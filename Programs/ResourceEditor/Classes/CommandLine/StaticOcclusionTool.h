@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Base/ScopedPtr.h"
-#include "FileSystem/FilePath.h"
-#include "Classes/CommandLine/CommandLineModule.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include <REPlatform/Global/CommandLineModule.h>
+
+#include <Base/ScopedPtr.h>
+#include <FileSystem/FilePath.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
@@ -11,7 +12,7 @@ class Scene;
 class StaticOcclusionBuildSystem;
 }
 
-class StaticOcclusionTool : public CommandLineModule
+class StaticOcclusionTool : public DAVA::CommandLineModule
 {
 public:
     StaticOcclusionTool(const DAVA::Vector<DAVA::String>& commandLine);
@@ -33,9 +34,9 @@ protected:
     };
     eAction commandAction = ACTION_NONE;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(StaticOcclusionTool, CommandLineModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(StaticOcclusionTool, DAVA::CommandLineModule)
     {
-        DAVA::ReflectionRegistrator<StaticOcclusionTool>::Begin()
+        DAVA::ReflectionRegistrator<StaticOcclusionTool>::Begin()[DAVA::M::CommandName("-staticocclusion")]
         .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
         .End();
     }

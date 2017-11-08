@@ -17,10 +17,6 @@ criminal penalties as provided by law.
 
 #include "lineeq.hpp"
 
-#include "cstdmf/debug.hpp"
-
-DECLARE_DEBUG_COMPONENT2("Physics", 0)
-
 //#define HULLTREE_TIMING
 
 // -----------------------------------------------------------------------------

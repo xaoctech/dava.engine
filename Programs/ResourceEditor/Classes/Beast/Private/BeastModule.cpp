@@ -141,6 +141,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BeastModule)
     .End();
 }
 
-DECL_GUI_MODULE(BeastModule);
+DECL_TARC_MODULE(BeastModule);
 
 #endif //#if defined (__DAVAENGINE_BEAST__)

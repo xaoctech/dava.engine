@@ -607,4 +607,4 @@ void LibraryModule::ImportedPackageWillBeRemoved(PackageNode* node, ImportedPack
     }
 }
 
-DECL_GUI_MODULE(LibraryModule);
+DECL_TARC_MODULE(LibraryModule);

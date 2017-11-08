@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Classes/CommandLine/CommandLineModule.h"
+#include <REPlatform/Global/CommandLineModule.h>
 
 #include <Reflection/ReflectionRegistrator.h>
 
-class ConsoleHelpTool : public CommandLineModule
+class ConsoleHelpTool : public DAVA::CommandLineModule
 {
 public:
     ConsoleHelpTool(const DAVA::Vector<DAVA::String>& commandLine);
@@ -13,9 +13,9 @@ private:
     eFrameResult OnFrameInternal() override;
     void ShowHelpInternal() override;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ConsoleHelpTool, CommandLineModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ConsoleHelpTool, DAVA::CommandLineModule)
     {
-        DAVA::ReflectionRegistrator<ConsoleHelpTool>::Begin()
+        DAVA::ReflectionRegistrator<ConsoleHelpTool>::Begin()[DAVA::M::CommandName("-help")]
         .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
         .End();
     }

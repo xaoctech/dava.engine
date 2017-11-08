@@ -195,4 +195,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(RenderOptionsModule)
     .End();
 }
 
-DECL_GUI_MODULE(RenderOptionsModule);
+DECL_TARC_MODULE(RenderOptionsModule);

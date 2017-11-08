@@ -1,12 +1,12 @@
 #pragma once
 
+#include <REPlatform/Global/CommandLineModule.h>
 #include <DavaTools/TextureCompression/TextureConverter.h>
 
-#include "Render/TextureDescriptor.h"
-#include "Classes/CommandLine/CommandLineModule.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include <Render/TextureDescriptor.h>
+#include <Reflection/ReflectionRegistrator.h>
 
-class TextureDescriptorTool : public CommandLineModule
+class TextureDescriptorTool : public DAVA::CommandLineModule
 {
 public:
     TextureDescriptorTool(const DAVA::Vector<DAVA::String>& commandLine);
@@ -45,9 +45,9 @@ private:
     DAVA::TextureConverter::eConvertQuality quality = DAVA::TextureConverter::ECQ_DEFAULT;
     DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> compressionParams;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TextureDescriptorTool, CommandLineModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TextureDescriptorTool, DAVA::CommandLineModule)
     {
-        DAVA::ReflectionRegistrator<TextureDescriptorTool>::Begin()
+        DAVA::ReflectionRegistrator<TextureDescriptorTool>::Begin()[DAVA::M::CommandName("-texdescriptor")]
         .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
         .End();
     }

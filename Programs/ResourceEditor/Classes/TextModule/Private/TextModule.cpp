@@ -103,4 +103,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TextModule)
     .End();
 }
 
-DECL_GUI_MODULE(TextModule);
+DECL_TARC_MODULE(TextModule);

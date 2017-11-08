@@ -14,6 +14,7 @@
 #include "TArc/Utils/QtDelayedExecutor.h"
 #include "TArc/Utils/QtMessageHandler.h"
 #include "TArc/Utils/RhiEmptyFrame.h"
+#include "TArc/Utils/ModuleCollection.h"
 #include "TArc/WindowSubSystem/Private/UIManager.h"
 #include "TArc/WindowSubSystem/Private/UIProxy.h"
 
@@ -77,7 +78,7 @@ public:
         return engine.IsConsoleMode();
     }
 
-    void PostInit()
+    virtual void PostInit()
     {
         FileSystem* fileSystem = GetEngineContext()->fileSystem;
         DVASSERT(fileSystem != nullptr);
@@ -224,9 +225,18 @@ public:
         }
 
         Vector<TArcPlugin*> plugins = pluginsManager->GetPluginsWithBaseType(Type::Instance<T>());
+        ModuleCollection* moduleCollection = ModuleCollection::Instance();
         for (TArcPlugin* plugin : plugins)
         {
-            AddModule(plugin->GetModuleType()->CreateObject(ReflectedType::CreatePolicy::ByPointer).Cast<T*>(nullptr));
+            const ReflectedType* pluginType = plugin->GetModuleType();
+            if (Type::Instance<T>() == Type::Instance<ConsoleModule>())
+            {
+                moduleCollection->AddConsoleModule([pluginType]() { return pluginType; });
+            }
+            else
+            {
+                moduleCollection->AddGuiModule([pluginType]() { return pluginType; });
+            }
         }
     }
 
@@ -365,7 +375,6 @@ public:
         Texture::SetGPULoadingOrder({ GPU_ORIGIN });
 
         ActivateContextImpl(globalContext);
-        LoadPluginModules<ConsoleModule>();
         for (std::unique_ptr<ConsoleModule>& module : modules)
         {
             module->Init(this);
@@ -420,6 +429,12 @@ public:
         surface->destroy();
 
         Impl::OnLoopStopped();
+    }
+
+    void PostInit() override
+    {
+        Impl::PostInit();
+        LoadPluginModules<ConsoleModule>();
     }
 
     void AddModule(ConsoleModule* module) override
@@ -527,7 +542,6 @@ public:
         uiManager.reset(new UIManager(this, this, propertiesHolder->CreateSubHolder("UIManager")));
         DVASSERT(controllerModule != nullptr, "Controller Module hasn't been registered");
 
-        LoadPluginModules<ClientModule>();
         for (std::unique_ptr<ClientModule>& module : modules)
         {
             module->Init(this, std::make_unique<UIProxy>(module.get(), uiManager.get()));
@@ -586,6 +600,12 @@ public:
         modules.clear();
         uiManager.reset();
         Impl::OnLoopStopped();
+    }
+
+    void PostInit() override
+    {
+        Impl::PostInit();
+        LoadPluginModules<ClientModule>();
     }
 
     void OnWindowCreated(Window* w) override

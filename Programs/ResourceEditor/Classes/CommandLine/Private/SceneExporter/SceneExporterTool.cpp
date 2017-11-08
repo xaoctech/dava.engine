@@ -444,4 +444,4 @@ void SceneExporterTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-sceneexporter -texture -indir /Users/SmokeTest/DataSource/3d/ -output /Users/config.yaml -processfilelist /Users/files.txt -useCache -ip 127.0.0.1");
 }
 
-DECL_CONSOLE_MODULE(SceneExporterTool, "-sceneexporter");
+DECL_TARC_MODULE(SceneExporterTool);

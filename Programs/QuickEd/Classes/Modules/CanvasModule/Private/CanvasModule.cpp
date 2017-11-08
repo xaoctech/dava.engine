@@ -161,4 +161,4 @@ void CanvasModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::V
     RecreateBgrColorActions();
 }
 
-DECL_GUI_MODULE(CanvasModule);
+DECL_TARC_MODULE(CanvasModule);

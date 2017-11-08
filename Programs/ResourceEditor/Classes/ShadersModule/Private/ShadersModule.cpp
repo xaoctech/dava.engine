@@ -175,4 +175,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShadersModule)
     .End();
 }
 
-DECL_GUI_MODULE(ShadersModule);
+DECL_TARC_MODULE(ShadersModule);

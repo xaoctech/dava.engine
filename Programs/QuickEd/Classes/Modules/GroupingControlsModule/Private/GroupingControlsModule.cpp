@@ -315,4 +315,4 @@ DAVA::Result GroupingControlsModule::CanUngroupSelection(const SelectedNodes& se
     return Result(Result::RESULT_SUCCESS);
 }
 
-DECL_GUI_MODULE(GroupingControlsModule);
+DECL_TARC_MODULE(GroupingControlsModule);

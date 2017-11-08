@@ -154,4 +154,4 @@ void SpritesPackerModule::OnReloadSprites()
     GetUI()->ShowModalDialog(DAVA::mainWindowKey, &dialogReloadSprites);
 }
 
-DECL_GUI_MODULE(SpritesPackerModule);
+DECL_TARC_MODULE(SpritesPackerModule);

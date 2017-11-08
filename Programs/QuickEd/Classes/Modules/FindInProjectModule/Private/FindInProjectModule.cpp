@@ -87,4 +87,4 @@ void FindInProjectModule::OnFindInProject()
     }
 }
 
-DECL_GUI_MODULE(FindInProjectModule);
+DECL_TARC_MODULE(FindInProjectModule);

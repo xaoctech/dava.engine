@@ -11,6 +11,8 @@ criminal penalties as provided by law.
 
 //boundbox.ipp
 
+#include <float.h>
+
 /**
  *	Constructor
  *	Defaults to the unset/inside out state

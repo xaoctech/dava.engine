@@ -137,6 +137,52 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TerrainConverterGUIModule)
     .End();
 }
 
+TerrainConverterConsoleModule::TerrainConverterConsoleModule(const DAVA::Vector<DAVA::String>& commandLine)
+    : CommandLineModule(commandLine, "-mapConvert")
+{
+    using namespace DAVA;
+
+    options.AddOption("-file", VariantType(String("")), "Target map for convert");
+    options.AddOption("-project", VariantType(String("")), "Wot Bltz project path");
+    options.AddOption("-templates", VariantType(String("")), "Terrain converter tamplates");
+}
+
+bool TerrainConverterConsoleModule::PostInitInternal()
+{
+    mapPath = DAVA::FilePath(options.GetOption("-file").AsString());
+    projectPath = options.GetOption("-project").AsString();
+    templatesPath = options.GetOption("-templates").AsString();
+
+    if (mapPath.IsEmpty() == true || projectPath.empty() == true || templatesPath.empty() == true)
+    {
+        DAVA::Logger::Error("Incorrect input args");
+        return false;
+    }
+
+    return true;
+}
+
+DAVA::ConsoleModule::eFrameResult TerrainConverterConsoleModule::OnFrameInternal()
+{
+    Converter con(templatesPath, projectPath);
+    con.Do(mapPath, DAVA::Vector<DAVA::String>());
+
+    return eFrameResult::FINISHED;
+}
+
+void TerrainConverterConsoleModule::ShowHelpInternal()
+{
+    CommandLineModule::ShowHelpInternal();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(TerrainConverterConsoleModule)
+{
+    DAVA::ReflectionRegistrator<TerrainConverterConsoleModule>::Begin()[DAVA::M::CommandName("-mapConvert")]
+    .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
+    .End();
+}
+
 START_PLUGINS_DECLARATION();
 DECLARE_PLUGIN(TerrainConverterGUIModule, DAVA::TArcPlugin::PluginDescriptor("ResourceEditor", "TerrainConverter", "Terrain Converter for Blitz", "Terrain Converter for Blitz", 0, 1));
+DECLARE_PLUGIN(TerrainConverterConsoleModule, DAVA::TArcPlugin::PluginDescriptor("ResourceEditor", "TerrainConverterCmd", "Terrain Converter for Blitz", "Terrain Converter for Blitz", 0, 1));
 END_PLUGINS_DECLARATION();

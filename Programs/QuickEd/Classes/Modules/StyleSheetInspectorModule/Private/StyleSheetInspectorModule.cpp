@@ -27,4 +27,4 @@ void StyleSheetInspectorModule::PostInit()
     GetUI()->AddView(DAVA::mainWindowKey, panelKey, widget);
 }
 
-DECL_GUI_MODULE(StyleSheetInspectorModule);
+DECL_TARC_MODULE(StyleSheetInspectorModule);

@@ -210,4 +210,4 @@ void DumpTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-dump  -resdir /Users/resources  -indir /Users/resources/3d/Maps/20_lake_lk/ -processfile 20_lake_lk.sc2 -outfile /Users/resources/dump.txt -mode с  -qualitycfgpath /Users/resources/quality.yaml -gpu all");
 }
 
-DECL_CONSOLE_MODULE(DumpTool, "-dump");
+DECL_TARC_MODULE(DumpTool);

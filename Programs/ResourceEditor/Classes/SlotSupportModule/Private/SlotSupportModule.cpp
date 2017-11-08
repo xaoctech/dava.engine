@@ -159,4 +159,4 @@ void SlotSupportModule::PostInit()
     GetUI()->AddAction(DAVA::mainWindowKey, placement, action);
 }
 
-DECL_GUI_MODULE(SlotSupportModule);
+DECL_TARC_MODULE(SlotSupportModule);

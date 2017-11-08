@@ -157,4 +157,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LibraryModule)
     .End();
 }
 
-DECL_GUI_MODULE(LibraryModule);
+DECL_TARC_MODULE(LibraryModule);

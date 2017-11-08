@@ -31,6 +31,7 @@
 #include "physics2/bsp.hpp"
 #include "speedtree/speedtree_collision.hpp"
 #include "Model.h"
+#include <Base/BaseTypes.h>
 
 ServerSPT::ServerSPT(const DAVA::String& _fileName, const DAVA::String& _mapName, DAVA::Entity* model)
     : modelName(_fileName)
@@ -95,10 +96,10 @@ void ServerSPT::PrepareDestructible()
     String path = "out\\tree\\";
     ReadBuffer_(content, sizeof(content), "~res:/modelTemplate\\destructibleTree.xml");
 
-    _snprintf(result, sizeof(result), content,
-              (mapName + "speedTree/" + modelName + ".spt").c_str(), health, density, Model::GetPhysicsParams(
-                                                                                      fallType)
-                                                                                      .c_str());
+    Snprintf(result, sizeof(result), content,
+             (mapName + "speedTree/" + modelName + ".spt").c_str(), health, density, Model::GetPhysicsParams(
+                                                                                     fallType)
+                                                                                     .c_str());
     File* f = File::Create(path + modelName + ".xml", File::CREATE | File::WRITE);
     f->Write(result, strlen(result));
     SafeRelease(f);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <REPlatform/Global/CommandLineModule.h>
+
 #include <TArc/Core/ClientModule.h>
 
 #include <Base/Type.h>
@@ -27,4 +29,20 @@ protected:
 private:
     std::shared_ptr<DAVA::REFileOperation> convertOperation;
     DAVA_VIRTUAL_REFLECTION(TerrainConverterGUIModule, DAVA::ClientModule);
+};
+
+class TerrainConverterConsoleModule : public DAVA::CommandLineModule
+{
+public:
+    TerrainConverterConsoleModule(const DAVA::Vector<DAVA::String>& commandLine);
+
+    bool PostInitInternal() override;
+    eFrameResult OnFrameInternal() override;
+    void ShowHelpInternal() override;
+
+private:
+    DAVA::FilePath mapPath;
+    DAVA::String projectPath;
+    DAVA::String templatesPath;
+    DAVA_VIRTUAL_REFLECTION(TerrainConverterConsoleModule, DAVA::CommandLineModule);
 };

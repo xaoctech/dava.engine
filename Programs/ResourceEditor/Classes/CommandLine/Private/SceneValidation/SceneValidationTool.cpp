@@ -212,4 +212,4 @@ DAVA::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
     return eFrameResult::FINISHED;
 }
 
-DECL_CONSOLE_MODULE(SceneValidationTool, "-scenevalidation");
+DECL_TARC_MODULE(SceneValidationTool);

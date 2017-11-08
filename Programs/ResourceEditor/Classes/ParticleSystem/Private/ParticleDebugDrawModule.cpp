@@ -213,4 +213,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ParticleDebugDrawModule)
     .End();
 }
 
-DECL_GUI_MODULE(ParticleDebugDrawModule);
+DECL_TARC_MODULE(ParticleDebugDrawModule);

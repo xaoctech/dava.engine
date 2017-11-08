@@ -298,4 +298,4 @@ void TextureDescriptorTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-texdescriptor -savepreset -file /Users/SmokeTest/DataSource/3d/Maps/images/texture.tex");
 }
 
-DECL_CONSOLE_MODULE(TextureDescriptorTool, "-texdescriptor");
+DECL_TARC_MODULE(TextureDescriptorTool);

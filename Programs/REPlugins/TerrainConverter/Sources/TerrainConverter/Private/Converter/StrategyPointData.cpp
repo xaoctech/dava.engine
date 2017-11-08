@@ -26,7 +26,7 @@ StrategyPointData StrategyPointData::Create(DAVA::KeyedArchive* customProperties
 
     StrategyPointData data;
     data.baseID = customProperties->GetInt32(BASE_ID, StrategyPointData::INVALID_BASE_ID);
-    data.bonus—apture = customProperties->GetInt32(BONUS_CAPTURE, data.bonus—apture);
+    data.bonusCapture = customProperties->GetInt32(BONUS_CAPTURE, data.bonusCapture);
     data.penaltyLoss = customProperties->GetInt32(PENALTY_LOSS, data.penaltyLoss);
     data.incomeVictoryPoints = customProperties->GetInt32(INCOME_VICTORY_POINTS, data.incomeVictoryPoints);
     data.spawnVictoryPointsTime = customProperties->GetFloat(SPAWN_VICTORY_POINTS_TIME, data.spawnVictoryPointsTime);
@@ -43,7 +43,7 @@ void StrategyPointData::FillPattern(DAVA::String& pattern)
     using namespace SStrategyPointData;
 
     StringReplace(pattern, AsPattern(BASE_ID), Format("%d", baseID));
-    StringReplace(pattern, AsPattern(BONUS_CAPTURE), Format("%d", bonus—apture));
+    StringReplace(pattern, AsPattern(BONUS_CAPTURE), Format("%d", bonusCapture));
     StringReplace(pattern, AsPattern(PENALTY_LOSS), Format("%d", penaltyLoss));
     StringReplace(pattern, AsPattern(INCOME_VICTORY_POINTS), Format("%d", incomeVictoryPoints));
     StringReplace(pattern, AsPattern(SPAWN_VICTORY_POINTS_TIME), Format("%f", spawnVictoryPointsTime));

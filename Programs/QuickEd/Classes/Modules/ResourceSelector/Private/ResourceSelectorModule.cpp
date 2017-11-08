@@ -356,4 +356,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ResourceSelectorModule)
     .End();
 }
 
-DECL_GUI_MODULE(ResourceSelectorModule);
+DECL_TARC_MODULE(ResourceSelectorModule);

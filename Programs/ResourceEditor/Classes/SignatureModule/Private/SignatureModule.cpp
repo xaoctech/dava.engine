@@ -44,4 +44,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SignatureModule)
     .End();
 }
 
-DECL_GUI_MODULE(SignatureModule);
+DECL_TARC_MODULE(SignatureModule);

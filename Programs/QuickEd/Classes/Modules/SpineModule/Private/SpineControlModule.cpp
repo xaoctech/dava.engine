@@ -130,4 +130,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SpineControlModule)
     .End();
 }
 
-DECL_GUI_MODULE(SpineControlModule);
+DECL_TARC_MODULE(SpineControlModule);

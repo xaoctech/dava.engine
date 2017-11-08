@@ -31,6 +31,7 @@
 #include <TArc/Testing/TArcTestClass.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
@@ -230,15 +231,16 @@ void REApplication::CreateConsoleModules(DAVA::Core* tarcCore) const
 {
     DVASSERT(cmdLine.size() > 1);
 
-    DAVA::Vector<std::pair<const DAVA::ReflectedType*, DAVA::String>> modules = DAVA::ModuleCollection::Instance()->GetConsoleModules();
+    DAVA::Vector<const DAVA::ReflectedType*> modules = DAVA::ModuleCollection::Instance()->GetConsoleModules();
 
     auto createModuleFn = [&](const DAVA::String& command) -> bool
     {
-        for (const auto& module : modules)
+        for (const DAVA::ReflectedType* moduleType : modules)
         {
-            if (module.second == command)
+            const DAVA::M::CommandName* commandNameMeta = DAVA::GetReflectedTypeMeta<DAVA::M::CommandName>(moduleType);
+            if (commandNameMeta != nullptr && commandNameMeta->commandName == command)
             {
-                tarcCore->CreateModule(module.first, cmdLine);
+                tarcCore->CreateModule(moduleType, cmdLine);
                 return true;
             }
         }

@@ -10,6 +10,7 @@
 #include <REPlatform/Deprecated/EditorConfig.h>
 
 #include <Render/PixelFormatDescriptor.h>
+#include <Base/BaseTypes.h>
 
 #include <libpng/png.h>
 #include <libpng/zconf.h>
@@ -188,17 +189,17 @@ void Converter::CheckPath(Entity* curr, const Vector<String>& tags)
             int32 group = customProperties->GetInt32("group", 0);
             bool isPerformanceTestBot = customProperties->GetBool("performanceTestBot");
             UniqueID guid = GetEntityID(curr);
-            _snprintf(resultBuff, sizeof(resultBuff), botSpawnFormatPattern,
-                      guid.toString().c_str(),
-                      team,
-                      vehicle.c_str(),
-                      (botname.empty() ? botname.c_str() : Format("\n\t\t\t<botName>\t%s\t</botName>",
-                                                                  botname.c_str())
-                                                           .c_str()),
-                      nextid,
-                      (isPerformanceTestBot ? "1" : "0"),
-                      script.c_str(),
-                      group);
+            Snprintf(resultBuff, sizeof(resultBuff), botSpawnFormatPattern,
+                     guid.toString().c_str(),
+                     team,
+                     vehicle.c_str(),
+                     (botname.empty() ? botname.c_str() : Format("\n\t\t\t<botName>\t%s\t</botName>",
+                                                                 botname.c_str())
+                                                          .c_str()),
+                     nextid,
+                     (isPerformanceTestBot ? "1" : "0"),
+                     script.c_str(),
+                     group);
 
             PathComponent::Waypoint* startWP = path->GetPoints()[0];
             PathComponent::Waypoint* nextWP = NULL;
@@ -244,11 +245,11 @@ void Converter::AddWayPointToChunk(PathComponent::Waypoint* wp, uint32 pointNumb
         directive = directive.insert(directive.find(")", switchPos), s);
         needNewPath = true;
     }
-    _snprintf(resultBuff, sizeof(resultBuff), patrolFormatPattern,
-              guid.toString().c_str(),
-              nextid,
-              pointNumber,
-              directive.c_str());
+    Snprintf(resultBuff, sizeof(resultBuff), patrolFormatPattern,
+             guid.toString().c_str(),
+             nextid,
+             pointNumber,
+             directive.c_str());
     Matrix4 wt;
     wt.BuildTranslation(wp->position);
     AddEntityToChunk(resultBuff, wt, 0);
@@ -289,12 +290,12 @@ void Converter::AddEntityToChunk(char* textBuf, const Matrix4& wt, const uint32 
 
     char* beginTr = strstr(textBuf, "<transform>") + 12;
 
-    _snprintf(transformBuf, sizeof(transformBuf),
-              "\t\t\t<row0> %f %f %f </row0>\r\n\t\t\t<row1> %f %f %f </row1>\r\n\t\t\t<row2> %f %f %f </row2>\r\n\t\t\t<row3> %f %f %f </row3>",
-              t._00, t._01, t._02,
-              t._10, t._11, t._12,
-              t._20, t._21, t._22,
-              t._30, t._31, t._32);
+    Snprintf(transformBuf, sizeof(transformBuf),
+             "\t\t\t<row0> %f %f %f </row0>\r\n\t\t\t<row1> %f %f %f </row1>\r\n\t\t\t<row2> %f %f %f </row2>\r\n\t\t\t<row3> %f %f %f </row3>",
+             t._00, t._01, t._02,
+             t._10, t._11, t._12,
+             t._20, t._21, t._22,
+             t._30, t._31, t._32);
 
     File* f = File::Create("out\\spaces\\" + identifier + ".chunk", File::OPEN | File::READ);
     if (f)
@@ -506,8 +507,8 @@ void Converter::CheckNodes(Entity* curr, const Vector<String>& tags)
 void Converter::AddModelToChunk(Entity* node, Model* model)
 {
     Logger::Info("AddModelToChunk model %s", model->GetModelName().c_str());
-    _snprintf(resultBuff, sizeof(resultBuff), modelContentFormatPattern, "",
-              (mapName + model->GetModelName()).c_str(), "<destructibleState> undamaged </destructibleState>");
+    Snprintf(resultBuff, sizeof(resultBuff), modelContentFormatPattern, "",
+             (mapName + model->GetModelName()).c_str(), "<destructibleState> undamaged </destructibleState>");
     AddEntityToChunk(resultBuff, node->GetWorldTransform(), node->GetID());
     resultBuff[0] = 0;
 }
@@ -519,7 +520,7 @@ void Converter::AddTreeToChunk(Entity* node, ServerSPT* tree)
 {
     Logger::Info("AddModelToChunk model %s", tree->GetModelName().c_str());
     String fn = mapName + "speedTree/" + tree->GetModelName();
-    _snprintf(resultBuff, sizeof(resultBuff), speedTreeFormatPattern, fn.c_str());
+    Snprintf(resultBuff, sizeof(resultBuff), speedTreeFormatPattern, fn.c_str());
     AddEntityToChunk(resultBuff, node->GetWorldTransform(), node->GetID());
     resultBuff[0] = 0;
 }
@@ -585,37 +586,37 @@ void Converter::AddPointToChunk(Entity* node)
                             preferredVehicleType);
             preferredVehicleTypeStr = SPAWN_PREFERRED_VEHICLE_TYPES[eSPVT_ANY];
         }
-        _snprintf(resultBuff, sizeof(resultBuff), spawnPointFormatPattern,
-                  guid.toString().c_str(), team, preferredVehicleTypeStr.c_str(), group, pointNumber);
+        Snprintf(resultBuff, sizeof(resultBuff), spawnPointFormatPattern,
+                 guid.toString().c_str(), team, preferredVehicleTypeStr.c_str(), group, pointNumber);
     }
     else if (val.find("controlpoint") != std::string::npos)
     {
-        _snprintf(resultBuff, sizeof(resultBuff), controlPointFormatPattern,
-                  radius,
-                  pointsPerSecond,
-                  maxPointsPerSecond);
+        Snprintf(resultBuff, sizeof(resultBuff), controlPointFormatPattern,
+                 radius,
+                 pointsPerSecond,
+                 maxPointsPerSecond);
     }
     else if (val.find("botspawn") != std::string::npos)
     {
-        _snprintf(resultBuff, sizeof(resultBuff), botSpawnFormatPattern,
-                  guid.toString().c_str(),
-                  team,
-                  vehicle.c_str(),
-                  (botname.empty() ? botname.c_str() : Format("\n\t\t\t<botName>\t%s\t</botName>",
-                                                              botname.c_str())
-                                                       .c_str()),
-                  pathIDbotspawn,
-                  (isPerformanceTestBot ? "1" : "0"),
-                  script.c_str(),
-                  group);
+        Snprintf(resultBuff, sizeof(resultBuff), botSpawnFormatPattern,
+                 guid.toString().c_str(),
+                 team,
+                 vehicle.c_str(),
+                 (botname.empty() ? botname.c_str() : Format("\n\t\t\t<botName>\t%s\t</botName>",
+                                                             botname.c_str())
+                                                      .c_str()),
+                 pathIDbotspawn,
+                 (isPerformanceTestBot ? "1" : "0"),
+                 script.c_str(),
+                 group);
     }
     else if (val.find("patrol") != std::string::npos)
     {
-        _snprintf(resultBuff, sizeof(resultBuff), patrolFormatPattern,
-                  guid.toString().c_str(),
-                  pathIDpatrol,
-                  pointNumber,
-                  directive.c_str());
+        Snprintf(resultBuff, sizeof(resultBuff), patrolFormatPattern,
+                 guid.toString().c_str(),
+                 pathIDpatrol,
+                 pointNumber,
+                 directive.c_str());
     }
     else if (val.find("strategicpoint") != std::string::npos)
     {
@@ -624,7 +625,7 @@ void Converter::AddPointToChunk(Entity* node)
         String currentStrategyPoint = strategyPointPattern;
         strategyPointData.FillPattern(currentStrategyPoint);
 
-        _snprintf(resultBuff, sizeof(resultBuff), currentStrategyPoint.c_str());
+        Snprintf(resultBuff, sizeof(resultBuff), "%s", currentStrategyPoint.c_str());
 
         arenaDefCompilator->Visit(strategyPointData);
     }
@@ -646,7 +647,7 @@ void Converter::CreateSettingsFile(int32 minx, int32 miny, int32 maxx, int32 max
     content[res] = 0;
     SafeRelease(f);
 
-    _snprintf(result, sizeof(result), content, -6, 5, -6, 5);
+    Snprintf(result, sizeof(result), content, -6, 5, -6, 5);
     f = File::Create("out\\spaces\\space.settings", File::CREATE | File::WRITE);
     f->Write(result, strlen(result));
     SafeRelease(f);
@@ -673,14 +674,15 @@ void Converter::CreateBorderFile(void)
     content[res] = 0;
     SafeRelease(f);
 
-    //	_snprintf( result, sizeof(result), content, minx, maxx, miny, maxy);
-    _snprintf(result, sizeof(result), content, topX, topY, botX, botY);
+    //	Snprintf( result, sizeof(result), content, minx, maxx, miny, maxy);
+    Snprintf(result, sizeof(result), content, topX, topY, botX, botY);
     f = File::Create("out\\boundingBox.xml", File::CREATE | File::WRITE);
     f->Write(result, strlen(result));
     SafeRelease(f);
 
     AABBox2 bbox(Vector2(topX, topY), Vector2(botX, botY));
-    arenaDefCompilator->Visit(BoundingBoxData(bbox));
+    BoundingBoxData bboxData(bbox);
+    arenaDefCompilator->Visit(bboxData);
 }
 
 bool Converter::PrepareIndexTexture(void)
@@ -791,7 +793,7 @@ bool Converter::PrepareIndexTexture(void)
     return true;
 } // Converter::PrepareIndexTexture
 
-uint8 GetDominantIndex(uint8* image, UINT offset)
+uint8 GetDominantIndex(uint8* image, uint32 offset)
 {
     uint8 maxVal = 0;
     int32 maxInd = 0;
@@ -809,7 +811,7 @@ uint8 GetDominantIndex(uint8* image, UINT offset)
 
 uint8 downValues[4];
 
-uint8 Downscale4Pixels(uint8* image, UINT strip, UINT offset)
+uint8 Downscale4Pixels(uint8* image, uint32 strip, uint32 offset)
 {
     memset(downValues, 0, 4);
 
@@ -880,16 +882,16 @@ void Converter::GenerateMaterialKindMap(void)
     if (tileMask)
     {
         uint8* tileMaskData = tileMask->GetData();
-        UINT width = tileMask->GetWidth();
-        UINT bufferSz = ((width >> 1) * (width >> 1)) >> 2;
+        uint32 width = tileMask->GetWidth();
+        uint32 bufferSz = ((width >> 1) * (width >> 1)) >> 2;
         uint8* matKind = new uint8[bufferSz];
         memset(matKind, 0, bufferSz);
         uint8 val;
-        UINT offset = 0;
-        UINT matOff = 0;
-        for (UINT y = 0; y < width; y += 2)
+        uint32 offset = 0;
+        uint32 matOff = 0;
+        for (uint32 y = 0; y < width; y += 2)
         {
-            for (UINT x = 0; x < width; x += 8)
+            for (uint32 x = 0; x < width; x += 8)
             {
                 val = 0;
                 for (int i = 0; i < 4; i++)
@@ -1066,7 +1068,7 @@ void Converter::DoConvertHM()
 
                     // Create header at front of buffer
                     HeightMapHeader hmh;
-                    ::ZeroMemory(&hmh, sizeof(hmh));
+                    memset(&hmh, 0, sizeof(hmh));
                     hmh.magic_ = HeightMapHeader::MAGIC;
                     hmh.compression_ = 0;
                     hmh.width_ = nW;
@@ -1144,9 +1146,9 @@ void Converter::DoConvertHM()
                     compressResult("out\\spaces\\" + identifier + ".cdata", (BinaryPtr)&result);
 
                     File* f = File::Create("out\\spaces\\" + identifier + ".chunk", File::CREATE | File::WRITE);
-                    _snprintf(content, sizeof(content),
-                              "<root>\n<terrain>\n<editorOnly>\n<hidden>	false	</hidden>\n<frozen>	false	</frozen>\n</editorOnly>\n<visibilityMask>4294967295</visibilityMask>\n<metaData>	</metaData>\n<resource>	%s/terrain2	</resource>\n</terrain>\n</root>\n",
-                              (identifier + ".cdata").c_str());
+                    Snprintf(content, sizeof(content),
+                             "<root>\n<terrain>\n<editorOnly>\n<hidden>	false	</hidden>\n<frozen>	false	</frozen>\n</editorOnly>\n<visibilityMask>4294967295</visibilityMask>\n<metaData>	</metaData>\n<resource>	%s/terrain2	</resource>\n</terrain>\n</root>\n",
+                             (identifier + ".cdata").c_str());
                     int32 res = f->Write(content, strlen(content));
                     SafeRelease(f);
                 }
@@ -1180,9 +1182,7 @@ void Converter::archiveFile(String fileName, FilePath filePath, zipFile& zf)
     File* fin = File::Create(filePath, File::OPEN | File::READ);
 
     zip_fileinfo zi;
-    zi.tmz_date.tm_sec = zi.tmz_date.tm_min = zi.tmz_date.tm_hour =
-    zi.tmz_date.tm_mday = zi.tmz_date.tm_mon = zi.tmz_date.tm_year = 0;
-    zi.dosDate = 0;
+    zi.dos_date = 0;
     zi.internal_fa = 0;
     zi.external_fa = 0;
 
@@ -1200,7 +1200,7 @@ void Converter::archiveFile(String fileName, FilePath filePath, zipFile& zf)
         err = zipCloseFileInZip(zf);
     }
     SafeRelease(fin);
-    delete buffer;
+    delete[] buffer;
 }
 
 void Converter::browseDir(String dirName, zipFile& archive)
@@ -1241,7 +1241,7 @@ String Converter::outsideChunkIdentifier(int32 gridX, int32 gridZ)
     String gridChunkIdentifier;
 
     uint16 gridxs = uint16(gridX), gridzs = uint16(gridZ);
-    _snprintf(chunkIdentifierCStr, sizeof(chunkIdentifierCStr), "%04x%04xo", int(gridxs), int(gridzs));
+    Snprintf(chunkIdentifierCStr, sizeof(chunkIdentifierCStr), "%04x%04xo", int(gridxs), int(gridzs));
     gridChunkIdentifier += chunkIdentifierCStr;
     return gridChunkIdentifier;
 }
@@ -1274,17 +1274,15 @@ void Converter::compressResult(String archiveName, BinaryPtr hMap)
     //	zf = zipOpen(archiveName.c_str(), APPEND_STATUS_ADDINZIP);
     zf = zipOpen(archiveName.c_str(), 0);
     zip_fileinfo zi;
-    zi.tmz_date.tm_sec = zi.tmz_date.tm_min = zi.tmz_date.tm_hour =
-    zi.tmz_date.tm_mday = zi.tmz_date.tm_mon = zi.tmz_date.tm_year = 0;
-    zi.dosDate = 0;
+    zi.dos_date = 0;
     zi.internal_fa = 0;
     zi.external_fa = 0;
 
-    addFile2Zip(zf, zi, "terrain2\\heights", hMap);
-    addFile2Zip(zf, zi, "terrain2\\dominantTextures", (BinaryPtr)&dominantBlock);
-    addFile2Zip(zf, zi, "terrain2\\layer 1", (BinaryPtr)&blendBlock[0]);
-    addFile2Zip(zf, zi, "terrain2\\layer 2", (BinaryPtr)&blendBlock[1]);
-    addFile2Zip(zf, zi, "terrain2\\layer 3", (BinaryPtr)&blendBlock[2]);
+    addFile2Zip(zf, zi, (char*)"terrain2\\heights", hMap);
+    addFile2Zip(zf, zi, (char*)"terrain2\\dominantTextures", (BinaryPtr)&dominantBlock);
+    addFile2Zip(zf, zi, (char*)"terrain2\\layer 1", (BinaryPtr)&blendBlock[0]);
+    addFile2Zip(zf, zi, (char*)"terrain2\\layer 2", (BinaryPtr)&blendBlock[1]);
+    addFile2Zip(zf, zi, (char*)"terrain2\\layer 3", (BinaryPtr)&blendBlock[2]);
 
     browseDir("~res:/template\\", zf);
 
@@ -1707,21 +1705,21 @@ void Converter::AddWater(Entity* node, const String& guidStr)
     size.z = 0.0f;
 
     //write vlo file
-    _snprintf(resultBuff, sizeof(resultBuff), waterVloFormatPattern,
-              guidStr.c_str(),
-              pos.x, pos.z, pos.y,
-              size.x, size.z, size.y,
-              guidStr.c_str());
+    Snprintf(resultBuff, sizeof(resultBuff), waterVloFormatPattern,
+             guidStr.c_str(),
+             pos.x, pos.z, pos.y,
+             size.x, size.z, size.y,
+             guidStr.c_str());
 
     File* f = File::Create("out\\spaces\\" + guidStr + ".vlo", File::CREATE | File::WRITE);
     f->Write(resultBuff, strlen(resultBuff));
     SafeRelease(f);
 
     //write to all needed chunks
-    _snprintf(resultBuff, sizeof(resultBuff), waterFormatPattern,
-              guidStr.c_str(),
-              pos.x, pos.z, pos.y,
-              size.x, size.z, size.y);
+    Snprintf(resultBuff, sizeof(resultBuff), waterFormatPattern,
+             guidStr.c_str(),
+             pos.x, pos.z, pos.y,
+             size.x, size.z, size.y);
 
     AABBox3 box(Vector3(0, 0, -1000), Vector3(100, 100, 1000));
 

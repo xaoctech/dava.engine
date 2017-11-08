@@ -42,4 +42,4 @@ void ConsoleHelpTool::ShowHelpInternal()
     CommandLineModule::ShowHelpInternal();
 }
 
-DECL_CONSOLE_MODULE(ConsoleHelpTool, "-help");
+DECL_TARC_MODULE(ConsoleHelpTool);

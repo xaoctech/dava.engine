@@ -156,4 +156,4 @@ void SceneImageDump::ShowHelpInternal()
     DAVA::Logger::Info("\t-sceneimagedump -processfile /Users/SmokeTest/DataSource/3d/Maps/11-grass/test_scene.sc2 -camera TestCamera -width 1024 -height 1024 -gpu adreno -outfile /Users/screenshot.png");
 }
 
-DECL_CONSOLE_MODULE(SceneImageDump, "-sceneimagedump");
+DECL_TARC_MODULE(SceneImageDump);

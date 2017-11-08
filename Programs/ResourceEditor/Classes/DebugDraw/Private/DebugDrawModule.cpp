@@ -369,4 +369,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DebugDrawModule)
     .End();
 }
 
-DECL_GUI_MODULE(DebugDrawModule);
+DECL_TARC_MODULE(DebugDrawModule);

@@ -51,4 +51,4 @@ void IssueNavigatorModule::JumpToPackage(const DAVA::FilePath& packagePath)
     InvokeOperation(QEGlobal::OpenDocumentByPath.ID, path);
 }
 
-DECL_GUI_MODULE(IssueNavigatorModule);
+DECL_TARC_MODULE(IssueNavigatorModule);

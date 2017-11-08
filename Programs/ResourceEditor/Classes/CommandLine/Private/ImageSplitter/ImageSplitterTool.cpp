@@ -77,4 +77,4 @@ void ImageSplitterTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-imagesplitter -merge -folder /Users/SmokeTest/images/");
 }
 
-DECL_CONSOLE_MODULE(ImageSplitterTool, "-imagesplitter");
+DECL_TARC_MODULE(ImageSplitterTool);

@@ -157,4 +157,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ObjectPlacementModule)
     .End();
 }
 
-DECL_GUI_MODULE(ObjectPlacementModule);
+DECL_TARC_MODULE(ObjectPlacementModule);

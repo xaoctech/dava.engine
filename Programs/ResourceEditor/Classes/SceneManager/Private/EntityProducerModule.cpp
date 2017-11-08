@@ -65,4 +65,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EntityProducerModule)
     .End();
 }
 
-DECL_GUI_MODULE(EntityProducerModule);
+DECL_TARC_MODULE(EntityProducerModule);

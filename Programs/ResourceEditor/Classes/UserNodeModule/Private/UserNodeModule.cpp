@@ -117,4 +117,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UserNodeModule)
     .End();
 }
 
-DECL_GUI_MODULE(UserNodeModule);
+DECL_TARC_MODULE(UserNodeModule);

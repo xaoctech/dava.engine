@@ -115,4 +115,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SelectionModule)
     .End();
 }
 
-DECL_GUI_MODULE(SelectionModule);
+DECL_TARC_MODULE(SelectionModule);

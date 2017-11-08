@@ -1,9 +1,19 @@
 #pragma once
 
+#include "TArc/DataProcessing/TArcAnyCasts.h"
+
+#include <Base/BaseTypes.h>
+#include <Base/FastName.h>
+#include <Base/Type.h>
 #include <PluginManager/Plugin.h>
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>
-#include <Base/BaseTypes.h>
+#include <ReflectionDeclaration/Private/AnyCasts.h>
+#include <Engine/EngineContext.h>
+#include <Engine/Private/EngineBackend.h>
+
+#include <Render/RHI/rhi_Public.h>
+#include <Render/Renderer.h>
 
 namespace DAVA
 {
@@ -84,6 +94,20 @@ extern "C" { \
     } \
     PLUGIN_FUNCTION_EXPORT DAVA::TArcPlugin** CREATE_PLUGINS_ARRAY_FUNCTION_NAME(const DAVA::EngineContext* context) \
     { \
+        DAVA::Private::SetEngineContext(const_cast<DAVA::EngineContext*>(context)); \
+        DAVA::TypeDB::GetLocalDB()->SetMasterDB(context->typeDB); \
+        DAVA::FastNameDB::GetLocalDB()->SetMasterDB(context->fastNameDB); \
+        DAVA::ReflectedTypeDB::GetLocalDB()->SetMasterDB(context->reflectedTypeDB); \
+        DAVA::RegisterAnyCasts(); \
+        DAVA::RegisterTArcAnyCasts(); \
+        rhi::InitParam params; \
+        params.maxIndexBufferCount = 8192; \
+        params.maxVertexBufferCount = 8192; \
+        params.maxConstBufferCount = 32767; \
+        params.maxTextureCount = 2048; \
+        params.maxSamplerStateCount = 32 * 1024; \
+        params.shaderConstRingBufferSize = 256 * 1024 * 1024; \
+        DAVA::Renderer::Initialize(rhi::RHI_NULL_RENDERER, params); \
         DAVA::TArcPlugin** plugins = new DAVA::TArcPlugin*[32]; \
         memset(plugins, 0, 32 * sizeof(DAVA::TArcPlugin*)); \
         DAVA::int32 counter = 0

@@ -5,7 +5,7 @@
 #include "unique_id.h"
 #include "Model.h"
 #include "ServerSPT.h"
-#include "zip/contrib/minizip/zip.h"
+#include "zip.h"
 
 #include <Scene3D/Components/Waypoint/PathComponent.h>
 #include <FileSystem/FilePath.h>

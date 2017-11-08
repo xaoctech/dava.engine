@@ -54,6 +54,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SpeedTreeModule)
     .End();
 }
 
-DECL_GUI_MODULE(SpeedTreeModule);
+DECL_TARC_MODULE(SpeedTreeModule);
 
 #endif //#if defined (__DAVAENGINE_SPEEDTREE__)

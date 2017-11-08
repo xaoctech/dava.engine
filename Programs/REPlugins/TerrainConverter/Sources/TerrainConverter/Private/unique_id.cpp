@@ -15,6 +15,8 @@
     #include <objbase.h>
 #endif
 
+#include <Base/BaseTypes.h>
+
 UniqueID UniqueID::s_zero_(0, 0, 0, 0);
 
 UniqueID::UniqueID()
@@ -47,7 +49,7 @@ UniqueID::UniqueID(const std::string& s)
 UniqueID::operator std::string() const
 {
     char buf[80];
-    _snprintf(buf, sizeof(buf), "%08X.%08X.%08X.%08X", a_, b_, c_, d_);
+    Snprintf(buf, sizeof(buf), "%08X.%08X.%08X.%08X", a_, b_, c_, d_);
     return std::string(buf);
 }
 

@@ -66,4 +66,4 @@ void LogWidgetModule::OnLogOutput(DAVA::Logger::eLogLevel ll, const QByteArray& 
     logWidget->AddMessage(ll, output);
 }
 
-DECL_GUI_MODULE(LogWidgetModule);
+DECL_TARC_MODULE(LogWidgetModule);

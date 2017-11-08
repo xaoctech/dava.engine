@@ -364,9 +364,9 @@ void Model::Save()
         nodeType = "nodelessVisual";
     }
 
-    _snprintf(result, sizeof(result), content, modelName.c_str(), nodeType.c_str(),
-              (mapName + modelName).c_str(), nodeType.c_str(), min.x, min.y, min.z, max.x, max.y, max.z,
-              modelName.c_str());
+    Snprintf(result, sizeof(result), content, modelName.c_str(), nodeType.c_str(),
+             (mapName + modelName).c_str(), nodeType.c_str(), min.x, min.y, min.z, max.x, max.y, max.z,
+             modelName.c_str());
     f = File::Create("out\\content\\" + mapName + modelName + ".model", File::CREATE | File::WRITE);
 
     f->Write(result, strlen(result));
@@ -378,12 +378,12 @@ void Model::Save()
     {
         ReadBuffer(primitiveGroup, sizeof(primitiveGroup), "~res:/modelTemplate\\invisible.primitiveGroup");
 
-        _snprintf(result,
-                  sizeof(result),
-                  primitiveGroup,
-                  groups[0].identifier.c_str(),
-                  GetBWCollision(0),
-                  GetBWMaterialKind(0));
+        Snprintf(result,
+                 sizeof(result),
+                 primitiveGroup,
+                 groups[0].identifier.c_str(),
+                 GetBWCollision(0),
+                 GetBWMaterialKind(0));
 
         buf = buf + result;
     }
@@ -393,16 +393,16 @@ void Model::Save()
 
         for (uint32 i = 0; i < groups.size(); i++)
         {
-            _snprintf(result,
-                      sizeof(result),
-                      primitiveGroup,
-                      i,
-                      groups[i].identifier.c_str(),
-                      GetBWCollision(i),
-                      GetBWMaterialKind(i),
-                      (groups[i].hasAlpha ? "true" : "false"),
-                      (groups[i].twoSided ? "true" : "false"),
-                      (mapName + "images/" + groups[i].material).c_str());
+            Snprintf(result,
+                     sizeof(result),
+                     primitiveGroup,
+                     i,
+                     groups[i].identifier.c_str(),
+                     GetBWCollision(i),
+                     GetBWMaterialKind(i),
+                     (groups[i].hasAlpha ? "true" : "false"),
+                     (groups[i].twoSided ? "true" : "false"),
+                     (mapName + "images/" + groups[i].material).c_str());
             buf = buf + result;
         }
     }
@@ -418,8 +418,8 @@ void Model::Save()
         nodes[0] = 0;
     }
 
-    _snprintf(result, sizeof(result), content, modelName.c_str(), nodes,
-              buf.c_str(), min.x, min.y, min.z, max.x, max.y, max.z, modelName.c_str());
+    Snprintf(result, sizeof(result), content, modelName.c_str(), nodes,
+             buf.c_str(), min.x, min.y, min.z, max.x, max.y, max.z, modelName.c_str());
 
     f = File::Create("out\\content\\" + mapName + modelName + ".visual", File::CREATE | File::WRITE);
 
@@ -437,12 +437,12 @@ DAVA::String Model::GetPhysicsParams(DAVA::int32 fallType_)
     //  "%.1f %.1f 0.03 300000 10000 0 0.1",
     //  "800 10 0.26 20000 4000 20 0.15"};
     {
-      "800 10 0.26 20000 4000 20 0.15",
-      "400 10 0.03 300000 10000 0 0.1",
-      "400 2 0.03 300000 10000 0 0.02",
-      "800 10 0.26 20000 4000 20 0.15"
+      (char*)"800 10 0.26 20000 4000 20 0.15",
+      (char*)"400 10 0.03 300000 10000 0 0.1",
+      (char*)"400 2 0.03 300000 10000 0 0.02",
+      (char*)"800 10 0.26 20000 4000 20 0.15"
     };
-    // масса, длина, угол пружины, жесткость, сопротивление пружины, сопротивление воздуха, углубление в землю
+    // пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 
     //  if (fallType == eFT_STOLB || fallType == eFT_PALMA)
     //  {
@@ -457,7 +457,7 @@ DAVA::String Model::GetPhysicsParams(DAVA::int32 fallType_)
     //      float32 mass = k * k * k * mass1;
     //
     //      char result[128];
-    //      _snprintf( result, sizeof(result), fallParams[fallType], mass, h);
+    //      Snprintf( result, sizeof(result), fallParams[fallType], mass, h);
     //      return String(result);
     //  }
     //  else
@@ -482,21 +482,21 @@ void Model::PrepareDestructible()
     {
         path = "out\\tree\\";
         ReadBuffer(content, sizeof(content), "~res:/modelTemplate\\destructibleTree.xml");
-        _snprintf(result, sizeof(result), content,
-                  (mapName + modelName + ".model").c_str(), health, density, param.c_str());
+        Snprintf(result, sizeof(result), content,
+                 (mapName + modelName + ".model").c_str(), health, density, param.c_str());
     }
     else if (collision == eMP_FALLING_ATOM)
     {
         path = "out\\falling\\";
         ReadBuffer(content, sizeof(content), "~res:/modelTemplate\\destructibleFalling.xml");
-        _snprintf(result, sizeof(result), content, (mapName + modelName + ".model").c_str(), health, param.c_str());
+        Snprintf(result, sizeof(result), content, (mapName + modelName + ".model").c_str(), health, param.c_str());
     }
     else if (collision == eMP_FRAGILE_PR || collision == eMP_FRAGILE_NPR)
     {
         path = "out\\destructible\\";
         ReadBuffer(content, sizeof(content), "~res:/modelTemplate\\destructible.xml");
-        _snprintf(result, sizeof(result), content, (mapName + modelName + ".model").c_str(), health,
-                  materialKind.c_str());
+        Snprintf(result, sizeof(result), content, (mapName + modelName + ".model").c_str(), health,
+                 materialKind.c_str());
     }
 
     File* f = File::Create(path + modelName + ".xml", File::CREATE | File::WRITE);
@@ -516,7 +516,7 @@ void Model::Build(void)
 
     VertexHeader* vh = (VertexHeader*)buff;
     vh->nVertices_ = vertices.size();
-    _snprintf(vh->vertexFormat_, sizeof(vh->vertexFormat_), "xyznuv");
+    Snprintf(vh->vertexFormat_, sizeof(vh->vertexFormat_), "xyznuv");
     ::memcpy((void*)(vh + 1), &vertices[0], dataSize);
     children_.push_back(vert);
 
@@ -528,7 +528,7 @@ void Model::Build(void)
 
     IndexHeader* ih = (IndexHeader*)buff;
     ih->nIndices_ = primitive.size();
-    _snprintf(ih->indexFormat_, sizeof(ih->indexFormat_), "list");
+    Snprintf(ih->indexFormat_, sizeof(ih->indexFormat_), "list");
     ih->nTriangleGroups_ = groups.size();
     ::memcpy((void*)(ih + 1), &primitive[0], dataSize);
 
@@ -555,7 +555,7 @@ void Model::Build(void)
     val += "</temp_bsp_materials.xml>";
     bspMat->SetBinarySize(val.size() + 1);
     buff = bspMat->GetBuffer();
-    _snprintf((char*)buff, val.size() + 1, val.c_str());
+    Snprintf((char*)buff, val.size() + 1, "%s", val.c_str());
     children_.push_back(bspMat);
 } // Model::Build
 
@@ -839,7 +839,7 @@ BinaryPtr Model::Recollect(void)
     for (uint32 i = 0; i < children_.size(); i++)
     {
         const String& sectName = children_[i]->sectionName();
-        int lens[6] = { childBlocks[i]->size(), 0, 0, 0, 0, sectName.length() };
+        int lens[6] = { (int)childBlocks[i]->size(), 0, 0, 0, 0, (int)sectName.length() };
         stream.append((char*)lens, sizeof(lens));
         stream.append(sectName.data(), lens[5]);
         stream.append((4 - lens[5]) & 3, '\0');

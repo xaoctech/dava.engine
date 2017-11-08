@@ -107,4 +107,4 @@ void HUDModule::OnSelectedRectChanged(const DAVA::Rect& rect)
     documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, newSelection);
 }
 
-DECL_GUI_MODULE(HUDModule);
+DECL_TARC_MODULE(HUDModule);

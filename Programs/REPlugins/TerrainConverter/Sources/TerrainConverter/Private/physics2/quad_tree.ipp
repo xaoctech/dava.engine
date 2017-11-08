@@ -56,8 +56,6 @@ inline void QuadTree<MEMBER_TYPE>::add( const MEMBER_TYPE & element )
 	{
 		// This warning is known to be triggered by the current
 		// incomplete system for handling very large objects.
-		dprintf("QuadTree::add: Skipping - Out of range (%d, %d) - (%d, %d)\n",
-			range.left_, range.bottom_, range.right_, range.top_ );
 		return;
 	}
 
@@ -83,7 +81,7 @@ inline void QuadTree<MEMBER_TYPE>::del( const MEMBER_TYPE & element )
  */
 template <class MEMBER_TYPE>
 inline const MEMBER_TYPE *
-QuadTree<MEMBER_TYPE>::testPoint( const BW::Vector3 & point ) const
+QuadTree<MEMBER_TYPE>::testPoint( const DAVA::Vector3 & point ) const
 {
 	return root_.testPoint( point );
 }
@@ -95,23 +93,10 @@ QuadTree<MEMBER_TYPE>::testPoint( const BW::Vector3 & point ) const
 template <class MEMBER_TYPE>
 inline void QuadTree<MEMBER_TYPE>::print() const
 {
-	dprintf( "sizeof(QT) = %d\n", sizeof( *this ) );
-	dprintf( "sizeof(QTN) = %d\n", sizeof( QuadTreeNode<MEMBER_TYPE> ) );
-	dprintf( "sizeof(elements) = %d\n", sizeof( std::vector<const MEMBER_TYPE *> ) );
-	dprintf( "Range = %f, Depth = %d\n", range_, depth_ );
 	root_.print( 0 );
 
 	const int width = 1 << depth_;
 	QTCoord coord;
-
-	for (coord.y_ = width - 1; coord.y_ >= 0; coord.y_--)
-	{
-		for (coord.x_ = 0; coord.x_ < width; coord.x_++)
-		{
-			dprintf( "%d", root_.countAt( coord, depth_ ) );
-		}
-		dprintf( "\n" );
-	}
 }
 
 
@@ -131,7 +116,7 @@ inline long QuadTree<MEMBER_TYPE>::size() const
  */
 template <class MEMBER_TYPE>
 inline QTTraversal<MEMBER_TYPE> QuadTree<MEMBER_TYPE>::traverse(
-	const BW::Vector3 & src, const BW::Vector3 & dst,
+	const DAVA::Vector3 & src, const DAVA::Vector3 & dst,
 	float radius ) const
 {
 	// TODO: This method could be generalised so the we don't have to always
@@ -150,8 +135,8 @@ inline QTTraversal<MEMBER_TYPE> QuadTree<MEMBER_TYPE>::traverse(
 template <class MEMBER_TYPE>
 inline QTTraversal<MEMBER_TYPE>::QTTraversal(
 		const Tree * pTree,
-		const BW::Vector3 & src, const BW::Vector3 & dst, float radius,
-		const BW::Vector2 & origin ) :
+		const DAVA::Vector3 & src, const DAVA::Vector3 & dst, float radius,
+		const DAVA::Vector2 & origin ) :
 	size_( 0 ),
 	headIndex_( 0 )
 {
@@ -165,7 +150,7 @@ inline QTTraversal<MEMBER_TYPE>::QTTraversal(
 
 	// This stores the interval from the src to dst. We can think of the line as
 	// being: src + t * dir, for t in [0, 1]
-	Vector2 dir( dst.x - src.x, dst.z - src.z );
+	DAVA::Vector2 dir( dst.x - src.x, dst.z - src.z );
 
 	// dirType_ stores whether the line points up or down, left or right.
 	const bool pointsLeft = (dir.x < 0);
@@ -173,10 +158,10 @@ inline QTTraversal<MEMBER_TYPE>::QTTraversal(
 	dirType_ = 2 * pointsDown + pointsLeft;
 
 	// Since the line has width, we calculate a high line and a low line.
-	Vector2 dirNorm = dir;
-	dirNorm.normalise();
+	DAVA::Vector2 dirNorm = dir;
+	dirNorm.Normalize();
 	dirNorm *= radius;
-	Vector2 perp( -dirNorm.y, dirNorm.x );
+	DAVA::Vector2 perp( -dirNorm.y, dirNorm.x );
 
 	// Directions are flipped so that all calculations are done assuming the
 	// query line points towards to top-right.
@@ -190,18 +175,18 @@ inline QTTraversal<MEMBER_TYPE>::QTTraversal(
 
 	dir += 2.f * dirNorm;
 
-	Vector2 srcLow( src.x, src.z );
+	DAVA::Vector2 srcLow( src.x, src.z );
 	srcLow -= dirNorm;
 	srcLow -= perp;
 
-	Vector2 srcHigh( src.x, src.z );
+	DAVA::Vector2 srcHigh( src.x, src.z );
 	srcHigh -= dirNorm;
 	srcHigh += perp;
 
-	Vector2 dstLow( dst.x, dst.z );
+	DAVA::Vector2 dstLow( dst.x, dst.z );
 	dstLow += dirNorm;
 	dstLow -= perp;
-	Vector2 dstHigh( dst.x, dst.z );
+	DAVA::Vector2 dstHigh( dst.x, dst.z );
 	dstHigh += dirNorm;
 	dstHigh += perp;
 
@@ -406,9 +391,6 @@ template <class MEMBER_TYPE>
 inline void QTTraversal<MEMBER_TYPE>::push(
 	const Node * pNode, QTCoord coord, int depth )
 {
-	MF_ASSERT( size_ < STACK_SIZE );
-	MF_ASSERT( headIndex_ == 0 );
-
 	StackElement & curr = stack_[ size_ ];
 	curr.pNode = pNode;
 	curr.coord = coord;
@@ -473,8 +455,6 @@ template <class MEMBER_TYPE>
 inline void QuadTreeNode<MEMBER_TYPE>::add( const MEMBER_TYPE & element,
 	const QTRange & range, int depth )
 {
-	MF_ASSERT( range.isValid( depth ) );
-
 	if (range.fills( depth ))
 	{
 		elements_.push_back( &element );
@@ -508,7 +488,6 @@ inline void QuadTreeNode<MEMBER_TYPE>::add( const MEMBER_TYPE & element,
 				{
 					newRange.bottom_ = 0; // Left and bottom clipped
 				}
-				MF_ASSERT( newRange.isValid( newDepth ) );
 				this->getOrCreateChild( QUAD_TL )->
 						add( element, newRange, newDepth );
 				newRange.bottom_ = origRange.bottom_;
@@ -518,7 +497,6 @@ inline void QuadTreeNode<MEMBER_TYPE>::add( const MEMBER_TYPE & element,
 
 			if (inBottom)
 			{
-				MF_ASSERT( newRange.isValid( newDepth ) );
 				this->getOrCreateChild( QUAD_BL )->
 					add( element, newRange, newDepth );
 			}
@@ -534,7 +512,6 @@ inline void QuadTreeNode<MEMBER_TYPE>::add( const MEMBER_TYPE & element,
 
 			if (inBottom)
 			{
-				MF_ASSERT( newRange.isValid( newDepth ) );
 				this->getOrCreateChild( QUAD_BR )->
 					add( element, newRange, newDepth );
 				newRange.bottom_ = 0;
@@ -545,7 +522,6 @@ inline void QuadTreeNode<MEMBER_TYPE>::add( const MEMBER_TYPE & element,
 			{
 				newRange.top_ = origRange.top_;
 				// Left and bottom clipped.
-				MF_ASSERT( newRange.isValid( newDepth ) );
 				this->getOrCreateChild( QUAD_TR )->
 					add( element, newRange, newDepth );
 			}
@@ -574,7 +550,7 @@ inline bool QuadTreeNode<MEMBER_TYPE>::del( const MEMBER_TYPE & element,
 template <class MEMBER_TYPE>
 inline const MEMBER_TYPE *
 	QuadTreeNode<MEMBER_TYPE>::testPoint(
-		const BW::Vector3 & point, QTCoord coord, int depth ) const
+		const DAVA::Vector3 & point, QTCoord coord, int depth ) const
 {
 	const MEMBER_TYPE * pResult = NULL;
 
@@ -655,7 +631,6 @@ inline void QuadTreeNode<MEMBER_TYPE>::print( int depth ) const
 	{
 		if (pChild_[i])
 		{
-			dprintf( "%s Child %d\n", prefix, i );
 			pChild_[i]->print( depth + 1 );
 		}
 	}
