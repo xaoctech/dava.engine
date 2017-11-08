@@ -33,6 +33,7 @@ public:
     {
         SYNC_IMMIDIATE,
         SYNC_WAIT_END,
+        SYNC_WAIT_PHASE_END,
         SYNC_WAIT_MARKER,
 
         SYNC_COUNT
@@ -40,11 +41,12 @@ public:
 
     static MotionTransitionInfo* LoadFromYaml(const YamlNode* transitionNode);
 
-    eType type = TYPE_COUNT;
-    eSync sync = SYNC_COUNT;
+    eType type = TYPE_REPLACE;
+    eSync sync = SYNC_IMMIDIATE;
     Interpolation::Func func;
 
     FastName markerToWait;
+    uint32 phaseToWait = std::numeric_limits<uint32>::max();
     float32 duration = 0.f;
     bool syncPhases = false;
 };
