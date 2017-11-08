@@ -1,4 +1,4 @@
-package dava_framework_NewBuilds_Tests_UnitTests.buildTypes
+package dava_framework_NewBuilds_ToolSet.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v10.*
 import jetbrains.buildServer.configs.kotlin.v10.BuildFeature
@@ -13,21 +13,24 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger.*
 import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 
-object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
-    uuid = "4975d025-16c7-44b7-b763-4aed3727fd43"
-    extId = "dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2"
-    name = "UnitTests_iOS"
+object dava_framework_ToolSet_ToolSetAndroid : BuildType({
+    uuid = "a4724ae3-4c02-42e5-95af-5cc3c178218b"
+    extId = "dava_framework_ToolSet_ToolSetAndroid"
+    name = "ToolSet_Android"
 
+    artifactRules = """
+        dava.framework/Programs/UnitTests/Platforms/Android/UnitTests/build/outputs/apk/UnitTests-fat-release.apk
+        dava.framework/Programs/SceneViewer/Platforms/Android/SceneViewer/build/outputs/apk/SceneViewer-fat-release.apk
+        dava.framework/Programs/TestBed/Platforms/Android/TestBed/build/outputs/apk/TestBed-fat-release.apk
+    """.trimIndent()
 
     params {
-        password("agent_password", "zxxddcc8bc1d3b46b3e775d03cbe80d301b")
-        param("check_folders", "Sources/Internal;Modules;Sources/CMake;Programs/UnitTests")
         param("env.build_failed", "true")
         param("env.build_required", "true")
         param("env.from_commit", "0")
-        param("pathToProject", "%system.teamcity.build.checkoutDir%/dava.framework/Programs/UnitTests/build")
-        param("teamcity_restapi_login", "dava_teamcity")
-        param("teamcity_restapi_password", "zxx38986f37ccea38c04e7be9a8371adc18")
+        param("env.PATH", "/Library/Frameworks/Python.framework/Versions/2.7/bin:/Users/Admin/.rvm/gems/ruby-2.0.0-p0/bin:/Users/Admin/.rvm/gems/ruby-2.0.0-p0@global/bin:/Users/Admin/.rvm/rubies/ruby-2.0.0-p0/bin:/Users/Admin/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:/Users/Admin/QtSDK/Desktop/Qt/474/gcc/bin:/Users/Admin/Downloads/Development/android-ndk-r10:/Users/Admin/AIRSDK_Compiler/bin:/Users/Admin/Downloads/gradle-1.7/bin:/Users/Admin/Downloads/Development/sdk/platform-tools/")
+        select("NDK_TYPE", "GOOGLE", display = ParameterDisplay.PROMPT,
+                options = listOf("CRYSTAX", "GOOGLE"))
     }
 
     vcs {
@@ -57,92 +60,19 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
             """.trimIndent()
         }
         script {
-            name = "Run build depends of folders"
-            workingDir = "Teamcity"
-            scriptContent = """python run_build_depends_of_folders.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash-dava.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --framework_branch %teamcity.build.branch% --check_folders "%check_folders%" --root_configuration_id %teamcity.build.id%"""
-        }
-        script {
             name = "clear"
             workingDir = "dava.framework"
-            scriptContent = """
-                if [ "true" == "%env.build_required%" ]
-                then
-                git clean -d -x -f
-                python RepoTools/Scripts/delete_folder.py %pathToProject%
-                
-                fi
-            """.trimIndent()
+            scriptContent = "git clean -d -x -f"
         }
         script {
-            name = "generate project"
-            workingDir = "%pathToProject%"
-            scriptContent = """
-                if [ "true" == "%env.build_required%" ]
-                then
-                export PATH=/Applications/CMake.app/Contents/bin:${'$'}PATH
-                cmake -G"Xcode" \
-                -DCMAKE_TOOLCHAIN_FILE=../../../Sources/CMake/Toolchains/ios.toolchain.cmake \
-                -DTEAMCITY_DEPLOY=true \
-                -DDISABLE_MEMORY_PROFILER=true \
-                ..
-                fi
-            """.trimIndent()
+            name = "Gradle build"
+            workingDir = "dava.framework/Programs/Toolset/Scripts"
+            scriptContent = "python android_build.py --sdk_dir %env.ANDROID_STUDIO_SDK% --ndk_dir %env.ANDROID_STUDIO_NDK%"
         }
         script {
-            name = "Unlock Keychain"
-            scriptContent = """
-                if [ "true" == "%env.build_required%" ]
-                then
-                security unlock-keychain -p %agent_password% /Users/Admin/Library/Keychains/login.keychain
-                fi
-            """.trimIndent()
-        }
-        script {
-            name = "build project"
-            workingDir = "%pathToProject%"
-            scriptContent = """
-                if [ "true" == "%env.build_required%" ]
-                then
-                xcodebuild -project UnitTests.xcodeproj -configuration Release CODE_SIGN_IDENTITY="iPhone Developer" DEVELOPMENT_TEAM="9KMD79CS7L"
-                fi
-            """.trimIndent()
-        }
-        script {
-            name = "deploy and run"
-            workingDir = "dava.framework/Programs/UnitTests/scripts"
-            scriptContent = """
-                if [ "true" == "%env.build_required%" ]
-                then
-                cp -R %pathToProject%/Release-iphoneos/UnitTests.app %pathToProject%/UnitTests.app
-                python start_unit_tests.py ios --teamcity
-                fi
-            """.trimIndent()
-        }
-        script {
-            name = "CHANGE_SUCCESSFUL_BUILD_DESCRIPTION"
-            enabled = false
-            workingDir = "Teamcity"
-            scriptContent = """
-                if [ "false" == "%env.build_required%" ]
-                then
-                
-                if [ -f "run_build.py" ]
-                then
-                
-                python run_build.py --teamcity_url https://teamcity2.wargaming.net \
-                --login "%teamcity_restapi_login%" \
-                --password "%teamcity_restapi_password%" \
-                --branch "%teamcity.build.branch%" \
-                --agent_name "%teamcity.agent.name%" \
-                --queue_at_top true \
-                --configuration_name dava_framework_TeamcityTools_ChangeBuildDescription \
-                --properties param.commit:%build.vcs.number.dava_DavaFrameworkStash%,param.configuration_id:%system.teamcity.buildType.id%,param.root_build_id:%teamcity.build.id%
-                
-                fi
-                
-                
-                fi
-            """.trimIndent()
+            name = "UnitTest"
+            workingDir = "dava.framework/Programs/Toolset/Scripts"
+            scriptContent = "python start_tests.py --platform ANDROID --sdk_dir %env.ANDROID_STUDIO_SDK% --davaRoot %system.teamcity.build.checkoutDir%/dava.framework"
         }
         script {
             name = "report commit status SUCCESSFUL"
@@ -163,12 +93,13 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
 
     triggers {
         vcs {
+            enabled = false
             branchFilter = "+:<default>"
         }
     }
 
     failureConditions {
-        executionTimeoutMin = 30
+        executionTimeoutMin = 120
         errorMessage = true
     }
 
@@ -195,8 +126,9 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
 
     requirements {
         exists("env.UNIT_TEST")
-        doesNotEqual("system.agent.name", "by2-badava-mac-07", "RQ_54")
+        doesNotEqual("system.agent.name", "by2-badava-mac-08")
+        doesNotEqual("system.agent.name", "by2-badava-mac-11", "RQ_87")
     }
     
-    disableSettings("RQ_54")
+    disableSettings("RQ_87")
 })

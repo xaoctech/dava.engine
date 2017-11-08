@@ -1,4 +1,5 @@
 #include "UI/UIHoleTransition.h"
+#include "Engine/Engine.h"
 #include "UI/UIControlSystem.h"
 #include "Time/SystemTimer.h"
 #include "Render/RenderHelper.h"

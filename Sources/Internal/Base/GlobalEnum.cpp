@@ -9,6 +9,7 @@
 #include "UI/UIStaticText.h"
 #include "Render/2D/TextBlock.h"
 #include "UI/UIList.h"
+#include "UI/UIScrollBar.h"
 #include "UI/UITextField.h"
 #include "UI/Components/UIComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"

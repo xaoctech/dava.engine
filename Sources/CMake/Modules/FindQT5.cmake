@@ -83,6 +83,8 @@ endmacro()
 # Find includes in corresponding build directories
 set ( CMAKE_INCLUDE_CURRENT_DIR ON )
 # Instruct CMake to run moc automatically when needed.
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "MocAutogen")
 set ( CMAKE_AUTOMOC ON )
 
 list( APPEND QT5_FIND_COMPONENTS ${QT5_FIND_COMPONENTS} Core Gui Widgets Concurrent Qml Quick QuickWidgets Network Test)

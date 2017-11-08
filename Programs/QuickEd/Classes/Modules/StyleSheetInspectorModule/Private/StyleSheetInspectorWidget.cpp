@@ -8,6 +8,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
+#include <Engine/Engine.h>
 #include <UI/UIControl.h>
 #include <UI/Styles/UIStyleSheet.h>
 #include <UI/Styles/UIStyleSheetSystem.h>

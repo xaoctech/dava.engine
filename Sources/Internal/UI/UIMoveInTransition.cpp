@@ -1,4 +1,5 @@
 #include "UI/UIMoveInTransition.h"
+#include "Engine/Engine.h"
 #include "UI/UIControlSystem.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
