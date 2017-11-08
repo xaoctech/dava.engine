@@ -1,4 +1,6 @@
 #include "UI/Input/UIActionBindingComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Utils/Utils.h"
 #include "Utils/StringUtils.h"

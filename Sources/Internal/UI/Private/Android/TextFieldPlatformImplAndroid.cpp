@@ -8,6 +8,7 @@
 #include "Logger/Logger.h"
 #include "Utils/UTF8Utils.h"
 #include "UI/UITextField.h"
+#include "UI/UITextFieldDelegate.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Focus/FocusHelpers.h"
 #include "Render/Image/Image.h"

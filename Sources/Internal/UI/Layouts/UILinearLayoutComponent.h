@@ -1,6 +1,7 @@
 #ifndef __DAVAENGINE_UI_LINEAR_LAYOUT_COMPONENT_H__
 #define __DAVAENGINE_UI_LINEAR_LAYOUT_COMPONENT_H__
 
+#include "Math/Vector.h"
 #include "UI/Components/UIComponent.h"
 #include "Reflection/Reflection.h"
 #include <bitset>
