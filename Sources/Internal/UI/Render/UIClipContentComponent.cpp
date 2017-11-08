@@ -1,4 +1,6 @@
 #include "UIClipContentComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -11,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIClipContentComponent)
     .Field("enabled", &UIClipContentComponent::IsEnabled, &UIClipContentComponent::SetEnabled)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIClipContentComponent);
 
 UIClipContentComponent::UIClipContentComponent()
 {

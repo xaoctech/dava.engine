@@ -1,4 +1,6 @@
 #include "UI/RichContent/UIRichContentObjectComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -13,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentObjectComponent)
     .Field("prototypeName", &UIRichContentObjectComponent::GetPrototypeName, &UIRichContentObjectComponent::SetPrototypeName)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIRichContentObjectComponent);
 
 UIRichContentObjectComponent::UIRichContentObjectComponent() = default;
 UIRichContentObjectComponent::~UIRichContentObjectComponent() = default;

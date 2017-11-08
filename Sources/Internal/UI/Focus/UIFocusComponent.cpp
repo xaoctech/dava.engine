@@ -1,4 +1,6 @@
 #include "UI/Focus/UIFocusComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -12,6 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFocusComponent)
     .Field("requestFocus", &UIFocusComponent::IsRequestFocus, &UIFocusComponent::SetRequestFocus)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIFocusComponent);
 
 UIFocusComponent::UIFocusComponent()
 {

@@ -42,13 +42,13 @@ object dava_framework_NewBuilds_PullRequestTest : BuildType({
         script {
             name = "Send Build Status to Slack"
             executionMode = BuildStep.ExecutionMode.ALWAYS
-            scriptContent = "curl http://10.128.2.115/modules/bot_slack/build_notify.php?build_id=%teamcity.build.id%"
+            scriptContent = "curl http://ba-manager.wargaming.net/modules/bot_slack/build_notify.php?build_id=%teamcity.build.id%"
         }
         script {
             name = "Update depend build status"
             executionMode = BuildStep.ExecutionMode.ALWAYS
             workingDir = "Teamcity"
-            scriptContent = "python update_depend_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --container_configuration_id %teamcity.build.id% --costum_dependent_build dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS"
+            scriptContent = "python update_depend_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash-dava.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --container_configuration_id %teamcity.build.id% --costum_dependent_build dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS"
         }
     }
 

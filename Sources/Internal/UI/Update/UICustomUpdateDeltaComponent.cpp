@@ -1,4 +1,6 @@
 #include "UICustomUpdateDeltaComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -11,6 +13,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UICustomUpdateDeltaComponent)
     .Field("delta", &UICustomUpdateDeltaComponent::GetDelta, &UICustomUpdateDeltaComponent::SetDelta)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UICustomUpdateDeltaComponent);
 
 UICustomUpdateDeltaComponent::UICustomUpdateDeltaComponent() = default;
 UICustomUpdateDeltaComponent::~UICustomUpdateDeltaComponent() = default;

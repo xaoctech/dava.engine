@@ -1,4 +1,6 @@
 #include "UI/Text/UITextComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Base/GlobalEnum.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
@@ -40,6 +42,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
     .Field("forceBiDiSupport", &UITextComponent::IsForceBiDiSupportEnabled, &UITextComponent::SetForceBiDiSupportEnabled)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UITextComponent);
 
 UITextComponent::UITextComponent(const UITextComponent& src)
     : UIComponent(src)

@@ -6,9 +6,14 @@
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiIos.h"
+#include "Render/2D/Sprite.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
+#include "Render/Texture.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
+#include "UI/IUIWebViewDelegate.h"
 
 @interface WebViewURLDelegate : NSObject<UIWebViewDelegate>
 {

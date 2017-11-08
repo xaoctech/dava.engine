@@ -1,4 +1,6 @@
 #include "UI/Input/UIActionComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlHelpers.h"
@@ -13,6 +15,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIActionComponent)
     .Field("action", &UIActionComponent::GetActionAsString, &UIActionComponent::SetActionFromString)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UIActionComponent);
 
 UIActionComponent::UIActionComponent()
 {

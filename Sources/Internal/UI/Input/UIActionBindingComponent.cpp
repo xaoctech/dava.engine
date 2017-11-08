@@ -1,4 +1,6 @@
 #include "UI/Input/UIActionBindingComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Utils/Utils.h"
 #include "Utils/StringUtils.h"
@@ -14,6 +16,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIActionBindingComponent)
     .Field("blockOtherShortcuts", &UIActionBindingComponent::IsBlockOtherKeyboardShortcuts, &UIActionBindingComponent::SetBlockOtherKeyboardShortcuts)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIActionBindingComponent);
 
 UIActionBindingComponent::UIActionBindingComponent()
 {

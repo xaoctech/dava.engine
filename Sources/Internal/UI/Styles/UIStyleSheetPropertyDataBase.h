@@ -5,7 +5,6 @@
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
 #include "Base/StaticSingleton.h"
-#include "FileSystem/VariantType.h"
 #include "UI/Styles/UIStyleSheetStructs.h"
 #include <bitset>
 

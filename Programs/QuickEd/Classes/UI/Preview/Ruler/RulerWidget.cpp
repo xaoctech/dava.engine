@@ -133,7 +133,8 @@ void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, i
     char nextDigit[2] = { 0x00, 0x00 };
 
     Vector2::eAxis axis = orientation == Qt::Horizontal ? Vector2::AXIS_X : Vector2::AXIS_Y;
-    float32 absValue = canvasDataAdapter.RelativeValueToAbsoluteValue(0.0f, axis);
+
+    float32 absValue = canvasDataAdapter.MapFromScreenToRoot(0.0f, axis);
     float32 scale = canvasDataAdapter.GetScale();
     float32 positionStep = tickStep * scale;
     float32 startValue = std::ceilf(absValue / tickStep) * tickStep;
@@ -143,7 +144,7 @@ void RulerWidget::DrawScale(QPainter& painter, int tickStep, int tickStartPos, i
     {
         float32 currentValue = i + startValue;
 
-        int curPos = static_cast<int>(std::round(canvasDataAdapter.AbsoluteValueToPosition(currentValue, axis) + EPSILON));
+        int curPos = static_cast<int>(std::round(canvasDataAdapter.MapFromRootToScreen(currentValue, axis) + EPSILON));
         int curPosValue = static_cast<int>(currentValue + EPSILON);
         const int textOffset = 5;
 

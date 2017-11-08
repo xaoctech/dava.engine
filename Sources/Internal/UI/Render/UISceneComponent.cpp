@@ -1,4 +1,6 @@
 #include "UISceneComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "UI/UIControl.h"
 #include "Reflection/ReflectionRegistrator.h"
@@ -12,6 +14,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISceneComponent)
     .DestructorByPointer([](UISceneComponent* o) { o->Release(); })
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UISceneComponent);
 
 UISceneComponent::UISceneComponent() = default;
 

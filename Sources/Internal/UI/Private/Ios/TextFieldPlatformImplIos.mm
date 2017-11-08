@@ -7,10 +7,12 @@
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiIos.h"
 #include "Logger/Logger.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
 #include "UI/UITextField.h"
+#include "UI/UITextFieldDelegate.h"
 #include "UI/Private/Ios/TextFieldPlatformImplIos.h"
 #include "UI/Private/Ios/UITextFieldHolder.h"
 #include "Utils/NSStringUtils.h"
@@ -98,6 +100,10 @@ void TextFieldPlatformImpl::SetTextColor(const DAVA::Color& color)
         if (![label.textColor isEqual:col])
         {
             label.textColor = col;
+
+            // Workaround for IOS 11 problem with updating font params.
+            // Solution is update text with same value.
+            label.text = label.text;
         }
     }
 

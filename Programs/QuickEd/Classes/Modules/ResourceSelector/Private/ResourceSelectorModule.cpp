@@ -17,10 +17,12 @@
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIControl.h>
-#include "UI/UIControlBackground.h"
+#include <UI/UIControlBackground.h>
+#include <Render/2D/Sprite.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Utils/Random.h>
 

@@ -1,4 +1,6 @@
 #include "UILayoutIsolationComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Math/Vector.h"
 #include "Reflection/ReflectionRegistrator.h"
@@ -13,6 +15,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UILayoutIsolationComponent)
     .DestructorByPointer([](UILayoutIsolationComponent* o) { o->Release(); })
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UILayoutIsolationComponent);
 
 UILayoutIsolationComponent::UILayoutIsolationComponent()
 {

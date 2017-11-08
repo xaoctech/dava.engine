@@ -1,5 +1,7 @@
 #include "UI/UIMoveInTransition.h"
+#include "Engine/Engine.h"
 #include "UI/UIControlSystem.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/RenderHelper.h"
 #include "Time/SystemTimer.h"
@@ -44,7 +46,7 @@ void UIMoveInTransition::Draw(const UIGeometricData& geometricData)
 	 FROM_BOTTOM,
 	 */
 
-    Sprite::DrawState drawState;
+    SpriteDrawState drawState;
     drawState.SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 
     if (type <= FROM_BOTTOM)

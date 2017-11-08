@@ -13,6 +13,7 @@
 
 #include <Math/Vector.h>
 #include <UI/UIControl.h>
+#include <UI/UIEvent.h>
 #include <Render/2D/FTFont.h>
 
 namespace DistanceSystemDetails
@@ -265,7 +266,7 @@ void DistanceSystem::DrawSolidLine(DAVA::Vector2 startPos, DAVA::Vector2 endPos,
 
     lineParams.startPos = startPos * transformMatrix;
     lineParams.endPos = endPos * transformMatrix;
-    GetPainter()->Add(GetOrder(), lineParams);
+    GetPainter()->Draw(GetOrder(), lineParams);
 
     //draw close line
     const float32 endLineLength = 8.0f;
@@ -280,7 +281,7 @@ void DistanceSystem::DrawSolidLine(DAVA::Vector2 startPos, DAVA::Vector2 endPos,
 
     lineParams.startPos = closeLineStart;
     lineParams.endPos = closeLineEnd;
-    GetPainter()->Add(GetOrder(), lineParams);
+    GetPainter()->Draw(GetOrder(), lineParams);
 
     Painting::DrawTextParams textParams;
     textParams.color = preferences->textColor;
@@ -314,7 +315,7 @@ void DistanceSystem::DrawSolidLine(DAVA::Vector2 startPos, DAVA::Vector2 endPos,
     }
     textParams.pos = textParams.pos * transformMatrix;
 
-    GetPainter()->Add(GetOrder(), textParams);
+    GetPainter()->Draw(GetOrder(), textParams);
 }
 
 void DistanceSystem::DrawDotLine(const DAVA::Rect& rect, DAVA::Vector2 endPos, const DAVA::Matrix3& transformMatrix, DAVA::Vector2::eAxis axis) const
@@ -343,5 +344,5 @@ void DistanceSystem::DrawDotLine(const DAVA::Rect& rect, DAVA::Vector2 endPos, c
     lineParams.endPos = endPos * transformMatrix;
     lineParams.type = Painting::DrawLineParams::DOT;
 
-    GetPainter()->Add(GetOrder(), lineParams);
+    GetPainter()->Draw(GetOrder(), lineParams);
 }

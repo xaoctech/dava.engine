@@ -1,6 +1,9 @@
 #include "LocalizedTextValueProperty.h"
 
-#include "FileSystem/LocalizationSystem.h"
+#include <FileSystem/LocalizationSystem.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 using namespace DAVA;
 

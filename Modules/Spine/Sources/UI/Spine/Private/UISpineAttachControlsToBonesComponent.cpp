@@ -3,7 +3,10 @@
 #include "UI/Spine/UISpineSingleComponent.h"
 #include "UI/Spine/UISpineSystem.h"
 
+#include <Engine/Engine.h>
+#include <Entity/ComponentManager.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <UI/UIControl.h>
 #include <UI/UIControlSystem.h>
 #include <Utils/Utils.h>
 
@@ -17,6 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISpineAttachControlsToBonesComponent)
     .Field("bonesBinds", &UISpineAttachControlsToBonesComponent::GetBindsAsString, &UISpineAttachControlsToBonesComponent::SetBindsFromString)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UISpineAttachControlsToBonesComponent);
 
 UISpineAttachControlsToBonesComponent::UISpineAttachControlsToBonesComponent() = default;
 

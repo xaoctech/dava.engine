@@ -1,4 +1,6 @@
 #include "UI/Focus/UITabOrderComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -11,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITabOrderComponent)
     .Field("tab", &UITabOrderComponent::GetTabOrder, &UITabOrderComponent::SetTabOrder)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UITabOrderComponent);
 
 UITabOrderComponent::UITabOrderComponent()
 {

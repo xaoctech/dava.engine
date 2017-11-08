@@ -1,13 +1,18 @@
+#!/usr/bin/env python
+#
+
 import sys
 import os
 
 scriptName = sys.argv[0]
 
 dir = os.path.dirname(scriptName)
+
 selftestsDir = os.path.join(dir, "Selftests").replace("\\", "/")
 includeBaseDir = selftestsDir.split("Sources/")[1]
 
 selftests = [f for f in os.listdir(selftestsDir) if os.path.isfile(os.path.join(selftestsDir, f)) and f.endswith(".h")]
+selftests.sort()
 
 indexFilePath = os.path.join(selftestsDir, "index")
 if os.path.exists(indexFilePath) and os.path.isfile(indexFilePath):

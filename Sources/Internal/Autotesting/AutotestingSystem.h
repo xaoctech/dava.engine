@@ -4,17 +4,20 @@
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 
-#include "DAVAEngine.h"
-#include "Base/Singleton.h"
-#include "Time/DateTime.h"
-
 #include "Autotesting/AutotestingSystemLua.h"
+#include "Base/Singleton.h"
+#include "Functional/TrackedObject.h"
+#include "Render/RHI/rhi_Public.h"
+#include "Time/DateTime.h"
+#include "UI/UIEvent.h"
 
 namespace DAVA
 {
 class Image;
 class AutotestingSystemLuaDelegate;
 class AutotestingSystemLua;
+class Texture;
+class Window;
 class AutotestingSystem : public Singleton<AutotestingSystem>
 {
 public:

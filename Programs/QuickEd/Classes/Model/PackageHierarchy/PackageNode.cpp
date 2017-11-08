@@ -11,8 +11,11 @@
 #include "Model/ControlProperties/ControlPropertiesSection.h"
 #include "Model/ControlProperties/ComponentPropertiesSection.h"
 
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 #include "UI/Layouts/UILayoutSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
+#include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlPackageContext.h"
 #include "UI/Styles/UIStyleSheet.h"

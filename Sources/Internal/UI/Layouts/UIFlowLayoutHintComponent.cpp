@@ -1,4 +1,6 @@
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "UI/UIControl.h"
@@ -18,6 +20,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutHintComponent)
     .Field("contentDirection", &UIFlowLayoutHintComponent::GetContentDirection, &UIFlowLayoutHintComponent::SetContentDirection)[M::EnumT<BiDiHelper::Direction>()]
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIFlowLayoutHintComponent);
 
 UIFlowLayoutHintComponent::UIFlowLayoutHintComponent()
 {

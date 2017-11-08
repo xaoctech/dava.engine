@@ -1,47 +1,54 @@
 #include "UI/UIControlSystem.h"
-#include "UI/UIScreen.h"
-#include "UI/Styles/UIStyleSheetSystem.h"
-#include "Logger/Logger.h"
 #include "Debug/DVAssert.h"
-#include "Time/SystemTimer.h"
-#include "Debug/Replay.h"
-#include "UI/UIControlSystem.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "UI/UISystem.h"
-#include "UI/Layouts/UILayoutSystem.h"
-#include "UI/Focus/UIFocusSystem.h"
-#include "UI/Input/UIInputSystem.h"
-#include "UI/Scroll/UIScrollBarLinkSystem.h"
-#include "UI/Scroll/UIScrollSystem.h"
-#include "UI/Sound/UISoundSystem.h"
-#include "UI/Render/UIRenderSystem.h"
-#include "Render/Renderer.h"
-#include "Render/RenderHelper.h"
-#include "UI/UIScreenTransition.h"
-#include "UI/UIEvent.h"
-#include "UI/UIPopup.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Render/2D/TextBlock.h"
-#include "Platform/DeviceInfo.h"
-#include "Input/InputSystem.h"
-#include "UI/Update/UIUpdateSystem.h"
 #include "Debug/ProfilerOverlay.h"
+#include "Debug/Replay.h"
 #include "DeviceManager/DeviceManager.h"
 #include "Engine/Engine.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
+#include "Input/InputSystem.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
-#include "Input/TouchScreen.h"
 #include "Input/Mouse.h"
+#include "Input/TouchScreen.h"
+#include "Logger/Logger.h"
+#include "Platform/DeviceInfo.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/2D/TextBlock.h"
+#include "Render/RenderHelper.h"
+#include "Render/Renderer.h"
+#include "Time/SystemTimer.h"
+#include "UI/Focus/UIFocusSystem.h"
+#include "UI/Input/UIInputSystem.h"
+#include "UI/Layouts/UILayoutSystem.h"
+#include "UI/Render/UIRenderSystem.h"
 #include "UI/RichContent/UIRichContentSystem.h"
+#include "UI/ScreenSwitchListener.h"
+#include "UI/Scroll/UIScrollBarLinkSystem.h"
+#include "UI/Scroll/UIScrollSystem.h"
+#include "UI/Sound/UISoundSystem.h"
+#include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIEvent.h"
+#include "UI/UIPopup.h"
+#include "UI/UIScreen.h"
+#include "UI/UIScreenTransition.h"
+#include "UI/UISystem.h"
+#include "UI/Update/UIUpdateSystem.h"
 
 namespace DAVA
 {
 UIControlSystem::UIControlSystem()
 {
+    vcs = new VirtualCoordinatesSystem();
+    vcs->EnableReloadResourceOnResize(true);
+    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
+
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
@@ -60,11 +67,6 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
-
-    vcs = new VirtualCoordinatesSystem();
-    vcs->EnableReloadResourceOnResize(true);
-    vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
-    vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     SetDoubleTapSettings(0.5f, 0.25f);
 }
@@ -703,6 +705,7 @@ void UIControlSystem::UnregisterComponent(UIControl* control, UIComponent* compo
 void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem* insertBeforeSystem)
 {
     system->SetScene(this);
+    UISystem* weak = system.get();
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
@@ -717,6 +720,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
     {
         systems.push_back(std::move(system));
     }
+    weak->RegisterSystem();
 }
 
 std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
@@ -729,6 +733,7 @@ std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
 
     if (it != systems.end())
     {
+        (*it)->UnregisterSystem();
         std::unique_ptr<UISystem> systemPtr(it->release());
         systems.erase(it);
         systemPtr->SetScene(nullptr);

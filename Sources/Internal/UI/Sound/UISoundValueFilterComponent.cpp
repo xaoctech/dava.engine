@@ -1,4 +1,6 @@
 #include "UISoundValueFilterComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/UIControl.h"
@@ -14,6 +16,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISoundValueFilterComponent)
     .Field("deadZone", &UISoundValueFilterComponent::GetDeadZone, &UISoundValueFilterComponent::SetDeadZone)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UISoundValueFilterComponent);
 
 UISoundValueFilterComponent::UISoundValueFilterComponent()
 {

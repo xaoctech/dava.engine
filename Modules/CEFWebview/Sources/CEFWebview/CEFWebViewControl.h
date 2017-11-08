@@ -2,12 +2,13 @@
 
 #include <cef/include/cef_client.h>
 
-#include "UI/IWebViewControl.h"
 #include "CEFWebview/CEFController.h"
 #include "CEFWebview/CEFWebPageRender.h"
 
 namespace DAVA
 {
+class IUIWebViewDelegate;
+class UIWebView;
 class Window;
 class CEFWebViewControl : public CefClient,
                           public CefLoadHandler,

@@ -4,10 +4,14 @@
 
 #include "Engine/Engine.h"
 #include "Platform/Steam.h"
+#include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
+#include "Render/Texture.h"
+#include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
+#include "UI/IUIWebViewDelegate.h"
 
 #import <WebKit/WebKit.h>
 #import <AppKit/NSWorkspace.h>

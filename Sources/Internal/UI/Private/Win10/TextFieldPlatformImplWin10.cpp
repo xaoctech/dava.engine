@@ -10,12 +10,14 @@
 #include "Math/Color.h"
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
 #include "Render/Texture.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
 #include "UI/UITextField.h"
+#include "UI/UITextFieldDelegate.h"
 #include "UI/Focus/FocusHelpers.h"
 
 #include <ppltasks.h>
