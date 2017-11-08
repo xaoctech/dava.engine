@@ -1011,7 +1011,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         {
             float32 theta = ParticlesRandom::VanDerCorputRnd(ind + 82, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
             float32 phi = ParticlesRandom::VanDerCorputRnd(ind + 5585, 4) * PI_2;
-            particle->speed = Vector3(currEmissionPower * cos(phi) * sin(theta), currEmissionPower * sin(phi) * sin(theta), currEmissionPower * cos(theta));
+            particle->speed = Vector3(currVelPower * cos(phi) * sin(theta), currVelPower * sin(phi) * sin(theta), currVelPower * cos(theta));
         }
         else
         {
