@@ -235,6 +235,9 @@ void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
 
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     DAVA::ParticleLayer* layer = GetForceOwner(force);
+    if (layer == nullptr)
+        return;
+
     DAVA::ParticleEmitterInstance* emitterInstance = GetLayerOwner(layer);
     DAVA::ParticleEffectComponent* effectComponent = emitterInstance->GetOwner();
     DAVA::Entity* entity = effectComponent->GetEntity();
