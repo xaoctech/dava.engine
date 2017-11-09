@@ -17,22 +17,32 @@ Matrix4 JointTransform::GetMatrix() const
 
 JointTransform JointTransform::AppendTransform(const JointTransform& transform) const
 {
-    //TODO: *Skinning* optimize by flags
-
     JointTransform res;
     res.position = ApplyToPoint(transform.position);
-    res.orientation = orientation * transform.orientation;
     res.scale = scale * transform.scale;
+
+    if (HasOrientation() && transform.HasOrientation())
+        res.orientation = orientation * transform.orientation;
+    else if (HasOrientation())
+        res.orientation = orientation;
+    else if (transform.HasOrientation())
+        res.orientation = transform.orientation;
+
     res.flags = flags | transform.flags;
+
     return res;
 }
 
 JointTransform JointTransform::GetInverse() const
 {
     JointTransform res;
-    res.scale = 1.f / scale;
-    res.orientation = orientation.GetInverse();
-    res.position = -res.orientation.ApplyToVectorFast(position) * res.scale;
+    res.orientation = HasOrientation() ? orientation.GetInverse() : orientation;
+    res.position = HasOrientation() ? -res.orientation.ApplyToVectorFast(position) : -position;
+    if (HasScale())
+    {
+        res.scale = 1.f / scale;
+        res.position *= res.scale;
+    }
     res.flags = flags;
 
     return res;
