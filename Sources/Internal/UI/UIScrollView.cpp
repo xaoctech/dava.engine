@@ -1,9 +1,10 @@
 #include "UIScrollView.h"
-#include "UI/UIScrollViewContainer.h"
-#include "UI/ScrollHelper.h"
-#include "UI/UIControlHelpers.h"
-#include "UI/Render/UIClipContentComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/ScrollHelper.h"
+#include "UI/Render/UIClipContentComponent.h"
+#include "UI/UIControlHelpers.h"
+#include "UI/UIScrollBar.h"
+#include "UI/UIScrollViewContainer.h"
 
 namespace DAVA
 {
@@ -16,6 +17,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollView)
     .DestructorByPointer([](UIScrollView* o) { o->Release(); })
     .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)
     .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)
+    .Field("returnSpeed", &UIScrollView::GetReturnSpeed, &UIScrollView::SetReturnSpeed)
+    .Field("scrollSpeed", &UIScrollView::GetScrollSpeed, &UIScrollView::SetScrollSpeed)
     .End();
 }
 
@@ -277,6 +280,15 @@ void UIScrollView::SetReturnSpeed(float32 speedInSeconds)
     scrollVertical->SetBorderMoveModifer(speedInSeconds);
 }
 
+float32 UIScrollView::GetReturnSpeed() const
+{
+    if (!scrollHorizontal || !scrollVertical)
+    {
+        return 0.f;
+    }
+    return scrollHorizontal->GetBorderMoveModifer();
+}
+
 void UIScrollView::SetScrollSpeed(float32 speedInSeconds)
 {
     if (!scrollHorizontal || !scrollVertical)
@@ -286,6 +298,15 @@ void UIScrollView::SetScrollSpeed(float32 speedInSeconds)
 
     scrollHorizontal->SetSlowDownTime(speedInSeconds);
     scrollVertical->SetSlowDownTime(speedInSeconds);
+}
+
+float32 UIScrollView::GetScrollSpeed() const
+{
+    if (!scrollHorizontal || !scrollVertical)
+    {
+        return 0.f;
+    }
+    return scrollHorizontal->GetSlowDownTime();
 }
 
 float32 UIScrollView::VisibleAreaSize(UIScrollBar* forScrollBar)

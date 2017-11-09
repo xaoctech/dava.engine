@@ -11,6 +11,7 @@
 
 #include "Functional/Function.h"
 #include "UI/IWebViewControl.h"
+#include "UI/IUIWebViewDelegate.h"
 
 namespace DAVA
 {

@@ -1,4 +1,6 @@
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "UI/UIControl.h"

@@ -2,7 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Vector.h"
-#include "FileSystem/XMLParser.h"
+#include "Base/RefPtr.h"
+#include "FileSystem/XMLParserDelegate.h"
 #include "Utils/BiDiHelper.h"
 
 namespace DAVA
