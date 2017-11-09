@@ -3,6 +3,8 @@
 #include "Base/AllocatorFactory.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
+#include "Base/Hash.h"
+#include "Base/UnordererMap.h"
 
 #include "MotionTransition.h"
 
@@ -19,6 +21,12 @@ class MotionState
 public:
     MotionState() = default;
     ~MotionState();
+
+    struct TransitionInfo
+    {
+        MotionTransitionInfo* info;
+        MotionState* state;
+    };
 
     void LoadFromYaml(const YamlNode* stateNode);
 
@@ -43,10 +51,38 @@ public:
     bool BindParameter(const FastName& parameterID, const float32* param);
     void UnbindParameters();
 
-    void AddTransitionState(const FastName& trigger, MotionState* dstState);
-    MotionState* GetTransitionState(const FastName& trigger) const;
+    void AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, MotionState* dstState, uint32 srcPhase = std::numeric_limits<uint32>::max());
+    const TransitionInfo& GetTransitionInfo(const FastName& trigger) const;
 
 protected:
+    struct TransitionKey
+    {
+        TransitionKey(const FastName& _trigger, uint32 _phase = std::numeric_limits<uint32>::max())
+            : trigger(_trigger)
+            , phase(_phase)
+        {
+        }
+
+        inline bool operator==(const TransitionKey& other) const
+        {
+            return trigger == other.trigger && phase == other.phase;
+        }
+
+        FastName trigger;
+        uint32 phase = std::numeric_limits<uint32>::max();
+    };
+
+    struct TransitionKeyHash
+    {
+        std::size_t operator()(const TransitionKey& key) const
+        {
+            std::size_t seed = 0;
+            HashCombine(seed, key.trigger);
+            HashCombine(seed, key.phase);
+            return seed;
+        }
+    };
+
     FastName id;
     BlendTree* blendTree = nullptr;
 
@@ -55,7 +91,7 @@ protected:
     //TODO: *Skinning* restore markers
     //Vector<FastName> markers;
     UnorderedSet<FastName> reachedMarkers;
-    UnorderedMap<FastName, MotionState*> transitions;
+    UnorderedMap<TransitionKey, TransitionInfo, TransitionKeyHash> transitions;
 
     Vector3 rootOffset;
     uint32 animationCurrPhaseIndex = 0u;

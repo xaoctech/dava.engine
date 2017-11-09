@@ -36,8 +36,6 @@ public:
         BLEND_COUNT
     };
 
-    ~Motion();
-
     static Motion* LoadFromYaml(const YamlNode* motionNode);
 
     const FastName& GetName() const;
@@ -61,14 +59,11 @@ public:
     const Vector<std::pair<FastName, FastName>> GetEndedPhases() const;
 
 protected:
-    uint32 GetTransitionIndex(const MotionState* srcState, const MotionState* dstState) const;
-    MotionTransitionInfo* GetTransition(const MotionState* srcState, const MotionState* dstState) const;
-
     FastName name;
     eMotionBlend blendMode = BLEND_COUNT;
 
-    Vector<MotionState> states; //TODO: *Skinning* think about state storage
-    Vector<MotionTransitionInfo*> transitions;
+    Vector<MotionState> states;
+    Vector<MotionTransitionInfo> transitions;
 
     Vector<FastName> statesIDs;
     Vector<FastName> parameterIDs;
@@ -77,6 +72,7 @@ protected:
     MotionState* currentState = nullptr;
     MotionState* nextState = nullptr;
     MotionState* pendingState = nullptr;
+    MotionTransitionInfo* pendingTransition = nullptr;
 
     Vector3 currentRootOffsetDelta;
     Vector3 rootExtractionMask = Vector3(0.f, 0.f, 0.f);

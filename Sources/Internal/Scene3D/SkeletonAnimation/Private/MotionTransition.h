@@ -17,8 +17,6 @@ class YamlNode;
 struct MotionTransitionInfo
 {
 public:
-    IMPLEMENT_POOL_ALLOCATOR(MotionTransitionInfo, 128);
-
     enum eType : uint8
     {
         TYPE_REPLACE,
@@ -39,7 +37,7 @@ public:
         SYNC_COUNT
     };
 
-    static MotionTransitionInfo* LoadFromYaml(const YamlNode* transitionNode);
+    static MotionTransitionInfo LoadFromYaml(const YamlNode* transitionNode);
 
     eType type = TYPE_REPLACE;
     eSync sync = SYNC_IMMIDIATE;

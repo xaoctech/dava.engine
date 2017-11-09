@@ -129,18 +129,29 @@ void MotionState::UnbindParameters()
     std::fill(boundParams.begin(), boundParams.end(), nullptr);
 }
 
-void MotionState::AddTransitionState(const FastName& trigger, MotionState* dstState)
+void MotionState::AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, MotionState* dstState, uint32 srcPhase)
 {
-    transitions[trigger] = dstState;
+    DVASSERT(transitionInfo != nullptr);
+    DVASSERT(dstState != nullptr);
+
+    TransitionKey key(trigger, srcPhase);
+    DVASSERT(transitions.count(key) == 0);
+
+    transitions[key] = { transitionInfo, dstState };
 }
 
-MotionState* MotionState::GetTransitionState(const FastName& trigger) const
+const MotionState::TransitionInfo& MotionState::GetTransitionInfo(const FastName& trigger) const
 {
-    auto found = transitions.find(trigger);
+    auto found = transitions.find(TransitionKey(trigger, animationCurrPhaseIndex));
     if (found != transitions.end())
         return found->second;
 
-    return nullptr;
+    found = transitions.find(TransitionKey(trigger));
+    if (found != transitions.end())
+        return found->second;
+
+    static TransitionInfo emptyInfo = { nullptr, nullptr };
+    return emptyInfo;
 }
 
 void MotionState::LoadFromYaml(const YamlNode* stateNode)

@@ -25,18 +25,13 @@ DAVA_REFLECTION_IMPL(Motion)
     .End();
 }
 
-Motion::~Motion()
-{
-    for (MotionTransitionInfo* t : transitions)
-        SafeDelete(t);
-}
-
 void Motion::TriggerEvent(const FastName& trigger)
 {
-    MotionState* state = (nextState != nullptr) ? nextState->GetTransitionState(trigger) : currentState->GetTransitionState(trigger);
-    if (state != nullptr)
+    const MotionState::TransitionInfo& transitionInfo = (nextState != nullptr && stateTransition.IsStarted()) ? nextState->GetTransitionInfo(trigger) : currentState->GetTransitionInfo(trigger);
+    if (transitionInfo.info != nullptr && transitionInfo.state != nullptr)
     {
-        pendingState = state;
+        pendingTransition = transitionInfo.info;
+        pendingState = transitionInfo.state;
     }
 }
 
@@ -48,26 +43,26 @@ void Motion::Update(float32 dTime)
         {
             if (nextState != nullptr && stateTransition.IsStarted())
             {
-                MotionTransitionInfo* nextTransition = GetTransition(nextState, pendingState);
-                if (nextTransition != nullptr && stateTransition.CanBeInterrupted(nextTransition, nextState, pendingState))
+                if (pendingTransition != nullptr && stateTransition.CanBeInterrupted(pendingTransition, nextState, pendingState))
                 {
-                    stateTransition.Interrupt(nextTransition, nextState, pendingState);
+                    stateTransition.Interrupt(pendingTransition, nextState, pendingState);
                     currentState = nextState;
                     nextState = pendingState;
 
                     pendingState = nullptr;
+                    pendingTransition = nullptr;
                 }
             }
             else
             {
-                MotionTransitionInfo* nextTransition = GetTransition(currentState, pendingState);
-                if (nextTransition != nullptr)
+                if (pendingTransition != nullptr)
                 {
-                    stateTransition.Reset(nextTransition, currentState, pendingState);
+                    stateTransition.Reset(pendingTransition, currentState, pendingState);
                     nextState = pendingState;
                     nextState->Reset();
 
                     pendingState = nullptr;
+                    pendingTransition = nullptr;
                 }
             }
         }
@@ -181,21 +176,6 @@ const Vector<FastName>& Motion::GetStateIDs() const
     return statesIDs;
 }
 
-uint32 Motion::GetTransitionIndex(const MotionState* srcState, const MotionState* dstState) const
-{
-    size_t srcStateIndex = std::distance(states.data(), srcState);
-    size_t dstStateIndex = std::distance(states.data(), dstState);
-    return uint32(srcStateIndex * states.size() + dstStateIndex);
-}
-
-MotionTransitionInfo* Motion::GetTransition(const MotionState* srcState, const MotionState* dstState) const
-{
-    if (srcState == nullptr || dstState == nullptr)
-        return nullptr;
-
-    return transitions[GetTransitionIndex(srcState, dstState)];
-}
-
 Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 {
     Motion* motion = new Motion();
@@ -245,14 +225,13 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 
         if (motion->currentState == nullptr && statesCount > 0)
             motion->currentState = motion->states.data();
-
-        motion->transitions.resize(statesCount * statesCount, nullptr);
     }
 
     const YamlNode* transitionsNode = motionNode->Get("transitions");
     if (transitionsNode != nullptr && transitionsNode->GetType() == YamlNode::TYPE_ARRAY)
     {
         uint32 transitionsCount = transitionsNode->GetCount();
+        motion->transitions.resize(transitionsCount);
         for (uint32 t = 0; t < transitionsCount; ++t)
         {
             const YamlNode* transitionNode = transitionsNode->Get(t);
@@ -264,6 +243,11 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
                 dstNode != nullptr && dstNode->GetType() == YamlNode::TYPE_STRING &&
                 triggerNode != nullptr && triggerNode->GetType() == YamlNode::TYPE_STRING)
             {
+                uint32 srcPhase = std::numeric_limits<uint32>::max();
+                const YamlNode* srcPhaseNode = transitionNode->Get("src-phase");
+                if (srcPhaseNode != nullptr && srcPhaseNode->GetType() == YamlNode::TYPE_STRING)
+                    srcPhase = srcPhaseNode->AsUInt32();
+
                 FastName srcName = srcNode->AsFastName();
                 FastName dstName = dstNode->AsFastName();
                 FastName trigger = triggerNode->AsFastName();
@@ -278,11 +262,8 @@ Motion* Motion::LoadFromYaml(const YamlNode* motionNode)
 
                 if (foundSrc != motion->states.end() && foundDst != motion->states.end())
                 {
-                    uint32 transitionIndex = motion->GetTransitionIndex(&(*foundSrc), &(*foundDst));
-                    DVASSERT(motion->transitions[transitionIndex] == nullptr);
-                    motion->transitions[transitionIndex] = MotionTransitionInfo::LoadFromYaml(transitionNode);
-
-                    foundSrc->AddTransitionState(trigger, &(*foundDst));
+                    motion->transitions[t] = MotionTransitionInfo::LoadFromYaml(transitionNode);
+                    foundSrc->AddTransition(trigger, &motion->transitions[t], &(*foundDst), srcPhase);
                 }
             }
         }
