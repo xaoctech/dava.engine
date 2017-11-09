@@ -3,6 +3,7 @@
 #if defined(__DAVAENGINE_BEAST__)
 
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+#include <REPlatform/Global/CommandLineModule.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
 #include <TArc/Testing/TArcUnitTests.h>
@@ -80,7 +81,7 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
     }
 
     DAVA::Vector<DAVA::eGPUFamily> gpuLoadingOrder;
-    std::unique_ptr<CommandLineModule> tool;
+    std::unique_ptr<DAVA::CommandLineModule> tool;
     bool testCompleted = false;
 
     DAVA_TEST (BeastTest)

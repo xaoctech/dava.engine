@@ -32,11 +32,10 @@ set(INCLUDES_PRIVATE
 set(HPP_FILES_RECURSE Sources/TerrainConverter/*.hpp Sources/TerrainConverter/*.h)
 set(CPP_FILES_RECURSE Sources/TerrainConverter/*.cpp Sources/TerrainConverter/*.c)
 
-set(WIN_DEBUG_LIBS "${LIBS_DIR}/Win32/Debug/cstdmf.lib")
-set(WIN_RELEASE_LIBS "${LIBS_DIR}/Win32/Release/cstdmf.lib")
+set(WIN_DEBUG_LIBS "${LIBS_DIR}/Win32/Debug/cstdmf.lib" "${LIBS_DIR}/Win32/Debug/libminizip.lib")
+set(WIN_RELEASE_LIBS "${LIBS_DIR}/Win32/Release/cstdmf.lib" "${LIBS_DIR}/Win32/Release/libminizip.lib")
 
-set(MACOS_LIBS "${LIBS_DIR}/MacOS/libcstdmf_macosx.a"
-                              "${LIBS_DIR}/MacOS/libminizip.a")
+set(MACOS_LIBS "${LIBS_DIR}/MacOS/libcstdmf_macosx.a" "${LIBS_DIR}/MacOS/libminizip.a")
 
 set(STATIC_LIBRARIES_WIN64_RELEASE "${WIN_RELEASE_LIBS}")
 set(STATIC_LIBRARIES_WIN64_DEBUG "${WIN_DEBUG_LIBS}")

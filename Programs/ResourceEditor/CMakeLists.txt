@@ -37,7 +37,9 @@ list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
 find_package(DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-add_plugin(TerrainConverter "${FRAMEWORK_PATH}/Programs/REPlugins/TerrainConverter")
+if (WIN32)
+  add_plugin(TerrainConverter "${FRAMEWORK_PATH}/Programs/REPlugins/TerrainConverter")
+endif()
 
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
