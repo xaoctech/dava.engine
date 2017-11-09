@@ -48,6 +48,10 @@ public:
     /** this request depends on other, so other should be downloaded first */
     bool IsSubRequest(const PackRequest* other) const;
 
+    bool IsLoadingStarted() const;
+
+    void StartLoading();
+
 private:
     void InitializeFileRequests();
 
@@ -153,6 +157,12 @@ private:
     bool delayedRequest = true;
     bool fileRequestsInitialized = false;
     bool mutable isDownloaded = false;
+    bool isLoadingStarted = false;
 };
+
+inline bool PackRequest::IsLoadingStarted() const
+{
+    return isLoadingStarted;
+}
 
 } // end namespace DAVA

@@ -40,7 +40,7 @@ void RequestManager::FireStartLoadingWhileInactiveSignals()
             if (r)
             {
                 packManager.GetLog() << "inAct start: " << r->GetRequestedPackName() << std::endl;
-                packManager.requestStartLoading.Emit(*r);
+                r->StartLoading();
             }
         }
         requestStartedWhileInactive.clear();
@@ -80,7 +80,7 @@ void RequestManager::FireStartLoadingSignal(PackRequest& request, bool inBackgro
         }
         else
         {
-            packManager.requestStartLoading.Emit(request);
+            request.StartLoading();
         }
     }
 }
