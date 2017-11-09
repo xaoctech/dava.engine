@@ -45,10 +45,12 @@ public:
     eSync sync = SYNC_IMMIDIATE;
     Interpolation::Func func;
 
+    Vector<uint32> phaseMap;
     FastName markerToWait;
     uint32 phaseToWait = std::numeric_limits<uint32>::max();
     float32 duration = 0.f;
-    bool syncPhases = false;
+    bool syncPhase = false;
+    bool inversePhase = false;
 };
 
 class MotionTransition

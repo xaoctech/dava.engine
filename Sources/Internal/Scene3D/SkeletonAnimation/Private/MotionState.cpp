@@ -63,13 +63,29 @@ void MotionState::GetRootOffsetDelta(Vector3* offset) const
     *offset = rootOffset;
 }
 
-void MotionState::SyncPhase(const MotionState* other)
+void MotionState::SyncPhase(const MotionState* other, const MotionTransitionInfo* transitionInfo)
 {
-    DVASSERT(blendTree->GetPhasesCount() == other->blendTree->GetPhasesCount());
+    DVASSERT(transitionInfo != nullptr);
 
-    animationPrevPhaseIndex = other->animationPrevPhaseIndex;
-    animationCurrPhaseIndex = other->animationCurrPhaseIndex;
-    animationPhase = other->animationPhase;
+    const Vector<uint32>& phaseMap = transitionInfo->phaseMap;
+    if (!phaseMap.empty())
+    {
+        animationPrevPhaseIndex = (other->animationPrevPhaseIndex < phaseMap.size()) ? phaseMap[other->animationPrevPhaseIndex] : animationPrevPhaseIndex;
+        animationCurrPhaseIndex = (other->animationCurrPhaseIndex < phaseMap.size()) ? phaseMap[other->animationCurrPhaseIndex] : animationCurrPhaseIndex;
+
+        DVASSERT(animationPrevPhaseIndex < blendTree->GetPhasesCount());
+        DVASSERT(animationCurrPhaseIndex < blendTree->GetPhasesCount());
+    }
+
+    if (transitionInfo->syncPhase)
+    {
+        animationPhase = other->animationPhase;
+    }
+
+    if (transitionInfo->inversePhase)
+    {
+        animationPhase = 1.f - animationPhase;
+    }
 }
 
 const Vector<FastName>& MotionState::GetBlendTreeParameters() const

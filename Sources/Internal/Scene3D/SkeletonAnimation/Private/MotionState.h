@@ -26,7 +26,7 @@ public:
     void Update(float32 dTime);
     void EvaluatePose(SkeletonPose* outPose) const;
     void GetRootOffsetDelta(Vector3* offset) const;
-    void SyncPhase(const MotionState* withOther);
+    void SyncPhase(const MotionState* withOther, const MotionTransitionInfo* transitionInfo);
 
     bool IsEndReached() const;
     bool IsPhaseEndReached(uint32 phaseIndex) const;
