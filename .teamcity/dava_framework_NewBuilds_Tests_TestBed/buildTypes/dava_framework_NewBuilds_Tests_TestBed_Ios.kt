@@ -139,9 +139,9 @@ object dava_framework_NewBuilds_Tests_TestBed_Ios : BuildType({
             type = "teamcity.stash.status"
             param("stash_host", "https://%stash_hostname%")
             param("stash_only_latest", "true")
-            param("stash_username", "i_petrochenko")
+            param("stash_username", "dava_teamcity")
             param("stash_failCancelledBuilds", "true")
-            param("secure:stash_username", "zxxf12c6f6e95b4c11aad2927fa4df2c366")
+            param("secure:stash_username", "zxx38986f37ccea38c0775d03cbe80d301b")
         }
     }
 
