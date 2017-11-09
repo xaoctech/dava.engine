@@ -16,23 +16,47 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit_launcherDataPath">
-       <property name="toolTip">
-        <string>Path where launcher will store artifacts</string>
-       </property>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="text">
-        <string/>
-       </property>
-       <property name="placeholderText">
-        <string>Path where launcher will store artifacts</string>
+        <string>IOS builds URL</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_10">
        <property name="text">
-        <string>Launcher info URL</string>
+        <string>Android builds URL</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>UWP builds URL</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLabel" name="label_androidBuildsURL">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextBrowserInteraction</set>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QCheckBox" name="checkBox_useTestAPI">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -43,10 +67,23 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Data storage dir</string>
+        <string>Launcher info URL</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_launcherDataPath">
+       <property name="toolTip">
+        <string>Path where launcher will store artifacts</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>Path where launcher will store artifacts</string>
        </property>
       </widget>
      </item>
@@ -64,9 +101,6 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
-      <widget class="QSpinBox" name="spinBox_autorefreshTimeout"/>
-     </item>
      <item row="11" column="1">
       <widget class="QCheckBox" name="checkBox_autorefreshEnabled">
        <property name="text">
@@ -74,12 +108,22 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="2">
+     <item row="13" column="2">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>ms</string>
        </property>
       </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Data storage dir</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QSpinBox" name="spinBox_autorefreshTimeout"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_9">
@@ -88,31 +132,8 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_serverHostName">
-       <property name="placeholderText">
-        <string>example: https://ba-manager.wargaming.net</string>
-       </property>
-      </widget>
-     </item>
      <item row="4" column="1">
       <widget class="QLabel" name="label_launcherMetaInfoURL">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::RichText</enum>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-       <property name="textInteractionFlags">
-        <set>Qt::TextBrowserInteraction</set>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="label_launcherFavoritesURL">
        <property name="text">
         <string/>
        </property>
@@ -143,25 +164,33 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="2">
-      <widget class="QPushButton" name="pushButton_copyCurrentPlatformBuildsURL">
+     <item row="5" column="1">
+      <widget class="QLabel" name="label_launcherFavoritesURL">
        <property name="text">
         <string/>
        </property>
-       <property name="icon">
-        <iconset resource="icons.qrc">
-         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextBrowserInteraction</set>
        </property>
       </widget>
      </item>
-     <item row="5" column="2">
-      <widget class="QPushButton" name="pushButton_copyFavoritesURL">
-       <property name="text">
-        <string/>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lineEdit_serverHostName">
+       <property name="placeholderText">
+        <string>example: https://ba-manager.wargaming.net</string>
        </property>
-       <property name="icon">
-        <iconset resource="icons.qrc">
-         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Launcher test info URL</string>
        </property>
       </widget>
      </item>
@@ -176,10 +205,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_14">
+     <item row="6" column="2">
+      <widget class="QPushButton" name="pushButton_copyCurrentPlatformBuildsURL">
        <property name="text">
-        <string>Launcher test info URL</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="icons.qrc">
+         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
        </property>
       </widget>
      </item>
@@ -187,6 +220,17 @@
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Favorites URL</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QPushButton" name="pushButton_copyFavoritesURL">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="icons.qrc">
+         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
        </property>
       </widget>
      </item>
@@ -207,7 +251,7 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Autorefresh timeout</string>
@@ -278,36 +322,8 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
-      <widget class="QCheckBox" name="checkBox_useTestAPI">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>IOS builds URL</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>Android builds URL</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>UWP builds URL</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QLabel" name="label_androidBuildsURL">
+     <item row="9" column="1">
+      <widget class="QLabel" name="label_UWPBuildsURL">
        <property name="text">
         <string/>
        </property>
@@ -319,6 +335,28 @@
        </property>
        <property name="textInteractionFlags">
         <set>Qt::TextBrowserInteraction</set>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QPushButton" name="pushButton_copyIOSBuildsURL">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="icons.qrc">
+         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QPushButton" name="pushButton_copyAndroidBuildsURL">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="icons.qrc">
+         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
        </property>
       </widget>
      </item>
@@ -338,44 +376,6 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
-      <widget class="QLabel" name="label_UWPBuildsURL">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::RichText</enum>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-       <property name="textInteractionFlags">
-        <set>Qt::TextBrowserInteraction</set>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="2">
-      <widget class="QPushButton" name="pushButton_copyAndroidBuildsURL">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="icons.qrc">
-         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="2">
-      <widget class="QPushButton" name="pushButton_copyIOSBuildsURL">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="icons.qrc">
-         <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
-       </property>
-      </widget>
-     </item>
      <item row="9" column="2">
       <widget class="QPushButton" name="pushButton_copyUWPBuildsURL">
        <property name="text">
@@ -384,6 +384,20 @@
        <property name="icon">
         <iconset resource="icons.qrc">
          <normaloff>:/Icons/copy.png</normaloff>:/Icons/copy.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>build agent</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QCheckBox" name="checkBox_buildAgent">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
