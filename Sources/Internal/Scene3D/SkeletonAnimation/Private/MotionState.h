@@ -88,8 +88,7 @@ protected:
 
     Vector<const float32*> boundParams;
 
-    //TODO: *Skinning* restore markers
-    //Vector<FastName> markers;
+    Vector<FastName> markers;
     UnorderedSet<FastName> reachedMarkers;
     UnorderedMap<TransitionKey, TransitionInfo, TransitionKeyHash> transitions;
 

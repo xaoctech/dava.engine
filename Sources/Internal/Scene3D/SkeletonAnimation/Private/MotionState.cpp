@@ -38,6 +38,9 @@ void MotionState::Update(float32 dTime)
     {
         animationPhase -= 1.f;
 
+        if (markers[animationCurrPhaseIndex].IsValid())
+            reachedMarkers.insert(markers[animationCurrPhaseIndex]);
+
         ++animationCurrPhaseIndex;
         if (animationCurrPhaseIndex == blendTree->GetPhasesCount())
         {
@@ -172,6 +175,27 @@ void MotionState::LoadFromYaml(const YamlNode* stateNode)
         DVASSERT(blendTree != nullptr);
 
         boundParams.resize(blendTree->GetParameterIDs().size());
+        markers.resize(blendTree->GetPhasesCount());
+
+        const YamlNode* markersNode = blendTreeNode->Get("markers");
+
+        if (markersNode != nullptr && markersNode->GetType() == YamlNode::TYPE_ARRAY)
+        {
+            uint32 markersCount = markersNode->GetCount();
+            for (uint32 m = 0; m < markersCount; ++m)
+            {
+                const YamlNode* markerNode = markersNode->Get(m);
+                if (markerNode->GetType() == YamlNode::TYPE_MAP && markerNode->GetCount() == 1)
+                {
+                    uint32 markerIndex = 0;
+                    if (sscanf(markerNode->GetItemKeyName(0).c_str(), "%u", &markerIndex) == 1)
+                    {
+                        DVASSERT(markerIndex < uint32(markers.size()));
+                        markers[markerIndex] = markerNode->Get(0)->AsFastName();
+                    }
+                }
+            }
+        }
     }
 }
 
