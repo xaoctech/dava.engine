@@ -48,7 +48,7 @@ public:
     };
     static CreateResult Create(const uint8* buffer, uint32 length, std::unique_ptr<CachePacket>& packet);
 
-    bool SendTo(Net::IChannel* channel);
+    bool SendTo(std::shared_ptr<Net::IChannel> channel);
     static void PacketSent(const uint8* buffer, size_t length);
 
 protected:

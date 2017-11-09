@@ -24,7 +24,7 @@ namespace Net
     class A : public IChannelListener
     {
     public:
-        void OnChannelOpen(IChannel*) override
+        void OnChannelOpen(std::shared_ptr<IChannel>) override
         {
             // some code that should be executed on main thread
         }
@@ -63,11 +63,11 @@ class ChannelListenerDispatched : public IChannelListener
 public:
     explicit ChannelListenerDispatched(std::weak_ptr<IChannelListener> targetChannelListener, Dispatcher<Function<void()>>* netEventsDispatcher);
 
-    void OnChannelOpen(IChannel* channel) override;
-    void OnChannelClosed(IChannel* channel, const char8* message) override;
-    void OnPacketReceived(IChannel* channel, const void* buffer, size_t length) override;
-    void OnPacketSent(IChannel* channel, const void* buffer, size_t length) override;
-    void OnPacketDelivered(IChannel* channel, uint32 packetId) override;
+    void OnChannelOpen(std::shared_ptr<IChannel> channel) override;
+    void OnChannelClosed(std::shared_ptr<IChannel> channel, const char8* message) override;
+    void OnPacketReceived(std::shared_ptr<IChannel> channel, const void* buffer, size_t length) override;
+    void OnPacketSent(std::shared_ptr<IChannel> channel, const void* buffer, size_t length) override;
+    void OnPacketDelivered(std::shared_ptr<IChannel> channel, uint32 packetId) override;
 
 private:
     Dispatcher<Function<void()>>* netEventsDispatcher = nullptr;

@@ -37,7 +37,7 @@ void ServerNetProxy::Disconnect()
     netServer.reset();
 }
 
-void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packetData, size_t length)
+void ServerNetProxy::OnPacketReceived(std::shared_ptr<Net::IChannel> channel, const void* packetData, size_t length)
 {
     if (nullptr == listener)
     { // do not need to process data in case of nullptr delegate
@@ -103,12 +103,12 @@ void ServerNetProxy::OnPacketReceived(Net::IChannel* channel, const void* packet
     }
 }
 
-void ServerNetProxy::OnPacketSent(Net::IChannel* channel, const void* buffer, size_t length)
+void ServerNetProxy::OnPacketSent(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length)
 {
     CachePacket::PacketSent(static_cast<const uint8*>(buffer), length);
 }
 
-void ServerNetProxy::OnChannelClosed(Net::IChannel* channel, const char8* message)
+void ServerNetProxy::OnChannelClosed(std::shared_ptr<Net::IChannel> channel, const char8* message)
 {
     if (listener)
     {
@@ -116,7 +116,7 @@ void ServerNetProxy::OnChannelClosed(Net::IChannel* channel, const char8* messag
     }
 }
 
-bool ServerNetProxy::SendAddedToCache(Net::IChannel* channel, const CacheItemKey& key, bool added)
+bool ServerNetProxy::SendAddedToCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, bool added)
 {
     if (channel)
     {
@@ -127,7 +127,7 @@ bool ServerNetProxy::SendAddedToCache(Net::IChannel* channel, const CacheItemKey
     return false;
 }
 
-bool ServerNetProxy::SendRemovedFromCache(Net::IChannel* channel, const CacheItemKey& key, bool removed)
+bool ServerNetProxy::SendRemovedFromCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, bool removed)
 {
     if (channel)
     {
@@ -138,7 +138,7 @@ bool ServerNetProxy::SendRemovedFromCache(Net::IChannel* channel, const CacheIte
     return false;
 }
 
-bool ServerNetProxy::SendCleared(Net::IChannel* channel, bool cleared)
+bool ServerNetProxy::SendCleared(std::shared_ptr<Net::IChannel> channel, bool cleared)
 {
     if (channel)
     {
@@ -149,7 +149,7 @@ bool ServerNetProxy::SendCleared(Net::IChannel* channel, bool cleared)
     return false;
 }
 
-bool ServerNetProxy::SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData)
+bool ServerNetProxy::SendChunk(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData)
 {
     if (channel)
     {
@@ -160,7 +160,7 @@ bool ServerNetProxy::SendChunk(Net::IChannel* channel, const CacheItemKey& key, 
     return false;
 }
 
-bool ServerNetProxy::SendStatus(Net::IChannel* channel)
+bool ServerNetProxy::SendStatus(std::shared_ptr<Net::IChannel> channel)
 {
     if (channel)
     {

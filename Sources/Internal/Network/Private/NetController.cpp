@@ -47,11 +47,10 @@ NetController::~NetController()
     }
     else
     {
-        for (List<ClientEntry>::iterator i = clients.begin(), e = clients.end(); i != e; ++i)
+        for (ClientEntry& entry : clients)
         {
-            ClientEntry& entry = *i;
-            delete entry.driver;
-            delete entry.client;
+            SafeDelete(entry.driver);
+            SafeDelete(entry.client);
         }
     }
 }
@@ -216,7 +215,7 @@ void NetController::OnTransportTerminated(IClientTransport* tr)
     if (SERVER_ROLE == role)
     {
         entry.parent->ReclaimClient(entry.client);
-        delete entry.driver;
+        SafeDelete(entry.driver);
         clients.erase(i);
 
         if (true == isTerminating && true == clients.empty())

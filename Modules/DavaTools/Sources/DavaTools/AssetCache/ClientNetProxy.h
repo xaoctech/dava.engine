@@ -61,15 +61,15 @@ public:
 
     //Net::IChannelListener
     // Channel is open (underlying transport has connection) and can receive and send data through IChannel interface
-    void OnChannelOpen(Net::IChannel* channel) override;
+    void OnChannelOpen(std::shared_ptr<Net::IChannel> channel) override;
     // Channel is closed (underlying transport has disconnected) with reason
-    void OnChannelClosed(Net::IChannel* channel, const char8* message) override;
+    void OnChannelClosed(std::shared_ptr<Net::IChannel> channel, const char8* message) override;
     // Some data arrived into channel
-    void OnPacketReceived(Net::IChannel* channel, const void* buffer, size_t length) override;
+    void OnPacketReceived(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length) override;
     // Buffer has been sent and can be reused or freed
-    void OnPacketSent(Net::IChannel* channel, const void* buffer, size_t length) override;
+    void OnPacketSent(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length) override;
     // Data packet with given ID has been delivered to other side
-    void OnPacketDelivered(Net::IChannel* channel, uint32 packetId) override{};
+    void OnPacketDelivered(std::shared_ptr<Net::IChannel> channel, uint32 packetId) override{};
 
     void OnAddressResolved(const Net::Endpoint& endpoint, int32 status);
 
@@ -79,7 +79,7 @@ private:
     Dispatcher<Function<void()>>* dispatcher = nullptr;
     std::shared_ptr<Net::AddressResolver> addressResolver;
     std::shared_ptr<Connection> netClient;
-    DAVA::Net::IChannel* openedChannel = nullptr;
+    std::shared_ptr<Net::IChannel> openedChannel;
 
     Set<ClientNetProxyListener*> listeners;
 };

@@ -50,8 +50,8 @@ public:
 
 private:
     // IChannelListener
-    void OnPacketSent(IChannel* channel, const void* buffer, size_t length) override;
-    void OnPacketDelivered(IChannel* channel, uint32 packetId) override;
+    void OnPacketSent(std::shared_ptr<IChannel> channel, const void* buffer, size_t length) override;
+    void OnPacketDelivered(std::shared_ptr<IChannel> channel, uint32 packetId) override;
 
     // LoggerOutput
     void Output(Logger::eLogLevel ll, const char8* text) override;

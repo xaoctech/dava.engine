@@ -52,13 +52,13 @@ void NetLogger::ChannelOpen()
     SendNextRecord(); // start sending log records if any
 }
 
-void NetLogger::OnPacketSent(IChannel* channel, const void* buffer, size_t length)
+void NetLogger::OnPacketSent(std::shared_ptr<IChannel> channel, const void* buffer, size_t length)
 {
     // Record has been sent and buffer can be deleted
     delete[] static_cast<const char8*>(buffer);
 }
 
-void NetLogger::OnPacketDelivered(IChannel* channel, uint32 packetId)
+void NetLogger::OnPacketDelivered(std::shared_ptr<IChannel> channel, uint32 packetId)
 {
     // Record has been got by other side so we can remove that record
     RemoveFirstMessage();

@@ -49,7 +49,7 @@ private:
 };
 }
 
-bool SendArchieve(Net::IChannel* channel, KeyedArchive* archieve)
+bool SendArchieve(std::shared_ptr<Net::IChannel> channel, KeyedArchive* archieve)
 {
     DVASSERT(archieve && channel);
 
@@ -169,7 +169,7 @@ void Connection::Delete(Net::IChannelListener* obj, void* context)
     //listener has external creation and deletion
 }
 
-void Connection::OnChannelOpen(Net::IChannel* channel)
+void Connection::OnChannelOpen(std::shared_ptr<Net::IChannel> channel)
 {
     if (listener != nullptr)
     {
@@ -177,7 +177,7 @@ void Connection::OnChannelOpen(Net::IChannel* channel)
     }
 }
 
-void Connection::OnChannelClosed(Net::IChannel* channel, const char8* message)
+void Connection::OnChannelClosed(std::shared_ptr<Net::IChannel> channel, const char8* message)
 {
     if (listener != nullptr)
     {
@@ -185,7 +185,7 @@ void Connection::OnChannelClosed(Net::IChannel* channel, const char8* message)
     }
 }
 
-void Connection::OnPacketReceived(Net::IChannel* channel, const void* buffer, size_t length)
+void Connection::OnPacketReceived(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length)
 {
     if (listener != nullptr)
     {
@@ -193,7 +193,7 @@ void Connection::OnPacketReceived(Net::IChannel* channel, const void* buffer, si
     }
 }
 
-void Connection::OnPacketSent(Net::IChannel* channel, const void* buffer, size_t length)
+void Connection::OnPacketSent(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length)
 {
     if (listener != nullptr)
     {
@@ -201,7 +201,7 @@ void Connection::OnPacketSent(Net::IChannel* channel, const void* buffer, size_t
     }
 }
 
-void Connection::OnPacketDelivered(Net::IChannel* channel, uint32 packetId)
+void Connection::OnPacketDelivered(std::shared_ptr<Net::IChannel> channel, uint32 packetId)
 {
     if (listener != nullptr)
     {

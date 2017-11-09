@@ -30,12 +30,12 @@ class TestEchoServer : public DAVA::Net::NetService
 public:
     TestEchoServer() = default;
 
-    void OnPacketReceived(IChannel* aChannel, const void* buffer, size_t length) override
+    void OnPacketReceived(std::shared_ptr<IChannel> aChannel, const void* buffer, size_t length) override
     {
         bytesRecieved += length;
         SendEcho(buffer, length);
     }
-    void OnPacketSent(IChannel* aChannel, const void* buffer, size_t length) override
+    void OnPacketSent(std::shared_ptr<IChannel> aChannel, const void* buffer, size_t length) override
     {
         // buffer must be among sent buffers and its length must correspond to sent length
         Deque<Parcel>::iterator i = std::find(parcels.begin(), parcels.end(), buffer);
@@ -55,7 +55,7 @@ public:
             bytesSent += length;
         }
     }
-    void OnPacketDelivered(IChannel* aChannel, uint32 packetId) override
+    void OnPacketDelivered(std::shared_ptr<IChannel> aChannel, uint32 packetId) override
     {
         if (false == parcels.empty())
         {
@@ -152,7 +152,7 @@ public:
         for (auto& x : parcels)
             SendParcel(&x);
     }
-    void OnPacketReceived(IChannel* aChannel, const void* buffer, size_t length) override
+    void OnPacketReceived(std::shared_ptr<IChannel> aChannel, const void* buffer, size_t length) override
     {
         if (pendingRead < parcels.size())
         {
@@ -169,7 +169,7 @@ public:
             testDone = true;
         }
     }
-    void OnPacketSent(IChannel* aChannel, const void* buffer, size_t length) override
+    void OnPacketSent(std::shared_ptr<IChannel> aChannel, const void* buffer, size_t length) override
     {
         if (pendingSent < parcels.size())
         {
@@ -182,7 +182,7 @@ public:
             pendingSent += 1;
         }
     }
-    void OnPacketDelivered(IChannel* aChannel, uint32 packetId) override
+    void OnPacketDelivered(std::shared_ptr<IChannel> aChannel, uint32 packetId) override
     {
         if (pendingDelivered < parcels.size())
         {

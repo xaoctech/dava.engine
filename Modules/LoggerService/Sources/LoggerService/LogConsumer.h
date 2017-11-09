@@ -22,7 +22,7 @@ public:
     LogConsumer& operator=(const LogConsumer&) = delete;
 
     //NetService method implementation
-    void OnPacketReceived(IChannel* channel, const void* buffer, size_t length) override;
+    void OnPacketReceived(std::shared_ptr<IChannel> channel, const void* buffer, size_t length) override;
 
     Signal<const String&> newDataNotifier;
 };

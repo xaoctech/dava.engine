@@ -19,14 +19,14 @@ class ServerNetProxyListener
 public:
     virtual ~ServerNetProxyListener() = default;
 
-    virtual void OnAddChunkToCache(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData) = 0;
-    virtual void OnChunkRequestedFromCache(Net::IChannel* channel, const CacheItemKey& key, uint32 chunkNumber) = 0;
-    virtual void OnRemoveFromCache(Net::IChannel* channel, const CacheItemKey& key) = 0;
-    virtual void OnClearCache(Net::IChannel* channel) = 0;
-    virtual void OnWarmingUp(Net::IChannel* channel, const CacheItemKey& key) = 0;
-    virtual void OnStatusRequested(Net::IChannel* channel) = 0;
+    virtual void OnAddChunkToCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData) = 0;
+    virtual void OnChunkRequestedFromCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, uint32 chunkNumber) = 0;
+    virtual void OnRemoveFromCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key) = 0;
+    virtual void OnClearCache(std::shared_ptr<Net::IChannel> channel) = 0;
+    virtual void OnWarmingUp(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key) = 0;
+    virtual void OnStatusRequested(std::shared_ptr<Net::IChannel> channel) = 0;
 
-    virtual void OnChannelClosed(Net::IChannel* channel, const char8* message){};
+    virtual void OnChannelClosed(std::shared_ptr<Net::IChannel> channel, const char8* message){};
 };
 
 class ServerNetProxy final : public Net::IChannelListener
@@ -43,23 +43,23 @@ public:
 
     uint16 GetListenPort() const;
 
-    bool SendAddedToCache(Net::IChannel* channel, const CacheItemKey& key, bool added);
-    bool SendRemovedFromCache(Net::IChannel* channel, const CacheItemKey& key, bool removed);
-    bool SendCleared(Net::IChannel* channel, bool cleared);
-    bool SendChunk(Net::IChannel* channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData);
-    bool SendStatus(Net::IChannel* channel);
+    bool SendAddedToCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, bool added);
+    bool SendRemovedFromCache(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, bool removed);
+    bool SendCleared(std::shared_ptr<Net::IChannel> channel, bool cleared);
+    bool SendChunk(std::shared_ptr<Net::IChannel> channel, const CacheItemKey& key, uint64 dataSize, uint32 numOfChunks, uint32 chunkNumber, const Vector<uint8>& chunkData);
+    bool SendStatus(std::shared_ptr<Net::IChannel> channel);
 
     //Net::IChannelListener
     // Channel is open (underlying transport has connection) and can receive and send data through IChannel interface
-    void OnChannelOpen(Net::IChannel* channel) override{};
+    void OnChannelOpen(std::shared_ptr<Net::IChannel> channel) override{};
     // Channel is closed (underlying transport has disconnected) with reason
-    void OnChannelClosed(Net::IChannel* channel, const char8* message) override;
+    void OnChannelClosed(std::shared_ptr<Net::IChannel> channel, const char8* message) override;
     // Some data arrived into channel
-    void OnPacketReceived(Net::IChannel* channel, const void* buffer, size_t length) override;
+    void OnPacketReceived(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length) override;
     // Buffer has been sent and can be reused or freed
-    void OnPacketSent(Net::IChannel* channel, const void* buffer, size_t length) override;
+    void OnPacketSent(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length) override;
     // Data packet with given ID has been delivered to other side
-    void OnPacketDelivered(Net::IChannel* channel, uint32 packetId) override{};
+    void OnPacketDelivered(std::shared_ptr<Net::IChannel> channel, uint32 packetId) override{};
 
 private:
     Dispatcher<Function<void()>>* dispatcher = nullptr;
