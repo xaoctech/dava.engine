@@ -1,6 +1,7 @@
 #include "UI/UITextField.h"
 #include "Input/InputSystem.h"
 #include "UI/UIControlSystem.h"
+#include "UI/UITextFieldDelegate.h"
 #include "Render/2D/FontManager.h"
 #include "Utils/UTF8Utils.h"
 #include "Logger/Logger.h"

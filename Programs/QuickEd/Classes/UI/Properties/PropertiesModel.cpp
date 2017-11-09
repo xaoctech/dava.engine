@@ -22,6 +22,7 @@
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 #include <TArc/Utils/Utils.h>
 
+#include <Engine/Engine.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIControl.h>
 #include <UI/UIControlSystem.h>

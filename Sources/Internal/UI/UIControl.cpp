@@ -12,7 +12,6 @@
 #include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/RenderHelper.h"
 #include "Render/Renderer.h"
 #include "UI/Components/UIComponent.h"
@@ -23,7 +22,6 @@
 #include "UI/Layouts/UILayoutSystem.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIRenderSystem.h"
-#include "UI/Sound/UISoundSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/UIAnalytics.h"
 #include "UI/UIControlBackground.h"
@@ -2137,6 +2135,11 @@ void UIControl::UpdateFamily()
 {
     UIControlFamily::Release(family);
     family = UIControlFamily::GetOrCreate(components);
+}
+
+int32 UIControl::TypeToRuntimeType(const Type* type)
+{
+    return GetEngineContext()->componentManager->GetRuntimeType(type);
 }
 
 void UIControl::RemoveAllComponents()
