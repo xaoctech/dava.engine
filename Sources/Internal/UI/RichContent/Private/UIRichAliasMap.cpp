@@ -1,5 +1,6 @@
 #include "UI/RichContent/UIRichAliasMap.h"
 #include "FileSystem/XMLParser.h"
+#include "FileSystem/XMLParserDelegate.h"
 #include "Logger/Logger.h"
 #include "Utils/Utils.h"
 
