@@ -140,11 +140,11 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
 
             motion->Update(dTime);
 
-            for (auto& phaseEnd : motion->GetEndedPhases())
-            {
-                if (phaseEnd.second == Motion::STATE_ANIMATION_END_MARKER)
-                    motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), phaseEnd.first));
-            }
+            for (const auto& stateAnimationEnd : motion->GetEndedStateAnimations())
+                motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), stateAnimationEnd));
+
+            for (const auto& stateMarker : motion->GetReachedMarkers())
+                motionSingleComponent->animationMarkerReached.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), stateMarker.first, stateMarker.second));
 
             const SkeletonPose& pose = motion->GetCurrentSkeletonPose();
             Motion::eMotionBlend blendMode = motion->GetBlendMode();

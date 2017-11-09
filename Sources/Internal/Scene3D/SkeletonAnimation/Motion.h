@@ -24,8 +24,6 @@ class Motion
     Motion() = default;
 
 public:
-    const static FastName STATE_ANIMATION_END_MARKER;
-
     enum eMotionBlend
     {
         BLEND_OVERRIDE,
@@ -55,8 +53,8 @@ public:
     void UnbindParameters();
 
     const Vector<FastName>& GetStateIDs() const;
-
-    const Vector<std::pair<FastName, FastName>> GetEndedPhases() const;
+    const Vector<std::pair<FastName, FastName>>& GetReachedMarkers() const;
+    const Vector<FastName>& GetEndedStateAnimations() const;
 
 protected:
     FastName name;
@@ -82,7 +80,8 @@ protected:
     uint32 rootNodeJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
 
     SkeletonPose currentPose;
-    Vector<std::pair<FastName, FastName>> endedPhases; /*[state-id, phase-id]*/
+    Vector<std::pair<FastName, FastName>> reachedMarkers; /*[state-id, phase-id]*/
+    Vector<FastName> endedStateAnimations;
 
     DAVA_REFLECTION(Motion);
 };
@@ -112,9 +111,14 @@ inline const Vector<FastName>& Motion::GetParameterIDs() const
     return parameterIDs;
 }
 
-inline const Vector<std::pair<FastName, FastName>> Motion::GetEndedPhases() const
+inline const Vector<std::pair<FastName, FastName>>& Motion::GetReachedMarkers() const
 {
-    return endedPhases;
+    return reachedMarkers;
+}
+
+inline const Vector<FastName>& Motion::GetEndedStateAnimations() const
+{
+    return endedStateAnimations;
 }
 
 } //ns

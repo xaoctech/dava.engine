@@ -16,7 +16,6 @@ ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 
 namespace DAVA
 {
-const FastName Motion::STATE_ANIMATION_END_MARKER("##state-animation-end");
 
 DAVA_REFLECTION_IMPL(Motion)
 {
@@ -86,17 +85,19 @@ void Motion::Update(float32 dTime)
 
     //////////////////////////////////////////////////////////////////////////
 
-    //TODO: *Skinning* think about retrieving markers from transitions
-    endedPhases.clear();
-    const UnorderedSet<FastName>& reachedMarkers = currentState->GetReachedMarkers();
-    for (const FastName& m : reachedMarkers)
+    reachedMarkers.clear();
+    for (const FastName& m : currentState->GetReachedMarkers())
+        reachedMarkers.emplace_back(currentState->GetID(), m);
+
+    if (nextState != nullptr && stateTransition.IsStarted())
     {
-        if (!m.empty())
-            endedPhases.emplace_back(currentState->GetID(), m);
+        for (const FastName& m : nextState->GetReachedMarkers())
+            reachedMarkers.emplace_back(currentState->GetID(), m);
     }
 
-    if (currentState->IsEndReached())
-        endedPhases.emplace_back(currentState->GetID(), Motion::STATE_ANIMATION_END_MARKER);
+    endedStateAnimations.clear();
+    if (currentState->IsAnimationEndReached())
+        endedStateAnimations.emplace_back(currentState->GetID());
 
     //////////////////////////////////////////////////////////////////////////
 

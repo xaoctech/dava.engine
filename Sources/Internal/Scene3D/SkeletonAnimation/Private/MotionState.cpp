@@ -24,6 +24,7 @@ void MotionState::Update(float32 dTime)
     if (blendTree == nullptr)
         return;
 
+    reachedMarkers.clear();
     animationEndReached = false;
 
     animationPrevPhaseIndex = animationCurrPhaseIndex;

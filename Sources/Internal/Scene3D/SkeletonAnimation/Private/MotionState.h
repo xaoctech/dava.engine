@@ -36,7 +36,7 @@ public:
     void GetRootOffsetDelta(Vector3* offset) const;
     void SyncPhase(const MotionState* withOther, const MotionTransitionInfo* transitionInfo);
 
-    bool IsEndReached() const;
+    bool IsAnimationEndReached() const;
     bool IsPhaseEndReached(uint32 phaseIndex) const;
     bool IsMarkerReached(const FastName& marker) const;
 
@@ -110,7 +110,7 @@ inline const UnorderedSet<FastName>& MotionState::GetReachedMarkers() const
     return reachedMarkers;
 }
 
-inline bool MotionState::IsEndReached() const
+inline bool MotionState::IsAnimationEndReached() const
 {
     return animationEndReached;
 }

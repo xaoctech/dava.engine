@@ -7,13 +7,15 @@ namespace DAVA
 {
 void MotionSingleComponent::Clear()
 {
-    animationEnd.clear();
-    rebindSkeleton.clear();
-    reloadMotion.clear();
-
     startSimpleMotion.clear();
     stopSimpleMotion.clear();
     simpleMotionFinished.clear();
+
+    rebindSkeleton.clear();
+    reloadMotion.clear();
+
+    animationEnd.clear();
+    animationMarkerReached.clear();
 }
 
 void MotionSingleComponent::EntityRemoved(const Entity* entity)
