@@ -123,6 +123,7 @@ bool TextureFormatSupported(TextureFormat format, ProgType progType = PROG_FRAGM
 const RenderDeviceCaps& DeviceCaps();
 
 void SuspendRendering();
+void SuspendRenderingAfterFrame();
 void ResumeRendering();
 
 //notify rendering backend that some explicit code can do some rendering not using rhi and thus leave rendering api in different state
