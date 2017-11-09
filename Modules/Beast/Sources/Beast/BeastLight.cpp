@@ -1,6 +1,7 @@
 #include "Beast/BeastLight.h"
 #include "Beast/BeastDebug.h"
 
+#include <Base/BaseMath.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Math/Color.h>
 #include <Render/Highlevel/Light.h>
@@ -51,6 +52,8 @@ void BeastLight::InitWithLight(DAVA::Entity* owner, DAVA::Light* _light)
         default:
             DVASSERT(0, "Invalid light type");
         }
+
+        SetShadowParameters();
         SetIntensity();
     }
 }
@@ -78,30 +81,43 @@ void BeastLight::CreateAmbientLight()
 void BeastLight::CreateDirectionalLight()
 {
     BEAST_VERIFY(ILBCreateDirectionalLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
-    BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
-    BEAST_VERIFY(ILBSetShadowSamples(light, GetShadowSamples()));
-    BEAST_VERIFY(ILBSetShadowAngle(light, GetShadowAngle()));
 }
 
 void BeastLight::CreatePointLight()
 {
     BEAST_VERIFY(ILBCreatePointLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
-    BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
-    BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
     BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
 }
 
 void BeastLight::CreateSpotLight()
 {
     BEAST_VERIFY(ILBCreateSpotLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
+    BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
+    BEAST_VERIFY(ILBSetSpotlightCone(light, GetConeAngle() * DAVA::PI / 180.0f, GetConePenumbraAngle() * DAVA::PI / 180.0f, GetConePenumbraExponent()));
+}
+
+void BeastLight::SetShadowParameters()
+{
     BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
     BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
-    BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
+    BEAST_VERIFY(ILBSetShadowSamples(light, GetShadowSamples()));
+    BEAST_VERIFY(ILBSetShadowAngle(light, GetShadowAngle()));
 }
 
 const ILBLinearRGB& BeastLight::GetColor() const
 {
     return linearRGB;
+}
+
+DAVA::float32 BeastLight::GetFloat(const DAVA::String& key, DAVA::float32 defaultValue)
+{
+    DAVA::float32 result = defaultValue;
+    DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
+    if (props != nullptr)
+    {
+        result = props->GetFloat(key, defaultValue);
+    }
+    return result;
 }
 
 bool BeastLight::GetCastShadows()
@@ -114,46 +130,6 @@ bool BeastLight::GetCastShadows()
     return true;
 }
 
-const ILBMatrix4x4& BeastLight::GetMatrix() const
-{
-    return matrix;
-}
-
-void BeastLight::SetIntensity()
-{
-    DAVA::float32 intensity = 1.f;
-
-    DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
-    if (props)
-    {
-        intensity = props->GetFloat("editor.intensity", 1.f);
-    }
-
-    BEAST_VERIFY(ILBSetLightIntensity(light, intensity));
-}
-
-DAVA::float32 BeastLight::GetShadowAngle()
-{
-    DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
-    if (props)
-    {
-        return props->GetFloat("editor.staticlight.shadowangle", 0.f);
-    }
-
-    return 0.f;
-}
-
-DAVA::float32 BeastLight::GetShadowRadius()
-{
-    DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
-    if (props)
-    {
-        return props->GetFloat("editor.staticlight.shadowradius", 0.f);
-    }
-
-    return 0.f;
-}
-
 DAVA::int32 BeastLight::GetShadowSamples()
 {
     DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
@@ -161,30 +137,53 @@ DAVA::int32 BeastLight::GetShadowSamples()
     {
         return props->GetInt32("editor.staticlight.shadowsamples", 1);
     }
-
     return 1;
+}
+
+const ILBMatrix4x4& BeastLight::GetMatrix() const
+{
+    return matrix;
+}
+
+void BeastLight::SetIntensity()
+{
+    DAVA::float32 intensity = GetFloat("editor.intensity", 1.0f);
+    BEAST_VERIFY(ILBSetLightIntensity(light, intensity));
+}
+
+DAVA::float32 BeastLight::GetShadowAngle()
+{
+    return GetFloat("editor.staticlight.shadowangle", 0.0f);
+}
+
+DAVA::float32 BeastLight::GetShadowRadius()
+{
+    return GetFloat("editor.staticlight.shadowradius", 0.0f);
 }
 
 DAVA::float32 BeastLight::GetFalloffCutoff()
 {
-    DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
-    if (props)
-    {
-        return props->GetFloat("editor.staticlight.falloffcutoff", 1000.f);
-    }
-
-    return 1000.f;
+    return GetFloat("editor.staticlight.falloffcutoff", 1000.f);
 }
 
 DAVA::float32 BeastLight::GetFalloffExponent()
 {
-    DAVA::KeyedArchive* props = GetCustomPropertiesArchieve(ownerNode);
-    if (props)
-    {
-        return props->GetFloat("editor.staticlight.falloffexponent", 1.f);
-    }
+    return GetFloat("editor.staticlight.falloffexponent", 1.0f);
+}
 
-    return 1.f;
+DAVA::float32 BeastLight::GetConeAngle()
+{
+    return GetFloat("editor.staticlight.cone.angle", 90.0f);
+}
+
+DAVA::float32 BeastLight::GetConePenumbraAngle()
+{
+    return GetFloat("editor.staticlight.cone.penumbra.angle", 0.0f);
+}
+
+DAVA::float32 BeastLight::GetConePenumbraExponent()
+{
+    return GetFloat("editor.staticlight.cone.penumbra.exponent", 1.0f);
 }
 
 void BeastLight::UpdateLightParamsFromHandle(ILBLightHandle lightHandle)
