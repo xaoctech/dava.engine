@@ -4,6 +4,7 @@
 #include <UI/UIPackageLoader.h>
 #include <UI/Input/UIActionBindingComponent.h>
 #include "UI/Update/UIUpdateComponent.h"
+#include <UI/Styles/UIStyleSheetSystem.h>
 #include <Utils/StringFormat.h>
 
 using namespace DAVA;
@@ -41,6 +42,12 @@ void UIStylesTest::LoadResources()
                 RefPtr<UIControl> c(proto->Clone());
                 container->AddControl(c.Get());
             }
+        });
+        actions->GetActionMap().Put(FastName("ADD_GLOBAL"), [&]() {
+            GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->AddGlobalClass(FastName("global"));
+        });
+        actions->GetActionMap().Put(FastName("REMOVE_GLOBAL"), [&]() {
+            GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->RemoveGlobalClass(FastName("global"));
         });
     }
 
