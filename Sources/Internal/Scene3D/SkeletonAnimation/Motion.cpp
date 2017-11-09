@@ -16,7 +16,6 @@ ENUM_DECLARE(DAVA::Motion::eMotionBlend)
 
 namespace DAVA
 {
-
 DAVA_REFLECTION_IMPL(Motion)
 {
     ReflectionRegistrator<Motion>::Begin()

@@ -56,6 +56,7 @@ Component* MotionComponent::Clone(Entity* toEntity)
     MotionComponent* newComponent = new MotionComponent();
     newComponent->SetEntity(toEntity);
     newComponent->SetMotionPath(GetMotionPath());
+    newComponent->SetPlaybackRate(GetPlaybackRate());
     return newComponent;
 }
 
