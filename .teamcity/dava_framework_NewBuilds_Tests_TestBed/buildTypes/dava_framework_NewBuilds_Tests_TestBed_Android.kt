@@ -73,7 +73,7 @@ object dava_framework_NewBuilds_Tests_TestBed_Android : BuildType({
     features {
         feature {
             type = "teamcity.stash.status"
-            param("stash_host", "https://stash-dava.wargaming.net")
+            param("stash_host", "https://%stash_hostname%")
             param("stash_only_latest", "true")
             param("stash_username", "i_petrochenko")
             param("stash_failCancelledBuilds", "true")

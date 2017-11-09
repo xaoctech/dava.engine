@@ -31,7 +31,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework : BuildType(
             enabled = false
             workingDir = "dava.framework"
             scriptContent = """
-                git clone https://stash-dava.wargaming.net/scm/df/dava.framework.git .
+                git clone https://%stash_hostname%/scm/df/dava.framework.git .
                 git remote add dava_git https://%remote_login%:%remote_pass%@github.com/dava/dava.framework.git
             """.trimIndent()
         }
