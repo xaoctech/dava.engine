@@ -82,12 +82,12 @@ void BlendTree::EvaluateRecursive(uint32 phaseIndex, float32 phase, uint32 phase
     {
     case TYPE_ANIMATION:
     {
-        int32 animationIndex = node.animData.animationIndex;
+        int32 animationIndex = node.animData.index;
         if (animationIndex != -1)
         {
             DVASSERT(phaseIndex < phasesCount);
 
-            const BlendTree::Animation& animation = animations[node.animData.animationIndex];
+            const BlendTree::Animation& animation = animations[node.animData.index];
 
             if (outPose != nullptr)
             {
@@ -300,7 +300,7 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
     if (!animationNodes.empty())
     {
         node.type = eNodeType::TYPE_ANIMATION;
-        node.animData.animationIndex = int32(animations.size());
+        node.animData.index = int32(animations.size());
 
         animations.emplace_back();
         BlendTree::Animation& animation = animations.back();
