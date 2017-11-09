@@ -137,8 +137,11 @@ void ViewSceneScreen::LoadScene()
     {
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         Entity* landscapeEntity = scene->FindByName("Landscape");
-        landscapeEntity->AddComponent(new StaticBodyComponent());
-        landscapeEntity->AddComponent(new HeightFieldShapeComponent());
+        if (landscapeEntity != nullptr)
+        {
+            landscapeEntity->AddComponent(new StaticBodyComponent());
+            landscapeEntity->AddComponent(new HeightFieldShapeComponent());
+        }
 
         scene->physicsSystem->SetSimulationEnabled(true);
 #endif
