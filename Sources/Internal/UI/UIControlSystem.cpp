@@ -26,6 +26,7 @@
 #include "UI/Layouts/UILayoutSystem.h"
 #include "UI/Render/UIRenderSystem.h"
 #include "UI/RichContent/UIRichContentSystem.h"
+#include "UI/ScreenSwitchListener.h"
 #include "UI/Scroll/UIScrollBarLinkSystem.h"
 #include "UI/Scroll/UIScrollSystem.h"
 #include "UI/Sound/UISoundSystem.h"

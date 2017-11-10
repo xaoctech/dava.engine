@@ -1,4 +1,6 @@
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 
