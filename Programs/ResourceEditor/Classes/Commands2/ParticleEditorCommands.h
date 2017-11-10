@@ -1,10 +1,9 @@
-#pragma once
-
-#include "Commands2/Base/RECommand.h"
-#include "Commands2/Base/CommandAction.h"
+#ifndef __PARTICLE_EDITOR_COMMANDS_H__
+#define __PARTICLE_EDITOR_COMMANDS_H__
 
 #include <DAVAEngine.h>
-#include <Particles/ParticleForce.h>
+#include "Commands2/Base/RECommand.h"
+#include "Commands2/Base/CommandAction.h"
 
 class CommandAddParticleEmitter : public CommandAction
 {
@@ -81,19 +80,15 @@ protected:
 };
 
 // Remove a layer from Particle Emitter.
-class CommandRemoveParticleEmitterLayer : public RECommand
+class CommandRemoveParticleEmitterLayer : public CommandAction
 {
 public:
     CommandRemoveParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
-    ~CommandRemoveParticleEmitterLayer();
-
     void Redo() override;
-    void Undo() override;
 
 protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::int32 selectedLayerIndex = -1;
 };
 
 class CommandRemoveParticleEmitter : public RECommand
@@ -134,10 +129,10 @@ protected:
 };
 
 // Add new force to Particle Emitter layer.
-class CommandAddParticleEmitterSimplifiedForce : public CommandAction
+class CommandAddParticleEmitterForce : public CommandAction
 {
 public:
-    CommandAddParticleEmitterSimplifiedForce(DAVA::ParticleLayer* layer);
+    CommandAddParticleEmitterForce(DAVA::ParticleLayer* layer);
     void Redo() override;
 
 protected:
@@ -145,95 +140,10 @@ protected:
 };
 
 // Remove a force from Particle Emitter layer.
-class CommandRemoveParticleEmitterSimplifiedForce : public CommandAction
+class CommandRemoveParticleEmitterForce : public CommandAction
 {
 public:
-    CommandRemoveParticleEmitterSimplifiedForce(DAVA::ParticleLayer* layer, DAVA::ParticleForceSimplified* force);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::ParticleForceSimplified* selectedForce = nullptr;
-};
-
-class CommandAddParticleDrag : public CommandAction
-{
-public:
-    CommandAddParticleDrag(DAVA::ParticleLayer* layer);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-};
-
-class CommandAddParticleVortex : public CommandAction
-{
-public:
-    CommandAddParticleVortex(DAVA::ParticleLayer* layer);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-};
-
-class CommandAddParticleGravity : public CommandAction
-{
-public:
-    CommandAddParticleGravity(DAVA::ParticleLayer* layer);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-};
-
-class CommandAddParticleWind : public CommandAction
-{
-public:
-    CommandAddParticleWind(DAVA::ParticleLayer* layer);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-};
-
-class CommandAddParticlePointGravity : public CommandAction
-{
-public:
-    CommandAddParticlePointGravity(DAVA::ParticleLayer* layer);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-};
-
-class CommandAddParticlePlaneCollision : public CommandAction
-{
-public:
-    CommandAddParticlePlaneCollision(DAVA::ParticleLayer* layer);
-    void Redo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-};
-
-class CommandRemoveParticleForce : public RECommand
-{
-public:
-    CommandRemoveParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
-    ~CommandRemoveParticleForce();
-
-    void Redo() override;
-    void Undo() override;
-
-protected:
-    DAVA::ParticleLayer* selectedLayer = nullptr;
-    DAVA::ParticleForce* selectedForce = nullptr;
-};
-
-class CommandCloneParticleForce : public CommandAction
-{
-public:
-    CommandCloneParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
+    CommandRemoveParticleEmitterForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force);
     void Redo() override;
 
 protected:
@@ -358,8 +268,7 @@ public:
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> animSpeedOverLife,
 
               DAVA::float32 pivotPointX,
-              DAVA::float32 pivotPointY,
-              bool applyGlobalForces);
+              DAVA::float32 pivotPointY);
 
     void Redo() override;
 
@@ -411,8 +320,6 @@ protected:
 
     DAVA::float32 pivotPointX;
     DAVA::float32 pivotPointY;
-
-    bool applyGlobalForces;
 };
 
 class CommandUpdateParticleLayerTime : public CommandUpdateParticleLayerBase
@@ -448,10 +355,10 @@ protected:
     DAVA::Vector<bool> lods;
 };
 
-class CommandUpdateParticleSimplifiedForce : public CommandAction
+class CommandUpdateParticleForce : public CommandAction
 {
 public:
-    CommandUpdateParticleSimplifiedForce(DAVA::ParticleLayer* layer, DAVA::uint32 forceId);
+    CommandUpdateParticleForce(DAVA::ParticleLayer* layer, DAVA::uint32 forceId);
 
     void Init(DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> force,
               DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> forcesOverLife);
@@ -474,71 +381,6 @@ protected:
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> force;
     DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> forcesOverLife;
 };
-
-class CommandUpdateParticleForce : public CommandAction
-{
-public:
-    struct ForceParams
-    {
-        DAVA::String forceName;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::Vector3>> forcePowerLine;
-        DAVA::RefPtr<DAVA::PropertyLine<DAVA::float32>> turbulenceLine;
-        DAVA::ParticleForce::eShape shape = DAVA::ParticleForce::eShape::BOX;
-        DAVA::ParticleForce::eTimingType timingType = DAVA::ParticleForce::eTimingType::CONSTANT;
-        DAVA::float32 radius = 0.0f;
-        DAVA::float32 windFrequency = 0.0f;
-        DAVA::float32 windTurbulence = 0.0f;
-        DAVA::float32 windTurbulenceFrequency = 0.0f;
-        DAVA::float32 windBias = 1.0f;
-        DAVA::uint32 backwardTurbulenceProbability = 0;
-        DAVA::uint32 reflectionPercent = 0;
-        DAVA::float32 pointGravityRadius = 1.0f;
-        DAVA::float32 planeScale = 1.0f;
-        DAVA::float32 reflectionChaos = 0.0f;
-        DAVA::float32 rndReflectionForceMin = 1.0f;
-        DAVA::float32 rndReflectionForceMax = 1.0f;
-        DAVA::float32 velocityThreshold = 1.0f;
-        DAVA::float32 startTime = 0.0f;
-        DAVA::float32 endTime = 15.0f;
-        DAVA::Vector3 boxSize;
-        DAVA::Vector3 forcePower;
-        DAVA::Vector3 direction;
-        bool isActive = true;
-        bool worldAlign = false;
-        bool useInfinityRange = false;
-        bool pointGravityUseRandomPointsOnSphere = false;
-        bool isGlobal = false;
-        bool killParticles = false;
-        bool normalAsReflectionVector = true;
-        bool randomizeReflectionForce = true;
-    };
-
-    CommandUpdateParticleForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params);
-
-    void Redo() override;
-    void Undo() override;
-
-    DAVA::ParticleLayer* GetLayer() const;
-    DAVA::uint32 GetForceIndex() const;
-
-protected:
-    void ApplyParams(ForceParams& params);
-
-    ForceParams newParams;
-    ForceParams oldParams;
-    DAVA::ParticleLayer* layer = nullptr;
-    DAVA::uint32 forceId = -1;
-};
-
-inline DAVA::ParticleLayer* CommandUpdateParticleForce::GetLayer() const
-{
-    return layer;
-}
-
-inline DAVA::uint32 CommandUpdateParticleForce::GetForceIndex() const
-{
-    return forceId;
-}
 
 // Load/save Particle Emitter Node.
 class CommandLoadParticleEmitterFromYaml : public CommandAction
@@ -610,3 +452,5 @@ protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::FilePath filePath;
 };
+
+#endif //__PARTICLE_EDITOR_COMMANDS_H__

@@ -204,7 +204,6 @@ protected:
             selectedIndecies.insert(treeWidget->filteringProxyModel->mapToSource(index));
         }
 
-        SelectableGroup selection = Selection::GetSelection();
         foreach (QModelIndex srcIndex, selectedIndecies)
         {
             SceneTreeItem* item = treeWidget->treeModel->GetItem(srcIndex);
@@ -230,7 +229,6 @@ protected:
             if (!parentSelected && static_cast<SceneTreeItem::eItemType>(item->ItemType()) == type)
             {
                 RemoveInfo info = callback(item);
-                selection.Remove(info.selectedObject);
                 commands.push_back(std::move(info.command));
             }
         }
@@ -247,7 +245,6 @@ protected:
             }
             MarkStructureChanged();
             sceneEditor->EndBatch();
-            Selection::SetSelection(selection);
         }
 
         treeWidget->SyncSelectionFromTree();
@@ -778,12 +775,6 @@ protected:
         Connect(menu.addAction(SharedIcon(":/QtIcons/remove_layer.png"), removeLayerText), this, &ParticleLayerContextMenu::RemoveLayer);
         menu.addSeparator();
         Connect(menu.addAction(SharedIcon(":/QtIcons/force.png"), QStringLiteral("Add Force")), this, &ParticleLayerContextMenu::AddForce);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/turtle.png"), QStringLiteral("Add Drag")), this, &ParticleLayerContextMenu::AddDrag);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/vortex_ico.png"), QStringLiteral("Add Vortex")), this, &ParticleLayerContextMenu::AddVortex);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/gravity.png"), QStringLiteral("Add Gravity")), this, &ParticleLayerContextMenu::AddGravity);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/wind_p.png"), QStringLiteral("Add Wind")), this, &ParticleLayerContextMenu::AddWind);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/pointGravity.png"), QStringLiteral("Add Point Gravity")), this, &ParticleLayerContextMenu::AddPointGravity);
-        Connect(menu.addAction(SharedIcon(":/QtIcons/plane_coll.png"), QStringLiteral("Add Plane Collision")), this, &ParticleLayerContextMenu::AddPlaneCollision);
     }
 
 private:
@@ -805,43 +796,7 @@ private:
 
     void AddForce()
     {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterSimplifiedForce(layerItem->GetLayer())));
-        MarkStructureChanged();
-    }
-
-    void AddDrag()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleDrag(layerItem->GetLayer())));
-        MarkStructureChanged();
-    }
-
-    void AddVortex()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleVortex(layerItem->GetLayer())));
-        MarkStructureChanged();
-    }
-
-    void AddGravity()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleGravity(layerItem->GetLayer())));
-        MarkStructureChanged();
-    }
-
-    void AddWind()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleWind(layerItem->GetLayer())));
-        MarkStructureChanged();
-    }
-
-    void AddPointGravity()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticlePointGravity(layerItem->GetLayer())));
-        MarkStructureChanged();
-    }
-
-    void AddPlaneCollision()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticlePlaneCollision(layerItem->GetLayer())));
+        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandAddParticleEmitterForce(layerItem->GetLayer())));
         MarkStructureChanged();
     }
 
@@ -849,12 +804,12 @@ private:
     SceneTreeItemParticleLayer* layerItem;
 };
 
-class SceneTree::ParticleSimplifiedForceContextMenu : public SceneTree::BaseContextMenu
+class SceneTree::ParticleForceContextMenu : public SceneTree::BaseContextMenu
 {
     using TBase = BaseContextMenu;
 
 public:
-    ParticleSimplifiedForceContextMenu(SceneTree* treeWidget)
+    ParticleForceContextMenu(SceneTree* treeWidget)
         : TBase(treeWidget)
     {
     }
@@ -863,107 +818,20 @@ protected:
     void FillActions(QMenu& menu) override
     {
         using namespace DAVA::TArc;
-        QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Force") : QStringLiteral("Remove Forces");
-        Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleSimplifiedForceContextMenu::RemoveForce);
+        QString removeForce = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Forces") : QStringLiteral("Remove Force");
+        Connect(menu.addAction(SharedIcon(":/QtIcons/remove_force.png"), removeForce), this, &ParticleForceContextMenu::RemoveForce);
     }
 
 private:
     void RemoveForce()
     {
-        RemoveCommandsHelper("Remove simplified forces", SceneTreeItem::EIT_ForceSimplified, [](SceneTreeItem* item)
-                             {
-                                 SceneTreeItemParticleForceSimplified* forceItem = static_cast<SceneTreeItemParticleForceSimplified*>(item);
-                                 DAVA::ParticleForceSimplified* force = forceItem->GetForce();
-                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterSimplifiedForce(forceItem->layer, force)), force);
-                             });
-    }
-};
-
-class SceneTree::ParticleForceContextMenu : public SceneTree::BaseContextMenu
-{
-    //////////////////////////////////////////////////////////////////////////
-    using TBase = BaseContextMenu;
-
-public:
-    ParticleForceContextMenu(SceneTreeItemParticleForce* force_, SceneTree* treeWidget)
-        : TBase(treeWidget)
-        , forceItem(force_)
-    {
-    }
-
-protected:
-    void FillActions(QMenu& menu) override
-    {
-        Connect(menu.addAction(DAVA::TArc::SharedIcon(":/QtIcons/clone.png"), QStringLiteral("Clone Force")), this, &ParticleForceContextMenu::CloneForce);
-        QString removeForceHint;
-        const QIcon* icon = nullptr;
-        if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::DRAG_FORCE)
-        {
-            removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Drag Force") : QStringLiteral("Remove Drag Forces");
-            icon = &DAVA::TArc::SharedIcon(":/QtIcons/remove_turtle.png");
-        }
-        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::VORTEX)
-        {
-            removeForceHint = GetSelectedItemsCount() < 2 ? QStringLiteral("Remove Vortex") : QStringLiteral("Remove Vortices");
-            icon = &DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_remove.png");
-        }
-        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::GRAVITY)
-        {
-            removeForceHint = QStringLiteral("Remove Gravity");
-            icon = &DAVA::TArc::SharedIcon(":/QtIcons/gravity_remove.png");
-        }
-        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::WIND)
-        {
-            removeForceHint = QStringLiteral("Remove Wind");
-            icon = &DAVA::TArc::SharedIcon(":/QtIcons/wind_p_remove.png");
-        }
-        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
-        {
-            removeForceHint = QStringLiteral("Remove Point Gravity");
-            icon = &DAVA::TArc::SharedIcon(":/QtIcons/pointGravity_remove.png");
-        }
-        else if (forceItem->GetForce()->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
-        {
-            removeForceHint = QStringLiteral("Remove Plane Collision");
-            icon = &DAVA::TArc::SharedIcon(":/QtIcons/plane_coll_remove.png");
-        }
-
-        Connect(menu.addAction(*icon, removeForceHint), this, &ParticleForceContextMenu::RemoveForce);
-    }
-
-private:
-    void CloneForce()
-    {
-        GetScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandCloneParticleForce(forceItem->layer, forceItem->GetForce())));
-        MarkStructureChanged();
-    }
-
-    void RemoveForce()
-    {
-        DAVA::ParticleForce* force = forceItem->GetForce();
-        DAVA::String commandName;
-        if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
-            commandName = "Remove Drag force";
-        else if (force->type == DAVA::ParticleForce::eType::VORTEX)
-            commandName = "Remove Vortex";
-        else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
-            commandName = "Remove Gravity";
-        else if (force->type == DAVA::ParticleForce::eType::WIND)
-            commandName = "Remove Wind";
-        else if (force->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
-            commandName = "Remove Point Gravity";
-        else if (force->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
-            commandName = "Remove Plane Collision";
-
-        RemoveCommandsHelper(commandName, SceneTreeItem::EIT_ParticleForce, [](SceneTreeItem* item)
+        RemoveCommandsHelper("Remove forces", SceneTreeItem::EIT_Force, [](SceneTreeItem* item)
                              {
                                  SceneTreeItemParticleForce* forceItem = static_cast<SceneTreeItemParticleForce*>(item);
                                  DAVA::ParticleForce* force = forceItem->GetForce();
-                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleForce(forceItem->layer, force)), force);
+                                 return RemoveInfo(std::unique_ptr<DAVA::Command>(new CommandRemoveParticleEmitterForce(forceItem->layer, force)), force);
                              });
     }
-
-    SceneTreeItemParticleForce* forceItem;
 };
 
 class SceneTree::ParticleEmitterContextMenu : public SceneTree::BaseContextMenu
@@ -1329,38 +1197,20 @@ void SceneTree::CommandExecuted(SceneEditor2* scene, const RECommandNotification
     CMDID_PARTICLE_LAYER_REMOVE,
     CMDID_PARTICLE_LAYER_MOVE,
     CMDID_PARTICLE_FORCE_REMOVE,
-    CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE,
     CMDID_PARTICLE_FORCE_MOVE,
     CMDID_META_OBJ_MODIFY,
     CMDID_PARTICLE_EMITTER_LAYER_ADD,
     CMDID_PARTICLE_EMITTER_LAYER_REMOVE,
     CMDID_PARTICLE_EMITTER_LAYER_CLONE,
-    CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_ADD,
-    CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE,
-    CMDID_PARTICLE_EMITTER_DRAG_ADD,
-    CMDID_PARTICLE_EMITTER_VORTEX_ADD,
-    CMDID_PARTICLE_EMITTER_GRAVITY_ADD,
-    CMDID_PARTICLE_EMITTER_WIND_ADD,
-    CMDID_PARTICLE_EMITTER_POINT_GRAVITY_ADD,
-    CMDID_PARTICLE_EMITTER_PLANE_COLLISION_ADD,
+    CMDID_PARTICLE_EMITTER_FORCE_ADD,
     CMDID_PARTICLE_EMITTER_FORCE_REMOVE,
     CMDID_PARTICLE_EFFECT_EMITTER_REMOVE,
     CMDID_REFLECTED_FIELD_MODIFY,
-    } };
-    static const DAVA::Vector<DAVA::uint32> idsForTreeUpdate =
-    { {
-    CMDID_PARTICLE_FORCE_UPDATE,
-    CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE
     } };
 
     if (commandNotification.MatchCommandIDs(idsForUpdate))
     {
         UpdateModel();
-        treeUpdater->Update();
-    }
-
-    if (commandNotification.MatchCommandIDs(idsForTreeUpdate))
-    {
         treeUpdater->Update();
     }
 }
@@ -1456,14 +1306,11 @@ void SceneTree::ShowContextMenu(const QPoint& pos)
     case SceneTreeItem::EIT_Layer:
         showMenuFn(ParticleLayerContextMenu(static_cast<SceneTreeItemParticleLayer*>(item), this));
         break;
-    case SceneTreeItem::EIT_ForceSimplified:
-        showMenuFn(ParticleSimplifiedForceContextMenu(this));
+    case SceneTreeItem::EIT_Force:
+        showMenuFn(ParticleForceContextMenu(this));
         break;
     case SceneTreeItem::EIT_InnerEmitter:
         showMenuFn(ParticleInnerEmitterContextMenu(static_cast<SceneTreeItemParticleInnerEmitter*>(item), this));
-        break;
-    case SceneTreeItem::EIT_ParticleForce:
-        showMenuFn(ParticleForceContextMenu(static_cast<SceneTreeItemParticleForce*>(item), this));
         break;
     default:
         break;

@@ -36,9 +36,3 @@ class EntityEditorCreator : public DAVA::TArc::EditorComponentExtension
 public:
     std::unique_ptr<DAVA::TArc::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const override;
 };
-
-class ParticleForceCreator : public DAVA::TArc::EditorComponentExtension
-{
-public:
-    std::unique_ptr<DAVA::TArc::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const override;
-};
