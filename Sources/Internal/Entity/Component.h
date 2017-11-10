@@ -106,8 +106,8 @@ public:
      */
     virtual void GetDataNodes(Set<DataNode*>& dataNodes);
     /**
-	 \brief This function optimize component before export.
-	*/
+     \brief This function optimize component before export.
+    */
     virtual void OptimizeBeforeExport()
     {
     }

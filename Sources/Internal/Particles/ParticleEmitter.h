@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
@@ -57,8 +56,9 @@ public:
 
     void AddLayer(ParticleLayer* layer);
     ParticleLayer* GetNextLayer(ParticleLayer* layer);
-    virtual void InsertLayer(ParticleLayer* layer, ParticleLayer* beforeLayer);
-    void RemoveLayer(ParticleLayer* layer);
+    void InsertLayer(ParticleLayer* layer, ParticleLayer* beforeLayer);
+    void InsertLayer(ParticleLayer* layer, int32 indexToInsert);
+    int32 RemoveLayer(ParticleLayer* layer);
     void RemoveLayer(int32 index);
     void MoveLayer(ParticleLayer* layer, ParticleLayer* beforeLayer);
     bool ContainsLayer(ParticleLayer* layer);
@@ -111,5 +111,3 @@ private:
     static EmitterCacheMap emitterCache;
 };
 }
-
-#endif // __DAVAENGINE_PARTICLE_EMITTER_H__
