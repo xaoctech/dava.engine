@@ -25,6 +25,7 @@ void MotionState::Update(float32 dTime)
         return;
 
     reachedMarkers.clear();
+    reachedMarkersSet.clear();
     animationEndReached = false;
 
     animationPrevPhaseIndex = animationCurrPhaseIndex;
@@ -38,8 +39,12 @@ void MotionState::Update(float32 dTime)
     {
         animationPhase -= 1.f;
 
-        if (markers[animationCurrPhaseIndex].IsValid())
-            reachedMarkers.insert(markers[animationCurrPhaseIndex]);
+        const FastName& phaseMarker = markers[animationCurrPhaseIndex];
+        if (phaseMarker.IsValid())
+        {
+            reachedMarkers.push_back(phaseMarker);
+            reachedMarkersSet.insert(phaseMarker);
+        }
 
         ++animationCurrPhaseIndex;
         if (animationCurrPhaseIndex == blendTree->GetPhasesCount())

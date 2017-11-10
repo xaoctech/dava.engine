@@ -40,7 +40,7 @@ public:
     bool IsPhaseEndReached(uint32 phaseIndex) const;
     bool IsMarkerReached(const FastName& marker) const;
 
-    const UnorderedSet<FastName>& GetReachedMarkers() const;
+    const Vector<FastName>& GetReachedMarkers() const;
 
     const FastName& GetID() const;
     const Vector<FastName>& GetBlendTreeParameters() const;
@@ -89,7 +89,8 @@ protected:
     Vector<const float32*> boundParams;
 
     Vector<FastName> markers;
-    UnorderedSet<FastName> reachedMarkers;
+    Vector<FastName> reachedMarkers;
+    UnorderedSet<FastName> reachedMarkersSet;
     UnorderedMap<TransitionKey, TransitionInfo, TransitionKeyHash> transitions;
 
     Vector3 rootOffset;
@@ -104,7 +105,7 @@ inline const FastName& MotionState::GetID() const
     return id;
 }
 
-inline const UnorderedSet<FastName>& MotionState::GetReachedMarkers() const
+inline const Vector<FastName>& MotionState::GetReachedMarkers() const
 {
     return reachedMarkers;
 }
@@ -121,7 +122,7 @@ inline bool MotionState::IsPhaseEndReached(uint32 phaseIndex) const
 
 inline bool MotionState::IsMarkerReached(const FastName& marker) const
 {
-    return reachedMarkers.count(marker) > 0;
+    return reachedMarkersSet.count(marker) > 0;
 }
 
 } //ns
