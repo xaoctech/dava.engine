@@ -653,8 +653,12 @@ void EngineBackend::HandleAppSuspended(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppSuspended: enter");
 
         appIsSuspended = true;
+
+        // Warning: Application can ruin something if rendering is done in application suspended state.
+        // So we have to ensure that if application suspend|resume state is changed, render state is also immediately changed.
+        // Please NEVER add some additional `if` checks here.
         if (Renderer::IsInitialized())
-            rhi::SuspendRendering(); //NOTE: asserts checking suspend/resume state in RenderLoop are not just for fun. Application can ruin something if rendering in suspended state - please dont hide them with if checks
+            rhi::SuspendRendering();
         rhi::ShaderSourceCache::Save("~doc:/ShaderSource.bin");
         engine->suspended.Emit();
 
@@ -669,8 +673,12 @@ void EngineBackend::HandleAppResumed(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppResumed: enter");
 
         appIsSuspended = false;
+
+        // Warning: Application can ruin something if rendering is done in application suspended state.
+        // So we have to ensure that if application suspend|resume state is changed, render state is also immediately changed.
+        // Please NEVER add some additional `if` checks here.
         if (Renderer::IsInitialized())
-            rhi::ResumeRendering(); //NOTE: asserts checking suspend/resume state in RenderLoop are not just for fun. Application can ruin something if rendering in suspended state - please dont hide them with if checks
+            rhi::ResumeRendering();
         engine->resumed.Emit();
 
         Logger::Info("EngineBackend::HandleAppResumed: leave");

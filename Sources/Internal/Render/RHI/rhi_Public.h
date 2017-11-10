@@ -122,6 +122,9 @@ Api HostApi();
 bool TextureFormatSupported(TextureFormat format, ProgType progType = PROG_FRAGMENT);
 const RenderDeviceCaps& DeviceCaps();
 
+//Suspend/Resume function should be called only from valid state, if you see state assert, it means that you have some error in your application flow.
+//SuspendRendering are blocking functions. Control flow will not be returned until render thread finishes it's current tasks and settles in suspended state.
+//Most OS allow you to finish whatever you do within AppSuspended call, but all rendering commands afterwards can be treated as errors and can lead to random crashes.
 void SuspendRendering();
 void SuspendRenderingAfterFrame();
 void ResumeRendering();
