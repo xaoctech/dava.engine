@@ -2,6 +2,8 @@
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
 
+#include <DavaTools/Version.h>
+
 #include <QProcess>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -62,7 +64,9 @@ void SharedDataRequester::OnGetPoolsFinished()
     //DAVA::Logger::Debug("Get pools done");
     pools = SharedDataParser::ParsePoolsReply(reply->readAll());
 
-    QString s = QString("http://ba-manager.wargaming.net/modules/jsonAPI/acs/api.php?cmd=getShared&key=%1").arg(getRequestOwnID ? QString::number(getRequestOwnID) : "NULL");
+    QString s = QString("http://ba-manager.wargaming.net/modules/jsonAPI/acs/api.php?cmd=getShared&key=%1&version=%2")
+                .arg(getRequestOwnID ? QString::number(getRequestOwnID) : "NULL")
+                .arg(APPLICATION_BUILD_VERSION);
 
     //DAVA::Logger::Debug("Sending request: %s", s.toStdString().c_str());
     getServersRequest = networkManager->get(QNetworkRequest(QUrl(s)));

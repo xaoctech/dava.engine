@@ -34,7 +34,7 @@ void ServerLogics::OnAddChunkToCache(std::shared_ptr<DAVA::Net::IChannel> channe
 
     auto Error = [&](const char* err)
     {
-        Logger::Error("Wrong request: %s. Client %p, key %s chunk#%u", err, channel, Brief(key).c_str(), chunkNumber);
+        Logger::Error("Wrong request: %s. Client %p, key %s chunk#%u", err, channel.get(), Brief(key).c_str(), chunkNumber);
         DiscardTask();
     };
 
@@ -187,7 +187,7 @@ void ServerLogics::OnChunkRequestedFromCache(std::shared_ptr<DAVA::Net::IChannel
 
     auto Error = [&](const char* err)
     {
-        Logger::Error("Wrong chunk request: %s. Client %p, key %s, chunk %u", err, clientChannel, Brief(key).c_str(), chunkNumber);
+        Logger::Error("Wrong chunk request: %s. Client %p, key %s, chunk %u", err, clientChannel.get(), Brief(key).c_str(), chunkNumber);
         Vector<uint8> empty;
         serverProxy->SendChunk(clientChannel, key, 0, 0, 0, empty);
     };
@@ -243,7 +243,7 @@ void ServerLogics::OnRemoveFromCache(std::shared_ptr<DAVA::Net::IChannel> channe
 
     if ((nullptr != serverProxy) && (nullptr != dataBase) && (nullptr != channel))
     {
-        DAVA::Logger::Debug("Receiving remove from cache: key %s, channel %p", Brief(key).c_str(), channel);
+        DAVA::Logger::Debug("Receiving remove from cache: key %s, channel %p", Brief(key).c_str(), channel.get());
         bool removed = dataBase->Remove(key);
         DAVA::Logger::Debug("Sending data %s removed", (removed ? "is" : "is not"));
         serverProxy->SendRemovedFromCache(channel, key, removed);
@@ -254,7 +254,7 @@ void ServerLogics::OnClearCache(std::shared_ptr<DAVA::Net::IChannel> channel)
 {
     hasIncomingRequestsRecently = true;
 
-    DAVA::Logger::Debug("Receiving clearing of cache from channel %p", channel);
+    DAVA::Logger::Debug("Receiving clearing of cache from channel %p", channel.get());
     dataBase->ClearStorage();
     DAVA::Logger::Debug("Sending storage is cleared");
     serverProxy->SendCleared(channel, true);
@@ -262,7 +262,7 @@ void ServerLogics::OnClearCache(std::shared_ptr<DAVA::Net::IChannel> channel)
 
 void ServerLogics::OnWarmingUp(std::shared_ptr<DAVA::Net::IChannel> channel, const DAVA::AssetCache::CacheItemKey& key)
 {
-    DAVA::Logger::Debug("Receiving warming up request from channel %p key %s", channel, Brief(key).c_str());
+    DAVA::Logger::Debug("Receiving warming up request from channel %p key %s", channel.get(), Brief(key).c_str());
     if (nullptr != dataBase)
     {
         dataBase->UpdateAccessTimestamp(key);
@@ -273,13 +273,13 @@ void ServerLogics::OnStatusRequested(std::shared_ptr<DAVA::Net::IChannel> channe
 {
     hasIncomingRequestsRecently = true;
 
-    DAVA::Logger::Debug("Received status request from channel %p", channel);
+    DAVA::Logger::Debug("Received status request from channel %p", channel.get());
     serverProxy->SendStatus(channel);
 }
 
 void ServerLogics::OnChannelClosed(std::shared_ptr<DAVA::Net::IChannel> channel, const DAVA::char8*)
 {
-    DAVA::Logger::Debug("Channel %p is closed", channel);
+    DAVA::Logger::Debug("Channel %p is closed", channel.get());
     RemoveClientFromTasks(channel);
 }
 
