@@ -1,4 +1,5 @@
 #include "UIScreenshoter.h"
+#include "Engine/Engine.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/RenderHelper.h"

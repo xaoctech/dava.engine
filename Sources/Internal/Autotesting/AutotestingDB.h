@@ -14,6 +14,7 @@
 namespace DAVA
 {
 class Image;
+class Logger;
 
 class AutotestingDB : public Singleton<AutotestingDB>
 {

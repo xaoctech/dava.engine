@@ -168,19 +168,28 @@ void ParticleEmitter::InsertLayer(ParticleLayer* layer, ParticleLayer* beforeLay
     }
 }
 
-void ParticleEmitter::RemoveLayer(ParticleLayer* layer)
+void ParticleEmitter::InsertLayer(ParticleLayer* layer, int32 indexToInsert)
 {
+    DVASSERT(0 <= indexToInsert && indexToInsert <= static_cast<int32>(layers.size()));
+    layers.insert(layers.begin() + indexToInsert, SafeRetain(layer));
+}
+
+int32 ParticleEmitter::RemoveLayer(ParticleLayer* layer)
+{
+    int32 removedLayerIndex = -1;
     if (!layer)
     {
-        return;
+        return removedLayerIndex;
     }
 
     Vector<ParticleLayer*>::iterator layerIter = std::find(layers.begin(), layers.end(), layer);
     if (layerIter != this->layers.end())
     {
+        removedLayerIndex = static_cast<int32>(std::distance(layers.begin(), layerIter));
         layers.erase(layerIter);
         SafeRelease(layer);
     }
+    return removedLayerIndex;
 }
 
 void ParticleEmitter::RemoveLayer(int32 index)

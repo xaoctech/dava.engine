@@ -12,6 +12,7 @@
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
 #include "UI/UITextField.h"
+#include "UI/UITextFieldDelegate.h"
 #include "UI/Private/Ios/TextFieldPlatformImplIos.h"
 #include "UI/Private/Ios/UITextFieldHolder.h"
 #include "Utils/NSStringUtils.h"

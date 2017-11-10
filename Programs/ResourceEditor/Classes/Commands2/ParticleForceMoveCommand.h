@@ -1,9 +1,27 @@
-#ifndef __PARTICLE_FORCE_MOVE_COMMAND_H__
-#define __PARTICLE_FORCE_MOVE_COMMAND_H__
+#pragma once
 
 #include "Commands2/Base/RECommand.h"
-#include "Particles/ParticleLayer.h"
-#include "Particles/ParticleForce.h"
+
+namespace DAVA
+{
+class ParticleForce;
+class ParticleForceSimplified;
+struct ParticleLayer;
+}
+
+class ParticleSimplifiedForceMoveCommand : public RECommand
+{
+public:
+    ParticleSimplifiedForceMoveCommand(DAVA::ParticleForceSimplified* force, DAVA::ParticleLayer* oldLayer, DAVA::ParticleLayer* newLayer);
+    ~ParticleSimplifiedForceMoveCommand();
+
+    void Undo() override;
+    void Redo() override;
+
+    DAVA::ParticleForceSimplified* force;
+    DAVA::ParticleLayer* oldLayer;
+    DAVA::ParticleLayer* newLayer;
+};
 
 class ParticleForceMoveCommand : public RECommand
 {
@@ -18,5 +36,3 @@ public:
     DAVA::ParticleLayer* oldLayer;
     DAVA::ParticleLayer* newLayer;
 };
-
-#endif // __PARTICLE_FORCE_MOVE_COMMAND_H__

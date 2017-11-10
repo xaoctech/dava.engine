@@ -1,5 +1,6 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 
+#include "FileSystem/XMLParser.h"
 #include "Logger/Logger.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
