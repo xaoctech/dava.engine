@@ -139,7 +139,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
 
         FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
@@ -206,7 +206,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
 
         FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
@@ -273,7 +273,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
 
         FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
@@ -327,7 +327,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
 
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
         FilePath configPath = SETestDetail::projectStr + "config.yaml";

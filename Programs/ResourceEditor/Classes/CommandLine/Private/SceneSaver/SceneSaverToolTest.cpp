@@ -69,7 +69,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
 
         {
             CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::newProjectStr);
@@ -109,7 +109,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
 
         FilePath dataSourcePath = SSTestDetail::projectStr + "DataSource/3d/";
 
@@ -138,7 +138,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
 
         FilePath dataSourcePath = SSTestDetail::projectStr + "DataSource/3d/";
 
