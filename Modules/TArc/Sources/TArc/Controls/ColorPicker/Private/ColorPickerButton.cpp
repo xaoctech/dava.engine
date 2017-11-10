@@ -70,6 +70,49 @@ void ColorPickerButton::mouseReleaseEvent(QMouseEvent* e)
     }
 }
 
+void ColorPickerButton::OnColorChanging(Color colorValue, ColorPickerButton::Fields typeField)
+{
+    if (rangeMeta != nullptr)
+    {
+        auto clampValue = [](float32 prevV, float32 newV, float32 minV, float32 maxV, float32 stepV)
+        {
+            float32 halfStep = stepV / 2.0f;
+            if (newV > prevV)
+            {
+                newV += halfStep;
+            }
+            else
+            {
+                newV -= halfStep;
+            }
+
+            int32 stepCount = static_cast<int32>((newV - prevV) / stepV);
+            newV = prevV + stepCount * stepV;
+
+            return Clamp(newV, minV, maxV);
+        };
+
+        Color minValue = rangeMeta->minValue.Get<Color>();
+        Color maxValue = rangeMeta->maxValue.Get<Color>();
+        Color stepValue = rangeMeta->step.Get<Color>();
+
+        colorValue.r = clampValue(prevColorValue.r, colorValue.r, minValue.r, maxValue.r, stepValue.r);
+        colorValue.g = clampValue(prevColorValue.g, colorValue.g, minValue.g, maxValue.g, stepValue.g);
+        colorValue.b = clampValue(prevColorValue.b, colorValue.b, minValue.b, maxValue.b, stepValue.b);
+        colorValue.a = clampValue(prevColorValue.a, colorValue.a, minValue.a, maxValue.a, stepValue.a);
+    }
+
+    FastName fieldName = GetFieldName(typeField);
+    if (fieldName.IsValid() == false)
+    {
+        return;
+    }
+
+    cachedColor = colorValue;
+    setIcon(cachedColor.Cast<QIcon>(QIcon()));
+    wrapper.SetFieldValue(fieldName, colorValue);
+}
+
 void ColorPickerButton::ButtonReleased()
 {
     if (readOnly)
@@ -77,50 +120,27 @@ void ColorPickerButton::ButtonReleased()
         return;
     }
 
-    ColorPickerDialog cp(controlParams.accessor, this);
+    ColorPickerDialog cp(controlParams.accessor);
     cp.setWindowTitle("Select color");
 
-    Color prevValue = cachedColor.Get<Color>();
-    cp.SetDavaColor(prevValue);
+    prevColorValue = cachedColor.Get<Color>();
+    cp.SetDavaColor(prevColorValue);
+
+    auto colorChangingCallFn = [this, &cp]()
+    {
+        OnColorChanging(cp.GetDavaColor(), Fields::IntermediateColor);
+    };
+
+    connections.AddConnection(&cp, &ColorPickerDialog::changing, colorChangingCallFn);
+    connections.AddConnection(&cp, &ColorPickerDialog::changed, colorChangingCallFn);
 
     bool changed = cp.Exec();
+
+    OnColorChanging(prevColorValue, Fields::IntermediateColor);
+
     if (changed)
     {
-        Color colorValue = cp.GetDavaColor();
-        if (rangeMeta != nullptr)
-        {
-            auto clampValue = [](float32 prevV, float32 newV, float32 minV, float32 maxV, float32 stepV)
-            {
-                float32 halfStep = stepV / 2.0f;
-                if (newV > prevV)
-                {
-                    newV += halfStep;
-                }
-                else
-                {
-                    newV -= halfStep;
-                }
-
-                int32 stepCount = static_cast<int32>((newV - prevV) / stepV);
-                newV = prevV + stepCount * stepV;
-
-                return Clamp(newV, minV, maxV);
-            };
-
-            Color minValue = rangeMeta->minValue.Get<Color>();
-            Color maxValue = rangeMeta->maxValue.Get<Color>();
-            Color stepValue = rangeMeta->step.Get<Color>();
-
-            colorValue.r = clampValue(prevValue.r, colorValue.r, minValue.r, maxValue.r, stepValue.r);
-            colorValue.g = clampValue(prevValue.g, colorValue.g, minValue.g, maxValue.g, stepValue.g);
-            colorValue.b = clampValue(prevValue.b, colorValue.b, minValue.b, maxValue.b, stepValue.b);
-            colorValue.a = clampValue(prevValue.a, colorValue.a, minValue.a, maxValue.a, stepValue.a);
-        }
-
-        cachedColor = colorValue;
-        setIcon(cachedColor.Cast<QIcon>(QIcon()));
-
-        wrapper.SetFieldValue(GetFieldName(Fields::Color), cachedColor);
+        OnColorChanging(cp.GetDavaColor(), Fields::Color);
     }
 }
 

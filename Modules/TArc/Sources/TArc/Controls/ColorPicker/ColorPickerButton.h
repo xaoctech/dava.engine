@@ -21,6 +21,7 @@ public:
     enum class Fields : uint32
     {
         Color,
+        IntermediateColor,
         IsReadOnly,
         Range,
         FieldCount
@@ -35,6 +36,8 @@ private:
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
 
+    void OnColorChanging(Color colorValue, ColorPickerButton::Fields typeField);
+
     void UpdateControl(const ControlDescriptor& changedfields) override;
     void SetupControl();
 
@@ -42,6 +45,7 @@ private:
 
     const M::Range* rangeMeta = nullptr;
     Any cachedColor;
+    Color prevColorValue;
     bool readOnly = false;
     QtConnections connections;
 };
