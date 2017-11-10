@@ -52,10 +52,10 @@ struct FBXVertex
     Set<FBXImporterDetails::VertexInfluence, JointWeightComparator> joints;
 };
 
-//namespace members
-
 static uint32 materialInstanceIndex = 0;
 Map<const FbxMesh*, GeometrySet> meshCache; //in ProcessedMesh::GeometrySet materials isn't retained. It's owned by materialCache
+
+FbxSurfaceMaterial* GetPolygonMaterial(FbxMesh* fbxMesh, int32 polygonIndex);
 
 }; //ns FBXMeshImportDetails
 
@@ -109,7 +109,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         if (maxControlPointInfluence > 1)
             meshFormat |= EVF_JOINTINDEX | EVF_JOINTWEIGHT;
 
-        using VerticesMap = Map<FBXVertex, Vector<int32>>; //[vertex, indices]
+        using VerticesMap = std::pair<Map<FBXVertex, Vector<int32>>, int32>; //[[vertex, indices], polygonCount]
         using MaterialGeometryMap = Map<FbxSurfaceMaterial*, VerticesMap>;
 
         MaterialGeometryMap materialGeometry;
@@ -119,6 +119,8 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             int32 polygonSize = fbxMesh->GetPolygonSize(p);
             DVASSERT(polygonSize == 3);
 
+            FbxSurfaceMaterial* fbxMaterial = GetPolygonMaterial(fbxMesh, p);
+            int32& materialPolygonIndex = materialGeometry[fbxMaterial].second;
             for (int32 v = 0; v < polygonSize; ++v)
             {
                 FBXVertex vertex;
@@ -153,35 +155,30 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
                         vertex.joints.insert(VertexInfluence(vInf.first, vInf.second / weightsSum));
                 }
 
-                FbxSurfaceMaterial* fbxMaterial = nullptr;
-                for (int32 me = 0; me < fbxMesh->GetElementMaterialCount(); me++)
-                {
-                    fbxMaterial = fbxNode->GetMaterial(fbxMesh->GetElementMaterial(me)->GetIndexArray().GetAt(p));
-                    if (fbxMaterial != nullptr)
-                        break;
-                }
-
-                materialGeometry[fbxMaterial][vertex].push_back(p * 3 + v);
+                materialGeometry[fbxMaterial].first[vertex].push_back(materialPolygonIndex * 3 + v);
             }
+
+            ++materialPolygonIndex;
         }
 
         GeometrySet geometrySet;
         Matrix4 meshTransform = ToMatrix4(fbxNode->EvaluateGlobalTransform());
-        for (auto& it : materialGeometry)
+        for (auto& gIt : materialGeometry)
         {
-            FbxSurfaceMaterial* fbxMaterial = it.first;
-            const VerticesMap& vertices = it.second;
+            FbxSurfaceMaterial* fbxMaterial = gIt.first;
+            const VerticesMap& vertices = gIt.second;
 
-            int32 vxCount = int32(vertices.size());
-            int32 indCount = polygonCount * 3;
+            int32 vxCount = int32(vertices.first.size());
+            int32 indCount = int32(vertices.second * 3);
 
             PolygonGroup* polygonGroup = new PolygonGroup();
             polygonGroup->AllocateData(meshFormat, vxCount, indCount);
 
             int32 vertexIndex = 0;
-            for (auto it = vertices.cbegin(); it != vertices.cend(); ++it)
+            for (auto vIt = vertices.first.cbegin(); vIt != vertices.first.cend(); ++vIt)
             {
-                const FBXVertex& fbxVertex = it->first;
+                const FBXVertex& fbxVertex = vIt->first;
+                const Vector<int32>& indices = vIt->second;
 
                 polygonGroup->SetCoord(vertexIndex, fbxVertex.position);
 
@@ -224,7 +221,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
                     }
                 }
 
-                for (int32 index : it->second)
+                for (int32 index : indices)
                     polygonGroup->SetIndex(index, uint16(vertexIndex));
 
                 ++vertexIndex;
@@ -356,6 +353,19 @@ bool FBXVertex::operator<(const FBXVertex& other) const
     }
 
     return false;
+}
+
+FbxSurfaceMaterial* GetPolygonMaterial(FbxMesh* fbxMesh, int32 polygonIndex)
+{
+    FbxSurfaceMaterial* fbxMaterial = nullptr;
+    for (int32 me = 0; me < fbxMesh->GetElementMaterialCount(); me++)
+    {
+        fbxMaterial = fbxMesh->GetNode()->GetMaterial(fbxMesh->GetElementMaterial(me)->GetIndexArray().GetAt(polygonIndex));
+        if (fbxMaterial != nullptr)
+            break;
+    }
+
+    return fbxMaterial;
 }
 
 }; //ns FBXMeshImportDetails
