@@ -41,7 +41,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS : Buil
         script {
             name = "Run build depends of folders"
             workingDir = "BuildBTools/Teamcity"
-            scriptContent = """python run_build_depends_of_folders.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash-dava.wargaming.net --configuration_name %request_configuration% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --framework_branch "%teamcity.build.branch%" --check_folders "%check_folders%" --client_branch "%client_branch%" --root_configuration_id "%teamcity.build.id%" --request_stash_mode true --convert_to_merge_requests false"""
+            scriptContent = """python run_build_depends_of_folders.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --configuration_name %request_configuration% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --framework_branch "%teamcity.build.branch%" --check_folders "%check_folders%" --client_branch "%client_branch%" --root_configuration_id "%teamcity.build.id%" --request_stash_mode true --convert_to_merge_requests false"""
         }
     }
 
@@ -53,7 +53,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS : Buil
         feature {
             type = "teamcity.stash.status"
             enabled = false
-            param("stash_host", "https://stash-dava.wargaming.net")
+            param("stash_host", "https://%stash_hostname%")
             param("stash_only_latest", "true")
             param("stash_username", "dava_teamcity")
             param("stash_failCancelledBuilds", "true")
@@ -63,7 +63,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS : Buil
             enabled = false
             vcsRootExtId = "dava_DavaFrameworkStash"
             publisher = bitbucketServer {
-                url = "https://stash-dava.wargaming.net"
+                url = "https://%stash_hostname%"
                 userName = "dava_teamcity"
                 password = "zxx38986f37ccea38c0775d03cbe80d301b"
             }
