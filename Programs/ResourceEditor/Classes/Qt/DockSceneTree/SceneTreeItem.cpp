@@ -514,7 +514,7 @@ DAVA::ParticleLayer* SceneTreeItemParticleLayer::GetLayer() const
 
 DAVA::ParticleLayer* SceneTreeItemParticleLayer::GetLayer(SceneTreeItem* item)
 {
-    DAVA::ParticleLayer* ret = nullptr;
+    DAVA::ParticleLayer* ret = NULL;
 
     if ((nullptr != item) && (item->ItemType() == SceneTreeItem::EIT_Layer))
     {
@@ -569,25 +569,18 @@ void SceneTreeItemParticleLayer::DoSync(QStandardItem* rootItem, DAVA::ParticleL
             }
         }
 
-        size_t itemsCount = layer->GetSimplifiedParticleForces().size();
+        size_t itemsCount = layer->forces.size();
         QList<QStandardItem*> items;
 
         for (size_t i = 0; i < itemsCount; ++i)
         {
-            items.push_back(new SceneTreeItemParticleForceSimplified(layer, layer->GetSimplifiedParticleForces()[i]));
+            items.push_back(new SceneTreeItemParticleForce(layer, layer->forces[i]));
         }
 
         if (items.size() > 0)
         {
             rootItem->insertRows(0, items);
         }
-
-        size_t forceCount = layer->GetParticleForces().size();
-        QList<QStandardItem*> forceItems;
-        for (size_t i = 0; i < forceCount; ++i)
-            forceItems.push_back(new SceneTreeItemParticleForce(layer, layer->GetParticleForces()[i]));
-        if (!forceItems.empty())
-            rootItem->insertRows(0, forceItems);
 
         if (!hadInnerEmmiter && (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
         {
@@ -602,65 +595,13 @@ const QIcon& SceneTreeItemParticleLayer::ItemIcon() const
 }
 
 // =========================================================================================
-// SceneTreeItemParticleForceSimplified
+// SceneTreeItemParticleForce
 // =========================================================================================
 
-SceneTreeItemParticleForceSimplified::SceneTreeItemParticleForceSimplified(DAVA::ParticleLayer* _layer, DAVA::ParticleForceSimplified* _force)
-    : SceneTreeItem(SceneTreeItem::EIT_ForceSimplified, _force)
+SceneTreeItemParticleForce::SceneTreeItemParticleForce(DAVA::ParticleLayer* _layer, DAVA::ParticleForce* _force)
+    : SceneTreeItem(SceneTreeItem::EIT_Force, _force)
     , layer(_layer)
 {
-}
-
-DAVA::ParticleForceSimplified* SceneTreeItemParticleForceSimplified::GetForce() const
-{
-    return object.Cast<DAVA::ParticleForceSimplified>();
-}
-
-DAVA::ParticleForceSimplified* SceneTreeItemParticleForceSimplified::GetForce(SceneTreeItem* item)
-{
-    if ((nullptr != item) && (item->ItemType() == SceneTreeItem::EIT_ForceSimplified))
-    {
-        SceneTreeItemParticleForceSimplified* itemForce = (SceneTreeItemParticleForceSimplified*)item;
-        return itemForce->GetForce();
-    }
-
-    return nullptr;
-}
-
-QString SceneTreeItemParticleForceSimplified::ItemName() const
-{
-    return "force";
-}
-
-QVariant SceneTreeItemParticleForceSimplified::ItemData() const
-{
-    return qVariantFromValue(GetForce());
-}
-
-const QIcon& SceneTreeItemParticleForceSimplified::ItemIcon() const
-{
-    return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Scene tree item particle force
-//////////////////////////////////////////////////////////////////////////
-
-SceneTreeItemParticleForce::SceneTreeItemParticleForce(DAVA::ParticleLayer* layer_, DAVA::ParticleForce* force)
-    : SceneTreeItem(SceneTreeItem::EIT_ParticleForce, force)
-    , layer(layer_)
-{
-}
-
-DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce(SceneTreeItem* rootItem)
-{
-    if ((nullptr != rootItem) && (rootItem->ItemType() == SceneTreeItem::EIT_ParticleForce))
-    {
-        SceneTreeItemParticleForce* itemForce = (SceneTreeItemParticleForce*)rootItem;
-        return itemForce->GetForce();
-    }
-
-    return nullptr;
 }
 
 DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce() const
@@ -668,16 +609,20 @@ DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce() const
     return object.Cast<DAVA::ParticleForce>();
 }
 
-QString SceneTreeItemParticleForce::ItemName() const
+DAVA::ParticleForce* SceneTreeItemParticleForce::GetForce(SceneTreeItem* item)
 {
-    QString ret;
-
-    if (object.ContainsObject())
+    if ((nullptr != item) && (item->ItemType() == SceneTreeItem::EIT_Force))
     {
-        ret = GetForce()->forceName.c_str();
+        SceneTreeItemParticleForce* itemForce = (SceneTreeItemParticleForce*)item;
+        return itemForce->GetForce();
     }
 
-    return ret;
+    return nullptr;
+}
+
+QString SceneTreeItemParticleForce::ItemName() const
+{
+    return "force";
 }
 
 QVariant SceneTreeItemParticleForce::ItemData() const
@@ -687,36 +632,8 @@ QVariant SceneTreeItemParticleForce::ItemData() const
 
 const QIcon& SceneTreeItemParticleForce::ItemIcon() const
 {
-    DAVA::ParticleForce* force = GetForce();
-    if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
-    {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
-    }
-    else if (force->type == DAVA::ParticleForce::eType::VORTEX)
-    {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico.png") : DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_red.png");
-    }
-    else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
-    {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/gravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/gravity_red.png");
-    }
-    else if (force->type == DAVA::ParticleForce::eType::WIND)
-    {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/wind_p.png") : DAVA::TArc::SharedIcon(":/QtIcons/wind_p_red.png");
-    }
-    else if (force->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
-    {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/pointGravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/pointGravity_red.png");
-    }
-    else if (force->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
-    {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/plane_coll.png") : DAVA::TArc::SharedIcon(":/QtIcons/plane_coll_red.png");
-    }
-
-    return DAVA::TArc::SharedIcon(":/QtIcons/turtle.png");
+    return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 SceneTreeItemParticleInnerEmitter::SceneTreeItemParticleInnerEmitter(DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitter* emitter_,
                                                                      DAVA::ParticleLayer* parentLayer_)
