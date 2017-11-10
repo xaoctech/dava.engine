@@ -2,6 +2,11 @@
 
 namespace DAVA
 {
+JointTransform::JointTransform(const Matrix4& transform)
+{
+    Construct(transform);
+}
+
 Matrix4 JointTransform::GetMatrix() const
 {
     Matrix4 result = HasOrientation() ? orientation.GetMatrix() : Matrix4::IDENTITY;

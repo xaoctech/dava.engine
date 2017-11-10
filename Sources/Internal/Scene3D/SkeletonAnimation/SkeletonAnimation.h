@@ -31,18 +31,16 @@ protected:
         UnorderedSet<uint32> jointsIgnoreMask;
 
         Vector<std::pair<uint32, const AnimationTrack*>> boundTracks; //[jointIndex, track]
-        const AnimationTrack* rootTrack = nullptr; //for root-node transform extraction
-
-        Vector<AnimationTrack::State> animationStates;
-        AnimationTrack::State rootAnimationState;
+        const AnimationTrack* rootNodeTrack = nullptr; //for root-node transform extraction
+        uint32 rootNodePositionChannel = std::numeric_limits<uint32>::max();
 
         float32 duration = 0.f;
         float32 clipStartTimestamp = 0.f;
         float32 animationStartTimestamp = 0.f;
     };
 
-    static JointTransform ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state);
-    void EvaluateRootPosition(SkeletonAnimationClip* clip, float32 animationLocalTime, Vector3* offset);
+    static JointTransform EvaluateJointTransform(float32 time, const AnimationTrack* track);
+    void EvaluateRootPosition(SkeletonAnimationClip* clip, float32 animationLocalTime, Vector3* outPosition);
     SkeletonAnimationClip* FindClip(float32 animationTime);
     float32 GetClipLocalTime(SkeletonAnimationClip* clip, float32 animationLocalTime);
 

@@ -34,7 +34,6 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton)
     for (SkeletonAnimationClip& clip : animationClips)
     {
         clip.boundTracks.clear();
-        clip.animationStates.clear();
 
         uint32 trackCount = clip.animationClip->GetTrackCount();
         uint32 jointCount = skeleton->GetJointsCount();
@@ -48,11 +47,7 @@ void SkeletonAnimation::BindSkeleton(const SkeletonComponent* skeleton)
             const AnimationTrack* track = clip.animationClip->FindTrack(joint.uid.c_str());
             if (track != nullptr)
             {
-                clip.animationStates.emplace_back(AnimationTrack::State(track->GetChannelsCount()));
-                track->Evaluate(0.f, &clip.animationStates.back());
-
                 clip.boundTracks.emplace_back(std::make_pair(j, track));
-
                 maxJointIndex = Max(maxJointIndex, j);
             }
         }
@@ -63,12 +58,17 @@ void SkeletonAnimation::BindRootNode(const FastName& rootNodeID)
 {
     for (SkeletonAnimationClip& clip : animationClips)
     {
-        clip.rootAnimationState = AnimationTrack::State();
-        clip.rootTrack = clip.animationClip->FindTrack(rootNodeID.c_str());
-        if (clip.rootTrack != nullptr)
+        clip.rootNodeTrack = clip.animationClip->FindTrack(rootNodeID.c_str());
+        if (clip.rootNodeTrack != nullptr)
         {
-            clip.rootAnimationState = AnimationTrack::State(clip.rootTrack->GetChannelsCount());
-            clip.rootTrack->Evaluate(0.f, &clip.rootAnimationState);
+            for (uint32 c = 0; c < clip.rootNodeTrack->GetChannelsCount(); ++c)
+            {
+                if (clip.rootNodeTrack->GetChannelTarget(c) == AnimationTrack::CHANNEL_TARGET_POSITION)
+                {
+                    clip.rootNodePositionChannel = c;
+                    break;
+                }
+            }
         }
     }
 }
@@ -88,15 +88,16 @@ void SkeletonAnimation::EvaluatePose(float32 animationLocalTime, SkeletonPose* o
     {
         uint32 jointIndex = clip->boundTracks[t].first;
         const AnimationTrack* track = clip->boundTracks[t].second;
-        AnimationTrack::State* state = &clip->animationStates[t];
-        track->Evaluate(GetClipLocalTime(clip, animationLocalTime), state);
 
-        outPose->SetTransform(jointIndex, ConstructJointTransform(track, state));
+        outPose->SetTransform(jointIndex, EvaluateJointTransform(animationLocalTime, track));
     }
 }
 
 void SkeletonAnimation::EvaluateRootOffset(float32 animationLocalTime0, float32 animationLocalTime1, Vector3* offset)
 {
+    if (animationClips.empty())
+        return;
+
     SkeletonAnimationClip* clip0 = FindClip(animationLocalTime0);
     SkeletonAnimationClip* clip1 = FindClip(animationLocalTime1);
 
@@ -136,24 +137,28 @@ float32 SkeletonAnimation::GetDuration() const
 
 //////////////////////////////////////////////////////////////////////////
 
-JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* track, const AnimationTrack::State* state)
+JointTransform SkeletonAnimation::EvaluateJointTransform(float32 time, const AnimationTrack* track)
 {
     JointTransform transform;
+    float32 workData[4];
     for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
     {
         AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
         switch (target)
         {
         case AnimationTrack::CHANNEL_TARGET_POSITION:
-            transform.SetPosition(Vector3(track->GetStateValue(state, c)));
+            track->Evaluate(time, c, workData);
+            transform.SetPosition(Vector3(workData));
             break;
 
         case AnimationTrack::CHANNEL_TARGET_ORIENTATION:
-            transform.SetOrientation(Quaternion(track->GetStateValue(state, c)));
+            track->Evaluate(time, c, workData);
+            transform.SetOrientation(Quaternion(workData));
             break;
 
         case AnimationTrack::CHANNEL_TARGET_SCALE:
-            transform.SetScale(*track->GetStateValue(state, c));
+            track->Evaluate(time, c, workData);
+            transform.SetScale(workData[0]);
             break;
 
         default:
@@ -164,23 +169,13 @@ JointTransform SkeletonAnimation::ConstructJointTransform(const AnimationTrack* 
     return transform;
 }
 
-void SkeletonAnimation::EvaluateRootPosition(SkeletonAnimationClip* clip, float32 animationLocalTime, Vector3* offset)
+void SkeletonAnimation::EvaluateRootPosition(SkeletonAnimationClip* clip, float32 animationLocalTime, Vector3* outPosition)
 {
     DVASSERT(clip != nullptr);
 
-    if (clip->rootTrack != nullptr)
+    if (clip->rootNodePositionChannel != std::numeric_limits<uint32>::max() && clip->rootNodeTrack != nullptr)
     {
-        clip->rootTrack->Evaluate(GetClipLocalTime(clip, animationLocalTime), &clip->rootAnimationState);
-
-        for (uint32 c = 0; c < clip->rootTrack->GetChannelsCount(); ++c)
-        {
-            AnimationTrack::eChannelTarget target = clip->rootTrack->GetChannelTarget(c);
-            if (target == AnimationTrack::CHANNEL_TARGET_POSITION)
-            {
-                *offset = Vector3(clip->rootTrack->GetStateValue(&clip->rootAnimationState, c));
-                break;
-            }
-        }
+        clip->rootNodeTrack->Evaluate(GetClipLocalTime(clip, animationLocalTime), clip->rootNodePositionChannel, outPosition->data);
     }
 }
 

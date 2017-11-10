@@ -53,7 +53,7 @@ public:
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
     const JointTransform& GetJointObjectSpaceTransform(uint32 jointIndex) const;
 
-    SkeletonPose GetDefaultPose() const;
+    const SkeletonPose& GetDefaultPose() const;
     void ApplyPose(const SkeletonPose& pose);
     void SetJointTransform(uint32 jointIndex, const JointTransform& transform);
 
@@ -68,9 +68,11 @@ public:
 private:
     void UpdateJointsMap();
     void SetJointUpdated(uint32 jointIndex);
+    void UpdateDefaultPose();
 
     /*config time*/
     Vector<Joint> jointsArray;
+    SkeletonPose defaultPose;
 
     /*runtime*/
     const static uint32 INFO_PARENT_MASK = 0xffffff;

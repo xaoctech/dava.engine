@@ -45,23 +45,23 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
 
     UpdateJointsMap();
+    UpdateDefaultPose();
 }
 
-SkeletonPose SkeletonComponent::GetDefaultPose() const
+void SkeletonComponent::UpdateDefaultPose()
 {
     uint32 jointCount = uint32(jointsArray.size());
 
-    SkeletonPose pose;
-    pose.SetJointCount(jointCount);
-
-    JointTransform transform;
+    defaultPose.SetJointCount(jointCount);
     for (uint32 j = 0; j < jointCount; ++j)
     {
-        transform.Construct(jointsArray[j].bindTransform);
-        pose.SetTransform(j, transform);
+        defaultPose.SetTransform(j, JointTransform(jointsArray[j].bindTransform));
     }
+}
 
-    return pose;
+const SkeletonPose& SkeletonComponent::GetDefaultPose() const
+{
+    return defaultPose;
 }
 
 void SkeletonComponent::ApplyPose(const SkeletonPose& pose)
@@ -140,6 +140,7 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
     }
 
     UpdateJointsMap();
+    UpdateDefaultPose();
 }
 
 void SkeletonComponent::UpdateJointsMap()

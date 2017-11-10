@@ -73,6 +73,7 @@ protected:
     MotionState* srcState = nullptr;
     MotionState* dstState = nullptr;
 
+    SkeletonPose workPose;
     SkeletonPose frozenPose;
     Vector3 frozenOffset;
     float32 transitionPhase = 0.f;
