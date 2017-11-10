@@ -106,7 +106,7 @@ JointTransform JointTransform::Lerp(const JointTransform& t0, const JointTransfo
 
     if (t0.HasScale() && t1.HasScale())
     {
-        result.SetScale(DAVA::Lerp<float32>(t0.scale, t1.scale, factor));
+        result.SetScale(DAVA::Lerp(t0.scale, t1.scale, factor));
     }
     else if (t0.HasScale())
     {
