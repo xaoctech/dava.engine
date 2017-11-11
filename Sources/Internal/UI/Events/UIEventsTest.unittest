@@ -40,7 +40,6 @@ DAVA_TESTCLASS (UIEventsTest)
     DECLARE_COVERED_FILES("UIMovieEventComponent.cpp")
     DECLARE_COVERED_FILES("UIShortcutEventComponent.cpp")
     DECLARE_COVERED_FILES("UIActionMap.cpp")
-    DECLARE_COVERED_FILES("UICommandMap.cpp")
     DECLARE_COVERED_FILES("UIInputMap.cpp")
     END_FILES_COVERED_BY_TESTS();
 
@@ -55,28 +54,6 @@ DAVA_TESTCLASS (UIEventsTest)
         screen = MakeRef<UIScreen>();
         GetEngineContext()->uiControlSystem->SetScreen(screen.Get());
         GetEngineContext()->uiControlSystem->Update();
-
-        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
-
-        sys->RegisterCommand(COMMAND_SET_TEXT_NAME, [sys](UIControl* source, const UICommandMap::CommandParams& params) {
-            if (source)
-            {
-                UIControl* targetControl = sys->GetTargetEntity(params.targetPath, source);
-                UIStaticText* text = CastIfEqual<UIStaticText*>(targetControl);
-                if (text)
-                {
-                    text->SetUtf8Text(params.argument);
-                }
-            }
-        });
-        sys->RegisterCommand(COMMAND_DISPATCH_EVENT_NAME, [sys](UIControl* source, const UICommandMap::CommandParams& params) {
-            UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
-            eventsSingle->DispatchEvent(source, FastName(params.argument));
-        });
-        sys->RegisterCommand(COMMAND_BROADCAST_EVENT_NAME, [sys](UIControl* source, const UICommandMap::CommandParams& params) {
-            UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
-            eventsSingle->BroadcastEvent(source, FastName(params.argument));
-        });
     }
 
     ~UIEventsTest()
@@ -167,66 +144,6 @@ DAVA_TESTCLASS (UIEventsTest)
         FastName empty;
         TEST_VERIFY(!eventsSingle->DispatchEvent(childText.Get(), empty));
         TEST_VERIFY(!eventsSingle->BroadcastEvent(text.Get(), empty));
-    }
-
-    DAVA_TEST (CommandsTest)
-    {
-        using namespace UIEventsTestDetails;
-
-        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
-        UIEventsSingleComponent* eventsSingle = GetEngineContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
-
-        auto COMMAND_TEST_EVENT = FastName("COMMAND_TEST");
-        auto actions = text->GetOrCreateComponent<UIEventBindingComponent>();
-
-        UIEventBindingComponent::CommandWithParams cmd;
-        cmd.commandName = COMMAND_SET_TEXT_NAME;
-        cmd.params.targetPath = FastName("childText");
-        cmd.params.argument = "CHILD_OK";
-        actions->BindCommand(COMMAND_TEST_EVENT, cmd);
-
-        UIEventBindingComponent::CommandWithParams cmd2;
-        cmd2.commandName = COMMAND_SET_TEXT_NAME;
-        cmd2.params.targetPath = UIEventsSystem::ACTION_COMPONENT_SELF_ENTITY_NAME;
-        cmd2.params.argument = "PARENT_OK";
-        actions->BindCommand(COMMAND_TEST_EVENT, cmd2);
-
-        TEST_VERIFY(text->GetUtf8Text() == "");
-        TEST_VERIFY(childText->GetUtf8Text() == "");
-        eventsSingle->DispatchEvent(childText.Get(), COMMAND_TEST_EVENT);
-        sys->Process(0.f);
-        TEST_VERIFY(text->GetUtf8Text() == "PARENT_OK");
-        TEST_VERIFY(childText->GetUtf8Text() == "CHILD_OK");
-
-        auto clone = actions->Clone();
-
-        TEST_VERIFY(actions->GetCommands().size() == 1);
-        TEST_VERIFY(actions->GetCommands()[COMMAND_TEST_EVENT].size() == 2);
-        actions->UnbindAllCommands(COMMAND_TEST_EVENT);
-        TEST_VERIFY(actions->GetCommands().size() == 0);
-
-        clone->Release();
-    }
-
-    DAVA_TEST (GlobalCommandTest)
-    {
-        UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
-        auto TEST_CMD = FastName("TEST");
-
-        int count = 0;
-        sys->RegisterCommand(TEST_CMD, [&count](UIControl* source, const UICommandMap::CommandParams& params) {
-            count++;
-        });
-
-        UICommandMap::CommandParams params;
-
-        TEST_VERIFY(count == 0);
-        TEST_VERIFY(sys->PerformCommandOnControl(TEST_CMD, nullptr, params));
-        TEST_VERIFY(count == 1);
-
-        sys->UnregisterCommand(TEST_CMD);
-        TEST_VERIFY(!sys->PerformCommandOnControl(TEST_CMD, nullptr, params));
-        TEST_VERIFY(count == 1);
     }
 
     DAVA_TEST (ShortcutsTest)

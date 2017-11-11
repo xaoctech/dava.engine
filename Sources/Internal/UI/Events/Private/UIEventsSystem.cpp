@@ -78,16 +78,6 @@ UIControl* UIEventsSystem::GetTargetEntity(const FastName& name, UIControl* cont
     return nullptr;
 }
 
-void UIEventsSystem::RegisterCommand(const FastName& commandName, const UICommandMap::CommandFunction& command)
-{
-    commandsByName.Put(commandName, command);
-}
-
-void UIEventsSystem::UnregisterCommand(const FastName& commandName)
-{
-    commandsByName.Remove(commandName);
-}
-
 void UIEventsSystem::BindGlobalShortcut(const KeyboardShortcut& shortcut, const FastName& eventName)
 {
     globalShortcutToEvent.BindEvent(shortcut, eventName);
@@ -105,11 +95,6 @@ void UIEventsSystem::PerformGlobalShortcut(const KeyboardShortcut& shortcut)
     {
         globalActions.Perform(event);
     }
-}
-
-bool UIEventsSystem::PerformCommandOnControl(const FastName& commandName, UIControl* source, const UICommandMap::CommandParams& params)
-{
-    return commandsByName.Perform(commandName, source, params);
 }
 
 bool UIEventsSystem::DispatchEvent(UIControl* control, const FastName& event)
@@ -195,20 +180,6 @@ bool UIEventsSystem::ProcessEventOnBinding(UIControl* sceneControl, const FastNa
     if (actions)
     {
         processed = actions->GetActionMap().Perform(event);
-        if (!processed)
-        {
-            auto& commands = actions->GetCommands();
-            auto it = commands.find(event);
-            if (it != commands.end())
-            {
-                auto& cmdList = it->second;
-                for (auto& cmd : cmdList)
-                {
-                    PerformCommandOnControl(cmd.commandName, sceneControl, cmd.params);
-                }
-                processed = true;
-            }
-        }
     }
     return processed;
 }

@@ -11,6 +11,9 @@ namespace DAVA
 {
 class UIControl;
 
+/** Keyboard shortcuts component.
+    Map keyboard shortcuts to events.
+*/
 class UIShortcutEventComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIShortcutEventComponent, UIComponent);
@@ -29,8 +32,11 @@ private:
 public:
     UIShortcutEventComponent* Clone() const override;
 
+    /** Bind keyboard shortcut to event name. */
     void BindShortcut(const KeyboardShortcut& shortcut, const FastName& eventName);
+    /** Unbind shortcut. */
     void UnbindShortcut(const KeyboardShortcut& shortcut);
+    /** Unbind shortcuts by event.*/
     void UnbindEvent(const FastName& eventName);
 
     UIInputMap& GetInputMap();

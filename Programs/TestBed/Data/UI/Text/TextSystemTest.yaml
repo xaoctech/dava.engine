@@ -671,8 +671,7 @@ Controls:
         SizePolicy:
             horizontalPolicy: "PercentOfParent"
             verticalPolicy: "PercentOfParent"
-        UIEventBindingComponent:
-            commands: "START; STOP; PREV; NEXT; BENCHMARK1; BENCHMARK2"
+        UIEventBindingComponent: {}
         Focus: {}
     children:
     -   class: "UIControl"

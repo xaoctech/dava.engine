@@ -119,7 +119,6 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
 
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
 
-    propertyNameTypeItemDelegates[PropertyPath("UIEventBindingComponent", "commands")] = new TablePropertyDelegate(QList<QString>({ "Event", "Command", "Target Path", "Argument" }), this);
     propertyNameTypeItemDelegates[PropertyPath("UIShortcutEventComponent", "shortcuts")] = new TablePropertyDelegate(QList<QString>({ "Event", "Shortcut" }), this);
 }
 
