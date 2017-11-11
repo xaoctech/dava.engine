@@ -1,5 +1,7 @@
 #include "UI/Events/UIMovieEventComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
@@ -12,6 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieEventComponent)
     .Field("stopEvent", &UIMovieEventComponent::GetStopEvent, &UIMovieEventComponent::SetStopEvent)
     .End();
 }
+
 IMPLEMENT_UI_COMPONENT(UIMovieEventComponent);
 
 UIMovieEventComponent::UIMovieEventComponent()

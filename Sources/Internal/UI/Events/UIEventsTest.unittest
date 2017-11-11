@@ -141,6 +141,10 @@ DAVA_TESTCLASS (UIEventsTest)
 
         TEST_VERIFY(!dispatchTest);
 
+        auto clone = actions->Clone();
+        TEST_VERIFY(clone != nullptr);
+        clone->Release();
+
         FastName empty;
         TEST_VERIFY(!eventsSingle->DispatchEvent(childText.Get(), empty));
         TEST_VERIFY(!eventsSingle->BroadcastEvent(text.Get(), empty));

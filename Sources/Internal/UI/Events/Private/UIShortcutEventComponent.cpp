@@ -2,6 +2,8 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Utils/StringUtils.h"
 #include "Utils/Utils.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
@@ -13,6 +15,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIShortcutEventComponent)
     .Field("shortcuts", &UIShortcutEventComponent::GetShortcutsAsString, &UIShortcutEventComponent::SetShortcutsFromString)
     .End();
 }
+
 IMPLEMENT_UI_COMPONENT(UIShortcutEventComponent);
 
 UIShortcutEventComponent::UIShortcutEventComponent()
