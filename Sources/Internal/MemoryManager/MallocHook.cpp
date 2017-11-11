@@ -69,35 +69,82 @@ void HookedFree(void* ptr)
 {
     DAVA::MemoryManager::Instance()->Deallocate(ptr);
 }
+
+#if defined(__DAVAENGINE_WIN32__) && defined(_DEBUG)
+void* HookedMallocDbg(size_t size, int, const char*, int)
+{
+    return HookedMalloc(size);
+}
+
+void* HookedReallocDbg(void* ptr, size_t newSize, int, const char*, int)
+{
+    return HookedRealloc(ptr, newSize);
+}
+
+void* HookedCallocDbg(size_t count, size_t elemSize, int, const char*, int)
+{
+    return HookedCalloc(count, elemSize);
+}
+
+char* HookedStrdupDbg(const char* src, int, const char*, int)
+{
+    return HookedStrdup(src);
+}
+
+void HookedFreeDbg(void* ptr, int)
+{
+    HookedFree(ptr);
+}
+#endif // __DAVAENGINE_WIN32__ && _DEBUG
+
 } // unnamed namespace
 
 namespace DAVA
 {
-void* (*MallocHook::RealMalloc)(size_t) = &malloc;
-void* (*MallocHook::RealRealloc)(void*, size_t) = &realloc;
-void (*MallocHook::RealFree)(void*) = &free;
+void* (*MallocHook::RealMalloc)(size_t) = nullptr;
+void* (*MallocHook::RealRealloc)(void*, size_t) = nullptr;
+void (*MallocHook::RealFree)(void*) = nullptr;
 #if defined(__DAVAENGINE_ANDROID__)
 size_t (*MallocHook::RealMallocSize)(void*) = nullptr;
 #endif
 
-MallocHook::MallocHook()
-{
-    Install();
-}
+#if defined(__DAVAENGINE_WIN32__) && defined(_DEBUG)
+void* (*MallocHook::RealMallocDbg)(size_t, int, const char*, int) = nullptr;
+void* (*MallocHook::RealReallocDbg)(void*, size_t, int, const char*, int) = nullptr;
+void (*MallocHook::RealFreeDbg)(void*, int) = nullptr;
+#endif
 
 void* MallocHook::Malloc(size_t size)
 {
+    static bool isHooked = false;
+    if (!isHooked)
+    {
+        isHooked = true;
+        Install();
+    }
+#if defined(__DAVAENGINE_WIN32__) && defined(_DEBUG)
+    return RealMallocDbg(size, _NORMAL_BLOCK, nullptr, 0);
+#else
     return RealMalloc(size);
+#endif
 }
 
 void* MallocHook::Realloc(void* ptr, size_t newSize)
 {
+#if defined(__DAVAENGINE_WIN32__) && defined(_DEBUG)
+    return RealReallocDbg(ptr, newSize, _NORMAL_BLOCK, nullptr, 0);
+#else
     return RealRealloc(ptr, newSize);
+#endif
 }
 
 void MallocHook::Free(void* ptr)
 {
+#if defined(__DAVAENGINE_WIN32__) && defined(_DEBUG)
+    RealFreeDbg(ptr, _NORMAL_BLOCK);
+#else
     RealFree(ptr);
+#endif
 }
 
 size_t MallocHook::MallocSize(void* ptr)
@@ -123,25 +170,17 @@ void MallocHook::Install()
      Explanation of allocation flow:
         app calls malloc --> HookedMalloc --> MemoryManager::Allocate --> MallocHook::Malloc --> original malloc
      Same flow with little differences is applied to other functions
-     Such a long chain is neccessary for keeping as mush common code among different platforms as possible.
+     Such a long chain is necessary for keeping as mush common code among different platforms as possible.
      To be able to call HookedMalloc instead of malloc I use some technique to intercept/replace functions.
 
      On Win32 I use Microsoft Detours library which modifies function prologue code with call to so called
      trampoline function. This trampoline function makes call to address which was specified by me (HookedMalloc).
 
      On *nix platforms (Android, iOS, Mac OS X, etc) I simply define my own implementation of malloc. In glibc
-     malloc is a weak symbol which means that it can be overriden by an application. Additionally I get original
+     malloc is a weak symbol which means that it can be overridden by an application. Additionally I get original
      address of malloc using dlsym function.
     */
 #if defined(__DAVAENGINE_WIN32__)
-    void* (*realCalloc)(size_t, size_t) = &calloc;
-    char* (*realStrdup)(const char*) = &_strdup;
-
-#if defined(_WIN64)
-    RealMalloc = &malloc;
-    RealRealloc = &realloc;
-    RealFree = &free;
-#else
     auto detours = [](PVOID* what, PVOID hook) -> void {
         LONG result = 0;
         result = DetourTransactionBegin();
@@ -153,6 +192,31 @@ void MallocHook::Install()
         result = DetourTransactionCommit();
         assert(0 == result);
     };
+
+// Separate debug and release implementations on Win32:
+//  now Win32 applications link to dynamic runtime and memory allocation can occur inside application
+//  but deallocation may occur inside Microsoft CRT dynamic library. Debug version of that library
+//  uses allocation routines with `_dbg` suffix and can calls them directly (not through malloc or free,
+//  but _malloc_dbg and _free_dbg).
+
+#if defined(_DEBUG)
+    RealMallocDbg = &_malloc_dbg;
+    RealReallocDbg = &_realloc_dbg;
+    RealFreeDbg = &_free_dbg;
+    void* (*realCallocDbg)(size_t, size_t, int, const char*, int) = &_calloc_dbg;
+    char* (*realStrdupDbg)(const char*, int, const char*, int) = &_strdup_dbg;
+
+    detours(reinterpret_cast<PVOID*>(&RealMallocDbg), reinterpret_cast<PVOID>(&HookedMallocDbg));
+    detours(reinterpret_cast<PVOID*>(&RealReallocDbg), reinterpret_cast<PVOID>(&HookedReallocDbg));
+    detours(reinterpret_cast<PVOID*>(&realCallocDbg), reinterpret_cast<PVOID>(&HookedCallocDbg));
+    detours(reinterpret_cast<PVOID*>(&realStrdupDbg), reinterpret_cast<PVOID>(&HookedStrdupDbg));
+    detours(reinterpret_cast<PVOID*>(&RealFreeDbg), reinterpret_cast<PVOID>(&HookedFreeDbg));
+#else
+    RealMalloc = &::malloc;
+    RealRealloc = &::realloc;
+    RealFree = &::free;
+    void* (*realCalloc)(size_t, size_t) = &calloc;
+    char* (*realStrdup)(const char*) = &_strdup;
 
     // On detours error you will see assert message
     detours(reinterpret_cast<PVOID*>(&RealMalloc), reinterpret_cast<PVOID>(&HookedMalloc));
