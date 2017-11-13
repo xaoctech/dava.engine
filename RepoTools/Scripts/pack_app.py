@@ -52,12 +52,18 @@ def main():
     parser.add_argument( '--app_name',  required = True )
     parser.add_argument( '--app_path',  required = True )
     parser.add_argument( '--out_path',  required = True )
+    parser.add_argument( '--ignore_file_masks' )
+
     parser.add_argument( '--dava_path' )
     parser.add_argument( '--build_number' )
 
     options      = parser.parse_args()
 
     archiveName  = [ options.app_name ]
+
+    ignore_file_masks = []
+    if options.ignore_file_masks:
+        ignore_file_masks = options.ignore_file_masks.split(' ')
 
     if options.dava_path :
         versionDava  = GetDavaVersion( options.dava_path )
@@ -76,7 +82,7 @@ def main():
 
     if os.path.exists( options.app_path ):
         print 'Pack options.app_name -> ', outPath
-        zipdir( options.app_path, outPath, False )
+        zipdir( options.app_path, outPath, False, ignore_file_masks )
     else:
        print 'No packing folder -> ', options.app_path
 
