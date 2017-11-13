@@ -96,6 +96,8 @@ void ColorPickerButton::OnColorChanging(Color colorValue, ColorPickerButton::Fie
         Color maxValue = rangeMeta->maxValue.Get<Color>();
         Color stepValue = rangeMeta->step.Get<Color>();
 
+        Color prevColorValue = cachedColor.Get<Color>();
+
         colorValue.r = clampValue(prevColorValue.r, colorValue.r, minValue.r, maxValue.r, stepValue.r);
         colorValue.g = clampValue(prevColorValue.g, colorValue.g, minValue.g, maxValue.g, stepValue.g);
         colorValue.b = clampValue(prevColorValue.b, colorValue.b, minValue.b, maxValue.b, stepValue.b);
@@ -123,7 +125,7 @@ void ColorPickerButton::ButtonReleased()
     ColorPickerDialog cp(controlParams.accessor);
     cp.setWindowTitle("Select color");
 
-    prevColorValue = cachedColor.Get<Color>();
+    Color prevColorValue = cachedColor.Get<Color>();
     cp.SetDavaColor(prevColorValue);
 
     auto colorChangingCallFn = [this, &cp]()

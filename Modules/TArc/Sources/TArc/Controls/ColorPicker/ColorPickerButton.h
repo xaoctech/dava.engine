@@ -45,7 +45,6 @@ private:
 
     const M::Range* rangeMeta = nullptr;
     Any cachedColor;
-    Color prevColorValue;
     bool readOnly = false;
     QtConnections connections;
 };
