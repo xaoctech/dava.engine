@@ -157,15 +157,25 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
 
     aimAngleParam = RadToDeg(-cameraAngle);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    const static FastName WEAPON_MOTION_NAME("WeaponMotion");
+    const static FastName WEAPON_MOTION_RELOAD_STATE_ID("reload");
+    const static FastName WEAPON_MOTION_SHOOT_STATE_ID("shoot");
+    const static FastName WEAPON_MOTION_SHOOT_MARKER("shoot");
+
+    MotionSingleComponent* msc = GetScene()->motionSingleComponent;
     if (waitReloadEnd)
     {
-        const static FastName WEAPON_MOTION_NAME("WeaponMotion");
-        const static FastName WEAPON_MOTION_RELOAD_STATE_ID("reload");
-
         MotionSingleComponent::AnimationInfo reloadAnimationInfo(characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_RELOAD_STATE_ID);
-        MotionSingleComponent* msc = GetScene()->motionSingleComponent;
-
         waitReloadEnd = (msc->animationEnd.count(reloadAnimationInfo) == 0);
+    }
+
+    if (shootEffect != nullptr)
+    {
+        const static MotionSingleComponent::AnimationInfo shootMarkerInfo(characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_SHOOT_STATE_ID, WEAPON_MOTION_SHOOT_MARKER);
+        if (msc->animationMarkerReached.count(shootMarkerInfo))
+            GetParticleEffectComponent(shootEffect)->Start();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -201,23 +211,16 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
             if (mouse != nullptr && mouse->GetLeftButtonState().IsPressed())
             {
                 characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_SHOOT);
-
-                shootingDelay -= timeElapsed;
-                if (shootingDelay <= 0.0f)
-                {
-                    shootingDelay = 0.1f;
-                    if (shootEffect != nullptr)
-                    {
-                        GetParticleEffectComponent(shootEffect)->Start();
-                    }
-                }
             }
             else
             {
-                shootingDelay = 0.f;
                 characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_IDLE);
             }
         }
+    }
+    else
+    {
+        characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_IDLE);
     }
 
     if (isMoving)

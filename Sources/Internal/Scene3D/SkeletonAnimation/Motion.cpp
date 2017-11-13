@@ -91,7 +91,7 @@ void Motion::Update(float32 dTime)
     if (nextState != nullptr && stateTransition.IsStarted())
     {
         for (const FastName& m : nextState->GetReachedMarkers())
-            reachedMarkers.emplace_back(currentState->GetID(), m);
+            reachedMarkers.emplace_back(nextState->GetID(), m);
     }
 
     endedStateAnimations.clear();

@@ -225,6 +225,8 @@ BlendTree* BlendTree::LoadFromYaml(const YamlNode* yamlNode)
     blendTree->nodes.emplace_back();
     blendTree->LoadBlendNodeRecursive(yamlNode, blendTree, 0);
 
+    std::sort(blendTree->markers.begin(), blendTree->markers.end(), std::less<float32>());
+
     return blendTree;
 }
 
@@ -245,7 +247,7 @@ void BlendTree::LoadIgnoreMask(const YamlNode* yamlNode, UnorderedSet<uint32>* i
     }
 }
 
-float32 BlendTree::GetClipTimestamp(const YamlNode* yamlNode)
+float32 BlendTree::GetClipTimestamp(const YamlNode* yamlNode) const
 {
     DVASSERT(yamlNode != nullptr && yamlNode->GetType() == YamlNode::TYPE_STRING);
     const String& string = yamlNode->AsString();
@@ -255,6 +257,38 @@ float32 BlendTree::GetClipTimestamp(const YamlNode* yamlNode)
         result /= divisor;
 
     return result;
+}
+
+float32 BlendTree::GetPhaseIDByTimestamp(const BlendTree::Animation& animation, float32 timestamp) const
+{
+    DVASSERT(!animation.phaseEnds.empty());
+
+    auto found = std::find_if(animation.phaseEnds.begin(), animation.phaseEnds.end(), [&timestamp](float32 phaseEnd) {
+        return phaseEnd > timestamp;
+    });
+
+    DVASSERT(found != animation.phaseEnds.end());
+
+    uint32 phaseIndex = 0;
+    float32 phaseValue = 0.f;
+
+    if (found == animation.phaseEnds.begin())
+    {
+        phaseValue = timestamp / animation.phaseEnds[0];
+    }
+    else
+    {
+        float32 prevPhaseTimestamp = *(--found);
+        DVASSERT(timestamp >= prevPhaseTimestamp);
+
+        phaseIndex = uint32(std::distance(animation.phaseEnds.begin(), found));
+        phaseValue = (timestamp - prevPhaseTimestamp) / (*found - prevPhaseTimestamp);
+    }
+
+    DVASSERT(phaseIndex < uint32(animation.phaseEnds.size()));
+    DVASSERT(phaseValue >= 0.f && phaseValue < 1.f);
+
+    return float32(phaseIndex) + phaseValue;
 }
 
 void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blendTree, uint32 nodeIndex, UnorderedSet<uint32> ignoreMask)
@@ -366,6 +400,39 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
 
             if (animation.phaseEnds.empty() || (!animation.phaseEnds.empty() && !FLOAT_EQUAL(animation.phaseEnds.back(), syncPointsBase)))
                 animation.phaseEnds.push_back(syncPointsBase);
+
+            const YamlNode* markersNode = animationNode->Get("markers");
+            if (markersNode != nullptr && markersNode->GetType() == YamlNode::TYPE_MAP)
+            {
+                uint32 markersCount = markersNode->GetCount();
+                for (uint32 marker = 0; marker < markersCount; ++marker)
+                {
+                    MarkerInfo markerInfo;
+                    markerInfo.markerID = FastName(markersNode->GetItemKeyName(marker).c_str());
+
+                    Vector<float32> markersTimestamps;
+
+                    const YamlNode* markerNode = markersNode->Get(marker);
+                    if (markerNode->GetType() == YamlNode::TYPE_STRING)
+                    {
+                        markersTimestamps.emplace_back(GetClipTimestamp(markerNode));
+                    }
+                    else if (markerNode->GetType() == YamlNode::TYPE_ARRAY)
+                    {
+                        uint32 valuesCount = markerNode->GetCount();
+                        for (uint32 value = 0; value < valuesCount; ++value)
+                        {
+                            markersTimestamps.emplace_back(GetClipTimestamp(markerNode->Get(value)));
+                        }
+                    }
+
+                    for (float32 timestamp : markersTimestamps)
+                    {
+                        markerInfo.phaseID = GetPhaseIDByTimestamp(animation, timestamp);
+                        markers.push_back(markerInfo);
+                    }
+                }
+            }
         }
 
         for (float32& phaseEnd : animation.phaseEnds)
@@ -376,7 +443,7 @@ void BlendTree::LoadBlendNodeRecursive(const YamlNode* yamlNode, BlendTree* blen
 
         //All animation should have the same phases count
         //TODO: *Skinning* return error, not assert
-        DVASSERT(phasesCount == uint32(animation.phaseEnds.size()));
+        DVASSERT(phasesCount == uint32(animation.phaseEnds.size()) || animation.treatAsPose);
     }
     else
     {

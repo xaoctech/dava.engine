@@ -88,7 +88,6 @@ protected:
 
     Vector<const float32*> boundParams;
 
-    Vector<FastName> markers;
     Vector<FastName> reachedMarkers;
     UnorderedSet<FastName> reachedMarkersSet;
     UnorderedMap<TransitionKey, TransitionInfo, TransitionKeyHash> transitions;

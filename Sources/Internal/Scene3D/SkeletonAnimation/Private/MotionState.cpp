@@ -24,8 +24,6 @@ void MotionState::Update(float32 dTime)
     if (blendTree == nullptr)
         return;
 
-    reachedMarkers.clear();
-    reachedMarkersSet.clear();
     animationEndReached = false;
 
     animationPrevPhaseIndex = animationCurrPhaseIndex;
@@ -38,13 +36,6 @@ void MotionState::Update(float32 dTime)
     if (animationPhase >= 1.f)
     {
         animationPhase -= 1.f;
-
-        const FastName& phaseMarker = markers[animationCurrPhaseIndex];
-        if (phaseMarker.IsValid())
-        {
-            reachedMarkers.push_back(phaseMarker);
-            reachedMarkersSet.insert(phaseMarker);
-        }
 
         ++animationCurrPhaseIndex;
         if (animationCurrPhaseIndex == blendTree->GetPhasesCount())
@@ -59,6 +50,42 @@ void MotionState::Update(float32 dTime)
     }
 
     blendTree->EvaluateRootOffset(animationCurrPhaseIndex0, animationPhase0, animationCurrPhaseIndex, animationPhase, boundParams, &rootOffset);
+
+    reachedMarkers.clear();
+    reachedMarkersSet.clear();
+
+    const Vector<BlendTree::MarkerInfo>& markersInfo = blendTree->GetMarkersInfo();
+    if (!markersInfo.empty())
+    {
+        float32 phaseID0 = float32(animationCurrPhaseIndex0) + animationPhase0;
+        float32 phaseID1 = float32(animationCurrPhaseIndex) + animationPhase;
+
+        Vector<BlendTree::MarkerInfo>::const_iterator markerLeft = markersInfo.end(), markerRight = markersInfo.begin();
+        for (Vector<BlendTree::MarkerInfo>::const_iterator it = markersInfo.begin(); it != markersInfo.end(); ++it)
+        {
+            if (markerLeft == markersInfo.end() && it->phaseID >= phaseID0)
+                markerLeft = it;
+
+            if (it->phaseID < phaseID1)
+                markerRight = it;
+            else
+                break;
+        }
+
+        if (markerRight >= markerLeft && markerLeft != markersInfo.end() && markerRight != markersInfo.end())
+        {
+            auto itEnd = ++markerRight;
+            for (auto it = markerLeft; it != itEnd; ++it)
+            {
+                const FastName& markerID = it->markerID;
+                if (!markerID.empty())
+                {
+                    reachedMarkers.push_back(markerID);
+                    reachedMarkersSet.insert(markerID);
+                }
+            }
+        }
+    }
 }
 
 void MotionState::EvaluatePose(SkeletonPose* outPose) const
@@ -180,27 +207,6 @@ void MotionState::LoadFromYaml(const YamlNode* stateNode)
         DVASSERT(blendTree != nullptr);
 
         boundParams.resize(blendTree->GetParameterIDs().size());
-        markers.resize(blendTree->GetPhasesCount());
-
-        const YamlNode* markersNode = blendTreeNode->Get("markers");
-
-        if (markersNode != nullptr && markersNode->GetType() == YamlNode::TYPE_ARRAY)
-        {
-            uint32 markersCount = markersNode->GetCount();
-            for (uint32 m = 0; m < markersCount; ++m)
-            {
-                const YamlNode* markerNode = markersNode->Get(m);
-                if (markerNode->GetType() == YamlNode::TYPE_MAP && markerNode->GetCount() == 1)
-                {
-                    uint32 markerIndex = 0;
-                    if (sscanf(markerNode->GetItemKeyName(0).c_str(), "%u", &markerIndex) == 1)
-                    {
-                        DVASSERT(markerIndex < uint32(markers.size()));
-                        markers[markerIndex] = markerNode->Get(0)->AsFastName();
-                    }
-                }
-            }
-        }
     }
 }
 
