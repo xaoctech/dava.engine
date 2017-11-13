@@ -17,13 +17,6 @@ PackMetaData::PackMetaData(const void* ptr, std::size_t size)
     Deserialize(ptr, size);
 }
 
-void PackMetaData::CollectDependencies(uint32 packIndex, Children& out) const
-{
-    // all dependent packs with all sub-dependencies
-    DVASSERT(packIndex < children.size());
-    out = children[packIndex];
-}
-
 PackMetaData::PackMetaData(const FilePath& metaDb)
 {
     // extract tables from sqlite DB
@@ -77,13 +70,35 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
         DAVA_THROW(Exception, "read metadata error - too big index bad meta");
     }
 
+    GenerateChildrenMatrix(numPacks);
+}
+
+void PackMetaData::CollectDependencies(uint32 packIndex, Children& out) const
+{
+    // all dependent packs with all sub-dependencies
+    DVASSERT(packIndex < children.size());
+    out = children[packIndex];
+}
+
+void PackMetaData::GenerateChildrenMatrixRow(uint32 packIndex, Children& out) const
+{
+    const String& packName = GetPackInfo(packIndex).packName;
+    for (uint32 childPack : GetPackDependencyIndexes(packName))
+    {
+        out.push_back(childPack);
+        GenerateChildrenMatrixRow(childPack, out);
+    }
+}
+
+void PackMetaData::GenerateChildrenMatrix(size_t numPacks)
+{
     children.clear();
     children.resize(numPacks);
 
     for (uint32 packIndex = 0; packIndex < numPacks; ++packIndex)
     {
         Children& c = children[packIndex];
-        CollectDependencies(packIndex, c);
+        GenerateChildrenMatrixRow(packIndex, c);
         c.shrink_to_fit();
     }
 }
