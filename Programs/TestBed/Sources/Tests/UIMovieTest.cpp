@@ -5,7 +5,7 @@
 
 namespace
 {
-FilePath path = "~res://TestData/MovieTest/bunny.m4v";
+FilePath path = "~res:/TestBed//TestData/MovieTest/bunny.m4v";
 }
 
 UIMovieTest::UIMovieTest(TestBed& app)
@@ -25,7 +25,7 @@ void UIMovieTest::LoadResources()
     AddControl(movieView);
 
     // Create the "player" buttons.
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(14);
 

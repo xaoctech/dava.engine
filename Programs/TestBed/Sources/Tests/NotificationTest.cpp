@@ -25,7 +25,7 @@ NotificationScreen::NotificationScreen(TestBed& app)
 void NotificationScreen::LoadResources()
 {
     BaseScreen::LoadResources();
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
 
     font->SetSize(30);
