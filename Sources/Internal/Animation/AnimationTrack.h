@@ -19,10 +19,13 @@ public:
     };
 
     uint32 Bind(const uint8* data);
-    void Evaluate(float32 time, uint32 channel, float32* outData) const;
+    void Evaluate(float32 time, uint32 channel, float32* outData, uint32 dataSize) const;
 
     uint32 GetChannelsCount() const;
     eChannelTarget GetChannelTarget(uint32 channel) const;
+
+    uint32 GetChannelValueSize(uint32 channel) const;
+    uint32 GetMaxChannelValueSize() const;
 
 private:
     struct Channel

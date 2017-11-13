@@ -36,13 +36,16 @@ uint32 AnimationChannel::Bind(const uint8* _data)
 
     return uint32(keysData - _data) + keysCount * keyStride;
 }
+
 #define KEY_DATA_SIZE (dimension * sizeof(float32))
 #define KEY_TIME(keyIndex) (*reinterpret_cast<const float32*>(keysData + (keyIndex)*keyStride))
 #define KEY_DATA(keyIndex) (reinterpret_cast<const float32*>(keysData + (keyIndex)*keyStride + sizeof(float32)))
 #define KEY_META(keyIndex) (KEY_DATA(keyIndex) + KEY_DATA_SIZE) //tangents for bezier interpolation
 
-void AnimationChannel::Evaluate(float32 time, float32* outData) const
+void AnimationChannel::Evaluate(float32 time, float32* outData, uint32 dataSize) const
 {
+    DVASSERT(dataSize >= GetDimension());
+
     uint32 k = startKey;
 
     if (KEY_TIME(k) > time)

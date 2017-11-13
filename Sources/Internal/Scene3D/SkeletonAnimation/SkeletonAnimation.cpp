@@ -139,26 +139,31 @@ float32 SkeletonAnimation::GetDuration() const
 
 JointTransform SkeletonAnimation::EvaluateJointTransform(float32 time, const AnimationTrack* track)
 {
+    static const uint32 MAX_CHANNEL_VALUE_SIZE = 4;
+    DVASSERT(MAX_CHANNEL_VALUE_SIZE >= track->GetMaxChannelValueSize());
+
     JointTransform transform;
-    float32 workData[4];
+    Array<float32, MAX_CHANNEL_VALUE_SIZE> workData;
     for (uint32 c = 0; c < track->GetChannelsCount(); ++c)
     {
+        track->Evaluate(time, c, workData.data(), uint32(workData.size()));
+
         AnimationTrack::eChannelTarget target = track->GetChannelTarget(c);
         switch (target)
         {
         case AnimationTrack::CHANNEL_TARGET_POSITION:
-            track->Evaluate(time, c, workData);
-            transform.SetPosition(Vector3(workData));
+            DVASSERT(track->GetChannelValueSize(c) == 3);
+            transform.SetPosition(Vector3(workData.data()));
             break;
 
         case AnimationTrack::CHANNEL_TARGET_ORIENTATION:
-            track->Evaluate(time, c, workData);
-            transform.SetOrientation(Quaternion(workData));
+            DVASSERT(track->GetChannelValueSize(c) == 4);
+            transform.SetOrientation(Quaternion(workData.data()));
             break;
 
         case AnimationTrack::CHANNEL_TARGET_SCALE:
-            track->Evaluate(time, c, workData);
-            transform.SetScale(workData[0]);
+            DVASSERT(track->GetChannelValueSize(c) == 1);
+            transform.SetScale(*workData.data());
             break;
 
         default:
@@ -175,7 +180,7 @@ void SkeletonAnimation::EvaluateRootPosition(SkeletonAnimationClip* clip, float3
 
     if (clip->rootNodePositionChannel != std::numeric_limits<uint32>::max() && clip->rootNodeTrack != nullptr)
     {
-        clip->rootNodeTrack->Evaluate(GetClipLocalTime(clip, animationLocalTime), clip->rootNodePositionChannel, outPosition->data);
+        clip->rootNodeTrack->Evaluate(GetClipLocalTime(clip, animationLocalTime), clip->rootNodePositionChannel, outPosition->data, uint32(Vector3::AXIS_COUNT));
     }
 }
 

@@ -41,10 +41,10 @@ uint32 AnimationTrack::Bind(const uint8* _data)
     return uint32(dataptr - _data);
 }
 
-void AnimationTrack::Evaluate(float32 time, uint32 channel, float32* outData) const
+void AnimationTrack::Evaluate(float32 time, uint32 channel, float32* outData, uint32 dataSize) const
 {
     DVASSERT(channel < GetChannelsCount());
-    channels[channel].channel.Evaluate(time, outData);
+    channels[channel].channel.Evaluate(time, outData, dataSize);
 }
 
 uint32 AnimationTrack::GetChannelsCount() const
@@ -56,5 +56,20 @@ AnimationTrack::eChannelTarget AnimationTrack::GetChannelTarget(uint32 channel) 
 {
     DVASSERT(channel < GetChannelsCount());
     return channels[channel].target;
+}
+
+uint32 AnimationTrack::GetChannelValueSize(uint32 channel) const
+{
+    DVASSERT(channel < GetChannelsCount());
+    return channels[channel].channel.GetDimension();
+}
+
+uint32 AnimationTrack::GetMaxChannelValueSize() const
+{
+    uint32 maxChannelSize = 0;
+    for (const Channel& channel : channels)
+        maxChannelSize = Max(maxChannelSize, channel.channel.GetDimension());
+
+    return maxChannelSize;
 }
 }
