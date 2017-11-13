@@ -227,7 +227,7 @@ macro ( __add_tools TOOLS_LIST_NAME )
         endforeach()
 
 ###
-        if( WIN32_MODE AND NOT ARG_WIN32_SUPPORTED )
+        if( WIN32 AND NOT X64_MODE AND NOT ARG_WIN32_SUPPORTED )
             set(  GENERATE false )  
         endif()      
 ###

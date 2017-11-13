@@ -8,7 +8,6 @@
 # -DSTASH_LOGIN      = stash user login
 # -DSTASH_PASS       = stash user password
 # -DFRAMEWORK_BRANCH = framework branch 
-# -DWIN32_MODE       = generate only programs supported win32
 #
 # -DCACHE_CLIENT     = add to toolset AssetCacheClient
 #
