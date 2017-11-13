@@ -81,12 +81,14 @@ void BeastLight::CreateAmbientLight()
 void BeastLight::CreateDirectionalLight()
 {
     BEAST_VERIFY(ILBCreateDirectionalLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
+    BEAST_VERIFY(ILBSetShadowAngle(light, GetShadowAngle()));
 }
 
 void BeastLight::CreatePointLight()
 {
     BEAST_VERIFY(ILBCreatePointLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
     BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
+    BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
 }
 
 void BeastLight::CreateSpotLight()
@@ -94,14 +96,13 @@ void BeastLight::CreateSpotLight()
     BEAST_VERIFY(ILBCreateSpotLight(manager->GetILBScene(), STRING_TO_BEAST_STRING(resourceName), &GetMatrix(), &GetColor(), &light));
     BEAST_VERIFY(ILBSetLightMaxRangeFalloff(light, GetFalloffCutoff(), GetFalloffExponent()));
     BEAST_VERIFY(ILBSetSpotlightCone(light, GetConeAngle() * DAVA::PI / 180.0f, GetConePenumbraAngle() * DAVA::PI / 180.0f, GetConePenumbraExponent()));
+    BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
 }
 
 void BeastLight::SetShadowParameters()
 {
     BEAST_VERIFY(ILBSetCastShadows(light, GetCastShadows()));
-    BEAST_VERIFY(ILBSetShadowRadius(light, GetShadowRadius()));
     BEAST_VERIFY(ILBSetShadowSamples(light, GetShadowSamples()));
-    BEAST_VERIFY(ILBSetShadowAngle(light, GetShadowAngle()));
 }
 
 const ILBLinearRGB& BeastLight::GetColor() const
