@@ -24,13 +24,7 @@ public class DavaGlobalLayoutState extends DavaActivity.ActivityListenerImpl imp
     private Rect visibleFrame = new Rect();
     private List<GlobalLayoutListener> listeners = new LinkedList<GlobalLayoutListener>();
 
-    DavaGlobalLayoutState()
-    {
-        onResume();
-    }
-
-    @Override
-    public void onResume()
+    private void initOverlayWindow()
     {
         if (layout == null)
         {
@@ -56,8 +50,7 @@ public class DavaGlobalLayoutState extends DavaActivity.ActivityListenerImpl imp
         }
     }
 
-    @Override
-    public void onPause()
+    public void releaseOverlayWindow()
     {
         if (layout != null)
         {
@@ -75,6 +68,18 @@ public class DavaGlobalLayoutState extends DavaActivity.ActivityListenerImpl imp
             visibleFrame.setEmpty();
             layout = null;
             contentView = null;
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        if (hasWindowFocus)
+        {
+            initOverlayWindow();
+        }
+        else
+        {
+            releaseOverlayWindow();
         }
     }
 
