@@ -223,18 +223,24 @@ void HUDSystem::OnUpdate()
     }
 }
 
-void HUDSystem::ProcessInput(UIEvent* currentInput)
+void HUDSystem::ProcessInput(UIEvent* currentInput, bool generated)
 {
+    const EditorSystemsManager* systemsManager = GetSystemsManager();
+
     UIEvent::Phase phase = currentInput->phase;
-    if (currentInput->point.x > 0.0f && currentInput->point.y > 0.0f)
+    if (generated == false)
     {
         hoveredPoint = currentInput->point;
+    }
+    else
+    {
+        pressedPoint -= systemsManager->GetMouseDelta();
     }
 
     switch (phase)
     {
     case UIEvent::Phase::DRAG:
-        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::SelectByRect)
+        if (systemsManager->GetDragState() == EditorSystemsManager::SelectByRect)
         {
             Vector2 point(pressedPoint);
             Vector2 size(hoveredPoint - pressedPoint);
@@ -248,7 +254,6 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
                 point.y += size.y;
                 size.y *= -1.0f;
             }
-
             selectionRectControl->SetRect(Rect(point, size));
             selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
@@ -490,7 +495,7 @@ void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
     hudControl = nullptr;
 }
 
-bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
 {
     using namespace DAVA::TArc;
 

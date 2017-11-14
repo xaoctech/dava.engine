@@ -29,6 +29,7 @@
 #include <UI/UIScreen.h>
 #include <UI/UIScreenManager.h>
 #include <Engine/Engine.h>
+#include <Entity/ComponentManager.h>
 
 using namespace DAVA;
 
@@ -138,9 +139,27 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
 
     for (auto it = systems.rbegin(); it != systems.rend(); ++it)
     {
-        if ((*it).second->CanProcessInput(currentInput))
+        BaseEditorSystem* system = (*it).second;
+        if (system->CanProcessInput(currentInput, false))
         {
-            (*it).second->ProcessInput(currentInput);
+            system->ProcessInput(currentInput, false);
+        }
+    }
+}
+
+void EditorSystemsManager::EmulateInput(DAVA::UIEvent* generatedEvent)
+{
+    if (generatedEvent->device == eInputDevices::MOUSE)
+    {
+        mouseDelta = generatedEvent->point - lastMousePos;
+    }
+
+    for (auto it = systems.rbegin(); it != systems.rend(); ++it)
+    {
+        BaseEditorSystem* system = (*it).second;
+        if (system->CanProcessInput(generatedEvent, true))
+        {
+            system->ProcessInput(generatedEvent, true);
         }
     }
 }

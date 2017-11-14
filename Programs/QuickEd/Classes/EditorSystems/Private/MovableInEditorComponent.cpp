@@ -3,6 +3,7 @@
 #include <UI/UIControl.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Engine/Engine.h>
+#include <Entity/ComponentManager.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(MovableInEditorComponent)
 {

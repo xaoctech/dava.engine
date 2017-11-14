@@ -125,6 +125,7 @@ public:
     DAVA_DEPRECATED(void InitSystems());
 
     void OnInput(DAVA::UIEvent* currentInput);
+    void EmulateInput(DAVA::UIEvent* generatedEvent);
 
     template <class OutIt, class Predicate>
     void CollectControlNodes(OutIt destination, Predicate predicate, StopPredicate stopPredicate = defaultStopPredicate) const;

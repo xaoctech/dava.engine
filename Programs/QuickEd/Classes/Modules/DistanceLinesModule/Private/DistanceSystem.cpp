@@ -154,13 +154,13 @@ void DistanceSystem::OnUpdate()
     DrawLines(selectedRect, highlightedRect, transformMatrix);
 }
 
-bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
 {
     //ignore keyboard events to not enable distances on alt+scroll combinations
     return currentInput->device != DAVA::eInputDevices::KEYBOARD;
 }
 
-void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/)
 {
     canDrawDistancesAfterInput = (currentInput->phase == DAVA::UIEvent::Phase::MOVE);
 }

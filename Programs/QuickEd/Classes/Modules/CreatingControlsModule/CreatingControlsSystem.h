@@ -29,8 +29,8 @@ public:
 private:
     // BaseEditorSystem
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, bool generated) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, bool generated) override;
 
     void BindFields();
 

@@ -364,6 +364,7 @@ void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*c
 {
     if (previousState == EditorSystemsManager::Transform)
     {
+        needRecalculateBgrBeforeRender = true;
         OnUpdate();
     }
 }
@@ -627,6 +628,7 @@ void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRoo
         AddBackgroundControllerToCanvas(backgroundController, std::distance(newRootControls.begin(), iter));
     }
     needRecalculateBgrBeforeRender = true;
+    OnUpdate();
 
     needCentralizeChanged.Emit(true);
 }

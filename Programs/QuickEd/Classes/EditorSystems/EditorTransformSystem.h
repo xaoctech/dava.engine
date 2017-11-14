@@ -51,8 +51,8 @@ private:
     struct MoveInfo;
 
     EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, bool generated) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, bool generated) override;
     void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
     eSystems GetOrder() const override;
 
@@ -101,7 +101,6 @@ private:
     DAVA::Map<const ControlNode*, DAVA::Vector2> extraDeltaToMoveControls;
     //this variable is used for rotation only
     DAVA::Vector2 previousMousePos;
-    DAVA::Vector2 initRootPosition;
     SelectedControls selectedControlNodes;
     DAVA::List<std::unique_ptr<MoveInfo>> nodesToMoveInfos;
     DAVA::Vector<DAVA::UIControl*> neighbours;

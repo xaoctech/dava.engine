@@ -4,9 +4,8 @@
 #include <Math/Vector.h>
 #include <Logger/Logger.h>
 
-DAVA::FastName CanvasData::displacementPropertyName{ "displacement" };
+DAVA::FastName CanvasData::positionPropertyName{ "displacement" };
 DAVA::FastName CanvasData::workAreaSizePropertyName{ "work area size" };
-DAVA::FastName CanvasData::canvasSizePropertyName{ "canvas size" };
 DAVA::FastName CanvasData::rootPositionPropertyName{ "root control position" };
 DAVA::FastName CanvasData::scalePropertyName{ "scale" };
 DAVA::FastName CanvasData::predefinedScalesPropertyName{ "predefined scales" };
@@ -16,8 +15,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CanvasData)
 {
     DAVA::ReflectionRegistrator<CanvasData>::Begin()
     .Field(workAreaSizePropertyName.c_str(), &CanvasData::GetWorkAreaSize, &CanvasData::SetWorkAreaSize)
-    .Field(canvasSizePropertyName.c_str(), &CanvasData::GetCanvasSize, nullptr)
-    .Field(displacementPropertyName.c_str(), &CanvasData::GetDisplacement, &CanvasData::SetDisplacement)
+    .Field(positionPropertyName.c_str(), &CanvasData::GetPosition, &CanvasData::SetPosition)
     .Field(rootPositionPropertyName.c_str(), &CanvasData::GetRootPosition, &CanvasData::SetRootPosition)
     .Field(scalePropertyName.c_str(), &CanvasData::GetScale, &CanvasData::SetScale)
     .Field(predefinedScalesPropertyName.c_str(), &CanvasData::GetPredefinedScales, nullptr)
@@ -32,12 +30,12 @@ CanvasData::CanvasData()
 
 DAVA::Vector2 CanvasData::GetWorkAreaSize() const
 {
-    return workAreaSize;
+    return workAreaSize * scale;
 }
 
 DAVA::Vector2 CanvasData::GetRootControlSize() const
 {
-    return rootControlSize;
+    return rootControlSize * scale;
 }
 
 void CanvasData::SetWorkAreaSize(const DAVA::Vector2& size)
@@ -46,34 +44,29 @@ void CanvasData::SetWorkAreaSize(const DAVA::Vector2& size)
     workAreaSize = size;
     if (workAreaSize.IsZero())
     {
-        displacement.SetZero();
+        position.SetZero();
     }
 }
 
-DAVA::Vector2 CanvasData::GetCanvasSize() const
+DAVA::Vector2 CanvasData::GetPosition() const
 {
-    return workAreaSize * scale + margin * 2.0f;
+    return position;
 }
 
-DAVA::Vector2 CanvasData::GetDisplacement() const
+void CanvasData::SetPosition(const DAVA::Vector2& displacement_)
 {
-    return displacement;
-}
-
-void CanvasData::SetDisplacement(const DAVA::Vector2& displacement_)
-{
-    displacement = displacement_;
+    position = displacement_;
 }
 
 DAVA::Vector2 CanvasData::GetRootPosition() const
 {
-    return rootPosition;
+    return rootRelativePosition * scale;
 }
 
 void CanvasData::SetRootPosition(const DAVA::Vector2& rootPosition_)
 {
     DVASSERT(rootPosition_.dx >= 0.0f && rootPosition_.dy >= 0.0f);
-    rootPosition = rootPosition_;
+    rootRelativePosition = rootPosition_;
 }
 
 DAVA::float32 CanvasData::GetScale() const

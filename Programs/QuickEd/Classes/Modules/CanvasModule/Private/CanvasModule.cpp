@@ -3,6 +3,7 @@
 #include "Modules/CanvasModule/EditorCanvas.h"
 #include "Modules/CanvasModule/EditorControlsView.h"
 #include "Modules/CanvasModule/CanvasData.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
 #include "UI/Preview/PreviewWidgetSettings.h"
 
 #include "Interfaces/EditorSystemsManagerInteface.h"
@@ -33,6 +34,8 @@ CanvasModule::CanvasModule()
 
 void CanvasModule::PostInit()
 {
+    canvasDataAdapter = std::make_unique<CanvasDataAdapter>(GetAccessor());
+
     CreateData();
     CreateMenuSeparator();
     RecreateBgrColorActions();
@@ -175,9 +178,10 @@ void CanvasModule::OnNeedCentralizeChanged(bool needCentralize)
     {
         return;
     }
+    DAVA::Vector2 centerPosition = canvasDataAdapter->GetCenterPosition();
 
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
-    canvasData->displacement.SetZero();
+    canvasData->SetPosition(centerPosition);
 }
 
 void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControlPos)
@@ -189,7 +193,7 @@ void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControl
     }
 
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
-    canvasData->rootPosition = rootControlPos;
+    canvasData->rootRelativePosition = rootControlPos;
 }
 
 void CanvasModule::OnRootControlSizeChanged(const DAVA::Vector2& rootControlSize)

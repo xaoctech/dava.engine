@@ -282,7 +282,7 @@ EditorSystemsManager::eDragState EditorTransformSystem::RequireNewState(DAVA::UI
     return EditorSystemsManager::NoDrag;
 }
 
-bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
 {
     using namespace DAVA;
     if (accessor->GetActiveContext() == nullptr)
@@ -298,7 +298,7 @@ bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
     return false;
 }
 
-void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/)
 {
     using namespace DAVA;
     switch (currentInput->phase)
@@ -341,22 +341,13 @@ void EditorTransformSystem::OnDragStateChanged(EditorSystemsManager::eDragState 
         extraDeltaToMoveControls.clear();
         PrepareDrag();
 
-        if (isRootControl)
-        {
-            initRootPosition = canvasDataAdapter.GetDisplacementPosition();
-        }
-
         documentData->BeginBatch("transformations");
     }
 
     else if (previousState == EditorSystemsManager::Transform)
     {
-        if (isRootControl)
-        {
-            canvasDataAdapter.SetDisplacementPosition(initRootPosition);
-        }
-
         documentData->EndBatch();
+        canvasDataAdapter.TryCentralizeScene();
     }
 }
 
@@ -913,7 +904,7 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
         deltaPosition /= control->GetScale();
         deltaPosition -= adjustedSize * control->GetPivot();
         deltaPosition *= parentGeometricData.scale * control->GetScale();
-        canvasDataAdapter.SetDisplacementPosition(canvasDataAdapter.GetDisplacementPosition() - deltaPosition);
+        canvasDataAdapter.MoveScene(deltaPosition, true);
 
         UIControl* movableInEditorParent = EditorTransformSystemDetail::GetParentWithComponent<MovableInEditorComponent>(control);
         movableInEditorParent->SetSize(finalSize);

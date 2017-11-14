@@ -90,12 +90,12 @@ EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::U
     }
 }
 
-bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
 {
     return (isEscPressed || isLMBPressed);
 }
 
-void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/)
 {
     using namespace DAVA;
 

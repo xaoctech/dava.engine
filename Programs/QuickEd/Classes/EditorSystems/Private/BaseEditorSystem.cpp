@@ -43,11 +43,11 @@ Painting::Painter* BaseEditorSystem::GetPainter() const
     return painter;
 }
 
-void BaseEditorSystem::ProcessInput(DAVA::UIEvent* /*currentInput*/)
+void BaseEditorSystem::ProcessInput(DAVA::UIEvent* /*currentInput*/, bool /*generated*/)
 {
 }
 
-bool BaseEditorSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool BaseEditorSystem::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
 {
     return false;
 }

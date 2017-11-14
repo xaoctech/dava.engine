@@ -7,6 +7,8 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 
+#include <Engine/Engine.h>
+#include <Time/SystemTimer.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
@@ -21,7 +23,7 @@ EditorCanvas::EditorCanvas(DAVA::TArc::ContextAccessor* accessor)
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DataContext*) { return Reflection::Create(&canvasDataAdapter); });
 }
 
-bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
 {
     using namespace DAVA;
     if (accessor->GetActiveContext() == nullptr)
@@ -36,13 +38,21 @@ bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput) const
     {
         return true;
     }
-    return (GetSystemsManager()->GetDragState() == EditorSystemsManager::DragScreen &&
+    return (GetSystemsManager()->GetDragState() != EditorSystemsManager::NoDrag &&
             (currentInput->mouseButton == eMouseButtons::LEFT || currentInput->mouseButton == eMouseButtons::MIDDLE));
 }
 
-void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
+void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, bool generated)
 {
     using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    const EditorSystemsManager* systemsManager = GetSystemsManager();
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
 
 #if defined __DAVAENGINE_MACOS__
     const float32 direction = -1.0f;
@@ -51,6 +61,9 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
 #else
 #error "unsupported platform"
 #endif
+
+    Vector2 pos = currentInput->point;
+    Vector2 mouseDelta = systemsManager->GetMouseDelta();
 
     if (currentInput->device == eInputDevices::TOUCH_PAD)
     {
@@ -70,24 +83,23 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
 
                     float32 newScale = scale * (1.0f + (scaleDelta * gestureDelta.dy * direction));
 
-                    canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
+                    canvasDataAdapter.SetScale(newScale, pos);
                 }
                 else
                 {
-                    Vector2 position = canvasDataAdapter.GetDisplacementPosition();
-                    Vector2 newPosition = position - gestureDelta;
-                    canvasDataAdapter.SetDisplacementPositionSafe(newPosition);
+                    canvasDataAdapter.MoveScene(gestureDelta);
                 }
             }
             else if (gesture.magnification != 0.0f)
             {
                 float32 newScale = canvasDataAdapter.GetScale() + gesture.magnification;
-                canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
+                canvasDataAdapter.SetScale(newScale, pos);
             }
         }
     }
     else if (currentInput->device == eInputDevices::MOUSE)
     {
+        EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
         if (currentInput->phase == UIEvent::Phase::WHEEL)
         {
             if ((currentInput->modifiers & (eModifierKeys::CONTROL | eModifierKeys::COMMAND)) != eModifierKeys::NONE)
@@ -99,25 +111,50 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput)
                 //later we can move it to preferences
                 const float32 scaleDelta = 0.07f;
                 float32 newScale = scale * (1.0f + (scaleDelta * ticksCount * direction));
-                canvasDataAdapter.SetScale(newScale, currentInput->physPoint);
+                canvasDataAdapter.SetScale(newScale, pos);
             }
             else
             {
-                Vector2 position = canvasDataAdapter.GetDisplacementPosition();
                 Vector2 additionalPos(currentInput->wheelDelta.x, currentInput->wheelDelta.y);
 
                 additionalPos *= canvasDataAdapter.GetViewSize();
                 //custom delimiter to scroll widget by little chunks of visible area
                 static const float wheelDelta = 0.05f;
-                Vector2 newPosition = position - additionalPos * wheelDelta;
-                canvasDataAdapter.SetDisplacementPositionSafe(newPosition);
+                canvasDataAdapter.MoveScene(-1 * additionalPos * wheelDelta);
             }
         }
-        else
+        else if (dragState == EditorSystemsManager::DragScreen)
         {
-            Vector2 position = canvasDataAdapter.GetDisplacementPosition();
-            Vector2 delta = GetSystemsManager()->GetMouseDelta();
-            canvasDataAdapter.SetDisplacementPositionSafe(position - delta);
+            canvasDataAdapter.MoveScene(mouseDelta);
+        }
+        else if (generated)
+        {
+            Vector2 lastPos = pos - systemsManager->GetMouseDelta();
+
+            Vector2 delta(0.0f, 0.0f);
+
+            CanvasData* canvasData = activeContext->GetData<CanvasData>();
+            Vector2 viewSize = canvasDataAdapter.GetViewSize();
+            Vector2 start(0.0f, 0.0f);
+            Vector2 end = viewSize;
+
+            for (int32 i = Vector2::AXIS_X; i < Vector2::AXIS_COUNT; ++i)
+            {
+                Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
+
+                if (pos[axis] < start[axis])
+                {
+                    delta[axis] = std::min(start[axis] - pos[axis], lastPos[axis] - pos[axis]);
+                }
+                else if (pos[axis] > end[axis])
+                {
+                    delta[axis] = -std::min(pos[axis] - end[axis], pos[axis] - lastPos[axis]);
+                }
+            }
+            if (delta.IsZero() == false)
+            {
+                canvasDataAdapter.MoveScene(delta, true);
+            }
         }
     }
 }
@@ -141,6 +178,7 @@ BaseEditorSystem::eSystems EditorCanvas::GetOrder() const
 
 void EditorCanvas::OnUpdate()
 {
+    MoveSceneByUpdate();
     OnPositionChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::positionPropertyName));
     OnScaleChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
 }
@@ -203,6 +241,7 @@ void EditorCanvas::OnPositionChanged(const DAVA::Any& positionValue)
 void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
 {
     using namespace DAVA;
+
     CanvasModuleData* canvasModuleData = accessor->GetGlobalContext()->GetData<CanvasModuleData>();
     UIControl* canvas = canvasModuleData->canvas.Get();
     if (scaleValue.CanGet<float32>())
@@ -213,5 +252,56 @@ void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
     else
     {
         canvas->SetScale(Vector2(1.0f, 1.0f));
+    }
+}
+
+void EditorCanvas::MoveSceneByUpdate()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    EditorSystemsManager* systemsManager = GetSystemsManager();
+    Vector2 mousePos = systemsManager->GetLastMousePos();
+    EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+    DataContext* activeContext = accessor->GetActiveContext();
+
+    if (activeContext == nullptr || dragState == EditorSystemsManager::NoDrag)
+    {
+        return;
+    }
+
+    Vector2 viewSize = canvasDataAdapter.GetViewSize();
+
+    Vector2 start(0.0f, 0.0f);
+    Vector2 end = viewSize;
+    Vector2 mouseDelta(0.0f, 0.0f);
+    float32 maxOverflow = 400.0f;
+    //constant to convert mouse overflow to mouse delta
+    float32 overflowToSpeedDelimiter = 10.0f;
+    for (int32 i = Vector2::AXIS_X; i < Vector2::AXIS_COUNT; ++i)
+    {
+        Vector2::eAxis axis = static_cast<Vector2::eAxis>(i);
+        if (mousePos[axis] < start[axis])
+        {
+            mouseDelta[axis] -= std::min(maxOverflow, start[axis] - mousePos[axis]) / overflowToSpeedDelimiter;
+        }
+        else if (mousePos[axis] > end[axis])
+        {
+            mouseDelta[axis] += std::min(maxOverflow, mousePos[axis] - end[axis]) / overflowToSpeedDelimiter;
+        }
+    }
+
+    if (mouseDelta.IsZero() == false)
+    {
+        Vector2 positionDelta = -mouseDelta;
+        Vector2 clampedPositionDelta = positionDelta;
+        mouseDelta = -clampedPositionDelta;
+
+        UIEvent event;
+        event.phase = UIEvent::Phase::DRAG;
+        event.device = eInputDevices::MOUSE;
+        event.mouseButton = eMouseButtons::LEFT;
+        event.point = mousePos + mouseDelta;
+        systemsManager->EmulateInput(&event);
     }
 }
