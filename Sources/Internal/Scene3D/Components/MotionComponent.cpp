@@ -26,7 +26,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
     .Field("playbackRate", &MotionComponent::GetPlaybackRate, &MotionComponent::SetPlaybackRate)[M::DisplayName("Playback Rate"), M::Range(0.f, 1.f, 0.1f)]
     .Field("parameters", &MotionComponent::parameters)[M::DisplayName("Parameters")]
     .Field("motions", &MotionComponent::motions)[M::DisplayName("Motions")]
-    .Field("simpleMotionRepeatsCount", &MotionComponent::simpleMotionRepeatsCount)[M::DisplayName("Single animation Repeats")]
+    .Field("singleAnimationRepeatsCount", &MotionComponent::GetSingleAnimationRepeatsCount, &MotionComponent::SetSingleAnimationRepeatsCount)[M::DisplayName("Single animation Repeats")]
     .End();
 }
 

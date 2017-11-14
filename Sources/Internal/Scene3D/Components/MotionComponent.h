@@ -38,6 +38,9 @@ public:
     float32 GetPlaybackRate() const;
     void SetPlaybackRate(float32 rate);
 
+    uint32 GetSingleAnimationRepeatsCount() const;
+    void SetSingleAnimationRepeatsCount(uint32 repeastCount);
+
     const Vector3& GetRootOffsetDelta() const;
 
     Vector<FilePath> GetDependencies() const;
@@ -70,6 +73,16 @@ inline float32 MotionComponent::GetPlaybackRate() const
 inline void MotionComponent::SetPlaybackRate(float32 rate)
 {
     playbackRate = rate;
+}
+
+inline uint32 MotionComponent::GetSingleAnimationRepeatsCount() const
+{
+    return simpleMotionRepeatsCount;
+}
+
+inline void MotionComponent::SetSingleAnimationRepeatsCount(uint32 repeastCount)
+{
+    simpleMotionRepeatsCount = repeastCount;
 }
 
 inline const Vector3& MotionComponent::GetRootOffsetDelta() const

@@ -25,7 +25,6 @@ public:
     void EvaluatePose(SkeletonPose* outPose);
 
     bool IsPlaying() const;
-    bool IsFinished() const;
 
     void SetAnimation(AnimationClip* animationClip);
     AnimationClip* GetAnimation() const;

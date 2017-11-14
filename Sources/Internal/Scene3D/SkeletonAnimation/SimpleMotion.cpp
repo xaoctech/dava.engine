@@ -51,21 +51,15 @@ void SimpleMotion::Update(float32 timeElapsed)
 
         if (animationClip->GetDuration() <= currentAnimationTime)
         {
-            isPlaying = (repeatsLeft > 0 || repeatsCount == 0);
-            if (isPlaying)
-            {
-                currentAnimationTime -= animationClip->GetDuration();
+            currentAnimationTime -= animationClip->GetDuration();
 
-                if (repeatsCount != 0)
-                    --repeatsLeft;
+            if (repeatsCount != 0)
+            {
+                --repeatsLeft;
+                isPlaying = (repeatsLeft > 0);
             }
         }
     }
-}
-
-bool SimpleMotion::IsFinished() const
-{
-    return (repeatsCount > 0) && (isPlaying == false) && (currentAnimationTime != 0.f);
 }
 
 void SimpleMotion::SetAnimation(AnimationClip* clip)

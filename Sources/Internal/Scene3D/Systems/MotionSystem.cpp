@@ -172,7 +172,7 @@ void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime
         if (simpleMotion != nullptr && simpleMotion->IsPlaying())
         {
             simpleMotion->Update(dTime);
-            if (simpleMotion->IsFinished())
+            if (!simpleMotion->IsPlaying())
                 motionSingleComponent->simpleMotionFinished.emplace_back(motionComponent);
 
             simpleMotion->EvaluatePose(&resultPose);
