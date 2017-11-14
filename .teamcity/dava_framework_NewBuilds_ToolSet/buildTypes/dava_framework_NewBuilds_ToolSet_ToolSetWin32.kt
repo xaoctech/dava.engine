@@ -14,7 +14,6 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger.*
 import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 
 object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDavaTools_win)
     uuid = "191a53b3-3a4a-4c0d-8aec-6bebec5048c0"
     extId = "dava_framework_NewBuilds_ToolSet_ToolSetWin32"
     name = "ToolSet_win"
@@ -53,8 +52,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
                   checked = "true", unchecked = "false")
         checkbox("use_incredi_build", "true",
                   checked = "true", unchecked = "false")
-        checkbox("x64", "false", display = ParameterDisplay.PROMPT,
-                  checked = "true", unchecked = "false")
     }
 
     vcs {
@@ -74,7 +71,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
         script {
             name = "report commit status INPROGRESS"
             workingDir = "Teamcity"
-            scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
+            scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
         }
         script {
             name = "Clear"
@@ -95,13 +92,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
         script {
             name = "generate project"
             workingDir = "%pathToProjectBuild%"
-            scriptContent = """
-                if %x64% == true (
-                    python %dava_gen% %platform% x64 %pathToProject% --add_definitions=%add_definitions%
-                ) else (
-                    python %dava_gen% %platform% %pathToProject% --add_definitions=%add_definitions%
-                )
-            """.trimIndent()
+            scriptContent = "python %dava_gen% %platform% %pathToProject% --add_definitions=%add_definitions%"
         }
         script {
             name = "build"
@@ -119,13 +110,21 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
             """.trimIndent()
         }
         script {
+            name = "Copy build result"
+            workingDir = "%pathToProjectApp_other%"
+            scriptContent = """
+                rmdir "%dava_dir%/Programs/UnitTests/Release" /S /Q
+                xcopy "%pathToProjectApp_other%" "%dava_dir%/Programs/UnitTests/Release" /I /S /H /E /R /Y
+            """.trimIndent()
+        }
+        script {
             name = "PackApp"
             workingDir = "%dava_scripts_dir%"
             scriptContent = "python pack_app.py --app_name %ProjectName% --out_path %pathToOutPackDir% --app_path %pathToProjectApp% --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number%"
         }
         script {
             name = "UnitTest"
-            workingDir = "%pathToProjectBuild%/app_other"
+            workingDir = "%pathToProjectApp_other%"
             scriptContent = "python start_tests.py"
         }
         script {
@@ -134,14 +133,14 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
             workingDir = "Teamcity"
             scriptContent = """
                 echo "##teamcity[setParameter name='env.build_failed' value='false']"
-                python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status SUCCESSFUL --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Good job !"
+                python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status SUCCESSFUL --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Good job !"
             """.trimIndent()
         }
         script {
             name = "report commit status FAILED"
             executionMode = BuildStep.ExecutionMode.ALWAYS
             workingDir = "Teamcity"
-            scriptContent = """python report_build_status.py --reported_status %env.build_failed% --teamcity_url https://teamcity2.wargaming.net --stash_url https://stash.wargaming.net --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status FAILED --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Need to work!""""
+            scriptContent = """python report_build_status.py --reported_status %env.build_failed% --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status FAILED --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Need to work!""""
         }
     }
 
@@ -160,7 +159,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
         feature {
             type = "teamcity.stash.status"
             enabled = false
-            param("stash_host", "https://stash.wargaming.net")
+            param("stash_host", "https://%stash_hostname%")
             param("stash_only_latest", "true")
             param("stash_username", "dava_teamcity")
             param("stash_vcsignorecsv", "dava.framework_wgtf_stash")
@@ -171,7 +170,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
             enabled = false
             vcsRootExtId = "dava_DavaFrameworkStash"
             publisher = bitbucketServer {
-                url = "https://stash.wargaming.net"
+                url = "https://%stash_hostname%"
                 userName = "dava_teamcity"
                 password = "zxx38986f37ccea38c0775d03cbe80d301b"
             }
@@ -182,4 +181,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
         doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
         exists("MSBuildTools4.0_x86_Path")
     }
+    
+    disableSettings("RQ_52", "RUNNER_9")
 })

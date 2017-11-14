@@ -14,7 +14,6 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger.*
 import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 
 object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDAVATools_mac)
     uuid = "a3f20776-ef99-4e39-bd04-4e5fac191e7e"
     extId = "dava_framework_NewBuilds_ToolSet_ToolSetMac"
     name = "ToolSet_mac"
@@ -27,7 +26,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
     """.trimIndent()
 
     params {
-        param("add_definitions", "-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=1,-DCUSTOM_DAVA_CONFIG_PATH_MAC=%DavaConfigMac%,-DIGNORE_FILE_TREE_CHECK=1,-DCHECK_DEPENDENT_FOLDERS=1,-DTEAMCITY_URL=https://teamcity2.wargaming.net,-DSTASH_URL=https://stash.wargaming.net,-DTEAMCITY_LOGIN=%teamcity_restapi_login%,-DTEAMCITY_PASS=%teamcity_restapi_password%,-DSTASH_LOGIN=%stash_restapi_login%,-DSTASH_PASS=%stash_restapi_password%,-DFRAMEWORK_BRANCH=%teamcity.build.branch%")
+        param("add_definitions", "-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=true,-DCUSTOM_DAVA_CONFIG_PATH_MAC=%DavaConfigMac%,-DIGNORE_FILE_TREE_CHECK=true")
         param("appID", "%ProjectName%")
         param("baseArchiveNameMac", "%ProjectName%_mac_")
         param("baseURLMac", "http://by1-davatool-01.corp.wargaming.local/dava.framework/mac/Tools/%branchID%/")
@@ -99,11 +98,11 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         script {
             name = "PackApp"
             workingDir = "%dava_scripts_dir%"
-            scriptContent = "python pack_app.py --app_name %ProjectName% --out_path %pathToOutPackDir% --app_path %pathToProjectApp% --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number%"
+            scriptContent = "python pack_app.py --app_name %ProjectName% --out_path %pathToOutPackDir% --app_path %pathToProjectApp% --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number% --ignore_file_masks '.dSYM .DS_Store'"
         }
         script {
             name = "UnitTest"
-            workingDir = "%pathToProjectBuild%/app_other"
+            workingDir = "%pathToProjectApp_other%"
             scriptContent = "python start_tests.py"
         }
         script {
@@ -160,4 +159,5 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         exists("env.macos")
     }
     
+    disableSettings("RUNNER_131")
 })

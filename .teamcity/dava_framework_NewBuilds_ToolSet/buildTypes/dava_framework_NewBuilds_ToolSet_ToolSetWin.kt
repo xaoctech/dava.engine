@@ -14,7 +14,6 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger.*
 import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 
 object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDavaTools_win)
     uuid = "191a53b3-3a4a-4c0d-8aec-6bebec5048c0"
     extId = "dava_framework_NewBuilds_ToolSet_ToolSetWin"
     name = "ToolSet_win"
@@ -125,7 +124,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         }
         script {
             name = "UnitTest"
-            workingDir = "%pathToProjectBuild%/app_other"
+            workingDir = "%pathToProjectApp_other%"
             scriptContent = "python start_tests.py"
         }
         script {
@@ -182,4 +181,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
         exists("MSBuildTools4.0_x86_Path")
     }
+    
+    disableSettings("RQ_52", "RUNNER_9")
 })
