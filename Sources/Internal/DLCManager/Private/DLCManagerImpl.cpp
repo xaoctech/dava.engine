@@ -776,19 +776,18 @@ void DLCManagerImpl::AskFooter()
     }
 }
 
-String DLCManagerImpl::BuildErrorMessageFailWrite() const
+String DLCManagerImpl::BuildErrorMessageFailWrite(const FilePath& path)
 {
     StringStream ss;
 
-    ss << "can't write file: " << localCacheFooter.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << '\n';
+    ss << "can't write file: " << path.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << '\n';
 
     // Check available space on device
-    //List<Storage>
     const DeviceInfo::StorageInfo* currentDevice = nullptr;
     const List<DeviceInfo::StorageInfo> storageList = DeviceInfo::GetStoragesList();
     for (const DeviceInfo::StorageInfo& info : storageList)
     {
-        if (localCacheFooter.StartsWith(info.path))
+        if (path.StartsWith(info.path))
         {
             if (currentDevice == nullptr)
             {
@@ -826,11 +825,11 @@ bool DLCManagerImpl::SaveServerFooter()
         }
     }
 
-    const String errMsg = BuildErrorMessageFailWrite();
+    const String errMsg = BuildErrorMessageFailWrite(localCacheFooter);
 
-    if (errMsg != lastErrorMessage)
+    if (errMsg != initErrorMsg)
     {
-        lastErrorMessage = errMsg;
+        initErrorMsg = errMsg;
         log << errMsg << std::endl;
         Logger::Error("%s", errMsg.c_str());
         error.Emit(ErrorOrigin::FileIO, errno, localCacheFooter.GetAbsolutePathname());
@@ -866,9 +865,9 @@ void DLCManagerImpl::GetFooter()
             const uint32 crc32 = CRC32::ForBuffer(reinterpret_cast<char*>(&initFooterOnServer.info), sizeof(initFooterOnServer.info));
             if (crc32 != initFooterOnServer.infoCrc32)
             {
-                const String errMsg = BuildErrorMessageBadServerCrc(crc32);
-                log << errMsg;
-                Logger::Error("%s", errMsg.c_str());
+                initErrorMsg = BuildErrorMessageBadServerCrc(crc32);
+                log << initErrorMsg;
+                Logger::Error("%s", initErrorMsg.c_str());
                 TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFooter);
                 return;
             }
@@ -926,25 +925,52 @@ void DLCManagerImpl::AskFileTable()
     log << "initState: " << ToString(initState) << std::endl;
 }
 
-void DLCManagerImpl::ReadLocalFileTableInfoBuffer()
+String DLCManagerImpl::BuildErrorMessageFailedRead(const FilePath& path)
+{
+    StringStream ss;
+    ss << "failed read from file: " << path.GetAbsolutePathname() << " errno(" << errno << ") " << strerror(errno);
+    return ss.str();
+}
+
+void DLCManagerImpl::UpdateErrorMessageFailedRead()
+{
+    const String err = BuildErrorMessageFailedRead(localCacheFileTable);
+    if (err != initErrorMsg)
+    {
+        initErrorMsg = err;
+        log << initErrorMsg;
+    }
+}
+
+bool DLCManagerImpl::ReadLocalFileTableInfoBuffer()
 {
     uint64 fileSize = 0;
     FileSystem* fs = engine.GetContext()->fileSystem;
 
-    fs->GetFileSize(localCacheFileTable, fileSize);
+    if (!fs->GetFileSize(localCacheFileTable, fileSize))
+    {
+        UpdateErrorMessageFailedRead();
+        return false;
+    }
 
     buffer.resize(static_cast<size_t>(fileSize));
 
     ScopedPtr<File> f(File::Create(localCacheFileTable, File::OPEN | File::READ));
     if (f)
     {
-        f->Read(buffer.data(), static_cast<uint32>(buffer.size()));
+        const uint32 result = f->Read(buffer.data(), static_cast<uint32>(buffer.size()));
+        if (result != buffer.size())
+        {
+            UpdateErrorMessageFailedRead();
+            return false;
+        }
     }
     else
     {
-        log << "error: failed open file: " << localCacheFileTable.GetAbsolutePathname() << " (" << errno << ") " << strerror(errno) << std::endl;
-        DAVA_THROW(Exception, "can't open file: " + localCacheFileTable.GetAbsolutePathname());
+        UpdateErrorMessageFailedRead();
+        return false;
     }
+    return true;
 }
 
 void DLCManagerImpl::FillFileNameIndexes()
@@ -962,49 +988,63 @@ void DLCManagerImpl::FillFileNameIndexes()
     }
 }
 
-void DLCManagerImpl::ReadContentAndExtractFileNames()
+bool DLCManagerImpl::ReadContentAndExtractFileNames()
 {
-    ReadLocalFileTableInfoBuffer();
+    if (!ReadLocalFileTableInfoBuffer())
+    {
+        return false;
+    }
 
-    uint32 crc32 = CRC32::ForBuffer(buffer);
+    const uint32 crc32 = CRC32::ForBuffer(buffer);
     if (crc32 != initFooterOnServer.info.filesTableCrc32)
     {
-        const char* err = "FileTable not match crc32";
-        log << "error: " << err << std::endl;
-        DAVA_THROW(DAVA::Exception, err);
+        log << "error: FileTable not match crc32" << std::endl;
+        return false;
     }
 
     uncompressedFileNames.clear();
-    PackArchive::ExtractFileTableData(initFooterOnServer,
-                                      buffer,
-                                      uncompressedFileNames,
-                                      usedPackFile.filesTable);
+    try
+    {
+        PackArchive::ExtractFileTableData(initFooterOnServer,
+                                          buffer,
+                                          uncompressedFileNames,
+                                          usedPackFile.filesTable);
+    }
+    catch (Exception& ex)
+    {
+        log << ex.file << "(" << ex.line << "): " << ex.what() << std::endl;
+        return false;
+    }
 
     FillFileNameIndexes();
 
     initState = InitState::CalculateLocalDBHashAndCompare;
     log << "initState: " << ToString(initState) << std::endl;
+
+    return true;
 }
 
 void DLCManagerImpl::GetFileTable()
 {
     DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
-    DLCDownloader::TaskStatus status;
-
     if (downloadTask != nullptr)
     {
-        status = downloader->GetTaskStatus(downloadTask);
+        const DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
         if (DLCDownloader::TaskState::Finished == status.state)
         {
             downloader->RemoveTask(downloadTask);
             downloadTask = nullptr;
 
-            bool allGood = !status.error.errorHappened;
+            const bool allGood = !status.error.errorHappened;
             if (allGood)
             {
                 retryCount = 0;
-                ReadContentAndExtractFileNames();
+                if (!ReadContentAndExtractFileNames())
+                {
+                    TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFileTable);
+                    return;
+                }
 
                 FireNetworkReady(true);
             }
@@ -1022,7 +1062,10 @@ void DLCManagerImpl::GetFileTable()
     else
     {
         // we already have file without additional request
-        ReadContentAndExtractFileNames();
+        if (!ReadContentAndExtractFileNames())
+        {
+            TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFileTable);
+        }
     }
 }
 
@@ -1117,7 +1160,7 @@ void DLCManagerImpl::ParseMeta()
 {
     DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
-    uint32 buffCrc32 = CRC32::ForBuffer(buffer);
+    const uint32 buffCrc32 = CRC32::ForBuffer(buffer);
 
     try
     {
@@ -1133,13 +1176,15 @@ void DLCManagerImpl::ParseMeta()
     }
     catch (Exception& ex)
     {
-        int32 localErrno = errno;
-        log << "error: " << ex.what() << " file: " << ex.file << "("
-            << ex.line << ") errno: (" << localErrno << ") "
-            << strerror(localErrno) << std::endl;
+        const String errMsg = BuildErrorMessageFailWrite(localCacheMeta);
 
-        error.Emit(ErrorOrigin::FileIO, localErrno, localCacheMeta.GetAbsolutePathname());
-
+        if (errMsg != initErrorMsg)
+        {
+            initErrorMsg = errMsg;
+            log << initErrorMsg << std::endl;
+            log << "file: " << ex.file << "(" << ex.line << "): " << ex.what() << std::endl;
+            error.Emit(ErrorOrigin::FileIO, errno, localCacheMeta.GetAbsolutePathname());
+        }
         // lets start all over again
         initState = InitState::LoadingRequestAskFooter;
         return;
@@ -1178,7 +1223,10 @@ void DLCManagerImpl::LoadPacksDataFromMeta()
             // no server data, so use local as is (preload existing file_names_cache)
             LoadLocalCacheServerFooter();
 
-            ReadContentAndExtractFileNames();
+            if (!ReadContentAndExtractFileNames())
+            {
+                DAVA_THROW(Exception, "can't read and extract FileNamesTable");
+            }
         }
 
         ScopedPtr<File> f(File::Create(localCacheMeta, File::OPEN | File::READ));
