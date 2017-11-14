@@ -15,7 +15,7 @@ void UIEventsSingleComponent::ResetState()
 {
 }
 
-bool UIEventsSingleComponent::DispatchEvent(UIControl* control, const FastName& event)
+bool UIEventsSingleComponent::SendEvent(UIControl* control, const FastName& event)
 {
     if (event.IsValid())
     {
@@ -25,7 +25,7 @@ bool UIEventsSingleComponent::DispatchEvent(UIControl* control, const FastName& 
     return false;
 }
 
-bool UIEventsSingleComponent::BroadcastEvent(UIControl* control, const FastName& event)
+bool UIEventsSingleComponent::SendBroadcastEvent(UIControl* control, const FastName& event)
 {
     if (event.IsValid())
     {

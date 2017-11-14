@@ -25,8 +25,8 @@ using namespace DAVA;
 namespace UIEventsTestDetails
 {
 const FastName COMMAND_SET_TEXT_NAME("SetText");
-const FastName COMMAND_DISPATCH_EVENT_NAME("DispatchEvent");
-const FastName COMMAND_BROADCAST_EVENT_NAME("BroadcastEvent");
+const FastName COMMAND_DISPATCH_EVENT_NAME("SendEvent");
+const FastName COMMAND_BROADCAST_EVENT_NAME("SendBroadcastEvent");
 }
 
 DAVA_TESTCLASS (UIEventsTest)
@@ -118,13 +118,13 @@ DAVA_TESTCLASS (UIEventsTest)
         TEST_VERIFY(!dispatchTest);
         TEST_VERIFY(!broadcastTest);
 
-        TEST_VERIFY(eventsSingle->DispatchEvent(childText.Get(), DISPATCH_TEST_EVENT));
+        TEST_VERIFY(eventsSingle->SendEvent(childText.Get(), DISPATCH_TEST_EVENT));
         sys->Process(0.f);
 
         TEST_VERIFY(dispatchTest);
         TEST_VERIFY(!broadcastTest);
 
-        TEST_VERIFY(eventsSingle->BroadcastEvent(text.Get(), BROADCAST_TEST_EVENT));
+        TEST_VERIFY(eventsSingle->SendBroadcastEvent(text.Get(), BROADCAST_TEST_EVENT));
         sys->Process(0.f);
 
         TEST_VERIFY(dispatchTest);
@@ -136,7 +136,7 @@ DAVA_TESTCLASS (UIEventsTest)
         actions->UnbindAction(DISPATCH_TEST_EVENT);
         TEST_VERIFY(!dispatchTest);
 
-        eventsSingle->DispatchEvent(childText.Get(), DISPATCH_TEST_EVENT);
+        eventsSingle->SendEvent(childText.Get(), DISPATCH_TEST_EVENT);
         sys->Process(0.f);
 
         TEST_VERIFY(!dispatchTest);
@@ -146,8 +146,8 @@ DAVA_TESTCLASS (UIEventsTest)
         clone->Release();
 
         FastName empty;
-        TEST_VERIFY(!eventsSingle->DispatchEvent(childText.Get(), empty));
-        TEST_VERIFY(!eventsSingle->BroadcastEvent(text.Get(), empty));
+        TEST_VERIFY(!eventsSingle->SendEvent(childText.Get(), empty));
+        TEST_VERIFY(!eventsSingle->SendBroadcastEvent(text.Get(), empty));
     }
 
     DAVA_TEST (ShortcutsTest)

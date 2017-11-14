@@ -47,10 +47,10 @@ public:
 
 private:
     /** Send event from child to root controls. */
-    bool DispatchEvent(UIControl* control, const FastName& event);
+    bool SendEvent(UIControl* control, const FastName& event);
 
     /** Broadcast event to all children controls. */
-    bool BroadcastEvent(UIControl* control, const FastName& event);
+    bool SendBroadcastEvent(UIControl* control, const FastName& event);
 
     /** Process event internal*/
     bool ProcessEventOnContol(UIControl* sceneControl, const FastName& event, bool checkFlow);

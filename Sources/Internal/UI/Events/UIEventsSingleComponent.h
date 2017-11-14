@@ -29,9 +29,9 @@ struct UIEventsSingleComponent : public UISingleComponent
     void ResetState() override;
 
     /** Send event through controls graph. */
-    bool DispatchEvent(UIControl* control, const FastName& event);
+    bool SendEvent(UIControl* control, const FastName& event);
 
     /** Broadcast event to control children. */
-    bool BroadcastEvent(UIControl* control, const FastName& event);
+    bool SendBroadcastEvent(UIControl* control, const FastName& event);
 };
 }

@@ -43,11 +43,11 @@ void UIEventsSystem::Process(float32 elapsedTime)
             eventsSingle->events.pop_front();
             if (event.broadcast)
             {
-                BroadcastEvent(event.control.Get(), event.event);
+                SendBroadcastEvent(event.control.Get(), event.event);
             }
             else
             {
-                DispatchEvent(event.control.Get(), event.event);
+                SendEvent(event.control.Get(), event.event);
             }
         }
     }
@@ -97,7 +97,7 @@ void UIEventsSystem::PerformGlobalShortcut(const KeyboardShortcut& shortcut)
     }
 }
 
-bool UIEventsSystem::DispatchEvent(UIControl* control, const FastName& event)
+bool UIEventsSystem::SendEvent(UIControl* control, const FastName& event)
 {
     DVASSERT(GetScene());
 
@@ -119,7 +119,7 @@ bool UIEventsSystem::DispatchEvent(UIControl* control, const FastName& event)
     return processed;
 }
 
-bool UIEventsSystem::BroadcastEvent(UIControl* control, const FastName& event)
+bool UIEventsSystem::SendBroadcastEvent(UIControl* control, const FastName& event)
 {
     DVASSERT(GetScene());
 
@@ -129,7 +129,7 @@ bool UIEventsSystem::BroadcastEvent(UIControl* control, const FastName& event)
         bool processedChild = ProcessEventOnContol(sceneControl, event, false);
         if (!processedChild)
         {
-            BroadcastEvent(sceneControl, event);
+            SendBroadcastEvent(sceneControl, event);
         }
         processed = processed || processedChild;
     }
@@ -232,7 +232,7 @@ void UIEventsSystem::ProcessControlEvent(int32 eventType, const UIEvent* uiEvent
             }
             if (event.IsValid())
             {
-                eventsSingle->DispatchEvent(control, event);
+                eventsSingle->SendEvent(control, event);
             }
         }
     }

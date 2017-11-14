@@ -404,7 +404,7 @@ bool UIInputSystem::HandleKeyEvent(UIEvent* event)
                         UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
                         if (eventsSingle && event.IsValid())
                         {
-                            if (eventsSingle->DispatchEvent(c, event))
+                            if (eventsSingle->SendEvent(c, event))
                             {
                                 break;
                             }
