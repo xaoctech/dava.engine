@@ -182,5 +182,5 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         exists("MSBuildTools4.0_x86_Path")
     }
     
-    disableSettings("RQ_52", "RUNNER_9")
+    disableSettings("RQ_52")
 })
