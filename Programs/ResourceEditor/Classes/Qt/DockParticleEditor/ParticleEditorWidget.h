@@ -16,7 +16,6 @@ class FieldBinder;
 }
 
 class EmitterLayerWidget;
-class LayerForceSimplifiedWidget;
 class LayerForceWidget;
 
 class ParticleEditorWidget : public QScrollArea
@@ -50,8 +49,7 @@ private:
         MODE_EFFECT,
         MODE_EMITTER,
         MODE_LAYER,
-        MODE_SIMPLIFIED_FORCE,
-        MODE_PARTICLE_FORCE
+        MODE_FORCE
     };
 
     void UpdateParticleEditorWidgets();
@@ -76,7 +74,6 @@ private:
     void SwitchEditorToEffectMode(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
     void SwitchEditorToEmitterMode(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter);
     void SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
-    void SwitchEditorToForceSimplifiedMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
     void SwitchEditorToForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
     // Reset the editor mode, hide/disconnect appropriate widgets.
@@ -90,7 +87,6 @@ private:
     ParticleEffectPropertiesWidget* effectPropertiesWidget;
     ParticleEmitterPropertiesWidget* emitterPropertiesWidget;
     EmitterLayerWidget* emitterLayerWidget;
-    LayerForceSimplifiedWidget* layerForceSimplifiedWidget;
     LayerForceWidget* layerForceWidget;
 
     std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;

@@ -1,11 +1,10 @@
 #include "ParticleEditorWidget.h"
 #include "EmitterLayerWidget.h"
-#include "LayerForceSimplifiedWidget.h"
+#include "LayerForceWidget.h"
 
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Selection/SelectionData.h"
 #include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/DockParticleEditor/LayerForceWidget.h"
 
 #include "Scene/System/EditorParticlesSystem.h"
 
@@ -19,11 +18,10 @@ ParticleEditorWidget::ParticleEditorWidget(QWidget* parent /* = 0*/)
 {
     setWidgetResizable(true);
 
-    emitterLayerWidget = nullptr;
-    layerForceSimplifiedWidget = nullptr;
-    emitterPropertiesWidget = nullptr;
-    effectPropertiesWidget = nullptr;
-    layerForceWidget = nullptr;
+    emitterLayerWidget = NULL;
+    layerForceWidget = NULL;
+    emitterPropertiesWidget = NULL;
+    effectPropertiesWidget = NULL;
 
     CreateInnerWidgets();
 
@@ -57,9 +55,6 @@ void ParticleEditorWidget::CreateInnerWidgets()
     emitterLayerWidget = new EmitterLayerWidget(this);
     emitterLayerWidget->hide();
 
-    layerForceSimplifiedWidget = new LayerForceSimplifiedWidget(this);
-    layerForceSimplifiedWidget->hide();
-
     layerForceWidget = new LayerForceWidget(this);
     layerForceWidget->hide();
 
@@ -71,7 +66,6 @@ void ParticleEditorWidget::DeleteInnerWidgets()
     SAFE_DELETE(effectPropertiesWidget);
     SAFE_DELETE(emitterPropertiesWidget);
     SAFE_DELETE(emitterLayerWidget);
-    SAFE_DELETE(layerForceSimplifiedWidget);
     SAFE_DELETE(layerForceWidget);
 }
 
@@ -91,12 +85,7 @@ void ParticleEditorWidget::OnUpdate()
         break;
     }
 
-    case MODE_SIMPLIFIED_FORCE:
-    {
-        layerForceSimplifiedWidget->Update();
-        break;
-    }
-    case MODE_PARTICLE_FORCE:
+    case MODE_FORCE:
     {
         layerForceWidget->Update();
         break;
@@ -256,31 +245,17 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
             SwitchEditorToLayerMode(scene, instance->GetOwner(), instance, layer);
         }
     }
-    else if (obj.CanBeCastedTo<DAVA::ParticleForceSimplified>())
-    {
-        DAVA::ParticleForceSimplified* force = obj.Cast<DAVA::ParticleForceSimplified>();
-        DAVA::ParticleLayer* layer = scene->particlesSystem->GetForceOwner(force);
-        if (layer != nullptr)
-        {
-            auto i = std::find(layer->GetSimplifiedParticleForces().begin(), layer->GetSimplifiedParticleForces().end(), force);
-            if (i != layer->GetSimplifiedParticleForces().end())
-            {
-                shouldReset = false;
-                SwitchEditorToForceSimplifiedMode(scene, layer, std::distance(layer->GetSimplifiedParticleForces().begin(), i));
-            }
-        }
-    }
     else if (obj.CanBeCastedTo<DAVA::ParticleForce>())
     {
         DAVA::ParticleForce* force = obj.Cast<DAVA::ParticleForce>();
         DAVA::ParticleLayer* layer = scene->particlesSystem->GetForceOwner(force);
         if (layer != nullptr)
         {
-            auto i = std::find(layer->GetParticleForces().begin(), layer->GetParticleForces().end(), force);
-            if (i != layer->GetParticleForces().end())
+            auto i = std::find(layer->forces.begin(), layer->forces.end(), force);
+            if (i != layer->forces.end())
             {
                 shouldReset = false;
-                SwitchEditorToForceMode(scene, layer, std::distance(layer->GetParticleForces().begin(), i));
+                SwitchEditorToForceMode(scene, layer, std::distance(layer->forces.begin(), i));
             }
         }
     }
@@ -388,27 +363,6 @@ void ParticleEditorWidget::SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::Pa
     UpdateParticleEditorWidgets();
 }
 
-void ParticleEditorWidget::SwitchEditorToForceSimplifiedMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
-{
-    ResetEditorMode();
-
-    if (!layer)
-    {
-        emit ChangeVisible(false);
-        return;
-    }
-
-    emit ChangeVisible(true);
-    widgetMode = MODE_SIMPLIFIED_FORCE;
-
-    layerForceSimplifiedWidget->Init(scene, layer, forceIndex, true);
-    setWidget(layerForceSimplifiedWidget);
-    layerForceSimplifiedWidget->show();
-    connect(layerForceSimplifiedWidget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
-
-    UpdateParticleEditorWidgets();
-}
-
 void ParticleEditorWidget::SwitchEditorToForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
 {
     ResetEditorMode();
@@ -420,7 +374,7 @@ void ParticleEditorWidget::SwitchEditorToForceMode(SceneEditor2* scene, DAVA::Pa
     }
 
     emit ChangeVisible(true);
-    widgetMode = MODE_PARTICLE_FORCE;
+    widgetMode = MODE_FORCE;
 
     layerForceWidget->Init(scene, layer, forceIndex, true);
     setWidget(layerForceWidget);
@@ -467,16 +421,7 @@ void ParticleEditorWidget::ResetEditorMode()
         break;
     }
 
-    case MODE_SIMPLIFIED_FORCE:
-    {
-        layerForceSimplifiedWidget = static_cast<LayerForceSimplifiedWidget*>(activeEditorWidget);
-        disconnect(layerForceSimplifiedWidget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
-        layerForceSimplifiedWidget->hide();
-
-        break;
-    }
-
-    case MODE_PARTICLE_FORCE:
+    case MODE_FORCE:
     {
         layerForceWidget = static_cast<LayerForceWidget*>(activeEditorWidget);
         disconnect(layerForceWidget, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __DAVAENGINE_COMPONENT_HELPERS_H__
+#define __DAVAENGINE_COMPONENT_HELPERS_H__
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
@@ -90,3 +91,5 @@ VariantType* GetCustomPropertiesValueRecursive(Entity* fromEntity, const String&
 PathComponent* GetPathComponent(const Entity* fromEntity);
 WaypointComponent* GetWaypointComponent(const Entity* fromEntity);
 }
+
+#endif //__DAVAENGINE_COMPONENT_HELPERS_H__
