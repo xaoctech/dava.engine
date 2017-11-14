@@ -776,49 +776,108 @@ void DLCManagerImpl::AskFooter()
     }
 }
 
-void DLCManagerImpl::SaveServerFooter()
+String DLCManagerImpl::BuildErrorMessageFailWrite() const
+{
+    StringStream ss;
+
+    ss << "can't write file: " << localCacheFooter.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << '\n';
+
+    // Check available space on device
+    //List<Storage>
+    const DeviceInfo::StorageInfo* currentDevice = nullptr;
+    const List<DeviceInfo::StorageInfo> storageList = DeviceInfo::GetStoragesList();
+    for (const DeviceInfo::StorageInfo& info : storageList)
+    {
+        if (localCacheFooter.StartsWith(info.path))
+        {
+            if (currentDevice == nullptr)
+            {
+                currentDevice = &info;
+            }
+            else if (info.path.GetAbsolutePathname().length() > currentDevice->path.GetAbsolutePathname().length())
+            {
+                currentDevice = &info;
+            }
+        }
+    }
+
+    if (currentDevice != nullptr)
+    {
+        ss << "device_type: " << currentDevice->type << '\n'
+           << "totalSpace: " << currentDevice->totalSpace << '\n'
+           << "freeSpace: " << currentDevice->freeSpace << '\n'
+           << "readOnly: " << currentDevice->readOnly << '\n'
+           << "removable: " << currentDevice->removable << '\n'
+           << "emulated: " << currentDevice->emulated << '\n'
+           << "path: " << currentDevice->path.GetStringValue();
+    }
+
+    return ss.str();
+}
+
+bool DLCManagerImpl::SaveServerFooter()
 {
     ScopedPtr<File> f(File::Create(localCacheFooter, File::CREATE | File::WRITE));
     if (f)
     {
         if (sizeof(initFooterOnServer) == f->Write(&initFooterOnServer, sizeof(initFooterOnServer)))
         {
-            return; // all good
+            return true; // all good
         }
     }
 
+    const String errMsg = BuildErrorMessageFailWrite();
+
+    if (errMsg != lastErrorMessage)
+    {
+        lastErrorMessage = errMsg;
+        log << errMsg << std::endl;
+        Logger::Error("%s", errMsg.c_str());
+        error.Emit(ErrorOrigin::FileIO, errno, localCacheFooter.GetAbsolutePathname());
+    }
+
+    return false;
+}
+
+String DLCManagerImpl::BuildErrorMessageBadServerCrc(uint32 crc32) const
+{
     StringStream ss;
-    ss << "can't write file: " << localCacheFooter.GetAbsolutePathname() << " errno: (" << errno << ") " << strerror(errno) << std::endl;
-    log << ss.str();
-    error.Emit(ErrorOrigin::FileIO, errno, localCacheFooter.GetAbsolutePathname());
-    DAVA_THROW(Exception, ss.str());
+    ss << "error: on server bad superpack!!! Footer not match crc32 "
+       << std::hex << crc32 << " != " << std::hex
+       << initFooterOnServer.infoCrc32 << std::dec << std::endl;
+    return ss.str();
 }
 
 void DLCManagerImpl::GetFooter()
 {
     DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
 
-    DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
+    const DLCDownloader::TaskStatus status = downloader->GetTaskStatus(downloadTask);
 
     if (DLCDownloader::TaskState::Finished == status.state)
     {
         downloader->RemoveTask(downloadTask);
         downloadTask = nullptr;
 
-        bool allGood = !status.error.errorHappened;
+        const bool allGood = !status.error.errorHappened;
         if (allGood)
         {
             retryCount = 0;
-            uint32 crc32 = CRC32::ForBuffer(reinterpret_cast<char*>(&initFooterOnServer.info), sizeof(initFooterOnServer.info));
+            const uint32 crc32 = CRC32::ForBuffer(reinterpret_cast<char*>(&initFooterOnServer.info), sizeof(initFooterOnServer.info));
             if (crc32 != initFooterOnServer.infoCrc32)
             {
-                log << "error: on server bad superpack!!! Footer not match crc32 "
-                    << std::hex << crc32 << " != " << std::hex
-                    << initFooterOnServer.infoCrc32 << std::dec << std::endl;
-                DAVA_THROW(DAVA::Exception, "on server bad superpack!!! Footer not match crc32");
+                const String errMsg = BuildErrorMessageBadServerCrc(crc32);
+                log << errMsg;
+                Logger::Error("%s", errMsg.c_str());
+                TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFooter);
+                return;
             }
 
-            SaveServerFooter();
+            if (!SaveServerFooter())
+            {
+                TestRetryCountLocalMetaAndGoTo(InitState::LoadingPacksDataFromLocalMeta, InitState::LoadingRequestAskFooter);
+                return;
+            }
 
             usedPackFile.footer = initFooterOnServer;
             initState = InitState::LoadingRequestAskFileTable;

@@ -204,12 +204,14 @@ private:
     // helper functions
     void ReadLocalFileTableInfoBuffer();
     void FillFileNameIndexes();
-    void SaveServerFooter();
+    bool SaveServerFooter();
     void DeleteLocalMetaFiles();
     void ContinueInitialization(float frameDelta);
     void ReadContentAndExtractFileNames();
     uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
 
+    String BuildErrorMessageBadServerCrc(uint32 crc32) const;
+    String BuildErrorMessageFailWrite() const;
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
@@ -309,6 +311,7 @@ private:
 
     Hints hints;
 
+    String lastErrorMessage;
     String profilerState;
     DebugGestureListener gestureChecker;
 
