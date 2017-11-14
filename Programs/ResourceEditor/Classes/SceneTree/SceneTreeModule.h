@@ -29,7 +29,6 @@ private:
 
     QAbstractItemModel* GetDataModel() const;
     QItemSelectionModel* GetSelectionModel() const;
-    void OnResetFilter();
     void OnFilterChanged(const DAVA::String& newFilter);
 
     void OnSceneSelectionChanged(const DAVA::Any& value);

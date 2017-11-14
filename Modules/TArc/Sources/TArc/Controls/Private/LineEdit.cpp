@@ -1,8 +1,12 @@
 #include "TArc/Controls/LineEdit.h"
 #include "TArc/Controls/Private/TextValidator.h"
+#include "TArc/Utils/Utils.h"
 
 #include <Base/FastName.h>
 #include <Reflection/ReflectedMeta.h>
+
+#include <QBoxLayout>
+#include <QPushButton>
 
 namespace DAVA
 {
@@ -26,6 +30,12 @@ void LineEdit::SetupControl()
     connections.AddConnection(this, &QLineEdit::textChanged, MakeFunction(this, &LineEdit::TextChanged));
     TextValidator* validator = new TextValidator(this, this);
     setValidator(validator);
+
+    QHBoxLayout* l = new QHBoxLayout();
+    l->setContentsMargins(QMargins());
+    l->setSpacing(1);
+    l->addStretch();
+    setLayout(l);
 }
 
 void LineEdit::EditingFinished()
@@ -69,6 +79,35 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
     if (descriptor.IsChanged(Fields::PlaceHolder))
     {
         setPlaceholderText(QString::fromStdString(GetFieldValue<String>(Fields::PlaceHolder, "")));
+    }
+
+    if (descriptor.IsChanged(Fields::Clearable))
+    {
+        bool needClearButton = GetFieldValue<bool>(Fields::Clearable, false);
+        if (needClearButton == false)
+        {
+            if (clearButton != nullptr)
+            {
+                layout()->removeWidget(clearButton);
+                clearButton->deleteLater();
+            }
+        }
+        else if (clearButton == nullptr)
+        {
+            QIcon clearIcon = SharedIcon(":/TArc/Resources/clear.png");
+            clearButton = new QPushButton(this);
+            clearButton->setFlat(true);
+            clearButton->setIcon(clearIcon);
+            clearButton->setCursor(QCursor(Qt::ArrowCursor));
+
+            QObject::connect(clearButton, &QToolButton::clicked, this, &QLineEdit::clear);
+            layout()->addWidget(clearButton);
+        }
+    }
+
+    if (descriptor.IsChanged(Fields::ClearButtonTooltip) && clearButton != nullptr)
+    {
+        clearButton->setToolTip(GetFieldValue<QString>(Fields::ClearButtonTooltip, QString("")));
     }
 }
 

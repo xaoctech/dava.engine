@@ -12,5 +12,15 @@
       <file>Resources/cplus.png</file>
       <file>Resources/import.png</file>
       <file>Resources/export.png</file>
+      <file>Resources/clear.png</file>
+      <file>Resources/filter.png</file>
+      <file>Resources/save.png</file>
+      <file>ContentFilter/Private/Icons/disable.png</file>
+      <file>ContentFilter/Private/Icons/enabled.png</file>
+      <file>ContentFilter/Private/Icons/inverse-disabled.png</file>
+      <file>ContentFilter/Private/Icons/inverse-enabled.png</file>
+      <file>ContentFilter/Private/Icons/remove.png</file>
+      <file>ContentFilter/Private/Icons/delete.png</file>
+      <file>ContentFilter/Private/Icons/rename.png</file>
     </qresource>
 </RCC>

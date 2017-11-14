@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QFlags>
 
+class QPushButton;
 namespace DAVA
 {
 namespace TArc
@@ -30,6 +31,8 @@ public:
         IsReadOnly,
         IsEnabled,
         Validator, // const M::Validator*
+        Clearable, // bool
+        ClearButtonTooltip, // QString
         FieldCount
     };
 
@@ -49,6 +52,7 @@ private:
     void ShowHint(const QString& message) override;
 
 private:
+    QPushButton* clearButton = nullptr;
     QtConnections connections;
 };
 } // namespace TArc

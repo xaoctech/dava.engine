@@ -92,7 +92,6 @@ public:
             params.fields[ReflectedButton::Fields::Icon] = "icon";
             params.fields[ReflectedButton::Fields::Text] = "text";
             params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
-            params.fields[ReflectedButton::Fields::Result] = "value";
 
             ReflectedButton* button = new ReflectedButton(params, GetAccessor(), reflectedModel);
             button->SetObjectName("ReflectedButton_enabled");
@@ -105,7 +104,6 @@ public:
             params.fields[ReflectedButton::Fields::Icon] = "icon";
             params.fields[ReflectedButton::Fields::Text] = "text";
             params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
-            params.fields[ReflectedButton::Fields::Result] = "value";
             params.fields[ReflectedButton::Fields::Enabled] = "enabled";
 
             ReflectedButton* button = new ReflectedButton(params, GetAccessor(), reflectedModel);
