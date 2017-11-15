@@ -19,6 +19,7 @@ struct ApplicationContext
     FileManager fileManager;
     AppsCommandsSender appsCommandsSender;
     UrlsHolder urlsHolder;
+    bool isBuildAgent = false;
 
     template <typename T, typename... Arguments>
     std::unique_ptr<BaseTask> CreateTask(Arguments&&... args);
