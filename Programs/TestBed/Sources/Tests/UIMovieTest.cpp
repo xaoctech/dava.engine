@@ -5,7 +5,7 @@
 
 namespace
 {
-FilePath path = "~res:/TestBed//TestData/MovieTest/bunny.m4v";
+FilePath path = "~res:/TestBed/TestData/MovieTest/bunny.m4v";
 }
 
 UIMovieTest::UIMovieTest(TestBed& app)
