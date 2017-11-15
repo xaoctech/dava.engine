@@ -40,7 +40,7 @@ void CanvasDataAdapter::MoveScene(const DAVA::Vector2& delta, bool force)
 
     Vector2 newPosition = canvasData->GetPosition() + delta;
     canvasData->SetPosition(newPosition);
-    if(force == false)
+    if (force == false)
     {
         TryCentralizeScene();
     }
