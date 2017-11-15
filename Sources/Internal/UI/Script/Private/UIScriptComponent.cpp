@@ -1,5 +1,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/Script/UIScriptComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
