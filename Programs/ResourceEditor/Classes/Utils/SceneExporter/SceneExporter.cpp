@@ -30,6 +30,7 @@
 #include <Utils/StringUtils.h>
 #include <Utils/MD5.h>
 #include <Entity/ComponentManager.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 #include <algorithm>
 
