@@ -755,11 +755,11 @@ void PhysicsSystem::InitNewObjects()
             {
                 if (physicsComponent->GetType() == Component::STATIC_BODY_COMPONENT)
                 {
-                    AttachShapesRecursively(entity, physicsComponent, scale);
+                    AttachShape(physicsComponent, component, scale);
                 }
                 else
                 {
-                    AttachShapesRecursively(entity, physicsComponent, scale);
+                    AttachShape(physicsComponent, component, scale);
 
                     physx::PxRigidDynamic* dynamicActor = physicsComponent->GetPxActor()->is<physx::PxRigidDynamic>();
                     DVASSERT(dynamicActor != nullptr);
@@ -1010,6 +1010,7 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
                 // Update local pose for nested shapes
 
                 CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
+                DVASSERT(shapeComponent->GetEntity() != nullptr);
                 if (shapeComponent->GetEntity() != e)
                 {
                     PhysicsSystemDetail::UpdateShapeLocalPose(shape, shapeComponent->GetEntity()->GetLocalTransform());
