@@ -1356,10 +1356,9 @@ uint64 DLCManagerImpl::GetPackSize(const String& packName) const
 
         totalSize = CountCompressedFileSize(totalSize, fileIndexes);
 
-        Vector<uint32> dependencyIndexes;
         uint32 packIndex = meta->GetPackIndex(packName);
 
-        meta->CollectDependencies(packIndex, dependencyIndexes);
+        const Vector<uint32>& dependencyIndexes = meta->GetChildren(packIndex);
 
         for (uint32 dependencyPackIndex : dependencyIndexes)
         {
@@ -1569,17 +1568,15 @@ DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& pack
     // 2. go throw all files and check if it's pack in set
 
     allPacks.clear();
-    childrenPacks.clear();
 
     size_t packsCount = meta->GetPacksCount();
 
     allPacks.reserve(packsCount);
-    childrenPacks.reserve(packsCount);
 
     for (const String& packName : packNames)
     {
         uint32 packIndex = meta->GetPackIndex(packName);
-        meta->CollectDependencies(packIndex, childrenPacks);
+        const Vector<uint32>& childrenPacks = meta->GetChildren(packIndex);
         for (const uint32 childPackIndex : childrenPacks)
         {
             allPacks.insert(childPackIndex);
@@ -1591,7 +1588,7 @@ DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& pack
     result.isRequestingEnabled = IsRequestingEnabled();
     // go throw all files
     const auto& allFiles = usedPackFile.filesTable.data.files;
-    size_t numFiles = allFiles.size();
+    const size_t numFiles = allFiles.size();
     for (size_t fileIndex = 0; fileIndex < numFiles; ++fileIndex)
     {
         const auto& fileInfo = allFiles[fileIndex];

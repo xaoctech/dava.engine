@@ -73,11 +73,11 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     GenerateChildrenMatrix(numPacks);
 }
 
-void PackMetaData::CollectDependencies(uint32 packIndex, Children& out) const
+const PackMetaData::Children& PackMetaData::GetChildren(uint32 packIndex) const
 {
     // all dependent packs with all sub-dependencies
     DVASSERT(packIndex < children.size());
-    out = children[packIndex];
+    return children[packIndex];
 }
 
 void PackMetaData::GenerateChildrenMatrixRow(uint32 packIndex, Children& out) const
@@ -99,7 +99,13 @@ void PackMetaData::GenerateChildrenMatrix(size_t numPacks)
     {
         Children& c = children[packIndex];
         GenerateChildrenMatrixRow(packIndex, c);
-        c.shrink_to_fit();
+        // remove duplicates (one pack can be dependency in several packs)
+        sort(begin(c), end(c));
+        const auto last = unique(begin(c), end(c));
+        if (last != end(c))
+        {
+            c.erase(last, end(c));
+        }
     }
 }
 
