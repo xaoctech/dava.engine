@@ -6,7 +6,7 @@ namespace DAVA
 {
 namespace Net
 {
-void LogConsumer::OnPacketReceived(std::shared_ptr<IChannel> channel, const void* buffer, size_t length)
+void LogConsumer::OnPacketReceived(const std::shared_ptr<IChannel>& channel, const void* buffer, size_t length)
 {
     String data(static_cast<const char8*>(buffer), length);
     String endp(channel->RemoteEndpoint().ToString());
