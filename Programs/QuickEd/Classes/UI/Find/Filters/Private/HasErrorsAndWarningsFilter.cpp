@@ -24,15 +24,14 @@ const DAVA::ReflectedStructure::Field* FindField(const char* nameStr)
 }
 
 template <typename Type>
-Type(const ControlInformation* control, const DAVA::ReflectedStructure::Field* field)
+Type GetValue(const ControlInformation* control, const DAVA::Type* componentType, const DAVA::ReflectedStructure::Field* field, Type defaultValue)
 {
-    const DAVA::Any& noInput = control->GetControlPropertyValue(*field);
-    if (noInput.CanCast<Type>())
+    const DAVA::Any& value = control->GetComponentPropertyValue(componentType, 0, *field);
+    if (value.CanCast<Type>())
     {
-        return noInput.Cast<Type>();
+        return value.Cast<Type>();
     }
-    DVASSERT(false, "can not cast field value!");
-    return Type();
+    return defaultValue;
 }
 }
 
@@ -60,19 +59,36 @@ FindFilter::ePackageStatus HasErrorsAndWarningsFilter::AcceptPackage(const Packa
 bool HasErrorsAndWarningsFilter::AcceptControl(const ControlInformation* control) const
 {
     using namespace DAVA;
+    const Type* anchorComponentType = Type::Instance<UIAnchorComponent>();
+    const Type* sizePolicyComponentType = Type::Instance<UISizePolicyComponent>();
 
-    if (control->HasComponent(Type::Instance<UIAnchorComponent>()) && control->HasComponent(Type::Instance<UISizePolicyComponent>()))
+    if (control->HasComponent(anchorComponentType) && control->HasComponent(sizePolicyComponentType))
     {
-        int32 hSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, horizontalSizePolicyField);
-        int32 vSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, horizontalSizePolicyField);
+        UISizePolicyComponent::eSizePolicy hSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, sizePolicyComponentType, horizontalSizePolicyField, UISizePolicyComponent::eSizePolicy::IGNORE_SIZE);
+        UISizePolicyComponent::eSizePolicy vSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, sizePolicyComponentType, horizontalSizePolicyField, UISizePolicyComponent::eSizePolicy::IGNORE_SIZE);
 
-        bool anchorsEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorsEnabledField);
-        bool leftAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, leftAnchorEnabledField);
-        bool hCenterAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, hCenterAnchorEnabledField);
-        bool rightAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, rightAnchorEnabledField);
-        bool topAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, topAnchorEnabledField);
-        bool vCenterAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, vCenterAnchorEnabledField);
-        bool bottomAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, bottomAnchorEnabledField);
+        bool anchorsEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, anchorsEnabledField, true);
+        bool leftAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, leftAnchorEnabledField, false);
+        bool hCenterAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, hCenterAnchorEnabledField, false);
+        bool rightAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, rightAnchorEnabledField, false);
+        bool topAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, topAnchorEnabledField, false);
+        bool vCenterAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, vCenterAnchorEnabledField, false);
+        bool bottomAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, bottomAnchorEnabledField, false);
+
+        if (anchorsEnabled == false)
+        {
+            return false;
+        }
+
+        if (hSizePolicy != UISizePolicyComponent::IGNORE_SIZE && (leftAnchorEnabled || hCenterAnchorEnabled || rightAnchorEnabled))
+        {
+            return true;
+        }
+
+        if (vSizePolicy != UISizePolicyComponent::IGNORE_SIZE && (topAnchorEnabled || vCenterAnchorEnabled || bottomAnchorEnabled))
+        {
+            return true;
+        }
     }
     return false;
 }
