@@ -753,14 +753,10 @@ void PhysicsSystem::InitNewObjects()
             PhysicsComponent* physicsComponent = PhysicsSystemDetail::GetParentPhysicsComponent(entity);
             if (physicsComponent != nullptr)
             {
-                if (physicsComponent->GetType() == Component::STATIC_BODY_COMPONENT)
-                {
-                    AttachShape(physicsComponent, component, scale);
-                }
-                else
-                {
-                    AttachShape(physicsComponent, component, scale);
+                AttachShape(physicsComponent, component, scale);
 
+                if (physicsComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
+                {
                     physx::PxRigidDynamic* dynamicActor = physicsComponent->GetPxActor()->is<physx::PxRigidDynamic>();
                     DVASSERT(dynamicActor != nullptr);
                     if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
