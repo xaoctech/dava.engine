@@ -166,7 +166,13 @@ void RenderWidgetOGL::OnFrame()
 
     QQuickWindow* wnd = quickWindow();
 
-    QVariant nativeHandle = wnd->openglContext()->nativeHandle();
+    QOpenGLContext* ctx = wnd->openglContext();
+    if (contextBinder != nullptr)
+    {
+        contextBinder->ReplaceContextIfNeed(ctx->surface(), ctx);
+    }
+
+    QVariant nativeHandle = ctx->nativeHandle();
     if (!nativeHandle.isValid())
     {
         DAVA::Logger::Error("GL context is not valid!");
@@ -267,11 +273,6 @@ bool RenderWidgetOGL::event(QEvent* e)
 void RenderWidgetOGL::showEvent(QShowEvent* e)
 {
     TBase::showEvent(e);
-    QOpenGLContext* ctx = quickWindow()->openglContext();
-    if (contextBinder != nullptr)
-    {
-        contextBinder->ReplaceContextIfNeed(ctx->surface(), ctx);
-    }
 }
 
 bool RenderWidgetOGL::eventFilter(QObject* object, QEvent* e)

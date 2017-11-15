@@ -1,4 +1,6 @@
 #include "UISceneComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "UI/UIControl.h"
 #include "Reflection/ReflectionRegistrator.h"

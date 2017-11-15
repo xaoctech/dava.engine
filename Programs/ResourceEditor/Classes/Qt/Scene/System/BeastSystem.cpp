@@ -29,14 +29,15 @@ void BeastSystem::SetDefaultPropertyValues(DAVA::Entity* entity)
     if (GetLight(entity))
     {
         SetBool(propertyList, "editor.staticlight.enable", true);
-
-        SetFloat(propertyList, "editor.intensity", 1.f);
-
-        SetFloat(propertyList, "editor.staticlight.shadowangle", 0.f);
-        SetFloat(propertyList, "editor.staticlight.shadowradius", 0.f);
         SetInt32(propertyList, "editor.staticlight.shadowsamples", 1);
+        SetFloat(propertyList, "editor.intensity", 1.0f);
+        SetFloat(propertyList, "editor.staticlight.shadowangle", 0.0f);
+        SetFloat(propertyList, "editor.staticlight.shadowradius", 0.0f);
         SetFloat(propertyList, "editor.staticlight.falloffcutoff", DEFAULT_FALLOFFCUTOFF_VALUE);
-        SetFloat(propertyList, "editor.staticlight.falloffexponent", 1.f);
+        SetFloat(propertyList, "editor.staticlight.falloffexponent", 1.0f);
+        SetFloat(propertyList, "editor.staticlight.cone.angle", 90.0f);
+        SetFloat(propertyList, "editor.staticlight.cone.penumbra.angle", 0.0f);
+        SetFloat(propertyList, "editor.staticlight.cone.penumbra.exponent", 1.0f);
     }
 }
 

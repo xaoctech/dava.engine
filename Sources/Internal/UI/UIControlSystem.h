@@ -17,6 +17,7 @@
 namespace DAVA
 {
 class Mouse;
+class ScreenSwitchListener;
 class UIComponent;
 class UIControl;
 class UIFocusSystem;
@@ -34,20 +35,6 @@ class UITextSystem;
 class UIUpdateSystem;
 class VirtualCoordinatesSystem;
 struct InputEvent;
-
-class ScreenSwitchListener
-{
-public:
-    virtual ~ScreenSwitchListener() = default;
-
-    virtual void OnScreenWillSwitch(UIScreen* newScreen)
-    {
-    }
-
-    virtual void OnScreenDidSwitch(UIScreen* newScreen)
-    {
-    }
-};
 
 /**
 	 \brief	UIControlSystem it's a core of the all controls work.
