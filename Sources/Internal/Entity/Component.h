@@ -142,7 +142,7 @@ inline Entity* Component::GetEntity() const
 
 inline ComponentFlags MakeComponentMask(int32 runtimeType)
 {
-    DVASSERT(runtimeType > 0);
+    DVASSERT(runtimeType >= 0);
 
     ComponentFlags flags;
     flags.set(static_cast<size_t>(runtimeType));
@@ -154,7 +154,6 @@ ComponentFlags MakeComponentMask(const Type* type);
 template <typename T>
 ComponentFlags MakeComponentMask()
 {
-    static_assert(std::is_base_of<Component, T>::value, "");
     return MakeComponentMask(Type::Instance<T>());
 }
 

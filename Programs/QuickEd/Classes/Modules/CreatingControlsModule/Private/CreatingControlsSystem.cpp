@@ -12,6 +12,7 @@
 #include <Functional/Functional.h>
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
+#include <UI/UIEvent.h>
 
 namespace CreatingControlsSystemDetails
 {

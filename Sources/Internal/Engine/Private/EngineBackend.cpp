@@ -436,8 +436,9 @@ int32 EngineBackend::OnFrame()
         if (drawSingleFrameWhileSuspended)
         {
             Logger::Info("EngineBackend::OnFrame, rendering single frame while suspended");
-            ResumeRenderer();
+            rhi::ResumeRendering();
             UpdateAndDrawWindows(frameDelta, true);
+            rhi::SuspendRenderingAfterFrame(); //suspends rendering at least one frame after it was resumed
         }
         BackgroundUpdate(frameDelta);
     }
@@ -654,7 +655,12 @@ void EngineBackend::HandleAppSuspended(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppSuspended: enter");
 
         appIsSuspended = true;
-        SuspendRenderer();
+
+        // Warning: Application can ruin something if rendering is done in application suspended state.
+        // So we have to ensure that if application suspend|resume state is changed, render state is also immediately changed.
+        // Please NEVER add some additional `if` checks here.
+        if (Renderer::IsInitialized())
+            rhi::SuspendRendering();
         rhi::ShaderSourceCache::Save("~doc:/ShaderSource.bin");
         engine->suspended.Emit();
 
@@ -669,7 +675,12 @@ void EngineBackend::HandleAppResumed(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppResumed: enter");
 
         appIsSuspended = false;
-        ResumeRenderer();
+
+        // Warning: Application can ruin something if rendering is done in application suspended state.
+        // So we have to ensure that if application suspend|resume state is changed, render state is also immediately changed.
+        // Please NEVER add some additional `if` checks here.
+        if (Renderer::IsInitialized())
+            rhi::ResumeRendering();
         engine->resumed.Emit();
 
         Logger::Info("EngineBackend::HandleAppResumed: leave");
@@ -1047,24 +1058,6 @@ void EngineBackend::SetScreenTimeoutEnabled(bool enabled)
 bool EngineBackend::IsRunning() const
 {
     return isRunning;
-}
-
-void EngineBackend::SuspendRenderer()
-{
-    if (Renderer::IsInitialized() && !rendererSuspended)
-    {
-        rhi::SuspendRendering();
-        rendererSuspended = true;
-    }
-}
-
-void EngineBackend::ResumeRenderer()
-{
-    if (Renderer::IsInitialized() && rendererSuspended)
-    {
-        rhi::ResumeRendering();
-        rendererSuspended = false;
-    }
 }
 
 void EngineBackend::DrawSingleFrameWhileSuspended()

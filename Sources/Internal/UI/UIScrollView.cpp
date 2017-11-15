@@ -1,9 +1,10 @@
 #include "UIScrollView.h"
-#include "UI/UIScrollViewContainer.h"
-#include "UI/ScrollHelper.h"
-#include "UI/UIControlHelpers.h"
-#include "UI/Render/UIClipContentComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/ScrollHelper.h"
+#include "UI/Render/UIClipContentComponent.h"
+#include "UI/UIControlHelpers.h"
+#include "UI/UIScrollBar.h"
+#include "UI/UIScrollViewContainer.h"
 
 namespace DAVA
 {

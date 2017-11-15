@@ -1,6 +1,7 @@
 #pragma once
-#include "Reflection/Reflection.h"
-#include "Reflection/ReflectedTypeDB.h"
+
+#include "Base/Type.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
@@ -32,7 +33,7 @@ public:
     ComponentManager();
 
     /** Register new component of specified type 'T'. The behavior is undefined until 'T' is a Component/UIComponent subclass. */
-    template <class T>
+    template <typename T>
     void RegisterComponent();
 
     void RegisterComponent(const Type* type);
@@ -71,7 +72,6 @@ public:
 private:
     void RegisterSceneComponentRecursively(const Type* type);
 
-private:
     int32 runtimeUIComponentsCount = 0;
     Vector<const Type*> registeredUIComponents;
 

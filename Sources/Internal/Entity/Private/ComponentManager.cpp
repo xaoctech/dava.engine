@@ -3,6 +3,7 @@
 #include "Scene3D/Entity.h"
 #include "UI/Components/UIComponent.h"
 #include "Utils/CRC32.h"
+#include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA
 {

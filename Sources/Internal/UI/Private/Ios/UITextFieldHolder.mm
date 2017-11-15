@@ -2,6 +2,7 @@
 
 #if defined(__DAVAENGINE_IPHONE__)
 
+#include "Engine/Engine.h"
 #include "Engine/Window.h"
 #include "Logger/Logger.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
