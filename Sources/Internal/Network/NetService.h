@@ -16,11 +16,11 @@ public:
     }
 
     // IChannelListener
-    void OnChannelOpen(std::shared_ptr<IChannel> aChannel) override;
-    void OnChannelClosed(std::shared_ptr<IChannel> aChannel, const char8* message) override;
-    void OnPacketReceived(std::shared_ptr<IChannel> aChannel, const void* buffer, size_t length) override;
-    void OnPacketSent(std::shared_ptr<IChannel> aChannel, const void* buffer, size_t length) override;
-    void OnPacketDelivered(std::shared_ptr<IChannel> aChannel, uint32 packetId) override;
+    void OnChannelOpen(const std::shared_ptr<IChannel>& channel) override;
+    void OnChannelClosed(const std::shared_ptr<IChannel>& channel, const char8* message) override;
+    void OnPacketReceived(const std::shared_ptr<IChannel>& channel, const void* buffer, size_t length) override;
+    void OnPacketSent(const std::shared_ptr<IChannel>& channel, const void* buffer, size_t length) override;
+    void OnPacketDelivered(const std::shared_ptr<IChannel>& channel, uint32 packetId) override;
 
     virtual void ChannelOpen()
     {

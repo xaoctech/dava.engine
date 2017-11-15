@@ -71,7 +71,7 @@ public:
     bool OnTimeout();
 
 private:
-    std::shared_ptr<Channel> GetChannel(uint32 channelId);
+    std::shared_ptr<Channel>& GetChannel(uint32 channelId);
     void SendControl(uint32 code, uint32 channelId, uint32 packetId);
 
     bool ProcessDataPacket(ProtoDecoder::DecodeResult* result);
@@ -137,16 +137,18 @@ inline const Endpoint& ProtoDriver::Channel::RemoteEndpoint() const
     return remoteEndpoint;
 }
 
-inline bool operator==(const std::shared_ptr<IChannel>& channel, uint32 channelId)
+inline std::shared_ptr<ProtoDriver::Channel>& ProtoDriver::GetChannel(uint32 channelId)
 {
-    ProtoDriver::Channel* ch = dynamic_cast<ProtoDriver::Channel*>(channel.get());
-    return (ch != nullptr) ? ch->channelId == channelId : false;
-}
+    for (std::shared_ptr<ProtoDriver::Channel>& channel : channels)
+    {
+        if (channel->channelId == channelId)
+        {
+            return channel;
+        }
+    }
 
-inline std::shared_ptr<ProtoDriver::Channel> ProtoDriver::GetChannel(uint32 channelId)
-{
-    Vector<std::shared_ptr<Channel>>::iterator i = std::find(channels.begin(), channels.end(), channelId);
-    return (i != channels.end()) ? *i : std::shared_ptr<Channel>();
+    static std::shared_ptr<ProtoDriver::Channel> empty;
+    return empty;
 }
 
 } // namespace Net

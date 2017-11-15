@@ -61,15 +61,15 @@ public:
 
     //Net::IChannelListener
     // Channel is open (underlying transport has connection) and can receive and send data through IChannel interface
-    void OnChannelOpen(std::shared_ptr<Net::IChannel> channel) override;
+    void OnChannelOpen(const std::shared_ptr<Net::IChannel>& channel) override;
     // Channel is closed (underlying transport has disconnected) with reason
-    void OnChannelClosed(std::shared_ptr<Net::IChannel> channel, const char8* message) override;
+    void OnChannelClosed(const std::shared_ptr<Net::IChannel>& channel, const char8* message) override;
     // Some data arrived into channel
-    void OnPacketReceived(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length) override;
+    void OnPacketReceived(const std::shared_ptr<Net::IChannel>& channel, const void* buffer, size_t length) override;
     // Buffer has been sent and can be reused or freed
-    void OnPacketSent(std::shared_ptr<Net::IChannel> channel, const void* buffer, size_t length) override;
+    void OnPacketSent(const std::shared_ptr<Net::IChannel>& channel, const void* buffer, size_t length) override;
     // Data packet with given ID has been delivered to other side
-    void OnPacketDelivered(std::shared_ptr<Net::IChannel> channel, uint32 packetId) override{};
+    void OnPacketDelivered(const std::shared_ptr<Net::IChannel>& channel, uint32 packetId) override{};
 
     void OnAddressResolved(const Net::Endpoint& endpoint, int32 status);
 
