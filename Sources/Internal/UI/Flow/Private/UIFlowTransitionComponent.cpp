@@ -1,5 +1,7 @@
 #include "UI/Flow/UIFlowTransitionComponent.h"
 #include "Base/GlobalEnum.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
