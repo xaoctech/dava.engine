@@ -83,20 +83,44 @@ UIViewScreen::UIViewScreen(DAVA::Window* window_, DAVA::ProgramOptions* options_
 
 void UIViewScreen::LoadResources()
 {
+    using namespace DAVA;
+
     BaseScreen::LoadResources();
 
-    DAVA::FilePath::AddResourcesFolder(projectPath + "/Data/");
-    DAVA::FilePath::AddResourcesFolder(projectPath + "/DataSource/");
+    FilePath::AddResourcesFolder(projectPath + "/Data/");
+    FilePath::AddResourcesFolder(projectPath + "/DataSource/");
 
-    DAVA::QualitySettingsSystem::Instance()->Load("~res:/quality.yaml");
+    QualitySettingsSystem::Instance()->Load("~res:/quality.yaml");
 
     SetupUI();
+
+    for (RefPtr<UIControl>& c : hiddenPlaceholders)
+    {
+        c = new UIControl();
+        UIControlBackground* bg = c->GetOrCreateComponent<UIControlBackground>();
+        bg->SetDrawType(UIControlBackground::DRAW_FILL);
+        bg->SetColor(Color(0.1f, 0.1f, 0.1f, 0.9f));
+        AddControl(c.Get());
+    }
+
+    visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect r) {
+        Rect vr = GetScene()->vcs->ConvertInputToVirtual(r);
+        Vector2 ws = GetScene()->vcs->ConvertInputToVirtual(Vector2(w->GetSize().dx, w->GetSize().dy));
+        hiddenPlaceholders[PlaceholderSide::LEFT]->SetRect(Rect(0.f, 0.f, vr.x, ws.dy));
+        hiddenPlaceholders[PlaceholderSide::RIGHT]->SetRect(Rect(vr.x + vr.dx, 0.f, ws.dx - (vr.x + vr.dx), ws.dy));
+        hiddenPlaceholders[PlaceholderSide::TOP]->SetRect(Rect(vr.x, 0.f, vr.dx, vr.y));
+        hiddenPlaceholders[PlaceholderSide::BOTTOM]->SetRect(Rect(vr.x, vr.y + vr.dy, vr.dx, ws.dy - (vr.y + vr.dy)));
+    });
 }
 
 void UIViewScreen::UnloadResources()
 {
-    DAVA::FilePath::RemoveResourcesFolder(projectPath + "/DataSource/");
-    DAVA::FilePath::RemoveResourcesFolder(projectPath + "/Data/");
+    using namespace DAVA;
+
+    GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+
+    FilePath::RemoveResourcesFolder(projectPath + "/DataSource/");
+    FilePath::RemoveResourcesFolder(projectPath + "/Data/");
 
     BaseScreen::UnloadResources();
 }

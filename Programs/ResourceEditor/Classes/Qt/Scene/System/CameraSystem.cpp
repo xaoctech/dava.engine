@@ -12,6 +12,7 @@
 
 #include "Classes/Commands2/RemoveComponentCommand.h"
 #include "Classes/Commands2/AddComponentCommand.h"
+#include "Classes/Commands2/EntityRemoveCommand.h"
 #include "Classes/StringConstants.h"
 
 #include <Scene3D/Components/CameraComponent.h>
@@ -41,6 +42,48 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene* scene)
 SceneCameraSystem::~SceneCameraSystem()
 {
     SafeRelease(curSceneCamera);
+}
+
+void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder)
+{
+    DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
+    // Debug camera whole object archive
+    DAVA::Camera* debugCam = GetCamera(topCameraEntity);
+    DAVA::RefPtr<DAVA::KeyedArchive> camArch;
+    camArch.ConstructInplace();
+    debugCam->SaveObject(camArch.Get());
+    cameraProps.Set("archive", camArch);
+
+    // Current active camera name
+    DAVA::FastName curCamName = GetEntityFromCamera(curSceneCamera)->GetName();
+    cameraProps.Set("activeCameraName", curCamName);
+}
+
+void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder)
+{
+    DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
+    DAVA::Camera* cur = GetCamera(topCameraEntity);
+
+    // set debug camera position
+    DAVA::RefPtr<DAVA::KeyedArchive> camArch;
+    camArch.ConstructInplace();
+    cur->SaveObject(camArch.Get());
+    camArch = cameraProps.Get<DAVA::RefPtr<DAVA::KeyedArchive>>("archive", camArch);
+    cur->LoadObject(camArch.Get());
+
+    // set active scene camera
+    DAVA::FastName camName = cameraProps.Get<DAVA::FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
+    auto camEntityIt = std::find_if(std::begin(sceneCameras), std::end(sceneCameras),
+                                    [&camName](DAVA::Entity* cam)
+                                    {
+                                        return cam->GetName() == camName;
+                                    });
+    if (camEntityIt != std::end(sceneCameras))
+    {
+        cur = GetCamera(*camEntityIt);
+        DAVA::Scene* scene = GetScene();
+        scene->SetCurrentCamera(cur);
+    }
 }
 
 DAVA::Camera* SceneCameraSystem::GetCurCamera() const
@@ -432,7 +475,7 @@ void SceneCameraSystem::CreateDebugCameras()
         topCamera->SetupPerspective(cameraFov, 320.0f / 480.0f, cameraNear, cameraFar);
         topCamera->SetAspect(1.0f);
 
-        DAVA::ScopedPtr<DAVA::Entity> topCameraEntity(new DAVA::Entity());
+        topCameraEntity = new DAVA::Entity();
         topCameraEntity->SetName(ResourceEditor::EDITOR_DEBUG_CAMERA);
         topCameraEntity->SetNotRemovable(true);
         topCameraEntity->AddComponent(new DAVA::CameraComponent(topCamera));
@@ -658,4 +701,9 @@ void SceneCameraSystem::EnableSystem()
 {
     EditorSceneSystem::EnableSystem();
     CreateDebugCameras();
+}
+
+std::unique_ptr<DAVA::Command> SceneCameraSystem::PrepareForSave(bool saveForGame)
+{
+    return std::make_unique<EntityRemoveCommand>(topCameraEntity);
 }

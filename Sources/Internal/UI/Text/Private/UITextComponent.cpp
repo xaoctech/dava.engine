@@ -1,4 +1,6 @@
 #include "UI/Text/UITextComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Base/GlobalEnum.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"

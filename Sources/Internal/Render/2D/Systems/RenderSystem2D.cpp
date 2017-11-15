@@ -1,5 +1,6 @@
 #include "RenderSystem2D.h"
 
+#include "Engine/Engine.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"

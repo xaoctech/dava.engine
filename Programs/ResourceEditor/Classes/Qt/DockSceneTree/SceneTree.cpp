@@ -12,10 +12,12 @@
 #include <QSignalBlocker>
 
 #include "Classes/Application/RESettings.h"
+#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Deprecated/SceneValidator.h"
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneImageGraber.h"
+#include "Scene/SceneHelper.h"
 #include "Qt/GlobalOperations.h"
 #include "Qt/Tools/PathDescriptor/PathDescriptor.h"
 

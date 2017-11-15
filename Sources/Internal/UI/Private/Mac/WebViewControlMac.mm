@@ -11,6 +11,7 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIWebView.h"
+#include "UI/IUIWebViewDelegate.h"
 
 #import <WebKit/WebKit.h>
 #import <AppKit/NSWorkspace.h>

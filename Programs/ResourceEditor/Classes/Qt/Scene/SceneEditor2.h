@@ -45,6 +45,14 @@ class RECommandStack;
 class EditorSceneSystem;
 class EditorSlotSystem;
 
+namespace DAVA
+{
+namespace TArc
+{
+class PropertiesHolder;
+}
+}
+
 class SceneEditor2 : public DAVA::Scene
 {
 public:
@@ -91,7 +99,13 @@ public:
     PathSystem* pathSystem = nullptr;
 
     //to manage editor systems adding/deleting
-    void AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags = 0, DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr, DAVA::SceneSystem* insertBeforeSceneForInput = nullptr, DAVA::SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
+    void AddSystem(DAVA::SceneSystem* sceneSystem,
+                   DAVA::uint64 componentFlags,
+                   DAVA::uint32 processFlags = 0,
+                   DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr,
+                   DAVA::SceneSystem* insertBeforeSceneForInput = nullptr,
+                   DAVA::SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
+
     void RemoveSystem(DAVA::SceneSystem* sceneSystem) override;
 
     template <typename T>
@@ -161,6 +175,8 @@ public:
     void Deactivate() override;
 
     void EnableEditorSystems();
+    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
+    void SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
 
     DAVA::uint32 GetFramesCount() const;
     void ResetFramesCount();

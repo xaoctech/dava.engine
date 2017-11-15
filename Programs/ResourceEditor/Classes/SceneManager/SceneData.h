@@ -5,6 +5,7 @@
 #include "Classes/Selection/SelectionSystem.h"
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/DataProcessing/SettingsNode.h>
 
 #include <Reflection/ReflectionRegistrator.h>
@@ -45,11 +46,16 @@ public:
     static const char* sceneCanRedoPropertyName;
     static const char* sceneRedoDescriptionPropertyName;
 
+    DAVA::TArc::PropertiesHolder* GetPropertiesRoot();
+
 private:
     friend class SceneManagerModule;
 
+    void CreatePropertiesRoot(DAVA::FileSystem* fs, const DAVA::FilePath& dirPath, const DAVA::FilePath& fileName);
+
     SceneEditor2* GetScenePtr() const;
     DAVA::RefPtr<SceneEditor2> scene;
+    std::unique_ptr<DAVA::TArc::PropertiesHolder> propertiesRoot = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneData, DAVA::TArc::DataNode)
     {

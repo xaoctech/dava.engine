@@ -178,6 +178,16 @@ Qt::ItemFlags ReflectedPropertyModel::flags(const QModelIndex& index) const
 
 QModelIndex ReflectedPropertyModel::buddy(const QModelIndex& indexForEdit) const
 {
+    if (indexForEdit.isValid() == false)
+    {
+        return indexForEdit;
+    }
+
+    ReflectedPropertyItem* item = MapItem(indexForEdit);
+    if (item->value->IsSpannedControl() == true)
+    {
+        return indexForEdit;
+    }
     return index(indexForEdit.row(), 1, indexForEdit.parent());
 }
 

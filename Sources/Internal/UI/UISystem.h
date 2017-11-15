@@ -16,6 +16,11 @@ public:
     virtual ~UISystem() = default;
 
 protected:
+    /** Called after adding this system to scene. */
+    virtual void RegisterSystem(){};
+    /** Called before removing this system from scene. */
+    virtual void UnregisterSystem(){};
+
     virtual void RegisterControl(UIControl* control){};
     virtual void UnregisterControl(UIControl* control){};
     virtual void RegisterComponent(UIControl* control, UIComponent* component){};

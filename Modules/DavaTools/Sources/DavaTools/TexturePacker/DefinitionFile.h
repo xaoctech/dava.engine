@@ -21,13 +21,13 @@ public:
     DefinitionFile(DefinitionFile&&) = delete;
 
     bool Load(const FilePath& filename);
-    bool LoadPNGDef(const FilePath& filename, const FilePath& pathToProcess);
+    bool LoadPNGDef(const FilePath& filename, const FilePath& pathToProcess, String outputBasename = String());
 
     void ClearPackedFrames();
-    bool LoadPNG(const FilePath& fullname, const FilePath& processDirectoryPath);
+    bool LoadPNG(const FilePath& fullname, const FilePath& processDirectoryPath, String outputBasename = String());
     bool LoadPSD(const FilePath& fullname, const FilePath& processDirectoryPath,
                  DAVA::uint32 maxTextureSize, bool retainEmptyPixesl, bool useLayerNames,
-                 bool verboseOutput);
+                 bool verboseOutput, String outputBasename = String());
 
     Size2i GetFrameSize(uint32 frame) const;
     int GetFrameWidth(uint32 frame) const;

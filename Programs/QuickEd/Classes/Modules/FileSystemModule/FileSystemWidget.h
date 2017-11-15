@@ -6,7 +6,6 @@
 #include <QModelIndex>
 #include <memory>
 
-class QLineEdit;
 class QTreeView;
 class QFileSystemModel;
 class QItemSelection;
@@ -33,9 +32,10 @@ public:
 
     DAVA::Signal<const QString&> openFile;
 
+    QTreeView* GetTreeView();
+
 private slots:
     void onDoubleClicked(const QModelIndex& index);
-    void setFilterFixedString(const QString& filterStr);
     void onNewFolder();
     void onNewFile();
     void onDeleteFile();
@@ -76,7 +76,6 @@ private:
 
     QPoint menuInvokePos = QPoint(-1, -1);
 
-    QLineEdit* filterLine = nullptr;
     QTreeView* treeView = nullptr;
 
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;

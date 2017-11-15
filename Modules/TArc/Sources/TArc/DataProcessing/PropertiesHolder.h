@@ -1,12 +1,11 @@
 #pragma once
 
+#include <TArc/Qt/QtRect.h>
+#include <TArc/Qt/QtByteArray.h>
+#include <TArc/Qt/QtString.h>
 
-#include "TArc/Qt/QtRect.h"
-#include "TArc/Qt/QtByteArray.h"
-#include "TArc/Qt/QtString.h"
-
-#include "Base/BaseTypes.h"
-#include "Base/Any.h"
+#include <Base/BaseTypes.h>
+#include <Base/Any.h>
 
 #include <memory>
 
@@ -14,6 +13,7 @@ namespace DAVA
 {
 class FilePath;
 class Type;
+class FileSystem;
 
 namespace TArc
 {
@@ -26,7 +26,10 @@ public:
     ~PropertiesHolder();
 
     PropertiesItem CreateSubHolder(const String& name) const;
-
+    static std::unique_ptr<PropertiesHolder> CopyWithNewPath(PropertiesHolder& holder,
+                                                             DAVA::FileSystem* fs,
+                                                             const String& projectName,
+                                                             const FilePath& directory);
     void SaveToFile();
 
 private:

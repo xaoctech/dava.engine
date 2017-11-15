@@ -29,6 +29,7 @@ void LibraryWidget::InitUI()
     treeView->setDragEnabled(true);
     treeView->setDragDropMode(QAbstractItemView::DragOnly);
     treeView->setDefaultDropAction(Qt::CopyAction);
+    treeView->setContextMenuPolicy(Qt::ActionsContextMenu);
     treeView->header()->setVisible(false);
 
     verticalLayout->addWidget(treeView);
@@ -45,4 +46,9 @@ void LibraryWidget::SetCurrentPackage(PackageNode* package)
     treeView->setEnabled(package != nullptr);
     treeView->expandAll();
     treeView->collapse(libraryModel->GetDefaultControlsModelIndex());
+}
+
+QTreeView* LibraryWidget::GetTreeView()
+{
+    return treeView;
 }

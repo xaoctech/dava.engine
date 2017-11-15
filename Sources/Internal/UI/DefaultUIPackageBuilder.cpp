@@ -1,5 +1,6 @@
 #include "DefaultUIPackageBuilder.h"
 
+#include "Engine/Engine.h"
 #include "UI/UIPackage.h"
 #include "UI/UIPackageLoader.h"
 #include "UI/UIControlSystem.h"

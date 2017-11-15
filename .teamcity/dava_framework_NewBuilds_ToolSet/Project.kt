@@ -18,8 +18,12 @@ object Project : Project({
     vcsRoot(dava_framework_NewBuilds_ToolSet_ResourceEditorConsoleTesting)
     vcsRoot(dava_framework_NewBuilds_ToolSet_StashDava)
 
+    buildType(dava_framework_ToolSet_ToolSetAndroid)
+    buildType(dava_framework_ToolSet_ToolSetIos)
     buildType(dava_framework_NewBuilds_ToolSet_ToolSetMac)
     buildType(dava_framework_NewBuilds_ToolSet_ToolSetWin)
+    buildType(dava_framework_ToolSet_ToolSetWin10)
+    buildType(dava_framework_ToolSet_ToolSetLinux)
 
     cleanup {
         artifacts(days = 7)
