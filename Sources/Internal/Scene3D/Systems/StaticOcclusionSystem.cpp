@@ -438,7 +438,7 @@ void StaticOcclusionDebugDrawSystem::RemoveComponentFromEntity(Entity* entity)
     StaticOcclusionDebugDrawComponent* debugDrawComponent = GetStaticOcclusionDebugDrawComponent(entity);
     DVASSERT(debugDrawComponent != nullptr);
     GetScene()->GetRenderSystem()->RemoveFromRender(debugDrawComponent->GetRenderObject());
-    entity->RemoveComponent<StaticOcclusionDebugDrawSystem>();
+    entity->RemoveComponent<StaticOcclusionDebugDrawComponent>();
 }
 
 void StaticOcclusionDebugDrawSystem::UpdateGeometry(StaticOcclusionDebugDrawComponent* component)
