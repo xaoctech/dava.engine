@@ -455,7 +455,7 @@ void PackageModule::CreateActions()
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
                                              const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             return IsMoveUpActionEnabled(selectedNodes);                                             
+                                             return IsMoveUpActionEnabled(selectedNodes);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveUp, this));
