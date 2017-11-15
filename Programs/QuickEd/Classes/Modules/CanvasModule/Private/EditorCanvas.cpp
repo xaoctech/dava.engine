@@ -120,7 +120,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, bool generated)
                 additionalPos *= canvasDataAdapter.GetViewSize();
                 //custom delimiter to scroll widget by little chunks of visible area
                 static const float wheelDelta = 0.05f;
-                canvasDataAdapter.MoveScene(-1 * additionalPos * wheelDelta);
+                canvasDataAdapter.MoveScene(additionalPos * wheelDelta);
             }
         }
         else if (dragState == EditorSystemsManager::DragScreen)
