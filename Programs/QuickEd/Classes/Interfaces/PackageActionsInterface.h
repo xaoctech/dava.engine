@@ -7,6 +7,7 @@ namespace Interfaces
 class PackageActionsInterface
 {
 public:
+    virtual QAction* GetImportPackageAction() = 0;
     virtual QAction* GetCutAction() = 0;
     virtual QAction* GetCopyAction() = 0;
     virtual QAction* GetPasteAction() = 0;

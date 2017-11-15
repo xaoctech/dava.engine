@@ -32,7 +32,6 @@ public:
     explicit PackageWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent = 0);
 
     PackageModel* GetPackageModel() const;
-    using QModelIndexList = QModelIndexList;
 
     void OnSelectionChanged(const DAVA::Any& selection);
     void OnPackageChanged(PackageContext* context, PackageNode* node);

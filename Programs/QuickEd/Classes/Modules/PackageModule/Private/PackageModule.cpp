@@ -194,13 +194,14 @@ void PackageModule::CreateActions()
         action->setShortcut(QKeySequence::New);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
+        packageData->importPackageAction = action;
+
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             return (selectedNodes.size() == 1 && (*selectedNodes.begin())->IsInsertingPackagesSupported());
+                                             return fieldValue.Cast<PackageNode*>(nullptr) != nullptr;
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnImport, this));
@@ -302,7 +303,7 @@ void PackageModule::CreateActions()
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
                                          {
                                              const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             if (selectedNodes.size() != 1)
+                                             if (selectedNodes.empty() == true)
                                              {
                                                  return false;
                                              }
@@ -446,31 +447,15 @@ void PackageModule::CreateActions()
         action->setShortcut(Qt::ControlModifier + Qt::Key_Up);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
+        packageData->moveUpAction = action;
+
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
                                              const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             if (selectedNodes.size() != 1)
-                                             {
-                                                 return false;
-                                             }
-
-                                             PackageBaseNode* node = (*selectedNodes.begin());
-
-                                             if (node->CanRemove())
-                                             {
-                                                 PackageIterator iterUp(node, [node, this](const PackageBaseNode* dest) -> bool {
-                                                     return CanMove(dest, node, UP);
-                                                 });
-                                                 --iterUp;
-                                                 return iterUp.IsValid();
-                                             }
-                                             else
-                                             {
-                                                 return false;
-                                             }
+                                             return IsMoveUpActionEnabled(selectedNodes);                                             
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveUp, this));
@@ -486,31 +471,15 @@ void PackageModule::CreateActions()
         action->setShortcut(Qt::ControlModifier + Qt::Key_Down);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
+        packageData->moveDownAction = action;
+
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
                                              const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             if (selectedNodes.size() != 1)
-                                             {
-                                                 return false;
-                                             }
-
-                                             PackageBaseNode* node = (*selectedNodes.begin());
-
-                                             if (node->CanRemove())
-                                             {
-                                                 PackageIterator iterDown(node, [node, this](const PackageBaseNode* dest) -> bool {
-                                                     return CanMove(dest, node, DOWN);
-                                                 });
-                                                 ++iterDown;
-                                                 return iterDown.IsValid();
-                                             }
-                                             else
-                                             {
-                                                 return false;
-                                             }
+                                             return IsMoveDownActionEnabled(selectedNodes);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveDown, this));
@@ -526,18 +495,15 @@ void PackageModule::CreateActions()
         action->setShortcut(Qt::ControlModifier + Qt::Key_Left);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
+        packageData->moveLeftAction = action;
+
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
                                              const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             if (selectedNodes.size() != 1)
-                                             {
-                                                 return false;
-                                             }
-                                             PackageBaseNode* node = (*selectedNodes.begin());
-                                             return (node->CanRemove() && CanMoveLeft(node));
+                                             return IsMoveLeftActionEnabled(selectedNodes);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveLeft, this));
@@ -553,18 +519,15 @@ void PackageModule::CreateActions()
         action->setShortcut(Qt::ControlModifier + Qt::Key_Right);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
+        packageData->moveRightAction = action;
+
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
                                              const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
-                                             if (selectedNodes.size() != 1)
-                                             {
-                                                 return false;
-                                             }
-                                             PackageBaseNode* node = (*selectedNodes.begin());
-                                             return (node->CanRemove() && CanMoveRight(node));
+                                             return IsMoveRightActionEnabled(selectedNodes);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnMoveRight, this));
@@ -716,11 +679,11 @@ void PackageModule::CreateActions()
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<ContextAccessor>();
-        fieldDescr.fieldName = FastName(ActiveContextFieldName);
+        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
+        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
                                          {
-                                             return fieldValue.Cast<DataContext*>(nullptr) != nullptr;
+                                             return fieldValue.Cast<PackageNode*>(nullptr) != nullptr;
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCollapseAll, this));
@@ -834,6 +797,14 @@ void PackageModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
 
     packageData->packageWidgetContexts.erase(documentData->GetPackageNode());
+}
+
+QAction* PackageModule::GetImportPackageAction()
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    DVASSERT(packageData != nullptr);
+    DVASSERT(packageData->importPackageAction != nullptr);
+    return packageData->importPackageAction;
 }
 
 QAction* PackageModule::GetCutAction()
@@ -997,7 +968,7 @@ void PackageModule::OnPaste()
         }
         if (selection.empty() == false)
         {
-            documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, selection);
+            SetNewSelection(selection);
         }
     }
 }
@@ -1033,7 +1004,7 @@ void PackageModule::OnDuplicate()
             SelectedNodes selection = executor.Paste(package, parent, index + 1, string);
             if (selection.empty() == false)
             {
-                documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, selection);
+                SetNewSelection(selection);
             }
         }
     }
@@ -1370,6 +1341,81 @@ void PackageModule::OnDropIntoPackageNode(const QMimeData* data, Qt::DropAction 
     packageWidget->GetPackageModel()->OnDropMimeData(data, action, destNode, destIndex, pos);
 }
 
+void PackageModule::RefreshMoveActions(const SelectedNodes& selection)
+{
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    packageData->moveUpAction->setEnabled(IsMoveUpActionEnabled(selection));
+    packageData->moveDownAction->setEnabled(IsMoveDownActionEnabled(selection));
+    packageData->moveLeftAction->setEnabled(IsMoveLeftActionEnabled(selection));
+    packageData->moveRightAction->setEnabled(IsMoveRightActionEnabled(selection));
+}
+
+bool PackageModule::IsMoveUpActionEnabled(const SelectedNodes& selection)
+{
+    if (selection.size() != 1)
+    {
+        return false;
+    }
+
+    PackageBaseNode* node = (*selection.begin());
+
+    if (node->CanRemove())
+    {
+        PackageIterator iterUp(node, [node, this](const PackageBaseNode* dest) -> bool {
+            return CanMove(dest, node, UP);
+        });
+        --iterUp;
+        return iterUp.IsValid();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool PackageModule::IsMoveDownActionEnabled(const SelectedNodes& selectedNodes)
+{
+    if (selectedNodes.size() != 1)
+    {
+        return false;
+    }
+
+    PackageBaseNode* node = (*selectedNodes.begin());
+
+    if (node->CanRemove())
+    {
+        PackageIterator iterDown(node, [node, this](const PackageBaseNode* dest) -> bool {
+            return CanMove(dest, node, DOWN);
+        });
+        ++iterDown;
+        return iterDown.IsValid();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool PackageModule::IsMoveLeftActionEnabled(const SelectedNodes& selectedNodes)
+{
+    if (selectedNodes.size() != 1)
+    {
+        return false;
+    }
+    PackageBaseNode* node = (*selectedNodes.begin());
+    return (node->CanRemove() && CanMoveLeft(node));
+}
+
+bool PackageModule::IsMoveRightActionEnabled(const SelectedNodes& selectedNodes)
+{
+    if (selectedNodes.size() != 1)
+    {
+        return false;
+    }
+    PackageBaseNode* node = (*selectedNodes.begin());
+    return (node->CanRemove() && CanMoveRight(node));
+}
+
 void PackageModule::OnCollapseAll()
 {
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
@@ -1468,6 +1514,7 @@ void PackageModule::MoveNode(PackageBaseNode* node, PackageBaseNode* dest, DAVA:
         packageWidget->OnBeforeProcessNodes(selection);
         executor.MoveControls(nodes, nextControlNode, destIndex);
         packageWidget->OnAfterProcessNodes(selection);
+        RefreshMoveActions(selection);
     }
     else if (dynamic_cast<StyleSheetNode*>(node) != nullptr)
     {
@@ -1476,6 +1523,7 @@ void PackageModule::MoveNode(PackageBaseNode* node, PackageBaseNode* dest, DAVA:
         packageWidget->OnBeforeProcessNodes(selection);
         executor.MoveStyles(nodes, nextStyleSheetNode, destIndex);
         packageWidget->OnAfterProcessNodes(selection);
+        RefreshMoveActions(selection);
     }
     else
     {
@@ -1508,6 +1556,13 @@ void PackageModule::JumpToPackage(const DAVA::FilePath& packagePath)
 {
     QString path = QString::fromStdString(packagePath.GetAbsolutePathname());
     InvokeOperation(QEGlobal::OpenDocumentByPath.ID, path);
+}
+
+void PackageModule::SetNewSelection(const SelectedNodes& selection)
+{
+    documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, selection);
+    PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
+    packageData->packageWidget->OnSelectionChanged(selection);
 }
 
 DECL_GUI_MODULE(PackageModule);

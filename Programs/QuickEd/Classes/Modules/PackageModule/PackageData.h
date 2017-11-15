@@ -13,12 +13,19 @@ public:
 private:
     friend class PackageModule;
 
+    QAction* importPackageAction = nullptr;
+
     QAction* copyAction = nullptr;
     QAction* pasteAction = nullptr;
     QAction* cutAction = nullptr;
 
     QAction* deleteAction = nullptr;
     QAction* duplicateAction = nullptr;
+
+    QAction* moveUpAction = nullptr;
+    QAction* moveDownAction = nullptr;
+    QAction* moveLeftAction = nullptr;
+    QAction* moveRightAction = nullptr;
 
     QAction* jumpToPrototypeAction = nullptr;
     QAction* findPrototypeInstancesAction = nullptr;

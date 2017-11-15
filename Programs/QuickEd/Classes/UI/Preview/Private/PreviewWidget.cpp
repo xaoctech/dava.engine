@@ -4,9 +4,12 @@
 #include "Classes/Interfaces/PackageActionsInterface.h"
 #include "Classes/Model/ControlProperties/RootProperty.h"
 #include "Classes/Model/ControlProperties/VisibleValueProperty.h"
+#include "Classes/Model/PackageHierarchy/ImportedPackagesNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetsNode.h"
 #include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
 #include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
 #include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetsNode.h"
 #include "Classes/Modules/CanvasModule/CanvasData.h"
 #include "Classes/Modules/CanvasModule/CanvasData.h"
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
@@ -54,8 +57,6 @@
 #include <QTimer>
 #include <QLabel>
 
-using namespace DAVA;
-
 PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::TArc::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
     : QFrame(nullptr)
     , accessor(accessor_)
@@ -63,8 +64,8 @@ PreviewWidget::PreviewWidget(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc:
     , ui(ui_)
     , rulerController(new RulerController(accessor, this))
     , scaleComboBoxData(accessor)
-    , hScrollBarData(Vector2::AXIS_X, accessor)
-    , vScrollBarData(Vector2::AXIS_Y, accessor)
+    , hScrollBarData(DAVA::Vector2::AXIS_X, accessor)
+    , vScrollBarData(DAVA::Vector2::AXIS_Y, accessor)
     , canvasDataAdapter(accessor)
     , systemsManager(systemsManager_)
 {
@@ -76,6 +77,7 @@ PreviewWidget::~PreviewWidget() = default;
 
 void PreviewWidget::CreateActions()
 {
+    using namespace DAVA;
     using namespace DAVA::TArc;
 
     selectAllAction = new QAction(tr("Select all"), this);
@@ -153,6 +155,7 @@ void PreviewWidget::InjectRenderWidget(DAVA::RenderWidget* renderWidget_)
 
 void PreviewWidget::InitUI()
 {
+    using namespace DAVA;
     using namespace DAVA::TArc;
 
     GuidesController* hGuidesController = new GuidesController(Vector2::AXIS_X, accessor, this);
@@ -285,38 +288,23 @@ void PreviewWidget::AddPickLayerMenuSection(QMenu* menu, const QPoint& pos)
     };
     systemsManager->CollectControlNodes(std::back_inserter(nodesUnderPoint), predicateForMenu, stopPredicate);
 
-    //create list of item to select
-    for (auto it = nodesUnderPoint.rbegin(); it != nodesUnderPoint.rend(); ++it)
+    LayerNode rootLayer;
+    for (ControlNode* control : nodesUnderPoint)
     {
-        ControlNode* controlNode = *it;
-        QString className = QString::fromStdString(controlNode->GetControl()->GetClassName());
-        QAction* action = new QAction(QString::fromStdString(controlNode->GetName()), menu);
-        action->setCheckable(true);
-        menu->addAction(action);
-
-        DataContext* activeContext = accessor->GetActiveContext();
-        DVASSERT(activeContext != nullptr);
-        DocumentData* data = activeContext->GetData<DocumentData>();
-        const SelectedNodes& selectedNodes = data->GetSelectedNodes();
-
-        if (selectedNodes.find(controlNode) != selectedNodes.end())
-        {
-            action->setChecked(true);
-        }
-        connect(action, &QAction::toggled, [this, controlNode]() {
-            systemsManager->SelectNode(controlNode);
-        });
+        List<ControlNode*> path = GetPathFromRoot(control);
+        InsertControlIntoLayer(rootLayer, path);
     }
 
-    if (nodesUnderPoint.empty() == false)
-    {
-        menu->addSeparator();
-    }
+    QMenu* pickLayerMenu = new QMenu("Pick Layer");
+    pickLayerMenu->setEnabled(nodesUnderPoint.empty() == false);
+    menu->addMenu(pickLayerMenu);
+    menu->addSeparator();
+    InsertLayerIntoMenu(rootLayer, pickLayerMenu);
 }
 
 void PreviewWidget::AddChangeTextMenuSection(QMenu* menu, const QPoint& localPos)
 {
-    Vector2 davaPoint(localPos.x(), localPos.y());
+    DAVA::Vector2 davaPoint(localPos.x(), localPos.y());
     ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPoint);
     if (CanChangeTextInControl(node))
     {
@@ -345,6 +333,7 @@ void PreviewWidget::AddPackageMenuSections(QMenu* parentMenu)
 
 void PreviewWidget::AddBgrColorMenuSection(QMenu* menu)
 {
+    using namespace DAVA;
     using namespace DAVA::TArc;
 
     QMenu* bgrColorsMenu = new QMenu("Background Color");
@@ -385,6 +374,8 @@ void PreviewWidget::AddBgrColorMenuSection(QMenu* menu)
 
 bool PreviewWidget::CanChangeTextInControl(const ControlNode* node) const
 {
+    using namespace DAVA;
+
     if (node == nullptr)
     {
         return false;
@@ -394,6 +385,113 @@ bool PreviewWidget::CanChangeTextInControl(const ControlNode* node) const
 
     UITextComponent* textComponent = control->GetComponent<UITextComponent>();
     return textComponent != nullptr;
+}
+
+DAVA::List<ControlNode*> PreviewWidget::GetPathFromRoot(ControlNode* node)
+{
+    using namespace DAVA;
+
+    const PackageNode* package = node->GetPackage();
+    ImportedPackagesNode* importedRoot = package->GetImportedPackagesNode();
+    PackageControlsNode* controlsRoot = package->GetPackageControlsNode();
+    PackageControlsNode* prototypesRoot = package->GetPrototypes();
+    StyleSheetsNode* styleSheetsRoot = package->GetStyleSheets();
+
+    auto isRootControl = [&](const ControlNode* node) -> bool
+    {
+        PackageBaseNode* parent = node->GetParent();
+        return (parent == controlsRoot || parent == prototypesRoot || parent == importedRoot || parent == styleSheetsRoot);
+    };
+
+    auto getParentNode = [&](const ControlNode* node) -> ControlNode*
+    {
+        return isRootControl(node) ? nullptr : dynamic_cast<ControlNode*>(node->GetParent());
+    };
+
+    List<ControlNode*> path = { node };
+
+    for (ControlNode* nextNode = getParentNode(node);
+         nextNode != nullptr;
+         nextNode = getParentNode(nextNode))
+    {
+        path.push_front(nextNode);
+    }
+
+    path.push_front(nullptr);
+
+    return path;
+}
+
+void PreviewWidget::InsertControlIntoLayer(LayerNode& layer, DAVA::List<ControlNode*>& pathFromRoot)
+{
+    DVASSERT(pathFromRoot.front() == layer.control);
+    pathFromRoot.pop_front();
+
+    if (pathFromRoot.empty() == true)
+    {
+        layer.enabled = true;
+    }
+    else
+    {
+        ControlNode* control = pathFromRoot.front();
+
+        auto found = std::find_if(layer.subLayers.begin(), layer.subLayers.end(), [control](LayerNode& subNode)
+                                  {
+                                      return (subNode.control == control);
+                                  });
+
+        if (found != layer.subLayers.end())
+        {
+            InsertControlIntoLayer(*found, pathFromRoot);
+        }
+        else
+        {
+            LayerNode deeperLayer;
+            deeperLayer.control = control;
+            if (control != nullptr) // we are not on first level now
+            {
+                deeperLayer.leadingSpaces = "  " + layer.leadingSpaces;
+            }
+            InsertControlIntoLayer(deeperLayer, pathFromRoot);
+            layer.subLayers.push_back(std::move(deeperLayer));
+        }
+    }
+}
+
+void PreviewWidget::InsertLayerIntoMenu(LayerNode& layer, QMenu* menu)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    ControlNode* control = layer.control;
+    if (control != nullptr)
+    {
+        QString text = QString::fromStdString(layer.leadingSpaces + control->GetName());
+        QAction* action = new QAction(text, menu);
+        action->setCheckable(true);
+        action->setEnabled(layer.enabled);
+        menu->addAction(action);
+
+        DataContext* activeContext = accessor->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        DocumentData* data = activeContext->GetData<DocumentData>();
+        const SelectedNodes& selectedNodes = data->GetSelectedNodes();
+
+        if (selectedNodes.find(control) != selectedNodes.end())
+        {
+            action->setChecked(true);
+        }
+        connect(action, &QAction::toggled, [this, control]() {
+            systemsManager->SelectNode(control);
+        });
+    }
+
+    layer.subLayers.sort([](const LayerNode& n1, const LayerNode& n2) { return n1.control->GetName() < n2.control->GetName(); });
+
+    for (LayerNode& subLayer : layer.subLayers)
+    {
+        InsertLayerIntoMenu(subLayer, menu);
+    }
 }
 
 void PreviewWidget::OnMouseReleased(QMouseEvent* event)
@@ -407,7 +505,7 @@ void PreviewWidget::OnMouseReleased(QMouseEvent* event)
     if (nodeToChangeTextOnMouseRelease)
     {
         QPoint point = event->pos();
-        Vector2 davaPoint(point.x(), point.y());
+        DAVA::Vector2 davaPoint(point.x(), point.y());
         ControlNode* node = systemsManager->GetControlNodeAtPoint(davaPoint);
         if (node == nodeToChangeTextOnMouseRelease && CanChangeTextInControl(node))
         {
@@ -422,7 +520,7 @@ void PreviewWidget::OnMouseDBClick(QMouseEvent* event)
     if (event->button() == Qt::LeftButton)
     {
         QPoint point = event->pos();
-        Vector2 davaPoint(point.x(), point.y());
+        DAVA::Vector2 davaPoint(point.x(), point.y());
         nodeToChangeTextOnMouseRelease = systemsManager->GetControlNodeAtPoint(davaPoint);
     }
 }
@@ -474,6 +572,8 @@ void PreviewWidget::OnDragMoved(QDragMoveEvent* event)
 
 bool PreviewWidget::ProcessDragMoveEvent(QDropEvent* event)
 {
+    using namespace DAVA;
+
     DVASSERT(nullptr != event);
     auto mimeData = event->mimeData();
     if (mimeData->hasFormat("text/uri-list"))
@@ -667,6 +767,7 @@ void PreviewWidget::OnTabBarContextMenuRequested(const QPoint& pos)
 void PreviewWidget::RegisterPackageActions(Interfaces::PackageActionsInterface* packageActions_)
 {
     packageActions = packageActions_;
+    renderWidget->addAction(packageActions->GetImportPackageAction());
     renderWidget->addAction(packageActions->GetCopyAction());
     renderWidget->addAction(packageActions->GetCutAction());
     renderWidget->addAction(packageActions->GetPasteAction());
@@ -678,6 +779,7 @@ void PreviewWidget::RegisterPackageActions(Interfaces::PackageActionsInterface* 
 
 void PreviewWidget::UnregisterPackageActions(Interfaces::PackageActionsInterface* packageActions)
 {
+    renderWidget->removeAction(packageActions->GetImportPackageAction());
     renderWidget->removeAction(packageActions->GetCopyAction());
     renderWidget->removeAction(packageActions->GetCutAction());
     renderWidget->removeAction(packageActions->GetPasteAction());

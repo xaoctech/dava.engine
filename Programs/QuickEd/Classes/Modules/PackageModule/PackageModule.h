@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Classes/EditorSystems/SelectionContainer.h"
 #include "Classes/Interfaces/PackageActionsInterface.h"
 
 #include <TArc/DataProcessing/DataListener.h>
@@ -11,13 +12,14 @@
 class QMimeData;
 class PackageBaseNode;
 
-class PackageModule : public DAVA::TArc::ClientModule, public Interfaces::PackageActionsInterface, private DAVA::TArc::DataListener
+class PackageModule : public DAVA::TArc::ClientModule, Interfaces::PackageActionsInterface, private DAVA::TArc::DataListener
 {
     // ClientModule
     void PostInit() override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
     // PackageActionsInterface
+    QAction* GetImportPackageAction() override;
     QAction* GetCutAction() override;
     QAction* GetCopyAction() override;
     QAction* GetPasteAction() override;
@@ -55,6 +57,12 @@ class PackageModule : public DAVA::TArc::ClientModule, public Interfaces::Packag
 
     void OnDropIntoPackageNode(const QMimeData* data, Qt::DropAction action, PackageBaseNode* destNode, DAVA::uint32 destIndex, const DAVA::Vector2* pos);
 
+    void RefreshMoveActions(const SelectedNodes& selection);
+    bool IsMoveUpActionEnabled(const SelectedNodes& selection);
+    bool IsMoveDownActionEnabled(const SelectedNodes& selection);
+    bool IsMoveLeftActionEnabled(const SelectedNodes& selection);
+    bool IsMoveRightActionEnabled(const SelectedNodes& selection);
+
     enum eDirection : bool
     {
         UP = true,
@@ -70,6 +78,8 @@ class PackageModule : public DAVA::TArc::ClientModule, public Interfaces::Packag
 
     void JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName);
     void JumpToPackage(const DAVA::FilePath& packagePath);
+
+    void SetNewSelection(const SelectedNodes& selection);
 
     DAVA::TArc::QtConnections connections;
     DAVA::TArc::DataWrapper documentDataWrapper;
