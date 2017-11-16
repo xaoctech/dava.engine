@@ -205,7 +205,7 @@ private:
     bool ReadLocalFileTableInfoBuffer();
     void FillFileNameIndexes();
     bool SaveServerFooter();
-    void DeleteLocalMetaFiles();
+    void DeleteLocalMetaFile() const;
     void ContinueInitialization(float frameDelta);
     bool ReadContentAndExtractFileNames();
     uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
@@ -218,7 +218,7 @@ private:
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
     PackRequest* CreateNewRequest(const String& requestedPackName);
-    bool IsLocalMetaAlreadyExist() const;
+    bool IsLocalMetaAndFileTableAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);

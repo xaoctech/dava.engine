@@ -661,11 +661,11 @@ PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
     return request;
 }
 
-bool DLCManagerImpl::IsLocalMetaAlreadyExist() const
+bool DLCManagerImpl::IsLocalMetaAndFileTableAlreadyExist() const
 {
     FileSystem* fs = engine.GetContext()->fileSystem;
-    bool localFileTableExist = fs->IsFile(localCacheFileTable);
-    bool localMetaExist = fs->IsFile(localCacheMeta);
+    const bool localFileTableExist = fs->IsFile(localCacheFileTable);
+    const bool localMetaExist = fs->IsFile(localCacheMeta);
     return localFileTableExist && localMetaExist;
 }
 
@@ -687,7 +687,7 @@ void DLCManagerImpl::TestRetryCountLocalMetaAndGoTo(InitState nextState, InitSta
 
     if (retryCount > hints.skipCDNConnectAfterAttempts)
     {
-        if (IsLocalMetaAlreadyExist())
+        if (IsLocalMetaAndFileTableAlreadyExist())
         {
             skipedStates.push_back(initState);
             Logger::Debug("DLCManager skip state from %s to %s, use local meta", ToString(initState).c_str(), ToString(nextState).c_str());
@@ -1080,7 +1080,7 @@ void DLCManagerImpl::CompareLocalMetaWitnRemoteHash()
         const uint32 localCrc32 = CRC32::ForFile(localCacheMeta);
         if (localCrc32 != initFooterOnServer.metaDataCrc32)
         {
-            DeleteLocalMetaFiles();
+            DeleteLocalMetaFile();
             // we have to download new localDB file from server!
             initState = InitState::LoadingRequestAskMeta;
         }
@@ -1092,7 +1092,7 @@ void DLCManagerImpl::CompareLocalMetaWitnRemoteHash()
     }
     else
     {
-        DeleteLocalMetaFiles();
+        DeleteLocalMetaFile();
 
         initState = InitState::LoadingRequestAskMeta;
     }
@@ -1231,18 +1231,23 @@ void DLCManagerImpl::LoadPacksDataFromMeta()
 
         ScopedPtr<File> f(File::Create(localCacheMeta, File::OPEN | File::READ));
 
-        uint32 size = static_cast<uint32>(f->GetSize());
+        if (!f)
+        {
+            DAVA_THROW(Exception, "can't open localCacheMeta");
+        }
+
+        const uint32 size = static_cast<uint32>(f->GetSize());
 
         buffer.resize(size);
 
-        uint32 readSize = f->Read(buffer.data(), size);
+        const uint32 readSize = f->Read(buffer.data(), size);
 
         if (size != readSize)
         {
             DAVA_THROW(Exception, "can't read localCacheMeta size not match");
         }
 
-        uint32 buffHash = CRC32::ForBuffer(buffer);
+        const uint32 buffHash = CRC32::ForBuffer(buffer);
 
         if (initFooterOnServer.metaDataCrc32 != buffHash)
         {
@@ -1251,7 +1256,7 @@ void DLCManagerImpl::LoadPacksDataFromMeta()
 
         meta.reset(new PackMetaData(buffer.data(), buffer.size()));
 
-        size_t numFiles = meta->GetFileCount();
+        const size_t numFiles = meta->GetFileCount();
         scanFileReady.resize(numFiles);
 
         // now user can do requests for local packs
@@ -1357,7 +1362,7 @@ void DLCManagerImpl::StartDelayedRequests()
     }
 }
 
-void DLCManagerImpl::DeleteLocalMetaFiles()
+void DLCManagerImpl::DeleteLocalMetaFile() const
 {
     FileSystem* fs = engine.GetContext()->fileSystem;
     fs->DeleteFile(localCacheMeta);
