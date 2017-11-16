@@ -5727,6 +5727,33 @@ fail:
     return SWIG_arg;
 }
 
+static int _wrap_AutotestingSystemLua_GetMsSinceEpoche(lua_State* L)
+{
+    int SWIG_arg = 0;
+    DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
+    DAVA::float32 result;
+
+    SWIG_check_num_args("DAVA::AutotestingSystemLua::GetMsSinceEpoche", 1, 1)
+        if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetMsSinceEpoche", 1, "DAVA::AutotestingSystemLua *");
+
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&arg1, SWIGTYPE_p_DAVA__AutotestingSystemLua, 0)))
+    {
+        SWIG_fail_ptr("AutotestingSystemLua_GetMsSinceEpoche", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
+    }
+
+    result = (DAVA::float32)(arg1)->GetMsSinceEpoche();
+    lua_pushnumber(L, (lua_Number)result);
+    SWIG_arg++;
+    return SWIG_arg;
+
+    if (0)
+        SWIG_fail;
+
+fail:
+    lua_error(L);
+    return SWIG_arg;
+}
+
 static int _wrap_AutotestingSystemLua_OnTestStart(lua_State* L)
 {
     int SWIG_arg = 0;
@@ -7573,6 +7600,7 @@ static swig_lua_method swig_AutotestingSystemLua_methods[] = {
     { "OnTestSkipped", _wrap_AutotestingSystemLua_OnTestSkipped },
     { "GetUsedMemory", _wrap_AutotestingSystemLua_GetUsedMemory },
     { "GetTimeElapsed", _wrap_AutotestingSystemLua_GetTimeElapsed },
+    { "GetMsSinceEpoche", _wrap_AutotestingSystemLua_GetMsSinceEpoche },
     { "OnTestStart", _wrap_AutotestingSystemLua_OnTestStart },
     { "OnStepStart", _wrap_AutotestingSystemLua_OnStepStart },
     { "Log", _wrap_AutotestingSystemLua_Log },
