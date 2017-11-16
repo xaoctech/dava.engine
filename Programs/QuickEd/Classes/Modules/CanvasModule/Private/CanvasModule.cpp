@@ -1,12 +1,12 @@
-#include "Modules/CanvasModule/CanvasModule.h"
-#include "Modules/CanvasModule/CanvasModuleData.h"
-#include "Modules/CanvasModule/EditorCanvas.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/CanvasModule/CanvasData.h"
-#include "Modules/CanvasModule/CanvasDataAdapter.h"
-#include "UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/Modules/CanvasModule/CanvasModule.h"
+#include "Classes/Modules/CanvasModule/CanvasModuleData.h"
+#include "Classes/Modules/CanvasModule/EditorCanvas.h"
+#include "Classes/Modules/CanvasModule/EditorControlsView.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
+#include "Classes/UI/Preview/PreviewWidgetSettings.h"
 
-#include "Interfaces/EditorSystemsManagerInteface.h"
+#include "Classes/Interfaces/EditorSystemsManagerInteface.h"
 
 #include <TArc/DataProcessing/Common.h>
 #include <TArc/Qt/QtIcon.h>
@@ -34,8 +34,6 @@ CanvasModule::CanvasModule()
 
 void CanvasModule::PostInit()
 {
-    canvasDataAdapter = std::make_unique<CanvasDataAdapter>(GetAccessor());
-
     CreateData();
     CreateMenuSeparator();
     RecreateBgrColorActions();
@@ -46,16 +44,19 @@ void CanvasModule::PostInit()
 
 void CanvasModule::CreateData()
 {
+    DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+
     std::unique_ptr<CanvasModuleData> data = std::make_unique<CanvasModuleData>();
-    data->editorCanvas = std::make_unique<EditorCanvas>(GetAccessor());
-    data->controlsView = std::make_unique<EditorControlsView>(data->canvas.Get(), GetAccessor());
+    data->editorCanvas = std::make_unique<EditorCanvas>(accessor);
+    data->controlsView = std::make_unique<EditorControlsView>(data->canvas.Get(), accessor);
+    data->canvasDataAdapter = std::make_unique<CanvasDataAdapter>(accessor);
 
     data->controlsView->workAreaSizeChanged.Connect(this, &CanvasModule::OnWorkAreaSizeChanged);
     data->controlsView->rootControlSizeChanged.Connect(this, &CanvasModule::OnRootControlSizeChanged);
     data->controlsView->rootControlPositionChanged.Connect(this, &CanvasModule::OnRootControlPositionChanged);
     data->controlsView->needCentralizeChanged.Connect(this, &CanvasModule::OnNeedCentralizeChanged);
 
-    GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
+    accessor->GetGlobalContext()->CreateData(std::move(data));
 }
 
 void CanvasModule::CreateMenuSeparator()
@@ -178,7 +179,9 @@ void CanvasModule::OnNeedCentralizeChanged(bool needCentralize)
     {
         return;
     }
-    DAVA::Vector2 centerPosition = canvasDataAdapter->GetCenterPosition();
+
+    CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+    DAVA::Vector2 centerPosition = canvasModuleData->canvasDataAdapter->GetCenterPosition();
 
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
     canvasData->SetPosition(centerPosition);

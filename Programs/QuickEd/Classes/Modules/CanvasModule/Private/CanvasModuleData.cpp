@@ -1,6 +1,7 @@
-#include "Modules/CanvasModule/CanvasModuleData.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/CanvasModule/EditorCanvas.h"
+#include "Classes/Modules/CanvasModule/CanvasModuleData.h"
+#include "Classes/Modules/CanvasModule/EditorControlsView.h"
+#include "Classes/Modules/CanvasModule/EditorCanvas.h"
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CanvasModuleData)
 {

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "EditorSystems/EditorSystemsConstants.h"
+#include "Classes/EditorSystems/EditorSystemsConstants.h"
 
-#include "Model/PackageHierarchy/PackageBaseNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
 
-#include "Interfaces/EditorSystemsManagerInteface.h"
+#include "Classes/Interfaces/EditorSystemsManagerInteface.h"
 
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
