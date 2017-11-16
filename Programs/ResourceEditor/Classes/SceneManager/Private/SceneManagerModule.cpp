@@ -213,7 +213,7 @@ void SceneManagerModule::PostInit()
         return v.CanCast<DAVA::FilePath>() && !v.Cast<DAVA::FilePath>().IsEmpty();
     };
     params.getMaximumCount = []() {
-        return 5;
+        return 15;
     };
 
     recentItems.reset(new RecentMenuItems(std::move(params)));
