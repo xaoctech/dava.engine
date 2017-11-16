@@ -26,7 +26,7 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    const SimpleMotion* GetSimpleMotion() const;
+    SimpleMotion* GetSimpleMotion() const;
 
 private:
     SimpleMotion* simpleMotion = nullptr;
@@ -49,7 +49,6 @@ public:
     void Update(float32 dTime);
 
     bool IsPlaying() const;
-    bool IsFinished() const;
 
     const SkeletonAnimation* GetAnimation() const;
 
