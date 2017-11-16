@@ -292,17 +292,16 @@ void ContentFilter::RebuildFiltersWidgets()
     }
 }
 
-String ContentFilter::GetImmediateText() const
-{
-    return GetFieldValue<String>(Fields::ImmediateText, "");
-}
-
 void ContentFilter::SetImmediateText(const String& immText)
 {
     FastName fieldName = GetFieldName(Fields::ImmediateText);
     if (fieldName.IsValid())
     {
-        wrapper.SetFieldValue(fieldName, immText);
+        AnyFn method = model.GetMethod(fieldName.c_str());
+        if (method.IsValid())
+        {
+            method.Invoke(immText);
+        }
     }
 }
 
@@ -479,7 +478,7 @@ void ContentFilter::OnRemoveFilterFromChain(const Any& filterKey, TArc::ControlP
 {
     filterControl->TearDown();
 
-    FastName removeMethodName = GetFieldName(Fields::RemoveFromFilter);
+    FastName removeMethodName = GetFieldName(Fields::RemoveFilterFromChain);
     DVASSERT(removeMethodName.IsValid() == true);
 
     AnyFn removeFn = model.GetMethod(removeMethodName.c_str());
@@ -602,7 +601,7 @@ void ContentFilter::ClearFilterChain()
     }
     filterWidgets.clear();
 
-    FastName removeMethodName = GetFieldName(Fields::RemoveFromFilter);
+    FastName removeMethodName = GetFieldName(Fields::RemoveFilterFromChain);
     DVASSERT(removeMethodName.IsValid() == true);
 
     AnyFn removeFn = model.GetMethod(removeMethodName.c_str());
@@ -634,7 +633,7 @@ void ContentFilter::DisableAllFilters()
 DAVA_REFLECTION_IMPL(ContentFilter)
 {
     ReflectionRegistrator<ContentFilter>::Begin()
-    .Field("immediateText", &ContentFilter::GetImmediateText, &ContentFilter::SetImmediateText)
+    .Method("immediateText", &ContentFilter::SetImmediateText)
     .Field("filterText", &ContentFilter::GetText, &ContentFilter::SetText)
     .Field("isEnabled", &ContentFilter::IsEnabled, nullptr)
     .Field("isSaveButtonEnabled", &ContentFilter::IsSaveButtonEnabled, nullptr)

@@ -2,6 +2,7 @@
 
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Core/FieldBinder.h>
+#include <TArc/Controls/ContentFilter/ContentFilter.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Utils/QtDelayedExecutor.h>
 
@@ -11,6 +12,7 @@
 #include <QPersistentModelIndex>
 
 class SceneTreeModelV2;
+class SceneTreeFilterBase;
 class BaseEntityCreator;
 class EntityCreator;
 
@@ -21,6 +23,7 @@ class QModelIndex;
 class SceneTreeModule : public DAVA::TArc::ClientModule
 {
 private:
+    ~SceneTreeModule() override;
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
     void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
@@ -48,6 +51,14 @@ private:
     void SetExpandedIndexList(const DAVA::Set<QPersistentModelIndex>& expandedIndexList);
 
     void ReloadTexturesInSelected();
+
+    // Filtration
+    const DAVA::Vector<SceneTreeFilterBase*>& GetFiltersChain() const;
+    void AddFilterToChain(const Any& filterTypeKey);
+    void RemoveFilterFromChain(const Any& filterIndex);
+
+    ContentFilter::AvailableFilterBase* GetAvailableFilterTypes() const;
+    void SaveCurrentChainAsFilterType(QString filterName) const;
 
 private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
