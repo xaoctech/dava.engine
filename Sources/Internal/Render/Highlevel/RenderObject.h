@@ -199,6 +199,8 @@ public:
     inline void SetReflectionVisible(bool visible);
     inline bool GetRefractionVisible() const;
     inline void SetRefractionVisible(bool visible);
+    inline bool GetClippingVisible() const;
+    inline void SetClippingVisible(bool visible);
 
     virtual void GetDataNodes(Set<DataNode*>& dataNodes);
 
@@ -437,13 +439,25 @@ inline bool RenderObject::GetRefractionVisible() const
 {
     return (flags & VISIBLE_REFRACTION) == VISIBLE_REFRACTION;
 }
-
 inline void RenderObject::SetRefractionVisible(bool visible)
 {
     if (visible)
         flags |= VISIBLE_REFRACTION;
     else
         flags &= ~VISIBLE_REFRACTION;
+}
+
+inline bool RenderObject::GetClippingVisible() const
+{
+    return (flags & ALWAYS_CLIPPING_VISIBLE) == ALWAYS_CLIPPING_VISIBLE;
+}
+
+inline void RenderObject::SetClippingVisible(bool visible)
+{
+    if (visible)
+        flags |= ALWAYS_CLIPPING_VISIBLE;
+    else
+        flags &= ~ALWAYS_CLIPPING_VISIBLE;
 }
 
 inline void RenderObject::AddVisibilityStructureNode(uint32 nodeValue)
