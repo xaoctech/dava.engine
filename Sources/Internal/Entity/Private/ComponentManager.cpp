@@ -45,7 +45,7 @@ void ComponentManager::RegisterComponent(const Type* type)
 
         ++runtimeSceneComponentsCount;
 
-        DVASSERT(runtimeSceneComponentsCount < ComponentFlags().size());
+        DVASSERT(runtimeSceneComponentsCount >= 0 && static_cast<size_t>(runtimeSceneComponentsCount) < ComponentFlags().size());
 
         registeredSceneComponents.push_back(type);
     }

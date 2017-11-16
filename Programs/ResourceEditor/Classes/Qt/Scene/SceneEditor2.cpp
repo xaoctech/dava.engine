@@ -92,7 +92,7 @@ SceneEditor2::SceneEditor2()
     SafeRelease(notify);
 
     DAVA::SceneSystem* gridSystem = new SceneGridSystem(this);
-    AddSystem(gridSystem, 0, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(gridSystem, emptyFlags, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     cameraSystem = new SceneCameraSystem(this);
     AddSystem(cameraSystem, MakeComponentMask<DAVA::CameraComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, transformSystem);
@@ -144,7 +144,7 @@ SceneEditor2::SceneEditor2()
     AddSystem(editorLightSystem, MakeComponentMask<DAVA::LightComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
 
     beastSystem = new BeastSystem(this);
-    AddSystem(beastSystem, 0);
+    AddSystem(beastSystem, emptyFlags);
 
     staticOcclusionBuildSystem = new DAVA::StaticOcclusionBuildSystem(this);
     AddSystem(staticOcclusionBuildSystem, MakeComponentMask<DAVA::StaticOcclusionComponent>() | MakeComponentMask<DAVA::TransformComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
