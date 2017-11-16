@@ -195,8 +195,8 @@ DAVA_TESTCLASS (SlotSystemTest)
         {
             TEST_VERIFY(testScene->GetChildrenCount() == 1);
             Entity* aEntity = testScene->GetChild(0);
-            TEST_VERIFY(aEntity->GetComponentCount(Component::SLOT_COMPONENT) == 1);
-            SlotComponent* alfaComponent = static_cast<SlotComponent*>(aEntity->GetComponent(Component::SLOT_COMPONENT, 0));
+            TEST_VERIFY(aEntity->GetComponentCount<SlotComponent>() == 1);
+            SlotComponent* alfaComponent = static_cast<SlotComponent*>(aEntity->GetComponent<SlotComponent>());
             SlotSystem::eSlotState state = testScene->slotSystem->GetSlotState(alfaComponent);
             TEST_VERIFY(state == SlotSystem::eSlotState::NOT_LOADED || state == SlotSystem::eSlotState::LOADED);
         }
@@ -248,14 +248,14 @@ DAVA_TESTCLASS (SlotSystemTest)
                 TEST_VERIFY(testScene->GetChildrenCount() == 2);
                 DAVA::Entity* aEntity = testScene->GetChild(0);
 
-                TEST_VERIFY(aEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 1);
-                DAVA::SlotComponent* alfaComponent = static_cast<DAVA::SlotComponent*>(aEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 0));
+                TEST_VERIFY(aEntity->GetComponentCount<DAVA::SlotComponent>() == 1);
+                DAVA::SlotComponent* alfaComponent = static_cast<DAVA::SlotComponent*>(aEntity->GetComponent<DAVA::SlotComponent>());
                 result = ValidateLoadedItem(aEntity, alfaComponent, DAVA::FastName("tree_k2_test3"));
 
                 DAVA::Entity* bEntity = testScene->GetChild(1);
-                TEST_VERIFY(bEntity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) == 2);
-                DAVA::SlotComponent* betaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 0));
-                DAVA::SlotComponent* gamaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent(DAVA::Component::SLOT_COMPONENT, 1));
+                TEST_VERIFY(bEntity->GetComponentCount<DAVA::SlotComponent>() == 2);
+                DAVA::SlotComponent* betaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent<DAVA::SlotComponent>(0));
+                DAVA::SlotComponent* gamaComponent = static_cast<DAVA::SlotComponent*>(bEntity->GetComponent<DAVA::SlotComponent>(1));
 
                 result &= ValidateLoadedItem(bEntity, betaComponent, DAVA::FastName("tree_k2_test3"));
                 result &= ValidateLoadedItem(bEntity, gamaComponent, DAVA::FastName("BigPlant01"));

@@ -10,6 +10,7 @@
 #include "Base/String.h"
 #include "Base/TemplateHelpers.h"
 #include "Engine/Engine.h"
+#include "Entity/ComponentUtils.h"
 #include "Render/2D/FTFont.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Highlevel/Camera.h"
@@ -82,10 +83,10 @@ void OverdrawTestingScreen::LoadResources()
                                                 AddButtons();
                                             });
 
-    scene->AddSystem(testerSystem, DAVA::MakeComponentMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(testerSystem, DAVA::ComponentUtils::MakeComponentMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     chartPainterSystem = new ChartPainterSystem(scene, OverdrawTestConfig::chartHeight);
-    scene->AddSystem(chartPainterSystem, DAVA::MakeComponentMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(chartPainterSystem, DAVA::ComponentUtils::MakeComponentMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     ScopedPtr<Camera> camera(new Camera());
 

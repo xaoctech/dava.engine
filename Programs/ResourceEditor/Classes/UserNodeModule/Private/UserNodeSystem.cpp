@@ -18,7 +18,6 @@
 #include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Utils.h>
-#include <Entity/ComponentManager.h>
 
 namespace UserNodeSystemDetails
 {
@@ -296,16 +295,13 @@ void UserNodeSystem::UpdateTransformedEntities()
     using namespace DAVA;
 
     TransformSingleComponent* trSingle = GetScene()->transformSingleComponent;
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    int32 runtimeType = cm->GetRuntimeType(Type::Instance<UserComponent>());
 
     if (trSingle != nullptr)
     {
         RenderSystem* renderSystem = GetScene()->GetRenderSystem();
         for (auto& pair : trSingle->worldTransformChanged.map)
         {
-            if (pair.first->GetComponentsCount(runtimeType) > 0)
+            if (pair.first->GetComponentsCount(Type::Instance<UserComponent>()) > 0)
             {
                 for (Entity* entity : pair.second)
                 {

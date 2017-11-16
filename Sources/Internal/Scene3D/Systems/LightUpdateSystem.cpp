@@ -13,8 +13,6 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/Scene.h"
 #include "Time/SystemTimer.h"
-#include "Entity/ComponentManager.h"
-#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -26,13 +24,10 @@ LightUpdateSystem::LightUpdateSystem(Scene* scene)
 void LightUpdateSystem::Process(float32 timeElapsed)
 {
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    int32 runtimeType = cm->GetRuntimeType(Type::Instance<LightComponent>());
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(runtimeType) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<LightComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {

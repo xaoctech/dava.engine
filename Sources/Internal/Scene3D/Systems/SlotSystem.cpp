@@ -410,7 +410,7 @@ void SlotSystem::RemoveEntity(Entity* entity)
 
 void SlotSystem::AddComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Type::Instance<SlotComponent>());
+    DVASSERT(component->GetType()->Is<SlotComponent>());
     SlotNode node;
     node.component = static_cast<SlotComponent*>(component);
     SetState(node, eSlotState::NOT_LOADED);
@@ -419,7 +419,7 @@ void SlotSystem::AddComponent(Entity* entity, Component* component)
 
 void SlotSystem::RemoveComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Type::Instance<SlotComponent>());
+    DVASSERT(component->GetType()->Is<SlotComponent>());
     UnloadItem(static_cast<SlotComponent*>(component));
     uint32 index = GetComponentIndex(static_cast<SlotComponent*>(component));
     RemoveExchangingWithLast(nodes, index);

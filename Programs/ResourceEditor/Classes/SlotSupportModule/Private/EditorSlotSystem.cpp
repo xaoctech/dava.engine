@@ -71,7 +71,7 @@ void EditorSlotSystem::RemoveEntity(DAVA::Entity* entity)
 
 void EditorSlotSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>());
+    DVASSERT(component->GetType()->Is<DAVA::SlotComponent>());
     pendingOnInitialize.insert(entity);
     if (entity->GetComponentCount<DAVA::SlotComponent>() == 1)
     {
@@ -84,7 +84,7 @@ void EditorSlotSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* compo
 
 void EditorSlotSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>());
+    DVASSERT(component->GetType()->Is<DAVA::SlotComponent>());
     if (entity->GetComponentCount<DAVA::SlotComponent>() == 1)
     {
         DAVA::FindAndRemoveExchangingWithLast(entities, entity);
@@ -503,7 +503,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         const RemoveComponentCommand* cmd = static_cast<const RemoveComponentCommand*>(command);
         DAVA::Component* component = const_cast<DAVA::Component*>(cmd->GetComponent());
-        if (component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>())
+        if (component->GetType()->Is<DAVA::SlotComponent>())
         {
             DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);
             holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr, DAVA::FastName()));
@@ -539,7 +539,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         const AddComponentCommand* cmd = static_cast<const AddComponentCommand*>(command);
         DAVA::Component* component = cmd->GetComponent();
-        if (component->GetType() == DAVA::Type::Instance<DAVA::SlotComponent>())
+        if (component->GetType()->Is<DAVA::SlotComponent>())
         {
             SlotSystemSettings* settings = accessor->GetGlobalContext()->GetData<SlotSystemSettings>();
             DAVA::SlotComponent* slotComponent = static_cast<DAVA::SlotComponent*>(component);

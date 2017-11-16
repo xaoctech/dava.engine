@@ -19,13 +19,12 @@ public:
 
 private:
     Vector<EntityFamilyType*> families;
-    Atomic<int32> refCount;
+    uint32 refCount = 0;
 };
 
 template <typename EntityFamilyType>
 FamilyRepository<EntityFamilyType>::~FamilyRepository()
 {
-    // DVASSERT(refCount == 0);
     ReleaseAllFamilies();
 }
 
@@ -39,8 +38,8 @@ EntityFamilyType* FamilyRepository<EntityFamilyType>::GetOrCreate(const EntityFa
         families.push_back(new EntityFamilyType(localFamily));
         iter = families.end() - 1;
     }
-    (*iter)->refCount.Increment(); // Increase family ref counter
-    refCount.Increment(); // Increase repository ref counter
+    (*iter)->refCount++; // Increase family ref counter
+    ++refCount; // Increase repository ref counter
     return *iter;
 }
 
@@ -49,16 +48,16 @@ void FamilyRepository<EntityFamilyType>::ReleaseFamily(EntityFamilyType* family)
 {
     if (family != nullptr)
     {
-        DVASSERT(refCount.Get() > 0);
-        DVASSERT(family->refCount.Get() > 0);
+        DVASSERT(refCount > 0);
+        DVASSERT(family->refCount > 0);
 
-        family->refCount.Decrement();
-        int32 newRefCount = refCount.Decrement();
-        if (0 == newRefCount)
+        --family->refCount;
+        --refCount;
+        if (0 == refCount)
         {
             for (auto x : families)
             {
-                DVASSERT(x->refCount.Get() == 0);
+                DVASSERT(x->refCount == 0);
                 delete x;
             }
             families.clear();

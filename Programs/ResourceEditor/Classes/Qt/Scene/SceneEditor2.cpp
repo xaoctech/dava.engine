@@ -30,6 +30,7 @@
 // framework
 #include <Debug/DVAssert.h>
 #include <Engine/Engine.h>
+#include <Entity/ComponentUtils.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
@@ -85,8 +86,6 @@ SceneEditor2::SceneEditor2()
 
     DAVA::ComponentFlags emptyFlags;
 
-    using DAVA::MakeComponentMask;
-
     EditorCommandNotify* notify = new EditorCommandNotify(this);
     commandStack->SetNotify(notify);
     SafeRelease(notify);
@@ -95,16 +94,16 @@ SceneEditor2::SceneEditor2()
     AddSystem(gridSystem, emptyFlags, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     cameraSystem = new SceneCameraSystem(this);
-    AddSystem(cameraSystem, MakeComponentMask<DAVA::CameraComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, transformSystem);
+    AddSystem(cameraSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::CameraComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, transformSystem);
 
     rotationSystem = new DAVA::RotationControllerSystem(this);
-    AddSystem(rotationSystem, MakeComponentMask<DAVA::CameraComponent>() | MakeComponentMask<DAVA::RotationControllerComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
+    AddSystem(rotationSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeComponentMask<DAVA::RotationControllerComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
 
     DAVA::SceneSystem* snapToLandscapeSystem = new DAVA::SnapToLandscapeControllerSystem(this);
-    AddSystem(snapToLandscapeSystem, MakeComponentMask<DAVA::CameraComponent>() | MakeComponentMask<DAVA::SnapToLandscapeControllerComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(snapToLandscapeSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeComponentMask<DAVA::SnapToLandscapeControllerComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
 
     wasdSystem = new DAVA::WASDControllerSystem(this);
-    AddSystem(wasdSystem, MakeComponentMask<DAVA::CameraComponent>() | MakeComponentMask<DAVA::WASDControllerComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(wasdSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeComponentMask<DAVA::WASDControllerComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
 
     collisionSystem = new SceneCollisionSystem(this);
     AddSystem(collisionSystem, emptyFlags, SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, renderUpdateSystem);
@@ -135,43 +134,43 @@ SceneEditor2::SceneEditor2()
     AddSystem(structureSystem, emptyFlags, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     particlesSystem = new EditorParticlesSystem(this);
-    AddSystem(particlesSystem, MakeComponentMask<DAVA::ParticleEffectComponent>(), 0, renderUpdateSystem);
+    AddSystem(particlesSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::ParticleEffectComponent>(), 0, renderUpdateSystem);
 
     textDrawSystem = new TextDrawSystem(this, cameraSystem);
     AddSystem(textDrawSystem, emptyFlags, 0, renderUpdateSystem);
 
     editorLightSystem = new EditorLightSystem(this);
-    AddSystem(editorLightSystem, MakeComponentMask<DAVA::LightComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
+    AddSystem(editorLightSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::LightComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
 
     beastSystem = new BeastSystem(this);
     AddSystem(beastSystem, emptyFlags);
 
     staticOcclusionBuildSystem = new DAVA::StaticOcclusionBuildSystem(this);
-    AddSystem(staticOcclusionBuildSystem, MakeComponentMask<DAVA::StaticOcclusionComponent>() | MakeComponentMask<DAVA::TransformComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(staticOcclusionBuildSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::StaticOcclusionComponent>() | DAVA::ComponentUtils::MakeComponentMask<DAVA::TransformComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     materialSystem = new EditorMaterialSystem(this);
-    AddSystem(materialSystem, MakeComponentMask<DAVA::RenderComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(materialSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::RenderComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
 
     wayEditSystem = new WayEditSystem(this);
-    AddSystem(wayEditSystem, MakeComponentMask<DAVA::WaypointComponent>() | MakeComponentMask<DAVA::TransformComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
+    AddSystem(wayEditSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::WaypointComponent>() | DAVA::ComponentUtils::MakeComponentMask<DAVA::TransformComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
     structureSystem->AddDelegate(wayEditSystem);
 
     pathSystem = new PathSystem(this);
-    AddSystem(pathSystem, MakeComponentMask<DAVA::PathComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(pathSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::PathComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
     modifSystem->AddDelegate(pathSystem);
     modifSystem->AddDelegate(wayEditSystem);
 
     editorLODSystem = new EditorLODSystem(this);
-    AddSystem(editorLODSystem, MakeComponentMask<DAVA::LodComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(editorLODSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::LodComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
 
     editorStatisticsSystem = new EditorStatisticsSystem(this);
-    AddSystem(editorStatisticsSystem, MakeComponentMask<DAVA::RenderComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(editorStatisticsSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::RenderComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
 
     visibilityCheckSystem = new VisibilityCheckSystem(this);
-    AddSystem(visibilityCheckSystem, MakeComponentMask<DAVA::VisibilityCheckComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(visibilityCheckSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::VisibilityCheckComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
 
     editorVegetationSystem = new EditorVegetationSystem(this);
-    AddSystem(editorVegetationSystem, MakeComponentMask<DAVA::RenderComponent>(), 0);
+    AddSystem(editorVegetationSystem, DAVA::ComponentUtils::MakeComponentMask<DAVA::RenderComponent>(), 0);
 
     SceneSignals::Instance()->EmitOpened(this);
 }

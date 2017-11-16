@@ -1,6 +1,17 @@
 #include "DAVAEngine.h"
 #include "UnitTests/UnitTests.h"
+
+#include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Components/AnimationComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/TextComponent.h"
 #include "Scene3D/Lod/LodComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
+#include "Entity/ComponentUtils.h"
 
 using namespace DAVA;
 
@@ -36,9 +47,11 @@ public:
     void PrepareForRemove() override;
 
     uint32 GetEnititesCount() const;
-    uint32 GetComponentsCount(uint32 componentType) const;
 
-    Map<uint32, Vector<Component*>> components;
+    template <typename T>
+    uint32 GetComponentsCount() const;
+
+    Map<const Type*, Vector<Component*>> components;
     Vector<Entity*> entities;
 };
 
@@ -66,15 +79,20 @@ SingleComponentSystem::SingleComponentSystem(Scene* scene)
 void SingleComponentSystem::AddEntity(Entity* entity)
 {
     entities.push_back(entity);
-    for (int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    const Vector<const Type*>& registeredComponentsTypes = cm->GetRegisteredSceneComponents();
+
+    for (const Type* type : registeredComponentsTypes)
     {
-        uint64 flags = 1LL << id;
-        if ((flags & GetRequiredComponents()) == flags)
+        uint32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+
+        if (GetRequiredComponents().test(runtimeIndex))
         {
-            uint32 componentsCount = entity->GetComponentCount(id);
+            uint32 componentsCount = entity->GetComponentCount(type);
             for (uint32 c = 0; c < componentsCount; ++c)
             {
-                AddComponent(entity, entity->GetComponent(id, c));
+                AddComponent(entity, entity->GetComponent(type, c));
             }
         }
     }
@@ -83,14 +101,16 @@ void SingleComponentSystem::AddEntity(Entity* entity)
 void SingleComponentSystem::RemoveEntity(Entity* entity)
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
-    const Vector<const Type*>& componentsTypes = cm->GetRegisteredSceneComponents();
+    const Vector<const Type*>& registeredComponentsTypes = cm->GetRegisteredSceneComponents();
 
-    for (const Type* type : componentsTypes)
+    for (const Type* type : registeredComponentsTypes)
     {
-        int32 runtimeType = cm->GetRuntimeType(type);
-        if (GetRequiredComponents().test(runtimeType))
+        int32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+
+        if (GetRequiredComponents().test(runtimeIndex))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
+
             for (uint32 c = 0; c < componentsCount; ++c)
             {
                 RemoveComponent(entity, entity->GetComponent(type, c));
@@ -136,15 +156,19 @@ void MultiComponentSystem::AddEntity(Entity* entity)
 {
     entities.push_back(entity);
 
-    for (int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    const Vector<const Type*>& registeredComponentsTypes = cm->GetRegisteredSceneComponents();
+
+    for (const Type* type : registeredComponentsTypes)
     {
-        uint64 flags = 1LL << id;
-        if ((flags & GetRequiredComponents()) == flags)
+        uint32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+
+        if (GetRequiredComponents().test(runtimeIndex))
         {
-            uint32 componentsCount = entity->GetComponentCount(id);
+            uint32 componentsCount = entity->GetComponentCount(type);
             for (uint32 c = 0; c < componentsCount; ++c)
             {
-                AddComponent(entity, entity->GetComponent(id, c));
+                AddComponent(entity, entity->GetComponent(type, c));
             }
         }
     }
@@ -152,15 +176,20 @@ void MultiComponentSystem::AddEntity(Entity* entity)
 
 void MultiComponentSystem::RemoveEntity(Entity* entity)
 {
-    for (int32 id = 0; id < Component::COMPONENT_COUNT; ++id)
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    const Vector<const Type*>& registeredComponentsTypes = cm->GetRegisteredSceneComponents();
+
+    for (const Type* type : registeredComponentsTypes)
     {
-        uint64 flags = 1LL << id;
-        if ((flags & GetRequiredComponents()) == flags)
+        int32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+
+        if (GetRequiredComponents().test(runtimeIndex))
         {
-            uint32 componentsCount = entity->GetComponentCount(id);
+            uint32 componentsCount = entity->GetComponentCount(type);
+
             for (uint32 c = 0; c < componentsCount; ++c)
             {
-                RemoveComponent(entity, entity->GetComponent(id, c));
+                RemoveComponent(entity, entity->GetComponent(type, c));
             }
         }
     }
@@ -188,9 +217,10 @@ uint32 MultiComponentSystem::GetEnititesCount() const
     return static_cast<uint32>(entities.size());
 }
 
-uint32 MultiComponentSystem::GetComponentsCount(uint32 componentType) const
+template <typename T>
+uint32 MultiComponentSystem::GetComponentsCount() const
 {
-    auto found = components.find(componentType);
+    auto found = components.find(Type::Instance<T>());
     if (found != components.end())
     {
         return static_cast<uint32>(found->second.size());
@@ -199,15 +229,130 @@ uint32 MultiComponentSystem::GetComponentsCount(uint32 componentType) const
     return 0;
 }
 
+template <typename T>
+uint32 Index(T* t)
+{
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    return cm->GetRuntimeComponentIndex(Type::Instance<T>());
+}
+
 DAVA_TESTCLASS (ComponentsTest)
 {
+    DAVA_TEST (EntityComponentsGettersTest)
+    {
+        Entity* entity = new Entity();
+
+        TEST_VERIFY(entity->GetComponentCount() == 1); // TransformComponent is added in Entity constructor
+        TEST_VERIFY(entity->GetComponent<TransformComponent>() != nullptr);
+
+        LightComponent* c;
+
+        const uint32 COMP_MAX = 50;
+
+        for (uint32 i = 0; i < COMP_MAX; ++i)
+        {
+            c = new LightComponent();
+            entity->AddComponent(c);
+
+            TEST_VERIFY(entity->GetComponentCount<LightComponent>() == i + 1);
+            TEST_VERIFY(entity->GetComponentCount(Type::Instance<LightComponent>()) == i + 1);
+
+            Component* c1 = entity->GetComponent<LightComponent>(i);
+            Component* c2 = entity->GetComponent(Type::Instance<LightComponent>(), i);
+
+            TEST_VERIFY(c1 == c2);
+        }
+
+        TEST_VERIFY(entity->GetComponentCount() == COMP_MAX + 1);
+
+        TEST_VERIFY(entity->GetComponent<LightComponent>(COMP_MAX - 1) == c);
+
+        SafeRelease(entity); // Components will be released in Entity destructor
+    }
+
+    DAVA_TEST (EntityComponentsFlagsAndTypeTest)
+    {
+        Entity* entity = new Entity();
+
+        ComponentFlags flags = ComponentUtils::MakeComponentMask<TransformComponent>();
+
+        TEST_VERIFY((entity->GetAvailableComponentFlags() & flags) == flags); // TransformComponent is added in Entity constructor
+
+        TransformComponent* c = entity->GetComponent<TransformComponent>();
+
+        TEST_VERIFY(entity->GetAvailableComponentFlags().test(Index(c)));
+
+        entity->RemoveComponent<TransformComponent>();
+
+        TEST_VERIFY(entity->GetAvailableComponentFlags().none());
+
+        entity->AddComponent(new TransformComponent());
+        entity->AddComponent(new LightComponent());
+        entity->AddComponent(new ActionComponent());
+        entity->AddComponent(new AnimationComponent());
+        entity->AddComponent(new CameraComponent());
+        entity->AddComponent(new CustomPropertiesComponent());
+        entity->AddComponent(new ParticleEffectComponent());
+        entity->AddComponent(new SwitchComponent());
+        entity->AddComponent(new TextComponent());
+
+        flags |= ComponentUtils::MakeComponentMask<LightComponent>();
+        flags |= ComponentUtils::MakeComponentMask<ActionComponent>();
+        flags |= ComponentUtils::MakeComponentMask<AnimationComponent>();
+        flags |= ComponentUtils::MakeComponentMask<CameraComponent>();
+        flags |= ComponentUtils::MakeComponentMask<CustomPropertiesComponent>();
+        flags |= ComponentUtils::MakeComponentMask<ParticleEffectComponent>();
+        flags |= ComponentUtils::MakeComponentMask<SwitchComponent>();
+        flags |= ComponentUtils::MakeComponentMask<TextComponent>();
+
+        TEST_VERIFY((entity->GetAvailableComponentFlags() & flags) == flags);
+        TEST_VERIFY(entity->GetAvailableComponentFlags() == flags);
+
+        ComponentManager* cm = GetEngineContext()->componentManager;
+
+        for (const Type* type : GetEngineContext()->componentManager->GetRegisteredSceneComponents())
+        {
+            Component* c = entity->GetComponent(type);
+            bool flagShouldBeSet = c != nullptr;
+            TEST_VERIFY(flags.test(cm->GetRuntimeComponentIndex(type)) == flagShouldBeSet);
+        }
+
+        entity->RemoveComponent<TransformComponent>();
+
+        ComponentFlags ecf = entity->GetAvailableComponentFlags();
+
+        TEST_VERIFY(ecf != flags);
+        TEST_VERIFY(ecf == (flags ^ ComponentUtils::MakeComponentMask<TransformComponent>()));
+
+        entity->GetComponent<LightComponent>()->GetType() == Type::Instance<LightComponent>();
+
+        const Vector<const Type*> types = {
+            Type::Instance<LightComponent>(), Type::Instance<ActionComponent>(),
+            Type::Instance<AnimationComponent>(), Type::Instance<CameraComponent>(),
+            Type::Instance<CustomPropertiesComponent>(), Type::Instance<ParticleEffectComponent>(),
+            Type::Instance<SwitchComponent>(), Type::Instance<TextComponent>()
+        };
+
+        for (const Type* type : types)
+        {
+            TEST_VERIFY(entity->GetComponent(type) != nullptr);
+
+            ComponentFlags f = ComponentUtils::MakeComponentMask(type);
+            TEST_VERIFY((ecf & f) == f);
+
+            TEST_VERIFY(entity->GetComponent(type)->GetType() == type);
+        }
+
+        SafeRelease(entity); // Components will be released in Entity destructor
+    }
+
     DAVA_TEST (RegisterEntityTest)
     {
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         e1->AddComponent(new LightComponent());
@@ -241,8 +386,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         scene->AddNode(e1);
@@ -300,8 +445,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -342,8 +487,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         e1->AddComponent(new ActionComponent());
@@ -475,7 +620,7 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
         MultiComponentSystem* testSystem = new MultiComponentSystem(scene);
-        scene->AddSystem(testSystem, MakeComponentMask<LightComponent>() | MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystem, ComponentUtils::MakeComponentMask<LightComponent>() | ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -529,7 +674,7 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
         MultiComponentSystem* testSystem = new MultiComponentSystem(scene);
-        scene->AddSystem(testSystem, MakeComponentMask<LightComponent>() | MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystem, ComponentUtils::MakeComponentMask<LightComponent>() | ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -577,7 +722,7 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
         MultiComponentSystem* testSystem = new MultiComponentSystem(scene);
-        scene->AddSystem(testSystem, MakeComponentMask<LightComponent>() | MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystem, ComponentUtils::MakeComponentMask<LightComponent>() | ComponentUtils::MakeComponentMask<ActionComponent>());
 
         Entity* e1 = new Entity();
 

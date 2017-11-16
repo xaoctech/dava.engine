@@ -10,7 +10,6 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/EntityFamily.h"
-#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 #include "MemoryManager/MemoryProfiler.h"
 
@@ -39,22 +38,20 @@ public:
     Entity();
 
     /**
-    Return scene of this entity or nullptr if this entity is not in scene.
-     */
+        Return scene of this entity or nullptr if this entity is not in scene.
+    */
     virtual Scene* GetScene();
 
     //components
     void AddComponent(Component* component);
 
     void RemoveComponent(Component* component);
-    void RemoveComponent(int32 runtimeType, uint32 index = 0);
     void RemoveComponent(const Type* type, uint32 index = 0);
     template <typename T>
     void RemoveComponent(uint32 index = 0);
 
     void DetachComponent(Component* component);
 
-    Component* GetComponent(int32 runtimeType, uint32 index = 0) const;
     Component* GetComponent(const Type* type, uint32 index = 0) const;
     template <typename T>
     T* GetComponent(uint32 index = 0) const;
@@ -65,7 +62,6 @@ public:
 
     uint32 GetComponentCount() const;
     uint32 GetComponentCount(const Type* type) const;
-    uint32 GetComponentCount(int32 runtimeType) const;
     template <typename T>
     uint32 GetComponentCount() const;
     inline ComponentFlags GetAvailableComponentFlags();
@@ -504,15 +500,6 @@ inline void Entity::RemoveAllComponents()
     }
 }
 
-inline void Entity::RemoveComponent(int32 runtimeType, uint32 index)
-{
-    Component* c = GetComponent(runtimeType, index);
-    if (c)
-    {
-        RemoveComponent(c);
-    }
-}
-
 inline void Entity::RemoveComponent(const Type* type, uint32 index)
 {
     Component* c = GetComponent(type, index);
@@ -559,9 +546,9 @@ inline Scene* Entity::GetScene()
     return scene;
 }
 
-inline uint32 Entity::GetComponentCount(int32 runtimeType) const
+inline uint32 Entity::GetComponentCount(const Type* type) const
 {
-    return family->GetComponentsCount(runtimeType);
+    return family->GetComponentsCount(type);
 }
 
 template <typename T>
@@ -589,4 +576,5 @@ inline EntityFamily* Entity::GetFamily() const
 {
     return family;
 }
-};
+
+} // namespace DAVA

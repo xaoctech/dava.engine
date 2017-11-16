@@ -8,6 +8,7 @@
 #include <Render/3D/PolygonGroup.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/TransformComponent.h>

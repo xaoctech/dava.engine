@@ -3,6 +3,7 @@
 
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
+#include <Entity/ComponentUtils.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Input/InputSystem.h>
 #include <UI/Render/UIDebugRenderComponent.h>
@@ -119,7 +120,7 @@ void FullscreenTest::LoadResources()
 
     rotationControllerSystem = new RotationControllerSystem(scene);
     scene->AddSystem(rotationControllerSystem,
-                     MakeComponentMask<CameraComponent>() | MakeComponentMask<RotationControllerComponent>(),
+                     ComponentUtils::MakeComponentMask<CameraComponent>() | ComponentUtils::MakeComponentMask<RotationControllerComponent>(),
                      Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
     scene->AddCamera(camera);

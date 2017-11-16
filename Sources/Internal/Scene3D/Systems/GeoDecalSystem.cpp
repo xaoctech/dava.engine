@@ -9,8 +9,6 @@
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Engine/Engine.h"
-#include "Entity/ComponentManager.h"
 
 #define DAVA_GEODECAL_SYSTEM_DEBUG_RENDER 0
 
@@ -45,13 +43,9 @@ void GeoDecalSystem::Process(float32 timeElapsed)
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
 
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    int32 runtimeType = cm->GetRuntimeType(Type::Instance<GeoDecalComponent>());
-
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(runtimeType) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<GeoDecalComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {
@@ -131,7 +125,7 @@ void GeoDecalSystem::Process(float32 timeElapsed)
 void GeoDecalSystem::AddComponent(Entity* entity, Component* component)
 {
     DVASSERT(component != nullptr);
-    DVASSERT(component->GetType() == Type::Instance<GeoDecalComponent>());
+    DVASSERT(component->GetType()->Is<GeoDecalComponent>());
     DVASSERT(decals.count(component) == 0);
 
     decals[component].lastValidConfig.invalidate();
@@ -140,7 +134,7 @@ void GeoDecalSystem::AddComponent(Entity* entity, Component* component)
 void GeoDecalSystem::RemoveComponent(Entity* entity, Component* component)
 {
     DVASSERT(component != nullptr);
-    DVASSERT(component->GetType() == Type::Instance<GeoDecalComponent>());
+    DVASSERT(component->GetType()->Is<GeoDecalComponent>());
     DVASSERT(decals.count(component) > 0);
 
     RemoveCreatedDecals(entity, static_cast<GeoDecalComponent*>(component));

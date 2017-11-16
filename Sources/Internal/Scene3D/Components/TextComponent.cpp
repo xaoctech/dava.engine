@@ -7,7 +7,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(TextComponent)
 {
-    ReflectionRegistrator<TextComponent>::Begin()
+    ReflectionRegistrator<TextComponent>::Begin()[M::NonExportableComponent()]
     .ConstructorByPointer()
     .Field("text", &TextComponent::GetText, &TextComponent::SetText)[M::DisplayName("Text")]
     .Field("color", &TextComponent::GetColor, &TextComponent::SetColor)[M::DisplayName("Text Color")]

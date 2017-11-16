@@ -16,7 +16,6 @@
 #include <Render/Material/NMaterial.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Math/Color.h>
-#include <Entity/ComponentManager.h>
 
 #include <physx/PxRigidBody.h>
 #include <physx/PxShape.h>
@@ -671,7 +670,6 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
         mapping.emplace(node.first->GetEntity(), node.second.ro);
     }
 
-    ComponentManager* cm = GetEngineContext()->componentManager;
     TransformSingleComponent* trSingle = GetScene()->transformSingleComponent;
     if (trSingle != nullptr)
     {
@@ -679,7 +677,7 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
         {
             for (const Type* type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
             {
-                if (pair.first->GetComponentsCount(cm->GetRuntimeType(type)) > 0)
+                if (pair.first->GetComponentsCount(type) > 0)
                 {
                     for (Entity* e : pair.second)
                     {

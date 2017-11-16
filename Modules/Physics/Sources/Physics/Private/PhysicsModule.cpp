@@ -207,6 +207,8 @@ void PhysicsModule::Init()
     static PhysicsModuleDetail::AssertHandler assertHandler;
     PxSetAssertHandler(assertHandler);
 
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CollisionShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StaticBodyComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DynamicBodyComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxShapeComponent);
@@ -216,6 +218,7 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConvexHullShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CharacterControllerComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxCharacterControllerComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleCharacterControllerComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WASDPhysicsControllerComponent);

@@ -4,6 +4,7 @@
 
 #include <DocDirSetup/DocDirSetup.h>
 
+#include <Entity/ComponentUtils.h>
 #include <Math/MathHelpers.h>
 #include <Render/2D/Sprite.h>
 #include <Input/Keyboard.h>
@@ -63,11 +64,11 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         //camera->SetPosition(Vector3(0, -10, 1));
 
         rotationControllerSystem = new DAVA::RotationControllerSystem(scene);
-        scene->AddSystem(rotationControllerSystem, MakeComponentMask<CameraComponent>() | MakeComponentMask<RotationControllerComponent>(),
+        scene->AddSystem(rotationControllerSystem, ComponentUtils::MakeComponentMask<CameraComponent>() | ComponentUtils::MakeComponentMask<RotationControllerComponent>(),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
         wasdSystem = new WASDControllerSystem(scene);
-        scene->AddSystem(wasdSystem, MakeComponentMask<CameraComponent>() | MakeComponentMask<WASDControllerComponent>(),
+        scene->AddSystem(wasdSystem, ComponentUtils::MakeComponentMask<CameraComponent>() | ComponentUtils::MakeComponentMask<WASDControllerComponent>(),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
         sceneView = new DAVA::UI3DView(GetRect());

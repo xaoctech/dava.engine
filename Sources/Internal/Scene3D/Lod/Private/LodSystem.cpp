@@ -11,8 +11,6 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Engine/Engine.h"
-#include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
@@ -30,13 +28,10 @@ void LodSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_LOD_SYSTEM);
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    int32 runtimeType = cm->GetRuntimeType(Type::Instance<LodComponent>());
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(runtimeType) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<LodComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {
@@ -252,7 +247,7 @@ void LodSystem::RemoveEntity(Entity* entity)
 
 void LodSystem::RegisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Type::Instance<ParticleEffectComponent>())
+    if (component->GetType()->Is<ParticleEffectComponent>())
     {
         auto iter = fastMap.find(entity);
         if (iter != fastMap.end())
@@ -271,7 +266,7 @@ void LodSystem::RegisterComponent(Entity* entity, Component* component)
 
 void LodSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Type::Instance<ParticleEffectComponent>())
+    if (component->GetType()->Is<ParticleEffectComponent>())
     {
         auto iter = fastMap.find(entity);
         if (iter != fastMap.end())
@@ -302,7 +297,7 @@ void LodSystem::ImmediateEvent(Component* component, uint32 event)
     case EventSystem::START_PARTICLE_EFFECT:
     case EventSystem::STOP_PARTICLE_EFFECT:
     {
-        DVASSERT(component->GetType() == Type::Instance<ParticleEffectComponent>());
+        DVASSERT(component->GetType()->Is<ParticleEffectComponent>());
         auto iter = fastMap.find(component->GetEntity());
         if (iter != fastMap.end())
         {
@@ -315,7 +310,7 @@ void LodSystem::ImmediateEvent(Component* component, uint32 event)
 
     case EventSystem::LOD_DISTANCE_CHANGED:
     {
-        DVASSERT(component->GetType() == Type::Instance<LodComponent>());
+        DVASSERT(component->GetType()->Is<LodComponent>());
         LodComponent* lod = static_cast<LodComponent*>(component);
         auto iter = fastMap.find(component->GetEntity());
         if (iter != fastMap.end())
@@ -334,7 +329,7 @@ void LodSystem::ImmediateEvent(Component* component, uint32 event)
 
     case EventSystem::LOD_RECURSIVE_UPDATE_ENABLED:
     {
-        DVASSERT(component->GetType() == Type::Instance<LodComponent>());
+        DVASSERT(component->GetType()->Is<LodComponent>());
         auto iter = fastMap.find(component->GetEntity());
         DVASSERT(iter != fastMap.end());
         int32 index = iter->second;

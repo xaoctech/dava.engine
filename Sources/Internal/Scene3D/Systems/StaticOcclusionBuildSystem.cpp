@@ -19,8 +19,6 @@
 #include "Scene3D/Lod/LodSystem.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Highlevel/Landscape.h"
-#include "Entity/ComponentManager.h"
-#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -269,13 +267,10 @@ void StaticOcclusionBuildSystem::SceneForceLod(int32 forceLodIndex)
 void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
 {
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    int32 runtimeTime = cm->GetRuntimeType(Type::Instance<StaticOcclusionComponent>());
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(runtimeTime) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<StaticOcclusionComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {

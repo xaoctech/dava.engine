@@ -67,9 +67,10 @@ physx::PxScene* ExtractPxScene(const SceneInfo& info)
     return PhysicsSystemPrivate::GetPxScene(info.scene->physicsSystem);
 }
 
-physx::PxShape* ExtractPxShape(const SceneInfo& info, uint32 collisionShapeType)
+template <typename T>
+physx::PxShape* ExtractPxShape(const SceneInfo& info)
 {
-    CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(info.entity->GetComponent(collisionShapeType, 0));
+    CollisionShapeComponent* component = static_cast<CollisionShapeComponent*>(info.entity->GetComponent(Type::Instance<T>()));
     TEST_VERIFY(component != nullptr);
     return component->GetPxShape();
 }
@@ -132,7 +133,7 @@ DAVA_TESTCLASS (PhysicsTest)
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
 
-        physx::PxShape* shape = ExtractPxShape(info, Component::BOX_SHAPE_COMPONENT);
+        physx::PxShape* shape = ExtractPxShape<BoxShapeComponent>(info);
         TEST_VERIFY(shape != nullptr);
 
         AttachComponent<StaticBodyComponent>(info);
@@ -193,7 +194,7 @@ DAVA_TESTCLASS (PhysicsTest)
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_DYNAMIC) == 0);
         TEST_VERIFY(pxScene->getNbActors(physx::PxActorTypeFlag::eRIGID_STATIC) == 0);
 
-        physx::PxShape* shape = ExtractPxShape(info, Component::BOX_SHAPE_COMPONENT);
+        physx::PxShape* shape = ExtractPxShape<BoxShapeComponent>(info);
         TEST_VERIFY(shape != nullptr);
 
         AttachComponent<StaticBodyComponent>(info);
@@ -240,7 +241,7 @@ DAVA_TESTCLASS (PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         Matrix4 localTransform = Matrix4::MakeTranslation(Vector3(90.0f, 0.0f, 0.0f));
-        static_cast<TransformComponent*>(info.entity->GetComponent(Component::TRANSFORM_COMPONENT))->SetLocalTransform(&localTransform);
+        info.entity->GetComponent<TransformComponent>()->SetLocalTransform(&localTransform);
 
         StaticBodyComponent* bodyComponent = AttachComponent<StaticBodyComponent>(info);
         BoxShapeComponent* boxComponent = AttachComponent<BoxShapeComponent>(info);

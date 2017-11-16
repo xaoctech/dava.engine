@@ -269,7 +269,7 @@ void EditorLODSystem::RemoveEntity(DAVA::Entity* entity)
 
 void EditorLODSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::LodComponent>());
+    DVASSERT(component->GetType()->Is<DAVA::LodComponent>());
 
     DAVA::LodComponent* lodComponent = static_cast<DAVA::LodComponent*>(component);
     lodData[eEditorMode::MODE_ALL_SCENE].lodComponents.push_back(lodComponent);
@@ -280,7 +280,7 @@ void EditorLODSystem::AddComponent(DAVA::Entity* entity, DAVA::Component* compon
 
 void EditorLODSystem::RemoveComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DVASSERT(component->GetType() == DAVA::Type::Instance<DAVA::LodComponent>());
+    DVASSERT(component->GetType()->Is<DAVA::LodComponent>());
 
     DAVA::LodComponent* removedComponent = static_cast<DAVA::LodComponent*>(component);
     for (DAVA::uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
@@ -699,7 +699,7 @@ void EditorLODSystem::ProcessCommand(const RECommandNotificationObject& commandN
     {
         auto processRemoveCommand = [this, InvalidateAllData](const RemoveComponentCommand* removeCommand)
         {
-            if (removeCommand->GetComponent()->GetType() == DAVA::Type::Instance<DAVA::RenderComponent>())
+            if (removeCommand->GetComponent()->GetType()->Is<DAVA::RenderComponent>())
             {
                 InvalidateAllData();
                 return true;

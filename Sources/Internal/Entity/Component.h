@@ -21,70 +21,6 @@ class Component : public Serializable, public InspBase
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_COMPONENT)
 
 public:
-    enum eType
-    {
-        TRANSFORM_COMPONENT = 0,
-        RENDER_COMPONENT,
-        LOD_COMPONENT,
-        DEBUG_RENDER_COMPONENT,
-        SWITCH_COMPONENT,
-        CAMERA_COMPONENT,
-        LIGHT_COMPONENT,
-        PARTICLE_EFFECT_COMPONENT,
-        BULLET_COMPONENT,
-        UPDATABLE_COMPONENT,
-        ANIMATION_COMPONENT,
-        COLLISION_COMPONENT, // multiple instances
-        PHYSICS_COMPONENT,
-        ACTION_COMPONENT, // actions, something simplier than scripts that can influence logic, can be multiple
-        SCRIPT_COMPONENT, // multiple instances, not now, it will happen much later.
-        USER_COMPONENT,
-        SOUND_COMPONENT,
-        CUSTOM_PROPERTIES_COMPONENT,
-        STATIC_OCCLUSION_COMPONENT,
-        STATIC_OCCLUSION_DATA_COMPONENT,
-        QUALITY_SETTINGS_COMPONENT, // type as fastname for detecting type of model
-        SPEEDTREE_COMPONENT,
-        WIND_COMPONENT,
-        WAVE_COMPONENT,
-        SKELETON_COMPONENT,
-        PATH_COMPONENT,
-        ROTATION_CONTROLLER_COMPONENT,
-        SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT,
-        WASD_CONTROLLER_COMPONENT,
-        VISIBILITY_CHECK_COMPONENT,
-        SLOT_COMPONENT,
-        MOTION_COMPONENT,
-        GEO_DECAL_COMPONENT,
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-        STATIC_BODY_COMPONENT,
-        DYNAMIC_BODY_COMPONENT,
-        BOX_SHAPE_COMPONENT,
-        CAPSULE_SHAPE_COMPONENT,
-        SPHERE_SHAPE_COMPONENT,
-        PLANE_SHAPE_COMPONENT,
-        MESH_SHAPE_COMPONENT,
-        CONVEX_HULL_SHAPE_COMPONENT,
-        HEIGHT_FIELD_SHAPE_COMPONENT,
-        BOX_CHARACTER_CONTROLLER_COMPONENT,
-        CAPSULE_CHARACTER_CONTROLLER_COMPONENT,
-        WASD_PHYSICS_CONTROLLER_COMPONENT,
-#endif
-
-        NON_EXPORTABLE_COMPONENTS, // everything below NON_EXPORTABLE_COMPONENTS will be serialized but won't be exported
-        TEXT_COMPONENT = NON_EXPORTABLE_COMPONENTS,
-
-        NON_SERIALIZABLE_COMPONENTS, // everything below NON_SERIALIZABLE_COMPONENTS won't be serialized
-        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT = NON_SERIALIZABLE_COMPONENTS,
-        WAYPOINT_COMPONENT,
-        EDGE_COMPONENT,
-
-        FIRST_USER_DEFINED_COMPONENT = 52,
-        COMPONENT_COUNT = 64
-    };
-
-public:
     static Component* CreateByType(const Type* componentType);
     template <typename T>
     static T* CreateByType();
@@ -92,7 +28,7 @@ public:
     ~Component() override;
 
     const Type* GetType() const;
-    int32 GetRuntimeType() const;
+    uint32 GetRuntimeIndex() const;
 
     /**
         Clone component. Then add cloned component to specified `toEntity` if `toEntity` is not nullptr. Return cloned component.
@@ -125,6 +61,7 @@ public:
 
 protected:
     Entity* entity = 0;
+    mutable const Type* type = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };
@@ -139,23 +76,6 @@ inline Entity* Component::GetEntity() const
 {
     return entity;
 };
-
-inline ComponentFlags MakeComponentMask(int32 runtimeType)
-{
-    DVASSERT(runtimeType >= 0);
-
-    ComponentFlags flags;
-    flags.set(static_cast<size_t>(runtimeType));
-    return flags;
-}
-
-ComponentFlags MakeComponentMask(const Type* type);
-
-template <typename T>
-ComponentFlags MakeComponentMask()
-{
-    return MakeComponentMask(Type::Instance<T>());
-}
 
 template <template <typename> class Container, class T>
 void Component::GetDataNodes(Container<T>& container)

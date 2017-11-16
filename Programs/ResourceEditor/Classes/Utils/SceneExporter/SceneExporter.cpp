@@ -25,6 +25,7 @@
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/SceneFile/VersionInfo.h>
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Utils/StringUtils.h>

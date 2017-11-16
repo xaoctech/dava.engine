@@ -2098,7 +2098,7 @@ UIComponent* UIControl::GetComponent(int32 runtimeType, uint32 index) const
 UIComponent* UIControl::GetComponent(const Type* type, uint32 index /*= 0*/) const
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
-    return GetComponent(cm->GetRuntimeType(type), index);
+    return GetComponent(cm->GetRuntimeComponentIndex(type), index);
 }
 
 int32 UIControl::GetComponentIndex(const UIComponent* component) const
@@ -2116,7 +2116,7 @@ int32 UIControl::GetComponentIndex(const UIComponent* component) const
 UIComponent* UIControl::GetOrCreateComponent(const Type* type, uint32 index)
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
-    UIComponent* ret = GetComponent(cm->GetRuntimeType(type), index);
+    UIComponent* ret = GetComponent(cm->GetRuntimeComponentIndex(type), index);
     if (!ret)
     {
         DVASSERT(index == 0);
@@ -2139,7 +2139,7 @@ void UIControl::UpdateFamily()
 
 int32 UIControl::TypeToRuntimeType(const Type* type)
 {
-    return GetEngineContext()->componentManager->GetRuntimeType(type);
+    return GetEngineContext()->componentManager->GetRuntimeComponentIndex(type);
 }
 
 void UIControl::RemoveAllComponents()
@@ -2237,7 +2237,7 @@ uint32 UIControl::GetComponentCount(int32 runtimeType) const
 uint32 UIControl::GetComponentCount(const Type* type) const
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
-    return family->GetComponentsCount(cm->GetRuntimeType(type));
+    return family->GetComponentsCount(cm->GetRuntimeComponentIndex(type));
 }
 
 const Vector<UIComponent*>& UIControl::GetComponents()

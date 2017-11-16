@@ -421,12 +421,11 @@ void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const 
 uint32 RootProperty::GetComponentAbsIndex(const DAVA::Type* componentType, DAVA::uint32 index) const
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
-    int32 runtimeType = cm->GetRuntimeType(componentType);
     uint32 i = 0;
 
     //sort sections in the same order as in ComponentManager
     UnorderedMap<const Type*, size_t> typeToIndex;
-    Vector<const Type*> sortedTypes = cm->GetRegisteredComponents();
+    Vector<const Type*> sortedTypes = cm->GetRegisteredUIComponents();
     for (size_t i = 0, size = sortedTypes.size(); i < size; ++i)
     {
         typeToIndex[sortedTypes[i]] = i;

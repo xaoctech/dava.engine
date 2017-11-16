@@ -20,8 +20,6 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-#include "Entity/ComponentManager.h"
-#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -92,13 +90,10 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_STATIC_OCCLUSION_SYSTEM)
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    int32 runtimeType = cm->GetRuntimeType(Type::Instance<StaticOcclusionComponent>());
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(runtimeType) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<StaticOcclusionComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {
@@ -209,7 +204,7 @@ void StaticOcclusionSystem::RegisterComponent(Entity* entity, Component* compone
 {
     SceneSystem::RegisterComponent(entity, component);
 
-    if (component->GetType() == Type::Instance<RenderComponent>())
+    if (component->GetType()->Is<RenderComponent>())
     {
         RenderObject* ro = GetRenderObject(entity);
         if (ro)
@@ -221,7 +216,7 @@ void StaticOcclusionSystem::RegisterComponent(Entity* entity, Component* compone
 
 void StaticOcclusionSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    if (component->GetType() == Type::Instance<RenderComponent>())
+    if (component->GetType()->Is<RenderComponent>())
     {
         RenderObject* ro = GetRenderObject(entity);
         if (ro)

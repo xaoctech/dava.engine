@@ -6,7 +6,7 @@
 namespace DAVA
 {
 /**
-    Track Components/UIComponents types.
+    Tracks Components/UIComponents types.
     Before any Component/UIComponent is used, it must be added to both Reflection(through registering Reflection permanent name) and ComponentManager(through ComponentManager::RegisterComponent).
 
     For example:
@@ -15,32 +15,46 @@ namespace DAVA
         GetEngineContext()->componentManager->RegisterComponent<UIFlowLayoutComponent>();
     \endcode
 
-    Base engine Component/UIComponents are registered in ReflectionDeclaration.cpp
+    Base engine Components are registered automatically (if both reflection and permanent name are provided).
+    Base engine UIComponents are registered in ReflectionDeclaration.cpp (for now).
 
     After registration, Component/UIComponent can be created through Component/UIComponent::CreateByType(const Type* componentType).
 
-    Component/UIComponent registration also introduces 'runtimeType' (just integer).
-    'runtimeType' can be used for Component/UIComponents management along with its' Type. 'runtimeType' is typically used for optimization (for example, indeces in array). You cannot rely on actual 'runtimeType' value between launches of the application.
+    Component/UIComponent registration also introduces 'componentRuntimeIndex' (just integer).
+    'componentRuntimeIndex' can be used for Component/UIComponents management along with its' Type. 'componentRuntimeIndex' is typically used for optimization (for example, indices in array). You cannot rely on its actual value between launches of the application.
 */
 
 class UIComponent;
 class Component;
 
+namespace Private
+{
+class EngineBackend;
+}
+
 class ComponentManager
 {
-public:
-    /** Create ComponentManager. */
-    ComponentManager();
+    friend class Private::EngineBackend; // For creation
 
+public:
     /** Register new component of specified type 'T'. The behavior is undefined until 'T' is a Component/UIComponent subclass. */
     template <typename T>
     void RegisterComponent();
 
+    /** Register new component of specified `Type`. The behavior is undefined until `Type` is derived Component/UIComponent. */
     void RegisterComponent(const Type* type);
 
-    void RegisterAllDerivedSceneComponentsRecursively();
+    /**
+        Return CRC32 hash of preregistered scene components.
+        (Hash of string of concatenated permanent names sorted in ascending order)
+    */
+    uint32 GetCRC32HashOfPreregisteredSceneComponents();
 
-    uint32 GetCRC32HashOfReflectedSceneComponents();
+    /**
+        Return CRC32 hash of all registered scene components, including fake components.
+        (Hash of string of concatenated permanent names sorted in ascending order)
+    */
+    uint32 GetCRC32HashOfRegisteredSceneComponents();
 
     //just increment counter
     void RegisterFakeSceneComponent();
@@ -52,16 +66,16 @@ public:
     uint32 GetSceneComponentsCount() const;
 
     /** Check if specified 'type' was registered as UIComponent. */
-    bool IsUIComponent(const Type* type) const;
+    bool IsRegisteredUIComponent(const Type* type) const;
 
     /** Check if specified 'type' was registered as Scene Component. */
-    bool IsSceneComponent(const Type* type) const;
+    bool IsRegisteredSceneComponent(const Type* type) const;
 
     /** Return runtimeType for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
-    int32 GetRuntimeType(const Type* type) const;
+    uint32 GetRuntimeComponentIndex(const Type* type) const;
 
-    /** Return Type of Scene Component for specified 'runtimeType'. Return nullptr if 'runtimeType' was not registered in ComponentManager. */
-    const Type* GetSceneTypeFromRuntimeType(int32 runtimeType) const;
+    /** Return Type of Scene Component for specified 'runtimeIndex'. Return nullptr if 'runtimeType' was not registered in ComponentManager. */
+    const Type* GetRegisteredSceneComponentTypeFromRuntimeIndex(uint32 runtimeIndex) const;
 
     /** Return reference to sorted vector of registered UIComponents types. */
     const Vector<const Type*>& GetRegisteredUIComponents() const;
@@ -70,19 +84,28 @@ public:
     const Vector<const Type*>& GetRegisteredSceneComponents() const;
 
 private:
-    void RegisterSceneComponentRecursively(const Type* type);
+    ComponentManager();
 
-    int32 runtimeUIComponentsCount = 0;
+    void PreregisterAllDerivedSceneComponentsRecursively();
+    void CollectSceneComponentRecursively(const Type* type, Vector<const Type*>& components);
+
+    void* Uint32ToVoidPtr(uint32 value) const;
+    uint32 VoidPtrToUint32(void* ptr) const;
+
+    uint32 runtimeUIComponentsCount = 0;
     Vector<const Type*> registeredUIComponents;
 
-    int32 runtimeSceneComponentsCount = 0;
+    uint32 runtimeSceneComponentsCount = 0;
     Vector<const Type*> registeredSceneComponents;
-    Vector<const Type*> sceneRuntimeTypeToType;
+    Vector<const Type*> sceneRuntimeIndexToType;
 
     int32 runtimeTypeIndex = -1;
-    int32 componentType = -1;
+    int32 componentTypeIndex = -1;
 
-    enum eComponentType : int32
+    bool componentsWerePreregistered = false;
+    uint32 crc32HashOfPreregisteredComponents;
+
+    enum eComponentType : uint32
     {
         UI_COMPONENT = 1,
         SCENE_COMPONENT

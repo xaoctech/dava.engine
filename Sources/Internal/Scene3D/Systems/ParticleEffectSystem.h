@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/Systems/BaseProcessSystem.h"
+#include "Entity/SceneSystem.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
 namespace DAVA

@@ -7,16 +7,13 @@
 
 namespace DAVA
 {
-#define INT32_TO_VOID_PTR(X) \
-reinterpret_cast<void*>(static_cast<intptr_t>(X))
-
-#define VOID_PTR_TO_INT32(X) \
-static_cast<int32>(reinterpret_cast<intptr_t>(X))
 
 ComponentManager::ComponentManager()
 {
-    runtimeTypeIndex = static_cast<int32>(Type::AllocUserData());
-    componentType = static_cast<int32>(Type::AllocUserData());
+    DVASSERT(runtimeTypeIndex == -1 && componentTypeIndex == -1);
+
+    runtimeTypeIndex = Type::AllocUserData();
+    componentTypeIndex = Type::AllocUserData();
 }
 
 void ComponentManager::RegisterComponent(const Type* type)
@@ -36,16 +33,16 @@ void ComponentManager::RegisterComponent(const Type* type)
             return;
         }
 
-        type->SetUserData(runtimeTypeIndex, INT32_TO_VOID_PTR(runtimeSceneComponentsCount + 1));
-        type->SetUserData(componentType, INT32_TO_VOID_PTR(eComponentType::SCENE_COMPONENT));
-
-        DVASSERT(sceneRuntimeTypeToType.size() == runtimeSceneComponentsCount);
-        sceneRuntimeTypeToType.resize(runtimeSceneComponentsCount + 1);
-        sceneRuntimeTypeToType[runtimeSceneComponentsCount] = type;
-
         ++runtimeSceneComponentsCount;
 
-        DVASSERT(runtimeSceneComponentsCount >= 0 && static_cast<size_t>(runtimeSceneComponentsCount) < ComponentFlags().size());
+        type->SetUserData(runtimeTypeIndex, Uint32ToVoidPtr(runtimeSceneComponentsCount));
+        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(eComponentType::SCENE_COMPONENT));
+
+        sceneRuntimeIndexToType.push_back(type);
+
+        DVASSERT(sceneRuntimeIndexToType.size() == runtimeSceneComponentsCount);
+
+        DVASSERT(static_cast<size_t>(runtimeSceneComponentsCount) < ComponentFlags().size());
 
         registeredSceneComponents.push_back(type);
     }
@@ -61,43 +58,92 @@ void ComponentManager::RegisterComponent(const Type* type)
             return;
         }
 
-        type->SetUserData(runtimeTypeIndex, INT32_TO_VOID_PTR(runtimeUIComponentsCount + 1));
-        type->SetUserData(componentType, INT32_TO_VOID_PTR(eComponentType::UI_COMPONENT));
-
         ++runtimeUIComponentsCount;
+
+        type->SetUserData(runtimeTypeIndex, Uint32ToVoidPtr(runtimeUIComponentsCount));
+        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(eComponentType::UI_COMPONENT));
 
         registeredUIComponents.push_back(type);
     }
     else
     {
-        DVASSERT(false);
+        DVASSERT(false, "'type' should be derived from Component or UIComponent.");
     }
 }
 
-void ComponentManager::RegisterAllDerivedSceneComponentsRecursively()
+void ComponentManager::PreregisterAllDerivedSceneComponentsRecursively()
 {
-    registeredSceneComponents.clear();
+    DVASSERT(!componentsWerePreregistered);
+    DVASSERT(runtimeSceneComponentsCount == 0);
+    DVASSERT(registeredSceneComponents.empty() && sceneRuntimeIndexToType.empty());
 
-    const Type* type = Type::Instance<Component>();
+    const TypeInheritance* inheritance = Type::Instance<Component>()->GetInheritance();
 
-    const TypeInheritance* inheritance = type->GetInheritance();
-
-    if (inheritance != nullptr)
+    if (inheritance == nullptr || inheritance->GetDerivedTypes().empty())
     {
-        for (const TypeInheritance::Info& info : inheritance->GetDerivedTypes())
-        {
-            RegisterSceneComponentRecursively(info.type);
-        }
+        DVASSERT(false, "'Component' type has no derived types.");
+        return;
     }
+
+    const Vector<TypeInheritance::Info>& derivedTypes = inheritance->GetDerivedTypes();
+
+    Vector<const Type*> componentsToRegister;
+    componentsToRegister.reserve(derivedTypes.size() + derivedTypes.size() / 4); // reserve ~125% of derived types, since each type may have its own children
+
+    for (const TypeInheritance::Info& info : derivedTypes)
+    {
+        CollectSceneComponentRecursively(info.type, componentsToRegister);
+    }
+
+    const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
+
+    std::sort(componentsToRegister.begin(), componentsToRegister.end(), [db](const Type* l, const Type* r) {
+        const String& permanentNameL = db->GetByType(l)->GetPermanentName();
+        const String& permanentNameR = db->GetByType(r)->GetPermanentName();
+
+        DVASSERT(!permanentNameL.empty() && !permanentNameR.empty());
+
+        return permanentNameL < permanentNameR;
+    });
+
+    CRC32 crc;
+
+    for (const Type* type : componentsToRegister)
+    {
+        RegisterComponent(type);
+
+        const String& permanentName = db->GetByType(type)->GetPermanentName();
+        crc.AddData(permanentName.data(), permanentName.size() * sizeof(String::value_type));
+    }
+
+    crc32HashOfPreregisteredComponents = crc.Done();
+
+    componentsWerePreregistered = true;
 }
 
-uint32 ComponentManager::GetCRC32HashOfReflectedSceneComponents()
+uint32 ComponentManager::GetCRC32HashOfPreregisteredSceneComponents()
+{
+    DVASSERT(componentsWerePreregistered);
+
+    return crc32HashOfPreregisteredComponents;
+}
+
+uint32 ComponentManager::GetCRC32HashOfRegisteredSceneComponents()
 {
     Vector<const String*> componentsPermanentNames;
     componentsPermanentNames.reserve(registeredSceneComponents.size());
 
+    const String fakeComponentName = "fakecomponent";
+
     for (const Type* type : registeredSceneComponents)
     {
+        // Special case for fake scene components
+        if (type == nullptr)
+        {
+            componentsPermanentNames.push_back(&fakeComponentName);
+            continue;
+        }
+
         const ReflectedType* refType = ReflectedTypeDB::GetLocalDB()->GetByType(type);
 
         DVASSERT(refType != nullptr);
@@ -117,7 +163,6 @@ uint32 ComponentManager::GetCRC32HashOfReflectedSceneComponents()
     DVASSERT(!componentsPermanentNames.empty(), "CRC32 will be 0.");
 
     std::sort(componentsPermanentNames.begin(), componentsPermanentNames.end(), [](const String* s1, const String* s2) {
-        DVASSERT(s1 != nullptr && s2 != nullptr);
         return *s1 < *s2;
     });
 
@@ -133,31 +178,27 @@ uint32 ComponentManager::GetCRC32HashOfReflectedSceneComponents()
 
 void ComponentManager::RegisterFakeSceneComponent()
 {
-    int32 typeIndex = runtimeSceneComponentsCount + 1;
-
-    DVASSERT(sceneRuntimeTypeToType.size() == runtimeSceneComponentsCount);
-    sceneRuntimeTypeToType.resize(typeIndex);
-    sceneRuntimeTypeToType[typeIndex - 1] = nullptr;
-
     ++runtimeSceneComponentsCount;
-
     registeredSceneComponents.push_back(nullptr);
+
+    DVASSERT(sceneRuntimeIndexToType.size() == runtimeSceneComponentsCount);
 }
 
-const Type* ComponentManager::GetSceneTypeFromRuntimeType(int32 runtimeType) const
+const Type* ComponentManager::GetRegisteredSceneComponentTypeFromRuntimeIndex(uint32 runtimeIndex) const
 {
     const Type* ret = nullptr;
-    if (runtimeType >= 0 && runtimeType < static_cast<int32>(sceneRuntimeTypeToType.size()))
+
+    if (runtimeIndex < static_cast<uint32>(sceneRuntimeIndexToType.size()))
     {
-        ret = sceneRuntimeTypeToType[runtimeType];
+        ret = sceneRuntimeIndexToType[runtimeIndex];
     }
 
     return ret;
 }
 
-void ComponentManager::RegisterSceneComponentRecursively(const Type* type)
+void ComponentManager::CollectSceneComponentRecursively(const Type* type, Vector<const Type*>& components)
 {
-    RegisterComponent(type);
+    components.push_back(type);
 
     const TypeInheritance* inheritance = type->GetInheritance();
 
@@ -165,7 +206,7 @@ void ComponentManager::RegisterSceneComponentRecursively(const Type* type)
     {
         for (const TypeInheritance::Info& info : inheritance->GetDerivedTypes())
         {
-            RegisterSceneComponentRecursively(info.type);
+            CollectSceneComponentRecursively(info.type, components);
         }
     }
 }

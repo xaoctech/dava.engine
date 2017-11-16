@@ -5,6 +5,7 @@
 namespace DAVA
 {
 class Component;
+class Type;
 
 class EntityFamily
 {
@@ -16,8 +17,8 @@ public:
     static EntityFamily* GetOrCreate(const Vector<Component*>& components);
     static void Release(EntityFamily*& family);
 
-    uint32 GetComponentIndex(int32 runtimeType, uint32 index) const;
-    uint32 GetComponentsCount(int32 runtimeType) const;
+    uint32 GetComponentIndex(const Type* type, uint32 index) const;
+    uint32 GetComponentsCount(const Type* type) const;
     ComponentFlags GetComponentsFlags() const;
 
     bool operator==(const EntityFamily& rhs) const;
@@ -26,7 +27,7 @@ private:
     Vector<uint32> componentsIndices;
     Vector<uint32> componentsCount;
     ComponentFlags componentsFlags;
-    Atomic<int32> refCount;
+    uint32 refCount = 0;
 
     template <typename EntityFamilyType>
     friend class FamilyRepository;

@@ -40,8 +40,7 @@ void EditorPhysicsSystem::UnregisterEntity(DAVA::Entity* entity)
 void EditorPhysicsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
     const DAVA::Type* componentType = component->GetType();
-    if (componentType == DAVA::Type::Instance<DAVA::StaticBodyComponent>() ||
-        componentType == DAVA::Type::Instance<DAVA::DynamicBodyComponent>())
+    if (componentType->Is<DAVA::StaticBodyComponent>() || componentType->Is<DAVA::DynamicBodyComponent>())
     {
         RegisterEntity(entity);
     }
@@ -50,8 +49,7 @@ void EditorPhysicsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Componen
 void EditorPhysicsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
     const DAVA::Type* componentType = component->GetType();
-    if (componentType == DAVA::Type::Instance<DAVA::StaticBodyComponent>() ||
-        componentType == DAVA::Type::Instance<DAVA::DynamicBodyComponent>())
+    if (componentType->Is<DAVA::StaticBodyComponent>() || componentType->Is<DAVA::DynamicBodyComponent>())
     {
         DAVA::uint32 actorCount = entity->GetComponentCount<DAVA::StaticBodyComponent>();
         actorCount += entity->GetComponentCount<DAVA::DynamicBodyComponent>();

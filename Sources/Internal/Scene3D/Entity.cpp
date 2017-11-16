@@ -21,6 +21,7 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Private/EntityHelpers.h"
 #include "Reflection/ReflectionRegistrator.h"
 
@@ -95,26 +96,16 @@ void Entity::DetachComponent(Vector<Component*>::iterator& it)
     c->SetEntity(nullptr);
 }
 
-Component* Entity::GetComponent(int32 runtimeType, uint32 index) const
+Component* Entity::GetComponent(const Type* type, uint32 index) const
 {
     Component* ret = nullptr;
-    uint32 maxCount = family->GetComponentsCount(runtimeType);
+    uint32 maxCount = family->GetComponentsCount(type);
     if (index < maxCount)
     {
-        ret = components[family->GetComponentIndex(runtimeType, index)];
+        ret = components[family->GetComponentIndex(type, index)];
     }
 
     return ret;
-}
-
-Component* Entity::GetComponent(const Type* type, uint32 index) const
-{
-    return GetComponent(GetEngineContext()->componentManager->GetRuntimeType(type), index);
-}
-
-uint32 Entity::GetComponentCount(const Type* type) const
-{
-    return family->GetComponentsCount(GetEngineContext()->componentManager->GetRuntimeType(type));
 }
 
 Component* Entity::GetOrCreateComponent(const Type* type, uint32 index)
@@ -497,7 +488,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
         if (isSerializable)
         {
             //don't save empty custom properties
-            if (c->GetType() == Type::Instance<CustomPropertiesComponent>())
+            if (c->GetType()->Is<CustomPropertiesComponent>())
             {
                 CustomPropertiesComponent* customProps = CastIfEqual<CustomPropertiesComponent*>(c);
                 if (customProps && customProps->GetArchive()->Count() <= 0)
@@ -552,7 +543,7 @@ void Entity::LoadComponentsV7(KeyedArchive* compsArch, SerializationContext* ser
                 Component* comp = ObjectFactory::Instance()->New<Component>(componentType);
                 if (nullptr != comp)
                 {
-                    if (comp->GetType() == Type::Instance<TransformComponent>())
+                    if (comp->GetType()->Is<TransformComponent>())
                     {
                         RemoveComponent(comp->GetType());
                     }

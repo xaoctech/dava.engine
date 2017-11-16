@@ -332,7 +332,8 @@ void ParticleEffectSystem::PrepareForRemove()
 
 void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
 {
-    DVASSERT(component->GetType() == Type::Instance<ParticleEffectComponent>());
+    DVASSERT(component->GetType()->Is<ParticleEffectComponent>());
+
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
     if (event == EventSystem::START_PARTICLE_EFFECT)
     {
