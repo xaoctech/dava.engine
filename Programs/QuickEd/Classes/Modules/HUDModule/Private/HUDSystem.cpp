@@ -203,11 +203,12 @@ void HUDSystem::OnUpdate()
     }
 
     EditorSystemsData* systemsData = accessor->GetGlobalContext()->GetData<EditorSystemsData>();
-    if (GetSystemsManager()->GetDragState() == eDragState::NoDrag &&
-        GetSystemsManager()->GetDisplayState() != eDisplayState::Emulation &&
+    const EditorSystemsManager* systemsManager = GetSystemsManager();
+    if (systemsManager->GetDragState() == eDragState::NoDrag &&
+        systemsManager->GetDisplayState() != eDisplayState::Emulation &&
         systemsData->IsHighlightDisabled() == false)
     {
-        ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
+        ControlNode* node = systemsManager->GetControlNodeAtPoint(systemsManager->GetLastMousePos());
         SetHighlight(node);
     }
     else
@@ -219,7 +220,7 @@ void HUDSystem::OnUpdate()
     {
         bool findPivot = hudMap.size() == 1 && IsKeyPressed(eModifierKeys::CONTROL) && IsKeyPressed(eModifierKeys::ALT);
         eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
-        ProcessCursor(hoveredPoint, searchOrder);
+        ProcessCursor(systemsManager->GetLastMousePos(), searchOrder);
     }
 }
 

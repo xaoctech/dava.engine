@@ -123,6 +123,11 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput, eInputSource inputSour
         lastMousePos = currentInput->point;
     }
 
+    if (inputSource == eInputSource::CANVAS)
+    {
+        lastMousePos -= mouseDelta;
+    }
+
     if (currentInput->device == eInputDevices::MOUSE && currentInput->tapCount > 0)
     {
         // From a series of clicks from mouse we should detect double clicks only.

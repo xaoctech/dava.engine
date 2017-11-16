@@ -127,7 +127,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputS
         {
             canvasDataAdapter.MoveScene(mouseDelta);
         }
-        else if (inputSource == eInputSource::CANVAS && dragState == eDragState::Transform)
+        else if (inputSource == eInputSource::CANVAS)
         {
             Vector2 lastPos = pos - systemsManager->GetMouseDelta();
 
@@ -265,7 +265,7 @@ void EditorCanvas::MoveSceneByUpdate()
     eDragState dragState = systemsManager->GetDragState();
     DataContext* activeContext = accessor->GetActiveContext();
 
-    if (activeContext == nullptr || dragState == eDragState::NoDrag)
+    if (activeContext == nullptr || dragState != eDragState::Transform)
     {
         return;
     }
