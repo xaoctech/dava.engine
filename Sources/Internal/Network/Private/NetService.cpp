@@ -30,16 +30,16 @@ void NetService::OnPacketReceived(const std::shared_ptr<IChannel>& aChannel, con
     PacketReceived(buffer, length);
 }
 
-void NetService::OnPacketSent(const std::shared_ptr<IChannel>& channel, const void* buffer, size_t length)
+void NetService::OnPacketSent(const std::shared_ptr<IChannel>& aChannel, const void* buffer, size_t length)
 {
     // If channel is NULL then OnChannelClosed has been called already
-    DVASSERT(NULL == channel || channel == channel);
+    DVASSERT(NULL == channel || channel == aChannel);
     PacketSent();
 }
 
-void NetService::OnPacketDelivered(const std::shared_ptr<IChannel>& channel, uint32 packetId)
+void NetService::OnPacketDelivered(const std::shared_ptr<IChannel>& aChannel, uint32 packetId)
 {
-    DVASSERT(channel == channel);
+    DVASSERT(channel == aChannel);
     PacketDelivered();
 }
 
