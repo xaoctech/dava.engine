@@ -361,6 +361,97 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
     }
 
+    DAVA_TEST (ExportSceneTestTags)
+    {
+        using namespace DAVA;
+
+        std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
+
+        FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
+        FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
+
+        auto getRelativePath = Bind(CommandLineModuleTestUtils::SceneBuilder::GetSceneRelativePathname,
+                                    SETestDetail::scenePathnameStr,
+                                    dataSourcePath,
+                                    std::placeholders::_1);
+        auto filesIdentical = CommandLineModuleTestUtils::SceneBuilder::FilesIdentical;
+
+        String defaultSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::defaultSlotDir);
+        String chinaSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::chinaSlotDir);
+        String boxTexture = getRelativePath("box.png");
+        String chineseBoxTexture = getRelativePath("box.china.png");
+
+        String sceneRelativePathname = FilePath(SETestDetail::scenePathnameStr).GetRelativePathname(dataSourcePath);
+
+        {
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
+
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-sceneexporter",
+              "-indir",
+              dataSourcePath.GetAbsolutePathname(),
+              "-outdir",
+              dataPath.GetAbsolutePathname(),
+              "-processfile",
+              sceneRelativePathname,
+              "-gpu",
+              "origin",
+              "-tag",
+              CommandLineModuleTestUtils::SceneBuilder::tagChina
+            };
+
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + chinaSlotRelativePathname) == true);
+            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + defaultSlotRelativePathname) == false);
+
+            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + boxTexture) == false);
+
+            CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
+        }
+
+        {
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
+
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-sceneexporter",
+              "-indir",
+              dataSourcePath.GetAbsolutePathname(),
+              "-outdir",
+              dataPath.GetAbsolutePathname(),
+              "-processfile",
+              sceneRelativePathname,
+              "-gpu",
+              "origin"
+            };
+
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+
+            // Sanity check
+            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
+            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + chinaSlotRelativePathname) == false);
+            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + defaultSlotRelativePathname) == true);
+
+            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
+            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + boxTexture) == true);
+
+            CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
+        }
+
+        CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
+    }
+
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(TArc)
     DECLARE_COVERED_FILES("SceneExporterTool.cpp")
