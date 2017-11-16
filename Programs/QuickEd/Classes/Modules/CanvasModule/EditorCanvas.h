@@ -17,9 +17,9 @@ public:
     EditorCanvas(DAVA::TArc::ContextAccessor* accessor);
 
 private:
-    bool CanProcessInput(DAVA::UIEvent* currentInput, bool generated) const override;
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    void ProcessInput(DAVA::UIEvent* currentInput, bool generated) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
     eSystems GetOrder() const override;

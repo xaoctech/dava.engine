@@ -738,7 +738,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorSystemsData = globalContext->GetData<EditorSystemsData>();
-    if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
+    if (editorSystemsData->systemsManager->GetDisplayState() == eDisplayState::Emulation)
     {
         return;
     }
@@ -1204,8 +1204,8 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
 
-    EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
-    if (displayState == EditorSystemsManager::Preview || displayState == EditorSystemsManager::Emulation)
+    eDisplayState displayState = systemsManager->GetDisplayState();
+    if (displayState == eDisplayState::Preview || displayState == eDisplayState::Emulation)
     {
         PackageNode* package = documentData->GetPackageNode();
         PackageControlsNode* packageControlsNode = package->GetPackageControlsNode();

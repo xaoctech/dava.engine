@@ -360,9 +360,9 @@ void EditorControlsView::DeleteCanvasControls(const CanvasControls& canvasContro
 {
 }
 
-void EditorControlsView::OnDragStateChanged(EditorSystemsManager::eDragState /*currentState*/, EditorSystemsManager::eDragState previousState)
+void EditorControlsView::OnDragStateChanged(eDragState /*currentState*/, eDragState previousState)
 {
-    if (previousState == EditorSystemsManager::Transform)
+    if (previousState == eDragState::Transform)
     {
         needRecalculateBgrBeforeRender = true;
         OnUpdate();
@@ -404,7 +404,7 @@ void EditorControlsView::ControlPropertyWasChanged(ControlNode* node, AbstractPr
         return;
     }
 
-    if (GetSystemsManager()->GetDragState() != EditorSystemsManager::Transform)
+    if (GetSystemsManager()->GetDragState() != eDragState::Transform)
     {
         if (EditorControlsViewDetails::IsPropertyAffectBackground(property))
         {
@@ -426,16 +426,16 @@ void EditorControlsView::RecalculateBackgroundPropertiesForGrids(DAVA::UIControl
     }
 }
 
-BaseEditorSystem::eSystems EditorControlsView::GetOrder() const
+eSystems EditorControlsView::GetOrder() const
 {
-    return CONTROLS_VIEW;
+    return eSystems::CONTROLS_VIEW;
 }
 
 void EditorControlsView::OnUpdate()
 {
     if (needRecalculateBgrBeforeRender)
     {
-        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::Transform)
+        if (GetSystemsManager()->GetDragState() == eDragState::Transform)
         { // do not recalculate while control is dragged
             return;
         }

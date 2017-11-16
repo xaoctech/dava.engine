@@ -23,7 +23,7 @@ EditorCanvas::EditorCanvas(DAVA::TArc::ContextAccessor* accessor)
     canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DataContext*) { return Reflection::Create(&canvasDataAdapter); });
 }
 
-bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated*/) const
+bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     using namespace DAVA;
     if (accessor->GetActiveContext() == nullptr)
@@ -38,11 +38,11 @@ bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput, bool /*generated
     {
         return true;
     }
-    return (GetSystemsManager()->GetDragState() != EditorSystemsManager::NoDrag &&
+    return (GetSystemsManager()->GetDragState() != eDragState::NoDrag &&
             (currentInput->mouseButton == eMouseButtons::LEFT || currentInput->mouseButton == eMouseButtons::MIDDLE));
 }
 
-void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, bool generated)
+void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource)
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
@@ -99,7 +99,7 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, bool generated)
     }
     else if (currentInput->device == eInputDevices::MOUSE)
     {
-        EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+        eDragState dragState = systemsManager->GetDragState();
         if (currentInput->phase == UIEvent::Phase::WHEEL)
         {
             if ((currentInput->modifiers & (eModifierKeys::CONTROL | eModifierKeys::COMMAND)) != eModifierKeys::NONE)
@@ -123,11 +123,11 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, bool generated)
                 canvasDataAdapter.MoveScene(additionalPos * wheelDelta);
             }
         }
-        else if (dragState == EditorSystemsManager::DragScreen)
+        else if (dragState == eDragState::DragScreen)
         {
             canvasDataAdapter.MoveScene(mouseDelta);
         }
-        else if (generated)
+        else if (inputSource == eInputSource::CANVAS && dragState == eDragState::Transform)
         {
             Vector2 lastPos = pos - systemsManager->GetMouseDelta();
 
@@ -171,9 +171,9 @@ void EditorCanvas::DeleteCanvasControls(const CanvasControls& canvasControls)
     canvasModuleData->canvas = nullptr;
 }
 
-BaseEditorSystem::eSystems EditorCanvas::GetOrder() const
+eSystems EditorCanvas::GetOrder() const
 {
-    return CANVAS;
+    return eSystems::CANVAS;
 }
 
 void EditorCanvas::OnUpdate()
@@ -183,7 +183,7 @@ void EditorCanvas::OnUpdate()
     OnScaleChanged(canvasDataAdapterWrapper.GetFieldValue(CanvasDataAdapter::scalePropertyName));
 }
 
-EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* currentInput)
+eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     using namespace DAVA;
     Function<void(UIEvent*, bool)> setMouseButtonOnInput = [this](const UIEvent* currentInput, bool value) {
@@ -217,7 +217,7 @@ EditorSystemsManager::eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* cu
         }
     }
     bool inDragScreenState = isMouseMidButtonPressed || isSpacePressed;
-    return inDragScreenState ? EditorSystemsManager::DragScreen : EditorSystemsManager::NoDrag;
+    return inDragScreenState ? eDragState::DragScreen : eDragState::NoDrag;
 }
 
 void EditorCanvas::OnPositionChanged(const DAVA::Any& positionValue)
@@ -262,10 +262,10 @@ void EditorCanvas::MoveSceneByUpdate()
 
     EditorSystemsManager* systemsManager = GetSystemsManager();
     Vector2 mousePos = systemsManager->GetLastMousePos();
-    EditorSystemsManager::eDragState dragState = systemsManager->GetDragState();
+    eDragState dragState = systemsManager->GetDragState();
     DataContext* activeContext = accessor->GetActiveContext();
 
-    if (activeContext == nullptr || dragState == EditorSystemsManager::NoDrag)
+    if (activeContext == nullptr || dragState == eDragState::NoDrag)
     {
         return;
     }
@@ -302,6 +302,6 @@ void EditorCanvas::MoveSceneByUpdate()
         event.device = eInputDevices::MOUSE;
         event.mouseButton = eMouseButtons::LEFT;
         event.point = mousePos + mouseDelta;
-        systemsManager->EmulateInput(&event);
+        systemsManager->OnInput(&event, eInputSource::CANVAS);
     }
 }

@@ -45,15 +45,15 @@ private:
     };
 
     using Directions = DAVA::Array<int, DAVA::Vector2::AXIS_COUNT>;
-    using CornersDirections = DAVA::Array<Directions, HUDAreaInfo::CORNERS_COUNT>;
+    using CornersDirections = DAVA::Array<Directions, eArea::CORNERS_COUNT>;
     static const CornersDirections cornersDirections;
 
     struct MoveInfo;
 
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    bool CanProcessInput(DAVA::UIEvent* currentInput, bool generated) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput, bool generated) override;
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void OnDragStateChanged(eDragState currentState, eDragState previousState) override;
     eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
@@ -95,7 +95,7 @@ private:
 
     bool CanMagnet() const;
 
-    HUDAreaInfo::eArea activeArea = HUDAreaInfo::NO_AREA;
+    eArea activeArea = eArea::NO_AREA;
     ControlNode* activeControlNode = nullptr;
     DAVA::Vector2 extraDelta;
     DAVA::Map<const ControlNode*, DAVA::Vector2> extraDeltaToMoveControls;

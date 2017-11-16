@@ -115,7 +115,7 @@ void EditorSystemsManager::InitFieldBinder()
     }
 }
 
-void EditorSystemsManager::OnInput(UIEvent* currentInput)
+void EditorSystemsManager::OnInput(UIEvent* currentInput, eInputSource inputSource)
 {
     if (currentInput->device == eInputDevices::MOUSE)
     {
@@ -130,36 +130,19 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput)
         currentInput->tapCount = (currentInput->tapCount % 2) ? 1 : 2;
     }
 
-    eDragState newState = NoDrag;
+    eDragState newState = eDragState::NoDrag;
     for (const auto& orderAndSystem : systems)
     {
-        newState = Max(newState, orderAndSystem.second->RequireNewState(currentInput));
+        newState = Max(newState, orderAndSystem.second->RequireNewState(currentInput, inputSource));
     }
     SetDragState(newState);
 
     for (auto it = systems.rbegin(); it != systems.rend(); ++it)
     {
         BaseEditorSystem* system = (*it).second;
-        if (system->CanProcessInput(currentInput, false))
+        if (system->CanProcessInput(currentInput, inputSource))
         {
-            system->ProcessInput(currentInput, false);
-        }
-    }
-}
-
-void EditorSystemsManager::EmulateInput(DAVA::UIEvent* generatedEvent)
-{
-    if (generatedEvent->device == eInputDevices::MOUSE)
-    {
-        mouseDelta = generatedEvent->point - lastMousePos;
-    }
-
-    for (auto it = systems.rbegin(); it != systems.rend(); ++it)
-    {
-        BaseEditorSystem* system = (*it).second;
-        if (system->CanProcessInput(generatedEvent, true))
-        {
-            system->ProcessInput(generatedEvent, true);
+            system->ProcessInput(currentInput, inputSource);
         }
     }
 }
@@ -167,7 +150,7 @@ void EditorSystemsManager::EmulateInput(DAVA::UIEvent* generatedEvent)
 void EditorSystemsManager::OnEmulationModeChanged(const DAVA::Any& emulationModeValue)
 {
     bool emulationMode = emulationModeValue.Cast<bool>(false);
-    SetDisplayState(emulationMode ? Emulation : previousDisplayState);
+    SetDisplayState(emulationMode ? eDisplayState::Emulation : previousDisplayState);
 }
 
 ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& point, bool canGoDeeper) const
@@ -281,8 +264,8 @@ void EditorSystemsManager::UpdateDisplayState()
         rootControls = documentData->GetDisplayedRootControls();
     }
 
-    eDisplayState state = rootControls.size() == 1 ? Edit : Preview;
-    if (displayState == Emulation)
+    eDisplayState state = rootControls.size() == 1 ? eDisplayState::Edit : eDisplayState::Preview;
+    if (displayState == eDisplayState::Emulation)
     {
         previousDisplayState = state;
     }
@@ -330,14 +313,14 @@ void EditorSystemsManager::OnDragStateChanged(eDragState currentState, eDragStat
 {
     using namespace DAVA::TArc;
 
-    if (currentState == Transform || previousState == Transform)
+    if (currentState == eDragState::Transform || previousState == eDragState::Transform)
     {
         DataContext* activeContext = accessor->GetActiveContext();
         DVASSERT(activeContext != nullptr);
         DocumentData* documentData = activeContext->GetData<DocumentData>();
         PackageNode* package = documentData->GetPackageNode();
         //calling this function can refresh all properties and styles in this node
-        package->SetCanUpdateAll(previousState == Transform);
+        package->SetCanUpdateAll(previousState == eDragState::Transform);
     }
 }
 
@@ -354,15 +337,15 @@ DAVA::Vector2 EditorSystemsManager::GetLastMousePos() const
 void EditorSystemsManager::OnPackageChanged(const DAVA::Any& /*packageValue*/)
 {
     magnetLinesChanged.Emit({});
-    SetDragState(NoDrag);
+    SetDragState(eDragState::NoDrag);
 }
 
-EditorSystemsManager::eDragState EditorSystemsManager::GetDragState() const
+eDragState EditorSystemsManager::GetDragState() const
 {
     return dragState;
 }
 
-EditorSystemsManager::eDisplayState EditorSystemsManager::GetDisplayState() const
+eDisplayState EditorSystemsManager::GetDisplayState() const
 {
     return displayState;
 }
@@ -403,7 +386,7 @@ const SortedControlNodeSet& EditorSystemsManager::GetDisplayedRootControls() con
 
 void EditorSystemsManager::RegisterEditorSystem(BaseEditorSystem* editorSystem)
 {
-    BaseEditorSystem::eSystems order = editorSystem->GetOrder();
+    eSystems order = editorSystem->GetOrder();
 
     CanvasControls newControls = editorSystem->CreateCanvasControls();
     if (newControls.empty() == false)

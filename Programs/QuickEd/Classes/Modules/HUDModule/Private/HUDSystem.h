@@ -40,11 +40,11 @@ private:
     };
     struct HUD;
 
-    bool CanProcessInput(DAVA::UIEvent* currentInput, bool generated) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput, bool generated) override;
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
-    void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void OnDragStateChanged(eDragState currentState, eDragState previousState) override;
+    void OnDisplayStateChanged(eDisplayState currentState, eDisplayState previousState) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 

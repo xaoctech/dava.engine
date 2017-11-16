@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EditorSystems/EditorSystemsConstants.h"
+
 #include "Model/PackageHierarchy/PackageBaseNode.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 
@@ -31,30 +33,11 @@ class FieldBinder;
 
 struct HUDAreaInfo
 {
-    enum eArea
-    {
-        AREAS_BEGIN,
-        ROTATE_AREA = AREAS_BEGIN,
-        TOP_LEFT_AREA,
-        TOP_CENTER_AREA,
-        TOP_RIGHT_AREA,
-        CENTER_LEFT_AREA,
-        CENTER_RIGHT_AREA,
-        BOTTOM_LEFT_AREA,
-        BOTTOM_CENTER_AREA,
-        BOTTOM_RIGHT_AREA,
-        PIVOT_POINT_AREA,
-        FRAME_AREA,
-        NO_AREA,
-        CORNERS_BEGIN = TOP_LEFT_AREA,
-        CORNERS_COUNT = PIVOT_POINT_AREA - TOP_LEFT_AREA + CORNERS_BEGIN,
-        AREAS_COUNT = NO_AREA - AREAS_BEGIN
-    };
     HUDAreaInfo(ControlNode* owner_ = nullptr, eArea area_ = NO_AREA)
         : owner(owner_)
         , area(area_)
     {
-        DVASSERT((owner != nullptr && area != HUDAreaInfo::NO_AREA) || (owner == nullptr && area == HUDAreaInfo::NO_AREA));
+        DVASSERT((owner != nullptr && area != eArea::NO_AREA) || (owner == nullptr && area == eArea::NO_AREA));
     }
     ControlNode* owner = nullptr;
     eArea area = NO_AREA;
@@ -88,32 +71,6 @@ class EditorSystemsManager : public Interfaces::EditorSystemsManagerInterface
     static StopPredicate defaultStopPredicate;
 
 public:
-    //we have situations, when one input can produce two different state. To resolve this conflict we declare that state priority is equal to it value
-    //as an example dragging control with pressed space bar button will perform drag screen and transform at the same time
-    enum eDragState
-    {
-        //invalid state to request new state from baseEditorSystem
-        NoDrag,
-        //if cursor is under control and it selectable
-        SelectByRect,
-        //if cursor under selected control, pressed left mouse button and starts dragging
-        Transform,
-        //all user input used only to drag canvas inside render widget
-        DragScreen,
-        //if mouse clicked, new control will be added
-        AddingControl
-    };
-
-    enum eDisplayState
-    {
-        //remove hud and throw all input to the DAVA framework
-        Emulation,
-        //just display all root controls, no other interaction enabled
-        Preview,
-        //display one root control
-        Edit
-    };
-
     explicit EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor);
     ~EditorSystemsManager();
 
@@ -124,8 +81,7 @@ public:
     //TODO: remove this function by moving systems to the separate modules
     DAVA_DEPRECATED(void InitSystems());
 
-    void OnInput(DAVA::UIEvent* currentInput);
-    void EmulateInput(DAVA::UIEvent* generatedEvent);
+    void OnInput(DAVA::UIEvent* currentInput, eInputSource inputSource);
 
     template <class OutIt, class Predicate>
     void CollectControlNodes(OutIt destination, Predicate predicate, StopPredicate stopPredicate = defaultStopPredicate) const;
@@ -178,16 +134,16 @@ private:
 
     DAVA::RefPtr<DAVA::UIControl> rootControl;
 
-    DAVA::Map<DAVA::uint32, BaseEditorSystem*> systems;
+    DAVA::Map<eSystems, BaseEditorSystem*> systems;
     DAVA::Map<BaseEditorSystem*, DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>> systemsControls;
 
     SelectionSystem* selectionSystemPtr = nullptr; // weak pointer to selection system
     HUDSystem* hudSystemPtr = nullptr;
 
-    eDragState dragState = NoDrag;
-    eDragState previousDragState = NoDrag;
-    eDisplayState displayState = Preview;
-    eDisplayState previousDisplayState = Preview;
+    eDragState dragState = eDragState::NoDrag;
+    eDragState previousDragState = eDragState::NoDrag;
+    eDisplayState displayState = eDisplayState::Preview;
+    eDisplayState previousDisplayState = eDisplayState::Preview;
 
     HUDAreaInfo currentHUDArea;
     //helpers
