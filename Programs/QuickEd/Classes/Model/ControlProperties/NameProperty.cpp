@@ -69,7 +69,7 @@ void NameProperty::ApplyValue(const DAVA::Any& value)
 {
     if (value.CanGet<String>())
     {
-        controlNode->GetControl()->SetName(value.Cast<FastName>());
+        controlNode->GetControl()->SetName(value.Cast<FastName>(), UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
     }
     else
     {

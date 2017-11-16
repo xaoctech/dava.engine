@@ -35,7 +35,7 @@ void IssueNavigatorModule::PostInit()
 
     DAVA::int32 sectionId = 0;
     layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));
-    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), sectionId++, widget));
+    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
 }
 
 void IssueNavigatorModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)

@@ -19,7 +19,7 @@ class IssueNavigatorWidget;
 class NamingIssuesHandler : public PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui_, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
     ~NamingIssuesHandler() override = default;
 
     // PackageListener
@@ -69,5 +69,6 @@ private:
     DuplicationsIssuesMap duplicationIssues;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::TArc::UI* ui = nullptr;
     PackageListenerProxy packageListenerProxy;
 };

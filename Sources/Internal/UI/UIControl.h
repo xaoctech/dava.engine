@@ -436,13 +436,20 @@ public:
     */
     template <class T>
     inline void SortChildren(const T& predicate);
+
+    enum eGenerateAssert : bool
+    {
+        GENERATE_ASSERT_ON_INCORRECT = true,
+        DO_NOT_GENERATE_ASSERT_ON_INCORRECT = false
+    };
     /*
      \brief Sets the conrtol name.
         Later you can find control by this name.
-     \param[in] _name new control name.
+     \param[in] name_ new control name.
+     \param[in] generateAssert whether to generate assert for incorrect symbols in name
      */
-    void SetName(const String& name_);
-    void SetName(const FastName& name_);
+    void SetName(const String& name_, eGenerateAssert generateAssert = GENERATE_ASSERT_ON_INCORRECT);
+    void SetName(const FastName& name_, eGenerateAssert generateAssert = GENERATE_ASSERT_ON_INCORRECT);
 
     /**
      \brief Returns current name of the control.
