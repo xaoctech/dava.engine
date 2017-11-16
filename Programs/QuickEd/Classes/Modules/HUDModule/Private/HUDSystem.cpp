@@ -288,7 +288,7 @@ void HUDSystem::HighlightNode(ControlNode* node)
 
         if (selectedNodes.find(node) != selectedNodes.end())
         {
-            //return;
+            return;
         }
 
         UIControl* targetControl = node->GetControl();
