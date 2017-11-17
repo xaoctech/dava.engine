@@ -213,6 +213,9 @@ private:
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
+    void RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) const;
+    void AddRequest(PackRequest* request);
+    PackRequest* PrepareNewRequest(const String& requestedPackName);
     PackRequest* CreateNewRequest(const String& requestedPackName);
     bool IsLocalMetaAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
@@ -290,6 +293,7 @@ private:
     Map<String, PreloadedPack> preloadedPacks;
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
+    Set<std::size_t> requestNameHashes; // for check if request with hash
 
     List<InitState> skipedStates; // if we can't download from server but have local meta, we can skip some state and use already downloaded meta
     String initErrorMsg;

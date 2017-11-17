@@ -617,46 +617,60 @@ PackRequest* DLCManagerImpl::AddDelayedRequest(const String& requestedPackName)
     return delayedRequests.back();
 }
 
-PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
+void DLCManagerImpl::RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) const
 {
-    for (auto* request : requests)
-    {
-        if (request->GetRequestedPackName() == requestedPackName)
-        {
-            return request;
-        }
-    }
-
-    log << " requested: " << requestedPackName << std::endl;
-
-    Vector<uint32> packIndexes = meta->GetFileIndexes(requestedPackName);
-
-    // check all requested files already downloaded
-    auto isFileDownloaded = [&](uint32 index) { return IsFileReady(index); };
-    auto removeIt = remove_if(begin(packIndexes), end(packIndexes), isFileDownloaded);
+    const auto removeIt = remove_if(begin(packIndexes), end(packIndexes), [&](uint32 index) { return IsFileReady(index); });
     if (removeIt != end(packIndexes))
     {
         packIndexes.erase(removeIt, end(packIndexes));
     }
+}
 
-    PackRequest* request = new PackRequest(*this, requestedPackName, std::move(packIndexes));
+void DLCManagerImpl::AddRequest(PackRequest* request)
+{
+    requests.push_back(request);
+    requestManager->Push(request);
+    requestNameHashes.insert(std::hash<String>{}(request->GetRequestedPackName()));
+}
 
-    Vector<uint32> deps = request->GetDependencies();
+PackRequest* DLCManagerImpl::PrepareNewRequest(const String& requestedPackName)
+{
+    Vector<uint32> packIndexes = meta->GetFileIndexes(requestedPackName);
 
-    for (uint32 dependent : deps)
+    RemoveDownloadedFileIndexes(packIndexes);
+
+    return new PackRequest(*this, requestedPackName, std::move(packIndexes));
+}
+
+PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
+{
+    // TODO check DVASSERT(find(begin(requests), end(requests), [&](PackRequest* r) -> bool { return r->GetRequestedPackName() == requestedPackName;}) == end(requests));
+
+    log << " requested: " << requestedPackName << '\n';
+
+    PackRequest* request = PrepareNewRequest(requestedPackName);
+
+    const uint32 requestedPackIndex = meta->GetPackIndex(requestedPackName);
+
+    const Vector<uint32>& depsList = meta->GetFullDependenciesList(requestedPackIndex);
+
+    for (uint32 dependencyIndex : depsList)
     {
-        const String& depPackName = meta->GetPackInfo(dependent).packName;
-        PackRequest* r = FindRequest(depPackName);
-        if (nullptr == r)
+        const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(dependencyIndex);
+        const String& depPackName = packInfo.packName;
+
+        if (nullptr == FindRequest(depPackName))
         {
-            // recursive call
-            PackRequest* dependentRequest = CreateNewRequest(depPackName);
-            DVASSERT(dependentRequest != nullptr);
+            log << " requested: " << depPackName << '\n';
+
+            PackRequest* dependentRequest = PrepareNewRequest(depPackName);
+            AddRequest(dependentRequest);
         }
     }
 
-    requests.push_back(request);
-    requestManager->Push(request);
+    AddRequest(request);
+
+    log << std::flush;
 
     return request;
 }
@@ -1358,7 +1372,7 @@ uint64 DLCManagerImpl::GetPackSize(const String& packName) const
 
         uint32 packIndex = meta->GetPackIndex(packName);
 
-        const Vector<uint32>& dependencyIndexes = meta->GetChildren(packIndex);
+        const Vector<uint32>& dependencyIndexes = meta->GetFullDependenciesList(packIndex);
 
         for (uint32 dependencyPackIndex : dependencyIndexes)
         {
@@ -1576,7 +1590,7 @@ DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& pack
     for (const String& packName : packNames)
     {
         uint32 packIndex = meta->GetPackIndex(packName);
-        const Vector<uint32>& childrenPacks = meta->GetChildren(packIndex);
+        const Vector<uint32>& childrenPacks = meta->GetFullDependenciesList(packIndex);
         for (const uint32 childPackIndex : childrenPacks)
         {
             allPacks.insert(childPackIndex);
@@ -1659,6 +1673,13 @@ void DLCManagerImpl::SetRequestingEnabled(bool value)
 PackRequest* DLCManagerImpl::FindRequest(const String& requestedPackName) const
 {
     DVASSERT(Thread::IsMainThread());
+
+    // optimization. Fast return nullptr if no such request
+    const std::size_t hash = std::hash<String>{}(requestedPackName);
+    if (0 == requestNameHashes.count(hash))
+    {
+        return nullptr;
+    }
 
     for (auto request : requests)
     {
