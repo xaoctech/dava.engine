@@ -33,7 +33,7 @@ class FieldBinder;
 
 struct HUDAreaInfo
 {
-    HUDAreaInfo(ControlNode* owner_ = nullptr, eArea area_ = NO_AREA)
+    HUDAreaInfo(ControlNode* owner_ = nullptr, eArea area_ = eArea::NO_AREA)
         : owner(owner_)
         , area(area_)
     {
