@@ -24,6 +24,7 @@ class PhysicsModule;
 class PhysicsComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
+class PhysicsVehiclesSubsystem;
 class CharacterControllerComponent;
 
 class PhysicsSystem final : public SceneSystem
@@ -54,13 +55,15 @@ public:
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
 
+    PhysicsVehiclesSubsystem* GetVehiclesSystem();
+
 private:
     bool FetchResults(bool waitForFetchFinish);
 
     void DrawDebugInfo();
 
     void InitNewObjects();
-    void AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
+    void AttachShapesRecursively(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
     void AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale);
 
     void ReleaseShape(CollisionShapeComponent* component);
@@ -99,6 +102,8 @@ private:
     physx::PxScene* physicsScene = nullptr;
     physx::PxControllerManager* controllerManager = nullptr;
     PhysicsGeometryCache* geometryCache = nullptr;
+
+    PhysicsVehiclesSubsystem* vehiclesSubsystem = nullptr;
 
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;

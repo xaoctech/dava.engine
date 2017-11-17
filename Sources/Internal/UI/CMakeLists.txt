@@ -21,6 +21,8 @@ set( HPP_FILES *.h
     Flow/Private/*.h
     Flow/Services/*.h
     Flow/Services/Private/*.h
+    Events/*.h
+    Events/Private/*.h
     )
 
 set( CPP_FILES *.cpp
@@ -46,6 +48,8 @@ set( CPP_FILES *.cpp
     Flow/Private/*.cpp
     Flow/Services/*.cpp
     Flow/Services/Private/*.cpp
+    Events/*.cpp
+    Events/Private/*.cpp
     )
 
 set( CPP_FILES_APPLE *.mm )

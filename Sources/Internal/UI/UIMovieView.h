@@ -58,6 +58,9 @@ protected:
     // impl can live longer than its owner: native control can queue callback in UI thread
     // but impl's owner is already dead
     std::shared_ptr<IMovieViewControl> movieViewControl;
+
+    // Player status on the previous frame
+    bool lastPlayingState = false;
 };
 
 } // namespace DAVA

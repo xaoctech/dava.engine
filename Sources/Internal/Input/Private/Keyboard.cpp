@@ -199,6 +199,12 @@ void Keyboard::CreateAndSendKeyInputEvent(eInputElements elementId, DigitalEleme
 
 void Keyboard::CreateAndSendCharInputEvent(char32_t charCode, bool charRepeated, Window* window, int64 timestamp)
 {
+    // Null character. Ignore it for now, as many others applications do.
+    if (charCode == 0)
+    {
+        return;
+    }
+
     DVASSERT(charCode > 0);
 
     InputEvent inputEvent;

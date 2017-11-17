@@ -27,6 +27,8 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/Update/UIUpdateComponent.h"
+#include "UI/Events/UIMovieEventComponent.h"
+#include "UI/Events/UIEventsSingleComponent.h"
 
 namespace DAVA
 {
@@ -132,6 +134,28 @@ void UIMovieView::Update(float32 timeElapsed)
 {
     UIControl::Update(timeElapsed);
     movieViewControl->Update();
+
+    bool playing = IsPlaying();
+    if (lastPlayingState != playing)
+    {
+        UIMovieEventComponent* events = GetComponent<UIMovieEventComponent>();
+        if (events)
+        {
+            FastName event = lastPlayingState ? events->GetStopEvent() : events->GetStartEvent();
+            if (event.IsValid())
+            {
+                if (GetScene())
+                {
+                    UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+                    if (eventsSingle)
+                    {
+                        eventsSingle->SendEvent(this, event);
+                    }
+                }
+            }
+        }
+        lastPlayingState = playing;
+    }
 }
 
 void UIMovieView::OnVisible()
