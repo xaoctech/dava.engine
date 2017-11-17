@@ -1,12 +1,11 @@
-#ifndef __UI_EDITOR_UI_PACKAGE_MIME_DATA_H__
-#define __UI_EDITOR_UI_PACKAGE_MIME_DATA_H__
+#pragma once
 
 #include <QMimeData>
 #include <QModelIndex>
 #include <QPersistentModelIndex>
 #include <QStringList>
 
-#include "Base/BaseTypes.h"
+#include <Base/BaseTypes.h>
 
 class ControlNode;
 class StyleSheetNode;
@@ -37,6 +36,3 @@ private:
     DAVA::Vector<ControlNode*> controls;
     DAVA::Vector<StyleSheetNode*> styles;
 };
-
-
-#endif // __UI_EDITOR_UI_PACKAGE_MIME_DATA_H__
