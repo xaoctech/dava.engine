@@ -486,7 +486,12 @@ void PreviewWidget::InsertLayerIntoMenu(LayerNode& layer, QMenu* menu)
         });
     }
 
-    layer.subLayers.sort([](const LayerNode& n1, const LayerNode& n2) { return n1.control->GetName() < n2.control->GetName(); });
+    layer.subLayers.sort([](const LayerNode& n1, const LayerNode& n2)
+                         {
+                             PackageBaseNode* parent = n1.control->GetParent();
+                             DVASSERT(parent == n2.control->GetParent());
+                             return parent->GetIndex(n1.control) < parent->GetIndex(n2.control);
+                         });
 
     for (LayerNode& subLayer : layer.subLayers)
     {
