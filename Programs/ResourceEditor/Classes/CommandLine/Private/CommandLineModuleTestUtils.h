@@ -51,6 +51,8 @@ public:
     creates scene with all objects that can be added with SceneBuilder: camera, box etc.
     */
     static void CreateFullScene(const FilePath& scenePathname, const FilePath& projectPathname = "", DAVA::Scene* scene = nullptr);
+    static bool FilesIdentical(const FilePath& filePath1, const FilePath& filePath2);
+    static String GetSceneRelativePathname(const FilePath& scenePath, const FilePath& dataSourcePath, const String& filename);
 
     enum R2OMode
     {

@@ -160,6 +160,103 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
         CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::projectStr);
     }
 
+    DAVA_TEST (SaveSceneTagsTest)
+    {
+        using namespace DAVA;
+
+        std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
+        CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
+
+        FilePath dataSourcePath = SSTestDetail::projectStr + "DataSource/3d/";
+        FilePath newDataSourcePath = SSTestDetail::newProjectStr + "DataSource/3d/";
+
+        auto getRelativePath = Bind(CommandLineModuleTestUtils::SceneBuilder::GetSceneRelativePathname,
+                                    SSTestDetail::scenePathnameStr,
+                                    dataSourcePath,
+                                    std::placeholders::_1);
+        auto filesAreIdentical = CommandLineModuleTestUtils::SceneBuilder::FilesIdentical;
+
+        String defaultSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::defaultSlotDir);
+        String chinaSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::chinaSlotDir);
+        String boxTexture = getRelativePath("box.png");
+        String chineseBoxTexture = getRelativePath("box.china.png");
+        String japaneseBoxTexture = getRelativePath("box.japan.png");
+
+        {
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::newProjectStr);
+            TEST_VERIFY(CreateDummyCompressedFiles(dataSourcePath));
+
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-scenesaver",
+              "-save",
+              "-indir",
+              dataSourcePath.GetAbsolutePathname(),
+              "-outdir",
+              newDataSourcePath.GetAbsolutePathname(),
+              "-processfile",
+              FilePath(SSTestDetail::scenePathnameStr).GetRelativePathname(dataSourcePath),
+            };
+
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::newScenePathnameStr));
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chinaSlotRelativePathname) == false);
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + boxTexture) == true);
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chineseBoxTexture) == false);
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + japaneseBoxTexture) == false);
+
+            TEST_VERIFY(filesAreIdentical(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
+
+            CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::newProjectStr);
+        }
+
+        {
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::newProjectStr);
+            TEST_VERIFY(CreateDummyCompressedFiles(dataSourcePath));
+
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-scenesaver",
+              "-save",
+              "-indir",
+              dataSourcePath.GetAbsolutePathname(),
+              "-outdir",
+              newDataSourcePath.GetAbsolutePathname(),
+              "-processfile",
+              FilePath(SSTestDetail::scenePathnameStr).GetRelativePathname(dataSourcePath),
+              "-taglist",
+              CommandLineModuleTestUtils::SceneBuilder::tagChina
+            };
+
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::newScenePathnameStr));
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chinaSlotRelativePathname) == true);
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
+
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + boxTexture) == true);
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + japaneseBoxTexture) == false);
+
+            TEST_VERIFY(filesAreIdentical(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
+            TEST_VERIFY(filesAreIdentical(newDataSourcePath + chineseBoxTexture, dataSourcePath + chineseBoxTexture) == true);
+
+            CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::newProjectStr);
+        }
+
+        CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::projectStr);
+    }
+
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(TArc)
     DECLARE_COVERED_FILES("SceneSaverTool.cpp")
