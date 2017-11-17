@@ -13,7 +13,7 @@ NameProperty::NameProperty(ControlNode* controlNode_, const NameProperty* source
 {
     if (sourceProperty)
     {
-        controlNode->GetControl()->SetName(sourceProperty->GetValue().Cast<FastName>());
+        controlNode->GetControl()->SetName(sourceProperty->GetValue().Cast<FastName>(), UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
 
         if (cloneType == CT_INHERIT && controlNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE_CHILD)
         {

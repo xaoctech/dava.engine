@@ -15,10 +15,11 @@
 
 using namespace DAVA;
 
-LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
+LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
     : sectionId(sectionId_)
     , widget(widget_)
     , accessor(accessor_)
+    , ui(ui_)
 {
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 }
@@ -73,6 +74,11 @@ void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis 
             widget->AddIssue(issue);
 
             createdIssues[axis][control] = issue.issueId;
+
+            DAVA::TArc::NotificationParams notificationParams;
+            notificationParams.title = "Error in formula";
+            notificationParams.message = Result(Result::RESULT_ERROR, issue.message);
+            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
         }
     }
     else

@@ -140,7 +140,7 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
     if (IsNameExists(origName, dest, siblingTopContainer))
     {
         String newName = ProduceUniqueName(origName, dest, siblingTopContainer);
-        control->GetControl()->SetName(newName);
+        control->GetControl()->SetName(newName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
     }
 }
 }

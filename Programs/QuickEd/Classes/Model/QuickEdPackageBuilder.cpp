@@ -131,7 +131,7 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithClass(const FastName
 
         if (controlName.IsValid())
         {
-            control->SetName(controlName);
+            control->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
         }
     }
 
@@ -165,7 +165,7 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const Fa
 
         if (controlName.IsValid())
         {
-            control->SetName(controlName);
+            control->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
         }
     }
 
@@ -233,7 +233,7 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPrototype(const Fast
 
     if (controlName.IsValid())
     {
-        node->GetControl()->SetName(controlName);
+        node->GetControl()->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
     }
     controlsStack.push_back(ControlDescr(node, true));
 
@@ -254,7 +254,7 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPath(const String& p
             if (child == nullptr)
             {
                 RefPtr<UIControl> fakeControl(new UIControl());
-                fakeControl->SetName(controlName);
+                fakeControl->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
                 RefPtr<ControlNode> newChild(ControlNode::CreateFromControl(fakeControl.Get()));
 
                 results.AddResult(Result(Result::RESULT_ERROR, Format("Access to removed control by path '%s'", pathName.c_str())));

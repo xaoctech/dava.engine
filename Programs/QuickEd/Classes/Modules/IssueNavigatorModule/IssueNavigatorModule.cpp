@@ -34,7 +34,7 @@ void IssueNavigatorModule::PostInit()
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
-    layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));
+    layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
     nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
 }
 
