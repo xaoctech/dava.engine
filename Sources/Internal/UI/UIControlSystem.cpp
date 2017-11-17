@@ -32,6 +32,7 @@
 #include "UI/Sound/UISoundSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/Events/UIEventsSystem.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIEvent.h"
 #include "UI/UIPopup.h"
@@ -51,6 +52,7 @@ UIControlSystem::UIControlSystem()
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
     AddSystem(std::make_unique<UIInputSystem>());
+    AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
@@ -69,6 +71,9 @@ UIControlSystem::UIControlSystem()
     soundSystem = GetSystem<UISoundSystem>();
     updateSystem = GetSystem<UIUpdateSystem>();
     renderSystem = GetSystem<UIRenderSystem>();
+    eventsSystem = GetSystem<UIEventsSystem>();
+
+    eventsSystem->RegisterCommands();
 
     SetDoubleTapSettings(0.5f, 0.25f);
 }
@@ -104,6 +109,7 @@ UIControlSystem::~UIControlSystem()
     layoutSystem = nullptr;
     updateSystem = nullptr;
     renderSystem = nullptr;
+    eventsSystem = nullptr;
 
     systems.clear();
     SafeDelete(vcs);
@@ -513,6 +519,7 @@ UIControl* UIControlSystem::GetFocusedControl() const
 void UIControlSystem::ProcessControlEvent(int32 eventType, const UIEvent* uiEvent, UIControl* control)
 {
     soundSystem->ProcessControlEvent(eventType, uiEvent, control);
+    eventsSystem->ProcessControlEvent(eventType, uiEvent, control);
 }
 
 void UIControlSystem::ReplayEvents()
@@ -803,6 +810,11 @@ DAVA::UIRenderSystem* UIControlSystem::GetRenderSystem() const
 UIUpdateSystem* UIControlSystem::GetUpdateSystem() const
 {
     return updateSystem;
+}
+
+UIEventsSystem* UIControlSystem::GetEventsSystem() const
+{
+    return eventsSystem;
 }
 
 void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)

@@ -22,8 +22,6 @@ private:
     bool ConvertOptionsToParamsInternal() override;
     int ProcessInternal() override;
 
-    void CollectAllFilesInDirectory(const DAVA::String& pathDirName, DAVA::Vector<DAVA::String>& output);
-
     DAVA::String compressionStr;
     DAVA::Compressor::Type compressionType;
     bool addHidden = false;

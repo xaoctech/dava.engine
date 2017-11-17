@@ -33,6 +33,7 @@ class UIStyleSheetSystem;
 class UISystem;
 class UITextSystem;
 class UIUpdateSystem;
+class UIEventsSystem;
 class VirtualCoordinatesSystem;
 struct InputEvent;
 
@@ -298,6 +299,7 @@ public:
     UIUpdateSystem* GetUpdateSystem() const;
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIRenderSystem* GetRenderSystem() const;
+    UIEventsSystem* GetEventsSystem() const;
 
     void SetDoubleTapSettings(float32 time, float32 inch);
 
@@ -331,6 +333,7 @@ private:
     UISoundSystem* soundSystem = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
     UIRenderSystem* renderSystem = nullptr;
+    UIEventsSystem* eventsSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 

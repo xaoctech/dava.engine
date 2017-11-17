@@ -55,6 +55,8 @@ struct ParticleGroup
     float32 loopDuration = 0.0f;
     float32 particlesToGenerate = 0.0f;
 
+    uint16 particlesGenerated = 0;
+
     bool finishingGroup = false;
     bool visibleLod = true;
 

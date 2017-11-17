@@ -256,12 +256,9 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
         {
             DAVA::Vector3 center = worldBox.GetCenter();
             DAVA::Vector3 direction = -light->GetDirection();
-
             direction.Normalize();
             direction = direction * worldBox.GetSize().x;
-
             center -= (direction / 2);
-
             drawer->DrawArrow(center + direction, center, direction.Length() / 2, DAVA::Color(1.0f, 1.0f, 0, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
         }
         else if (light->GetType() == DAVA::Light::TYPE_POINT)
@@ -282,6 +279,50 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity* entity, bool isSelected)
                     drawer->DrawCircle(worldCenter, DAVA::Vector3(0.0f, 0.0f, 1.0f), distance, segmentCount, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
                 }
             }
+        }
+        else if (light->GetType() == DAVA::Light::TYPE_SPOT)
+        {
+            float coneAngle = DAVA::PI / 2.0f;
+            float penumbraAngle = 0.0f;
+            DAVA::KeyedArchive* properties = GetCustomPropertiesArchieve(entity);
+            if (properties != nullptr)
+            {
+                DAVA::VariantType* value = properties->GetVariant("editor.staticlight.cone.angle");
+                if (value->GetType() == DAVA::VariantType::TYPE_FLOAT)
+                {
+                    coneAngle = value->AsFloat() * DAVA::PI / 180.0f;
+                }
+
+                value = properties->GetVariant("editor.staticlight.cone.penumbra.angle");
+                if (value->GetType() == DAVA::VariantType::TYPE_FLOAT)
+                {
+                    penumbraAngle = value->AsFloat() * DAVA::PI / 180.0f;
+                }
+            }
+
+            DAVA::Vector3 center = worldBox.GetCenter();
+            DAVA::Vector3 direction = light->GetDirection();
+            direction.Normalize();
+
+            center -= 0.5f * direction;
+            drawer->DrawArrow(center, center + direction, 0.5f * direction.Length(), DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+
+            DAVA::float32 innerRadius = std::sin(0.5f * coneAngle);
+            DAVA::float32 outerRadius = std::sin(0.5f * std::max(coneAngle, coneAngle + penumbraAngle));
+            DAVA::uint32 sgm = 16;
+            DAVA::float32 dt = 0.2f;
+            DAVA::float32 t = dt;
+            while (t <= 1.0f)
+            {
+                drawer->DrawCircle(center + t * direction, direction, t * innerRadius, sgm, DAVA::Color(1.0f, 1.0f, 0.5f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+                if (outerRadius > innerRadius)
+                {
+                    drawer->DrawCircle(center + t * direction, direction, t * outerRadius, sgm, DAVA::Color(1.0f, 1.0f, 0.0f, 1.0f), DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+                }
+                t += dt;
+            }
+            drawer->DrawCircle(center + direction, direction, outerRadius, sgm, DAVA::Color(1.0f, 1.0f, 0.0f, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+            drawer->DrawCircle(center + direction, direction, innerRadius, sgm, DAVA::Color(1.0f, 1.0f, 0.5f, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
         }
         else
         {
