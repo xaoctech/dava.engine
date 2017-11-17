@@ -61,7 +61,6 @@ private:
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
 
     void UpdateHUDEnabled();
-    SortedControlNodeSet GetSortedControlList() const;
 
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
@@ -71,7 +70,7 @@ private:
     DAVA::Vector2 pressedPoint; //corner of selection rect
     DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);
 
-    DAVA::Map<ControlNode*, std::unique_ptr<HUD>> hudMap;
+    DAVA::Map<PackageBaseNode*, std::unique_ptr<HUD>, LCAComparator> hudMap;
     std::unique_ptr<FrameControl> selectionRectControl;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetControls;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;
