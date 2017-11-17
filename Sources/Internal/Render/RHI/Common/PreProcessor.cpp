@@ -45,8 +45,6 @@ PreProc::~PreProc()
     Clear();
 }
 
-//------------------------------------------------------------------------------
-
 bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
 {
     bool success = false;
@@ -71,8 +69,6 @@ bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
     return success;
 }
 
-//------------------------------------------------------------------------------
-
 bool PreProc::Process(const char* src_text, TextBuffer* output)
 {
     Reset();
@@ -83,8 +79,6 @@ bool PreProc::Process(const char* src_text, TextBuffer* output)
     return ProcessInplaceInternal(text, output);
 }
 
-//------------------------------------------------------------------------------
-
 void PreProc::Clear()
 {
     Reset();
@@ -92,14 +86,10 @@ void PreProc::Clear()
     macro.clear();
 }
 
-//------------------------------------------------------------------------------
-
 bool PreProc::AddDefine(const char* name, const char* value)
 {
     return ProcessDefine(name, value);
 }
-
-//------------------------------------------------------------------------------
 
 void PreProc::Reset()
 {
@@ -110,8 +100,6 @@ void PreProc::Reset()
     curFileName = "<buffer>";
 }
 
-//------------------------------------------------------------------------------
-
 char* PreProc::AllocBuffer(uint32 sz)
 {
     Buffer buf;
@@ -120,16 +108,12 @@ char* PreProc::AllocBuffer(uint32 sz)
     return reinterpret_cast<char*>(buf.mem);
 }
 
-//------------------------------------------------------------------------------
-
 inline char* PreProc::GetExpression(char* txt, char** end) const
 {
     *end = SeekToLineEnding(txt);
     **end = 0;
     return txt;
 }
-
-//------------------------------------------------------------------------------
 
 char* PreProc::GetIdentifier(char* txt, char** end) const
 {
@@ -172,8 +156,6 @@ char* PreProc::GetIdentifier(char* txt, char** end) const
     *end = t;
     return n;
 }
-
-//------------------------------------------------------------------------------
 
 int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end) const
 {
@@ -250,8 +232,6 @@ int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end)
         return -1;
     }
 }
-
-//------------------------------------------------------------------------------
 
 bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 {
@@ -639,8 +619,6 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
     return true;
 }
 
-//------------------------------------------------------------------------------
-
 bool PreProc::ProcessInplaceInternal(char* src_text, TextBuffer* output)
 {
     bool success = false;
@@ -654,8 +632,6 @@ bool PreProc::ProcessInplaceInternal(char* src_text, TextBuffer* output)
 
     return success;
 }
-
-//------------------------------------------------------------------------------
 
 bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
 {
@@ -682,8 +658,6 @@ bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
 
     return success;
 }
-
-//------------------------------------------------------------------------------
 
 bool PreProc::ProcessDefine(const char* name, const char* value)
 {
@@ -724,15 +698,15 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     do
     {
         expanded = false;
-        for (const Macro& m : macro)
+        for (const auto& m : macro)
         {
-            char* t = strstr(value2, m.name);
+            char* t = strstr(value2, m.first.name);
             if (t)
             {
-                size_t name_l = m.name_len;
-                size_t val_l = m.value_len;
+                size_t name_l = m.first.nameLength;
+                size_t val_l = m.second.valueLength;
                 memmove(t + val_l, t + name_l, value2_sz - (t - value2) - name_l);
-                memcpy(t, m.value, val_l);
+                memcpy(t, m.second.value, val_l);
                 value2_sz += val_l - name_l;
                 expanded = true;
                 break;
@@ -743,7 +717,7 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
 
     uint32 name_len = static_cast<uint32>(strlen(name));
     uint32 value_len = static_cast<uint32>(strlen(value2));
-    macro.emplace(name, name_len, value2, value_len);
+    macro[MacroName(name, name_len)] = MacroValue(value2, value_len);
     minMacroLength = std::min(minMacroLength, value_len);
 
     return true;
@@ -775,56 +749,86 @@ char* PreProc::GetToken(char* str, ptrdiff_t strSize, const char* m, ptrdiff_t t
     return result;
 }
 
+char* GetNextToken(char* txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize)
+{
+    bool inRange = true;
+
+    char* firstValidSymbol = txt;
+    while (inRange && !IsValidAlphaChar(*firstValidSymbol))
+    {
+        ++firstValidSymbol;
+        inRange = (firstValidSymbol - txt) < txtSize;
+    }
+
+    if (inRange)
+    {
+        char* token = firstValidSymbol;
+        while (IsValidAlphaNumericChar(*token))
+            ++token;
+        tokenSize = token - firstValidSymbol;
+    }
+
+    return firstValidSymbol;
+}
+
 char* PreProc::ExpandMacroInLine(char* txt)
 {
+    char* begin = txt;
+    char* result = begin;
+
     char* lineEnding = SeekToLineEnding(txt);
     ptrdiff_t sourceLength = lineEnding - txt;
 
-    char* result = txt;
+    *lineEnding = 0;
 
-    bool expanded = false;
-    do
+    char* buffer = AllocBuffer(2048);
+    uint32 bufferPos = 0;
+
+    while (txt < lineEnding)
     {
-        expanded = false;
-        for (const Macro& m : macro)
+        ptrdiff_t tokenSize = 0;
+        char* token = GetNextToken(txt, lineEnding - txt, tokenSize);
+
+        ptrdiff_t charactersSkipped = token - txt;
+        if (charactersSkipped > 0)
         {
-            char* position = GetToken(result, sourceLength, m.name, m.name_len);
-            if (position != nullptr)
-            {
-                uint32 requiredLength = static_cast<uint32>(sourceLength + m.value_len + 1);
-                char* buffer = AllocBuffer(requiredLength);
-
-                size_t offset = position - result;
-                strncpy(buffer, result, offset);
-                strncpy(buffer + offset, m.value, m.value_len);
-                strncpy(buffer + offset + m.value_len, position + m.name_len, sourceLength - offset - m.name_len);
-
-                result = buffer;
-                sourceLength = requiredLength - 1;
-                expanded = true;
-            }
+            memcpy(buffer + bufferPos, txt, charactersSkipped);
+            bufferPos += charactersSkipped;
         }
-    } while (expanded);
 
-    return result;
+        if (tokenSize > 0)
+        {
+            char tokenEnding = *(token + tokenSize);
+            *(token + tokenSize) = 0;
+
+            auto i = macro.find(MacroName(token, tokenSize));
+            if (i != macro.end())
+            {
+                memcpy(buffer + bufferPos, i->second.value, i->second.valueLength);
+                bufferPos += i->second.valueLength;
+            }
+            else
+            {
+                memcpy(buffer + bufferPos, token, tokenSize);
+                bufferPos += tokenSize;
+            }
+
+            *(token + tokenSize) = tokenEnding;
+        }
+
+        txt = token + tokenSize;
+    }
+
+    *lineEnding = '\n';
+
+    return buffer;
 }
-
-//------------------------------------------------------------------------------
 
 void PreProc::Undefine(const char* name)
 {
     evaluator.RemoveVariable(name);
-    for (auto m = macro.begin(), m_end = macro.end(); m != m_end; ++m)
-    {
-        if (strcmp(m->name, name) == 0)
-        {
-            macro.erase(m);
-            break;
-        }
-    }
+    macro.erase(MacroName(name, strlen(name)));
 }
-
-//------------------------------------------------------------------------------
 
 void PreProc::GenerateOutput(TextBuffer* output, LineVector& lines)
 {
@@ -840,8 +844,6 @@ void PreProc::GenerateOutput(TextBuffer* output, LineVector& lines)
         output->insert(output->end(), endl, endl + endl_sz);
     }
 }
-
-//------------------------------------------------------------------------------
 
 void PreProc::ReportExprEvalError(uint32 line_n)
 {

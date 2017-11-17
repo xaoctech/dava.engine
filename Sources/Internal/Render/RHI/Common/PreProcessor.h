@@ -68,29 +68,59 @@ private:
         int32 val;
     };
 
-    struct Macro
+    struct MacroName
     {
-        char name[128];
-        char value[128];
-        uint32 name_len = 0;
-        uint32 value_len = 0;
+        char name[128]{};
+        uint32 nameLength = 0;
 
-        Macro(const char* nm, uint32 nmLen, const char* val, uint32 valLen)
-            : name_len(nmLen)
-            , value_len(valLen)
+        MacroName() = default;
+
+        MacroName(const char* nm, ptrdiff_t sz)
+            :
+            nameLength(sz)
         {
-            memset(name, 0, sizeof(name));
-            memset(value, 0, sizeof(value));
-            strncpy(name, nm, std::min<size_t>(name_len, sizeof(name)));
-            strncpy(value, val, std::min<size_t>(value_len, sizeof(value)));
+            memcpy(name, nm, std::min<ptrdiff_t>(sz, sizeof(name)));
         }
 
-        bool operator<(const Macro& r) const
+        bool operator==(const MacroName& r) const
         {
-            if (name_len == r.name_len)
-                return strcmp(name, r.name) > 0;
+            bool equals = false;
+            if (nameLength == r.nameLength)
+            {
+                equals = (strcmp(name, r.name) == 0);
+            }
+            return equals;
+        }
+    };
 
-            return name_len > r.name_len;
+    struct MacroValue
+    {
+        char value[128]{};
+        uint32 valueLength = 0;
+
+        MacroValue() = default;
+
+        MacroValue(const char* nm, ptrdiff_t sz)
+            :
+            valueLength(sz)
+        {
+            memcpy(value, nm, std::min<ptrdiff_t>(sz, sizeof(value)));
+        }
+    };
+
+    struct MacroNameHash
+    {
+        uint64 operator()(const MacroName& m) const
+        {
+            const uint32 _FNV_offset_basis = 2166136261U;
+            const uint32 _FNV_prime = 16777619U;
+            uint32 result = _FNV_offset_basis;
+            for (uint32 i = 0; i < m.nameLength; ++i)
+            {
+                result ^= static_cast<uint32>(m.name[i]);
+                result *= _FNV_prime;
+            }
+            return result;
         }
     };
 
@@ -111,7 +141,7 @@ private:
 
     Vector<Buffer> buffer;
     Vector<Var> variable;
-    Set<Macro> macro;
+    UnorderedMap<MacroName, MacroValue, MacroNameHash> macro;
     ExpressionEvaluator evaluator;
     FileCallback* fileCB = nullptr;
     const char* curFileName = "<buffer>";
