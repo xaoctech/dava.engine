@@ -7,6 +7,8 @@
 #include "Physics/CapsuleShapeComponent.h"
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
+#include "Physics/StaticBodyComponent.h"
+#include "Physics/DynamicBodyComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/PhysicsUtils.h"
 #include "Physics/BoxCharacterControllerComponent.h"
