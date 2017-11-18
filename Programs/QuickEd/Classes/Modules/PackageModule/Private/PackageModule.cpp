@@ -28,6 +28,7 @@
 #include <TArc/Utils/CommonFieldNames.h>
 
 #include <Engine/EngineContext.h>
+#include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/LocalizationSystem.h>
 #include <Reflection/ReflectedTypeDB.h>

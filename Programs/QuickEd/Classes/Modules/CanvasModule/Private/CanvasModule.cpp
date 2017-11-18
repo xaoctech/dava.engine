@@ -4,10 +4,13 @@
 #include "Classes/Modules/CanvasModule/EditorControlsView.h"
 #include "Classes/Modules/CanvasModule/CanvasData.h"
 #include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
+
 #include "Classes/UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/UI/Preview/Data/CentralWidgetData.h"
 
 #include "Classes/Interfaces/EditorSystemsManagerInteface.h"
 
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/Common.h>
 #include <TArc/Qt/QtIcon.h>
 #include <TArc/Utils/ModuleCollection.h>
@@ -35,6 +38,7 @@ CanvasModule::CanvasModule()
 void CanvasModule::PostInit()
 {
     CreateData();
+    InitFieldBinder();
     CreateMenuSeparator();
     RecreateBgrColorActions();
 
@@ -57,6 +61,31 @@ void CanvasModule::CreateData()
     data->controlsView->needCentralizeChanged.Connect(this, &CanvasModule::OnNeedCentralizeChanged);
 
     accessor->GetGlobalContext()->CreateData(std::move(data));
+}
+
+void CanvasModule::InitFieldBinder()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    Function<void(const Any&)> tryCentralize = [this](const Any&) {
+        CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+        canvasModuleData->canvasDataAdapter->TryCentralizeScene();
+    };
+
+    fieldBinder.reset(new FieldBinder(GetAccessor()));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CanvasData>();
+        fieldDescr.fieldName = FastName(CanvasData::workAreaSizePropertyName);
+        fieldBinder->BindField(fieldDescr, tryCentralize);
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
+        fieldDescr.fieldName = FastName(CentralWidgetData::viewSizePropertyName);
+        fieldBinder->BindField(fieldDescr, tryCentralize);
+    }
 }
 
 void CanvasModule::CreateMenuSeparator()

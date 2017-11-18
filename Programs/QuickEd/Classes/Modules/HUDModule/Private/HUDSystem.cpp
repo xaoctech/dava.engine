@@ -156,19 +156,7 @@ void HUDSystem::OnUpdate()
 
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     SelectedNodes selection = documentData->GetSelectedNodes();
-    for (auto iter = hudMap.begin(); iter != hudMap.end();)
-    {
-        ControlNode* node = DynamicTypeCheck<ControlNode*>(iter->first);
-        if (selection.find(node) == selection.end())
-        {
-            iter = hudMap.erase(iter);
-        }
-        else
-        {
-            ++iter;
-        }
-    }
-
+    hudMap.clear();
     for (PackageBaseNode* node : selection)
     {
         ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
