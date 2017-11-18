@@ -20,6 +20,8 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <FileSystem/YamlParser.h>
+#include <FileSystem/YamlNode.h>
 #include <Logger/Logger.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Render/Highlevel/Landscape.h>
@@ -248,6 +250,11 @@ void PhysicsModule::Shutdown()
         defaultMaterial->release();
     }
 
+    for (const auto& node : materials)
+    {
+        node.second->release();
+    }
+
     if (cpuDispatcher != nullptr)
     {
         cpuDispatcher->release();
@@ -312,27 +319,27 @@ physx::PxActor* PhysicsModule::CreateDynamicActor() const
     return physics->createRigidDynamic(physx::PxTransform(physx::PxIDENTITY::PxIdentity));
 }
 
-physx::PxShape* PhysicsModule::CreateBoxShape(const Vector3& halfSize) const
+physx::PxShape* PhysicsModule::CreateBoxShape(const Vector3& halfSize, const FastName& materialName) const
 {
-    return physics->createShape(physx::PxBoxGeometry(PhysicsMath::Vector3ToPxVec3(halfSize)), *GetDefaultMaterial(), true);
+    return physics->createShape(physx::PxBoxGeometry(PhysicsMath::Vector3ToPxVec3(halfSize)), *GetMaterial(materialName), true);
 }
 
-physx::PxShape* PhysicsModule::CreateCapsuleShape(float32 radius, float32 halfHeight) const
+physx::PxShape* PhysicsModule::CreateCapsuleShape(float32 radius, float32 halfHeight, const FastName& materialName) const
 {
-    return physics->createShape(physx::PxCapsuleGeometry(radius, halfHeight), *GetDefaultMaterial(), true);
+    return physics->createShape(physx::PxCapsuleGeometry(radius, halfHeight), *GetMaterial(materialName), true);
 }
 
-physx::PxShape* PhysicsModule::CreateSphereShape(float32 radius) const
+physx::PxShape* PhysicsModule::CreateSphereShape(float32 radius, const FastName& materialName) const
 {
-    return physics->createShape(physx::PxSphereGeometry(radius), *GetDefaultMaterial(), true);
+    return physics->createShape(physx::PxSphereGeometry(radius), *GetMaterial(materialName), true);
 }
 
-physx::PxShape* PhysicsModule::CreatePlaneShape() const
+physx::PxShape* PhysicsModule::CreatePlaneShape(const FastName& materialName) const
 {
-    return physics->createShape(physx::PxPlaneGeometry(), *GetDefaultMaterial(), true);
+    return physics->createShape(physx::PxPlaneGeometry(), *GetMaterial(materialName), true);
 }
 
-physx::PxShape* PhysicsModule::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
+physx::PxShape* PhysicsModule::CreateMeshShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, const FastName& materialName, PhysicsGeometryCache* cache) const
 {
     using namespace physx;
 
@@ -374,12 +381,12 @@ physx::PxShape* PhysicsModule::CreateMeshShape(Vector<PolygonGroup*>&& polygons,
 
     PxMeshScale pxScale(PxVec3(scale.x, scale.y, scale.z), PxQuat(PxIdentity));
     PxTriangleMeshGeometry geometry(triangleMesh, pxScale);
-    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
+    PxShape* shape = physics->createShape(geometry, *GetMaterial(materialName), true);
 
     return shape;
 }
 
-physx::PxShape* PhysicsModule::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, PhysicsGeometryCache* cache) const
+physx::PxShape* PhysicsModule::CreateConvexHullShape(Vector<PolygonGroup*>&& polygons, const Vector3& scale, const FastName& materialName, PhysicsGeometryCache* cache) const
 {
     using namespace physx;
 
@@ -421,12 +428,12 @@ physx::PxShape* PhysicsModule::CreateConvexHullShape(Vector<PolygonGroup*>&& pol
     DVASSERT(convexMesh != nullptr);
     PxMeshScale pxScale(PxVec3(scale.x, scale.y, scale.z), PxQuat(PxIdentity));
     PxConvexMeshGeometry geometry(convexMesh, pxScale);
-    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
+    PxShape* shape = physics->createShape(geometry, *GetMaterial(materialName), true);
 
     return shape;
 }
 
-physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, Matrix4& localPose) const
+physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, const FastName& materialName, Matrix4& localPose) const
 {
     using namespace physx;
     Heightmap* heightmap = landscape->GetHeightmap();
@@ -469,7 +476,7 @@ physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, Matrix4& 
     physx::PxReal heightScale = landscape->GetLandscapeHeight() / 32767.f;
     physx::PxReal dimensionScale = landscapeSize / size;
     PxHeightFieldGeometry geometry(heightfield, PxMeshGeometryFlags(), heightScale, dimensionScale, dimensionScale);
-    PxShape* shape = physics->createShape(geometry, *GetDefaultMaterial(), true);
+    PxShape* shape = physics->createShape(geometry, *GetMaterial(materialName), true);
 
     float32 translate = landscapeSize / 2.0f;
     localPose = Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), -PI_05) *
@@ -477,21 +484,6 @@ physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, Matrix4& 
     Matrix4::MakeTranslation(Vector3(-translate, -translate, 0.0f));
 
     return shape;
-}
-
-physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
-{
-    if (defaultMaterial == nullptr)
-    {
-        defaultMaterial = physics->createMaterial(0.5f, 0.8f, 0.7f);
-    }
-
-    return defaultMaterial;
-}
-
-physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
-{
-    return allocator;
 }
 
 const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
@@ -512,6 +504,118 @@ const Vector<uint32>& PhysicsModule::GetVehicleComponentTypes() const
 const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
 {
     return characterControllerComponents;
+}
+
+physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
+{
+    return allocator;
+}
+
+physx::PxMaterial* PhysicsModule::GetMaterial(const FastName& materialName) const
+{
+    CheckMaterials();
+    if (materialName.IsValid() == false)
+    {
+        return defaultMaterial;
+    }
+
+    auto iter = materials.find(materialName);
+    if (iter != materials.end())
+    {
+        return iter->second;
+    }
+
+    Logger::Error("Material %s wasn't registered in system. Check configuration file", materialName.c_str());
+    return defaultMaterial;
+}
+
+Vector<FastName> PhysicsModule::GetMaterialNames() const
+{
+    CheckMaterials();
+    Vector<FastName> names;
+    names.reserve(materials.size());
+
+    for (const auto& materialNode : materials)
+    {
+        names.push_back(materialNode.first);
+    }
+
+    return names;
+}
+
+void PhysicsModule::CheckMaterials() const
+{
+    if (defaultMaterial == nullptr)
+    {
+        const_cast<PhysicsModule*>(this)->LoadMaterials();
+    }
+}
+
+void PhysicsModule::LoadMaterials()
+{
+    defaultMaterial = physics->createMaterial(0.5f, 0.5f, 0.1f);
+    RefPtr<YamlParser> parser(YamlParser::Create(DAVA::FilePath("~res:/physicsMaterials.yaml")));
+    if (parser == nullptr)
+    {
+        return;
+    }
+
+    YamlNode* root = parser->GetRootNode();
+    DVASSERT(root->GetType() == YamlNode::TYPE_ARRAY);
+
+    Vector<YamlNode*> materialNodes = root->AsVector();
+    bool configCorrupted = false;
+    for (YamlNode* materialNode : materialNodes)
+    {
+        const YamlNode* nameNode = materialNode->Get("Name");
+        const YamlNode* staticFrictionNode = materialNode->Get("StaticFriction");
+        const YamlNode* dynamicFrictionNode = materialNode->Get("DynamicFriction");
+        const YamlNode* restitutionNode = materialNode->Get("Restitution");
+        if (nameNode == nullptr || staticFrictionNode == nullptr ||
+            dynamicFrictionNode == nullptr || restitutionNode == nullptr)
+        {
+            configCorrupted = true;
+            continue;
+        }
+
+        FastName name(nameNode->AsString());
+        float32 staticFriction = staticFrictionNode->AsFloat();
+        float32 dynamicFriction = dynamicFrictionNode->AsFloat();
+        float32 restitution = restitutionNode->AsFloat();
+
+        if (name.IsValid() == false)
+        {
+            Logger::Error("Empty name of physics material detected");
+            continue;
+        }
+
+        if (materials.count(name) > 0)
+        {
+            Logger::Error("Name %s is duplicated", name.c_str());
+            continue;
+        }
+
+        if (staticFriction < 0.0f)
+        {
+            Logger::Error("Static friction in material %s has invalid value. Value should be great or equal zero", name.c_str());
+            staticFriction = 0.0f;
+        }
+
+        if (dynamicFriction < 0.0f)
+        {
+            Logger::Error("Dynamic friction in material %s has invalid value. Value should be great or equal zero", name.c_str());
+            dynamicFriction = 0.0f;
+        }
+
+        if (restitution < 0.0f || restitution > 1.0f)
+        {
+            Logger::Error("Material %s contains incorrect restitution value %f. Value will be clamped", name.c_str(), restitution);
+            restitution = Clamp(restitution, 0.0f, 1.0f);
+        }
+
+        physx::PxMaterial* material = physics->createMaterial(staticFriction, dynamicFriction, restitution);
+        materials.emplace(name, material);
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)

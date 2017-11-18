@@ -28,6 +28,10 @@ void CollisionShapeComponent::Serialize(KeyedArchive* archive, SerializationCont
     archive->SetFloat("shape.mass", mass);
     archive->SetUInt32("shape.typeMask", typeMask);
     archive->SetUInt32("shape.typeMaskToCollideWith", typeMaskToCollideWith);
+    if (materialName.IsValid())
+    {
+        archive->SetFastName("shape.materialName", materialName);
+    }
 }
 
 void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -39,6 +43,7 @@ void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationCo
     mass = archive->GetFloat("shape.mass", mass);
     typeMask = archive->GetUInt32("shape.typeMask", typeMask);
     typeMaskToCollideWith = archive->GetUInt32("shape.typeMaskToCollideWith", typeMaskToCollideWith);
+    materialName = archive->GetFastName("shape.materialName", materialName);
 }
 
 physx::PxShape* CollisionShapeComponent::GetPxShape() const
@@ -122,6 +127,20 @@ uint32 CollisionShapeComponent::GetTypeMaskToCollideWith() const
     return typeMaskToCollideWith;
 }
 
+const FastName& CollisionShapeComponent::GetMaterialName() const
+{
+    return materialName;
+}
+
+void CollisionShapeComponent::SetMaterialName(const FastName& materialName_)
+{
+    if (materialName != materialName_)
+    {
+        materialName = materialName_;
+        ScheduleUpdate();
+    }
+}
+
 CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* shape)
 {
     DVASSERT(shape != nullptr);
@@ -158,7 +177,6 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     DVASSERT(name.IsValid());
     shape->setName(name.c_str());
     shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
-
     shape->acquireReference();
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -176,6 +194,7 @@ void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* compo
     component->mass = mass;
     component->typeMask = typeMask;
     component->typeMaskToCollideWith = typeMaskToCollideWith;
+    component->materialName = materialName;
 }
 
 void CollisionShapeComponent::ScheduleUpdate()
@@ -220,6 +239,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CollisionShapeComponent)
 {
     ReflectionRegistrator<CollisionShapeComponent>::Begin()
     .Field("Name", &CollisionShapeComponent::GetName, &CollisionShapeComponent::SetName)
+    .Field("material", &CollisionShapeComponent::GetMaterialName, &CollisionShapeComponent::SetMaterialName)[M::DisplayName("Material name")]
     .Field("Local pose", &CollisionShapeComponent::localPose)
     .Field("Override mass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)
     .Field("Mass", &CollisionShapeComponent::GetMass, &CollisionShapeComponent::SetMass)
