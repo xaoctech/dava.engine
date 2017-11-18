@@ -9,7 +9,7 @@
 #include <QSet>
 #include <QDebug>
 
-class ApplicationManager;
+class GuiApplicationManager;
 class BranchesListModel;
 class QSortFilterProxyModel;
 
@@ -25,7 +25,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(ApplicationManager* appManager, QWidget* parent = 0);
+    explicit MainWindow(GuiApplicationManager* appManager, QWidget* parent = 0);
     ~MainWindow();
 
     void RefreshApps();
@@ -35,6 +35,8 @@ public:
     const Receiver& GetReceiver() const;
 
     QString GetSelectedBranchID() const;
+
+    void ShowDebugString(const QString& str);
 
 signals:
     void RefreshClicked();
@@ -47,7 +49,6 @@ signals:
 
 private slots:
     void OnRun(int rowNumber);
-    void OnInstall(int rowNumber);
     void OnRemove(int rowNumber);
 
     void OnListItemClicked(QModelIndex);
@@ -58,7 +59,6 @@ private slots:
 
 private:
     void RefreshBranchesList();
-    void UpdateButtonsState(int rowNumber, ButtonsWidget::ButtonsState state);
     void OnConnectedChanged(bool connected);
     void AddText(const QString& text, const QColor& color = Qt::black);
 
@@ -81,7 +81,9 @@ private:
     QFont tableFont;
     BranchesListModel* listModel = nullptr;
     QSortFilterProxyModel* filterModel = nullptr;
-    ApplicationManager* appManager = nullptr;
+    GuiApplicationManager* appManager = nullptr;
 
     Receiver receiver;
+
+    QBuffer newsDataBuffer;
 };

@@ -1,14 +1,15 @@
 #include "ParticleEffectPropertiesWidget.h"
-#include "Commands2/ParticleEditorCommands.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include "Classes/Commands2/ParticleEditorCommands.h"
+
+#include <TArc/Utils/Utils.h>
+
+#include <Scene3D/Systems/ParticleEffectSystem.h>
 
 #include <QLineEdit>
 #include <QEvent>
 #include <QMenu>
 #include <QPushButton>
 #include <QSpinBox>
-
-#include "Scene3D/Systems/ParticleEffectSystem.h"
 
 static const int TreeItemTypeEmitter = QTreeWidgetItem::UserType + 1;
 static const int TreeItemTypeLayer = QTreeWidgetItem::UserType + 2;
@@ -18,6 +19,7 @@ static const int TreeItemTypeExternal = QTreeWidgetItem::UserType + 4;
 ParticleEffectPropertiesWidget::ParticleEffectPropertiesWidget(QWidget* parent)
     : BaseParticleEditorContentWidget(parent)
 {
+    using namespace DAVA::TArc;
     mainLayout = new QVBoxLayout();
     mainLayout->setAlignment(Qt::AlignTop);
     this->setLayout(mainLayout);

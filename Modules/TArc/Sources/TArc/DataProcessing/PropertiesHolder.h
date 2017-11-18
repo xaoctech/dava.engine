@@ -1,14 +1,19 @@
 #pragma once
 
-#include <memory>
+#include <TArc/Qt/QtRect.h>
+#include <TArc/Qt/QtByteArray.h>
+#include <TArc/Qt/QtString.h>
 
-#include "Base/BaseTypes.h"
-#include "Base/Any.h"
+#include <Base/BaseTypes.h>
+#include <Base/Any.h>
+
+#include <memory>
 
 namespace DAVA
 {
 class FilePath;
 class Type;
+class FileSystem;
 
 namespace TArc
 {
@@ -21,7 +26,10 @@ public:
     ~PropertiesHolder();
 
     PropertiesItem CreateSubHolder(const String& name) const;
-
+    static std::unique_ptr<PropertiesHolder> CopyWithNewPath(PropertiesHolder& holder,
+                                                             DAVA::FileSystem* fs,
+                                                             const String& projectName,
+                                                             const FilePath& directory);
     void SaveToFile();
 
 private:
@@ -40,6 +48,7 @@ public:
 
     template <typename T>
     T Get(const String& key, const T& defaultValue = T()) const;
+    Any Get(const String& key, const Any& defaultValue, const Type* type) const;
 
     PropertiesItem(const PropertiesItem& holder) = delete;
     PropertiesItem(PropertiesItem&& holder);
@@ -50,7 +59,6 @@ private:
     friend class PropertiesHolder;
     //RootPropertiesHolder use this empty c-tor
     PropertiesItem();
-    Any Get(const String& key, const Any& defaultValue, const Type* type) const;
     PropertiesItem(const PropertiesItem& parent, const String& name);
 
     struct Impl;
@@ -61,7 +69,7 @@ template <typename T>
 T PropertiesItem::Get(const String& key, const T& defaultValue) const
 {
     Any loadedValue = Get(key, defaultValue, Type::Instance<T>());
-    return loadedValue.Get<T>(defaultValue);
+    return loadedValue.Cast<T>(defaultValue);
 }
 
 } // namespace TArc

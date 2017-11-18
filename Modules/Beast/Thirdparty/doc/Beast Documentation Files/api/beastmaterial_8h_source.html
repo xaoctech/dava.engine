@@ -1,0 +1,591 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastmaterial.h Source File</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastmaterial_8h_source.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastmaterial.h Source File&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastmaterial.h Source
+File</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">beastapi/beastmaterial.h</div>
+</div>
+</div>
+<div class="contents"><a href="beastmaterial_8h.html">Go to the
+documentation of this file.</a>
+<div class="fragment">
+<pre class="fragment">
+<a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<a name="l00003"></a>00003 <span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<a name="l00004"></a>00004 <span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<a name="l00005"></a>00005 <span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<a name="l00006"></a>00006 <span class="comment">*/</span>
+<a name="l00007"></a>00007 
+<a name="l00011"></a>00011 <span class=
+"preprocessor">#ifndef BEASTMATERIAL_H</span>
+<a name="l00012"></a>00012 <span class=
+"preprocessor">#define BEASTMATERIAL_H</span>
+<a name="l00013"></a>00013 <span class=
+"preprocessor">#include "<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapitypes.h</a>"</span>
+<a name="l00014"></a>00014 
+<a name="l00015"></a>00015 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00016"></a>00016 <span class=
+"keyword">extern</span> <span class="stringliteral">"C"</span> {
+<a name="l00017"></a>00017 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00018"></a>00018 
+<a name="l00023"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79">00023</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00024"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a6e437d4d3c1a61b8a515ba8309ce5d90">00024</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a6e437d4d3c1a61b8a515ba8309ce5d90">ILB_CC_DIFFUSE</a> = 0, 
+<a name="l00025"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a282bc965c2f636dc67945ebd3cfa1908">00025</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a282bc965c2f636dc67945ebd3cfa1908">ILB_CC_SPECULAR</a>, 
+<a name="l00026"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a5cca56af89bf2094101d8372e4426a0a">00026</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a5cca56af89bf2094101d8372e4426a0a">ILB_CC_EMISSIVE</a>, 
+<a name="l00027"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a16e641b70306aa44d29fad17fafd1673">00027</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a16e641b70306aa44d29fad17fafd1673">ILB_CC_TRANSPARENCY</a>, 
+<a name="l00028"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac9b8d28e8d6226c3c92843431b92d8f5">00028</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac9b8d28e8d6226c3c92843431b92d8f5">ILB_CC_SHININESS</a>, 
+<a name="l00029"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a10315899384d8b10c5ba28192efd65ce">00029</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a10315899384d8b10c5ba28192efd65ce">ILB_CC_REFLECTION</a>, 
+<a name="l00030"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac79fea3e8871e4d96af143e20d881854">00030</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac79fea3e8871e4d96af143e20d881854">ILB_CC_NONDIRECTIONAL</a>, 
+<a name="l00031"></a><a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a12553027d9b534f95e362c67915bba88">00031</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a12553027d9b534f95e362c67915bba88">ILB_CC_NORMAL</a>, 
+<a name="l00032"></a>00032         ILB_CC_TOTAL_CHANNELS
+<a name="l00033"></a>00033 } <a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79" title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a>;
+<a name="l00034"></a>00034 
+<a name="l00035"></a><a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6c">00035</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00036"></a><a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6ca7f1efd30816d5fc981b55ab4a762aebc">00036</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6ca7f1efd30816d5fc981b55ab4a762aebc">ILB_WM_REPEAT</a> = 0, 
+<a name="l00037"></a><a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6ca32edad8edaf08228a81b80407b5a67b4">00037</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6ca32edad8edaf08228a81b80407b5a67b4">ILB_WM_MIRROR</a>, 
+<a name="l00038"></a><a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6ca0eaa9002d60bc95b7dc63052c65c7986">00038</a>         <a class="code"
+href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6ca0eaa9002d60bc95b7dc63052c65c7986">ILB_WM_CLAMP</a>, 
+<a name="l00039"></a>00039         ILB_WM_TOTAL_MODES
+<a name="l00040"></a>00040 } <a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6c">ILBMaterialChannelWrapMode</a>;
+<a name="l00041"></a>00041 
+<a name="l00050"></a>00050 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e"
+title=
+"Add a material to the scene.">ILBCreateMaterial</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+<a name="l00051"></a>00051         <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> name,
+<a name="l00052"></a>00052         <a class="code" href=
+"struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a>* material);
+<a name="l00053"></a>00053 
+<a name="l00063"></a>00063 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a71daf4692f979d84f4c09f74ed4e1ca1"
+title=
+"Checks if the material exists, if it does, it returns its handle.">ILBFindMaterial</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+<a name=
+"l00064"></a>00064                                                                          <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name,
+<a name=
+"l00065"></a>00065                                                                          <a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a>* material);
+<a name="l00066"></a>00066 
+<a name="l00074"></a>00074 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb"
+title=
+"Sets the color for a channel on a material.">ILBSetMaterialColor</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00075"></a>00075                                                                          <a class="code"
+href="beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79"
+title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a> channel,
+<a name=
+"l00076"></a>00076                                                                          <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>* color);
+<a name="l00077"></a>00077 
+<a name="l00087"></a>00087 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#acd427d12f671d3db463660b9f42c0a7a"
+title=
+"Sets a scale for a channel on a material Will be multiplied with material color, texture and vertex c...">ILBSetMaterialScale</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00088"></a>00088                                                                                            <a class="code"
+href="beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79"
+title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a> channel,
+<a name=
+"l00089"></a>00089                                                                                            <span class="keywordtype">float</span> scale);
+<a name="l00090"></a>00090 
+<a name="l00098"></a>00098 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#ae0b57662c4b5194a1130397a9a2911b9"
+title=
+"Sets the texture for a channel on a material.">ILBSetMaterialTexture</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00099"></a>00099                                                                            <a class="code"
+href="beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79"
+title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a> channel,
+<a name=
+"l00100"></a>00100                                                                            <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture);
+<a name="l00110"></a>00110 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#aeab18f4665f4fcd7a651949aa9ec156d"
+title=
+"Sets the texture wrap mode for a channel on a material.">ILBSetMaterialTextureWrapMode</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name="l00111"></a>00111         <a class="code" href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79" title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a> channel,
+<a name="l00112"></a>00112         <a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6c">ILBMaterialChannelWrapMode</a> wrapModeU,
+<a name="l00113"></a>00113         <a class="code" href=
+"beastmaterial_8h.html#a394429d1c97de22c2b292ceec20eef6c">ILBMaterialChannelWrapMode</a> wrapModeV,
+<a name="l00114"></a>00114         <a class="code" href=
+"struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture);
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116 
+<a name="l00124"></a>00124 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a1b9439c5772d4417e0a893e1d30fceb1"
+title=
+"Sets the material to use vertex color for a channel.">ILBSetMaterialUseVertexColors</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00125"></a>00125                                                                                            <a class="code"
+href="beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79"
+title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a> channel);
+<a name="l00126"></a>00126 
+<a name="l00136"></a>00136 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a5837d7262b7c1d8a9b240fb6cb87b22c"
+title=
+"Sets what UV layer should be used for the texture for a color channel.">ILBSetChannelUVLayer</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00137"></a>00137                                                                                 <a class="code"
+href="beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79"
+title=
+"Defines the different channels in the Beast API shading model.">ILBMaterialChannel</a> channel,
+<a name=
+"l00138"></a>00138                                                                                 <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title=
+"Beast api const string type.">ILBConstString</a> uvLayerName);
+<a name="l00139"></a>00139 
+<a name="l00146"></a>00146 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a44a0ff8a26ee725215dbc7edd26dc94e"
+title=
+"Sets if the material should use the alpha value of the diffuse channel as transparency.">ILBSetAlphaAsTransparency</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00147"></a>00147                                                                            <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> alphaAsTransparency);
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149 
+<a name="l00157"></a>00157 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a873a0f4c1746d112572486f634f14ad7"
+title=
+"Sets color correction on the primary GI calculations on the material.">ILBSetPrimaryGICorrection</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00158"></a>00158                                                                            <span class="keywordtype">float</span> intensity,
+<a name=
+"l00159"></a>00159                                                                            <span class="keywordtype">float</span> saturation);
+<a name="l00160"></a>00160 
+<a name="l00168"></a>00168 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a1ace1ca9ffe47dc15c397eee12cc8791"
+title=
+"Sets color correction on the secondary GI calculations on the material.">ILBSetSecondaryGICorrection</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00169"></a>00169                                                                            <span class="keywordtype">float</span> intensity,
+<a name=
+"l00170"></a>00170                                                                            <span class="keywordtype">float</span> saturation);
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172 
+<a name="l00181"></a>00181 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a81d7af695b6db9eca11b4544820c3118"
+title=
+"Sets boost and scaling factors for different aspects of the material in GI calculations.">ILBSetGIScale</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00182"></a>00182                                                                            <span class="keywordtype">float</span> diffuseBoost,
+<a name=
+"l00183"></a>00183                                                                            <span class="keywordtype">float</span> emissiveScale,
+<a name=
+"l00184"></a>00184                                                                            <span class="keywordtype">float</span> specularScale);
+<a name="l00185"></a>00185 
+<a name="l00194"></a>00194 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a62058608b3aadc1550c4a36d2bd180cc"
+title=
+"Sets the display name for the material.">ILBSetMaterialDisplayName</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material, 
+<a name=
+"l00195"></a>00195                                                                                          <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title=
+"Beast api const string type.">ILBConstString</a> displayName);
+<a name="l00196"></a>00196 
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198 
+<a name="l00206"></a>00206 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#ac154eb57095a7a087166517aba93d155"
+title=
+"Compiles and creates a representation of an OSL shader.">ILBCreateShader</a>(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager,
+<a name=
+"l00207"></a>00207                                                                                         <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> uniqueName,
+<a name=
+"l00208"></a>00208                                                                                         <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> fileName,
+<a name=
+"l00209"></a>00209                                                                                         <a class="code"
+href="struct_i_l_b_shader_handle.html" title=
+"Handle for an OSL shader.">ILBShaderHandle</a>* target);
+<a name="l00210"></a>00210 
+<a name="l00218"></a>00218 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#af1743e97c5bc0c0b39e9356e88f08dff"
+title=
+"Retrieves an OSL shader based on its unique name.">ILBFindShader</a>(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager,
+<a name="l00219"></a>00219         <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> uniqueName,
+<a name="l00220"></a>00220         <a class="code" href=
+"struct_i_l_b_shader_handle.html" title=
+"Handle for an OSL shader.">ILBShaderHandle</a>* target);
+<a name="l00221"></a>00221 
+<a name="l00228"></a>00228 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#ab4d8366405c79ee8784b8c1812f43ef9"
+title=
+"Assigns an OSL shader to a material.">ILBSetShader</a>(<a class=
+"code" href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material,
+<a name=
+"l00229"></a>00229                                                                                 <a class="code"
+href="struct_i_l_b_shader_handle.html" title=
+"Handle for an OSL shader.">ILBShaderHandle</a> shader);
+<a name="l00230"></a>00230 
+<a name="l00237"></a>00237 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a95d45304f5bf78bbbc621983dccb62d9"
+title=
+"Sets an OSL float input parameter for a material.">ILBSetShaderParamFloat</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material,
+<a name=
+"l00238"></a>00238                                                                                                         <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> param,
+<a name=
+"l00239"></a>00239                                                                                                         <span class="keywordtype">float</span> value);
+<a name="l00240"></a>00240 
+<a name="l00247"></a>00247 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a17c26e4ee50ac3391a42f6f8d1877f15"
+title=
+"Sets an OSL integer input parameter for a material.">ILBSetShaderParamInt</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material,
+<a name=
+"l00248"></a>00248                                                                                 <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> param,
+<a name=
+"l00249"></a>00249                                                                                 int32 value);
+<a name="l00250"></a>00250 
+<a name="l00257"></a>00257 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a544a0f468f000db767652d12733af720"
+title=
+"Sets an OSL color input parameter for a material.">ILBSetShaderParamColor</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material,
+<a name=
+"l00258"></a>00258                                                                                                         <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> param,
+<a name=
+"l00259"></a>00259                                                                                                         <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* value);
+<a name="l00260"></a>00260 
+<a name="l00267"></a>00267 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#a381ba3a6f85ff6dc82bc45a0c1e745b5"
+title=
+"Sets an OSL texture input parameter for a material.">ILBSetShaderParamTexture</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material,
+<a name=
+"l00268"></a>00268                                                                                                                 <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> param,
+<a name=
+"l00269"></a>00269                                                                                                                 <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> value);
+<a name="l00270"></a>00270 
+<a name="l00280"></a>00280 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastmaterial_8h.html#acf044a1d16cb91637cd1a8b604fe327f"
+title=
+"Connects an UV set to an OSL UV input parameter for a material.">ILBSetShaderParamUV</a>(<a class="code"
+href="struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> material,
+<a name=
+"l00281"></a>00281                                                                                                                 <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> param,
+<a name=
+"l00282"></a>00282                                                                                                                 <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> value);
+<a name="l00283"></a>00283 
+<a name="l00284"></a>00284 
+<a name="l00285"></a>00285 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00286"></a>00286 }
+<a name="l00287"></a>00287 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00288"></a>00288 
+<a name="l00289"></a>00289 
+<a name="l00290"></a>00290 <span class=
+"preprocessor">#endif // BEASTMATERIAL_H</span>
+<a name="l00291"></a>00291 
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

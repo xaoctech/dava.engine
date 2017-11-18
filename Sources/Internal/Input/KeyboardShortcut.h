@@ -3,7 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Engine/EngineTypes.h"
 
-#include "KeyboardDevice.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
@@ -12,7 +12,7 @@ class KeyboardShortcut final
 public:
     KeyboardShortcut();
     KeyboardShortcut(const KeyboardShortcut& shortcut);
-    KeyboardShortcut(Key key_, eModifierKeys modifiers_ = eModifierKeys::NONE);
+    KeyboardShortcut(eInputElements key_, eModifierKeys modifiers_ = eModifierKeys::NONE);
     KeyboardShortcut(const String& str);
 
     ~KeyboardShortcut();
@@ -21,12 +21,12 @@ public:
     bool operator==(const KeyboardShortcut& other) const;
     bool operator!=(const KeyboardShortcut& other) const;
 
-    Key GetKey() const;
+    eInputElements GetKey() const;
     eModifierKeys GetModifiers() const;
     String ToString() const;
 
 private:
-    Key key = Key::UNKNOWN;
+    eInputElements key = eInputElements::NONE;
     eModifierKeys modifiers = eModifierKeys::NONE;
 };
 }

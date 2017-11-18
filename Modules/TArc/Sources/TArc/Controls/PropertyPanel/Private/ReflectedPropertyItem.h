@@ -1,11 +1,10 @@
 #pragma once
 
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
-
-#include <QString>
 #include <memory>
 
 namespace DAVA

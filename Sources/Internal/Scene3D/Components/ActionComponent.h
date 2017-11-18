@@ -67,9 +67,6 @@ public:
 
         void actualizeDelay();
 
-        INTROSPECTION(Action,
-                      NULL);
-
         DAVA_VIRTUAL_REFLECTION(Action, InspBase);
     };
 
@@ -128,9 +125,6 @@ public:
 
         bool operator==(const ActionContainer& container) const;
 
-        INTROSPECTION(ActionContainer,
-                      NULL);
-
         DAVA_VIRTUAL_REFLECTION(ActionContainer, InspBase);
     };
 
@@ -150,11 +144,6 @@ private:
     Vector<ActionComponent::ActionContainer> actions;
     bool started;
     bool allActionsActive; //skip processing when all actions are active
-
-public:
-    INTROSPECTION_EXTEND(ActionComponent, Component,
-                         COLLECTION(actions, "Actions Array", I_VIEW | I_EDIT)
-                         );
 
     DAVA_VIRTUAL_REFLECTION(ActionComponent, Component);
 };

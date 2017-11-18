@@ -47,15 +47,8 @@ def _download_and_extract(working_directory_path):
     return source_folder_path
 
 
-@build_utils.run_once
-def _patch_sources(source_folder_path, working_directory_path):
-    build_utils.apply_patch(
-        os.path.abspath('patch.diff'), working_directory_path)
-
-
 def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources(source_folder_path, working_directory_path)
 
     build_utils.build_and_copy_libraries_win32_cmake(
         os.path.join(working_directory_path, 'gen'),
@@ -63,8 +56,9 @@ def _build_win32(working_directory_path, root_project_path):
         root_project_path,
         'yaml.sln', 'yaml',
         'yaml.lib', 'yaml.lib',
-        'libyaml_wind.lib', 'libyaml_win.lib',
-        'libyaml_wind.lib', 'libyaml_win.lib')
+        'libyaml.lib', 'libyaml.lib',
+        'libyaml.lib', 'libyaml.lib',
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 

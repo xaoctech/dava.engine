@@ -43,29 +43,30 @@ void ShowErrorMessage(ErrorID id, int errorCode, const QString& addInfo)
 
 void LogMessage(QtMsgType type, const QString& msg)
 {
-    QString typeStr;
-    switch (type)
-    {
-    case QtDebugMsg:
-    case QtInfoMsg:
-        typeStr = "DEBUG";
-        break;
-    case QtWarningMsg:
-        typeStr = "WARNING";
-        break;
-    case QtCriticalMsg:
-        typeStr = "CRITICAL";
-        break;
-    case QtFatalMsg:
-        typeStr = "FATAL";
-        break;
-    }
     QFile logFile;
-    QString logPath = FileManager::GetDocumentsDirectory() + "launcher.log";
-    logFile.setFileName(logPath);
-    QString time = QDateTime::currentDateTime().toString("[dd.MM.yyyy - hh:mm:ss]");
+    logFile.setFileName(FileManager::GetDocumentsDirectory() + "launcher.log");
     if (logFile.open(QIODevice::WriteOnly | QIODevice::Append))
     {
+        QString typeStr;
+        switch (type)
+        {
+        case QtDebugMsg:
+        case QtInfoMsg:
+            typeStr = "DEBUG";
+            break;
+        case QtWarningMsg:
+            typeStr = "WARNING";
+            break;
+        case QtCriticalMsg:
+            typeStr = "CRITICAL";
+            break;
+        case QtFatalMsg:
+            typeStr = "FATAL";
+            break;
+        }
+
+        QString time = QDateTime::currentDateTime().toString("[dd.MM.yyyy - hh:mm:ss]");
+
         logFile.write((QString("%1 (%2): %3\n").arg(time).arg(typeStr).arg(msg)).toStdString().c_str());
         logFile.flush();
         logFile.close();

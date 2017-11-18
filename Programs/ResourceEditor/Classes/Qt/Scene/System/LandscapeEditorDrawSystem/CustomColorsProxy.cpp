@@ -1,41 +1,37 @@
-#include "CustomColorsProxy.h"
-#include "Deprecated/EditorConfig.h"
+#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem/CustomColorsProxy.h"
+#include "Classes/Deprecated/EditorConfig.h"
 
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
 
-#include "Render/Texture.h"
-#include "Render/Material/NMaterial.h"
+#include <Render/Texture.h>
+#include <Render/Material/NMaterial.h>
 
-#include "Settings/Settings.h"
-#include "Settings/SettingsManager.h"
-
-using namespace DAVA;
-
-CustomColorsProxy::CustomColorsProxy(int32 _size)
-    : changedRect(Rect())
+CustomColorsProxy::CustomColorsProxy(DAVA::int32 _size)
+    : changedRect(DAVA::Rect())
     , spriteChanged(false)
     , textureLoaded(false)
     , size(_size)
     , changes(0)
-    , brushMaterial(new NMaterial())
+    , brushMaterial(new DAVA::NMaterial())
 {
-    Texture::FBODescriptor fboDesc;
+    DAVA::Texture::FBODescriptor fboDesc;
     fboDesc.width = size;
     fboDesc.height = size;
     fboDesc.textureType = rhi::TextureType::TEXTURE_TYPE_2D;
-    fboDesc.format = PixelFormat::FORMAT_RGBA8888;
+    fboDesc.format = DAVA::PixelFormat::FORMAT_RGBA8888;
     fboDesc.needDepth = false;
     fboDesc.needPixelReadback = true;
-    customColorsRenderTarget = Texture::CreateFBO(fboDesc);
+    customColorsRenderTarget = DAVA::Texture::CreateFBO(fboDesc);
 
     // clear texture, to initialize frame buffer object
     // using PRIORITY_SERVICE_2D + 1 to ensure it will be cleared before drawing existing image into render target
-    RenderHelper::CreateClearPass(customColorsRenderTarget->handle, rhi::HTexture(), PRIORITY_SERVICE_2D + 1, DAVA::Color::Clear, rhi::Viewport(0, 0, size, size));
+    DAVA::RenderHelper::CreateClearPass(customColorsRenderTarget->handle, rhi::HTexture(), DAVA::PRIORITY_SERVICE_2D + 1, DAVA::Color::Clear, rhi::Viewport(0, 0, size, size));
 
-    brushMaterial->SetMaterialName(FastName("CustomColorsMaterial"));
-    brushMaterial->SetFXName(FastName("~res:/ResourceEditor/LandscapeEditor/Materials/CustomColors.material"));
-    brushMaterial->PreBuildMaterial(RenderSystem2D::RENDER_PASS_NAME);
+    brushMaterial->SetMaterialName(DAVA::FastName("CustomColorsMaterial"));
+    brushMaterial->SetFXName(DAVA::FastName("~res:/ResourceEditor/LandscapeEditor/Materials/CustomColors.material"));
+    brushMaterial->PreBuildMaterial(DAVA::RenderSystem2D::RENDER_PASS_NAME);
 }
 
 void CustomColorsProxy::ResetLoadedState(bool isLoaded)
@@ -53,7 +49,7 @@ CustomColorsProxy::~CustomColorsProxy()
     SafeRelease(customColorsRenderTarget);
 }
 
-Texture* CustomColorsProxy::GetTexture()
+DAVA::Texture* CustomColorsProxy::GetTexture()
 {
     return customColorsRenderTarget;
 }
@@ -68,26 +64,26 @@ bool CustomColorsProxy::IsTargetChanged()
     return spriteChanged;
 }
 
-Rect CustomColorsProxy::GetChangedRect()
+DAVA::Rect CustomColorsProxy::GetChangedRect()
 {
     if (IsTargetChanged())
     {
         return changedRect;
     }
 
-    return Rect();
+    return DAVA::Rect();
 }
 
 void CustomColorsProxy::UpdateRect(const DAVA::Rect& rect)
 {
-    DAVA::Rect bounds(0.f, 0.f, (float32)size, (float32)size);
+    DAVA::Rect bounds(0.f, 0.f, static_cast<DAVA::float32>(size), static_cast<DAVA::float32>(size));
     changedRect = rect;
     bounds.ClampToRect(changedRect);
 
     spriteChanged = true;
 }
 
-int32 CustomColorsProxy::GetChangesCount() const
+DAVA::int32 CustomColorsProxy::GetChangesCount() const
 {
     return changes;
 }
@@ -121,21 +117,21 @@ void CustomColorsProxy::UpdateSpriteFromConfig()
     ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
     DVASSERT(data);
 
-    Vector<Color> customColors = data->GetEditorConfig()->GetColorPropertyValues("LandscapeCustomColors");
+    DAVA::Vector<DAVA::Color> customColors = data->GetEditorConfig()->GetColorPropertyValues("LandscapeCustomColors");
     if (customColors.empty())
     {
-        RenderHelper::CreateClearPass(customColorsRenderTarget->handle, rhi::HTexture(), PRIORITY_CLEAR, Color::Clear, viewport);
+        DAVA::RenderHelper::CreateClearPass(customColorsRenderTarget->handle, rhi::HTexture(), DAVA::PRIORITY_CLEAR, DAVA::Color::Clear, viewport);
     }
     else
     {
-        DAVA::uint32 defaultColorIndex = SettingsManager::GetValue(Settings::Scene_DefaultCustomColorIndex).AsUInt32();
-        defaultColorIndex = Min(defaultColorIndex, static_cast<DAVA::uint32>(customColors.size() - 1));
-        Color color = customColors[defaultColorIndex];
-        RenderHelper::CreateClearPass(customColorsRenderTarget->handle, rhi::HTexture(), PRIORITY_CLEAR, color, viewport);
+        DAVA::uint32 defaultColorIndex = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->defaultCustomColorIndex;
+        defaultColorIndex = DAVA::Min(defaultColorIndex, static_cast<DAVA::uint32>(customColors.size() - 1));
+        DAVA::Color color = customColors[defaultColorIndex];
+        DAVA::RenderHelper::CreateClearPass(customColorsRenderTarget->handle, rhi::HTexture(), DAVA::PRIORITY_CLEAR, color, viewport);
     }
 }
 
-NMaterial* CustomColorsProxy::GetBrushMaterial() const
+DAVA::NMaterial* CustomColorsProxy::GetBrushMaterial() const
 {
     return brushMaterial.get();
 }

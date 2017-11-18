@@ -1,0 +1,17 @@
+set( MODULE_NAME SpeedTree )
+
+set( MODULE_TYPE STATIC )
+
+set( HPP_FILES_RECURSE Sources/SpeedTree/*.h )
+set( CPP_FILES_RECURSE Sources/SpeedTree/*.cpp )
+set( CPP_FILES_APPLE Sources/SpeedTree/*.mm  )
+
+set( INCLUDES Sources )
+set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
+
+set( DEFINITIONS_PRIVATE_WIN      -D_CRT_SECURE_NO_WARNINGS )
+set( DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
+
+set( DEFINITIONS -D__DAVAENGINE_SPEEDTREE__ )
+
+setup_main_module()

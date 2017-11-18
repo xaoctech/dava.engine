@@ -6,10 +6,9 @@
 #include "TArc/Controls/ReflectedButton.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Utils/QtConnections.h"
-
-#include <TArc/Qt/QtString.h>
-#include <TArc/Qt/QtIcon.h>
-#include <QtTools/WidgetHelpers/SharedIcon.h>
+#include "TArc/Qt/QtString.h"
+#include "TArc/Qt/QtIcon.h"
+#include "TArc/Utils/Utils.h"
 
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>

@@ -1,4 +1,6 @@
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 
@@ -12,6 +14,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentAliasesComponent)
     .Field("aliases", &UIRichContentAliasesComponent::GetAliasesAsString, &UIRichContentAliasesComponent::SetAliasesFromString)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIRichContentAliasesComponent);
 
 UIRichContentAliasesComponent::UIRichContentAliasesComponent(const UIRichContentAliasesComponent& src)
     : UIComponent(src)

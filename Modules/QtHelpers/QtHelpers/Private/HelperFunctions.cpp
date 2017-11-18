@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QDir>
 #include <QApplication>
+#include <QDirIterator>
 
 #ifdef Q_OS_MAC
 #include <QUrl>
@@ -68,5 +69,34 @@ QString GetApplicationDirPath()
         return appPath.left(charIndex + 1);
     }
     return QString();
+}
+
+void CopyRecursively(const QString& fromDir, const QString& toDir)
+{
+    QDir().mkpath(toDir);
+
+    QString toDirWithSlash = toDir;
+    if (!toDirWithSlash.endsWith('/'))
+    {
+        toDirWithSlash.append('/');
+    }
+
+    QDirIterator it(fromDir, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    while (it.hasNext())
+    {
+        it.next();
+
+        QFileInfo fileInfo = it.fileInfo();
+        QString dest = toDirWithSlash + fileInfo.fileName();
+
+        if (fileInfo.isDir())
+        {
+            CopyRecursively(fileInfo.absoluteFilePath(), dest);
+        }
+        else
+        {
+            QFile::copy(fileInfo.absoluteFilePath(), dest);
+        }
+    }
 }
 } // namespace QtHelpers

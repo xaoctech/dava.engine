@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055" />
+      <title>Creating a Scene</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBSceneHandle", "../api/struct_i_l_b_scene_handle.html", "API"]); 
+reflinkdata.push(["ILBBeginPhysicalScene()", "../api/beastscene_8h.html#a0a467a88ff313a3165115a9a3836552f", "API"]); 
+reflinkdata.push(["ILBEndScene()", "../api/beastscene_8h.html#a73654682a5785904682800b934720fcf", "API"]); 
+reflinkdata.push(["ILBReleaseScene()", "../api/beastscene_8h.html#a76617096fad3a44003598b0f022eedf2", "API"]); 
+reflinkdata.push(["beastscene.h", "../api/beastscene_8h.html", "API"]); 
+reflinkdata.push(["ILBMeshHandle", "../api/struct_i_l_b_mesh_handle.html", "API"]); 
+reflinkdata.push(["ILBBeginMesh", "../api/beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b", "API"]); 
+reflinkdata.push(["ILBEndMesh", "../api/beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987", "API"]); 
+reflinkdata.push(["ILBTextureHandle", "../api/struct_i_l_b_texture_handle.html", "API"]); 
+reflinkdata.push(["ILBBeginTexture", "../api/beasttexture_8h.html#a218a87ee822598e86003b25c4d956108", "API"]); 
+reflinkdata.push(["ILB_PF_RGBA_BYTE", "../api/beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748", "API"]); 
+reflinkdata.push(["ILBEndTexture", "../api/beasttexture_8h.html#ab3fc5a5b9823618ada51e95db0c3d917", "API"]); 
+reflinkdata.push(["ILBBeginPhysicalScene", "../api/beastscene_8h.html#a0a467a88ff313a3165115a9a3836552f", "API"]); 
+reflinkdata.push(["ILBInstanceHandle", "../api/struct_i_l_b_instance_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateInstance", "../api/beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470", "API"]); 
+reflinkdata.push(["ILBMaterialHandle", "../api/struct_i_l_b_material_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateMaterial", "../api/beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e", "API"]); 
+reflinkdata.push(["ILBShaderHandle", "../api/struct_i_l_b_shader_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateShader", "../api/beastmaterial_8h.html#ac154eb57095a7a087166517aba93d155", "API"]); 
+reflinkdata.push(["ILBSetShader", "../api/beastmaterial_8h.html#ab4d8366405c79ee8784b8c1812f43ef9", "API"]); 
+reflinkdata.push(["ILBLightHandle", "../api/struct_i_l_b_light_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateDirectionalLight", "../api/beastlightsource_8h.html#a8ced5dd6f603ff9a82629f4e8e0bfc06", "API"]); 
+reflinkdata.push(["ILBSetCastShadows", "../api/beastlightsource_8h.html#a5a4df1a9c5464fde3618d1b953357e3b", "API"]); 
+reflinkdata.push(["ILBSetShadowSamples", "../api/beastlightsource_8h.html#a58d8137ba4915d19c2914a7767dedb92", "API"]); 
+reflinkdata.push(["ILBSetShadowAngle", "../api/beastlightsource_8h.html#a241e87acac4e6b2de274e224f4a9a44a", "API"]); 
+reflinkdata.push(["ILBCreateSkyLight", "../api/beastlightsource_8h.html#a9cf9e1a688ab5ec1ffa1fb74519b1a44", "API"]); 
+reflinkdata.push(["ILBCameraHandle", "../api/struct_i_l_b_camera_handle.html", "API"]); 
+reflinkdata.push(["ILBCreatePerspectiveCamera", "../api/beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6", "API"]); 
+reflinkdata.push(["ILBSetFov", "../api/beastcamera_8h.html#acf7eff806d9479b2c65a3093e9515bfb", "API"]); 
+reflinkdata.push(["ILBPointCloudHandle", "../api/struct_i_l_b_point_cloud_handle.html", "API"]); 
+reflinkdata.push(["ILBCreatePointCloud", "../api/beastpointcloud_8h.html#a17bb367d37e1bae0bf6f72a0bfc926c7", "API"]); 
+reflinkdata.push(["ILBEndPointCloud", "../api/beastpointcloud_8h.html#a1e155fbaaeb21d78ba7f7557a5058442", "API"]); 
+reflinkdata.push(["ILBAddLightLightLinks", "../api/beastlightsource_8h.html#a7887867f2b60a3dc0e820027be3a5e9b", "API"]); 
+reflinkdata.push(["ILB_LL_EXCLUDING", "../api/beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660eac33d489b56290fea9ee69a4c61e92f72", "API"]); 
+reflinkdata.push(["ILBEndScene", "../api/beastscene_8h.html#a73654682a5785904682800b934720fcf", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm',                           'd30e6102','index.html',location.hash);                           javascript:initPage('Creating a Scene','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating a Scene&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Initializing and Terminating Beast</div><a href="GUID-98C027F7-24AF-47E6-99D8-B2BACAE42DC4.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Integrating the Beast API</div><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Meshes</div><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-598E2DDF-04E7-4B5C-B831-0C4750A37C16"></a></span><h1>Creating a Scene</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-E23AB7ED-653B-4BAF-864E-B3500EF9CA21"></a></span> Each time you want to invoke <span class="charspan-msgph" translate="no">Beast</span> to light and render a world or level in your game, you need to use the <span class="charspan-msgph" translate="no">Beast</span> API to create a scene: a representation of the geometry and light sources that should be taken into account during the rendering.
+            
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-697C981F-5C4D-40A4-B09C-992DC72690F9"></a></span>A scene is essentially a container for: 
+         </p><span class="anchor_wrapper"><a name="UL_3402E7BFE8094998B774D15FC89A949A"></a></span><ul>
+            <li>Instances of meshes that describe the geometry of the objects in the world. </li>
+            <li>The materials that define the way the surfaces of your mesh instances interact with light. </li>
+            <li>Light sources. </li>
+            <li>Cameras (optional). </li>
+            <li>Point clouds (optional). </li>
+         </ul>
+         <p><span class="anchor_wrapper"><a name="GUID-0D85B6ED-BCD3-4E03-8A2B-14E5D78B6F14"></a></span>The scene acts as factory for all these object types; the memory used for these types of objects is managed by the scene they
+            belong to. When you release a scene, all handles to the objects owned by that scene will be invalidated. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-108CFD8F-00C0-4B84-9E1E-9FB861336B94"></a></span>Scenes do not have a graph or a hierarchy. You are expected to flatten the transformations you provide for the objects in
+            your scene so that they are all expressed in world space. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-D5C201DC-37E8-46D9-A12A-96090327C2AE"></a></span>Scenes are not persisted in the cache by the <span class="charspan-msgph" translate="no">Beast</span> Manager. Therefore, they cannot be re-used by other <span class="charspan-msgph" translate="no">Beast</span> Managers, or re-used once they are destroyed. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_7474809B340D4C2A8C539C588E2093E7"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6141"></a><span class="anchor_wrapper"><a name="GUID-7945BD44-1FF7-4D97-9501-F3AB66538D1A"></a></span>Setting up a scene
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-60FE116E-806A-4A2B-B4D1-A3C298551B96"></a></span>You create and set up a scene as follows: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_82E943A4960A492995261818623FFF5D"></a></span><ol start="1">
+               <li>Create meshes to represent the elements of the geometry in your world. You set up each mesh with its own array of vertices
+                  and normals, as well as other optional data such as materials, colors, tangents and bitangents, and UV sets. 
+                  <p><span class="anchor_wrapper"><a name="GUID-4B9EBD90-7D1A-418E-845F-B296D9AC8917"></a></span>Meshes are not part of a scene themselves; they represent a definition of an object's geometry and properties. Meshes are
+                     created by the <span class="charspan-msgph" translate="no">Beast</span> Manager outside the scene, and are maintained in the cache on their own. Later, you will create instances of your mesh that
+                     place the geometry at a specific translation and rotation within your scene. This indirection allows each mesh to be re-used
+                     multiple times within each scene (and across multiple scenes at the same time) with a minimal additional memory cost. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-AD17C4B0-33E3-424C-B8EA-23A8E8B1B735"></a></span>For details on meshes, and on how to create and set up mesh handles, see <span class="char_link"><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm">Creating Meshes</a></span>. 
+                  </p> 
+               </li>
+               <li>Create textures to represent the different input textures that should be applied to your meshes. Like meshes, textures are
+                  created and maintained outside the scene, so that each texture can be referenced by multiple mesh instances at the same time.
+                  
+                  <p><span class="anchor_wrapper"><a name="GUID-D57FBA26-07C6-45E8-96CD-E8303C1468EB"></a></span>For details on textures, and on how to create and set up texture handles, see <span class="char_link"><a href="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm">Creating Textures</a></span>. 
+                  </p> 
+               </li>
+               <li>Create and initialize a scene handle, which will be a container that holds all of the other objects you add to the scene.
+                  You must create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSceneHandle'); return false;">ILBSceneHandle</a></span> object, and initialize it through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginPhysicalScene()'); return false;">ILBBeginPhysicalScene()</a></span>. 
+               </li>
+               <li>Create mesh instances that place your meshes at specific locations and orientations within your scene. You can also assign
+                  textures and materials to your instances. 
+                  <p><span class="anchor_wrapper"><a name="GUID-6582AD3A-893E-43A7-ADFD-D5E2FD8943EE"></a></span>For details on mesh instances, and on how to create and set up instance handles, see <span class="char_link"><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm">Creating Mesh Instances</a></span>. 
+                  </p> 
+               </li>
+               <li>Create materials to represent the different kinds of surfaces on your meshes and mesh instances. 
+                  <p><span class="anchor_wrapper"><a name="GUID-26AB9D9D-B50B-4FE8-8078-B3B7DDA1FD46"></a></span>When you create your meshes and instances, you assign materials to them by name. Then, within each scene, you create the actual
+                     referenced materials with those names. The properties of each material are set up within each scene. This indirection allows
+                     a single mesh to be used across multiple scenes with different material properties in each scene. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-090172D7-FC35-43B9-9CE7-2831AC7DAFD9"></a></span>For details on materials, and on how to create and set up material handles, see <span class="char_link"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a></span>. 
+                  </p> 
+               </li>
+               <li>For each light in your scene, create and set up a light source through the API. You set up what type of light source it is
+                  (point light, spot light, sky light, etc.), its translation and rotation within the scene, and other optional properties that
+                  depend on this type. 
+                  <p><span class="anchor_wrapper"><a name="GUID-C554BA9F-5627-4928-9E5E-EDB1D870519F"></a></span>For details on light sources, and on how to create and set up light source handles, see <span class="char_link"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm">Creating Light Sources</a></span>. 
+                  </p> 
+               </li>
+               <li>You can create cameras, if desired, to represent viewpoints in your scene. These viewpoints may be used during rendering,
+                  depending on the type of rendering you set up. For example, the camera may define the starting viewpoint for the eRnsT viewer,
+                  or the frame of view for rendering a still image of your scene. 
+                  <p><span class="anchor_wrapper"><a name="GUID-8D684E18-8CFA-4BC0-B796-421E1A8D4373"></a></span>For details on cameras, and on how to create and set up camera handles, see <span class="char_link"><a href="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm">Creating Cameras</a></span>. 
+                  </p> 
+               </li>
+               <li>If you want to dynamically affect the lighting applied to objects as they move around your scenes at runtime, you can create
+                  point clouds to bake the lighting at selected positions in the open spaces of your world. 
+                  <p><span class="anchor_wrapper"><a name="GUID-22D4031C-6792-47EB-A868-66ADD5001F81"></a></span>For details on point clouds, and on how to create and set up point cloud handles, see <span class="char_link"><a href="GUID-6318156E-F07D-4207-AD69-816CA1217869.htm">Creating Point Clouds</a></span>. 
+                  </p> 
+               </li>
+               <li>If desired, you can create light links between light sources and mesh instances in your scene. These links control whether
+                  or not the light from specific light sources apply to specific instances. For details, see <span class="char_link"><a href="GUID-95524AD7-1EAE-4396-BC02-3F4939DDD2C1.htm">Creating Light Links</a></span>. 
+               </li>
+               <li>When you have added all the objects outlined above to your scene, you must close the scene handle by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndScene()'); return false;">ILBEndScene()</a></span>. After you close the scene, you will be ready to set up and launch a rendering job as described under <span class="char_link"><a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm">Rendering the Scene</a></span>. Once the scene has been closed, you can only modify it during the course of a live eRnsT session. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-26B808C2-B2F6-47C4-8467-CBA7DBC83883"></a></span>The steps above do not have to be done in exactly the order specified. The only requirement is that you must set up all of
+               your instances, materials, light sources, cameras and point clouds after you initialize your scene handle (step 3) and before
+               you close your scene handle (step 10). 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-5DEC4B9A-6997-422C-8553-5B37429D46C2"></a></span>For example, the following code fragment illustrates the overall process of setting up a very simple scene: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">// 1. Create meshes
+std::basic_string&lt;TCHAR&gt; sphereMatName(_T("SphereMaterial"));
+std::basic_string&lt;TCHAR&gt; floorMatName(_T("FloorMaterial"));
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMeshHandle'); return false;">ILBMeshHandle</a> floorMesh;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMesh'); return false;">ILBBeginMesh</a>(bmh, _T("Floor"), &amp;floorMesh);
+... // add triangles
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMesh'); return false;">ILBEndMesh</a>(floorMesh);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMeshHandle'); return false;">ILBMeshHandle</a> sphereMesh;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMesh'); return false;">ILBBeginMesh</a>(bmh, _T("Sphere"), &amp;sphereMesh);
+... // add triangles
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMesh'); return false;">ILBEndMesh</a>(sphereMesh);
+
+// 2. Create a texture used by the floor
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTextureHandle'); return false;">ILBTextureHandle</a> floorTex;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTexture'); return false;">ILBBeginTexture</a>(bm, _T("FloorTexture"), 256, 256, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_PF_RGBA_BYTE'); return false;">ILB_PF_RGBA_BYTE</a>, &amp;floorTex);
+... // add pixel data
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTexture'); return false;">ILBEndTexture</a>(floorTex);
+
+// 3. Create the scene handle
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSceneHandle'); return false;">ILBSceneHandle</a> scene;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginPhysicalScene'); return false;">ILBBeginPhysicalScene</a>(bmh, _T("SimpleScene"), &amp;scene);
+
+// 4. Create instances of the meshes
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBInstanceHandle'); return false;">ILBInstanceHandle</a> floorInstance;
+bex::Matrix4x4 floorTrans = bex::scaleTranslation(bex::Vec3(10.0f, 1.0f, 10.0f), bex::Vec3(0.0f, -5.0f, 0.0f));
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateInstance'); return false;">ILBCreateInstance</a>(scene, floorMesh, _T("FloorInstance"), &amp;floorTrans, &amp;floorInstance);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBInstanceHandle'); return false;">ILBInstanceHandle</a> sphereInstance;
+bex::Matrix4x4 sphereTrans = bex::scaleTranslation(bex::Vec3(10.0f, 1.0f, 10.0f), bex::Vec3(0.0f, -5.0f, 0.0f));
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateInstance'); return false;">ILBCreateInstance</a>(scene, floorMesh, _T("SphereInstance"), &amp;sphereTrans, &amp;sphereInstance);
+
+// 5. Set up the materials
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a> floorMat; 
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial'); return false;">ILBCreateMaterial</a>(scene, floorMatName.c_str(), &amp;floorMat); 
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBShaderHandle'); return false;">ILBShaderHandle</a> diffuseShader;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateShader'); return false;">ILBCreateShader</a>(scene, _T("diffuse"), _T("diffuseTexture.osl"), &amp;diffuseShader);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShader'); return false;">ILBSetShader</a>(floorMat, diffuseShader);
+
+// 6. Create light sources
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightHandle'); return false;">ILBLightHandle</a> light;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateDirectionalLight'); return false;">ILBCreateDirectionalLight</a>(scene, _T("Sun"), 
+       &amp;bex::directionalLightOrientation(bex::Vec3(1.0, -1.0f, -1.0f)), 
+       &amp;bex::ColorRGB(1.0f, 1.0f, .8f), 
+       &amp;light);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetCastShadows'); return false;">ILBSetCastShadows</a>(light, true);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShadowSamples'); return false;">ILBSetShadowSamples</a>(light, 32);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetShadowAngle'); return false;">ILBSetShadowAngle</a>(light, .1f);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightHandle'); return false;">ILBLightHandle</a> skyLight;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateSkyLight'); return false;">ILBCreateSkyLight</a>(scene, 
+    _T("SkyLight"),
+    &amp;bex::identity(),
+    &amp;bex::ColorRGB(0.21f, 0.21f, 0.3f),
+    &amp;skyLight);
+
+// 7. Create a camera
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCameraHandle'); return false;">ILBCameraHandle</a> camera;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePerspectiveCamera'); return false;">ILBCreatePerspectiveCamera</a>(scene, 
+    _T("Camera"), 
+	   &amp;bex::setCameraMatrix(bex::Vec3(.3f, 3.0f, 20.0f), 
+    bex::Vec3(.1f, -0.3f, -1.0f), 
+    bex::Vec3(0.0f, 1.0f, 0.0f)), 
+    &amp;camera);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetFov'); return false;">ILBSetFov</a>(camera, static_cast&lt;float&gt;(M_PI) / 4.0f, 1.0f);
+
+// 8. Create a point cloud
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBPointCloudHandle'); return false;">ILBPointCloudHandle</a> pch;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePointCloud'); return false;">ILBCreatePointCloud</a>(scene, _T("DynamicCloud"), &amp;pch);
+... // set up the grid of points in the cloud
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndPointCloud'); return false;">ILBEndPointCloud</a>(pch);
+
+// 9. Create light links
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddLightLightLinks'); return false;">ILBAddLightLightLinks</a>(skyLight, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LL_EXCLUDING'); return false;">ILB_LL_EXCLUDING</a>, sphereInstance, 1);
+
+// 10. Finalize the scene
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndScene'); return false;">ILBEndScene</a>(scene);
+</pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_F55FF1478CA04788BB3ED1B779FB9A71"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6247"></a><span class="anchor_wrapper"><a name="GUID-D75FB10B-E399-40FC-AFB6-23A1D87FC355"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-62408EAB-1C0F-4184-A0A2-F2F48B27FF34"></a></span>You can add objects to a single scene from multiple threads simultaneously. However: 
+            </p> <span class="anchor_wrapper"><a name="UL_E6D9DEAD54FC42808080F36E5BD68AEB"></a></span><ul>
+               <li>You should only call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndScene()'); return false;">ILBEndScene()</a></span> once from a single thread, and you should only call it after all objects have been added. 
+               </li>
+               <li>If you choose to call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReleaseScene()'); return false;">ILBReleaseScene()</a></span> at any point, you should call it only once from a single thread, and never call it while another thread is actively adding
+                  data to the scene or using the scene in another API call. 
+               </li>
+            </ul> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3F5B017701174750A97671D77741018A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6267"></a><span class="anchor_wrapper"><a name="GUID-81D2CDB8-3C2E-4BEC-9FA3-2CE6BF799562"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-4E2CBAD9-6F42-4A7F-9FF2-80C81EDCA3A2"></a></span>API functions related to the creation and setup of scenes are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastscene.h'); return false;">beastscene.h</a></span> file. 
+            </p> 
+         </div><span class="noindex">
+            <div class="topic-list">
+               <h4 class="related">Topics in this section</h4>
+               <ul class="jumplist">
+                  <li class="topiclist-litem"><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm">Creating Meshes</a></li>
+                  <li class="topiclist-litem"><a href="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm">Creating Textures</a></li>
+                  <li class="topiclist-litem"><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm">Creating Mesh Instances</a></li>
+                  <li class="topiclist-litem"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a></li>
+                  <li class="topiclist-litem"><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm">Creating Light Sources</a></li>
+                  <li class="topiclist-litem"><a href="GUID-B661B0C1-4AB1-44EA-9A3C-28C0F2E56023.htm">Creating Cameras</a></li>
+                  <li class="topiclist-litem"><a href="GUID-6318156E-F07D-4207-AD69-816CA1217869.htm">Creating Point Clouds</a></li>
+                  <li class="topiclist-litem"><a href="GUID-95524AD7-1EAE-4396-BC02-3F4939DDD2C1.htm">Creating Light Links</a></li>
+               </ul>
+            </div></span><div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

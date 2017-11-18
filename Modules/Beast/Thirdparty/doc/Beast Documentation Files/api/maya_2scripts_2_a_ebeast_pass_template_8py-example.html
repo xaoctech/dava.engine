@@ -1,0 +1,440 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/scripts/AEbeastPassTemplate.py</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2scripts_2_a_ebeast_pass_template_8py-example.html','api_maya_2scripts_2_a_ebeast_pass_template_8py_example_html2714c2ee-9321-46d8-9280-3705bc2d4b28','index.html',location.hash); javascript:initPage('API: maya/scripts/AEbeastPassTemplate.py','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2scripts_2_a_ebeast_pass_template_8py-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/scripts/AEbeastPassTemplate.py&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/scripts/AEbeastPassTemplate.py</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/scripts/AEbeastPassTemplate.py</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class=
+"comment"># Copyright 2013 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment"># Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment"># provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment"># accompanies this software in either electronic or hard copy form.</span>
+
+<span class="keyword">import</span> pymel.core
+<span class="keyword">import</span> pymel.core.general
+<span class="keyword">import</span> pymel.core.system
+<span class="keyword">import</span> os.path
+
+<span class="keyword">def </span>isLight(node):
+        <span class=
+"keywordflow">if</span> isinstance(node, pymel.core.nodetypes.Light):
+                <span class=
+"keywordflow">return</span> <span class="keyword">True</span>
+        relatives = pymel.core.general.listRelatives(node)
+        <span class=
+"keywordflow">if</span> isinstance(relatives[0], pymel.core.nodetypes.Light):
+                <span class=
+"keywordflow">return</span> <span class="keyword">True</span>
+        <span class="keywordflow">return</span> <span class=
+"keyword">False</span>
+
+<span class="keyword">def </span>getTransform(node):
+        <span class=
+"keywordflow">if</span> isinstance(node, pymel.core.nodetypes.Transform):
+                <span class="keywordflow">return</span> node
+        <span class="keywordflow">else</span>:
+                relatives = pymel.core.general.listRelatives(node, parent=<span class="keyword">True</span>)
+                <span class=
+"keywordflow">if</span> len(relatives) == 0:
+                        <span class=
+"keywordflow">return</span> <span class="keywordtype">None</span>
+                transform = PyNode(relatives[0])
+                <span class="keywordflow">return</span> transform
+
+<span class=
+"keyword">class </span>AEbeastPassTemplate(pymel.core.ui.AETemplate):
+        <span class="keyword">def </span>__init__(self, nodeName):
+                self.beginScrollLayout()
+                self.addControl(<span class=
+"stringliteral">"passType"</span>, label=<span class=
+"stringliteral">"Pass Type"</span>, changeCommand=self.passChanged)
+                self.beginLayout(<span class=
+"stringliteral">"Illumination Pass"</span>, collapse=0)
+                self.addControl(<span class=
+"stringliteral">"illuminationPassMode"</span>, label=<span class=
+"stringliteral">"Illumination Mode"</span>)
+                self.endLayout()
+                self.beginLayout(<span class=
+"stringliteral">"Light Pass"</span>, collapse=0)
+                self.addControl(<span class=
+"stringliteral">"lightPassType"</span>, label=<span class=
+"stringliteral">"Light Pass Type"</span>)
+                self.callCustom(self.onLightsDisplayNew, self.onLightsDisplayUpdate, <span class="stringliteral">"lights"</span>)
+                self.endLayout()
+                self.beginLayout(<span class=
+"stringliteral">"Radiosity Normal Map Pass"</span>, collapse=0)
+                self.addControl(<span class=
+"stringliteral">"rnmPassMode"</span>, label=<span class=
+"stringliteral">"Illumination Mode"</span>)
+                self.addControl(<span class=
+"stringliteral">"rnmBasis"</span>, label=<span class=
+"stringliteral">"Basis"</span>, changeCommand=self.passChanged)
+                self.addControl(<span class=
+"stringliteral">"rnmIncludeNormalComponent"</span>, label=<span class="stringliteral">"Include Normal Component"</span>)
+                self.addControl(<span class=
+"stringliteral">"rnmAllowNegative"</span>, label=<span class=
+"stringliteral">"Allow Negative"</span>)
+                self.addControl(<span class=
+"stringliteral">"rnmCustomBasisVectors"</span>, label=<span class=
+"stringliteral">"RNM Custom Basis Vectors"</span>)
+                self.endLayout()
+                self.beginLayout(<span class=
+"stringliteral">"Ambient Occlusion Pass"</span>, collapse=0)
+                self.addControl(<span class=
+"stringliteral">"aoMaxDistance"</span>, label=<span class=
+"stringliteral">"Max Distance"</span>)
+                self.addControl(<span class=
+"stringliteral">"aoConeAngle"</span>, label=<span class=
+"stringliteral">"Cone Angle"</span>)
+                self.addControl(<span class=
+"stringliteral">"aoContrast"</span>, label=<span class=
+"stringliteral">"Contrast"</span>)
+                self.addControl(<span class=
+"stringliteral">"aoScale"</span>, label=<span class=
+"stringliteral">"Scale"</span>)
+                self.addControl(<span class=
+"stringliteral">"aoDistribution"</span>, label=<span class=
+"stringliteral">"Sampling Distribution"</span>)
+                self.addControl(<span class=
+"stringliteral">"aoSelfOcclusion"</span>, label=<span class=
+"stringliteral">"Self Occlusion"</span>)
+                self.endLayout()
+                self.beginLayout(<span class=
+"stringliteral">"Lua Pass"</span>, collapse=0)
+                self.callCustom(self.createScriptFileSelector, self.createScriptFileSelector, <span class="stringliteral">"luaScript"</span>)
+                self.endLayout()
+                self.addExtraControls()
+                self.endScrollLayout()
+                
+        <span class=
+"keyword">def </span>passChanged(self, nodeName):
+                node = pymel.core.general.PyNode(nodeName)
+                passType = node.passType.get()
+                self.dimControl(nodeName, <span class=
+"stringliteral">"illuminationPassMode"</span>, passType <span class="keywordflow">is</span> <span class="keywordflow">not</span> 1)
+                self.dimLightPassCtrls(nodeName, node.passType.get() <span class="keywordflow">is</span> <span class="keywordflow">not</span> 2)
+                self.dimRNMPassCtrls(nodeName, node.passType.get() <span class="keywordflow">is</span> <span class="keywordflow">not</span> 3)
+                self.dimAOPassCtrls(nodeName, node.passType.get() <span class="keywordflow">is</span> <span class="keywordflow">not</span> 4)
+                self.dimLuaPassCtrls(nodeName, node.passType.get() <span class="keywordflow">is</span> <span class="keywordflow">not</span> 5)
+
+        <span class=
+"keyword">def </span>onLightsDisplayNew(self, attrStr):
+                self.ctrls = []
+                <span class="comment"># create controls</span>
+                pymel.core.windows.setUITemplate(<span class=
+"stringliteral">"attributeEditorTemplate"</span>, pushTemplate=<span class="keyword">True</span>)
+                <span class=
+"comment">#self.ctrls.append(pymel.core.windows.frameLayout(label="Lights", collapse=0))</span>
+                pymel.core.windows.columnLayout(adjustableColumn=<span class="keyword">True</span>)
+                self.createLightsTextList()
+                pymel.core.windows.setParent(<span class=
+"stringliteral">".."</span>)
+                <span class=
+"comment">#pymel.core.windows.setParent("..")</span>
+                pymel.core.windows.setUITemplate(popTemplate=<span class="keyword">True</span>)
+                self.onLightsDisplayUpdate(attrStr)
+
+        <span class=
+"keyword">def </span>onLightsDisplayUpdate(self, attrStr):
+                self.populateLightsList(attrStr)
+
+        <span class=
+"keyword">def </span>populateLightsList(self, attrStr):
+                self.lightsList.removeAll()
+                attr = pymel.core.general.Attribute(attrStr)
+                node = attr.node()
+                <span class="keywordflow">for</span> l <span class=
+"keywordflow">in</span> node.lights:
+                        self.lightsList.append(l.get())
+                self.lightsList.deleteKeyCommand(pymel.core.Callback(self.onRemoveLights, attrStr))
+                self.addLightsButton.setCommand(pymel.core.Callback(self.onAddLights, attrStr))
+                self.removeLightsButton.setCommand(pymel.core.Callback(self.onRemoveLights, attrStr))
+
+        <span class=
+"keyword">def </span>createLightsTextList(self):
+                self.lightsList = pymel.core.windows.textScrollList(allowMultiSelection=<span class="keyword">True</span>, height=100)
+                self.addLightsButton = pymel.core.windows.button(label=<span class="stringliteral">"Add Selection"</span>)
+                self.removeLightsButton = pymel.core.windows.button(label=<span class="stringliteral">"Remove"</span>)
+
+        <span class=
+"keyword">def </span>onRemoveLights(self, attrStr):
+                attr = pymel.core.general.Attribute(attrStr)
+                passNode = attr.node()
+                selectedLights = self.lightsList.getSelectItem()
+                <span class=
+"keywordflow">for</span> light <span class=
+"keywordflow">in</span> selectedLights:
+                        <span class=
+"keywordflow">for</span> l <span class=
+"keywordflow">in</span> passNode.lights:
+                                <span class=
+"keywordflow">if</span> light == l.get():
+                                        l.remove()
+                self.onLightsDisplayUpdate(attrStr)
+
+        <span class=
+"keyword">def </span>onAddLights(self, attrStr):
+                attr = pymel.core.general.Attribute(attrStr)
+                passNode = attr.node()
+                existingLights = []
+                <span class="keywordflow">for</span> l <span class=
+"keywordflow">in</span> passNode.lights:
+                        existingLights.append(l.get())
+                selection = pymel.core.general.ls(long=<span class=
+"keyword">True</span>, selection=<span class="keyword">True</span>)
+                <span class="keywordflow">for</span> s <span class=
+"keywordflow">in</span> selection:
+                        selectedNode = pymel.core.PyNode(s)
+                        <span class=
+"keywordflow">if</span> <span class=
+"keywordflow">not</span> isLight(selectedNode):
+                                <span class=
+"keywordflow">continue</span>
+                        light = getTransform(selectedNode)
+                        <span class=
+"keywordflow">if</span> light.shortName() <span class=
+"keywordflow">not</span> <span class=
+"keywordflow">in</span> existingLights:
+                                passNode.lights[passNode.lights.numElements()].set(light.shortName())
+                self.onLightsDisplayUpdate(attrStr)
+
+        <span class=
+"keyword">def </span>createScriptFileSelector(self, attrStr):
+                attr = pymel.core.general.Attribute(attrStr)
+                node = attr.node()
+                <span class=
+"keywordflow">if</span> hasattr(self, <span class=
+"stringliteral">"scriptCtrl"</span>):
+                        pymel.core.windows.deleteUI(self.scriptCtrl)
+                self.scriptCtrl = pymel.core.windows.textFieldButtonGrp(label=<span class="stringliteral">"Script File"</span>, buttonLabel=<span class="stringliteral">"Browse"</span>, text=node.luaScript.get(), editable=<span class="keyword">False</span>, buttonCommand=pymel.core.windows.Callback(self.onPressScriptSelect, node))
+
+        <span class=
+"keyword">def </span>onPressScriptSelect(self, node):
+                filter = <span class=
+"stringliteral">"Lua Script Files (*.lua)"</span>
+                templateDirectory = pymel.core.melGlobals[<span class="stringliteral">'gBeastRoot'</span>] + <span class="stringliteral">"/examples/data"</span>
+                scriptFile = pymel.core.system.fileDialog2(startingDirectory=templateDirectory, caption=<span class="stringliteral">"Select Lua script file"</span>, fileFilter=filter, dialogStyle=2, fileMode=1)
+                <span class=
+"keywordflow">if</span> scriptFile <span class=
+"keywordflow">and</span> len(scriptFile) &gt; 0:
+                        <span class=
+"comment"># Strip project directory</span>
+                        projectPath = pymel.core.system.Workspace.getPath()
+                        absScriptPath = scriptFile[0]
+                        relScriptPath = absScriptPath
+                        <span class="keywordflow">try</span>:
+                                relScriptPath = os.path.relpath(relScriptPath, projectPath)
+                        <span class="keywordflow">except</span>:
+                                <span class=
+"keywordflow">pass</span>
+                        node.luaScript.set(relScriptPath)
+                        self.scriptCtrl.setText(relScriptPath)
+
+        <span class=
+"keyword">def </span>dimLightPassCtrls(self, nodeName, dim):
+                self.dimControl(nodeName, <span class=
+"stringliteral">"lightPassType"</span>, dim)
+                <span class=
+"comment"># sanity check that ctrls are created</span>
+                <span class=
+"keywordflow">if</span> hasattr(self, <span class=
+"stringliteral">"lightsList"</span>):
+                        self.lightsList.setEnable(<span class=
+"keywordflow">not</span> dim)
+                        self.addLightsButton.setEnable(<span class=
+"keywordflow">not</span> dim)
+                        self.removeLightsButton.setEnable(<span class="keywordflow">not</span> dim)
+
+        <span class=
+"keyword">def </span>dimRNMPassCtrls(self, nodeName, dim):
+                node = pymel.core.general.PyNode(nodeName)
+                basisType = node.rnmBasis.get()
+                self.dimControl(nodeName, <span class=
+"stringliteral">"rnmPassMode"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"rnmBasis"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"rnmAllowNegative"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"rnmIncludeNormalComponent"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"rnmCustomBasisVectors"</span>, dim <span class=
+"keywordflow">or</span> basisType <span class=
+"keywordflow">is</span> <span class="keywordflow">not</span> 3)
+
+        <span class=
+"keyword">def </span>dimAOPassCtrls(self, nodeName, dim):
+                node = pymel.core.general.PyNode(nodeName)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"aoMaxDistance"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"aoConeAngle"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"aoContrast"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"aoScale"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"aoDistribution"</span>, dim)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"aoSelfOcclusion"</span>, dim)
+                        
+        <span class=
+"keyword">def </span>dimLuaPassCtrls(self, nodeName, dim):
+                node = pymel.core.general.PyNode(nodeName)
+                self.dimControl(nodeName, <span class=
+"stringliteral">"luaScript"</span>, dim)
+
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

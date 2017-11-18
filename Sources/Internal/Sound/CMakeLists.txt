@@ -1,4 +1,4 @@
-set( NAME_MODULE_STUB  Sound )
+set( MODULE_NAME_STUB  Sound )
 
 set( CPP_FILES         Private/SoundSystem.cpp ) 
 set( CPP_FILES_STUB    Private/*Stub.cpp )#only stub mode

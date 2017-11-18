@@ -149,13 +149,14 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowVisibleFrameChangedEvent(Wi
     return e;
 }
 
-MainDispatcherEvent MainDispatcherEvent::CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 key, eModifierKeys modifierKeys, bool isRepeated)
+MainDispatcherEvent MainDispatcherEvent::CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 keyScancode, uint32 keyVirtual, eModifierKeys modifierKeys, bool isRepeated)
 {
     DVASSERT(keyEventType == KEY_DOWN || keyEventType == KEY_UP || keyEventType == KEY_CHAR);
 
     MainDispatcherEvent e(keyEventType, window);
     e.timestamp = SystemTimer::GetMs();
-    e.keyEvent.key = key;
+    e.keyEvent.keyScancode = keyScancode;
+    e.keyEvent.keyVirtual = keyVirtual;
     e.keyEvent.modifierKeys = modifierKeys;
     e.keyEvent.isRepeated = isRepeated;
     return e;
@@ -248,15 +249,15 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowRotationGestureEvent(Window
     return e;
 }
 
-MainDispatcherEvent MainDispatcherEvent::CreateWindowSwipeGestureEvent(Window* window, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys)
+MainDispatcherEvent MainDispatcherEvent::CreateWindowSwipeGestureEvent(Window* window, float32 x, float32 y, float32 deltaX, float32 deltaY, eModifierKeys modifierKeys)
 {
     MainDispatcherEvent e(TRACKPAD_GESTURE, window);
     e.trackpadGestureEvent.magnification = 0.0f;
     e.trackpadGestureEvent.rotation = 0.0f;
     e.trackpadGestureEvent.deltaX = deltaX;
     e.trackpadGestureEvent.deltaY = deltaY;
-    e.trackpadGestureEvent.x = 0.0f;
-    e.trackpadGestureEvent.y = 0.0f;
+    e.trackpadGestureEvent.x = x;
+    e.trackpadGestureEvent.y = y;
     e.trackpadGestureEvent.modifierKeys = modifierKeys;
     return e;
 }
@@ -264,6 +265,12 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowSwipeGestureEvent(Window* w
 MainDispatcherEvent MainDispatcherEvent::CreateWindowCaptureLostEvent(Window* window)
 {
     MainDispatcherEvent e(WINDOW_CAPTURE_LOST, window);
+    return e;
+}
+
+MainDispatcherEvent MainDispatcherEvent::CreateInputLanguageChangedEvent()
+{
+    MainDispatcherEvent e(INPUT_LANGUAGE_CHANGED);
     return e;
 }
 } // namespace Private

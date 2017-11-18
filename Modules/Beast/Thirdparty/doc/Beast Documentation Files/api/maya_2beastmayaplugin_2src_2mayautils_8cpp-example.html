@@ -1,0 +1,878 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/mayautils.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2mayautils_8cpp-example.html','api_maya_2beastmayaplugin_2src_2mayautils_8cpp_example_html24e77698-e6f1-4747-8570-7c054d426627','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/mayautils.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2mayautils_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/mayautils.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/mayautils.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/beastmayaplugin/src/mayautils.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "mayautils.h"</span>
+<span class="preprocessor">#include &lt;maya/MColor.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MDistance.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MString.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MMatrix.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MDagPath.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MItDag.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnMesh.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnCamera.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnPointLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnDirectionalLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnSpotLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnAreaLight.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MPlug.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MPlugArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatVectorArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatMatrix.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MItMeshPolygon.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MPointArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MRenderUtil.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MSelectionList.h&gt;</span>
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+<span class="preprocessor">#include &lt;objbase.h&gt;</span>
+<span class="preprocessor">#include "plugincontext.h"</span>
+<span class="preprocessor">#include "scenemanager.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmeshwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastcamerawrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttexturewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastscenewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastlightwrapper.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeids.h"</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+std::wstring getGuid() {
+        GUID guid;
+        CoCreateGuid(&amp;guid);
+        RPC_WSTR guidString;
+        UuidToString(&amp;guid, &amp;guidString);
+        std::wstring str = (<span class=
+"keywordtype">wchar_t</span>*)guidString;
+        RpcStringFree(&amp;guidString);
+        <span class="keywordflow">return</span> str;
+}
+
+<a name="_a0"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a> gammaCorrectColorRGB(<span class="keyword">const</span> MColor&amp; c, <span class="keywordtype">float</span> gamma) {
+        <span class=
+"comment">// Note that the typename for c is wrong here, </span>
+        <span class=
+"comment">// the type is not linear until afterwards</span>
+        <span class="keywordtype">float</span> maxVal = 1.0f;
+        <span class="keywordtype">float</span> r = c.<a name=
+"a1"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b.html#aae144720efa4b0c2abdf0a1b32fce858"
+title="Red component.">r</a>;
+        <span class="keywordtype">float</span> g = c.g;
+        <span class="keywordtype">float</span> b = c.b;
+        <span class=
+"keywordflow">if</span>(r &gt; 1.0f, g &gt; 1.0f, b &gt; 1.0f) {
+                maxVal = std::max(r, std::max(g, b));
+                r /= maxVal;
+                g /= maxVal;
+                b /= maxVal;
+                MGlobal::displayWarning(L<span class=
+"stringliteral">"Color with intensity over 1. This may cause strange effects"</span>);
+        }
+        <span class="keywordflow">return</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>(pow(r, gamma) * maxVal, pow(g, gamma) * maxVal, pow(b, gamma) * maxVal);
+}
+
+<a name="_a2"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> gammaCorrectColorRGBA(<span class="keyword">const</span> MColor&amp; c, <span class="keywordtype">float</span> gamma) {
+        <span class=
+"comment">// Note that the typename for c is wrong here, </span>
+        <span class=
+"comment">// the type is not linear until afterwards</span>
+        <span class="keywordtype">float</span> maxVal = 1.0f;
+        <span class="keywordtype">float</span> r = c.<a name=
+"a3"></a><a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html#a576c990277b4bc837e4e663b9ff1b1af"
+title="Red component.">r</a>;
+        <span class="keywordtype">float</span> g = c.g;
+        <span class="keywordtype">float</span> b = c.b;
+        <span class=
+"keywordflow">if</span>(r &gt; 1.0f, g &gt; 1.0f, b &gt; 1.0f) {
+                maxVal = std::max(r, std::max(g, b));
+                r /= maxVal;
+                g /= maxVal;
+                b /= maxVal;
+                MGlobal::displayWarning(L<span class=
+"stringliteral">"Color with intensity over 1. This may cause strange effects"</span>);
+        }
+        <span class="keywordflow">return</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>(pow(r, gamma) * maxVal, pow(g, gamma) * maxVal, pow(b, gamma) * maxVal, c.a);
+}
+
+<a class="code" href="struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> toLinearBeastColorRGBA(<span class="keyword">const</span> MColor&amp; col) {
+        <span class=
+"keywordflow">return</span> gammaCorrectColorRGBA(col, 2.2f);
+}
+
+<a class="code" href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a> toLinearBeastColorRGB(<span class="keyword">const</span> MColor&amp; col) {
+        <span class=
+"keywordflow">return</span> gammaCorrectColorRGB(col, 2.2f);
+}
+
+<a name="_a4"></a><a class="code" href=
+"struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a> toBeastTransform(<span class="keyword">const</span> MMatrix&amp; m) {
+        <a class="code" href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a> result;
+        <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; 4; ++y) {
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; 4; ++x) {
+                        result.<a name="a5"></a><a class="code"
+href=
+"struct_i_l_b_matrix4x4.html#a48a4f2d3bf221e6035bb0677237aef39"
+title=
+"The actual data in the matrix.">m</a>[y * 4 + x] = (float)m(x, y);
+                }
+        }
+        <span class="keywordflow">return</span> result;
+}
+
+<a name="_a6"></a><a class="code" href="struct_i_l_b_vec3.html"
+title=
+"Three dimensional geometric vector type.">ILBVec3</a> toBeastVector(<span class="keyword">const</span> MVector&amp; vec) {
+        <span class="keywordflow">return</span> <a class="code"
+href="struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>(static_cast&lt;float&gt;(vec.x), static_cast&lt;float&gt;(vec.y), static_cast&lt;float&gt;(vec.z));
+}
+
+MVector toMayaVector(<span class="keyword">const</span> <a class=
+"code" href="struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>&amp; vec) {
+        <span class=
+"keywordflow">return</span> MVector(static_cast&lt;double&gt;(vec.<a name="a7"></a><a class="code"
+href="struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3"
+title="x">x</a>), static_cast&lt;double&gt;(vec.<a name=
+"a8"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a>), static_cast&lt;double&gt;(vec.<a name=
+"a9"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a>));
+}
+
+MObject findMayaNode(<span class=
+"keyword">const</span> std::wstring&amp; name) {
+        MSelectionList tempSel;
+        MStatus status;
+        status = tempSel.add(name.c_str());
+        <span class=
+"comment">// findMayaNode is used to test if things like persp have been created yet, so we don't want to emit an error if the object doesn't exist</span>
+        <span class=
+"keywordflow">if</span>(status != MStatus::kSuccess) {
+                <span class=
+"keywordflow">return</span> MObject::kNullObj;
+        }
+        MObject tempObj;
+        status = tempSel.getDependNode(0, tempObj);
+        CHECK_MSTATUS_AND_RETURN(status, MObject::kNullObj);
+        <span class=
+"keywordflow">if</span> (tempObj == MObject::kNullObj) {
+                std::wstring tempString = name;
+                tempString.insert(name.find_last_of(<span class=
+"charliteral">':'</span>)+1, L<span class=
+"stringliteral">"*"</span>);
+                status = tempSel.add(tempString.c_str());
+                CHECK_MSTATUS_AND_RETURN(status, MObject::kNullObj);
+                status = tempSel.getDependNode(0, tempObj);
+                CHECK_MSTATUS_AND_RETURN(status, MObject::kNullObj);
+        }
+        <span class="keywordflow">return</span> tempObj;
+}
+
+NodeType getNodeType(<span class=
+"keyword">const</span> MFnDagNode&amp; dagNode, <span class=
+"keywordtype">bool</span> checkVisibility) {
+        <span class=
+"keywordflow">if</span>(dagNode.isIntermediateObject()) {
+                <span class="keywordflow">return</span> Ignored;
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (dagNode.typeName() == <span class=
+"stringliteral">"transform"</span>) {
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; dagNode.childCount(); i++) {
+                        MFnDagNode childDagNode(dagNode.child(i));
+
+                        <span class=
+"keywordflow">if</span>(childDagNode.isIntermediateObject()) {
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+                        <span class=
+"comment">// Always export cameras...</span>
+                        MString childType = childDagNode.typeName();
+                        <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"camera"</span>) {
+                                <span class=
+"keywordflow">return</span> Camera;
+                        }
+                        <span class=
+"comment">// ...only export the others if they're visible</span>
+                        MDagPath path;
+                        dagNode.getPath(path);
+                        <span class=
+"keywordflow">if</span> (checkVisibility &amp;&amp; !path.isVisible()) {
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+
+                        <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"mesh"</span>) {
+                                <span class=
+"keywordflow">return</span> Mesh;
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"pointLight"</span>) {
+                                <span class=
+"keywordflow">return</span> PointLight;
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"directionalLight"</span>) {
+                                <span class=
+"keywordflow">return</span> DirectionalLight;
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"spotLight"</span>) {
+                                <span class=
+"keywordflow">return</span> SpotLight;
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"areaLight"</span>) {
+                                <span class=
+"keywordflow">return</span> AreaLight;
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (childType == <span class=
+"stringliteral">"volumeLight"</span>) {
+                                <span class=
+"keywordflow">return</span> SkyLight;
+                        }
+                }
+        }
+        <span class="keywordflow">return</span> Ignored;
+}
+
+std::wstring getPlugName(<span class=
+"keyword">const</span> MPlug&amp; plug) {
+        <span class=
+"keywordflow">return</span> plug.partialName(<span class=
+"keyword">false</span>, <span class=
+"keyword">false</span>, <span class=
+"keyword">false</span>, <span class=
+"keyword">false</span>, <span class=
+"keyword">false</span>, <span class=
+"keyword">true</span>).asWChar();
+}
+
+<span class=
+"comment">// Gets what node and what output is connected to node and the input with specified name</span>
+std::pair&lt;MObject, std::wstring&gt; getConnectedNode(<span class="keyword">const</span> MFnDependencyNode&amp; node, <span class="keyword">const</span> std::wstring&amp; inputName) {
+        MPlug inputPlug = node.findPlug(inputName.c_str(), <span class="keyword">true</span>);
+        MPlugArray connectedPlugs;
+        <span class=
+"keywordtype">bool</span> hasConnections = inputPlug.connectedTo(connectedPlugs, <span class="keyword">true</span>, <span class="keyword">true</span>);
+        <span class="keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> length = connectedPlugs.length();
+        <span class=
+"keywordflow">if</span>(hasConnections &amp;&amp; connectedPlugs.length() &gt; 0) {
+                MPlug&amp; plug = connectedPlugs[0];
+                std::wstring connectedAttribute = getPlugName(plug);
+                MObject connectedNode = plug.node();
+                <span class=
+"keywordflow">return</span> std::make_pair(connectedNode, connectedAttribute);
+        }
+        <span class=
+"keywordflow">return</span> std::make_pair(MObject::kNullObj, L<span class="stringliteral">""</span>);
+}
+
+<span class=
+"keywordtype">void</span> getConnectedNodes(<span class="keyword">const</span> MFnDependencyNode&amp; node, std::vector&lt;std::pair&lt;MObject, std::wstring&gt;&gt;&amp; result) {
+        MPlugArray allConnections;
+        node.getConnections(allConnections);
+
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; allConnections.length(); i++) {
+                getConnectedNodes(allConnections[i], result);
+        }
+}
+
+<span class=
+"keywordtype">void</span> getConnectedNodes(MPlug&amp; inputPlug, std::vector&lt;std::pair&lt;MObject, std::wstring&gt;&gt;&amp; result) {
+        <span class="keywordflow">if</span>(inputPlug.isArray()) {
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; inputPlug.numElements(); ++i) {
+                        getConnectedNodes(inputPlug[i], result);
+                }
+        }
+
+        MPlugArray connectedPlugs;
+        inputPlug.connectedTo(connectedPlugs, <span class=
+"keyword">true</span>, <span class="keyword">true</span>);
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; connectedPlugs.length(); i++) {
+                MPlug&amp; plug = connectedPlugs[i];
+                std::wstring connectedAttribute = getPlugName(plug);
+                MObject connectedNode = plug.node();
+                result.push_back(std::make_pair(connectedNode, connectedAttribute));
+        }
+}
+
+<span class=
+"keywordtype">void</span> getInstancesFromSelection(MSelectionList&amp; selection, std::vector&lt;MObject&gt;&amp; result) {
+        MStatus res;
+        MSelectionList children;
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; selection.length(); ++i) {
+                MObject node;
+                selection.getDependNode(i, node);
+
+                <span class=
+"comment">// We're only interested in dag nodes</span>
+                MFnDagNode dagNode(node, &amp;res);
+                <span class=
+"keywordflow">if</span> (res == MStatus::kSuccess) {
+                        <span class=
+"keywordflow">if</span> (getNodeType(dagNode) == Mesh) {
+                                <span class=
+"comment">// So here's something we can bake</span>
+                                result.push_back(dagNode.object());
+                        } <span class="keywordflow">else</span> {
+                                <span class=
+"comment">// This is something else but it may have children we can bake.</span>
+                                <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; dagNode.childCount(); i++) {
+                                        children.add(dagNode.child(i));
+                                }
+                        }
+                }
+        }
+
+        <span class="keywordflow">if</span> (!children.isEmpty()) {
+                getInstancesFromSelection(children, result);
+        }
+}
+
+<span class=
+"keywordtype">bool</span> setCompoundPlugValue(<span class=
+"keyword">const</span> MFnDependencyNode&amp; node, <span class=
+"keyword">const</span> std::wstring&amp; attr, int2 value) {
+        <span class=
+"keywordtype">bool</span> res1 = setPlugValue(node, attr, value[0], 0);
+        <span class=
+"keywordtype">bool</span> res2 = setPlugValue(node, attr, value[1], 1);
+        <span class=
+"keywordflow">return</span> res1 &amp;&amp; res2;
+}
+
+<span class=
+"keywordtype">bool</span> getCompoundPlugValue(<span class=
+"keyword">const</span> MFnDependencyNode&amp; node, <span class=
+"keyword">const</span> std::wstring&amp; attr, int2&amp; value) {
+        <span class=
+"keywordtype">bool</span> res1 = getPlugValue(node, attr, value[0], 0);
+        <span class=
+"keywordtype">bool</span> res2 = getPlugValue(node, attr, value[1], 1);
+        <span class=
+"keywordflow">return</span> res1 &amp;&amp; res2;
+}
+
+<span class=
+"keywordtype">bool</span> getCompoundPlugValue(<span class=
+"keyword">const</span> MFnDependencyNode&amp; node, <span class=
+"keyword">const</span> std::wstring&amp; attr, float2&amp; value) {
+        <span class=
+"keywordtype">bool</span> res1 = getPlugValue(node, attr, value[0], 0);
+        <span class=
+"keywordtype">bool</span> res2 = getPlugValue(node, attr, value[1], 1);
+        <span class=
+"keywordflow">return</span> res1 &amp;&amp; res2;
+}
+
+<span class=
+"comment">// Returns true if the node was exported and false if it was ignored</span>
+<span class="keywordtype">bool</span> exportDagNode(<span class=
+"keyword">const</span> MDagPath&amp; dp, SceneManager&amp; sceneManager, BeastCameraPtr&amp; renderCam) {
+        std::string debugWhoIsThis = dp.fullPathName().asChar();
+
+        <span class="keywordflow">switch</span>(getNodeType(dp)) {
+                <span class="keywordflow">case</span> Mesh:
+                {
+                        sceneManager.createInstance(dp);
+                        <span class="keywordflow">break</span>;
+                }
+                <span class="keywordflow">case</span> Camera:
+                {
+                        BeastCameraPtr cam = sceneManager.createCamera(dp);
+                        <span class="keywordflow">if</span>(cam) {
+                                <span class=
+"comment">// For now, assume there is one perspective camera</span>
+                                renderCam = cam;
+                        }
+                        <span class="keywordflow">break</span>;
+                }
+                <span class="keywordflow">case</span> PointLight:
+                {
+                        sceneManager.createPointLight(dp);
+                        <span class="keywordflow">break</span>;
+                }
+                <span class="keywordflow">case</span> SpotLight:
+                {
+                        sceneManager.createSpotLight(dp);
+                        <span class="keywordflow">break</span>;
+                }
+                <span class=
+"keywordflow">case</span> DirectionalLight:
+                {
+                        sceneManager.createDirectionalLight(dp);
+                        <span class="keywordflow">break</span>;
+                }
+                <span class="keywordflow">case</span> AreaLight:
+                {
+                        sceneManager.createAreaLight(dp);
+                        <span class="keywordflow">break</span>;
+                }
+                <span class="keywordflow">case</span> SkyLight:
+                {
+                        sceneManager.createSkyLight(dp);
+                        <span class="keywordflow">break</span>;
+                }
+                <span class="keywordflow">default</span>:
+                {
+                        <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+                }
+        }
+        <span class="keywordflow">return</span> <span class=
+"keyword">true</span>;
+}
+
+<span class="keywordtype">void</span> removeNode(<span class=
+"keyword">const</span> MObject&amp; obj, SceneManager&amp; sceneManager) {
+        sceneManager.removeInstance(obj);
+        sceneManager.removeLight(obj);
+        sceneManager.removeCamera(obj);
+}
+
+<span class=
+"keywordtype">int</span> countRelevantNodes(MItDag&amp; dagIter) {
+        <span class="keywordtype">int</span> relevantCount = 0;
+        <span class="keywordflow">while</span>(!dagIter.isDone()) {
+                MDagPath dp;
+                dagIter.getPath(dp);
+                <span class=
+"keywordflow">if</span>(getNodeType(dp) != Ignored) {
+                        relevantCount++;
+                }
+                dagIter.next();
+        }
+        <span class="keywordflow">return</span> relevantCount;
+}
+
+<span class=
+"keywordtype">void</span> exportScene(JobContext&amp; bjc, BeastCameraPtr&amp; renderCam, <span class="keywordtype">bool</span> progressBar, <span class="keywordtype">bool</span> live) {
+        ScopedProgressBar progress(progressBar, L<span class=
+"stringliteral">"Beast Export"</span>);
+        progress.setProgress(0);
+
+        MObject settingsNode = findMayaNode(L<span class=
+"stringliteral">"beastSettings"</span>);
+        <span class=
+"keywordflow">if</span> (settingsNode == MObject::kNullObj) {
+                <span class=
+"comment">// TODO: Create new beast settings here</span>
+                <span class="keywordflow">return</span>;
+        }
+
+        <span class="keyword">const</span> <span class=
+"keywordtype">float</span> currentTime = getCurrentFrameTime();
+
+        <span class=
+"comment">// Check if motion blur is enabled</span>
+        <span class="keywordtype">float</span> motionBlur = 0.0f;
+        getPlugValue(settingsNode, L<span class=
+"stringliteral">"motionBlur"</span>, motionBlur);
+
+        <span class=
+"keywordtype">float</span> shutterOpen, shutterClose;
+        <span class=
+"keywordflow">if</span> (motionBlur &gt; 0.0f) {
+                getCameraShutterTimings(currentTime, motionBlur, shutterOpen, shutterClose);
+                setCurrentFrameTime(shutterOpen);
+        }
+        
+        BeastScene&amp; scene = bjc.createScene(live);
+
+        <span class="keyword">const</span> <span class=
+"keywordtype">float</span> meterPerWorldUnit = 0.01f; <span class=
+"comment">// Internal unit is cm</span>
+        scene.setMeterPerWorldUnit(meterPerWorldUnit);
+
+        MItDag dagIter(MItDag::kBreadthFirst, MFn::kInvalid);
+        <span class=
+"keywordtype">int</span> relevantNodes = countRelevantNodes(dagIter);
+        progress.setProgressMax(relevantNodes);
+
+        dagIter.reset();
+        <span class="keywordtype">int</span> currentNode = 0;
+        <span class="keywordflow">while</span>(!dagIter.isDone()) {
+                MDagPath dp;
+                dagIter.getPath(dp);
+                <span class=
+"keywordtype">bool</span> nodeChanged = exportDagNode(dp, bjc.getSceneManager(), renderCam);
+                <span class=
+"keywordflow">if</span>(nodeChanged &amp;&amp; progressBar) {
+                        currentNode++;
+                        progress.setProgress(currentNode);
+                }
+                dagIter.next();
+        }
+        
+        <span class=
+"keywordflow">if</span> (motionBlur &gt; 0.0f) {
+                
+                <span class=
+"keywordtype">int</span> motionSteps = 1;
+                getPlugValue(settingsNode, L<span class=
+"stringliteral">"motionSteps"</span>, motionSteps);
+
+                <span class=
+"comment">// Create data for motion blur</span>
+                bjc.getSceneManager().createMotionData(shutterOpen, shutterClose, motionSteps);
+
+                <span class=
+"comment">// Reset the frame time</span>
+                setCurrentFrameTime(currentTime);
+        }
+
+        scene.end();
+}
+
+<span class=
+"comment">// Only supports non-array attributes and multi-attributes with indexMatters=false</span>
+MStatus connect( <span class=
+"keyword">const</span> MFnDependencyNode&amp; node, <span class=
+"keyword">const</span> std::wstring&amp; attr, <span class=
+"keyword">const</span> MFnDependencyNode&amp; otherNode, <span class="keyword">const</span> std::wstring&amp; otherAttr) {
+        MStatus res;
+        MDGModifier dgm;
+
+        MPlug otherPlug = otherNode.findPlug(otherAttr.c_str(), res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        MString command = L<span class=
+"stringliteral">"connectAttr "</span>;
+        <span class="keywordflow">if</span>(otherPlug.isArray()) {
+                command += <span class=
+"stringliteral">"-nextAvailable "</span>;
+        }
+
+        MString nodeName = node.name();
+        MFnDagNode dagNode(node.object(), &amp;res);
+        <span class=
+"keywordflow">if</span>(res == MStatus::kSuccess) {
+                nodeName = dagNode.fullPathName();
+        }
+
+        MString otherNodeName = otherNode.name();
+        MFnDagNode otherDagNode(otherNode.object(), &amp;res);
+        <span class=
+"keywordflow">if</span>(res == MStatus::kSuccess) {
+                otherNodeName = otherDagNode.fullPathName();
+        }
+
+        command += nodeName + L<span class=
+"stringliteral">"."</span> + attr.c_str() + L<span class=
+"stringliteral">" "</span>;
+        command += otherNodeName + <span class=
+"stringliteral">"."</span> + otherAttr.c_str();
+        res = MGlobal::executeCommand(command);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        <span class="keywordflow">return</span> MS::kSuccess;
+}
+
+MStatus disconnect( <span class=
+"keyword">const</span> MFnDependencyNode&amp; node, <span class=
+"keyword">const</span> std::wstring&amp; attr, <span class=
+"keyword">const</span> MFnDependencyNode&amp; otherNode, <span class="keyword">const</span> std::wstring&amp; otherAttr ) {
+        MStatus res;
+        MDGModifier dgm;
+
+        MPlug plug = node.findPlug(attr.c_str(), res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+        MPlug otherPlug = otherNode.findPlug(otherAttr.c_str(), res);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        res = dgm.disconnect(plug, otherPlug);
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        res = dgm.doIt();
+        CHECK_MSTATUS_AND_RETURN_IT(res);
+
+        <span class="keywordflow">return</span> MS::kSuccess;
+}
+
+<span class="keywordtype">bool</span> isConnected(<span class=
+"keyword">const</span> MFnDependencyNode&amp; node, <span class=
+"keyword">const</span> std::wstring&amp; inputName) {
+        MPlug inputPlug = node.findPlug(inputName.c_str(), <span class="keyword">true</span>);
+        std::vector&lt;std::pair&lt;MObject, std::wstring&gt;&gt; result;
+        getConnectedNodes(inputPlug, result);
+        <span class="keywordflow">return</span> !result.empty();
+}
+
+<span class="keywordtype">bool</span> inStringArray(<span class=
+"keyword">const</span> MString&amp; val, <span class=
+"keyword">const</span> MStringArray&amp; stringArray) {
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; stringArray.length(); i++) {
+                <span class=
+"keyword">const</span> MString&amp; currentVal = stringArray[i];
+                <span class=
+"keywordflow">if</span>(val == currentVal) {
+                        <span class=
+"keywordflow">return</span> <span class="keyword">true</span>;
+                }
+        }
+        <span class="keywordflow">return</span> <span class=
+"keyword">false</span>;
+}
+
+<span class=
+"keywordtype">void</span> setCurrentFrameTime(<span class=
+"keywordtype">float</span> time) {
+        MGlobal::viewFrame(time);
+}
+
+<span class="keywordtype">float</span> getCurrentFrameTime() {
+        <span class="keywordtype">double</span> result;
+        MGlobal::executeCommand(<span class=
+"stringliteral">"currentTime -q"</span>, result);
+        <span class="keywordflow">return</span> float(result);
+}
+
+<span class=
+"keywordtype">void</span> getCameraShutterTimings(<span class=
+"keywordtype">float</span> currentTime, <span class=
+"keywordtype">float</span> blurLength, <span class=
+"keywordtype">float</span>&amp; shutterOpen, <span class=
+"keywordtype">float</span>&amp; shutterClose) {
+        <span class="keyword">static</span> <span class=
+"keyword">const</span> <span class=
+"keywordtype">float</span> blurByFrame = 0.4f;
+        <span class="keyword">const</span> <span class=
+"keywordtype">float</span> shutterTimeSpan = blurLength * blurByFrame;
+        shutterOpen  = currentTime - shutterTimeSpan * 0.5f;
+        shutterClose = currentTime + shutterTimeSpan * 0.5f;
+}
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

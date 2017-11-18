@@ -3,17 +3,24 @@
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Engine/Window.h"
 #include "Entity/Component.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "UI/Layouts/LayoutFormula.h"
 #include "UI/Layouts/Private/Layouter.h"
 #include "UI/Layouts/UIAnchorComponent.h"
 #include "UI/Layouts/UIFlowLayoutComponent.h"
-#include "UI/Layouts/UISizePolicyComponent.h"
-#include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILayoutIsolationComponent.h"
-#include "UI/Layouts/UILinearLayoutComponent.h"
-#include "UI/Layouts/LayoutFormula.h"
+#include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UILayoutSystemListener.h"
+#include "UI/Layouts/UILinearLayoutComponent.h"
+#include "UI/Layouts/UISizePolicyComponent.h"
+#include "UI/Text/UITextComponent.h"
+#include "UI/Text/UITextSystem.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
 
@@ -22,17 +29,14 @@ namespace DAVA
 UILayoutSystem::UILayoutSystem()
     : sharedLayouter(std::make_unique<Layouter>())
 {
-    sharedLayouter->SetRtl(isRtl);
-    sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
-    {
+    sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
         for (UILayoutSystemListener* listener : listeners)
         {
             listener->OnFormulaProcessed(control, axis, formula);
         }
     };
 
-    sharedLayouter->onFormulaRemoved = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
-    {
+    sharedLayouter->onFormulaRemoved = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
         for (UILayoutSystemListener* listener : listeners)
         {
             listener->OnFormulaRemoved(control, axis, formula);
@@ -43,6 +47,35 @@ UILayoutSystem::UILayoutSystem()
 UILayoutSystem::~UILayoutSystem()
 {
     DVASSERT(listeners.empty());
+}
+
+void UILayoutSystem::RegisterSystem()
+{
+    // Subscribe on visible frame changing only for primary window if it exists
+    if (GetPrimaryWindow())
+    {
+        visibleFrameChangedToken = GetPrimaryWindow()->visibleFrameChanged.Connect([&](Window* w, Rect rect) {
+            Rect vr = GetScene()->vcs->ConvertInputToVirtual(rect);
+            UpdateVisibilityRect(vr);
+        });
+        virtualSizeChangedToken = GetScene()->vcs->virtualSizeChanged.Connect([&](const Size2i& size) {
+            UpdateVisibilityRect(Rect(0.f, 0.f, static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+        });
+        inputSizeChangedToken = GetScene()->vcs->inputAreaSizeChanged.Connect([&](const Size2i& size) {
+            Vector2 s = GetScene()->vcs->ConvertInputToVirtual(Vector2(static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+            UpdateVisibilityRect(Rect(0.f, 0.f, s.x, s.y));
+        });
+    }
+}
+
+void UILayoutSystem::UnregisterSystem()
+{
+    if (GetPrimaryWindow())
+    {
+        GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+        GetScene()->vcs->virtualSizeChanged.Disconnect(virtualSizeChangedToken);
+        GetScene()->vcs->inputAreaSizeChanged.Disconnect(inputSizeChangedToken);
+    }
 }
 
 void UILayoutSystem::Process(float32 elapsedTime)
@@ -131,13 +164,12 @@ void UILayoutSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContainer)
 
 bool UILayoutSystem::IsRtl() const
 {
-    return isRtl;
+    return sharedLayouter->IsRtl();
 }
 
 void UILayoutSystem::SetRtl(bool rtl)
 {
-    isRtl = rtl;
-    sharedLayouter->SetRtl(isRtl);
+    sharedLayouter->SetRtl(rtl);
 }
 
 void UILayoutSystem::ProcessControl(UIControl* control)
@@ -172,9 +204,19 @@ void UILayoutSystem::ProcessControl(UIControl* control)
 void UILayoutSystem::ManualApplyLayout(UIControl* control)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_LAYOUT_SYSTEM);
+    UIControlSystem* scene = control->GetScene();
+    if (scene)
+    {
+        scene->GetTextSystem()->ForceProcessControl(0.0f, control);
+    }
+    else
+    {
+        GetEngineContext()->uiControlSystem->GetTextSystem()->ForceProcessControl(0.0f, control);
+    }
 
     Layouter localLayouter;
-    localLayouter.SetRtl(isRtl);
+    localLayouter.SetRtl(sharedLayouter->IsRtl());
+    localLayouter.SetVisibilityRect(sharedLayouter->GetVisibilityRect());
     localLayouter.ApplyLayout(control);
 }
 
@@ -296,6 +338,19 @@ void UILayoutSystem::ProcessControlHierarhy(UIControl* control)
             continue;
         }
         ++it;
+    }
+}
+
+void UILayoutSystem::UpdateVisibilityRect(const Rect& visibilityRect)
+{
+    sharedLayouter->SetVisibilityRect(visibilityRect);
+    if (currentScreen.Valid())
+    {
+        currentScreen->SetLayoutDirty();
+    }
+    if (popupContainer.Valid())
+    {
+        popupContainer->SetLayoutDirty();
     }
 }
 }

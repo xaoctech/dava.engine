@@ -11,6 +11,7 @@ class ResourceEditorLauncher;
 class REModule : public DAVA::TArc::ClientModule
 {
 public:
+    REModule();
     ~REModule();
 
 protected:

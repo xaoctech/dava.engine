@@ -14,7 +14,7 @@ namespace DAVA
 class UIUpdateComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIUpdateComponent, UIComponent);
-    IMPLEMENT_UI_COMPONENT(UIUpdateComponent);
+    DECLARE_UI_COMPONENT(UIUpdateComponent);
 
 public:
     UIUpdateComponent();

@@ -4,10 +4,9 @@
 
 #include "Modules/LegacySupportModule/Private/Project.h"
 
-#include <TArc/Core/FieldBinder.h>
-
 #include <QtTools/FileDialogs/FileDialog.h>
-#include <QtTools/Utils/Utils.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/Core/FieldBinder.h>
 #include <QtHelpers/HelperFunctions.h>
 
 #include <Debug/DVAssert.h>
@@ -80,21 +79,22 @@ FileSystemWidget::FileSystemWidget(DAVA::TArc::ContextAccessor* accessor_, QWidg
 
 FileSystemWidget::~FileSystemWidget() = default;
 
+QTreeView* FileSystemWidget::GetTreeView()
+{
+    return treeView;
+}
+
 void FileSystemWidget::InitUI()
 {
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
     verticalLayout->setSpacing(5);
     verticalLayout->setContentsMargins(0, 0, 0, 0);
 
-    filterLine = new QLineEdit(this);
-    verticalLayout->addWidget(filterLine);
-
     treeView = new QTreeView(this);
     verticalLayout->addWidget(treeView);
 
-    filterLine->setClearButtonEnabled(true);
-
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    treeView->setHeaderHidden(true);
     connect(treeView, &QWidget::customContextMenuRequested, this, &FileSystemWidget::OnCustomContextMenuRequested);
     treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -102,7 +102,6 @@ void FileSystemWidget::InitUI()
     treeView->setDragDropMode(QAbstractItemView::DragOnly);
 
     connect(treeView, &QTreeView::doubleClicked, this, &FileSystemWidget::onDoubleClicked);
-    connect(filterLine, &QLineEdit::textChanged, this, &FileSystemWidget::setFilterFixedString);
 }
 
 void FileSystemWidget::BindFields()
@@ -132,8 +131,9 @@ void FileSystemWidget::SetResourceDirectory(const QString& path)
     if (isAvailable)
     {
         model = new FileSystemModel(this);
+        connect(model, &QFileSystemModel::directoryLoaded, this, &FileSystemWidget::OnDirectoryLoaded);
+
         model->setFilter(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot);
-        setFilterFixedString("");
         model->setNameFilterDisables(false);
         model->setReadOnly(false);
         treeView->setModel(model);
@@ -155,8 +155,11 @@ void FileSystemWidget::SetResourceDirectory(const QString& path)
 
 void FileSystemWidget::SelectFile(const QString& filePath)
 {
-    DVASSERT(!filePath.isEmpty());
-    treeView->setCurrentIndex(model->index(filePath));
+    QModelIndex index = model->index(filePath);
+    //scrollTo will expand all collapsed indexes
+    treeView->scrollTo(index);
+    treeView->setCurrentIndex(index);
+    fileToSelect = filePath;
 }
 
 //refresh actions by menu invoke pos
@@ -235,13 +238,6 @@ void FileSystemWidget::onDoubleClicked(const QModelIndex& index)
     {
         openFile.Emit(model->filePath(index));
     }
-}
-
-void FileSystemWidget::setFilterFixedString(const QString& filterStr)
-{
-    QStringList filters;
-    filters << QString("*%1*" + Project::GetUiFileExtension()).arg(filterStr);
-    model->setNameFilters(filters);
 }
 
 void FileSystemWidget::onNewFolder()
@@ -429,5 +425,24 @@ void FileSystemWidget::OnProjectPathChanged(const DAVA::Any& projectPath)
         QString uiResourcesPath = QString::fromStdString(uiDirectory.GetStringValue());
 
         SetResourceDirectory(uiResourcesPath);
+    }
+}
+
+void FileSystemWidget::OnDirectoryLoaded(const QString& path)
+{
+    if (fileToSelect.isEmpty())
+    {
+        return;
+    }
+
+    QModelIndex index = model->index(fileToSelect);
+    QModelIndex parent = index.parent();
+    QString parentDir = model->filePath(parent);
+    if (path == parentDir)
+    {
+        //if not call sort before scrollTo fileSystemModel will sort items after we scroll to the unsortedItem
+        model->sort(0);
+        treeView->scrollTo(model->index(fileToSelect));
+        fileToSelect.clear();
     }
 }

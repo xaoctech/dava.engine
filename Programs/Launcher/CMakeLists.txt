@@ -3,21 +3,18 @@ cmake_minimum_required (VERSION 3.0)
 set                   ( CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebinfo" CACHE STRING "limited configs" FORCE )
 
 project               ( Launcher )
+
 set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
+
 include               ( CMake-common )
+include               ( ToolsHelpers )
 
 find_package          ( QT5 REQUIRED  COMPONENTS Network )
-find_package          ( QtHelpers  REQUIRED )
+find_dava_module   ( QtHelpers )
 
 include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
-
 include_directories   (.)             
 include_directories   ( "Classes" )
-
-if ( WIN32 )
-    set( LIB_RELEASE  "msvcrt.lib" )
-    set( LIB_DEBUG    "msvcrtd.lib" )
-endif()
 
 file                  ( GLOB UI_LIST "DataQt/*.ui" )
 qt5_wrap_ui           ( UI_APP_HDRS  ${UI_LIST} )
@@ -53,8 +50,10 @@ ADD_CUSTOM_COMMAND( TARGET ${PROJECT_NAME} POST_BUILD
 )    
 endif ()
 
-#create package info for users, which install launcher at the first time
 if (WIN32 AND DEPLOY AND NOT DAVA_MEGASOLUTION )
+
+    copy_libraries_subset_for_qt_tools()
+
     add_custom_target( "createPackageInfo" ALL
         COMMAND "python" "${CMAKE_CURRENT_LIST_DIR}/Teamcity/createPackageInfo.py"
             "${DEPLOY_DIR}"

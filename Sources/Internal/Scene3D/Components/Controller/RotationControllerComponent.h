@@ -13,11 +13,6 @@ public:
 
     Component* Clone(Entity* toEntity) override;
 
-public:
-    INTROSPECTION_EXTEND(RotationControllerComponent, Component,
-                         NULL
-                         );
-
     DAVA_VIRTUAL_REFLECTION(RotationControllerComponent, Component);
 };
 };

@@ -41,6 +41,7 @@ QWidget* CreatedEditor(const Reflection& r, const MultiDoubleSpinBox::FieldDescr
     params.fields[DoubleSpinBox::Fields::Value] = fieldDescr.valueRole;
     ApplyRole(params.fields, DoubleSpinBox::Fields::Range, fieldDescr.rangeRole);
     ApplyRole(params.fields, DoubleSpinBox::Fields::IsReadOnly, fieldDescr.readOnlyRole);
+    ApplyRole(params.fields, DoubleSpinBox::Fields::ShowSpinArrows, fieldDescr.showSpinArrowsRole);
     ApplyRole(params.fields, DoubleSpinBox::Fields::Accuracy, fieldDescr.accuracyRole);
     DoubleSpinBox* spinBox = new DoubleSpinBox(params, accessor, model, result);
     subControls.push_back(spinBox);
@@ -125,6 +126,7 @@ bool MultiDoubleSpinBox::FieldDescriptor::operator==(const FieldDescriptor& othe
     return valueRole == other.valueRole &&
     readOnlyRole == other.readOnlyRole &&
     accuracyRole == other.accuracyRole &&
+    showSpinArrowsRole == other.showSpinArrowsRole &&
     rangeRole == other.rangeRole;
 }
 

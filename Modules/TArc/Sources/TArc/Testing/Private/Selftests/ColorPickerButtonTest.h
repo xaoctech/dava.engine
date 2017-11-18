@@ -6,8 +6,7 @@
 #include "TArc/Controls/ColorPicker/ColorPickerButton.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Utils/QtConnections.h"
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
@@ -400,5 +399,5 @@ DAVA_TARC_TESTCLASS(ColorPickerButtonTest)
     END_TESTED_MODULES()
 
     DAVA::TArc::QtConnections connections;
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 };

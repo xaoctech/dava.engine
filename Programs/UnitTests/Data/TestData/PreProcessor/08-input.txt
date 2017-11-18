@@ -1,9 +1,0 @@
-BASIC MACRO EXPANSION
-
-#define FOG tick_blue_fog
-#define HOG 4
-{
-  fog = FOG;
-  hog = 2*HOG - (hh - HOG);
-}
-last

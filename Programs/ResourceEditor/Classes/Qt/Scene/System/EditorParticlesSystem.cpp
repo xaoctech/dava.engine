@@ -182,6 +182,14 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
         emitterVector = emitter->GetEmitter()->emissionVector->GetValue(effect->GetCurrTime());
         emitterVector.Normalize();
     }
+    DAVA::Vector3 emissionVelocityVector(0.0f, 0.0f, 1.0f);
+    if (emitter->GetEmitter()->emissionVelocityVector)
+    {
+        emissionVelocityVector = emitter->GetEmitter()->emissionVelocityVector->GetValue(effect->GetCurrTime());
+        float32 sqrLen = emissionVelocityVector.SquareLength();
+        if (sqrLen > DAVA::EPSILON)
+            emissionVelocityVector /= std::sqrt(sqrLen);
+    }
 
     DAVA::float32 scale = 1.0f;
     HoodSystem* hoodSystem = ((SceneEditor2*)GetScene())->hoodSystem;
@@ -198,8 +206,15 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
     wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
     TransformPerserveLength(emitterVector, wMat);
 
+    emissionVelocityVector *= arrowBaseSize * scale;
+    TransformPerserveLength(emissionVelocityVector, wMat);
+
     GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emitterVector, arrowSize,
                                                                DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+
+    if (emitter->GetEmitter()->emissionVelocityVector)
+        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(center, center + emissionVelocityVector, arrowSize,
+                                                                   DAVA::Color(0.0f, 0.0f, 0.7f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
 void EditorParticlesSystem::AddEntity(DAVA::Entity* entity)
@@ -210,6 +225,11 @@ void EditorParticlesSystem::AddEntity(DAVA::Entity* entity)
 void EditorParticlesSystem::RemoveEntity(DAVA::Entity* entity)
 {
     DAVA::FindAndRemoveExchangingWithLast(entities, entity);
+}
+
+void EditorParticlesSystem::PrepareForRemove()
+{
+    entities.clear();
 }
 
 void EditorParticlesSystem::RestartParticleEffects()
@@ -340,10 +360,32 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
         }
         case CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES:
         {
-            RestartParticleEffects();
-
-            const CommandChangeLayerMaterialProperties* cmd = static_cast<const CommandChangeLayerMaterialProperties*>(command);
-            SceneSignals::Instance()->EmitParticleLayerValueChanged(activeScene, cmd->GetLayer());
+            EmitValueChanged<CommandChangeLayerMaterialProperties>(command, activeScene);
+            break;
+        }
+        case CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES:
+        {
+            EmitValueChanged<CommandChangeFlowProperties>(command, activeScene);
+            break;
+        }
+        case CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES:
+        {
+            EmitValueChanged<CommandChangeNoiseProperties>(command, activeScene);
+            break;
+        }
+        case CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES:
+        {
+            EmitValueChanged<CommandChangeFresnelToAlphaProperties>(command, activeScene);
+            break;
+        }
+        case CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES:
+        {
+            EmitValueChanged<CommandChangeParticlesStripeProperties>(command, activeScene);
+            break;
+        }
+        case CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP:
+        {
+            EmitValueChanged<CommandChangeAlphaRemapProperties>(command, activeScene);
             break;
         }
 
@@ -429,7 +471,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
 
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
-      CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES,
+      CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES, CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP,
       CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE,
       CMDID_PARTICLE_EFFECT_START_STOP, CMDID_PARTICLE_EFFECT_RESTART, CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML,
       CMDID_PARTICLE_EMITTER_SAVE_TO_YAML,

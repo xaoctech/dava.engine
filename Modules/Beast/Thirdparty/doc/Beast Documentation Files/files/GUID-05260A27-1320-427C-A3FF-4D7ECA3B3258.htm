@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057" />
+      <title>Creating Meshes</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBMeshHandle", "../api/struct_i_l_b_mesh_handle.html", "API"]); 
+reflinkdata.push(["ILBBeginMesh()", "../api/beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b", "API"]); 
+reflinkdata.push(["ILBAddVertexData()", "../api/beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073", "API"]); 
+reflinkdata.push(["ILBBeginMaterialGroup()", "../api/beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051", "API"]); 
+reflinkdata.push(["ILBAddTriangleData()", "../api/beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a", "API"]); 
+reflinkdata.push(["ILBEndMaterialGroup()", "../api/beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca", "API"]); 
+reflinkdata.push(["ILBEndMesh()", "../api/beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987", "API"]); 
+reflinkdata.push(["ILBBeginUVLayer()", "../api/beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533", "API"]); 
+reflinkdata.push(["ILBAddUVData()", "../api/beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286", "API"]); 
+reflinkdata.push(["ILBEndUVLayer()", "../api/beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e", "API"]); 
+reflinkdata.push(["ILBSetMaterialUseVertexColors()", "../api/beastmaterial_8h.html#a1b9439c5772d4417e0a893e1d30fceb1", "API"]); 
+reflinkdata.push(["ILBBeginColorLayer()", "../api/beastmesh_8h.html#a8b7588112f49e905dd611689bc7aa20e", "API"]); 
+reflinkdata.push(["ILBAddColorData()", "../api/beastmesh_8h.html#ab600a8462872e92092865a2a4106a996", "API"]); 
+reflinkdata.push(["ILBEndColorLayer()", "../api/beastmesh_8h.html#a8b4fc33d943c97f5d4b7498334089b9f", "API"]); 
+reflinkdata.push(["ILBBeginTangents()", "../api/beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f", "API"]); 
+reflinkdata.push(["ILBAddTangentData()", "../api/beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65", "API"]); 
+reflinkdata.push(["ILBEndTangents()", "../api/beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69", "API"]); 
+reflinkdata.push(["beastmesh.h", "../api/beastmesh_8h.html", "API"]); 
+reflinkdata.push(["ILBBeginMesh", "../api/beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b", "API"]); 
+reflinkdata.push(["ILBAddVertexData", "../api/beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073", "API"]); 
+reflinkdata.push(["ILBBeginMaterialGroup", "../api/beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051", "API"]); 
+reflinkdata.push(["ILBAddTriangleData", "../api/beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a", "API"]); 
+reflinkdata.push(["ILBEndMaterialGroup", "../api/beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca", "API"]); 
+reflinkdata.push(["ILBEndMesh", "../api/beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987", "API"]); 
+reflinkdata.push(["ILBBeginUVLayer", "../api/beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533", "API"]); 
+reflinkdata.push(["ILBAddUVData", "../api/beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286", "API"]); 
+reflinkdata.push(["ILBEndUVLayer", "../api/beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e", "API"]); 
+reflinkdata.push(["ILBBeginColorLayer", "../api/beastmesh_8h.html#a8b7588112f49e905dd611689bc7aa20e", "API"]); 
+reflinkdata.push(["ILBAddColorData", "../api/beastmesh_8h.html#ab600a8462872e92092865a2a4106a996", "API"]); 
+reflinkdata.push(["ILBEndColorLayer", "../api/beastmesh_8h.html#a8b4fc33d943c97f5d4b7498334089b9f", "API"]); 
+reflinkdata.push(["ILBBeginTangents", "../api/beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f", "API"]); 
+reflinkdata.push(["ILBAddTangentData", "../api/beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65", "API"]); 
+reflinkdata.push(["ILBEndTangents", "../api/beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm',                           'd30e6276','index.html',location.hash);                           javascript:initPage('Creating Meshes','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Meshes&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating a Scene</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Creating a Scene</div><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Textures</div><a href="GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-86FD8E73-157E-452F-8C17-12EB24AF1275"></a></span><h1>Creating Meshes</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-F8574D87-6FDC-440A-AB2B-EA849B0674AB"></a></span> Meshes are representations of the static physical objects that make up the geometry of your game world: buildings, ground,
+            trees, lampposts, etc. Each mesh is like an abstract definition or blueprint for its geometry that you place in your scenes
+            by creating instances with specific translations and rotations in the global space of the scene. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-76074722-3E80-4069-AA8B-328341C57EE6"></a></span>Each mesh is created by the <span class="charspan-msgph" translate="no">Beast</span> Manager and maintained on its own in the cache. Therefore, each mesh can be instantiated as many times as necessary in any
+            scene that can access that cache, without increasing the amount of memory needed. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-90D704C3-5324-4858-A082-831FEAF0644A"></a></span>All meshes in <span class="charspan-msgph" translate="no">Beast</span> use triangles as primitives. If you use a different primitive for the geometry in your game, you are responsible for tesselating
+            it into triangles before providing the triangles to <span class="charspan-msgph" translate="no">Beast</span>. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_0790E233D968409F9B815A4D28B9EC0A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6297"></a><span class="anchor_wrapper"><a name="GUID-19D19C6A-4527-4561-96E6-A7368E8DB51A"></a></span>About triangles and materials
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-13EA044D-1D3E-4FE9-813C-9F9312161B38"></a></span>Each triangle that you add to a mesh is created with a material, which you specify only by name. When you create the mesh,
+               you do not yet set up any properties for its materials (like their color, reflectiveness, specularity, etc.). Later, when
+               you instantiate the mesh in a scene, you will need to create materials within that scene whose names match the names of the
+               materials you specified when adding your triangles to the mesh. The materials themselves are stored within the scenes that
+               use them. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-E1A94962-C179-4198-8048-5ED045575BB3"></a></span>This indirect approach to specifying materials has the benefit of allowing you to re-use the same mesh in different scenes
+               while changing the way light reacts to the surface of the mesh in each scene. However, it has the disadvantage that <span class="charspan-msgph" translate="no">Beast</span> has no way to validate at the time the mesh is created that the named materials will actually exist in the scene at the time
+               the mesh is used. It is your responsibility to ensure that you set up your scene with a set of materials whose names match
+               the names of all materials used in your meshes. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-129D6157-E335-46DF-815C-9E8E72BAA1B5"></a></span>You can also override the material groups in your mesh for each instance that you create. See also <span class="char_link"><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm">Creating Mesh Instances</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_C08AD26A0148443BA0235FA48872DD38"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6317"></a><span class="anchor_wrapper"><a name="GUID-4CEDC6D9-75A2-429B-A281-6929FB36799C"></a></span>Setting up a mesh
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-A4B1AEB3-F4EE-44A4-B8FC-1154467EBA78"></a></span>To create a mesh: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_4AC046A842CB444B80DD60E2A6CDAA77"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMeshHandle'); return false;">ILBMeshHandle</a></span>. 
+               </li>
+               <li>Initialize the handle by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMesh()'); return false;">ILBBeginMesh()</a></span>. In your call, you have to specify the <span class="charspan-msgph" translate="no">Beast</span> Manager that will be responsible for creating and managing the mesh. 
+               </li>
+               <li>Add vertices and their normals to the mesh by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData()'); return false;">ILBAddVertexData()</a></span>. You can call this method multiple times to add vertices in batches; this can help to reduce temporary memory consumption.
+                  
+               </li>
+               <li>Add triangles to your mesh. You add triangles in batches called material groups, each of which collects together multiple
+                  triangles that share the same material. To add a material group: 
+                  <!--OList--><span class="anchor_wrapper"><a name="OL_DD7214B42292435AAD853FF0C76C16E3"></a></span><ol start="1">
+                     <li>Create the material group by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMaterialGroup()'); return false;">ILBBeginMaterialGroup()</a></span>. In your call, you need to specify the name of the material that you want to apply to the triangles you add. 
+                     </li>
+                     <li>Add triangles to the group by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTriangleData()'); return false;">ILBAddTriangleData()</a></span>. In your call, you need to provide the indices of the vertices that make up the triangles. These indices refer back to the
+                        array of vertices you added to the mesh in your calls to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData()'); return false;">ILBAddVertexData()</a></span>. You can call this method multiple times to add triangles in batches; this can help to reduce temporary memory consumption.
+                        
+                     </li>
+                     <li>When you are finished adding triangles with the current material, call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMaterialGroup()'); return false;">ILBEndMaterialGroup()</a></span>. 
+                     </li>
+                  </ol> 
+               </li>
+               <li>While your mesh is open, you can also add other optional data described in the following sections: UV layers, vertex colors,
+                  and tangents/bitangents. You can add these optional groups in any order, but you must end each group before you create another.
+                  
+                  <p><span class="anchor_wrapper"><a name="GUID-1E919B18-8B59-4EBE-982A-C169B8B81FBD"></a></span>Note that if you plan to bake the lighting for your mesh to a texture, you must create at least one UV layer to tell Beast
+                     how to lay out the triangles of the mesh in 2D space. 
+                  </p> 
+               </li>
+               <li>Finalize the mesh handle by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMesh()'); return false;">ILBEndMesh()</a></span>. Once you have finalized the mesh, you can no longer modify it, but it will be ready for instantiation in your scenes. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-8138F8E9-6D8F-4836-ABA4-DE97058518B2"></a></span>For example, the following code creates a simple mesh: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">// Create the mesh
+ILBBeastMesh mesh;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMesh'); return false;">ILBBeginMesh</a>(bm, _T("MyMesh"), &amp;mesh);
+
+// Add a batch of vertices and normals
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData'); return false;">ILBAddVertexData</a>(mesh, points, normals, pointCount);
+
+// Add a batch of triangles with the "Wood" material
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMaterialGroup'); return false;">ILBBeginMaterialGroup</a>(mesh, "Wood");
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTriangleData'); return false;">ILBAddTriangleData</a>(mesh, vertexIndices_wood, vertexCount_wood);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMaterialGroup'); return false;">ILBEndMaterialGroup</a>(mesh);
+// Add a second batch of triangles with a different material
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMaterialGroup'); return false;">ILBBeginMaterialGroup</a>(mesh, "Steel");
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTriangleData'); return false;">ILBAddTriangleData</a>(mesh, vertexIndices_steel, vertexCount_steel);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMaterialGroup'); return false;">ILBEndMaterialGroup</a>(mesh);
+
+... // Add optional data (see the following sections)
+
+// Close the mesh
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMesh'); return false;">ILBEndMesh</a>(mesh);</pre></div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_1599D2BF29DC469EB48691F35AB30E9A"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e6384"></a><span class="anchor_wrapper"><a name="GUID-7FA32F21-969F-4338-BD7A-E920442DEE91"></a></span>Adding UV layers
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-4DEFB27E-045C-466E-B55A-77A45C3D12D5"></a></span>A UV layer, or UV set, is a customized mapping of each vertex in your mesh into two-dimensional UV space. When you create
+                  a texture target or an atlased texture target for a mesh instance, the UV layer is used to determine how the triangles in
+                  the 3D mesh get laid out in the 2D texture. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-CFC8D375-4CE6-4091-BCF5-FF2AC40EAC0F"></a></span>If you plan to bake the lighting for your mesh to a texture, you must set up at least one UV set. In some circumstances, you
+                  may want to set up additional UV layers for special effects. 
+               </p> <span class="anchor_wrapper"><a name="UL_E4062AC0F8544C5F9D777D4D14014AFE"></a></span><ul>
+                  <li>By controlling the way your UV layer maps your mesh to 2D space, you can customize the relative resolution of the lightmap
+                     for different areas of the mesh. You can create your mapping such that the triangles that need more lighting detail occupy
+                     larger areas of the UV space relative to the triangles that need less detail. 
+                  </li>
+                  <li>If your runtime engine has any special requirements for the way it applies UV maps to mesh instances, your UV layer will need
+                     to respect those requirements so that your engine will be able to apply the textures created by Beast. 
+                  </li>
+                  <li>UV layers also allow you to send information from selected material channels to different output textures. For example, you
+                     could send the diffuse color of a mesh instance to one UV layer, and its specular color to another UV layer. Those UV layers
+                     can then be rendered to different textures with different resolutions or different layouts. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-13ACED11-D0EA-4CEE-854C-209BBFBFE6FF"></a></span>To create a UV layer: 
+               </p> 
+               <!--OList--><span class="anchor_wrapper"><a name="OL_6BC6CB3D1B534F1F8411CE3E3A0FB736"></a></span><ol start="1">
+                  <li>While your mesh is open, create the UV layer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginUVLayer()'); return false;">ILBBeginUVLayer()</a></span>. In your call, you need to specify a name for the layer. 
+                  </li>
+                  <li>Call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddUVData()'); return false;">ILBAddUVData()</a></span> to provide the 2D UV coordinates for each vertex that you added to your mesh in your original calls to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData()'); return false;">ILBAddVertexData()</a></span>. You must specify the UV coordinates in the same order you added the vertices. You can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddUVData()'); return false;">ILBAddUVData()</a></span> multiple times to add coordinates in batches; this can help to reduce temporary memory consumption. 
+                  </li>
+                  <li>When you have provided UV coordinates for each vertex in the mesh, you can close the UV layer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndUVLayer()'); return false;">ILBEndUVLayer()</a></span>. This call will only succeed if you have provided coordinates for each vertex. 
+                  </li>
+               </ol> 
+               <p><span class="anchor_wrapper"><a name="GUID-42EA1AD8-0B6F-412C-8322-71544747327A"></a></span>For example: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint">// Add a UV layer.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginUVLayer'); return false;">ILBBeginUVLayer</a>(mesh, "uv1");
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddUVData'); return false;">ILBAddUVData</a>(mesh, uvCoordinateArray, arrayCount)
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndUVLayer'); return false;">ILBEndUVLayer</a>(mesh);</pre></div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_2D644404B05C4381AC5CCF8FAA19A8DD"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e6437"></a><span class="anchor_wrapper"><a name="GUID-DCA30B7F-4D22-4264-9385-6E38053BC26F"></a></span>Adding vertex colors
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-628E4EB5-3966-489B-906F-0DDE8409B8BC"></a></span>You can specify an RGBA color for each vertex in your mesh. 
+               </p> <span class="anchor_wrapper"><a name="UL_7C2B5F0FBA3B436E8AD37BAC28C912C0"></a></span><ul>
+                  <li>You can use these colors to provide the color for a particular channel in a material. See <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialUseVertexColors()'); return false;">ILBSetMaterialUseVertexColors()</a></span>. 
+                  </li>
+                  <li>These colors will also be taken into account if you bake a vertex target for an instance of this mesh. </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-7BB052E9-9115-41C5-A2A9-F03B2CDB1FFB"></a></span>To add a layer of vertex colors: 
+               </p> 
+               <!--OList--><span class="anchor_wrapper"><a name="OL_90306109759842F7B4C4BA5926264956"></a></span><ol start="1">
+                  <li>While your mesh is open, create the color layer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginColorLayer()'); return false;">ILBBeginColorLayer()</a></span>. In your call, you need to specify a name for the layer. 
+                  </li>
+                  <li>Call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddColorData()'); return false;">ILBAddColorData()</a></span> to provide the color for each vertex that you added to your mesh in your original calls to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData()'); return false;">ILBAddVertexData()</a></span>. You must specify the colors in the same order you added the vertices. You can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddColorData()'); return false;">ILBAddColorData()</a></span> multiple times to add colors in batches; this can help to reduce temporary memory consumption. 
+                  </li>
+                  <li>When you have provided the color for each vertex in the mesh, you can close the color layer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndColorLayer()'); return false;">ILBEndColorLayer()</a></span>. This call will only succeed if you have provided a color for each vertex. 
+                  </li>
+               </ol> 
+               <p><span class="anchor_wrapper"><a name="GUID-42006F9F-7C1F-4F87-B5A8-D2B8DE3C52CE"></a></span>For example: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint">// Add a color layer.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginColorLayer'); return false;">ILBBeginColorLayer</a>(mesh, "color1");
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddColorData'); return false;">ILBAddColorData</a>(mesh, rgbaColorArray, arrayCount)
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndColorLayer'); return false;">ILBEndColorLayer</a>(mesh);</pre></div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_C674614D385F424CA814FBF1313BE4AD"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e6488"></a><span class="anchor_wrapper"><a name="GUID-04139655-9542-473C-832F-231F2FDB068E"></a></span>Adding tangents and bitangents
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-966D376B-3A91-417B-A555-43ED04A6C4FD"></a></span>Some types of render passes, notably the RNM pass, require your meshes to be set up with tangents and bitangents. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-04E4B535-02CF-4AD5-87DF-709252662482"></a></span>To add tangent and bitangent information: 
+               </p> 
+               <!--OList--><span class="anchor_wrapper"><a name="OL_9102AF7C6C2B40F2A2EBE8B8D8951A0C"></a></span><ol start="1">
+                  <li>While your mesh is open, open the tangent data layer by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTangents()'); return false;">ILBBeginTangents()</a></span>. 
+                  </li>
+                  <li>Call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTangentData()'); return false;">ILBAddTangentData()</a></span> to provide the tangent and bitangent for each vertex that you added to your mesh in your original calls to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData()'); return false;">ILBAddVertexData()</a></span>. You must specify the data in the same order you added the vertices. You can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTangentData()'); return false;">ILBAddTangentData()</a></span> multiple times to add data in batches; this can help to reduce temporary memory consumption. 
+                  </li>
+                  <li>When you have provided the tangent and bitangent for each vertex in the mesh, you can close the tangent data layer by calling
+                     <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTangents()'); return false;">ILBEndTangents()</a></span>. This call will only succeed if you have provided a tangent and a bitangent for each vertex. 
+                  </li>
+               </ol> 
+               <p><span class="anchor_wrapper"><a name="GUID-4CF5B1F9-10B3-4147-90C8-FCAA88C93B26"></a></span>For example: 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint">// Add tangents and bitangents.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginTangents'); return false;">ILBBeginTangents</a>(mesh);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTangentData'); return false;">ILBAddTangentData</a>(mesh, tangentArray, bitangentArray, arrayCount)
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndTangents'); return false;">ILBEndTangents</a>(mesh);</pre></div> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5599068625C9430CBF4637D858681849"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6530"></a><span class="anchor_wrapper"><a name="GUID-DECA072A-21F2-409F-86D0-A17B8E3F4C5A"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-F628678B-F78E-4DCB-A3C3-A494C093EAB9"></a></span>You can create multiple different meshes simultaneously in multiple threads. In addition, multiple threads can find meshes
+               in the cache and use them simultaneously. However, only one thread should add data to any given mesh at any time; therefore,
+               each mesh should be created entirely within a single thread and not split across multiple threads. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3F5B017701174750A97671D77741018A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e6538"></a><span class="anchor_wrapper"><a name="GUID-6262D702-13A4-4AEF-B791-6151FD32265E"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-C34C7EF2-E95B-4B6E-8BDB-68387F62B974"></a></span>API functions related to the creation and setup of meshes are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastmesh.h'); return false;">beastmesh.h</a></span> file. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

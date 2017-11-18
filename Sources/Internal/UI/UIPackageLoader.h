@@ -26,6 +26,7 @@ public:
     static const DAVA::int32 LAST_VERSION_WITH_LEGACY_DEBUG_DRAW = 14;
     static const DAVA::int32 LAST_VERSION_WITH_LEGACY_CLIP_CONTENT = 14;
     static const DAVA::int32 LAST_VERSION_WITH_RICH_SINGLE_ALISES = 15;
+    static const DAVA::int32 LAST_VERSION_WITH_LEGACY_STATIC_TEXT = 17;
 
 public:
     UIPackageLoader();
@@ -56,6 +57,7 @@ private:
     void ProcessLegacyDebugDraw(const YamlNode* node, AbstractUIPackageBuilder* builder) const;
     void ProcessLegacyClipContent(const YamlNode* node, AbstractUIPackageBuilder* builder) const;
     void ProcessLegacyRichSingleAliases(const YamlNode* node, AbstractUIPackageBuilder* builder) const;
+    void ProcessLegacyStaticText(const ReflectedType* ref, const YamlNode* node, AbstractUIPackageBuilder* builder) const;
     Vector<ComponentNode> ExtractComponentNodes(const YamlNode* node);
 
     Any ReadAnyFromYamlNode(const ReflectedStructure::Field* fieldRef, const YamlNode* node, const String& name) const;
@@ -81,6 +83,7 @@ private:
     DAVA::Map<DAVA::String, DAVA::String> legacyAlignsMap;
     DAVA::Map<DAVA::String, DAVA::String> legacyDebugDrawMap;
     DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>> legacyPrototypes;
+    DAVA::Map<DAVA::String, DAVA::String> legacyStaticTextMap;
 };
 };
 

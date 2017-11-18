@@ -32,20 +32,33 @@ public:
     void AddComponent(DAVA::Entity* entity, DAVA::Component* component) override;
     void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
 
+    void PrepareForRemove() override;
+
     void Process(DAVA::float32 timeElapsed) override;
 
     void WillClone(DAVA::Entity* originalEntity) override;
     void DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* newEntity) override;
+
+    DAVA::RefPtr<DAVA::KeyedArchive> SaveSlotsPreset(DAVA::Entity* entity);
+    void LoadSlotsPreset(DAVA::Entity* entity, DAVA::RefPtr<DAVA::KeyedArchive> archive);
+
+    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component);
+    static DAVA::FastName GenerateUniqueSlotName(DAVA::SlotComponent* component,
+                                                 DAVA::Entity* entity,
+                                                 const DAVA::FastName& newTemplateName,
+                                                 const DAVA::FastName& newEntityName,
+                                                 const DAVA::Set<DAVA::FastName>& reservedName);
 
 protected:
     friend class AttachEntityToSlot;
 
     void DetachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity);
     void AttachEntity(DAVA::SlotComponent* component, DAVA::Entity* entity, DAVA::FastName itemName);
-    DAVA::Entity* AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName);
+    DAVA::RefPtr<DAVA::Entity> AttachEntity(DAVA::SlotComponent* component, DAVA::FastName itemName);
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
     void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
+    DAVA::FastName GetSuitableItemName(DAVA::SlotComponent* component) const;
 
     void Draw() override;
 
@@ -54,6 +67,7 @@ protected:
     void SetScene(DAVA::Scene* scene) override;
 
 private:
+    void LoadSlotsPresetImpl(DAVA::Entity* entity, DAVA::RefPtr<DAVA::KeyedArchive> archive);
     DAVA::Vector<DAVA::Entity*> entities;
     DAVA::Set<DAVA::Entity*> pendingOnInitialize;
     DAVA::TArc::QtConnections connections;
@@ -62,7 +76,7 @@ private:
     struct AttachedItemInfo
     {
         DAVA::SlotComponent* component = nullptr;
-        DAVA::Entity* entity = nullptr;
+        DAVA::RefPtr<DAVA::Entity> entity;
         DAVA::FastName itemName;
     };
 

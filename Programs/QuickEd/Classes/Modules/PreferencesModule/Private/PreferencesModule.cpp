@@ -10,15 +10,13 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PreferencesModule)
     .End();
 }
 
+PreferencesModule::PreferencesModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PreferencesData);
+}
+
 void PreferencesModule::PostInit()
 {
-    using namespace DAVA::TArc;
-
-    std::unique_ptr<PreferencesData> preferencesData(new PreferencesData());
-
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* globalContext = accessor->GetGlobalContext();
-    globalContext->CreateData(std::move(preferencesData));
 }
 
 DECL_GUI_MODULE(PreferencesModule);

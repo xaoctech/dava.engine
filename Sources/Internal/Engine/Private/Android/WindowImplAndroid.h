@@ -64,7 +64,7 @@ public:
     void ProcessProperties();
     void OnMouseEvent(int32 action, int32 nativeButtonState, float32 x, float32 y, float32 deltaX, float32 deltaY, int32 nativeModifierKeys);
     void OnTouchEvent(int32 action, int32 touchId, float32 x, float32 y, int32 nativeModifierKeys);
-    void OnKeyEvent(int32 action, int32 keyCode, int32 unicodeChar, int32 nativeModifierKeys, bool isRepeated);
+    void OnKeyEvent(int32 action, int32 keyScancode, int32 keyVirtual, int32 unicodeChar, int32 nativeModifierKeys, bool isRepeated);
     void OnGamepadButton(int32 deviceId, int32 action, int32 keyCode);
     void OnGamepadMotion(int32 deviceId, int32 axis, float32 value);
     void OnVisibleFrameChanged(int32 x, int32 y, int32 width, int32 height);

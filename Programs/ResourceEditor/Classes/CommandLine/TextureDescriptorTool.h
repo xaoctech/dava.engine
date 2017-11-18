@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include "Render/TextureDescriptor.h"
 #include "CommandLine/CommandLineModule.h"

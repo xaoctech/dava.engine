@@ -1,5 +1,4 @@
-#ifndef __ITEMDELEGATEFORFLOAT_H__
-#define __ITEMDELEGATEFORFLOAT_H__
+#pragma once
 
 #include "DAVAEngine.h"
 
@@ -19,5 +18,3 @@ public:
 private slots:
     void OnEditingFinished();
 };
-
-#endif // __ITEMDELEGATEFORFLOAT_H__

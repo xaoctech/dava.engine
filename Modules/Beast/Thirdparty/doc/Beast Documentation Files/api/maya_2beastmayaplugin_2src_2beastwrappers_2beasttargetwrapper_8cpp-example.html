@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>
+maya/beastmayaplugin/src/beastwrappers/beasttargetwrapper.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetwrapper_8cpp-example.html','api_maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetwrapper_8cpp_example_html98533bfc-3dc0-4cd1-9486-eb1c6d60bc64','index.html',location.hash); javascript:initPage('smaya/beastmayaplugin/src/beastwrappers/beasttargetwrapper.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2beastwrappers_2beasttargetwrapper_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/beastwrappers/beasttargetwrapper.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/beastwrappers/beasttargetwrapper.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/src/beastwrappers/beasttargetwrapper.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class=
+"preprocessor">#include "beastwrappers/beasttargetwrapper.h"</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttarget_8h.html" title=
+"The target definitions.">beastapi/beasttarget.h</a>&gt;</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastrenderpasswrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastinstancewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttargetentitywrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastframebufferwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmeshwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastuvlayerwrapper.h"</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+<span class=
+"keywordtype">void</span> BeastTarget::addPass(BeastRenderPass&amp; rp) {
+        BEAST_CALL(<a name="a0"></a><a class="code" href=
+"beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385" title=
+"Add a Render Pass to a target.">ILBAddPassToTarget</a>(obj(), rp.obj()));
+}
+
+BeastTargetEntityPtr BeastTarget::addInstance(BeastInstance&amp; instance) {
+        <a name="_a1"></a><a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> h;
+        BEAST_CALL(<a name="a2"></a><a class="code" href=
+"beasttarget_8h.html#a03e7ae4191ae2af374e373220df6a240" title=
+"Adds an instance to bake to a texture or vertex bake target.">ILBAddBakeInstance</a>(obj(), instance.obj(), &amp;h));
+        BeastTargetEntityPtr entity(<span class=
+"keyword">new</span> BeastTargetEntity(h));
+        <span class="keywordflow">return</span> entity;
+}
+
+<span class=
+"keywordtype">void</span> BeastTarget::setTargetResolution(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height) {
+        BEAST_CALL(<a name="a3"></a><a class="code" href=
+"beasttarget_8h.html#ae624c8e69a35d5afe0ba256269033a42" title=
+"Changes the resolution of a texture target when running an Live Ernst job.">ILBSetTargetResolution</a>(obj(), width, height));
+}
+
+<span class=
+"keywordtype">void</span> BeastTarget::setAtlasPadding(<span class=
+"keywordtype">int</span> padding) {
+        BEAST_CALL(<a name="a4"></a><a class="code" href=
+"beasttarget_8h.html#a28318eee02a625f4ec008b73d9ceaf0e" title=
+"Sets the padding on an atlased texture target.">ILBSetAtlasPadding</a>(obj(), padding));
+}
+
+<span class=
+"keywordtype">int</span> BeastTarget::getFramebufferCount() {
+        int32 nofBuffers;
+        BEAST_CALL(<a name="a5"></a><a class="code" href=
+"beasttarget_8h.html#aaaab10e997da4f0f8c3a2d156432d072" title=
+"Gets the number of framebuffers associated with this target Is only valid on targets rendering images...">ILBGetFramebufferCount</a>(obj(), &amp;nofBuffers));
+        <span class="keywordflow">return</span> nofBuffers;
+}
+
+BeastFramebufferPtr BeastTarget::getFrameBuffer(BeastRenderPass&amp; rp, <span class="keywordtype">int</span> index) {
+        <a name="_a6"></a><a class="code" href=
+"struct_i_l_b_framebuffer_handle.html" title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a> fb;
+        BEAST_CALL(<a name="a7"></a><a class="code" href=
+"beasttarget_8h.html#a80558e4dbbafbeb7ff7855c435d124cb" title=
+"Gets a framebuffer from a target Is only valid on targets rendering images and the target is done...">ILBGetFramebuffer</a>(obj(), rp.obj(), index, &amp;fb));
+        <span class=
+"keywordflow">return</span> BeastFramebufferPtr(<span class=
+"keyword">new</span> BeastFramebuffer(fb));
+}
+
+BeastFramebufferPtr BeastTarget::getVertexbuffer(BeastRenderPass&amp; rp, BeastTargetEntity&amp; te) {
+        <a class="code" href="struct_i_l_b_framebuffer_handle.html"
+title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a> buffer;
+        BEAST_CALL(<a name="a8"></a><a class="code" href=
+"beasttarget_8h.html#a509256071bd31085926ded2c5de64c2b" title=
+"Gets a framebuffer with vertex data from a target Is only valid on targets rendering vertex data and ...">ILBGetVertexbuffer</a>(obj(), rp.obj(), te.obj(), &amp;buffer));
+        BeastFramebufferPtr bufferPtr(<span class=
+"keyword">new</span> BeastFramebuffer(buffer));
+        <span class="keywordflow">return</span> bufferPtr;
+}
+
+beastmaya::BeastTargetEntityPtr BeastTarget::addMeshToTarget(BeastMesh&amp; mesh) {
+        <a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> h;
+        BEAST_CALL(<a name="a9"></a><a class="code" href=
+"beasttarget_8h.html#aebfe65844a739b06821567403c1db3ca" title=
+"Adds a mesh to be unwrapped to a UV unwrap target.">ILBAddMeshToTarget</a>(obj(), mesh.obj(), &amp;h));
+        BeastTargetEntityPtr entity(<span class=
+"keyword">new</span> BeastTargetEntity(h));
+        <span class="keywordflow">return</span> entity;
+}
+
+beastmaya::BeastUVLayerPtr BeastTarget::getUVLayerFromTarget(BeastTargetEntity&amp; targetEntity) {
+        <a name="_a10"></a><a class="code" href=
+"struct_i_l_b_u_v_layer_handle.html" title=
+"Handle for Beast uv layers Intentionally hidden implementation.">ILBUVLayerHandle</a> h;
+        BEAST_CALL(<a name="a11"></a><a class="code" href=
+"beasttarget_8h.html#a6d613b86c358f0776c2d4c656b452802" title=
+"Gets a uv layer from a target Only valid on UV unwrap targets and when the target is done...">ILBGetUVLayerFromTarget</a>(obj(), targetEntity.obj(), &amp;h));
+        BeastUVLayerPtr uvLayer(<span class=
+"keyword">new</span> BeastUVLayer(h));
+        <span class="keywordflow">return</span> uvLayer;
+}
+
+<span class=
+"keywordtype">void</span> BeastTarget::getUVLayerResolutionFromTarget(BeastTargetEntity&amp; targetEntity, <span class="keywordtype">int</span>&amp; width, <span class="keywordtype">int</span>&amp; height) {
+        BEAST_CALL(<a name="a12"></a><a class="code" href=
+"beasttarget_8h.html#acd242766614ee76a1ee20466e9e7aace" title=
+"Gets the resulting resolution from packing the UV layout of the unwrapped mesh Only valid on UV unwra...">ILBGetUVLayerResolutionFromTarget</a>(obj(), targetEntity.obj(), &amp;width, &amp;height));
+}
+
+<span class=
+"keywordtype">void</span> BeastTarget::enableWorldSpaceFilter(<a class="code"
+href="beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09" title=
+"World space filter components.">ILBWorldSpaceFilterComponent</a> component) {
+        BEAST_CALL(<a name="a13"></a><a class="code" href=
+"beasttarget_8h.html#a1ef516e92fd790f09348b6e30f79c06a" title=
+"Enable world space filter for a target.">ILBEnableWorldSpaceFilter</a>(obj(), component));
+}
+
+<span class=
+"keywordtype">void</span> BeastTarget::setWorldSpaceFilterSize(<a class="code"
+href="beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09" title=
+"World space filter components.">ILBWorldSpaceFilterComponent</a> component, <span class="keywordtype">float</span> size) {
+        BEAST_CALL(<a name="a14"></a><a class="code" href=
+"beasttarget_8h.html#adcef9012b7a79f10ba2bcb966d270dfb" title=
+"Set the world space filter size for a target.">ILBSetWorldSpaceFilterSize</a>(obj(), component, size));
+}
+
+<span class=
+"keywordtype">void</span> BeastTarget::setWorldSpaceFilterNormalDeviation(<a class="code"
+href="beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09" title=
+"World space filter components.">ILBWorldSpaceFilterComponent</a> component, <span class="keywordtype">float</span> normalDeviation) {
+        BEAST_CALL(<a name="a15"></a><a class="code" href=
+"beasttarget_8h.html#a5f8502b99ab6b610263003de8eef1be7" title=
+"Set the maximum allowed normal deviation for world space filtering.">ILBSetWorldSpaceFilterNormalDeviation</a>(obj(), component, normalDeviation));
+}
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

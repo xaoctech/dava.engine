@@ -1,19 +1,17 @@
 #pragma once
 
-#include "Math/Vector.h"
-#include "Input/KeyboardDevice.h"
-#include "Input/GamepadDevice.h"
-
 #include "Engine/EngineTypes.h"
+#include "Math/Vector.h"
+#include "Input/InputElements.h"
 
 namespace DAVA
 {
 class UIControl;
 class Window;
 /**
-\ingroup controlsystem
-\brief User input representation.
-	Represent user input event used in the control system. Contains all input data.
+    \ingroup controlsystem
+    \brief User input representation.
+    Represent user input event used in the control system. Contains all input data.
 */
 class UIEvent
 {
@@ -37,8 +35,8 @@ public:
     };
 
     /**
-	 \enum Input state accordingly to control.
-	 */
+     \enum Input state accordingly to control.
+     */
     enum eControlInputState
     {
         CONTROL_STATE_RELEASED = 0, //!<Input is released
@@ -47,12 +45,12 @@ public:
     };
 
     /**
-	 \ Input can be handled in the different ways.
-	 */
+     \ Input can be handled in the different ways.
+     */
     enum eInputHandledType
     {
         INPUT_NOT_HANDLED = 0, //!<Input is not handled at all.
-        INPUT_HANDLED_SOFT = 1, //!<Input is handled, but input control can be changed by UIControlSystem::Instance()->SwitchInputToControl() method.
+        INPUT_HANDLED_SOFT = 1, //!<Input is handled, but input control can be changed by GetEngineContext()->uiControlSystem->SwitchInputToControl() method.
         INPUT_HANDLED_HARD = 2, //!<Input is handled completely, input control can't be changed.
     };
 
@@ -95,7 +93,7 @@ public:
 
     union {
         uint32 touchId;
-        Key key;
+        eInputElements key;
         char32_t keyChar; // unicode utf32 char
         eMouseButtons mouseButton;
         eGamepadElements element;

@@ -8,7 +8,6 @@
 #include "Main/QtUtils.h"
 #include "Scene/SceneEditor2.h"
 #include "Scene/SceneHelper.h"
-#include "Settings/SettingsManager.h"
 #include "StringConstants.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"

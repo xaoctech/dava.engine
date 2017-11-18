@@ -7,6 +7,7 @@
 #include "Animation/LinearPropertyAnimation.h"
 #include "Animation/AnimationManager.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectedTypeDB.h"
 #include "Render/Renderer.h"
 #include "UI/UIScreen.h"
 #include "UI/UIScreenTransition.h"
@@ -38,7 +39,7 @@ struct AnimatedPropertySetter
     void Animate(UIControl* control, const Reflection& ref, const T& startValue, const T& endValue) const
     {
         const int32 track = PROPERTY_ANIMATION_GROUP_OFFSET + propertyIndex;
-        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(AnimationManager::Instance()->FindPlayingAnimation(control, track));
+        LinearPropertyAnimation<T>* currentAnimation = DynamicTypeCheck<LinearPropertyAnimation<T>*>(GetEngineContext()->animationManager->FindPlayingAnimation(control, track));
 
         if (!currentAnimation || currentAnimation->GetEndValue() != endValue)
         {
@@ -121,6 +122,8 @@ void UIStyleSheetSystem::Process(float32 elapsedTime)
     {
         ProcessControlHierarhy(popupContainer.Get());
     }
+
+    globalStyleSheetDirty = false;
 }
 
 void UIStyleSheetSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
@@ -274,12 +277,18 @@ void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFr
 
 void UIStyleSheetSystem::AddGlobalClass(const FastName& clazz)
 {
-    globalClasses.AddClass(clazz);
+    if (globalClasses.AddClass(clazz))
+    {
+        SetGlobalStyleSheetDirty();
+    }
 }
 
 void UIStyleSheetSystem::RemoveGlobalClass(const FastName& clazz)
 {
-    globalClasses.RemoveClass(clazz);
+    if (globalClasses.RemoveClass(clazz))
+    {
+        SetGlobalStyleSheetDirty();
+    }
 }
 
 bool UIStyleSheetSystem::HasGlobalClass(const FastName& clazz) const
@@ -331,7 +340,7 @@ void UIStyleSheetSystem::ProcessControlHierarhy(UIControl* control)
     if ((control->IsVisible() || control->GetStyledPropertySet().test(propIndex))
         && control->IsStyleSheetDirty())
     {
-        ProcessControl(control);
+        ProcessControl(control, globalStyleSheetDirty);
     }
 
     for (UIControl* child : control->GetChildren())
@@ -384,15 +393,19 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
 
     if (descr.group->componentType == nullptr)
     {
-        Reflection ref = Reflection::Create(ReflectedObject(control));
-        ref = ref.GetField(descr.field->name);
-        if (ref.IsValid())
+        ReflectedObject refObject(control);
+        if (TypeInheritance::CanDownCast(refObject.GetReflectedType()->GetType(), descr.group->refType->GetType()))
         {
-            action(control, ref);
-
-            if (listener != nullptr)
+            Reflection ref = Reflection::Create(refObject);
+            ref = ref.GetField(descr.field->name);
+            if (ref.IsValid())
             {
-                listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+                action(control, ref);
+
+                if (listener != nullptr)
+                {
+                    listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
+                }
             }
         }
     }
@@ -419,6 +432,19 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
             const char* controlName = control->GetName().c_str();
             Logger::Error("Style sheet can not find component \'%s\' in control \'%s\'", componentName, controlName);
         }
+    }
+}
+
+void UIStyleSheetSystem::SetGlobalStyleSheetDirty()
+{
+    globalStyleSheetDirty = true;
+    if (currentScreen.Valid())
+    {
+        currentScreen->SetStyleSheetDirty();
+    }
+    if (popupContainer.Valid())
+    {
+        popupContainer->SetStyleSheetDirty();
     }
 }
 }

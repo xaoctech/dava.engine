@@ -65,9 +65,6 @@ void LandscapeEditorShortcutManager::InitDefaultShortcuts()
     CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_AVG_STRENGTH_INCREASE_LARGE, Qt::CTRL | Qt::ALT | Qt::Key_K);
     CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_AVG_STRENGTH_DECREASE_LARGE, Qt::CTRL | Qt::ALT | Qt::Key_J);
 
-    CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_VISIBILITY_TOOL_SET_POINT, Qt::ALT | Qt::Key_P, false);
-    CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_VISIBILITY_TOOL_SET_AREA, Qt::ALT | Qt::Key_A, false);
-
     CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_SET_ABSOLUTE, Qt::CTRL | Qt::Key_1, false);
     CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_SET_RELATIVE, Qt::CTRL | Qt::Key_2, false);
     CreateOrUpdateShortcut(ResourceEditor::SHORTCUT_SET_AVERAGE, Qt::CTRL | Qt::Key_3, false);

@@ -15,3 +15,10 @@ ProjectProperties:
     -   directory: "./Gfx2/"
         resolution: [2048, 1536]
     Library: []
+    Blanks:
+     - {name: "blank", pathToYaml: "~res:/UI/Blank.yaml", control: "Root", path: ""}
+    Devices:
+     - {name: "default", screenSize: [1024, 768]}
+     - {name: "iPad", screenSize: [1024, 768], virtualKeyboardHeight: 353}
+     - {name: "iPhone6", screenSize: [1334, 750], virtualKeyboardHeight: 342}
+     - {name: "iPhone6Plus", screenSize: [1920, 1080], virtualKeyboardHeight: 342}

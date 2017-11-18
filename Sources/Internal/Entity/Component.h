@@ -53,6 +53,8 @@ public:
         WASD_CONTROLLER_COMPONENT,
         VISIBILITY_CHECK_COMPONENT,
         SLOT_COMPONENT,
+        MOTION_COMPONENT,
+        GEO_DECAL_COMPONENT,
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         STATIC_BODY_COMPONENT,
@@ -64,15 +66,24 @@ public:
         MESH_SHAPE_COMPONENT,
         CONVEX_HULL_SHAPE_COMPONENT,
         HEIGHT_FIELD_SHAPE_COMPONENT,
+        BOX_CHARACTER_CONTROLLER_COMPONENT,
+        CAPSULE_CHARACTER_CONTROLLER_COMPONENT,
+        WASD_PHYSICS_CONTROLLER_COMPONENT,
+        VEHICLE_CAR_COMPONENT,
+        VEHICLE_TANK_COMPONENT,
+        VEHICLE_CHASSIS_COMPONENT,
+        VEHICLE_WHEEL_COMPONENT,
 #endif
 
-        //debug components - note that everything below won't be serialized
-        DEBUG_COMPONENTS,
-        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT,
+        NON_EXPORTABLE_COMPONENTS, // everything below NON_EXPORTABLE_COMPONENTS will be serialized but won't be exported
+        TEXT_COMPONENT = NON_EXPORTABLE_COMPONENTS,
+
+        NON_SERIALIZABLE_COMPONENTS, // everything below NON_SERIALIZABLE_COMPONENTS won't be serialized
+        STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT = NON_SERIALIZABLE_COMPONENTS,
         WAYPOINT_COMPONENT,
         EDGE_COMPONENT,
 
-        FIRST_USER_DEFINED_COMPONENT = 48,
+        FIRST_USER_DEFINED_COMPONENT = 56,
         COMPONENT_COUNT = 64
     };
 
@@ -113,11 +124,6 @@ public:
 
 protected:
     Entity* entity = 0;
-
-public:
-    INTROSPECTION(Component,
-                  MEMBER(entity, "entity", I_SAVE)
-                  )
 
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };

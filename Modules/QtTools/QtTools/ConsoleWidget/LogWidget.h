@@ -1,15 +1,10 @@
-#ifndef __LOGWIDGET_H__
-#define __LOGWIDGET_H__
-
+#pragma once
 
 #include "Base/Result.h"
 #include "LogModel.h"
 
-#include "QtTools/WarningGuard/QtWarningsHandler.h"
-PUSH_QT_WARNING_SUPRESSOR
 #include <QWidget>
 #include <QPointer>
-POP_QT_WARNING_SUPRESSOR
 
 class QTimer;
 class LogFilterModel;
@@ -22,9 +17,7 @@ class LogWidget;
 
 class LogWidget : public QWidget
 {
-    PUSH_QT_WARNING_SUPRESSOR
     Q_OBJECT
-    POP_QT_WARNING_SUPRESSOR
 
 public:
     explicit LogWidget(QWidget* parent = NULL);
@@ -54,6 +47,3 @@ private:
     Ui::LogWidget* ui;
     QTimer* scrollTimer;
 };
-
-
-#endif // __LOGWIDGET_H__

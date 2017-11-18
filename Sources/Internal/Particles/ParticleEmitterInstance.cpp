@@ -1,7 +1,15 @@
 #include "Particles/ParticleEmitterInstance.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleEmitterInstance)
+{
+    ReflectionRegistrator<ParticleEmitterInstance>::Begin()
+    .End();
+}
+
 ParticleEmitterInstance::ParticleEmitterInstance(ParticleEffectComponent* owner_, bool isInner)
     : owner(owner_)
     , isInnerEmitter(isInner)

@@ -1,10 +1,9 @@
 #include "TArc/Controls/Label.h"
 #include "TArc/Controls/CommonStrings.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Base/FastName.h>
 #include <Reflection/ReflectedMeta.h>
-
-#include <QString>
 
 namespace DAVA
 {

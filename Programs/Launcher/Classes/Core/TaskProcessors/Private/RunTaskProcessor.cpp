@@ -1,5 +1,5 @@
 #include "Core/TaskProcessors/RunTaskProcessor.h"
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 #include "Core/Receiver.h"
 
 void RunTaskProcessor::AddTask(std::unique_ptr<BaseTask>&& task, Notifier notifier)
@@ -14,4 +14,9 @@ void RunTaskProcessor::AddTask(std::unique_ptr<BaseTask>&& task, Notifier notifi
 void RunTaskProcessor::Terminate()
 {
     //run task is sync-only, so they can not be terminated
+}
+
+std::size_t RunTaskProcessor::GetTasksCount() const
+{
+    return 0;
 }

@@ -53,11 +53,6 @@ public:
 private:
     IUpdatable* updatableObject;
 
-public:
-    INTROSPECTION_EXTEND(UpdatableComponent, Component,
-                         MEMBER(updatableObject, "Updatable Object", I_SAVE)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(UpdatableComponent, Component);
 };
 }

@@ -1,11 +1,12 @@
 #include "UI/UISlider.h"
-#include "Render/RenderHelper.h"
 #include "Base/ObjectFactory.h"
-#include "Utils/Utils.h"
-#include "UI/UIEvent.h"
-#include "Render/2D/Systems/RenderSystem2D.h"
-#include "UI/UIControlSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/RenderHelper.h"
+#include "UI/UIControlBackground.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIEvent.h"
+#include "Utils/Utils.h"
 
 namespace DAVA
 {

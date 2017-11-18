@@ -5,12 +5,12 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "SizeDialog.h"
 #include "Main/QtUtils.h"
-#include "Settings/SettingsManager.h"
 
 #include "Tools/PathDescriptor/PathDescriptor.h"
 #include "ImageTools/ImageTools.h"
 
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
 
 #include "QtTools/FileDialogs/FileDialog.h"
@@ -26,7 +26,7 @@ ImageArea::ImageArea(QWidget* parent /*= 0*/)
     : QLabel(parent)
     , image(nullptr)
     , acceptableSize(0, 0)
-    , imagePath(SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPathSpecular).AsString())
+    , imagePath(REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->imageSplitterPathSpecular)
     , requestedFormat(DAVA::FORMAT_A8)
 {
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
@@ -74,10 +74,12 @@ void ImageArea::mousePressEvent(QMouseEvent* ev)
 {
     if (ev->button() == Qt::LeftButton)
     {
-        DAVA::FilePath defaultPath = SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPathSpecular).AsString();
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+
+        DAVA::FilePath defaultPath(settings->imageSplitterPathSpecular);
         if (defaultPath.IsEmpty())
         {
-            defaultPath = SettingsManager::Instance()->GetValue(Settings::Internal_ImageSplitterPath).AsString();
+            defaultPath = settings->imageSplitterPath;
             if (defaultPath.IsEmpty())
             {
                 defaultPath = GetDefaultPath();
@@ -127,7 +129,7 @@ void ImageArea::SetImage(const DAVA::FilePath& filePath)
     if ((DAVA::FORMAT_INVALID == requestedFormat) || (image->format == requestedFormat))
     {
         const DAVA::FilePath path = filePath;
-        SettingsManager::Instance()->SetValue(Settings::Internal_ImageSplitterPathSpecular, DAVA::VariantType(path.GetAbsolutePathname()));
+        REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->imageSplitterPathSpecular = path.GetAbsolutePathname();
         imagePath = filePath;
         SetImage(image);
     }

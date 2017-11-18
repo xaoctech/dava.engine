@@ -60,6 +60,8 @@ private slots:
 
     void OnShareButtonClicked();
     void OnUnshareButtonClicked();
+    void OnGenerateAssertButtonClicked();
+    void OnGenerateCrashButtonClicked();
     void OnClearButtonClicked();
     void OnApplyButtonClicked();
     void OnCloseButtonClicked();

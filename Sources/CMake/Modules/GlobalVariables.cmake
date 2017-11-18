@@ -73,22 +73,41 @@ set( DAVA_PLATFORM_LIST IOS
                         LINUX
                         )
 
+set( DAVA_PLATFORM_CURRENT_POSTFIXES )
+
 if( IOS )
-    set( DAVA_PLATFORM_CURENT IOS )
+    set( DAVA_PLATFORM_CURRENT IOS )
 elseif( MACOS )
-    set( DAVA_PLATFORM_CURENT MACOS )
+    set( DAVA_PLATFORM_CURRENT MACOS )
 elseif( ANDROID )
-    set( DAVA_PLATFORM_CURENT ANDROID )
+    set( DAVA_PLATFORM_CURRENT ANDROID )
 elseif( WIN32 AND NOT WINDOWS_UAP )
-    set( DAVA_PLATFORM_CURENT WIN )
+    set( DAVA_PLATFORM_CURRENT WIN )
     set( WIN true )
 elseif( WIN32 AND WINDOWS_UAP )
-    set( DAVA_PLATFORM_CURENT WINUAP )
+    set( DAVA_PLATFORM_CURRENT WINUAP )
     set( WINUAP true )
 elseif (LINUX)
-    set( DAVA_PLATFORM_CURENT LINUX )
+    set( DAVA_PLATFORM_CURRENT LINUX )
 endif()
 
+if(ANDROID)
+    if(ANDROID_ABI MATCHES "x86" )
+        set( DAVA_PLATFORM_CURRENT_POSTFIXES ANDROID_X86 )
+    elseif( ANDROID_ABI MATCHES "armeabi" ) 
+        set( DAVA_PLATFORM_CURRENT_POSTFIXES ANDROID_ARM )
+    endif()
+elseif(WIN32 AND WINDOWS_UAP)
+    if(WINDOWS_UAP_PLATFORMS MATCHES "Win32" )
+        list( APPEND DAVA_PLATFORM_CURRENT_POSTFIXES WINUAP_WIN32 )
+    endif()
+    if( WINDOWS_UAP_PLATFORMS MATCHES "ARM" ) 
+        list( APPEND DAVA_PLATFORM_CURRENT_POSTFIXES WINUAP_ARM )
+    endif()
+    if( WINDOWS_UAP_PLATFORMS MATCHES "x64" ) 
+        list( APPEND DAVA_PLATFORM_CURRENT_POSTFIXES WINUAP_X64 )
+    endif()
+endif()
 
 set( DAVA_MODULES_DIR                   "${DAVA_ROOT_DIR}/Modules" )
 set( DAVA_SOURCES_DIR                   "${DAVA_ROOT_DIR}/Sources" )
@@ -105,9 +124,6 @@ set( DAVA_THIRD_PARTY_INCLUDES_PATH     "${DAVA_THIRD_PARTY_ROOT_PATH}/include"
                                         "${DAVA_THIRD_PARTY_ROOT_PATH}/glew/include" 
                                         "${DAVA_THIRD_PARTY_ROOT_PATH}/icucommon/source/common" 
                                       ) 
-
-set( DAVA_SPEEDTREE_ROOT_DIR            "${DAVA_ROOT_DIR}/../dava.speedtree" )                                      
-set( DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR "${DAVA_ROOT_DIR}/../dava.resourceeditor.beast" ) 
 
 #additional variables for Windows UAP
 if ( WINDOWS_UAP )
@@ -170,11 +186,6 @@ endif ()
 
 set( DAVA_THIRD_PARTY_INCLUDES_PATH "${DAVA_THIRD_PARTY_INCLUDES_PATH}"
                                     "${DAVA_THIRD_PARTY_ROOT_PATH}/openssl/include/${DAVA_OPENSSL_PLATFORM}/${DAVA_OPENSSL_ARCH}" )
-
-get_filename_component( DAVA_SPEEDTREE_ROOT_DIR ${DAVA_SPEEDTREE_ROOT_DIR} ABSOLUTE )
-get_filename_component( DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR ${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR} ABSOLUTE )
-
-set( DAVA_BINARY_WIN32_DIR  "${DAVA_RESOURCEEDITOR_BEAST_ROOT_DIR}/beast/bin" )
 
 set( DAVA_INCLUDE_DIR       ${DAVA_ENGINE_DIR} ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
 

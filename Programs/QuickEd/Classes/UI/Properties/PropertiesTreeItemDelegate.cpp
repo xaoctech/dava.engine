@@ -46,6 +46,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyItemDelegates[AbstractProperty::TYPE_ENUM] = new EnumPropertyDelegate(this);
     anyItemDelegates[Type::Instance<Vector2>()] = new Vector2PropertyDelegate(this);
     anyItemDelegates[Type::Instance<String>()] = new StringPropertyDelegate(this);
+    anyItemDelegates[Type::Instance<FastName>()] = new StringPropertyDelegate(this);
     anyItemDelegates[Type::Instance<Color>()] = new ColorPropertyDelegate(this);
     anyItemDelegates[Type::Instance<WideString>()] = new StringPropertyDelegate(this);
     anyItemDelegates[Type::Instance<FilePath>()] = new FilePathPropertyDelegate(this);
@@ -76,9 +77,12 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "parentRest"
                        << "parentLine"
                        << "min(parentRest, content)"
-                       << "max(parent, childrenSum)";
+                       << "max(parent, childrenSum)"
+                       << "visibilityMargins.left"
+                       << "visibilityMargins.right"
+                       << "visibilityMargins.top"
+                       << "visibilityMargins.bottom";
 
-    propertyNameTypeItemDelegates[PropertyPath("*", "actions")] = new TablePropertyDelegate(QList<QString>({ "Action", "Shortcut" }), this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
@@ -93,7 +97,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-gradient")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "bg-contour")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
-    propertyNameTypeItemDelegates[PropertyPath("*", "text-font")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("*", "text-fontName")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "particleEffect-effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this, false);
 
     propertyNameTypeItemDelegates[PropertyPath("Sound", "*")] = new FMODEventPropertyDelegate(this);
@@ -112,6 +116,10 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "animationName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("animationsNames", "UISpineComponent"), false);
     propertyNameTypeItemDelegates[PropertyPath("UISpineComponent", "skinName")] = new ComboPropertyDelegate(this, std::make_unique<CompletionsProviderForUIReflection>("skinsNames", "UISpineComponent"), false);
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
+
+    propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
+
+    propertyNameTypeItemDelegates[PropertyPath("UIShortcutEventComponent", "shortcuts")] = new TablePropertyDelegate(QList<QString>({ "Event", "Shortcut" }), this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
@@ -265,6 +273,11 @@ AbstractPropertyDelegate* PropertiesTreeItemDelegate::GetCustomItemDelegateForIn
 void PropertiesTreeItemDelegate::SetProject(const Project* project)
 {
     context.project = project;
+}
+
+void PropertiesTreeItemDelegate::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+{
+    context.accessor = accessor_;
 }
 
 void PropertiesTreeItemDelegate::emitCommitData(QWidget* editor)

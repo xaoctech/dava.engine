@@ -1,18 +1,34 @@
-#include "HeightDeltaTool.h"
+#include "Classes/Qt/Tools/HeightDeltaTool/HeightDeltaTool.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Qt/Main/mainwindow.h"
+#include "Classes/Qt/Tools/HeightDeltaTool/PaintHeightDelta.h"
+#include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
+
+#include "ui_HeightDeltaTool.h"
+
+#include <QtTools/FileDialogs/FileDialog.h>
+
+#include <Render/Image/ImageSystem.h>
+#include <Render/Image/ImageFormatInterface.h>
 
 #include <QFileInfo>
 #include <QImageReader>
 #include <QMessageBox>
 
-#include "ui_HeightDeltaTool.h"
-
-#include "Qt/Main/mainwindow.h"
-#include "Tools/HeightDeltaTool/PaintHeightDelta.h"
-#include "Tools/PathDescriptor/PathDescriptor.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Image/ImageFormatInterface.h"
-
-#include "QtTools/FileDialogs/FileDialog.h"
+namespace HeightDeltaToolDetails
+{
+SceneEditor2* GetActiveScene()
+{
+    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    if (data != nullptr)
+    {
+        return data->GetScene().Get();
+    }
+    return nullptr;
+}
+}
 
 HeightDeltaTool::HeightDeltaTool(QWidget* p)
     : QWidget(p)
@@ -44,7 +60,7 @@ void HeightDeltaTool::OnRun()
 {
     DVASSERT(!outputFilePath.isEmpty());
 
-    SceneEditor2* scene = sceneholder.GetScene();
+    SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
     DVASSERT(scene);
     DAVA::Landscape* landscapeRO = FindLandscape(scene);
     DVASSERT(landscapeRO);
@@ -58,10 +74,12 @@ void HeightDeltaTool::OnRun()
 
     const double threshold = GetThresholdInMeters(unitSize);
 
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+
     DAVA::Vector<DAVA::Color> colors;
     colors.resize(2);
-    colors[0] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color0).AsColor();
-    colors[1] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color1).AsColor();
+    colors[0] = settings->heightMaskColor0;
+    colors[1] = settings->heightMaskColor1;
 
     PaintHeightDelta::Execute(outputFilePath.toStdString(), (DAVA::float32)threshold, heightmap,
                               heightmapSize, heightmapSize, bbox.max.z - bbox.min.z, colors);
@@ -74,7 +92,7 @@ void HeightDeltaTool::OnValueChanged(double /*v*/)
 {
     ui->run->setEnabled(false);
 
-    SceneEditor2* scene = sceneholder.GetScene();
+    SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
     DVASSERT(scene != nullptr);
     DAVA::Landscape* landscape = FindLandscape(scene);
     if (landscape == nullptr)

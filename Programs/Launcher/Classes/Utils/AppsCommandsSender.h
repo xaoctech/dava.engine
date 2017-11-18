@@ -17,7 +17,7 @@ public:
     bool RequestQuit(const QString& appPath);
 
 private:
-    int SendMessage(int message, const QString& appPath);
+    int SendCommand(int message, const QString& appPath);
     int ProcessReply(const QByteArray& data);
     QLocalSocket* socket = nullptr;
 };

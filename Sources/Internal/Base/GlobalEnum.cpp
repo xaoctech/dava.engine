@@ -9,6 +9,7 @@
 #include "UI/UIStaticText.h"
 #include "Render/2D/TextBlock.h"
 #include "UI/UIList.h"
+#include "UI/UIScrollBar.h"
 #include "UI/UITextField.h"
 #include "UI/Components/UIComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
@@ -21,6 +22,7 @@
 #include "UI/UIWebView.h"
 #include "Render/RHI/rhi_Type.h"
 #include "Render/Highlevel/BillboardRenderObject.h"
+#include "Render/Highlevel/GeoDecalManager.h"
 #include "Utils/BiDiHelper.h"
 
 using namespace DAVA;
@@ -403,4 +405,11 @@ ENUM_DECLARE(BillboardRenderObject::BillboardType)
 {
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_SPHERICAL, "Spherical");
     ENUM_ADD_DESCR(BillboardRenderObject::BILLBOARD_CYLINDRICAL, "Cylindrical");
+}
+
+ENUM_DECLARE(GeoDecalManager::Mapping)
+{
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::PLANAR, "Planar");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::SPHERICAL, "Spherical");
+    ENUM_ADD_DESCR(GeoDecalManager::Mapping::CYLINDRICAL, "Cylindrical");
 }

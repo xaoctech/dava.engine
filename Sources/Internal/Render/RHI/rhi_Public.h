@@ -71,6 +71,8 @@ struct RenderDeviceCaps
     uint32 maxAnisotropy = 1;
     uint32 maxSamples = 1;
     uint32 maxTextureSize = 2048;
+    uint32 maxFPS = 60;
+
     char deviceDescription[128];
 
     bool is32BitIndicesSupported = false;
@@ -120,7 +122,11 @@ Api HostApi();
 bool TextureFormatSupported(TextureFormat format, ProgType progType = PROG_FRAGMENT);
 const RenderDeviceCaps& DeviceCaps();
 
+//Suspend/Resume function should be called only from valid state, if you see state assert, it means that you have some error in your application flow.
+//SuspendRendering are blocking functions. Control flow will not be returned until render thread finishes it's current tasks and settles in suspended state.
+//Most OS allow you to finish whatever you do within AppSuspended call, but all rendering commands afterwards can be treated as errors and can lead to random crashes.
 void SuspendRendering();
+void SuspendRenderingAfterFrame();
 void ResumeRendering();
 
 //notify rendering backend that some explicit code can do some rendering not using rhi and thus leave rendering api in different state

@@ -107,7 +107,7 @@ public:
 
     void ProcessInput(const UIEvent& input);
     void ClickSystemBack();
-    void PressEscape();
+    void EmulatePressKey(DAVA::uint32 key);
 
     // helpers
     bool SetText(const String& path, const String& text); // lua uses ansi strings
@@ -115,6 +115,7 @@ public:
     bool CheckMsgText(UIControl* control, const String& key);
     String GetTaggedClass(UIControl* control, const String& tag);
     String GetText(UIControl* control);
+    String GetRichText(UIControl* control);
     uint32 GetTextColor(UIControl* control);
 
     // multiplayer api

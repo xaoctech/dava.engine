@@ -14,7 +14,7 @@ void ShowActionWithText(QToolBar* toolbar, QAction* action, bool showText);
 DAVA::WideString SizeInBytesToWideString(DAVA::float32 size);
 DAVA::String SizeInBytesToString(DAVA::float32 size);
 
-bool IsKeyModificatorPressed(DAVA::Key key);
+bool IsKeyModificatorPressed(DAVA::eInputElements key);
 bool IsKeyModificatorsPressed();
 
 enum eMessageBoxFlags

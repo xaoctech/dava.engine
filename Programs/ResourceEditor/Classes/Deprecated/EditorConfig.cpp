@@ -1,4 +1,4 @@
-#include "EditorConfig.h"
+#include "Classes/Deprecated/EditorConfig.h"
 
 EditorConfig::EditorConfig()
 {

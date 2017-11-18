@@ -17,16 +17,6 @@ PackMetaData::PackMetaData(const void* ptr, std::size_t size)
     Deserialize(ptr, size);
 }
 
-void PackMetaData::CollectDependencies(uint32 packIndex, Children& out) const
-{
-    const String& packName = GetPackInfo(packIndex).packName;
-    for (uint32 childPack : GetPackDependencyIndexes(packName))
-    {
-        out.push_back(childPack);
-        CollectDependencies(childPack, out);
-    }
-}
-
 PackMetaData::PackMetaData(const FilePath& metaDb)
 {
     // extract tables from sqlite DB
@@ -80,14 +70,42 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
         DAVA_THROW(Exception, "read metadata error - too big index bad meta");
     }
 
+    GenerateChildrenMatrix(numPacks);
+}
+
+const PackMetaData::Children& PackMetaData::GetChildren(uint32 packIndex) const
+{
+    // all dependent packs with all sub-dependencies
+    DVASSERT(packIndex < children.size());
+    return children[packIndex];
+}
+
+void PackMetaData::GenerateChildrenMatrixRow(uint32 packIndex, Children& out) const
+{
+    const String& packName = GetPackInfo(packIndex).packName;
+    for (uint32 childPack : GetPackDependencyIndexes(packName))
+    {
+        out.push_back(childPack);
+        GenerateChildrenMatrixRow(childPack, out);
+    }
+}
+
+void PackMetaData::GenerateChildrenMatrix(size_t numPacks)
+{
     children.clear();
     children.resize(numPacks);
 
     for (uint32 packIndex = 0; packIndex < numPacks; ++packIndex)
     {
         Children& c = children[packIndex];
-        CollectDependencies(packIndex, c);
-        c.shrink_to_fit();
+        GenerateChildrenMatrixRow(packIndex, c);
+        // remove duplicates (one pack can be dependency in several packs)
+        sort(begin(c), end(c));
+        const auto last = unique(begin(c), end(c));
+        if (last != end(c))
+        {
+            c.erase(last, end(c));
+        }
     }
 }
 
@@ -166,12 +184,12 @@ Vector<uint32> PackMetaData::GetFileIndexes(const String& requestedPackName) con
 
 uint32 PackMetaData::GetPackIndexForFile(const uint32 fileIndex) const
 {
-    return packIndexes.at(fileIndex);
+    return packIndexes[fileIndex];
 }
 
 const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const uint32 packIndex) const
 {
-    return packDependencies.at(packIndex);
+    return packDependencies[packIndex];
 }
 
 const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) const

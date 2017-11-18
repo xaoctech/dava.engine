@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QtTools/Utils/QtDelayedExecutor.h"
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <QDialog>
 #include <QLabel>
@@ -48,7 +48,7 @@ private:
 
     void Setup(const QString& title, const QString& message, bool hasWaitbar, bool hasCancel);
     Ui::QtWaitDialog* ui;
-    QtDelayedExecutor executor;
+    DAVA::TArc::QtDelayedExecutor executor;
 
     bool wasCanceled = false;
     bool isRunnedFromExec = false;

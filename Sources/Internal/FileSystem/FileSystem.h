@@ -25,6 +25,7 @@ namespace DAVA
 	\todo refactoring of utils and ~res:/ ~doc:/ access for the project files
 	\todo add support for pack files
 */
+class FileSystemDelegate;
 class FileSystem : public Singleton<FileSystem>
 {
 public:
@@ -134,7 +135,7 @@ public:
      */
     virtual const FilePath GetPublicDocumentsPath();
 
-#if defined(__DAVAENGINE_APPLE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
     /**
         \brief Function to retrieve user’s home path
         \returns user’s home path
@@ -291,6 +292,12 @@ public:
 
     FilePath GetTempDirectoryPath() const;
 
+    void SetFilenamesTag(const String& newTag);
+    const String& GetFilenamesTag() const;
+
+    void SetDelegate(FileSystemDelegate* delegate);
+    FileSystemDelegate* GetDelegate() const;
+
 private:
     bool HasLineEnding(File* f);
 
@@ -318,6 +325,10 @@ private:
     mutable Mutex accessArchiveMap;
     UnorderedMap<String, ResourceArchiveItem> resArchiveMap;
     Map<String, void*> lockedFileHandles;
+
+    String filenamesTag;
+
+    FileSystemDelegate* fsDelegate = nullptr;
 
     friend class File;
 };

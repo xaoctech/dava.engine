@@ -28,6 +28,7 @@ public:
         PlaceHolder,
         IsReadOnly,
         IsEnabled,
+        Validator, // const M::Validator*
         FieldCount
     };
 

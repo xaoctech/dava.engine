@@ -1,15 +1,29 @@
-cmake_minimum_required (VERSION 3.0)
-project( bullet )
+cmake_minimum_required(VERSION 3.0)
+project(bullet)
 
-set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" )
-include            ( CMake-common )
+function(auto_source_groups TOP_GROUP SOURCE_FILES)
+    foreach(FILE ${SOURCE_FILES})
+        file(RELATIVE_PATH FILE_RELATIVE ${PROJECT_SOURCE_DIR} ${FILE})
+        get_filename_component(PARENT_DIR "${FILE_RELATIVE}" DIRECTORY)
+        if ("${PARENT_DIR}" STREQUAL "")
+            source_group("${TOP_GROUP}" FILES "${FILE_RELATIVE}")
+        else()
+            string(REPLACE "/" "\\" GROUP "${PARENT_DIR}")
+            source_group("${TOP_GROUP}\\${GROUP}" FILES "${FILE_RELATIVE}")
+        endif()
+    endforeach()
+endfunction()
 
-include_directories   ( . )
-include_directories   ( ${DAVA_INCLUDE_DIR} )
-include_directories   ( ${DAVA_TOOLS_DIR} )
-include_directories   ( ${DAVA_THIRD_PARTY_INCLUDES_PATH} )
+include_directories("${PROJECT_SOURCE_DIR}")
 
-define_source( )
+file(GLOB_RECURSE SRC_FILES
+    "BulletCollision/*.cpp" "BulletCollision/*.h"
+    "BulletDynamics/*.cpp"  "BulletDynamics/*.h"
+    "LinearMath/*.cpp"      "LinearMath/*.h"
+    "vectormath/*.cpp"      "vectormath/*.h"
+    "*.h"
+)
 
-add_library                    ( ${PROJECT_NAME} STATIC ${PROJECT_SOURCE_FILES} ${PROJECT_HEADER_FILE_ONLY} )
-	
+auto_source_groups("main" "${SRC_FILES}")
+
+add_library(${PROJECT_NAME} STATIC ${SRC_FILES})

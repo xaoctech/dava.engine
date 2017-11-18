@@ -1,0 +1,455 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples/code/common/objreader.h</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples_2code_2common_2objreader_8h-example.html','api_examples_2code_2common_2objreader_8h_example_html8ab3bdab-6a88-4e1e-879e-e4f0af646990','index.html',location.hash); javascript:initPage('API: examples/code/common/objreader.h','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples_2code_2common_2objreader_8h-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples/code/common/objreader.h&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples/code/common/objreader.h</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">examples/code/common/objreader.h</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#ifndef OBJREADER_H</span>
+<span class="preprocessor">#define OBJREADER_H</span>
+
+<span class="preprocessor">#include "utils.h"</span>
+<span class="preprocessor">#include "vecmath.h"</span>
+<span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;vector&gt;</span>
+
+<span class="keyword">namespace </span>bex {
+
+        <span class="keyword">class </span>OBJReader {
+        <span class="keyword">public</span>:
+                OBJReader()
+                        :m_vertices(0),
+                        m_vertexNormals(0),
+                        m_UVs(0),
+                        m_currentGroup(0)
+                {
+                        m_dummyMaterial.diffuse = bex::ColorRGBA(0.9f,0.9f,0.9f,1.0f);
+                        m_materialMap[<span class=
+"stringliteral">"dummy"</span>] = m_dummyMaterial;
+                        m_currentMaterial = &amp;m_dummyMaterial;
+                        m_currentMaterialName = <span class=
+"stringliteral">"dummy"</span>;
+                }
+
+
+                <span class="keyword">struct </span>Material {
+                        Material() : shininess(0.0f) {}
+                        bex::ColorRGBA diffuse;
+                        bex::ColorRGBA emissive;
+                        bex::ColorRGBA specular;
+                        <span class=
+"keywordtype">float</span> shininess;
+                };
+
+
+                <span class="keyword">struct </span>Group {
+                        Material material;
+                        std::string materialName;
+                        std::vector&lt;int&gt; vertexIndexList;
+                        std::vector&lt;int&gt; normalIndexList;
+                        std::vector&lt;int&gt; uvIndexList;
+                };
+
+
+                <span class=
+"keywordtype">void</span> loadObjFile(<span class=
+"keyword">const</span> std::wstring file) {
+                        <span class=
+"keywordtype">size_t</span> pos = file.find_last_of(L<span class=
+"stringliteral">"/"</span>);
+                        m_path = file.substr(0, pos+1);
+                        loadFile(file);
+
+                }
+                <span class=
+"keywordtype">void</span> getMeshNames(std::vector&lt;std::string&gt;&amp; meshNames) {
+                        std::map&lt;std::string, Group&gt;::const_iterator iter;
+                        iter = m_groupMap.begin();
+                        <span class=
+"keywordflow">while</span> (iter != m_groupMap.end()) {
+                                meshNames.push_back(iter-&gt;first);
+                                iter++;
+                        }
+                }
+
+                <span class=
+"keyword">const</span> std::map&lt;std::string, Material&gt;&amp; getMaterials() {
+                        <span class=
+"keywordflow">return</span> m_materialMap;
+                }
+
+                <span class=
+"keywordtype">void</span> getMeshData(<span class=
+"keyword">const</span> std::string&amp; meshName, std::vector&lt;bex::Vec3&gt;&amp; vertices, std::vector&lt;bex::Vec3&gt;&amp; normals, std::vector&lt;bex::Vec2&gt;&amp; UVs, std::string&amp; materialName) {
+                        <span class=
+"keywordflow">if</span> (m_groupMap.find(meshName) != m_groupMap.end()) {
+                                Group&amp; tempGroup = m_groupMap.find(meshName)-&gt;second;
+                                <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i=0; i&lt;tempGroup.vertexIndexList.size(); i++) {
+                                        vertices.push_back(m_vertices[tempGroup.vertexIndexList[i]-1]);
+                                        normals.push_back(m_vertexNormals[tempGroup.normalIndexList[i]-1]);
+                                        UVs.push_back(m_UVs[tempGroup.uvIndexList[i]-1]);
+                                }
+                                materialName = tempGroup.materialName;
+                        }
+                }
+
+        <span class="keyword">private</span>:
+
+                std::vector&lt;std::string&gt; tokenizeString(<span class="keyword">const</span> std::string&amp; input, <span class="keywordtype">char</span> breakChar) {
+                        std::vector&lt;std::string&gt; result;
+                        std::string::size_type firstPos = input.size();
+                        <span class=
+"keywordflow">for</span> (std::string::size_type lastPos = 0; lastPos &lt;= input.size(); ++lastPos) {
+                                <span class=
+"keywordflow">if</span> (lastPos == input.size() || input[lastPos] == breakChar) {
+                                        <span class=
+"comment">// In separator.</span>
+                                        <span class=
+"keywordflow">if</span> (firstPos &lt; lastPos) {
+                                                result.push_back(input.substr(firstPos, lastPos - firstPos));
+                                                firstPos = input.size();
+                                        }
+                                } <span class=
+"keywordflow">else</span> {
+                                        <span class=
+"comment">// In token.</span>
+                                        <span class=
+"keywordflow">if</span> (firstPos &gt; lastPos) {
+                                                firstPos = lastPos;
+                                        }
+                                }
+                        }
+                        <span class=
+"keywordflow">return</span> result;
+                }
+                
+                <span class=
+"keywordtype">void</span> processTokens(<span class=
+"keyword">const</span> std::vector&lt;std::string&gt;&amp; tokens) {
+                        <span class=
+"keywordflow">if</span> (tokens.size() == 0) {
+                                <span class=
+"keywordflow">return</span>;
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"v"</span>) == 0) {
+                                m_vertices.push_back(bex::Vec3((<span class="keywordtype">float</span>)atof(tokens[1].c_str()), (<span class="keywordtype">float</span>)atof(tokens[2].c_str()), (<span class="keywordtype">float</span>)atof(tokens[3].c_str())));
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"mtllib"</span>) == 0) {
+                                loadFile(m_path + bex::string2tstring(tokens[1]));
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"vn"</span>) == 0) {
+                                m_vertexNormals.push_back(bex::Vec3((<span class="keywordtype">float</span>)atof(tokens[1].c_str()), (<span class="keywordtype">float</span>)atof(tokens[2].c_str()), (<span class="keywordtype">float</span>)atof(tokens[3].c_str())));
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"vt"</span>) == 0) {
+                                m_UVs.push_back(bex::Vec2((<span class="keywordtype">float</span>)atof(tokens[1].c_str()), (<span class="keywordtype">float</span>)atof(tokens[2].c_str())));
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"f"</span>) == 0) {
+                                <span class=
+"comment">//No group, no face lists!</span>
+                                <span class=
+"keywordflow">if</span> (m_currentGroup) {
+                                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> i=1; i&lt;4; i++) {
+                                                std::vector&lt;std::string&gt; faces = tokenizeString(tokens[i], <span class="charliteral">'/'</span>);
+                                                m_currentGroup-&gt;vertexIndexList.push_back(atoi(faces[0].c_str()));
+                                                m_currentGroup-&gt;uvIndexList.push_back(atoi(faces[1].c_str()));
+                                                m_currentGroup-&gt;normalIndexList.push_back(atoi(faces[2].c_str()));
+                                        }
+
+                                }
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"g"</span>) == 0) {
+                                std::string groupName = tokens[1];
+                                <span class=
+"keywordflow">for</span>(std::vector&lt;std::string&gt;::const_iterator it = tokens.begin() + 2; it != tokens.end(); ++it) {
+                                        groupName += <span class=
+"stringliteral">"."</span> + *it;
+                                }
+                                <span class=
+"keywordflow">if</span> (m_groupMap.find(groupName) == m_groupMap.end()) {
+                                        Group g;
+                                        g.material = *m_currentMaterial;
+                                        g.materialName = m_currentMaterialName;
+                                        m_groupMap[groupName] = g;
+                                        m_currentGroup = &amp;(m_groupMap.find(groupName)-&gt;second);
+                                } <span class=
+"keywordflow">else</span> {
+                                        m_currentGroup = &amp;(m_groupMap.find(groupName)-&gt;second);
+                                }
+                        }
+
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"usemtl"</span>) == 0) {
+                                <span class=
+"comment">//No group, no material name!</span>
+
+                                <span class=
+"keywordflow">if</span> (m_currentGroup) {
+                                        std::map&lt;std::string, Material&gt;::iterator it;
+                                        it = m_materialMap.find(tokens[1]);
+                                        <span class=
+"keywordflow">if</span> (it == m_materialMap.end()) {
+                                                m_currentGroup-&gt;material = m_dummyMaterial;
+                                                m_currentGroup-&gt;materialName = <span class="stringliteral">"dummy"</span>;
+                                        } <span class=
+"keywordflow">else</span> {
+                                                m_currentMaterial = &amp;it-&gt;second;
+                                                m_currentMaterialName = it-&gt;first;
+                                                m_currentGroup-&gt;material = it-&gt;second;
+                                                m_currentGroup-&gt;materialName = it-&gt;first;
+                                        }
+                                }
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"newmtl"</span>) == 0) {
+                                m_materialMap[tokens[1]] = m_dummyMaterial;
+                                m_currentMaterial = &amp;(m_materialMap.find(tokens[1])-&gt;second);
+                                m_currentMaterialName = tokens[1];
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"Kd"</span>) == 0) {
+                                m_currentMaterial-&gt;diffuse = bex::ColorRGBA((<span class="keywordtype">float</span>)atof(tokens[1].c_str()), (<span class="keywordtype">float</span>)atof(tokens[2].c_str()), (<span class="keywordtype">float</span>)atof(tokens[3].c_str()), 1.0f);
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"Ke"</span>) == 0) {
+                                m_currentMaterial-&gt;emissive = bex::ColorRGBA((<span class="keywordtype">float</span>)atof(tokens[1].c_str()), (<span class="keywordtype">float</span>)atof(tokens[2].c_str()), (<span class="keywordtype">float</span>)atof(tokens[3].c_str()), 1.0f);
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"Ks"</span>) == 0) {
+                                m_currentMaterial-&gt;specular = bex::ColorRGBA((<span class="keywordtype">float</span>)atof(tokens[1].c_str()), (<span class="keywordtype">float</span>)atof(tokens[2].c_str()), (<span class="keywordtype">float</span>)atof(tokens[3].c_str()), 1.0f);
+                        }
+                        <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (tokens[0].compare(<span class=
+"stringliteral">"Ns"</span>) == 0) {
+                                m_currentMaterial-&gt;shininess = (float)atof(tokens[1].c_str());
+                        }
+                }
+
+                <span class=
+"keywordtype">void</span> loadFile(<span class=
+"keyword">const</span> std::wstring file) {
+                        std::ifstream fileStream;
+                        fileStream.open(file.c_str());
+
+
+                        <span class=
+"keywordtype">char</span> row[256];
+                        <span class=
+"keywordflow">while</span> (fileStream.good()) {
+                                fileStream.getline(row, 256);
+                                std::string str = row;
+                                std::vector&lt;std::string&gt; tokens = tokenizeString(str, <span class="charliteral">' '</span>);
+                                processTokens(tokens);
+                        }
+                }
+
+                std::vector&lt;bex::Vec3&gt; m_vertices;
+                std::vector&lt;bex::Vec3&gt; m_vertexNormals;
+                std::vector&lt;bex::Vec2&gt; m_UVs;
+                std::map&lt;std::string, Group&gt; m_groupMap;
+                std::map&lt;std::string, Material&gt; m_materialMap;
+                std::wstring m_path;
+                Material m_dummyMaterial;
+                Group* m_currentGroup;
+                Material* m_currentMaterial;
+                std::string m_currentMaterialName;
+        };
+
+}
+
+
+<span class="preprocessor">#endif//OBJREADER_H</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

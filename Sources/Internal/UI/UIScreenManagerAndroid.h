@@ -1,10 +1,13 @@
 #ifndef __DAVAENGINE_ANDROID_SCREENMANAGER_C_H__
 #define __DAVAENGINE_ANDROID_SCREENMANAGER_C_H__
 
-#include "DAVAEngine.h"
+#include "Base/BaseTypes.h"
+#include "Base/Singleton.h"
 
 namespace DAVA
 {
+class UIScreen;
+
 class UIScreenManager : public Singleton<UIScreenManager>
 {
 public:

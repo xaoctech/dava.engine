@@ -3,6 +3,7 @@
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
 #include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
 #include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
+#include "Classes/SlotSupportModule/SlotSystemSettings.h"
 
 #include "Classes/Interfaces/PropertyPanelInterface.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
@@ -51,6 +52,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotSupportModule)
     DAVA::ReflectionRegistrator<SlotSupportModule>::Begin()
     .ConstructorByPointer()
     .End();
+}
+
+SlotSupportModule::SlotSupportModule()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SlotSystemSettings);
 }
 
 void SlotSupportModule::OnContextCreated(DAVA::TArc::DataContext* context)

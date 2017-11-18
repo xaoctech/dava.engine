@@ -26,6 +26,8 @@ private:
 
 private:
     bool captureStdoutFlag = false; // Flag controls whether TeamCity attribute 'captureStandardOutput=true' is set on test start
+    int64 testStartTime = 0;
+    int64 suiteStartTime = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////

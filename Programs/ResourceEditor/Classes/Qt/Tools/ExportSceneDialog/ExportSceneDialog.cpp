@@ -1,24 +1,21 @@
-#include "Tools/ExportSceneDialog/ExportSceneDialog.h"
-#include "Tools/Widgets/FilePathBrowser.h"
-
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Deprecated/EditorConfig.h"
+#include <Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h>
+#include "Classes/Qt/Tools/Widgets/FilePathBrowser.h"
 
-#include "Settings/SettingsManager.h"
-#include <Tools/TextureCompression/TextureConverter.h>
+#include <TArc/DataProcessing/DataContext.h>
 
-#include "Base/GlobalEnum.h"
-#include "Debug/DVAssert.h"
-
-#include "TArc/DataProcessing/DataContext.h"
+#include <Base/GlobalEnum.h>
+#include <Base/BaseTypes.h>
+#include <Debug/DVAssert.h>
 
 #include <QCheckBox>
 #include <QComboBox>
-
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-
 #include <QPushButton>
 
 ExportSceneDialog::ExportSceneDialog(QWidget* parent)
@@ -97,6 +94,30 @@ void ExportSceneDialog::SetupUI()
             }
         }
 
+        QLabel* tagLabel = new QLabel(this);
+        tagLabel->setText("Select Tag:");
+        tagLabel->setMinimumSize(UI_WIDTH, UI_HEIGHT);
+        optionsLayout->addWidget(tagLabel);
+
+        tagSelector = new QComboBox(this);
+        tagSelector->setMinimumSize(UI_WIDTH, UI_HEIGHT);
+        optionsLayout->addWidget(tagSelector);
+
+        tagSelector->addItem("No tags", "");
+
+        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DVASSERT(data != nullptr);
+        const EditorConfig* editorConfig = data->GetEditorConfig();
+        if (editorConfig->HasProperty("Tags"))
+        {
+            const DAVA::Vector<DAVA::String>& projectTags = editorConfig->GetComboPropertyValues("Tags");
+            for (const DAVA::String& tag : projectTags)
+            {
+                QString qTag = QString::fromStdString(tag);
+                tagSelector->addItem(qTag, qTag);
+            }
+        }
+
         optimizeOnExport = new QCheckBox("Optimize on export", this);
         optimizeOnExport->setMinimumSize(UI_WIDTH, UI_HEIGHT);
         optionsLayout->addWidget(optimizeOnExport);
@@ -141,8 +162,8 @@ void ExportSceneDialog::InitializeValues()
         gpuSelector[gpu]->setCheckState(Qt::Unchecked);
     }
 
-    DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
-    qualitySelector->setCurrentIndex(quality.AsInt32());
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    qualitySelector->setCurrentIndex(static_cast<int>(settings->compressionQuality));
     optimizeOnExport->setCheckState(Qt::Checked);
     useHDtextures->setCheckState(Qt::Unchecked);
 
@@ -199,4 +220,9 @@ bool ExportSceneDialog::GetOptimizeOnExport() const
 bool ExportSceneDialog::GetUseHDTextures() const
 {
     return useHDtextures->checkState() == Qt::Checked;
+}
+
+DAVA::String ExportSceneDialog::GetFilenamesTag() const
+{
+    return tagSelector->currentData(Qt::UserRole).toString().toStdString();
 }

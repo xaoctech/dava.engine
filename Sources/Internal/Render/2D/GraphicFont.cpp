@@ -1,5 +1,7 @@
 #include "GraphicFont.h"
 
+#include "Engine/Engine.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Texture.h"
 #include "Render/Shader.h"
 #include "FileSystem/YamlParser.h"
@@ -396,7 +398,7 @@ Font::StringMetrics GraphicFont::DrawStringToBuffer(const WideString& str,
         }
         float32 charWidth = (charDescription.xAdvance + nextKerning) * sizeScale;
         if (charSizes)
-            charSizes->push_back(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(charWidth));
+            charSizes->push_back(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(charWidth));
         lastX += charWidth;
 
         charDrawed++;

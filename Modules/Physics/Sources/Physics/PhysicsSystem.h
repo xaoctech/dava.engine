@@ -2,6 +2,7 @@
 
 #include <Entity/SceneSystem.h>
 #include <Math/Vector.h>
+#include <Base/BaseTypes.h>
 
 #include <physx/PxQueryReport.h>
 #include <physx/PxSimulationEventCallback.h>
@@ -12,6 +13,7 @@ namespace physx
 class PxScene;
 class PxRigidActor;
 class PxShape;
+class PxControllerManager;
 }
 
 namespace DAVA
@@ -23,6 +25,8 @@ class PhysicsComponent;
 class DynamicBodyComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
+class PhysicsVehiclesSubsystem;
+class CharacterControllerComponent;
 
 class PhysicsSystem final : public SceneSystem
 {
@@ -36,6 +40,8 @@ public:
     void RegisterComponent(Entity* entity, Component* component) override;
     void UnregisterComponent(Entity* entity, Component* component) override;
 
+    void PrepareForRemove() override;
+
     void Process(float32 timeElapsed) override;
 
     void SetSimulationEnabled(bool isEnabled);
@@ -44,12 +50,14 @@ public:
     void SetDebugDrawEnabled(bool drawDebugInfo);
     bool IsDebugDrawEnabled() const;
 
-    void SheduleUpdate(PhysicsComponent* component);
-    void SheduleUpdate(CollisionShapeComponent* component);
+    void ScheduleUpdate(PhysicsComponent* component);
+    void ScheduleUpdate(CollisionShapeComponent* component);
+    void ScheduleUpdate(CharacterControllerComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
-
     void AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode);
+
+    PhysicsVehiclesSubsystem* GetVehiclesSystem();
 
 private:
     bool FetchResults(bool waitForFetchFinish);
@@ -57,7 +65,7 @@ private:
     void DrawDebugInfo();
 
     void InitNewObjects();
-    void AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
+    void AttachShapesRecursively(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
     void AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale);
 
     void ReleaseShape(CollisionShapeComponent* component);
@@ -68,17 +76,19 @@ private:
     void UpdateComponents();
     void ApplyForces();
 
+    void MoveCharacterControllers(float32 timeElapsed);
+
 private:
     class SimulationEventCallback : public physx::PxSimulationEventCallback
     {
     public:
         SimulationEventCallback(CollisionSingleComponent* targetCollisionSingleComponent);
-        void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32);
-        void onWake(physx::PxActor**, physx::PxU32);
-        void onSleep(physx::PxActor**, physx::PxU32);
-        void onTrigger(physx::PxTriggerPair*, physx::PxU32);
-        void onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, const physx::PxU32);
-        void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs);
+        void onConstraintBreak(physx::PxConstraintInfo*, physx::PxU32) override;
+        void onWake(physx::PxActor**, physx::PxU32) override;
+        void onSleep(physx::PxActor**, physx::PxU32) override;
+        void onTrigger(physx::PxTriggerPair*, physx::PxU32) override;
+        void onAdvance(const physx::PxRigidBody* const*, const physx::PxTransform*, const physx::PxU32) override;
+        void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
 
     private:
         CollisionSingleComponent* targetCollisionSingleComponent;
@@ -93,7 +103,10 @@ private:
     bool isSimulationEnabled = true;
     bool isSimulationRunning = false;
     physx::PxScene* physicsScene = nullptr;
-    PhysicsGeometryCache* geometryCache;
+    physx::PxControllerManager* controllerManager = nullptr;
+    PhysicsGeometryCache* geometryCache = nullptr;
+
+    PhysicsVehiclesSubsystem* vehiclesSubsystem = nullptr;
 
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;
@@ -101,10 +114,14 @@ private:
     Vector<CollisionShapeComponent*> collisionComponents;
     Vector<CollisionShapeComponent*> pendingAddCollisionComponents;
 
+    Vector<CharacterControllerComponent*> characterControllerComponents;
+    Vector<CharacterControllerComponent*> pendingAddCharacterControllerComponents;
+
     UnorderedMap<Entity*, Vector<CollisionShapeComponent*>> waitRenderInfoComponents;
 
     Set<PhysicsComponent*> physicsComponensUpdatePending;
     Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
+    Set<CharacterControllerComponent*> characterControllerComponentsUpdatePending;
 
     struct PendingForce
     {

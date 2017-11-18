@@ -2,7 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Vector.h"
-#include "FileSystem/XMLParser.h"
+#include "Base/RefPtr.h"
+#include "FileSystem/XMLParserDelegate.h"
 #include "Utils/BiDiHelper.h"
 
 namespace DAVA
@@ -13,8 +14,8 @@ class UIControl;
 class XMLRichContentBuilder final : public XMLParserDelegate
 {
 public:
-    /** Constructor with specified RichLink pointer and editor mode flag. */
-    XMLRichContentBuilder(RichLink* link_, bool editorMode = false);
+    /** Constructor with specified RichLink pointer and editor mode and debug draw flags. */
+    XMLRichContentBuilder(RichLink* link_, bool editorMode = false, bool debugDraw = false);
 
     /** Parse specified text and build list of controls. */
     bool Build(const String& text);
@@ -36,7 +37,7 @@ private:
     const String& GetClass() const;
 
     /** Setup base parameters in specified control. */
-    void PrepareControl(UIControl* ctrl, bool autosize, bool stick);
+    void PrepareControl(UIControl* ctrl, bool autosize);
     /** Append control to the controls list. */
     void AppendControl(UIControl* ctrl);
     /** Process open tag. */
@@ -49,10 +50,11 @@ private:
     void FlushText();
 
 private:
-    bool debugDraw = false;
     bool needLineBreak = false;
     bool needSpace = false;
+    bool needSoftStick = false;
     bool isEditorMode = false;
+    bool isDebugDraw = false;
     bool classesInheritance = false;
     BiDiHelper::Direction direction = BiDiHelper::Direction::NEUTRAL;
     String fullText;

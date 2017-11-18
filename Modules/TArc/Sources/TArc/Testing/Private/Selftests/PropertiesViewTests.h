@@ -70,7 +70,7 @@ DAVA_REFLECTION_IMPL(RootNode)
     .End();
 }
 
-WindowKey wnd = WindowKey(FastName("PropertiesViewTests"));
+TArc::WindowKey wnd = TArc::WindowKey(FastName("PropertiesViewTests"));
 
 class SelectionData : public DAVA::TArc::DataNode
 {
@@ -122,9 +122,10 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
     void WriteInitialSettings() override
     {
         using namespace DAVA;
+        using namespace DAVA::TArc;
         ReflectionPathTree tree(FastName("Root"));
-        tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("child1"), FastName("value") });
-        tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("child2") });
+        tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child1"), FastName("value") });
+        tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child2") });
 
         const EngineContext* ctx = GetEngineContext();
 

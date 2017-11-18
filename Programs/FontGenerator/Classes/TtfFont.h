@@ -2,7 +2,6 @@
 #define __DISTANCE_GENERATOR__TTFFONT__
 
 #include <Base/BaseTypes.h>
-#include <Base/Singleton.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

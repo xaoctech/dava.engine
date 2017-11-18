@@ -41,10 +41,10 @@ public:
     DataReader<T> CreateReader() const;
 
     bool IsActive() const;
+    void Sync(bool notifyListener);
 
 private:
     friend class DataWrappersProcessor;
-    friend class QtReflected;
     friend class DataListener;
     template <typename T>
     friend class DataEditor;
@@ -59,7 +59,6 @@ private:
     void ClearListener(DataListener* listenerForCheck);
 
     void UpdateCachedValue(int32 id, const Any& value);
-    void Sync(bool notifyListener);
     void SyncByFieldKey(const Any& fieldKey, const Any& v);
     void SyncWithEditor(const Reflection& etalonData);
     void NotifyListener(bool sendNotify, const Vector<Any>& fields = Vector<Any>());
@@ -68,6 +67,23 @@ private:
 private:
     struct Impl;
     std::shared_ptr<Impl> impl;
+
+    class DataWrapperWeak
+    {
+    public:
+        DataWrapperWeak() = default;
+        DataWrapperWeak(const DataWrapper wrapper)
+            : impl(wrapper.impl)
+        {
+        }
+
+        std::weak_ptr<Impl> impl;
+    };
+
+    DataWrapper(const DataWrapperWeak& weak)
+        : impl(weak.impl.lock())
+    {
+    }
 };
 
 template <typename T>

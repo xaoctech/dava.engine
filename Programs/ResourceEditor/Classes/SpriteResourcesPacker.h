@@ -1,5 +1,4 @@
-#ifndef __SPRITE_RESOURCES_PACKER_H__
-#define __SPRITE_RESOURCES_PACKER_H__
+#pragma once
 
 #include "FileSystem/FilePath.h"
 #include "Render/RenderBase.h"
@@ -21,5 +20,3 @@ protected:
     DAVA::FilePath inputDir;
     DAVA::FilePath outputDir;
 };
-
-#endif //__SPRITES_PACKER_H__

@@ -125,4 +125,9 @@ void AnimationSystem::RemoveEntity(Entity* entity)
         RemoveFromActive(comp);
     }
 }
+
+void AnimationSystem::PrepareForRemove()
+{
+    activeComponents.clear();
+}
 };

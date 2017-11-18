@@ -1,0 +1,424 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A" />
+      <title>Creating Render Passes</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBCreateFullShadingPass()", "../api/beastrenderpass_8h.html#ad16bdfe42814a2538c0c974ea79ec715", "API"]); 
+reflinkdata.push(["ILBCreateIlluminationPass()", "../api/beastrenderpass_8h.html#ad0c96c4fec277646dab3674b931c2cfd", "API"]); 
+reflinkdata.push(["ILBIlluminationMode", "../api/beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636", "API"]); 
+reflinkdata.push(["ILB_IM_DIRECT_ONLY", "../api/beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3", "API"]); 
+reflinkdata.push(["ILB_IM_INDIRECT_ONLY", "../api/beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82", "API"]); 
+reflinkdata.push(["ILB_IM_FULL", "../api/beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93", "API"]); 
+reflinkdata.push(["ILB_IM_FULL_AND_INDIRECT", "../api/beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aef8d5a408fd47e7b7655421774103240", "API"]); 
+reflinkdata.push(["ILBAddFullyBakedLight()", "../api/beastrenderpass_8h.html#ab0407b495d4427673eddc63082d4490f", "API"]); 
+reflinkdata.push(["ILBCreateIlluminationPassSH()", "../api/beastrenderpass_8h.html#a43bb3dff69e941825b46da030c0a6f4a", "API"]); 
+reflinkdata.push(["ILBCreateRNMPass()", "../api/beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6", "API"]); 
+reflinkdata.push(["ILBRNMBasis", "../api/beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15", "API"]); 
+reflinkdata.push(["ILB_RB_HL2", "../api/beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5", "API"]); 
+reflinkdata.push(["ILB_RB_UE3", "../api/beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0", "API"]); 
+reflinkdata.push(["ILB_RB_UE3_FLIPPED", "../api/beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a6e5b6d82674682e7b91178102d395be1", "API"]); 
+reflinkdata.push(["ILB_RB_CUSTOM", "../api/beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b", "API"]); 
+reflinkdata.push(["ILBAddCustomBasisVector()", "../api/beastrenderpass_8h.html#a0237a590e98b631eb7a486b9446f957e", "API"]); 
+reflinkdata.push(["ILBSetLambertianClamp()", "../api/beastrenderpass_8h.html#adc7b570a58e487fa5b7d5088a4aca422", "API"]); 
+reflinkdata.push(["ILBSetAllowNegative()", "../api/beastrenderpass_8h.html#a95e0f741d4f937d51b0d4f3b0d33018b", "API"]); 
+reflinkdata.push(["ILBIncludeNormalComponent()", "../api/beastrenderpass_8h.html#a385b1ebd62698ea6cccb53c0e9cf071d", "API"]); 
+reflinkdata.push(["ILBRNMMatchNormalIntensity()", "../api/beastrenderpass_8h.html#a01320e43cb627fb5655bda7817cd2f1e", "API"]); 
+reflinkdata.push(["ILBCreateLightPass()", "../api/beastrenderpass_8h.html#a75f19f8d7eaba6ce1f2350e5fcecd1bb", "API"]); 
+reflinkdata.push(["ILBLightPassType", "../api/beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aaf", "API"]); 
+reflinkdata.push(["ILB_LP_LIGHTMAP", "../api/beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1", "API"]); 
+reflinkdata.push(["ILB_LP_SHADOWMAP", "../api/beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c", "API"]); 
+reflinkdata.push(["ILB_LP_FULLSHADING", "../api/beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772", "API"]); 
+reflinkdata.push(["ILBCreateLightPassEntry()", "../api/beastrenderpass_8h.html#a5e739df252830d484d077607ba8390c8", "API"]); 
+reflinkdata.push(["ILBAddLightToPass()", "../api/beastrenderpass_8h.html#a75899d0b3701c21fe3bf10681a54371b", "API"]); 
+reflinkdata.push(["ILBAddTargetToPass()", "../api/beastrenderpass_8h.html#a1cf7ec9fa12d94730a9b9642b1b9d701", "API"]); 
+reflinkdata.push(["ILBAddPassToTarget()", "../api/beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385", "API"]); 
+reflinkdata.push(["ILBSetLambertianScale()", "../api/beastrenderpass_8h.html#a71609144a15421439392d9ce80eb31d3", "API"]); 
+reflinkdata.push(["ILBEnableSignedDistanceField()", "../api/beastrenderpass_8h.html#a21dfaef01b2775b3a55501fcb8a111d5", "API"]); 
+reflinkdata.push(["ILBCreateAmbientOcclusionPass()", "../api/beastrenderpass_8h.html#a6b867c7cb0101d7f28870ef50fbd3c97", "API"]); 
+reflinkdata.push(["ILBSetAOAdaptive()", "../api/beastrenderpass_8h.html#a51193d5aa62550475f31c0b90100cc07", "API"]); 
+reflinkdata.push(["ILBSetAONumRays()", "../api/beastrenderpass_8h.html#a77ae79aa30453e1b5c2c824ac6afda7f", "API"]); 
+reflinkdata.push(["ILBSetAOContrast()", "../api/beastrenderpass_8h.html#ad8788bbbafd64342099152ac404f5f03", "API"]); 
+reflinkdata.push(["ILBSetAOUniformSampling()", "../api/beastrenderpass_8h.html#afc887b914ff75213285173bb6cd33298", "API"]); 
+reflinkdata.push(["ILBSetAOSelfOcclusion()", "../api/beastrenderpass_8h.html#a2c7e9750b8ca0817583d49f7f296de27", "API"]); 
+reflinkdata.push(["ILBEnableAOBentNormals()", "../api/beastrenderpass_8h.html#ad61962c051aa01a367b08758e2d822a1", "API"]); 
+reflinkdata.push(["ILBCreateLuaPass()", "../api/beastrenderpass_8h.html#a4325115669829001bbad46707487b5c4", "API"]); 
+reflinkdata.push(["ILBRenderPassHandle", "../api/struct_i_l_b_render_pass_handle.html", "API"]); 
+reflinkdata.push(["beastrenderpass.h", "../api/beastrenderpass_8h.html", "API"]); 
+reflinkdata.push(["ILBCreateLightPass", "../api/beastrenderpass_8h.html#a75f19f8d7eaba6ce1f2350e5fcecd1bb", "API"]); 
+reflinkdata.push(["ILBCreateLightPassEntry", "../api/beastrenderpass_8h.html#a5e739df252830d484d077607ba8390c8", "API"]); 
+reflinkdata.push(["ILBAddTargetToPass", "../api/beastrenderpass_8h.html#a1cf7ec9fa12d94730a9b9642b1b9d701", "API"]); 
+reflinkdata.push(["ILBAddLightToPass", "../api/beastrenderpass_8h.html#a75899d0b3701c21fe3bf10681a54371b", "API"]); 
+reflinkdata.push(["ILBCreateFullShadingPass", "../api/beastrenderpass_8h.html#ad16bdfe42814a2538c0c974ea79ec715", "API"]); 
+reflinkdata.push(["ILBAddPassToTarget", "../api/beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm',                           'd30e9001','index.html',location.hash);                           javascript:initPage('Creating Render Passes','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Render Passes&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating Render Targets</div><a href="GUID-C5DEE2AC-1BFE-4C80-8370-03BBFD925C4D.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Rendering the Scene</div><a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Launching Jobs</div><a href="GUID-C2AC7E8E-8DD1-4199-9B17-953320BF3186.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm">Rendering the Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-09DC7405-A274-4A97-BD37-D9C62AB3C7BE"></a></span><h1>Creating Render Passes</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-7E6AA9D9-3570-47EA-8228-649D53CE8434"></a></span> Render passes define what kind of lighting data should be baked for a set of linked targets. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_F178EE5C10FE479A826BE76170F4BA82"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9009"></a><span class="anchor_wrapper"><a name="GUID-485DD0D0-49CE-4C56-8221-36122146B22B"></a></span>Types of render passes
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-B78B2D66-3645-40C5-BE6C-A250F6F99E16"></a></span><span class="charspan-msgph" translate="no">Beast</span> offers several different types of render passes, described in the following sections. Each of these types is pre-set to bake
+               a different kind of information about the way its linked targets are lit. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-D2C1584E-D1F1-4A05-B3D2-66EDF7D763EA"></a></span>Each type of pass is created by calling a different API function. For some passes, you can further configure the type of data
+               produced by setting parameter values in the function you call to initialize the pass, or by calling additional API functions.
+               These functions are all listed in the following sections. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-3C2FF2E5-FF1E-4F07-8975-2BA8D74C36A1"></a></span>In addition, different numbers of data channels may be used for the different passes to store the final output data of the
+               pass in the framebuffer or vertexbuffer generated by the rendering job. Each section below indicates the number of output
+               channels generated by each pass, and the significance of those channels. 
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_8C4C1A1CB7B64C57A814004BC35A782F"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e9025"></a><span class="anchor_wrapper"><a name="GUID-06C4065C-C101-4A6C-B610-4A19CA6901AC"></a></span>Full shading pass
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-65777283-ABE2-4922-8223-7E0FF04E0B20"></a></span>The full shading pass bakes the fully rendered appearance of the mesh instance, including the diffuse channel of its material,
+                  lighting contributions, shadows, etc. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-8E7ECBBB-B8A4-4896-87BE-F5CC743D2B60"></a></span>To create a full shading pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateFullShadingPass()'); return false;">ILBCreateFullShadingPass()</a></span> function. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-0873DA9B-7AAA-4600-B1D1-3663B9291651"></a></span><em class="strong">Output.</em> The full shading pass creates five channels for each pixel in the output framebuffer or each vertex in the output vertexbuffer:
+                  
+               </p> 
+               <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre>(RGBA)Z</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-68415B6A-5023-4A28-84DC-EE016C2E6134"></a></span>where Z represents the depth channel. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_CC86704ECB484175A7139BA2B1E119C6"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e9053"></a><span class="anchor_wrapper"><a name="GUID-298392E7-7939-43D9-9F8F-FB7CDE03E850"></a></span>Illumination pass
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-60662C72-7F6F-4980-A707-1C2B807177E8"></a></span>The illumination pass bakes only the effects of the lighting on each instance, not including the diffuse color or texture
+                  of its material. This allows you to create textures or vertex data that reflect only the effect of the incoming light that
+                  hits each instance. You can blend this data at runtime with the color texture of the mesh. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-DAC00EF7-DE29-4248-BBFF-9316FDA4747C"></a></span>To create an illumination pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateIlluminationPass()'); return false;">ILBCreateIlluminationPass()</a></span> function. 
+               </p> <span class="anchor_wrapper"><a name="UL_CA26D4CFDBAF434AA3518D69442AF74C"></a></span><ul>
+                  <li>In your call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateIlluminationPass()'); return false;">ILBCreateIlluminationPass()</a></span>, you need to provide an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBIlluminationMode'); return false;">ILBIlluminationMode</a></span> enumeration to indicate what type of light contributions should be baked: direct light only (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_DIRECT_ONLY'); return false;">ILB_IM_DIRECT_ONLY</a></span>), indirect light only (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_INDIRECT_ONLY'); return false;">ILB_IM_INDIRECT_ONLY</a></span>), all incoming light (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL'); return false;">ILB_IM_FULL</a></span>), or both full lighting and indirect lighting separately (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL_AND_INDIRECT'); return false;">ILB_IM_FULL_AND_INDIRECT</a></span>). 
+                     <p><span class="anchor_wrapper"><a name="GUID-9531D8B2-93E8-49F2-B830-D3C0EC6BDE7F"></a></span>The <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL_AND_INDIRECT'); return false;">ILB_IM_FULL_AND_INDIRECT</a></span> option produces the same output as both <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL'); return false;">ILB_IM_FULL</a></span> and <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_INDIRECT_ONLY'); return false;">ILB_IM_INDIRECT_ONLY</a></span>, combined in a single pass. This could be useful if you want to do real-time direct lighting for objects close to the camera
+                        and blend to fully baked lightmaps for more distant geometry. You would then apply the indirect lighting values to the nearby
+                        objects, the full lighting values to the distant objects, and interpolate or switch between those values based on the distance
+                        of the geometry. If you choose this approach, you can also call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddFullyBakedLight()'); return false;">ILBAddFullyBakedLight()</a></span> to make the illumination pass write the full light contribution (direct and indirect) for a specified light source to both
+                        the full and indirect-only outputs. 
+                     </p> 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-CAF8BFEC-D91C-449A-A6C3-DB5AFBB5BC00"></a></span><em class="strong">Output.</em> For <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_DIRECT_ONLY'); return false;">ILB_IM_DIRECT_ONLY</a></span>, <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_INDIRECT_ONLY'); return false;">ILB_IM_INDIRECT_ONLY</a></span> and <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL'); return false;">ILB_IM_FULL</a></span>, the illumination pass creates five channels for each pixel in the output framebuffer, or each vertex in the output vertexbuffer:
+                  
+               </p> 
+               <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre>(RGBA)Z</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-22356FAC-D7A0-4A9F-9A46-46E7A6CBAFEB"></a></span>where Z represents the depth channel. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-3038B13C-BCDB-479C-9CD8-0158E1CD4984"></a></span> For <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL_AND_INDIRECT'); return false;">ILB_IM_FULL_AND_INDIRECT</a></span>, the illumination pass creates seven channels for each pixel in the output framebuffer, or each vertex in the output vertexbuffer:
+                  
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint">(RGB)<sub>i</sub>(RGB)<sub>f</sub>Z</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-FFA549A2-2F38-48E1-BFBF-B9606E20113B"></a></span>where: 
+               </p> <span class="anchor_wrapper"><a name="UL_B6587D84E3AB4F1099255BAB031996E1"></a></span><ul>
+                  <li>RGB<sub>i</sub> represents the indirect-only lighting. 
+                  </li>
+                  <li>RGB<sub>f</sub> represents the full lighting (direct and indirect combined). 
+                  </li>
+                  <li>Z represents the depth channel. </li>
+               </ul> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_4E1F4209C1C64276A94689B6DCACC85C"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e9159"></a><span class="anchor_wrapper"><a name="GUID-BE248DC1-7AF2-4177-B1C7-32FAA435555C"></a></span>Spherical Harmonics illumination pass
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-17835258-7ECC-41D9-BA68-C6CE6037B10A"></a></span>For point cloud targets, you can use a type of illumination pass that uses Spherical Harmonics to integrate the illumination
+                     around each point in the cloud. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-B155B893-0E3C-42AB-AA3D-D84417F0A455"></a></span>To create this kind of illumination pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateIlluminationPassSH()'); return false;">ILBCreateIlluminationPassSH()</a></span> function. It accepts the same arguments as the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateIlluminationPass()'); return false;">ILBCreateIlluminationPass()</a></span> function described above. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-A3A8D880-C233-49E9-9425-66EA827A8F48"></a></span><em class="strong">Output.</em> Three spherical harmonic bands are computed, which produces nine coefficients for each color channel. There are therefore
+                     27 channels for each vertex (i.e. each point cloud point) in the output vertexbuffer: 
+                  </p> 
+                  <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre>(R0 ... R8, G0 ... G8, B0 ... B8)</pre></div> 
+               </div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_3C551B5015E24D70B5DA7572AFA47451"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e9186"></a><span class="anchor_wrapper"><a name="GUID-63EC2CCE-E281-4C0C-9EFE-ECC4D7D82596"></a></span>Radiosity Normal Map (RNM) pass
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-2B6EDA22-F8FA-4946-A486-F6A9C06C0C2E"></a></span> The RNM pass creates radiosity normal maps, also known as directional light maps. In this lighting technique, each shaded
+                  fragment records the light incoming from three different directions that deviate from the normal of the fragment. These deviations,
+                  which are always orthogonal to each other, are known as the <em class="mild">RNM bases</em>. The incoming light values along each basis are stored separately. At runtime, these values can be interpolated and blended
+                  with a normal map or bump map that provides details of the surface texture of the mesh. This greatly increases the realism
+                  and believability of the final texture. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-B9EE1615-20DF-4F72-ACC1-148E18A9B505"></a></span>For example, if a red light is shining on a wall from the left, and a blue light is shining from the right, a bump in the
+                  middle of the wall should be shaded red on the left and blue on the right. Using the RNM technique, the lighting color to
+                  be applied to each point on the mesh is determined by taking the normal from the corresponding point in the normal map, and
+                  interpolating the incoming directional light values in the RNM maps to determine what color of light shines along that normal.
+                  
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-77078B7B-7F22-43CA-8876-AFFEBD1530B5"></a></span>Note that in order to use the RNM pass to render a target, you must have provided tangents and bitangents for each triangle
+                  in the mesh at the time you created that mesh. See also <span class="char_link"><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm">Creating Meshes</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-C2D7A052-609F-4EE0-96FE-FFEA9D0A1E7A"></a></span>To create an RNM pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateRNMPass()'); return false;">ILBCreateRNMPass()</a></span> function. 
+               </p> <span class="anchor_wrapper"><a name="UL_10CD85B9BE65418887E14480C5D3CE7F"></a></span><ul>
+                  <li>In your call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateRNMPass()'); return false;">ILBCreateRNMPass()</a></span>, you also need to provide an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRNMBasis'); return false;">ILBRNMBasis</a></span> enumeration to indicate the alignment of the RNM basis vectors: the alignment used in Half-Life 2 (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_HL2'); return false;">ILB_RB_HL2</a></span>), the alignment used in the Unreal Engine (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_UE3'); return false;">ILB_RB_UE3</a></span>), the alignment used in Unreal in untouched order (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_UE3_FLIPPED'); return false;">ILB_RB_UE3_FLIPPED</a></span>) or custom (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_CUSTOM'); return false;">ILB_RB_CUSTOM</a></span>). Define custom basis vectors with a series of calls to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddCustomBasisVector()'); return false;">ILBAddCustomBasisVector()</a></span>, this allows you to use more basis vectors than 3 for directional lightmaps. 
+                  </li>
+                  <li>You also need to specify the number of samples to use for indirect light calculations. 
+                     <p><span class="anchor_wrapper"><a name="GUID-A13FD5F5-779F-466D-BF3D-CF0B7E90FEFA"></a></span>If you set this value to 0, an adaptive sampling method is used, based on a final gather with a radiance cache. In this case,
+                        the settings for the number of samples and the number of light bounces are taken from the Final Gather settings in the XML
+                        configuration file you provide for the rendering job. See also <span class="char_link"><a href="GUID-82757E4A-4070-4B3B-B1FF-2F851B73C5B8.htm"> Final Gather Settings</a></span>. This approach is recommended for most projects. 
+                     </p> 
+                  </li>
+                  <li>You also need to provide an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRNMBasis'); return false;">ILBRNMBasis</a></span> enumeration to indicate the alignment of the RNM basis vectors: the alignment used in Half-Life 2 (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_HL2'); return false;">ILB_RB_HL2</a></span>), the alignment used in the Unreal Engine (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_UE3'); return false;">ILB_RB_UE3</a></span>), the alignment used in Unreal in untouched order (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_UE3_FLIPPED'); return false;">ILB_RB_UE3_FLIPPED</a></span>), or a custom set of bases (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_CUSTOM'); return false;">ILB_RB_CUSTOM</a></span>) that you specify in calls to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddCustomBasisVector()'); return false;">ILBAddCustomBasisVector()</a></span>. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-9D4EC393-909F-44BF-92B2-EA0F3FD9C8CB"></a></span>You can also use the following API functions to configure the RNM pass. See the function descriptions for details. 
+               </p> <span class="anchor_wrapper"><a name="UL_9A5E44781F89485384CFB1965CE3C192"></a></span><ul>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLambertianClamp()'); return false;">ILBSetLambertianClamp()</a></span>: Determines whether or not the result of the pass is scaled so that the sum of the lambertian shading values of the directional
+                     components equals a clamp value. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAllowNegative()'); return false;">ILBSetAllowNegative()</a></span>: Determines whether or not the directional components can include negative coefficients and light contributions that come
+                     from below the plane of the surface. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBIncludeNormalComponent()'); return false;">ILBIncludeNormalComponent()</a></span>: Determines whether or not the lighting contribution along the direction of the normal is also computed and output along
+                     with the three RNM bases. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRNMMatchNormalIntensity()'); return false;">ILBRNMMatchNormalIntensity()</a></span>: Determines whether or not the intensity of the lighting values along the RNM bases are scaled to match the intensity along
+                     the normal. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddCustomBasisVector()'); return false;">ILBAddCustomBasisVector()</a></span>: When using the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_CUSTOM'); return false;">ILB_RB_CUSTOM</a></span> basis mode, this function allows you to specify a basis vector for the RNM pass. Note that your basis vectors should always
+                     be orthogonal to each other. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-10F08B4F-E803-4190-8158-BD77A261AFAD"></a></span><em class="strong">Output.</em> The RNM pass creates 4 channels for each basis vector, plus 4 channels for the normal component if it is included. If you
+                  use any of the built-in bases in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRNMBasis'); return false;">ILBRNMBasis</a></span> enumeration (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_HL2'); return false;">ILB_RB_HL2</a></span>, <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_UE3'); return false;">ILB_RB_UE3</a></span> or <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_UE3_FLIPPED'); return false;">ILB_RB_UE3_FLIPPED</a></span>), this produces 13 values (or 17 if the normal is included): 
+               </p> 
+               <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLGHT"></a></span><pre class="prettyprint">(RGBA)<sub>1</sub>(RGBA)<sub>2</sub>(RGBA)<sub>3</sub>(RGBA)<sub>n</sub>Z</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-64310259-EC49-403C-9F03-77D97133DACE"></a></span>where: 
+               </p> <span class="anchor_wrapper"><a name="UL_614AEB1211774B72A8E8CF136632806F"></a></span><ul>
+                  <li>RGBA<sub>1</sub> to RGBA<sub>3</sub> represent the RGBA values for the three directions in the RNM basis. 
+                  </li>
+                  <li>RGBA<sub>n</sub> represents the RGBA values for the normal component, if included. 
+                  </li>
+                  <li> Z represents the depth channel. </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-A7C685E7-ACEE-4DC4-B904-0B52EC184230"></a></span>If you a custom basis for your RNM pass, the number of coefficients depends on the number of basis vectors you add. You will
+                  get a set of RGBA values for each basis, plus a set of RGB values for the normal (if included), plus a value for the depth
+                  channel. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_22D18AC7387E499FAF1052E0E2C68939"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e9353"></a><span class="anchor_wrapper"><a name="GUID-E42FBEA6-1C1B-4900-AAEC-22EE08380124"></a></span>Light pass
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-6CAA0E85-342A-4CB2-B07F-251039B3BE4F"></a></span> The light pass is typically used to bake lighting data for a selected set of target instances lit by a selected set of lights
+                  in the scene. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-083CC7D5-1A40-4A76-B6BD-CFBCE63068FD"></a></span>To create a light pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLightPass()'); return false;">ILBCreateLightPass()</a></span> function. 
+               </p> <span class="anchor_wrapper"><a name="UL_250027C18C8F484EB1ABAD35290C9D40"></a></span><ul>
+                  <li>In your call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLightPass()'); return false;">ILBCreateLightPass()</a></span>, you need to provide an element from the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLightPassType'); return false;">ILBLightPassType</a></span> enumeration to indicate what type of light contributions should be baked: all incoming light (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LP_LIGHTMAP'); return false;">ILB_LP_LIGHTMAP</a></span>), shadows (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LP_SHADOWMAP'); return false;">ILB_LP_SHADOWMAP</a></span>), or full shading information(<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LP_FULLSHADING'); return false;">ILB_LP_FULLSHADING</a></span>). 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-C5C4D798-B232-45F8-A4F2-4DE08329413C"></a></span>Once you have created the light pass, you need to create one or more light pass entries: objects that associate light sources
+                  in your scene with the target entities that they will apply to. Entries are created by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLightPassEntry()'); return false;">ILBCreateLightPassEntry()</a></span>; light sources and target entities are added by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddLightToPass()'); return false;">ILBAddLightToPass()</a></span> and <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTargetToPass()'); return false;">ILBAddTargetToPass()</a></span>. (This function should not be confused with <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPassToTarget()'); return false;">ILBAddPassToTarget()</a></span>, which may be similar in name but is very different in effect.) 
+               </p> 
+               <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRenderPassHandle'); return false;">ILBRenderPassHandle</a> lightPass;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLightPass'); return false;">ILBCreateLightPass</a>(job, "LightPass", <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LP_SHADOWMAP'); return false;">ILB_LP_SHADOWMAP</a>, &amp;lightPass);
+ILBLightPassEntry lpEntry1, lpEntry2;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLightPassEntry'); return false;">ILBCreateLightPassEntry</a>(lightPass, &amp;lpEntry1);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTargetToPass'); return false;">ILBAddTargetToPass</a>(lpEntry1, targetEntity1);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddLightToPass'); return false;">ILBAddLightToPass</a>(lpEntry1, lightA);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLightPassEntry'); return false;">ILBCreateLightPassEntry</a>(lightPass, &amp;lpEntry2);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddTargetToPass'); return false;">ILBAddTargetToPass</a>(lpEntry2, targetEntity2);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddLightToPass'); return false;">ILBAddLightToPass</a>(lpEntry2, lightB);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddLightToPass'); return false;">ILBAddLightToPass</a>(lpEntry2, lightC);</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-71DA698B-B685-405D-98C9-0F335FC6C133"></a></span>You can also use the following API functions to configure the light pass. See the function descriptions for details. 
+               </p> <span class="anchor_wrapper"><a name="UL_C9720D22950A4718882C72BEEC900190"></a></span><ul>
+                  <li>If you use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LP_LIGHTMAP'); return false;">ILB_LP_LIGHTMAP</a></span> type of light pass, you can set the amount of lambertian reflectance to be weighted into the final result by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetLambertianScale()'); return false;">ILBSetLambertianScale()</a></span>. 
+                  </li>
+                  <li>If you use the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_LP_SHADOWMAP'); return false;">ILB_LP_SHADOWMAP</a></span> type of light pass, you can call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEnableSignedDistanceField()'); return false;">ILBEnableSignedDistanceField()</a></span> to enable an additional rendering mode that stores for each pixel the distance to the closest shadow transition. 
+                     <div><span class="anchor_wrapper"><a name="GUID-582681D9-8829-4495-9FE9-B7611906E6E3"></a></span><div class="note-note"><span class="label">Note</span>This option is available only when using "classic" materials, not physical materials. 
+                        </div>
+                     </div> 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-6AB75C16-8BA8-492E-91E3-ABC45834E498"></a></span><em class="strong">Output.</em> The light pass creates five channels for each pixel in the output framebuffer or each vertex in the output vertexbuffer:
+                  
+               </p> 
+               <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre>(RGBA)Z</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-6536480C-FF14-413F-BC31-838A670E58DB"></a></span>where Z represents the depth channel. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_66848F2258164533B95C6FCE63079B36"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e9441"></a><span class="anchor_wrapper"><a name="GUID-2A701DA2-4D6E-4B3F-942E-E414543E9D54"></a></span>Ambient occlusion pass
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-7C277A0D-9543-4760-9B80-9D27A9895FF3"></a></span> Ambient occlusion is a representation of the proximity of other light-occluding bodies to each baked pixel. It creates a
+                  lightmap that represents the way the ambient (or directionless) light on each object is occluded by surrounding physical objects.
+                  You can use these ambient occlusion maps to give additional detail to your shadows. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-54840AA3-8EDB-45D4-8ED4-A4036A9520E1"></a></span>To create an ambient occlusion pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateAmbientOcclusionPass()'); return false;">ILBCreateAmbientOcclusionPass()</a></span> function. 
+               </p> <span class="anchor_wrapper"><a name="UL_0BB38EFE5EB04E539B39544D2E54378C"></a></span><ul>
+                  <li>In your call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateAmbientOcclusionPass()'); return false;">ILBCreateAmbientOcclusionPass()</a></span>, you can set the maximum distance and cone angle within which to look for occluding objects. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-AE74A693-263E-410D-92F3-3F7C1A6F32F4"></a></span>You can also use the following API functions to configure the ambient occlusion pass. See the function descriptions for details.
+                  
+               </p> <span class="anchor_wrapper"><a name="UL_24149F2A08564516806304181007EBB1"></a></span><ul>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAOAdaptive()'); return false;">ILBSetAOAdaptive()</a></span>: Configures the pass to use adaptive sampling, which typically increases rendering speed dramatically. 
+                     <div><span class="anchor_wrapper"><a name="GUID-E839D5D3-276C-4405-ABBE-E462177FD042"></a></span><div class="note-note"><span class="label">Note</span>This option is available only when using "classic" materials, not physical materials. 
+                        </div>
+                     </div> 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAONumRays()'); return false;">ILBSetAONumRays()</a></span>: Sets the minimum and maximum number of rays that will be sent from each point in order to find occluding objects. 
+                     <div><span class="anchor_wrapper"><a name="GUID-9F3D6865-B756-447B-9E58-CB53E50BED94"></a></span><div class="note-note"><span class="label">Note</span>This option is available only when using "classic" materials, not physical materials. 
+                        </div>
+                     </div> 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAOContrast()'); return false;">ILBSetAOContrast()</a></span>: Sets the contrast and scale of the lighting values in the ambient occlusion map. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAOUniformSampling()'); return false;">ILBSetAOUniformSampling()</a></span>: By default, occlusion samples are cosine-weighted. This function changes the sampling to be uniform instead. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAOSelfOcclusion()'); return false;">ILBSetAOSelfOcclusion()</a></span>: Determines how the pass handles self-occlusion. By default, self-occlusion is detected and reflected in the occlusion map
+                     just like any other occluding object. 
+                  </li>
+                  <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEnableAOBentNormals()'); return false;">ILBEnableAOBentNormals()</a></span>: Configures the pass to generate bent normals: the direction of least occlusion from each sampled point. 
+                     <div><span class="anchor_wrapper"><a name="GUID-22CE0858-F2C3-494E-93F7-25B401FCA29A"></a></span><div class="note-note"><span class="label">Note</span>This option is available only when using "classic" materials, not physical materials. 
+                        </div>
+                     </div> 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-BD3A3AF8-3DCC-4150-A3E0-3B20D2B61485"></a></span><em class="strong">"Classic" materials only.</em> Note that the ambient occlusion pass is not supported by the physically based rendering system. If you want to use the ambient
+                  occlusion pass, you need to create your scene with the "classic" material system. See <span class="char_link"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating Classic Materials</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-E2C73F75-42A4-438F-B146-91D69A3187D0"></a></span><em class="strong">Output.</em> The ambient occlusion pass creates five channels for each pixel in the output framebuffer or each vertex in the output vertexbuffer:
+                  
+               </p> 
+               <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre>(RGBA)Z</pre></div> 
+               <p><span class="anchor_wrapper"><a name="GUID-1E4EC73A-F6B1-4EB1-8765-D1F751D6F5C4"></a></span>where Z represents the depth channel. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-BB762C57-D129-4EFC-A42A-8439A44CDFE2"></a></span>Note that if you use <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEnableAOBentNormals()'); return false;">ILBEnableAOBentNormals()</a></span>, the RGB channels will instead store the X, Y and Z orientations of the bent normal in world space. The bent normal is normalized
+                  and mapped from the [-1..1] range to the [0..1] range. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_860E21BC750B452FA9EC4122C7BE8FA8"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e9527"></a><span class="anchor_wrapper"><a name="GUID-E343BB73-C8EB-4E4A-B79C-DF32D36567FB"></a></span>Lua pass
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-F68BEC3D-80F0-4AE3-BD63-8F61E5CF1117"></a></span> The Lua pass allows you to customize the way lighting values are generated for each sampled point by providing your own Lua
+                  script that <span class="charspan-msgph" translate="no">Beast</span> will call to bake the lighting information. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-9324F163-34F1-4C08-A7BA-506779FFE27D"></a></span>To create a Lua pass, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateLuaPass()'); return false;">ILBCreateLuaPass()</a></span> function. In your call, you need to provide the Lua script that <span class="charspan-msgph" translate="no">Beast</span> will call to generate the output values for each sampled point. For details on the structure and requirements of this script,
+                  see <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm"> Lua Reference</a></span>. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-07653ACE-F766-4237-B742-7BE5CFA59384"></a></span><em class="strong">Output.</em> The Lua pass does not create a fixed number of output channels. The number of channels created for each pixel in the output
+                  framebuffer or each vertex in the output vertexbuffer depends on your implementation of the Lua baking script. 
+               </p> 
+               <p><span class="anchor_wrapper"><a name="GUID-2E6E839B-3434-4051-8DCC-A0A4DA63F77A"></a></span><em class="strong">Physical material limitations.</em> Note that the Lua pass does not support dynamic types of illumination or radiance cacheing when used with physical materials
+                  (see the <span class="code" translate="no">gather.sampletype</span> and <span class="code" translate="no">gather.useRadianceCache</span> functions in the <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm"> Lua Reference</a></span>). 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_AF324DA0BEEF45B8BD8B912F4B6CCDD5"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9569"></a><span class="anchor_wrapper"><a name="GUID-3BD6E605-40DA-49C2-B631-44650392D66C"></a></span>Setting up a render pass
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-2CC71717-0C7D-45AB-BF11-82F167FAFB87"></a></span>You set up render passes in the context of setting up and running a rendering job. For more information about how to set up
+               a render pass in the overall context of rendering a scene, see <span class="char_link"><a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm">Rendering the Scene</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-39212F29-2541-4913-882D-66A287960520"></a></span>To set up a render pass: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_6819ECD9FDD546E58D17B17D0BBC8E94"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRenderPassHandle'); return false;">ILBRenderPassHandle</a></span>. 
+               </li>
+               <li>Initialize and configure the handle according to the type of lighting data you want to bake. See the functions listed for
+                  the different types of render passes listed under <span class="char_link"><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm#SECTION_F178EE5C10FE479A826BE76170F4BA82">Types of render passes</a></span> above. 
+               </li>
+               <li>In order for your pass to be carried out in a rendering job, you need to assign it to at least one target in the same job
+                  by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPassToTarget()'); return false;">ILBAddPassToTarget()</a></span>. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-34347C74-D4C0-4C26-B172-44EBBAA00D91"></a></span>For example: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBRenderPassHandle'); return false;">ILBRenderPassHandle</a> illuminationPass;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateFullShadingPass'); return false;">ILBCreateFullShadingPass</a>(job, "illumPass", <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_IM_FULL'); return false;">ILB_IM_FULL</a>, &amp;illuminationPass);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddPassToTarget'); return false;">ILBAddPassToTarget</a>(myTextureTarget, illuminationPass);</pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_EC90E312DF4F47B59A4E8240194B4BAD"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e9607"></a><span class="anchor_wrapper"><a name="GUID-4DF5BD5D-3310-452C-86D0-502A717480A1"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-E355BB3C-01B1-48A2-80A1-30B8E3F955F1"></a></span>API functions related to the creation and setup of render passes are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastrenderpass.h'); return false;">beastrenderpass.h</a></span> file. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

@@ -52,13 +52,5 @@ public:
     DAVA::VariantType newVal;
 };
 
-class KeyedArchiveReplaceValueCommand : public KeyeadArchiveSetValueCommand
-{
-public:
-    KeyedArchiveReplaceValueCommand(DAVA::KeyedArchive* archive, const DAVA::String& key, const DAVA::VariantType& val);
-
-    void Undo() override;
-    void Redo() override;
-};
 
 #endif // __KEYEDARCHIVE_COMMAND_H__

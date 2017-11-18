@@ -26,11 +26,6 @@ public:
     //this method helps to load data for older scene file version
     void LoadFromArchive(const KeyedArchive& srcProperties, SerializationContext* serializationContext);
 
-public:
-    INTROSPECTION_EXTEND(CustomPropertiesComponent, Component,
-                         MEMBER(properties, "Custom properties", I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(CustomPropertiesComponent, Component);
 
 private:

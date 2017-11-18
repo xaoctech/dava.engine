@@ -296,6 +296,8 @@ public final class DavaActivity extends Activity
         window.getDecorView().setOnSystemUiVisibilityChangeListener(this);
         hideNavigationBar();
 
+        DeviceInfo.initialize();
+
         // Load & show splash view
         Bitmap splashViewBitmap =  loadSplashViewBitmap();
         splashView = new DavaSplashView(this, splashViewBitmap);
@@ -631,7 +633,6 @@ public final class DavaActivity extends Activity
                 }
             }
         });
-
     }
 
     // Invoked from c++ thread and tells that Engine has entered Run method

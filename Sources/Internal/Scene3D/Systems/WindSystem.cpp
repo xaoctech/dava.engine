@@ -69,6 +69,16 @@ void WindSystem::RemoveEntity(Entity* entity)
     }
 }
 
+void WindSystem::PrepareForRemove()
+{
+    for (WindInfo* info : winds)
+    {
+        SafeDelete(info);
+    }
+
+    winds.clear();
+}
+
 void WindSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_WIND_SYSTEM)

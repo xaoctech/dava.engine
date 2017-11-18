@@ -16,8 +16,8 @@
   </PathMasks>
   <UncheckedButtons> toolStripButton_OP toolStripButton_64 toolStripButton_MP toolStripButton_Options toolStripButtonRetired toolstrip_L3Warnings  toolstrip_L2Warnings </UncheckedButtons>
   <DisableDetectableErrors>V001 V122 V126 V201 V202 V203 V1006 V2001 V2002 V2003 V2004 V2005 V2006 V2007 V2008 V2009 V2010 V2011 V2012 V2013 V520 </DisableDetectableErrors>
-  <UserName>Wargaming</UserName>
-  <SerialNumber>KS7G-46T9-10YG-KTG6</SerialNumber>
+  <UserName>Wargaming Group Limited</UserName>
+  <SerialNumber>Q920-7FAC-17JG-Q585</SerialNumber>
   <Version>6.8</Version>
   <StatisticsFilter />
   <EnableSuppressedMessagesInStatistics>false</EnableSuppressedMessagesInStatistics>
@@ -50,7 +50,7 @@
   <TraceModePVS>Off</TraceModePVS>
   <IncrementalDepthLevel>Show_Level1_and_Level2</IncrementalDepthLevel>
   <HelpLanguage>English</HelpLanguage>
-  <ExternalToolCommandLine>/c echo %code %message %filename [%line] &gt;&gt; "C:\Users\i_petrochenko\Documents\PVSStudioExternaltoolExample.txt" &amp;&amp; notepad "C:\Users\i_petrochenko\Documents\PVSStudioExternaltoolExample.txt"</ExternalToolCommandLine>
+  <ExternalToolCommandLine>/c echo %code %message %filename [%line] &gt;&gt; "C:\PVSStudioExternaltoolExample.txt" &amp;&amp; notepad "C:\PVSStudioExternaltoolExample.txt"</ExternalToolCommandLine>
   <ExternalToolPath>C:\Windows\system32\cmd.exe</ExternalToolPath>
   <SafeTypes />
   <ModifInterval>Check_All_Files</ModifInterval>

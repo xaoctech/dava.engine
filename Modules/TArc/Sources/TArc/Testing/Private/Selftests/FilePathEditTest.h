@@ -9,8 +9,7 @@
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/Testing/Private/TestModuleHolder.h"
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include "TArc/Utils/QtDelayedExecutor.h"
 
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>

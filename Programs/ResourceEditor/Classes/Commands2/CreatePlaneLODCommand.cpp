@@ -1,14 +1,10 @@
-#include "CreatePlaneLODCommand.h"
+#include "Classes/Commands2/CreatePlaneLODCommand.h"
+#include <Classes/Commands2/RECommandIDs.h>
+#include "Classes/Qt/Scene/SceneHelper.h"
+#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
-#include "Render/Material/NMaterialNames.h"
-#include "Scene3D/Lod/LodComponent.h"
-
-#include "Commands2/RECommandIDs.h"
-#include "Scene/SceneHelper.h"
-#include "Settings/SettingsManager.h"
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
-
-using namespace DAVA;
+#include <Render/Material/NMaterialNames.h>
+#include <Scene3D/Lod/LodComponent.h>
 
 CreatePlaneLODCommand::CreatePlaneLODCommand(const CreatePlaneLODCommandHelper::RequestPointer& request_)
     : RECommand(CMDID_LOD_CREATE_PLANE, "Create Plane LOD")
@@ -21,23 +17,23 @@ void CreatePlaneLODCommand::Redo()
 {
     CreateTextureFiles();
 
-    ScopedPtr<Texture> fileTexture(Texture::CreateFromFile(request->texturePath));
-    NMaterial* material = request->planeBatch->GetMaterial();
+    DAVA::ScopedPtr<DAVA::Texture> fileTexture(DAVA::Texture::CreateFromFile(request->texturePath));
+    DAVA::NMaterial* material = request->planeBatch->GetMaterial();
     if (material != nullptr)
     {
-        if (material->HasLocalTexture(NMaterialTextureName::TEXTURE_ALBEDO))
+        if (material->HasLocalTexture(DAVA::NMaterialTextureName::TEXTURE_ALBEDO))
         {
-            material->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, fileTexture);
+            material->SetTexture(DAVA::NMaterialTextureName::TEXTURE_ALBEDO, fileTexture);
         }
         else
         {
-            material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, fileTexture);
+            material->AddTexture(DAVA::NMaterialTextureName::TEXTURE_ALBEDO, fileTexture);
         }
         fileTexture->Reload();
     }
 
-    auto entity = GetEntity();
-    auto renderObject = DAVA::GetRenderObject(entity);
+    DAVA::Entity* entity = GetEntity();
+    DAVA::RenderObject* renderObject = DAVA::GetRenderObject(entity);
     renderObject->AddRenderBatch(request->planeBatch, request->newLodIndex, -1);
 }
 
@@ -60,16 +56,16 @@ void CreatePlaneLODCommand::CreateTextureFiles()
 {
     DVASSERT(request->planeImage);
 
-    FilePath folder = request->texturePath.GetDirectory();
-    FileSystem::Instance()->CreateDirectory(folder, true);
-    ImageSystem::Save(request->texturePath, request->planeImage);
+    DAVA::FilePath folder = request->texturePath.GetDirectory();
+    DAVA::FileSystem::Instance()->CreateDirectory(folder, true);
+    DAVA::ImageSystem::Save(request->texturePath, request->planeImage);
     TextureDescriptorUtils::CreateOrUpdateDescriptor(request->texturePath);
 }
 
 void CreatePlaneLODCommand::DeleteTextureFiles()
 {
-    FileSystem::Instance()->DeleteFile(request->texturePath);
-    FileSystem::Instance()->DeleteFile(TextureDescriptor::GetDescriptorPathname(request->texturePath));
+    DAVA::FileSystem::Instance()->DeleteFile(request->texturePath);
+    DAVA::FileSystem::Instance()->DeleteFile(DAVA::TextureDescriptor::GetDescriptorPathname(request->texturePath));
 }
 
 DAVA::RenderBatch* CreatePlaneLODCommand::GetRenderBatch() const

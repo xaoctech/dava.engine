@@ -2,13 +2,19 @@
 
 #include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/WindowSubSystem/Private/WaitDialog.h"
+#include "TArc/WindowSubSystem/Private/DockPanel.h"
+#include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
+#include "TArc/Qt/QtByteArray.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>
 #include <Debug/DVAssert.h>
 #include <Utils/StringFormat.h>
+#include <FileSystem/FileSystem.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 #include <QPointer>
 #include <QMainWindow>
@@ -34,6 +40,9 @@ namespace UIManagerDetail
 String WINDOW_GEOMETRY_KEY("geometry");
 String WINDOW_STATE_KEY("state");
 String FILE_DIR_KEY("fileDialogDir");
+String DEFAULT_SCHEME_NAME("default");
+String KEY_BINDINGS_SCHEMES("keyBindingSchemes");
+String KEY_BINDING_ACTIONS("keyBindableActions");
 
 static Vector<std::pair<QMessageBox::StandardButton, ModalMessageParams::Button>> buttonsConvertor =
 {
@@ -164,6 +173,10 @@ QAction* FindAction(QWidget* w, const QString& actionName)
 void InsertActionImpl(QMenu* menu, QAction* before, QAction* action)
 {
     menu->insertAction(before, action);
+    if (menu->isEnabled() == false)
+    {
+        menu->setEnabled(true);
+    }
 }
 
 void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
@@ -177,6 +190,7 @@ void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
     {
         QToolButton* toolButton = qobject_cast<QToolButton*>(w);
         bool autoRise = (toolButton != nullptr) ? toolButton->autoRaise() : false;
+        w->setMaximumHeight(24);
         toolbar->insertWidget(before, w);
         if (toolButton != nullptr)
         {
@@ -187,7 +201,18 @@ void InsertActionImpl(QToolBar* toolbar, QAction* before, QAction* action)
 
 void InsertActionImpl(QMenuBar* menuBar, QAction* before, QAction* action)
 {
+    QAction* dummyAction = nullptr;
+    QMenu* actionMenu = action->menu();
+    if (actionMenu != nullptr)
+    {
+        dummyAction = actionMenu->addAction("dummy");
+    }
     menuBar->insertAction(before, action);
+
+    if (dummyAction != nullptr)
+    {
+        actionMenu->removeAction(dummyAction);
+    }
 }
 
 template <typename T>
@@ -213,11 +238,80 @@ void InsertAction(T* container, QAction* action, const InsertionParams& params)
             {
                 beforeAction = actions.at(actions.indexOf(beforeAction) + 1);
             }
+            else
+            {
+                beforeAction = nullptr;
+            }
         }
     }
 
-    action->setParent(container);
+    QMenu* actionMenu = action->menu();
+    if (actionMenu != nullptr)
+    {
+        DVASSERT(action->parent() == actionMenu);
+        DVASSERT(actionMenu->parent() == nullptr || actionMenu->parent() == container);
+        actionMenu->setObjectName(action->objectName());
+        actionMenu->setParent(container, actionMenu->windowFlags());
+    }
+    else
+    {
+        if (action->parent() == nullptr)
+        {
+            action->setParent(container);
+        }
+    }
+
     InsertActionImpl(container, beforeAction, action);
+}
+
+template <class T>
+QAction* RemoveAction(T* placeholder, QAction* action)
+{
+    QAction* restoreBefore = nullptr;
+
+    QList<QAction*> actions = placeholder->actions();
+    int actionIndex = actions.indexOf(action);
+    if (actionIndex != -1 && actionIndex + 1 < actions.size())
+    {
+        restoreBefore = actions[actionIndex + 1];
+    }
+    placeholder->removeAction(action);
+
+    return restoreBefore;
+}
+
+template <class T>
+QMenu* GetOrCreateSubmenu(T* placeholder, const QString& submenuName)
+{
+    QMenu* submenu = placeholder->template findChild<QMenu*>(submenuName, Qt::FindDirectChildrenOnly);
+    if (submenu == nullptr)
+    {
+        QAction* action = FindAction(placeholder, submenuName);
+        submenu = new QMenu(submenuName, placeholder);
+        submenu->setObjectName(submenuName);
+        if (action != nullptr)
+        {
+            action->setParent(submenu);
+            action->setMenu(submenu);
+        }
+        else
+        {
+            placeholder->addMenu(submenu);
+        }
+    }
+
+    return submenu;
+}
+
+void InsertActionInMenu(QMenu* topLevelMenu, QStringList& path, QAction* action, const QUrl& url)
+{
+    QMenu* currentLevelMenu = topLevelMenu;
+    for (const QString& submenuName : path)
+    {
+        currentLevelMenu = GetOrCreateSubmenu(currentLevelMenu, submenuName);
+    }
+
+    UIManagerDetail::InsertAction(currentLevelMenu, action, InsertionParams::Create(url));
 }
 
 void AddMenuPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInfo)
@@ -237,53 +331,22 @@ void AddMenuPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInfo)
         UIManagerDetail::InsertAction(windowInfo.menuBar, action, InsertionParams::Create(url));
         return;
     }
-
-    QMenu* topLevelMenu = nullptr;
-    QString topLevelTitle = path.front();
-    topLevelMenu = windowInfo.menuBar->findChild<QMenu*>(topLevelTitle, Qt::FindDirectChildrenOnly);
-    if (topLevelMenu == nullptr)
+    else
     {
-        QAction* action = FindAction(windowInfo.menuBar, topLevelTitle);
-        topLevelMenu = new QMenu(topLevelTitle, windowInfo.menuBar);
-        topLevelMenu->setObjectName(topLevelTitle);
-        if (action != nullptr)
-        {
-            action->setMenu(topLevelMenu);
-        }
-        else
-        {
-            windowInfo.menuBar->addMenu(topLevelMenu);
-        }
+        QString topLevelTitle = path.front();
+        path.pop_front();
+        QMenu* topLevelMenu = GetOrCreateSubmenu(windowInfo.menuBar, topLevelTitle);
+        UIManagerDetail::InsertActionInMenu(topLevelMenu, path, action, url);
     }
-
-    QMenu* currentLevelMenu = topLevelMenu;
-    for (int i = 1; i < path.size(); ++i)
-    {
-        QString currentLevelTittle = path[i];
-        QMenu* menu = currentLevelMenu->findChild<QMenu*>(currentLevelTittle);
-        if (menu == nullptr)
-        {
-            QAction* action = FindAction(currentLevelMenu, currentLevelTittle);
-            menu = new QMenu(currentLevelTittle, currentLevelMenu);
-            menu->setObjectName(currentLevelTittle);
-            if (action != nullptr)
-            {
-                action->setMenu(menu);
-            }
-            else
-            {
-                currentLevelMenu->addMenu(menu);
-            }
-        }
-        currentLevelMenu = menu;
-    }
-
-    UIManagerDetail::InsertAction(currentLevelMenu, action, InsertionParams::Create(url));
 }
 
 void AddToolbarPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInfo)
 {
-    QString toolbarName = url.path();
+    QStringList path = url.path().split("$/", QString::SkipEmptyParts);
+
+    QString toolbarName = path.front();
+    path.pop_front();
+
     QToolBar* toolbar = windowInfo.window->findChild<QToolBar*>(toolbarName);
     if (toolbar == nullptr)
     {
@@ -292,7 +355,45 @@ void AddToolbarPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInf
         windowInfo.window->addToolBar(toolbar);
     }
 
-    UIManagerDetail::InsertAction(toolbar, action, InsertionParams::Create(url));
+    if (path.isEmpty())
+    {
+        UIManagerDetail::InsertAction(toolbar, action, InsertionParams::Create(url));
+        return;
+    }
+
+    QString menuButtonName = path.front();
+    path.pop_front();
+
+    QMenu* topLevelMenu = nullptr;
+
+    QToolButton* menuButton = toolbar->findChild<QToolButton*>(menuButtonName, Qt::FindDirectChildrenOnly);
+    if (menuButton == nullptr)
+    {
+        QAction* insertBefore = nullptr;
+        {
+            QAction* action = FindAction(toolbar, menuButtonName);
+            if (action != nullptr)
+            {
+                insertBefore = RemoveAction(toolbar, action);
+            }
+        }
+
+        menuButton = new QToolButton(toolbar);
+        menuButton->setObjectName(menuButtonName);
+        menuButton->setText(menuButtonName);
+        menuButton->setPopupMode(QToolButton::InstantPopup);
+
+        topLevelMenu = new QMenu(menuButton);
+        menuButton->setMenu(topLevelMenu);
+        QAction* insertedAction = toolbar->insertWidget(insertBefore, menuButton);
+        insertedAction->setObjectName(menuButtonName);
+    }
+    else
+    {
+        topLevelMenu = menuButton->menu();
+    }
+
+    UIManagerDetail::InsertActionInMenu(topLevelMenu, path, action, url);
 }
 
 void AddStatusbarPoint(const QUrl& url, QAction* action, MainWindowInfo& windowInfo)
@@ -378,6 +479,13 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
         {
             AddStatusbarPoint(url, action, windowInfo);
         }
+        else if (scheme == invisibleScheme)
+        {
+            if (action->parent() == nullptr)
+            {
+                action->setParent(windowInfo.window);
+            }
+        }
         else
         {
             DVASSERT(false);
@@ -385,67 +493,126 @@ void AddAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement,
     }
 }
 
-void RemoveMenuPoint(const QUrl& url, MainWindowInfo& windowInfo)
+void RemoveActionFromMenu(QMenu* currentLevelMenu, QStringList& pathToAction, const QString& actionName)
 {
-    QStringList path = url.path().split("$/");
-    DVASSERT(!path.isEmpty());
-    QString topLevelTitle = path.front();
-    QMenu* topLevelMenu = windowInfo.menuBar->findChild<QMenu*>(topLevelTitle, Qt::FindDirectChildrenOnly);
-    if (topLevelMenu == nullptr)
-    {
-        return;
-    }
-
-    QMenu* currentLevelMenu = topLevelMenu;
-    for (int i = 1; i < path.size() - 1; ++i)
-    {
-        QString currentLevelTittle = path[i];
-        QMenu* menu = currentLevelMenu->findChild<QMenu*>(currentLevelTittle);
-        if (menu == nullptr)
-        {
-            break;
-        }
-        currentLevelMenu = menu;
-    }
-
     if (currentLevelMenu == nullptr)
     {
         return;
     }
 
-    QAction* action = FindAction(currentLevelMenu, path.back());
-    currentLevelMenu->removeAction(action);
-    action->deleteLater();
+    auto deleteMenu = [currentLevelMenu](QMenu* deletedMenu)
+    {
+        currentLevelMenu->removeAction(deletedMenu->menuAction());
+        deletedMenu->setParent(nullptr);
+        deletedMenu->deleteLater();
+    };
+
+    if (pathToAction.empty())
+    {
+        QMenu* menuToRemove = currentLevelMenu->findChild<QMenu*>(actionName, Qt::FindDirectChildrenOnly);
+        if (menuToRemove != nullptr)
+        {
+            deleteMenu(menuToRemove);
+        }
+        else
+        {
+            QAction* action = FindAction(currentLevelMenu, actionName);
+            currentLevelMenu->removeAction(action);
+            action->deleteLater();
+        }
+    }
+    else
+    {
+        QString deeperLevelName = pathToAction.front();
+        pathToAction.pop_front();
+        QMenu* deeperLevelMenu = currentLevelMenu->findChild<QMenu*>(deeperLevelName, Qt::FindDirectChildrenOnly);
+        RemoveActionFromMenu(deeperLevelMenu, pathToAction, actionName);
+        if (deeperLevelMenu != nullptr && deeperLevelMenu->isEmpty())
+        {
+            deleteMenu(deeperLevelMenu);
+        }
+    }
 }
 
-void RemoveToolbarPoint(const QUrl& url, MainWindowInfo& windowInfo)
+void RemoveMenuPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
+{
+    QStringList path = url.path().split("$/");
+    DVASSERT(!path.isEmpty());
+    QString topLevelTitle = path.front();
+    path.pop_front();
+
+    QMenu* topLevelMenu = windowInfo.menuBar->findChild<QMenu*>(topLevelTitle, Qt::FindDirectChildrenOnly);
+
+    RemoveActionFromMenu(topLevelMenu, path, actionName);
+
+    if (topLevelMenu != nullptr && topLevelMenu->isEmpty())
+    {
+        windowInfo.menuBar->removeAction(topLevelMenu->menuAction());
+        topLevelMenu->setParent(nullptr);
+        topLevelMenu->deleteLater();
+    }
+}
+
+void RemoveToolbarPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
+{
+    QStringList path = url.path().split("$/");
+    DVASSERT(!path.isEmpty());
+
+    QString toolbarName = path.front();
+    path.pop_front();
+
+    QToolBar* toolbar = windowInfo.window->findChild<QToolBar*>(toolbarName);
+    if (toolbar != nullptr)
+    {
+        if (path.empty())
+        {
+            QAction* action = FindAction(toolbar, actionName);
+            toolbar->removeAction(action);
+            action->deleteLater();
+            return;
+        }
+        else
+        {
+            QString menuButtonName = path.front();
+            path.pop_front();
+
+            QToolButton* menuButton = toolbar->findChild<QToolButton*>(menuButtonName, Qt::FindDirectChildrenOnly);
+            if (menuButton != nullptr)
+            {
+                RemoveActionFromMenu(menuButton->menu(), path, actionName);
+                if (menuButton->menu()->isEmpty())
+                {
+                    QAction* buttonAction = toolbar->findChild<QAction*>(menuButtonName, Qt::FindDirectChildrenOnly);
+                    toolbar->removeAction(buttonAction);
+                    buttonAction->deleteLater();
+                }
+            }
+        }
+    }
+}
+
+void RemoveStatusbarPoint(const QUrl& url, const QString& actionName, MainWindowInfo& windowInfo)
 {
     // TODO not implemented
     DVASSERT(false);
 }
 
-void RemoveStatusbarPoint(const QUrl& url, MainWindowInfo& windowInfo)
-{
-    // TODO not implemented
-    DVASSERT(false);
-}
-
-void RemoveAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement)
+void RemoveAction(MainWindowInfo& windowInfo, const ActionPlacementInfo& placement, const QString& actionName)
 {
     for (const QUrl& url : placement.GetUrls())
     {
         QString scheme = url.scheme();
         if (scheme == menuScheme)
         {
-            RemoveMenuPoint(url, windowInfo);
+            RemoveMenuPoint(url, actionName, windowInfo);
         }
         else if (scheme == toolbarScheme)
         {
-            RemoveToolbarPoint(url, windowInfo);
+            RemoveToolbarPoint(url, actionName, windowInfo);
         }
         else if (scheme == statusbarScheme)
         {
-            RemoveStatusbarPoint(url, windowInfo);
+            RemoveStatusbarPoint(url, actionName, windowInfo);
         }
         else
         {
@@ -461,6 +628,8 @@ struct UIManager::Impl : public QObject
     Array<Function<void(const PanelKey&, const WindowKey&, QWidget*)>, PanelKey::TypesCount> addFunctions;
     UnorderedMap<WindowKey, UIManagerDetail::MainWindowInfo> windows;
     PropertiesItem propertiesHolder;
+    ContextAccessor* accessor = nullptr;
+
     bool initializationFinished = false;
     Set<WaitHandle*> activeWaitDialogues;
     ClientModule* currentModule = nullptr;
@@ -474,12 +643,16 @@ struct UIManager::Impl : public QObject
 
     Map<ClientModule*, ModuleResources> moduleResourcesMap;
 
-    Impl(UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
+    Vector<KeyBindableAction> keyBindableActions;
+
+    Impl(ContextAccessor* accessor_, UIManager::Delegate* delegate, PropertiesItem&& givenPropertiesHolder)
         : managerDelegate(delegate)
         , propertiesHolder(std::move(givenPropertiesHolder))
+        , accessor(accessor_)
     {
         addFunctions[PanelKey::DockPanel] = MakeFunction(this, &UIManager::Impl::AddDockPanel);
         addFunctions[PanelKey::CentralPanel] = MakeFunction(this, &UIManager::Impl::AddCentralPanel);
+        addFunctions[PanelKey::OverCentralPanel] = MakeFunction(this, &UIManager::Impl::AddOverCentralPanel);
     }
 
     ~Impl()
@@ -572,11 +745,12 @@ protected:
 
     QDockWidget* CreateDockWidget(const DockPanelInfo& dockPanelInfo, UIManagerDetail::MainWindowInfo& mainWindowInfo, QMainWindow* mainWindow)
     {
-        DVASSERT(dockPanelInfo.title.isEmpty() == false, "Provide correct value of DockPanelInfo::title");
         const QString& text = dockPanelInfo.title;
 
-        QDockWidget* dockWidget = new QDockWidget(text, mainWindow);
-        dockWidget->setObjectName(text);
+        DockPanel::Params params;
+        params.accessor = accessor;
+        params.descriptors = dockPanelInfo.descriptors;
+        DockPanel* dockWidget = new DockPanel(params, text, mainWindow);
 
         QAction* dockWidgetAction = dockWidget->toggleViewAction();
 
@@ -595,6 +769,8 @@ protected:
         QMainWindow* mainWindow = mainWindowInfo.window;
         DVASSERT(mainWindow != nullptr);
         QDockWidget* newDockWidget = CreateDockWidget(info, mainWindowInfo, mainWindow);
+        DVASSERT(key.GetViewName().isEmpty() == false, "Provide correct value of PanelKey::viewName");
+        newDockWidget->setObjectName(key.GetViewName());
         newDockWidget->layout()->setContentsMargins(0, 0, 0, 0);
         newDockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);
 
@@ -629,6 +805,19 @@ protected:
                 mainWindow->addDockWidget(info.area, newDockWidget);
             }
         }
+
+        if (info.ensureVisible)
+        {
+            newDockWidget->setVisible(true);
+            if (newDockWidget->isFloating() == false)
+            {
+                QList<QDockWidget*> tabifiedWidgets = mainWindow->tabifiedDockWidgets(newDockWidget);
+                if (tabifiedWidgets.isEmpty() == false)
+                {
+                    mainWindow->tabifyDockWidget(tabifiedWidgets.front(), newDockWidget);
+                }
+            }
+        }
     }
 
     void AddCentralPanel(const PanelKey& key, const WindowKey& windowKey, QWidget* widget)
@@ -661,11 +850,28 @@ protected:
 
         tabWidget->addTab(widget, widget->objectName());
     }
+
+    void AddOverCentralPanel(const PanelKey& key, const WindowKey& windowKey, QWidget* widget)
+    {
+        UIManagerDetail::MainWindowInfo& mainWindowInfo = FindOrCreateWindow(windowKey);
+        QMainWindow* mainWindow = mainWindowInfo.window;
+        QWidget* centralWidget = mainWindow->centralWidget();
+
+        const OverCentralPanelInfo& info = key.GetInfo().Get<OverCentralPanelInfo>();
+        new OverlayWidget(info, widget, centralWidget);
+    }
 };
 
-UIManager::UIManager(Delegate* delegate, PropertiesItem&& holder)
-    : impl(new Impl(delegate, std::move(holder)))
+UIManager::UIManager(ContextAccessor* accessor, Delegate* delegate, PropertiesItem&& holder)
+    : impl(new Impl(accessor, delegate, std::move(holder)))
 {
+    FilePath schemesDir = FilePath::FilepathInDocuments(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->Exists(schemesDir.MakeDirectoryPathname()) == false)
+    {
+        fs->CreateDirectory(schemesDir, false);
+    }
+    LoadScheme();
 }
 
 UIManager::~UIManager() = default;
@@ -710,6 +916,15 @@ void UIManager::AddView(const WindowKey& windowKey, const PanelKey& panelKey, QW
     DVASSERT(impl->addFunctions[type] != nullptr);
 
     impl->addFunctions[type](panelKey, windowKey, widget);
+    QList<QAction*> actions = widget->findChildren<QAction*>();
+    foreach (QAction* action, actions)
+    {
+        if (action->objectName().isEmpty())
+        {
+            action->setObjectName(action->text());
+        }
+        RegisterAction(action);
+    }
 
     UIManagerDetail::MainWindowInfo& mainWindowInfo = impl->FindOrCreateWindow(windowKey);
     QMainWindow* window = mainWindowInfo.window;
@@ -727,12 +942,14 @@ void UIManager::AddAction(const WindowKey& windowKey, const ActionPlacementInfo&
 
     UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
     UIManagerDetail::AddAction(windowInfo, placement, action);
+
+    RegisterAction(action);
 }
 
-void UIManager::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement)
+void UIManager::RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName)
 {
     UIManagerDetail::MainWindowInfo& windowInfo = impl->FindOrCreateWindow(windowKey);
-    UIManagerDetail::RemoveAction(windowInfo, placement);
+    UIManagerDetail::RemoveAction(windowInfo, placement, actionName);
 }
 
 void UIManager::ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration)
@@ -784,7 +1001,7 @@ QString UIManager::GetSaveFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getSaveFileName(windowInfo.window, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absolutePath());
     }
     return filePath;
 }
@@ -806,7 +1023,7 @@ QString UIManager::GetOpenFileName(const WindowKey& windowKey, const FileDialogP
     QString filePath = QFileDialog::getOpenFileName(parent, params.title, dir, params.filters);
     if (!filePath.isEmpty())
     {
-        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absoluteFilePath());
+        impl->propertiesHolder.Set(UIManagerDetail::FILE_DIR_KEY, QFileInfo(filePath).absolutePath());
     }
     return filePath;
 }
@@ -829,6 +1046,39 @@ QString UIManager::GetExistingDirectory(const WindowKey& windowKey, const Direct
     return dirPath;
 }
 
+int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
+{
+    DVASSERT(dlg != nullptr);
+    UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
+    if (windowInfo != nullptr)
+    {
+        if (dlg->parent() != windowInfo->window.data())
+        {
+            dlg->setParent(windowInfo->window.data());
+        }
+    }
+
+    dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
+    dlg->setModal(true);
+
+    QString dialogName = dlg->objectName();
+    if (dialogName.isEmpty() == true)
+    {
+        dialogName = dlg->windowTitle();
+    }
+
+    PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+    QRect dialogRect = pi.Get("geometry", QRect());
+    if (dialogRect.isValid())
+    {
+        dlg->setGeometry(dialogRect);
+    }
+
+    int result = dlg->exec();
+    pi.Set("geometry", dlg->geometry());
+    return result;
+}
+
 ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)
 {
     using namespace UIManagerDetail;
@@ -845,7 +1095,7 @@ ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKe
     return Convert(resultButton);
 }
 
-void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationParams& params)
+void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const
 {
     using namespace UIManagerDetail;
 
@@ -855,6 +1105,30 @@ void UIManager::ShowNotification(const WindowKey& windowKey, const NotificationP
 
 void UIManager::InjectWindow(const WindowKey& windowKey, QMainWindow* window)
 {
+    QList<QAction*> actions = window->findChildren<QAction*>();
+    foreach (QAction* action, actions)
+    {
+        QVariant block = action->property("blockName");
+        if (block.canConvert<QString>())
+        {
+            QString blockName = block.value<QString>();
+            QVariant actionName = action->property("actionName");
+            if (actionName.canConvert<QString>())
+            {
+                action->setObjectName(actionName.value<QString>());
+            }
+
+            KeyBindableActionInfo info;
+            info.blockName = blockName;
+            info.context = action->shortcutContext();
+            info.defaultShortcuts = action->shortcuts();
+
+            MakeActionKeyBindable(action, info);
+        }
+
+        RegisterAction(action);
+    }
+
     UIManagerDetail::MainWindowInfo windowInfo;
     windowInfo.window = window;
     windowInfo.menuBar = window->findChild<QMenuBar*>();
@@ -899,6 +1173,331 @@ void UIManager::ModuleDestroyed(ClientModule* module)
         }
 
         impl->moduleResourcesMap.erase(iter);
+    }
+}
+
+const Vector<KeyBindableAction>& UIManager::GetKeyBindableActions() const
+{
+    return impl->keyBindableActions;
+}
+
+String UIManager::GetCurrentKeyBindingsScheme() const
+{
+    String currentScheme;
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        currentScheme = schemesHolder.Get<String>("currentScheme");
+        if (currentScheme.empty())
+        {
+            currentScheme = UIManagerDetail::DEFAULT_SCHEME_NAME;
+            schemesHolder.Set("currentScheme", currentScheme);
+        }
+    }
+
+    return currentScheme;
+}
+
+void UIManager::SetCurrentKeyBindingsScheme(const String& schemeName)
+{
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        schemesHolder.Set("currentScheme", schemeName);
+    }
+    LoadScheme();
+}
+
+Vector<String> UIManager::GetKeyBindingsSchemeNames() const
+{
+    Vector<String> schemes;
+    {
+        PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+        int32 schemesCount = schemesHolder.Get<int32>("schemesCount");
+        schemes.reserve(schemesCount + 1);
+
+        for (int32 i = 0; i < schemesCount; ++i)
+        {
+            schemes.push_back(schemesHolder.Get<String>(Format("scheme_%d", i)));
+        }
+    }
+
+    auto iter = std::find(schemes.begin(), schemes.end(), UIManagerDetail::DEFAULT_SCHEME_NAME);
+    if (iter == schemes.end())
+    {
+        schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
+        SaveSchemeNames(schemes);
+    }
+
+    return schemes;
+}
+
+void UIManager::AddKeyBindingsScheme(const String& schemeName)
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    DVASSERT(std::find(schemes.begin(), schemes.end(), schemeName) == schemes.end());
+
+    schemes.push_back(schemeName);
+    SaveSchemeNames(schemes);
+}
+
+void UIManager::RemoveKeyBindingsScheme(const String& schemeName)
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
+    DVASSERT(iter != schemes.end());
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    fs->DeleteFile(BuildSchemePath(schemeName));
+
+    schemes.erase(iter);
+    if (schemes.empty())
+    {
+        schemes.push_back(UIManagerDetail::DEFAULT_SCHEME_NAME);
+    }
+    SaveSchemeNames(schemes);
+    SetCurrentKeyBindingsScheme(schemes.front());
+}
+
+String UIManager::ImportKeyBindingsScheme(const FilePath& path)
+{
+    PropertiesHolder holder(path.GetFilename(), path.GetDirectory());
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    String schemeName = item.Get<String>("schemeName");
+    if (schemeName.empty())
+    {
+        NotificationParams p;
+        p.title = "Import scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "Key Binding scheme file is invalid";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+        return schemeName;
+    }
+
+    int32 index = 0;
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    String newSchemeName = schemeName;
+    while (true)
+    {
+        auto iter = std::find(schemes.begin(), schemes.end(), newSchemeName);
+        if (iter == schemes.end())
+        {
+            schemeName = newSchemeName;
+            break;
+        }
+
+        newSchemeName = Format("%s_%d", schemeName.c_str(), ++index);
+    }
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->CopyFile(path, BuildSchemePath(schemeName)))
+    {
+        AddKeyBindingsScheme(schemeName);
+    }
+    else
+    {
+        schemeName = String("");
+        NotificationParams p;
+        p.title = "Import scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "File can't be copied";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+    }
+
+    return schemeName;
+}
+
+void UIManager::ExportKeyBindingsScheme(const FilePath& path, const String& schemeName) const
+{
+    Vector<String> schemes = GetKeyBindingsSchemeNames();
+    auto iter = std::find(schemes.begin(), schemes.end(), schemeName);
+    DVASSERT(iter != schemes.end());
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    if (fs->CopyFile(BuildSchemePath(schemeName), path) == false)
+    {
+        NotificationParams p;
+        p.title = "Export scheme";
+        p.message.type = Result::RESULT_ERROR;
+        p.message.message = "File can't be copied";
+        ShowNotification(DAVA::TArc::mainWindowKey, p);
+    }
+}
+
+void UIManager::AddShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->sequences.push_back(shortcut);
+    iter->action->setShortcuts(iter->sequences);
+    SaveScheme();
+}
+
+void UIManager::RemoveShortcut(const QKeySequence& shortcut, QPointer<QAction> action)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->sequences.removeAll(shortcut);
+    iter->action->setShortcuts(iter->sequences);
+    SaveScheme();
+}
+
+void UIManager::SetActionContext(QPointer<QAction> action, Qt::ShortcutContext context)
+{
+    DVASSERT(action != nullptr);
+    auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [action](const KeyBindableAction& a) {
+        return a.action == action;
+    });
+
+    DVASSERT(iter != impl->keyBindableActions.end());
+    iter->context = context;
+    iter->action->setShortcutContext(iter->context);
+    SaveScheme();
+}
+
+void UIManager::RegisterAction(QAction* action)
+{
+    KeyBindableActionInfo info;
+    if (GetActionKeyBindableInfo(action, info))
+    {
+        auto iter = std::find_if(impl->keyBindableActions.begin(), impl->keyBindableActions.end(), [&action, &info](const KeyBindableAction& keyBindAction) {
+            return keyBindAction.actionName == action->objectName() && keyBindAction.blockName == info.blockName;
+        });
+
+        KeyBindableAction* bindableAction = nullptr;
+        if (iter != impl->keyBindableActions.end())
+        {
+            bindableAction = &(*iter);
+        }
+        else
+        {
+            impl->keyBindableActions.push_back(KeyBindableAction());
+            bindableAction = &impl->keyBindableActions.back();
+            bindableAction->actionName = action->objectName();
+            bindableAction->blockName = info.blockName;
+            bindableAction->context = info.context;
+            bindableAction->sequences = info.defaultShortcuts;
+        }
+
+        bindableAction->action = action;
+        bindableAction->isReadOnly = info.readOnly;
+        bindableAction->defaultContext = info.context;
+        bindableAction->defaultSequences = info.defaultShortcuts;
+        action->setShortcutContext(bindableAction->context);
+        action->setShortcuts(bindableAction->sequences);
+    }
+}
+
+void UIManager::LoadScheme()
+{
+    Vector<QAction*> actions;
+    for (KeyBindableAction& action : impl->keyBindableActions)
+    {
+        action.sequences = action.defaultSequences;
+        action.context = action.defaultContext;
+        if (action.action != nullptr)
+        {
+            action.action->setShortcutContext(action.defaultContext);
+            action.action->setShortcuts(action.defaultSequences);
+            actions.push_back(action.action.data());
+        }
+    }
+
+    impl->keyBindableActions.clear();
+    FilePath schemePath = BuildSchemePath(GetCurrentKeyBindingsScheme());
+    PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    int32 blocksCount = item.Get<int32>("blocksCount");
+    for (int32 blockIndex = 0; blockIndex < blocksCount; ++blockIndex)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockIndex));
+        QString blockName = blockHolder.Get<QString>("blockName");
+        int32 actionsCount = blockHolder.Get<int32>("actionsCount");
+        for (int32 actionIndex = 0; actionIndex < actionsCount; ++actionIndex)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", actionIndex));
+
+            KeyBindableAction bindableAction;
+            bindableAction.blockName = blockName;
+            bindableAction.actionName = actionHolder.Get<QString>("actionName");
+            bindableAction.context = actionHolder.Get<Qt::ShortcutContext>("actionContext");
+
+            int32 sequencesCount = actionHolder.Get<int32>("actionSequencesCount");
+            for (int32 sequenceIndex = 0; sequenceIndex < sequencesCount; ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                bindableAction.sequences.push_back(QKeySequence::fromString(sequenceHolder.Get<QString>("keySequence")));
+            }
+
+            impl->keyBindableActions.push_back(bindableAction);
+        }
+    }
+
+    for (QAction* action : actions)
+    {
+        RegisterAction(action);
+    }
+}
+
+void UIManager::SaveScheme() const
+{
+    FilePath schemePath = BuildSchemePath(GetCurrentKeyBindingsScheme());
+    PropertiesHolder holder(schemePath.GetBasename(), schemePath.GetDirectory());
+
+    PropertiesItem item = holder.CreateSubHolder(UIManagerDetail::KEY_BINDING_ACTIONS);
+    item.Set("schemeName", schemePath.GetBasename());
+    Map<QString, Vector<KeyBindableAction>> sortedActions;
+    for (const KeyBindableAction& action : impl->keyBindableActions)
+    {
+        if (action.action != nullptr)
+        {
+            sortedActions[action.blockName].push_back(action);
+        }
+    }
+
+    item.Set("blocksCount", static_cast<int32>(sortedActions.size()));
+    int32 blockCounter = 0;
+    for (const auto& blockPair : sortedActions)
+    {
+        PropertiesItem blockHolder = item.CreateSubHolder(Format("blockNumber_%d", blockCounter++));
+        blockHolder.Set("blockName", blockPair.first);
+        blockHolder.Set("actionsCount", static_cast<int32>(blockPair.second.size()));
+        for (size_t i = 0; i < blockPair.second.size(); ++i)
+        {
+            PropertiesItem actionHolder = blockHolder.CreateSubHolder(Format("actionNumber_%d", static_cast<int32>(i)));
+            const KeyBindableAction& action = blockPair.second[i];
+            actionHolder.Set("actionName", action.actionName);
+            actionHolder.Set("actionContext", action.context);
+
+            actionHolder.Set("actionSequencesCount", static_cast<int32>(action.sequences.size()));
+            for (int sequenceIndex = 0; sequenceIndex < action.sequences.size(); ++sequenceIndex)
+            {
+                PropertiesItem sequenceHolder = actionHolder.CreateSubHolder(Format("sequenceNumber_%d", sequenceIndex));
+                sequenceHolder.Set("keySequence", action.sequences[sequenceIndex].toString());
+            }
+        }
+    }
+}
+
+FilePath UIManager::BuildSchemePath(const String& scheme) const
+{
+    return FilePath::FilepathInDocuments(Format("%s/%s", UIManagerDetail::KEY_BINDINGS_SCHEMES.c_str(), scheme.c_str()));
+}
+
+void UIManager::SaveSchemeNames(const Vector<String>& schemes) const
+{
+    PropertiesItem schemesHolder = impl->propertiesHolder.CreateSubHolder(UIManagerDetail::KEY_BINDINGS_SCHEMES);
+    int32 schemesCount = static_cast<int32>(schemes.size());
+    schemesHolder.Set("schemesCount", schemesCount);
+
+    for (int32 i = 0; i < schemesCount; ++i)
+    {
+        schemesHolder.Set(Format("scheme_%d", i), schemes[i]);
     }
 }
 

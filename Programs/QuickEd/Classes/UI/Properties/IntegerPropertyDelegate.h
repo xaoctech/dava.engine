@@ -1,5 +1,4 @@
-#ifndef __ITEMDELEGATEFORINTEGER_H__
-#define __ITEMDELEGATEFORINTEGER_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 class PropertiesTreeItemDelegate;
@@ -17,6 +16,3 @@ public:
 private slots:
     void OnValueChanged();
 };
-
-
-#endif // __ITEMDELEGATEFORINTEGER_H__

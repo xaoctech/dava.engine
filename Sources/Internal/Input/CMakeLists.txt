@@ -18,4 +18,7 @@ set( CPP_FILES_WIN Private/Win32/*.cpp )
 set( HPP_FILES_WINUAP Private/Win10/*.h )
 set( CPP_FILES_WINUAP Private/Win10/*.cpp )
 
+set( HPP_FILES_LINUX Private/Linux/*.h )
+set( CPP_FILES_LINUX Private/Linux/*.cpp )
+
 setup_main_module()

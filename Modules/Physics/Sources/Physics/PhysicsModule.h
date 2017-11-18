@@ -20,6 +20,8 @@ class PxActor;
 class PxShape;
 class PxMaterial;
 class PxSimulationEventCallback;
+class PxDefaultCpuDispatcher;
+class PxAllocatorCallback;
 }
 
 namespace DAVA
@@ -27,6 +29,7 @@ namespace DAVA
 class PolygonGroup;
 class Landscape;
 class PhysicsGeometryCache;
+class PhysicsVehiclesSubsystem;
 struct Matrix4;
 
 class PhysicsModule : public IModule
@@ -56,11 +59,19 @@ public:
 
     physx::PxMaterial* GetDefaultMaterial() const;
 
+    physx::PxAllocatorCallback* GetAllocator() const;
+
+    const Vector<uint32>& GetBodyComponentTypes() const;
+    const Vector<uint32>& GetShapeComponentTypes() const;
+    const Vector<uint32>& GetVehicleComponentTypes() const;
+    const Vector<uint32>& GetCharacterControllerComponentTypes() const;
+
 private:
     physx::PxFoundation* foundation = nullptr;
     physx::PxPhysics* physics = nullptr;
     physx::PxCooking* cooking = nullptr;
 
+    mutable physx::PxDefaultCpuDispatcher* cpuDispatcher = nullptr;
     mutable physx::PxMaterial* defaultMaterial = nullptr;
 
     class PhysicsAllocator;
@@ -68,6 +79,11 @@ private:
 
     class PhysicsErrotCallback;
     PhysicsErrotCallback* errorCallback = nullptr;
+
+    Vector<uint32> bodyComponents;
+    Vector<uint32> shapeComponents;
+    Vector<uint32> vehicleComponents;
+    Vector<uint32> characterControllerComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

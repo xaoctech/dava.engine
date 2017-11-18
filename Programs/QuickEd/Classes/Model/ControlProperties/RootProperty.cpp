@@ -425,7 +425,7 @@ uint32 RootProperty::GetComponentAbsIndex(const DAVA::Type* componentType, DAVA:
     uint32 i = 0;
 
     //sort sections in the same order as in ComponentManager
-    HashMap<const Type*, size_t> typeToIndex;
+    UnorderedMap<const Type*, size_t> typeToIndex;
     Vector<const Type*> sortedTypes = cm->GetRegisteredComponents();
     for (size_t i = 0, size = sortedTypes.size(); i < size; ++i)
     {

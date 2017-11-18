@@ -1,4 +1,6 @@
 #include "UIUpdateComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -11,6 +13,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIUpdateComponent)
     .Field("updateInvisible", &UIUpdateComponent::GetUpdateInvisible, &UIUpdateComponent::SetUpdateInvisible)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIUpdateComponent);
 
 UIUpdateComponent::UIUpdateComponent() = default;
 UIUpdateComponent::~UIUpdateComponent() = default;

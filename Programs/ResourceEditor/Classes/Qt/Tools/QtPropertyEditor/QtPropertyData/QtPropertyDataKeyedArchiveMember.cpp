@@ -4,7 +4,8 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Deprecated/EditorConfig.h"
 #include "Main/QtUtils.h"
-#include "QtTools/Utils/Utils.h"
+
+#include <TArc/Utils/Utils.h>
 
 QtPropertyKeyedArchiveMember::QtPropertyKeyedArchiveMember(const DAVA::FastName& name, DAVA::KeyedArchive* archive_, const DAVA::String& key_)
     : QtPropertyDataDavaVariant(name, DAVA::VariantType())
@@ -55,7 +56,7 @@ void QtPropertyKeyedArchiveMember::CheckAndFillPresetValues()
                 const DAVA::Vector<DAVA::Color>& allowedColors = editorConfig->GetColorPropertyValues(key);
                 for (size_t i = 0; i < allowedColors.size(); ++i)
                 {
-                    AddAllowedValue(DAVA::VariantType((int)i), ColorToQColor(allowedColors[i]));
+                    AddAllowedValue(DAVA::VariantType((int)i), DAVA::TArc::ColorToQColor(allowedColors[i]));
                 }
             }
         }

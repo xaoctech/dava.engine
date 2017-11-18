@@ -41,8 +41,12 @@ def _download(working_directory_path):
     source_folder_path = os.path.join(working_directory_path, 'googletest')
 
     build_utils.run_process(
-        'git clone ' + get_download_info(),
+        ['git', 'clone', get_download_info()],
         process_cwd=working_directory_path,
+        shell=True)
+    build_utils.run_process(
+        ['git', 'checkout', 'tags/release-1.8.0'],
+        process_cwd=source_folder_path,
         shell=True)
 
     return source_folder_path
@@ -58,6 +62,11 @@ def _build_win32(working_directory_path, root_project_path):
     source_folder_path = _download(working_directory_path)
     _patch_sources(source_folder_path)
 
+    override_props_file=os.path.abspath('override.props')
+    msbuild_args=[
+        "/p:ForceImportBeforeCppTargets={}".format(override_props_file),
+    ]
+
     build_utils.build_and_copy_libraries_win32_cmake(
         os.path.join(source_folder_path, '_build'),
         source_folder_path,
@@ -66,7 +75,9 @@ def _build_win32(working_directory_path, root_project_path):
         'gmock.lib', 'gmock.lib',
         'gmock.lib', 'gmock.lib',
         'gmock.lib', 'gmock.lib',
-        target_lib_subdir='googlemock')
+        msbuild_args=msbuild_args,
+        target_lib_subdir='googlemock',
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 
@@ -74,6 +85,7 @@ def _build_win32(working_directory_path, root_project_path):
 def _build_macos(working_directory_path, root_project_path):
     source_folder_path = _download(working_directory_path)
     _patch_sources(source_folder_path)
+
     build_utils.build_and_copy_libraries_macos_cmake(
         os.path.join(source_folder_path, '_build'),
         source_folder_path,

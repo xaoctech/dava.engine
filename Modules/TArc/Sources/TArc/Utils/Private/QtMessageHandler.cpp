@@ -1,9 +1,8 @@
 #include "TArc/Utils/QtMessageHandler.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Logger/Logger.h>
 #include <Debug/DVAssert.h>
-
-#include <QString>
 
 namespace DAVA
 {

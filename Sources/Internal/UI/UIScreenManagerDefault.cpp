@@ -3,6 +3,10 @@
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_LINUX__)
 
 #include "Base/BaseObject.h"
+#include "Engine/Engine.h"
+#include "Logger/Logger.h"
+#include "UI/UIControlSystem.h"
+#include "UI/UIScreen.h"
 
 namespace DAVA
 {
@@ -39,7 +43,7 @@ void UIScreenManager::SetFirst(int screenId)
     if (screen.type == Screen::TYPE_SCREEN)
     {
         activeScreenId = screenId;
-        UIControlSystem::Instance()->SetScreen(static_cast<UIScreen*>(screen.value));
+        GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value));
     }
     else
     {
@@ -53,14 +57,14 @@ void UIScreenManager::SetScreen(int screenId)
     if (screen.type == Screen::TYPE_SCREEN)
     {
         activeScreenId = screenId;
-        UIControlSystem::Instance()->SetScreen(static_cast<UIScreen*>(screen.value));
+        GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value));
     }
 }
 
 void UIScreenManager::ResetScreen()
 {
     activeScreenId = -1;
-    UIControlSystem::Instance()->Reset();
+    GetEngineContext()->uiControlSystem->Reset();
 }
 
 void UIScreenManager::RegisterScreen(int screenId, UIScreen* screen)

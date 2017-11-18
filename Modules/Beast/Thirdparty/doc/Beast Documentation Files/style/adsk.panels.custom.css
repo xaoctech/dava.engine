@@ -1,0 +1,42 @@
+/* Product-specific graphic in upper-left pane - Marvel */
+/* formatting of ToC entries */
+a:link, a:active, a:visited {
+	color: #00289C;
+	text-decoration: none;
+}
+a:hover {
+	color: black;
+	text-decoration: underline;
+}
+table.contentTable {
+	border-spacing: 0;
+	min-width: 350px;
+}
+tr.book-title__row td {
+	height: 71px;
+}
+.book-title {
+	padding: 0;
+}
+img.panel_text {
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+img.panel_icon {
+	float: right;
+	margin: 0;
+	padding: 0;	
+}
+.book-title__row {
+	height: 80px;
+	background-color: white;
+}
+.tablink:hover {
+	color: #d5d9df;
+}
+/* without padding there isn't room for the book graphics */
+.topic_opened_toc_image, .topic_closed_toc_image, .topic_toc_image {
+	padding: 2px 10px;
+	height: 14px;
+}

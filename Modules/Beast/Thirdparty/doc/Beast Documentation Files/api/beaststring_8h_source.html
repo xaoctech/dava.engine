@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beaststring.h Source File</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beaststring_8h_source.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beaststring.h Source File&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beaststring.h Source
+File</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">beastapi/beaststring.h</div>
+</div>
+</div>
+<div class="contents"><a href="beaststring_8h.html">Go to the
+documentation of this file.</a>
+<div class="fragment">
+<pre class="fragment">
+<a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<a name="l00003"></a>00003 <span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<a name="l00004"></a>00004 <span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<a name="l00005"></a>00005 <span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<a name="l00006"></a>00006 <span class="comment">*/</span>
+<a name="l00007"></a>00007 
+<a name="l00008"></a>00008 
+<a name="l00013"></a>00013 <span class=
+"preprocessor">#ifndef BEASTSTRING_H</span>
+<a name="l00014"></a>00014 <span class=
+"preprocessor">#define BEASTSTRING_H</span>
+<a name="l00015"></a>00015 
+<a name="l00016"></a>00016 <span class=
+"preprocessor">#include "<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapitypes.h</a>"</span>
+<a name="l00017"></a>00017 
+<a name="l00018"></a>00018 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00019"></a>00019 <span class=
+"keyword">extern</span> <span class="stringliteral">"C"</span> {
+<a name="l00020"></a>00020 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00021"></a>00021 
+<a name="l00035"></a>00035 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beaststring_8h.html#abe0cf7e931bb4ded132edf29bc93245a" title=
+"Returns the length of the string in number of characters.">ILBGetLength</a>(<a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> <span class="keywordtype">string</span>,
+<a name=
+"l00036"></a>00036                                                                 int32* length);
+<a name="l00037"></a>00037 
+<a name="l00048"></a>00048 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beaststring_8h.html#a04f9d83165cc6abc3eec1101d2673fa8" title=
+"Copies the contained string to a buffer.">ILBCopy</a>(<a class=
+"code" href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> <span class="keywordtype">string</span>,
+<a name=
+"l00049"></a>00049                                                    <a class="code"
+href="beastapitypes_8h.html#a180da578dc3f216e8ff16bbdd2ea692b"
+title="Beast api string type.">ILBString</a> target,
+<a name=
+"l00050"></a>00050                                                    int32 length);
+<a name="l00051"></a>00051 
+<a name="l00059"></a>00059 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beaststring_8h.html#a0511419e6d1254e6946cad27aa098c14" title=
+"Releases a string object.">ILBReleaseString</a>(<a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> <span class="keywordtype">string</span>);
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00062"></a>00062 }
+<a name="l00063"></a>00063 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 <span class=
+"preprocessor">#endif // BEASTSTRING_H</span>
+<a name="l00067"></a>00067 
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

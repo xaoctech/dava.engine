@@ -1,8 +1,8 @@
 #include "Classes/Library/Private/ScenePreviewDialog.h"
 #include "Classes/Library/Private/ControlsFactory.h"
 #include "Classes/Library/Private/ScenePreviewControl.h"
-
-#include "Classes/Settings/SettingsManager.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/REGlobal.h"
 
 ScenePreviewDialog::ScenePreviewDialog()
     : ExtendedDialog()
@@ -44,8 +44,8 @@ ScenePreviewDialog::~ScenePreviewDialog()
 
 void ScenePreviewDialog::Show(const DAVA::FilePath& scenePathname)
 {
-    bool enabled = SettingsManager::GetValue(Settings::General_PreviewEnabled).AsBool();
-    if (!enabled)
+    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    if (settings->previewEnabled == false)
         return;
 
     if (!GetParent())

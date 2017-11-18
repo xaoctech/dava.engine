@@ -48,6 +48,10 @@ WaveSystem::~WaveSystem()
     ClearWaves();
 }
 
+void WaveSystem::PrepareForRemove()
+{
+}
+
 void WaveSystem::ImmediateEvent(Component* component, uint32 event)
 {
     if (event == EventSystem::WAVE_TRIGGERED)

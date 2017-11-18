@@ -78,7 +78,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
                 {
                     if (mat != nullptr)
                     {
-                        const HashMap<FastName, MaterialTextureInfo*>& textures = mat->GetLocalTextures();
+                        const UnorderedMap<FastName, MaterialTextureInfo*>& textures = mat->GetLocalTextures();
                         for (auto& tx : textures)
                         {
                             if (tx.first != FastName("heightmap"))

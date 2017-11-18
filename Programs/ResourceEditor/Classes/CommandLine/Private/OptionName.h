@@ -11,6 +11,8 @@ public:
     static const DAVA::String OutFile;
     static const DAVA::String OutDir;
 
+    static const DAVA::String ResourceDir;
+
     static const DAVA::String File;
     static const DAVA::String ProcessFile;
 
@@ -61,6 +63,9 @@ public:
 
     static const DAVA::String Validate;
     static const DAVA::String Count;
+
+    static const DAVA::String Tag;
+    static const DAVA::String TagList;
 
     static const DAVA::String MakeNameForGPU(DAVA::eGPUFamily gpuFamily);
 };

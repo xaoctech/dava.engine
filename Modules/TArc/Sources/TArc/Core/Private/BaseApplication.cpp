@@ -2,6 +2,7 @@
 #include "TArc/Core/Core.h"
 #include "TArc/Testing/TArcTestCore.h"
 #include "TArc/DataProcessing/TArcAnyCasts.h"
+#include "TArc/SharedModules/ThemesModule/ThemesModule.h"
 #include "TArc/Utils/AssertGuard.h"
 #include "QtHelpers/RunGuard.h"
 
@@ -71,6 +72,7 @@ int BaseApplication::RunImpl()
 
         Core core(e);
         Init(&core);
+        core.PostInit();
         CreateModules(&core);
         return e.Run();
     }

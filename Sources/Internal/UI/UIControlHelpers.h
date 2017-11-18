@@ -24,7 +24,12 @@ public:
     static void ScrollToControl(DAVA::UIControl* control, bool toTopLeftForBigControls = false);
     static void ScrollToControlWithAnimation(DAVA::UIControl* control, float32 animationTime = 0.3f, bool toTopLeftForBigControls = false);
 
-    static bool IsControlNameValid(const FastName& controlName);
+    enum NameCheckStrictness
+    {
+        RegularCheck,
+        StrictCheck
+    };
+    static bool IsControlNameValid(const FastName& controlName, NameCheckStrictness = RegularCheck);
 
 private:
     static const UIControl* FindControlByPathImpl(const String& controlPath, const UIControl* rootControl);

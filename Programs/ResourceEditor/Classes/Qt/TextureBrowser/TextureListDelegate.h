@@ -36,6 +36,7 @@ public:
 
 signals:
     void textureDescriptorChanged(DAVA::TextureDescriptor* descriptor);
+    void textureDescriptorReload(DAVA::TextureDescriptor* descriptor);
 
 protected:
     bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) override;
@@ -43,6 +44,7 @@ protected:
 private slots:
     void textureReadyThumbnail(const DAVA::TextureDescriptor* descriptor, const TextureInfo& images);
     void onOpenTexturePath();
+    void onReloadTexture();
 
     void onLoadPreset();
     void onSavePreset();

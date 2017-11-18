@@ -35,11 +35,6 @@ public:
 private:
     StaticOcclusionData data;
 
-public:
-    INTROSPECTION_EXTEND(StaticOcclusionDataComponent, Component,
-                         PROPERTY("Size in kBytes", "Size of occlusion information in kBytes", GetDataSize, SetDataSize, I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(StaticOcclusionDataComponent, Component);
 };
 
@@ -89,17 +84,6 @@ private:
 
     friend class StaticOcclusionBuildSystem;
 
-public:
-    INTROSPECTION_EXTEND(StaticOcclusionComponent, Component,
-                         PROPERTY("Bounding box", "Bounding box of occlusion zone", GetBoundingBox, SetBoundingBox, I_VIEW | I_EDIT)
-                         PROPERTY("Subdivisions X", "Number of subdivisions on X axis", GetSubdivisionsX, SetSubdivisionsX, I_VIEW | I_EDIT)
-                         PROPERTY("Subdivisions Y", "Number of subdivisions on Y axis", GetSubdivisionsY, SetSubdivisionsY, I_VIEW | I_EDIT)
-                         PROPERTY("Subdivisions Z", "Number of subdivisions on Z axis", GetSubdivisionsZ, SetSubdivisionsZ, I_VIEW | I_EDIT)
-                         PROPERTY("Place on Landscape", "Place lowest occlusion cubes at landscape height", GetPlaceOnLandscape, SetPlaceOnLandscape, I_VIEW | I_EDIT)
-                         PROPERTY("Occlusion Pixel Threshold", "Occlusion Pixel Threshold", GetOcclusionPixelThreshold, SetOcclusionPixelThreshold, I_VIEW | I_EDIT)
-                         PROPERTY("Occlusion Pixel Threshold For Speedtree", "Occlusion Pixel Threshold For Speedtree", GetOcclusionPixelThresholdForSpeedtree, SetOcclusionPixelThresholdForSpeedtree, I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(StaticOcclusionComponent, Component);
 };
 
@@ -127,11 +111,6 @@ private:
     rhi::HIndexBuffer gridIndices, coverIndices;
     uint32 vertexCount, gridIndexCount, coverIndexCount;
     AABBox3 bbox;
-
-public:
-    INTROSPECTION_EXTEND(StaticOcclusionDebugDrawComponent, Component,
-                         NULL
-                         );
 
     DAVA_VIRTUAL_REFLECTION(StaticOcclusionDebugDrawComponent, Component);
 };

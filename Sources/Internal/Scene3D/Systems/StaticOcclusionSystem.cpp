@@ -273,6 +273,13 @@ void StaticOcclusionSystem::RemoveEntity(Entity* entity)
     }
 }
 
+void StaticOcclusionSystem::PrepareForRemove()
+{
+    ClearOcclusionObjects();
+    indexedRenderObjects.clear();
+    staticOcclusionComponents.clear();
+}
+
 void StaticOcclusionSystem::ClearOcclusionObjects()
 {
     for (size_t i = 0, sz = indexedRenderObjects.size(); i < sz; ++i)
@@ -347,6 +354,7 @@ StaticOcclusionDebugDrawSystem::~StaticOcclusionDebugDrawSystem()
     SetScene(nullptr);
     SafeRelease(gridMaterial);
     SafeRelease(coverMaterial);
+    DVASSERT(entities.empty() == true);
 }
 
 void StaticOcclusionDebugDrawSystem::SetScene(Scene* scene)
@@ -387,14 +395,15 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity* entity)
     UpdateGeometry(debugDrawComponent);
 
     GetScene()->GetRenderSystem()->RenderPermanent(debugRenderObject);
+
+    entities.push_back(entity);
 }
 
 void StaticOcclusionDebugDrawSystem::RemoveEntity(Entity* entity)
 {
-    StaticOcclusionDebugDrawComponent* debugDrawComponent = GetStaticOcclusionDebugDrawComponent(entity);
-    DVASSERT(debugDrawComponent != nullptr);
-    GetScene()->GetRenderSystem()->RemoveFromRender(debugDrawComponent->GetRenderObject());
-    entity->RemoveComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);
+    RemoveComponentFromEntity(entity);
+    bool removeSuccessful = FindAndRemoveExchangingWithLast(entities, entity);
+    DVASSERT(removeSuccessful == true);
 }
 
 void StaticOcclusionDebugDrawSystem::ImmediateEvent(Component* component, uint32 event)
@@ -407,6 +416,23 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Component* component, uint32
     {
         UpdateGeometry(debugDrawComponent);
     }
+}
+
+void StaticOcclusionDebugDrawSystem::PrepareForRemove()
+{
+    for (Entity* entity : entities)
+    {
+        RemoveComponentFromEntity(entity);
+    }
+    entities.clear();
+}
+
+void StaticOcclusionDebugDrawSystem::RemoveComponentFromEntity(Entity* entity)
+{
+    StaticOcclusionDebugDrawComponent* debugDrawComponent = GetStaticOcclusionDebugDrawComponent(entity);
+    DVASSERT(debugDrawComponent != nullptr);
+    GetScene()->GetRenderSystem()->RemoveFromRender(debugDrawComponent->GetRenderObject());
+    entity->RemoveComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);
 }
 
 void StaticOcclusionDebugDrawSystem::UpdateGeometry(StaticOcclusionDebugDrawComponent* component)

@@ -1,0 +1,1510 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastmesh.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beastmesh_8h.html','api_beastmesh_8h_html9bad9179-aef5-4f2d-9135-d86371bbd613','index.html',location.hash); javascript:initPage('API: beastapi/beastmesh.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastmesh_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastmesh.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastmesh.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beastmesh.h File Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-858D3A28-204D-466F-B59B-153ED75E55AC.htm">Typographical
+Conventions</a>, <a href=
+".././files/GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm">Working
+With Object Handles</a>, <a href=
+".././files/GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm">Using
+the Cache</a>, <a href=
+".././files/GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating
+a Scene</a>, <a href=
+".././files/GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm">Creating
+Meshes</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>The api for specifying meshes in beast.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#ab600a8462872e92092865a2a4106a996">ILBAddColorData</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, const
+<a class="el" translate="no" href=
+"struct_i_l_b_linear_r_g_b_a.html">ILBLinearRGBA</a> *colorData,
+int32 vertexCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65">ILBAddTangentData</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, const
+<a class="el" translate="no" href="struct_i_l_b_vec3.html">ILBVec3</a>
+*tangentData, const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *bitangentData, int32
+vertexCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a">ILBAddTriangleData</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, const int32
+*indexData, int32 indexCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286">ILBAddUVData</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, const
+<a class="el" translate="no" href="struct_i_l_b_vec2.html">ILBVec2</a> *uvData,
+int32 vertexCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073">ILBAddVertexData</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, const
+<a class="el" translate="no" href="struct_i_l_b_vec3.html">ILBVec3</a>
+*positionData, const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *normalData, int32
+vertexCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a8b7588112f49e905dd611689bc7aa20e">ILBBeginColorLayer</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, <a class=
+"el" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+layerName)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051">ILBBeginMaterialGroup</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, <a class=
+"el" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+materialName)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b">ILBBeginMesh</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+uniqueName, <a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> *targetMesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f">ILBBeginTangents</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533">ILBBeginUVLayer</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, <a class=
+"el" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+layerName)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a8b4fc33d943c97f5d4b7498334089b9f">ILBEndColorLayer</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca">ILBEndMaterialGroup</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987">ILBEndMesh</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69">ILBEndTangents</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e">ILBEndUVLayer</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastmesh_8h.html#a1c52fe9db53e4b783d8563957e077bca">ILBFindMesh</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+uniqueName, <a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> *target)</td>
+</tr>
+</table>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="ab600a8462872e92092865a2a4106a996"></a>
+<!-- doxytag: member="beastmesh.h::ILBAddColorData" ref="ab600a8462872e92092865a2a4106a996" args="(ILBMeshHandle mesh, const ILBLinearRGBA *colorData, int32 vertexCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddColorData</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_linear_r_g_b_a.html">ILBLinearRGBA</a> *&nbsp;</td>
+<td class="paramname"><em>colorData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>vertexCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddColorData',false)">Search for all
+occurrences</a></div>
+<p>Add color data to the active color set.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add color data to.</td>
+</tr>
+<tr>
+<td class="paramname">colorData</td>
+<td>a pointer to an array of color data.</td>
+</tr>
+<tr>
+<td class="paramname">vertexCount</td>
+<td>the number of colors in the array</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a11">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a11">examples/code/common/primitives.h</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a16">include/beastapi/beastmesh.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a75557b2c87deceb957da51c05d0deb65"></a>
+<!-- doxytag: member="beastmesh.h::ILBAddTangentData" ref="a75557b2c87deceb957da51c05d0deb65" args="(ILBMeshHandle mesh, const ILBVec3 *tangentData, const ILBVec3 *bitangentData, int32 vertexCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddTangentData</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *&nbsp;</td>
+<td class="paramname"><em>tangentData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *&nbsp;</td>
+<td class="paramname"><em>bitangentData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>vertexCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddTangentData',false)">Search for all
+occurrences</a></div>
+<p>Adds a batch of tangents and bitangents (binormals) to a
+mesh.</p>
+<p>It may be called multiple times, but the total number of added
+tangents/bitangents may never be more than there are vertices in
+the mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add tangent data on.</td>
+</tr>
+<tr>
+<td class="paramname">tangentData</td>
+<td>an array of tangents to add.</td>
+</tr>
+<tr>
+<td class="paramname">bitangentData</td>
+<td>an array of bitangents to add.</td>
+</tr>
+<tr>
+<td class="paramname">vertexCount</td>
+<td>the number of tangents/bitangents to add.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a16">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a16">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a20">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a4">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="af0be1497df9d37ac9bfe8e5c0fddd40a"></a>
+<!-- doxytag: member="beastmesh.h::ILBAddTriangleData" ref="af0be1497df9d37ac9bfe8e5c0fddd40a" args="(ILBMeshHandle mesh, const int32 *indexData, int32 indexCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddTriangleData</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const int32 *&nbsp;</td>
+<td class="paramname"><em>indexData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>indexCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddTriangleData',false)">Search for all
+occurrences</a></div>
+<p>Add triangles to a material group.</p>
+<p>The indices refers to the vertices added with AddVertexData. The
+triangles should be defined so the objects outside sees it as
+counter clock wise to make sure the outside is visible if rendering
+them single sided.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh on which to add the triangles to</td>
+</tr>
+<tr>
+<td class="paramname">indexData</td>
+<td>the indices of the triangles to add</td>
+</tr>
+<tr>
+<td class="paramname">indexCount</td>
+<td>the total index count. Must be a multiply of 3 (i.e each batch
+must end in a complete triangle)</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a5">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a5">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a5">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a5">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a9">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a10">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a81cd6d03cb22be5a6ac39e56c0f17286"></a>
+<!-- doxytag: member="beastmesh.h::ILBAddUVData" ref="a81cd6d03cb22be5a6ac39e56c0f17286" args="(ILBMeshHandle mesh, const ILBVec2 *uvData, int32 vertexCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddUVData</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec2.html">ILBVec2</a> *&nbsp;</td>
+<td class="paramname"><em>uvData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>vertexCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddUVData',false)">Search for all
+occurrences</a></div>
+<p>Adds a batch of UV coordinates to a mesh.</p>
+<p>It may be called multiple times, but the total number of add
+UV's may never be more than there are vertices in the mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add UV data on.</td>
+</tr>
+<tr>
+<td class="paramname">uvData</td>
+<td>an array of UV coordinates to add to the UV layer</td>
+</tr>
+<tr>
+<td class="paramname">vertexCount</td>
+<td>the number of UV coordinates in the uvData array.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a8">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a8">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a8">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a8">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a12">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a8">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a5236fec2aafc8fda1169d3fb96f35073"></a>
+<!-- doxytag: member="beastmesh.h::ILBAddVertexData" ref="a5236fec2aafc8fda1169d3fb96f35073" args="(ILBMeshHandle mesh, const ILBVec3 *positionData, const ILBVec3 *normalData, int32 vertexCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddVertexData</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *&nbsp;</td>
+<td class="paramname"><em>positionData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_vec3.html">ILBVec3</a> *&nbsp;</td>
+<td class="paramname"><em>normalData</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>vertexCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddVertexData',false)">Search for all
+occurrences</a></div>
+<p>Adds a chunk of vertex data to a mesh.</p>
+<p>This can be called multiple times to keep temporary buffer
+bounded.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add vertices to.</td>
+</tr>
+<tr>
+<td class="paramname">positionData</td>
+<td>a pointer to an array of vertex positions</td>
+</tr>
+<tr>
+<td class="paramname">normalData</td>
+<td>a pointer to an array of vertex normals</td>
+</tr>
+<tr>
+<td class="paramname">vertexCount</td>
+<td>the number of positions/normals specified in this call.
+Behavior is undefined if positionData or normalsData contains less
+than vertexCount positions/normals</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a3">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a3">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a3">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a3">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a5">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a1">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a8b7588112f49e905dd611689bc7aa20e"></a>
+<!-- doxytag: member="beastmesh.h::ILBBeginColorLayer" ref="a8b7588112f49e905dd611689bc7aa20e" args="(ILBMeshHandle mesh, ILBConstString layerName)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBBeginColorLayer</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>layerName</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBeginColorLayer',false)">Search for all
+occurrences</a></div>
+<p>Creates a new color layer.</p>
+<p><br /></p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add the color layer to</td>
+</tr>
+<tr>
+<td class="paramname">layerName</td>
+<td>the name of the layer, must be unique.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a10">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a10">examples/code/common/primitives.h</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a14">include/beastapi/beastmesh.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="abe23ea67f2c6a53adb21221af2c52051"></a>
+<!-- doxytag: member="beastmesh.h::ILBBeginMaterialGroup" ref="abe23ea67f2c6a53adb21221af2c52051" args="(ILBMeshHandle mesh, ILBConstString materialName)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBBeginMaterialGroup</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>materialName</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBeginMaterialGroup',false)">Search for all
+occurrences</a></div>
+<p>Begins a material group.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add a material group to</td>
+</tr>
+<tr>
+<td class="paramname">materialName</td>
+<td>name of the default material on this group</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a4">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a4">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a4">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a4">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a7">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a9">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a92c87b1cf4b5ef28cf891fa3dd09b08b"></a>
+<!-- doxytag: member="beastmesh.h::ILBBeginMesh" ref="a92c87b1cf4b5ef28cf891fa3dd09b08b" args="(ILBManagerHandle beastManager, ILBConstString uniqueName, ILBMeshHandle *targetMesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBBeginMesh</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>uniqueName</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> *&nbsp;</td>
+<td class="paramname"><em>targetMesh</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBeginMesh',false)">Search for all
+occurrences</a></div>
+<p>Begins creation of a mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the beast manager this mesh will be associated with</td>
+</tr>
+<tr>
+<td class="paramname">uniqueName</td>
+<td>a name that must be unique within the scene. Used to look it up
+in the cache.</td>
+</tr>
+<tr>
+<td class="paramname">targetMesh</td>
+<td>a pointer to a Beast mesh object that will receive the created
+object</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a2">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a2">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a2">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a2">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a0">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a13">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ae91527dff4459be0cf16c1e062d6e84f"></a>
+<!-- doxytag: member="beastmesh.h::ILBBeginTangents" ref="ae91527dff4459be0cf16c1e062d6e84f" args="(ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBBeginTangents</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBeginTangents',false)">Search for all
+occurrences</a></div>
+<p>Begins adding tangents and bitangents to the mesh.</p>
+<p><br />
+Use ILBAddTangentData to add tangent and bitangent data.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add tangent data to. Must not be finalized
+yet.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a15">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a15">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a18">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a72eb69adaf60b98fd8f09e67b7e6b533"></a>
+<!-- doxytag: member="beastmesh.h::ILBBeginUVLayer" ref="a72eb69adaf60b98fd8f09e67b7e6b533" args="(ILBMeshHandle mesh, ILBConstString layerName)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBBeginUVLayer</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>layerName</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBeginUVLayer',false)">Search for all
+occurrences</a></div>
+<p>Creates a new UV layer.</p>
+<p><br />
+Use AddUVData to add UV coordinates.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to add the UV layer to. Must not be finalized
+yet.</td>
+</tr>
+<tr>
+<td class="paramname">layerName</td>
+<td>the UV layer name. Must be unique within the mesh</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a7">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a7">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a7">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a7">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a10">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a5">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a8b4fc33d943c97f5d4b7498334089b9f"></a>
+<!-- doxytag: member="beastmesh.h::ILBEndColorLayer" ref="a8b4fc33d943c97f5d4b7498334089b9f" args="(ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEndColorLayer</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEndColorLayer',false)">Search for all
+occurrences</a></div>
+<p>Finalizes a color layer.</p>
+<p>The total number of added colors must be the same as the vertex
+count in the mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to finalize the color layer on.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a13">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a13">examples/code/common/primitives.h</a>,
+and <a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a15">include/beastapi/beastmesh.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a60a2f33321f18f5b655fec00f41e80ca"></a>
+<!-- doxytag: member="beastmesh.h::ILBEndMaterialGroup" ref="a60a2f33321f18f5b655fec00f41e80ca" args="(ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEndMaterialGroup</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEndMaterialGroup',false)">Search for all
+occurrences</a></div>
+<p>End a material group.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to end the material group on</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a6">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a6">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a6">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a6">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a8">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a11">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a74e254ea8c3fd546ddfb1420d5c81987"></a>
+<!-- doxytag: member="beastmesh.h::ILBEndMesh" ref="a74e254ea8c3fd546ddfb1420d5c81987" args="(ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEndMesh</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEndMesh',false)">Search for all
+occurrences</a></div>
+<p>Finalizes a mesh.</p>
+<p><br />
+After this call, it's possible to create instances from the
+mesh.<br />
+Will fail if any material group, uvLayer or colorLayer is
+unfinished</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to finalize</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a14">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a14">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a10">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a10">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a3">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a12">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="acca674f6ff0ad3d9572580ee94a3fc69"></a>
+<!-- doxytag: member="beastmesh.h::ILBEndTangents" ref="acca674f6ff0ad3d9572580ee94a3fc69" args="(ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEndTangents</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEndTangents',false)">Search for all
+occurrences</a></div>
+<p>Ends adding tangent data to the mesh.</p>
+<p><br />
+Will fail if not the current number of tangents is the same as the
+number of vertices in the mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to finalize the tangent data on.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a17">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a17">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a19">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a3">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a923825e6be553d32931471e02c2aeb4e"></a>
+<!-- doxytag: member="beastmesh.h::ILBEndUVLayer" ref="a923825e6be553d32931471e02c2aeb4e" args="(ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEndUVLayer</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEndUVLayer',false)">Search for all
+occurrences</a></div>
+<p>Ends the UV layer currently being created.</p>
+<p><br />
+Will fail if not the current number of UV's is the same as the
+number of vertices in the mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh to finalize the UV layer on.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2primitives_8h-example.html#a9">examples-physical/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2primitives_8h-example.html#a9">examples/code/common/primitives.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a9">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a9">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a11">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmeshwrapper_8cpp-example.html#a6">
+maya/beastmayaplugin/src/beastwrappers/beastmeshwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a1c52fe9db53e4b783d8563957e077bca"></a>
+<!-- doxytag: member="beastmesh.h::ILBFindMesh" ref="a1c52fe9db53e4b783d8563957e077bca" args="(ILBManagerHandle beastManager, ILBConstString uniqueName, ILBMeshHandle *target)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBFindMesh</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>uniqueName</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> *&nbsp;</td>
+<td class="paramname"><em>target</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBFindMesh',false)">Search for all
+occurrences</a></div>
+<p>Finds a cached mesh.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the beast manager to check whether the mesh is available
+in</td>
+</tr>
+<tr>
+<td class="paramname">uniqueName</td>
+<td>the unique name for mesh.</td>
+</tr>
+<tr>
+<td class="paramname">target</td>
+<td>the mesh handle to store the mesh in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.<br />
+ILB_ST_SUCCESS if the mesh is available ILB_ST_UNKNOWN_OBJECT if
+the mesh is not in the cache</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2utils_8h-example.html#a33">examples-physical/code/common/utils.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2utils_8h-example.html#a26">examples/code/common/utils.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastmesh_8h-example.html#a4">include/beastapi/beastmesh.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a5">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beastmesh_8h_source.html">Go to the source code of this
+file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

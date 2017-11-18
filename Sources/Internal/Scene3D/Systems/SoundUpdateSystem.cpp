@@ -151,6 +151,13 @@ void SoundUpdateSystem::RemoveEntity(Entity* entity)
     FindAndRemoveExchangingWithLast(sounds, entity);
 }
 
+void SoundUpdateSystem::PrepareForRemove()
+{
+    autoTriggerSounds.clear();
+    sounds.clear();
+    pausedEvents.clear();
+}
+
 void SoundUpdateSystem::AddAutoTriggerSound(Entity* soundOwner, SoundEvent* sound)
 {
     int32 soundsCount = static_cast<int32>(autoTriggerSounds.size());

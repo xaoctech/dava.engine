@@ -2,9 +2,6 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Base/Message.h"
-#include "Reflection/Reflection.h"
-#include "FileSystem/YamlParser.h"
 #include "Reflection/Reflection.h"
 
 namespace DAVA
@@ -41,10 +38,6 @@ public:
 		\returns true if object is animating on the requested tracks
 	 */
     bool IsAnimating(int32 track = -1) const;
-    /**
-		\brief Load animated object animations from yaml
-	 */
-    void LoadFromYaml(YamlNode* node);
     // TODO: void	Pause(int32 track = -1);
 
     /**

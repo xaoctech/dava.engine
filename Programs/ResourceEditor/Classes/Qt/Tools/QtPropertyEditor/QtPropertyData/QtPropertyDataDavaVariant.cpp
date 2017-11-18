@@ -7,11 +7,10 @@
 
 #include "Classes/Application/REGlobal.h"
 
-#include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
+#include <QtTools/FileDialogs/FileDialog.h>
 
-#include "QtTools/FileDialogs/FileDialog.h"
-#include "QtTools/WidgetHelpers/SharedIcon.h"
-#include "QtTools/Utils/Utils.h"
+#include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
+#include <TArc/Utils/Utils.h>
 
 #include <QListWidget>
 #include <QDoubleSpinBox>
@@ -452,7 +451,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
     case DAVA::VariantType::TYPE_COLOR:
     {
         QToolButton* colorBtn = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
-        colorBtn->setIcon(SharedIcon(":/QtIcons/color.png"));
+        colorBtn->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/color.png"));
         colorBtn->setIconSize(QSize(12, 12));
         colorBtn->setAutoRaise(true);
         colorBtn->setObjectName("colorButton");
@@ -482,7 +481,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
     case DAVA::VariantType::TYPE_FILEPATH:
     {
         QToolButton* filePathBtn = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
-        filePathBtn->setIcon(SharedIcon(":/QtIcons/openscene.png"));
+        filePathBtn->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/openscene.png"));
         filePathBtn->setIconSize(QSize(14, 14));
         filePathBtn->setAutoRaise(true);
         connections.AddConnection(filePathBtn, &QToolButton::clicked, [this]() {
@@ -493,7 +492,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
     case DAVA::VariantType::TYPE_STRING:
     {
         QToolButton* editMultiline = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
-        editMultiline->setIcon(SharedIcon(":/QtIcons/pencil.png"));
+        editMultiline->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/pencil.png"));
         editMultiline->setIconSize(QSize(14, 14));
         editMultiline->setAutoRaise(true);
         editMultiline->setToolTip("Open multiline editor");
@@ -957,7 +956,7 @@ void QtPropertyDataDavaVariant::UpdateColorButtonIcon()
         QPixmap pix(16, 16);
         QPainter p(&pix);
 
-        QColor c = ColorToQColor(curVariantValue.AsColor());
+        QColor c = DAVA::TArc::ColorToQColor(curVariantValue.AsColor());
 
         if (c.alpha() < 255)
         {

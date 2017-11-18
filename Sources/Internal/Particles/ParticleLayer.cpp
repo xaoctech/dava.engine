@@ -5,12 +5,20 @@
 #include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleLayer)
+{
+    ReflectionRegistrator<ParticleLayer>::Begin()
+    .End();
+}
 const ParticleLayer::LayerTypeNamesInfo ParticleLayer::layerTypeNamesInfoMap[] =
 {
   { TYPE_SINGLE_PARTICLE, "single" },
   { TYPE_PARTICLES, "particles" },
+  { TYPE_PARTICLE_STRIPE, "particlesStripe" },
   { TYPE_SUPEREMITTER_PARTICLES, "superEmitter" }
 };
 
@@ -61,62 +69,6 @@ eBlendMode GetBlendModeByName(const String& blendStr)
 
 ParticleLayer::ParticleLayer()
 {
-    life = 0;
-    lifeVariation = 0;
-
-    number = 0;
-    numberVariation = 0;
-
-    size = 0;
-    sizeVariation = 0;
-
-    velocity = 0;
-    velocityVariation = 0;
-    velocityOverLife = 0;
-
-    spin = 0;
-    spinVariation = 0;
-    spinOverLife = 0;
-    animSpeedOverLife = 0;
-    randomSpinDirection = false;
-
-    colorOverLife = 0;
-    colorRandom = 0;
-    alphaOverLife = 0;
-
-    angle = 0;
-    angleVariation = 0;
-
-    blending = BLENDING_ALPHABLEND;
-    enableFog = true;
-    enableFrameBlend = false;
-    inheritPosition = false;
-    type = TYPE_PARTICLES;
-
-    degradeStrategy = DEGRADE_KEEP;
-
-    endTime = 100.0f;
-    deltaTime = 0.0f;
-    deltaVariation = 0.0f;
-    loopVariation = 0.0f;
-    loopEndTime = 0.0f;
-
-    frameOverLifeEnabled = false;
-    frameOverLifeFPS = 0;
-    randomFrameOnStart = false;
-    loopSpriteAnimation = true;
-
-    scaleVelocityBase = 1;
-    scaleVelocityFactor = 0;
-
-    particleOrientation = PARTICLE_ORIENTATION_CAMERA_FACING;
-
-    isLooped = false;
-
-    isLong = false;
-
-    isDisabled = false;
-
     activeLODS.resize(4, true);
 }
 
@@ -131,6 +83,60 @@ ParticleLayer::~ParticleLayer()
 ParticleLayer* ParticleLayer::Clone()
 {
     ParticleLayer* dstLayer = new ParticleLayer();
+
+    dstLayer->stripeLifetime = stripeLifetime;
+    dstLayer->stripeVertexSpawnStep = stripeVertexSpawnStep;
+    dstLayer->stripeStartSize = stripeStartSize;
+    dstLayer->stripeUScrollSpeed = stripeUScrollSpeed;
+    dstLayer->stripeVScrollSpeed = stripeVScrollSpeed;
+    dstLayer->stripeFadeDistanceFromTop = stripeFadeDistanceFromTop;
+    dstLayer->alphaOverLife = alphaOverLife;
+
+    if (stripeSizeOverLife)
+        dstLayer->stripeSizeOverLife.Set(stripeSizeOverLife->Clone());
+
+    if (stripeTextureTileOverLife)
+        dstLayer->stripeTextureTileOverLife.Set(stripeTextureTileOverLife->Clone());
+
+    if (stripeNoiseUScrollSpeedOverLife)
+        dstLayer->stripeNoiseUScrollSpeedOverLife.Set(stripeNoiseUScrollSpeedOverLife->Clone());
+
+    if (stripeNoiseVScrollSpeedOverLife)
+        dstLayer->stripeNoiseVScrollSpeedOverLife.Set(stripeNoiseVScrollSpeedOverLife->Clone());
+
+    if (stripeColorOverLife)
+        dstLayer->stripeColorOverLife.Set(stripeColorOverLife->Clone());
+
+    if (flowSpeed)
+        dstLayer->flowSpeed.Set(flowSpeed->Clone());
+    if (flowSpeedVariation)
+        dstLayer->flowSpeedVariation.Set(flowSpeedVariation->Clone());
+
+    if (flowOffset)
+        dstLayer->flowOffset.Set(flowOffset->Clone());
+    if (flowOffsetVariation)
+        dstLayer->flowOffsetVariation.Set(flowOffsetVariation->Clone());
+
+    if (noiseScale)
+        dstLayer->noiseScale.Set(noiseScale->Clone());
+    if (noiseScaleVariation)
+        dstLayer->noiseScaleVariation.Set(noiseScaleVariation->Clone());
+    if (noiseScaleOverLife)
+        dstLayer->noiseScaleOverLife.Set(noiseScaleOverLife->Clone());
+
+    if (noiseUScrollSpeed)
+        dstLayer->noiseUScrollSpeed.Set(noiseUScrollSpeed->Clone());
+    if (noiseUScrollSpeedVariation)
+        dstLayer->noiseUScrollSpeedVariation.Set(noiseUScrollSpeedVariation->Clone());
+    if (noiseUScrollSpeedOverLife)
+        dstLayer->noiseUScrollSpeedOverLife.Set(noiseUScrollSpeedOverLife->Clone());
+
+    if (noiseVScrollSpeed)
+        dstLayer->noiseVScrollSpeed.Set(noiseVScrollSpeed->Clone());
+    if (noiseVScrollSpeedVariation)
+        dstLayer->noiseVScrollSpeedVariation.Set(noiseVScrollSpeedVariation->Clone());
+    if (noiseVScrollSpeedOverLife)
+        dstLayer->noiseVScrollSpeedOverLife.Set(noiseVScrollSpeedOverLife->Clone());
 
     if (life)
         dstLayer->life.Set(life->Clone());
@@ -207,10 +213,18 @@ ParticleLayer* ParticleLayer::Clone()
 
     dstLayer->layerName = layerName;
 
+    dstLayer->enableFlow = enableFlow;
+    dstLayer->enableFlowAnimation = enableFlowAnimation;
+
+    dstLayer->enableNoise = enableNoise;
+    dstLayer->enableNoiseScroll = enableNoiseScroll;
+
     dstLayer->blending = blending;
     dstLayer->enableFog = enableFog;
     dstLayer->enableFrameBlend = enableFrameBlend;
     dstLayer->inheritPosition = inheritPosition;
+    dstLayer->stripeInheritPositionOnlyForBaseVertex = stripeInheritPositionOnlyForBaseVertex;
+    dstLayer->usePerspectiveMapping = usePerspectiveMapping;
     dstLayer->startTime = startTime;
     dstLayer->endTime = endTime;
 
@@ -225,6 +239,9 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->type = type;
     dstLayer->degradeStrategy = degradeStrategy;
     dstLayer->sprite = sprite;
+    dstLayer->flowmap = flowmap;
+    dstLayer->noise = noise;
+    dstLayer->alphaRemapSprite = alphaRemapSprite;
     dstLayer->layerPivotPoint = layerPivotPoint;
     dstLayer->layerPivotSizeOffsets = layerPivotSizeOffsets;
 
@@ -238,8 +255,21 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->scaleVelocityFactor = scaleVelocityFactor;
 
     dstLayer->spritePath = spritePath;
+    dstLayer->flowmapPath = flowmapPath;
     dstLayer->activeLODS = activeLODS;
     dstLayer->isLong = isLong;
+    dstLayer->useFresnelToAlpha = useFresnelToAlpha;
+    dstLayer->fresnelToAlphaBias = fresnelToAlphaBias;
+    dstLayer->fresnelToAlphaPower = fresnelToAlphaPower;
+    dstLayer->noisePath = noisePath;
+    dstLayer->enableNoise = enableNoise;
+    dstLayer->enableNoiseScroll = enableNoiseScroll;
+
+    dstLayer->alphaRemapPath = alphaRemapPath;
+    if (alphaRemapOverLife)
+        dstLayer->alphaRemapOverLife.Set(alphaRemapOverLife->Clone());
+    dstLayer->enableAlphaRemap = enableAlphaRemap;
+    dstLayer->alphaRemapLoopCount = alphaRemapLoopCount;
 
     return dstLayer;
 }
@@ -341,16 +371,23 @@ void ParticleLayer::UpdateLayerTime(float32 startTime, float32 endTime)
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(spinVariation).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angle).Get(), startTime, translateTime, endTime);
     UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(angleVariation).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeed).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowSpeedVariation).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffset).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(flowOffsetVariation).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScale).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseScaleVariation).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseUScrollSpeed).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseUScrollSpeedVariation).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeed).Get(), startTime, translateTime, endTime);
+    UpdatePropertyLineKeys(PropertyLineHelper::GetValueLine(noiseVScrollSpeedVariation).Get(), startTime, translateTime, endTime);
 }
 
 void ParticleLayer::SetSprite(const FilePath& path)
 {
     spritePath = path;
-
     if (type != TYPE_SUPEREMITTER_PARTICLES)
-    {
         sprite.reset(Sprite::Create(spritePath));
-    }
 }
 
 void ParticleLayer::SetPivotPoint(Vector2 pivot)
@@ -360,8 +397,73 @@ void ParticleLayer::SetPivotPoint(Vector2 pivot)
     layerPivotSizeOffsets *= 0.5f;
 }
 
+void ParticleLayer::SetFlowmap(const FilePath& spritePath_)
+{
+    flowmapPath = spritePath_;
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        flowmap.reset(Sprite::Create(flowmapPath));
+}
+
+void ParticleLayer::SetNoise(const FilePath& spritePath_)
+{
+    noisePath = spritePath_;
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        noise.reset(Sprite::Create(noisePath));
+}
+
+void ParticleLayer::SetAlphaRemap(const FilePath& spritePath_)
+{
+    alphaRemapPath = spritePath_;
+    if (type != TYPE_SUPEREMITTER_PARTICLES)
+        alphaRemapSprite.reset(Sprite::Create(alphaRemapPath));
+}
+
 void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* node, bool preserveInheritPosition)
 {
+    stripeSizeOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeSizeOverLifeProp"));
+    stripeTextureTileOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeTextureTileOverLife"));
+    stripeColorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("stripeColorOverLife"));
+    stripeNoiseUScrollSpeedOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeNoiseUScrollSpeedOverLife"));
+    stripeNoiseVScrollSpeedOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("stripeNoiseVScrollSpeedOverLife"));
+
+    stripeLifetime = 0.0f;
+    const YamlNode* stripeLifetimeNode = node->Get("stripeLifetime");
+    if (stripeLifetimeNode)
+    {
+        stripeLifetime = stripeLifetimeNode->AsFloat();
+    }
+    stripeVertexSpawnStep = 1.0f;
+    const YamlNode* stripeVertexSpawnStepNode = node->Get("stripeVertexSpawnStep");
+    if (stripeVertexSpawnStepNode)
+    {
+        stripeVertexSpawnStep = stripeVertexSpawnStepNode->AsFloat();
+    }
+    stripeStartSize = 0.0f;
+    const YamlNode* stripeStartSizeNode = node->Get("stripeStartSize");
+    if (stripeStartSizeNode)
+    {
+        stripeStartSize = stripeStartSizeNode->AsFloat();
+    }
+    stripeUScrollSpeed = 0.0f;
+    const YamlNode* stripeUScrollSpeedNode = node->Get("stripeUScrollSpeed");
+    if (stripeUScrollSpeedNode)
+    {
+        stripeUScrollSpeed = stripeUScrollSpeedNode->AsFloat();
+    }
+    stripeVScrollSpeed = 0.0f;
+    const YamlNode* stripeVScrollSpeedNode = node->Get("stripeVScrollSpeed");
+    if (stripeVScrollSpeedNode)
+    {
+        stripeVScrollSpeed = stripeVScrollSpeedNode->AsFloat();
+    }
+
+    stripeFadeDistanceFromTop = 0.0f;
+    const YamlNode* stripeFadeDistanceFromTopNode = node->Get("stripeFadeDistanceFromTop");
+    if (stripeFadeDistanceFromTopNode)
+    {
+        stripeFadeDistanceFromTop = stripeFadeDistanceFromTopNode->AsFloat();
+    }
+
     // format processing
     int32 format = 0;
     const YamlNode* formatNode = node->Get("effectFormat");
@@ -396,6 +498,16 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         isLong = longNode->AsBool();
     }
 
+    const YamlNode* useFresToAlphaNode = node->Get("useFresToAlpha");
+    if (useFresToAlphaNode)
+        useFresnelToAlpha = useFresToAlphaNode->AsBool();
+    const YamlNode* fresToAlphaBiasNode = node->Get("fresToAlphaBias");
+    if (fresToAlphaBiasNode)
+        fresnelToAlphaBias = fresToAlphaBiasNode->AsFloat();
+    const YamlNode* fresToAlphaPowerNode = node->Get("fresToAlphaPower");
+    if (fresToAlphaPowerNode)
+        fresnelToAlphaPower = fresToAlphaPowerNode->AsFloat();
+
     const YamlNode* pivotPointNode = node->Get("pivotPoint");
 
     const YamlNode* spriteNode = node->Get("sprite");
@@ -405,6 +517,25 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         FilePath spritePath = configPath.GetDirectory() + spriteNode->AsString();
         SetSprite(spritePath);
     }
+    const YamlNode* flowmapNode = node->Get("flowmap");
+    if (flowmapNode && !flowmapNode->AsString().empty())
+    {
+        FilePath flowPath = configPath.GetDirectory() + flowmapNode->AsString();
+        SetFlowmap(flowPath);
+    }
+    const YamlNode* noiseNode = node->Get("noise");
+    if (noiseNode && !noiseNode->AsString().empty())
+    {
+        FilePath noisePath = configPath.GetDirectory() + noiseNode->AsString();
+        SetNoise(noisePath);
+    }
+    const YamlNode* alphaRemapNode = node->Get("alphaRemap");
+    if (alphaRemapNode && !alphaRemapNode->AsString().empty())
+    {
+        FilePath alphaRemapPath = configPath.GetDirectory() + alphaRemapNode->AsString();
+        SetAlphaRemap(alphaRemapPath);
+    }
+
     if (pivotPointNode)
     {
         Vector2 _pivot = pivotPointNode->AsPoint();
@@ -470,6 +601,30 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         scaleVelocityFactor = scaleVelocityFactorNode->AsFloat();
     }
+
+    alphaRemapLoopCount = 1.0f;
+    const YamlNode* alphaRemapLoopCountNode = node->Get("alphaRemapLoopCount");
+    if (alphaRemapLoopCountNode)
+    {
+        alphaRemapLoopCount = alphaRemapLoopCountNode->AsFloat();
+    }
+
+    alphaRemapOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaRemapOverLife"));
+
+    flowSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeed"));
+    flowSpeedVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowSpeedVariation"));
+    flowOffset = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffset"));
+    flowOffsetVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("flowOffsetVariation"));
+
+    noiseScale = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseScale"));
+    noiseScaleVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseScaleVariation"));
+    noiseScaleOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseScaleOverLife"));
+    noiseUScrollSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseUScrollSpeed"));
+    noiseUScrollSpeedVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseUScrollSpeedVariation"));
+    noiseUScrollSpeedOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseUScrollSpeedOverLife"));
+    noiseVScrollSpeed = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseVScrollSpeed"));
+    noiseVScrollSpeedVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseVScrollSpeedVariation"));
+    noiseVScrollSpeedOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("noiseVScrollSpeedOverLife"));
 
     life = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("life"));
     lifeVariation = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("lifeVariation"));
@@ -595,6 +750,34 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         enableFog = fogNode->AsBool();
     }
+    const YamlNode* enableFlowNode = node->Get("enableFlow");
+    if (enableFlowNode)
+    {
+        enableFlow = enableFlowNode->AsBool();
+    }
+    const YamlNode* enableFlowAnimationNode = node->Get("enableFlowAnimation");
+    if (enableFlowAnimationNode)
+    {
+        enableFlowAnimation = enableFlowAnimationNode->AsBool();
+    }
+
+    const YamlNode* enableNoiseNode = node->Get("enableNoise");
+    if (enableNoiseNode)
+    {
+        enableNoise = enableNoiseNode->AsBool();
+    }
+
+    const YamlNode* useNoiseScrollNode = node->Get("useNoiseScroll");
+    if (useNoiseScrollNode)
+    {
+        enableNoiseScroll = useNoiseScrollNode->AsBool();
+    }
+
+    const YamlNode* enableAlphaRemapNode = node->Get("enableAlphaRemap");
+    if (enableAlphaRemapNode)
+    {
+        enableAlphaRemap = enableAlphaRemapNode->AsBool();
+    }
 
     const YamlNode* frameBlendNode = node->Get("enableFrameBlend");
     if (frameBlendNode)
@@ -638,16 +821,38 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
         loopEndTime = loopEndTimeNode->AsFloat();
 
     /*validate all time depended property lines*/
+    UpdatePropertyLineOnLoad(stripeSizeOverLife.Get(), startTime, endTime);
+
+    UpdatePropertyLineOnLoad(flowSpeed.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(flowSpeedVariation.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(flowOffset.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(flowOffsetVariation.Get(), startTime, endTime);
+
+    UpdatePropertyLineOnLoad(noiseScale.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseScaleVariation.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseScaleOverLife.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseUScrollSpeed.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseUScrollSpeedVariation.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseUScrollSpeedOverLife.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseVScrollSpeed.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseVScrollSpeedVariation.Get(), startTime, endTime);
+    UpdatePropertyLineOnLoad(noiseVScrollSpeedOverLife.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(life.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(lifeVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(number.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(numberVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(size.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(sizeVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(velocity.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(velocityVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(spin.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(spinVariation.Get(), startTime, endTime);
+
     UpdatePropertyLineOnLoad(angle.Get(), startTime, endTime);
     UpdatePropertyLineOnLoad(angleVariation.Get(), startTime, endTime);
 
@@ -656,6 +861,13 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         inheritPosition = inheritPositionNode->AsBool();
     }
+    const YamlNode* stripeInheritPositionForBaseNode = node->Get("stripeInheritPositionForBase");
+    if (stripeInheritPositionForBaseNode)
+        stripeInheritPositionOnlyForBaseVertex = stripeInheritPositionForBaseNode->AsBool();
+
+    const YamlNode* usePerspectiveMappingNode = node->Get("usePerspectiveMapping");
+    if (usePerspectiveMappingNode)
+        usePerspectiveMapping = usePerspectiveMappingNode->AsBool();
 
     // Load the Inner Emitter parameters.
     const YamlNode* innerEmitterPathNode = node->Get("innerEmitterPath");
@@ -674,7 +886,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
             innerEmitterPath = configPath.GetDirectory() + relativePath;
             if (innerEmitterPath == configPath) // prevent recursion
             {
-                Logger::Error("Atempt to load inner emitter from super emitter's config will cause recursion");
+                Logger::Error("Attempt to load inner emitter from super emitter's config will cause recursion");
             }
             else
             {
@@ -722,6 +934,19 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     String layerNodeName = Format("layer%d", layerIndex);
     parentNode->AddNodeToMap(layerNodeName, layerNode);
 
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeSizeOverLifeProp", stripeSizeOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeTextureTileOverLife", stripeTextureTileOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeNoiseUScrollSpeedOverLife", stripeNoiseUScrollSpeedOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "stripeNoiseVScrollSpeedOverLife", stripeNoiseVScrollSpeedOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "stripeColorOverLife", stripeColorOverLife);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeLifetime", stripeLifetime);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVertexSpawnStep", stripeVertexSpawnStep);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeStartSize", stripeStartSize);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeUScrollSpeed", stripeUScrollSpeed);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeVScrollSpeed", stripeVScrollSpeed);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "stripeFadeDistanceFromTop", stripeFadeDistanceFromTop);
+
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "name", layerName);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "type", "layer");
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "layerType",
@@ -732,22 +957,49 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<Vector2>(layerNode, "pivotPoint", layerPivotPoint);
 
-    // Truncate an extension of the sprite file.
-    FilePath savePath = spritePath;
-    if (!savePath.IsEmpty())
-    {
-        savePath.TruncateExtension();
-        String relativePath = savePath.GetRelativePathname(configPath.GetDirectory());
-        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite", relativePath);
-    }
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "useFresToAlpha", useFresnelToAlpha);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaBias", fresnelToAlphaBias);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "fresToAlphaPower", fresnelToAlphaPower);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode(layerNode, "alphaRemapLoopCount", alphaRemapLoopCount);
+
+    SaveSpritePath(spritePath, configPath, layerNode, "sprite");
+    SaveSpritePath(flowmapPath, configPath, layerNode, "flowmap");
+    SaveSpritePath(noisePath, configPath, layerNode, "noise");
+    SaveSpritePath(alphaRemapPath, configPath, layerNode, "alphaRemap");
+
+    layerNode->Add("enableAlphaRemap", enableAlphaRemap);
 
     layerNode->Add("blending", blending);
+
+    layerNode->Add("enableFlow", enableFlow);
+    layerNode->Add("enableFlowAnimation", enableFlowAnimation);
+
+    layerNode->Add("enableNoise", enableNoise);
+    layerNode->Add("useNoiseScroll", enableNoiseScroll);
 
     layerNode->Add("enableFog", enableFog);
     layerNode->Add("enableFrameBlend", enableFrameBlend);
 
     layerNode->Add("scaleVelocityBase", scaleVelocityBase);
     layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaRemapOverLife", this->alphaRemapOverLife);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeed);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeedVariation", this->flowSpeedVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffset", this->flowOffset);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowOffsetVariation", this->flowOffsetVariation);
+
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseScale", this->noiseScale);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseScaleVariation", this->noiseScaleVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseScaleOverLife", this->noiseScaleOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseUScrollSpeed", this->noiseUScrollSpeed);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseUScrollSpeedVariation", this->noiseUScrollSpeedVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseUScrollSpeedOverLife", this->noiseUScrollSpeedOverLife);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseVScrollSpeed", this->noiseVScrollSpeed);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseVScrollSpeedVariation", this->noiseVScrollSpeedVariation);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "noiseVScrollSpeedOverLife", this->noiseVScrollSpeedOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "life", this->life);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "lifeVariation", this->lifeVariation);
@@ -790,6 +1042,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "loopEndTime", this->loopEndTime);
 
     layerNode->Set("inheritPosition", inheritPosition);
+    layerNode->Set("stripeInheritPositionForBase", stripeInheritPositionOnlyForBaseVertex);
+    layerNode->Set("usePerspectiveMapping", usePerspectiveMapping);
 
     layerNode->Set("particleOrientation", particleOrientation);
 
@@ -808,6 +1062,16 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
 
     // Now write the forces.
     SaveForcesToYamlNode(layerNode);
+}
+
+void ParticleLayer::SaveSpritePath(FilePath& path, const FilePath& configPath, YamlNode* layerNode, std::string name)
+{
+    if (!path.IsEmpty())
+    {
+        path.TruncateExtension();
+        String relativePath = path.GetRelativePathname(configPath.GetDirectory());
+        PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, name, relativePath);
+    }
 }
 
 void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
@@ -834,6 +1098,27 @@ void ParticleLayer::SaveForcesToYamlNode(YamlNode* layerNode)
 
 void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
 {
+    PropertyLineHelper::AddIfModifiable(stripeSizeOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(stripeTextureTileOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(stripeNoiseUScrollSpeedOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(stripeNoiseVScrollSpeedOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(stripeColorOverLife.Get(), modifiables);
+
+    PropertyLineHelper::AddIfModifiable(alphaRemapOverLife.Get(), modifiables);
+
+    PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(flowSpeedVariation.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(flowOffset.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(flowOffsetVariation.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseScale.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseScaleVariation.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseScaleOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseUScrollSpeed.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseUScrollSpeedVariation.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseUScrollSpeedOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseVScrollSpeed.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseVScrollSpeedVariation.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(noiseVScrollSpeedOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(life.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(lifeVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(number.Get(), modifiables);

@@ -1,4 +1,6 @@
 #include "UI/RichContent/UIRichContentComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 
@@ -14,6 +16,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentComponent)
     .Field("classesInheritance", &UIRichContentComponent::GetClassesInheritance, &UIRichContentComponent::SetClassesInheritance)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIRichContentComponent);
 
 UIRichContentComponent::UIRichContentComponent(const UIRichContentComponent& src)
     : UIComponent(src)

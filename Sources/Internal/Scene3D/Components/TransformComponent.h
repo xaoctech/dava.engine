@@ -36,13 +36,6 @@ private:
 
     friend class TransformSystem;
 
-public:
-    INTROSPECTION_EXTEND(TransformComponent, Component,
-                         MEMBER(localMatrix, "Local Transform", I_SAVE | I_VIEW)
-                         MEMBER(worldMatrix, "World Transform", I_SAVE | I_VIEW)
-                         MEMBER(parentMatrix, "Parent Matrix", I_SAVE)
-                         )
-
     DAVA_VIRTUAL_REFLECTION(TransformComponent, Component);
 };
 

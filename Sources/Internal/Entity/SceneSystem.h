@@ -85,6 +85,12 @@ public:
     virtual void SceneDidLoaded();
 
     /**
+        /brief This function is called before system will be removed from scene
+               instead of unregister all scene's entities.
+    */
+    virtual void PrepareForRemove() = 0;
+
+    /**
         \brief This function is called when event is fired to this system.
         \param[in] entity entity fired an event.
         \param[in] event event id for this event.

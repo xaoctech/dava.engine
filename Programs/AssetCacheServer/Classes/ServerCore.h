@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Tools/AssetCache/ServerNetProxy.h>
-#include <Tools/AssetCache/ClientNetProxy.h>
+#include <DavaTools/AssetCache/ServerNetProxy.h>
+#include <DavaTools/AssetCache/ClientNetProxy.h>
 
-#include "AssetCacheHttpServer.h"
 #include "ServerLogics.h"
 #include "ApplicationSettings.h"
 #include "SharedDataRequester.h"
@@ -15,12 +14,12 @@ class QTimer;
 
 class ServerCore : public QObject,
                    public DAVA::AssetCache::ClientNetProxyListener,
-                   public CacheDBOwner,
-                   public AssetCacheHttpServerListener
+                   public CacheDBOwner
 {
     Q_OBJECT
 
     static const DAVA::uint32 UPDATE_INTERVAL_MS = 16;
+    static const DAVA::uint32 LAZY_UPDATE_INTERVAL_MS = 500;
     static const DAVA::uint32 CONNECT_TIMEOUT_SEC = 1;
     static const DAVA::uint32 CONNECT_REATTEMPT_WAIT_SEC = 5;
     static const DAVA::uint32 SHARED_UPDATE_INTERVAL_SEC = 3;
@@ -67,9 +66,6 @@ public:
     // CacheDBOwner
     void OnStorageSizeChanged(DAVA::uint64 occupied, DAVA::uint64 overall) override;
 
-    // AssetCacheHttpServerListener
-    void OnStatusRequested(ClientID clientId) override;
-
 signals:
     void ServerStateChanged(const ServerCore* serverCore) const;
     void StorageSizeChanged(DAVA::uint64 occupied, DAVA::uint64 overall) const;
@@ -83,6 +79,7 @@ private slots:
     void OnSharedDataReceived(const DAVA::List<SharedPoolParams>& pools, const DAVA::List<SharedServerParams>& servers);
     void OnSettingsUpdated(const ApplicationSettings* settings);
     void OnRefreshTimer();
+    void OnLazyUpdateTimer();
     void OnConnectTimeout();
     void OnReattemptTimer();
     void ReconnectAsynchronously();
@@ -108,7 +105,6 @@ private:
     CompareResult CompareWithRemoteList(const DAVA::List<RemoteServerParams>& updatedRemotesList);
 
 private:
-    AssetCacheHttpServer httpServer;
     DAVA::AssetCache::ServerNetProxy serverProxy;
     DAVA::AssetCache::ClientNetProxy clientProxy;
     CacheDB dataBase;
@@ -129,6 +125,7 @@ private:
     SharedDataRequester sharedDataRequester;
 
     QTimer* updateTimer = nullptr;
+    QTimer* lazyUpdateTimer = nullptr;
     QTimer* connectTimer = nullptr;
     QTimer* reconnectWaitTimer = nullptr;
     QTimer* sharedDataUpdateTimer = nullptr;

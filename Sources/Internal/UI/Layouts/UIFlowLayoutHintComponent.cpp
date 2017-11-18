@@ -1,4 +1,6 @@
 #include "UI/Layouts/UIFlowLayoutHintComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "UI/UIControl.h"
@@ -18,6 +20,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutHintComponent)
     .Field("contentDirection", &UIFlowLayoutHintComponent::GetContentDirection, &UIFlowLayoutHintComponent::SetContentDirection)[M::EnumT<BiDiHelper::Direction>()]
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UIFlowLayoutHintComponent);
 
 UIFlowLayoutHintComponent::UIFlowLayoutHintComponent()
 {
@@ -78,6 +82,28 @@ bool UIFlowLayoutHintComponent::IsStickItemAfterThis() const
 void UIFlowLayoutHintComponent::SetStickItemAfterThis(bool flag)
 {
     flags.set(FLAG_STICK_ITEM_AFTER_THIS, flag);
+    SetLayoutDirty();
+}
+
+bool UIFlowLayoutHintComponent::IsStickHardBeforeThis() const
+{
+    return flags.test(FLAG_STICK_HARD_BEFORE_THIS);
+}
+
+void UIFlowLayoutHintComponent::SetStickHardBeforeThis(bool flag)
+{
+    flags.set(FLAG_STICK_HARD_BEFORE_THIS, flag);
+    SetLayoutDirty();
+}
+
+bool UIFlowLayoutHintComponent::IsStickHardAfterThis() const
+{
+    return flags.test(FLAG_STICK_HARD_AFTER_THIS);
+}
+
+void UIFlowLayoutHintComponent::SetStickHardAfterThis(bool flag)
+{
+    flags.set(FLAG_STICK_HARD_AFTER_THIS, flag);
     SetLayoutDirty();
 }
 

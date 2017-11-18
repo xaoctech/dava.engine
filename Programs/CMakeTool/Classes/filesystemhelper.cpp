@@ -89,9 +89,9 @@ QString FileSystemHelper::FindCMakeBin(const QString& path, const QString& frame
     QString davaPath = path.left(index + frameworkDirName.length());
     QString cmakePath = davaPath + "/Bin" +
 #ifdef Q_OS_MAC
-    "/CMake.app/Contents/bin/cmake";
+    "/CMakeMac/CMake.app/Contents/bin/cmake";
 #elif defined Q_OS_WIN
-    "/cmake/bin/cmake.exe";
+    "/CMakeWin32/bin/cmake.exe";
 #endif //Q_OS_MAC Q_OS_WIN
     if (!QFile::exists(cmakePath))
     {

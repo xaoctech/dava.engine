@@ -1,4 +1,6 @@
 #include "UISoundComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -14,6 +16,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISoundComponent)
     .Field("valueChanged", &UISoundComponent::GetOnValueChangedSoundEventName, &UISoundComponent::SetOnValueChangedSoundEventName)
     .End();
 }
+
+IMPLEMENT_UI_COMPONENT(UISoundComponent);
 
 UISoundComponent::UISoundComponent()
 {

@@ -11,6 +11,10 @@ class SceneGridSystem : public DAVA::SceneSystem, public EditorSceneSystem
 public:
     SceneGridSystem(DAVA::Scene* scene);
 
+    void PrepareForRemove() override
+    {
+    }
+
 protected:
     void Draw() override;
 };

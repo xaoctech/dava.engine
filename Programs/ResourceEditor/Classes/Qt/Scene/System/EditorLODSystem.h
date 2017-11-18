@@ -105,6 +105,7 @@ public:
     void RemoveEntity(DAVA::Entity* entity) override;
     void AddComponent(DAVA::Entity* entity, DAVA::Component* component) override;
     void RemoveComponent(DAVA::Entity* entity, DAVA::Component* component) override;
+    void PrepareForRemove() override;
 
     void Process(DAVA::float32 timeElapsed) override;
 

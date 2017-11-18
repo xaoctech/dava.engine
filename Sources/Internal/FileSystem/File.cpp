@@ -5,10 +5,11 @@
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/FileAPIHelper.h"
 #include "FileSystem/FileSystem.h"
+#include "FileSystem/FileSystemDelegate.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/CheckIOError.h"
 #include "FileSystem/ResourceArchive.h"
-#include "Platform/TemplateAndroid/AssetsManagerAndroid.h"
+#include "Engine/Private/Android/AssetsManagerAndroid.h"
 
 #include "Compression/LZ4Compressor.h"
 #include "Concurrency/LockGuard.h"
@@ -86,6 +87,42 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     {
         return nullptr;
     }
+
+    //Tags
+    FileSystem* fs = FileSystem::Instance();
+    FileSystemDelegate* fsDelegate = fs->GetDelegate();
+    if (fsDelegate != nullptr)
+    { // hooked check: can we continue work with file?
+        String path = filename.GetAbsolutePathname();
+        if (fsDelegate->CanCreateFile(path, attributes) == false)
+        {
+            return nullptr;
+        }
+    }
+
+    if (!(attributes & (WRITE | CREATE | APPEND)) && fs->filenamesTag.empty() == false)
+    {
+        FilePath taggedFilename = filename;
+        String basename = filename.GetBasename();
+        String::size_type pointPos = basename.find(".");
+        if (pointPos == String::npos)
+        { // ... any file
+            taggedFilename.ReplaceBasename(basename + fs->filenamesTag);
+        }
+        else
+        { // ... texture.PowerVR_iOS.pvr
+            basename.insert(pointPos, fs->filenamesTag);
+            taggedFilename.ReplaceBasename(basename);
+        }
+
+        File* result = PureCreate(taggedFilename, attributes);
+        if (result != nullptr)
+        {
+            result->filename = filename;
+            return result;
+        }
+    }
+    //end of tags
 
     File* result = PureCreate(filename, attributes);
     if (result != nullptr)
@@ -634,13 +671,10 @@ String File::GetModificationDate(const FilePath& filePathname)
     int32 ret = stat(realPathname.c_str(), &fileInfo);
     if (0 == ret)
     {
-#if defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_LINUX__)
-        tm* utcTime = gmtime(&fileInfo.st_mtime);
-#elif defined(__DAVAENGINE_ANDROID__)
-        time_t st_mtime = static_cast<time_t>(fileInfo.st_mtime);
-        tm* utcTime = gmtime(&st_mtime);
-#elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_IPHONE__)
         tm* utcTime = gmtime(&fileInfo.st_mtimespec.tv_sec);
+#else
+        tm* utcTime = gmtime(&fileInfo.st_mtime);
 #endif
         return String(Format("%04d.%02d.%02d %02d:%02d:%02d",
                              utcTime->tm_year + 1900, utcTime->tm_mon + 1, utcTime->tm_mday,

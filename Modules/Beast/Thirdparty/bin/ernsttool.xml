@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<iltool version="1">
+    <tool id="9ebd39b3-8dac-42ab-9f02-7bc7f825599a">
+        <impl osFamily="windows" bitness="64" minVersion="5.0.0" main="5dd29a44-b1c8-4b15-a648-e3270e00853c">
+            <file id="5dd29a44-b1c8-4b15-a648-e3270e00853c">
+                <![CDATA[ernsttool-64.exe]]>
+</file>
+        </impl>
+        <impl osFamily="windows" bitness="32" minVersion="5.0.0" main="bcfcf99d-8f6f-492d-ba11-7b2128fd942d">
+            <file id="bcfcf99d-8f6f-492d-ba11-7b2128fd942d">
+                <![CDATA[ernsttool-32.exe]]>
+</file>
+        </impl>
+    </tool>
+</iltool>

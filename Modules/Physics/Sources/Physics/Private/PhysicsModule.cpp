@@ -8,6 +8,13 @@
 #include "Physics/MeshShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
 #include "Physics/HeightFieldShapeComponent.h"
+#include "Physics/VehicleCarComponent.h"
+#include "Physics/VehicleTankComponent.h"
+#include "Physics/VehicleChassisComponent.h"
+#include "Physics/VehicleWheelComponent.h"
+#include "Physics/BoxCharacterControllerComponent.h"
+#include "Physics/CapsuleCharacterControllerComponent.h"
+#include "Physics/WASDPhysicsControllerComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/Private/PhysicsMath.h"
 
@@ -30,7 +37,7 @@ namespace PhysicsModuleDetail
 {
 physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return nullptr;
@@ -51,7 +58,7 @@ physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 
 void ReleasePvd()
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return;
@@ -160,6 +167,29 @@ PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
+
+    bodyComponents.reserve(2);
+    bodyComponents.push_back(Component::STATIC_BODY_COMPONENT);
+    bodyComponents.push_back(Component::DYNAMIC_BODY_COMPONENT);
+
+    shapeComponents.reserve(7);
+    shapeComponents.push_back(Component::BOX_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::CAPSULE_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::SPHERE_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::PLANE_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::MESH_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::CONVEX_HULL_SHAPE_COMPONENT);
+    shapeComponents.push_back(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
+
+    vehicleComponents.reserve(4);
+    vehicleComponents.push_back(Component::VEHICLE_CAR_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_TANK_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_CHASSIS_COMPONENT);
+    vehicleComponents.push_back(Component::VEHICLE_WHEEL_COMPONENT);
+
+    characterControllerComponents.reserve(2);
+    characterControllerComponents.push_back(Component::BOX_CHARACTER_CONTROLLER_COMPONENT);
+    characterControllerComponents.push_back(Component::CAPSULE_CHARACTER_CONTROLLER_COMPONENT);
 }
 
 void PhysicsModule::Init()
@@ -184,6 +214,10 @@ void PhysicsModule::Init()
     cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, cookingParams);
     DVASSERT(cooking);
 
+    PxInitVehicleSDK(*physics);
+    PxVehicleSetBasisVectors(PxVec3(0.0f, 0.0f, 1.0f), PxVec3(1.0f, 0.0f, 0.0f));
+    PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+
     static PhysicsModuleDetail::AssertHandler assertHandler;
     PxSetAssertHandler(assertHandler);
 
@@ -196,10 +230,29 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConvexHullShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleCarComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleTankComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleChassisComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleWheelComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxCharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleCharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WASDPhysicsControllerComponent);
 }
 
 void PhysicsModule::Shutdown()
 {
+    physx::PxCloseVehicleSDK();
+
+    if (defaultMaterial != nullptr)
+    {
+        defaultMaterial->release();
+    }
+
+    if (cpuDispatcher != nullptr)
+    {
+        cpuDispatcher->release();
+    }
+
     cooking->release();
     physics->release();
     PhysicsModuleDetail::ReleasePvd(); // PxPvd should be released between PxPhysics and PxFoundation
@@ -236,7 +289,10 @@ physx::PxScene* PhysicsModule::CreateScene(const PhysicsSceneConfig& config, phy
     sceneDesc.filterShader = filterShader;
     sceneDesc.simulationEventCallback = callback;
 
-    PxDefaultCpuDispatcher* cpuDispatcher = PxDefaultCpuDispatcherCreate(config.threadCount);
+    if (cpuDispatcher == nullptr)
+    {
+        cpuDispatcher = PxDefaultCpuDispatcherCreate(config.threadCount);
+    }
     DVASSERT(cpuDispatcher);
     sceneDesc.cpuDispatcher = cpuDispatcher;
 
@@ -431,6 +487,31 @@ physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
     }
 
     return defaultMaterial;
+}
+
+physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
+{
+    return allocator;
+}
+
+const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
+{
+    return bodyComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
+{
+    return shapeComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetVehicleComponentTypes() const
+{
+    return vehicleComponents;
+}
+
+const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
+{
+    return characterControllerComponents;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsModule)

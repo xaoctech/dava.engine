@@ -1,10 +1,9 @@
-#ifndef __DAVAENGINE_FLOW_LAYOUT_ALGORITHM_H__
-#define __DAVAENGINE_FLOW_LAYOUT_ALGORITHM_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Math/Vector.h"
-
-#include "ControlLayoutData.h"
+#include "UI/Layouts/Private/ControlLayoutData.h"
+#include "UI/Layouts/Private/Layouter.h"
 
 namespace DAVA
 {
@@ -15,7 +14,7 @@ class UISizePolicyComponent;
 class FlowLayoutAlgorithm
 {
 public:
-    FlowLayoutAlgorithm(Vector<ControlLayoutData>& layoutData_, bool isRtl_);
+    FlowLayoutAlgorithm(Layouter& layouter);
     ~FlowLayoutAlgorithm();
 
     void Apply(ControlLayoutData& data, Vector2::eAxis axis);
@@ -37,8 +36,7 @@ private:
     void SortLineItemsByContentDirection(int32 firstIndex, int32 lastIndex, List<uint32>& order, int32& realLastIndex);
 
 private:
-    Vector<ControlLayoutData>& layoutData;
-    const bool isRtl;
+    Layouter& layouter;
 
     bool inverse = false;
     bool skipInvisible = true;
@@ -55,6 +53,3 @@ private:
     bool dynamicVerticalSpacing = false;
 };
 }
-
-
-#endif //__DAVAENGINE_FLOW_LAYOUT_ALGORITHM_H__

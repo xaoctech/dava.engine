@@ -32,10 +32,11 @@ public:
     TextDrawSystem(DAVA::Scene* scene, SceneCameraSystem* cameraSystem);
     ~TextDrawSystem();
 
+    void PrepareForRemove() override;
     DAVA::Vector2 ToPos2d(const DAVA::Vector3& pos3d) const;
 
-    void DrawText(DAVA::int32 x, DAVA::int32 y, const DAVA::String& text, const DAVA::Color& color, Align align = Align::TopLeft);
     void DrawText(const DAVA::Vector2& pos2d, const DAVA::String& text, const DAVA::Color& color, Align align = Align::TopLeft);
+    void DrawText(const DAVA::Vector2& pos2d, const DAVA::WideString& text, const DAVA::Color& color, DAVA::float32 fontSize, Align align = Align::TopLeft);
 
     DAVA::GraphicFont* GetFont() const;
 
@@ -44,18 +45,20 @@ protected:
 
     struct TextToDraw
     {
-        TextToDraw(DAVA::Vector2 _pos, const DAVA::String& _text, const DAVA::Color& _color, Align _align)
-            : pos(_pos)
-            , text(_text)
-            , color(_color)
-            , align(_align)
+        TextToDraw(const DAVA::Vector2& pos_, const DAVA::WideString& text_, const DAVA::Color& color_, Align align_, DAVA::float32 fontSize_)
+            : pos(pos_)
+            , text(text_)
+            , color(color_)
+            , align(align_)
+            , fontSize(fontSize_)
         {
         }
 
         DAVA::Vector2 pos;
-        DAVA::String text;
+        DAVA::WideString text;
         DAVA::Color color;
-        Align align;
+        Align align = Align::TopLeft;
+        DAVA::float32 fontSize = 10.f;
     };
 
     using GraphicFontVertexVector = DAVA::Vector<DAVA::GraphicFont::GraphicFontVertex>;

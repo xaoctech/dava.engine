@@ -28,7 +28,7 @@ protected:
     void OnRenderSystemInitialized(DAVA::Window* w) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
     bool ControlWindowClosing(const DAVA::TArc::WindowKey& key, QCloseEvent* event) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
@@ -43,6 +43,7 @@ private:
     void RegisterOperations();
 
     /// Action and operation handlers
+    void CreateFirstScene();
     void CreateNewScene();
     void OpenScene();
     void OpenSceneQuckly();
@@ -53,7 +54,8 @@ private:
     void SaveSceneToFolder(bool compressedTextures);
     void ExportScene();
     void CloseAllScenes(bool needSavingReqiest);
-    void ReloadTextures(DAVA::eGPUFamily gpu);
+    void ReloadAllTextures(DAVA::eGPUFamily gpu);
+    void ReloadTextures(DAVA::Vector<DAVA::Texture*> textures);
 
     /// Fields value handlers
     void OnProjectPathChanged(const DAVA::Any& projectPath);
@@ -77,6 +79,10 @@ private:
     bool SaveSceneImpl(DAVA::RefPtr<SceneEditor2> scene, const DAVA::FilePath& scenePath = DAVA::FilePath());
     DAVA::FilePath GetSceneSavePath(const DAVA::RefPtr<SceneEditor2>& scene);
 
+    void GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
+                               DAVA::FilePath& fileName, bool sceneIsTemp = false);
+    void CreateSceneProperties(SceneData* const data, bool sceneIsTemp = false);
+
     /// scene->SaveEmitters() would call this function if emitter to save didn't have path
     DAVA::FilePath SaveEmitterFallback(const DAVA::String& entityName, const DAVA::String& emitterName);
     bool IsSceneCompatible(const DAVA::FilePath& scenePath);
@@ -91,6 +97,8 @@ private:
     bool IsValidMimeData(QDropEvent* event);
     void DeleteSelection();
     void MoveToSelection();
+
+    bool SaveToFolderAvailable() const;
 
 private:
     DAVA::TArc::QtConnections connections;
@@ -108,6 +116,7 @@ private:
     {
         DAVA::ReflectionRegistrator<SceneManagerModule>::Begin()
         .ConstructorByPointer()
+        .Field("saveToFolderAvailable", &SceneManagerModule::SaveToFolderAvailable, nullptr)
         .End();
     }
 };

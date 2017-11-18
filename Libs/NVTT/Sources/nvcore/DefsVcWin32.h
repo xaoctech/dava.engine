@@ -18,7 +18,8 @@
 #define NV_CONST
 
 // Set standard function names.
-#ifndef POSH_OS_WIN_STORE
+// Visual Studio 2015 and later already has snprintf defined
+#if !defined(POSH_OS_WIN_STORE) && _MSC_VER < 1900
 #   define snprintf _snprintf
 #endif
 #if _MSC_VER < 1500

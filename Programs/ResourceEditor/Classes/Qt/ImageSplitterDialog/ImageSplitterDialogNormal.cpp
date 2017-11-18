@@ -1,5 +1,8 @@
 #include "ImageSplitterDialog/ImageSplitterDialogNormal.h"
 
+#include "Classes/Application/REGlobal.h"
+#include "Classes/SceneManager/SceneData.h"
+
 #include "Render/PixelFormatDescriptor.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -37,7 +40,13 @@ ImageSplitterDialogNormal::~ImageSplitterDialogNormal()
 
 void ImageSplitterDialogNormal::OnSaveClicked()
 {
-    SceneEditor2* scene = sceneHolder.GetScene();
+    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    if (data == nullptr || data->GetScene().Get() == nullptr)
+    {
+        return;
+    }
+
+    SceneEditor2* scene = data->GetScene().Get();
     DAVA::Landscape* landscape = nullptr;
     if (scene != nullptr)
     {

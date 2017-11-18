@@ -1,0 +1,1624 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples/code/liveernst/liveernst.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples_2code_2liveernst_2liveernst_8cpp-example.html','api_examples_2code_2liveernst_2liveernst_8cpp_example_html34e9ca54-182d-48b8-ac14-e93bfc96834f','index.html',location.hash); javascript:initPage('API: examples/code/liveernst/liveernst.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples_2code_2liveernst_2liveernst_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples/code/liveernst/liveernst.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples/code/liveernst/liveernst.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">examples/code/liveernst/liveernst.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="comment">/*</span>
+<span class="comment">Beast API Sample: Live Ernst example</span>
+
+<span class=
+"comment">The purpose of this sample is to demonstrate how to:</span>
+<span class="comment">1. Start a live session in eRnsT</span>
+<span class=
+"comment">2. Change the properties of light sources</span>
+<span class=
+"comment">3. Receive the generated light maps back from Ernst</span>
+<span class="comment">*/</span>
+
+<span class=
+"preprocessor">#define _USE_MATH_DEFINES // for M_PI</span>
+<span class="preprocessor">#include &lt;math.h&gt;</span>
+
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+<span class="preprocessor">#include &lt;fstream&gt;</span>
+<span class="preprocessor">#include &lt;iostream&gt;</span>
+<span class="preprocessor">#include &lt;map&gt;</span>
+<span class="preprocessor">#include &lt;limits&gt;</span>
+
+<span class="preprocessor">#include "objreader.h"</span>
+<span class="preprocessor">#include "primitives.h"</span>
+<span class="preprocessor">#include "textures.h"</span>
+<span class="preprocessor">#include "xmlwriter.h"</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beaststring_8h.html" title=
+"Beast strings is objects encapsulating strings returned from Beast API functions.">beastapi/beaststring.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastapi/beastutils.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmanager_8h.html" title=
+"The beast manager is the core object for all interaction with the Beast API.">beastapi/beastmanager.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastscene_8h.html" title=
+"The api for specifying scenes in beast.">beastapi/beastscene.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastinstance_8h.html" title=
+"The api for specifying instances of meshes in Beast.">beastapi/beastinstance.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastlightsource_8h.html" title=
+"The api for specifying light sources in beast.">beastapi/beastlightsource.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastcamera_8h.html" title=
+"The beast camera function definitions.">beastapi/beastcamera.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmaterial_8h.html" title=
+"The api for specifying materials in beast.">beastapi/beastmaterial.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttarget_8h.html" title=
+"The target definitions.">beastapi/beasttarget.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastrenderpass_8h.html" title=
+"Render Pass specification.">beastapi/beastrenderpass.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttargetentity_8h.html" title=
+"Target entities, the relationship between an instance and a bake target.">beastapi/beasttargetentity.h</a>&gt;</span>
+
+<span class=
+"comment">// Make sure we have a unicode safe cout define</span>
+<span class="preprocessor">#ifdef UNICODE</span>
+<span class="preprocessor">#define tcout std::wcout</span>
+<span class="preprocessor">#else</span>
+<span class="preprocessor">#define tcout std::cout</span>
+<span class="preprocessor">#endif</span>
+
+<span class="keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> SPHERES = 50;
+<span class="keyword">const</span> <span class=
+"keywordtype">float</span> SPHERE_RADIUS = 1.0f;
+
+<span class="keyword">static</span> <a name="_a0"></a><a class=
+"code" href="struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> constructMesh(<span class="keyword">const</span> bex::tstring&amp; name, <span class="keyword">const</span> std::vector&lt;bex::Vec3&gt;&amp; vertices, <span class="keyword">const</span> std::vector&lt;bex::Vec3&gt;&amp; normals, <span class="keyword">const</span> std::vector&lt;bex::Vec2&gt;&amp; uvs, bex::tstring mat, <a name="_a1"></a><a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> manager) {
+        <a class="code" href="struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh;
+        bex::apiCall(<a name="a2"></a><a class="code" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b" title=
+"Begins creation of a mesh.">ILBBeginMesh</a>(manager, name.c_str(), &amp;mesh));
+        bex::apiCall(<a name="a3"></a><a class="code" href=
+"beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073" title=
+"Adds a chunk of vertex data to a mesh.">ILBAddVertexData</a>(mesh, &amp;vertices[0], &amp;normals[0], static_cast&lt;int32&gt;(vertices.size())));
+        bex::apiCall(<a name="a4"></a><a class="code" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051" title=
+"Begins a material group.">ILBBeginMaterialGroup</a>(mesh, mat.c_str()));
+        std::vector&lt;int32&gt; indices;
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">size_t</span> idx=0; idx &lt; vertices.size(); idx++) {
+                indices.push_back((int32)idx);
+        }
+        bex::apiCall(<a name="a5"></a><a class="code" href=
+"beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a" title=
+"Add triangles to a material group.">ILBAddTriangleData</a>(mesh, &amp;indices[0], static_cast&lt;int32&gt;(indices.size())));
+        bex::apiCall(<a name="a6"></a><a class="code" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca" title=
+"End a material group.">ILBEndMaterialGroup</a>(mesh));
+        bex::apiCall(<a name="a7"></a><a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv1"</span>)));
+        bex::apiCall(<a name="a8"></a><a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvs[0], static_cast&lt;int32&gt;(uvs.size())));
+        bex::apiCall(<a name="a9"></a><a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+        bex::apiCall(<a name="a10"></a><a class="code" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987" title=
+"Finalizes a mesh.">ILBEndMesh</a>(mesh));
+
+        <span class="keywordflow">return</span> mesh; 
+}
+
+<span class="keyword">class </span>TargetEntity {
+<span class="keyword">public</span>:
+        TargetEntity(bex::Matrix4x4 transform, <a class="code"
+href="struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh, <span class="keyword">const</span> bex::tstring&amp; name, <a class="code"
+href="beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7"
+title=
+"Describes what kind of baking a target entity is using.">ILBTargetEntityType</a> type, int32 width=0, int32 height=0) :
+                m_transform(transform),
+                m_mesh(mesh),
+                m_name(name.c_str()),
+                m_type(type),
+                m_width(width),
+                m_height(height)
+        {
+        }
+
+        <span class=
+"keyword">const</span> bex::tstring&amp; getName()<span class=
+"keyword"> const </span>{
+                <span class="keywordflow">return</span> m_name;
+        }
+
+        <span class="keywordtype">void</span> update(<a class=
+"code" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7"
+title="Describes what kind of baking a target entity is using.">ILBTargetEntityType</a> type, int32 width, int32 height) {
+                m_type = type;
+                m_width = width;
+                m_height = height;
+        }
+
+        <span class="keywordtype">void</span> createScene(<a name=
+"_a11"></a><a class="code" href="struct_i_l_b_scene_handle.html"
+title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                bex::apiCall(<a name="a12"></a><a class="code"
+href="beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470"
+title=
+"Add an instance to the scene.">ILBCreateInstance</a>(scene, m_mesh, m_name.c_str(), &amp;m_transform, &amp;m_instance));
+                bex::apiCall(<a name="a13"></a><a class="code"
+href="beastinstance_8h.html#a63eb0787eae630d1a6d3f4c47edebdfc"
+title=
+"Sets render stats on an instance.">ILBSetRenderStats</a>(m_instance, <a name="a14"></a><a class="code"
+href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ead9aef204c9d56f7b42450345f5a829a1"
+title=
+"If enabled shadow rays will be biased in order to get smooth shadows on smoothed meshes.">ILB_RS_SHADOW_BIAS</a>, <a name="a15"></a><a class="code"
+href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0a27e3cdfab5d04d0f974dd223c395294a"
+title=
+"Sets the render stats supplied to true.">ILB_RSOP_ENABLE</a>));
+        }
+
+        <span class="keywordtype">void</span> create(<a name=
+"_a16"></a><a class="code" href="struct_i_l_b_target_handle.html"
+title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> objVertexTarget, <a class="code"
+href="struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> objAtlasTarget)<span class="keyword"> const </span>{
+                <a name="_a17"></a><a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> objEntity;
+                <span class=
+"keywordflow">if</span> (m_type == <a name="a18"></a><a class=
+"code" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7aa05422efdd87ef30541164f6cad73ce0"
+title="Vertex baking.">ILB_TT_VERTEX</a>) {
+                        bex::apiCall(<a name="a19"></a><a class=
+"code" href="beasttarget_8h.html#a03e7ae4191ae2af374e373220df6a240"
+title=
+"Adds an instance to bake to a texture or vertex bake target.">ILBAddBakeInstance</a>(objVertexTarget, m_instance, &amp;objEntity));
+                } <span class=
+"keywordflow">else</span> <span class="keywordflow">if</span> (m_type == <a name="a20"></a><a class="code"
+href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7abcb361095b616cd31a1c738b009c3fc5"
+title="Texture baking.">ILB_TT_TEXTURE</a>) {  
+                        bex::apiCall(<a class="code" href=
+"beasttarget_8h.html#a03e7ae4191ae2af374e373220df6a240" title=
+"Adds an instance to bake to a texture or vertex bake target.">ILBAddBakeInstance</a>(objAtlasTarget, m_instance, &amp;objEntity));
+                        <span class=
+"keywordflow">if</span> (m_width &gt; 0 &amp;&amp; m_height &gt; 0) {
+                                bex::apiCall(<a name=
+"a21"></a><a class="code" href=
+"beasttargetentity_8h.html#af8cdbd10b4318b8a8788091cc3fbd8cf"
+title="Sets the requested resolution for the target entity.">ILBSetBakeResolution</a>(objEntity, m_width, m_height));
+                        }
+                }
+        }
+
+<span class="keyword">private</span>:
+        bex::Matrix4x4 m_transform;
+        <a class="code" href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7"
+title="Describes what kind of baking a target entity is using.">ILBTargetEntityType</a> m_type;
+        <a name="_a22"></a><a class="code" href=
+"struct_i_l_b_instance_handle.html" title=
+"Handle for Beast instance Intentionally hidden implementation.">ILBInstanceHandle</a> m_instance;
+        <a class="code" href="struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> m_mesh;
+        bex::tstring m_name;
+        int32 m_width;
+        int32 m_height;
+};
+
+<span class="keyword">class </span>TargetManager {
+<span class="keyword">private</span>:
+        <span class=
+"keyword">typedef</span> std::map&lt;bex::tstring, TargetEntity*&gt; TargetMap;
+<span class="keyword">public</span>:
+        ~TargetManager() {
+                TargetMap::iterator it = m_targets.begin();
+                <span class=
+"keywordflow">for</span> (;it != m_targets.end(); it++) {
+                        <span class=
+"keyword">delete</span> it-&gt;second;
+                }
+        }
+
+        <span class=
+"keywordtype">void</span> addTarget(TargetEntity* target) {
+                TargetMap::iterator it = m_targets.find(target-&gt;getName());
+                <span class=
+"keywordflow">if</span> (it != m_targets.end()) {
+                        <span class=
+"keyword">delete</span> it-&gt;second;
+                        m_targets.erase(it);
+                }
+                m_targets[target-&gt;getName()] = target;
+        }
+
+        <span class="keywordtype">void</span> update(<span class=
+"keyword">const</span> bex::tstring&amp; name, <a class="code"
+href="beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7"
+title=
+"Describes what kind of baking a target entity is using.">ILBTargetEntityType</a> type, int32 width, int32 height) {
+                TargetMap::iterator it = m_targets.find(name);
+                <span class=
+"keywordflow">if</span> (it != m_targets.end()) {
+                        it-&gt;second-&gt;update(type, width, height);
+                }
+        }
+
+        <span class="keywordtype">void</span> createScene(<a class=
+"code" href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                TargetMap::const_iterator it = m_targets.begin();
+                <span class=
+"keywordflow">for</span> (;it != m_targets.end(); it++) {
+                        it-&gt;second-&gt;createScene(scene);
+                }
+        }
+
+        <span class="keywordtype">void</span> create(<a name=
+"_a23"></a><a class="code" href="struct_i_l_b_job_handle.html"
+title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job)<span class="keyword"> const </span>{
+                <a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> objVertexTarget;
+                <a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> objAtlasTarget;
+                bex::apiCall(<a name="a24"></a><a class="code"
+href="beasttarget_8h.html#a02a3067604f5ac729d6ddf533fc3c3a2" title=
+"Adds a vertex baking target.">ILBCreateVertexTarget</a>(job, _T(<span class="stringliteral">"objVertexTarget"</span>), &amp;objVertexTarget));
+                bex::apiCall(<a name="a25"></a><a class="code"
+href="beasttarget_8h.html#a409692f3e607da5b2757b75c75fe2413" title=
+"Adds a texture baking target to a job.">ILBCreateTextureTarget</a>(job, _T(<span class="stringliteral">"objTextureTarget"</span>), 64, 64, &amp;objAtlasTarget));
+                TargetMap::const_iterator it = m_targets.begin();
+                <span class=
+"keywordflow">for</span> (;it != m_targets.end(); it++) {
+                        it-&gt;second-&gt;create(objVertexTarget, objAtlasTarget);
+                }
+        }
+<span class="keyword">private</span>:
+        TargetMap m_targets;
+};
+
+<span class="keyword">class </span>Camera {
+<span class="keyword">public</span>:
+        Camera(<span class=
+"keyword">const</span> bex::tstring&amp; name,
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform,
+                <span class=
+"keywordtype">float</span> horizontalFov,
+                <span class=
+"keywordtype">float</span> pixelAspectRatio) :
+                m_name(name),
+                m_transform(transform),
+                m_horizontalFov(horizontalFov),
+                m_pixelAspectRatio(pixelAspectRatio) {}
+
+                <a name="_a26"></a><a class="code" href=
+"struct_i_l_b_camera_handle.html" title=
+"Handle for Beast cameras Intentionally hidden implementation.">ILBCameraHandle</a> create(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene)<span class="keyword"> const </span>{
+                        <a class="code" href=
+"struct_i_l_b_camera_handle.html" title=
+"Handle for Beast cameras Intentionally hidden implementation.">ILBCameraHandle</a> camera;
+                        bex::apiCall(<a name="a27"></a><a class=
+"code" href="beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6"
+title=
+"Add a camera to the scene.">ILBCreatePerspectiveCamera</a>(scene, m_name.c_str(), &amp;m_transform, &amp;camera));
+                        bex::apiCall(<a name="a28"></a><a class=
+"code" href="beastcamera_8h.html#acf7eff806d9479b2c65a3093e9515bfb"
+title=
+"Sets the fov of the camera.">ILBSetFov</a>(camera, m_horizontalFov, m_pixelAspectRatio));
+                        <span class=
+"keywordflow">return</span> camera;
+                }
+
+<span class="keyword">private</span>:
+        bex::tstring m_name;
+        bex::Matrix4x4 m_transform;
+        <span class="keywordtype">float</span> m_horizontalFov;
+        <span class="keywordtype">float</span> m_pixelAspectRatio;
+};
+
+<span class="keyword">class </span>LightSource {
+<span class="keyword">public</span>:
+        LightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+                m_name(name),
+                m_displayName(name),
+                m_transform(transform),
+                m_color(color),
+                m_intensity(1.0f),
+                m_castShadows(true),
+                m_shadowSamples(1),
+                m_directScale(1.0f),
+                m_indirectScale(1.0f),
+                m_visibleForEye(true),
+                m_visibleForRefl(true),
+                m_visibleForRefr(true),
+                m_visibleForGI(true)
+        {}
+
+        <span class="keyword">virtual</span> ~LightSource() {}
+
+        <span class=
+"keywordtype">void</span> setDisplayName(<span class=
+"keyword">const</span> bex::tstring&amp; displayName) {
+                m_displayName = displayName;
+        }
+        <span class=
+"keywordtype">void</span> setTransform(<span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform) {
+                m_transform = transform;
+        }
+        <span class="keywordtype">void</span> setColor(<span class=
+"keyword">const</span> bex::ColorRGB&amp; color) {
+                m_color = color;
+        }
+        <span class=
+"keywordtype">void</span> setIntensity(<span class=
+"keywordtype">float</span> intensity) {
+                m_intensity = intensity;
+        }
+        <span class=
+"keywordtype">void</span> setCastShadows(<span class=
+"keywordtype">bool</span> castShadows) {
+                m_castShadows = castShadows;
+        }
+        <span class=
+"keywordtype">void</span> setShadowSamples(int32 shadowSamples) {
+                m_shadowSamples = shadowSamples;
+        }
+        <span class=
+"keywordtype">void</span> setIntensityScale(<span class=
+"keywordtype">float</span> directScale, <span class=
+"keywordtype">float</span> indirectScale) {
+                m_directScale = directScale;
+                m_indirectScale = indirectScale;
+        }
+        <span class=
+"keywordtype">void</span> setVisibleForEye(<span class=
+"keywordtype">bool</span> v) {
+                m_visibleForEye = v;
+        }
+        <span class=
+"keywordtype">void</span> setVisibleForRefl(<span class=
+"keywordtype">bool</span> v) {
+                m_visibleForRefl = v;
+        }
+        <span class=
+"keywordtype">void</span> setVisibleForRefr(<span class=
+"keywordtype">bool</span> v) {
+                m_visibleForRefr = v;
+        }
+        <span class=
+"keywordtype">void</span> setVisibleForGI(<span class=
+"keywordtype">bool</span> v) {
+                m_visibleForGI = v;
+        }
+        <span class=
+"keyword">const</span> bex::tstring&amp; getName()<span class=
+"keyword"> const </span>{
+                <span class="keywordflow">return</span> m_name;
+        }
+        <a name="_a29"></a><a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> getHandle()<span class="keyword"> const </span>{
+                <span class="keywordflow">return</span> m_handle;
+        }
+        <span class="keyword">virtual</span> <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> create(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) = 0;
+
+<span class="keyword">protected</span>:
+        <span class="keyword">virtual</span> <span class=
+"keywordtype">void</span> setBasicParameters(<a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light)<span class="keyword"> const </span>{
+                <a name="a30"></a><a class="code" href=
+"beastlightsource_8h.html#a69d0fe9b9a8ab24c82cb252e01f90a3c" title=
+"Sets the display name for the light source.">ILBSetLightDisplayName</a>(light, m_displayName.c_str());
+                <a name="a31"></a><a class="code" href=
+"beastlightsource_8h.html#ad6a54067158baa1510c1fe57ab90bf1c" title=
+"Sets light intensity for a light source.">ILBSetLightIntensity</a>(light, m_intensity);
+                <a name="a32"></a><a class="code" href=
+"beastlightsource_8h.html#a5a4df1a9c5464fde3618d1b953357e3b" title=
+"Flags whether the light cast shadows or not.">ILBSetCastShadows</a>(light, m_castShadows);
+                <a name="a33"></a><a class="code" href=
+"beastlightsource_8h.html#a58d8137ba4915d19c2914a7767dedb92" title=
+"Sets the maximum number of shadow samples for the light source.">ILBSetShadowSamples</a>(light, m_shadowSamples);
+                <a name="a34"></a><a class="code" href=
+"beastlightsource_8h.html#a27beb7875c829e6c3fbe4fffe6393b2d" title=
+"Sets scale for direct and indirect light intensity for a light source.">ILBSetIntensityScale</a>(light, m_directScale, m_indirectScale);
+                <a name="a35"></a><a class="code" href=
+"beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8" title=
+"Sets light status bits for a light source.">ILBSetLightStats</a>(light, <a name="a36"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa8f050a34cd979f16dc36e9b7537a3f63"
+title=
+"Controls if the light source should be visible for camera rays.">ILB_LS_VISIBLE_FOR_EYE</a>, m_visibleForEye ? <a name="a37"></a><a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a080ba9816cbce988c57024dc51e53276"
+title=
+"Sets the light stats supplied to true.">ILB_LSOP_ENABLE</a> : <a name="a38"></a><a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a8a7cbb31b5b0ec84832a6a231f77844f"
+title=
+"Sets the light stats supplied to false.">ILB_LSOP_DISABLE</a>);
+                <a class="code" href=
+"beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8" title=
+"Sets light status bits for a light source.">ILBSetLightStats</a>(light, <a name="a39"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa9a82b735fb4a137ba45c79c5634e01be"
+title=
+"Controls if the light source should be visible for reflection rays.">ILB_LS_VISIBLE_FOR_REFLECTIONS</a>, m_visibleForRefl ? <a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a080ba9816cbce988c57024dc51e53276"
+title=
+"Sets the light stats supplied to true.">ILB_LSOP_ENABLE</a> : <a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a8a7cbb31b5b0ec84832a6a231f77844f"
+title=
+"Sets the light stats supplied to false.">ILB_LSOP_DISABLE</a>);
+                <a class="code" href=
+"beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8" title=
+"Sets light status bits for a light source.">ILBSetLightStats</a>(light, <a name="a40"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aaed21e6120515b9436a0a254b2f060485"
+title=
+"Controls if the light source should be visible for refraction rays.">ILB_LS_VISIBLE_FOR_REFRACTIONS</a>, m_visibleForRefr ? <a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a080ba9816cbce988c57024dc51e53276"
+title=
+"Sets the light stats supplied to true.">ILB_LSOP_ENABLE</a> : <a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a8a7cbb31b5b0ec84832a6a231f77844f"
+title=
+"Sets the light stats supplied to false.">ILB_LSOP_DISABLE</a>);
+                <a class="code" href=
+"beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8" title=
+"Sets light status bits for a light source.">ILBSetLightStats</a>(light, <a name="a41"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa6c17d6ab5ace5c5a6871360a271b064b"
+title=
+"Controls if the light source should be visible for global illumination rays.">ILB_LS_VISIBLE_FOR_GI</a>, m_visibleForGI ? <a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a080ba9816cbce988c57024dc51e53276"
+title=
+"Sets the light stats supplied to true.">ILB_LSOP_ENABLE</a> : <a class="code"
+href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a8a7cbb31b5b0ec84832a6a231f77844f"
+title=
+"Sets the light stats supplied to false.">ILB_LSOP_DISABLE</a>);
+        }
+        bex::tstring m_name;
+        bex::tstring m_displayName;
+        bex::Matrix4x4 m_transform;
+        bex::ColorRGB m_color;
+        <span class="keywordtype">bool</span> m_castShadows;
+        int32 m_shadowSamples;
+        <span class="keywordtype">float</span> m_intensity;
+        <span class="keywordtype">float</span> m_directScale;
+        <span class="keywordtype">float</span> m_indirectScale;
+        <span class="keywordtype">bool</span> m_visibleForEye;
+        <span class="keywordtype">bool</span> m_visibleForRefl;
+        <span class="keywordtype">bool</span> m_visibleForRefr;
+        <span class="keywordtype">bool</span> m_visibleForGI;
+        <a class="code" href="struct_i_l_b_light_handle.html"
+title="Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> m_handle;
+};
+
+<span class=
+"keyword">class </span>FalloffLightSource : <span class="keyword">public</span> LightSource {
+<span class="keyword">public</span>:
+        FalloffLightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+                LightSource(name, transform, color),
+                m_falloffType(EXPONENT_FALLOFF),
+                m_exponent(0.0f),
+                m_constant(0.0f),
+                m_linear(0.0f),
+                m_quadratic(1.0f),
+                m_cutoff(std::numeric_limits&lt;float&gt;::max()),
+                m_clamp(true)
+        {}
+        <span class=
+"keywordtype">void</span> setExponentFalloff(<span class=
+"keywordtype">float</span> cutoff, <span class=
+"keywordtype">float</span> exponent, <span class=
+"keywordtype">bool</span> clamp) {
+                m_falloffType = EXPONENT_FALLOFF;
+                m_cutoff = cutoff;
+                m_exponent = exponent;
+                m_clamp = clamp;
+        }
+        <span class=
+"keywordtype">void</span> setMaxrangeFalloff(<span class=
+"keywordtype">float</span> cutoff, <span class=
+"keywordtype">float</span> exponent) {
+                m_falloffType = MAXRANGE_FALLOFF;
+                m_cutoff = cutoff;
+                m_exponent = exponent;
+        }
+        <span class=
+"keywordtype">void</span> setPolynomialFalloff(<span class=
+"keywordtype">float</span> cutoff, <span class=
+"keywordtype">float</span> constant, <span class=
+"keywordtype">float</span> linear, <span class=
+"keywordtype">float</span> quadratic, <span class=
+"keywordtype">bool</span> clamp) {
+                m_falloffType = POLYNOMIAL_FALLOFF;
+                m_cutoff = cutoff;
+                m_constant = constant;
+                m_linear = linear;
+                m_quadratic = quadratic;
+                m_clamp = clamp;
+        }
+
+<span class="keyword">protected</span>:
+        <span class=
+"keywordtype">void</span> setBasicParameters(<a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light)<span class="keyword"> const </span>{
+                LightSource::setBasicParameters(light);
+                <span class=
+"keywordflow">switch</span> (m_falloffType) {
+                        <span class=
+"keywordflow">case</span> EXPONENT_FALLOFF:
+                                bex::apiCall(<a name=
+"a42"></a><a class="code" href=
+"beastlightsource_8h.html#a2283254650fcf9ba204164f3412d1e5e" title=
+"Sets the falloff to type &quot;Exponent&quot; for a light source.">ILBSetLightExponentFalloff</a>(light, m_cutoff, m_exponent, m_clamp));
+                                <span class=
+"keywordflow">break</span>;
+                        <span class=
+"keywordflow">case</span> MAXRANGE_FALLOFF:
+                                bex::apiCall(<a name=
+"a43"></a><a class="code" href=
+"beastlightsource_8h.html#a9fe9ebf5765ce92d61a0844624b3ac78" title=
+"Sets the falloff to type &quot;Max Range&quot; for a light source.">ILBSetLightMaxRangeFalloff</a>(light, m_cutoff, m_exponent));
+                                <span class=
+"keywordflow">break</span>;
+                        <span class=
+"keywordflow">case</span> POLYNOMIAL_FALLOFF:
+                                bex::apiCall(<a name=
+"a44"></a><a class="code" href=
+"beastlightsource_8h.html#a7e4faad59ecedce853ed9f0f2ce497b2" title=
+"Sets the falloff to type &quot;Polynomial&quot; for a light source.">ILBSetLightPolynomialFalloff</a>(light, m_cutoff, m_constant, m_linear, m_quadratic, m_clamp));
+                                <span class=
+"keywordflow">break</span>;
+                }
+
+        }
+
+        <span class="keyword">enum</span> FallOffType {
+                EXPONENT_FALLOFF,
+                MAXRANGE_FALLOFF,
+                POLYNOMIAL_FALLOFF
+        };
+
+        FallOffType m_falloffType;
+        <span class="keywordtype">float</span> m_cutoff;
+        <span class="keywordtype">float</span> m_exponent;
+        <span class="keywordtype">float</span> m_constant;
+        <span class="keywordtype">float</span> m_linear;
+        <span class="keywordtype">float</span> m_quadratic;
+        <span class="keywordtype">bool</span> m_clamp;
+};
+
+<span class="keyword">class </span>PointLightSource : <span class=
+"keyword">public</span> FalloffLightSource {
+<span class="keyword">public</span>:
+        PointLightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+                FalloffLightSource(name, transform, color),
+                m_shadowRadius(0.0f)
+        {}
+        <span class="keyword">virtual</span> <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> create(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light;
+                bex::apiCall(<a name="a45"></a><a class="code"
+href="beastlightsource_8h.html#a18dbdf65ce6b68609609caea8df8f620"
+title=
+"Add a point light to the scene.">ILBCreatePointLight</a>(scene, m_name.c_str(), &amp;m_transform, &amp;m_color, &amp;light));
+                setBasicParameters(light);
+                m_handle = light;
+                <span class="keywordflow">return</span> light;
+        }
+        <span class=
+"keywordtype">void</span> setShadowRadius(<span class=
+"keywordtype">float</span> shadowRadius) {
+                m_shadowRadius = shadowRadius;
+        }
+
+<span class="keyword">protected</span>:
+        <span class=
+"keywordtype">void</span> setBasicParameters(<a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light)<span class="keyword"> const </span>{
+                FalloffLightSource::setBasicParameters(light);
+                bex::apiCall(<a name="a46"></a><a class="code"
+href="beastlightsource_8h.html#a727de9f4b1ab1e33e23d94dab8e79cff"
+title=
+"Sets a radius for the light source as a shadow caster.">ILBSetShadowRadius</a>(light, m_shadowRadius));
+        }
+
+        <span class="keywordtype">float</span> m_shadowRadius;
+};
+
+<span class="keyword">class </span>SpotLightSource : <span class=
+"keyword">public</span> PointLightSource {
+<span class="keyword">public</span>:
+        SpotLightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+        PointLightSource(name, transform, color),
+        m_angle((float)(M_PI/2.0f)),
+        m_penumbraAngle(0.0f),
+        m_penumbraExponent(1.0f)
+        {}
+        <span class="keyword">virtual</span> <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> create(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light;
+                bex::apiCall(<a name="a47"></a><a class="code"
+href="beastlightsource_8h.html#ac670809149f4a6cfbb9a6fed48a8c62c"
+title=
+"Add a spot light to the scene.">ILBCreateSpotLight</a>(scene, m_name.c_str(), &amp;m_transform, &amp;m_color, &amp;light));
+                setBasicParameters(light);
+                m_handle = light;
+                <span class="keywordflow">return</span> light;
+        }
+        <span class="keywordtype">void</span> setCone(<span class=
+"keywordtype">float</span> angle, <span class=
+"keywordtype">float</span> penumbraAngle, <span class=
+"keywordtype">float</span> penumbraExponent) {
+                m_angle = angle;
+                m_penumbraAngle = penumbraAngle;
+                m_penumbraExponent = penumbraExponent;
+        }
+
+<span class="keyword">protected</span>:
+        <span class=
+"keywordtype">void</span> setBasicParameters(<a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light)<span class="keyword"> const </span>{
+                PointLightSource::setBasicParameters(light);
+                bex::apiCall(<a name="a48"></a><a class="code"
+href="beastlightsource_8h.html#a1b9a66bbda4bb1b84028405cac5f9f97"
+title=
+"Sets the cone angle for a spotlight.">ILBSetSpotlightCone</a>(light, m_angle, m_penumbraAngle, m_penumbraExponent));
+        }
+        <span class="keywordtype">float</span> m_angle;
+        <span class="keywordtype">float</span> m_penumbraAngle;
+        <span class="keywordtype">float</span> m_penumbraExponent;
+};
+
+<span class="keyword">class </span>AreaLightSource : <span class=
+"keyword">public</span> FalloffLightSource {
+<span class="keyword">public</span>:
+        AreaLightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+                FalloffLightSource(name, transform, color)
+        {}
+        <span class="keyword">virtual</span> <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> create(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light;
+                bex::apiCall(<a name="a49"></a><a class="code"
+href="beastlightsource_8h.html#a19211b284f14aa8e950dd5148d89393d"
+title=
+"Add an area light to the scene It points in negative Y direction by default, use the matrix to change...">ILBCreateAreaLight</a>(scene, m_name.c_str(), &amp;m_transform, &amp;m_color, &amp;light));
+                setBasicParameters(light);
+                m_handle = light;
+                <span class="keywordflow">return</span> light;
+        }
+};
+
+<span class=
+"keyword">class </span>DirectionalLightSource : <span class=
+"keyword">public</span> LightSource {
+<span class="keyword">public</span>:
+        DirectionalLightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+                LightSource(name, transform, color),
+                m_shadowAngle(0.0f)
+        {}
+
+        <span class=
+"keywordtype">void</span> setShadowAngle(<span class=
+"keywordtype">float</span> shadowAngle) {
+                m_shadowAngle = shadowAngle;
+        }
+
+        <span class="keyword">virtual</span> <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> create(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light;
+                bex::apiCall(<a name="a50"></a><a class="code"
+href="beastlightsource_8h.html#a8ced5dd6f603ff9a82629f4e8e0bfc06"
+title=
+"Add a directional light to the scene It points in negative Y direction by default, use the matrix to change its direction.">ILBCreateDirectionalLight</a>(scene, m_name.c_str(), &amp;m_transform, &amp;m_color, &amp;light));
+                setBasicParameters(light);
+                m_handle = light;
+                <span class="keywordflow">return</span> light;
+        }
+<span class="keyword">protected</span>:
+        <span class=
+"keywordtype">void</span> setBasicParameters(<a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light)<span class="keyword"> const </span>{
+                LightSource::setBasicParameters(light);
+                bex::apiCall(<a name="a51"></a><a class="code"
+href="beastlightsource_8h.html#a241e87acac4e6b2de274e224f4a9a44a"
+title=
+"Sets the angle covered of the sky for a directional light or window light for shadow casting purposes...">ILBSetShadowAngle</a>(light, m_shadowAngle));
+        }
+        <span class="keywordtype">float</span> m_shadowAngle;
+};
+
+<span class="keyword">class </span>SkyLightSource : <span class=
+"keyword">public</span> LightSource {
+<span class="keyword">public</span>:
+        SkyLightSource(<span class=
+"keyword">const</span> bex::tstring&amp; name, 
+                <span class=
+"keyword">const</span> bex::Matrix4x4&amp; transform, 
+                <span class=
+"keyword">const</span> bex::ColorRGB&amp; color) :
+                LightSource(name, transform, color),
+                m_volumeType(<a name="a52"></a><a class="code"
+href="beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7a0a8652097fe53d23e89d563fd1c7218b"
+title="Specified the whole 3D space.">ILB_LVT_INFINITY</a>),
+                m_texture(L<span class="stringliteral">""</span>)
+        {}
+
+        <span class="keyword">virtual</span> <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> create(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light;
+                bex::apiCall(<a name="a53"></a><a class="code"
+href="beastlightsource_8h.html#a9cf9e1a688ab5ec1ffa1fb74519b1a44"
+title=
+"Add a sky light to the scene It illuminates the whole scene by default, but this can be altered by se...">ILBCreateSkyLight</a>(scene, m_name.c_str(), &amp;m_transform, &amp;m_color, &amp;light));
+                setBasicParameters(light);
+                <span class=
+"keywordflow">if</span> (m_texture.size()) {
+                        <a name="_a54"></a><a class="code" href=
+"struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> tex;
+                        <span class=
+"keywordflow">if</span> (<a name="a55"></a><a class="code" href=
+"beasttexture_8h.html#a6bd555f05562f16b62dfd859221220d5" title=
+"Finds a cached texture.">ILBFindTexture</a>(beastManager, m_texture.c_str(), &amp;tex) != <a name="a56"></a><a class="code"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206aef28b1942ff355ac96c65b724412fe2f"
+title="The call was successfully completed!">ILB_ST_SUCCESS</a>) {
+                                bex::apiCall(<a name=
+"a57"></a><a class="code" href=
+"beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78" title=
+"References in an external texture.">ILBReferenceTexture</a>(beastManager, m_texture.c_str(), m_texture.c_str(), &amp;tex));
+                        }
+                        bex::apiCall(<a name="a58"></a><a class=
+"code" href=
+"beastlightsource_8h.html#af59d123c255edd4894ff9b11ff68199c" title=
+"Sets a texture for a sky light.">ILBSetSkyLightTexture</a>(light, tex));
+                }
+                m_handle = light;
+                <span class="keywordflow">return</span> light;
+        }
+
+        <span class=
+"keywordtype">void</span> setVolumeType(<a class="code" href=
+"beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7" title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a> volumeType) {
+                m_volumeType = volumeType;
+        }
+
+        <span class=
+"keywordtype">void</span> setTexture(<span class=
+"keyword">const</span> bex::tstring&amp; texture) {
+                m_texture = texture;
+        }
+
+<span class="keyword">protected</span>:
+        <span class=
+"keywordtype">void</span> setBasicParameters(<a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light)<span class="keyword"> const </span>{
+                LightSource::setBasicParameters(light);
+                bex::apiCall(<a name="a59"></a><a class="code"
+href="beastlightsource_8h.html#a1792bb257b48b8c7bb3ef8c0b470328f"
+title=
+"Sets light volume type for a sky light.">ILBSetSkyLightVolumeType</a>(light, m_volumeType));
+        }
+        <a class="code" href=
+"beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7" title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a> m_volumeType;
+        bex::tstring m_texture;
+};
+
+<span class="keyword">class </span>LightManager {
+<span class="keyword">private</span>:
+        <span class=
+"keyword">typedef</span> std::map&lt;bex::tstring, LightSource*&gt; LightMap;
+<span class="keyword">public</span>:
+        ~LightManager() {
+                LightMap::iterator it = m_lights.begin();
+                <span class=
+"keywordflow">for</span> (;it != m_lights.end(); it++) {
+                        <span class=
+"keyword">delete</span> it-&gt;second;
+                }
+        }
+        <span class=
+"keywordtype">void</span> addLight(LightSource* light) {
+                LightMap::iterator it = m_lights.find(light-&gt;getName());
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"keyword">delete</span> it-&gt;second;
+                        m_lights.erase(it);
+                }
+                m_lights[light-&gt;getName()] = light;
+        }
+        <span class=
+"keywordtype">void</span> deleteLight(<span class=
+"keyword">const</span> bex::tstring&amp; name) {
+                LightMap::iterator it = m_lights.find(name);
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"keyword">delete</span> it-&gt;second;
+                        m_lights.erase(it);
+                }
+        }
+        <span class="keywordtype">void</span> create(<a class=
+"code" href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, <a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene) {
+                LightMap::iterator it = m_lights.begin();
+                <span class=
+"keywordflow">for</span> (;it != m_lights.end(); it++) {
+                        it-&gt;second-&gt;create(beastManager, scene);
+                }
+        }
+
+<span class="keyword">private</span>:
+        LightMap m_lights;
+};
+
+<span class="keywordtype">int</span> main(<span class=
+"keywordtype">char</span> argc, <span class=
+"keywordtype">char</span>** argv) {
+        <span class="keywordflow">try</span> {
+                <a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bmh;
+
+                <span class=
+"comment">// Route errors to stderr</span>
+                bex::apiCall(<a name="a60"></a><a class="code"
+href="beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5"
+title="Sets where log messages should be routed.">ILBSetLogTarget</a>(<a name="a61"></a><a class="code"
+href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36aab16aff43a62a8dab5fc10679279be08"
+title="Error messages.">ILB_LT_ERROR</a>, <a name=
+"a62"></a><a class="code" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaa0823c48847428786988097061ae529dc"
+title="Routes messages to stderr.">ILB_LS_STDERR</a>, 0));
+
+<span class="preprocessor">#if defined(WIN32)</span>
+                <span class=
+"comment">// Route general info to debug output (i.e output window in</span>
+                <span class="comment">// visual studio)</span>
+                bex::apiCall(<a class="code" href=
+"beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5" title=
+"Sets where log messages should be routed.">ILBSetLogTarget</a>(<a name="a63"></a><a class="code"
+href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979"
+title=
+"Information messages and render progress messages.">ILB_LT_INFO</a>, <a name="a64"></a><a class="code"
+href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaafe476493e5f3f942fd2cc0feed18a1c3"
+title=
+"Routes messages to the debug output in visual studio when a debugger is connected.">ILB_LS_DEBUG_OUTPUT</a>, 0));
+<span class="preprocessor">#else</span>
+                <span class=
+"comment">// Route general info to std output</span>
+                bex::apiCall(<a class="code" href=
+"beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5" title=
+"Sets where log messages should be routed.">ILBSetLogTarget</a>(<a class="code"
+href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979"
+title=
+"Information messages and render progress messages.">ILB_LT_INFO</a>, <a name="a65"></a><a class="code"
+href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaadfaa465f90b7778d2c3e76d9c2f5508c"
+title="Routes messages to stdout.">ILB_LS_STDOUT</a>, 0));
+<span class="preprocessor">#endif</span>
+
+                <span class=
+"comment">// Setup our beast manager</span>
+                bex::apiCall(<a name="a66"></a><a class="code"
+href="beastmanager_8h.html#aeb36a8136fb38c84b0a40368f2f9b259"
+title="Creates a Beast Manager.">ILBCreateManager</a>(L<span class=
+"stringliteral">"../../../temp/liveernst"</span>, <a name=
+"a67"></a><a class="code" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128baea3b0812e33bd4cbe8795c3b8dbade15"
+title=
+"Makes the cache local.">ILB_CS_LOCAL</a>, bex::getLicenseKey().c_str(), &amp;bmh));
+
+                <span class=
+"comment">// Set the path to the Beast binaries</span>
+                bex::apiCall(<a name="a68"></a><a class="code"
+href="beastmanager_8h.html#a641932b6198033b27ae7476c95464478"
+title="Sets where the Beast binaries are located.">ILBSetBeastPath</a>(bmh, L<span class="stringliteral">"../../../bin"</span>));
+
+                <span class=
+"comment">// Waste the cache from previous runs if present</span>
+                bex::apiCall(<a name="a69"></a><a class="code"
+href="beastmanager_8h.html#a8fee8b5f9aeb42ce1331b7b5e6630024"
+title="Clears the cache.">ILBClearCache</a>(bmh));
+
+                bex::OBJReader objReader;
+                std::wstring objFileName = L<span class=
+"stringliteral">"../../data/hangar.obj"</span>;
+                tcout &lt;&lt; <span class=
+"stringliteral">"Starting to load file"</span> &lt;&lt; std::endl;
+                objReader.loadObjFile(objFileName);
+                tcout &lt;&lt; <span class=
+"stringliteral">"Done Loading File "</span> &lt;&lt; objFileName &lt;&lt; std::endl;
+                
+                <span class=
+"keyword">typedef</span> std::pair&lt;std::string, ILBMeshHandle&gt; MeshNameHandle;
+                std::vector&lt;MeshNameHandle&gt; meshHandles;
+                std::vector&lt;std::string&gt; allMeshes;
+
+                objReader.getMeshNames(allMeshes);
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i=0; i&lt;allMeshes.size();i++) {
+                        std::vector&lt;bex::Vec3&gt; vertices;
+                        std::vector&lt;bex::Vec3&gt; normals;
+                        std::vector&lt;bex::Vec2&gt; uvs;
+                        std::string materialName;
+                        objReader.getMeshData(allMeshes[i], vertices, normals, uvs, materialName);
+                        <span class=
+"keywordflow">if</span> (vertices.size() != 0) {
+                                <span class=
+"keyword">const</span> std::string&amp; name = allMeshes[i];
+                                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> handle = constructMesh(bex::string2tstring(name), vertices, normals, uvs, bex::string2tstring(materialName), bmh);
+                                meshHandles.push_back(MeshNameHandle(name, handle));
+                        }
+                }
+
+                LightManager lightManager;
+
+                DirectionalLightSource* sun = <span class=
+"keyword">new</span> DirectionalLightSource(L<span class=
+"stringliteral">"Sun"</span>, 
+                        bex::translation(bex::Vec3(0.0f, 7.5f, -20.0f)) * bex::directionalLightOrientation(normalize(bex::Vec3(-1.0f, -1.0f, -0.25f))), 
+                        bex::ColorRGB(0.6f, 0.6f, .5f));
+                sun-&gt;setCastShadows(<span class=
+"keyword">true</span>);
+                sun-&gt;setShadowSamples(32);
+                sun-&gt;setShadowAngle(.025f);
+                lightManager.addLight(sun);             
+
+                SkyLightSource* sky = <span class=
+"keyword">new</span> SkyLightSource(L<span class=
+"stringliteral">"Sky"</span>,
+                        bex::translation(bex::Vec3(0.0f, 5.0f, -20.0f)), 
+                        bex::ColorRGB(0.25f, 0.3f, 0.4f));
+                lightManager.addLight(sky);
+
+                <a class="code" href=
+"beastscene_8h.html#a8ed9e76b37c5567208d6041d3ed9637b" title=
+"The scene up vector.">ILBSceneUpVector</a> sceneUpVector = <a name="a70"></a><a class="code"
+href=
+"beastscene_8h.html#a8ed9e76b37c5567208d6041d3ed9637ba52109e70afc18b49b4cbc2cca14eb233">ILB_UP_POS_Y</a>;
+                <span class=
+"keywordtype">float</span> sceneScale = 1.0f;
+
+                Camera perspCamera(_T(<span class=
+"stringliteral">"Camera"</span>), bex::translation(bex::Vec3(-40.0f, 20.0f, -50.0f)) * bex::cameraOrientation(normalize(bex::Vec3(1.0f, -0.5f, 1.0f)), bex::Vec3(0.0f, 1.0f, 0.0f)), (<span class="keywordtype">float</span>)M_PI_2, 1.0f);
+
+                TargetManager targetManager;
+
+                bex::Matrix4x4 objTrans = bex::scaleTranslation(bex::Vec3(1.0f, 1.0f, 1.0f), bex::Vec3(0.0f, 0.0f, 0.0f));
+                
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">size_t</span> i = 0; i &lt; meshHandles.size(); ++i) {
+                        <span class=
+"keywordflow">if</span>(meshHandles[i].first == <span class=
+"stringliteral">"hangar:Ground"</span>) {
+                                <span class=
+"comment">// Vertex bake ground</span>
+                                targetManager.addTarget(<span class="keyword">new</span> TargetEntity(objTrans, meshHandles[i].second, bex::string2tstring(meshHandles[i].first), <a class="code"
+href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7aa05422efdd87ef30541164f6cad73ce0"
+title="Vertex baking.">ILB_TT_VERTEX</a>));
+                        } <span class="keywordflow">else</span> {
+                                targetManager.addTarget(<span class="keyword">new</span> TargetEntity(objTrans, meshHandles[i].second, bex::string2tstring(meshHandles[i].first), <a class="code"
+href=
+"beasttargetentity_8h.html#ad61a2b2bfc8d0073d56483c3be12b3f7abcb361095b616cd31a1c738b009c3fc5"
+title="Texture baking.">ILB_TT_TEXTURE</a>));
+                        }
+                }
+
+                <span class="comment">// Create a scene</span>
+                <a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene;
+                bex::apiCall(<a name="a71"></a><a class="code"
+href="beastscene_8h.html#ac0cdb9df4007ae693f537fb26ab0942f" title=
+"Begins creation of a scene that will use &quot;classic&quot; fixed-function materials.">ILBBeginScene</a>(bmh, L<span class="stringliteral">"ErnstScene"</span>, &amp;scene));
+
+                <a name="a72"></a><a class="code" href=
+"beastscene_8h.html#ae375c8bde83288000063c7c115a93e1f" title=
+"Sets the up vector of the scene.">ILBSetSceneUpVector</a>(scene, sceneUpVector);
+                <a name="a73"></a><a class="code" href=
+"beastscene_8h.html#afe5d709844ea816d13138a15b0d74574" title=
+"Sets how many meters a world unit in represents for the scene.">ILBSetMeterPerWorldUnit</a>(scene, sceneScale);
+
+                lightManager.create(bmh, scene);
+                targetManager.createScene(scene);
+
+                <span class=
+"comment">// Create materials from obj file</span>
+                <span class=
+"keyword">const</span> std::map&lt;std::string, bex::OBJReader::Material&gt;&amp; map = objReader.getMaterials();
+                std::map&lt;std::string, bex::OBJReader::Material&gt;::const_iterator it = map.begin();
+                <span class=
+"keywordflow">for</span> (;it != map.end(); ++it) {
+                        <a name="_a74"></a><a class="code" href=
+"struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> mat;
+                        bex::apiCall(<a name="a75"></a><a class=
+"code" href=
+"beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e" title=
+"Add a material to the scene.">ILBCreateMaterial</a>(scene, bex::string2tstring(it-&gt;first).c_str(), &amp;mat));
+                        bex::apiCall(<a name="a76"></a><a class=
+"code" href=
+"beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb" title=
+"Sets the color for a channel on a material.">ILBSetMaterialColor</a>(mat, <a name="a77"></a><a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a6e437d4d3c1a61b8a515ba8309ce5d90">ILB_CC_DIFFUSE</a>, &amp;(it-&gt;second.diffuse)));
+                        bex::apiCall(<a class="code" href=
+"beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb" title=
+"Sets the color for a channel on a material.">ILBSetMaterialColor</a>(mat, <a name="a78"></a><a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a5cca56af89bf2094101d8372e4426a0a">ILB_CC_EMISSIVE</a>, &amp;(it-&gt;second.emissive)));
+                        <span class=
+"keywordflow">if</span>(it-&gt;second.shininess &gt; 0.0f) {
+                                bex::apiCall(<a class="code" href=
+"beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb" title=
+"Sets the color for a channel on a material.">ILBSetMaterialColor</a>(mat, <a name="a79"></a><a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a282bc965c2f636dc67945ebd3cfa1908">ILB_CC_SPECULAR</a>, &amp;(it-&gt;second.specular)));
+                                bex::apiCall(<a name=
+"a80"></a><a class="code" href=
+"beastmaterial_8h.html#acd427d12f671d3db463660b9f42c0a7a" title=
+"Sets a scale for a channel on a material Will be multiplied with material color, texture and vertex c...">ILBSetMaterialScale</a>(mat, <a name="a81"></a><a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac9b8d28e8d6226c3c92843431b92d8f5">ILB_CC_SHININESS</a>, it-&gt;second.shininess));
+                        }
+                }
+
+                <span class="comment">// Create the camera</span>
+                <a class="code" href=
+"struct_i_l_b_camera_handle.html" title=
+"Handle for Beast cameras Intentionally hidden implementation.">ILBCameraHandle</a> cameraHandle = perspCamera.create(scene);
+
+                <span class="comment">// Finalize the scene</span>
+                bex::apiCall(<a name="a82"></a><a class="code"
+href="beastscene_8h.html#a73654682a5785904682800b934720fcf" title=
+"Finalizes this scene Any future call to modify this scene or any of its objects will fail...">ILBEndScene</a>(scene));
+
+                <span class="comment">// Create Ernst job</span>
+                <a class="code" href="struct_i_l_b_job_handle.html"
+title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> ernstJob;
+                bex::apiCall(<a name="a83"></a><a class="code"
+href="beastjob_8h.html#a93d10d404c2f5e693ef531a444ed215d" title=
+"Creates a Live Ernst job.">ILBCreateLiveErnstJob</a>(bmh, L<span class="stringliteral">"ErnstJob"</span>, scene, &amp;ernstJob));
+                targetManager.create(ernstJob);
+
+                <span class="comment">// Run Ernst</span>
+                bex::apiCall(<a name="a84"></a><a class="code"
+href="beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8" title=
+"Starts a job.">ILBStartJob</a>(ernstJob, <a name=
+"a85"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0acea2a833558b7861cb3a5bb8372b5f03"
+title=
+"Show the render window / progress view and close it when the rendering is done.">ILB_SR_CLOSE_WHEN_DONE</a>, <a name="a86"></a><a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f"
+title=
+"Render distributed if possible, otherwise fallback on local rendering.">ILB_RD_AUTODETECT</a>));
+                bex::apiCall(<a name="a87"></a><a class="code"
+href="beastjob_8h.html#a285dfca953c0c4e5fb546b2db11454ca" title=
+"Sets the GI baking mode in a Live Ernst job.">ILBSetErnstGIBakingMode</a>(ernstJob, <a name="a88"></a><a class="code"
+href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05a6dd9534fe5bc11ae1580a5e51ea802cb"
+title=
+"Only bake what the camera sees.">ILB_BM_CAMERA_FRUSTUM</a>));
+
+
+                <a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light2;
+                bex::apiCall(<a class="code" href=
+"beastlightsource_8h.html#a18dbdf65ce6b68609609caea8df8f620" title=
+"Add a point light to the scene.">ILBCreatePointLight</a>(scene, L<span class="stringliteral">"Point"</span>, &amp;bex::translation(bex::Vec3(-2.0, 10.0f, 1.0f)), &amp;bex::ColorRGB(1.0f, 0.0f, 0.0f), &amp;light2));
+                bex::apiCall(<a class="code" href=
+"beastlightsource_8h.html#a5a4df1a9c5464fde3618d1b953357e3b" title=
+"Flags whether the light cast shadows or not.">ILBSetCastShadows</a>(light2, <span class="keyword">true</span>));
+
+                DWORD updateFrequencyTicks = 10000;
+                DWORD nextUpdateTicks = GetTickCount();
+                DWORD updateIndex = 0;
+
+                <span class=
+"keywordflow">while</span> (<span class="keyword">true</span>) {
+                        bex::apiCall(<a name="a89"></a><a class=
+"code" href="beastjob_8h.html#a5098930e9e25f74f9a36b7c57e8fdc55"
+title=
+"Waits until a job is done or until there is progress updates.">ILBWaitJobDone</a>(ernstJob, 500));
+                        <a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813" title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> isRunning;
+                        bex::apiCall(<a name="a90"></a><a class=
+"code" href="beastjob_8h.html#aab1c21d554bd70197ef70d76be8c46ac"
+title=
+"Checks if the job is running.">ILBIsJobRunning</a>(ernstJob, &amp;isRunning));
+                        <span class=
+"keywordflow">if</span> (!isRunning) {
+                                <span class=
+"keywordflow">break</span>;
+                        }
+
+                        DWORD ticks = GetTickCount();
+                        <span class=
+"keywordflow">if</span> (ticks &gt;= nextUpdateTicks) {
+                                nextUpdateTicks += updateFrequencyTicks;
+                                updateIndex += 1;
+
+                                <span class=
+"keywordtype">float</span> x = 50.0f * sinf(updateIndex * 30.0f * <span class="keywordtype">float</span>(M_PI) / 180.0f);
+                                <span class=
+"keywordtype">float</span> y = 20.0f;
+                                <span class=
+"keywordtype">float</span> z = 50.0f * cosf(updateIndex * 30.0f * <span class="keywordtype">float</span>(M_PI) / 180.0f);
+                                bex::apiCall(<a name=
+"a91"></a><a class="code" href=
+"beastlightsource_8h.html#a5b7594e206c261e4b28a42151e70768a" title=
+"Sets the transform for a light source.">ILBSetLightTransform</a>(light2, &amp;bex::translation(bex::Vec3(x,y,z))));
+                        }
+
+                        <span class=
+"keywordflow">while</span> (<span class="keyword">true</span>) {
+                                <a name="_a92"></a><a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> uh;
+                                <a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813" title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> hasUpdate;
+                                bex::apiCall(<a name=
+"a93"></a><a class="code" href=
+"beastjob_8h.html#a0d5762fda4d20fac1ec419ab9c3ff73a" title=
+"Checks if a job has a new update and retrieves it.">ILBGetJobUpdate</a>(ernstJob, &amp;hasUpdate, &amp;uh));
+                                <span class=
+"keywordflow">if</span> (!hasUpdate) {
+                                        <span class=
+"keywordflow">break</span>;
+                                }
+
+                                <a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a> updateType;
+                                bex::apiCall(<a name=
+"a94"></a><a class="code" href=
+"beastjob_8h.html#aad63bf4ebd2d2adbd09da011901748c2" title=
+"Gets the type of update.">ILBGetJobUpdateType</a>(uh, &amp;updateType));
+                                <span class=
+"keywordflow">switch</span> (updateType) {
+                                        <span class=
+"keywordflow">case</span> <a name="a95"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2f4cd4cc3b342e4a0017db82df9222e8"
+title=
+"Specifies a generated light map from a Live Ernst job.">ILB_UT_UPDATE_TEXTURE</a>: {
+                                                <a name=
+"_a96"></a><a class="code" href=
+"struct_i_l_b_framebuffer_handle.html" title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a> fb;
+                                                int32 channels, width, height;
+                                                bex::apiCall(<a name="a97"></a><a class="code"
+href="beastjob_8h.html#af28fc0ad160035db7462377d25e94010" title=
+"Get an updated frame buffer.">ILBGetUpdateFramebuffer</a>(uh, &amp;fb));
+                                                bex::apiCall(<a name="a98"></a><a class="code"
+href="beastframebuffer_8h.html#a4662e995fab4e00ac3671bac2640293b"
+title=
+"Gets the number of channels in the framebuffer.">ILBGetChannelCount</a>(fb, &amp;channels));
+                                                bex::apiCall(<a name="a99"></a><a class="code"
+href="beastframebuffer_8h.html#a6cb5c02d2cb6d3ffa765304c358fa908"
+title=
+"Gets the resolution for a framebuffer.">ILBGetResolution</a>(fb, &amp;width, &amp;height));
+                                                <a class="code"
+href="struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> te;
+                                                bex::apiCall(<a name="a100"></a><a class="code"
+href="beastframebuffer_8h.html#a5bae7bdb01c691f58b3c3750adff8b94"
+title=
+"Returns which target entity this frame buffer is generated from.">ILBGetFramebufferTargetEntity</a>(fb, &amp;te));
+                                                <a name=
+"_a101"></a><a class="code" href="struct_i_l_b_string_handle.html"
+title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> sh;
+                                                bex::apiCall(<a name="a102"></a><a class="code"
+href="beasttargetentity_8h.html#ad5027ddb11f200414b8b751fcde428ab"
+title=
+"Returns the name of the instance of a target entity.">ILBGetTargetEntityInstance</a>(te, &amp;sh));
+                                                bex::tstring instanceName = bex::convertStringHandle(sh);
+                                                tcout &lt;&lt; <span class="stringliteral">"FBT: "</span> &lt;&lt; width &lt;&lt; <span class="stringliteral">"x"</span> &lt;&lt; height &lt;&lt; <span class="stringliteral">" "</span> &lt;&lt; instanceName &lt;&lt; std::endl;
+                                                <span class=
+"keywordflow">break</span>;
+                                        }
+                                        <span class=
+"keywordflow">case</span> <a name="a103"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faaadc02c641f72baf35d6551724a8e61e7"
+title=
+"Specifies vertex lighting from a Live Ernst job.">ILB_UT_UPDATE_VERTEX</a>: {
+                                                <a class="code"
+href="struct_i_l_b_framebuffer_handle.html" title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a> fb;
+                                                int32 channels, width, height;
+                                                bex::apiCall(<a class="code"
+href="beastjob_8h.html#af28fc0ad160035db7462377d25e94010" title=
+"Get an updated frame buffer.">ILBGetUpdateFramebuffer</a>(uh, &amp;fb));
+                                                bex::apiCall(<a class="code"
+href="beastframebuffer_8h.html#a4662e995fab4e00ac3671bac2640293b"
+title=
+"Gets the number of channels in the framebuffer.">ILBGetChannelCount</a>(fb, &amp;channels));
+                                                bex::apiCall(<a class="code"
+href="beastframebuffer_8h.html#a6cb5c02d2cb6d3ffa765304c358fa908"
+title=
+"Gets the resolution for a framebuffer.">ILBGetResolution</a>(fb, &amp;width, &amp;height));
+                                                <a class="code"
+href="struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> te;
+                                                bex::apiCall(<a class="code"
+href="beastframebuffer_8h.html#a5bae7bdb01c691f58b3c3750adff8b94"
+title=
+"Returns which target entity this frame buffer is generated from.">ILBGetFramebufferTargetEntity</a>(fb, &amp;te));
+                                                <a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> sh;
+                                                bex::apiCall(<a class="code"
+href="beasttargetentity_8h.html#ad5027ddb11f200414b8b751fcde428ab"
+title=
+"Returns the name of the instance of a target entity.">ILBGetTargetEntityInstance</a>(te, &amp;sh));
+                                                bex::tstring instanceName = bex::convertStringHandle(sh);
+                                                tcout &lt;&lt; <span class="stringliteral">"FBV: "</span> &lt;&lt; width &lt;&lt; <span class="stringliteral">"x"</span> &lt;&lt; height &lt;&lt; <span class="stringliteral">" "</span> &lt;&lt; instanceName &lt;&lt; std::endl;
+                                                <span class=
+"keywordflow">break</span>;
+                                        }
+                                }
+                                bex::apiCall(<a name=
+"a104"></a><a class="code" href=
+"beastjob_8h.html#aca61aa7f5a3bced77f1a43dd273901a9" title=
+"Destroys a job update.">ILBDestroyUpdate</a>(uh));
+                        }
+                }
+                <a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a> jobStatus;
+                bex::apiCall(<a name="a105"></a><a class="code"
+href="beastjob_8h.html#af2b42bfe51b1ae4b46f6ccd1e292dba7" title=
+"Returns the result of the job as a JobStatus.">ILBGetJobResult</a>(ernstJob, &amp;jobStatus));
+
+                <span class=
+"keywordflow">switch</span>(jobStatus) {
+                        <span class=
+"keywordflow">case</span> <a name="a106"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258af35d8189b4357db890060948fc0b888c"
+title=
+"Beast does not have a valid license.">ILB_JS_INVALID_LICENSE</a>:
+                                tcout &lt;&lt; L<span class=
+"stringliteral">"Could not find license for Ernst"</span> &lt;&lt; std::endl;
+                                <span class=
+"keywordflow">break</span>;
+                        <span class=
+"keywordflow">case</span> <a name="a107"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258accdb1933dc73a4de2bbd25465bd77e03"
+title="Beast crashed, sorry.">ILB_JS_CRASH</a>:
+                                tcout &lt;&lt; L<span class=
+"stringliteral">"Ernst crashed"</span> &lt;&lt; std::endl;
+                                <span class=
+"keywordflow">break</span>;                  
+                }
+
+                bex::apiCall(<a name="a108"></a><a class="code"
+href="beastjob_8h.html#a3dd89827f352d0c78c9c735ffc315f92" title=
+"Destroys a job.">ILBDestroyJob</a>(ernstJob));
+                bex::apiCall(<a name="a109"></a><a class="code"
+href="beastscene_8h.html#a76617096fad3a44003598b0f022eedf2" title=
+"Releases the scene data.">ILBReleaseScene</a>(scene));
+                <span class="keywordflow">return</span> 0;
+        } <span class=
+"keywordflow">catch</span>(bex::Exception&amp; ex) {
+                <a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> errorString;
+                <a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> extendedError;
+                <a name="a110"></a><a class="code" href=
+"beastutils_8h.html#aed2244af0fe901862e4d71c934af46dc" title=
+"Converts an error code into a string for human readable error reporting.">ILBErrorToString</a>(ex.status, &amp;errorString);
+                <a name="a111"></a><a class="code" href=
+"beastutils_8h.html#ae949fbbb56d2dfb94290a968802066c0" title=
+"Returns the last error that happened in this thread.">ILBGetExtendErrorInformation</a>(&amp;extendedError);
+                tcout &lt;&lt; L<span class=
+"stringliteral">"Beast API error"</span> &lt;&lt; std::endl;
+                tcout &lt;&lt; L<span class=
+"stringliteral">"Error: "</span> &lt;&lt; bex::convertStringHandle(errorString) &lt;&lt; std::endl;
+                tcout &lt;&lt; L<span class=
+"stringliteral">"Info: "</span> &lt;&lt; bex::convertStringHandle(extendedError) &lt;&lt; std::endl;
+                <span class="keywordflow">return</span> 1;
+        }  <span class=
+"keywordflow">catch</span>(std::exception&amp; ex) {
+                tcout &lt;&lt; L<span class=
+"stringliteral">"Standard exception"</span> &lt;&lt; std::endl;
+                tcout &lt;&lt; L<span class=
+"stringliteral">"Error: "</span> &lt;&lt; ex.what() &lt;&lt; std::endl;;
+                <span class="keywordflow">return</span> 1;
+        }
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

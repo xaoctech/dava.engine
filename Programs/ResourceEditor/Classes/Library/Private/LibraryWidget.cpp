@@ -3,20 +3,23 @@
 #include "Classes/Library/Private/LibraryData.h"
 
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/SceneManager/SceneData.h"
 #include "Classes/Application/REGlobal.h"
 
-#include "Main/QtUtils.h"
+#include "Classes/Qt/Main/QtUtils.h"
 
-#include "TArc/Core/FieldBinder.h"
-#include "TArc/Core/ContextAccessor.h"
-#include "TArc/Utils/QtConnections.h"
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Utils/QtConnections.h>
+#include <TArc/WindowSubSystem/QtAction.h>
+#include <TArc/DataProcessing/Common.h>
 
-#include "QtTools/Utils/Utils.h"
-#include "QtHelpers/HelperFunctions.h"
+#include <TArc/Utils/Utils.h>
+#include <QtHelpers/HelperFunctions.h>
 
-#include "Reflection/ReflectedType.h"
-#include "Render/Image/ImageFormatInterface.h"
-#include "Render/RenderBase.h"
+#include <Reflection/ReflectedType.h>
+#include <Render/Image/ImageFormatInterface.h>
+#include <Render/RenderBase.h>
 
 #include <QToolBar>
 #include <QLineEdit>
@@ -305,7 +308,17 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
     DAVA::FilePath pathname = fileInfo.absoluteFilePath().toStdString();
     if (pathname.IsEqualToExtension(".sc2"))
     {
-        QAction* actionAdd = contextMenu.addAction("Add Model", this, SLOT(OnAddModel()));
+        DAVA::TArc::QtAction* actionAdd = new DAVA::TArc::QtAction(contextAccessor, "Add Model", &contextMenu);
+        DAVA::TArc::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+        actionAdd->SetStateUpdationFunction(DAVA::TArc::QtAction::Enabled, fieldDescr, [](const DAVA::Any& v) {
+            return v.IsEmpty() == false;
+        });
+        QObject::connect(actionAdd, &QAction::triggered, this, &LibraryWidget::OnAddModel);
+        contextMenu.addAction(actionAdd);
+
+        actionAdd->setEnabled(contextAccessor->GetActiveContext() != nullptr);
         QAction* actionEdit = contextMenu.addAction("Edit Model", this, SLOT(OnEditModel()));
 
         actionAdd->setData(fileInfoAsVariant);
@@ -315,6 +328,9 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
     {
         QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertDae()));
         actionConvert->setData(fileInfoAsVariant);
+
+        QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsDae()));
+        actionConvertAnimations->setData(fileInfoAsVariant);
     }
 
     contextMenu.addSeparator();
@@ -337,6 +353,11 @@ void LibraryWidget::OnFilesTypeChanged(int typeIndex)
 
 void LibraryWidget::OnAddModel()
 {
+    if (contextAccessor->GetActiveContext() == nullptr)
+    {
+        return;
+    }
+
     QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
@@ -345,7 +366,7 @@ void LibraryWidget::OnAddModel()
 
 void LibraryWidget::OnEditModel()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit EditSceneRequested(fileInfo.absoluteFilePath().toStdString());
@@ -353,15 +374,23 @@ void LibraryWidget::OnEditModel()
 
 void LibraryWidget::OnConvertDae()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEConvertionRequested(fileInfo.absoluteFilePath().toStdString());
 }
 
+void LibraryWidget::OnConvertAnimationsDae()
+{
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
+    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
+
+    emit DAEAnimationConvertionRequested(fileInfo.absoluteFilePath().toStdString());
+}
+
 void LibraryWidget::OnRevealAtFolder()
 {
-    QVariant indexAsVariant = ((QAction*)sender())->data();
+    QVariant indexAsVariant = qobject_cast<QAction*>(sender())->data();
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     QtHelpers::ShowInOSFileManager(fileInfo.absoluteFilePath());

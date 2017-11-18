@@ -1,11 +1,12 @@
 #include "TArc/Controls/SceneTabbar.h"
+#include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/Utils/CommonFieldNames.h"
 
 #include <Debug/DVAssert.h>
 #include <Base/BaseTypes.h>
 
 #include <QVariant>
-#include <QShortcut>
+#include <QAction>
 
 namespace DAVA
 {
@@ -22,10 +23,24 @@ SceneTabbar::SceneTabbar(ContextAccessor* accessor_, Reflection model_, QWidget*
 
     QObject::connect(this, &QTabBar::currentChanged, this, &SceneTabbar::OnCurrentTabChanged);
     QObject::connect(this, &QTabBar::tabCloseRequested, this, &SceneTabbar::OnCloseTabRequest);
-    QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this), &QShortcut::activated, DAVA::MakeFunction(this, &SceneTabbar::OnCloseCurrentTab));
+
+    Reflection ref = model.GetField(MainObjectName);
+    DVASSERT(ref.IsValid() == true);
+    String mainObjectName = ref.GetValue().Cast<String>(String(""));
+    DVASSERT(mainObjectName.empty() == false);
+
+    QAction* closeTab = new QAction(QString("Close %1").arg(mainObjectName.c_str()), this);
+    KeyBindableActionInfo info;
+    info.blockName = "File";
+    info.context = Qt::WindowShortcut;
+    info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::Key_W));
 #if defined(__DAVAENGINE_WIN32__)
-    QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4), this), &QShortcut::activated, DAVA::MakeFunction(this, &SceneTabbar::OnCloseCurrentTab));
+    info.defaultShortcuts.push_back(QKeySequence(Qt::CTRL + Qt::Key_F4));
 #endif
+    MakeActionKeyBindable(closeTab, info);
+
+    addAction(closeTab);
+    QObject::connect(closeTab, &QAction::triggered, DAVA::MakeFunction(this, &SceneTabbar::OnCloseCurrentTab));
 }
 
 void SceneTabbar::OnDataChanged(const DataWrapper& wrapper, const Vector<Any>& fields)

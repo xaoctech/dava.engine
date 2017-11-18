@@ -1,9 +1,9 @@
 #include "CubemapEditor/CubemapEditorDialog.h"
 #include "CubemapEditor/ClickableQLabel.h"
 #include "CubemapEditor/CubemapUtils.h"
-#include "Classes/Settings/SettingsManager.h"
 #include "Qt/Main/QtUtils.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
 #include "Classes/Project/ProjectManagerData.h"
 
 #include "ui_CubemapEditorDialog.h"
@@ -12,7 +12,7 @@
 #include "ImageTools/ImageTools.h"
 #include "QtTools/FileDialogs/FileDialog.h"
 
-#include "TArc/DataProcessing/DataContext.h"
+#include <TArc/DataProcessing/DataContext.h>
 
 #include <QMouseEvent>
 #include <QMessageBox>
@@ -77,8 +77,13 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 {
     ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
-    FilePath projectPath = CubemapUtils::GetDialogSavedPath("Internal/CubemapLastFaceDir",
-                                                            data->GetDataSource3DPath().GetAbsolutePathname());
+
+    CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+    FilePath projectPath = settings->cubemapLastFaceDir;
+    if (projectPath.IsEmpty() == true)
+    {
+        projectPath = data->GetDataSource3DPath();
+    }
 
     QString fileName = FileDialog::getOpenFileName(this,
                                                    tr("Open Cubemap Face Image"),
@@ -92,7 +97,8 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
         LoadImageTo(path, face, false);
 
         projectPath = stdFilePath;
-        SettingsManager::SetValue(Settings::Internal_CubemapLastFaceDir, VariantType(projectPath.GetDirectory()));
+        CommonInternalSettings* settings = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>();
+        settings->cubemapLastFaceDir = projectPath.GetDirectory();
 
         if (AllFacesLoaded())
         {

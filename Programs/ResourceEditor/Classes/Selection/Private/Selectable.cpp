@@ -1,9 +1,12 @@
 #include "Classes/Selection/Selectable.h"
 
-Selectable::Selectable(Object* baseObject)
-    : object(baseObject)
+#include <Base/Type.h>
+#include <Reflection/ReflectedTypeDB.h>
+
+Selectable::Selectable(const DAVA::Any& object_)
+    : object(object_)
 {
-    DVASSERT(object != nullptr);
+    DVASSERT(ContainsObject() == true);
 }
 
 Selectable::Selectable(const Selectable& other)
@@ -34,7 +37,7 @@ Selectable& Selectable::operator=(Selectable&& other)
     {
         object = other.object;
         boundingBox = other.boundingBox;
-        other.object = nullptr;
+        other.object = DAVA::Reflection();
     }
     return *this;
 }
@@ -51,7 +54,7 @@ bool Selectable::operator!=(const Selectable& other) const
 
 bool Selectable::operator<(const Selectable& other) const
 {
-    return object < other.object;
+    return DAVA::PointerValueAnyLess()(object, other.object);
 }
 
 void Selectable::SetBoundingBox(const DAVA::AABBox3& box)
@@ -61,19 +64,19 @@ void Selectable::SetBoundingBox(const DAVA::AABBox3& box)
 
 const DAVA::Matrix4& Selectable::GetLocalTransform() const
 {
-    auto proxy = GetTransformProxyForClass(object->GetTypeInfo()->Type());
+    auto proxy = GetTransformProxyForClass(object);
     return (proxy == nullptr) ? DAVA::Matrix4::IDENTITY : proxy->GetLocalTransform(object);
 }
 
 const DAVA::Matrix4& Selectable::GetWorldTransform() const
 {
-    auto proxy = GetTransformProxyForClass(object->GetTypeInfo()->Type());
+    auto proxy = GetTransformProxyForClass(object);
     return (proxy == nullptr) ? DAVA::Matrix4::IDENTITY : proxy->GetWorldTransform(object);
 }
 
 void Selectable::SetLocalTransform(const DAVA::Matrix4& transform)
 {
-    auto proxy = GetTransformProxyForClass(object->GetTypeInfo()->Type());
+    auto proxy = GetTransformProxyForClass(object);
     if (proxy != nullptr)
     {
         proxy->SetLocalTransform(object, transform);
@@ -82,30 +85,33 @@ void Selectable::SetLocalTransform(const DAVA::Matrix4& transform)
 
 bool Selectable::SupportsTransformType(TransformType transformType) const
 {
-    auto proxyClass = GetTransformProxyForClass(object->GetTypeInfo()->Type());
+    auto proxyClass = GetTransformProxyForClass(object);
     return (proxyClass != nullptr) && proxyClass->SupportsTransformType(object, transformType);
 }
 
 bool Selectable::TransformDependsOn(const Selectable& other) const
 {
-    auto proxyClass = GetTransformProxyForClass(object->GetTypeInfo()->Type());
+    auto proxyClass = GetTransformProxyForClass(object);
     return (proxyClass != nullptr) && proxyClass->TransformDependsFromObject(object, other.GetContainedObject());
 }
 
 /*
  * Transform proxy stuff
  */
-static DAVA::Map<const DAVA::MetaInfo*, Selectable::TransformProxy*> transformProxies;
+static DAVA::Map<const DAVA::Type*, Selectable::TransformProxy*> transformProxies;
 
-void Selectable::AddConcreteProxy(DAVA::MetaInfo* classInfo, Selectable::TransformProxy* proxy)
+void Selectable::AddConcreteProxy(const DAVA::Type* classInfo, Selectable::TransformProxy* proxy)
 {
     DVASSERT(transformProxies.count(classInfo) == 0);
     transformProxies.emplace(classInfo, proxy);
 }
 
-Selectable::TransformProxy* Selectable::GetTransformProxyForClass(const DAVA::MetaInfo* classInfo)
+Selectable::TransformProxy* Selectable::GetTransformProxyForClass(const DAVA::Any& object)
 {
-    auto i = transformProxies.find(classInfo);
+    const DAVA::Type* t = object.GetType();
+    DVASSERT(t->IsPointer() == true);
+    const DAVA::ReflectedType* refType = DAVA::ReflectedTypeDB::GetByPointer(object.Get<void*>(), t->Deref());
+    auto i = transformProxies.find(refType->GetType());
     return (i == transformProxies.end()) ? nullptr : i->second;
 }
 

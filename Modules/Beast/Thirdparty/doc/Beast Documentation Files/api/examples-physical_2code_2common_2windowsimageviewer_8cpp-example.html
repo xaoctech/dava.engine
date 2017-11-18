@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples-physical/code/common/windowsimageviewer.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples-physical_2code_2common_2windowsimageviewer_8cpp-example.html','api_examples_physical_2code_2common_2windowsimageviewer_8cpp_example_html74326874-1a9a-4153-b674-53dfb8ec605e','index.html',location.hash); javascript:initPage('API: examples-physical/code/common/windowsimageviewer.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples-physical_2code_2common_2windowsimageviewer_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples-physical/code/common/windowsimageviewer.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples-physical/code/common/windowsimageviewer.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+examples-physical/code/common/windowsimageviewer.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "windowsimageviewer.h"</span>
+
+<span class="keyword">namespace </span>bex {
+        WindowsImageViewer::WindowsImageViewer() :
+                m_exitRequested(<span class=
+"keyword">false</span>),
+                m_width(16),
+                m_height(9),
+                m_visible(<span class="keyword">false</span>),
+                m_bitmapInitialized(<span class=
+"keyword">false</span>)
+        {
+                HINSTANCE instance = GetModuleHandle(NULL);
+                
+                WNDCLASS windowClass;
+                windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+                windowClass.lpfnWndProc = wndProc;
+                windowClass.cbClsExtra = 0;
+                windowClass.cbWndExtra = 0;
+                windowClass.hInstance = instance;
+                windowClass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+                windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+                windowClass.hbrBackground = NULL;
+                windowClass.lpszMenuName = NULL;
+                windowClass.lpszClassName = TEXT(<span class=
+"stringliteral">"BeastSampleWindow"</span>);
+                RegisterClass(&amp;windowClass);
+
+                m_style = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+                <span class=
+"keywordtype">int</span> windowWidth, windowHeight;
+                calculateWindowSize(m_width, m_height, &amp;windowWidth, &amp;windowHeight);
+                m_windowHandle = CreateWindow(windowClass.lpszClassName, TEXT(<span class="stringliteral">"Image Viewer"</span>),
+                        m_style, CW_USEDEFAULT, CW_USEDEFAULT, windowWidth, windowHeight,
+                        NULL, NULL, instance, NULL);
+
+                SetWindowLongPtr(m_windowHandle, GWLP_USERDATA, (LONG_PTR) <span class="keyword">this</span>);
+
+                m_deviceContext = GetDC(m_windowHandle);
+
+                m_memoryDeviceContext = CreateCompatibleDC(m_deviceContext);
+        }
+
+        WindowsImageViewer::~WindowsImageViewer() {
+                HINSTANCE instance = GetModuleHandle(NULL);
+                UnregisterClass(TEXT(<span class=
+"stringliteral">"BeastSampleWindow"</span>), instance);
+
+                releaseBitmap();
+                DeleteDC(m_memoryDeviceContext);
+        }
+
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::calculateWindowSize(<span class="keywordtype">int</span> clientWidth, <span class="keywordtype">int</span> clientHeight, <span class="keywordtype">int</span> *windowWidth, <span class="keywordtype">int</span> *windowHeight)
+        {
+                RECT rect;
+                rect.left = 0;
+                rect.top = 0;
+                rect.right = clientWidth;
+                rect.bottom = clientHeight;
+                AdjustWindowRect(&amp;rect, m_style, FALSE);
+                *windowWidth = rect.right - rect.left;
+                *windowHeight = rect.bottom - rect.top;
+        }
+
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::setClientSize(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height)
+        {
+                releaseBitmap();
+
+                m_width = width;
+                m_height = height;
+
+                <span class=
+"keywordtype">int</span> windowWidth = 0;
+                <span class=
+"keywordtype">int</span> windowHeight = 0;
+                calculateWindowSize(width, height, &amp;windowWidth, &amp;windowHeight);
+
+                UINT flags = SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOREPOSITION | SWP_NOZORDER;
+                SetWindowPos(m_windowHandle, NULL, 0, 0, windowWidth, windowHeight, flags);             
+
+                UpdateWindow(m_windowHandle);
+
+                createBitmap();
+        }
+
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::createBitmap() {
+                m_memoryBitmap = CreateCompatibleBitmap(m_deviceContext, m_width, m_height);
+                m_oldMemoryObject = SelectObject(m_memoryDeviceContext, m_memoryBitmap);
+
+                m_bitmapInitialized = <span class=
+"keyword">true</span>;
+        }
+
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::releaseBitmap() {
+                <span class=
+"keywordflow">if</span> (m_bitmapInitialized) {
+                        SelectObject(m_memoryDeviceContext, m_oldMemoryObject);
+                        DeleteObject(m_memoryBitmap);
+
+                        m_bitmapInitialized = <span class=
+"keyword">false</span>;
+                }
+        }
+
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::writeData(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* data, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height) {
+                <span class=
+"keywordflow">if</span> (m_width != width || m_height != height)
+                        setClientSize(width, height);
+
+                <span class="keywordflow">if</span> (!m_visible) {
+                        ShowWindow(m_windowHandle, SW_SHOW);
+                        SetForegroundWindow(m_windowHandle);
+                        m_visible = <span class=
+"keyword">true</span>;
+                }
+
+                BITMAPINFO bitmapInfo;
+                memset(&amp;bitmapInfo.bmiHeader, 0, <span class=
+"keyword">sizeof</span>(BITMAPINFOHEADER));
+                bitmapInfo.bmiHeader.biSize = <span class=
+"keyword">sizeof</span>(BITMAPINFOHEADER);
+                bitmapInfo.bmiHeader.biWidth = width;
+                bitmapInfo.bmiHeader.biHeight = height;
+                bitmapInfo.bmiHeader.biPlanes = 1;
+                bitmapInfo.bmiHeader.biBitCount = 24;
+                bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span>* convertedData = <span class=
+"keyword">new</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span>[width * height * 3];
+
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> y = 0; y &lt; height; ++y) {
+                        <span class=
+"keywordtype">int</span> flippedY = height-1 - y;
+                        <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span>* sourceData = &amp;data[y*width*3];
+                        <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span>* targetData = &amp;convertedData[flippedY*width*3];
+                        
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> x = 0; x &lt; width; ++x) {
+                                targetData[2] = sourceData[0];
+                                targetData[1] = sourceData[1];
+                                targetData[0] = sourceData[2];
+
+                                sourceData += 3;
+                                targetData += 3;
+                        }
+                }
+
+                SetDIBits(m_memoryDeviceContext, m_memoryBitmap, 0, height, convertedData, &amp;bitmapInfo, DIB_RGB_COLORS);
+                InvalidateRect(m_windowHandle, NULL, FALSE);
+                UpdateWindow(m_windowHandle);
+
+                <span class=
+"keyword">delete</span>[] convertedData;
+        }
+                
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::update() {
+                MSG msg;
+                <span class=
+"keywordflow">while</span> (PeekMessage(&amp;msg, NULL, 0, 0, PM_REMOVE)) {
+                        TranslateMessage(&amp;msg);
+                        DispatchMessage(&amp;msg);
+                }
+        }
+
+        <span class=
+"keywordtype">bool</span> WindowsImageViewer::isExitRequested()<span class="keyword"> const </span>{
+                <span class=
+"keywordflow">return</span> m_exitRequested;
+        }
+
+        <span class=
+"keywordtype">void</span> WindowsImageViewer::waitUntilClosed() {
+                <span class=
+"keywordflow">while</span> (!m_exitRequested) {
+                        update();
+                        Sleep(0);
+                }
+        }
+
+        LRESULT CALLBACK WindowsImageViewer::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+        {
+                LONG_PTR userData = GetWindowLongPtr(hWnd, GWLP_USERDATA);
+                WindowsImageViewer* imageViewer = NULL;
+
+                <span class="keywordflow">if</span> (userData) {
+                        imageViewer = <span class=
+"keyword">reinterpret_cast&lt;</span>WindowsImageViewer*<span class="keyword">&gt;</span>(userData);
+                }
+
+                <span class="keywordflow">switch</span> (message) {
+                        <span class=
+"keywordflow">case</span> WM_CLOSE:
+                                imageViewer-&gt;m_exitRequested = <span class="keyword">true</span>;
+                                <span class=
+"keywordflow">return</span> 1;
+
+                        <span class=
+"keywordflow">case</span> WM_KEYDOWN:
+                                <span class=
+"keywordflow">if</span> (wParam == VK_ESCAPE)
+                                        imageViewer-&gt;m_exitRequested = <span class="keyword">true</span>;
+
+                                <span class=
+"keywordflow">return</span> 0;
+                        
+                        <span class=
+"keywordflow">case</span> WM_ERASEBKGND:
+                                <span class=
+"keywordflow">return</span> 1;
+
+                        <span class=
+"keywordflow">case</span> WM_PAINT:
+                        {
+                                PAINTSTRUCT paintStruct;
+                                HDC hdc = BeginPaint(imageViewer-&gt;m_windowHandle, &amp;paintStruct);
+
+                                BitBlt(imageViewer-&gt;m_deviceContext, 0, 0, imageViewer-&gt;m_width, imageViewer-&gt;m_height, imageViewer-&gt;m_memoryDeviceContext, 0, 0, SRCCOPY);
+
+                                EndPaint(imageViewer-&gt;m_windowHandle, &amp;paintStruct);
+
+                                <span class=
+"keywordflow">return</span> 0;
+                        }
+
+                        <span class="keywordflow">default</span>:
+                                <span class=
+"keywordflow">return</span> DefWindowProc(hWnd, message, wParam, lParam);
+                }
+        }
+}
+
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

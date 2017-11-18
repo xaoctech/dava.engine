@@ -25,7 +25,7 @@ LoggerOutputObject::LoggerOutputContainer::LoggerOutputContainer(LoggerOutputObj
 
 void LoggerOutputObject::LoggerOutputContainer::AboutToBeDestroyed()
 {
-    DAVA::Logger::RemoveCustomOutput(this); //as a static method, must be safe for Logger::Instance() == nullptr
+    DAVA::Logger::RemoveCustomOutput(this); //as a static method, must be safe for GetEngineContext()->logger == nullptr
 }
 
 LoggerOutputObject::LoggerOutputContainer::~LoggerOutputContainer()

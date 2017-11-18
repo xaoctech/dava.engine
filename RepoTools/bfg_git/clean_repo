@@ -1,3 +1,0 @@
-#!/bin/sh
-# run from teamcity
-java -jar bfg-1.12.3.jar --strip-blobs-bigger-than 99M dava.framework

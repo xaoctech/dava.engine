@@ -9,6 +9,10 @@ ColladaPolygonGroupInstance::ColladaPolygonGroupInstance(ColladaPolygonGroup* _p
     material = _material;
 }
 
+ColladaPolygonGroupInstance::~ColladaPolygonGroupInstance()
+{
+}
+
 void ColladaPolygonGroupInstance::Render()
 {
     polyGroup->Render(material);

@@ -13,6 +13,7 @@
 #include "Utils/UTF8Utils.h"
 #include "Utils/Utils.h"
 
+#define YAML_DECLARE_STATIC
 #include "yaml/yaml.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
@@ -102,7 +103,7 @@ String LocalizationSystem::GetDeviceLocale(void) const
         return overridenLangId;
     }
 
-    JNI::JavaClass jniLocalisation("com/dava/framework/JNILocalization");
+    JNI::JavaClass jniLocalisation("com/dava/engine/Localization");
     Function<jstring()> jgetLocale = jniLocalisation.GetStaticMethod<jstring>("GetLocale");
 
     return JNI::JavaStringToString(JNI::LocalRef<jstring>(jgetLocale()));

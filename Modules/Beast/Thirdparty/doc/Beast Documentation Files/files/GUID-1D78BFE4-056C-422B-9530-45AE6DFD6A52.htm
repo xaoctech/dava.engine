@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA" />
+      <title>Working With Object Handles</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBCreatePointLight()", "../api/beastlightsource_8h.html#a18dbdf65ce6b68609609caea8df8f620", "API"]); 
+reflinkdata.push(["ILBCreatePerspectiveCamera()", "../api/beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6", "API"]); 
+reflinkdata.push(["ILBMeshHandle", "../api/struct_i_l_b_mesh_handle.html", "API"]); 
+reflinkdata.push(["ILBBeginMesh", "../api/beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b", "API"]); 
+reflinkdata.push(["ILBAddVertexData", "../api/beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073", "API"]); 
+reflinkdata.push(["ILBEndMesh", "../api/beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987", "API"]); 
+reflinkdata.push(["ILBInstanceHandle", "../api/struct_i_l_b_instance_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateInstance", "../api/beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm',                           'd30e4492','index.html',location.hash);                           javascript:initPage('Working With Object Handles','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Working With Object Handles&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Colors and Gamma Correction</div><a href="GUID-8CFC4CF7-F3AE-4092-81BE-C417DD0A4662.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Programming With the Beast API</div><a href="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Working With Strings</div><a href="GUID-B310EEA2-D148-493D-8C85-90BA6B3369B3.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-215C3EE9-6616-41B4-B6A6-6BEEF46BB58D.htm"> Getting Started with Beast</a>&nbsp;&gt;&nbsp;<a href="GUID-95D179A7-E0BF-4A07-8A0B-1ABBBA6BDEAA.htm">Programming With the Beast API</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-D37533AA-F89A-4F9A-B9CA-B167B3717CF9"></a></span><h1>Working With Object Handles</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-645D473D-D7DA-4805-A4FA-DF841E773CF5"></a></span>Most types of objects in <span class="charspan-msgph" translate="no">Beast</span>, such as scenes, textures, meshes, light sources and render jobs, are used through handles. Each type of handle has its own
+            set of functions that you can call to initialize it, access its data, and operate on it. Taken together, these handles and
+            their related functions are quite similar to classes and class methods in object-oriented languages such as C++: you can think
+            of the handle as a pointer to a class instance, and the functions that operate on it are like class methods. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-2ED56585-C664-441E-8F4E-348E9FD76E42"></a></span>Typically, you work with these handles as follows: 
+         </p>
+         <!--OList--><span class="anchor_wrapper"><a name="OL_52BC5749E4E143AB88945CD31FF4761B"></a></span><ol start="1">
+            <li>You create a new instance of the handle, either on the stack or on the heap. </li>
+            <li>You initialize the handle and prepare it for use by calling a function specific to that type of handle, and passing a pointer
+               to your handle as an argument. For example, to initialize a light source handle as a point light, you call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePointLight()'); return false;">ILBCreatePointLight()</a></span>. Similarly, to initialize a camera handle, you call <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreatePerspectiveCamera()'); return false;">ILBCreatePerspectiveCamera()</a></span>. 
+            </li>
+            <li>Any time you call a function to access the data in the handle, you pass your handle as an argument by value. </li>
+            <li>Some kinds of handles, such as scenes and meshes, need to be closed when you are finished modifying them. This marks them
+               as being complete, prevents them from further modification, and enables their use for other purposes. For example, after a
+               scene is closed you can render it, and after a mesh is closed you can create instances of it. 
+            </li>
+            <li>Some kinds of handles, such as jobs, job updates, framebuffers and scenes, also offer "destroy" or "release" functions that
+               release all memory allocated by the handle. In most cases, you do not need to call these explicitly, as the handle will be
+               cleared transparently when its variable passes out of scope or when the <span class="charspan-msgph" translate="no">Beast</span> manager is destroyed. However, if you need to free up the memory at some point, you can call these functions to do so. Note
+               that these calls invalidate the handles; the destroyed or released handles cannot be used again unless you re-initialize them.
+               
+            </li>
+         </ol>
+         <p><span class="anchor_wrapper"><a name="GUID-3C9293C5-718D-4605-9038-F4037D3B17AF"></a></span>For example, the following code shows how to create and use mesh and instance handles: 
+         </p>
+         <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMeshHandle'); return false;">ILBMeshHandle</a> myMesh;
+// Note that myMesh is passed as a pointer for initialization.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginMesh'); return false;">ILBBeginMesh</a>(bm, "myMesh", &amp;myMesh);
+// Now myMesh is passed as a value.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddVertexData'); return false;">ILBAddVertexData</a>(myMesh, vertexData, normalData, vertexCount);
+...
+// Now myMesh is closed, after which it can be instantiated.
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBEndMesh'); return false;">ILBEndMesh</a>(myMesh);
+
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBInstanceHandle'); return false;">ILBInstanceHandle</a> myMeshInstance;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateInstance'); return false;">ILBCreateInstance</a>(myScene, myMesh, "InstanceName", matrix, &amp;myMeshInstance);
+...
+</pre></div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

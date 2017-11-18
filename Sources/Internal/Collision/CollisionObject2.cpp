@@ -41,7 +41,7 @@ void CollisionObject2::SetPolygon(Polygon2* _basePolygon)
     
 
 #if 0
-void CollisionObject2::Update(const Sprite::DrawState & state/*const Vector2 & _position, const Vector2 & _pivot, const Vector2 & _scale, float32 _angle*/)
+void CollisionObject2::Update(const SpriteDrawState & state/*const Vector2 & _position, const Vector2 & _pivot, const Vector2 & _scale, float32 _angle*/)
 {
     if (!basePolygon)return;
     uint32 globalFrameIndex = Core::Instance()->GetGlobalFrameIndex();
@@ -98,7 +98,7 @@ void CollisionObject2::UpdatePosition(Vector2 newPos)
     bbox.max += diff;
 }
 
-void CollisionObject2::Update(const Sprite::DrawState& state /*const Vector2 & _position, const Vector2 & _pivot, const Vector2 & _scale, float32 _angle*/)
+void CollisionObject2::Update(const SpriteDrawState& state /*const Vector2 & _position, const Vector2 & _pivot, const Vector2 & _scale, float32 _angle*/)
 {
     if (!basePolygon)
         return;

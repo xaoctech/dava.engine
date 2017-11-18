@@ -9,6 +9,7 @@
 
 BasePropertyDelegate::BasePropertyDelegate(PropertiesTreeItemDelegate* delegate)
     : AbstractPropertyDelegate(delegate)
+    , accessor(nullptr)
 {
 }
 

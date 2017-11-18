@@ -242,7 +242,7 @@ public:
         */
     inline ePathType GetType() const;
 
-    bool StartsWith(const FilePath& basePath);
+    bool StartsWith(const FilePath& basePath) const;
 
     static bool ContainPath(const FilePath& basePath, const FilePath& partPath);
     static bool ContainPath(const FilePath& basePath, const String& partPath);

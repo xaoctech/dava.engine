@@ -1,0 +1,16 @@
+//#include "nodes.h"
+surface
+defaultShader
+    [[ string description = "default material" ]]
+(
+    float Kd = 1
+        [[  string description = "Diffuse scaling",
+            float UImin = 0, float UIsoftmax = 1 ]],
+    color Cs = 1
+        [[  string description = "Base color",
+            float UImin = 0, float UImax = 1 ]]
+  )
+{
+   color mixture = noise("perlin", P);//turbulence(P * 0.04, 8);
+   Ci = Kd * Cs * diffuse(N) * mixture + (1-mixture) * phong(N, 13);
+}

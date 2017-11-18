@@ -1,13 +1,15 @@
 #include "Classes/Application/REModule.h"
 #include "Classes/Application/REGlobal.h"
+#include "Classes/Application/RESettings.h"
+#include "Classes/Application/FileSystemData.h"
+#include "Classes/Application/Private/SettingsConverter.h"
 
 #include "Main/mainwindow.h"
 #include "TextureCache.h"
-#include "QtTools/Utils/Themes/Themes.h"
 
-#include "TArc/WindowSubSystem/Private/UIManager.h"
-#include "TArc/DataProcessing/DataNode.h"
-#include "UI/Render/UIRenderSystem.h"
+#include <TArc/WindowSubSystem/Private/UIManager.h>
+#include <TArc/DataProcessing/DataNode.h>
+#include <UI/Render/UIRenderSystem.h>
 
 #include <QPointer>
 
@@ -43,6 +45,10 @@ public:
 };
 }
 
+REModule::REModule()
+{
+}
+
 REModule::~REModule()
 {
     GetAccessor()->GetGlobalContext()->DeleteData<REModuleDetail::REGlobalData>();
@@ -50,8 +56,8 @@ REModule::~REModule()
 
 void REModule::PostInit()
 {
-    Themes::InitFromQApplication();
     DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+    ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
 
     const DAVA::EngineContext* engineContext = accessor->GetEngineContext();
     engineContext->localizationSystem->InitWithDirectory("~res:/Strings/");
@@ -69,6 +75,8 @@ void REModule::PostInit()
     globalData->mainWindow->EnableGlobalTimeout(true);
 
     RegisterOperation(REGlobal::ShowMaterial.ID, this, &REModule::ShowMaterial);
+
+    globalContext->CreateData(std::make_unique<FileSystemData>());
 }
 
 void REModule::ShowMaterial(DAVA::NMaterial* material)

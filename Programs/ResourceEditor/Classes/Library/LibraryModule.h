@@ -4,8 +4,7 @@
 
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 #include <Reflection/Reflection.h>
 
@@ -35,13 +34,14 @@ private:
     void OnAddSceneRequested(const DAVA::FilePath& scenePathname);
     void OnEditSceneRequested(const DAVA::FilePath& scenePathname);
     void OnDAEConvertionRequested(const DAVA::FilePath& daePathname);
+    void OnDAEAnimationConvertionRequested(const DAVA::FilePath& daePathname);
     void OnDoubleClicked(const DAVA::FilePath& scenePathname);
     void OnDragStarted();
 
     DAVA::RefPtr<ScenePreviewDialog> previewDialog;
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
     DAVA::TArc::QtConnections connections;
-    QtDelayedExecutor executor;
+    DAVA::TArc::QtDelayedExecutor executor;
 
     DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::TArc::ClientModule);
 };

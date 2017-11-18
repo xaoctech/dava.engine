@@ -1,8 +1,9 @@
-#ifndef __PARTICLE_FORCE_H__
-#define __PARTICLE_FORCE_H__
+#pragma once
 
 #include "Base/BaseObject.h"
 #include "Particles/ParticlePropertyLine.h"
+
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -19,9 +20,6 @@ public:
     RefPtr<PropertyLine<Vector3>> force;
     RefPtr<PropertyLine<float32>> forceOverLife;
 
-public:
-    INTROSPECTION_EXTEND(ParticleForce, BaseObject, nullptr)
+    DAVA_VIRTUAL_REFLECTION(ParticleForce, BaseObject);
 };
 };
-
-#endif /* defined(__PARTICLE_FORCE_H__) */

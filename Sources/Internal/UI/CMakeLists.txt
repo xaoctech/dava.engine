@@ -14,7 +14,11 @@ set( HPP_FILES *.h
     Formula/Private/*.h
     RichContent/*.h
     RichContent/Private/*.h
+    Text/*.h
+    Text/Private/*.h
     Render/*.h
+    Events/*.h
+    Events/Private/*.h
     )
 
 set( CPP_FILES *.cpp
@@ -33,7 +37,11 @@ set( CPP_FILES *.cpp
     Formula/Private/*.cpp
     RichContent/*.cpp
     RichContent/Private/*.cpp
+    Text/*.cpp
+    Text/Private/*.cpp
     Render/*.cpp
+    Events/*.cpp
+    Events/Private/*.cpp
     )
 
 set( CPP_FILES_APPLE *.mm )

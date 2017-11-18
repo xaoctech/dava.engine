@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ILConfig>
+
+  <AASettings>
+    <minSampleRate>0</minSampleRate>
+    <maxSampleRate>0</maxSampleRate>
+    <contrast>0.01</contrast>
+  </AASettings>
+
+  <RenderSettings>
+    <bias>0</bias>
+  </RenderSettings>
+
+  <FrameSettings>
+    <inputGamma>0.45</inputGamma>
+    <outputCorrection>
+      <colorCorrection>Gamma</colorCorrection>
+      <gamma>2.2</gamma>
+    </outputCorrection>
+  </FrameSettings>
+
+  <GISettings>
+    <enableGI>true</enableGI> 
+    <primaryIntegrator>FinalGather</primaryIntegrator>
+    <secondaryIntegrator>PathTracer</secondaryIntegrator>
+
+    <fgRays>600</fgRays>
+    <fgDepth>4</fgDepth>
+
+    <prepassMaxSampleRate>0</prepassMaxSampleRate>
+    <prepassMinSampleRate>0</prepassMinSampleRate>
+  </GISettings>
+
+  <TextureBakeSettings>
+    <edgeDilation>2</edgeDilation>
+    <bilinearFilter>true</bilinearFilter>
+    <conservativeRasterization>true</conservativeRasterization>
+  </TextureBakeSettings>
+
+</ILConfig>

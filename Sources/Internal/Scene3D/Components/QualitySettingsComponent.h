@@ -43,14 +43,6 @@ private:
     FastName requiredQuality;
     bool filterByType;
 
-public:
-    INTROSPECTION_EXTEND(QualitySettingsComponent, Component,
-                         PROPERTY("filterByType", "Filter By Type", GetFilterByType, SetFilterByType, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("modelType", "Model Type", GetModelType, SetModelType, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("requiredGroup", "Required Group", GetRequiredGroup, SetRequiredGroup, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("requiredQuality", "Required Quality", GetRequiredQuality, SetRequiredQuality, I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(QualitySettingsComponent, Component);
 };
 }

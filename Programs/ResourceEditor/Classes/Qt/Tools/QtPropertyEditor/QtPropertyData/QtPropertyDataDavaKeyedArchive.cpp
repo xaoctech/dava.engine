@@ -9,7 +9,7 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/Application/REGlobal.h"
 
-#include "QtTools/WidgetHelpers/SharedIcon.h"
+#include <TArc/Utils/Utils.h>
 
 #include <QSet>
 #include <QMenu>
@@ -135,7 +135,7 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const DAVA::FastName& name, DAVA
 
     // add optional widget (button) to remove this key
     QToolButton* remButton = childData->AddButton();
-    remButton->setIcon(SharedIcon(":/QtIcons/keyminus.png"));
+    remButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/keyminus.png"));
     remButton->setToolTip("Remove keyed archive member");
     remButton->setIconSize(QSize(12, 12));
 
@@ -262,7 +262,7 @@ void QtPropertyDataDavaKeyedArcive::FinishTreeCreation()
 {
     // add optional widget (button) to add new key
     QToolButton* addButton = AddButton();
-    addButton->setIcon(SharedIcon(":/QtIcons/keyplus.png"));
+    addButton->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/keyplus.png"));
     addButton->setToolTip("Add keyed archive member");
     addButton->setIconSize(QSize(12, 12));
     connections.AddConnection(addButton, &QToolButton::clicked, [this, addButton]() {

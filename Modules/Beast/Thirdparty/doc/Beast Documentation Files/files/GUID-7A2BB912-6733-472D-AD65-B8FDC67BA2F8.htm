@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-9BA7EFF2-4929-4C69-9A8D-72CF9AFD27EC" />
+      <title>Reading UV Layer Data</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBGetUVLayerSize()", "../api/beastuvlayer_8h.html#a28b39e6d49654cc53bdfa5888a0670a9", "API"]); 
+reflinkdata.push(["ILBReadUVLayerValues()", "../api/beastuvlayer_8h.html#aa613565b4ec0412f14b7b0b46fdcc612", "API"]); 
+reflinkdata.push(["ILBGetUVLayerIndexSize()", "../api/beastuvlayer_8h.html#a30f59a9e1075498e204f135b85035729", "API"]); 
+reflinkdata.push(["ILBReadUVLayerIndexValues()", "../api/beastuvlayer_8h.html#a85f61f1a4885f6a4d1fd50ef738149f8", "API"]); 
+reflinkdata.push(["ILBTargetHandle", "../api/struct_i_l_b_target_handle.html", "API"]); 
+reflinkdata.push(["ILBTargetEntityHandle", "../api/struct_i_l_b_target_entity_handle.html", "API"]); 
+reflinkdata.push(["ILBUVLayerHandle", "../api/struct_i_l_b_u_v_layer_handle.html", "API"]); 
+reflinkdata.push(["ILBGetUVLayerFromTarget", "../api/beasttarget_8h.html#a6d613b86c358f0776c2d4c656b452802", "API"]); 
+reflinkdata.push(["ILBGetUVLayerSize", "../api/beastuvlayer_8h.html#a28b39e6d49654cc53bdfa5888a0670a9", "API"]); 
+reflinkdata.push(["ILBGetUVLayerIndexSize", "../api/beastuvlayer_8h.html#a30f59a9e1075498e204f135b85035729", "API"]); 
+reflinkdata.push(["ILBVec2", "../api/struct_i_l_b_vec2.html", "API"]); 
+reflinkdata.push(["ILBReadUVLayerValues", "../api/beastuvlayer_8h.html#aa613565b4ec0412f14b7b0b46fdcc612", "API"]); 
+reflinkdata.push(["ILBReadUVLayerIndexValues", "../api/beastuvlayer_8h.html#a85f61f1a4885f6a4d1fd50ef738149f8", "API"]); 
+reflinkdata.push(["ILBGetUVLayerResolutionFromTarget", "../api/beasttarget_8h.html#acd242766614ee76a1ee20466e9e7aace", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm',                           'd30e10644','index.html',location.hash);                           javascript:initPage('Reading UV Layer Data','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Reading UV Layer Data&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Retrieving UV Layers</div><a href="GUID-2C898010-9E97-4206-8569-2EBF662DCE2B.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Retrieving the UV Unwrap Result</div><a href="GUID-9BA7EFF2-4929-4C69-9A8D-72CF9AFD27EC.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Related API Functions</div><a href="GUID-3CC72824-D049-408D-AA17-D3E99778F199.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-BB1E6549-0663-4EFC-8B06-F27253E87FF3.htm">Creating UVs for Meshes</a>&nbsp;&gt;&nbsp;<a href="GUID-9BA7EFF2-4929-4C69-9A8D-72CF9AFD27EC.htm">Retrieving the UV Unwrap Result</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-2BD7258A-92F9-4ACA-9A06-9898AFBC3159"></a></span><h1>Reading UV Layer Data</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-7A2BB912-6733-472D-AD65-B8FDC67BA2F8"></a></span>
+         <!--Body--><div class="section"><span class="anchor_wrapper"><a name="SECTION_E7B8274D69784C8694871082232A0448"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10650"></a><span class="anchor_wrapper"><a name="GUID-3CFB8033-262F-4CB9-B490-F6F9F2AF452C"></a></span>API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-C2A3ACB0-0E1A-429F-833E-92DF5F8D61D5"></a></span> Using a handle to a UV layer, the following API functions are used to read data from the layer: 
+            </p> <span class="anchor_wrapper"><a name="UL_53CA839FD9EB4C7CAC28B3C59EA8CB5D"></a></span><ul>
+               <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerSize()'); return false;">ILBGetUVLayerSize()</a></span> returns the size of the array containing the UV values. 
+               </li>
+               <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReadUVLayerValues()'); return false;">ILBReadUVLayerValues()</a></span> reads a number of values from the UV array. Each value is an ILBVec2 struct, where the x component holds the U value, and
+                  the y component holds the V value. 
+               </li>
+               <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerIndexSize()'); return false;">ILBGetUVLayerIndexSize()</a></span> returns the size of the index array, with an index entry for each face vertex. This should have the same number of entries
+                  as the number of face vertices in the mesh the UV layer was created for. 
+               </li>
+               <li><span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReadUVLayerIndexValues()'); return false;">ILBReadUVLayerIndexValues()</a></span> reads a number of index values from the UV index array. Each value is an integer pointing to the UV array, and associating
+                  a UV value with each face vertex. 
+               </li>
+            </ul> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_75B56E4026574B5592950F6282A60797"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10676"></a><span class="anchor_wrapper"><a name="GUID-7D9D29B6-CA11-46C9-83D5-910DCD7DDFAE"></a></span>Example
+            </h2> 
+            <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTargetHandle'); return false;">ILBTargetHandle</a> unwrapTarget;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBTargetEntityHandle'); return false;">ILBTargetEntityHandle</a> unwrapEntity;
+
+// Create job and target, add mesh to target and run job,
+// see example above...
+
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBUVLayerHandle'); return false;">ILBUVLayerHandle</a> uvLayer;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerFromTarget'); return false;">ILBGetUVLayerFromTarget</a>(unwrapTarget, unwrapEntity, &amp;uvLayer);
+
+int32 uvLayerSize, uvLayerIndexSize;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerSize'); return false;">ILBGetUVLayerSize</a>(uvLayer, &amp;uvLayerSize);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerIndexSize'); return false;">ILBGetUVLayerIndexSize</a>(uvLayer, &amp;uvLayerIndexSize);
+
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBVec2'); return false;">ILBVec2</a>* uvArray = new <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBVec2'); return false;">ILBVec2</a>[uvLayerSize];
+int32* uvIndexArray = new int32[uvLayerIndexSize];
+
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReadUVLayerValues'); return false;">ILBReadUVLayerValues</a>(uvLayer, 0, uvLayerSize, uvArray);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBReadUVLayerIndexValues'); return false;">ILBReadUVLayerIndexValues</a>(uvLayer, 0, uvLayerIndexSize, &amp;uvIndex);
+
+for (int32 faceVertex=0; faceVertex&lt;uvLayerIndexSize; ++faceVertex) {
+	const <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBVec2'); return false;">ILBVec2</a>&amp; uv = uvArray[uvIndexArray[faceVertex]];
+	// Assign uv to the corresponding face vertex,
+	// for example...
+	myMesh-&gt;assignUvToFaceVertex(faceVertex, uv);
+}
+
+delete [] uvArray;
+delete [] uvIndexArray;
+
+int32 width, height;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBGetUVLayerResolutionFromTarget'); return false;">ILBGetUVLayerResolutionFromTarget</a>(unwrapTarget, unwrapEntity, &amp;width, &amp;height));
+cout &lt;&lt; “Recommended resolution for baking mesh is “ &lt;&lt; width &lt;&lt; “ “ &lt;&lt; height &lt;&lt; endl;</pre></div> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

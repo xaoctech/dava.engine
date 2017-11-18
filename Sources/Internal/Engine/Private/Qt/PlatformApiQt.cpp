@@ -36,13 +36,6 @@ RenderWidget* GetRenderWidget()
     return EngineBackend::Instance()->GetPlatformCore()->GetRenderWidget();
 }
 
-bool SetLoopPaused(bool isLoopStopped)
-{
-    bool result = Private::EngineBackend::showingModalMessageBox;
-    Private::EngineBackend::showingModalMessageBox = isLoopStopped;
-    return result;
-}
-
 } // namespace Qt
 } // namespace PlatformApi
 } // namespace DAVA

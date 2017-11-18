@@ -2,6 +2,8 @@
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/YamlNode.h"
 #include "Logger/Logger.h"
+
+#define YAML_DECLARE_STATIC
 #include "yaml/yaml.h"
 
 namespace DAVA

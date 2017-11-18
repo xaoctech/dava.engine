@@ -1,22 +1,15 @@
-#ifndef __LOGDELEGATE_H__
-#define __LOGDELEGATE_H__
+#pragma once
 
-#include "QtTools/WarningGuard/QtWarningsHandler.h"
-PUSH_QT_WARNING_SUPRESSOR
 #include <QWidget>
 #include <QPointer>
 #include <QScopedPointer>
 #include <QStyledItemDelegate>
-POP_QT_WARNING_SUPRESSOR
 
 class QAbstractItemView;
 
-class LogDelegate
-: public QStyledItemDelegate
+class LogDelegate : public QStyledItemDelegate
 {
-    PUSH_QT_WARNING_SUPRESSOR
     Q_OBJECT
-    POP_QT_WARNING_SUPRESSOR
 
 signals:
     void copyRequest();
@@ -31,6 +24,3 @@ private:
 
     QPointer<QAbstractItemView> view;
 };
-
-
-#endif // __LOGDELEGATE_H__

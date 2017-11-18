@@ -1,0 +1,521 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/texturetarget.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2texturetarget_8cpp-example.html','api_maya_2beastmayaplugin_2src_2texturetarget_8cpp_example_htmlf045bc1d-a684-48b2-b3e6-158e06b5a0cb','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/texturetarget.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2texturetarget_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/texturetarget.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/texturetarget.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/beastmayaplugin/src/texturetarget.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "texturetarget.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastjobwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastframebufferwrapper.h"</span>
+
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+<span class="preprocessor">#include &lt;algorithm&gt;</span>
+<span class="preprocessor">#include "mayautils.h"</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MImage.h&gt;</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+<span class="keyword">struct </span>BeastTextureResult {
+        std::vector&lt;std::wstring&gt; splitTextures;
+};
+
+<span class="keyword">struct </span>PassResult {
+        PassPtr pass;
+        std::vector&lt;BeastTextureResult&gt; textures;
+        PassResult(PassPtr p) : pass(p) { }
+};
+
+<span class="keyword">struct </span>TargetResult {
+        std::vector&lt;PassResult&gt; passResults;
+};
+
+TextureEntity::TextureEntity(<span class=
+"keyword">const</span> MObject&amp; instance, <span class=
+"keyword">const</span> MObject&amp; entity, <span class=
+"keyword">const</span> std::wstring&amp; uvSet) :
+Entity(instance, entity),
+m_uvSet(uvSet),
+m_sizeType(TextureEntity::SIZE_TYPE_NONE) { }
+
+<span class=
+"keywordtype">void</span> TextureEntity::setTexelScale(<span class=
+"keywordtype">float</span> scale) {
+        m_sizeType = TextureEntity::SIZE_TYPE_SCALE;
+
+        m_texelScale = scale;
+}
+
+<span class=
+"keywordtype">void</span> TextureEntity::setTextureResolution(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height) {
+        m_sizeType = TextureEntity::SIZE_TYPE_RESOLUTION;
+
+        m_textureWidth = width;
+        m_textureHeight = height;
+}
+
+<span class=
+"keywordtype">void</span> TextureEntity::exportEntity(BeastTarget&amp; target) {
+        m_targetEntity = target.addInstance(*getBeastInstance());
+        m_targetEntity-&gt;setBakeUVSet(m_uvSet.c_str());
+        <span class=
+"keywordflow">if</span>(m_sizeType == TextureEntity::SIZE_TYPE_SCALE) {
+                m_targetEntity-&gt;setTexelScale(m_texelScale);
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span>(m_sizeType == TextureEntity::SIZE_TYPE_RESOLUTION) {
+                m_targetEntity-&gt;setBakeResolution(m_textureWidth, m_textureHeight);
+        }
+}
+
+<span class=
+"keywordtype">void</span> TextureEntity::importEntity(TargetResult&amp; result) {
+        MStatus res;
+
+        int32 fIdx;
+        <span class="keywordtype">float</span> sX,sY, oX, oY;
+        m_targetEntity-&gt;getAtlasInformation(fIdx, oX, oY, sX, sY);
+        MFnDependencyNode entityNode(getMayaEntity(), &amp;res);
+        CHECK_MSTATUS_AND_RETURN_VOID(res);
+
+        setPlugValue(entityNode, L<span class=
+"stringliteral">"outFrameBufferIndex"</span>, (<span class=
+"keywordtype">int</span>)fIdx);
+        setPlugValue(entityNode, L<span class=
+"stringliteral">"outAtlasOffset"</span>, oX, 0);
+        setPlugValue(entityNode, L<span class=
+"stringliteral">"outAtlasOffset"</span>, oY, 1);
+        setPlugValue(entityNode, L<span class=
+"stringliteral">"outAtlasScale"</span>, sX, 0);
+        setPlugValue(entityNode, L<span class=
+"stringliteral">"outAtlasScale"</span>, sY, 1);
+
+        <span class="comment">// Erase compound</span>
+        MPlug textureResultsPlug = entityNode.findPlug(L<span class="stringliteral">"textureResults"</span>, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_VOID(res);
+
+        <span class="keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> numElements = textureResultsPlug.numElements();
+        <span class="keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; numElements; ++i) {
+                std::wstringstream cmd;
+                cmd &lt;&lt; L<span class=
+"stringliteral">"removeMultiInstance "</span> &lt;&lt; getEntityName() &lt;&lt; L<span class="stringliteral">".textureResults["</span> &lt;&lt; i &lt;&lt; <span class="stringliteral">"];"</span>;
+                res = MGlobal::executeCommand(cmd.str().c_str());
+                CHECK_MSTATUS(res);
+        }
+
+        <span class="keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> passIndex = 0; passIndex &lt; result.passResults.size(); ++passIndex) {
+                PassResult&amp; passResult = result.passResults[passIndex];
+                {
+                        <span class=
+"comment">// Set pass name</span>
+                        std::wstringstream cmd;
+                        cmd &lt;&lt; L<span class=
+"stringliteral">"setAttr -type \"string\" "</span> &lt;&lt; getEntityName() &lt;&lt; L<span class="stringliteral">".textureResults["</span> &lt;&lt; 
+                                passIndex &lt;&lt; L<span class=
+"stringliteral">"].pass \""</span> &lt;&lt; passResult.pass-&gt;getPassName() &lt;&lt; <span class="stringliteral">"\""</span>;
+                        res = MGlobal::executeCommand(cmd.str().c_str());
+                        CHECK_MSTATUS(res);
+                }
+                {
+                        <span class=
+"comment">// Grab the correct atlas</span>
+                        assert(fIdx &lt; int32(passResult.textures.size()) &amp;&amp; <span class="stringliteral">"frame buffer index larger than number of resulting textures"</span>);
+                        BeastTextureResult&amp; textureResult = passResult.textures[fIdx];
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> splitIndex = 0; splitIndex &lt; textureResult.splitTextures.size(); ++splitIndex) {
+                                <span class=
+"comment">// Set texture filename</span>
+                                std::wstringstream cmd;
+                                cmd &lt;&lt; L<span class=
+"stringliteral">"setAttr -type \"string\" "</span> &lt;&lt; getEntityName() &lt;&lt; L<span class="stringliteral">".textureResults["</span> &lt;&lt; 
+                                        passIndex &lt;&lt; L<span class="stringliteral">"].textureFileName["</span> &lt;&lt; splitIndex &lt;&lt; <span class="stringliteral">"] \""</span> &lt;&lt; textureResult.splitTextures[splitIndex] &lt;&lt; <span class="stringliteral">"\""</span>;
+                                res = MGlobal::executeCommand(cmd.str().c_str());
+                                CHECK_MSTATUS(res);
+                        }
+                }
+        }
+}
+
+TextureTarget::TextureTarget(<span class=
+"keyword">const</span> MObject&amp; targetNode, <span class=
+"keywordtype">int</span> width, <span class=
+"keywordtype">int</span> height, <span class=
+"keywordtype">bool</span> atlas, <span class=
+"keywordtype">int</span> padding, <span class=
+"keywordtype">bool</span> atlasRescale, <span class=
+"keywordtype">float</span> atlasThreshold) :
+m_width(width),
+m_height(height),
+m_atlas(atlas),
+m_padding(padding),
+m_atlasRescale(atlasRescale),
+m_atlasThreshold(atlasThreshold),
+Target(targetNode) { }
+
+<span class=
+"keywordtype">void</span> TextureTarget::exportTarget(BeastJob&amp; job) {
+        <span class="keyword">static</span> <span class=
+"keywordtype">int</span> i = 0;
+        std::wostringstream nameStream;
+        nameStream &lt;&lt; L<span class=
+"stringliteral">"target"</span> &lt;&lt; i++;
+        std::wstring name = nameStream.str();
+        <span class="keywordflow">if</span>(m_atlas) {
+                BeastTargetPtr target = job.createAtlasedTextureTarget(name.c_str(), m_width, m_height, 0, m_atlasRescale, m_atlasThreshold);
+                setBeastTarget(target);
+                getBeastTarget().setAtlasPadding(m_padding);
+        } <span class="keywordflow">else</span> {
+                BeastTargetPtr target = job.createTextureTarget(name.c_str(), m_width, m_height);
+                setBeastTarget(target);
+        }
+        <span class=
+"keywordflow">if</span>(isWorldSpaceFilterEnabled()) {
+                <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(getWorldSpaceFilterSettings()); it != end(getWorldSpaceFilterSettings()); ++it) {
+                        <span class=
+"keyword">const</span> FilterSettings&amp; settings = it-&gt;second;
+                        getBeastTarget().enableWorldSpaceFilter(it-&gt;first);
+                        getBeastTarget().setWorldSpaceFilterSize(it-&gt;first, settings.size);
+                        getBeastTarget().setWorldSpaceFilterNormalDeviation(it-&gt;first, settings.normalDev);
+                }
+        }
+        
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(m_entities); it != end(m_entities); ++it) {
+                (*it)-&gt;exportEntity(getBeastTarget());
+        }
+
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> passIt = begin(m_passes); passIt != end(m_passes); ++passIt) {
+                (*passIt)-&gt;exportPass(job, getBeastTarget());
+                <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> entityIt = begin(m_entities); entityIt != end(m_entities); ++entityIt) {
+                        <span class=
+"comment">// Add entity to pass</span>
+                        (*passIt)-&gt;addEntity(*(*entityIt)-&gt;getBeastTargetEntity());
+                }
+        }
+}
+
+<span class=
+"keyword">static</span> MString getWorkspaceDirectory() {
+        MStatus res;
+        MString result = MGlobal::executeCommandStringResult(L<span class="stringliteral">"workspace -q -rootDirectory"</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, &amp;res);
+        CHECK_MSTATUS(res);
+        <span class="keywordflow">return</span> result;
+}
+
+<span class="keyword">static</span> <span class=
+"keywordtype">void</span> createDirectory(<span class=
+"keyword">const</span> std::wstring&amp; path) {
+        std::wstringstream cmd;
+        cmd &lt;&lt; L<span class="stringliteral">"\</span>
+<span class="stringliteral">import os\n\</span>
+<span class=
+"stringliteral">dir = os.path.dirname('"</span> &lt;&lt; path &lt;&lt; L<span class="stringliteral">"')\n\</span>
+<span class="stringliteral">if not os.path.exists(dir):\n\</span>
+<span class="stringliteral">        os.makedirs(dir)"</span>;
+        MStatus res = MGlobal::executePythonCommand(cmd.str().c_str());
+        CHECK_MSTATUS(res);
+}
+
+<span class=
+"keywordtype">void</span> TextureTarget::importTarget() {
+
+        TargetResult result;
+
+        MString workspaceDir = getWorkspaceDirectory();
+        std::wstring outputSubDir = L<span class=
+"stringliteral">"beast"</span>;
+        
+        <span class=
+"keywordtype">int</span> numBuffers = getBeastTarget().getFramebufferCount();
+
+        <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> pIt = begin(m_passes); pIt!=end(m_passes); ++pIt) {
+
+                BeastRenderPass&amp; rp = (*pIt)-&gt;getBeastPass();
+
+                <span class=
+"keywordtype">bool</span> skipAlpha = <span class=
+"keyword">true</span>; <span class=
+"comment">// qualify this on a per pass basis</span>
+
+                result.passResults.push_back(PassResult(*pIt));
+
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> i = 0; i &lt; numBuffers; i++) {
+                        BeastFramebufferPtr frameBuffer = getBeastTarget().getFrameBuffer(rp, i);
+
+                        <span class=
+"keywordtype">int</span> numChannels;
+                        frameBuffer-&gt;getChannelCount(numChannels);
+
+                        result.passResults.back().textures.push_back(BeastTextureResult());
+
+                        <span class=
+"keywordtype">int</span> width, height;
+                        frameBuffer-&gt;getResolution(width, height);
+                        std::vector&lt;unsigned char&gt; pixels;
+                        pixels.resize(width*height*numChannels);
+                        frameBuffer-&gt;readRegionLDR(0,0,width,height, <a name="a0"></a><a class="code"
+href=
+"beastframebuffer_8h.html#a1473025b7f3e0baa1c2f4c2a4e57e594a5d2b31e3d02259fc937892303dc002b5">ILB_CS_ALL</a>, 2.2f, pixels);
+                        <span class=
+"keywordtype">int</span> nofTex = (int)ceilf((<span class=
+"keywordtype">float</span>)(numChannels-1)/3.0f);<span class=
+"comment">//TODO we don't care about Z, validate this for lua</span>
+                        std::vector&lt;std::vector&lt;unsigned char&gt; &gt; outImages; 
+                        outImages.resize(nofTex);
+
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> outIdx=0; outIdx&lt;nofTex; outIdx++) {
+                                <span class=
+"keywordtype">int</span> size = width*height*4;
+                                outImages[outIdx].resize(size);
+                        }
+
+                        <span class=
+"keywordtype">int</span> offset=0;
+
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; height; ++y) {
+                                <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; width; ++x) {
+                                        <span class=
+"keywordtype">int</span> inputPixel = x + y * width;
+                                        <span class=
+"keywordtype">int</span> outputPixel = x + (height - y - 1) * width;
+                                        <span class=
+"keywordtype">int</span> offset = 0;
+                                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> outIdx=0; outIdx&lt;nofTex; outIdx++) {
+                                                outImages[outIdx][outputPixel*4] = pixels[inputPixel*numChannels + offset];
+                                                outImages[outIdx][outputPixel*4+1] = (offset + 1 &lt; numChannels) ? pixels[inputPixel*numChannels + offset + 1] : 0;
+                                                outImages[outIdx][outputPixel*4+2] = (offset + 2 &lt; numChannels) ? pixels[inputPixel*numChannels + offset + 2] : 0;
+                                                outImages[outIdx][outputPixel*4+3] = 255;
+                                                offset += 3;
+                                        }
+                                }
+                        }
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> outIdx=0; outIdx&lt;nofTex; outIdx++) {
+                                MImage tempI;
+                                tempI.create(width, height,4, MImage::kByte);
+                                tempI.setPixels(&amp;outImages[outIdx][0], width,height);
+                                std::wstringstream tempPath;
+                                tempPath &lt;&lt; workspaceDir.asWChar() &lt;&lt; outputSubDir &lt;&lt;  L<span class="stringliteral">"/"</span> &lt;&lt; getTargetName() &lt;&lt; L<span class="stringliteral">"_"</span> &lt;&lt; (*pIt)-&gt;getPassName();
+                                <span class=
+"keywordflow">if</span>(m_atlas) {
+                                        tempPath &lt;&lt; L<span class="stringliteral">"_atlas"</span> &lt;&lt; i;
+                                } <span class=
+"keywordflow">else</span> {
+                                        <span class=
+"comment">// There should only be one entity</span>
+                                        tempPath &lt;&lt; L<span class="stringliteral">"_"</span> &lt;&lt; m_entities[0]-&gt;getEntityName();
+                                }
+                                tempPath &lt;&lt; L<span class=
+"stringliteral">"_"</span> &lt;&lt; outIdx &lt;&lt; L<span class=
+"stringliteral">".tga"</span>;
+                                createDirectory(tempPath.str());
+                                MGlobal::displayInfo(MString(L<span class="stringliteral">"BEAST: Writing texture "</span>) + tempPath.str().c_str());
+                                tempI.writeToFile(tempPath.str().c_str(), L<span class="stringliteral">"tga"</span>);
+
+                                result.passResults.back().textures.back().splitTextures.push_back(tempPath.str());
+                        }
+                }
+        }
+
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(m_entities); it != end(m_entities); ++it) {
+                (*it)-&gt;importEntity(result);
+        }
+
+}
+
+<span class=
+"keywordtype">void</span> TextureTarget::addEntity(TextureEntityPtr&amp; entity) {
+        m_entities.push_back(entity);
+}
+
+<span class=
+"keywordtype">void</span> TextureTarget::addPass(PassPtr&amp; pass) {
+        m_passes.push_back(pass);
+}
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

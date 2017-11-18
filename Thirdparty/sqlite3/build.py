@@ -34,7 +34,7 @@ def build_for_target(target, working_directory_path, root_project_path):
 
 
 def get_download_info():
-    return 'https://www.sqlite.org/2016/sqlite-amalgamation-3140200.zip'
+    return 'https://www.sqlite.org/2016/sqlite-amalgamation-3130000.zip'
 
 
 def _download_and_extract(working_directory_path):
@@ -66,7 +66,8 @@ def _build_win32(working_directory_path, root_project_path):
         'sqlite3.sln', 'sqlite3',
         'sqlite3.lib', 'sqlite3.lib',
         'sqlite3.lib', 'sqlite3.lib',
-        'sqlite3.lib', 'sqlite3.lib')
+        'sqlite3.lib', 'sqlite3.lib',
+        static_runtime=False)
 
     _copy_headers(source_folder_path, root_project_path)
 

@@ -24,6 +24,7 @@ public:
     void ReleaseContext() override;
 
 protected:
+    void showEvent(QShowEvent* e) override;
     bool event(QEvent* e) override;
     bool eventFilter(QObject* object, QEvent* e) override;
     bool IsInFullScreen() const override;

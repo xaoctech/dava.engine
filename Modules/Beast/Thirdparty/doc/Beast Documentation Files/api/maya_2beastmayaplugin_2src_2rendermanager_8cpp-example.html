@@ -1,0 +1,1281 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/rendermanager.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2rendermanager_8cpp-example.html','api_maya_2beastmayaplugin_2src_2rendermanager_8cpp_example_htmlc16f51a9-fd32-4e82-b320-2f86356f7b1d','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/rendermanager.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2rendermanager_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/rendermanager.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/rendermanager.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/beastmayaplugin/src/rendermanager.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#include "rendermanager.h"</span>
+
+<span class=
+"preprocessor">#include &lt;maya/MFnNumericData.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnSet.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MSelectionList.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MPlugArray.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MItDependencyNodes.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFileObject.h&gt;</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttargetwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttargetentitywrapper.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livebeastentity.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livebeastinstance.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeenums.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeids.h"</span>
+<span class="preprocessor">#include "job.h"</span>
+<span class="preprocessor">#include "renderjob.h"</span>
+<span class="preprocessor">#include "livejob.h"</span>
+<span class="preprocessor">#include "texturetarget.h"</span>
+<span class="preprocessor">#include "vertextarget.h"</span>
+<span class="preprocessor">#include "fullshadingpass.h"</span>
+<span class="preprocessor">#include "illuminationpass.h"</span>
+<span class="preprocessor">#include "ambientocclusionpass.h"</span>
+<span class="preprocessor">#include "luapass.h"</span>
+<span class="preprocessor">#include "lightpass.h"</span>
+<span class="preprocessor">#include "rnmpass.h"</span>
+<span class="preprocessor">#include "cameratarget.h"</span>
+<span class="preprocessor">#include "<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastutils.h</a>"</span>
+<span class="preprocessor">#include "mayautils.h"</span>
+<span class="preprocessor">#include "rendergraph.h"</span>
+<span class="preprocessor">#include "viewportrenderer.h"</span>
+<span class="preprocessor">#include "plugincontext.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeids.h"</span>
+
+<span class="preprocessor">#include &lt;maya/MDistance.h&gt;</span>
+
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+<span class="keyword">class </span>ExportException : <span class=
+"keyword">public</span> std::exception {
+};
+
+RenderManager::RenderManager( PluginContext &amp;bpc ) : m_bpc(bpc)
+{
+}
+
+RenderManager::~RenderManager()
+{
+}
+
+<span class=
+"keywordtype">bool</span> RenderManager::render(ERenderType renderType, <span class="keywordtype">bool</span> cameraRender) {
+        <span class="keywordflow">try</span> {
+                RenderGraphPtr renderGraph(<span class=
+"keyword">new</span> RenderGraph);
+                renderGraph-&gt;renderType = renderType;
+                renderGraph-&gt;cameraRender = cameraRender;
+                buildGraph(*renderGraph); <span class=
+"comment">// Collect settings and targets from the Maya DAG.</span>
+                <span class=
+"keywordflow">if</span>(!validateGraph(*renderGraph)) { <span class="comment">// Check that we have a valid setup and something to do.</span>
+                        <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+                }
+                <span class=
+"keywordflow">return</span> processGraph(renderGraph); <span class=
+"comment">// Go ahead and bake/render the job.</span>
+        } <span class=
+"keywordflow">catch</span>(std::exception&amp; e) {
+                MGlobal::displayError(MString(L<span class=
+"stringliteral">"BEAST: Baking failed, "</span>) + e.what());
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        } <span class="keywordflow">catch</span>(...) {
+                MGlobal::displayError(<span class=
+"stringliteral">"BEAST: Baking failed, unknown exception"</span>);
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        }
+        <span class="keywordflow">return</span> <span class=
+"keyword">true</span>;
+}
+
+<span class="comment">// Maya API</span>
+<span class=
+"keywordtype">void</span> RenderManager::buildGraph(RenderGraph&amp; graph) {
+        <span class=
+"comment">// Create targets depending on what command was invoked</span>
+        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_CAMERA) {
+                <span class=
+"comment">// Camera target is trivial, but may include settings like render resolution later</span>
+                graph.cameraTarget = createCameraTarget(graph.cameraRender);
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_BAKE) {
+                <span class=
+"comment">// Parse and generate bake targets</span>
+                addBakeTargets(graph);
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE) {
+                <span class=
+"comment">// Create a camera target to store handle to camera</span>
+                graph.cameraTarget = createCameraTarget(graph.cameraRender);
+                <span class=
+"comment">// Parse and generate bake targets</span>
+                addBakeTargets(graph);
+        } <span class="keywordflow">else</span> {
+                assert(0 &amp;&amp; <span class=
+"stringliteral">"Invalid render type"</span>);
+        }
+}
+
+<span class=
+"keywordtype">bool</span> RenderManager::validateGraph(RenderGraph&amp; graph) {
+        <span class="keywordtype">bool</span> result = <span class=
+"keyword">true</span>;
+        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_BAKE || (graph.renderType == RENDER_TYPE_LIVE &amp;&amp; !graph.cameraRender)) {
+                <span class="comment">// Require targets</span>
+                <span class=
+"keywordflow">if</span>(graph.targets.empty()) {
+                        MGlobal::displayError(<span class=
+"stringliteral">"BEAST: No targets to bake"</span>);
+                        result = <span class=
+"keyword">false</span>;
+                }
+        }
+        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_BAKE) {
+                <span class="comment">// Require passes</span>
+                <span class=
+"keywordflow">if</span>(graph.passes.empty()) {
+                        MGlobal::displayError(<span class=
+"stringliteral">"BEAST: No passes to bake"</span>);
+                        result = <span class=
+"keyword">false</span>;
+                }
+        }
+        <span class="keywordflow">return</span> result;
+}
+
+<span class=
+"keywordtype">bool</span> RenderManager::processGraph(RenderGraphPtr&amp; graph) {
+        <span class="keywordflow">try</span> {
+                <span class=
+"comment">// Create context that last for the job lifetime</span>
+                JobContextPtr bjc(<span class=
+"keyword">new</span> JobContext(m_bpc, graph));
+        
+                <span class="comment">// Export scene</span>
+                exportScene(*bjc, *graph);
+
+                <span class="comment">// Create job</span>
+                JobPtr job = createJob(bjc, *graph);
+
+                <span class=
+"comment">// Update graph entities with Beast API instance handles</span>
+                updateGraph(*bjc, *graph);
+
+                <span class=
+"comment">// Export targets and passes</span>
+                exportGraph(*job, *graph);
+
+                <span class=
+"comment">// Create any live callbacks</span>
+                createCallbacks(*bjc, *graph);
+
+                <span class=
+"comment">// Run/start the job (it will continue running if it's a live job)</span>
+                <span class=
+"keywordflow">if</span> (job-&gt;runJob()) {
+                        <span class=
+"comment">// Import resulting data if successful and if we're baking</span>
+                        importGraph(*graph);
+                }
+        } <span class=
+"keywordflow">catch</span> (ExportException&amp; ) {
+                MGlobal::displayError( <span class=
+"stringliteral">"Beast Export failed"</span> );
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        } <span class=
+"keywordflow">catch</span> (BeastException&amp; e) {
+                <span class=
+"keywordflow">if</span> (e.getStatus() == <a name=
+"a0"></a><a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206a0666c29584ddbaae5c4ed1684ef96f8f"
+title="A license error occurred.">ILB_ST_INVALID_LICENSE</a>) {
+                        <span class=
+"comment">// This is kind of okay, not really an error. Just post a message that we need a license to run.</span>
+                        MGlobal::executePythonCommandOnIdle(<span class="stringliteral">"beastUtils.messageBox('warning', 'A license error has occurred. Please check that your BEAST_LICENSE environment variable contains a valid license. Job has been canceled.')"</span>);
+                        <span class=
+"keywordflow">return</span> <span class="keyword">true</span>;
+                } <span class="keywordflow">else</span> {
+                        MGlobal::displayError(e.getTypeString().c_str());
+                        MGlobal::displayError(e.getExtendErrorInformation().c_str());
+                }
+                <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+        }
+        <span class="keywordflow">return</span> <span class=
+"keyword">true</span>;
+}
+
+CameraTargetPtr RenderManager::createCameraTarget(<span class=
+"keywordtype">bool</span> cameraTarget) {  
+        CameraTargetPtr target(<span class=
+"keyword">new</span> CameraTarget(<span class=
+"keyword">true</span>));
+        <span class="keywordflow">return</span> target;
+}
+
+<span class=
+"keywordtype">void</span> RenderManager::addBakeTargets(RenderGraph&amp; graph) {
+        MObject settingsNode = findMayaNode(L<span class=
+"stringliteral">"beastSettings"</span>);
+        assert (settingsNode != MObject::kNullObj);
+
+        <span class=
+"keywordtype">bool</span> selectionBake = <span class=
+"keyword">false</span>;
+        getPlugValue(settingsNode, L<span class=
+"stringliteral">"selectionBake"</span>, selectionBake);
+
+        <span class=
+"keywordtype">float</span> globalTexelScale = 1.0f;
+        getPlugValue(settingsNode, L<span class=
+"stringliteral">"texelScale"</span>, globalTexelScale);
+        <span class=
+"keywordtype">float</span> internalToUIUnits = float(MDistance::internalToUI(1.0f));
+        graph.globalTexelScale = globalTexelScale * internalToUIUnits;
+
+        <span class="keywordflow">if</span> (selectionBake) {
+                addBakeTargetsFromSelection(graph);
+        } <span class="keywordflow">else</span> {
+                <span class=
+"comment">// Add all target nodes</span>
+                MItDependencyNodes it(MFn::kPluginDependNode);
+                <span class=
+"keywordflow">while</span> (!it.isDone()) {
+                        MFnDependencyNode targetNode(it.thisNode());
+                        <span class=
+"keywordflow">if</span> (targetNode.typeId() == ADSK_BEAST_TARGET) {
+                                addBakeTarget(graph, targetNode.object());
+                        }
+                        it.next();
+                }
+        }
+        <span class=
+"comment">// Parse out and apply filter settings</span>
+        <span class=
+"keywordflow">if</span>(graph.renderType != RENDER_TYPE_LIVE) {
+                <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(graph.targets); it != end(graph.targets); ++it) {
+                        MFnDependencyNode mayaTarget(it-&gt;first);
+                        FilterSettings direct, indirect, other;
+                        getFilterSettings(mayaTarget, direct, indirect, other);
+                        Target&amp; beastTarget = *it-&gt;second;
+                        beastTarget.setWorldSpaceFilterSettings(<a name="a1"></a><a class="code"
+href=
+"beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09a7aed6772cf92bd75b7c6367f6c04edd5"
+title="Filter everything.">ILB_WSFC_DEFAULT</a>, other);
+                        beastTarget.setWorldSpaceFilterSettings(<a name="a2"></a><a class="code"
+href=
+"beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09ab7f4dca05ec8f53e13c9f99be75c9942"
+title="Filter only direct component.">ILB_WSFC_DIRECT</a>, direct);
+                        beastTarget.setWorldSpaceFilterSettings(<a name="a3"></a><a class="code"
+href=
+"beasttarget_8h.html#a5aa19b886e23bb21497f2cebd7bfdf09a2fa29c0a4dd5b18d21d4d555e28b2b3b"
+title=
+"Filter only indirect component.">ILB_WSFC_INDIRECT</a>, indirect);
+                }
+        }
+}
+
+<span class="keyword">static</span> <span class=
+"keywordtype">void</span> getConnectedPassNodes(MFnDependencyNode&amp; targetNode, std::vector&lt;MObject&gt;&amp; result) {
+        MStatus res;
+        MPlug passes = targetNode.findPlug(L<span class=
+"stringliteral">"passes"</span>, &amp;res);
+        CHECK_MSTATUS_AND_RETURN_VOID(res);
+
+        std::vector&lt;std::pair&lt;MObject, std::wstring&gt;&gt; connectedNodes;
+        getConnectedNodes(passes, connectedNodes);
+        
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(connectedNodes); it != end(connectedNodes); ++it) {
+                MFnDependencyNode passNode((*it).first);
+                <span class=
+"keywordflow">if</span>(passNode.typeId() == ADSK_BEAST_PASS) {
+                        result.push_back(passNode.object());
+                }
+        }
+}
+
+<span class=
+"keyword">static</span> MObject getEntityNode(MFnDagNode instance, MString&amp; targetUniqueID) {
+        std::vector&lt;std::pair&lt;MObject, std::wstring&gt; &gt; connectedNodes;
+        MPlug entitiesPlug = instance.findPlug(L<span class=
+"stringliteral">"beastEntities"</span>, <span class=
+"keyword">true</span>);
+        getConnectedNodes(entitiesPlug, connectedNodes);
+
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(connectedNodes); it != end(connectedNodes); ++it) {
+                MObject&amp; entityObj = (*it).first;
+                MFnDependencyNode entityNode(entityObj);
+
+                <span class=
+"keywordflow">if</span>(entityNode.typeId() != ADSK_BEAST_ENTITY) {
+                        <span class=
+"comment">// This could probably also be worth an assert, but since Maya allows you to connect whatever...</span>
+                        <span class="keywordflow">continue</span>;
+                }
+
+                MString entityTargetID;
+                getPlugValue(entityNode, L<span class=
+"stringliteral">"target"</span>, entityTargetID);
+                <span class=
+"keywordflow">if</span>(entityTargetID == targetUniqueID) {
+                        <span class=
+"comment">// Already has an entity for this target, all done.</span>
+                        <span class=
+"keywordflow">return</span> entityObj;
+                }
+        }
+        <span class="keywordflow">return</span> MObject::kNullObj;
+}
+
+
+<span class="keyword">static</span> <span class=
+"keywordtype">void</span> getTargetsFromNode(MFnDependencyNode node, std::vector&lt;MObject&gt;&amp; result) {
+        MStatus res;
+        std::vector&lt;std::pair&lt;MObject, std::wstring&gt;&gt; connectedNodes;
+        MPlug plug = node.findPlug(L<span class=
+"stringliteral">"instObjGroups"</span>, &amp;res);
+        <span class=
+"keywordflow">if</span> (res == MStatus::kSuccess) {
+                getConnectedNodes(plug, connectedNodes);
+        }
+        plug = node.findPlug(L<span class=
+"stringliteral">"message"</span>, &amp;res);
+        <span class=
+"keywordflow">if</span> (res == MStatus::kSuccess) {
+                getConnectedNodes(plug, connectedNodes);
+        }
+
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(connectedNodes); it != end(connectedNodes); ++it) {
+                <span class=
+"comment">// Check connected sets.</span>
+                MFnSet setNode((*it).first, &amp;res);
+                <span class=
+"keywordflow">if</span> (res == MStatus::kSuccess) {
+                        <span class=
+"keywordflow">if</span>(setNode.typeId() == ADSK_BEAST_TARGET) {
+                                result.push_back(setNode.object());
+                        } <span class="keywordflow">else</span> {
+                                getTargetsFromNode(setNode.object(), result);
+                        }
+                }
+        }
+
+        <span class="keywordflow">if</span> (result.empty()) {
+                <span class=
+"comment">// Nothing.. try my parents.</span>
+                MFnDagNode dagNode(node.object(), &amp;res);
+                <span class=
+"keywordflow">if</span> (res == MStatus::kSuccess) {
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; dagNode.parentCount(); i++) {
+                                getTargetsFromNode(dagNode.parent(i), result);
+                        }
+                }
+        }
+}
+
+<span class=
+"keywordtype">void</span> RenderManager::addBakeTargetsFromSelection(RenderGraph&amp; graph) {
+        MSelectionList selection;
+        MGlobal::getActiveSelectionList(selection);
+        std::vector&lt;MObject&gt; instances;
+        getInstancesFromSelection(selection, instances);
+
+        <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; instances.size(); ++i) {
+                std::vector&lt;MObject&gt; targetNodes;
+                getTargetsFromNode(instances[i], targetNodes);
+                
+                <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(targetNodes); it != end(targetNodes); ++it) {
+                        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE &amp;&amp; graph.entities.find(instances[i]) != graph.entities.end()) {
+                                <span class=
+"comment">// Ernst only supports a single target per instance, so skip this Maya instance if it is already exported </span>
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+                        MFnDependencyNode targetNode(*it);
+
+                        std::vector&lt;MObject&gt; passes;
+                        <span class=
+"keywordflow">if</span>(graph.renderType != RENDER_TYPE_LIVE) {
+                                getConnectedPassNodes(targetNode, passes);
+                                <span class=
+"keywordflow">if</span> (passes.empty()) {
+                                        <span class=
+"comment">// Nothing to bake so don't create the target.</span>
+                                        <span class=
+"keywordflow">continue</span>;
+                                }
+                        }
+
+                        <span class=
+"keywordtype">int</span> targetType = 0;
+                        getPlugValue(targetNode, L<span class=
+"stringliteral">"targetType"</span>, targetType);
+
+                        int2 textureResolution = {512, 512};
+                        getCompoundPlugValue(targetNode, L<span class="stringliteral">"textureResolution"</span>, textureResolution);
+
+                        <span class=
+"keywordflow">if</span> (targetType == TARGET_TYPE_TEXTUREBAKE) {
+                                std::vector&lt;MObject&gt; singleInstanceVec(1, instances[i]);
+                                TargetPtr target = createTextureTarget(targetNode, graph, singleInstanceVec, passes, <span class="keyword">false</span>);
+                                graph.targets.insert(std::make_pair(*it, target));
+                        } <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (targetType == TARGET_TYPE_VERTEXBAKE) {
+                                TargetPtr target = createVertexTarget(targetNode, graph, std::vector&lt;MObject&gt;(1, instances[i]), passes);
+                                graph.targets.insert(std::make_pair(*it, target));
+                        } <span class="keywordflow">else</span> {
+                                assert(0 &amp;&amp; <span class=
+"stringliteral">"Invalid target type"</span>);
+                        }
+                }
+        }
+}
+
+<span class=
+"keywordtype">void</span> RenderManager::addBakeTarget(RenderGraph&amp; graph, MFnSet targetNode) {
+        MSelectionList targetMembers;
+        targetNode.getMembers(targetMembers, <span class=
+"keyword">true</span>);
+        std::vector&lt;MObject&gt; instances;
+        getInstancesFromSelection(targetMembers, instances);
+        <span class=
+"keywordflow">if</span> (graph.renderType != RENDER_TYPE_LIVE &amp;&amp; instances.empty()) {
+                <span class=
+"comment">// Nothing to bake so don't create the target.</span>
+                <span class="keywordflow">return</span>;
+        }
+
+        std::vector&lt;MObject&gt; passes;
+        <span class=
+"keywordflow">if</span>(graph.renderType != RENDER_TYPE_LIVE) {
+                getConnectedPassNodes(targetNode, passes);
+                <span class=
+"keywordflow">if</span> (passes.empty()) {
+                        <span class=
+"comment">// Nothing to bake so don't create the target.</span>
+                        <span class="keywordflow">return</span>;
+                }
+        }
+
+        <span class="keywordtype">int</span> targetType = 0;
+        getPlugValue(targetNode, L<span class=
+"stringliteral">"targetType"</span>, targetType);
+
+        int2 textureResolution = {512, 512};
+        getCompoundPlugValue(targetNode, L<span class=
+"stringliteral">"textureResolution"</span>, textureResolution);
+
+        <span class=
+"keywordtype">bool</span> atlasTarget = <span class=
+"keyword">false</span>;
+        <span class="keywordtype">int</span> atlasPadding = 0;
+        <span class=
+"keywordtype">bool</span> atlasRescale = <span class=
+"keyword">false</span>;
+        <span class=
+"keywordtype">float</span> atlasThreshold = 1.0f;
+        getPlugValue(targetNode, L<span class=
+"stringliteral">"atlasTarget"</span>, atlasTarget);
+        <span class="keywordflow">if</span> (atlasTarget) {
+                getPlugValue(targetNode, L<span class=
+"stringliteral">"atlasPadding"</span>, atlasPadding);
+                getPlugValue(targetNode, L<span class=
+"stringliteral">"atlasRescale"</span>, atlasRescale);
+                <span class=
+"keywordflow">if</span> (atlasRescale) {
+                        getPlugValue(targetNode, L<span class=
+"stringliteral">"atlasThreshold"</span>, atlasThreshold);
+                }
+        }
+
+        <span class=
+"comment">// Vertex targets and atlased texture targets get a single VertexTarget/TextureTarget instance that is shared by multiple instances</span>
+        <span class="keyword">const</span> <span class=
+"keywordtype">bool</span> useSingleTarget = targetType == TARGET_TYPE_VERTEXBAKE || (atlasTarget &amp;&amp; graph.renderType == RENDER_TYPE_BAKE);
+        <span class="keywordflow">if</span> (useSingleTarget) {
+                <span class=
+"keywordflow">if</span> (targetType == TARGET_TYPE_TEXTUREBAKE) {
+                        TargetPtr target = createTextureTarget(targetNode, graph, instances, passes, <span class="keyword">true</span>, atlasPadding, atlasRescale, atlasThreshold);
+                        graph.targets.insert(std::make_pair(targetNode.object(), target));
+                } <span class=
+"keywordflow">else</span> <span class="keywordflow">if</span> (targetType == TARGET_TYPE_VERTEXBAKE) {
+                        TargetPtr target = createVertexTarget(targetNode, graph, instances, passes);
+                        graph.targets.insert(std::make_pair(targetNode.object(), target));
+                }
+        } <span class="keywordflow">else</span> {
+                assert(targetType != TARGET_TYPE_VERTEXBAKE &amp;&amp; <span class="stringliteral">"Incorrect target type"</span>);
+                <span class=
+"keywordflow">if</span>(instances.empty() &amp;&amp; graph.renderType == RENDER_TYPE_LIVE) {
+                        <span class=
+"comment">// Currently nothing to bake, but we create the target anyway so that objects can be added live</span>
+                        std::vector&lt;MObject&gt; emptyInstanceVec;
+                        TargetPtr target = createTextureTarget(targetNode, graph, emptyInstanceVec, passes, <span class="keyword">false</span>);
+                        <span class=
+"keywordflow">if</span>(target) {
+                                graph.targets.insert(std::make_pair(targetNode.object(), target));
+                        }
+                }
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; instances.size(); ++i) {
+                        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE &amp;&amp; graph.entities.find(instances[i]) != graph.entities.end()) {
+                                <span class=
+"comment">// Ernst only supports a single target per instance, so skip this Maya instance if it is already exported </span>
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+                        <span class=
+"keywordflow">if</span> (targetType == TARGET_TYPE_TEXTUREBAKE) {
+                                std::vector&lt;MObject&gt; singleInstanceVec(1, instances[i]);
+                                TargetPtr target = createTextureTarget(targetNode, graph, singleInstanceVec, passes, <span class="keyword">false</span>);
+                                <span class=
+"keywordflow">if</span>(target) {
+                                        graph.targets.insert(std::make_pair(targetNode.object(), target));
+                                }
+                        }
+                }
+        }
+}
+
+PassPtr RenderManager::createPass(RenderGraph&amp; graph, MFnDependencyNode passNode) {
+        <span class=
+"keyword">auto</span> it = graph.passes.find(passNode.object());
+        <span class=
+"keywordflow">if</span> (it != graph.passes.end()) {
+                <span class=
+"comment">// This pass already exist in the graph.</span>
+                <span class=
+"keywordflow">return</span> (*it).second;
+        }
+
+        <span class=
+"keywordtype">int</span> passType = PASS_TYPE_FULLSHADING;
+        getPlugValue(passNode, L<span class=
+"stringliteral">"passType"</span>, passType);
+
+        PassPtr pass;
+        <span class=
+"keywordflow">if</span> (passType == PASS_TYPE_FULLSHADING) {
+                pass = PassPtr(<span class=
+"keyword">new</span> FullShadingPass(passNode.object()));
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (passType == PASS_TYPE_ILLUMINATION) {
+                <span class=
+"keywordtype">int</span> illuminationMode = <a name=
+"a4"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93"
+title="Both direct and indirect illumination.">ILB_IM_FULL</a>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"illuminationPassMode"</span>, illuminationMode);
+                pass = PassPtr(<span class=
+"keyword">new</span> IlluminationPass(passNode.object(), (<a name=
+"a5"></a><a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636" title=
+"Illumination Modes.">ILBIlluminationMode</a>)illuminationMode));
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (passType == PASS_TYPE_LIGHTPASS) {
+                <span class=
+"keywordtype">int</span> lightPassType = LIGHTPASS_TYPE_LIGHTMAP;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"lightPassType"</span>, lightPassType);
+
+                std::vector&lt;MString&gt; lightNames;
+                getPlugArrayValues(passNode, L<span class=
+"stringliteral">"lights"</span>, lightNames);
+
+                std::vector&lt;MObject&gt; lights;
+                <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(lightNames); it != end(lightNames); ++it) {
+                        MObject light = findMayaNode(it-&gt;asWChar());
+                        <span class=
+"keywordflow">if</span>(light == MObject::kNullObj) {
+                                <span class=
+"comment">// TODO: Should this halt rendering or not?</span>
+                                MGlobal::displayWarning(MString(L<span class="stringliteral">"BEAST: Light specified in light pass was not found: "</span>) + *it);
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+                        lights.push_back(light);
+                }
+                <span class=
+"keywordflow">if</span>(lights.empty()) {
+                        <span class=
+"keywordflow">throw</span> std::runtime_error(<span class=
+"stringliteral">"Couldn't create light pass because there were no lights"</span>);
+                }
+
+                <span class=
+"keywordflow">switch</span> (lightPassType) {
+                        <span class=
+"keywordflow">case</span> LIGHTPASS_TYPE_LIGHTMAP:
+                                pass = PassPtr(<span class=
+"keyword">new</span> LightPass(passNode.object(), <a name=
+"a6"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1"
+title=
+"Stores the incoming light in the light map.">ILB_LP_LIGHTMAP</a>, lights));
+                                <span class=
+"keywordflow">break</span>;
+                        <span class=
+"keywordflow">case</span> LIGHTPASS_TYPE_SHADOWMAP:
+                                pass = PassPtr(<span class=
+"keyword">new</span> LightPass(passNode.object(), <a name=
+"a7"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa1d7c5bf7867125ad1a7467726a0deb6c"
+title="Stores the shadow mask.">ILB_LP_SHADOWMAP</a>, lights));
+                                <span class=
+"keywordflow">break</span>;
+                        <span class=
+"keywordflow">case</span> LIGHTPASS_TYPE_FULL:
+                                pass = PassPtr(<span class=
+"keyword">new</span> LightPass(passNode.object(), <a name=
+"a8"></a><a class="code" href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa02734e50d1616ec211bb96dc2923c772"
+title=
+"Stores the full shading in the light map.">ILB_LP_FULLSHADING</a>, lights));
+                                <span class=
+"keywordflow">break</span>;
+                        <span class="keywordflow">default</span>:
+                                assert(<span class=
+"keyword">false</span>);
+                                pass = PassPtr(<span class=
+"keyword">new</span> LightPass(passNode.object(), <a class="code"
+href=
+"beastrenderpass_8h.html#a827e8d68dc2c632a836954c3637a7aafa44c888d543fcaa9c4c7b39593632ceb1"
+title=
+"Stores the incoming light in the light map.">ILB_LP_LIGHTMAP</a>, lights));
+                }
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (passType == PASS_TYPE_RNM) {
+                <span class=
+"keywordtype">int</span> illuminationMode = <a class="code" href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93"
+title="Both direct and indirect illumination.">ILB_IM_FULL</a>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"rnmPassMode"</span>, illuminationMode);
+
+                <span class=
+"keywordtype">int</span> basis = <a name="a9"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a1d80cc9bdf906a1a860130637da2c7b5"
+title="Half-Life 2 compatible basis.">ILB_RB_HL2</a>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"rnmBasis"</span>, basis);
+
+                <span class=
+"keywordtype">int</span> allowNegative = <a name=
+"a10"></a><a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bca50926c390d9ba33b0249dfc72cf97fdb"
+title=
+"As ILB_AN_DISALLOW, and also culls lights below the horizon of each triangle.">ILB_AN_DISALLOW_CULL_HORIZON</a>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"rnmAllowNegative"</span>, allowNegative);
+
+                <span class=
+"keywordtype">bool</span> includeNormalComponent = <span class=
+"keyword">false</span>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"rnmIncludeNormalComponent"</span>, includeNormalComponent);
+
+                RNMPassPtr rnmPass(<span class=
+"keyword">new</span> RNMPass(passNode.object(), (<a class="code"
+href="beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636"
+title=
+"Illumination Modes.">ILBIlluminationMode</a>)illuminationMode, (<a class="code"
+href="beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15"
+title="RNM Basis.">ILBRNMBasis</a>)basis, (<a name=
+"a11"></a><a class="code" href=
+"beastrenderpass_8h.html#a53911d3a2277d2c15d428a6b0e4c65bc" title=
+"Allow Negative.">ILBRNMAllowNegative</a>)allowNegative, includeNormalComponent));
+                pass = rnmPass;
+
+                <span class=
+"keywordflow">if</span>(basis == <a name="a12"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b"
+title=
+"Allows the user to enter the basis vectors manually.">ILB_RB_CUSTOM</a>) {
+                        std::vector&lt;MObject&gt; basisVectors;
+                        getPlugArrayValues(passNode, L<span class=
+"stringliteral">"rnmCustomBasisVectors"</span>, basisVectors);
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(basisVectors); it != end(basisVectors); ++it) {
+                                MFnNumericData data(*it);
+                                <a name="_a13"></a><a class="code"
+href="struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a> vec;
+                                data.getData3Float(vec.<a name=
+"a14"></a><a class="code" href=
+"struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3" title=
+"x">x</a>, vec.<a name="a15"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a>, vec.<a name="a16"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a>);
+                                rnmPass-&gt;addCustomBasisVector(vec);
+                        }
+                }
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (passType == PASS_TYPE_AMBIENTOCCLUSION) {
+                <span class=
+"keywordtype">float</span> maxDistance = 0.0f;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"aoMaxDistance"</span>, maxDistance);
+
+                <span class=
+"keywordtype">float</span> coneAngle = 180.0f;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"aoConeAngle"</span>, coneAngle);
+
+                <span class=
+"keywordtype">float</span> contrast = 1.0f;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"aoContrast"</span>, contrast);
+
+                <span class=
+"keywordtype">float</span> scale = 1.0f;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"aoScale"</span>, scale);
+
+                <span class=
+"keywordtype">int</span> distribution = AO_DISTRIBUTION_COSWEIGHTED;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"aoDistribution"</span>, distribution);
+
+                <span class=
+"keywordtype">int</span> selfOcclusion = <a name=
+"a17"></a><a class="code" href=
+"beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754aa2f8d6b0274be869aff02c7dfad441ff6"
+title="Objects can self occlude.">ILB_SO_ENABLED</a>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"aoSelfOcclusion"</span>, selfOcclusion);
+
+                pass = AmbientOcclusionPassPtr(<span class=
+"keyword">new</span> AmbientOcclusionPass(passNode.object(), maxDistance, coneAngle, contrast, scale, distribution == AO_DISTRIBUTION_UNIFORM, (<a name="a18"></a><a class="code"
+href="beastrenderpass_8h.html#ae278e21212869d75cf7f6263e8ae754a"
+title=
+"Self Occlusion Mode.">ILBAOSelfOcclusion</a>)selfOcclusion));
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span> (passType == PASS_TYPE_LUA) {
+                MString luaFileName = L<span class=
+"stringliteral">""</span>;
+                getPlugValue(passNode, L<span class=
+"stringliteral">"luaScript"</span>, luaFileName);
+
+                MFileObject scriptFile;
+                scriptFile.setRawFullName(luaFileName);
+
+                <span class=
+"keywordflow">if</span>(scriptFile.exists()) {
+                        pass = PassPtr(<span class=
+"keyword">new</span> LuaPass(passNode.object(), scriptFile.resolvedFullName().asWChar()));
+                } <span class="keywordflow">else</span> {
+                        MGlobal::displayError(MString(L<span class=
+"stringliteral">"BEAST: Couldn't find Lua script file for pass "</span>) + passNode.name());
+                }
+        }
+
+        <span class="keywordflow">if</span> (pass) {
+                graph.passes.insert(std::make_pair(passNode.object(), pass));
+        }
+        <span class="keywordflow">return</span> pass;
+}
+
+<span class=
+"comment">// Create a texture target shared by many Maya objects</span>
+TargetPtr RenderManager::createTextureTarget(MFnDependencyNode&amp; targetNode, RenderGraph&amp; graph, <span class="keyword">const</span> std::vector&lt;MObject&gt;&amp; instances, <span class="keyword">const</span> std::vector&lt;MObject&gt;&amp; passes, <span class="keywordtype">bool</span> atlas, <span class="keywordtype">int</span> atlasPadding, <span class="keywordtype">bool</span> atlasRescale, <span class="keywordtype">float</span> atlasThreshold) {
+        MStatus res;
+        
+        MString targetUniqueID; <span class=
+"comment">// A static GUID that is used to relate entities to targets</span>
+        getPlugValue(targetNode, L<span class=
+"stringliteral">"uniqueID"</span>, targetUniqueID);
+
+        int2 targetTextureResolution = {512, 512};
+        getCompoundPlugValue(targetNode, L<span class=
+"stringliteral">"textureResolution"</span>, targetTextureResolution);
+
+        <span class="comment">// Create entities</span>
+        std::vector&lt;TextureEntityPtr&gt; entities;
+        <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> it = begin(instances); it != end(instances); ++it) {
+                MFnDependencyNode transformNode(*it, &amp;res);
+                CHECK_MSTATUS_AND_CONTINUE(res);
+
+                <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE &amp;&amp; graph.entities.find(*it) != graph.entities.end()) {
+                        <span class=
+"comment">// Ernst only supports a single target per instance, so skip this Maya instance if it is already exported </span>
+                        <span class="keywordflow">continue</span>;
+                }
+                MObject beastInstanceObj = getBeastInstanceNode(transformNode);
+                MObject entityObj = getEntityNode(*it, targetUniqueID);
+
+                <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE) {
+                        <span class=
+"comment">// Skip this target if we are not the selected live target for the instance</span>
+                        MObject liveEntity = getLiveEntityNode(transformNode);
+                        <span class=
+"keywordflow">if</span>(liveEntity == MObject::kNullObj || liveEntity != entityObj) {
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+                }
+
+                <span class=
+"comment">// Get bake UV-set, can be from beastEntity, beastInstance, beastTarget, in listed priority</span>
+                std::wstring uvSet = getBakeUVSet(entityObj, beastInstanceObj, targetNode.object(), *it);
+                TextureEntityPtr entity(<span class=
+"keyword">new</span> TextureEntity(*it, entityObj, uvSet));
+
+                <span class=
+"keywordflow">if</span>(beastInstanceObj != MObject::kNullObj) {
+                        <span class=
+"keywordtype">bool</span> fromInstance = <span class=
+"keyword">true</span>;
+                        <span class=
+"keywordflow">if</span>(entityObj != MObject::kNullObj) {
+                                getPlugValue(entityObj, L<span class="stringliteral">"fromInstance"</span>, fromInstance);
+                        }
+                        MFnDependencyNode propertySource(fromInstance ? beastInstanceObj : entityObj);
+
+                        <span class=
+"keywordtype">bool</span> autoTextureResolution = <span class=
+"keyword">false</span>;
+                        getPlugValue(propertySource, L<span class=
+"stringliteral">"autoTextureResolution"</span>, autoTextureResolution);
+
+                        int2 textureResolution = {512, 512};
+                        getTextureResolution(propertySource, textureResolution);
+
+                        <span class=
+"keywordtype">float</span> texelScale = 1.0f;
+                        getPlugValue(propertySource, L<span class=
+"stringliteral">"texelScale"</span>, texelScale);
+
+                        <span class=
+"keywordflow">if</span>(!atlas) {
+                                <span class=
+"comment">// Override target resolution</span>
+                                targetTextureResolution[0] = textureResolution[0];
+                                targetTextureResolution[1] = textureResolution[1];
+                        } <span class="keywordflow">else</span> {
+                                <span class=
+"comment">// Clamp instance texture resolution to target resolution</span>
+                                textureResolution[0] = std::min(textureResolution[0], targetTextureResolution[0]);
+                                textureResolution[1] = std::min(textureResolution[1], targetTextureResolution[1]);
+
+                                <span class=
+"keywordflow">if</span>(!autoTextureResolution) {
+                                        entity-&gt;setTextureResolution(textureResolution[0], textureResolution[1]);
+                                } <span class=
+"keywordflow">else</span> {
+                                        <span class=
+"comment">// We need to set texel scale otherwise to support lightmap rescaling feature</span>
+                                        entity-&gt;setTexelScale(texelScale * graph.globalTexelScale);
+                                }
+                        }
+                }
+                entities.push_back(entity);
+                graph.entities.insert(std::make_pair(*it, entity));
+        }
+
+        TextureTargetPtr target(<span class=
+"keyword">new</span> TextureTarget(targetNode.object(), targetTextureResolution[0], targetTextureResolution[1], atlas, atlasPadding, atlasRescale, atlasThreshold));
+        <span class=
+"comment">// Associate entities with target</span>
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(entities); it != end(entities); ++it) {
+                TextureEntityPtr&amp; entity = *it;
+                target-&gt;addEntity(entity);
+        }
+
+        <span class=
+"comment">// Associate passes with target</span>
+        <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> it = begin(passes); it != end(passes); ++it) {
+                PassPtr pass = createPass(graph, *it);
+                <span class="keywordflow">if</span> (pass) {
+                        target-&gt;addPass(pass);
+                }
+        }
+
+        <span class="keywordflow">return</span> target;
+}
+
+TargetPtr RenderManager::createVertexTarget(MFnDependencyNode&amp; targetNode, RenderGraph&amp; graph, <span class="keyword">const</span> std::vector&lt;MObject&gt;&amp; instances, <span class="keyword">const</span> std::vector&lt;MObject&gt;&amp; passes) {
+        MStatus res;
+        
+        MString targetUniqueID; <span class=
+"comment">// A static GUID that is used to relate entities to targets</span>
+        getPlugValue(targetNode, L<span class=
+"stringliteral">"uniqueID"</span>, targetUniqueID);
+        
+        VertexTargetPtr target(<span class=
+"keyword">new</span> VertexTarget(targetNode.object()));
+
+        <span class=
+"comment">// Associate passes with target</span>
+        <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> it = begin(passes); it != end(passes); ++it) {
+                PassPtr pass = createPass(graph, *it);
+                <span class="keywordflow">if</span> (pass) {
+                        target-&gt;addPass(pass);
+                }
+        }
+
+        <span class=
+"comment">// Associate entities with target</span>
+        <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> it = begin(instances); it != end(instances); ++it) {
+                MFnDependencyNode transformNode(*it, &amp;res);
+                CHECK_MSTATUS_AND_CONTINUE(res);
+
+                MObject beastInstanceObj = getBeastInstanceNode(transformNode);
+                MObject entityObj = getEntityNode(*it, targetUniqueID);
+
+                <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE) {
+                        <span class=
+"comment">// Skip this target if we are not the selected live target for the instance</span>
+                        MObject liveEntity = getLiveEntityNode(transformNode);
+                        <span class=
+"keywordflow">if</span>(liveEntity == MObject::kNullObj || liveEntity != entityObj) {
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+                }
+
+                VertexEntityPtr entity(<span class=
+"keyword">new</span> VertexEntity(*it, entityObj));
+                target-&gt;addEntity(entity);
+                graph.entities.insert(std::make_pair(*it, entity));
+        }
+        <span class="keywordflow">return</span> target;
+}
+
+<span class=
+"keywordtype">void</span> RenderManager::exportScene(JobContext&amp; bjc, RenderGraph&amp; graph) {
+        BeastCameraPtr renderCam;
+        beastmaya::exportScene(bjc, renderCam, <span class=
+"keyword">true</span>, graph.renderType == RENDER_TYPE_LIVE);
+        <span class="keywordflow">if</span>(graph.cameraTarget) {
+                graph.cameraTarget-&gt;setBeastCamera(renderCam);
+        }
+}
+
+<span class=
+"keywordtype">void</span> RenderManager::updateGraph(JobContext&amp; bjc, RenderGraph&amp; graph) {
+        <span class=
+"comment">// Update graph entities with Beast API instance handles</span>
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(graph.entities); it != end(graph.entities); ++it) {
+                MObject mayaInstance = it-&gt;second-&gt;getMayaInstance();
+                BeastInstancePtr beastInstance = bjc.getSceneManager().getInstance(mayaInstance);
+                <span class=
+"keywordflow">if</span> (!beastInstance) {
+                        <span class="comment">// No match</span>
+                        <span class=
+"keywordflow">throw</span> std::exception(<span class=
+"stringliteral">"Didn't find matching instance on entity"</span>);
+                }
+                it-&gt;second-&gt;setBeastInstance(beastInstance);
+        }
+        <span class=
+"comment">// Let passes update themselves with Beast API handles</span>
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(graph.passes); it != end(graph.passes); ++it) {
+                it-&gt;second-&gt;updatePass(bjc.getSceneManager());
+        }
+}
+
+JobPtr RenderManager::createJob(JobContextPtr&amp; bjc, RenderGraph&amp; graph) {
+        <span class=
+"comment">// Create correct job type depending on invoked command</span>
+        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_CAMERA || graph.renderType == RENDER_TYPE_BAKE) {
+                JobPtr job(<span class=
+"keyword">new</span> RenderJob(*bjc));
+                <span class="keywordflow">return</span> job;
+        } <span class="keywordflow">else</span> <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE) {
+                BeastCameraPtr&amp; camera = graph.cameraTarget-&gt;getBeastCamera();
+                assert(camera &amp;&amp; <span class=
+"stringliteral">"No camera found"</span>);
+                ViewportRenderer&amp; vr = m_bpc.getViewportRenderer();
+                JobPtr job(<span class=
+"keyword">new</span> LiveJob(vr.createViewportJob(bjc, camera, graph.cameraRender)));
+                <span class="keywordflow">return</span> job;
+        } <span class="keywordflow">else</span> {
+                assert(0 &amp;&amp; <span class=
+"stringliteral">"Incorrect render type"</span>);
+        }
+        <span class=
+"keywordflow">throw</span> std::exception(<span class=
+"stringliteral">"Failed to create job"</span>);
+}
+
+<span class=
+"keywordtype">void</span> RenderManager::exportGraph(Job&amp; job, RenderGraph&amp; graph) {
+        <span class=
+"comment">// TODO: Live job creates its own camera target, make it use the CameraTarget class directly</span>
+        <span class=
+"keywordflow">if</span>(graph.cameraTarget &amp;&amp; graph.renderType != RENDER_TYPE_LIVE) {
+                graph.cameraTarget-&gt;exportTarget(job.getBeastJob());
+        }
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(graph.targets); it != end(graph.targets); ++it) {
+                it-&gt;second-&gt;exportTarget(job.getBeastJob());
+        }
+}
+
+<span class=
+"comment">// Import resulting textures and vertex colors</span>
+<span class=
+"keywordtype">void</span> RenderManager::importGraph(RenderGraph&amp; graph) {
+        <span class=
+"keywordflow">if</span>(graph.renderType == RENDER_TYPE_LIVE) {
+                <span class="keywordflow">return</span>;
+        }
+        <span class="keywordflow">if</span>(graph.cameraTarget) {
+                graph.cameraTarget-&gt;importTarget();
+        }
+        <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> it = begin(graph.targets); it != end(graph.targets); ++it) {
+                it-&gt;second-&gt;importTarget();
+        }
+}
+
+<span class=
+"comment">// Create callbacks for Beast nodes in Maya so that we can track changes when running live</span>
+<span class=
+"keywordtype">void</span> RenderManager::createCallbacks(JobContext&amp; bjc, RenderGraph&amp; graph) {
+        MStatus res;
+
+        <span class=
+"keywordflow">if</span>(graph.renderType != RENDER_TYPE_LIVE) {
+                <span class=
+"comment">// No callbacks when not running Live</span>
+                <span class="keywordflow">return</span>;
+        }
+        <span class=
+"comment">// Create callbacks for Beast API entities</span>
+        <span class="keywordflow">for</span>(<span class=
+"keyword">auto</span> it = begin(graph.entities); it != end(graph.entities); ++it) {
+                <span class=
+"comment">// Create beastInstanceNode callback</span>
+                MFnDependencyNode transformNode(it-&gt;second-&gt;getMayaInstance(), &amp;res);
+                CHECK_MSTATUS_AND_CONTINUE(res);
+                MObject beastInstanceNode = getBeastInstanceNode(transformNode);
+                assert((beastInstanceNode != MObject::kNullObj) &amp;&amp; <span class="stringliteral">"beastInstance node not found on object to be baked"</span>);
+                <span class=
+"keywordflow">if</span> (beastInstanceNode != MObject::kNullObj) {
+                        bjc.insertLiveCallback(it-&gt;second-&gt;getMayaInstance(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveBeastInstance(beastInstanceNode, it-&gt;second-&gt;getBeastTargetEntity())));
+                }
+
+                <span class=
+"comment">// Create beastEntityNode callbacks</span>
+                std::vector&lt;MObject&gt; entities;
+                getEntityNodes(transformNode, entities);
+                <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> eit = begin(entities); eit != end(entities); ++eit) {
+                        bjc.insertLiveCallback(it-&gt;second-&gt;getMayaInstance(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveBeastEntity(*eit, it-&gt;second-&gt;getBeastTargetEntity())));
+                }
+        }
+}
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

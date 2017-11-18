@@ -11,11 +11,9 @@
 
 #include "Preset.h"
 
-#include "TArc/DataProcessing/DataContext.h"
-
-#include "QtTools/WidgetHelpers/SharedIcon.h"
-#include "QtTools/Utils/Utils.h"
-#include "QtTools/Utils/Themes/Themes.h"
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Utils/Utils.h>
 
 #include "QtHelpers/HelperFunctions.h"
 
@@ -161,7 +159,8 @@ void TextureListDelegate::drawPreviewBig(QPainter* painter, const QStyleOptionVi
         if (curModel->isHighlited(index) && !option.state.testFlag(QStyle::State_Selected))
         {
             // draw highlight
-            painter->setPen(Themes::GetHighligtedItemTextColor());
+            QColor color = REGlobal::GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetHighligtedItemTextColor();
+            painter->setPen(color);
         }
         else
         {
@@ -307,7 +306,8 @@ void TextureListDelegate::drawPreviewSmall(QPainter* painter, const QStyleOption
         if (curModel->isHighlited(index) && !option.state.testFlag(QStyle::State_Selected))
         {
             // draw highlight
-            painter->setPen(Themes::GetHighligtedItemTextColor());
+            QColor color = REGlobal::GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetHighligtedItemTextColor();
+            painter->setPen(color);
         }
         else
         {
@@ -360,7 +360,7 @@ int TextureListDelegate::drawFormatInfo(QPainter* painter, QRect rect, const DAV
         if (texture->width != texture->height)
         {
             r.moveLeft(r.x() - 16);
-            SharedIcon(":/QtIcons/error.png").paint(painter, r.x(), r.y(), 16, 16);
+            DAVA::TArc::SharedIcon(":/QtIcons/error.png").paint(painter, r.x(), r.y(), 16, 16);
         }
 
         ret = rect.width() - (r.x() - rect.x());
@@ -398,6 +398,9 @@ bool TextureListDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, 
         QAction* openTextureFolder = menu.addAction("Open texture folder");
         QObject::connect(openTextureFolder, &QAction::triggered, this, &TextureListDelegate::onOpenTexturePath);
 
+        QAction* reloadTexture = menu.addAction("Reload texture");
+        QObject::connect(reloadTexture, &QAction::triggered, this, &TextureListDelegate::onReloadTexture);
+
         QAction* savePresetAction = menu.addAction(ActionIcon::savePresetIcon, "Save Preset");
         QObject::connect(savePresetAction, &QAction::triggered, this, &TextureListDelegate::onSavePreset);
 
@@ -413,6 +416,16 @@ bool TextureListDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, 
     }
 
     return QAbstractItemDelegate::editorEvent(event, model, option, index);
+}
+
+void TextureListDelegate::onReloadTexture()
+{
+    if (nullptr == lastSelectedTextureDescriptor)
+    {
+        return;
+    }
+
+    emit textureDescriptorReload(lastSelectedTextureDescriptor);
 }
 
 void TextureListDelegate::onOpenTexturePath()

@@ -9,7 +9,7 @@ namespace DAVA
 class ColladaMesh
 {
 public:
-    ColladaMesh(FCDGeometryMesh* _mesh, ColladaVertexWeight* wertexWeightArray);
+    ColladaMesh(FCDGeometryMesh* _mesh, ColladaVertexWeight* wertexWeightArray, uint32 maxVertexInfluence);
     ~ColladaMesh();
 
     inline int GetPolygonGroupCount()

@@ -13,11 +13,6 @@ public:
 
     Component* Clone(Entity* toEntity) override;
 
-public:
-    INTROSPECTION_EXTEND(WASDControllerComponent, Component,
-                         NULL
-                         );
-
     DAVA_VIRTUAL_REFLECTION(WASDControllerComponent, Component);
 };
 };

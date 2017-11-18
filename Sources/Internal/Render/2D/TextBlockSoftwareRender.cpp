@@ -1,4 +1,6 @@
 #include "Render/2D/TextBlockSoftwareRender.h"
+#include "Engine/Engine.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/RHI/rhi_Public.h"
 #include "Render/Renderer.h"
 #include "UI/UIControlSystem.h"
@@ -40,8 +42,18 @@ void TextBlockSoftwareRender::Prepare()
     TextBlockRender::Prepare();
     SafeRelease(currentTexture);
 
-    uint32 width = Max(textBlock->cacheDx, 1);
-    uint32 height = Max(textBlock->cacheDy, 1);
+    if (textBlock->visualText.empty())
+    {
+        // Skip draw empty string
+        return;
+    }
+
+    // Fix buffer size according minimal size of texture
+    textBlock->cacheDx = Max(textBlock->cacheDx, static_cast<int32>(Texture::MINIMAL_WIDTH));
+    textBlock->cacheDy = Max(textBlock->cacheDy, static_cast<int32>(Texture::MINIMAL_HEIGHT));
+
+    uint32 width = textBlock->cacheDx;
+    uint32 height = textBlock->cacheDy;
 
     // Check that text can be rendered in available texture size otherwise don't draw it
     uint32 maxSize = rhi::DeviceCaps().maxTextureSize;
@@ -77,19 +89,15 @@ void TextBlockSoftwareRender::Prepare()
     {
         addInfo = UTF8Utils::EncodeToUTF8(textBlock->visualText.c_str());
     }
-    else
+    else if (textBlock->multilineStrings.size() >= 1)
     {
-        if (textBlock->multilineStrings.size() >= 1)
-        {
-            addInfo = UTF8Utils::EncodeToUTF8(textBlock->multilineStrings[0].c_str());
-        }
-        else
-        {
-            addInfo = "empty";
-        }
+        addInfo = UTF8Utils::EncodeToUTF8(textBlock->multilineStrings[0].c_str());
     }
 
     currentTexture = Texture::CreateTextFromData(FORMAT_A8, buffer.data(), width, height, false, addInfo.c_str());
+    currentTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+    currentTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+
     sprite = Sprite::CreateFromTexture(currentTexture, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
 }
 
@@ -125,18 +133,18 @@ Font::StringMetrics TextBlockSoftwareRender::DrawTextML(const WideString& drawTe
     if (textBlock->cacheUseJustify)
     {
         metrics = ftFont->DrawStringToBuffer(buf, x, y,
-                                             -textBlock->cacheOx + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
-                                             -textBlock->cacheOy + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
-                                             int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(w)))),
-                                             int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(lineSize)))),
+                                             -textBlock->cacheOx + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
+                                             -textBlock->cacheOy + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
+                                             int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(w)))),
+                                             int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(lineSize)))),
                                              drawText,
                                              true);
     }
     else
     {
         metrics = ftFont->DrawStringToBuffer(buf, x, y,
-                                             -textBlock->cacheOx + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
-                                             -textBlock->cacheOy + int32(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
+                                             -textBlock->cacheOx + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
+                                             -textBlock->cacheOy + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
                                              0,
                                              0,
                                              drawText,

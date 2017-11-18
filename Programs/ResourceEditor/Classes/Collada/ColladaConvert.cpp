@@ -1,6 +1,6 @@
 #include "ColladaConvert.h"
 #include "ColladaDocument.h"
-#include "Collada/ColladaToSc2Importer/ColladaToSc2Importer.h"
+#include "Collada/ColladaToSc2Importer/ColladaImporter.h"
 #include "Classes/Collada/ImportParams.h"
 
 eColladaErrorCodes ConvertDaeToSc2(const DAVA::FilePath& pathToFile, std::unique_ptr<DAEConverter::ImportParams>&& importParams)
@@ -42,6 +42,29 @@ eColladaErrorCodes ConvertDaeToSc2(const DAVA::FilePath& pathToFile, std::unique
             ret = eColladaErrorCodes::COLLADA_ERROR;
         }
     }
+
+    return ret;
+}
+
+eColladaErrorCodes ConvertDaeToAnimations(const DAVA::FilePath& pathToFile)
+{
+    FCollada::Initialize();
+
+    DAVA::ColladaDocument colladaDocument;
+
+    eColladaErrorCodes code = colladaDocument.Open(pathToFile.GetAbsolutePathname().c_str());
+    if (code != COLLADA_OK)
+    {
+        DAVA::Logger::Error("[ConvertDaeToAnimations] Failed to read %s with error %d", pathToFile.GetAbsolutePathname().c_str(), (int32)code);
+        return code;
+    }
+
+    DAVA::FilePath saveDirectory = pathToFile.GetDirectory();
+
+    eColladaErrorCodes ret = colladaDocument.SaveAnimations(saveDirectory);
+    colladaDocument.Close();
+
+    FCollada::Release();
 
     return ret;
 }

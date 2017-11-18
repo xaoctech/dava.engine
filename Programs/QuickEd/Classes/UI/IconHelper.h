@@ -1,7 +1,7 @@
 #ifndef __UIEDITOR__ICONHELPER__
 #define __UIEDITOR__ICONHELPER__
 
-#include <QString>
+#include <TArc/Qt/QtString.h>
 
 class IconHelper
 {

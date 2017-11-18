@@ -1,16 +1,14 @@
 #pragma once
 
 #include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Qt/QtString.h>
 
 #include <Base/Result.h>
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
 #include <Math/Math2D.h>
 #include <FileSystem/FilePath.h>
-
-#include <QString>
-
-#include <tuple>
 
 namespace DAVA
 {
@@ -28,16 +26,43 @@ public:
         bool operator==(const ResDir& other) const;
     };
 
+    struct PinnedControl
+    {
+        ResDir packagePath;
+        ResDir iconPath;
+        DAVA::String controlName;
+    };
+
+    struct LibrarySection
+    {
+        bool pinned = false;
+        ResDir packagePath;
+        ResDir iconPath;
+    };
+
     struct GfxDir
     {
         ResDir directory;
-        DAVA::Size2i resolution;
+        DAVA::float32 scale = 1.f;
     };
 
-    ProjectData();
+    struct Device
+    {
+        DAVA::UnorderedMap<DAVA::FastName, DAVA::Any> params;
+    };
+
+    struct Blank
+    {
+        DAVA::FilePath path;
+        DAVA::String name;
+        DAVA::FastName controlName;
+        DAVA::FastName controlPath;
+    };
+
+    ProjectData(const DAVA::String& projectDir);
     ~ProjectData() override;
 
-    static const DAVA::int32 CURRENT_PROJECT_FILE_VERSION = 1;
+    static const DAVA::int32 CURRENT_PROJECT_FILE_VERSION = 2;
 
     static const DAVA::String& GetProjectFileName();
     static const DAVA::String& GetFontsConfigFileName();
@@ -56,20 +81,50 @@ public:
     const ResDir& GetFontsConfigsDirectory() const;
     const ResDir& GetTextsDirectory() const;
     const DAVA::Vector<GfxDir>& GetGfxDirectories() const;
-    const DAVA::Vector<ResDir>& GetLibraryPackages() const;
+    const DAVA::Vector<PinnedControl>& GetPinnedControls() const;
+    const DAVA::Vector<LibrarySection>& GetLibrarySections() const;
     const DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>>& GetPrototypes() const;
 
     const DAVA::String& GetDefaultLanguage() const;
 
+    const DAVA::Vector<Device>& GetDevices() const;
+    const DAVA::Vector<Blank>& GetBlanks() const;
+
+    const DAVA::Map<DAVA::String, DAVA::String>& GetSoundLocales() const;
+
     bool Save() const;
+
+    DAVA::TArc::PropertiesItem CreatePropertiesNode(const DAVA::String& nodeName);
 
     static DAVA::FastName projectPathPropertyName;
 
 private:
     friend class ProjectModule;
 
-    DAVA::ResultList ParseLegacyProperties(const DAVA::FilePath& projectFile, const DAVA::YamlNode* root, int version);
-    DAVA::ResultList Parse(const DAVA::FilePath& projectFile, const DAVA::YamlNode* node);
+    DAVA::ResultList ParseProjectFile(const DAVA::FilePath& projectFile, const DAVA::YamlNode* node);
+
+    DAVA::int32 ParseVersion(const DAVA::YamlNode* root);
+
+    DAVA::ResultList ParseLegacyProperties(const DAVA::FilePath& projectFile, const DAVA::YamlNode* root);
+    DAVA::ResultList ParseProjectFileV1(const DAVA::FilePath& projectFile, const DAVA::YamlNode* node);
+    DAVA::ResultList ParseProjectFileV2(const DAVA::FilePath& projectFile, const DAVA::YamlNode* node);
+
+    void ParsePluginsDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseResourceDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseAdditionalResourceDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseUiDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseFontsDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseFontsConfigsDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseLibraryV1(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParsePrototypes(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseTextsDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseDevices(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseGfxDirectories(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseConvertedResourceDirectory(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+
+    void ParseLibraryV2(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseLibraryControlsV2(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
+    void ParseLibrarySectionsV2(const DAVA::YamlNode* projectDataNode, DAVA::ResultList& resultList);
 
     void RefreshAbsolutePaths();
     DAVA::FilePath MakeAbsolutePath(const DAVA::String& relPath) const;
@@ -95,8 +150,16 @@ private:
     ResDir fontsConfigsDirectory;
     ResDir textsDirectory;
     DAVA::Vector<GfxDir> gfxDirectories;
-    DAVA::Vector<ResDir> libraryPackages;
+
+    DAVA::Vector<PinnedControl> pinnedControls;
+    DAVA::Vector<LibrarySection> librarySections;
     DAVA::Map<DAVA::String, DAVA::Set<DAVA::FastName>> prototypes;
+
+    DAVA::Vector<Device> devicesForPreview;
+    DAVA::Vector<Blank> blanksForPreview;
+    DAVA::Map<DAVA::String, DAVA::String> soundLocales;
+
+    std::unique_ptr<DAVA::TArc::PropertiesHolder> propertiesHolder;
 
     DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArc::DataNode);
 };

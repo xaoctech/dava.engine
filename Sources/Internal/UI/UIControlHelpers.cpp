@@ -6,19 +6,56 @@
 
 namespace UIControlHelpersDetails
 {
-static const DAVA::String PATH_SEPARATOR("/");
-static const DAVA::FastName WILDCARD_PARENT("..");
-static const DAVA::FastName WILDCARD_CURRENT(".");
-static const DAVA::FastName WILDCARD_ROOT("^");
-static const DAVA::FastName WILDCARD_MATCHES_ONE_LEVEL("*");
-static const DAVA::FastName WILDCARD_MATCHES_ZERO_OR_MORE_LEVEL("**");
-static const DAVA::Set<DAVA::FastName> RESERVED_NAMES = {
+using namespace DAVA;
+
+const String PATH_SEPARATOR("/");
+const FastName WILDCARD_PARENT("..");
+const FastName WILDCARD_CURRENT(".");
+const FastName WILDCARD_ROOT("^");
+const FastName WILDCARD_MATCHES_ONE_LEVEL("*");
+const FastName WILDCARD_MATCHES_ZERO_OR_MORE_LEVEL("**");
+const Set<FastName> RESERVED_NAMES = {
     WILDCARD_PARENT,
     WILDCARD_CURRENT,
-    WILDCARD_ROOT,
-    WILDCARD_MATCHES_ONE_LEVEL,
-    WILDCARD_MATCHES_ZERO_OR_MORE_LEVEL
 };
+
+bool IsReservedName(const FastName& name)
+{
+    return (RESERVED_NAMES.find(name) != RESERVED_NAMES.end());
+}
+
+bool IsAllowedSymbol(char ch, UIControlHelpers::NameCheckStrictness strictness)
+{
+    auto IsLatinChar = [](char ch) -> bool
+    {
+        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+    };
+
+    auto IsDigit = [](char ch) -> bool
+    {
+        return (ch >= '0' && ch <= '9');
+    };
+
+    auto IsOtherAllowedChar = [](char ch) -> bool
+    {
+        static const UnorderedSet<char> allowedChars = { '.', '-', '_', ' ', ':' };
+        return allowedChars.find(ch) != allowedChars.end();
+    };
+
+    auto IsOtherAllowedCharStrict = [](char ch) -> bool
+    {
+        static const UnorderedSet<char> allowedChars = { '.', '-', '_' };
+        return allowedChars.find(ch) != allowedChars.end();
+    };
+
+    bool strict = (strictness == UIControlHelpers::NameCheckStrictness::StrictCheck);
+    return IsLatinChar(ch) || IsDigit(ch) || (strict ? IsOtherAllowedCharStrict(ch) : IsOtherAllowedChar(ch));
+}
+
+bool ContainsOnlyAllowedSymbols(const String& str, UIControlHelpers::NameCheckStrictness strictness)
+{
+    return std::all_of(str.begin(), str.end(), Bind(&IsAllowedSymbol, _1, strictness));
+}
 }
 
 namespace DAVA
@@ -251,14 +288,10 @@ void UIControlHelpers::ScrollToControlWithAnimation(DAVA::UIControl* control, fl
     }
 }
 
-bool UIControlHelpers::IsControlNameValid(const FastName& controlName)
+bool UIControlHelpers::IsControlNameValid(const FastName& controlName, NameCheckStrictness strictness)
 {
     using namespace UIControlHelpersDetails;
-
-    if (RESERVED_NAMES.count(controlName) > 0)
-        return false;
-
-    return (String(controlName.c_str()).find_first_of(PATH_SEPARATOR) == String::npos);
+    return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str(), strictness);
 }
 
 void UIControlHelpers::ScrollToRect(DAVA::UIControl* control, const Rect& rect, float32 animationTime, bool toTopLeftForBigControls)

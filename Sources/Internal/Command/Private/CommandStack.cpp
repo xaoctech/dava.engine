@@ -53,7 +53,7 @@ void CommandStack::ExecInternal(std::unique_ptr<Command>&& command, bool isSingl
         }
         commands.push_back(std::move(command));
         SetCurrentIndex(currentIndex + 1);
-        EmitCurrentIndexChanged();
+        OnCurrentIndexChanged();
         //invoke it after SetCurrentIndex to discard logic problems, when client code trying to get IsClean, CanUndo or CanRedo after got commandExecuted
         commandExecuted.Emit(commands.back().get(), true);
     }
@@ -117,7 +117,7 @@ void CommandStack::Undo()
         int32 commandIndexToExecute = currentIndex;
         SetCurrentIndex(currentIndex - 1);
         commands[commandIndexToExecute]->Undo();
-        EmitCurrentIndexChanged();
+        OnCurrentIndexChanged();
         //invoke it after SetCurrentIndex to discard logic problems, when client code trying to get IsClean, CanUndo or CanRedo after got commandExecuted
         commandExecuted.Emit(commands[commandIndexToExecute].get(), false);
     }
@@ -130,7 +130,7 @@ void CommandStack::Redo()
         int32 commandIndexToExecute = currentIndex + 1;
         SetCurrentIndex(commandIndexToExecute);
         commands[commandIndexToExecute]->Redo();
-        EmitCurrentIndexChanged();
+        OnCurrentIndexChanged();
         //invoke it after SetCurrentIndex to discard logic problems, when client code trying to get IsClean, CanUndo or CanRedo after got commandExecuted
         commandExecuted.Emit(commands[commandIndexToExecute].get(), true);
     }
@@ -168,18 +168,18 @@ void CommandStack::UpdateCleanState()
 {
     if (commandBatch != nullptr)
     {
-        EmitCleanChanged(commandBatch->IsClean());
+        SetCleanState(commandBatch->IsClean());
         return;
     }
     if (cleanIndex == currentIndex)
     {
-        EmitCleanChanged(true);
+        SetCleanState(true);
         return;
     }
 
     if (hasModifiedCommandsInRemoved == true)
     {
-        EmitCleanChanged(false);
+        SetCleanState(false);
         return;
     }
     int32 begin = std::min(cleanIndex, currentIndex);
@@ -192,7 +192,7 @@ void CommandStack::UpdateCleanState()
         const std::unique_ptr<Command>& command = commands[index + 1];
         containsModifiedCommands |= (command->IsClean() == false);
     }
-    EmitCleanChanged(!containsModifiedCommands);
+    SetCleanState(!containsModifiedCommands);
 }
 
 void CommandStack::SetCurrentIndex(int32 currentIndex_)
@@ -203,39 +203,13 @@ void CommandStack::SetCurrentIndex(int32 currentIndex_)
     }
 }
 
-void CommandStack::EmitCurrentIndexChanged()
+void CommandStack::OnCurrentIndexChanged()
 {
     UpdateCleanState();
-    EmitCanUndoChanged(CanUndo());
-    EmitCanRedoChanged(CanRedo());
-    undoCommandChanged.Emit(GetUndoCommand());
-    redoCommandChanged.Emit(GetRedoCommand());
 }
 
-void CommandStack::EmitCleanChanged(bool isClean_)
+void CommandStack::SetCleanState(bool isClean_)
 {
-    if (isClean != isClean_)
-    {
-        isClean = isClean_;
-        cleanChanged.Emit(isClean);
-    }
-}
-
-void CommandStack::EmitCanUndoChanged(bool canUndo_)
-{
-    if (canUndo != canUndo_)
-    {
-        canUndo = canUndo_;
-        canUndoChanged.Emit(canUndo);
-    }
-}
-
-void CommandStack::EmitCanRedoChanged(bool canRedo_)
-{
-    if (canRedo != canRedo_)
-    {
-        canRedo = canRedo_;
-        canRedoChanged.Emit(canRedo);
-    }
+    isClean = isClean_;
 }
 }

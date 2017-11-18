@@ -50,14 +50,20 @@ void LocalNotification::SetUseSound(const bool value)
 
 void LocalNotification::Show()
 {
-    isVisible = true;
-    isChanged = true;
+    if (!isVisible)
+    {
+        isVisible = true;
+        isChanged = true;
+    }
 }
 
 void LocalNotification::Hide()
 {
-    isVisible = false;
-    isChanged = true;
+    if (isVisible)
+    {
+        isVisible = false;
+        isChanged = true;
+    }
 }
 
 void LocalNotification::Update()

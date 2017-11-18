@@ -3,12 +3,15 @@
 #if defined(__DAVAENGINE_WIN32__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)
 
-#include "Platform/TemplateWin32/MovieViewControlWin32.h"
 
-#include "Render/Image/Image.h"
 #include "Platform/TemplateWin32/FfmpegPlayer.h"
+#include "Platform/TemplateWin32/MovieViewControlWin32.h"
+#include "Render/2D/Sprite.h"
+#include "Render/Image/Image.h"
 #include "Render/PixelFormatDescriptor.h"
+#include "Render/Texture.h"
 #include "UI/UIControl.h"
+#include "UI/UIControlBackground.h"
 
 namespace DAVA
 {

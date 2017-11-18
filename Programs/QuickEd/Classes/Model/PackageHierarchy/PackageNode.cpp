@@ -11,8 +11,11 @@
 #include "Model/ControlProperties/ControlPropertiesSection.h"
 #include "Model/ControlProperties/ComponentPropertiesSection.h"
 
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 #include "UI/Layouts/UILayoutSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
+#include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlPackageContext.h"
 #include "UI/Styles/UIStyleSheet.h"
@@ -425,14 +428,17 @@ void PackageNode::RefreshPackageStylesAndLayout(bool includeImportedPackages)
     }
 
     RebuildStyleSheets();
+
     for (int32 i = 0; i < packageControlsNode->GetCount(); i++)
     {
-        UIControlSystem::Instance()->GetStyleSheetSystem()->ProcessControl(packageControlsNode->Get(i)->GetControl(), true);
+        GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->ProcessControl(packageControlsNode->Get(i)->GetControl(), true);
+        packageControlsNode->Get(i)->GetControl()->SetLayoutDirty();
         NotifyPropertyChanged(packageControlsNode->Get(i));
     }
     for (int32 i = 0; i < prototypes->GetCount(); i++)
     {
-        UIControlSystem::Instance()->GetStyleSheetSystem()->ProcessControl(prototypes->Get(i)->GetControl(), true);
+        GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->ProcessControl(prototypes->Get(i)->GetControl(), true);
+        prototypes->Get(i)->GetControl()->SetLayoutDirty();
         NotifyPropertyChanged(prototypes->Get(i));
     }
 }

@@ -1,11 +1,14 @@
-#include "Scene3D/Scene.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/Application/REGlobal.h"
 
-#include "Scene/System/HoodSystem.h"
-#include "Scene/System/ModifSystem.h"
-#include "Scene/System/CollisionSystem.h"
-#include "Scene/System/CameraSystem.h"
-#include "Scene/SceneEditor2.h"
-#include "Base/AlignedAllocator.h"
+#include "Classes/Qt/Scene/System/HoodSystem.h"
+#include "Classes/Qt/Scene/System/ModifSystem.h"
+#include "Classes/Qt/Scene/System/CollisionSystem.h"
+#include "Classes/Qt/Scene/System/CameraSystem.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+
+#include <Scene3D/Scene.h>
+#include <Base/AlignedAllocator.h>
 
 HoodSystem::HoodSystem(DAVA::Scene* scene, SceneCameraSystem* camSys)
     : DAVA::SceneSystem(scene)
@@ -121,7 +124,7 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 {
     if (!IsLocked())
     {
-        scale = scale * SettingsManager::GetValue(Settings::Scene_GizmoScale).AsFloat();
+        scale = scale * REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>()->gizmoScale;
 
         if (curScale != scale && 0 != scale)
         {

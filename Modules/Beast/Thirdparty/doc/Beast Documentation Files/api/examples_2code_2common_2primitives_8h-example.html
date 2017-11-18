@@ -1,0 +1,1136 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples/code/common/primitives.h</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples_2code_2common_2primitives_8h-example.html','api_examples_2code_2common_2primitives_8h_example_htmla574df74-e0c1-4dcc-bdf9-b9d8446ae56b','index.html',location.hash); javascript:initPage('API: examples/code/common/primitives.h','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples_2code_2common_2primitives_8h-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples/code/common/primitives.h&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>examples/code/common/primitives.h</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">examples/code/common/primitives.h</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#ifndef PRIMITIVES_H</span>
+<span class="preprocessor">#define PRIMITIVES_H</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmesh_8h.html" title=
+"The api for specifying meshes in beast.">beastapi/beastmesh.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastpointcloud_8h.html" title=
+"The api for specifying point clouds in beast.">beastapi/beastpointcloud.h</a>&gt;</span>
+<span class="preprocessor">#include "utils.h"</span>
+<span class="preprocessor">#include "vecmath.h"</span>
+<span class="preprocessor">#include &lt;cmath&gt;</span>
+<span class="preprocessor">#include &lt;vector&gt;</span>
+
+<span class="keyword">namespace </span>bex {
+        <span class="keyword">inline</span> <a name=
+"_a0"></a><a class="code" href="struct_i_l_b_mesh_handle.html"
+title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> createSphere(<a name="_a1"></a><a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bm,
+                                                                          <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name,
+                                                                          <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; materialName,
+                                                                          <span class="keywordtype">int</span> segmentsU,
+                                                                          <span class="keywordtype">int</span> segmentsV,
+                                                                          std::vector&lt;float&gt;* colors = 0) {
+                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh;
+                apiCall(<a name="a2"></a><a class="code" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b" title=
+"Begins creation of a mesh.">ILBBeginMesh</a>(bm, name.c_str(), &amp;mesh));
+                <span class="keyword">const</span> <span class=
+"keywordtype">float</span> PI = 3.141592f;
+                <span class=
+"keywordflow">if</span>(segmentsU &lt; 3 || segmentsV &lt; 3) {
+                        <span class=
+"keywordflow">throw</span> std::runtime_error(<span class=
+"stringliteral">"Invalid segment setup"</span>);
+                }
+                <span class=
+"comment">// Create the vertex data</span>
+                <span class=
+"comment">// For simplicity the points on the top and bottom of the </span>
+                <span class=
+"comment">// sphere is generated as a complete circle</span>
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> v = 0; v &lt; segmentsV; ++v) {
+                        <span class=
+"keywordtype">float</span> angleTh = (<span class=
+"keyword">static_cast&lt;</span><span class=
+"keywordtype">float</span><span class=
+"keyword">&gt;</span>(v) / static_cast&lt;float&gt;(segmentsV - 1)) * PI;
+                        std::vector&lt;Vec3&gt; positions;
+                        std::vector&lt;Vec3&gt; normals;
+                        positions.reserve(segmentsU);
+                        normals.reserve(segmentsU);
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> u = 0; u &lt;= segmentsU; ++u) {
+                                <span class=
+"keywordtype">float</span> anglePh = <span class=
+"keyword">static_cast&lt;</span><span class=
+"keywordtype">float</span><span class=
+"keyword">&gt;</span>(u) * 2.0f * PI / static_cast&lt;float&gt;(segmentsU);
+                                <span class=
+"keywordtype">float</span> x = cosf(anglePh) * sinf(angleTh);
+                                <span class=
+"keywordtype">float</span> y = cosf(angleTh);
+                                <span class=
+"keywordtype">float</span> z = sinf(anglePh) * sinf(angleTh);
+                                positions.push_back(Vec3(x, y, z));
+                                <span class=
+"comment">// Normalizations might be redundant here</span>
+                                normals.push_back(normalize(Vec3(x, y, z)));
+                        }
+                        <span class=
+"comment">// Add vertexdata to the mesh</span>
+                        <span class=
+"comment">// Note this is done per latitude</span>
+                        apiCall(<a name="a3"></a><a class="code"
+href="beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073" title=
+"Adds a chunk of vertex data to a mesh.">ILBAddVertexData</a>(mesh, &amp;positions[0], &amp;normals[0], static_cast&lt;int32&gt;(positions.size())));
+                }
+
+                <span class=
+"comment">// Create a material group that will contain all polygons</span>
+                apiCall(<a name="a4"></a><a class="code" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051" title=
+"Begins a material group.">ILBBeginMaterialGroup</a>(mesh, materialName.c_str()));
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> v = 0; v &lt; segmentsV - 1; ++v) {
+                        std::vector&lt;int32&gt; indices;
+                        <span class=
+"comment">// Each triangle requires 3 indices and each segments needs</span>
+                        <span class=
+"comment">// facet need 2 triangles, hence 6 times the number of segments</span>
+                        indices.reserve(segmentsU * 6);
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> u = 0; u &lt; segmentsU; ++u) {
+                                <span class=
+"comment">// Create the 4 indices that defines a sphere facet</span>
+                                <span class=
+"comment">// a-----b</span>
+                                <span class=
+"comment">// |     |</span>
+                                <span class=
+"comment">// |     |</span>
+                                <span class=
+"comment">// d-----c</span>
+                                <span class=
+"keywordtype">int</span> a = u + v * (segmentsU + 1);
+                                <span class=
+"keywordtype">int</span> b = (u + 1) + v * (segmentsU + 1);
+                                <span class=
+"keywordtype">int</span> c = (u + 1) + (v + 1) * (segmentsU + 1);
+                                <span class=
+"keywordtype">int</span> d = u + (v + 1) * (segmentsU + 1);
+                                <span class=
+"comment">// Skip this triangle on the top band since it would be</span>
+                                <span class=
+"comment">// degenerated.</span>
+                                <span class=
+"keywordflow">if</span> (v &gt; 0) 
+                                {
+                                        indices.push_back(a);
+                                        indices.push_back(b);
+                                        indices.push_back(c);
+                                }
+                                <span class=
+"comment">// Skip this triangle on the bottom band since it would be</span>
+                                <span class=
+"comment">// degenerated.</span>
+                                <span class=
+"keywordflow">if</span> (v &lt; segmentsV - 2) 
+                                {
+                                        indices.push_back(a);
+                                        indices.push_back(c);
+                                        indices.push_back(d);
+                                }
+                        }
+                        apiCall(<a name="a5"></a><a class="code"
+href="beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a" title=
+"Add triangles to a material group.">ILBAddTriangleData</a>(mesh, &amp;indices[0], static_cast&lt;int32&gt;(indices.size())));
+                }
+                <span class=
+"comment">// Finalize the material group</span>
+                apiCall(<a name="a6"></a><a class="code" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca" title=
+"End a material group.">ILBEndMaterialGroup</a>(mesh));
+
+                <span class="comment">// Add uv's</span>
+                apiCall(<a name="a7"></a><a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv1"</span>)));
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> v = 0; v &lt; segmentsV; ++v) {
+                        std::vector&lt;Vec2&gt; uvs;
+                        uvs.reserve(segmentsU);
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> u = 0; u &lt;= segmentsU; ++u) {
+                                Vec2 uv;
+                                uv.y = <span class=
+"keyword">static_cast&lt;</span><span class=
+"keywordtype">float</span><span class=
+"keyword">&gt;</span>(v) / static_cast&lt;float&gt;(segmentsV-1);
+                                <span class=
+"keywordflow">if</span> (v == 0 || v == (segmentsV-1)) {
+                                        uv.x = 0.5f;
+                                } <span class=
+"keywordflow">else</span> {
+                                        uv.x = <span class=
+"keyword">static_cast&lt;</span><span class=
+"keywordtype">float</span><span class=
+"keyword">&gt;</span>(u) / static_cast&lt;float&gt;(segmentsU);
+                                }
+                                uvs.push_back(uv);
+                        }
+                        <span class=
+"comment">// Add uv data to the mesh</span>
+                        <span class=
+"comment">// Note this is done per latitude </span>
+                        apiCall(<a name="a8"></a><a class="code"
+href="beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvs[0], static_cast&lt;int32&gt;(uvs.size())));
+                }
+                apiCall(<a name="a9"></a><a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add vertex colors</span>
+                apiCall(<a name="a10"></a><a class="code" href=
+"beastmesh_8h.html#a8b7588112f49e905dd611689bc7aa20e" title=
+"Creates a new color layer.">ILBBeginColorLayer</a>(mesh, _T(<span class="stringliteral">"color1"</span>)));
+                <span class=
+"keywordflow">if</span> (colors &amp;&amp; colors-&gt;size() == (segmentsU + 1) * segmentsV * 4) {
+                        apiCall(<a name="a11"></a><a class="code"
+href="beastmesh_8h.html#ab600a8462872e92092865a2a4106a996" title=
+"Add color data to the active color set.">ILBAddColorData</a>(mesh, (<a name="_a12"></a><a class="code"
+href="struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>*)(&amp;(*colors)[0]), static_cast&lt;int32&gt;(colors-&gt;size()/4)));
+                } <span class="keywordflow">else</span> {
+                        std::vector&lt;ColorRGBA&gt; randomColors;
+                        randomColors.reserve(segmentsU * segmentsV);
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> v = 0; v &lt; segmentsV * (segmentsU+1); ++v) {
+                                randomColors.push_back(randomRGBA(1.0f));
+                        }
+                        apiCall(<a class="code" href=
+"beastmesh_8h.html#ab600a8462872e92092865a2a4106a996" title=
+"Add color data to the active color set.">ILBAddColorData</a>(mesh, &amp;randomColors[0], static_cast&lt;int32&gt;(randomColors.size())));
+                }
+                apiCall(<a name="a13"></a><a class="code" href=
+"beastmesh_8h.html#a8b4fc33d943c97f5d4b7498334089b9f" title=
+"Finalizes a color layer.">ILBEndColorLayer</a>(mesh));
+
+                apiCall(<a name="a14"></a><a class="code" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987" title=
+"Finalizes a mesh.">ILBEndMesh</a>(mesh));
+                <span class="keywordflow">return</span> mesh;
+        }
+
+        <span class="keyword">inline</span> <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> createCornellBox(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bm,
+                                                                                  <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name,
+                                                                                  <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; materialName) {
+                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh;
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b" title=
+"Begins creation of a mesh.">ILBBeginMesh</a>(bm, name.c_str(), &amp;mesh));
+
+                Vec3 A(-1,-1,-1);
+                Vec3 B(-1,-1, 1);
+                Vec3 C( 1,-1, 1);
+                Vec3 D( 1,-1,-1);
+                Vec3 E(-1, 1,-1);
+                Vec3 F( 1, 1,-1);
+                Vec3 G( 1, 1, 1);
+                Vec3 H(-1, 1, 1);
+
+                Vec2 UVD(0.f, 0.f);
+                Vec2 UVC(1.f/3.f,0.f);
+                Vec2 UVB(2.f/3.f,0.f);
+                Vec2 UVA(1.f,0.f);
+                Vec2 UVH(0.f,1.f/3.f);
+                Vec2 UVG(1.f/3.f,1.f/3.f);
+                Vec2 UVF(2.f/3.f,1.f/3.f);
+                Vec2 UVE(1.f,1.f/3.f);
+                Vec2 UVL(0.f,2.f/3.f);
+                Vec2 UVK(1.f/3.f,2.f/3.f);
+                Vec2 UVJ(2.f/3.f,2.f/3.f);
+                Vec2 UVI(1.f,2.f/3.f);
+
+                <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> red(.7f, 0.f, 0.f, 1.f);
+                <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> blue(0.f, 0.f, .7f, 1.f);
+                <a class="code" href=
+"struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a> white(.7f, .7f, .7f, 1.f);
+
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> vertexCount = 20;
+                std::vector&lt;Vec3&gt; positions;
+                std::vector&lt;Vec3&gt; normals;
+                std::vector&lt;ILBLinearRGBA&gt; colors;
+                std::vector&lt;Vec2&gt; uv;
+                std::vector&lt;Vec3&gt; tangents;
+                std::vector&lt;Vec3&gt; bitangents;
+
+                <span class="comment">// Face 1, floor</span>
+                positions.push_back(A);
+                positions.push_back(B);
+                positions.push_back(C);
+                positions.push_back(D);
+                uv.push_back(UVA);
+                uv.push_back(UVB);
+                uv.push_back(UVF);
+                uv.push_back(UVE);
+                normals.insert(normals.end(), 4, Vec3(0,1,0));
+                colors.insert(colors.end(), 4, white);
+                tangents.insert(tangents.end(), 4, Vec3(1,0,0));
+                bitangents.insert(bitangents.end(), 4, Vec3(0,0,-1));
+                <span class="comment">// Face 2, ceiling</span>
+                positions.push_back(E);
+                positions.push_back(F);
+                positions.push_back(G);
+                positions.push_back(H);
+                uv.push_back(UVB);
+                uv.push_back(UVC);
+                uv.push_back(UVG);
+                uv.push_back(UVF);
+                normals.insert(normals.end(), 4, Vec3(0,-1,0));
+                colors.insert(colors.end(), 4, white);
+                tangents.insert(tangents.end(), 4, Vec3(1,0,0));
+                bitangents.insert(bitangents.end(), 4, Vec3(0,0,1));
+                <span class="comment">// Face 3, back wall</span>
+                positions.push_back(H);
+                positions.push_back(G);
+                positions.push_back(C);
+                positions.push_back(B);
+                uv.push_back(UVC);
+                uv.push_back(UVD);
+                uv.push_back(UVH);
+                uv.push_back(UVG);
+                normals.insert(normals.end(), 4, Vec3(0,0,-1));
+                colors.insert(colors.end(), 4, white);
+                tangents.insert(tangents.end(), 4, Vec3(1,0,0));
+                bitangents.insert(bitangents.end(), 4, Vec3(0,-1,0));
+                <span class="comment">// Face 4, left wall</span>
+                positions.push_back(E);
+                positions.push_back(H);
+                positions.push_back(B);
+                positions.push_back(A);
+                uv.push_back(UVE);
+                uv.push_back(UVF);
+                uv.push_back(UVJ);
+                uv.push_back(UVI);
+                normals.insert(normals.end(), 4, Vec3(1,0,0));
+                colors.insert(colors.end(), 4, red);
+                tangents.insert(tangents.end(), 4, Vec3(0,0,1));
+                bitangents.insert(bitangents.end(), 4, Vec3(0,-1,0));
+                <span class="comment">// Face 5, right wall</span>
+                positions.push_back(G);
+                positions.push_back(F);
+                positions.push_back(D);
+                positions.push_back(C);
+                uv.push_back(UVF);
+                uv.push_back(UVG);
+                uv.push_back(UVK);
+                uv.push_back(UVJ);
+                normals.insert(normals.end(), 4, Vec3(-1,0,0));
+                colors.insert(colors.end(), 4, blue);
+                tangents.insert(tangents.end(), 4, Vec3(0,0,-1));
+                bitangents.insert(bitangents.end(), 4, Vec3(0,-1,0));
+
+                <span class="comment">// Setup the triangles</span>
+                std::vector&lt;int&gt; triangles;
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> i = 0; i &lt; 5; i++) {
+                        <span class=
+"keywordtype">int</span> base = i * 4;
+                        triangles.push_back(base + 0);
+                        triangles.push_back(base + 1);
+                        triangles.push_back(base + 2);
+                        triangles.push_back(base + 2);
+                        triangles.push_back(base + 3);
+                        triangles.push_back(base + 0);
+                }
+
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073" title=
+"Adds a chunk of vertex data to a mesh.">ILBAddVertexData</a>(mesh, &amp;positions[0], &amp;normals[0], vertexCount));
+
+                <span class=
+"comment">// Create a material group that will contain all polygons</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051" title=
+"Begins a material group.">ILBBeginMaterialGroup</a>(mesh, materialName.c_str()));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a" title=
+"Add triangles to a material group.">ILBAddTriangleData</a>(mesh, &amp;triangles[0], (int32)triangles.size()));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca" title=
+"End a material group.">ILBEndMaterialGroup</a>(mesh));
+
+                <span class="comment">// Add a uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv1"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uv[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add a color layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a8b7588112f49e905dd611689bc7aa20e" title=
+"Creates a new color layer.">ILBBeginColorLayer</a>(mesh, _T(<span class="stringliteral">"colors"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#ab600a8462872e92092865a2a4106a996" title=
+"Add color data to the active color set.">ILBAddColorData</a>(mesh, &amp;colors[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a8b4fc33d943c97f5d4b7498334089b9f" title=
+"Finalizes a color layer.">ILBEndColorLayer</a>(mesh));
+
+                <span class="comment">// Add a tangent layer</span>
+                apiCall(<a name="a15"></a><a class="code" href=
+"beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f" title=
+"Begins adding tangents and bitangents to the mesh.">ILBBeginTangents</a>(mesh));
+                apiCall(<a name="a16"></a><a class="code" href=
+"beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65" title=
+"Adds a batch of tangents and bitangents (binormals) to a mesh.">ILBAddTangentData</a>(mesh, &amp;tangents[0], &amp;bitangents[0], vertexCount));
+                apiCall(<a name="a17"></a><a class="code" href=
+"beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69" title=
+"Ends adding tangent data to the mesh.">ILBEndTangents</a>(mesh));
+
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987" title=
+"Finalizes a mesh.">ILBEndMesh</a>(mesh));
+                <span class="keywordflow">return</span> mesh;
+        }
+
+
+        <span class="keyword">inline</span> <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> createPlane(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bm,
+                                                                         <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name,
+                                                                         <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; materialName) {
+                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh;
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b" title=
+"Begins creation of a mesh.">ILBBeginMesh</a>(bm, name.c_str(), &amp;mesh));
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> vertexCount = 4;
+
+                <span class="comment">// Setup vertex data</span>
+                Vec3 normal(0.0f, 1.0f, 0.0f);
+                std::vector&lt;Vec3&gt; normals(vertexCount, normal);
+                std::vector&lt;Vec3&gt; positions(vertexCount);
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; vertexCount; ++i) {
+                        <span class=
+"keywordtype">float</span> x = (i &lt; 2) ? -1.0f : 1.0f;
+                        <span class=
+"keywordtype">float</span> z = ((i == 1)||(i == 2)) ? 1.0f : -1.0f;
+                        positions[i] = Vec3(x, 0.0f, z);
+                }
+                
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073" title=
+"Adds a chunk of vertex data to a mesh.">ILBAddVertexData</a>(mesh, &amp;positions[0], &amp;normals[0], vertexCount));
+
+                <span class=
+"comment">// Create a material group that will contain all polygons</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051" title=
+"Begins a material group.">ILBBeginMaterialGroup</a>(mesh, materialName.c_str()));
+
+                <span class=
+"comment">// Two triangles requires 6 indices</span>
+                std::vector&lt;int32&gt; tris(6);
+                tris[0] = 0;
+                tris[1] = 1;
+                tris[2] = 2;
+                tris[3] = 0;
+                tris[4] = 2;
+                tris[5] = 3;
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a" title=
+"Add triangles to a material group.">ILBAddTriangleData</a>(mesh, &amp;tris[0], 6));
+
+                <span class=
+"comment">// Finalize the material group</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca" title=
+"End a material group.">ILBEndMaterialGroup</a>(mesh));
+
+                std::vector&lt;Vec2&gt; uvData(vertexCount);
+                std::vector&lt;Vec3&gt; tangents(vertexCount);
+                std::vector&lt;Vec3&gt; bitangents(vertexCount);
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; vertexCount; ++i) {
+                        <span class=
+"keywordtype">int</span> idx = i &amp; 3;
+                        <span class=
+"keywordtype">float</span> u = (idx &lt; 2) ? 0.0f : 1.0f;
+                        <span class=
+"keywordtype">float</span> v = ((idx == 1)||(idx == 2)) ? 1.0f : 0.0f;
+                        uvData[i] = Vec2(u, v);
+                        tangents[i] = Vec3(1.0f, 0.0f, 0.0f);
+                        bitangents[i] = Vec3(0.0f, 0.0f, -1.0f);
+                }
+                
+                <span class="comment">// Add a uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv1"</span>)));
+                <span class="comment">// Add uv data</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvData[0], vertexCount));
+                <span class=
+"comment">// Finalize the uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+<span class="preprocessor">#if 0</span>
+                <span class="comment">// Add a tangent layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f" title=
+"Begins adding tangents and bitangents to the mesh.">ILBBeginTangents</a>(mesh));
+                <span class="comment">// Add tangents</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65" title=
+"Adds a batch of tangents and bitangents (binormals) to a mesh.">ILBAddTangentData</a>(mesh, &amp;tangents[0], &amp;bitangents[0], vertexCount));
+                <span class=
+"comment">// Finalize the tangent layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69" title=
+"Ends adding tangent data to the mesh.">ILBEndTangents</a>(mesh));
+<span class="preprocessor">#endif</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987" title=
+"Finalizes a mesh.">ILBEndMesh</a>(mesh));
+                <span class="keywordflow">return</span> mesh;
+        }
+
+        <span class="keyword">inline</span> <span class=
+"keywordtype">void</span> createPlaneVertices(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> xres, 
+                                                         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> yres, 
+                                                         std::vector&lt;Vec3&gt;&amp; vertices) {
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> vertexCount = xres * yres;
+                vertices.resize(vertexCount);
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> vertexIndex = 0;
+
+                <span class="keyword">const</span> <span class=
+"keywordtype">float</span> x_rcp = 2.0f / ((float)xres-1.0f);
+                <span class="keyword">const</span> <span class=
+"keywordtype">float</span> y_rcp = 2.0f / ((float)yres-1.0f);
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> y = 0; y &lt; yres; y++) {
+                        <span class=
+"keywordtype">float</span> yp = (float)y * y_rcp - 1.0f;
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> x = 0; x &lt; xres; x++) {
+                                <span class=
+"keywordtype">float</span> xp = (float)x * x_rcp - 1.0f;
+                                vertices[vertexIndex++] = Vec3(xp, 0.0f, yp);
+                        }
+                }
+        }
+
+        <span class="keyword">inline</span> <a name=
+"_a18"></a><a class="code" href=
+"struct_i_l_b_point_cloud_handle.html" title=
+"Handle for Beast point clouds Intentionally hidden implementation.">ILBPointCloudHandle</a> createPlanePC(<a name="_a19"></a><a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene,
+                                                                                         <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name,
+                                                                                         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> xres,
+                                                                                         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> yres,
+                                                                                         bex::Matrix4x4&amp; mtx) {
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> vertexCount = xres * yres;
+                Vec3 normal(0.0f, 1.0f, 0.0f);
+                std::vector&lt;Vec3&gt; normals(vertexCount, normal);
+                std::vector&lt;Vec3&gt; positions;
+                createPlaneVertices(xres, yres, positions);
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">size_t</span> i = 0; i &lt; positions.size(); i++) {
+                        positions[i] = mulPoint(mtx, positions[i]);
+                }
+                <a class="code" href=
+"struct_i_l_b_point_cloud_handle.html" title=
+"Handle for Beast point clouds Intentionally hidden implementation.">ILBPointCloudHandle</a> pc;
+                apiCall(<a name="a20"></a><a class="code" href=
+"beastpointcloud_8h.html#a17bb367d37e1bae0bf6f72a0bfc926c7" title=
+"Begins creation of a Point Cloud.">ILBCreatePointCloud</a>(scene, name.c_str(), &amp;pc));
+                apiCall(<a name="a21"></a><a class="code" href=
+"beastpointcloud_8h.html#af5fcb05cdc2f735740497a43326af2f3" title=
+"Adds a chunk of point data to a point cloud.">ILBAddPointCloudData</a>(pc, &amp;positions[0], &amp;normals[0], vertexCount));
+                apiCall(<a name="a22"></a><a class="code" href=
+"beastpointcloud_8h.html#a1e155fbaaeb21d78ba7f7557a5058442" title=
+"Finalizes a point cloud.">ILBEndPointCloud</a>(pc));
+                <span class="keywordflow">return</span> pc;
+        }
+
+        <span class="keyword">inline</span> <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> createPlane(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bm, 
+                                                                         <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name, 
+                                                                         <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; materialName, 
+                                                                         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> xres,
+                                                                         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> yres,
+                                                                         std::vector&lt;float&gt;* colors = 0) {
+                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh;
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b" title=
+"Begins creation of a mesh.">ILBBeginMesh</a>(bm, name.c_str(), &amp;mesh));
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> vertexCount = xres * yres;
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> triangleCount = (xres-1) * (yres-1) * 2;
+
+                <span class="comment">// Setup vertex data</span>
+                Vec3 normal(0.0f, 1.0f, 0.0f);
+                Vec3 tangent(1.0f, 0.0f, 0.0f);
+                Vec3 bitangent(0.0f, 0.0f, -1.0f);
+
+                std::vector&lt;Vec3&gt; normals(vertexCount, normal);
+                std::vector&lt;Vec3&gt; positions;
+                std::vector&lt;int32&gt; tris(triangleCount * 3);
+                std::vector&lt;Vec2&gt; uvData(vertexCount);
+                std::vector&lt;Vec3&gt; tangents(vertexCount, tangent);
+                std::vector&lt;Vec3&gt; bitangents(vertexCount, bitangent);
+                
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> vertexIndex = 0;
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> triangleIndex = 0;
+
+                createPlaneVertices(xres, yres, positions);
+
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> y = 0; y &lt; yres; y++) {
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> x = 0; x &lt; xres; x++) {
+                                uvData[vertexIndex] = Vec2(positions[vertexIndex].x * 0.5f + 0.5f, positions[vertexIndex].z * 0.5f + 0.5f);
+                                vertexIndex++;
+
+                                <span class=
+"keywordflow">if</span> (x != xres-1 &amp;&amp; y != yres-1) {
+                                        <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> indexV1 = y * xres + x;
+                                        <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> indexV2 = y * xres + x + 1;
+                                        <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> indexV3 = y * xres + x + xres;
+                                        <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> indexV4 = y * xres + x + xres + 1;
+                                        tris[triangleIndex++] = indexV1;
+                                        tris[triangleIndex++] = indexV4;
+                                        tris[triangleIndex++] = indexV2;
+                                        tris[triangleIndex++] = indexV1;
+                                        tris[triangleIndex++] = indexV3;
+                                        tris[triangleIndex++] = indexV4;
+                                }
+                        }
+                }
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073" title=
+"Adds a chunk of vertex data to a mesh.">ILBAddVertexData</a>(mesh, &amp;positions[0], &amp;normals[0], vertexCount));
+
+                <span class=
+"comment">// Create a material group that will contain all polygons</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051" title=
+"Begins a material group.">ILBBeginMaterialGroup</a>(mesh, materialName.c_str()));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a" title=
+"Add triangles to a material group.">ILBAddTriangleData</a>(mesh, &amp;tris[0], triangleCount * 3));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca" title=
+"End a material group.">ILBEndMaterialGroup</a>(mesh));
+
+                <span class="comment">// Add uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv1"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvData[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add tangent layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f" title=
+"Begins adding tangents and bitangents to the mesh.">ILBBeginTangents</a>(mesh));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65" title=
+"Adds a batch of tangents and bitangents (binormals) to a mesh.">ILBAddTangentData</a>(mesh, &amp;tangents[0], &amp;bitangents[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69" title=
+"Ends adding tangent data to the mesh.">ILBEndTangents</a>(mesh));
+
+                <span class="comment">// Add colors</span>
+                <span class=
+"keywordflow">if</span> (colors &amp;&amp; colors-&gt;size() == vertexCount*4) {
+                        apiCall(<a class="code" href=
+"beastmesh_8h.html#a8b7588112f49e905dd611689bc7aa20e" title=
+"Creates a new color layer.">ILBBeginColorLayer</a>(mesh, _T(<span class="stringliteral">"colors"</span>)));
+                        apiCall(<a class="code" href=
+"beastmesh_8h.html#ab600a8462872e92092865a2a4106a996" title=
+"Add color data to the active color set.">ILBAddColorData</a>(mesh, (<a class="code"
+href="struct_i_l_b_linear_r_g_b_a.html" title=
+"Color with alpha definition All colors are expressed in linear space as opposed to gamma corrected...">ILBLinearRGBA</a>*)&amp;(*colors)[0], vertexCount));
+                        apiCall(<a class="code" href=
+"beastmesh_8h.html#a8b4fc33d943c97f5d4b7498334089b9f" title=
+"Finalizes a color layer.">ILBEndColorLayer</a>(mesh));
+                }
+
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987" title=
+"Finalizes a mesh.">ILBEndMesh</a>(mesh));
+                <span class="keywordflow">return</span> mesh;
+        }
+
+        <span class="keyword">inline</span> <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> createPlaneMultiUV(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bm, <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name, <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; materialName) {
+                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> mesh;
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a92c87b1cf4b5ef28cf891fa3dd09b08b" title=
+"Begins creation of a mesh.">ILBBeginMesh</a>(bm, name.c_str(), &amp;mesh));
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> vertexCount = 4;
+
+                <span class="comment">// Setup vertex data</span>
+                Vec3 normal(0.0f, 1.0f, 0.0f);
+                std::vector&lt;Vec3&gt; normals(vertexCount, normal);
+                std::vector&lt;Vec3&gt; positions(vertexCount);
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; vertexCount; ++i) {
+                        <span class=
+"keywordtype">float</span> x = (i &lt; 2) ? -1.0f : 1.0f;
+                        <span class=
+"keywordtype">float</span> z = ((i == 1)||(i == 2)) ? 1.0f : -1.0f;
+                        positions[i] = Vec3(x, 0.0f, z);
+                }
+
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a5236fec2aafc8fda1169d3fb96f35073" title=
+"Adds a chunk of vertex data to a mesh.">ILBAddVertexData</a>(mesh, &amp;positions[0], &amp;normals[0], 4));
+
+                <span class=
+"comment">// Create a material group that will contain all polygons</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#abe23ea67f2c6a53adb21221af2c52051" title=
+"Begins a material group.">ILBBeginMaterialGroup</a>(mesh, materialName.c_str()));
+
+                <span class=
+"comment">// Two triangles requires 6 indices</span>
+                std::vector&lt;int32&gt; tris(6);
+                tris[0] = 0;
+                tris[1] = 1;
+                tris[2] = 2;
+                tris[3] = 0;
+                tris[4] = 2;
+                tris[5] = 3;
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#af0be1497df9d37ac9bfe8e5c0fddd40a" title=
+"Add triangles to a material group.">ILBAddTriangleData</a>(mesh, &amp;tris[0], 6));
+
+                <span class=
+"comment">// Finalize the material group</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a60a2f33321f18f5b655fec00f41e80ca" title=
+"End a material group.">ILBEndMaterialGroup</a>(mesh));
+
+                std::vector&lt;Vec2&gt; uvData1(vertexCount);
+                std::vector&lt;Vec2&gt; uvData2(vertexCount);
+                std::vector&lt;Vec2&gt; uvData3(vertexCount);
+                std::vector&lt;Vec2&gt; uvData4(vertexCount);
+                std::vector&lt;Vec3&gt; tangents(vertexCount);
+                std::vector&lt;Vec3&gt; bitangents(vertexCount);
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; vertexCount; ++i) {
+                        <span class=
+"keywordtype">int</span> idx = i &amp; 3;
+                        <span class=
+"keywordtype">float</span> u = (idx &lt; 2) ? 0.0f : 0.5f;
+                        <span class=
+"keywordtype">float</span> v = ((idx == 1)||(idx == 2)) ? 0.0f : 0.5f;
+                        uvData1[i] = Vec2(u, v);
+                        uvData2[i] = Vec2(u+0.5f, v);
+                        uvData3[i] = Vec2(u, v+0.5f);
+                        uvData4[i] = Vec2(u+0.5f, v+0.5f);
+                        tangents[i] = Vec3(1.0f, 0.0f, 0.0f);
+                        bitangents[i] = Vec3(0.0f, 0.0f, -1.0f);
+                }
+
+                <span class="comment">// Add first uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv1"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvData1[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add second uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv2"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvData2[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add third uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv3"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvData3[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add fourth uv layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a72eb69adaf60b98fd8f09e67b7e6b533" title=
+"Creates a new UV layer.">ILBBeginUVLayer</a>(mesh, _T(<span class=
+"stringliteral">"uv4"</span>)));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a81cd6d03cb22be5a6ac39e56c0f17286" title=
+"Adds a batch of UV coordinates to a mesh.">ILBAddUVData</a>(mesh, &amp;uvData4[0], vertexCount));
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a923825e6be553d32931471e02c2aeb4e" title=
+"Ends the UV layer currently being created.">ILBEndUVLayer</a>(mesh));
+
+                <span class="comment">// Add a tangent layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#ae91527dff4459be0cf16c1e062d6e84f" title=
+"Begins adding tangents and bitangents to the mesh.">ILBBeginTangents</a>(mesh));
+                <span class="comment">// Add tangents</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a75557b2c87deceb957da51c05d0deb65" title=
+"Adds a batch of tangents and bitangents (binormals) to a mesh.">ILBAddTangentData</a>(mesh, &amp;tangents[0], &amp;bitangents[0], vertexCount));
+                <span class=
+"comment">// Finalize the tangent layer</span>
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#acca674f6ff0ad3d9572580ee94a3fc69" title=
+"Ends adding tangent data to the mesh.">ILBEndTangents</a>(mesh));
+
+                apiCall(<a class="code" href=
+"beastmesh_8h.html#a74e254ea8c3fd546ddfb1420d5c81987" title=
+"Finalizes a mesh.">ILBEndMesh</a>(mesh));
+                <span class="keywordflow">return</span> mesh;
+        }
+
+        <span class="keyword">inline</span> <a class="code" href=
+"struct_i_l_b_point_cloud_handle.html" title=
+"Handle for Beast point clouds Intentionally hidden implementation.">ILBPointCloudHandle</a> createPointCloudGrid(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                                                        <span class="keyword">const</span> std::basic_string&lt;TCHAR&gt;&amp; name, 
+                                                                                                        <span class="keyword">const</span> <a name="_a23"></a><a class="code"
+href="struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>&amp; minCorner, 
+                                                                                                        <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>&amp; maxCorner,
+                                                                                                        int32 count) {
+                <span class=
+"keywordflow">if</span> (count &lt; 2) {
+                        <span class="keywordflow">return</span> 0;
+                }
+                                                                                                                
+                <a class="code" href=
+"struct_i_l_b_point_cloud_handle.html" title=
+"Handle for Beast point clouds Intentionally hidden implementation.">ILBPointCloudHandle</a> pch;
+                apiCall(<a class="code" href=
+"beastpointcloud_8h.html#a17bb367d37e1bae0bf6f72a0bfc926c7" title=
+"Begins creation of a Point Cloud.">ILBCreatePointCloud</a>(scene, name.c_str(), &amp;pch));
+
+                std::vector&lt;ILBVec3&gt; normals;
+                normals.resize(count, <a class="code" href=
+"struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>(1, 0, 0));
+
+                <a class="code" href="struct_i_l_b_vec3.html"
+title="Three dimensional geometric vector type.">ILBVec3</a> sideLength(maxCorner.<a name="a24"></a><a class="code"
+href="struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3"
+title="x">x</a> - minCorner.<a class="code" href=
+"struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3" title=
+"x">x</a>, maxCorner.<a name="a25"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a> - minCorner.<a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a>, maxCorner.<a name="a26"></a><a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a> - minCorner.<a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a>);
+
+                <span class=
+"keywordflow">for</span> (int32 z = 0; z &lt; count; z++) {
+                        <span class=
+"keywordflow">for</span> (int32 y = 0; y &lt; count; y++) {
+                                std::vector&lt;ILBVec3&gt; points;
+                                points.reserve(count);
+                                <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; count; ++x) {
+                                        <span class=
+"keywordtype">float</span> xx = minCorner.<a class="code" href=
+"struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3" title=
+"x">x</a> + sideLength.<a class="code" href=
+"struct_i_l_b_vec3.html#a49d44042d774151462f2d42e004314c3" title=
+"x">x</a> * (float)x / (<span class=
+"keywordtype">float</span>)(count-1);
+                                        <span class=
+"keywordtype">float</span> yy = minCorner.<a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a> + sideLength.<a class="code" href=
+"struct_i_l_b_vec3.html#ac130ee9f211ea9fdcbfda50ff174ccae" title=
+"y">y</a> * (float)y / (<span class=
+"keywordtype">float</span>)(count-1);
+                                        <span class=
+"keywordtype">float</span> zz = minCorner.<a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a> + sideLength.<a class="code" href=
+"struct_i_l_b_vec3.html#ae8a428118cca400f1f07163917212b7c" title=
+"z">z</a> * (float)z / (<span class=
+"keywordtype">float</span>)(count-1);
+                                        points.push_back(<a class=
+"code" href="struct_i_l_b_vec3.html" title=
+"Three dimensional geometric vector type.">ILBVec3</a>(xx, yy, zz));
+                                }
+                                apiCall(<a class="code" href=
+"beastpointcloud_8h.html#af5fcb05cdc2f735740497a43326af2f3" title=
+"Adds a chunk of point data to a point cloud.">ILBAddPointCloudData</a>(pch, &amp;points[0], &amp;normals[0], count));
+                        }
+                }
+                apiCall(<a class="code" href=
+"beastpointcloud_8h.html#a1e155fbaaeb21d78ba7f7557a5058442" title=
+"Finalizes a point cloud.">ILBEndPointCloud</a>(pch));
+                <span class="keywordflow">return</span> pch;
+        }
+}
+
+<span class="preprocessor">#endif // PRIMITIVES_H</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

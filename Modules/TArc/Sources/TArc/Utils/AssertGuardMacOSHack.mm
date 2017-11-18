@@ -6,6 +6,12 @@
 
 #include <algorithm>
 
+@interface NSApplication (AssertCategory)
+
+- (void)nsAppAssertStop:(id)sender;
+
+@end
+
 namespace AssertGuardMacOSHackDetail
 {
 bool stopWasCalled = false;
@@ -28,12 +34,6 @@ void SwapMethodImplementation(bool isReversSwap)
     method_exchangeImplementations(originalMethod, swizzledMethod);
 }
 }
-
-@interface NSApplication (AssertCategory)
-
-- (void)nsAppAssertStop:(id)sender;
-
-@end
 
 @implementation NSApplication (AssertCategory)
 - (void)nsAppAssertStop:(id)sender

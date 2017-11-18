@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Tasks/BaseTask.h"
+#include "Core/CommonTasks/BaseTask.h"
 
 #include <QString>
 #include <QObject>
@@ -19,9 +19,6 @@ public:
 
     QString GetTempDownloadFilePath(const QString& url) const;
 
-    //name CreateFile is already taken by windows
-    bool CreateFileFromRawData(const QByteArray& dataToWrite, const QString& filePath) const;
-
     QString GetApplicationDirectory(const QString& branchID, const QString& appID) const;
     QString GetBranchDirectory(const QString& branchID) const;
 
@@ -32,13 +29,14 @@ public:
     bool MoveLauncherRecursively(const QString& pathOut, const QString& pathIn, ErrorHolder* result) const;
 
     QString GetFilesDirectory() const;
+    static QString GetDocumentsDirectory();
 
     QString GetLauncherDirectory() const;
 
     bool IsInQuarantine() const;
 
     static QString GetFileNameFromURL(const QString& url);
-    static QString GetDocumentsDirectory();
+    static QString GetLocalConfigFilePath();
     static bool DeleteDirectory(const QString& path);
     static void MakeDirectory(const QString& path);
 
@@ -51,8 +49,6 @@ signals:
 private:
     using EntireList = QList<QPair<QFileInfo, QString>>;
 
-    QString GetDefaultFilesDirectory() const;
-
     QStringList OwnDirectories() const;
     EntireList CreateEntireList(const QString& pathOut, const QString& pathIn, ErrorHolder* result) const;
 
@@ -60,4 +56,6 @@ private:
 
     QString launcherDirectory;
     bool isInQuarantine = false;
+
+    static QString documentsDirectory;
 };

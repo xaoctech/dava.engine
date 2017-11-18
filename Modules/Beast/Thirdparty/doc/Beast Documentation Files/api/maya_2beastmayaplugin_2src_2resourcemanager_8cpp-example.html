@@ -1,0 +1,1004 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/resourcemanager.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2resourcemanager_8cpp-example.html','api_maya_2beastmayaplugin_2src_2resourcemanager_8cpp_example_htmlb69baf7e-0f75-4d57-9866-3e296524894a','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/resourcemanager.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2resourcemanager_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/resourcemanager.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/resourcemanager.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">
+maya/beastmayaplugin/src/resourcemanager.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#define _USE_MATH_DEFINES</span>
+<span class="preprocessor">#include "resourcemanager.h"</span>
+<span class="preprocessor">#include &lt;maya/MFnMesh.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatPointArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatVectorArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MStringArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MPointArray.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MItMeshPolygon.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFloatMatrix.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MRenderUtil.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnTypedAttribute.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MObjectHandle.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MGlobal.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnDependencyNode.h&gt;</span>
+
+<span class="preprocessor">#include "plugincontext.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmanagerwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmeshwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttexturewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmaterialwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastscenewrapper.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/resourcenode.h"</span>
+<span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+<span class="preprocessor">#include &lt;algorithm&gt;</span>
+
+<span class="keyword">namespace </span>beastmaya {
+
+        <span class="keyword">struct </span>UVSet {
+                MFloatArray u;
+                MFloatArray v;
+        };
+
+        ResourceManager::ResourceManager(PluginContext* bpc) : m_bpc(bpc) {
+        }
+
+        ResourceManager::~ResourceManager() {
+        }
+
+        BeastMeshPtr ResourceManager::createMesh(MDagPath dp, MObjectArray&amp; surfaceShaders, <span class="keyword">const</span> std::wstring&amp; overrideName, std::vector&lt;unsigned int&gt;* beastToMayaTriMapping) {
+                MStatus res;
+                BeastManager&amp; bm = m_bpc-&gt;getManager();
+
+                <span class=
+"keywordflow">if</span> (dp.extendToShape() != MStatus::kSuccess) {
+                        <span class=
+"comment">// No shape, fail.</span>
+                        <span class=
+"keywordflow">return</span> BeastMeshPtr();
+                }
+
+                MFnMesh mesh(dp, &amp;res);
+                <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                        <span class=
+"comment">// No mesh, fail.</span>
+                        <span class=
+"keywordflow">return</span> BeastMeshPtr();
+                }
+
+                std::wstring indexingId = getMeshShaders(mesh, dp.instanceNumber(), surfaceShaders);
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; getUniqueResourceName(mesh) &lt;&lt; indexingId;
+
+                <span class=
+"comment">// Materials are referenced by hash name</span>
+                MStringArray shaderNames;
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; surfaceShaders.length(); i++) {
+                        std::wstringstream name;
+                        name &lt;&lt; MObjectHandle(surfaceShaders[i]).hashCode();
+                        shaderNames.append(name.str().c_str());
+                        <span class=
+"comment">// Mesh is built with material references so we add them to the unique mesh name.</span>
+                        uniqueName &lt;&lt; <span class=
+"stringliteral">"_"</span> &lt;&lt; name.str();
+                }
+                uniqueName &lt;&lt; <span class=
+"stringliteral">"_"</span> &lt;&lt; overrideName;
+
+                BeastMeshPtr cachedMesh = bm.findMesh(uniqueName.str().c_str());
+                <span class="keywordflow">if</span>(cachedMesh) {
+                        <span class=
+"keywordflow">return</span> cachedMesh;
+                }
+
+                MeshGeometry meshGeometry;
+                getMeshGeometry(mesh, dp.instanceNumber(), meshGeometry, beastToMayaTriMapping);
+
+                <span class=
+"keywordflow">if</span>(meshGeometry.empty()) {
+                        <span class=
+"comment">// No mesh, fail.</span>
+                        <span class=
+"keywordflow">return</span> BeastMeshPtr();
+                }
+
+                MStringArray uvSetNames;
+                mesh.getUVSetNames(uvSetNames);
+
+                BeastMeshPtr beastMesh = exportMesh(uniqueName.str(), meshGeometry, shaderNames, uvSetNames);
+
+
+                <span class=
+"comment">// Add callback to track when the resource goes dirty</span>
+                m_resourceCallbacks.erase(mesh.object());
+                m_resourceCallbacks.insert(std::make_pair(mesh.object(), NodeMessageObjectPtr(<span class="keyword">new</span> ResourceNode(mesh.object()))));
+
+                <span class="keywordflow">return</span> beastMesh;
+        }
+
+        std::wstring ResourceManager::getMeshShaders(MFnMesh&amp; mesh, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> instanceNumber, MObjectArray&amp; surfaceShaders) {
+                MStatus res;
+                <span class=
+"comment">// Shader to polygon mapping</span>
+                MObjectArray shaders;
+                MIntArray shaderIndices;
+                mesh.getConnectedShaders(instanceNumber, shaders, shaderIndices);
+
+                <span class=
+"comment">// Find connected surface shaders</span>
+                surfaceShaders.clear();
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; shaders.length(); i++) {
+                        MFnDependencyNode shadingGroup(shaders[i]);
+                        std::pair&lt;MObject, std::wstring&gt; materialPair = getConnectedNode(shadingGroup, L<span class="stringliteral">"surfaceShader"</span>);
+                        <span class=
+"keywordflow">if</span> (materialPair.first != MObject::kNullObj) {
+                                MObject shaderObject(materialPair.first);
+                                surfaceShaders.append(shaderObject);
+                        } <span class="keywordflow">else</span> {
+                                <span class=
+"comment">// No material assigned so use the default</span>
+                                surfaceShaders.append(findMayaNode(L<span class="stringliteral">"lambert1"</span>));
+                        }
+                }
+
+                <span class=
+"comment">// Create an ID string corresponding to the index list</span>
+                std::wstringstream indexingId;
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 1; i &lt; shaderIndices.length(); i++) {
+                        <span class=
+"keywordtype">int</span> prev = shaderIndices[i-1];
+                        <span class=
+"keywordtype">int</span> count = 1;
+                        <span class=
+"keywordflow">while</span> (prev == shaderIndices[i]) {
+                                count++;
+                                i++;
+                                <span class=
+"keywordflow">if</span> (i &gt;= shaderIndices.length()) {
+                                        <span class=
+"keywordflow">break</span>;
+                                }
+                        }
+                        indexingId &lt;&lt; <span class=
+"stringliteral">"_"</span> &lt;&lt; prev &lt;&lt; <span class=
+"stringliteral">"-"</span> &lt;&lt; count;
+                }
+                <span class=
+"keywordflow">return</span> indexingId.str();
+        }
+
+        <span class=
+"keywordtype">void</span> ResourceManager::getMeshGeometry(MFnMesh&amp; mesh, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> instanceNumber, MeshGeometry&amp; meshGeometry, std::vector&lt;unsigned int&gt;* beastToMayaTriMapping) {
+
+                <span class=
+"comment">// Shader to polygon mapping</span>
+                MObjectArray shaders;
+                MIntArray shaderIndices;
+                mesh.getConnectedShaders(instanceNumber, shaders, shaderIndices);
+
+                <span class=
+"comment">// Temp storage for vertex indexing</span>
+                std::vector&lt;int&gt; vertexIndexRemap;
+                vertexIndexRemap.resize(mesh.numVertices());
+
+                <span class="comment">// Vertex positions</span>
+                MFloatPointArray points;
+                mesh.getPoints(points);
+
+                <span class="comment">// Vertex normals</span>
+                MFloatVectorArray normals;
+                mesh.getNormals(normals);
+
+                <span class="comment">// Vertex tangents</span>
+                MFloatVectorArray tangents, bitangents;
+                mesh.getTangents(tangents);
+                mesh.getBinormals(bitangents);
+
+                <span class="comment">// UV-sets</span>
+                MStringArray uvSetNames;
+                mesh.getUVSetNames(uvSetNames);
+
+                std::vector&lt;UVSet&gt; uvsets;
+                uvsets.resize(uvSetNames.length());
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; uvSetNames.length(); i++) {
+                        mesh.getUVs(uvsets[i].u, uvsets[i].v, &amp;uvSetNames[i]);
+                }
+
+                <span class=
+"comment">// Make room for stuff.</span>
+                meshGeometry.uvs.resize(uvsets.size());
+                meshGeometry.triangles.resize(shaders.length() + 1);
+
+                std::vector&lt;unsigned int&gt; shaderGroupTriCount;
+                <span class=
+"keywordflow">if</span> (beastToMayaTriMapping) {
+                        shaderGroupTriCount.resize(shaders.length() + 1);
+                }
+
+                <span class=
+"comment">// Go through all polys and fill meshGeometry accordingly</span>
+                <span class="keywordtype">int</span> vertexID = 0;
+                MItMeshPolygon piter(mesh.object());
+                <span class=
+"keywordflow">while</span>(!piter.isDone()) {
+
+                        <span class="comment">// Vertices</span>
+                        MIntArray polyIndices;
+                        piter.getVertices(polyIndices);
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; polyIndices.length(); i++) {
+                                vertexIndexRemap[polyIndices[i]] = vertexID;
+
+                                <span class=
+"keywordtype">int</span> vIdx = piter.vertexIndex(i);
+                                meshGeometry.vertices.push_back(toBeastVector(points[vIdx]));
+
+                                <span class=
+"keywordtype">int</span> nIdx = piter.normalIndex(i);
+                                meshGeometry.normals.push_back(toBeastVector(normals[nIdx]));
+
+                                <span class=
+"keywordtype">int</span> tIdx = piter.tangentIndex(i);
+                                <span class=
+"keywordflow">if</span>((<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span>)tIdx &lt; tangents.length() &amp;&amp; (<span class="keywordtype">unsigned</span> int)tIdx &lt; bitangents.length()) {
+                                        meshGeometry.tangents.push_back(toBeastVector(tangents[tIdx]));
+                                        meshGeometry.bitangents.push_back(toBeastVector(bitangents[tIdx]));
+                                }
+
+                                <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">int</span> setIdx = 0; setIdx &lt; int(uvsets.size()); setIdx++) {
+                                        <span class=
+"keywordtype">int</span> uvIdx;
+                                        piter.getUVIndex(i, uvIdx, &amp;uvSetNames[setIdx]);
+                                        <a name="_a0"></a><a class=
+"code" href="struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a> uv(0, 0);
+                                        <span class=
+"comment">// We can get UV indices that are outside the UV array size.</span>
+                                        <span class=
+"comment">// For now we fall back to 0, 0</span>
+                                        <span class=
+"keywordflow">if</span>((<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span>)uvIdx &lt; uvsets[setIdx].u.length() &amp;&amp; (<span class="keywordtype">unsigned</span> int)uvIdx &lt; uvsets[setIdx].v.length() &amp;&amp; uvIdx &gt;= 0) {
+                                                uv = <a class=
+"code" href="struct_i_l_b_vec2.html" title=
+"Two dimensional geometric vector type.">ILBVec2</a>(uvsets[setIdx].u[uvIdx], uvsets[setIdx].v[uvIdx]);
+                                        }
+                                        
+                                        meshGeometry.uvs[setIdx].push_back(uv);
+                                }
+                                vertexID++;
+                        }
+                        
+                        <span class=
+"keywordflow">if</span>(meshGeometry.bitangents.size() &lt; meshGeometry.vertices.size() || meshGeometry.tangents.size() &lt; meshGeometry.vertices.size()) {
+                                <span class=
+"comment">// We don't have valid tangent or bitangent data here, erase it</span>
+                                meshGeometry.bitangents.clear();
+                                meshGeometry.tangents.clear();
+                        }
+
+                        <span class=
+"comment">// Shader index for this poly. Adding one because unassigned will be -1 and we don't like negative indexing.</span>
+                        <span class=
+"keywordtype">int</span> sIdx = shaderIndices[piter.index()] + 1;
+
+                        <span class=
+"comment">// Triangulation</span>
+                        MPointArray points;
+                        MIntArray vertexList;
+                        piter.getTriangles(points, vertexList);
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; vertexList.length(); i++) {
+                                meshGeometry.triangles[sIdx].push_back(vertexIndexRemap[vertexList[i]]);
+                        }
+                        <span class=
+"keywordflow">if</span> (beastToMayaTriMapping) {
+                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> numTris = vertexList.length() / 3;
+                                shaderGroupTriCount[sIdx] += numTris;
+                                <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; numTris; i++) {
+                                        beastToMayaTriMapping-&gt;push_back(sIdx);
+                                }
+                        }
+                        piter.next();
+                }
+                <span class=
+"keywordflow">if</span> (beastToMayaTriMapping) {
+                        <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> runningTotal = 0;
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; shaderGroupTriCount.size(); ++i) {
+                                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> n = shaderGroupTriCount[i];
+                                shaderGroupTriCount[i] = runningTotal;
+                                runningTotal += n;
+                        }
+                        <span class=
+"keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; beastToMayaTriMapping-&gt;size(); i++) {
+                                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> sIdx = (*beastToMayaTriMapping)[i];
+                                (*beastToMayaTriMapping)[i] = shaderGroupTriCount[sIdx];
+                                shaderGroupTriCount[sIdx]++;
+                        }
+                }
+
+        }
+
+        BeastMeshPtr ResourceManager::exportMesh(<span class=
+"keyword">const</span> std::wstring&amp; name, MeshGeometry&amp; meshGeometry, MStringArray&amp; shadersNames, MStringArray&amp; uvSetNames) {
+                BeastManager&amp; bm = m_bpc-&gt;getManager();
+
+                BeastMeshPtr beastMesh = bm.beginMesh(name.c_str());
+
+                <span class="comment">// Write vertices</span>
+                beastMesh-&gt;addVertexData(&amp;meshGeometry.vertices[0], &amp;meshGeometry.normals[0], int32(meshGeometry.vertices.size()));
+
+                <span class="comment">// Write tangents</span>
+                <span class=
+"keywordflow">if</span>(meshGeometry.tangents.size() &gt; 0) {
+                        <span class=
+"comment">// Add tangents if we have tangent data for the mesh</span>
+                        beastMesh-&gt;beginTangents();
+                        beastMesh-&gt;addTangentData(&amp;meshGeometry.tangents[0], &amp;meshGeometry.bitangents[0], int32(meshGeometry.tangents.size()));
+                        beastMesh-&gt;endTangents();
+                }
+
+                <span class="comment">// Write UV-sets</span>
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; uvSetNames.length(); i++) {
+                        beastMesh-&gt;beginUVLayer(uvSetNames[i].asWChar());
+                        beastMesh-&gt;addUVData(&amp;meshGeometry.uvs[i][0], int32(meshGeometry.uvs[i].size()));
+                        beastMesh-&gt;endUVLayer();
+                }
+
+                <span class=
+"comment">// Write triangulation per material</span>
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; shadersNames.length() + 1; i++) { <span class="comment">// +1 because there could be polygons with no shader assigned and we want those as well</span>
+
+                        <span class=
+"keywordflow">if</span> (meshGeometry.triangles[i].size() == 0) {
+                                <span class=
+"keywordflow">continue</span>;
+                        }
+
+                        <span class=
+"comment">// First group of triangles has no material assigned... so it's usually empty.</span>
+                        std::wstring materialName;
+                        <span class=
+"keywordflow">if</span> (i == 0) {
+                                std::wstringstream defaultMaterialName;
+                                defaultMaterialName &lt;&lt; MObjectHandle(findMayaNode(L<span class="stringliteral">"lambert1"</span>)).hashCode();
+                                materialName = defaultMaterialName.str();
+                        } <span class="keywordflow">else</span> {
+                                materialName = shadersNames[i-1].asWChar();
+                        }
+
+                        beastMesh-&gt;beginMaterialGroup(materialName.c_str());
+                        beastMesh-&gt;addTriangleData(&amp;meshGeometry.triangles[i][0], int32(meshGeometry.triangles[i].size()));
+                        beastMesh-&gt;endMaterialGroup();
+                }
+
+                beastMesh-&gt;endMesh();
+                <span class="keywordflow">return</span> beastMesh;
+        }
+
+        <span class=
+"keywordtype">void</span> getResolutionOverride(<span class=
+"keyword">const</span> MObject&amp; node, <span class=
+"keywordtype">int</span>&amp; width, <span class=
+"keywordtype">int</span>&amp; height) {
+                <span class=
+"keywordtype">int</span> newWidth, newHeight;
+                <span class=
+"keywordflow">if</span> (!getPlugValue(node, L<span class=
+"stringliteral">"outSizeX"</span>, newWidth)) {
+                        <span class="keywordflow">return</span>;
+                }
+                <span class=
+"keywordflow">if</span> (!getPlugValue(node, L<span class=
+"stringliteral">"outSizeY"</span>, newHeight)) {
+                        <span class="keywordflow">return</span>;
+                }
+                <span class=
+"comment">// Clamp the new size with the original size, also make 0 pixel textures have a size of 1</span>
+                width = std::max(std::min(newWidth, width), 1);
+                height = std::max(std::min(newHeight, height), 1);
+        }
+
+        MObject getNormalMapNode(<span class=
+"keyword">const</span> MObject&amp; node) {
+                MStatus res;
+                MFnDependencyNode bumpDN(node, &amp;res);
+                <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                        <span class=
+"comment">// Not a dependency node connected. Assume something is very wrong</span>
+                        <span class=
+"keywordflow">return</span> MObject::kNullObj;
+                }
+                MPlug nmType = bumpDN.findPlug(<span class=
+"stringliteral">"bumpInterp"</span>, &amp;res);
+                <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                        <span class=
+"comment">// No Bump 2d node connected, let's treat it like it's not bumped</span>
+                        <span class=
+"keywordflow">return</span> MObject::kNullObj;
+                }
+                <span class=
+"keywordflow">if</span>(nmType.asInt() != 1) {
+                        <span class=
+"comment">// Not a tangent space normal map, treat it like it's not bumped</span>
+                        <span class=
+"keywordflow">return</span> MObject::kNullObj;
+                }
+                <span class=
+"comment">// Now we know we have a bump node in tangent space normal map mode, let's sample</span>
+                <span class=
+"comment">// its input normal. Here we need to assume that what's connected is connected</span>
+                <span class=
+"comment">// through alpha even if we mean to sample its color</span>
+                std::pair&lt;MObject, std::wstring&gt; normalMapConnection = getConnectedNode(bumpDN, L<span class="stringliteral">"bumpValue"</span>);
+                MFnDependencyNode normalMapDN(normalMapConnection.first, &amp;res);
+                <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                        <span class=
+"comment">// Not a dependency node connected. Assume something is very wrong</span>
+                        <span class=
+"keywordflow">return</span> MObject::kNullObj;
+                }
+                MPlug normalMapOutColor = normalMapDN.findPlug(L<span class="stringliteral">"outColor"</span>, <span class="keyword">true</span>, &amp;res);
+                <span class=
+"keywordflow">if</span> (res != MStatus::kSuccess) {
+                        <span class=
+"comment">// We didn't find something with outColor as output.</span>
+                        <span class=
+"comment">// The best we can do is treat it like it's not normal mapped</span>
+                } <span class="keywordflow">else</span> {
+                        <span class=
+"keywordflow">return</span> normalMapConnection.first;
+                }
+                <span class=
+"keywordflow">return</span> MObject::kNullObj;
+        }
+
+        BeastTexturePtr ResourceManager::createTexture(MObject node, std::wstring output, <span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height, <span class="keywordtype">bool</span> normalMap, <span class="keywordtype">bool</span> flipHorizontally, <span class="keywordtype">bool</span> flipVertically) {
+                MStatus res;
+                BeastManager&amp; bm = m_bpc-&gt;getManager();
+
+                MObject fileNode = node;
+                <span class="keywordflow">if</span>(normalMap) {
+                        MObject normalMapFileNode = getNormalMapNode(node);
+                        <span class=
+"keywordflow">if</span>(normalMapFileNode == MObject::kNullObj) {
+                                MGlobal::displayWarning(L<span class="stringliteral">"BEAST: Only tangent space normal maps supported"</span>);
+                                <span class=
+"keywordflow">return</span> BeastTexturePtr();
+                        }
+                        <span class=
+"comment">// Success, we have a normal map file texture</span>
+                        output = L<span class=
+"stringliteral">"outColor"</span>;
+                        node = fileNode = normalMapFileNode;
+                }
+
+                MFnDependencyNode shader(node, &amp;res);
+                <span class=
+"keywordflow">if</span> (res != MStatus::kSuccess) {
+                        <span class=
+"comment">// No texture, fail.</span>
+                        <span class=
+"keywordflow">return</span> BeastTexturePtr();
+                }
+
+                getResolutionOverride(node, width, height);
+
+                MObject settingsNode = findMayaNode(L<span class=
+"stringliteral">"beastSettings"</span>);
+                <span class=
+"keywordtype">bool</span> useFile = <span class=
+"keyword">false</span>;
+                <span class=
+"keywordtype">bool</span> removeDuplicateTextures = <span class=
+"keyword">false</span>;
+                <span class=
+"keywordflow">if</span> (settingsNode != MObject::kNullObj) {
+                        getPlugValue(settingsNode, L<span class=
+"stringliteral">"useTextureFile"</span>, useFile);
+                        getPlugValue(settingsNode, L<span class=
+"stringliteral">"removeDuplicateTextures"</span>, removeDuplicateTextures);                        
+                }
+
+                std::wstring resourceName = getUniqueResourceName(shader);
+
+                MString fileTextureName;
+                <span class=
+"keywordflow">if</span> (useFile &amp;&amp; !flipHorizontally &amp;&amp; !flipVertically) {
+                        fileTextureName = MRenderUtil::exactFileTextureName(fileNode);
+                        <span class=
+"keywordflow">if</span>(removeDuplicateTextures &amp;&amp; fileTextureName.length() != 0) {
+                                resourceName = fileTextureName.asWChar();
+                        }
+                }
+
+                <span class=
+"comment">// Construct a unique name</span>
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; resourceName &lt;&lt; <span class="stringliteral">"_"</span> &lt;&lt; width &lt;&lt; <span class="stringliteral">"x"</span> &lt;&lt; height &lt;&lt; <span class="stringliteral">"_"</span> &lt;&lt; flipHorizontally &lt;&lt; flipVertically &lt;&lt; useFile;
+
+                <span class=
+"comment">// Check if it's already available in cache</span>
+                BeastTexturePtr result = bm.findTexture(uniqueName.str().c_str());
+                <span class="keywordflow">if</span>(result) {
+                        <span class=
+"keywordflow">return</span> result;
+                }
+
+                <span class=
+"comment">// Reference texture file directly</span>
+                <span class=
+"keywordflow">if</span> (fileTextureName.length() != 0) {
+                        BeastTexturePtr tex = bm.referenceTexture(fileTextureName.asWChar(), uniqueName.str().c_str());
+                        <span class=
+"keywordflow">if</span>(normalMap) {
+                                tex-&gt;setInputGamma(1.0f);
+                        } 
+                        <span class=
+"keywordflow">return</span> tex;
+                }
+
+                <span class="comment">// Sample texture</span>
+                <span class="keyword">const</span> <span class=
+"keywordtype">int</span> sampleCount = width * height;
+                MFloatVectorArray texelData;
+                texelData.setLength(sampleCount);
+
+                MFloatArray uVec(sampleCount, 0.0f);
+                MFloatArray vVec(sampleCount, 0.0f);
+                MFloatArray filter(sampleCount, 1.0f / (<span class="keywordtype">float</span>)width);
+
+                MFloatArray tempY(height, 0.0f);
+                MFloatArray tempX(width, 0.0f);
+
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; height; ++y) {
+                        <span class=
+"keywordflow">if</span> (!flipVertically) {
+                                tempY[y] = ((float)y + 0.5f) / (float)height;
+                        } <span class="keywordflow">else</span> {
+                                tempY[y] = ((float)height - 0.5f - (<span class="keywordtype">float</span>)y) / (<span class="keywordtype">float</span>)height;
+                        }
+                }
+
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; width; ++x) {
+                        <span class=
+"keywordflow">if</span> (!flipHorizontally) {
+                                tempX[x] = ((float)x + 0.5f) / (float)width;
+                        } <span class="keywordflow">else</span> {
+                                tempX[x] = ((float)width - 0.5f - (<span class="keywordtype">float</span>)x) / (<span class="keywordtype">float</span>)width;
+                        }
+                }
+
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; height; ++y) {
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; width; ++x) {
+                                <span class=
+"keywordtype">int</span> idx = x + y * width;
+                                uVec[idx] = tempX[x];
+                                vVec[idx] = tempY[y];
+                        }
+                }
+
+                MFloatVectorArray transData;
+                MFloatMatrix mtx;
+                std::wstring completeName = std::wstring(shader.name().asWChar()) + L<span class="stringliteral">"."</span> + output;
+                res = MRenderUtil::sampleShadingNetwork(completeName.c_str(), sampleCount, <span class="keyword">false</span>, <span class="keyword">false</span>, mtx, 0, &amp;uVec, &amp;vVec, 0, 0, 0, 0, &amp;filter, texelData, transData);
+                CHECK_MSTATUS_AND_RETURN(res, BeastTexturePtr());
+                assert(texelData.length() == sampleCount);
+                <span class=
+"keywordflow">if</span>(texelData.length() != sampleCount) {
+                        texelData.setLength(sampleCount);
+                }
+
+                <span class=
+"comment">// First identify if we need HDR</span>
+                <span class=
+"keywordtype">bool</span> needHDR = <span class=
+"keyword">false</span>;
+
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; height; ++y) {
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; width; ++x) {
+                                <span class=
+"keywordtype">int</span> idx = x + y * width;
+                                <span class=
+"keywordflow">if</span>(std::max(texelData[idx].x, std::max(texelData[idx].y, texelData[idx].z)) &gt; 1.0f) {
+                                        needHDR = <span class=
+"keyword">true</span>;
+                                        <span class=
+"keywordflow">break</span>;
+                                }
+                        }
+                }
+                <span class="keywordflow">if</span>(needHDR) {
+                        result = bm.beginTexture(uniqueName.str().c_str(), width, height, <a name="a1"></a><a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3afabf0b0240e9ddfaf4ab8ec763d052e9"
+title="Color floating point pixels.">ILB_PF_RGB_FLOAT</a>);
+                        <span class=
+"comment">// Is the conversion here kosher?</span>
+                        result-&gt;addPixelDataHDR(reinterpret_cast&lt;const float*&gt;(&amp;texelData[0]), width * height);
+                } <span class="keywordflow">else</span> {
+                        result = bm.beginTexture(uniqueName.str().c_str(), width, height, <a name="a2"></a><a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8"
+title="Color byte pixels.">ILB_PF_RGB_BYTE</a>);
+                        std::vector&lt;unsigned char&gt; ldrData(width * height * 3);
+
+                        <span class=
+"keywordflow">if</span>(normalMap) {
+                                result-&gt;setInputGamma(1.0f);
+                        } 
+                        
+                        <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> y = 0; y &lt; height; ++y) {
+                                <span class=
+"keywordflow">for</span>(<span class=
+"keywordtype">int</span> x = 0; x &lt; width; ++x) {
+                                        <span class=
+"keywordtype">int</span> idx = x + y * width;
+                                        <span class=
+"keyword">const</span> MFloatVector&amp; col = texelData[idx];
+                                        <span class=
+"comment">// Assume this is gamma corrected data?</span>
+                                        ldrData[idx * 3 + 0] = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(col.x * 255.0f);
+                                        ldrData[idx * 3 + 1] = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(col.y * 255.0f);
+                                        ldrData[idx * 3 + 2] = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(col.z * 255.0f);
+                                }
+                        }
+
+                        result-&gt;addPixelDataLDR(&amp;ldrData[0], width * height);
+                }
+                result-&gt;endTexture();
+
+                <span class=
+"comment">// Add callback to track when the resource goes dirty</span>
+                m_resourceCallbacks.erase(shader.object());
+                m_resourceCallbacks.insert(std::make_pair(shader.object(), NodeMessageObjectPtr(<span class="keyword">new</span> ResourceNode(shader.object()))));
+
+                <span class="keywordflow">return</span> result;
+        }
+
+        BeastShaderPtr ResourceManager::createShader(std::wstring fileName) {
+                 <span class=
+"comment">// Replace slashes so that cache keys are consistent.</span>
+                std::replace(fileName.begin(), fileName.end(), <span class="charliteral">'\\'</span>, <span class="charliteral">'/'</span>);
+
+                HANDLE hFile = CreateFile(fileName.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                <span class=
+"keywordflow">if</span> (INVALID_HANDLE_VALUE == hFile) {
+                        <span class=
+"comment">// There is no file?</span>
+                        <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                }
+
+                FILETIME lastWriteTime;
+                <span class=
+"keywordflow">if</span> (!GetFileTime(hFile, NULL, NULL, &amp;lastWriteTime)) {
+                        CloseHandle(hFile);
+                        <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                }
+                CloseHandle(hFile);
+
+                <span class=
+"comment">// Construct unique name from filename and date modified.</span>
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; fileName &lt;&lt; <span class=
+"stringliteral">"_"</span> &lt;&lt; lastWriteTime.dwHighDateTime &lt;&lt; lastWriteTime.dwLowDateTime;
+
+                BeastManager&amp; bm = m_bpc-&gt;getManager();
+                BeastShaderPtr cachedShader = bm.findShader(uniqueName.str().c_str());
+                <span class="keywordflow">if</span>(cachedShader) {
+                        <span class=
+"keywordflow">return</span> cachedShader;
+                }
+
+                <span class=
+"keywordflow">return</span> bm.createShader(uniqueName.str().c_str(), fileName.c_str());
+        }
+
+        std::wstring ResourceManager::getUniqueResourceName(MFnDependencyNode&amp; node) {
+                <span class=
+"keywordflow">if</span> (!node.hasAttribute(<span class=
+"stringliteral">"beastUniqueResourceName"</span>)) {
+                        MFnTypedAttribute tattr;
+                        MObject mo;
+
+                        mo = tattr.create(<span class=
+"stringliteral">"beastUniqueResourceName"</span>, <span class=
+"stringliteral">"burn"</span>, MFnData::kString);
+                        tattr.addToCategory(<span class=
+"stringliteral">"Beast"</span>);
+                        tattr.setStorable(<span class=
+"keyword">false</span>);
+                        node.addAttribute(mo);
+                }
+                
+                MString beastUniqueResourceName;
+                getPlugValue(node, L<span class=
+"stringliteral">"beastUniqueResourceName"</span>, beastUniqueResourceName);
+                <span class=
+"keywordflow">if</span> (beastUniqueResourceName == <span class=
+"stringliteral">""</span>) {
+                        beastUniqueResourceName.setWChar(getGuid().c_str());
+                        setPlugValue(node, L<span class=
+"stringliteral">"beastUniqueResourceName"</span>, beastUniqueResourceName);
+                }
+
+                std::wstringstream result;
+                result &lt;&lt; MObjectHandle(node.object()).hashCode() &lt;&lt; <span class="stringliteral">"_"</span> &lt;&lt; beastUniqueResourceName.asWChar();
+
+                <span class=
+"keywordflow">return</span> result.str();
+        }
+
+        BeastTexturePtr ResourceManager::getBlackTexture()
+        {
+                <span class=
+"keywordflow">if</span> (m_blackTexture.get() == NULL) {
+                        m_blackTexture = createColorTextureLDR(0, 0, 0);
+                }
+
+                <span class=
+"keywordflow">return</span> m_blackTexture;
+        }
+
+        BeastTexturePtr ResourceManager::getWhiteTexture()
+        {
+                <span class=
+"keywordflow">if</span> (m_whiteTexture.get() == NULL) {
+                        m_whiteTexture = createColorTextureLDR(255, 255, 255);
+                }
+
+                <span class=
+"keywordflow">return</span> m_whiteTexture;
+        }
+
+        BeastTexturePtr ResourceManager::createColorTextureLDR(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> r, <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> g, <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> b)
+        {
+                BeastManager&amp; bm = m_bpc-&gt;getManager();
+
+                std::wstring name = getGuid();
+                BeastTexturePtr texture = bm.beginTexture(name.c_str(), 1, 1, <a class="code"
+href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8"
+title="Color byte pixels.">ILB_PF_RGB_BYTE</a>);
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">char</span> data[] = { r, g, b };
+                texture-&gt;addPixelDataLDR(data, 1);
+                texture-&gt;endTexture();
+
+                <span class="keywordflow">return</span> texture;
+        }
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

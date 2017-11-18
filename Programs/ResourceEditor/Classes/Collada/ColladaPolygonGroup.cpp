@@ -137,13 +137,14 @@ bool sortFunc(const ColladaVertex& a, const ColladaVertex& b)
     return false;
 }
 
-ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPolygons* _polygons, ColladaVertexWeight* vertexWeightArray)
+ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPolygons* _polygons, ColladaVertexWeight* vertexWeightArray, uint32 maxVertexInfluence)
 {
     vertexFormat = EVF_VERTEX | EVF_NORMAL;
     parentMesh = _parentMesh;
     polygons = _polygons;
     materialSemantic = polygons->GetMaterialSemantic();
-    skinAnimation = (vertexWeightArray != 0);
+    skinned = (vertexWeightArray != 0);
+    maxVertexInfluenceCount = maxVertexInfluence;
 
     FCDGeometryPolygonsInput* pVertexInput = polygons->FindInput(FUDaeGeometryInput::POSITION);
     FCDGeometryPolygonsInput* pTexCoordInput0 = polygons->FindInput(FUDaeGeometryInput::TEXCOORD);
@@ -163,6 +164,13 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPo
         vertexFormat |= EVF_TANGENT;
     if (pBinormalInput && pBinormalSource)
         vertexFormat |= EVF_BINORMAL;
+    if (vertexWeightArray)
+    {
+        if (maxVertexInfluenceCount == 1)
+            vertexFormat |= EVF_HARD_JOINTINDEX;
+        else
+            vertexFormat |= EVF_JOINTWEIGHT | EVF_JOINTINDEX;
+    }
 
     FCDGeometryPolygonsInputList texCoordInputList;
     polygons->FindInputs(FUDaeGeometryInput::TEXCOORD, texCoordInputList);
@@ -315,6 +323,8 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPo
         if (vertexWeightArray)
         {
             tv.jointCount = vertexWeightArray[vertexIndex].jointCount;
+            DVASSERT(tv.jointCount <= ColladaVertex::COLLADA_MAX_JOINT_WEIGHTS);
+
             for (int jointi = 0; jointi < tv.jointCount; ++jointi)
             {
                 tv.joint[jointi] = vertexWeightArray[vertexIndex].jointArray[jointi];
@@ -591,6 +601,10 @@ ColladaPolygonGroup::ColladaPolygonGroup(ColladaMesh* _parentMesh, FCDGeometryPo
 #endif
 }
 
+ColladaPolygonGroup::~ColladaPolygonGroup()
+{
+}
+
 void ColladaPolygonGroup::Render(ColladaMaterial* material)
 {
     if (material == nullptr)
@@ -756,7 +770,7 @@ void ColladaPolygonGroup::Render(ColladaMaterial* material)
 
 void ColladaPolygonGroup::RenderMesh()
 {
-    if (!skinAnimation)
+    if (!skinned)
     {
         glCallList(renderListId);
     }

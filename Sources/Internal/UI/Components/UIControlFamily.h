@@ -21,8 +21,9 @@ public:
 
 private:
     UIControlFamily(const Vector<UIComponent*>& components);
+    UIControlFamily(const UIControlFamily& other);
 
-    int32 refCount = 0;
+    Atomic<int32> refCount;
     int32 hash = 0;
 
     Vector<uint32> componentIndices;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Classes/Qt/Scene/ActiveSceneHolder.h"
 #include "Render/Image/Image.h"
 
 #include <QDialog>
@@ -43,5 +42,4 @@ private:
 private:
     QScopedPointer<Ui::ImageSplitterNormal> ui;
     DAVA::Array<ImageArea*, CHANNELS_COUNT> imageArreas;
-    ActiveSceneHolder sceneHolder;
 };

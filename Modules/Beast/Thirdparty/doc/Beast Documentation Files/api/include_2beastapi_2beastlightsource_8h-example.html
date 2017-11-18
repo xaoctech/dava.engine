@@ -1,0 +1,1015 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: include/beastapi/beastlightsource.h</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/include_2beastapi_2beastlightsource_8h-example.html','api_include_2beastapi_2beastlightsource_8h_example_html427ffd73-8c70-4199-a19f-dc1053e445fe','index.html',location.hash); javascript:initPage('API: include/beastapi/beastlightsource.h','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="include_2beastapi_2beastlightsource_8h-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=include/beastapi/beastlightsource.h&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>include/beastapi/beastlightsource.h</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">include/beastapi/beastlightsource.h</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+
+<span class="preprocessor">#ifndef BEASTLIGHTSOURCE_H</span>
+<span class="preprocessor">#define BEASTLIGHTSOURCE_H</span>
+
+<span class="preprocessor">#include "<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapitypes.h</a>"</span>
+
+<span class="preprocessor">#ifdef __cplusplus</span>
+<span class="keyword">extern</span> <span class=
+"stringliteral">"C"</span> {
+<span class="preprocessor">#endif // __cplusplus</span>
+
+<span class="keyword">typedef</span> <span class=
+"keyword">enum</span> {
+        <a name="a0"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dbad25a747b9518327cf937f5f247bc0a41"
+title="Directional light.">ILB_LST_DIRECTIONAL</a> = 0,
+
+        <a name="a1"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dba2c6a2f571e07446560f99ee864953a06"
+title="Point light.">ILB_LST_POINT</a>,
+
+        <a name="a2"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dbafb34f7f71dab17e3b42b17a3a9076225"
+title="Area light.">ILB_LST_AREA</a>,
+
+        <a name="a3"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dbaa82dcebdcccd0a19a4f7c9ad07427763"
+title="Spot light.">ILB_LST_SPOT</a>,
+
+        <a name="a4"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dbad66d450c1542ae2956ca95ce7d797cb1"
+title="Window light.">ILB_LST_WINDOW</a>,
+
+        <a name="a5"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dba51ed1e109224d4865497f3ab325ca5d4"
+title="Sky light.">ILB_LST_SKY</a>,
+
+        <a name="a6"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6dba0af59e7bd5a82a4fa832822fa586dc15"
+title="Ambient light.">ILB_LST_AMBIENT</a>,
+
+} <a name="a7"></a><a class="code" href=
+"beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6db" title=
+"Describes light types.">ILBLightType</a>;
+
+<span class="keyword">typedef</span> <span class=
+"keyword">enum</span> {
+        <a name="a8"></a><a class="code" href=
+"beastlightsource_8h.html#a0df3ab0992784fee7570db98750aeed4a10c104d506f045ea0297654270a19726"
+title=
+"Computes falloff as (1.0f / distance) ^ exponent Note that an exponent of 0 gives no falloff...">ILB_FO_EXPONENT</a> = 0,
+        <a name="a9"></a><a class="code" href=
+"beastlightsource_8h.html#a0df3ab0992784fee7570db98750aeed4a56c9dbdc67177facfa2e0f3daae555c8"
+title=
+"Computes falloff as (max((maxRange - distance), 0) / maxRange) ^ exponent .">ILB_FO_MAX_RANGE</a>,
+
+        <a name="a10"></a><a class="code" href=
+"beastlightsource_8h.html#a0df3ab0992784fee7570db98750aeed4a8875fe12f25028dcf39cd34bcb2a852d"
+title="OpenGL-type fall off.">ILB_FO_POLYNOMIAL</a>
+
+} <a name="a11"></a><a class="code" href=
+"beastlightsource_8h.html#a0df3ab0992784fee7570db98750aeed4" title=
+"Describes different falloff for light sources.">ILBFalloffType</a>;
+
+<span class="keyword">typedef</span> <span class=
+"keyword">enum</span> {
+        <a name="a12"></a><a class="code" href=
+"beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7a0a8652097fe53d23e89d563fd1c7218b"
+title="Specified the whole 3D space.">ILB_LVT_INFINITY</a> = 0,
+
+        <a name="a13"></a><a class="code" href=
+"beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7ac30f13b672c191c8d3e29ac111956c75"
+title="A sphere volume.">ILB_LVT_SPHERE</a>,
+
+        <a name="a14"></a><a class="code" href=
+"beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7a8091c8356d80a0e42aac4f7e63155df5"
+title="A cube volume.">ILB_LVT_CUBE</a>
+} <a name="a15"></a><a class="code" href=
+"beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7" title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a>;
+
+<span class="keyword">typedef</span> <span class=
+"keyword">enum</span> {
+        <a name="a16"></a><a class="code" href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa8f050a34cd979f16dc36e9b7537a3f63"
+title=
+"Controls if the light source should be visible for camera rays.">ILB_LS_VISIBLE_FOR_EYE</a>                  = 0x00000001,
+
+        <a name="a17"></a><a class="code" href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa9a82b735fb4a137ba45c79c5634e01be"
+title=
+"Controls if the light source should be visible for reflection rays.">ILB_LS_VISIBLE_FOR_REFLECTIONS</a>  = 0x00000002,
+
+        <a name="a18"></a><a class="code" href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aaed21e6120515b9436a0a254b2f060485"
+title=
+"Controls if the light source should be visible for refraction rays.">ILB_LS_VISIBLE_FOR_REFRACTIONS</a>  = 0x00000004,
+
+        <a name="a19"></a><a class="code" href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa6c17d6ab5ace5c5a6871360a271b064b"
+title=
+"Controls if the light source should be visible for global illumination rays.">ILB_LS_VISIBLE_FOR_GI</a>                   = 0x00000008,
+
+} <a name="a20"></a><a class="code" href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853a" title=
+"Status bit masks for light sources.">ILBLightStats</a>;
+
+<span class="keyword">typedef</span> <span class=
+"keyword">enum</span> {
+        <a name="a21"></a><a class="code" href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a8a7cbb31b5b0ec84832a6a231f77844f"
+title=
+"Sets the light stats supplied to false.">ILB_LSOP_DISABLE</a>,
+        <a name="a22"></a><a class="code" href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a080ba9816cbce988c57024dc51e53276"
+title="Sets the light stats supplied to true.">ILB_LSOP_ENABLE</a>,
+        <a name="a23"></a><a class="code" href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446a662a786e6b1b62ed0ff1a95c6eece0a9"
+title=
+"Sets the light stats to the value of the light mask.">ILB_LSOP_SET</a>,
+} <a name="a24"></a><a class="code" href=
+"beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446" title=
+"Selects if the light stats should be enabled or disabled.">ILBLightStatOperation</a>;
+
+<span class="keyword">typedef</span> uint32 <a name=
+"a25"></a><a class="code" href=
+"beastlightsource_8h.html#a5c69045aa5c2ac29484359c76d5c38f3" title=
+"Type representing multiple light stats.">ILBLightStatsMask</a>;
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a26"></a><a class="code" href=
+"beastlightsource_8h.html#a18dbdf65ce6b68609609caea8df8f620" title=
+"Add a point light to the scene.">ILBCreatePointLight</a>(<a name=
+"_a27"></a><a class="code" href="struct_i_l_b_scene_handle.html"
+title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                           <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                           <span class="keyword">const</span> <a name="_a28"></a><a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                           <span class="keyword">const</span> <a name="_a29"></a><a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                           <a name="_a30"></a><a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a31"></a><a class="code" href=
+"beastlightsource_8h.html#ac670809149f4a6cfbb9a6fed48a8c62c" title=
+"Add a spot light to the scene.">ILBCreateSpotLight</a>(<a class=
+"code" href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                          <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                          <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                          <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                          <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a32"></a><a class="code" href=
+"beastlightsource_8h.html#a8ced5dd6f603ff9a82629f4e8e0bfc06" title=
+"Add a directional light to the scene It points in negative Y direction by default, use the matrix to change its direction.">ILBCreateDirectionalLight</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                                         <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                                         <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                                         <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                                         <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a33"></a><a class="code" href=
+"beastlightsource_8h.html#a19211b284f14aa8e950dd5148d89393d" title=
+"Add an area light to the scene It points in negative Y direction by default, use the matrix to change...">ILBCreateAreaLight</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                          <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                          <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                          <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                          <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a34"></a><a class="code" href=
+"beastlightsource_8h.html#a6451d16f84a33191333cfad658e2835b" title=
+"Add a window light to the scene It points in negative Y direction by default, use the matrix to chang...">ILBCreateWindowLight</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                                <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                                <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a35"></a><a class="code" href=
+"beastlightsource_8h.html#a9cf9e1a688ab5ec1ffa1fb74519b1a44" title=
+"Add a sky light to the scene It illuminates the whole scene by default, but this can be altered by se...">ILBCreateSkyLight</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                                <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                                <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a36"></a><a class="code" href=
+"beastlightsource_8h.html#a5061a63c225138b6fc1884f00b879cbb" title=
+"Add an ambient light to the scene.">ILBCreateAmbientLight</a>(<a class="code"
+href="struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+                                                                                <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> name, 
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform,
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* intensity,
+                                                                                <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a37"></a><a class="code" href=
+"beastlightsource_8h.html#a5b7594e206c261e4b28a42151e70768a" title=
+"Sets the transform for a light source.">ILBSetLightTransform</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform);
+
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a38"></a><a class="code" href=
+"beastlightsource_8h.html#a772db085a4f1b2d4f98e78e0587d3d8d" title=
+"Sets the color for a light source.">ILBSetLightColor</a>(<a class=
+"code" href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                        <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* color);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a39"></a><a class="code" href=
+"beastlightsource_8h.html#ad6a54067158baa1510c1fe57ab90bf1c" title=
+"Sets light intensity for a light source.">ILBSetLightIntensity</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span> intensity);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a40"></a><a class="code" href=
+"beastlightsource_8h.html#a5a4df1a9c5464fde3618d1b953357e3b" title=
+"Flags whether the light cast shadows or not.">ILBSetCastShadows</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> castShadows);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a41"></a><a class="code" href=
+"beastlightsource_8h.html#a727de9f4b1ab1e33e23d94dab8e79cff" title=
+"Sets a radius for the light source as a shadow caster.">ILBSetShadowRadius</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span> radius);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a42"></a><a class="code" href=
+"beastlightsource_8h.html#a241e87acac4e6b2de274e224f4a9a44a" title=
+"Sets the angle covered of the sky for a directional light or window light for shadow casting purposes...">ILBSetShadowAngle</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span> angleRadians);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a43"></a><a class="code" href=
+"beastlightsource_8h.html#a58d8137ba4915d19c2914a7767dedb92" title=
+"Sets the maximum number of shadow samples for the light source.">ILBSetShadowSamples</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, int32 samples);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a44"></a><a class="code" href=
+"beastlightsource_8h.html#a7887867f2b60a3dc0e820027be3a5e9b" title=
+"Adds a light centric light link list.">ILBAddLightLightLinks</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                 <a class="code"
+href="beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660e"
+title=
+"Enum defining if a light link is inclusive or exclusive.">ILBLightLinkMode</a> mode,
+                                                                                 <span class="keyword">const</span> <a name="_a45"></a><a class="code"
+href="struct_i_l_b_instance_handle.html" title=
+"Handle for Beast instance Intentionally hidden implementation.">ILBInstanceHandle</a>* instances, 
+                                                                                 int32 count);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a46"></a><a class="code" href=
+"beastlightsource_8h.html#a7b0919ad42c08160108f0ff35a901054" title=
+"Sets the falloff for a light source.">ILBSetFalloff</a>(<a class=
+"code" href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                 <a class="code"
+href="beastlightsource_8h.html#a0df3ab0992784fee7570db98750aeed4"
+title=
+"Describes different falloff for light sources.">ILBFalloffType</a> type, 
+                                                                                 <span class="keywordtype">float</span> exponent, 
+                                                                                 <span class="keywordtype">float</span> cutoff,
+                                                                                 <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> clampToOne);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a47"></a><a class="code" href=
+"beastlightsource_8h.html#a9fe9ebf5765ce92d61a0844624b3ac78" title=
+"Sets the falloff to type &quot;Max Range&quot; for a light source.">ILBSetLightMaxRangeFalloff</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                 <span class="keywordtype">float</span> cutoff, 
+                                                                                                 <span class="keywordtype">float</span> exponent);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a48"></a><a class="code" href=
+"beastlightsource_8h.html#a2283254650fcf9ba204164f3412d1e5e" title=
+"Sets the falloff to type &quot;Exponent&quot; for a light source.">ILBSetLightExponentFalloff</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                 <span class="keywordtype">float</span> cutoff, 
+                                                                                                 <span class="keywordtype">float</span> exponent, 
+                                                                                                 <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> clampToOne);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a49"></a><a class="code" href=
+"beastlightsource_8h.html#a7e4faad59ecedce853ed9f0f2ce497b2" title=
+"Sets the falloff to type &quot;Polynomial&quot; for a light source.">ILBSetLightPolynomialFalloff</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                   <span class="keywordtype">float</span> cutoff, 
+                                                                                                   <span class="keywordtype">float</span> constant, 
+                                                                                                   <span class="keywordtype">float</span> linear, 
+                                                                                                   <span class="keywordtype">float</span> quadratic, 
+                                                                                                   <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a> clampToOne);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a50"></a><a class="code" href=
+"beastlightsource_8h.html#a1b9a66bbda4bb1b84028405cac5f9f97" title=
+"Sets the cone angle for a spotlight.">ILBSetSpotlightCone</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                           <span class="keywordtype">float</span> angleRadians,
+                                                                           <span class="keywordtype">float</span> penumbraAngleRadians,
+                                                                           <span class="keywordtype">float</span> penumbraExponent);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a51"></a><a class="code" href=
+"beastlightsource_8h.html#a59b48b4e30c877228135bd657695db52" title=
+"Sets distance to spotlight clipping planes.">ILBSetClippingPlanes</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span> nearDistance, <span class="keywordtype">float</span> farDistance);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a52"></a><a class="code" href=
+"beastlightsource_8h.html#a27beb7875c829e6c3fbe4fffe6393b2d" title=
+"Sets scale for direct and indirect light intensity for a light source.">ILBSetIntensityScale</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                           <span class="keywordtype">float</span> directScale,
+                                                                           <span class="keywordtype">float</span> indirectScale);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a53"></a><a class="code" href=
+"beastlightsource_8h.html#aeb1d049047eb87ae407b596d0fd81ba8" title=
+"Sets light status bits for a light source.">ILBSetLightStats</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                        ILBLightStatsMask stats,
+                                                                                        <a class="code"
+href="beastlightsource_8h.html#ab01e5a2c76145900ae93cd4a5116b446"
+title=
+"Selects if the light stats should be enabled or disabled.">ILBLightStatOperation</a> operation);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a54"></a><a class="code" href=
+"beastlightsource_8h.html#a23d0ee936cbfd4454f4c7850275c9a62" title=
+"Adds a light ramp entry for falloff calculation.">ILBSetLightRampEntry</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                <span class="keywordtype">float</span> position,
+                                                                                <span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* value);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a55"></a><a class="code" href=
+"beastlightsource_8h.html#ae31119270e91668a18c14d899487ecaa" title=
+"Sets a projected texture for a light source (gobo).">ILBSetLightProjectedTexture</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                           <a name="_a56"></a><a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a57"></a><a class="code" href=
+"beastlightsource_8h.html#a69d0fe9b9a8ab24c82cb252e01f90a3c" title=
+"Sets the display name for the light source.">ILBSetLightDisplayName</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                         <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title=
+"Beast api const string type.">ILBConstString</a> displayName);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a58"></a><a class="code" href=
+"beastlightsource_8h.html#a1792bb257b48b8c7bb3ef8c0b470328f" title=
+"Sets light volume type for a sky light.">ILBSetSkyLightVolumeType</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                        <a class="code"
+href="beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7"
+title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a> type);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a59"></a><a class="code" href=
+"beastlightsource_8h.html#af59d123c255edd4894ff9b11ff68199c" title=
+"Sets a texture for a sky light.">ILBSetSkyLightTexture</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                 <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a> texture);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a60"></a><a class="code" href=
+"beastlightsource_8h.html#a1280f6365c390d723f8701ace5aafa72" title=
+"Sets texture filter size for a sky light.">ILBSetSkyLightTextureFilter</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                           <span class="keywordtype">float</span> filter);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a61"></a><a class="code" href=
+"beastlightsource_8h.html#a5fe7bbb22fbef033bb75f05142ba6bd2" title=
+"Sets light volume type for a light source.">ILBSetLightVolumeType</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                 <a class="code"
+href="beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7"
+title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a> type);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a62"></a><a class="code" href=
+"beastlightsource_8h.html#aac29ff03845abebbdc4f508423f69969" title=
+"Changes the type of a light source.">ILBChangeLightType</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                          <a class="code"
+href="beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6db"
+title="Describes light types.">ILBLightType</a> newType, 
+                                                                                          <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* newHandle);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a63"></a><a class="code" href=
+"beastlightsource_8h.html#a2660a1ca39cc1a4fde4e9a9d3f26c159" title=
+"Gets the type of a light source.">ILBGetLightType</a>(<a class=
+"code" href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                   <a class="code"
+href="beastlightsource_8h.html#a4efb2e778157b55ec2f46bac1c71a6db"
+title="Describes light types.">ILBLightType</a>* type);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a64"></a><a class="code" href=
+"beastlightsource_8h.html#ab9e774493fdf8fb48ebb7ada1fa694fe" title=
+"Gets the transform of a light source.">ILBGetLightTransform</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>* transform);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a65"></a><a class="code" href=
+"beastlightsource_8h.html#a20c0a5629d258404ee398d8b78268da2" title=
+"Gets the name of a light source.">ILBGetLightName</a>(<a class=
+"code" href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                   <a name="_a66"></a><a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a>* name);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a67"></a><a class="code" href=
+"beastlightsource_8h.html#a62c35e95f9f1d0822c48b1b7d86ee25b" title=
+"Gets the display name of a light source.">ILBGetLightDisplayName</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                  <a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a>* displayName);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a68"></a><a class="code" href=
+"beastlightsource_8h.html#a15209534e859dedfe3480aeb68cee94c" title=
+"Gets the color of a light source.">ILBGetLightColor</a>(<a class=
+"code" href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                        <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>* color);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a69"></a><a class="code" href=
+"beastlightsource_8h.html#a59743ed9f203bee96b18f7f936c132a2" title=
+"Gets light intensity for a light source.">ILBGetLightIntensity</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                <span class="keywordtype">float</span>* intensity);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a70"></a><a class="code" href=
+"beastlightsource_8h.html#af93c4b043d0f64006fa2d423b8b59b62" title=
+"Returns whether a light source cast shadows.">ILBGetLightCastShadows</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                  <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* castShadows);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a71"></a><a class="code" href=
+"beastlightsource_8h.html#a8e6ae244bc501e7695a4091c4c63b6f6" title=
+"Returns the number of shadow samples a light source will use.">ILBGetLightShadowSamples</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                        int32* shadowSamples);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a72"></a><a class="code" href=
+"beastlightsource_8h.html#ae77fc88b8e9e631359699bedac388cab" title=
+"Returns the falloff type from a light source.">ILBGetLightFalloffType</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                  <a class="code"
+href="beastlightsource_8h.html#a0df3ab0992784fee7570db98750aeed4"
+title=
+"Describes different falloff for light sources.">ILBFalloffType</a>* type);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a73"></a><a class="code" href=
+"beastlightsource_8h.html#abfa8b007d0609abf6c2df62fa517f05e" title=
+"Returns the falloff parameters from a light source with MaxRange falloff.">ILBGetLightMaxRangeFalloff</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                          <span class="keywordtype">float</span>* cutoff, 
+                                                                                                          <span class="keywordtype">float</span>* exponent);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a74"></a><a class="code" href=
+"beastlightsource_8h.html#a2893b3d4365d35ec0de732a8f497cb5a" title=
+"Returns the falloff parameters from a light source with Exponent falloff.">ILBGetLightExponentFalloff</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                          <span class="keywordtype">float</span>* cutoff, 
+                                                                                                          <span class="keywordtype">float</span>* exponent, 
+                                                                                                          <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* clamp);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a75"></a><a class="code" href=
+"beastlightsource_8h.html#ab76ecee4da6e8b3f4164260f13a333a3" title=
+"Returns the falloff parameters from a light source with Polynomial falloff.">ILBGetLightPolynomialFalloff</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                                                                <span class="keywordtype">float</span>* cutoff, 
+                                                                                                                <span class="keywordtype">float</span>* constant, 
+                                                                                                                <span class="keywordtype">float</span>* linear, 
+                                                                                                                <span class="keywordtype">float</span>* quadratic, 
+                                                                                                                <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* clamp);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a76"></a><a class="code" href=
+"beastlightsource_8h.html#af332f29ea0191f6fa3892c14763e500a" title=
+"Gets scale for direct and indirect light intensity for a light source.">ILBGetLightIntensityScale</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                                         <span class="keywordtype">float</span>* directScale,
+                                                                                                         <span class="keywordtype">float</span>* indirectScale);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a77"></a><a class="code" href=
+"beastlightsource_8h.html#a556c7f04ebe096407c5b72696101fcde" title=
+"Query light stats for a light source.">ILBGetLightStats</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light,
+                                                                                        ILBLightStatsMask stats,
+                                                                                        ILBLightStatsMask* result);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a78"></a><a class="code" href=
+"beastlightsource_8h.html#aa3a65c36bd65538e000b7a6bc079a528" title=
+"Gets the cone angle for a spotlight.">ILBGetSpotlightCone</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, 
+                                                                           <span class="keywordtype">float</span>* angleRadians,
+                                                                           <span class="keywordtype">float</span>* penumbraAngleRadians,
+                                                                           <span class="keywordtype">float</span>* penumbraExponent);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a79"></a><a class="code" href=
+"beastlightsource_8h.html#a1e7b7c08b02acc714ce536b0dc175d1c" title=
+"Gets distance to spotlight clipping planes.">ILBGetClippingPlanes</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span>* nearDistance, <span class="keywordtype">float</span>* farDistance);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a80"></a><a class="code" href=
+"beastlightsource_8h.html#afd0668b57c586e9261c3482fafa3c518" title=
+"Gets a radius for the light source as a shadow caster.">ILBGetShadowRadius</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span>* radius);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a81"></a><a class="code" href=
+"beastlightsource_8h.html#a1dc930d6995dba6b0c32d28e766d5820" title=
+"Gets the angle covered of the sky for a directional light or window light for shadow casting purposes...">ILBGetShadowAngle</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span>* angleRadians);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a82"></a><a class="code" href=
+"beastlightsource_8h.html#a054b8f46f4bf23083949a0dfbc1a2916" title=
+"Gets light volume type for a sky light.">ILBGetSkyLightVolumeType</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <a class="code"
+href="beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7"
+title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a>* type);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a83"></a><a class="code" href=
+"beastlightsource_8h.html#aa6c423b090a94b1bcf90a0e4514c3e87" title=
+"Gets a texture from a sky light.">ILBGetSkyLightTexture</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <a class="code"
+href="struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>* texture);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a84"></a><a class="code" href=
+"beastlightsource_8h.html#acae82b5736abc6fac6f15c36bbe1c686" title=
+"Gets texture filter size from a sky light.">ILBGetSkyLightTextureFilter</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <span class="keywordtype">float</span>* filter);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a85"></a><a class="code" href=
+"beastlightsource_8h.html#abccd427cee2054a1b0797a51923008c4" title=
+"Gets light volume type for a light source.">ILBGetLightVolumeType</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light, <a class="code"
+href="beastlightsource_8h.html#a8409bbe02697c41f9ab47ddfcb61acc7"
+title=
+"Describes different light volumes for light sources.">ILBLightVolumeType</a>* type);
+
+ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a name=
+"a86"></a><a class="code" href=
+"beastlightsource_8h.html#a41519a99b86d5e36fd825f95a67d54c4" title=
+"Deletes a light source from a scene.">ILBDeleteLightSource</a>(<a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light);
+
+<span class="preprocessor">#ifdef __cplusplus</span>
+}
+<span class="preprocessor">#endif // __cplusplus</span>
+
+
+<span class="preprocessor">#endif // BEASTLIGHTSOURCE_H </span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

@@ -1,8 +1,11 @@
 #include "Render/2D/TextBlockGraphicRender.h"
-#include "Render/ShaderCache.h"
+#include "Engine/Engine.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
-#include "UI/UIControlSystem.h"
+#include "Render/Material/NMaterial.h"
 #include "Render/Renderer.h"
+#include "Render/ShaderCache.h"
+#include "UI/UIControlSystem.h"
 
 namespace DAVA
 {
@@ -172,7 +175,7 @@ Font::StringMetrics TextBlockGraphicRender::DrawTextML(const WideString& drawTex
                                                        int32 xOffset, uint32 yOffset,
                                                        int32 lineSize)
 {
-    return InternalDrawText(drawText, xOffset, yOffset, int32(std::ceil(UIControlSystem::Instance()->vcs->ConvertVirtualToPhysicalX(float32(w)))), lineSize);
+    return InternalDrawText(drawText, xOffset, yOffset, int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(w)))), lineSize);
 }
 
 Font::StringMetrics TextBlockGraphicRender::InternalDrawText(const WideString& drawText, int32 x, int32 y, int32 w, int32 lineSize)

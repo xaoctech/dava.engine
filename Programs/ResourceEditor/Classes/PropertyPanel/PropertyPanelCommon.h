@@ -8,9 +8,11 @@ enum eREPropertyType
 {
     GroupQualityProperty = DAVA::TArc::PropertyNode::DomainSpecificProperty,
     AddComponentProperty,
+    SlotName,
     SlotTypeFilters,
     SlotJointAttachment,
     SlotPreviewProperty,
-    SlotTemplateName
+    SlotTemplateName,
+    SlotPasteProperty
 };
 } // namespace PropertyPanel

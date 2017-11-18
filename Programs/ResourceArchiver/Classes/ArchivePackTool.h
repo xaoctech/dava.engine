@@ -3,7 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/ResourceArchive.h"
 #include "CommandLineTool.h"
-#include <Tools/AssetCache/AssetCacheClient.h>
+#include <DavaTools/AssetCache/AssetCacheClient.h>
 
 class ArchivePackTool : public CommandLineTool
 {
@@ -21,8 +21,6 @@ private:
 
     bool ConvertOptionsToParamsInternal() override;
     int ProcessInternal() override;
-
-    void CollectAllFilesInDirectory(const DAVA::String& pathDirName, DAVA::Vector<DAVA::String>& output);
 
     DAVA::String compressionStr;
     DAVA::Compressor::Type compressionType;

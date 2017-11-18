@@ -9,14 +9,14 @@
 
 namespace DAVA
 {
-DAVA::Component* PlaneShapeComponent::Clone(Entity* toEntity)
+Component* PlaneShapeComponent::Clone(Entity* toEntity)
 {
     PlaneShapeComponent* result = new PlaneShapeComponent();
     result->SetEntity(toEntity);
 
     result->point = point;
     result->normal = normal;
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
 }
@@ -43,7 +43,7 @@ const Vector3& PlaneShapeComponent::GetPoint() const
 void PlaneShapeComponent::SetPoint(const Vector3& point_)
 {
     point = point_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 const Vector3& PlaneShapeComponent::GetNormal() const
@@ -53,8 +53,8 @@ const Vector3& PlaneShapeComponent::GetNormal() const
 
 void PlaneShapeComponent::SetNormal(const Vector3& normal_)
 {
-    normal = normal_;
-    SheduleUpdate();
+    normal = Normalize(normal_);
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)

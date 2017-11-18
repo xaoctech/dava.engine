@@ -121,6 +121,10 @@ void EditorLightSystem::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
+void EditorLightSystem::PrepareForRemove()
+{
+}
+
 void EditorLightSystem::Process(float32 timeElapsed)
 {
     if (isEnabled)

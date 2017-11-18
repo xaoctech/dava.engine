@@ -49,7 +49,7 @@ bool AppsCommandsSender::Ping(const QString& appPath)
 {
     using namespace LauncherIPCHelpers;
     int pingCode = static_cast<int>(PING);
-    int replyCode = SendMessage(pingCode, appPath);
+    int replyCode = SendCommand(pingCode, appPath);
     return static_cast<eProtocolReply>(replyCode) == PONG;
 }
 
@@ -57,12 +57,12 @@ bool AppsCommandsSender::RequestQuit(const QString& appPath)
 {
     using namespace AppsCommandsSenderDetails;
     int quitCode = static_cast<int>(LauncherListener::eMessage::QUIT);
-    int replyCode = SendMessage(quitCode, appPath);
+    int replyCode = SendCommand(quitCode, appPath);
     return static_cast<eChannelReply>(replyCode) == TARGET_NOT_FOUND
     || static_cast<LauncherListener::eReply>(replyCode) == LauncherListener::eReply::ACCEPT;
 }
 
-int AppsCommandsSender::SendMessage(int message, const QString& appPath)
+int AppsCommandsSender::SendCommand(int message, const QString& appPath)
 {
     using namespace AppsCommandsSenderDetails;
     using namespace LauncherIPCHelpers;

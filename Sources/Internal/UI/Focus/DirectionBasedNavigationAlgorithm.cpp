@@ -10,7 +10,6 @@
 #include "UI/UIList.h"
 #include "UI/UIEvent.h"
 #include "UI/UIControlHelpers.h"
-#include "Input/KeyboardDevice.h"
 
 namespace DAVA
 {

@@ -5,7 +5,7 @@
 
 #include <libdxt/nvtt_extra.h>
 
-#if defined(__DAVAENGINE_WIN_UAP__)
+#if defined(__DAVAENGINE_WINDOWS__)
 
 //disabling of warning 
 #pragma warning(push)

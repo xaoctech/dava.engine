@@ -34,6 +34,7 @@ public:
 
     const SelectedNodes& GetSelectedNodes() const;
     const SortedControlNodeSet& GetDisplayedRootControls() const;
+    const DAVA::Set<ControlNode*>& GetSelectedControls() const;
 
     QString GetName() const;
     QString GetPackageAbsolutePath() const;
@@ -64,6 +65,7 @@ public:
     static DAVA::FastName redoTextPropertyName;
     static DAVA::FastName currentNodePropertyName;
     static DAVA::FastName selectionPropertyName;
+    static DAVA::FastName selectedControlsPropertyName;
     static DAVA::FastName displayedRootControlsPropertyName;
     static DAVA::FastName guidesPropertyName;
 
@@ -78,7 +80,8 @@ private:
 
     DAVA::RefPtr<PackageNode> package;
     std::unique_ptr<DAVA::CommandStack> commandStack;
-    SelectionContainer selection;
+    DAVA::Set<PackageBaseNode*> selectedNodes;
+    DAVA::Set<ControlNode*> selectedControls;
 
     PackageBaseNode* currentNode = nullptr;
     //we store this variable for cases when we select multiple controls from bottom to top and than deselect them one by one

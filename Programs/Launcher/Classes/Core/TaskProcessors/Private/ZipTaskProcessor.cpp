@@ -1,5 +1,5 @@
 #include "Core/TaskProcessors/ZipTaskProcessor.h"
-#include "Core/Tasks/UnzipTask.h"
+#include "Core/CommonTasks/UnzipTask.h"
 
 #include <QApplication>
 #include <QDir>
@@ -22,6 +22,11 @@ ZipTaskProcessor::TaskParams::~TaskParams()
         process->disconnect();
         process->deleteLater();
     }
+}
+
+ZipTaskProcessor::ZipTaskProcessor(QObject* parent)
+    : QObject(parent)
+{
 }
 
 ZipTaskProcessor::~ZipTaskProcessor()
@@ -224,4 +229,9 @@ QString ZipTaskProcessor::GetArchiverPath() const
     "/../Resources/7za";
 #endif //Q_OS_MAC Q_OS_WIN
     return processAddr;
+}
+
+std::size_t ZipTaskProcessor::GetTasksCount() const
+{
+    return currentTaskParams != nullptr ? 1 : 0;
 }

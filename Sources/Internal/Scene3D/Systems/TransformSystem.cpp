@@ -203,4 +203,17 @@ void TransformSystem::RemoveEntity(Entity* entity)
     entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE);
     entity->RemoveFlag(Entity::TRANSFORM_DIRTY);
 }
+
+void TransformSystem::PrepareForRemove()
+{
+    uint32 size = static_cast<uint32>(updatableEntities.size());
+    for (uint32 i = 0; i < size; ++i)
+    {
+        Entity* entity = updatableEntities[i];
+        entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE);
+        entity->RemoveFlag(Entity::TRANSFORM_DIRTY);
+    }
+
+    updatableEntities.clear();
+}
 };

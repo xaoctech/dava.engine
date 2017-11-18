@@ -2,6 +2,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
+#include "Base/Token.h"
+#include "Math/Rect.h"
 #include "UI/UISystem.h"
 
 struct UILayoutSystemTest;
@@ -43,17 +45,20 @@ protected:
     void UnregisterControl(UIControl* control) override;
     void UnregisterComponent(UIControl* control, UIComponent* component) override;
 
+    void RegisterSystem() override;
+    void UnregisterSystem() override;
+
 private:
     UIControl* FindNotDependentOnChildrenControl(UIControl* control) const;
     bool HaveToLayoutAfterReorder(const UIControl* control) const;
     bool HaveToLayoutAfterReposition(const UIControl* control) const;
 
     void CollectControls(UIControl* control, bool recursive);
-    void CollectControlChildren(UIControl* control, int32 parentIndex, bool recursive);
     void ProcessControlHierarhy(UIControl* control);
     void ProcessControl(UIControl* control);
 
-    bool isRtl = false;
+    void UpdateVisibilityRect(const Rect& visibilityRect);
+
     bool autoupdatesEnabled = true;
     bool dirty = false;
     bool needUpdate = false;
@@ -62,6 +67,10 @@ private:
     RefPtr<UIControl> popupContainer;
 
     Vector<UILayoutSystemListener*> listeners;
+
+    Token visibleFrameChangedToken;
+    Token virtualSizeChangedToken;
+    Token inputSizeChangedToken;
 
     friend UILayoutSystemTest;
 };

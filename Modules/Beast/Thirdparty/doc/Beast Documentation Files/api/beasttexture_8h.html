@@ -1,0 +1,1065 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beasttexture.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beasttexture_8h.html','api_beasttexture_8h_html6aa8c60a-1383-485b-8e0a-4b57ec2b49dc','index.html',location.hash); javascript:initPage('API: beastapi/beasttexture.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beasttexture_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beasttexture.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beasttexture.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#enum-members">Enumerations</a> |
+<a href="#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beasttexture.h File Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-3C1A9D33-9CF5-49DC-A35B-555751D1FAE0.htm">Using
+the Cache</a>, <a href=
+".././files/GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating
+a Scene</a>, <a href=
+".././files/GUID-BB72D7E8-18BE-4322-97C5-042CEACA0F65.htm">What's
+New in Beast 2013.1.x</a>, <a href=
+".././files/GUID-B1C3534D-9E9C-4714-B434-CB607FD4FB0E.htm">Creating
+Textures</a>, <a href=
+".././files/GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating
+Physical Materials</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>The beast texture function definitions.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="enum-members"></a> Enumerations</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537f">ILBImageGammaType</a>
+{ <a class="el" translate="no" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537fa4e632ef8d15de472a8da7340d9d1facf">
+ILB_IG_GAMMA</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3">ILBPixelFormat</a>
+{<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a12194f1625a0233c928889e47db72fe0">ILB_PF_MONO_FLOAT</a>,
+<a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3afabf0b0240e9ddfaf4ab8ec763d052e9">
+ILB_PF_RGB_FLOAT</a>, <a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a3402163b47ccf0c7f57696ab4040ee7a">
+ILB_PF_RGBA_FLOAT</a>, <a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3aad5992a25edcbed487932f9cb28af25b">
+ILB_PF_MONO_BYTE</a>,<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8">ILB_PF_RGB_BYTE</a>,
+<a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748">
+ILB_PF_RGBA_BYTE</a><br />
+}</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#a4fc283ac7977576dfb4bbd89b7efa1de">ILBAddPixelDataHDR</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a> texture,
+const float *data, int32 pixelCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#a899020e097cdd18e0e9fc6e4c144bc8c">ILBAddPixelDataLDR</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a> texture,
+const unsigned char *data, int32 pixelCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#a218a87ee822598e86003b25c4d956108">ILBBeginTexture</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+uniqueName, int32 width, int32 height, <a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3">ILBPixelFormat</a>
+inputFormat, <a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+*target)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#ab3fc5a5b9823618ada51e95db0c3d917">ILBEndTexture</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+texture)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#a6bd555f05562f16b62dfd859221220d5">ILBFindTexture</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+uniqueName, <a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+*target)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#a442ae625f8dec36f638f2e0155389a78">ILBReferenceTexture</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>
+beastManager, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+uniqueName, <a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+filename, <a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+*target)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beasttexture_8h.html#aeb4462778d8120fba15a814bebb14f70">ILBSetInputGamma</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a> texture,
+<a class="el" translate="no" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537f">ILBImageGammaType</a>
+type, float gamma)</td>
+</tr>
+</table>
+<hr />
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="a07eaf015717168a5368efd47614a537f"></a>
+<!-- doxytag: member="beasttexture.h::ILBImageGammaType" ref="a07eaf015717168a5368efd47614a537f" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537f">ILBImageGammaType</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBImageGammaType',false)">Search for all
+occurrences</a></div>
+<p>Gamma for input pixels data.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a07eaf015717168a5368efd47614a537fa4e632ef8d15de472a8da7340d9d1facf">
+</a>
+<!-- doxytag: member="ILB_IG_GAMMA" ref="a07eaf015717168a5368efd47614a537fa4e632ef8d15de472a8da7340d9d1facf" args="" -->ILB_IG_GAMMA</em>&nbsp;</td>
+<td>
+<p>Gamma ramp, will always be combined with a gamma value.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_IG_GAMMA',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a1">include/beastapi/beasttexture.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ae8b3f4c719743cb696db2073fcdddee3"></a>
+<!-- doxytag: member="beasttexture.h::ILBPixelFormat" ref="ae8b3f4c719743cb696db2073fcdddee3" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3">ILBPixelFormat</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBPixelFormat',false)">Search for all
+occurrences</a></div>
+<p>Format for pixel data.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae8b3f4c719743cb696db2073fcdddee3a12194f1625a0233c928889e47db72fe0">
+</a>
+<!-- doxytag: member="ILB_PF_MONO_FLOAT" ref="ae8b3f4c719743cb696db2073fcdddee3a12194f1625a0233c928889e47db72fe0" args="" -->ILB_PF_MONO_FLOAT</em>&nbsp;</td>
+<td>
+<p>Monochrome floating point pixels.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_PF_MONO_FLOAT',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae8b3f4c719743cb696db2073fcdddee3afabf0b0240e9ddfaf4ab8ec763d052e9">
+</a>
+<!-- doxytag: member="ILB_PF_RGB_FLOAT" ref="ae8b3f4c719743cb696db2073fcdddee3afabf0b0240e9ddfaf4ab8ec763d052e9" args="" -->ILB_PF_RGB_FLOAT</em>&nbsp;</td>
+<td>
+<p>Color floating point pixels.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_PF_RGB_FLOAT',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae8b3f4c719743cb696db2073fcdddee3a3402163b47ccf0c7f57696ab4040ee7a">
+</a>
+<!-- doxytag: member="ILB_PF_RGBA_FLOAT" ref="ae8b3f4c719743cb696db2073fcdddee3a3402163b47ccf0c7f57696ab4040ee7a" args="" -->ILB_PF_RGBA_FLOAT</em>&nbsp;</td>
+<td>
+<p>Color with alpha floating point pixels.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_PF_RGBA_FLOAT',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae8b3f4c719743cb696db2073fcdddee3aad5992a25edcbed487932f9cb28af25b">
+</a>
+<!-- doxytag: member="ILB_PF_MONO_BYTE" ref="ae8b3f4c719743cb696db2073fcdddee3aad5992a25edcbed487932f9cb28af25b" args="" -->ILB_PF_MONO_BYTE</em>&nbsp;</td>
+<td>
+<p>Monochrome byte pixels.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_PF_MONO_BYTE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8">
+</a>
+<!-- doxytag: member="ILB_PF_RGB_BYTE" ref="ae8b3f4c719743cb696db2073fcdddee3a526aea53467f3fe52dd6f3e4fb1e8bb8" args="" -->ILB_PF_RGB_BYTE</em>&nbsp;</td>
+<td>
+<p>Color byte pixels.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_PF_RGB_BYTE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748">
+</a>
+<!-- doxytag: member="ILB_PF_RGBA_BYTE" ref="ae8b3f4c719743cb696db2073fcdddee3a4dc9b68572e246568d94339c8d762748" args="" -->ILB_PF_RGBA_BYTE</em>&nbsp;</td>
+<td>
+<p>Color with alpha byte pixels.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_PF_RGBA_BYTE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a8">include/beastapi/beasttexture.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="a4fc283ac7977576dfb4bbd89b7efa1de"></a>
+<!-- doxytag: member="beasttexture.h::ILBAddPixelDataHDR" ref="a4fc283ac7977576dfb4bbd89b7efa1de" args="(ILBTextureHandle texture, const float *data, int32 pixelCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddPixelDataHDR</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>&nbsp;</td>
+<td class="paramname"><em>texture</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const float *&nbsp;</td>
+<td class="paramname"><em>data</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>pixelCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddPixelDataHDR',false)">Search for all
+occurrences</a></div>
+<p>Adds pixels to a texture.</p>
+<p>This function should only be used on textures using FLOAT pixel
+formats. Pixel data is treated as a linear array of pixels line by
+line. It may be called multiple times avoid having to replicate the
+entire image in Beast format, but the total number of pixels must
+not exceed what was specified in beginTexture.<br />
+The lines are given from the bottom and up, the lines are stored
+left to right.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">texture</td>
+<td>the texture to add the pixels for</td>
+</tr>
+<tr>
+<td class="paramname">data</td>
+<td>the pixel data to add. Note this must correspond to the pixel
+format specified in the beginTexture call</td>
+</tr>
+<tr>
+<td class="paramname">pixelCount</td>
+<td>the number of pixel (not data values) specified in this
+batch.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2textures_8h-example.html#a9">examples-physical/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2textures_8h-example.html#a9">examples/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a14">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttexturewrapper_8cpp-example.html#a0">
+maya/beastmayaplugin/src/beastwrappers/beasttexturewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a899020e097cdd18e0e9fc6e4c144bc8c"></a>
+<!-- doxytag: member="beasttexture.h::ILBAddPixelDataLDR" ref="a899020e097cdd18e0e9fc6e4c144bc8c" args="(ILBTextureHandle texture, const unsigned char *data, int32 pixelCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddPixelDataLDR</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>&nbsp;</td>
+<td class="paramname"><em>texture</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const unsigned char *&nbsp;</td>
+<td class="paramname"><em>data</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>pixelCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddPixelDataLDR',false)">Search for all
+occurrences</a></div>
+<p>Adds pixels to a texture.</p>
+<p>This function should only be used on textures using BYTE pixel
+formats. Pixel data is treated as a linear array of pixels line by
+line. It may be called multiple times avoid having to replicate the
+entire image in Beast format, but the total number of pixels must
+not exceed what was specified in beginTexture.<br />
+The lines are given from the bottom and up, the lines are stored
+left to right.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">texture</td>
+<td>the texture to add the pixels for</td>
+</tr>
+<tr>
+<td class="paramname">data</td>
+<td>the pixel data to add. Note this must correspond to the pixel
+format specified in the beginTexture call</td>
+</tr>
+<tr>
+<td class="paramname">pixelCount</td>
+<td>the number of pixels (not data values) specified in this
+batch.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2textures_8h-example.html#a6">examples-physical/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2textures_8h-example.html#a6">examples/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a15">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttexturewrapper_8cpp-example.html#a1">
+maya/beastmayaplugin/src/beastwrappers/beasttexturewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a218a87ee822598e86003b25c4d956108"></a>
+<!-- doxytag: member="beasttexture.h::ILBBeginTexture" ref="a218a87ee822598e86003b25c4d956108" args="(ILBManagerHandle beastManager, ILBConstString uniqueName, int32 width, int32 height, ILBPixelFormat inputFormat, ILBTextureHandle *target)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBBeginTexture</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>uniqueName</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>width</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>height</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beasttexture_8h.html#ae8b3f4c719743cb696db2073fcdddee3">ILBPixelFormat</a>&nbsp;</td>
+<td class="paramname"><em>inputFormat</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>target</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBBeginTexture',false)">Search for all
+occurrences</a></div>
+<p>Begins creation of a texture.</p>
+<p><br /></p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the beast manager this texture will be associated with</td>
+</tr>
+<tr>
+<td class="paramname">uniqueName</td>
+<td>a unique name for the texture.</td>
+</tr>
+<tr>
+<td class="paramname">width</td>
+<td>the width of the texture</td>
+</tr>
+<tr>
+<td class="paramname">height</td>
+<td>the height of the texture</td>
+</tr>
+<tr>
+<td class="paramname">inputFormat</td>
+<td>the pixel format you intend to use to input data. This will not
+necessarily be the same format as Beast choose to save the image
+in.</td>
+</tr>
+<tr>
+<td class="paramname">target</td>
+<td>a pointer to a <a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>
+that will receive the created texture</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2textures_8h-example.html#a2">examples-physical/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2textures_8h-example.html#a2">examples/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a12">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a14">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ab3fc5a5b9823618ada51e95db0c3d917"></a>
+<!-- doxytag: member="beasttexture.h::ILBEndTexture" ref="ab3fc5a5b9823618ada51e95db0c3d917" args="(ILBTextureHandle texture)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBEndTexture</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>&nbsp;</td>
+<td class="paramname"><em>texture</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBEndTexture',false)">Search for all
+occurrences</a></div>
+<p>Finalizes creation of a texture.</p>
+<p>Will fail unless it has got the width * height pixels added</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">texture</td>
+<td>the texture to finalize</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2textures_8h-example.html#a7">examples-physical/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2textures_8h-example.html#a7">examples/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a16">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttexturewrapper_8cpp-example.html#a5">
+maya/beastmayaplugin/src/beastwrappers/beasttexturewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a6bd555f05562f16b62dfd859221220d5"></a>
+<!-- doxytag: member="beasttexture.h::ILBFindTexture" ref="a6bd555f05562f16b62dfd859221220d5" args="(ILBManagerHandle beastManager, ILBConstString uniqueName, ILBTextureHandle *target)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBFindTexture</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>uniqueName</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>target</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBFindTexture',false)">Search for all
+occurrences</a></div>
+<p>Finds a cached texture.</p>
+<p><br /></p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the beast manager to check whether the texture is available
+in</td>
+</tr>
+<tr>
+<td class="paramname">uniqueName</td>
+<td>the unique name for texture.</td>
+</tr>
+<tr>
+<td class="paramname">target</td>
+<td>the texture handle to store the texture in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation. ILB_ST_SUCCESS if the texture is
+available ILB_ST_UNKNOWN_OBJECT if the texture is not in the
+cache</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2utils_8h-example.html#a36">examples-physical/code/common/utils.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2utils_8h-example.html#a29">examples/code/common/utils.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a60">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a55">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a13">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a9">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a442ae625f8dec36f638f2e0155389a78"></a>
+<!-- doxytag: member="beasttexture.h::ILBReferenceTexture" ref="a442ae625f8dec36f638f2e0155389a78" args="(ILBManagerHandle beastManager, ILBConstString uniqueName, ILBConstString filename, ILBTextureHandle *target)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBReferenceTexture</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_manager_handle.html">ILBManagerHandle</a>&nbsp;</td>
+<td class="paramname"><em>beastManager</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>uniqueName</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>filename</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>target</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBReferenceTexture',false)">Search for all
+occurrences</a></div>
+<p>References in an external texture.</p>
+<p><br />
+Note, a referenced texture doesn't need a call to
+ILBEndTexture!</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">beastManager</td>
+<td>the beast manager this texture will be associated with</td>
+</tr>
+<tr>
+<td class="paramname">uniqueName</td>
+<td>A unique name for the texture.</td>
+</tr>
+<tr>
+<td class="paramname">filename</td>
+<td>the path to the file to use</td>
+</tr>
+<tr>
+<td class="paramname">target</td>
+<td>a pointer to a <a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html" title=
+"Handle for Beast textures Intentionally hidden implementation.">ILBTextureHandle</a>
+that will receive the new created texture</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a62">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a57">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a9">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastmanagerwrapper_8cpp-example.html#a12">
+maya/beastmayaplugin/src/beastwrappers/beastmanagerwrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aeb4462778d8120fba15a814bebb14f70"></a>
+<!-- doxytag: member="beasttexture.h::ILBSetInputGamma" ref="aeb4462778d8120fba15a814bebb14f70" args="(ILBTextureHandle texture, ILBImageGammaType type, float gamma)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetInputGamma</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_texture_handle.html">ILBTextureHandle</a>&nbsp;</td>
+<td class="paramname"><em>texture</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beasttexture_8h.html#a07eaf015717168a5368efd47614a537f">ILBImageGammaType</a>&nbsp;</td>
+<td class="paramname"><em>type</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">float&nbsp;</td>
+<td class="paramname"><em>gamma</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetInputGamma',false)">Search for all
+occurrences</a></div>
+<p>Sets what gamma encoding the colors in LDR texture has.</p>
+<p><br />
+This call is only valid on textures with an LDR pixel format. HDR
+textures are always regarded as linear. By default it's set to
+ILB_IG_GAMMA with gamma 2.2</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">texture</td>
+<td>the texture to set gamma on</td>
+</tr>
+<tr>
+<td class="paramname">type</td>
+<td>the gamma ramp type</td>
+</tr>
+<tr>
+<td class="paramname">gamma</td>
+<td>the gamma value.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2textures_8h-example.html#a4">examples-physical/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"examples_2code_2common_2textures_8h-example.html#a4">examples/code/common/textures.h</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beasttexture_8h-example.html#a17">include/beastapi/beasttexture.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beasttexturewrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beasttexturewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beasttexture_8h_source.html">Go to the source code of
+this file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

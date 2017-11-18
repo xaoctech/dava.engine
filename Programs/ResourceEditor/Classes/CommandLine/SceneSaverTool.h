@@ -25,6 +25,8 @@ private:
     eAction commandAction = ACTION_NONE;
     DAVA::String filename;
 
+    DAVA::Vector<DAVA::String> tags;
+
     DAVA::FilePath inFolder;
     DAVA::FilePath dataSourceFolder;
     DAVA::FilePath outFolder;

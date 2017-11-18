@@ -1,0 +1,1494 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/beastmayaplugin/src/scenemanager.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2beastmayaplugin_2src_2scenemanager_8cpp-example.html','api_maya_2beastmayaplugin_2src_2scenemanager_8cpp_example_html23c1af38-10e0-4bde-9ac1-e73ad7a1bb1f','index.html',location.hash); javascript:initPage('API: maya/beastmayaplugin/src/scenemanager.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2beastmayaplugin_2src_2scenemanager_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/beastmayaplugin/src/scenemanager.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text">
+<span>maya/beastmayaplugin/src/scenemanager.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/beastmayaplugin/src/scenemanager.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="preprocessor">#define _USE_MATH_DEFINES</span>
+<span class="preprocessor">#include "scenemanager.h"</span>
+<span class=
+"preprocessor">#include &lt;maya/MFileObject.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnMesh.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MFnCamera.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnPointLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnDirectionalLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnSpotLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnAreaLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnVolumeLight.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MFnNumericAttribute.h&gt;</span>
+<span class="preprocessor">#include &lt;maya/MMatrix.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MObjectHandle.h&gt;</span>
+<span class=
+"preprocessor">#include &lt;maya/MfnDependencyNode.h&gt;</span>
+
+<span class="preprocessor">#include "plugincontext.h"</span>
+<span class="preprocessor">#include "jobcontext.h"</span>
+<span class="preprocessor">#include "mayautils.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmanagerwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastinstancewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastcamerawrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beasttexturewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastmaterialwrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastscenewrapper.h"</span>
+<span class=
+"preprocessor">#include "beastwrappers/beastlightwrapper.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livetransform.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/liveinstance.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livelight.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livecamera.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/liveresource.h"</span>
+<span class=
+"preprocessor">#include "mayacallbacks/livematerial.h"</span>
+<span class="preprocessor">#include "mayanodes/nodeids.h"</span>
+<span class="preprocessor">#include "mayathreading.h"</span>
+<span class="preprocessor">#include &lt;string&gt;</span>
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+<span class="preprocessor">#include &lt;assert.h&gt;</span>
+<span class="preprocessor">#include &lt;math.h&gt;</span>
+
+<span class="keyword">namespace </span>{
+        <span class=
+"keywordtype">bool</span> hasEnding(std::wstring <span class=
+"keyword">const</span> &amp;str, std::wstring <span class=
+"keyword">const</span> &amp;ending)
+        {
+                <span class=
+"keywordflow">if</span> (str.length() &gt;= ending.length()) {
+                        <span class=
+"keywordflow">return</span> (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
+                } <span class="keywordflow">else</span> {
+                        <span class=
+"keywordflow">return</span> <span class="keyword">false</span>;
+                }
+        }
+}
+
+<span class="keyword">namespace </span>beastmaya {
+
+        SceneManager::SceneManager(JobContext* bjc, BeastScenePtr&amp; scene, <span class="keywordtype">bool</span> live) : m_bjc(bjc), m_scene(scene), m_live(live) {
+                <span class=
+"keywordtype">float</span> corr[4][4] = {{1.0f, 0.0f, 0.0f, 0.0f},
+                                                        {0.0f, 0.0f, 1.0f, 0.0f},
+                                                        {0.0f, -1.0f, 0.0f,     0.0f},
+                                                        {0.0f, 0.0f, 0.0f, 1.0f}};
+                lightCorrection = MMatrix(corr);
+
+                <span class=
+"comment">// If this is a live scene let's create callbacks to keep it updated.</span>
+                <span class="keywordflow">if</span> (m_live) {
+                        m_DGMessageManager.reset(<span class=
+"keyword">new</span> DGMessageManager(*m_bjc));
+                        m_liveResourceManager.reset(<span class=
+"keyword">new</span> LiveResourceManager());
+                        AsyncHandler::getInstance()-&gt;start(m_liveResourceManager);
+                }
+
+                <span class=
+"comment">// Make sure the default initial shading group material exist at all times</span>
+                createMaterial(findMayaNode(L<span class=
+"stringliteral">"lambert1"</span>));
+        }
+
+        SceneManager::~SceneManager()
+        {
+                <span class="keywordflow">if</span> (m_live) {
+                        AsyncHandler::getInstance()-&gt;requestTermination(m_liveResourceManager-&gt;getName());
+                }
+
+                <span class=
+"comment">// Let's not delete lights and instances explicitly, they're going to be destroyed together with the scene now.</span>
+                <span class=
+"keywordflow">for</span> (LightMap::iterator it = m_lights.begin(); it != m_lights.end(); it++) {
+                        it-&gt;second-&gt;setPersistent(<span class="keyword">true</span>);
+                }
+                <span class="keywordflow">for</span> (<span class=
+"keyword">auto</span> it = m_instances.begin(); it != m_instances.end(); it++) {
+                        it-&gt;second-&gt;setPersistent(<span class="keyword">true</span>);
+                }
+
+                m_instances.clear();
+                m_lights.clear();
+                m_cameras.clear();
+                m_materials.clear();
+                m_scene.reset();
+        }
+
+        BeastMaterialPtr SceneManager::createMaterial(<span class=
+"keyword">const</span> MObject&amp; obj) {
+                MStatus res;
+                MFnDependencyNode shader(obj, &amp;res);
+                <span class=
+"keywordflow">if</span> (res != MStatus::kSuccess) {
+                        <span class=
+"keywordflow">return</span> BeastMaterialPtr();
+                }
+
+                BeastManager&amp; bm = m_bjc-&gt;getPluginContext().getManager();
+
+                <span class=
+"comment">// Meshes reference materials by hash name</span>
+                std::wstringstream name;
+                name &lt;&lt; MObjectHandle(obj).hashCode();
+
+                <span class=
+"keywordflow">if</span>(m_scene-&gt;findMaterial(name.str().c_str())) {
+                        <span class=
+"keywordflow">return</span> BeastMaterialPtr();
+                }
+
+                BeastMaterialPtr material = m_scene-&gt;createMaterial(name.str().c_str());
+                <span class="keywordflow">if</span> (!material) {
+                        <span class=
+"keywordflow">return</span> material;
+                }
+                m_materials.insert(std::make_pair(obj, material));
+
+                <span class=
+"comment">// Try to create OSL material</span>
+                BeastShaderPtr beastShader;
+                <span class=
+"keywordflow">if</span>(shader.typeId() == ADSK_BEAST_OSL_SHADER) {
+                        beastShader = createBeastOSLShader(shader);
+                } <span class="keywordflow">else</span> {
+                        beastShader = createStandardShader(shader);
+                }
+                <span class="keywordflow">if</span>(beastShader) {
+                        material-&gt;setShader(*beastShader);
+                }
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addMaterialCallback(obj, material);
+                }
+
+                <span class="keywordflow">return</span> material;
+        }
+        
+        BeastInstancePtr SceneManager::createInstance(<span class=
+"keyword">const</span> MDagPath&amp; dp) {
+                MStatus meshRes;
+                MFnMesh mesh(dp, &amp;meshRes);
+                <span class=
+"keywordflow">if</span>(meshRes != MStatus::kSuccess) {
+                        <span class=
+"comment">// No mesh attached to this instance, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastInstancePtr();
+                }
+
+                InstanceMap::iterator it = m_instances.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_instances.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastInstancePtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; mesh.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a name="_a0"></a><a class="code" href=
+"struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(dp.inclusiveMatrix());
+
+                MObjectArray surfaceShaders;
+                ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                BeastMeshPtr beastMesh = rm.createMesh(dp, surfaceShaders);
+                <span class="keywordflow">if</span>(!beastMesh) {
+                        <span class=
+"keywordflow">return</span> BeastInstancePtr();
+                }
+
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; surfaceShaders.length(); i++) {
+                        createMaterial(surfaceShaders[i]);
+                }
+
+                BeastInstancePtr beastInstance = m_scene-&gt;createInstance(*beastMesh, uniqueName.str().c_str(), matrix);
+                m_instances.insert(std::make_pair(dp.node(), beastInstance));
+                setInstanceProperties(dp);
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addInstanceCallback(dp, beastInstance);
+                        addShapeCallback(dp);
+                }
+
+                <span class=
+"keywordflow">return</span> beastInstance;
+        }
+
+        BeastLightPtr SceneManager::createPointLight(<span class=
+"keyword">const</span> MDagPath&amp; dp)
+        {
+                MStatus lightRes;
+                MFnPointLight light(dp, &amp;lightRes);
+                <span class=
+"keywordflow">if</span> (lightRes != MStatus::kSuccess) {
+                        <span class=
+"comment">// No light attached, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                LightMap::iterator it = m_lights.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; light.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a class="code" href="struct_i_l_b_matrix4x4.html"
+title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(lightCorrection * dp.inclusiveMatrix());
+
+                BeastLightPtr beastLight = m_scene-&gt;createPointLight(uniqueName.str().c_str(), matrix, toLinearBeastColorRGB(light.color()));
+                m_lights.insert(std::make_pair(dp.node(), beastLight));
+                setLightProperties(dp);
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addLightCallback(dp, beastLight);
+                }
+
+                <span class="keywordflow">return</span> beastLight;
+        }
+
+        BeastLightPtr SceneManager::createDirectionalLight(<span class="keyword">const</span> MDagPath&amp; dp)
+        {
+                MStatus lightRes;
+                MFnDirectionalLight light(dp, &amp;lightRes);
+                <span class=
+"keywordflow">if</span> (lightRes != MStatus::kSuccess) {
+                        <span class=
+"comment">// No light attached, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                LightMap::iterator it = m_lights.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; light.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a class="code" href="struct_i_l_b_matrix4x4.html"
+title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(lightCorrection * dp.inclusiveMatrix());
+
+                BeastLightPtr beastLight = m_scene-&gt;createDirectionalLight(uniqueName.str().c_str(), matrix, toLinearBeastColorRGB(light.color()));
+                m_lights.insert(std::make_pair(dp.node(), beastLight));
+                setLightProperties(dp);
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addLightCallback(dp, beastLight);
+                }
+
+                <span class="keywordflow">return</span> beastLight;
+        }
+
+        BeastLightPtr SceneManager::createSpotLight(<span class=
+"keyword">const</span> MDagPath&amp; dp)
+        {
+                MStatus lightRes;
+                MFnSpotLight light(dp, &amp;lightRes);
+                <span class=
+"keywordflow">if</span> (lightRes != MStatus::kSuccess) {
+                        <span class=
+"comment">// No light attached, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                LightMap::iterator it = m_lights.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; light.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a class="code" href="struct_i_l_b_matrix4x4.html"
+title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(lightCorrection * dp.inclusiveMatrix());
+
+                BeastLightPtr beastLight = m_scene-&gt;createSpotLight(uniqueName.str().c_str(), matrix, toLinearBeastColorRGB(light.color()));
+                m_lights.insert(std::make_pair(dp.node(), beastLight));
+                setLightProperties(dp);
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addLightCallback(dp, beastLight);
+                }
+
+                <span class="keywordflow">return</span> beastLight;
+        }
+
+        BeastLightPtr SceneManager::createAreaLight(<span class=
+"keyword">const</span> MDagPath&amp; dp)
+        {
+                MStatus lightRes;
+                MFnAreaLight light(dp, &amp;lightRes);
+                <span class=
+"keywordflow">if</span> (lightRes != MStatus::kSuccess) {
+                        <span class=
+"comment">// No light attached, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                LightMap::iterator it = m_lights.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; light.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a class="code" href="struct_i_l_b_matrix4x4.html"
+title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(lightCorrection * dp.inclusiveMatrix());
+
+                BeastLightPtr beastLight = m_scene-&gt;createAreaLight(uniqueName.str().c_str(), matrix, toLinearBeastColorRGB(light.color()));
+                m_lights.insert(std::make_pair(dp.node(), beastLight));
+                setLightProperties(dp);
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addLightCallback(dp, beastLight);
+                }
+
+                <span class="keywordflow">return</span> beastLight;
+        }
+
+        BeastLightPtr SceneManager::createSkyLight(<span class=
+"keyword">const</span> MDagPath&amp; dp)
+        {
+                MStatus lightRes;
+                MFnVolumeLight light(dp, &amp;lightRes);
+                <span class=
+"keywordflow">if</span> (lightRes != MStatus::kSuccess) {
+                        <span class=
+"comment">// No light attached, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                LightMap::iterator it = m_lights.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_lights.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; light.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a class="code" href="struct_i_l_b_matrix4x4.html"
+title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(lightCorrection * dp.inclusiveMatrix());
+
+                BeastLightPtr beastLight = m_scene-&gt;createSkyLight(uniqueName.str().c_str(), matrix, toLinearBeastColorRGB(light.color()));
+                m_lights.insert(std::make_pair(dp.node(), beastLight));
+                setLightProperties(dp);
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addLightCallback(dp, beastLight);
+                }
+
+                <span class="keywordflow">return</span> beastLight;
+        }
+
+        BeastCameraPtr SceneManager::createCamera(<span class=
+"keyword">const</span> MDagPath&amp; dp)
+        {
+                MStatus cameraRes;
+                MFnCamera camera(dp, &amp;cameraRes);
+                <span class=
+"keywordflow">if</span>(cameraRes != MStatus::kSuccess || camera.isOrtho()) {
+                        <span class=
+"comment">// No perspective camera attached, just drop it</span>
+                        <span class=
+"keywordflow">return</span> BeastCameraPtr();
+                }
+
+                CameraMap::iterator it = m_cameras.find(dp.node());
+                <span class=
+"keywordflow">if</span> (it != m_cameras.end()) {
+                        <span class=
+"comment">// There can be only one</span>
+                        <span class=
+"keywordflow">return</span> BeastCameraPtr();
+                }
+
+                std::wstringstream uniqueName;
+                uniqueName &lt;&lt; camera.fullPathName().asWChar() &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; MObjectHandle(dp.node()).hashCode() &lt;&lt; <span class="stringliteral">")"</span>;
+                <a class="code" href="struct_i_l_b_matrix4x4.html"
+title=
+"Matrix for transformations.">ILBMatrix4x4</a> matrix = toBeastTransform(dp.inclusiveMatrix());
+
+                BeastCameraPtr beastCamera = m_scene-&gt;createPerspectiveCamera(uniqueName.str().c_str(), matrix);
+                m_cameras.insert(std::make_pair(dp.node(), beastCamera));
+                beastCamera-&gt;setFov((<span class=
+"keywordtype">float</span>)camera.horizontalFieldOfView(), 1.0f);
+
+                <span class=
+"keywordtype">float</span> scale = 1.0f;
+                getPlugValue(camera,L<span class=
+"stringliteral">"focusRegionScale"</span>, scale);
+                <span class=
+"keywordtype">bool</span> enableDof = camera.isDepthOfField();
+                <span class="keywordflow">if</span> (enableDof) {
+                        beastCamera-&gt;setDof((<span class=
+"keywordtype">float</span>)camera.fStop()*scale, (float)camera.focusDistance(), 0);
+                } <span class="keywordflow">else</span> {
+                        beastCamera-&gt;setDof(0.0f, 0.0f, 0);
+                }
+
+
+
+                <span class="keywordflow">if</span> (m_live) {
+                        addCameraCallback(dp, beastCamera);
+                }
+
+                <span class=
+"keywordflow">return</span> beastCamera;
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::removeLight(<span class=
+"keyword">const</span> MObject&amp; light) {
+                m_lights.erase(light);
+                m_bjc-&gt;removeLiveCallback(light);
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::removeInstance(<span class=
+"keyword">const</span> MObject&amp; instance) {
+                m_instances.erase(instance);
+                m_bjc-&gt;removeLiveCallback(instance);
+                m_bjc-&gt;getRenderGraph().entities.erase(instance);
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::removeCamera(<span class=
+"keyword">const</span> MObject&amp; camera) {
+                m_cameras.erase(camera);
+                m_bjc-&gt;removeLiveCallback(camera);
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::addLightCallback(<span class="keyword">const</span> MDagPath&amp; dp, <span class="keyword">const</span> BeastLightPtr&amp; l) {
+                MFnLight light(dp);
+                m_bjc-&gt;insertLiveCallback(dp.node(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveLight(light.object(), l, *<span class="keyword">this</span>, m_bjc-&gt;getPluginContext().getResourceManager())));
+                m_bjc-&gt;insertLiveCallback(dp.node(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveTransform&lt;BeastLightPtr&gt;(dp.node(), l)));
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::addInstanceCallback(<span class="keyword">const</span> MDagPath&amp; dp, <span class="keyword">const</span> BeastInstancePtr&amp; i) {
+                MFnMesh mesh(dp);
+                m_bjc-&gt;insertLiveCallback(dp.node(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveInstance(mesh.object(), i, *<span class="keyword">this</span>)));
+                m_bjc-&gt;insertLiveCallback(dp.node(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveTransform&lt;BeastInstancePtr&gt;(dp.node(), i)));
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::addCameraCallback(<span class="keyword">const</span> MDagPath&amp; dp, <span class="keyword">const</span> BeastCameraPtr&amp; c) {
+                MFnCamera camera(dp);
+                m_bjc-&gt;insertLiveCallback(dp.node(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveCamera(camera.object(), c)));
+                m_bjc-&gt;insertLiveCallback(dp.node(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveTransform&lt;BeastCameraPtr&gt;(dp.node(), c)));
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::addShapeCallback(<span class="keyword">const</span> MDagPath&amp; dp) {
+                MFnMesh mesh(dp);
+                m_bjc-&gt;insertLiveCallback(mesh.object(), NodeMessageObjectPtr(<span class="keyword">new</span> LiveResource(mesh.object(), m_liveResourceManager)));
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::addMaterialCallback(<span class="keyword">const</span> MObject&amp; obj, <span class="keyword">const</span> BeastMaterialPtr&amp; m)
+        {
+                ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                m_bjc-&gt;insertLiveCallback(obj, NodeMessageObjectPtr(<span class="keyword">new</span> LiveMaterial(obj, m, *<span class="keyword">this</span>, rm)));
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::addTextureCallback(<span class="keyword">const</span> MObject&amp; obj)
+        {
+                m_bjc-&gt;insertLiveCallback(obj, NodeMessageObjectPtr(<span class="keyword">new</span> LiveResource(obj, m_liveResourceManager)));
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::setInstanceProperties(<span class="keyword">const</span> MDagPath&amp; dp)
+        {
+                InstanceMap::iterator it = m_instances.find(dp.node());
+
+                <span class=
+"keywordflow">if</span> (it == m_instances.end()) {
+                        <span class="keywordflow">return</span>;
+                }
+
+                MStatus res;
+                MFnMesh m(dp, &amp;res);
+
+                <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                        <span class="keywordflow">return</span>;
+                }
+
+                BeastInstancePtr beastInstance = it-&gt;second;
+
+                <a class="code" href=
+"beastinstance_8h.html#a41dbcbbb41e8ebe5ab1abe43c35f14ce" title=
+"Type representing multiple render stats.">ILBRenderStatsMask</a> rsEnables = 0, rsDisables = 0;
+
+                <span class=
+"keywordtype">bool</span> castsShadows = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"castsShadows"</span>, castsShadows);
+                (castsShadows?rsEnables:rsDisables) |= <a name=
+"a1"></a><a class="code" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea5747b01b3be653fd41ce177fbec45fd8"
+title=
+"Controls whether the object should cast shadows.">ILB_RS_CAST_SHADOWS</a>;
+
+                <span class=
+"keywordtype">bool</span> receiveShadows = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"receiveShadows"</span>, receiveShadows);
+                (receiveShadows?rsEnables:rsDisables) |= <a name=
+"a2"></a><a class="code" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea98e3008ae3ce6b6b5d9b90e2c31ce959"
+title=
+"Controls whether the object should receive shadows.">ILB_RS_RECEIVE_SHADOWS</a>;
+
+                <span class=
+"keywordtype">bool</span> primaryVisibility = <span class=
+"keyword">true</span>;
+                <span class=
+"keywordtype">bool</span> visibility = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"primaryVisibility"</span>, primaryVisibility);
+                getPlugValue(m, L<span class=
+"stringliteral">"visibility"</span>, visibility);
+                (primaryVisibility &amp;&amp; visibility?rsEnables:rsDisables) |= <a name="a3"></a><a class="code"
+href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea164789c856489f4caaa19e7945b9341b"
+title=
+"Controls whether the object should be visible for camera rays.">ILB_RS_VISIBLE_FOR_EYE</a>;
+
+                <span class=
+"keywordtype">bool</span> visibleInReflections = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"visibleInReflections"</span>, visibleInReflections);
+                (visibleInReflections?rsEnables:rsDisables) |= <a name="a4"></a><a class="code"
+href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea3e2787a854ec98b5d427a548d4273eb6"
+title=
+"Controls whether the object should be visible for reflection rays.">ILB_RS_VISIBLE_FOR_REFLECTIONS</a>;
+
+                <span class=
+"keywordtype">bool</span> visibleInRefractions = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"visibleInRefractions"</span>, visibleInRefractions);
+                (visibleInRefractions?rsEnables:rsDisables) |= <a name="a5"></a><a class="code"
+href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea60859e62b8efdc1d2d52346e4b467abc"
+title=
+"Controls whether the object should be visible for refraction rays.">ILB_RS_VISIBLE_FOR_REFRACTIONS</a>;
+
+                <span class=
+"keywordtype">bool</span> doubleSided = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"doubleSided"</span>, doubleSided);
+                (doubleSided?rsEnables:rsDisables) |= <a name=
+"a6"></a><a class="code" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eae396af30c2d44efeb27f0a10a255d738"
+title=
+"Controls whether the object should be single sided or double sided.">ILB_RS_DOUBLE_SIDED</a>;
+
+                <span class=
+"keywordtype">bool</span> opposite = <span class=
+"keyword">false</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"opposite"</span>, opposite);
+                (opposite?rsEnables:rsDisables) |= <a name=
+"a7"></a><a class="code" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eace13aa24dbc766e83ae65e6a16d201b3"
+title="Only applies when single sided.">ILB_RS_OPPOSITE</a>;
+
+                <span class=
+"keywordtype">bool</span> beastVisibleForGI = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"beastVisibleForGI"</span>, beastVisibleForGI);
+                (beastVisibleForGI?rsEnables:rsDisables) |= <a name="a8"></a><a class="code"
+href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eab6ca71a18425aeeed5e7a443edf2c19c"
+title=
+"Controls whether the object should be visible for global illumination rays.">ILB_RS_VISIBLE_FOR_GI</a>;
+
+                <span class=
+"keywordtype">bool</span> beastCastGI = <span class=
+"keyword">true</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"beastCastGI"</span>, beastCastGI);
+                (beastCastGI?rsEnables:rsDisables) |= <a name=
+"a9"></a><a class="code" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea80a8a29140a3d87f3b940a2fe3451cec"
+title=
+"If this is set to false, the object is black for GI purposes.">ILB_RS_CAST_GI</a>;
+
+                <span class=
+"keywordtype">bool</span> beastShadowBias = <span class=
+"keyword">false</span>;
+                getPlugValue(m, L<span class=
+"stringliteral">"beastShadowBias"</span>, beastShadowBias);
+                (beastShadowBias?rsEnables:rsDisables) |= <a name=
+"a10"></a><a class="code" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ead9aef204c9d56f7b42450345f5a829a1"
+title=
+"If enabled shadow rays will be biased in order to get smooth shadows on smoothed meshes.">ILB_RS_SHADOW_BIAS</a>;
+
+                beastInstance-&gt;setRenderStats(rsEnables, <span class="keyword">true</span>);
+                beastInstance-&gt;setRenderStats(rsDisables, <span class="keyword">false</span>);
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::setLightProperties(<span class="keyword">const</span> MDagPath&amp; dp) {
+                LightMap::iterator it = m_lights.find(dp.node());
+
+                <span class=
+"keywordflow">if</span> (it == m_lights.end()) {
+                        <span class="keywordflow">return</span>;
+                }
+
+                MStatus res;
+                MFnNonExtendedLight l(dp, &amp;res);
+
+                <span class=
+"keywordflow">if</span>(res != MStatus::kSuccess) {
+                        <span class="keywordflow">return</span>;
+                }
+
+                BeastLightPtr beastLight = it-&gt;second;
+
+                std::pair&lt;MObject, std::wstring&gt; colorConnection = getConnectedNode(l, L<span class="stringliteral">"color"</span>);
+                <span class=
+"keywordflow">if</span> (colorConnection.first == MObject::kNullObj) {
+                        beastLight-&gt;setColor(toLinearBeastColorRGB(l.color()));
+                } <span class="keywordflow">else</span> {
+                        beastLight-&gt;setColor(<a name=
+"_a11"></a><a class="code" href="struct_i_l_b_linear_r_g_b.html"
+title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>(1.0f, 1.0f, 1.0f));
+                }
+
+                beastLight-&gt;setIntensity(l.intensity());
+                beastLight-&gt;setCastShadows(l.useRayTraceShadows() || l.useDepthMapShadows());
+
+                <span class=
+"keywordtype">float</span> directScale = 1.0f;
+                <span class=
+"keywordtype">float</span> indirectScale = 1.0f;
+                getPlugValue(l, L<span class=
+"stringliteral">"beastDirectScale"</span>, directScale);
+                getPlugValue(l, L<span class=
+"stringliteral">"beastIndirectScale"</span>, indirectScale);
+                beastLight-&gt;setIntensityScale(directScale, indirectScale);
+
+                NodeType type = getNodeType(dp, <span class=
+"keyword">false</span>);
+                <span class="keywordflow">switch</span>(type) {
+                        <span class=
+"keywordflow">case</span> DirectionalLight:
+                        {
+                                MFnDirectionalLight dl(dp);
+                                <span class=
+"keywordtype">float</span> angleRadians = std::min(dl.shadowAngle() * float(M_PI) / 180.0f, float(M_PI));
+                                beastLight-&gt;setShadowAngle(angleRadians);
+                                <span class=
+"keywordflow">break</span>;
+                        }
+                        <span class=
+"keywordflow">case</span> PointLight:
+                        {
+                                beastLight-&gt;setShadowRadius(l.shadowRadius());
+                                <span class=
+"keywordflow">break</span>;
+                        }
+                        <span class=
+"keywordflow">case</span> SpotLight:
+                        {
+                                MFnSpotLight sl(dp);
+                                <span class=
+"keywordtype">float</span> penumbraExponent = 5.0f;
+                                getPlugValue(sl, L<span class=
+"stringliteral">"beastPenumbraExponent"</span>, penumbraExponent);
+                                beastLight-&gt;setSpotlightCone(<span class="keywordtype">float</span>(sl.coneAngle()), <span class="keywordtype">float</span>(sl.penumbraAngle()), penumbraExponent);
+                                beastLight-&gt;setShadowRadius(sl.shadowRadius());
+
+                                <span class=
+"keywordtype">float</span> nearDistance = 0.0f;
+                                <span class=
+"keywordtype">float</span> farDistance = FLT_MAX;
+                                getPlugValue(sl, L<span class=
+"stringliteral">"beastNearClipDistance"</span>, nearDistance);
+                                getPlugValue(sl, L<span class=
+"stringliteral">"beastFarClipDistance"</span>, farDistance);
+                                beastLight-&gt;setClippingPlanes(nearDistance, farDistance);
+
+                                <span class=
+"keywordflow">if</span> (colorConnection.first != MObject::kNullObj) {
+                                        <span class=
+"keywordtype">int</span> maxShaderSamplingResolution = getMaxShaderSamplingResolution();
+                                        ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                                        BeastTexturePtr tex = rm.createTexture(colorConnection.first, colorConnection.second, maxShaderSamplingResolution, maxShaderSamplingResolution, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>);
+                                        beastLight-&gt;setProjectedTexture(*tex);
+                                }
+                                <span class=
+"keywordflow">break</span>;
+                        }
+                        <span class=
+"keywordflow">case</span> SkyLight:
+                        {
+                                <span class=
+"keywordflow">if</span> (colorConnection.first != MObject::kNullObj) {
+                                        <span class=
+"keywordtype">int</span> maxShaderSamplingResolution = getMaxShaderSamplingResolution();
+                                        ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                                        BeastTexturePtr tex = rm.createTexture(colorConnection.first, colorConnection.second, maxShaderSamplingResolution, maxShaderSamplingResolution);
+                                        beastLight-&gt;setSkylightTexture(*tex);
+                                }
+                                <span class=
+"keywordflow">break</span>;
+                        }
+                }
+
+                <span class=
+"keywordflow">if</span> (type == PointLight || type == SpotLight || type == AreaLight) {
+                        setLightFalloff(l, beastLight);
+                }
+
+
+                <a class="code" href=
+"beastlightsource_8h.html#a5c69045aa5c2ac29484359c76d5c38f3" title=
+"Type representing multiple light stats.">ILBLightStatsMask</a> lsEnables = 0, lsDisables = 0;
+
+                <span class=
+"keywordtype">bool</span> visibility = <span class=
+"keyword">true</span>;
+                getPlugValue(l, L<span class=
+"stringliteral">"visibility"</span>, visibility);
+                (visibility?lsEnables:lsDisables) |= <a name=
+"a12"></a><a class="code" href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa8f050a34cd979f16dc36e9b7537a3f63"
+title=
+"Controls if the light source should be visible for camera rays.">ILB_LS_VISIBLE_FOR_EYE</a>;
+
+                <span class=
+"keywordtype">bool</span> beastVisibleForReflections = <span class=
+"keyword">true</span>;
+                getPlugValue(l, L<span class=
+"stringliteral">"beastVisibleForReflections"</span>, beastVisibleForReflections);
+                (beastVisibleForReflections?lsEnables:lsDisables) |= <a name="a13"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa9a82b735fb4a137ba45c79c5634e01be"
+title=
+"Controls if the light source should be visible for reflection rays.">ILB_LS_VISIBLE_FOR_REFLECTIONS</a>;
+
+                <span class=
+"keywordtype">bool</span> beastVisibleForRefractions = <span class=
+"keyword">true</span>;
+                getPlugValue(l, L<span class=
+"stringliteral">"beastVisibleForRefractions"</span>, beastVisibleForRefractions);
+                (beastVisibleForRefractions?lsEnables:lsDisables) |= <a name="a14"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aaed21e6120515b9436a0a254b2f060485"
+title=
+"Controls if the light source should be visible for refraction rays.">ILB_LS_VISIBLE_FOR_REFRACTIONS</a>;
+
+                <span class=
+"keywordtype">bool</span> beastVisibleForGI = <span class=
+"keyword">true</span>;
+                getPlugValue(l, L<span class=
+"stringliteral">"beastVisibleForGI"</span>, beastVisibleForGI);
+                (beastVisibleForGI?lsEnables:lsDisables) |= <a name="a15"></a><a class="code"
+href=
+"beastlightsource_8h.html#ad29eaba69a20a37a53d3f17d5059853aa6c17d6ab5ace5c5a6871360a271b064b"
+title=
+"Controls if the light source should be visible for global illumination rays.">ILB_LS_VISIBLE_FOR_GI</a>;
+
+                beastLight-&gt;setLightStats(lsEnables, <span class="keyword">true</span>);
+                beastLight-&gt;setLightStats(lsDisables, <span class="keyword">false</span>);
+
+                <span class="comment">//TODO: ramp color?</span>
+        }
+
+        BeastLightPtr SceneManager::getLight(<span class=
+"keyword">const</span> MObject&amp; light) {
+                LightMap::iterator it = m_lights.find(light);
+                <span class=
+"keywordflow">if</span> (it == m_lights.end()) {
+                        <span class=
+"keywordflow">return</span> BeastLightPtr();
+                }
+                <span class=
+"keywordflow">return</span> it-&gt;second;
+        }
+
+        BeastInstancePtr SceneManager::getInstance(<span class=
+"keyword">const</span> MObject&amp; instance) {
+                InstanceMap::iterator it = m_instances.find(instance);
+                <span class=
+"keywordflow">if</span> (it == m_instances.end()) {
+                        <span class=
+"keywordflow">return</span> BeastInstancePtr();
+                }
+                <span class=
+"keywordflow">return</span> it-&gt;second;
+        }
+
+        BeastCameraPtr SceneManager::getCamera(<span class=
+"keyword">const</span> MObject&amp; camera) {
+                CameraMap::iterator it = m_cameras.find(camera);
+                <span class=
+"keywordflow">if</span> (it == m_cameras.end()) {
+                        <span class=
+"keywordflow">return</span> BeastCameraPtr();
+                }
+                <span class=
+"keywordflow">return</span> it-&gt;second;
+        }
+
+        BeastMaterialPtr SceneManager::getMaterial(<span class=
+"keyword">const</span> MObject&amp; material) {
+                MaterialMap::iterator it = m_materials.find(material);
+                <span class=
+"keywordflow">if</span> (it == m_materials.end()) {
+                        <span class=
+"keywordflow">return</span> BeastMaterialPtr();
+                }
+                <span class=
+"keywordflow">return</span> it-&gt;second;
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::createMotionData(<span class="keywordtype">float</span> shutterOpen, <span class="keywordtype">float</span> shutterClose, <span class="keywordtype">int</span> motionSteps) {
+
+                MDagPath dagPath;
+                <span class="keywordtype">int</span> index;
+
+                <span class="comment">//</span>
+                <span class=
+"comment">// Save original transforms</span>
+                <span class="comment">//</span>
+
+                std::vector&lt;ILBMatrix4x4&gt; cameraTransforms(m_cameras.size());
+                std::vector&lt;ILBMatrix4x4&gt; instanceTransforms(m_instances.size());
+
+                index = 0;
+                <span class=
+"keywordflow">for</span> (CameraMap::const_iterator it = m_cameras.begin(); it != m_cameras.end(); ++it) {
+                        <span class=
+"keywordflow">if</span> (MDagPath::getAPathTo(it-&gt;first, dagPath) == MStatus::kSuccess) {
+                                cameraTransforms[index] = toBeastTransform(dagPath.inclusiveMatrix());
+                        }
+                        ++index;
+                }
+                index = 0;
+                <span class=
+"keywordflow">for</span> (InstanceMap::const_iterator it = m_instances.begin(); it != m_instances.end(); ++it) {
+                        <span class=
+"keywordflow">if</span> (MDagPath::getAPathTo(it-&gt;first, dagPath) == MStatus::kSuccess) {
+                                instanceTransforms[index] = toBeastTransform(dagPath.inclusiveMatrix());
+                        }
+                        ++index;
+                }
+
+                <span class="comment">//</span>
+                <span class=
+"comment">// Sample the scene at multiple time intervals and save motion data</span>
+                <span class="comment">//</span>
+
+                motionSteps = std::max(1, motionSteps);
+
+                <span class=
+"keywordtype">float</span> shutterStep = (shutterClose - shutterOpen) / motionSteps;
+                <span class=
+"keywordtype">float</span> shutterTime = shutterOpen + shutterStep;
+
+                MotionTransformsVector cameraMotionTransforms(m_cameras.size());
+                MotionTransformsVector instanceMotionTransforms(m_instances.size());
+
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> i=0; i&lt;motionSteps; ++i) {
+
+                        <span class=
+"comment">// Set the global frame time</span>
+                        MGlobal::viewFrame(shutterTime);
+                        shutterTime += shutterStep;
+
+                        <span class=
+"comment">// Handle transformation blur for cameras</span>
+                        index = 0;
+                        <span class=
+"keywordflow">for</span> (CameraMap::const_iterator it = m_cameras.begin(); it != m_cameras.end(); ++it) {
+                                <span class=
+"keywordflow">if</span> (MDagPath::getAPathTo(it-&gt;first, dagPath) == MStatus::kSuccess) {
+                                        cameraMotionTransforms[index].push_back( toBeastTransform(dagPath.inclusiveMatrix()) );
+                                }
+                                ++index;
+                        }
+
+                        <span class=
+"comment">// Handle transformation blur for instances</span>
+                        index = 0;
+                        <span class=
+"keywordflow">for</span> (InstanceMap::const_iterator it = m_instances.begin(); it != m_instances.end(); ++it) {
+                                <span class=
+"keywordflow">if</span> (MDagPath::getAPathTo(it-&gt;first, dagPath) == MStatus::kSuccess) {
+                                        instanceMotionTransforms[index].push_back( toBeastTransform(dagPath.inclusiveMatrix()) );
+                                }
+                                ++index;
+                        }
+
+                        <span class=
+"comment">// Handle deformation blur for instances</span>
+                        <span class=
+"comment">// [TODO] - Implement!</span>
+                }
+
+                <span class="comment">//</span>
+                <span class=
+"comment">// Assign the motion data to the objects</span>
+                <span class="comment">//</span>
+
+                index = 0;
+                <span class=
+"keywordflow">for</span> (CameraMap::const_iterator it = m_cameras.begin(); it != m_cameras.end(); ++it) {
+
+                        BeastCameraPtr camera = it-&gt;second;
+
+                        <span class=
+"comment">// Remove redundant motion transforms by comparing against the original transform</span>
+                        <span class=
+"keyword">const</span> <a class="code" href=
+"struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>&amp; transform = cameraTransforms[index];
+                        MotionTransforms&amp; motionTransforms = cameraMotionTransforms[index];
+                        removeRedundantMotionData(transform, motionTransforms);
+
+                        <span class=
+"keywordflow">if</span> (motionTransforms.size() &gt; 0) {
+                                camera-&gt;setTransform(transform);
+                                camera-&gt;setMotionTransforms(motionTransforms);
+                        }
+                        ++index;
+                }
+
+                index = 0;
+                <span class=
+"keywordflow">for</span> (InstanceMap::const_iterator it = m_instances.begin(); it != m_instances.end(); ++it) {
+
+                        BeastInstancePtr instance = it-&gt;second;
+
+                        <span class=
+"comment">// Remove redundant motion transforms by comparing against the original transform</span>
+                        <span class=
+"keyword">const</span> <a class="code" href=
+"struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>&amp; transform = instanceTransforms[index];
+                        MotionTransforms&amp; motionTransforms = instanceMotionTransforms[index];
+                        removeRedundantMotionData(transform, motionTransforms);
+
+                        <span class=
+"keywordflow">if</span> (motionTransforms.size() &gt; 0) {
+                                instance-&gt;setTransform(transform); <span class="comment">//This might look silly, but needed since the callback seems to reset the original transform when we search for motion transforms.</span>
+                                instance-&gt;setMotionTransforms(motionTransforms);
+                        }
+                        ++index;
+                }
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::removeRedundantMotionData(<span class="keyword">const</span> <a class="code"
+href="struct_i_l_b_matrix4x4.html" title=
+"Matrix for transformations.">ILBMatrix4x4</a>&amp; transform, MotionTransforms&amp; motionTransforms)<span class="keyword"> const </span>{
+                <span class=
+"comment">// If all motion transforms are identical to the original transform, we can clear them all</span>
+                <span class=
+"keywordtype">bool</span> isRedundant = <span class=
+"keyword">true</span>;
+                <span class="keywordflow">for</span> (<span class=
+"keywordtype">int</span> i=0; i&lt;motionTransforms.size(); ++i) {
+                        <span class=
+"keywordflow">if</span> (memcmp(motionTransforms[i].m, transform.<a name="a16"></a><a class="code"
+href=
+"struct_i_l_b_matrix4x4.html#a48a4f2d3bf221e6035bb0677237aef39"
+title="The actual data in the matrix.">m</a>, <span class=
+"keyword">sizeof</span>(<span class=
+"keywordtype">float</span>)*16) != 0) {
+                                isRedundant = <span class=
+"keyword">false</span>;
+                                <span class=
+"keywordflow">break</span>;
+                        }
+                }
+                <span class="keywordflow">if</span> (isRedundant) {
+                        motionTransforms.clear();
+                }
+        }
+
+        <span class=
+"keywordtype">int</span> SceneManager::getMaxShaderSamplingResolution()<span class="keyword"> const </span>{
+                MObject settingsNode = findMayaNode(L<span class=
+"stringliteral">"beastSettings"</span>);
+                <span class=
+"keywordtype">int</span> maxShaderSamplingResolution = 256;
+                <span class=
+"keywordflow">if</span> (settingsNode != MObject::kNullObj) {
+                        getPlugValue(settingsNode, L<span class=
+"stringliteral">"maxShaderSamplingResolution"</span>, maxShaderSamplingResolution);
+                }
+                <span class=
+"keywordflow">return</span> maxShaderSamplingResolution;
+        }
+                
+        beastmaya::BeastShaderPtr SceneManager::createBeastOSLShader(MFnDependencyNode&amp; shader) {
+                MaterialMap::iterator it = m_materials.find(shader.object());
+                <span class=
+"keywordflow">if</span> (it == m_materials.end()) {
+                        <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                }
+                BeastMaterialPtr&amp; material = it-&gt;second;
+
+                BeastManager&amp; bm = m_bjc-&gt;getPluginContext().getManager();
+
+                BeastShaderPtr beastShader;
+
+                assert(shader.typeId() == ADSK_BEAST_OSL_SHADER);
+                <span class=
+"keywordflow">if</span>(shader.typeId() != ADSK_BEAST_OSL_SHADER) {
+                        <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                }
+                MString shaderFileName = L<span class=
+"stringliteral">""</span>;
+                getPlugValue(shader, L<span class=
+"stringliteral">"shader"</span>, shaderFileName);
+
+                <span class=
+"keywordflow">if</span> (shaderFileName.length()) {
+                        MFileObject shaderFile;
+                        shaderFile.setRawFullName(shaderFileName);
+
+                        <span class=
+"keywordflow">if</span>(shaderFile.exists()) {
+                                ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                                beastShader = rm.createShader(shaderFile.resolvedFullName().asWChar());
+                        
+                                <span class=
+"keywordflow">if</span> (!setBeastOSLShaderParams(shader, material, getMaxShaderSamplingResolution())) {
+                                        <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                                }
+                        } <span class="keywordflow">else</span> {
+                                MGlobal::displayError(MString(L<span class="stringliteral">"BEAST: Couldn't find shader file: "</span>) + shaderFileName);
+                                <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                        }
+                }
+                <span class=
+"keywordflow">return</span> beastShader;
+        }
+
+        beastmaya::BeastShaderPtr SceneManager::createStandardShader(MFnDependencyNode&amp; shader) {
+                MaterialMap::iterator it = m_materials.find(shader.object());
+                <span class=
+"keywordflow">if</span> (it == m_materials.end()) {
+                        <span class=
+"keywordflow">return</span> BeastShaderPtr();
+                }
+                BeastMaterialPtr&amp; material = it-&gt;second;
+
+                BeastManager&amp; bm = m_bjc-&gt;getPluginContext().getManager();
+
+                std::wstring fileName = m_bjc-&gt;getPluginContext().getBeastRoot() + std::wstring(L<span class="stringliteral">"/shaders/beastphong.osl"</span>);
+
+                ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                BeastShaderPtr beastShader = rm.createShader(fileName.c_str());
+
+                <span class=
+"comment">//Sample diffuse, specular etc to  texture from maya and plug it into the default OSL phong shader</span>
+                <span class=
+"keywordtype">int</span> maxShaderSamplingResolution = getMaxShaderSamplingResolution();
+                setStandardShaderParam(shader, material, L<span class="stringliteral">"color"</span>, L<span class="stringliteral">"diffuseTexture"</span>, L<span class="stringliteral">"diffuseColor"</span>, maxShaderSamplingResolution);
+                setStandardShaderParam(shader, material, L<span class="stringliteral">"specularColor"</span>, L<span class="stringliteral">"specularTexture"</span>, L<span class="stringliteral">"specularColor"</span>, maxShaderSamplingResolution);
+                setStandardShaderParam(shader, material, L<span class="stringliteral">"transparency"</span>, L<span class="stringliteral">"transparencyTexture"</span>, L<span class="stringliteral">"transparencyColor"</span>, maxShaderSamplingResolution);
+                setStandardShaderParam(shader, material, L<span class="stringliteral">"cosinePower"</span>, L<span class="stringliteral">"shininessTexture"</span>, L<span class="stringliteral">"shininessColor"</span>, maxShaderSamplingResolution);
+                setStandardShaderParam(shader, material, L<span class="stringliteral">"incandescence"</span>, L<span class="stringliteral">"emissionTexture"</span>, L<span class="stringliteral">"emissionColor"</span>, maxShaderSamplingResolution);
+
+                <span class=
+"keywordtype">bool</span> refractions = <span class=
+"keyword">false</span>;
+                getPlugValue(shader, L<span class=
+"stringliteral">"refractions"</span>, refractions);
+                <span class="keywordflow">if</span>(refractions) {
+                        <span class=
+"keywordtype">float</span> refractiveIndex = 1.0f;
+                        getPlugValue(shader, L<span class=
+"stringliteral">"refractiveIndex"</span>, refractiveIndex);
+                        material-&gt;setShaderParamFloat(L<span class="stringliteral">"eta"</span>, refractiveIndex);
+                }
+                <span class=
+"keywordflow">return</span> beastShader;
+        }
+
+        <span class=
+"keywordtype">bool</span> SceneManager::setBeastOSLShaderParams(MFnDependencyNode&amp; shader, BeastMaterialPtr&amp; material, <span class="keywordtype">int</span> maxShaderSamplingResolution) {
+                MStatus res;
+
+                <span class=
+"comment">// Parse and bind parameters</span>
+                <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> attributeCount = shader.attributeCount(&amp;res);
+                CHECK_MSTATUS_AND_RETURN(res, <span class=
+"keyword">false</span>);
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> i = 0; i &lt; attributeCount; ++i) {
+                        MObject attr = shader.attribute(i, &amp;res);
+                        CHECK_MSTATUS_AND_RETURN(res, <span class=
+"keyword">false</span>);
+
+                        MPlug attrPlug = shader.findPlug(attr, <span class="keyword">true</span>, &amp;res);
+                        CHECK_MSTATUS_AND_RETURN(res, <span class=
+"keyword">false</span>);
+
+                        <span class=
+"keywordflow">if</span>(attr.hasFn(MFn::kNumericAttribute)) {
+                                <span class=
+"comment">// Do we have a float, a color or a texture? Let's hope!</span>
+                                MFnNumericAttribute numAttr(attr, &amp;res);
+                                CHECK_MSTATUS_AND_RETURN(res, <span class="keyword">false</span>);
+
+                                std::wstring attrName = numAttr.name(&amp;res).asWChar();
+                                CHECK_MSTATUS_AND_RETURN(res, <span class="keyword">false</span>);
+
+                                MFnNumericData::Type numAttrType = numAttr.unitType(&amp;res);
+                                CHECK_MSTATUS_AND_RETURN(res, <span class="keyword">false</span>);
+
+                                <span class=
+"keywordflow">if</span>(numAttrType == MFnNumericData::kFloat &amp;&amp; hasEnding(attrName, L<span class="stringliteral">"Float"</span>)) {
+                                        <span class=
+"comment">// We have a float</span>
+                                        <span class=
+"keyword">const</span> <span class=
+"keywordtype">float</span> value = attrPlug.asFloat(MDGContext::fsNormal, &amp;res);
+                                        CHECK_MSTATUS_AND_RETURN(res, <span class="keyword">false</span>);
+
+                                        material-&gt;setShaderParamFloat(attrName.substr(0, attrName.length() - 5).c_str(), value);
+                                } <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span>(numAttrType == MFnNumericData::kInt &amp;&amp; hasEnding(attrName, L<span class="stringliteral">"Int"</span>)) {
+                                        <span class=
+"comment">// We have a int</span>
+                                        <span class=
+"keyword">const</span> <span class=
+"keywordtype">int</span> value = attrPlug.asInt(MDGContext::fsNormal, &amp;res);
+                                        CHECK_MSTATUS_AND_RETURN(res, <span class="keyword">false</span>);
+
+                                        material-&gt;setShaderParamInt(attrName.substr(0, attrName.length() - 3).c_str(), value);
+
+                                } <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (numAttrType == MFnNumericData::k3Float) {
+                                        <span class=
+"comment">// We have a color or a texture, check on naming which one it is</span>
+                                        <span class=
+"keywordflow">if</span>(hasEnding(attrName, L<span class=
+"stringliteral">"ColorRGB"</span>)) {
+                                                <span class=
+"comment">// We have a color</span>
+                                                assert(attrPlug.isCompound());
+                                                MColor color(attrPlug.child(0).asFloat(), attrPlug.child(1).asFloat(), attrPlug.child(2).asFloat(), 1.0f);
+
+                                                material-&gt;setShaderParamColor(attrName.substr(0, attrName.length() - 8).c_str(), toLinearBeastColorRGB(color));
+                                        } <span class=
+"keywordflow">else</span> <span class=
+"keywordflow">if</span> (hasEnding(attrName, L<span class=
+"stringliteral">"Texture"</span>)) {
+                                                <span class=
+"comment">// We have a texture</span>
+                                                <span class=
+"comment">// Check if we are connected</span>
+                                                <span class=
+"keyword">const</span> <span class=
+"keywordtype">bool</span> isConnected = attrPlug.isConnected(&amp;res);
+                                                CHECK_MSTATUS_AND_RETURN(res, <span class="keyword">false</span>);
+
+                                                <span class=
+"keywordflow">if</span>(isConnected) {
+                                                        <span class="comment">// Looks like we have a texture</span>
+                                                        std::pair&lt;MObject, std::wstring&gt; connection = getConnectedNode(shader, attrName);
+                                                        ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+                                                        BeastTexturePtr tex = rm.createTexture(connection.first, connection.second, maxShaderSamplingResolution, maxShaderSamplingResolution);
+
+                                                        material-&gt;setShaderParamTexture(attrName.substr(0, attrName.length() - 7).c_str(), *tex);
+
+                                                        <span class="keywordflow">if</span> (m_live) {
+                                                                addTextureCallback(connection.first);
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                }
+
+                <span class=
+"keywordflow">return</span> <span class="keyword">true</span>;
+        }
+
+        <span class=
+"keywordtype">void</span> SceneManager::setStandardShaderParam(MFnDependencyNode&amp; shader, BeastMaterialPtr&amp; material, <span class="keyword">const</span> std::wstring&amp; attrName, <span class="keyword">const</span> std::wstring&amp; paramTexName, <span class="keyword">const</span> std::wstring&amp; paramColorName, <span class="keyword">const</span> <span class="keywordtype">int</span> maxShaderSamplingResolution) {
+                MStatus res;
+                ResourceManager&amp; rm = m_bjc-&gt;getPluginContext().getResourceManager();
+
+                MPlug inputPlug = shader.findPlug(attrName.c_str(), <span class="keyword">true</span>, &amp;res);
+                <span class=
+"keywordflow">if</span> (res == MStatus::kSuccess) {
+                        std::pair&lt;MObject, std::wstring&gt; connection = getConnectedNode(shader, attrName.c_str());
+                        <span class=
+"keywordflow">if</span> (connection.first != MObject::kNullObj) {
+                                BeastTexturePtr tex = rm.createTexture(connection.first, connection.second, maxShaderSamplingResolution, maxShaderSamplingResolution, <span class="keyword">false</span>);
+                                <span class=
+"keywordflow">if</span> (tex) {
+                                        material-&gt;setShaderParamTexture(paramTexName.c_str(), *tex);
+                                }
+                        } <span class="keywordflow">else</span> {
+                                <a class="code" href=
+"struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a> linearColor;
+                                <span class=
+"keywordflow">if</span>(inputPlug.isCompound()) {
+                                        MColor color = MColor(inputPlug.child(0).asFloat(), inputPlug.child(1).asFloat(), inputPlug.child(2).asFloat(), 1.0f);
+                                        linearColor = toLinearBeastColorRGB(color);
+                                } <span class=
+"keywordflow">else</span> {
+                                        <span class=
+"keyword">const</span> <span class=
+"keywordtype">float</span> val = inputPlug.asFloat();
+                                        linearColor = <a class=
+"code" href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>(val, val, val);
+                                }
+                                material-&gt;setShaderParamColor(paramColorName.c_str(), linearColor);
+                        }
+                } <span class="keywordflow">else</span> {
+                        material-&gt;setShaderParamColor(paramColorName.c_str(), <a class="code"
+href="struct_i_l_b_linear_r_g_b.html" title=
+"Color definition All colors are expressed in linear space as opposed to gamma corrected.">ILBLinearRGB</a>(0.0f, 0.0f, 0.0f));
+                }
+        }
+
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

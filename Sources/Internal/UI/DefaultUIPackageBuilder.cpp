@@ -1,5 +1,6 @@
 #include "DefaultUIPackageBuilder.h"
 
+#include "Engine/Engine.h"
 #include "UI/UIPackage.h"
 #include "UI/UIPackageLoader.h"
 #include "UI/UIControlSystem.h"
@@ -292,7 +293,7 @@ void DefaultUIPackageBuilder::EndControl(eControlPlace controlPlace)
         case TO_PROTOTYPES:
         {
             UIControl* control = lastDescr->control.Get();
-            UIControlSystem::Instance()->GetLayoutSystem()->ManualApplyLayout(control);
+            GetEngineContext()->uiControlSystem->GetLayoutSystem()->ManualApplyLayout(control);
             package->AddPrototype(control);
             break;
         }
@@ -300,7 +301,7 @@ void DefaultUIPackageBuilder::EndControl(eControlPlace controlPlace)
         case TO_CONTROLS:
         {
             UIControl* control = lastDescr->control.Get();
-            UIControlSystem::Instance()->GetLayoutSystem()->ManualApplyLayout(control);
+            GetEngineContext()->uiControlSystem->GetLayoutSystem()->ManualApplyLayout(control);
             package->AddControl(control);
             break;
         }

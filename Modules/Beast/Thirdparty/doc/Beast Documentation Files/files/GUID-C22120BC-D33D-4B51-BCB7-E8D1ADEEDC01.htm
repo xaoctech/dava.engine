@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-C22120BC-D33D-4B51-BCB7-E8D1ADEEDC01" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-4A48B67D-7066-494A-BA3C-C619A0646262" />
+      <title>What's New in 2012.1.x</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILB_CC_NORMAL", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a12553027d9b534f95e362c67915bba88", "API"]); 
+reflinkdata.push(["ILBCreateIlluminationPassSH()", "../api/beastrenderpass_8h.html#a43bb3dff69e941825b46da030c0a6f4a", "API"]); 
+reflinkdata.push(["ILBCreateRNMPass()", "../api/beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6", "API"]); 
+reflinkdata.push(["ILB_RB_CUSTOM", "../api/beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15a161e1fd2854fb7f6f260b02c08051e9b", "API"]); 
+reflinkdata.push(["ILBAddCustomBasisVector()", "../api/beastrenderpass_8h.html#a0237a590e98b631eb7a486b9446f957e", "API"]); 
+reflinkdata.push(["ILBSetClippingPlanes()", "../api/beastlightsource_8h.html#a59b48b4e30c877228135bd657695db52", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-C22120BC-D33D-4B51-BCB7-E8D1ADEEDC01.htm',                           'd30e2209','index.html',location.hash);                           javascript:initPage('What\'s New in 2012.1.x','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-C22120BC-D33D-4B51-BCB7-E8D1ADEEDC01.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-C22120BC-D33D-4B51-BCB7-E8D1ADEEDC01.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=What\'s New in 2012.1.x&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Beast 2012.1.x</div><a href="GUID-4A48B67D-7066-494A-BA3C-C619A0646262.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Beast 2012.1.x</div><a href="GUID-4A48B67D-7066-494A-BA3C-C619A0646262.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Upgrade Requirements for 2012.1.x</div><a href="GUID-4D6E34F7-21DF-4DFD-88BA-2EF4C43E07D9.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-61E8AD5E-49BB-4F7F-8D8C-11B3CADE2821.htm">Migration Guide</a>&nbsp;&gt;&nbsp;<a href="GUID-9F081398-2814-48DD-9EDD-623E18FB6550.htm">Previous Releases</a>&nbsp;&gt;&nbsp;<a href="GUID-4A48B67D-7066-494A-BA3C-C619A0646262.htm">Beast 2012.1.x</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-E1DEE82A-0A09-4348-9B40-D108C6CCA816"></a></span><h1>What's New in 2012.1.x</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-C22120BC-D33D-4B51-BCB7-E8D1ADEEDC01"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-F1D9DAFD-EF53-45DC-807D-E7E6B03CCCF7"></a></span>This page lists the new features and bug fixes introduced in the 2012.1.x releases. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_8CB92F763FD84C5981C6FA12BFE14516"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e2217"></a><span class="anchor_wrapper"><a name="GUID-9412D3EE-CB77-4569-A360-D291FAF9A731"></a></span>2012.1.2
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_C6EDBC7CF9FF4E8E8362F437CF7DBD05"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2222"></a><span class="anchor_wrapper"><a name="GUID-AE4092FA-C23C-42E2-9620-C95332701057"></a></span>Bug fixes
+               </h3> <span class="anchor_wrapper"><a name="UL_E8DC83C4A8144835B15A82DE0283913A"></a></span><ul>
+                  <li> Fixed an issue that could leave a distributed bake hanging, waiting for resources that had already been transferred. </li>
+                  <li> Fixed a regression that could cause progress to be miscalculated for large bake jobs. </li>
+                  <li> Fixed the Lua function <span class="code" translate="no">getSampleOcclusion()</span> so that it works for dynamic illumination sample types: i.e. when the <span class="code" translate="no">gather.sampletype</span> option is set to <span class="code" translate="no">dyni</span> (dynamic illumination), <span class="code" translate="no">ddyni</span> (direct dynamic illumination), or <span class="code" translate="no">idyni</span> (indirect dynamic illumination). 
+                  </li>
+                  <li>Fixed a potential crash that could occur when using meshes that have a color but no UV set. </li>
+                  <li> Fixed a bug that caused the last scanline to be skipped when reading DXT1-compressed <span class="filePath" translate="no">.dds</span> images. 
+                  </li>
+               </ul> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_D7DEE4DB26174145A92ECE29ECB51DED"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e2258"></a><span class="anchor_wrapper"><a name="GUID-4D0E3275-8291-4F9F-A659-4AAFA52F2C15"></a></span>2012.1.1
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_33B096DD77284CD9A835AC13EF9E3054"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2263"></a><span class="anchor_wrapper"><a name="GUID-BE78CCF2-B836-4B35-9C58-9EBA454A8780"></a></span>Bug fixes
+               </h3> <span class="anchor_wrapper"><a name="UL_7E9E0DD773C64D48AA42CC7684B992EE"></a></span><ul>
+                  <li>Fixed a problem that could cause black spots to appear when using the Monte Carlo integrator. </li>
+                  <li>Fixed a problem that could cause curved surfaces to produce too many secondary final gather points. </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_A626341264EF4D39B23A92C8F5424DA4"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2275"></a><span class="anchor_wrapper"><a name="GUID-FAC4666A-4C1A-4685-B939-0810F4F93B0F"></a></span>Distribeast
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-53A81556-8695-40CC-9E3E-BF56D6A26F3D"></a></span>This release of <span class="charspan-msgph" translate="no">Beast</span> includes Distribeast version 0.3.4.0. 
+               </p> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_5F6820A8C8B348ADACBF8B3710EFD501"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2286"></a><span class="anchor_wrapper"><a name="GUID-7AB199C8-6A51-4049-9BA0-ECBE13977FCC"></a></span>Bug fixes
+                  </h4> <span class="anchor_wrapper"><a name="UL_9900D65E680843B794C9E682FD2C5C6F"></a></span><ul>
+                     <li> Corrected an issue that could produce spurious failed bakes upon disconnection of a remote node, due to an incorrect error
+                        code being generated for some resource transfers. 
+                     </li>
+                     <li> Corrected an issue that could lead to memory usage growing over time, degraded performance, and failed updates from versions
+                        0.3.1.0 through 0.3.2.0 (contained in the <span class="charspan-msgph" translate="no">Beast</span> 2012.1 release). 
+                        <p><span class="anchor_wrapper"><a name="GUID-1D63AC8A-48DB-491B-80B2-3E8165EF80F2"></a></span></p>If you receive an error message on upgrade saying that a service could not be stopped, click <em class="strong">Retry</em> in the installer when the error message is displayed. The installation should eventually complete successfully. 
+                     </li>
+                  </ul> 
+               </div> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_A8C198B9C20E443A9FAB54B815AAA4EC"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e2307"></a><span class="anchor_wrapper"><a name="GUID-50818613-5296-4F37-81AC-FA7697B4E6A0"></a></span>2012.1 (original release)
+            </h2> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_54EF888419814F8FB74921E49738FED5"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2312"></a><span class="anchor_wrapper"><a name="GUID-398D0FA2-CA96-4E1F-9C49-B5E480E9BDBA"></a></span> <span class="charspan-msgph" translate="no">Beast</span> 
+               </h3> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_56DA9BC544124CC2983D915E7569AA16"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2320"></a><span class="anchor_wrapper"><a name="GUID-2A28CA78-7F54-4987-8BE0-2A7F0DBFF15B"></a></span>Normal maps
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-D194498A-0AA4-46B7-85F7-1D5DF7C22554"></a></span>You can now provide high-detail normal maps for your materials, which are taken into account during the illumination pass.
+                     
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-BD94E2DF-05CA-4842-A779-C42D3F801E27"></a></span>You set up the normal maps in the new material channel: <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_NORMAL'); return false;">ILB_CC_NORMAL</a></span>. You can set a texture for this channel using the same methods as for other material channels. For details, see <span class="char_link"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm">Creating Classic Materials</a></span>. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_E02AD6195BFD45D68726AC1C64C10AA3"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2338"></a><span class="anchor_wrapper"><a name="GUID-D80489C0-13B5-457B-A90E-09E419DEEFF1"></a></span>Illumination pass for point clouds
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-959F6C23-8E20-4A6D-9668-0F4F9BC2B769"></a></span>You can now perform an illumination pass for point cloud targets. Use the new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateIlluminationPassSH()'); return false;">ILBCreateIlluminationPassSH()</a></span> function to create the render pass. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-C318F4F0-C4F3-4E00-8180-DEC597A22944"></a></span>See also <span class="char_link"><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm">Creating Render Passes</a></span>. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_E603391D1E68427DB72F39D73934A938"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2356"></a><span class="anchor_wrapper"><a name="GUID-146133E5-DCC9-4219-B7DA-0712B00C4D02"></a></span>Custom bases for the RNM pass
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-9DCB6CC3-99F4-4E86-8430-D5BC50F03051"></a></span>You can now configure the basis vectors used by the RNM pass, if your rendering system expects RNM lighting data to use a
+                     custom set of bases that differs from the "standard" bases supported by <span class="charspan-msgph" translate="no">Beast</span> out-of-the-box. 
+                  </p> <span class="anchor_wrapper"><a name="UL_19A31606BDA04082866FEEB13DCA0B09"></a></span><ul>
+                     <li>In your call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateRNMPass()'); return false;">ILBCreateRNMPass()</a></span>, pass the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_RB_CUSTOM'); return false;">ILB_RB_CUSTOM</a></span> value to indicate that you want to use custom bases. 
+                     </li>
+                     <li>Add each of your custom basis vectors in a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBAddCustomBasisVector()'); return false;">ILBAddCustomBasisVector()</a></span>. 
+                     </li>
+                  </ul> 
+                  <p><span class="anchor_wrapper"><a name="GUID-81F6B97D-FAC2-4A84-9186-43C2BE9CD1B2"></a></span>See also <span class="char_link"><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm">Creating Render Passes</a></span>. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_497AE1D2C9D949F2BA99EDF15CB21CE5"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2389"></a><span class="anchor_wrapper"><a name="GUID-7715D61E-0B53-4699-AE1A-1FA0CC25C39B"></a></span>Clipping planes for spot lights
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-FD8F3E30-1395-404E-B03A-9BF347B102AE"></a></span>You can now set up your spot lights with near and far clipping planes using the new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetClippingPlanes()'); return false;">ILBSetClippingPlanes()</a></span> function. The light from the spot light will only apply to objects that lie between these two clipping planes. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_7AEF631BACAE412698285C5D54871CA4"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2402"></a><span class="anchor_wrapper"><a name="GUID-D7530ACF-D35B-44AC-8A98-6C4D12A80C0E"></a></span>New Lua function for Lambertian reflectance
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-E6EFB97B-4743-4BC0-9532-1164D7B5CE77"></a></span>You can now retrieve the Lambertian reflectance for a light in your custom Lua baking scripts. Use the new <span class="code" translate="no">getLightLambertianReflectance(int, vec3)</span> function, where: 
+                  </p> <span class="anchor_wrapper"><a name="UL_D60C5967DEB74872B8EC32212509972E"></a></span><ul>
+                     <li>The integer argument specifies the index of the light. </li>
+                     <li>The vec3 argument specifies the direction of the normal along which to get the reflectance. </li>
+                  </ul> 
+                  <p><span class="anchor_wrapper"><a name="GUID-1DC16170-ABC3-4B89-865B-F789A0E50E5E"></a></span>See also <span class="char_link"><a href="GUID-3EEB82D8-8B8C-4503-9BD4-74C7693EB705.htm"> Lua Reference</a></span>. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_87CE204201E245C68392A5F994D97A1A"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2426"></a><span class="anchor_wrapper"><a name="GUID-E0FBBF01-3C26-4AE1-9CE4-B2D7ED77759E"></a></span>Support for uncompressed <span class="filePath" translate="no">.dds</span> textures
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-F979EE1C-F2B2-44B7-A704-E80BA2E74ACA"></a></span>You can now import textures from uncompressed <span class="filePath" translate="no">.dds</span> files that contain data in RGB or RGBA format. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_0E609EFE4EEE43B8A9F1943AB3D482CE"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2441"></a><span class="anchor_wrapper"><a name="GUID-22F3885E-57EC-4305-A45D-A89AC95B4C45"></a></span>New XML setting for controlling light leakage
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-D54476C6-97FB-4F72-8CE4-8D4266040AC6"></a></span>If you use the final gather algorithm, and you have problems with light leakage at secondary final gather depths, you may
+                     be able to use the new <span class="code" translate="no">&lt;GISettings&gt;&lt;fgMaxSearchRadius&gt;</span> setting to reduce the leakage without significantly affecting your rendering times. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-B84B4136-D232-432B-9DF4-781414C80A7B"></a></span>See also <span class="char_link"><a href="GUID-82757E4A-4070-4B3B-B1FF-2F851B73C5B8.htm"> Final Gather Settings</a></span>. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_449D67799B9543BE86C6B7CDABD98DD7"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2459"></a><span class="anchor_wrapper"><a name="GUID-0D9DAAA7-FC57-4C29-BFF3-ED0069E9C898"></a></span>eRnsT-style path tracing
+                  </h4> 
+                  <p><span class="anchor_wrapper"><a name="GUID-3B28A919-6BCD-4995-9F4B-2D104A9FBADD"></a></span>This release adds support for eRnsT-style path tracing for <span class="charspan-msgph" translate="no">Beast</span> rendering jobs, through the Monte Carlo integrator. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-E93A1DF5-390C-4891-9CED-1F34CEC27EE4"></a></span>You can also now configure the Lua pass to use the eRnsT-style Monte Carlo integrator by enabling the new <span class="code" translate="no">gather.useMonteCarlo</span> setting in the <span class="code" translate="no">setup()</span> function of your Lua bake script. 
+                  </p> 
+                  <p><span class="anchor_wrapper"><a name="GUID-831B008F-00B5-40C1-98F2-5E201F75D010"></a></span>These changes allow you to make the results of your final baking through <span class="charspan-msgph" translate="no">Beast</span> match more closely the previews provided by the standalone eRnsT viewer or by the live eRnsT API in your level editor. 
+                  </p> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_BD61BE690E4044AE974A3616FBF3B381"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2486"></a><span class="anchor_wrapper"><a name="GUID-1CC9D713-A9EB-4195-A283-D94D3C699B1B"></a></span>Performance
+                  </h4> <span class="anchor_wrapper"><a name="UL_BECC40DF53BE446E89BF6AD34134AE8D"></a></span><ul>
+                     <li> Improved performance for multi-bounce final gathering in distributed rendering. </li>
+                     <li> Improved performance for point cloud search operations. </li>
+                     <li>Reduced startup time for point cloud bakes. </li>
+                     <li> Reduced creation time and memory requirements for acceleration data structure. </li>
+                     <li> Reduced memory usage when the <span class="code" translate="no">&lt;ADSSettings&gt;&lt;useSSE&gt;</span> option is enabled. 
+                     </li>
+                     <li>Improved performance for loading mesh data from files. </li>
+                     <li> Improved multi-threaded performance for the irradiance cache. </li>
+                     <li> Improved multi-threaded performance when reading radiance cache data from a file. </li>
+                  </ul> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_0E9443F3AD2346EBADFD8CE931D853CA"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2513"></a><span class="anchor_wrapper"><a name="GUID-75268BBD-5F28-4960-8EB9-1F853CC6AE0B"></a></span>Other improvements
+                  </h4> <span class="anchor_wrapper"><a name="UL_A276F193D615425D9B432F7AFF47919F"></a></span><ul>
+                     <li>Log events from the cluster are now collected and saved in CSV format. </li>
+                     <li> Improved support for Unicode names. </li>
+                     <li>Improved sampling of spot light gobo textures. The sampling is now determined according to the way the spot light projects
+                        on the surface, regardless of UV sets and spot light placement. 
+                     </li>
+                     <li>Improved logging of warnings during scene loading. Warnings are now summarized to avoid flooding the log. </li>
+                     <li>Improved error handling when reading PNG images. </li>
+                  </ul> 
+               </div> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_4CE9B0405FE2418C93133A8FFE903F9F"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2532"></a><span class="anchor_wrapper"><a name="GUID-7DCE3137-FC78-49EA-A393-CCECD1E948DC"></a></span>eRnsT
+               </h3> <span class="anchor_wrapper"><a name="UL_DACA53AA8C474BFD853743DADB0DEA49"></a></span><ul>
+                  <li>Added checkerboard rendering for instances without light map data. </li>
+                  <li>Added support for double-sided rendering in the standalone eRnsT viewer. </li>
+                  <li>Added visualization of the shadow radius for spot lights and point lights. </li>
+                  <li> Improved the performance of texture light map initialization. </li>
+               </ul> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_D05FC622CBD3416AA306CD2E300A078F"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e2548"></a><span class="anchor_wrapper"><a name="GUID-56DB867D-48CE-4A7C-9F15-B09F0F20E4B3"></a></span>Distribeast
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-A02DFC8A-61EB-46E5-AB57-BFFC4230DE13"></a></span>This release of <span class="charspan-msgph" translate="no">Beast</span> includes Distribeast version 0.3.2. 
+               </p> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_D35526FB41FC4674909D6705035632BF"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2559"></a><span class="anchor_wrapper"><a name="GUID-A010A3FF-589D-43DC-AA30-FA7EDF810898"></a></span>Improvements
+                  </h4> <span class="anchor_wrapper"><a name="UL_DE284FE877ED46A6B70D4C86BA62D55A"></a></span><ul>
+                     <li>Improved communication performance. </li>
+                     <li>Improved messaging prioritization. </li>
+                     <li>Improved event handling prioritization. </li>
+                     <li>Lowered priority for disk I/O. </li>
+                     <li>Nodes are now better at skipping unnecessary operations related to canceled or failed jobs. </li>
+                     <li>Improved startup logging. </li>
+                  </ul> 
+               </div> 
+               <div class="section"><span class="anchor_wrapper"><a name="SECTION_6631ABC67C084F77B0D9E0EDB2570811"></a></span> 
+                  <h4><a name="TOC_ENTRY__d30e2579"></a><span class="anchor_wrapper"><a name="GUID-97F8FA5A-0F74-453C-8AEC-3FEA34BADCA3"></a></span>Bug fixes
+                  </h4> <span class="anchor_wrapper"><a name="UL_63DBF51A52054217AC0C6D714A4C26A7"></a></span><ul>
+                     <li>Overzealous error reporting no longer results in failed jobs. </li>
+                     <li>Canceling a job at an early stage no longer leads to nodes being held until the Distribeast service is restarted. </li>
+                     <li>A potential deadlock condition was found and corrected. </li>
+                     <li>A potential crash on shutdown was found and corrected. </li>
+                     <li>Errors are now logged correctly for spawned processes. </li>
+                     <li>Sent resources are now logged correctly. </li>
+                  </ul> 
+               </div> 
+            </div> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

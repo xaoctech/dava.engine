@@ -3,10 +3,14 @@
 
 namespace DAVA
 {
-ColladaMeshInstance::ColladaMeshInstance(bool _animated)
+ColladaMeshInstance::ColladaMeshInstance(ColladaSkinnedMesh* _skinnedMesh)
 {
-    animated = _animated;
-    geometryInstance = 0;
+    skinnedMesh = _skinnedMesh;
+}
+
+ColladaSkinnedMesh* ColladaMeshInstance::GetSkinnedMesh()
+{
+    return skinnedMesh;
 }
 
 void ColladaMeshInstance::AddPolygonGroupInstance(ColladaPolygonGroupInstance* instance)

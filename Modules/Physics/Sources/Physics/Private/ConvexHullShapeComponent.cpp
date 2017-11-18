@@ -8,23 +8,13 @@
 
 namespace DAVA
 {
-DAVA::Component* ConvexHullShapeComponent::Clone(Entity* toEntity)
+Component* ConvexHullShapeComponent::Clone(Entity* toEntity)
 {
     ConvexHullShapeComponent* result = new ConvexHullShapeComponent();
     result->SetEntity(toEntity);
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
-}
-
-void ConvexHullShapeComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
-{
-    CollisionShapeComponent::Serialize(archive, serializationContext);
-}
-
-void ConvexHullShapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
-{
-    CollisionShapeComponent::Deserialize(archive, serializationContext);
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -37,6 +27,7 @@ void ConvexHullShapeComponent::CheckShapeType() const
 void ConvexHullShapeComponent::UpdateLocalProperties()
 {
     physx::PxShape* shape = GetPxShape();
+    DVASSERT(shape != nullptr);
     physx::PxConvexMeshGeometry geom;
     shape->getConvexMeshGeometry(geom);
     geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);

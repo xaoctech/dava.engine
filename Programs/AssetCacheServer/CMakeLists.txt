@@ -6,8 +6,9 @@ set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_
 include               ( CMake-common )
 
 find_package          ( QT5 REQUIRED )
-find_package          ( QtHelpers REQUIRED )
-find_package          ( DavaTools     REQUIRED )
+find_dava_module   ( QtHelpers )
+find_dava_module   ( DavaTools )
+find_dava_module   ( DocDirSetup )
 
 dava_add_definitions  ( -DCONSOLE )
 

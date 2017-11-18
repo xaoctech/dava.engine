@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-9AEDAD43-A251-4C5C-9824-388809C4CB9F" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-48EAD368-B67B-451F-BE60-C1201718EF50" />
+      <title>The eRnsT Interface</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-9AEDAD43-A251-4C5C-9824-388809C4CB9F.htm',                           'd30e10756','index.html',location.hash);                           javascript:initPage('The eRnsT Interface','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-9AEDAD43-A251-4C5C-9824-388809C4CB9F.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-9AEDAD43-A251-4C5C-9824-388809C4CB9F.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=The eRnsT Interface&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Using the eRnsT Viewer</div><a href="GUID-48EAD368-B67B-451F-BE60-C1201718EF50.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Using the eRnsT Viewer</div><a href="GUID-48EAD368-B67B-451F-BE60-C1201718EF50.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Controlling the 3D View</div><a href="GUID-098F8729-3ED9-46EA-969A-C02B896C5E0E.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-48EAD368-B67B-451F-BE60-C1201718EF50.htm"> Using the eRnsT Viewer</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-A3A359D4-7938-46A2-BFE2-62496138CF77"></a></span><h1>The eRnsT Interface</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-9AEDAD43-A251-4C5C-9824-388809C4CB9F"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-04DBBD3D-AF4B-467D-B6C3-BDFCA298ACBD"></a></span> The eRnsT interface consists of a 3D view for rendering your scene with its lighting setup, a toolbar that offers easy access
+            to common tools and commands, and several panes that you can use to browse the objects in your scene, and to read and modify
+            settings. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-847C1456-A583-406B-A107-12FA9FE9FA8D"></a></span> <img src="../images/GUID-7ACEED24-B4F7-4035-AC7D-B2B52604D523-low.png" /> 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-A0D88593-84A4-4844-A1CB-FEF0027B528A"></a></span>The following sections provide more detail on the elements of this interface. 
+         </p>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_7B0B5AA0ABEE4462B7BC44BF288DF926"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10770"></a><span class="anchor_wrapper"><a name="GUID-9CF8585F-A5DE-4B43-97E2-72D024F3ECB8"></a></span>The 3D view
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-6FCB6325-4AFF-4C0E-AC0C-434152E2045C"></a></span>The 3D view renders all the objects and light sources that have been provided to eRnsT. As you move the camera around the
+               3D view, eRnsT progressively renders the area currently in view. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-80C3F9B4-8290-446F-9693-0DFCA95210A0"></a></span>For more information on navigating the 3D view, see <span class="char_link"><a href="GUID-098F8729-3ED9-46EA-969A-C02B896C5E0E.htm">Controlling the 3D View</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_0FEE690167DD4D34AE283F508C8E6460"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10784"></a><span class="anchor_wrapper"><a name="GUID-2A34F69E-A21C-4024-A90F-75800EA52D9F"></a></span>The toolbar
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-7A9337AB-7F66-4D6B-BACC-D580DB9E42C1"></a></span>The toolbar offers the following controls: 
+            </p> <span class="anchor_wrapper"><a name="TABLE_DDA1B2EA1E8D4BE08E69653021411AE8"></a></span><div class="table_NotRuled">
+               <table cellpadding="0" cellspacing="0" class="not-ruled">
+                  <colgroup>
+                     <col width="4.985044865403789%" />
+                     <col width="95.0149551345962%" />
+                  </colgroup>
+                  <tr class="not-ruledHeading">
+                     <th class="table-heading">icon </th>
+                     <th class="table-heading">description </th>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-EF8697D4-C020-4F8D-8F05-378314BC3123-low.png" /> 
+                     </td>
+                     <td class="table-body">Undoes the last change in the undo list. See <span class="char_link"><a href="GUID-E42AB1EB-365E-4DA3-8984-2F2CAE5F7606.htm">Undoing and Redoing</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-9C6A2841-9A45-49E5-9527-C20ACBB57505-low.png" /> 
+                     </td>
+                     <td class="table-body">Re-does the last change that you have undone. See <span class="char_link"><a href="GUID-E42AB1EB-365E-4DA3-8984-2F2CAE5F7606.htm">Undoing and Redoing</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body"> <em class="strong">Unit:</em> 
+                     </td>
+                     <td class="table-body">Sets the units used in your scene. See the Interface Scale property under <span class="char_link"><a href="GUID-C8B27A28-66E7-4A51-B2CC-562F9C86ABBA.htm">Global Properties</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body"> <em class="strong">Up:</em> 
+                     </td>
+                     <td class="table-body">Sets the Up axis used in your scene. See the Up Axis property under <span class="char_link"><a href="GUID-C8B27A28-66E7-4A51-B2CC-562F9C86ABBA.htm">Global Properties</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-03389652-B095-44BD-A102-F44C6ED8122F-low.png" /> 
+                     </td>
+                     <td class="table-body">When activated, the eRnsT interface progressively renders the area visible to the camera and bakes the lighting for the area
+                        to lightmaps. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-3C9DAE42-0161-494A-BB67-7DDDA33152A6-low.png" /> 
+                     </td>
+                     <td class="table-body">When activated, disables rendering and baking of the scene. As you move the camera around the scene, only the areas whose
+                        lighting has already been baked to lightmaps will be rendered. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-4323FC34-A7A9-4CAC-B864-E64CC0FA5E79-low.png" /> 
+                     </td>
+                     <td class="table-body">When activated, shows the translation widget for any selected light sources. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-6C947BAF-5E35-4BCD-8584-4050FDDA00A0-low.png" /> 
+                     </td>
+                     <td class="table-body">When activated, shows the rotation widget for any selected light sources. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-FC15F5E9-D8B1-432A-8490-353B295999C3-low.png" /> 
+                     </td>
+                     <td class="table-body">When activated, shows the scaling widget for any selected light sources. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-2D47B635-8782-412B-9ACA-22F644AD6806-low.png" /> 
+                     </td>
+                     <td class="table-body">When activated, renders representations of all light sources at their current positions. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-E7FE4452-8D05-4731-A6A6-FC31C69969F6-low.png" /> 
+                     </td>
+                     <td class="table-body">Adds a new point light to the scene. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-D7FF0E8A-E5BE-41F5-BEBB-13B94B44A921-low.png" /> 
+                     </td>
+                     <td class="table-body">Adds a new spot light to the scene. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-C3DD35BC-BC65-4C53-B662-D7D9A75284F1-low.png" /> 
+                     </td>
+                     <td class="table-body">Adds a new directional light to the scene. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-7511008D-6FE9-4CCF-AAF6-DEEDDA08515B-low.png" /> 
+                     </td>
+                     <td class="table-body">Adds a new area light to the scene. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledOddRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-AFDD0787-5D8E-46E2-A67C-05D1BD8DBE7B-low.png" /> 
+                     </td>
+                     <td class="table-body">Adds a new sky light to the scene. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+                  <tr class="not-ruledEvenRow">
+                     <td class="table-body">
+                        &nbsp;
+                         <img src="../images/GUID-A33A8A9D-9D91-4B84-8E49-6EA3F075F332-low.png" /> 
+                     </td>
+                     <td class="table-body">Adds a new ambient light to the scene. See <span class="char_link"><a href="GUID-D62A7E08-A7F1-4222-8596-619102A53FB4.htm">Working with Light Sources</a></span>. 
+                     </td>
+                  </tr>
+               </table>
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_CE8A66F476624880ADD6790F3ABCB36E"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10961"></a><span class="anchor_wrapper"><a name="GUID-9CA615F7-913A-42B5-B203-DF97C4A79950"></a></span>The Browser pane
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-47812BFB-FC78-47DE-BC52-83E935EBD65D"></a></span>The Browser pane contains a hierarchical tree view that lists all of the objects in your scene by type and by name. You can
+               use this tree view to browse the elements that make up your scene, and to select objects whose settings you want to modify
+               in the Properties pane. See also <span class="char_link"><a href="GUID-80499326-2F23-42EB-A4BA-BA6F8E017000.htm">Selecting Objects</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-F0C47639-5734-4BBB-A88C-1C79809D0C33"></a></span>You can show and hide the Browser pane (and all other panes) at any time by pressing <em class="strong">Ctrl+Enter</em>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_E4D07F9A004049DD959903D903E414C1"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e10978"></a><span class="anchor_wrapper"><a name="GUID-EDF56472-672E-4EAC-8D03-D44BBA891FF1"></a></span>The Properties pane
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-9E0E7174-CC2A-498B-8457-8E6B1A7EFD05"></a></span>The Properties pane displays configuration settings that apply globally to the scene as a whole, and to the currently selected
+               object in the scene. You can modify these settings to control the way your scene is rendered, and the way each of your light
+               sources contributes to the overall lighting. See also <span class="char_link"><a href="GUID-9AE90AD7-B3E5-469B-94E5-8B20CF301C30.htm">Setting Properties</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-87FD8AFA-950A-48BB-BDB5-B415595673C7"></a></span>The Properties pane also offers access to the history of changes that you have made to your scene in the eRnsT interface.
+               See also <span class="char_link"><a href="GUID-E42AB1EB-365E-4DA3-8984-2F2CAE5F7606.htm">Undoing and Redoing</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-11D065D7-614E-48EF-BDE3-CE00D173AF93"></a></span>You can show and hide the Properties pane (and all other panes) at any time by pressing <em class="strong">Ctrl+Enter</em>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_439FB62BA1354EA48086A6F7FC86BA39"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e11001"></a><span class="anchor_wrapper"><a name="GUID-63E74C7D-E248-4FDB-ADAA-0A4625C3E105"></a></span>The Log pane
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-02840B57-AA27-4B26-B277-07AB6EE332F7"></a></span>The log pane displays informational messages, warnings and errors generated by eRnsT. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-53A1DD72-D951-4D93-97A6-8443D0348FA3"></a></span>The log pane is hidden by default. You can show and hide it by pressing <em class="strong">Ctrl+L</em>. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

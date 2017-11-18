@@ -1,8 +1,8 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/SettingsNode.h>
 
-class PreferencesData : public DAVA::TArc::DataNode
+class PreferencesData : public DAVA::TArc::SettingsNode
 {
 public:
     bool IsGuidesEnabled() const;
@@ -11,6 +11,7 @@ public:
 
 private:
     void SetGuidesEnabled(bool value);
+    bool guidesEnabled = true;
 
-    DAVA_VIRTUAL_REFLECTION(PreferencesData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(PreferencesData, DAVA::TArc::SettingsNode);
 };

@@ -2,21 +2,31 @@
 
 #include "Utils/PackageListenerProxy.h"
 
-#include <Base/BaseTypes.h>
 #include <TArc/Core/FieldBinder.h>
 #include <QtTools/Updaters/ContinuousUpdater.h>
+#include <Base/BaseTypes.h>
 #include <QObject>
 
-class DocumentsModule;
 class FindInDocumentWidget;
 class FindFilter;
-class MainWindow;
+
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+class UI;
+} // namespace TArc
+} // namespace DAVA
 
 class FindInDocumentController : public QObject, PackageListener
 {
     Q_OBJECT
 public:
-    FindInDocumentController(DocumentsModule* documentsModule, MainWindow* mainWindow, FindInDocumentWidget* findInDocumentWidget);
+    FindInDocumentController(DAVA::TArc::UI* ui, DAVA::TArc::ContextAccessor* accessor);
+
+    Q_SIGNAL void FindInDocumentRequest(std::shared_ptr<FindFilter> filter);
+    Q_SIGNAL void SelectControlRequest(const QString& path, const QString& name);
 
 private slots:
     void ShowFindInDocumentWidget();
@@ -53,7 +63,7 @@ private:
     void ImportedPackageWasAdded(PackageNode* node, ImportedPackagesNode* to, int index) override;
     void ImportedPackageWasRemoved(PackageNode* node, ImportedPackagesNode* from) override;
 
-    DocumentsModule* documentsModule = nullptr;
+    DAVA::TArc::ContextAccessor* accessor = nullptr;
     FindContext context;
     FindInDocumentWidget* findInDocumentWidget = nullptr;
     PackageListenerProxy packageListenerProxy;

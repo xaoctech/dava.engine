@@ -17,7 +17,7 @@ Component* StaticBodyComponent::Clone(Entity* toEntity)
     StaticBodyComponent* result = new StaticBodyComponent();
     result->SetEntity(toEntity);
 
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
     return result;
 }
 

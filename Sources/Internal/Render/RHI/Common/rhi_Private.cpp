@@ -41,7 +41,7 @@ uint32 stat_SET_VB = DAVA::InvalidIndex;
 uint32 stat_SET_IB = DAVA::InvalidIndex;
 
 static Dispatch _Impl = {};
-static RenderDeviceCaps renderDeviceCaps = {};
+static RenderDeviceCaps renderDeviceCaps;
 
 void SetDispatchTable(const Dispatch& dispatch)
 {

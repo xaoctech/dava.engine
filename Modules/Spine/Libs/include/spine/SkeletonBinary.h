@@ -42,19 +42,18 @@ extern "C" {
 
 struct spAtlasAttachmentLoader;
 
-typedef struct spSkeletonBinary
-{
-    float scale;
-    spAttachmentLoader* attachmentLoader;
-    const char* const error;
+typedef struct spSkeletonBinary {
+	float scale;
+	spAttachmentLoader* attachmentLoader;
+	const char* const error;
 } spSkeletonBinary;
 
-spSkeletonBinary* spSkeletonBinary_createWithLoader(spAttachmentLoader* attachmentLoader);
-spSkeletonBinary* spSkeletonBinary_create(spAtlas* atlas);
-void spSkeletonBinary_dispose(spSkeletonBinary* self);
+spSkeletonBinary* spSkeletonBinary_createWithLoader (spAttachmentLoader* attachmentLoader);
+spSkeletonBinary* spSkeletonBinary_create (spAtlas* atlas);
+void spSkeletonBinary_dispose (spSkeletonBinary* self);
 
-spSkeletonData* spSkeletonBinary_readSkeletonData(spSkeletonBinary* self, const unsigned char* binary, const int length);
-spSkeletonData* spSkeletonBinary_readSkeletonDataFile(spSkeletonBinary* self, const char* path);
+spSkeletonData* spSkeletonBinary_readSkeletonData (spSkeletonBinary* self, const unsigned char* binary, const int length);
+spSkeletonData* spSkeletonBinary_readSkeletonDataFile (spSkeletonBinary* self, const char* path);
 
 #ifdef SPINE_SHORT_NAMES
 typedef spSkeletonBinary SkeletonBinary;

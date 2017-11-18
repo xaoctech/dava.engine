@@ -8,12 +8,17 @@ import tarfile
 import sys
 import build_config
 
+# These values should be set by root build.py before using this module
 verbose = False
+output_folder_path = ''
+dava_folder_path = ''
+suppress_build_warnings=False   # Do not output compiler warning messages while building libraries
+                                # (currently supported only for Visual Studio projects)
 
 
 def print_verbose(msg):
     if verbose:
-        print msg
+        print msg.rstrip()
 
 
 def download(url, file_name):
@@ -76,32 +81,40 @@ def apply_patch(patch, working_dir = '.'):
         print_verbose(line)
     proc.wait()
     if proc.returncode != 0:
-        print "Failed with return code %s" % proc.returncode
-        raise
+        raise RuntimeError('Failed to apply patch with return code %s' % proc.returncode)
 
 
-def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None):
+def build_vs(project, configuration, platform='Win32', target = None, toolset = None, env=None, msbuild_args=None):
     print "Building %s for %s (%s) ..." % (project, configuration, platform)
-    args = ["c:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe", project, "/p:Configuration="+configuration, '/p:Platform=' + platform]
+    args = [build_config.get_msbuild_path_win32(), project, "/m", "/p:Configuration="+configuration, '/p:Platform=' + platform]
+    if suppress_build_warnings:
+        args.append('/consoleloggerparameters:ErrorsOnly')
+
     if not toolset is None:
         args.append('/p:PlatformToolset=' + toolset)
     if (not target is None):
         args.append('/target:' + target)
     if (not env is None):
         args.append('/p:useenv=true')
+
+    if msbuild_args is not None:
+        args.extend(msbuild_args)
+
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
     for line in proc.stdout:
         print_verbose(line)
     proc.wait()
 
     if proc.returncode != 0:
-        print "Failed with return code %s" % proc.returncode
-        raise
+        raise RuntimeError('msbuild failed with return code %s' % proc.returncode)
 
 
-def build_xcode_target(project, target, configuration):
+def build_xcode_target(project, target, configuration, xcodebuild_args):
     print "Building %s for %s ..." % (project, configuration)
-    proc = subprocess.Popen(["xcodebuild", "-project", project, "-target", target, "-configuration", configuration, "build"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    args=["xcodebuild", "-project", project, "-target", target, "-configuration", configuration, "build"]
+    if xcodebuild_args is not None:
+        args.extend(xcodebuild_args)
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     for line in proc.stdout:
         print_verbose(line)
     proc.wait()
@@ -110,9 +123,12 @@ def build_xcode_target(project, target, configuration):
         raise
 
 
-def build_xcode_alltargets(project, configuration):
+def build_xcode_alltargets(project, configuration, xcodebuild_args):
     print "Building %s for %s ..." % (project, configuration)
-    proc = subprocess.Popen(["xcodebuild", "-project", project, "-alltargets", "-configuration", configuration, "build"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    args=["xcodebuild", "-project", project, "-alltargets", "-configuration", configuration, "build"]
+    if xcodebuild_args is not None:
+        args.extend(xcodebuild_args)
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     for line in proc.stdout:
         print_verbose(line)
     proc.wait()
@@ -159,8 +175,8 @@ def copy_files_by_name(from_dir, to_dir, filenames):
 def clean_copy_includes(from_dir, to_dir):
     print "Copying includes from %s to %s" % (from_dir, to_dir)
     if os.path.exists(to_dir) and os.path.isdir(to_dir):
-        shutil.rmtree(to_dir)
-    shutil.copytree(from_dir, to_dir)
+        clear_files(to_dir, '*.h')
+    copy_files(from_dir, to_dir, '*.h')
 
 
 def clear_files(dir, wildcard):
@@ -179,22 +195,22 @@ def copy_folder_recursive(src, dest, ignore=None):
             ignored = set()
         for f in files:
             if f not in ignored:
-                copy_folder_recursive(os.path.join(src, f), 
-                                    os.path.join(dest, f), 
+                copy_folder_recursive(os.path.join(src, f),
+                                    os.path.join(dest, f),
                                     ignore)
     else:
         shutil.copyfile(src, dest)
 
 
 def cmake_build(solution_folder_path, configuration):
-    run_process("cmake --build . --config " + configuration, process_cwd=solution_folder_path, shell=True)
+    run_process(build_config.get_cmake_executable() + " --build . --config " + configuration, process_cwd=solution_folder_path, shell=True)
 
 
 def cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args = []):
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
-    cmd = ['cmake', '-G', cmake_generator, src_folder_path]
+    cmd = [build_config.get_cmake_executable(), '-G', cmake_generator, src_folder_path]
     cmd.extend(cmake_additional_args)
 
     print 'Running CMake: {}, working directory: {}'.format(' '.join(cmd), output_folder_path)
@@ -205,30 +221,41 @@ def cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_a
     sp.wait()
 
 
-def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator, sln_name, target, configuration, cmake_additional_args = []):
+def cmake_generate_build_vs(output_folder_path, src_folder_path, cmake_generator, sln_name, target, configuration, cmake_additional_args = [], msbuild_args=None):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
-    build_vs(os.path.join(output_folder_path, sln_name), 'Debug', configuration, target)
-    build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target)
+    build_vs(os.path.join(output_folder_path, sln_name), 'Debug', configuration, target, msbuild_args=msbuild_args)
+    build_vs(os.path.join(output_folder_path, sln_name), 'Release', configuration, target, msbuild_args=msbuild_args)
 
 
-def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_generator, project, target, cmake_additional_args = []):
+def cmake_generate_build_xcode(output_folder_path, src_folder_path, cmake_generator, project, target, cmake_additional_args = [], xcodebuild_args=None):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
-    build_xcode_target(os.path.join(output_folder_path, project), target, 'Release')
+    build_xcode_target(os.path.join(output_folder_path, project), target, 'Release', xcodebuild_args)
+
 
 def cmake_generate_build_make(output_folder_path, src_folder_path, cmake_generator, target, cmake_additional_args = []):
     cmake_generate(output_folder_path, src_folder_path, cmake_generator, cmake_additional_args)
     build_make_target(output_folder_path, target)
 
 
-def cmake_generate_build_ndk(output_folder_path, src_folder_path, toolchain_filepath, android_ndk_path, abi, cmake_additional_args = []):
+def cmake_generate_build_ndk(output_folder_path, src_folder_path, android_ndk_path, abi, cmake_additional_args = []):
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
 
-    cmd = ['cmake', '-DCMAKE_TOOLCHAIN_FILE=' + toolchain_filepath, '-DANDROID_NDK=' + android_ndk_path, '-DCMAKE_BUILD_TYPE=Release', '-DANDROID_ABI=' + abi]
+    cmake_path = os.path.join(android_ndk_path, '../cmake/3.6.3155560/bin/cmake')
+    cmake_toolchain = os.path.join(android_ndk_path, 'build/cmake/android.toolchain.cmake')
+
+    cmd = [cmake_path,
+        '-DANDROID_PLATFORM=' + build_config.get_android_platform(),
+        '-DANDROID_STL=' + build_config.get_android_stl(),
+        '-DANDROID_ARM_NEON=TRUE',
+        '-DANDROID_ABI=' + abi,
+        '-GAndroid Gradle - Unix Makefiles',
+        '-DCMAKE_TOOLCHAIN_FILE=' + cmake_toolchain,
+        '-DCMAKE_BUILD_TYPE=Release']
+
     if (sys.platform == 'win32'):
         cmd.extend(['-G', 'MinGW Makefiles', '-DCMAKE_MAKE_PROGRAM=' + os.path.join(android_ndk_path, 'prebuilt\\windows-x86_64\\bin\\make.exe')])
     cmd.extend(cmake_additional_args)
-
     cmd.append(src_folder_path)
 
     sp = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd=output_folder_path)
@@ -236,7 +263,7 @@ def cmake_generate_build_ndk(output_folder_path, src_folder_path, toolchain_file
         print_verbose(line)
     sp.wait()
 
-    sp = subprocess.Popen(['cmake', '--build', '.'], stdout=subprocess.PIPE, cwd=output_folder_path)
+    sp = subprocess.Popen([cmake_path, '--build', '.'], stdout=subprocess.PIPE, cwd=output_folder_path)
     for line in sp.stdout:
         print_verbose(line)
     sp.wait()
@@ -262,8 +289,8 @@ def build_android_ndk(project_path, output_path, debug, ndk_additional_args = []
     sp.wait()
 
 
-def get_android_ndk_path(root_project_path):
-    config_file_path = os.path.join(root_project_path, 'DavaConfig.in')
+def get_android_ndk_path():
+    config_file_path = os.path.join(dava_folder_path, 'DavaConfig.in')
     for line in open(config_file_path):
         splitted = line.strip().split('=')
         key = splitted[0].strip()
@@ -293,7 +320,7 @@ def get_url_file_name_no_ext(url):
 def download_and_extract(download_url, working_directory_path, result_folder_path, inner_dir_name = None):
     download_data = (download_url, result_folder_path)
 
-    try:        
+    try:
         if download_data in download_and_extract.cache:
             return result_folder_path
     except AttributeError:
@@ -355,12 +382,38 @@ def _run_process_iter(args, process_cwd='.', environment=None, shell=False):
         raise subprocess.CalledProcessError(return_code, args)
 
 
-def android_ndk_make_toolchain(root_project_path, arch, platform, system, install_dir):
-    android_ndk_root = get_android_ndk_path(root_project_path)
+def android_ndk_get_toolchain_arm():
+    install_dir = os.path.join(os.path.join(output_folder_path, 'common'), 'android_ndk_toolchain_arm')
+
+    if 'installed' not in android_ndk_get_toolchain_arm.__dict__:
+        android_ndk_get_toolchain_arm.installed = False
+
+    if not android_ndk_get_toolchain_arm.installed:
+        _android_ndk_make_toolchain('arm', install_dir)
+        android_ndk_get_toolchain_arm.installed = True
+
+    return install_dir
+
+
+def android_ndk_get_toolchain_x86():
+    install_dir = os.path.join(os.path.join(output_folder_path, 'common'), 'android_ndk_toolchain_x86')
+
+    if 'installed' not in android_ndk_get_toolchain_x86.__dict__:
+        android_ndk_get_toolchain_x86.installed = False
+
+    if not android_ndk_get_toolchain_x86.installed:
+        _android_ndk_make_toolchain('x86', install_dir)
+        android_ndk_get_toolchain_x86.installed = True
+
+    return install_dir
+
+
+def _android_ndk_make_toolchain(arch, install_dir):
+    android_ndk_root = get_android_ndk_path()
 
     exec_path = os.path.join(android_ndk_root, 'build/tools')
 
-    cmd = ['sh', 'make-standalone-toolchain.sh', '--arch=' + arch, '--platform=' + platform, '--system=' + system, '--install-dir=' + install_dir, '--ndk-dir=' + android_ndk_root]
+    cmd = ['python', 'make_standalone_toolchain.py', '--force', '--arch=' + arch, '--api=' + build_config.get_android_api_version(), '--stl=' + build_config.get_android_libc(), '--install-dir=' + install_dir]
     run_process(cmd, process_cwd=exec_path)
 
 
@@ -425,74 +478,57 @@ def get_autotools_linux_env():
     env['CXX'] = '/usr/local/bin/clang++'
     return env
 
-def get_autotools_android_arm_env(root_project_path, enable_stl=False):
-    android_ndk_folder_path = get_android_ndk_path(root_project_path)
-    android_prefix = os.path.join(android_ndk_folder_path, 'toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64')
-    cross_path = os.path.join(android_prefix, 'bin/arm-linux-androideabi')
-    sysroot_path = os.path.join(android_ndk_folder_path, 'platforms/android-14/arch-arm')
+def get_autotools_android_arm_env(toolchain_path, enable_stl=False):
+    cross_path = os.path.join(toolchain_path, 'bin/arm-linux-androideabi')
+    sysroot_path = os.path.join(toolchain_path, 'sysroot')
 
     env = os.environ.copy()
     env['CPP'] = '{}-cpp'.format(cross_path)
     env['AR'] = '{}-ar'.format(cross_path)
     env['AS'] = '{}-as'.format(cross_path)
     env['NM'] = '{}-nm'.format(cross_path)
-    env['CC'] = '{}-gcc'.format(cross_path)
-    env['CXX'] = '{}-g++'.format(cross_path)
+    env['CC'] = '{}-clang'.format(cross_path)
+    env['CXX'] = '{}-clang++'.format(cross_path)
     env['LD'] = '{}-ld'.format(cross_path)
     env['RANLIB'] = '{}-ranlib'.format(cross_path)
-    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -I{}/include -O2'.format(sysroot_path, sysroot_path, android_prefix)
+    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -O2'.format(sysroot_path, sysroot_path)
     env['CPPFLAGS'] = env['CFLAGS']
-    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib -L{}/sources/crystax/libs/armeabi-v7a'.format(sysroot_path, sysroot_path, android_prefix, android_ndk_folder_path)
+    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib'.format(sysroot_path, sysroot_path, os.path.join(toolchain_path, 'arm-linux-androideabi'))
 
     if enable_stl:
-        # just use gnu-libstdc++ shared for now
-        stl_folder_path = os.path.join(android_ndk_folder_path, 'sources/cxx-stl/gnu-libstdc++/4.9')
-        stl_include_folder_path = os.path.join(stl_folder_path, 'include')
-        stl_lib_folder_path = os.path.join(stl_folder_path, 'libs/armeabi-v7a')
-        stl_bits_include_folder_path = os.path.join(stl_lib_folder_path, 'include')
-        env['CPPFLAGS'] += ' -I{} -I{} -frtti -fexceptions'.format(stl_include_folder_path, stl_bits_include_folder_path)
-        env['LDFLAGS'] += ' -L{} -l{}'.format(stl_lib_folder_path, 'gnustl_shared')
+        env['LDFLAGS'] += ' -l' + build_config.get_android_stl()
 
     return env
 
 
-def get_autotools_android_x86_env(root_project_path, enable_stl=False):
-    android_ndk_folder_path = get_android_ndk_path(root_project_path)
-    android_prefix = os.path.join(android_ndk_folder_path, 'toolchains/x86-4.9/prebuilt/darwin-x86_64')
-    cross_path = os.path.join(android_prefix, 'bin/i686-linux-android')
-    sysroot_path = os.path.join(android_ndk_folder_path, 'platforms/android-14/arch-x86')
+def get_autotools_android_x86_env(toolchain_path, enable_stl=False):
+    cross_path = os.path.join(toolchain_path, 'bin/i686-linux-android')
+    sysroot_path = os.path.join(toolchain_path, 'sysroot')
 
     env = os.environ.copy()
     env['CPP'] = '{}-cpp'.format(cross_path)
     env['AR'] = '{}-ar'.format(cross_path)
     env['AS'] = '{}-as'.format(cross_path)
     env['NM'] = '{}-nm'.format(cross_path)
-    env['CC'] = '{}-gcc'.format(cross_path)
-    env['CXX'] = '{}-g++'.format(cross_path)
+    env['CC'] = '{}-clang'.format(cross_path)
+    env['CXX'] = '{}-clang++'.format(cross_path)
     env['LD'] = '{}-ld'.format(cross_path)
     env['RANLIB'] = '{}-ranlib'.format(cross_path)
-    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -I{}/include -O2'.format(sysroot_path, sysroot_path, android_prefix)
+    env['CFLAGS'] = '--sysroot={} -I{}/usr/include -O2'.format(sysroot_path, sysroot_path)
     env['CPPFLAGS'] = env['CFLAGS']
-    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib -L{}/sources/crystax/libs/x86'.format(sysroot_path, sysroot_path, android_prefix, android_ndk_folder_path)
+    env['LDFLAGS'] = '--sysroot={} -L{}/usr/lib -L{}/lib'.format(sysroot_path, sysroot_path, os.path.join(toolchain_path, 'i686-linux-android'))
 
     if enable_stl:
-        # just use gnu-libstdc++ shared for now
-        stl_folder_path = os.path.join(android_ndk_folder_path, 'sources/cxx-stl/gnu-libstdc++/4.9')
-        stl_include_folder_path = os.path.join(stl_folder_path, 'include')
-        stl_lib_folder_path = os.path.join(stl_folder_path, 'libs/x86')
-        stl_bits_include_folder_path = os.path.join(stl_lib_folder_path, 'include')
-        env['CPPFLAGS'] += ' -I{} -I{} -frtti -fexceptions'.format(stl_include_folder_path, stl_bits_include_folder_path)
-        env['LDFLAGS'] += ' -L{} -l{}'.format(stl_lib_folder_path, 'gnustl_shared')
+        env['LDFLAGS'] += ' -l' + build_config.get_android_stl()
 
     return env
-
 
 def get_win32_vs_x86_env():
-    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86')
+    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86', build_config.get_msvc_sdk_version_win32())
 
 
 def get_win32_vs_x64_env():
-    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'x86_amd64')
+    return _get_vs_env(build_config.get_vs_vc_path_win32(), 'amd64', build_config.get_msvc_sdk_version_win32())
 
 
 def get_win10_vs_x86_env():
@@ -507,10 +543,13 @@ def get_win10_vs_arm_env():
     return _get_vs_env(build_config._get_vs_vc_path_win10(), 'x86_arm')
 
 
-def _get_vs_env(vs_path, arch):
+def _get_vs_env(vs_path, arch, sdk_ver=None):
     vsvars_path = '{}/vcvarsall.bat'.format(vs_path)
 
-    cmd = [vsvars_path, arch, '&', 'set']
+    if sdk_ver is not None:
+        cmd = [vsvars_path, arch, sdk_ver, '&', 'set']
+    else:
+        cmd = [vsvars_path, arch, '&', 'set']
     sp = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     output = sp.communicate()[0]
     output = output.split("\r\n")
@@ -543,14 +582,21 @@ def build_and_copy_libraries_win32_cmake(
         result_lib_name_x86_debug, result_lib_name_x86_release,
         result_lib_name_x64_debug, result_lib_name_x64_release,
         cmake_additional_args = [], target_lib_subdir = '',
-        output_libs_path = 'Libs/lib_CMake'):
+        msbuild_args=None,
+        output_libs_path = 'Libs/lib_CMake',
+        output_lib_folder='win',
+        static_runtime=False):
     # Folders for the library to be built into
     build_x86_folder = os.path.join(gen_folder_path, 'build_win32_x86')
     build_x64_folder = os.path.join(gen_folder_path, 'build_win32_x64')
 
+    if static_runtime:
+        override_file=os.path.abspath(os.path.join(os.getcwd(), '../cmake/msvc_static_runtime.cmake'))
+        cmake_additional_args.append('-DCMAKE_USER_MAKE_RULES_OVERRIDE={}'.format(override_file))
+
     # Generate & build
-    cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args)
-    cmake_generate_build_vs(build_x64_folder, source_folder_path, build_config.get_cmake_generator_win32_x64(), solution_name, target_name, 'x64', cmake_additional_args)
+    cmake_generate_build_vs(build_x86_folder, source_folder_path, build_config.get_cmake_generator_win32_x86(), solution_name, target_name, 'Win32', cmake_additional_args, msbuild_args)
+    cmake_generate_build_vs(build_x64_folder, source_folder_path, build_config.get_cmake_generator_win32_x64(), solution_name, target_name, 'x64', cmake_additional_args, msbuild_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure
@@ -560,10 +606,10 @@ def build_and_copy_libraries_win32_cmake(
     lib_path_x64_debug = os.path.join(build_x64_folder, os.path.join(target_lib_subdir, 'Debug', built_lib_name_debug))
     lib_path_x64_release = os.path.join(build_x64_folder, os.path.join(target_lib_subdir, 'Release', built_lib_name_release))
 
-    shutil.copyfile(lib_path_x86_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x86', 'Debug'), result_lib_name_x86_debug))
-    shutil.copyfile(lib_path_x86_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x86', 'Release'), result_lib_name_x86_release))
-    shutil.copyfile(lib_path_x64_debug, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x64', 'Debug'), result_lib_name_x64_debug))
-    shutil.copyfile(lib_path_x64_release, os.path.join(mkpath(root_project_path, output_libs_path, 'win', 'x64', 'Release'), result_lib_name_x64_release))
+    shutil.copyfile(lib_path_x86_debug, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x86', 'Debug'), result_lib_name_x86_debug))
+    shutil.copyfile(lib_path_x86_release, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x86', 'Release'), result_lib_name_x86_release))
+    shutil.copyfile(lib_path_x64_debug, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x64', 'Debug'), result_lib_name_x64_debug))
+    shutil.copyfile(lib_path_x64_release, os.path.join(mkpath(root_project_path, output_libs_path, output_lib_folder, 'x64', 'Release'), result_lib_name_x64_release))
 
     return (build_x86_folder, build_x64_folder)
 
@@ -620,7 +666,10 @@ def build_and_copy_libraries_macos_cmake(
         output_libs_path='Libs/lib_CMake'):
     build_folder_macos = os.path.join(gen_folder_path, 'build_macos')
 
-    cmake_generate_build_xcode(build_folder_macos, source_folder_path, build_config.get_cmake_generator_macos(), project_name, target_name, cmake_additional_args)
+    xcodebuild_args=[
+        'MACOSX_DEPLOYMENT_TARGET='+build_config.get_macos_deployment_target(),
+    ]
+    cmake_generate_build_xcode(build_folder_macos, source_folder_path, build_config.get_cmake_generator_macos(), project_name, target_name, cmake_additional_args, xcodebuild_args=xcodebuild_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure
@@ -666,11 +715,10 @@ def build_and_copy_libraries_android_cmake(
     build_android_armeabiv7a_folder = os.path.join(gen_folder_path, 'build_android_armeabiv7a')
     build_android_x86_folder = os.path.join(gen_folder_path, 'build_android_x86')
 
-    toolchain_filepath = os.path.join(root_project_path, 'Sources/CMake/Toolchains/android.toolchain.cmake')
-    android_ndk_folder_path = get_android_ndk_path(root_project_path)
+    android_ndk_folder_path = get_android_ndk_path()
 
-    cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_folder_path, toolchain_filepath, android_ndk_folder_path, arm_abi, cmake_additional_args)
-    cmake_generate_build_ndk(build_android_x86_folder, source_folder_path, toolchain_filepath, android_ndk_folder_path, 'x86', cmake_additional_args)
+    cmake_generate_build_ndk(build_android_armeabiv7a_folder, source_folder_path, android_ndk_folder_path, arm_abi, cmake_additional_args)
+    cmake_generate_build_ndk(build_android_x86_folder, source_folder_path, android_ndk_folder_path, 'x86', cmake_additional_args)
 
     # Move built files into Libs/lib_CMake
     # TODO: update pathes after switching to new folders structure
@@ -693,6 +741,8 @@ def build_and_copy_libraries_linux_cmake(
         target_lib_subdir=''):
 
     build_folder = os.path.join(gen_folder_path, 'build_linux')
+    cmake_additional_args.append('-DCMAKE_C_COMPILER=clang')
+    cmake_additional_args.append('-DCMAKE_CXX_COMPILER=clang++')
     cmake_generate_build_make(build_folder, source_folder_path, build_config.get_cmake_generator_linux(), target, cmake_additional_args)
 
     # Move built files into Libs/lib_CMake
@@ -711,6 +761,7 @@ def build_with_autotools(source_folder_path,
                          configure_exec_name='configure',
                          make_exec_name='make',
                          make_targets=['all', 'install'],
+                         shell_prefix='sh',
                          postclean=True):
     if isinstance(configure_exec_name, list):
         if sys.platform == 'win32':
@@ -718,13 +769,13 @@ def build_with_autotools(source_folder_path,
         else:
             cmd = ['./{}'.format(configure_exec_name[0])]
             cmd.extend(configure_exec_name[1:])
-            cmd.insert(0, 'sh')
+            cmd.insert(0, shell_prefix)
     else:
         if sys.platform == 'win32':
             cmd = [configure_exec_name]
         else:
             cmd = ['./{}'.format(configure_exec_name)]
-            cmd.insert(0, 'sh')
+            cmd.insert(0, shell_prefix)
 
     cmd.extend(configure_args)
     if install_dir is not None:

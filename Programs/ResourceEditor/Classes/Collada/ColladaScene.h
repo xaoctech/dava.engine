@@ -7,7 +7,7 @@
 #include "ColladaLight.h"
 #include "ColladaMaterial.h"
 #include "ColladaMeshInstance.h"
-#include "ColladaAnimatedMesh.h"
+#include "ColladaSkinnedMesh.h"
 #include "ColladaCamera.h"
 #include "ColladaAnimation.h"
 
@@ -30,13 +30,13 @@ public:
 
     void SetupDefaultLights();
 
-    ColladaMeshInstance* CreateMeshInstance(ColladaMesh* mesh, FCDGeometryInstance* geometryInstance, bool animated);
+    ColladaMeshInstance* CreateMeshInstance(ColladaMesh* mesh, FCDGeometryInstance* geometryInstance, ColladaSkinnedMesh* skinned = nullptr);
 
     ColladaMesh* FindMeshWithName(const fm::string& name);
     ColladaTexture* FindTextureWithName(const fm::string& name);
     ColladaMaterial* FindMaterialWithName(const fm::string& name);
     ColladaLight* FindLightWithName(const fm::string& name);
-    ColladaAnimatedMesh* FindAnimatedMeshWithName(const fm::string& name);
+    ColladaSkinnedMesh* FindSkinnedMeshWithName(const fm::string& name);
 
     int FindMaterialIndex(ColladaMaterial* material);
     int FindMeshIndex(ColladaMesh* mesh);
@@ -49,7 +49,7 @@ public:
     std::vector<ColladaLight*> colladaLights;
     std::vector<ColladaMaterial*> colladaMaterials;
     std::vector<ColladaTexture*> colladaTextures;
-    std::vector<ColladaAnimatedMesh*> colladaAnimatedMeshes;
+    std::vector<ColladaSkinnedMesh*> colladaSkinnedMeshes;
 
     std::vector<ColladaLight*> colladaActiveSceneLights;
     std::vector<ColladaCamera*> colladaCameras;
@@ -62,9 +62,9 @@ public:
     float32 animationEndTime;
 
     int exportSceneLevel;
-    ColladaSceneNode* rootNode;
-    FCDSceneNode* rootFCDNode;
-    float currentTime;
+    ColladaSceneNode* rootNode = nullptr;
+    FCDSceneNode* rootFCDNode = nullptr;
+    float32 currentTime = 0.f;
 };
 };
 

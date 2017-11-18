@@ -6,13 +6,12 @@
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Qt/QtRect.h"
+#include "TArc/Qt/QtString.h"
 
 #include <Reflection/Reflection.h>
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
-
-#include <QString>
-#include <QRect>
 
 class QLayout;
 class QWidget;
@@ -58,7 +57,7 @@ public:
     QWidget* AcquireEditorWidget(const QStyleOptionViewItem& option);
     void EnsureEditorCreated(QWidget* parent);
 
-    QString GetPropertyName() const;
+    virtual QString GetPropertyName() const;
     FastName GetID() const;
     int32 GetPropertiesNodeCount() const;
     std::shared_ptr<PropertyNode> GetPropertyNode(int32 index) const;

@@ -43,8 +43,8 @@ void UILoadingScreen::OnActive()
 
     if (!thread)
     {
-        UIControlSystem::Instance()->LockSwitch();
-        UIControlSystem::Instance()->LockInput();
+        GetEngineContext()->uiControlSystem->LockSwitch();
+        GetEngineContext()->uiControlSystem->LockInput();
 
         thread = Thread::Create(Message(this, &UILoadingScreen::ThreadMessage));
         thread->SetStackSize(LOADING_THREAD_STACK_SIZE);
@@ -63,10 +63,10 @@ void UILoadingScreen::Update(float32 timeElapsed)
 
     if ((thread) && (thread->GetState() == Thread::STATE_ENDED))
     {
-        JobManager::Instance()->WaitMainJobs(thread->GetId());
+        GetEngineContext()->jobManager->WaitMainJobs(thread->GetId());
 
-        UIControlSystem::Instance()->UnlockInput();
-        UIControlSystem::Instance()->UnlockSwitch();
+        GetEngineContext()->uiControlSystem->UnlockInput();
+        GetEngineContext()->uiControlSystem->UnlockSwitch();
 
         UIScreenManager::Instance()->SetScreen(nextScreenId);
 

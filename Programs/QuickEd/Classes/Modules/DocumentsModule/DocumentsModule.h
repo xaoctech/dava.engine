@@ -1,18 +1,16 @@
 #pragma once
 
-#include "Application/QEGlobal.h"
-#include "EditorSystems/EditorSystemsManager.h"
-
-#include "Utils/PackageListenerProxy.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/UI/Preview/PreviewWidget.h"
+#include "Classes/Utils/PackageListenerProxy.h"
 
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Utils/QtConnections.h>
-
-#include <QtTools/Utils/QtDelayedExecutor.h>
+#include <TArc/Utils/QtDelayedExecutor.h>
 
 class FindInDocumentController;
-class PreviewWidget;
 class EditorSystemsManager;
 class PackageNode;
 class ControlNode;
@@ -26,31 +24,34 @@ public:
 protected:
     void OnRenderSystemInitialized(DAVA::Window* window) override;
     bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    void SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
     void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
 
     void PostInit() override;
     void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
+    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
 private:
-    void InitEditorSystems();
     void InitCentralWidget();
-    void InitWatcher();
+    void InitGlobalData();
 
     void CreateDocumentsActions();
     void RegisterOperations();
 
     //Edit
-    void CreateUndoRedoActions();
+    void CreateEditActions();
     void OnUndo();
     void OnRedo();
 
     //View
     void CreateViewActions();
+    void CreateFindActions();
 
+    void OpenPackageFiles(const QStringList& links);
     DAVA::TArc::DataContext::ContextID OpenDocument(const QString& path);
     DAVA::RefPtr<PackageNode> CreatePackage(const QString& path);
 
@@ -65,10 +66,13 @@ private:
 
     bool HasUnsavedDocuments() const;
     bool SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID);
-    void SaveAllDocuments();
-    void SaveCurrentDocument();
+    bool SaveAllDocuments();
+    bool SaveCurrentDocument();
+    void DiscardUnsavedChanges();
 
     void SelectControl(const QString& documentPath, const QString& controlPath);
+
+    void OnEmulationModeChanged(bool mode);
 
     //previewWidget helper functions
     void ChangeControlText(ControlNode* node);
@@ -84,14 +88,13 @@ private:
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
 
-    PreviewWidget* previewWidget = nullptr;
-    std::unique_ptr<EditorSystemsManager> systemsManager;
+    void OnSelectInFileSystem();
+    void OnDroppingFile(bool droppingFile);
+
+    QPointer<PreviewWidget> previewWidget;
     DAVA::TArc::QtConnections connections;
 
-    friend class FindInDocumentController;
-    std::unique_ptr<FindInDocumentController> findInDocumentController;
-
-    QtDelayedExecutor delayedExecutor;
+    DAVA::TArc::QtDelayedExecutor delayedExecutor;
 
     PackageListenerProxy packageListenerProxy;
 

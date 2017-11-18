@@ -46,7 +46,7 @@ void AttachEntityToSlot::Redo()
 
     if (redoEntityInited == false)
     {
-        redoEntity = DAVA::RefPtr<DAVA::Entity>::ConstructWithRetain(system->AttachEntity(component, redoItemName));
+        redoEntity = system->AttachEntity(component, redoItemName);
         if (redoEntity.Get() == nullptr)
         {
             DAVA::Logger::Error("Couldn't load item %s to slot %s", redoItemName.c_str(), component->GetSlotName().c_str());

@@ -1,0 +1,394 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: maya/scripts/oslparser.py</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/maya_2scripts_2oslparser_8py-example.html','api_maya_2scripts_2oslparser_8py_example_html77de77cb-1bfe-4f62-8756-3aef0c30b437','index.html',location.hash); javascript:initPage('API: maya/scripts/oslparser.py','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="maya_2scripts_2oslparser_8py-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=maya/scripts/oslparser.py&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>maya/scripts/oslparser.py</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">maya/scripts/oslparser.py</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="keyword">import</span> collections
+<span class="keyword">import</span> sys
+<span class="keyword">import</span> re
+<span class="keyword">import</span> shlex
+
+<span class="keyword">def </span>strip_annotations(line):
+        <span class=
+"comment"># A programmer once had a problem and thought: "Hey,</span>
+        <span class=
+"comment"># I can solve this with regular expressions!". Now he</span>
+        <span class="comment"># has two problems...</span>
+        <span class="keywordflow">return</span> re.sub(<span class=
+"stringliteral">r'\[\[.*?\]\]'</span>, <span class=
+"stringliteral">''</span>, line)
+
+<span class="keyword">def </span>strip_body(line):
+        <span class="keywordflow">while</span> <span class=
+"keyword">True</span>:
+                (line, replacements) = re.subn(<span class=
+"stringliteral">r'\{[^\{\}]*\}'</span>, <span class=
+"stringliteral">''</span>, line)
+                <span class=
+"keywordflow">if</span> replacements == 0:
+                        <span class=
+"keywordflow">return</span> line
+        
+<span class="keyword">def </span>merge_lines(lines):
+        <span class="keywordflow">return</span> <span class=
+"stringliteral">' '</span>.join(<span class=
+"stringliteral">' '</span>.join(lines).splitlines())
+
+<span class="keyword">def </span>strip_comments(lines):
+        <span class=
+"keywordflow">return</span> [line.split(<span class=
+"stringliteral">'//'</span>)[0] <span class=
+"keywordflow">for</span> line <span class=
+"keywordflow">in</span> lines]
+
+<span class="keyword">def </span>strip_preprocessor(lines):
+        <span class=
+"keywordflow">return</span> [line.split(<span class=
+"stringliteral">'#'</span>)[0] <span class=
+"keywordflow">for</span> line <span class=
+"keywordflow">in</span> lines]
+        
+<span class="keyword">def </span>find_shader(line):
+        <span class="keywordflow">if</span> <span class=
+"stringliteral">'surface'</span> <span class=
+"keywordflow">in</span> line:
+                <span class=
+"keywordflow">return</span> line[line.find(<span class=
+"stringliteral">'surface'</span>):]
+        <span class="keywordflow">if</span> <span class=
+"stringliteral">'shader'</span> <span class=
+"keywordflow">in</span> line:
+                <span class=
+"keywordflow">return</span> line[line.find(<span class=
+"stringliteral">'shader'</span>):]
+        
+<span class="keyword">class </span>OslParser(object):
+        <span class="keyword">def </span>__init__(self, in_file):
+                self.in_file = in_file
+                self.params = []
+
+        <span class="keyword">def </span>parse(self):
+                lines = list(self.in_file)
+                lines = strip_comments(lines)
+                lines = strip_preprocessor(lines)
+                line = merge_lines(lines)
+                line = strip_body(line)
+                line = strip_annotations(line)
+                line = find_shader(line)
+                <span class="comment"># print line</span>
+                self.parse_signature(line)
+        
+        <span class=
+"keyword">def </span>parse_default(self, paramList):
+                typeName = paramList[0]
+                <span class=
+"keywordflow">if</span> len(paramList) &lt; 3 <span class=
+"keywordflow">and</span> paramList[2] != <span class=
+"stringliteral">'='</span>:
+                        <span class=
+"keywordflow">print</span> <span class=
+"stringliteral">'error parsing default'</span>
+                <span class=
+"keywordflow">elif</span> typeName == <span class=
+"stringliteral">'color'</span>:
+                        <span class=
+"keywordflow">if</span> paramList[3] == <span class=
+"stringliteral">'color'</span>:
+                                <span class=
+"keywordflow">return</span> (float(paramList[4]), float(paramList[6]), float(paramList[8]))
+                        <span class="keywordflow">else</span>:
+                                p = float(paramList[3])
+                                <span class=
+"keywordflow">return</span> (p, p, p)
+                <span class=
+"keywordflow">elif</span> typeName == <span class=
+"stringliteral">'float'</span>:
+                        <span class="keywordflow">try</span>:
+                                <span class=
+"keywordflow">return</span> float(paramList[3])
+                        <span class="keywordflow">except</span>:
+                                <span class=
+"comment"># Cases like assigning u to a texture coord</span>
+                                <span class=
+"keywordflow">return</span> 0
+                <span class=
+"keywordflow">elif</span> typeName == <span class=
+"stringliteral">'string'</span>:
+                        <span class=
+"keywordflow">return</span> paramList[3]
+                <span class=
+"keywordflow">elif</span> typeName == <span class=
+"stringliteral">'int'</span>:
+                        <span class=
+"keywordflow">return</span> int(paramList[3])
+                <span class=
+"keywordflow">elif</span> typeName == <span class=
+"stringliteral">'normal'</span>:
+                        <span class=
+"comment"># not properly supported</span>
+                        <span class=
+"keywordflow">return</span> (1, 0, 0)
+                <span class="keywordflow">else</span>:
+                        <span class=
+"keywordflow">print</span>(<span class=
+"stringliteral">"Unknown type "</span> + typeName)
+
+
+        <span class=
+"keyword">def </span>add_parameter(self, paramList):
+                data = (paramList[1], paramList[0], self.parse_default(paramList))
+                self.params.append(data)
+
+        <span class=
+"keyword">def </span>parse_signature(self, line):
+                startPar = line.find(<span class=
+"stringliteral">'('</span>)
+                params = line[startPar:]
+                myshlex = shlex.shlex(params)
+                myshlex.wordchars = myshlex.wordchars + <span class="stringliteral">'.'</span>
+                lexed = list(myshlex)
+                <span class="comment"># print lexed</span>
+                paramLevel = 0
+                accumulated = []
+                <span class=
+"comment"># Split our tokens into parameter declarations</span>
+                <span class=
+"keywordflow">for</span> token <span class=
+"keywordflow">in</span> lexed:
+                        <span class=
+"comment"># Deal with parenthises</span>
+                        <span class=
+"keywordflow">if</span> token == <span class=
+"stringliteral">'('</span>:
+                                paramLevel = paramLevel + 1
+                        <span class=
+"keywordflow">elif</span> token == <span class=
+"stringliteral">')'</span>:
+                                paramLevel = paramLevel - 1
+                        <span class=
+"keywordflow">elif</span> token == <span class=
+"stringliteral">','</span> <span class=
+"keywordflow">and</span> paramLevel == 1:
+                                <span class=
+"comment"># We just finalized a parameter</span>
+                                <span class=
+"comment"># print accumulated</span>
+                                self.add_parameter(accumulated)
+                                accumulated = []
+                        <span class="keywordflow">else</span>:
+                                accumulated.append(token)
+                <span class=
+"keywordflow">if</span> len(accumulated) != 0:
+                        self.add_parameter(accumulated)
+                <span class="comment"># print params</span>
+                <span class="comment"># for param in params:</span>
+                <span class=
+"comment">#       if '=' in param:</span>
+                <span class=
+"comment">#               decl = param.split('=')</span>
+                <span class=
+"comment">#               # print decl</span>
+                <span class=
+"comment">#               type, name = decl[0].split()</span>
+                <span class=
+"comment">#               dataPair = (name, type)</span>
+                <span class=
+"comment">#               self.params.append(dataPair)</span>
+
+<span class="keyword">def </span>unit_tests():
+        fail = 0
+        <span class=
+"keywordflow">if</span> strip_comments([<span class=
+"stringliteral">"a // b // c"</span>]) == [<span class=
+"stringliteral">"a "</span>]:
+                fail += 1
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"strip_comments() failed"</span>
+        <span class="keywordflow">if</span> <span class=
+"keywordflow">not</span> strip_preprocessor([<span class=
+"stringliteral">"#include &lt;adf&gt;"</span>]) == [<span class=
+"stringliteral">""</span>]:
+                fail += 1
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"strip_preprocessor() failed"</span>
+        <span class="keywordflow">if</span> <span class=
+"keywordflow">not</span> strip_annotations(<span class=
+"stringliteral">"a [[ b ]] c [[ d ]] e"</span>) == <span class=
+"stringliteral">"a  c  e"</span>:
+                fail += 1
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"strip_annotations() failed"</span>
+        <span class="keywordflow">if</span> <span class=
+"keywordflow">not</span> strip_body(<span class=
+"stringliteral">"a { b { c } d } e { f } g"</span>) == <span class=
+"stringliteral">"a  e  g"</span>:
+                fail += 1
+                <span class="keywordflow">print</span> <span class=
+"stringliteral">"strip_body() failed"</span>
+        <span class="keywordflow">return</span> fail
+        
+                                
+<span class="keyword">def </span>main():
+        <span class="comment"># f = unit_tests()</span>
+        <span class="comment"># if f &gt; 0:</span>
+        <span class=
+"comment">#       print str(f) + " unit tests failed!"</span>
+        osl_parser = OslParser(sys.stdin)
+        osl_parser.parse()
+        params = osl_parser.params
+        <span class="keywordflow">print</span> params
+
+<span class="keywordflow">if</span> __name__ == <span class=
+"stringliteral">'__main__'</span>:
+        main()
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

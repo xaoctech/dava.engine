@@ -6,7 +6,6 @@
 #include "Scene3D/Scene.h"
 #include "Base/StaticSingleton.h"
 
-#include "Settings/SettingsManager.h"
 #include "Command/Command.h"
 
 #include "Scene/System/ModifSystem.h"
@@ -16,10 +15,8 @@
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/RulerToolSystem.h"
 #include "Scene/System/StructureSystem.h"
-#include "Scene/System/EditorParticlesSystem.h"
 #include "Scene/System/EditorLightSystem.h"
 #include "Scene/System/TextDrawSystem.h"
-#include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/EditorMaterialSystem.h"
 #include "Scene/System/WayEditSystem.h"
@@ -41,11 +38,20 @@ class HoodSystem;
 class EditorLODSystem;
 class EditorStatisticsSystem;
 class EditorVegetationSystem;
+class EditorParticlesSystem;
 class FogSettingsChangedReceiver;
 class VisibilityCheckSystem;
 class RECommandStack;
 class EditorSceneSystem;
 class EditorSlotSystem;
+
+namespace DAVA
+{
+namespace TArc
+{
+class PropertiesHolder;
+}
+}
 
 class SceneEditor2 : public DAVA::Scene
 {
@@ -80,7 +86,6 @@ public:
     EditorParticlesSystem* particlesSystem = nullptr;
     EditorLightSystem* editorLightSystem = nullptr;
     TextDrawSystem* textDrawSystem = nullptr;
-    DebugDrawSystem* debugDrawSystem = nullptr;
     BeastSystem* beastSystem = nullptr;
     DAVA::StaticOcclusionBuildSystem* staticOcclusionBuildSystem = nullptr;
     EditorMaterialSystem* materialSystem = nullptr;
@@ -94,7 +99,13 @@ public:
     PathSystem* pathSystem = nullptr;
 
     //to manage editor systems adding/deleting
-    void AddSystem(DAVA::SceneSystem* sceneSystem, DAVA::uint64 componentFlags, DAVA::uint32 processFlags = 0, DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr, DAVA::SceneSystem* insertBeforeSceneForInput = nullptr, DAVA::SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
+    void AddSystem(DAVA::SceneSystem* sceneSystem,
+                   DAVA::uint64 componentFlags,
+                   DAVA::uint32 processFlags = 0,
+                   DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr,
+                   DAVA::SceneSystem* insertBeforeSceneForInput = nullptr,
+                   DAVA::SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
+
     void RemoveSystem(DAVA::SceneSystem* sceneSystem) override;
 
     template <typename T>
@@ -124,7 +135,6 @@ public:
     void BeginBatch(const DAVA::String& text, DAVA::uint32 commandsCount = 1);
     void EndBatch();
 
-    void ActivateCommandStack();
     void Exec(std::unique_ptr<DAVA::Command>&& command);
     void RemoveCommands(DAVA::uint32 commandId);
 
@@ -165,6 +175,8 @@ public:
     void Deactivate() override;
 
     void EnableEditorSystems();
+    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
+    void SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
 
     DAVA::uint32 GetFramesCount() const;
     void ResetFramesCount();
@@ -191,8 +203,6 @@ protected:
 
     void RemoveSystems();
 
-    bool wasChanged; //deprecated
-
     void Setup3DDrawing();
 
     DAVA::uint32 framesCount = 0;
@@ -207,11 +217,6 @@ private:
 
         void AccumulateDependentCommands(REDependentCommandsHolder& holder) override;
         void Notify(const RECommandNotificationObject& commandNotification) override;
-        void CleanChanged(bool clean) override;
-        void CanUndoChanged(bool canUndo) override;
-        void CanRedoChanged(bool canRedo) override;
-        void UndoTextChanged(const DAVA::String& undoText) override;
-        void RedoTextChanged(const DAVA::String& redoText) override;
 
     private:
         SceneEditor2* editor = nullptr;

@@ -51,6 +51,19 @@ UIControl* UIPackage::GetPrototype(const FastName& name) const
     return nullptr;
 }
 
+RefPtr<UIControl> UIPackage::ExtractPrototype(const String& name)
+{
+    return ExtractPrototype(FastName(name));
+}
+
+RefPtr<UIControl> UIPackage::ExtractPrototype(const FastName& name)
+{
+    RefPtr<UIControl> prototype;
+    prototype = GetPrototype(name);
+    RemovePrototype(prototype.Get());
+    return prototype;
+}
+
 void UIPackage::AddPrototype(UIControl* control)
 {
     control->SetPackageContext(controlPackageContext);
@@ -92,6 +105,19 @@ UIControl* UIPackage::GetControl(const FastName& name) const
     }
 
     return nullptr;
+}
+
+RefPtr<UIControl> UIPackage::ExtractControl(const String& name)
+{
+    return ExtractControl(FastName(name));
+}
+
+RefPtr<UIControl> UIPackage::ExtractControl(const FastName& name)
+{
+    RefPtr<UIControl> control;
+    control = GetControl(name);
+    RemoveControl(control.Get());
+    return control;
 }
 
 void UIPackage::AddControl(UIControl* control)

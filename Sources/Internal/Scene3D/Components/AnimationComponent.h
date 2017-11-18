@@ -71,13 +71,6 @@ private:
 
     Matrix4 animationTransform;
 
-public:
-    INTROSPECTION_EXTEND(AnimationComponent, Component,
-                         MEMBER(repeatsCount, "repeatsCount", I_VIEW | I_EDIT | I_SAVE)
-                         PROPERTY("isPlaying", "isPlaying", GetIsPlaying, SetIsPlaying, I_SAVE | I_EDIT | I_VIEW)
-                         MEMBER(animationTimeScale, "animationTimeScale", I_VIEW | I_EDIT | I_SAVE)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(AnimationComponent, Component);
 };
 

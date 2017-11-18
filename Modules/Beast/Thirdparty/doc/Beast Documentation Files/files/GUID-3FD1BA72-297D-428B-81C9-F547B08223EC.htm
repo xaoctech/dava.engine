@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-3FD1BA72-297D-428B-81C9-F547B08223EC" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A" />
+      <title>Sample XML Configuration File for Classic Material Rendering</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-3FD1BA72-297D-428B-81C9-F547B08223EC.htm',                           'd30e8637','index.html',location.hash);                           javascript:initPage('Sample XML Configuration File for Classic Material Rendering','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-3FD1BA72-297D-428B-81C9-F547B08223EC.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-3FD1BA72-297D-428B-81C9-F547B08223EC.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Sample XML Configuration File for Classic Material Rendering&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Rendering the Scene</div><a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Rendering the Scene</div><a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Render Targets</div><a href="GUID-C5DEE2AC-1BFE-4C80-8370-03BBFD925C4D.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-CEB95E04-0028-40FE-9D9D-07AA2A5DF64A.htm">Rendering the Scene</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-B49F83AA-C21E-47E7-AEE1-7214408D4EF9"></a></span><h1>Sample XML Configuration File for Classic Material Rendering</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-3FD1BA72-297D-428B-81C9-F547B08223EC"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-47D65EC0-73E8-40A0-9F57-434AB41ABE10"></a></span>If you use the "classic" material system, the XML configuration file offers a wide variety of settings for configuring the
+            way the rendering and baking is carried out. In practice, the default values for most of these settings produce good results
+            for most projects. The minimal sample configuration below isolates just the most important configuration settings, which are
+            typically tuned differently for each project or even each scene. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-77DA98D4-C115-40F0-A6A9-F5AC06F6D605"></a></span>For detailed descriptions of all possible configuration parameters, including the ones shown below, see the <span class="char_link"><a href="GUID-F64DB7DB-534D-4B24-8556-FE2AF7F6B1CD.htm"> XML Reference</a></span>. 
+         </p>
+         <div class="codeBlock"><pre class="prettyprint">&lt;ILConfig&gt;
+  &lt;!-- Global illumination settings. --&gt;
+  &lt;GISettings&gt;
+    &lt;enableGI&gt;true&lt;/enableGI&gt;
+    &lt;primaryIntegrator&gt;FinalGather&lt;/primaryIntegrator&gt;
+    &lt;secondaryIntegrator&gt;PathTracer&lt;/secondaryIntegrator&gt;
+    &lt;fgRays&gt;500&lt;/fgRays&gt;
+    &lt;fgContrastThreshold&gt;0.1&lt;/fgContrastThreshold&gt;
+  &lt;/GISettings&gt;
+  &lt;!-- Sampling settings for texture targets. --&gt;
+  &lt;AASettings&gt;
+    &lt;minSampleRate&gt;0&lt;/minSampleRate&gt;
+    &lt;maxSampleRate&gt;2&lt;/maxSampleRate&gt;
+    &lt;contrast&gt;0.1&lt;/contrast&gt;
+    &lt;filter&gt;Gauss&lt;/filter&gt;
+    &lt;filterSize&gt;&lt;x&gt;1.0&lt;/x&gt;&lt;y&gt;1.0&lt;/y&gt;&lt;/filterSize&gt;
+  &lt;/AASettings&gt;
+&lt;/ILConfig&gt;
+</pre></div>
+         <p><span class="anchor_wrapper"><a name="GUID-0113BFCE-5380-4327-B474-741971D299D8"></a></span>Note that if you use physical materials in your scene, the parameters in the <span class="code" translate="no">GISettings</span> and <span class="code" translate="no">AASettings</span> groups are not read. You configure global illumination and anti-aliasing settings using the functions in the <span class="charspan-msgph" translate="no">Beast</span> API instead. 
+         </p>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

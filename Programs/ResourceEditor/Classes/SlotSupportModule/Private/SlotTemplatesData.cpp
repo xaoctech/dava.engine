@@ -1,6 +1,4 @@
 #include "Classes/SlotSupportModule/Private/SlotTemplatesData.h"
-#include "Classes/Settings/Settings.h"
-#include "Classes/Settings/SettingsManager.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -32,21 +30,6 @@ DAVA::Vector<SlotTemplatesData::Template> SlotTemplatesData::GetTemplates() cons
     }
 
     return result;
-}
-
-DAVA::Color SlotTemplatesData::GetBoxColor() const
-{
-    return SettingsManager::Instance()->GetValue(Settings::Scene_Slot_Box_Color).AsColor();
-}
-
-DAVA::Color SlotTemplatesData::GetBoxEdgesColor() const
-{
-    return SettingsManager::Instance()->GetValue(Settings::Scene_Slot_Box_Edges_Color).AsColor();
-}
-
-DAVA::Color SlotTemplatesData::GetPivotColor() const
-{
-    return SettingsManager::Instance()->GetValue(Settings::Scene_Slot_Pivot_Color).AsColor();
 }
 
 void SlotTemplatesData::Clear()

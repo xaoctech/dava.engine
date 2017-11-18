@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html>
+   <head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<link href="../style/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="../scripts/prettify.js"></script>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="product" content="3DSMAX" />
+      <meta name="release" content="NA" />
+      <meta name="book" content="Developer" />
+      <meta name="created" content="2014-04-23" />
+      <meta name="topicid" content="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C" />
+      <meta name="topic-type" content="concept" />
+      <meta name="parent-id" content="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89" />
+      <title>Creating Classic Materials</title>
+      <link rel="stylesheet" type="text/css" href="../style/adsk.cpm.css" />
+      <link rel="stylesheet" type="text/css" href="../style/sdk-custom-html.css" /><script type="text/javascript" src="../scripts/ac_common.js"></script><script type="text/javascript" src="../scripts/adsk.strings.js"></script><script type="text/javascript" src="../scripts/adsk.common.js"></script><script type="text/javascript" src="../scripts/adsk.highlight.js"></script><script type="text/javascript" src="../scripts/common-processing.js"></script><script src="../scripts/multireflink.js" type="text/javascript"></script><script type="text/javascript">
+reflinkdata.push(["ILBBeginScene()", "../api/beastscene_8h.html#ac0cdb9df4007ae693f537fb26ab0942f", "API"]); 
+reflinkdata.push(["ILBBeginPhysicalScene()", "../api/beastscene_8h.html#a0a467a88ff313a3165115a9a3836552f", "API"]); 
+reflinkdata.push(["ILBMaterialChannel", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79", "API"]); 
+reflinkdata.push(["ILB_CC_DIFFUSE", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a6e437d4d3c1a61b8a515ba8309ce5d90", "API"]); 
+reflinkdata.push(["ILB_CC_SPECULAR", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a282bc965c2f636dc67945ebd3cfa1908", "API"]); 
+reflinkdata.push(["ILB_CC_EMISSIVE", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a5cca56af89bf2094101d8372e4426a0a", "API"]); 
+reflinkdata.push(["ILB_CC_TRANSPARENCY", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a16e641b70306aa44d29fad17fafd1673", "API"]); 
+reflinkdata.push(["ILB_CC_NONDIRECTIONAL", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac79fea3e8871e4d96af143e20d881854", "API"]); 
+reflinkdata.push(["ILBSetNondirectionalScale()", "../api/beastrenderpass_8h.html#a2dc9ba10f419c629b6ea8801ee3136dc", "API"]); 
+reflinkdata.push(["ILB_CC_NORMAL", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a12553027d9b534f95e362c67915bba88", "API"]); 
+reflinkdata.push(["ILBSetMaterialColor()", "../api/beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb", "API"]); 
+reflinkdata.push(["ILBSetMaterialTexture()", "../api/beastmaterial_8h.html#ae0b57662c4b5194a1130397a9a2911b9", "API"]); 
+reflinkdata.push(["ILBSetMaterialUseVertexColors()", "../api/beastmaterial_8h.html#a1b9439c5772d4417e0a893e1d30fceb1", "API"]); 
+reflinkdata.push(["ILBSetMaterialScale()", "../api/beastmaterial_8h.html#acd427d12f671d3db463660b9f42c0a7a", "API"]); 
+reflinkdata.push(["ILB_CC_SHININESS", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79ac9b8d28e8d6226c3c92843431b92d8f5", "API"]); 
+reflinkdata.push(["ILB_CC_REFLECTION", "../api/beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a10315899384d8b10c5ba28192efd65ce", "API"]); 
+reflinkdata.push(["ILBSetAlphaAsTransparency()", "../api/beastmaterial_8h.html#a44a0ff8a26ee725215dbc7edd26dc94e", "API"]); 
+reflinkdata.push(["ILBMaterialHandle", "../api/struct_i_l_b_material_handle.html", "API"]); 
+reflinkdata.push(["ILBCreateMaterial()", "../api/beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e", "API"]); 
+reflinkdata.push(["beastmaterial.h", "../api/beastmaterial_8h.html", "API"]); 
+reflinkdata.push(["ILBCreateMaterial", "../api/beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e", "API"]); 
+reflinkdata.push(["ILBSetMaterialTexture", "../api/beastmaterial_8h.html#ae0b57662c4b5194a1130397a9a2911b9", "API"]); 
+reflinkdata.push(["ILBSetMaterialColor", "../api/beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb", "API"]); 
+reflinkdata.push(["ILBLinearRGBA", "../api/struct_i_l_b_linear_r_g_b_a.html", "API"]); 
+reflinkdata.push(["ILBSetMaterialScale", "../api/beastmaterial_8h.html#acd427d12f671d3db463660b9f42c0a7a", "API"]); 
+</script><script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+   <body height="100%" onload="javascript:initFrame('files/GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm',                           'd30e7135','index.html',location.hash);                           javascript:initPage('Creating Classic Materials','Beast Documentation');                           javascript:convSymbols();                           ; javascript:prettyPrint()" onclick="closeRefLinkDiv();"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+      <div class="head">
+         <div class="head-block">
+            <div class="nav-group">
+               <!--browse buttons-->
+               <div class="browse">
+                  <nobr>
+                     <div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+                        <div id="AddFavTitle" style="display:none">Add to Favorites</div><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm" class="headNavLink" onclick="javascript:top.HlpSys.favorites.addToFavorites(document);" onmouseover="showInfo(document.getElementById('AddFavTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/add_favorite.gif" border="0" /></a></div>
+                     <div class="headNavLinkHome">
+                        <div id="homeTitle" style="display:none">Home: Beast Documentation</div><a href="mePortal.htm" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('homeTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkShare">
+                        <div id="shareTitle" style="display:none">Share</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('shareTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.location='mailto:?subject=Creating Classic Materials&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif" border="0" /></a></div>
+                     <div class="headNavLinkPrint">
+                        <div id="printTitle" style="display:none">Print</div><a href="#" target="content" class="headNavLink" onmouseover="showInfo(document.getElementById('printTitle').innerHTML);" onmouseout="hideInfo();" onclick="window.print()"><img src="../images/nav-print.gif" border="0" /></a></div><span class="home-button-separator">&nbsp;</span><div class="headNavLinkPrev">
+                        <div id="prevTitle" style="display:none">Creating Physical Materials</div><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('prevTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-prev-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkUp">
+                        <div id="parentTitle" style="display:none">Creating Physical Materials</div><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('parentTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-up-xp.gif" border="0" /></a></div>
+                     <div class="headNavLinkNext">
+                        <div id="nextTitle" style="display:none">Creating Light Sources</div><a href="GUID-47547F92-858D-46EA-8DD0-44B34D8BE9AE.htm" class="headNavLink" onmouseover="showInfo(document.getElementById('nextTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/nav-next-xp.gif" border="0" /></a></div>
+                  </nobr>
+               </div>
+               <!--end browse buttons-->
+            </div>
+            <div class="button-info"><span id="infoline">&nbsp;</span></div>
+            <div class="ancestry"><a href="GUID-6F3CD6B9-3B62-433A-86AC-5534C8DEC055.htm">Integrating the Beast API</a>&nbsp;&gt;&nbsp;<a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a>&nbsp;&gt;&nbsp;<a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a>&nbsp;&gt;&nbsp;
+            </div>
+            <div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span class="anchor_wrapper"><a name="GUID-BA651A88-9E3E-4F34-9D0D-693032FCBD6A"></a></span><h1>Creating Classic Materials</h1>
+            </div></div>
+         </div>
+      </div>
+      <div class="head-margin">&nbsp;</div>
+      <div style="line-height: 0pt">&nbsp;</div>
+      <div class="head-margin">&nbsp;</div>
+      <div class="body_content"><span class="anchor_wrapper"><a name="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C"></a></span>
+         <!--Body--><p><span class="anchor_wrapper"><a name="GUID-D81B4FDD-967B-4BA6-81D1-39EDDD10A03C"></a></span> Materials define the way the surfaces of your meshes react to light. 
+         </p>
+         <p><span class="anchor_wrapper"><a name="GUID-BA96E6BB-A237-4DF3-A834-C3FBD4820836"></a></span>You define materials within a scene. When you create a mesh, you give each of its triangles a material by name. Then, when
+            you create an instance of a mesh within a scene, each of its triangles uses the material in that scene whose name matches
+            the name of the material assigned to it when the mesh was created. See <span class="char_link"><a href="GUID-05260A27-1320-427C-A3FF-4D7ECA3B3258.htm">Creating Meshes</a></span>. You can also override the materials used in each instance of a mesh. See <span class="char_link"><a href="GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm">Creating Mesh Instances</a></span>. 
+         </p>
+         <div><span class="anchor_wrapper"><a name="GUID-497B16EC-842A-45C8-A4E8-4E176D49713D"></a></span><div class="note-note"><span class="label">Note</span>The "classic materials" approach described on this page is now considered deprecated, although it is still supported in the
+               current release. If you are starting a new integration of <span class="charspan-msgph" translate="no">Beast</span>, it is highly recommended that you use the new physical material system, as described in <span class="char_link"><a href="GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating Physical Materials</a></span>. If you do intend to use the material system outlined below, you must create your scene using the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginScene()'); return false;">ILBBeginScene()</a></span> function instead of <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBBeginPhysicalScene()'); return false;">ILBBeginPhysicalScene()</a></span>. 
+            </div>
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_4477AF0319594DF8A18E58B7078A1C05"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7165"></a><span class="anchor_wrapper"><a name="GUID-3E1293D3-6F2E-4BE8-A552-CE7F7167998D"></a></span>Channels
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-BDCCF08A-E976-4008-A7F7-0F6A4C9E6952"></a></span>In <span class="charspan-msgph" translate="no">Beast</span>, materials are based on the Phong model. They contain multiple channels, identified by the elements in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialChannel'); return false;">ILBMaterialChannel</a></span> enumeration. Each channel defines a different kind of information about the material, and can store different kinds of data.
+               
+            </p> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_8B41AD4DD2774A6CA2D1C3F9A664508B"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7179"></a><span class="anchor_wrapper"><a name="GUID-72114245-45A1-4E51-9DEF-1E364E2C393C"></a></span>Color channels
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-1649236D-F564-45D2-9BC0-4EDB96E77A3A"></a></span>The following channels store a color value and a scalar value that determines the scale or intensity of that color. 
+               </p> <span class="anchor_wrapper"><a name="UL_46AF9515B81240E182C8E454E824E262"></a></span><ul>
+                  <li>The diffuse channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_DIFFUSE'); return false;">ILB_CC_DIFFUSE</a></span>) stores the base color of the surface. 
+                  </li>
+                  <li>The specular channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_SPECULAR'); return false;">ILB_CC_SPECULAR</a></span>) stores the color used for specular highlights. 
+                  </li>
+                  <li>The emissive channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_EMISSIVE'); return false;">ILB_CC_EMISSIVE</a></span>) stores a color that should be emitted from the surface. 
+                  </li>
+                  <li>The transparency channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_TRANSPARENCY'); return false;">ILB_CC_TRANSPARENCY</a></span>) determines what color of incoming light will shine through the surface. It is defined in the opposite way to a typical alpha
+                     channel, so that if you set the color value to <span class="code" translate="no">(1.0f, 0.0f, 0.0f)</span> the object will let red light pass through. Its shadow will also appear to be red. 
+                  </li>
+                  <li>The non-directional channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_NONDIRECTIONAL'); return false;">ILB_CC_NONDIRECTIONAL</a></span>) allows you to blend in a lighting contribution that is independent of the surface normal. This is useful for objects like
+                     vegetation that have very simple geometry representations. The nondirectional contribution is only added to the baked results,
+                     but never affects the light simulation. You can scale the intensity of the nondirectional contribution by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetNondirectionalScale()'); return false;">ILBSetNondirectionalScale()</a></span>. This channel is only supported for the RNM render pass. See also <span class="char_link"><a href="GUID-8074C0E6-3A5D-4713-B101-C5DD448D8546.htm">Creating Render Passes</a></span>. 
+                  </li>
+                  <li>The normal map channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_NORMAL'); return false;">ILB_CC_NORMAL</a></span>) allows you to provide a high-detail representation of local deviations in the surface texture. These normal maps are taken
+                     into account during the illumination pass. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-0CBF6A93-12C6-46D7-B9F0-B6EB1AB29C41"></a></span>The color in each of these channels may be drawn from any of the following sources: 
+               </p> <span class="anchor_wrapper"><a name="UL_8602DBD590A34ECFAD7EC6F94E990345"></a></span><ul>
+                  <li>It may be a flat constant value. You can set the color value of a channel through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialColor()'); return false;">ILBSetMaterialColor()</a></span>. 
+                  </li>
+                  <li>It may be drawn from a texture. You can set the texture of a channel through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialTexture()'); return false;">ILBSetMaterialTexture()</a></span>. 
+                  </li>
+                  <li>It may be drawn from vertex colors stored in the mesh. The vertex colors are interpolated across the face of each triangle.
+                     You can enable vertex coloring for a channel through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialUseVertexColors()'); return false;">ILBSetMaterialUseVertexColors()</a></span>. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-EBF28D87-B6D4-4E35-886D-BD9F644BC8D8"></a></span>Scalar values for these channels are set to 1 by default. You can change the scalar value through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialScale()'); return false;">ILBSetMaterialScale()</a></span>. 
+               </p> 
+            </div> 
+            <div class="section"><span class="anchor_wrapper"><a name="SECTION_231B0EE3009C45858A3CA2ABBE64F93D"></a></span> 
+               <h3><a name="TOC_ENTRY__d30e7256"></a><span class="anchor_wrapper"><a name="GUID-30D4E82D-075B-42CD-AA4E-D02EA2776F67"></a></span>Scalar-only channels
+               </h3> 
+               <p><span class="anchor_wrapper"><a name="GUID-9CAF36A2-75DF-4136-9874-9BF5FC2025AC"></a></span>The following channels store only a scalar value: 
+               </p> <span class="anchor_wrapper"><a name="UL_B0B2A01DD338493C9F947BFEFB50440A"></a></span><ul>
+                  <li>The shininess channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_SHININESS'); return false;">ILB_CC_SHININESS</a></span>) determines how smooth and glossy the surface appears. Materials with high values will have small, sharp specular highlights;
+                     materials with low values will have wider, less intense specular highlights. 
+                  </li>
+                  <li>The reflectivity channel (<span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_REFLECTION'); return false;">ILB_CC_REFLECTION</a></span>) determines how much of the incoming light is reflected back from the surface. Reflection strength is computed by multiplying
+                     the specular channel with the reflection channel. This means that the value you set for the specular channel affects reflections
+                     as well. 
+                  </li>
+               </ul> 
+               <p><span class="anchor_wrapper"><a name="GUID-BD878218-C5F1-4C04-8CF5-D2DF766A657B"></a></span>Scalar values for these channels are set to 1 by default. You can change the scalar value through a call to <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialScale()'); return false;">ILBSetMaterialScale()</a></span>. 
+               </p> 
+            </div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_CE6BCE2564B946428FA876F92D03C489"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7283"></a><span class="anchor_wrapper"><a name="GUID-B858B3BE-508E-49F0-9EF3-F6A7CCF6A98E"></a></span>About transparency
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-C50F7875-831D-4CE4-A28A-0D6D59DEF55E"></a></span>You can make your materials transparent in either of the following ways: 
+            </p> <span class="anchor_wrapper"><a name="UL_6BA155D8CFF64EAF96090480BBDEEF7E"></a></span><ul>
+               <li>By setting color values in the transparency channel. </li>
+               <li>By using the alpha values set in the diffuse channel to determine how opaque the material is. To set this up, call the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetAlphaAsTransparency()'); return false;">ILBSetAlphaAsTransparency()</a></span> function. Alpha values of 1 will be opaque; alpha values of 0 will be transparent. Note that this approach produces monochrome
+                  shadows. 
+               </li>
+            </ul> 
+            <p><span class="anchor_wrapper"><a name="GUID-D57FD4D5-BC14-43EE-AD5B-51307BFF1180"></a></span>Note that in either case, the transparency does not affect specular highlights, emissive light or reflections. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_53F4EBA09DF1458293725FFA1C3B4095"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7303"></a><span class="anchor_wrapper"><a name="GUID-DE7C9074-B735-480D-A002-852E92158243"></a></span>The formula
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-CD9F13C4-E764-4262-939A-DA68FFC8792D"></a></span>For each light, the following equation is computed: 
+            </p> 
+            <div class="codeBlock"><span class="anchor_wrapper"><a name="NOHIGHLIGHT"></a></span><pre>(N * L) D (1 - T) + S(R * V )<sup>s</sup></pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-CA46F414-5C45-4203-A0F5-AB5B3E8CA23E"></a></span>Reflections, transmission and emissive colors are added as follows: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint">E + TC<sub>T</sub> + rSC<sub>R</sub></pre></div> 
+            <p><span class="anchor_wrapper"><a name="GUID-9F62173A-190D-45B0-A7B7-5FFD7E01A50E"></a></span>Where: 
+            </p> <span class="anchor_wrapper"><a name="UL_E83A4B0B3D7440E5A0812506BDD9FC62"></a></span><ul>
+               <li>N is the normal of the surface. </li>
+               <li>L is the direction towards the light source. </li>
+               <li>D is the diffuse color of the fragment multiplied by its scale. </li>
+               <li>T is the transparency of the fragment multiplied by its scale. </li>
+               <li>E is the emissive color of the fragment multiplied by its scale. </li>
+               <li>R is the reflected light direction. </li>
+               <li>V is the direction towards the viewer. </li>
+               <li>S is the specular color of the fragment multiplied by its scale. </li>
+               <li>s is the shininess of the fragment. </li>
+               <li>C<sub>T</sub> is the color of the transmitted ray. 
+               </li>
+               <li>r is the reflectivity of the fragment. </li>
+               <li>C<sub>R</sub> is the color of the reflection ray. 
+               </li>
+            </ul> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_6534FA7E5EAC454E825EB0F23398DD60"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7364"></a><span class="anchor_wrapper"><a name="GUID-C49A87D1-C812-404B-A84C-A8D7EDC34DED"></a></span>Insubstantial materials
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-0A227ED2-6A9A-4DEF-8494-E16AE20F396F"></a></span>When working with global illumination, insubstantial materials that amplify light can be problematic since they can drench
+               the scene in light. To avoid this, make the object glow or emit light using the emissive channel rather than large diffuse
+               or specular values. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-348F8590-3A35-443F-8583-BA9D4CD3AD57"></a></span>Clamping the material colors can also be a good idea. There is an option to do this automatically in the XML configuration
+               file; see the <span class="code" translate="no">&lt;clampMaterials&gt;</span> setting under <span class="char_link"><a href="GUID-EA20965A-23B7-45B1-B71F-E585C0806CA1.htm"> GISettings</a></span>. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_360978F1B8BF41A682C61E9A93D034E5"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7381"></a><span class="anchor_wrapper"><a name="GUID-805434FA-B898-4845-9793-EA17850DCB71"></a></span>Setting up a classic material
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-9ADF02A9-9087-4235-837A-ACE006D9E840"></a></span>You can only set up a material in the context of setting up a scene. See also <span class="char_link"><a href="GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating a Scene</a></span>. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-4B8EDA29-F31E-47E9-8B98-09DCD86606A8"></a></span>To set up a material: 
+            </p> 
+            <!--OList--><span class="anchor_wrapper"><a name="OL_4AC046A842CB444B80DD60E2A6CDAA77"></a></span><ol start="1">
+               <li>Create a new <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a></span>. 
+               </li>
+               <li>Initialize the handle by calling <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial()'); return false;">ILBCreateMaterial()</a></span>. In your call, you have to specify the handle of the scene that will contain your material, and the name of the material.
+                  This name should match the name of the material assigned to the triangles in your mesh. 
+               </li>
+               <li>Set up the channels for the material with the desired colors and strengths. For details, see <span class="char_link"><a href="GUID-70D8E9BA-D53D-4EC5-8E7E-389F6E8B663C.htm#GUID-72114245-45A1-4E51-9DEF-1E364E2C393C">Color channels</a></span> above. 
+               </li>
+            </ol> 
+            <p><span class="anchor_wrapper"><a name="GUID-8931F51D-2E1A-4D6A-A669-4FD90BFD7570"></a></span>You do not have to close or finalize the material in order to use it in a rendering pass. 
+            </p> 
+            <p><span class="anchor_wrapper"><a name="GUID-0C742BB2-D059-452A-B42E-FF8693CC287A"></a></span>For example, the following code sets up a shiny material whose base diffuse channel comes from a texture, and whose specular
+               channel reflects bluish highlights: 
+            </p> 
+            <div class="codeBlock"><pre class="prettyprint"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBMaterialHandle'); return false;">ILBMaterialHandle</a> myMat;
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBCreateMaterial'); return false;">ILBCreateMaterial</a>(scene, _T("TexturedSpec"), &amp;sm1);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialTexture'); return false;">ILBSetMaterialTexture</a>(sm1, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_DIFFUSE'); return false;">ILB_CC_DIFFUSE</a>, tex);
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialColor'); return false;">ILBSetMaterialColor</a>(sm1, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_SPECULAR'); return false;">ILB_CC_SPECULAR</a>, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBLinearRGBA'); return false;">ILBLinearRGBA</a>(0.23f, 0.10f, .7f, 1.0f));
+<a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILBSetMaterialScale'); return false;">ILBSetMaterialScale</a>(sm1, <a href="javascript:void(0)" onclick="openRefLinkDiv(event,'ILB_CC_SHININESS'); return false;">ILB_CC_SHININESS</a>, 20.0f);
+</pre></div> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_5599068625C9430CBF4637D858681849"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7422"></a><span class="anchor_wrapper"><a name="GUID-D704AA43-B48B-4DE8-9E43-6B61A3C48BD2"></a></span>Thread safety
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-1D501048-17FB-4845-A438-DCB882E7142E"></a></span>You can create multiple different materials simultaneously in multiple threads. In addition, multiple threads can find materials
+               in the cache and use them simultaneously. You can also modify a single material from multiple different threads at the same
+               time. 
+            </p> 
+         </div>
+         <div class="section"><span class="anchor_wrapper"><a name="SECTION_3F5B017701174750A97671D77741018A"></a></span> 
+            <h2><a name="TOC_ENTRY__d30e7430"></a><span class="anchor_wrapper"><a name="GUID-638E1C7D-13E1-4388-BBE3-2F05AADA42AF"></a></span>Related API functions
+            </h2> 
+            <p><span class="anchor_wrapper"><a name="GUID-A6BA9E4F-77A2-4C05-929C-BEDBBA83BB2C"></a></span>API functions related to the creation and setup of materials are declared in the <span class="code" translate="no"><a href="javascript:void(0)" onclick="openRefLinkDiv(event,'beastmaterial.h'); return false;">beastmaterial.h</a></span> file. 
+            </p> 
+         </div>
+         <div class="footer-block"><a href="javascript:doComments('../html/ac.cmtdialog.htm');"><span class="comments-link">Please send us your comment about this page</span></a></div><br /></div>
+   <div id="reflinkdiv" style="display:none; visibility:hidden; position:absolute; z-index:40001; padding:5px; border-style:solid; border-width:1px; border-color:#666666; background-color:#dfdfdf; overflow:visible"></div><script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

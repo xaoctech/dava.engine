@@ -14,6 +14,7 @@ public:
     LandscapeEditorDrawSystem::eErrorType EnableLandscapeEditing();
     bool DisableLandscapeEdititing();
 
+    void PrepareForRemove() override;
     void Process(DAVA::float32 timeElapsed) override;
     bool Input(DAVA::UIEvent* event) override;
 
@@ -41,5 +42,5 @@ protected:
     void DisablePreview();
     void SendUpdatedLength();
 
-    void Clear();
+    void ClearInternal();
 };

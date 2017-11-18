@@ -1,6 +1,7 @@
 #include "TArc/Controls/PropertyPanel/Private/kDComponentValue.h"
 #include "TArc/Controls/PropertyPanel/Private/kDComponentValueTraits.h"
 #include "TArc/Controls/PropertyPanel/Private/MultiDoubleSpinBox.h"
+#include "TArc/Controls/PropertyPanel/Private/MultiIntSpinBox.h"
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
 #include "TArc/Controls/Widget.h"
 #include "TArc/Controls/ColorPicker/ColorPickerButton.h"
@@ -18,6 +19,9 @@ namespace TArc
 template <typename T, typename TEditor, typename TComponent>
 DAVA::TArc::kDComponentValue<T, TEditor, TComponent>::kDComponentValue()
 {
+    using namespace KDComponentValueTraits;
+    InitFieldsList<T, TEditor>(fields);
+    InitRanges<T, TComponent>(nodes, ranges);
 }
 
 template <typename T, typename TEditor, typename TComponent>
@@ -41,9 +45,6 @@ bool kDComponentValue<T, TEditor, TComponent>::IsValidValueToSet(const Any& newV
 template <typename T, typename TEditor, typename TComponent>
 ControlProxy* kDComponentValue<T, TEditor, TComponent>::CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor)
 {
-    using namespace KDComponentValueTraits;
-    InitFieldsList<T, TEditor>(fields);
-    InitRanges<T>(nodes, ranges);
     if (Type::Instance<T>() == Type::Instance<Color>())
     {
         Widget* w = new Widget(parent);
@@ -183,6 +184,11 @@ int32 kDComponentValue<T, TEditor, TComponent>::GetAccuracy() const
 {
     if (!nodes.empty())
     {
+        if (DAVA::Type::Instance<T>() == DAVA::Type::Instance<Color>())
+        {
+            return 3;
+        }
+
         const M::FloatNumberAccuracy* accuracy = nodes.front()->field.ref.template GetMeta<M::FloatNumberAccuracy>();
         if (accuracy != nullptr)
         {
@@ -229,6 +235,13 @@ const M::Range* kDComponentValue<T, TEditor, TComponent>::Get6AxisRange() const
     return ranges[5].get();
 }
 
+template <typename T, typename TEditor, typename TComponent>
+bool kDComponentValue<T, TEditor, TComponent>::ShowSpinArrows() const
+{
+    const Type* componentType = Type::Instance<TComponent>();
+    return componentType != Type::Instance<float32>() && componentType != Type::Instance<float64>();
+}
+
 using Vector2ComponentValue = kDComponentValue<Vector2, MultiDoubleSpinBox, float32>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector2ComponentValue)
 {
@@ -239,6 +252,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector2ComponentValue)
     .Field("accuracy", &Vector2ComponentValue::GetAccuracy, nullptr)
     .Field("xRange", &Vector2ComponentValue::Get1AxisRange, nullptr)
     .Field("yRange", &Vector2ComponentValue::Get2AxisRange, nullptr)
+    .Field("showSpinArrows", &Vector2ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -254,6 +268,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector3ComponentValue)
     .Field("xRange", &Vector3ComponentValue::Get1AxisRange, nullptr)
     .Field("yRange", &Vector3ComponentValue::Get2AxisRange, nullptr)
     .Field("zRange", &Vector3ComponentValue::Get3AxisRange, nullptr)
+    .Field("showSpinArrows", &Vector3ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -271,6 +286,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(Vector4ComponentValue)
     .Field("yRange", &Vector4ComponentValue::Get2AxisRange, nullptr)
     .Field("zRange", &Vector4ComponentValue::Get3AxisRange, nullptr)
     .Field("wRange", &Vector4ComponentValue::Get4AxisRange, nullptr)
+    .Field("showSpinArrows", &Vector4ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
@@ -288,24 +304,44 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(RectComponentValue)
     .Field("yRange", &RectComponentValue::Get2AxisRange, nullptr)
     .Field("widthRange", &RectComponentValue::Get3AxisRange, nullptr)
     .Field("heightRange", &RectComponentValue::Get4AxisRange, nullptr)
+    .Field("showSpinArrows", &RectComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 
-using ColorComponentValue = kDComponentValue<Color, MultiDoubleSpinBox, float32>;
-DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ColorComponentValue)
+using FloatColorComponentValue = kDComponentValue<Color, MultiDoubleSpinBox, float32>;
+DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(FloatColorComponentValue)
 {
-    ReflectionRegistrator<ColorComponentValue>::Begin()
-    .Field("fieldsList", &ColorComponentValue::fields)
-    .Field("R", &ColorComponentValue::Get1Axis, &ColorComponentValue::Set1Axis)
-    .Field("G", &ColorComponentValue::Get2Axis, &ColorComponentValue::Set2Axis)
-    .Field("B", &ColorComponentValue::Get3Axis, &ColorComponentValue::Set3Axis)
-    .Field("A", &ColorComponentValue::Get4Axis, &ColorComponentValue::Set4Axis)
-    .Field("value", &ColorComponentValue::GetFullValue, &ColorComponentValue::SetFullValue)
-    .Field("accuracy", &ColorComponentValue::GetAccuracy, nullptr)
-    .Field("rRange", &ColorComponentValue::Get1AxisRange, nullptr)
-    .Field("gRange", &ColorComponentValue::Get2AxisRange, nullptr)
-    .Field("bRange", &ColorComponentValue::Get3AxisRange, nullptr)
-    .Field("aRange", &ColorComponentValue::Get4AxisRange, nullptr)
+    ReflectionRegistrator<FloatColorComponentValue>::Begin()
+    .Field("fieldsList", &FloatColorComponentValue::fields)
+    .Field("R", &FloatColorComponentValue::Get1Axis, &FloatColorComponentValue::Set1Axis)
+    .Field("G", &FloatColorComponentValue::Get2Axis, &FloatColorComponentValue::Set2Axis)
+    .Field("B", &FloatColorComponentValue::Get3Axis, &FloatColorComponentValue::Set3Axis)
+    .Field("A", &FloatColorComponentValue::Get4Axis, &FloatColorComponentValue::Set4Axis)
+    .Field("value", &FloatColorComponentValue::GetFullValue, &FloatColorComponentValue::SetFullValue)
+    .Field("accuracy", &FloatColorComponentValue::GetAccuracy, nullptr)
+    .Field("rRange", &FloatColorComponentValue::Get1AxisRange, nullptr)
+    .Field("gRange", &FloatColorComponentValue::Get2AxisRange, nullptr)
+    .Field("bRange", &FloatColorComponentValue::Get3AxisRange, nullptr)
+    .Field("aRange", &FloatColorComponentValue::Get4AxisRange, nullptr)
+    .Field("showSpinArrows", &FloatColorComponentValue::ShowSpinArrows, nullptr)
+    .End();
+}
+
+using IntColorComponentValue = kDComponentValue<Color, MultiIntSpinBox, uint32>;
+DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(IntColorComponentValue)
+{
+    ReflectionRegistrator<IntColorComponentValue>::Begin()
+    .Field("fieldsList", &IntColorComponentValue::fields)
+    .Field("R", &IntColorComponentValue::Get1Axis, &IntColorComponentValue::Set1Axis)
+    .Field("G", &IntColorComponentValue::Get2Axis, &IntColorComponentValue::Set2Axis)
+    .Field("B", &IntColorComponentValue::Get3Axis, &IntColorComponentValue::Set3Axis)
+    .Field("A", &IntColorComponentValue::Get4Axis, &IntColorComponentValue::Set4Axis)
+    .Field("value", &IntColorComponentValue::GetFullValue, &IntColorComponentValue::SetFullValue)
+    .Field("accuracy", &IntColorComponentValue::GetAccuracy, nullptr)
+    .Field("rRange", &IntColorComponentValue::Get1AxisRange, nullptr)
+    .Field("gRange", &IntColorComponentValue::Get2AxisRange, nullptr)
+    .Field("bRange", &IntColorComponentValue::Get3AxisRange, nullptr)
+    .Field("aRange", &IntColorComponentValue::Get4AxisRange, nullptr)
     .End();
 }
 
@@ -327,6 +363,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(AABBox3ComponentValue)
     .Field("maxXRange", &AABBox3ComponentValue::Get4AxisRange, nullptr)
     .Field("maxYRange", &AABBox3ComponentValue::Get5AxisRange, nullptr)
     .Field("maxZRange", &AABBox3ComponentValue::Get6AxisRange, nullptr)
+    .Field("showSpinArrows", &AABBox3ComponentValue::ShowSpinArrows, nullptr)
     .End();
 }
 

@@ -1,4 +1,6 @@
 #include "UI/Focus/UINavigationComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -14,6 +16,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UINavigationComponent)
     .Field("down", &UINavigationComponent::GetNextFocusDown, &UINavigationComponent::SetNextFocusDown)
     .End();
 }
+IMPLEMENT_UI_COMPONENT(UINavigationComponent);
 
 UINavigationComponent::UINavigationComponent()
 {

@@ -44,12 +44,6 @@ private:
     PathComponent* path = nullptr;
     PathComponent::Edge* edge = nullptr;
 
-public:
-    INTROSPECTION_EXTEND(EdgeComponent, Component,
-                         PROPERTY("Edge properties", "Edge properties", GetProperties, SetProperties, I_SAVE | I_VIEW | I_EDIT)
-                         PROPERTY("nextEntityName", "Next Entity Name", GetNextEntityName, SetNextEntityName, I_VIEW)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(EdgeComponent, Component);
 };
 

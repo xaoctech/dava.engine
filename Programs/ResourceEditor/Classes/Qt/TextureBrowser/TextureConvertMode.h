@@ -1,5 +1,4 @@
-#ifndef __RESOURCEEDITORQT_TEXTURECONVERTMODE_H__
-#define __RESOURCEEDITORQT_TEXTURECONVERTMODE_H__
+#pragma once
 
 enum eTextureConvertMode
 {
@@ -8,5 +7,3 @@ enum eTextureConvertMode
     CONVERT_NOT_EXISTENT,
     CONVERT_NOT_REQUESTED,
 };
-
-#endif

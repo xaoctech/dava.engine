@@ -219,7 +219,7 @@ void UIParticles::Draw(const UIGeometricData& geometricData)
     {
         matrix.BuildRotation(Vector3::UnitZ, -geometricData.angle);
         matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
-        effect->effectRenderObject->BindDynamicParameters(defaultCamera);
+        effect->effectRenderObject->BindDynamicParameters(defaultCamera, nullptr);
         effect->effectRenderObject->SetWorldTransformPtr(&matrix);
     }
 
@@ -230,6 +230,7 @@ void UIParticles::Draw(const UIGeometricData& geometricData)
     for (int32 i = 0, sz = effect->effectRenderObject->GetActiveRenderBatchCount(); i < sz; ++i)
     {
         RenderBatch* batch = effect->effectRenderObject->GetActiveRenderBatch(i);
+
         NMaterial* material = batch->GetMaterial();
         material->PreBuildMaterial(PASS_FORWARD);
         material->BindParams(packet);

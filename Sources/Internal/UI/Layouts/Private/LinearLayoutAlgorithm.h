@@ -3,8 +3,8 @@
 
 #include "Base/BaseTypes.h"
 #include "Math/Vector.h"
-
-#include "ControlLayoutData.h"
+#include "UI/Layouts/Private/Layouter.h"
+#include "UI/Layouts/Private/ControlLayoutData.h"
 
 namespace DAVA
 {
@@ -14,7 +14,7 @@ class UISizePolicyComponent;
 class LinearLayoutAlgorithm
 {
 public:
-    LinearLayoutAlgorithm(Vector<ControlLayoutData>& layoutData_, bool isRtl_);
+    LinearLayoutAlgorithm(Layouter& layouter);
     ~LinearLayoutAlgorithm();
 
     void SetInverse(bool inverse_);
@@ -35,8 +35,7 @@ private:
     void PlaceChildren(ControlLayoutData& data, Vector2::eAxis axis, int32 firstIndex, int32 lastIndex);
 
 private:
-    Vector<ControlLayoutData>& layoutData;
-    const bool isRtl;
+    Layouter& layouter;
 
     bool inverse = false;
     bool skipInvisible = true;

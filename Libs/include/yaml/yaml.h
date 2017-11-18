@@ -26,20 +26,17 @@ extern "C" {
 
 /** The public API declaration. */
 
-	
-//	DAVA ENGINE SPECIFIC FIX 
-// #ifdef WIN32
-// #   if defined(YAML_DECLARE_STATIC)
-// #       define  YAML_DECLARE(type)  type
-// #   elif defined(YAML_DECLARE_EXPORT)
-// #       define  YAML_DECLARE(type)  __declspec(dllexport) type
-// #   else
-// #       define  YAML_DECLARE(type)  __declspec(dllimport) type
-// #   endif
-// #else
-// #   define  YAML_DECLARE(type)  type
-// #endif
-#define  YAML_DECLARE(type)  type
+#ifdef _WIN32
+#   if defined(YAML_DECLARE_STATIC)
+#       define  YAML_DECLARE(type)  type
+#   elif defined(YAML_DECLARE_EXPORT)
+#       define  YAML_DECLARE(type)  __declspec(dllexport) type
+#   else
+#       define  YAML_DECLARE(type)  __declspec(dllimport) type
+#   endif
+#else
+#   define  YAML_DECLARE(type)  type
+#endif
 
 /** @} */
 

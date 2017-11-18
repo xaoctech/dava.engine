@@ -3,7 +3,7 @@
 
 namespace DAVA
 {
-ColladaMesh::ColladaMesh(FCDGeometryMesh* _mesh, ColladaVertexWeight* vertexWeightArray)
+ColladaMesh::ColladaMesh(FCDGeometryMesh* _mesh, ColladaVertexWeight* vertexWeightArray, uint32 maxVertexInfluence)
     : mesh(_mesh)
 {
     name = _mesh->GetDaeId();
@@ -16,7 +16,7 @@ ColladaMesh::ColladaMesh(FCDGeometryMesh* _mesh, ColladaVertexWeight* vertexWeig
     for (int p = 0; p < polygonsCount; ++p)
     {
         FCDGeometryPolygons* poly = mesh->GetPolygons(p);
-        ColladaPolygonGroup* polyGroup = new ColladaPolygonGroup(this, poly, vertexWeightArray);
+        ColladaPolygonGroup* polyGroup = new ColladaPolygonGroup(this, poly, vertexWeightArray, maxVertexInfluence);
         polygons.push_back(polyGroup);
 
         printf("- polygroup: %p\n", polyGroup);

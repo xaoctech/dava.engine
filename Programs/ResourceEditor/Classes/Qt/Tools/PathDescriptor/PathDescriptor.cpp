@@ -65,6 +65,8 @@ void PathDescriptor::InitializePathDescriptors()
     descriptors.push_back(PathDescriptor("texture", textureFilter, PathDescriptor::PATH_TEXTURE));
     descriptors.push_back(PathDescriptor("lightmap", textureFilter, PathDescriptor::PATH_TEXTURE));
     descriptors.push_back(PathDescriptor("densityMap", textureFilter, PathDescriptor::PATH_TEXTURE));
+    descriptors.push_back(PathDescriptor("Decal albedo", textureFilter, PathDescriptor::PATH_TEXTURE));
+    descriptors.push_back(PathDescriptor("Decal normal", textureFilter, PathDescriptor::PATH_TEXTURE));
 }
 
 PathDescriptor& PathDescriptor::GetPathDescriptor(PathDescriptor::eType type)

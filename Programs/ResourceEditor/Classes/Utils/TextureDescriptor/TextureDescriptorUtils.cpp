@@ -7,7 +7,6 @@
 #include "FileSystem/KeyedArchive.h"
 
 #include "ImageTools/ImageTools.h"
-#include "Settings/SettingsManager.h"
 #include "Preset.h"
 
 namespace TextureDescriptorUtils

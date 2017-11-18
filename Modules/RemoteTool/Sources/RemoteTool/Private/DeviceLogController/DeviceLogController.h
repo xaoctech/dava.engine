@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tools/NetworkHelpers/ChannelListenerDispatched.h>
+#include <NetworkHelpers/ChannelListenerDispatched.h>
 
 #include <Network/PeerDesription.h>
 #include <Network/NetService.h>
@@ -8,8 +8,18 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QString>
 
 class LogWidget;
+
+namespace DAVA
+{
+namespace TArc
+{
+class ContextAccessor;
+class UI;
+}
+}
 
 class DeviceLogController : public QObject,
                             public DAVA::Net::NetService,
@@ -18,7 +28,7 @@ class DeviceLogController : public QObject,
     Q_OBJECT
 
 public:
-    explicit DeviceLogController(const DAVA::Net::PeerDescription& peerDescr, QWidget* parentWidget, QObject* parent = NULL);
+    explicit DeviceLogController(DAVA::TArc::UI* ui, const DAVA::Net::PeerDescription& peerDescr, QWidget* parentWidget, QObject* parent = NULL);
     ~DeviceLogController();
     void Init();
 
@@ -35,10 +45,13 @@ public:
 
 private:
     void Output(const DAVA::String& msg);
+    static LogWidget* GetOrCreateLogView(const QString& title, QWidget* parentWidget, DAVA::TArc::UI* ui);
 
 private:
+    static QMap<QString, LogWidget*> views;
     QPointer<LogWidget> view;
     QPointer<QWidget> parentWidget;
     DAVA::Net::PeerDescription peer;
     std::unique_ptr<DAVA::Net::ChannelListenerDispatched> channelListenerDispatched;
+    DAVA::TArc::UI* ui = nullptr;
 };

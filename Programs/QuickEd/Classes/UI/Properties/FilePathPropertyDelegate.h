@@ -1,5 +1,4 @@
-#ifndef __ITEMDELEGATEFORFILEPATH_H__
-#define __ITEMDELEGATEFORFILEPATH_H__
+#pragma once
 
 #include "BasePropertyDelegate.h"
 
@@ -21,6 +20,3 @@ private:
     bool IsPathValid(const QString& path) const;
     QPointer<QLineEdit> lineEdit = nullptr;
 };
-
-
-#endif // __ITEMDELEGATEFORFILEPATH_H__

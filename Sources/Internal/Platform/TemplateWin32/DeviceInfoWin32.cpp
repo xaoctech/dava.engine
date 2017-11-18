@@ -15,6 +15,8 @@
 
 #include <VersionHelpers.h>
 
+#include <WinInet.h>
+
 namespace DAVA
 {
 namespace RegistryReader
@@ -270,8 +272,32 @@ eGPUFamily DeviceInfoPrivate::GetGPUFamilyImpl()
 
 DeviceInfo::NetworkInfo DeviceInfoPrivate::GetNetworkInfo()
 {
-    // For now return default network info for Windows.
-    return DeviceInfo::NetworkInfo();
+    DeviceInfo::NetworkInfo networkInfo;
+
+    // API details: https://msdn.microsoft.com/en-us/library/windows/desktop/aa384702(v=vs.85).aspx
+
+    DWORD connectedState = 0;
+
+    BOOL active = InternetGetConnectedState(&connectedState, 0);
+
+    if (!active || (connectedState & INTERNET_CONNECTION_OFFLINE))
+    {
+        networkInfo.networkType = DeviceInfo::eNetworkType::NETWORK_TYPE_NOT_CONNECTED;
+        return networkInfo;
+    }
+
+    // This is true for wi-fi too
+    if (connectedState & INTERNET_CONNECTION_LAN)
+    {
+        // Set wi-fi type anyway, since it is more informative for us
+        networkInfo.networkType = DeviceInfo::eNetworkType::NETWORK_TYPE_WIFI;
+    }
+    else
+    {
+        networkInfo.networkType = DeviceInfo::eNetworkType::NETWORK_TYPE_UNKNOWN;
+    }
+
+    return networkInfo;
 }
 
 bool DeviceInfoPrivate::IsHIDConnected(DeviceInfo::eHIDType type)

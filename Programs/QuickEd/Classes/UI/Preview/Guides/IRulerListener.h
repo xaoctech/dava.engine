@@ -1,8 +1,8 @@
 #pragma once
 
+#include <TArc/Qt/QtRect.h>
 #include <Base/BaseTypes.h>
 
-#include <QRect>
 #include <QAction>
 #include <QList>
 

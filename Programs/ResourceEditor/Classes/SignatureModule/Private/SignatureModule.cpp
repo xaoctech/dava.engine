@@ -32,7 +32,7 @@ void SignatureModule::OnContextCreated(DAVA::TArc::DataContext* context)
     DVASSERT(scene != nullptr);
 
     OwnersSignatureSystem* ownerSystem = new OwnersSignatureSystem(scene, currentUserName);
-    scene->AddSystem(ownerSystem, 0);
+    scene->AddSystem(ownerSystem, 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
     ownerSystem->EnableSystem();
 }
 

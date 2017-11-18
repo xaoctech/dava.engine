@@ -75,6 +75,7 @@ def main():
       'm',  # ObjC
       'mm',  # ObjC++
       'cc', 'cp', 'cpp', 'c++', 'cxx', 'hpp',  # C++
+      'unittest', # C++ unittest
       # Other languages that clang-format supports
       'proto', 'protodevel',  # Protocol Buffers
       'js',  # JavaScript

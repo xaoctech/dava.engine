@@ -1,18 +1,12 @@
 #include "QtTools/InputDialogs/MultilineTextInputDialog.h"
-#include "Preferences/PreferencesStorage.h"
-#include "Preferences/PreferencesRegistrator.h"
+
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <QEvent>
 #include <QShowEvent>
 #include <QKeyEvent>
 #include <QPlainTextEdit>
 #include <QApplication>
-
-namespace MultilineTextInputDialogDetails
-{
-const DAVA::FastName settingsKey("multilineTextInputDialogGeometry");
-GlobalValuesRegistrator registrator(settingsKey, DAVA::VariantType(DAVA::String()));
-}
 
 bool MultilineTextInputDialog::eventFilter(QObject* obj, QEvent* event)
 {
@@ -50,13 +44,9 @@ bool MultilineTextInputDialog::eventFilter(QObject* obj, QEvent* event)
     return false;
 }
 
-QString MultilineTextInputDialog::GetMultiLineText(QWidget* parent, const QString& title, const QString& label, const QString& text /*= QString()*/, bool* ok /*= Q_NULLPTR*/, Qt::WindowFlags flags /*= Qt::WindowFlags()*/, Qt::InputMethodHints inputMethodHints /*= Qt::ImhNone*/)
+QString MultilineTextInputDialog::GetMultiLineText(DAVA::TArc::UI* ui, const QString& title, const QString& label, const QString& text /*= QString()*/, bool* ok /*= Q_NULLPTR*/, Qt::WindowFlags flags /*= Qt::WindowFlags()*/, Qt::InputMethodHints inputMethodHints /*= Qt::ImhNone*/)
 {
-    MultilineTextInputDialog dialog(parent, flags);
-
-    DAVA::String geometryStr = PreferencesStorage::Instance()->GetValue(MultilineTextInputDialogDetails::settingsKey).AsString();
-    QByteArray geometry = QByteArray::fromStdString(geometryStr);
-    dialog.restoreGeometry(QByteArray::fromBase64(geometry));
+    MultilineTextInputDialog dialog(nullptr, flags);
 
     dialog.setOptions(QInputDialog::UsePlainTextEditForTextInput);
     dialog.setWindowTitle(title);
@@ -69,10 +59,7 @@ QString MultilineTextInputDialog::GetMultiLineText(QWidget* parent, const QStrin
         child->installEventFilter(&dialog);
     }
 
-    int ret = dialog.exec();
-
-    geometry = dialog.saveGeometry().toBase64();
-    PreferencesStorage::Instance()->SetValue(MultilineTextInputDialogDetails::settingsKey, DAVA::VariantType(geometry.toStdString()));
+    int ret = ui->ShowModalDialog(DAVA::TArc::mainWindowKey, &dialog);
 
     bool isAccepted = (ret == QDialog::Accepted);
     if (ok)

@@ -1,5 +1,4 @@
 #include "RegExpValidator.h"
-#include "Classes/Settings/SettingsManager.h"
 
 RegExpValidator::RegExpValidator(const QString& value)
 {

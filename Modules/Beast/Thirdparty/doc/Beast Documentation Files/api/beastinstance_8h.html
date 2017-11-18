@@ -1,0 +1,1564 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastinstance.h File Reference</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.OverviewLinksDiv {  }
+/*]]>*/
+</style>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/beastinstance_8h.html','api_beastinstance_8h_htmlbb8de37e-ea5a-46e0-934e-3bad908c3f4b','index.html',location.hash); javascript:initPage('API: beastapi/beastinstance.h File Reference','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastinstance_8h.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastinstance.h File Reference&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastinstance.h File
+Reference</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="summary"><a href="#typedef-members">Typedefs</a> |
+<a href="#enum-members">Enumerations</a> | <a href=
+"#func-members">Functions</a></div>
+<div class="headertitle">
+<div class="title">beastapi/beastinstance.h File Reference</div>
+</div>
+</div>
+<div class="contents">
+<div class="OverviewLinksDiv">
+<p>This reference page is linked to from the following overview
+topics: <a href=
+".././files/GUID-1C385E95-11FA-4E86-AAEB-9620799B2CA1.htm">What's
+New in Beast 2013.0.x</a>, <a href=
+".././files/GUID-1D78BFE4-056C-422B-9530-45AE6DFD6A52.htm">Working
+With Object Handles</a>, <a href=
+".././files/GUID-500EB842-14B8-4ADA-9475-6200CAFB3057.htm">Creating
+a Scene</a>, <a href=
+".././files/GUID-95524AD7-1EAE-4396-BC02-3F4939DDD2C1.htm">Creating
+Light Links</a>, <a href=
+".././files/GUID-A42C7CD9-03E8-4D66-AFA7-86741EFE300F.htm">Creating
+Mesh Instances</a>, <a href=
+".././files/GUID-B812FA2F-A188-4D9A-A5A8-ACD7A771AA89.htm">Creating
+Physical Materials</a>.</p>
+<hr /></div>
+<div class="textblock"><code>#include "<a class="el" translate="no" href=
+"beastapitypes_8h_source.html">beastapitypes.h</a>"</code><br /></div>
+<hr />
+<a name="details" id="details"></a>
+<h2>File Description</h2>
+<div class="textblock">
+<p>The api for specifying instances of meshes in Beast.</p>
+</div>
+<table class="memberdecls">
+<tr>
+<td colspan="2">
+<h2><a name="typedef-members"></a> Typedefs</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">typedef
+uint32&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a41dbcbbb41e8ebe5ab1abe43c35f14ce">ILBRenderStatsMask</a></td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="enum-members"></a> Enumerations</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0">ILBRenderStatOperation</a>
+{ <a class="el" translate="no" href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0a8a1c92b8158ad5acc3a31a89cac67f85">
+ILB_RSOP_DISABLE</a>, <a class="el" translate="no" href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0a27e3cdfab5d04d0f974dd223c395294a">
+ILB_RSOP_ENABLE</a> }</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top">enum &nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1e">ILBRenderStats</a>
+{<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea164789c856489f4caaa19e7945b9341b">ILB_RS_VISIBLE_FOR_EYE</a>
+= 0x00000001, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea3e2787a854ec98b5d427a548d4273eb6">
+ILB_RS_VISIBLE_FOR_REFLECTIONS</a> = 0x00000002, <a class="el" translate="no"
+href="beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea60859e62b8efdc1d2d52346e4b467abc">
+ILB_RS_VISIBLE_FOR_REFRACTIONS</a> = 0x00000004, <a class="el" translate="no"
+href="beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eab6ca71a18425aeeed5e7a443edf2c19c">
+ILB_RS_VISIBLE_FOR_GI</a> = 0x00000008,<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea5747b01b3be653fd41ce177fbec45fd8">ILB_RS_CAST_SHADOWS</a>
+= 0x00000010, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea98e3008ae3ce6b6b5d9b90e2c31ce959">
+ILB_RS_RECEIVE_SHADOWS</a> = 0x00000020, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea80a8a29140a3d87f3b940a2fe3451cec">
+ILB_RS_CAST_GI</a> = 0x00000040, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eab2dff6be854be9b36a2a2276854d94bd">
+ILB_RS_RECEIVE_GI</a> = 0x00000080,<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea15a6126a03167f46a13b0fbb99ba0d35">ILB_RS_CAST_OCCLUSION</a>
+= 0x00000100, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eaffba8b84a9969919a1429f7923b5e0af">
+ILB_RS_RECEIVE_OCCLUSION</a> = 0x00000200, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eae396af30c2d44efeb27f0a10a255d738">
+ILB_RS_DOUBLE_SIDED</a> = 0x00000400, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1eace13aa24dbc766e83ae65e6a16d201b3">
+ILB_RS_OPPOSITE</a> = 0x00000800,<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea7159f2a773795fd6b61d0e95d920e098">ILB_RS_SELF_OCCLUSION</a>
+= 0x00001000, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ead9aef204c9d56f7b42450345f5a829a1">
+ILB_RS_SHADOW_BIAS</a> = 0x00002000, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea92b84f50828037bf4cc15704dfd56129">
+ILB_RS_PRIMARY_VISIBILITY</a> = ILB_RS_VISIBLE_FOR_EYE, <a class=
+"el" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea8ca4500bf8bfc99ff6ea84da40247881">
+ILB_RS_VISIBLE_IN_REFLECTIONS</a> =
+ILB_RS_VISIBLE_FOR_REFLECTIONS,<br />
+&nbsp;&nbsp;<a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea32e9c11c64288645195379e23162a20b">ILB_RS_VISIBLE_IN_REFRACTIONS</a>
+= ILB_RS_VISIBLE_FOR_REFRACTIONS, <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ea798fe729724effd8a7d3d5d2416de070">
+ILB_RS_VISIBLE_IN_FINAL_GATHER</a> = ILB_RS_VISIBLE_FOR_GI<br />
+}</td>
+</tr>
+<tr>
+<td colspan="2">
+<h2><a name="func-members"></a> Functions</h2>
+</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#aacff4cc6feb065742974bd0bcaa1d326">ILBAddInstanceLightLinks</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+<a class="el" translate="no" href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660e">ILBLightLinkMode</a>
+mode, const <a class="el" translate="no" href=
+"struct_i_l_b_light_handle.html">ILBLightHandle</a> *lightSources,
+int32 count)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#af66271b414c6b0b327510d8f48c73623">ILBAddLODInstance</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> lowRes,
+<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>
+highRes)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470">ILBCreateInstance</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_scene_handle.html">ILBSceneHandle</a> scene,
+<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh, <a class=
+"el" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+name, const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *transform,
+<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>
+*instance)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a0ef5936f29b4b853eab139c36c3d038e">ILBDeleteInstance</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>
+instance)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#aa7b2cc660de3a14bfca8fe80b768f3cd">ILBSetInstanceDisplayName</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+<a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>
+displayName)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a238175a5847cbc6aaeb7e803f93ea002">ILBSetInstanceMesh</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+<a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a> mesh)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#ac991142ec84378d9eb6f35c9ba7b4e82">ILBSetInstanceMotionTransforms</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *transforms, int32
+count)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#aaddf2d7e0cdbdb6dd81715245b0e4c37">ILBSetInstanceTransform</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *transform)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a597be38698cb168821114af6525b6e4a">ILBSetMaterialOverrides</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+<a class="el" translate="no" href=
+"struct_i_l_b_material_handle.html">ILBMaterialHandle</a>
+*materials, int32 materialCount)</td>
+</tr>
+<tr>
+<td class="memItemLeft" translate="no" align="right" valign="top"><a class="el" translate="no"
+href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>&nbsp;</td>
+<td class="memItemRight" translate="no" valign="bottom"><a class="el" translate="no" href=
+"beastinstance_8h.html#a63eb0787eae630d1a6d3f4c47edebdfc">ILBSetRenderStats</a>
+(<a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a> instance,
+<a class="el" translate="no" href=
+"beastinstance_8h.html#a41dbcbbb41e8ebe5ab1abe43c35f14ce">ILBRenderStatsMask</a>
+stats, <a class="el" translate="no" href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0">ILBRenderStatOperation</a>
+operation)</td>
+</tr>
+</table>
+<hr />
+<h2>Typedef Documentation</h2>
+<a class="anchor" id="a41dbcbbb41e8ebe5ab1abe43c35f14ce"></a>
+<!-- doxytag: member="beastinstance.h::ILBRenderStatsMask" ref="a41dbcbbb41e8ebe5ab1abe43c35f14ce" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">typedef uint32 <a class="el" translate="no" href=
+"beastinstance_8h.html#a41dbcbbb41e8ebe5ab1abe43c35f14ce">ILBRenderStatsMask</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBRenderStatsMask',false)">Search for all
+occurrences</a></div>
+<p>Type representing multiple render stats.</p>
+<p>Combine render stats using the or operator (|).<br />
+Example:<br />
+ILBRenderStatsMask rsMask = ILB_RS_SELF_OCCLUSION |
+ILB_RS_PRIMARY_VISIBILITY;</p>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a22">include/beastapi/beastinstance.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="ade1096d33f58e9a34c373c50bacc2ff0"></a>
+<!-- doxytag: member="beastinstance.h::ILBRenderStatOperation" ref="ade1096d33f58e9a34c373c50bacc2ff0" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0">ILBRenderStatOperation</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBRenderStatOperation',false)">Search for all
+occurrences</a></div>
+<p>Selects if the render stats should be enabled or disabled.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ade1096d33f58e9a34c373c50bacc2ff0a8a1c92b8158ad5acc3a31a89cac67f85">
+</a>
+<!-- doxytag: member="ILB_RSOP_DISABLE" ref="ade1096d33f58e9a34c373c50bacc2ff0a8a1c92b8158ad5acc3a31a89cac67f85" args="" -->ILB_RSOP_DISABLE</em>&nbsp;</td>
+<td>
+<p>Sets the render stats supplied to false.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RSOP_DISABLE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"ade1096d33f58e9a34c373c50bacc2ff0a27e3cdfab5d04d0f974dd223c395294a">
+</a>
+<!-- doxytag: member="ILB_RSOP_ENABLE" ref="ade1096d33f58e9a34c373c50bacc2ff0a27e3cdfab5d04d0f974dd223c395294a" args="" -->ILB_RSOP_ENABLE</em>&nbsp;</td>
+<td>
+<p>Sets the render stats supplied to true.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RSOP_ENABLE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a21">include/beastapi/beastinstance.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a82928922fac8f5eedb9bf3b97cdbaf1e"></a>
+<!-- doxytag: member="beastinstance.h::ILBRenderStats" ref="a82928922fac8f5eedb9bf3b97cdbaf1e" args="" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no">enum <a class="el" translate="no" href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1e">ILBRenderStats</a></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBRenderStats',false)">Search for all
+occurrences</a></div>
+<p>Beast render stats.</p>
+<dl>
+<dt><b>Enumerator:</b></dt>
+<dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea164789c856489f4caaa19e7945b9341b">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_FOR_EYE" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea164789c856489f4caaa19e7945b9341b" args="" -->ILB_RS_VISIBLE_FOR_EYE</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should be visible for camera
+rays.</p>
+<p>All other effects such as shadow casting and occlusion casting
+is unaffected.<br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_VISIBLE_FOR_EYE',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea3e2787a854ec98b5d427a548d4273eb6">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_FOR_REFLECTIONS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea3e2787a854ec98b5d427a548d4273eb6" args="" -->ILB_RS_VISIBLE_FOR_REFLECTIONS</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should be visible for reflection
+rays.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick=
+"searchForTerm('ILB_RS_VISIBLE_FOR_REFLECTIONS',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea60859e62b8efdc1d2d52346e4b467abc">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_FOR_REFRACTIONS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea60859e62b8efdc1d2d52346e4b467abc" args="" -->ILB_RS_VISIBLE_FOR_REFRACTIONS</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should be visible for refraction
+rays.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick=
+"searchForTerm('ILB_RS_VISIBLE_FOR_REFRACTIONS',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1eab6ca71a18425aeeed5e7a443edf2c19c">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_FOR_GI" ref="a82928922fac8f5eedb9bf3b97cdbaf1eab6ca71a18425aeeed5e7a443edf2c19c" args="" -->ILB_RS_VISIBLE_FOR_GI</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should be visible for global
+illumination rays.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_VISIBLE_FOR_GI',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea5747b01b3be653fd41ce177fbec45fd8">
+</a>
+<!-- doxytag: member="ILB_RS_CAST_SHADOWS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea5747b01b3be653fd41ce177fbec45fd8" args="" -->ILB_RS_CAST_SHADOWS</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should cast shadows.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_CAST_SHADOWS',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea98e3008ae3ce6b6b5d9b90e2c31ce959">
+</a>
+<!-- doxytag: member="ILB_RS_RECEIVE_SHADOWS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea98e3008ae3ce6b6b5d9b90e2c31ce959" args="" -->ILB_RS_RECEIVE_SHADOWS</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should receive shadows.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_RECEIVE_SHADOWS',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea80a8a29140a3d87f3b940a2fe3451cec">
+</a>
+<!-- doxytag: member="ILB_RS_CAST_GI" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea80a8a29140a3d87f3b940a2fe3451cec" args="" -->ILB_RS_CAST_GI</em>&nbsp;</td>
+<td>
+<p>If this is set to false, the object is black for GI
+purposes.</p>
+<p>It's still in the scene and casts occlusion, but no light
+bounces off it and it casts no color bleeding on neighbor
+objects.<br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_CAST_GI',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1eab2dff6be854be9b36a2a2276854d94bd">
+</a>
+<!-- doxytag: member="ILB_RS_RECEIVE_GI" ref="a82928922fac8f5eedb9bf3b97cdbaf1eab2dff6be854be9b36a2a2276854d94bd" args="" -->ILB_RS_RECEIVE_GI</em>&nbsp;</td>
+<td>
+<p>Controls whether the object is receiving any GI.</p>
+<p>If disabled it only gets direct light.<br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_RECEIVE_GI',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea15a6126a03167f46a13b0fbb99ba0d35">
+</a>
+<!-- doxytag: member="ILB_RS_CAST_OCCLUSION" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea15a6126a03167f46a13b0fbb99ba0d35" args="" -->ILB_RS_CAST_OCCLUSION</em>&nbsp;</td>
+<td>
+<p>Controls whether the object is an occluder when rendering
+ambient occlusion.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_CAST_OCCLUSION',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1eaffba8b84a9969919a1429f7923b5e0af">
+</a>
+<!-- doxytag: member="ILB_RS_RECEIVE_OCCLUSION" ref="a82928922fac8f5eedb9bf3b97cdbaf1eaffba8b84a9969919a1429f7923b5e0af" args="" -->ILB_RS_RECEIVE_OCCLUSION</em>&nbsp;</td>
+<td>
+<p>Controls whether the object is receiving any occlusion when
+rendering ambient occlusion.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_RECEIVE_OCCLUSION',false)">Search
+for all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1eae396af30c2d44efeb27f0a10a255d738">
+</a>
+<!-- doxytag: member="ILB_RS_DOUBLE_SIDED" ref="a82928922fac8f5eedb9bf3b97cdbaf1eae396af30c2d44efeb27f0a10a255d738" args="" -->ILB_RS_DOUBLE_SIDED</em>&nbsp;</td>
+<td>
+<p>Controls whether the object should be single sided or double
+sided.</p>
+<p>If single sided, only polygons that are defined CCW from the ray
+are visible.<br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_DOUBLE_SIDED',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1eace13aa24dbc766e83ae65e6a16d201b3">
+</a>
+<!-- doxytag: member="ILB_RS_OPPOSITE" ref="a82928922fac8f5eedb9bf3b97cdbaf1eace13aa24dbc766e83ae65e6a16d201b3" args="" -->ILB_RS_OPPOSITE</em>&nbsp;</td>
+<td>
+<p>Only applies when single sided.</p>
+<p>It flips the test for rejecting single sided polygons.<br />
+Default: Disabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_OPPOSITE',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea7159f2a773795fd6b61d0e95d920e098">
+</a>
+<!-- doxytag: member="ILB_RS_SELF_OCCLUSION" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea7159f2a773795fd6b61d0e95d920e098" args="" -->ILB_RS_SELF_OCCLUSION</em>&nbsp;</td>
+<td>
+<p>Controls whether the object cast shadows on itself.</p>
+<p><br />
+Default: Enabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_SELF_OCCLUSION',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ead9aef204c9d56f7b42450345f5a829a1">
+</a>
+<!-- doxytag: member="ILB_RS_SHADOW_BIAS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ead9aef204c9d56f7b42450345f5a829a1" args="" -->ILB_RS_SHADOW_BIAS</em>&nbsp;</td>
+<td>
+<p>If enabled shadow rays will be biased in order to get smooth
+shadows on smoothed meshes.</p>
+<p><br />
+Default: Disabled</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_SHADOW_BIAS',false)">Search for all
+occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea92b84f50828037bf4cc15704dfd56129">
+</a>
+<!-- doxytag: member="ILB_RS_PRIMARY_VISIBILITY" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea92b84f50828037bf4cc15704dfd56129" args="" -->ILB_RS_PRIMARY_VISIBILITY</em>&nbsp;</td>
+<td>
+<p>DEPRECATED This enum will be removed in future versions of the
+API.</p>
+<p><br />
+Use the enum ILB_RS_VISIBLE_FOR_EYE instead.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick="searchForTerm('ILB_RS_PRIMARY_VISIBILITY',false)">Search
+for all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea8ca4500bf8bfc99ff6ea84da40247881">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_IN_REFLECTIONS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea8ca4500bf8bfc99ff6ea84da40247881" args="" -->ILB_RS_VISIBLE_IN_REFLECTIONS</em>&nbsp;</td>
+<td>
+<p>DEPRECATED This enum will be removed in future versions of the
+API.</p>
+<p><br />
+Use the enum ILB_RS_VISIBLE_FOR_REFLECTIONS instead.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick=
+"searchForTerm('ILB_RS_VISIBLE_IN_REFLECTIONS',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea32e9c11c64288645195379e23162a20b">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_IN_REFRACTIONS" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea32e9c11c64288645195379e23162a20b" args="" -->ILB_RS_VISIBLE_IN_REFRACTIONS</em>&nbsp;</td>
+<td>
+<p>DEPRECATED This enum will be removed in future versions of the
+API.</p>
+<p><br />
+Use the enum ILB_RS_VISIBLE_FOR_REFRACTIONS instead.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick=
+"searchForTerm('ILB_RS_VISIBLE_IN_REFRACTIONS',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+<tr>
+<td valign="top"><em><a class="anchor" id=
+"a82928922fac8f5eedb9bf3b97cdbaf1ea798fe729724effd8a7d3d5d2416de070">
+</a>
+<!-- doxytag: member="ILB_RS_VISIBLE_IN_FINAL_GATHER" ref="a82928922fac8f5eedb9bf3b97cdbaf1ea798fe729724effd8a7d3d5d2416de070" args="" -->ILB_RS_VISIBLE_IN_FINAL_GATHER</em>&nbsp;</td>
+<td>
+<p>DEPRECATED This enum will be removed in future versions of the
+API.</p>
+<p><br />
+Use the enum ILB_RS_VISIBLE_FOR_GI instead.</p>
+<div class="searchLinkDivInline"><a href="javascript:void(0);"
+onclick=
+"searchForTerm('ILB_RS_VISIBLE_IN_FINAL_GATHER',false)">Search for
+all occurrences</a></div>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a18">include/beastapi/beastinstance.h</a>.</dd>
+</dl>
+</div>
+</div>
+<hr />
+<h2>Function Documentation</h2>
+<a class="anchor" id="aacff4cc6feb065742974bd0bcaa1d326"></a>
+<!-- doxytag: member="beastinstance.h::ILBAddInstanceLightLinks" ref="aacff4cc6feb065742974bd0bcaa1d326" args="(ILBInstanceHandle instance, ILBLightLinkMode mode, const ILBLightHandle *lightSources, int32 count)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddInstanceLightLinks</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a7026f7adde8fe8ffea95c03a9cd6660e">ILBLightLinkMode</a>&nbsp;</td>
+<td class="paramname"><em>mode</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_light_handle.html">ILBLightHandle</a> *&nbsp;</td>
+<td class="paramname"><em>lightSources</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>count</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddInstanceLightLinks',false)">Search for all
+occurrences</a></div>
+<p>Adds an object centric light link list.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to add light links to</td>
+</tr>
+<tr>
+<td class="paramname">mode</td>
+<td>sets whether the light links are inclusive or exclusive</td>
+</tr>
+<tr>
+<td class="paramname">lightSources</td>
+<td>an array of light sources that should be linked</td>
+</tr>
+<tr>
+<td class="paramname">count</td>
+<td>the number of light sources present in the lightSources
+array</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a32">include/beastapi/beastinstance.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="af66271b414c6b0b327510d8f48c73623"></a>
+<!-- doxytag: member="beastinstance.h::ILBAddLODInstance" ref="af66271b414c6b0b327510d8f48c73623" args="(ILBInstanceHandle lowRes, ILBInstanceHandle highRes)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBAddLODInstance</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>lowRes</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>highRes</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBAddLODInstance',false)">Search for all
+occurrences</a></div>
+<p>Connects two meshes so one acts as a high resolution instances
+and one as a lod.</p>
+<p>This is used for normal map generation etc. When connected, the
+low resolution mesh will automatically be set as invisible using
+renderstats. There can be many high resolution instances for every
+low resolution instance. An instance can act as high resolution
+mesh for many low resolution meshes</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">lowRes</td>
+<td>the instance to act as low resolution mesh in this lod
+relationship. Will be hidden by this call.</td>
+</tr>
+<tr>
+<td class="paramname">highRes</td>
+<td>the high resolution mesh in this lod relationship</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a36">include/beastapi/beastinstance.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a5dea848eab1c2517d8ffcfde6ed96470"></a>
+<!-- doxytag: member="beastinstance.h::ILBCreateInstance" ref="a5dea848eab1c2517d8ffcfde6ed96470" args="(ILBSceneHandle scene, ILBMeshHandle mesh, ILBConstString name, const ILBMatrix4x4 *transform, ILBInstanceHandle *instance)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBCreateInstance</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_scene_handle.html">ILBSceneHandle</a>&nbsp;</td>
+<td class="paramname"><em>scene</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>name</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transform</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>instance</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBCreateInstance',false)">Search for all
+occurrences</a></div>
+<p>Add an instance to the scene.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">scene</td>
+<td>the scene the instance should be a part of</td>
+</tr>
+<tr>
+<td class="paramname">mesh</td>
+<td>the mesh the instance should reference</td>
+</tr>
+<tr>
+<td class="paramname">name</td>
+<td>the name of the instance, must be unique within the scene.</td>
+</tr>
+<tr>
+<td class="paramname">transform</td>
+<td>the object space to world space transform for this mesh</td>
+</tr>
+<tr>
+<td class="paramname">instance</td>
+<td>the handle to store the generated instance in</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a19">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a15">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a15">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2cache_2cache_8cpp-example.html#a17">examples/code/cache/cache.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a12">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a35">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a12">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a15">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2materials_2materials_8cpp-example.html#a15">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a15">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a15">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a3">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a15">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a15">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a16">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2simple_2simple_8cpp-example.html#a15">examples/code/simple/simple.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2uvset_2uvset_8cpp-example.html#a15">examples/code/uvset/uvset.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a23">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastscenewrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beastscenewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a0ef5936f29b4b853eab139c36c3d038e"></a>
+<!-- doxytag: member="beastinstance.h::ILBDeleteInstance" ref="a0ef5936f29b4b853eab139c36c3d038e" args="(ILBInstanceHandle instance)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBDeleteInstance</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em></td>
+<td>)</td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBDeleteInstance',false)">Search for all
+occurrences</a></div>
+<p>Deletes an instance from a scene.</p>
+<p>Only possible for dynamic scenes, ie. scenes associated with a
+live ernst job.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>instance to delete</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a38">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastinstancewrapper_8cpp-example.html#a0">
+maya/beastmayaplugin/src/beastwrappers/beastinstancewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aa7b2cc660de3a14bfca8fe80b768f3cd"></a>
+<!-- doxytag: member="beastinstance.h::ILBSetInstanceDisplayName" ref="aa7b2cc660de3a14bfca8fe80b768f3cd" args="(ILBInstanceHandle instance, ILBConstString displayName)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetInstanceDisplayName</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5">ILBConstString</a>&nbsp;</td>
+<td class="paramname"><em>displayName</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetInstanceDisplayName',false)">Search for all
+occurrences</a></div>
+<p>Sets the display name for the instance.</p>
+<p>This name does not have to be unique within the scene and can be
+used by tools to give human understandable names to objects that
+has names that are generated and for some reason isn't suitable to
+read</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to set the name for</td>
+</tr>
+<tr>
+<td class="paramname">displayName</td>
+<td>the display name to set</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a37">include/beastapi/beastinstance.h</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a238175a5847cbc6aaeb7e803f93ea002"></a>
+<!-- doxytag: member="beastinstance.h::ILBSetInstanceMesh" ref="a238175a5847cbc6aaeb7e803f93ea002" args="(ILBInstanceHandle instance, ILBMeshHandle mesh)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetInstanceMesh</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_mesh_handle.html">ILBMeshHandle</a>&nbsp;</td>
+<td class="paramname"><em>mesh</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetInstanceMesh',false)">Search for all
+occurrences</a></div>
+<p>Change the mesh of an instance.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to change the mesh</td>
+</tr>
+<tr>
+<td class="paramname">mesh</td>
+<td>the new mesh</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a31">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastinstancewrapper_8cpp-example.html#a7">
+maya/beastmayaplugin/src/beastwrappers/beastinstancewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="ac991142ec84378d9eb6f35c9ba7b4e82"></a>
+<!-- doxytag: member="beastinstance.h::ILBSetInstanceMotionTransforms" ref="ac991142ec84378d9eb6f35c9ba7b4e82" args="(ILBInstanceHandle instance, const ILBMatrix4x4 *transforms, int32 count)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetInstanceMotionTransforms</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transforms</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>count</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetInstanceMotionTransforms',false)">Search for
+all occurrences</a></div>
+<p>Sets the motion transforms of a motion blurred instance.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to change</td>
+</tr>
+<tr>
+<td class="paramname">transforms</td>
+<td>an array of transforms describing the camera motion</td>
+</tr>
+<tr>
+<td class="paramname">count</td>
+<td>the number of transforms in the array</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a29">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastinstancewrapper_8cpp-example.html#a3">
+maya/beastmayaplugin/src/beastwrappers/beastinstancewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="aaddf2d7e0cdbdb6dd81715245b0e4c37"></a>
+<!-- doxytag: member="beastinstance.h::ILBSetInstanceTransform" ref="aaddf2d7e0cdbdb6dd81715245b0e4c37" args="(ILBInstanceHandle instance, const ILBMatrix4x4 *transform)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetInstanceTransform</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">const <a class="el" translate="no" href=
+"struct_i_l_b_matrix4x4.html">ILBMatrix4x4</a> *&nbsp;</td>
+<td class="paramname"><em>transform</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetInstanceTransform',false)">Search for all
+occurrences</a></div>
+<p>Sets the transform for an instance.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to change</td>
+</tr>
+<tr>
+<td class="paramname">transform</td>
+<td>the new transform</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a28">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastinstancewrapper_8cpp-example.html#a2">
+maya/beastmayaplugin/src/beastwrappers/beastinstancewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a597be38698cb168821114af6525b6e4a"></a>
+<!-- doxytag: member="beastinstance.h::ILBSetMaterialOverrides" ref="a597be38698cb168821114af6525b6e4a" args="(ILBInstanceHandle instance, ILBMaterialHandle *materials, int32 materialCount)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetMaterialOverrides</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_material_handle.html">ILBMaterialHandle</a>
+*&nbsp;</td>
+<td class="paramname"><em>materials</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype">int32&nbsp;</td>
+<td class="paramname"><em>materialCount</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetMaterialOverrides',false)">Search for all
+occurrences</a></div>
+<p>Overrides materials for this instance.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to override materials for</td>
+</tr>
+<tr>
+<td class="paramname">materials</td>
+<td>an array of materials to override the one specified in the mesh
+with. It should be in the same order as the material groups in the
+mesh. A 0 pointer will keep the default material. If the material
+lists size doesn't match, unassigned materials will stay default
+and overflowing materials will be ignored.</td>
+</tr>
+<tr>
+<td class="paramname">materialCount</td>
+<td>the number of override materials available in the materials
+array.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples-physical_2code_2common_2samplescommon_8h-example.html#a27">
+examples-physical/code/common/samplescommon.h</a>, <a class="el" translate="no"
+href=
+"examples_2code_2materials_2materials_8cpp-example.html#a35">examples/code/materials/materials.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a42">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2shbaking_2shbaking_8cpp-example.html#a28">examples/code/shbaking/shbaking.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a34">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastinstancewrapper_8cpp-example.html#a9">
+maya/beastmayaplugin/src/beastwrappers/beastinstancewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<a class="anchor" id="a63eb0787eae630d1a6d3f4c47edebdfc"></a>
+<!-- doxytag: member="beastinstance.h::ILBSetRenderStats" ref="a63eb0787eae630d1a6d3f4c47edebdfc" args="(ILBInstanceHandle instance, ILBRenderStatsMask stats, ILBRenderStatOperation operation)" -->
+<div class="memitem">
+<div class="memproto">
+<table class="memname">
+<tr>
+<td class="memname" translate="no"><a class="el" translate="no" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206">ILBStatus</a>
+ILBSetRenderStats</td>
+<td>(</td>
+<td class="paramtype"><a class="el" translate="no" href=
+"struct_i_l_b_instance_handle.html">ILBInstanceHandle</a>&nbsp;</td>
+<td class="paramname"><em>instance</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastinstance_8h.html#a41dbcbbb41e8ebe5ab1abe43c35f14ce">ILBRenderStatsMask</a>&nbsp;</td>
+<td class="paramname"><em>stats</em>,</td>
+</tr>
+<tr>
+<td class="paramkey"></td>
+<td></td>
+<td class="paramtype"><a class="el" translate="no" href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0">ILBRenderStatOperation</a>&nbsp;</td>
+<td class="paramname"><em>operation</em>&nbsp;</td>
+</tr>
+<tr>
+<td></td>
+<td>)</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div class="memdoc">
+<div class="searchLinkDiv"><a href="javascript:void(0);" onclick=
+"searchForTerm('ILBSetRenderStats',false)">Search for all
+occurrences</a></div>
+<p>Sets render stats on an instance.</p>
+<dl>
+<dt><b>Parameters:</b></dt>
+<dd>
+<table class="params">
+<tr>
+<td class="paramname">instance</td>
+<td>the instance to set the render stats on</td>
+</tr>
+<tr>
+<td class="paramname">stats</td>
+<td>the stats to modify. Can be multiple render stats or:ed
+together</td>
+</tr>
+<tr>
+<td class="paramname">operation</td>
+<td>selects whether to enable or disable the selected render
+stats.</td>
+</tr>
+</table>
+</dd>
+</dl>
+<dl class="return">
+<dt><b>Returns:</b></dt>
+<dd>The result of the operation.</dd>
+</dl>
+<dl>
+<dt><b>Examples:</b></dt>
+<dd><a class="el" translate="no" href=
+"examples_2code_2atlas_2atlas_8cpp-example.html#a25">examples/code/atlas/atlas.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2baking_2baking_8cpp-example.html#a25">examples/code/baking/baking.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2ernst_2ernst_8cpp-example.html#a13">examples/code/ernst/ernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lightsources_2lightsources_8cpp-example.html#a36">examples/code/lightsources/lightsources.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2liveernst_2liveernst_8cpp-example.html#a13">examples/code/liveernst/liveernst.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2lua_2lua_8cpp-example.html#a20">examples/code/lua/lua.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2occlusion_2occlusion_8cpp-example.html#a21">examples/code/occlusion/occlusion.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2pointcloud_2pointcloud_8cpp-example.html#a20">examples/code/pointcloud/pointcloud.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2readback_2readback_8cpp-example.html#a4">examples/code/readback/readback.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2renderstats_2renderstats_8cpp-example.html#a32">examples/code/renderstats/renderstats.cpp</a>,
+<a class="el" translate="no" href=
+"examples_2code_2rnm_2rnm_8cpp-example.html#a20">examples/code/rnm/rnm.cpp</a>,
+<a class="el" translate="no" href=
+"include_2beastapi_2beastinstance_8h-example.html#a30">include/beastapi/beastinstance.h</a>,
+and <a class="el" translate="no" href=
+"maya_2beastmayaplugin_2src_2beastwrappers_2beastinstancewrapper_8cpp-example.html#a4">
+maya/beastmayaplugin/src/beastwrappers/beastinstancewrapper.cpp</a>.</dd>
+</dl>
+</div>
+</div>
+<p><a href="beastinstance_8h_source.html">Go to the source code of
+this file.</a></p>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

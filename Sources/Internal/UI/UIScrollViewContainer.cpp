@@ -1,5 +1,5 @@
 #include "UI/UIScrollViewContainer.h"
-
+#include "Engine/Engine.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/ScrollHelper.h"
 #include "UI/UIControlSystem.h"
@@ -213,7 +213,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
             }
             if (currentTouch->touchLocker != this && currentScroll)
             {
-                UIControlSystem::Instance()->SwitchInputToControl(mainTouch, this);
+                GetEngineContext()->uiControlSystem->SwitchInputToControl(mainTouch, this);
             }
             Input(currentTouch);
         }

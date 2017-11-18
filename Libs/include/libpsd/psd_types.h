@@ -17,7 +17,7 @@ typedef int						psd_int;
 typedef unsigned int			psd_uint;
 typedef float					psd_float;
 typedef double					psd_double;
-typedef size_t                  psd_ptr;
+typedef size_t					psd_pointer;
 
 
 typedef unsigned char			psd_color_component;

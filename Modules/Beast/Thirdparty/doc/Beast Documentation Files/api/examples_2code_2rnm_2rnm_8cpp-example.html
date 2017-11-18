@@ -1,0 +1,630 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: examples/code/rnm/rnm.cpp</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body onLoad="javascript:initFrame('api/examples_2code_2rnm_2rnm_8cpp-example.html','api_examples_2code_2rnm_2rnm_8cpp_example_html6aa18ae6-d356-4343-ab32-5e6077eb8126','index.html',location.hash); javascript:initPage('API: examples/code/rnm/rnm.cpp','Beast Documentation');" height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="examples_2code_2rnm_2rnm_8cpp-example.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=examples/code/rnm/rnm.cpp&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>examples/code/rnm/rnm.cpp</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">examples/code/rnm/rnm.cpp</div>
+</div>
+</div>
+<div class="contents">
+<div class="fragment">
+<pre class="fragment">
+<span class="comment">/*</span>
+<span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<span class="comment">*/</span>
+
+<span class="comment">/*</span>
+<span class="comment">Beast API Sample: RNM</span>
+
+<span class=
+"comment">The purpose of this sample is to demonstrate how to:</span>
+<span class=
+"comment"> - Create an RNM pass and bake a texture with it.</span>
+<span class="comment">*/</span>
+
+<span class=
+"preprocessor">#define _USE_MATH_DEFINES // for M_PI</span>
+<span class="preprocessor">#include &lt;math.h&gt;</span>
+
+<span class="preprocessor">#include "primitives.h"</span>
+<span class="preprocessor">#include "textures.h"</span>
+<span class="preprocessor">#include "xmlwriter.h"</span>
+
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beaststring_8h.html" title=
+"Beast strings is objects encapsulating strings returned from Beast API functions.">beastapi/beaststring.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastutils_8h.html" title=
+"Utility functions for the Beast API.">beastapi/beastutils.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmanager_8h.html" title=
+"The beast manager is the core object for all interaction with the Beast API.">beastapi/beastmanager.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastscene_8h.html" title=
+"The api for specifying scenes in beast.">beastapi/beastscene.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastinstance_8h.html" title=
+"The api for specifying instances of meshes in Beast.">beastapi/beastinstance.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastlightsource_8h.html" title=
+"The api for specifying light sources in beast.">beastapi/beastlightsource.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastcamera_8h.html" title=
+"The beast camera function definitions.">beastapi/beastcamera.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastmaterial_8h.html" title=
+"The api for specifying materials in beast.">beastapi/beastmaterial.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beasttarget_8h.html" title=
+"The target definitions.">beastapi/beasttarget.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href=
+"beastrenderpass_8h.html" title=
+"Render Pass specification.">beastapi/beastrenderpass.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;sstream&gt;</span>
+<span class="preprocessor">#include &lt;fstream&gt;</span>
+<span class="preprocessor">#include &lt;iostream&gt;</span>
+
+<span class="keyword">const</span> <span class=
+"keywordtype">unsigned</span> <span class=
+"keywordtype">int</span> SPHERES = 3;
+<span class="keyword">const</span> <span class=
+"keywordtype">float</span> SPHERE_RADIUS = 3.0f;
+
+<span class="keywordtype">int</span> main(<span class=
+"keywordtype">char</span> argc, <span class=
+"keywordtype">char</span>** argv) {
+        <span class="keywordflow">try</span> {
+                <a name="_a0"></a><a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bmh;
+
+                <span class=
+"comment">// Route errors to stderr</span>
+                bex::apiCall(<a name="a1"></a><a class="code" href=
+"beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5" title=
+"Sets where log messages should be routed.">ILBSetLogTarget</a>(<a name="a2"></a><a class="code"
+href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36aab16aff43a62a8dab5fc10679279be08"
+title="Error messages.">ILB_LT_ERROR</a>, <a name=
+"a3"></a><a class="code" href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaa0823c48847428786988097061ae529dc"
+title="Routes messages to stderr.">ILB_LS_STDERR</a>, 0));
+
+<span class="preprocessor">#if defined(WIN32)</span>
+                <span class=
+"comment">// Route general info to debug output (i.e output window in</span>
+                <span class="comment">// visual studio)</span>
+                bex::apiCall(<a class="code" href=
+"beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5" title=
+"Sets where log messages should be routed.">ILBSetLogTarget</a>(<a name="a4"></a><a class="code"
+href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979"
+title=
+"Information messages and render progress messages.">ILB_LT_INFO</a>, <a name="a5"></a><a class="code"
+href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaafe476493e5f3f942fd2cc0feed18a1c3"
+title=
+"Routes messages to the debug output in visual studio when a debugger is connected.">ILB_LS_DEBUG_OUTPUT</a>, 0));
+<span class="preprocessor">#else</span>
+                <span class=
+"comment">// Route general info to std output</span>
+                bex::apiCall(<a class="code" href=
+"beastmanager_8h.html#a38a065e12002db2fbd7b5b5554faa2d5" title=
+"Sets where log messages should be routed.">ILBSetLogTarget</a>(<a class="code"
+href=
+"beastmanager_8h.html#a0a1f3118449e22dd61637fe672d15d36ab34dc46368e1ef07c7024643d6c54979"
+title=
+"Information messages and render progress messages.">ILB_LT_INFO</a>, <a name="a6"></a><a class="code"
+href=
+"beastmanager_8h.html#a72383a21c343b7535664870145851dfaadfaa465f90b7778d2c3e76d9c2f5508c"
+title="Routes messages to stdout.">ILB_LS_STDOUT</a>, 0));
+<span class="preprocessor">#endif</span>
+
+                <span class=
+"comment">// Setup our beast manager</span>
+                bex::apiCall(<a name="a7"></a><a class="code" href=
+"beastmanager_8h.html#aeb36a8136fb38c84b0a40368f2f9b259" title=
+"Creates a Beast Manager.">ILBCreateManager</a>(<span class=
+"stringliteral">"../../../temp/rnm"</span>, <a name=
+"a8"></a><a class="code" href=
+"beastmanager_8h.html#a71f1de2e0b644c5d7f09520e95d6128baea3b0812e33bd4cbe8795c3b8dbade15"
+title=
+"Makes the cache local.">ILB_CS_LOCAL</a>, bex::getLicenseKey().c_str(), &amp;bmh));
+
+                <span class=
+"comment">// Set the path to the Beast binaries</span>
+                bex::apiCall(<a name="a9"></a><a class="code" href=
+"beastmanager_8h.html#a641932b6198033b27ae7476c95464478" title=
+"Sets where the Beast binaries are located.">ILBSetBeastPath</a>(bmh, <span class="stringliteral">"../../../bin"</span>));
+
+                <span class=
+"comment">// Waste the cache from previous runs if present</span>
+                bex::apiCall(<a name="a10"></a><a class="code"
+href="beastmanager_8h.html#a8fee8b5f9aeb42ce1331b7b5e6630024"
+title="Clears the cache.">ILBClearCache</a>(bmh));
+
+                <span class=
+"comment">// Create ball and a plane meshes</span>
+                std::string sphereMatName = <span class=
+"stringliteral">"SphereMaterial"</span>;
+                std::string boxMatName = <span class=
+"stringliteral">"boxMaterial"</span>;
+                <a name="_a11"></a><a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> sphereMesh = bex::createSphere(bmh, <span class="stringliteral">"Sphere"</span>, sphereMatName, 32, 32);
+                <a class="code" href=
+"struct_i_l_b_mesh_handle.html" title=
+"Handle for Beast meshes Intentionally hidden implementation.">ILBMeshHandle</a> cornellMesh = bex::createCornellBox(bmh, <span class="stringliteral">"Cornell"</span>, boxMatName);
+
+                <span class="comment">// Create a scene</span>
+                <a name="_a12"></a><a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene;
+                bex::apiCall(<a name="a13"></a><a class="code"
+href="beastscene_8h.html#ac0cdb9df4007ae693f537fb26ab0942f" title=
+"Begins creation of a scene that will use &quot;classic&quot; fixed-function materials.">ILBBeginScene</a>(bmh, <span class="stringliteral">"BakingScene"</span>, &amp;scene));
+
+                <span class=
+"comment">// Create an instance of the Cornell Box</span>
+                <a name="_a14"></a><a class="code" href=
+"struct_i_l_b_instance_handle.html" title=
+"Handle for Beast instance Intentionally hidden implementation.">ILBInstanceHandle</a> cornellInstance;
+                bex::Matrix4x4 cornellTrans = bex::scaleTranslation(bex::Vec3(10.0f, 10.0f, 10.0f), 
+                                                                                                                  bex::Vec3(0.0f, 0.0f, 0.0f));
+                bex::apiCall(<a name="a15"></a><a class="code"
+href="beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470"
+title=
+"Add an instance to the scene.">ILBCreateInstance</a>(scene, cornellMesh, <span class="stringliteral">"CornellInstance"</span>, &amp;cornellTrans, &amp;cornellInstance));
+
+                <span class=
+"comment">// Create an area light</span>
+                <a name="_a16"></a><a class="code" href=
+"struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a> light;
+
+                bex::Vec3 pos = bex::Vec3(0.0f, 9.0f, 0.0f);
+                bex::Vec3 lookAt(0.0f, 0.0f, 0.0f);
+                bex::Matrix4x4 matrix = bex::setAreaLightMatrix(pos, 
+                        lookAt - pos, 
+                        bex::Vec3(1.0f, 0.0f, 0.0f), 
+                        bex::Vec2(2.0f, 2.0f));
+
+                bex::apiCall(<a name="a17"></a><a class="code"
+href="beastlightsource_8h.html#a19211b284f14aa8e950dd5148d89393d"
+title=
+"Add an area light to the scene It points in negative Y direction by default, use the matrix to change...">ILBCreateAreaLight</a>(scene, 
+                        _T(<span class=
+"stringliteral">"Light"</span>), 
+                        &amp;matrix,
+                        &amp;bex::ColorRGB(1.0f, 1.0f, 1.0f), 
+                        &amp;light));
+
+                
+                bex::apiCall(<a name="a18"></a><a class="code"
+href="beastlightsource_8h.html#a5a4df1a9c5464fde3618d1b953357e3b"
+title=
+"Flags whether the light cast shadows or not.">ILBSetCastShadows</a>(light, <span class="keyword">true</span>));
+                bex::apiCall(<a name="a19"></a><a class="code"
+href="beastlightsource_8h.html#a58d8137ba4915d19c2914a7767dedb92"
+title=
+"Sets the maximum number of shadow samples for the light source.">ILBSetShadowSamples</a>(light, 48));
+
+                <span class=
+"comment">// Create the spheres on the plane</span>
+                <span class="keyword">const</span> <span class=
+"keywordtype">float</span> spherePosRadius = 10.0f - 2.0f*SPHERE_RADIUS;
+                <span class="keywordflow">for</span>(<span class=
+"keywordtype">int</span> i = 0; i &lt; SPHERES; ++i) {
+                        <span class=
+"keywordtype">float</span> x = (bex::frand() - 0.5f) * spherePosRadius * 2.0f;
+                        <span class=
+"keywordtype">float</span> z = (bex::frand() - 0.5f) * spherePosRadius * 2.0f;
+
+                        bex::Matrix4x4 trans = bex::scaleTranslation(bex::Vec3(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS), 
+                                bex::Vec3(x, SPHERE_RADIUS-10.0f, z));
+                        <a class="code" href=
+"struct_i_l_b_instance_handle.html" title=
+"Handle for Beast instance Intentionally hidden implementation.">ILBInstanceHandle</a> tempInstance;
+                        std::stringstream sphereName;
+                        sphereName &lt;&lt; <span class=
+"stringliteral">"SphereInstance_"</span> &lt;&lt; i;
+                        bex::apiCall(<a class="code" href=
+"beastinstance_8h.html#a5dea848eab1c2517d8ffcfde6ed96470" title=
+"Add an instance to the scene.">ILBCreateInstance</a>(scene, sphereMesh, sphereName.str().c_str(), &amp;trans, &amp;tempInstance));
+                        bex::apiCall(<a name="a20"></a><a class=
+"code" href=
+"beastinstance_8h.html#a63eb0787eae630d1a6d3f4c47edebdfc" title=
+"Sets render stats on an instance.">ILBSetRenderStats</a>(tempInstance, <a name="a21"></a><a class="code"
+href=
+"beastinstance_8h.html#a82928922fac8f5eedb9bf3b97cdbaf1ead9aef204c9d56f7b42450345f5a829a1"
+title=
+"If enabled shadow rays will be biased in order to get smooth shadows on smoothed meshes.">ILB_RS_SHADOW_BIAS</a>, <a name="a22"></a><a class="code"
+href=
+"beastinstance_8h.html#ade1096d33f58e9a34c373c50bacc2ff0a27e3cdfab5d04d0f974dd223c395294a"
+title=
+"Sets the render stats supplied to true.">ILB_RSOP_ENABLE</a>));
+                }
+
+                <span class=
+"comment">// Create the floor material</span>
+                <a name="_a23"></a><a class="code" href=
+"struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> boxMat;
+                bex::apiCall(<a name="a24"></a><a class="code"
+href="beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e"
+title=
+"Add a material to the scene.">ILBCreateMaterial</a>(scene, boxMatName.c_str(), &amp;boxMat));
+                bex::apiCall(<a name="a25"></a><a class="code"
+href="beastmaterial_8h.html#a1b9439c5772d4417e0a893e1d30fceb1"
+title=
+"Sets the material to use vertex color for a channel.">ILBSetMaterialUseVertexColors</a>(boxMat, <a name="a26"></a><a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a6e437d4d3c1a61b8a515ba8309ce5d90">ILB_CC_DIFFUSE</a>));
+
+                <span class=
+"comment">// Create the sphere material</span>
+                <a class="code" href=
+"struct_i_l_b_material_handle.html" title=
+"Handle for Beast materials Intentionally hidden implementation.">ILBMaterialHandle</a> sphereMat;
+                bex::apiCall(<a class="code" href=
+"beastmaterial_8h.html#adb783a366a51dbd7327c259dd060487e" title=
+"Add a material to the scene.">ILBCreateMaterial</a>(scene, sphereMatName.c_str(), &amp;sphereMat));
+                bex::apiCall(<a name="a27"></a><a class="code"
+href="beastmaterial_8h.html#af138fa00c89b4f8d6d120784ef752ceb"
+title=
+"Sets the color for a channel on a material.">ILBSetMaterialColor</a>(sphereMat, <a class="code"
+href=
+"beastmaterial_8h.html#a3878a5d80d380fb74e70fb07e042bb79a6e437d4d3c1a61b8a515ba8309ce5d90">ILB_CC_DIFFUSE</a>, &amp;bex::ColorRGBA(.9f, .9f, .9f, 1.0f)));
+
+                <span class=
+"comment">// Setup a camera to render from</span>
+                <a name="_a28"></a><a class="code" href=
+"struct_i_l_b_camera_handle.html" title=
+"Handle for Beast cameras Intentionally hidden implementation.">ILBCameraHandle</a> camera;
+                bex::Vec3 camPos(0.0f, 0.0f, -20.0f);
+                bex::Vec3 camLookAt(0.0f, -3.0f, 0.0f);
+                bex::apiCall(<a name="a29"></a><a class="code"
+href="beastcamera_8h.html#a311e41c55685346b3db3254a8e89bfd6" title=
+"Add a camera to the scene.">ILBCreatePerspectiveCamera</a>(scene, 
+                        _T(<span class=
+"stringliteral">"Camera"</span>), 
+                        &amp;bex::setCameraMatrix(camPos, camLookAt-camPos, bex::Vec3(0.0f, 1.0f, 0.0f)), 
+                        &amp;camera));
+
+                <span class="comment">// Finalize the scene</span>
+                bex::apiCall(<a name="a30"></a><a class="code"
+href="beastscene_8h.html#a73654682a5785904682800b934720fcf" title=
+"Finalizes this scene Any future call to modify this scene or any of its objects will fail...">ILBEndScene</a>(scene));
+
+                std::string xmlFileName = <span class=
+"stringliteral">"../../data/rnm.xml"</span>;
+
+                <span class=
+"comment">// Create settings xml file</span>
+                {
+                        <span class=
+"keyword">using namespace </span>bex;
+                        std::ofstream ofs(xmlFileName.c_str(), std::ios_base::out | std::ios_base::trunc);
+                        XMLWriter xml(ofs);
+                        
+                        {ScopedTag _x(xml, <span class=
+"stringliteral">"ILConfig"</span>);
+                                {ScopedTag _x(xml, <span class=
+"stringliteral">"AASettings"</span>);
+                                        xml.data(<span class=
+"stringliteral">"minSampleRate"</span>, 0);
+                                        xml.data(<span class=
+"stringliteral">"maxSampleRate"</span>, 2);
+                                }
+                                {ScopedTag _x(xml, <span class=
+"stringliteral">"RenderSettings"</span>);
+                                        xml.data(<span class=
+"stringliteral">"bias"</span>, 0.00001f);
+                                }
+                                {ScopedTag _x(xml, <span class=
+"stringliteral">"GISettings"</span>);
+                                        xml.data(<span class=
+"stringliteral">"enableGI"</span>, <span class=
+"keyword">true</span>);
+                                        xml.data(<span class=
+"stringliteral">"fgRays"</span>, 300);
+                                        xml.data(<span class=
+"stringliteral">"fgContrastThreshold"</span>, 0.1);
+                                        xml.data(<span class=
+"stringliteral">"fgInterpolationPoints"</span>, 15);
+                                        xml.data(<span class=
+"stringliteral">"primaryIntegrator"</span>, <span class=
+"stringliteral">"FinalGather"</span>);
+                                        xml.data(<span class=
+"stringliteral">"secondaryIntegrator"</span>, <span class=
+"stringliteral">"PathTracer"</span>);
+                                }
+                        }
+                }
+
+                <a name="_a31"></a><a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job;
+                bex::apiCall(<a name="a32"></a><a class="code"
+href="beastjob_8h.html#a9947df5852323003deac6c8799ddd607" title=
+"Creates a Beast job.">ILBCreateJob</a>(bmh, _T(<span class=
+"stringliteral">"TestJob"</span>), scene, xmlFileName.c_str(), &amp;job));
+
+                <span class="comment">// Create passes</span>
+                <a name="_a33"></a><a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> fullShadingPass;
+                bex::apiCall(<a name="a34"></a><a class="code"
+href="beastrenderpass_8h.html#ad16bdfe42814a2538c0c974ea79ec715"
+title=
+"Creates a Full Shading render pass.">ILBCreateFullShadingPass</a>(job, _T(<span class="stringliteral">"fullShading"</span>), &amp;fullShadingPass));
+
+                <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> rnmPass1;
+                bex::apiCall(<a name="a35"></a><a class="code"
+href="beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6"
+title=
+"Creates an RNM render pass.">ILBCreateRNMPass</a>(job, _T(<span class="stringliteral">"RNM1"</span>), <a name="a36"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636af0f4be4bbc2214543156efdfda82bf82"
+title=
+"Only indirect illumination (no direct illumination)">ILB_IM_INDIRECT_ONLY</a>, 0, <a name="a37"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0"
+title=
+"Unreal Engine 3 compatible basis.">ILB_RB_UE3</a>, &amp;rnmPass1));
+                <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> rnmPass2;
+                bex::apiCall(<a class="code" href=
+"beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6" title=
+"Creates an RNM render pass.">ILBCreateRNMPass</a>(job, _T(<span class="stringliteral">"RNM2"</span>), <a name="a38"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636aa6f5e9e2a99a4b8c114e94a1ff56e2a3"
+title=
+"Only direct illumination (no indirect illumination)">ILB_IM_DIRECT_ONLY</a>, 0, <a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0"
+title=
+"Unreal Engine 3 compatible basis.">ILB_RB_UE3</a>, &amp;rnmPass2));
+                <a class="code" href=
+"struct_i_l_b_render_pass_handle.html" title=
+"Handle for Beast render pass Intentionally hidden implementation.">ILBRenderPassHandle</a> rnmPass3;
+                bex::apiCall(<a class="code" href=
+"beastrenderpass_8h.html#aed59b8f7001b93c2fa6bd5090b321cc6" title=
+"Creates an RNM render pass.">ILBCreateRNMPass</a>(job, _T(<span class="stringliteral">"RNM3"</span>), <a name="a39"></a><a class="code"
+href=
+"beastrenderpass_8h.html#a92b9b61709699c9defd6802a93aeb636a76a30622438218dd5d0e5ff72d5b3b93"
+title=
+"Both direct and indirect illumination.">ILB_IM_FULL</a>, 0, <a class="code"
+href=
+"beastrenderpass_8h.html#a2915dd174636e1a53353050c7841df15acc3dc57817b9e7903db303e07dedc6e0"
+title=
+"Unreal Engine 3 compatible basis.">ILB_RB_UE3</a>, &amp;rnmPass3));
+
+                <span class="comment">// Create Targets</span>
+                <a name="_a40"></a><a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> textureTarget;
+                bex::apiCall(<a name="a41"></a><a class="code"
+href="beasttarget_8h.html#a409692f3e607da5b2757b75c75fe2413" title=
+"Adds a texture baking target to a job.">ILBCreateTextureTarget</a>(job, _T(<span class="stringliteral">"textureTarget"</span>), 256, 256, &amp;textureTarget));
+                <a name="_a42"></a><a class="code" href=
+"struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a> entity;
+                bex::apiCall(<a name="a43"></a><a class="code"
+href="beasttarget_8h.html#a03e7ae4191ae2af374e373220df6a240" title=
+"Adds an instance to bake to a texture or vertex bake target.">ILBAddBakeInstance</a>(textureTarget, cornellInstance, &amp;entity));
+
+                <a class="code" href=
+"struct_i_l_b_target_handle.html" title=
+"Handle for Beast target specification Intentionally hidden implementation.">ILBTargetHandle</a> cameraTarget;
+                bex::apiCall(<a name="a44"></a><a class="code"
+href="beasttarget_8h.html#ab91c63b59f1ad10a213890f69a1de72f" title=
+"Adds a camera render target to a job.">ILBCreateCameraTarget</a>(job, _T(<span class="stringliteral">"cameraTarget"</span>), camera, 640, 480, &amp;cameraTarget));
+
+                <span class="comment">// Add pass to targets</span>
+                bex::apiCall(<a name="a45"></a><a class="code"
+href="beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385" title=
+"Add a Render Pass to a target.">ILBAddPassToTarget</a>(textureTarget, rnmPass1));
+                bex::apiCall(<a class="code" href=
+"beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385" title=
+"Add a Render Pass to a target.">ILBAddPassToTarget</a>(textureTarget, rnmPass2));
+                bex::apiCall(<a class="code" href=
+"beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385" title=
+"Add a Render Pass to a target.">ILBAddPassToTarget</a>(textureTarget, rnmPass3));
+                bex::apiCall(<a class="code" href=
+"beasttarget_8h.html#ae04ff99e5585a57f49a08c71a300b385" title=
+"Add a Render Pass to a target.">ILBAddPassToTarget</a>(cameraTarget, fullShadingPass));
+
+                <span class=
+"comment">// Finally render the scene</span>
+                <span class=
+"keywordflow">if</span>(!bex::renderJob(job, std::cout)) {
+                        <span class="keywordflow">return</span> 1;
+                }
+                <span class="keywordflow">return</span> 0;
+
+        } <span class=
+"keywordflow">catch</span>(bex::Exception&amp; ex) {
+                <a name="_a46"></a><a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> errorString;
+                <a class="code" href=
+"struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a> extendedError;
+                <a name="a47"></a><a class="code" href=
+"beastutils_8h.html#aed2244af0fe901862e4d71c934af46dc" title=
+"Converts an error code into a string for human readable error reporting.">ILBErrorToString</a>(ex.status, &amp;errorString);
+                <a name="a48"></a><a class="code" href=
+"beastutils_8h.html#ae949fbbb56d2dfb94290a968802066c0" title=
+"Returns the last error that happened in this thread.">ILBGetExtendErrorInformation</a>(&amp;extendedError);
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Beast API error"</span> &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Error: "</span> &lt;&lt; bex::convertStringHandle(errorString) &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Info: "</span> &lt;&lt; bex::convertStringHandle(extendedError) &lt;&lt; std::endl;
+                <span class="keywordflow">return</span> 1;
+        }  <span class=
+"keywordflow">catch</span>(std::exception&amp; ex) {
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Standard exception"</span> &lt;&lt; std::endl;
+                std::cout &lt;&lt; <span class=
+"stringliteral">"Error: "</span> &lt;&lt; ex.what() &lt;&lt; std::endl;;
+                <span class="keywordflow">return</span> 1;
+        }
+}
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br />
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

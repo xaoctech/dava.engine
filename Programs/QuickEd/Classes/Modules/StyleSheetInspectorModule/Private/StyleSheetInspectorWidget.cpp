@@ -8,6 +8,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
+#include <Engine/Engine.h>
 #include <UI/UIControl.h>
 #include <UI/Styles/UIStyleSheet.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
@@ -87,7 +88,7 @@ void StyleSheetInspectorWidget::Update()
     }
 
     UIStyleSheetProcessDebugData debugData;
-    UIControlSystem::Instance()->GetStyleSheetSystem()->DebugControl(currentControl.Get(), &debugData);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->DebugControl(currentControl.Get(), &debugData);
 
     QFont boldFont;
     boldFont.setBold(true);

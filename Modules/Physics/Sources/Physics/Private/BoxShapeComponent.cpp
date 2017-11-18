@@ -10,13 +10,13 @@
 
 namespace DAVA
 {
-DAVA::Component* BoxShapeComponent::Clone(Entity* toEntity)
+Component* BoxShapeComponent::Clone(Entity* toEntity)
 {
     BoxShapeComponent* result = new BoxShapeComponent();
     result->SetEntity(toEntity);
 
     result->halfExtents = halfExtents;
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
 
     return result;
 }
@@ -41,7 +41,10 @@ const Vector3& BoxShapeComponent::GetHalfSize() const
 void BoxShapeComponent::SetHalfSize(const Vector3& size)
 {
     halfExtents = size;
-    SheduleUpdate();
+    DVASSERT(halfExtents.x > 0.0f);
+    DVASSERT(halfExtents.y > 0.0f);
+    DVASSERT(halfExtents.z > 0.0f);
+    ScheduleUpdate();
 }
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -54,9 +57,11 @@ void BoxShapeComponent::CheckShapeType() const
 void BoxShapeComponent::UpdateLocalProperties()
 {
     physx::PxShape* shape = GetPxShape();
+    DVASSERT(shape != nullptr);
     physx::PxBoxGeometry geom;
     shape->getBoxGeometry(geom);
     geom.halfExtents = PhysicsMath::Vector3ToPxVec3(halfExtents);
+    DVASSERT(geom.isValid());
     shape->setGeometry(geom);
     CollisionShapeComponent::UpdateLocalProperties();
 }

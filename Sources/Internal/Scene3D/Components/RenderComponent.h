@@ -30,11 +30,6 @@ public:
 private:
     RenderObject* renderObject = nullptr;
 
-public:
-    INTROSPECTION_EXTEND(RenderComponent, Component,
-                         MEMBER(renderObject, "renderObject", I_SAVE | I_VIEW | I_EDIT)
-                         );
-
     DAVA_VIRTUAL_REFLECTION(RenderComponent, Component);
 };
 }

@@ -28,7 +28,7 @@ Component* DynamicBodyComponent::Clone(Entity* toEntity)
 {
     DynamicBodyComponent* result = new DynamicBodyComponent();
     result->SetEntity(toEntity);
-    CopyFields(result);
+    CopyFieldsIntoClone(result);
     result->linearDamping = linearDamping;
     result->angularDamping = angularDamping;
     result->maxAngularVelocity = maxAngularVelocity;
@@ -72,7 +72,7 @@ float32 DynamicBodyComponent::GetLinearDamping() const
 void DynamicBodyComponent::SetLinearDamping(float32 damping)
 {
     linearDamping = damping;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 float32 DynamicBodyComponent::GetAngularDamping() const
@@ -83,7 +83,7 @@ float32 DynamicBodyComponent::GetAngularDamping() const
 void DynamicBodyComponent::SetAngularDamping(float32 damping)
 {
     angularDamping = damping;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 float32 DynamicBodyComponent::GetMaxAngularVelocity() const
@@ -94,7 +94,7 @@ float32 DynamicBodyComponent::GetMaxAngularVelocity() const
 void DynamicBodyComponent::SetMaxAngularVelocity(float32 velocity)
 {
     maxAngularVelocity = velocity;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 uint32 DynamicBodyComponent::GetMinPositionIters() const
@@ -105,7 +105,7 @@ uint32 DynamicBodyComponent::GetMinPositionIters() const
 void DynamicBodyComponent::SetMinPositionIters(uint32 minPositionIters_)
 {
     minPositionIters = minPositionIters_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 uint32 DynamicBodyComponent::GetMinVelocityIters() const
@@ -116,7 +116,7 @@ uint32 DynamicBodyComponent::GetMinVelocityIters() const
 void DynamicBodyComponent::SetMinVelocityIters(uint32 minVelocityIters_)
 {
     minVelocityIters = minVelocityIters_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 DynamicBodyComponent::eLockFlags DynamicBodyComponent::GetLockFlags() const
@@ -127,7 +127,7 @@ DynamicBodyComponent::eLockFlags DynamicBodyComponent::GetLockFlags() const
 void DynamicBodyComponent::SetLockFlags(eLockFlags lockFlags_)
 {
     lockFlags = lockFlags_;
-    SheduleUpdate();
+    ScheduleUpdate();
 }
 
 bool DynamicBodyComponent::IsCCDEnabled() const

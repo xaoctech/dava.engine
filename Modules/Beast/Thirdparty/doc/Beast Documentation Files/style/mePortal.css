@@ -1,0 +1,83 @@
+/* M&E Portal  base CSS*/
+* {
+	margin: 0;
+	padding: 0;
+}
+html, body {
+	background-color: #fff;
+}
+body {
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	padding-bottom: 1.25em;
+	text-align: center;
+}
+#container {
+	margin: 0 auto;
+	text-align: left;
+}
+#header {
+	background: #000 url(../images/Portal_00MainSmall.png) no-repeat bottom center;
+	height: 6.313em;
+}
+#content {
+	background-color: #fff;
+	margin: 0.750em 0 0 0;
+	padding: 0 0 0.250em 0;
+}
+.colBanner {
+	background-color: #000;
+	color: #fff;
+	height: 2.218em;
+	padding: 0.750em 0 0 0;
+}
+.colBanner p {
+	margin:  0 0 0 0.750em;
+}
+#new {
+	background-color: #e1e1e1;
+}
+#help {
+}
+#reference {
+	background-color: #e1e1e1;
+}
+dl {
+	height: 8.9em;
+	margin: 0.750em 0 0 0.750em;
+	min-height: 142px;
+}
+dd {
+	font-size: .9em;
+}
+img {
+	border: none;
+}
+a {
+	color: #000;
+	text-decoration: none;	
+}
+a:hover {
+	text-decoration: underline;
+}
+.clear {
+	clear: both; 
+}
+#footer {
+	background-color: #000;
+	height: 2.5em;
+	margin: 0.250em 0 0 0;
+	padding: 0.5em 0 0 0;
+}
+#footer p {
+	font-size: .9em;
+	margin: 0.250em 0 0 0.5em;
+}
+#footer a {
+	color: #fff;
+	text-decoration: none;
+
+}
+#footer a:hover {
+	text-decoration: underline;
+}

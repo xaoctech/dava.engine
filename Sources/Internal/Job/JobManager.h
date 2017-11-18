@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
 #include "Concurrency/Atomic.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/Semaphore.h"
@@ -13,7 +12,7 @@ namespace DAVA
 {
 class Engine;
 class JobThread;
-class JobManager : public Singleton<JobManager>
+class JobManager
 {
 public:
     /*! Available types of main-thread job. */

@@ -1,0 +1,858 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0024)http://docs.autodesk.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>.MTcontainer { min-height: 67px; }</style>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 6 November 2007), see www.w3.org" />
+<link rel="stylesheet" type="text/css" href="doxygen.css" />
+<link rel="stylesheet" type="text/css" href="tabs.css" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href=
+"../style/adsk.cpm.css" />
+<link rel="stylesheet" type="text/css" href=
+"../style/sdk-custom-html.css" />
+<script type="text/javascript" src="../scripts/ac_common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.strings.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.common.js">
+</script>
+<script type="text/javascript" src="../scripts/adsk.highlight.js">
+</script>
+<script type="text/javascript" src=
+"../scripts/common-processing.js">
+</script>
+<title>API: beastapi/beastjob.h Source File</title>
+
+<script type="text/javascript">
+//<![CDATA[
+function searchForTerm (term, setAnd) {
+        if (top.frames['left_tab'])
+        {
+                top.frames['left_tab'].doNewSearch(term, setAnd); 
+                top.frames['left_tab'].selectTabByName('searchTab');
+        }
+}
+//]]>
+</script>
+<style type="text/css">
+/*<![CDATA[*/
+    .searchLinkDiv { font-size:90%; text-align:right; }
+/*]]>*/
+</style>
+<script type="text/javascript">
+                        function toggleContents()
+                        { 
+                            if (top.document.body.cols == "0,100") 
+                            { top.document.body.cols = "30,70"; }
+                            else { top.document.body.cols = "0,100"; }
+                        }
+                        </script>
+                        
+<script type="text/javascript">
+	var DocOnlineVersions = [];
+	var DocDownloads = [];
+</script>
+<script type="text/javascript" src="https://gameware.autodesk.com/beast/developer/doc/2015/documentation/docdata.js"></script>
+<script type="text/javascript" src="../scripts/doclinks.js"></script></head>
+<body height="100%"><div align="right" id="DocLinks"></div><script type="text/javascript">PrintDocLinks()</script>
+<div class="head">
+<div class="head-block">
+<div class="nav-group"><!--browse buttons-->
+<div class="browse">
+<div class="headNavLinkToggleToc"><div id="ToggleTocTitle" style="display:none">Toggle the navigation pane</div><a href="beastjob_8h_source.html" target="content" onClick="javascript: toggleContents();" class="headNavLink" onmouseover="showInfo(document.getElementById('ToggleTocTitle').innerHTML);" onmouseout="hideInfo();"><img src="../images/toggle_navigation.gif" border="0"></a></div><div class="headNavLinkAddToFav">
+<div id="AddFavTitle" style="display:none"><nobr>Add to
+Favorites</nobr></div>
+<nobr><a href="#" class="headNavLink" onclick=
+"javascript:top.HlpSys.favorites.addToFavorites(document);"
+onmouseover=
+"showInfo(document.getElementById('AddFavTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/add_favorite.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkHome">
+<div id="homeTitle" style="display:none"><nobr>Home: Beast
+Documentation</nobr></div>
+<nobr><a href="../index.html" target="_top" class="headNavLink"
+onmouseover=
+"showInfo(document.getElementById('homeTitle').innerHTML);"
+onmouseout="hideInfo();"><img src="../images/nav-home-xp.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkShare">
+<div id="shareTitle" style="display:none"><nobr>Share</nobr></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('shareTitle').innerHTML);"
+onmouseout="hideInfo();" onclick=
+"window.location='mailto:?subject=beastapi/beastjob.h Source File&amp;body=' + window.location; return false;"><img src="../images/nav-share.gif"
+border="0" /></a></nobr></div>
+<div class="headNavLinkPrint">
+<div id="printTitle" style="display:none"></div>
+<nobr><a href="#" target="content" class="headNavLink" onmouseover=
+"showInfo(document.getElementById('printTitle').innerHTML);"
+onmouseout="hideInfo();" onclick="window.print()"><img src=
+"../images/nav-print.gif" border="0" /></a></nobr></div>
+<nobr><span class="home-button-separator">&nbsp;</span></nobr>
+<div class="headNavLinkPrev"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkUp"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+<div class="headNavLinkNext"><nobr><img src=
+"../images/nav-null-xp.gif" border="0" /></nobr></div>
+</div>
+<!--end browse buttons--></div>
+<div class="button-info"><span id="infoline">&nbsp;</span></div>
+<div class="ancestry">&nbsp;</div>
+<div class="MTcontainer"><!-- begin MT --><div id="MicrosoftTranslatorWidget" style="float:right; width: 330px; min-height: 57px; border-color: #170D07; background-color: #362F2A"><noscript><a href="http://microsofttranslator.com">Translate this page</a><br />Powered by <a href="http://www.bing.com/translator">Microsoft® Translator</a></noscript></div> <script type="text/javascript"> /* <![CDATA[ */ setTimeout(function() { if (location && location.href && location.href.indexOf('mk:@MSITStore:') == 0) { return; } var s = document.createElement("script"); s.type = "text/javascript"; s.charset = "UTF-8"; s.src = ((location && location.href && location.href.indexOf('https') == 0) ? "https://ssl.microsofttranslator.com" : "http://www.microsofttranslator.com" ) + "/ajax/v2/widget.aspx?siteData=y5CYlxTRD0znCzRLDwX0Wy7-g1EdC1XA4dSC-Y1LtaeScyli8_Ps5jPKqTr4xKxMI0OOUfkDplvX3uxN0JnPclebSYW8_J1HBzf4VLQEzQ8M4PsYXF_cMyp1Oumaetky&layout=ts&mode=manual&from=en&category=5297189e-446b-459e-ae1d-9d0360400781_tech&toolbar=none&hidelanguages="; var p = document.getElementsByTagName('head')[0] || document.documentElement; p.insertBefore(s, p.firstChild); }, 0); /* ]]> */ </script><!-- end MT -->
+			<div class="head-text"><span>beastapi/beastjob.h Source
+File</span></div></div>
+</div>
+</div>
+<div class="head-margin">&nbsp;</div>
+<div style="line-height: 0pt">&nbsp;</div>
+<div class="head-margin">&nbsp;</div>
+<div class="body_content">
+<div><!--Body-->
+<!-- Generated by Doxygen 1.7.4 -->
+<div id="navrow1" class="tabs">
+<ul class="tablist">
+<li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+</ul>
+</div>
+<div class="header">
+<div class="headertitle">
+<div class="title">beastapi/beastjob.h</div>
+</div>
+</div>
+<div class="contents"><a href="beastjob_8h.html">Go to the
+documentation of this file.</a>
+<div class="fragment">
+<pre class="fragment">
+<a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class=
+"comment">Copyright 2014 Autodesk, Inc.  All rights reserved.</span>
+<a name="l00003"></a>00003 <span class=
+"comment">Use of this software is subject to the terms of the Autodesk license agreement</span>
+<a name="l00004"></a>00004 <span class=
+"comment">provided at the time of installation or download, or which otherwise </span>
+<a name="l00005"></a>00005 <span class=
+"comment">accompanies this software in either electronic or hard copy form.</span>
+<a name="l00006"></a>00006 <span class="comment">*/</span>
+<a name="l00007"></a>00007 
+<a name="l00008"></a>00008 
+<a name="l00012"></a>00012 <span class=
+"preprocessor">#ifndef BEASTJOB_H</span>
+<a name="l00013"></a>00013 <span class=
+"preprocessor">#define BEASTJOB_H</span>
+<a name="l00014"></a>00014 <span class=
+"preprocessor">#include "<a class="code" href=
+"beastapitypes_8h.html" title=
+"This header is the base for getting platform consistent types for the Beast API.">beastapitypes.h</a>"</span>
+<a name="l00015"></a>00015 
+<a name="l00019"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258">00019</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00023"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a5b985d57c29be05961491293f7258d06">00023</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a5b985d57c29be05961491293f7258d06"
+title=
+"This was a triumph! I'm making a note here; Huge Success!">ILB_JS_SUCCESS</a> = 0,
+<a name="l00024"></a>00024 
+<a name="l00028"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a7e560eb9df57faa38d7cb6eded048aa3">00028</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a7e560eb9df57faa38d7cb6eded048aa3"
+title="Job was aborted by external means.">ILB_JS_CANCELLED</a>,
+<a name="l00029"></a>00029 
+<a name="l00033"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258af35d8189b4357db890060948fc0b888c">00033</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258af35d8189b4357db890060948fc0b888c"
+title=
+"Beast does not have a valid license.">ILB_JS_INVALID_LICENSE</a>,
+<a name="l00034"></a>00034 
+<a name="l00038"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a319dbd68655ee66792379cd02951c8f6">00038</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a319dbd68655ee66792379cd02951c8f6"
+title="Error parsing the command line.">ILB_JS_CMDLINE_ERROR</a>,
+<a name="l00039"></a>00039 
+<a name="l00043"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a5478dc2c5cc02133e33f7ecbe563e169">00043</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a5478dc2c5cc02133e33f7ecbe563e169"
+title="Error parsing the config files.">ILB_JS_CONFIG_ERROR</a>,
+<a name="l00044"></a>00044 
+<a name="l00048"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258accdb1933dc73a4de2bbd25465bd77e03">00048</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258accdb1933dc73a4de2bbd25465bd77e03"
+title="Beast crashed, sorry.">ILB_JS_CRASH</a>,
+<a name="l00049"></a>00049 
+<a name="l00053"></a><a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a24dcb4cfc29a93ef5c2dfdabb038bbb7">00053</a>         <a class="code"
+href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258a24dcb4cfc29a93ef5c2dfdabb038bbb7"
+title="Other Error.">ILB_JS_OTHER_ERROR</a> = 0x10000001
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055 } <a class="code" href=
+"beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a>;
+<a name="l00056"></a>00056 
+<a name="l00060"></a><a class="code" href=
+"beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1">00060</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00064"></a><a class="code" href=
+"beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1a9c1007055cc5afb1d257086f0b93b514">00064</a>         <a class="code"
+href=
+"beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1a9c1007055cc5afb1d257086f0b93b514"
+title="Enable rendering.">ILB_ERS_RUN</a> = 0,
+<a name="l00065"></a>00065 
+<a name="l00069"></a><a class="code" href=
+"beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1a179c9296ec904e965a1b8a25ff656c7f">00069</a>         <a class="code"
+href=
+"beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1a179c9296ec904e965a1b8a25ff656c7f"
+title="Pause a render without.">ILB_ERS_PAUSE</a>
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 } <a class="code" href=
+"beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1" title=
+"The different states for live job.">ILBErnstRunningState</a>;
+<a name="l00072"></a>00072 
+<a name="l00076"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0">00076</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00080"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0a3b91c64198f51de01c4d6627e4705c57">00080</a>         <a class="code"
+href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0a3b91c64198f51de01c4d6627e4705c57"
+title=
+"Don't display the render window / progress view.">ILB_SR_NO_DISPLAY</a> = 0,
+<a name="l00081"></a>00081 
+<a name="l00085"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0acea2a833558b7861cb3a5bb8372b5f03">00085</a>         <a class="code"
+href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0acea2a833558b7861cb3a5bb8372b5f03"
+title=
+"Show the render window / progress view and close it when the rendering is done.">ILB_SR_CLOSE_WHEN_DONE</a>,
+<a name="l00086"></a>00086 
+<a name="l00091"></a><a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0ad5c6185f7d1d74ce7e48872a9583a26b">00091</a>         <a class="code"
+href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0ad5c6185f7d1d74ce7e48872a9583a26b"
+title=
+"Show the render window and keep it open until the user closes it or the job is destroyed.">ILB_SR_KEEP_OPEN</a>
+<a name="l00092"></a>00092 } <a class="code" href=
+"beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0" title=
+"Sets how to handle the Beast window when rendering.">ILBShowResults</a>;
+<a name="l00093"></a>00093 
+<a name="l00097"></a><a class="code" href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2">00097</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00101"></a><a class="code" href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a47626f3d45dc2759a1f51829bd610618">00101</a>         <a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a47626f3d45dc2759a1f51829bd610618"
+title="Force a local render.">ILB_RD_FORCE_LOCAL</a> = 0,
+<a name="l00102"></a>00102 
+<a name="l00107"></a><a class="code" href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f">00107</a>         <a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a12dc6129ef7f73c3cdbc82089d01415f"
+title=
+"Render distributed if possible, otherwise fallback on local rendering.">ILB_RD_AUTODETECT</a>,
+<a name="l00108"></a>00108 
+<a name="l00113"></a><a class="code" href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a51dec84d8cf599aeea2d0216b7bbd0c5">00113</a>         <a class="code"
+href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2a51dec84d8cf599aeea2d0216b7bbd0c5"
+title=
+"Force a distributed render, fails if distribution is not available.">ILB_RD_FORCE_DISTRIBUTED</a>
+<a name="l00114"></a>00114 } <a class="code" href=
+"beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2" title=
+"Sets how beast should render distributed.">ILBDistributionType</a>;
+<a name="l00115"></a>00115 
+<a name="l00119"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9fa">00119</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00123"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa1b7d77f0228db051df9c7fd74d90fd2d">00123</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa1b7d77f0228db051df9c7fd74d90fd2d"
+title=
+"Specifies a new light source created in Ernst.">ILB_UT_NEW_LIGHTSOURCE</a> = 0,
+<a name="l00124"></a>00124 
+<a name="l00128"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa3290544032ac029010c0e15ce40e0593">00128</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa3290544032ac029010c0e15ce40e0593"
+title=
+"Specifies an update to a previously existing light source.">ILB_UT_UPDATE_LIGHTSOURCE</a>,
+<a name="l00129"></a>00129 
+<a name="l00133"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa514de36903b209a88317f84257aa0b87">00133</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa514de36903b209a88317f84257aa0b87"
+title=
+"Specifies that a light sources has been deleted in Ernst.">ILB_UT_DELETE_LIGHTSOURCE</a>,
+<a name="l00134"></a>00134 
+<a name="l00138"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa5c5f673d1a576a099f8922befa3b3a14">00138</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa5c5f673d1a576a099f8922befa3b3a14"
+title="Global information about the scene.">ILB_UT_SCENE_INFO</a>,
+<a name="l00139"></a>00139 
+<a name="l00143"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faac33d6dad892ee574e80dcf631a11cd67">00143</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faac33d6dad892ee574e80dcf631a11cd67"
+title=
+"Specifies an update to a previously existing camera.">ILB_UT_UPDATE_CAMERA</a>,
+<a name="l00144"></a>00144 
+<a name="l00148"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faab10275b9dbe14370f809a3dad9dcb427">00148</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faab10275b9dbe14370f809a3dad9dcb427"
+title=
+"Specifies an update to a previously existing target entity.">ILB_UT_UPDATE_TARGET</a>,
+<a name="l00149"></a>00149 
+<a name="l00153"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2f4cd4cc3b342e4a0017db82df9222e8">00153</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2f4cd4cc3b342e4a0017db82df9222e8"
+title=
+"Specifies a generated light map from a Live Ernst job.">ILB_UT_UPDATE_TEXTURE</a>,
+<a name="l00154"></a>00154 
+<a name="l00158"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faaadc02c641f72baf35d6551724a8e61e7">00158</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faaadc02c641f72baf35d6551724a8e61e7"
+title=
+"Specifies vertex lighting from a Live Ernst job.">ILB_UT_UPDATE_VERTEX</a>,
+<a name="l00162"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2d20e2df2a9b2701b0fc9534ff2e8713">00162</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faa2d20e2df2a9b2701b0fc9534ff2e8713"
+title=
+"Specifies an update camera frame buffer from a Live Ernst job.">ILB_UT_UPDATE_CAMERA_FRAME_BUFFER</a>,
+<a name="l00163"></a>00163 
+<a name="l00169"></a><a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faaad25d0c49f6f05a4842d8934c41a285a">00169</a>         <a class="code"
+href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9faaad25d0c49f6f05a4842d8934c41a285a"
+title=
+"Message that the lighting setup of a scene has changed and that the specified target does no longer c...">ILB_UT_INVALIDATE_FRAMEBUFFER</a>
+<a name="l00170"></a>00170 
+<a name="l00171"></a>00171 } <a class="code" href=
+"beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a>;
+<a name="l00172"></a>00172 
+<a name="l00176"></a><a class="code" href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05">00176</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00180"></a><a class="code" href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05a6dd9534fe5bc11ae1580a5e51ea802cb">00180</a>         <a class="code"
+href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05a6dd9534fe5bc11ae1580a5e51ea802cb"
+title="Only bake what the camera sees.">ILB_BM_CAMERA_FRUSTUM</a>,
+<a name="l00181"></a>00181 
+<a name="l00186"></a><a class="code" href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05a236e30494587bd34eb17bcd58fcdee75">00186</a>         <a class="code"
+href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05a236e30494587bd34eb17bcd58fcdee75"
+title=
+"Bake all targets in the scene, prioritized by the areas with the most variance.">ILB_BM_ENTIRE_LEVEL</a>
+<a name="l00187"></a>00187 } <a class="code" href=
+"beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05" title=
+"Different baking modes for a Live Ernst session.">ILBErnstBakingModeType</a>;
+<a name="l00188"></a>00188 
+<a name="l00192"></a><a class="code" href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183">00192</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> {
+<a name="l00196"></a><a class="code" href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183ae73939950eadffe4d161da2e4df80191">00196</a>         <a class="code"
+href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183ae73939950eadffe4d161da2e4df80191"
+title="No caustics at all.">ILB_CM_NONE</a>,
+<a name="l00197"></a>00197 
+<a name="l00202"></a><a class="code" href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183a69120c7e9a60b912421020f3931a1adb">00202</a>         <a class="code"
+href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183a69120c7e9a60b912421020f3931a1adb"
+title=
+"Caustics with one diffuse interaction before all specular interactions are allowed.">ILB_CM_SOME</a>,
+<a name="l00203"></a>00203 
+<a name="l00207"></a><a class="code" href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183a8806c3a516548833f929b6f4f5ce5bb0">00207</a>         <a class="code"
+href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183a8806c3a516548833f929b6f4f5ce5bb0"
+title="All caustic light paths allowed.">ILB_CM_ALL</a>
+<a name="l00208"></a>00208 } <a class="code" href=
+"beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183" title=
+"Controls the type of caustics to include in physical rendering (both Ernst and Beast)">ILBCausticsModeType</a>;
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00211"></a>00211 <span class=
+"keyword">extern</span> <span class="stringliteral">"C"</span> {
+<a name="l00212"></a>00212 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00213"></a>00213 
+<a name="l00222"></a>00222 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a9947df5852323003deac6c8799ddd607" title=
+"Creates a Beast job.">ILBCreateJob</a>(<a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager,
+<a name="l00223"></a>00223                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> uniqueName, 
+<a name="l00224"></a>00224                 <a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+<a name="l00225"></a>00225                 <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> jobXML, 
+<a name="l00226"></a>00226                 <a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a>* job);
+<a name="l00227"></a>00227 
+<a name="l00238"></a>00238 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a1280c43d81424cb593c548839c33c5ce" title=
+"Creates an Ernst job.">ILBCreateErnstJob</a>(<a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, 
+<a name="l00239"></a>00239         <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> uniqueName, 
+<a name="l00240"></a>00240         <a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+<a name="l00241"></a>00241         <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> jobXML, 
+<a name="l00242"></a>00242         <a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a>* job);
+<a name="l00243"></a>00243 
+<a name="l00252"></a>00252 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a93d10d404c2f5e693ef531a444ed215d" title=
+"Creates a Live Ernst job.">ILBCreateLiveErnstJob</a>(<a class=
+"code" href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, 
+<a name="l00253"></a>00253         <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> uniqueName, 
+<a name="l00254"></a>00254         <a class="code" href=
+"struct_i_l_b_scene_handle.html" title=
+"Handle for Beast scenes Intentionally hidden implementation.">ILBSceneHandle</a> scene, 
+<a name="l00255"></a>00255         <a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a>* job);
+<a name="l00256"></a>00256 
+<a name="l00263"></a>00263 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a51efd3529c65fa21fa0358d5eeab2854" title=
+"Creates an UV job.">ILBCreateUVJob</a>(<a class="code" href=
+"struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> beastManager, 
+<a name="l00264"></a>00264         <a class="code" href=
+"beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5" title=
+"Beast api const string type.">ILBConstString</a> uniqueName, 
+<a name="l00265"></a>00265         <a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a>* job);
+<a name="l00266"></a>00266 
+<a name="l00273"></a>00273 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a0d5762fda4d20fac1ec419ab9c3ff73a" title=
+"Checks if a job has a new update and retrieves it.">ILBGetJobUpdate</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, 
+<a name="l00274"></a>00274         <a class="code" href=
+"beastapitypes_8h.html#ac4f28becc15566cc389396f596943813" title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* hasUpdate, 
+<a name="l00275"></a>00275         <a class="code" href=
+"struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a>* updateHandle);
+<a name="l00276"></a>00276 
+<a name="l00282"></a>00282 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aad63bf4ebd2d2adbd09da011901748c2" title=
+"Gets the type of update.">ILBGetJobUpdateType</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update,
+<a name=
+"l00283"></a>00283                                                                                            <a class="code"
+href="beastjob_8h.html#a7492146836ef3c15423878f34771d9fa" title=
+"Different types of updates which can come from Ernst.">ILBUpdateType</a>* updateType);
+<a name="l00284"></a>00284 
+<a name="l00289"></a>00289 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aca61aa7f5a3bced77f1a43dd273901a9" title=
+"Destroys a job update.">ILBDestroyUpdate</a>(<a class="code" href=
+"struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update);
+<a name="l00290"></a>00290 
+<a name="l00296"></a>00296 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#ac51d44a7d1df2338b499358d64656467" title=
+"Get an updated light source.">ILBGetUpdateLightSource</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update, 
+<a name=
+"l00297"></a>00297                                                                                                    <a class="code"
+href="struct_i_l_b_light_handle.html" title=
+"Handle for Beast light sources Intentionally hidden implementation.">ILBLightHandle</a>* light);
+<a name="l00298"></a>00298 
+<a name="l00304"></a>00304 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a20a5a49fc1feb1039069bb578328c3e3" title=
+"Get an updated scene info node.">ILBGetUpdateSceneInfo</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update, 
+<a name=
+"l00305"></a>00305                                                                                                    <a class="code"
+href="struct_i_l_b_scene_info_handle.html" title=
+"Handle for Beast scene information node Intentionally hidden implementation.">ILBSceneInfoHandle</a>* sceneInfo);
+<a name="l00306"></a>00306 
+<a name="l00312"></a>00312 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aca5a46a3ad2d517bb741da7119004a0e" title=
+"Get an updated camera.">ILBGetUpdateCamera</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update, 
+<a name=
+"l00313"></a>00313                                                                                                    <a class="code"
+href="struct_i_l_b_camera_handle.html" title=
+"Handle for Beast cameras Intentionally hidden implementation.">ILBCameraHandle</a>* camera);
+<a name="l00314"></a>00314 
+<a name="l00320"></a>00320 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a782c049e8ef10a55ac2aeb515c04522a" title=
+"Get an updated target entity.">ILBGetUpdateTargetEntity</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update,
+<a name=
+"l00321"></a>00321                                                                                                         <a class="code"
+href="struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a>* targetEntity);
+<a name="l00322"></a>00322 
+<a name="l00328"></a>00328 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#af28fc0ad160035db7462377d25e94010" title=
+"Get an updated frame buffer.">ILBGetUpdateFramebuffer</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update,
+<a name=
+"l00329"></a>00329                                                                                                         <a class="code"
+href="struct_i_l_b_framebuffer_handle.html" title=
+"Handle for Beast framebuffers Intentionally hidden implementation.">ILBFramebufferHandle</a>* fb);
+<a name="l00330"></a>00330 
+<a name="l00336"></a>00336 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#af9c4e0052c58829e4a3b64c39973b7d2" title=
+"Get the target entity of an invalidated frame buffer update.">ILBGetUpdateInvalidateFramebuffer</a>(<a class="code"
+href="struct_i_l_b_job_update_handle.html" title=
+"Handle for updates from Ernst jobs Intentionally hidden implementation.">ILBJobUpdateHandle</a> update,
+<a name=
+"l00337"></a>00337                                                                                                                          <a class="code"
+href="struct_i_l_b_target_entity_handle.html" title=
+"Handle for Beast target entities Intentionally hidden implementation.">ILBTargetEntityHandle</a>* te);
+<a name="l00338"></a>00338 
+<a name="l00339"></a>00339 
+<a name="l00344"></a>00344 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a3dd89827f352d0c78c9c735ffc315f92" title=
+"Destroys a job.">ILBDestroyJob</a>(<a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job);
+<a name="l00345"></a>00345 
+<a name="l00352"></a>00352 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a21f03d750d6b1b51c3f3d113879bd8a0" title=
+"Sets the output directory for the job.">ILBSetJobOutputPath</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastapitypes_8h.html#a54bd326b1c231ccbb6748a51cbe302e5"
+title="Beast api const string type.">ILBConstString</a> path);
+<a name="l00353"></a>00353 
+<a name="l00360"></a>00360 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#ac3a3c9190a806a93e366a78c20e624d2" title=
+"Sets the number of processing threads on the local submitting machine.">ILBSetJobLocalProcessingThreads</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">int</span> numLocalProcessingThreads);
+<a name="l00361"></a>00361 
+<a name="l00368"></a>00368 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a385af7a9ddc5005bdc391e9ada0266c8" title=
+"Starts a job.">ILBStartJob</a>(<a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0" title=
+"Sets how to handle the Beast window when rendering.">ILBShowResults</a> showResults, <a class="code"
+href="beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2" title=
+"Sets how beast should render distributed.">ILBDistributionType</a> distribution);
+<a name="l00369"></a>00369 
+<a name="l00375"></a>00375 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a5098930e9e25f74f9a36b7c57e8fdc55" title=
+"Waits until a job is done or until there is progress updates.">ILBWaitJobDone</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, int32 timeout);
+<a name="l00376"></a>00376 
+<a name="l00382"></a>00382 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aab1c21d554bd70197ef70d76be8c46ac" title=
+"Checks if the job is running.">ILBIsJobRunning</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* result);
+<a name="l00383"></a>00383 
+<a name="l00391"></a>00391 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a3bcfbda1f0ac506afef3fa777ab54bc4" title=
+"Checks if the job is completed.">ILBIsJobCompleted</a>(<a class=
+"code" href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* result);
+<a name="l00392"></a>00392 
+<a name="l00398"></a>00398 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#af2b42bfe51b1ae4b46f6ccd1e292dba7" title=
+"Returns the result of the job as a JobStatus.">ILBGetJobResult</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a>* status);
+<a name="l00399"></a>00399 
+<a name="l00404"></a>00404 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a5b1d1c64179f1eb231cd2675a3a4cd03" title=
+"Cancels a running job.">ILBCancelJob</a>(<a class="code" href=
+"struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job);
+<a name="l00405"></a>00405 
+<a name="l00413"></a>00413 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aea220bd754153ffafc87ba440793e892" title=
+"Gets the current status of a job.">ILBGetJobProgress</a>(<a class=
+"code" href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="struct_i_l_b_string_handle.html" title=
+"Handle for Beast strings Intentionally hidden implementation.">ILBStringHandle</a>* jobName, int32* progress);
+<a name="l00414"></a>00414 
+<a name="l00421"></a>00421 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a09ba4786a9be629ae8f83f418fe38d43" title=
+"Checks if the progress of a Job has been updated since the last time ILBGetJobProgress was called...">ILBJobHasNewProgress</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* newActivity, <a class="code"
+href="beastapitypes_8h.html#ac4f28becc15566cc389396f596943813"
+title=
+"Bool type with a well defined size to avoid compatibility-problems.">ILBBool</a>* newProgress);
+<a name="l00422"></a>00422 
+<a name="l00433"></a>00433 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a3f2bf3d3ec6c6fd231ace0e653410c70" title=
+"Convenience function to execute a Beast job.">ILBExecuteBeast</a>(<a class="code"
+href="struct_i_l_b_manager_handle.html" title=
+"Handle for Beast managers Intentionally hidden implementation.">ILBManagerHandle</a> bm, 
+<a name=
+"l00434"></a>00434                                                                    <a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job,
+<a name=
+"l00435"></a>00435                                                                    <a class="code"
+href="beastjob_8h.html#a003edc685c7e133d235e0d67b48ae0e0" title=
+"Sets how to handle the Beast window when rendering.">ILBShowResults</a> showResults,
+<a name=
+"l00436"></a>00436                                                                    <a class="code"
+href="beastjob_8h.html#a9b4b419f7078be53fc9fd30bc5ca37d2" title=
+"Sets how beast should render distributed.">ILBDistributionType</a> distribution, 
+<a name=
+"l00437"></a>00437                                                                    <a class="code"
+href="beastjob_8h.html#a5f81ced5d432a8adf0846433251b6258" title=
+"Status codes for Beast API calls.">ILBJobStatus</a>* status);
+<a name="l00438"></a>00438 
+<a name="l00444"></a>00444 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aed0365d41663f51d7dbf4582afbdf734" title=
+"Sets the amount of direct illumination to use in a Live Ernst job.">ILBSetErnstDirectIllumination</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> illumination);
+<a name="l00445"></a>00445 
+<a name="l00451"></a>00451 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#afaa17868cb90cf6922f665364be87f4f" title=
+"Sets the amount of indirect illumination to use in a Live Ernst job.">ILBSetErnstIndirectIllumination</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> illumination);
+<a name="l00452"></a>00452 
+<a name="l00459"></a>00459 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a262f4913dcff6fae0c03e2852915418f" title=
+"Sets the variance threshold in a Live Ernst job.">ILBSetErnstVarianceThreshold</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> threshold);
+<a name="l00460"></a>00460 
+<a name="l00466"></a>00466 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a3b620cd0523152ab23eb3ffefe8d49bc" title=
+"Sets the display gamma for the Ernst editor.">ILBSetErnstDisplayGamma</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> displayGamma);
+<a name="l00467"></a>00467 
+<a name="l00474"></a>00474 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a70223d84464a93188b0cfed18fb42116" title=
+"Sets the GI depth in a Live Ernst job.">ILBSetErnstGIDepth</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">int</span> minDepth, <span class="keywordtype">int</span> maxDepth);
+<a name="l00475"></a>00475 
+<a name="l00482"></a>00482 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a285dfca953c0c4e5fb546b2db11454ca" title=
+"Sets the GI baking mode in a Live Ernst job.">ILBSetErnstGIBakingMode</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastjob_8h.html#a3dd118e41764066e93700fb1bb316f05" title=
+"Different baking modes for a Live Ernst session.">ILBErnstBakingModeType</a> mode);
+<a name="l00483"></a>00483 
+<a name="l00490"></a>00490 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a1ec96e5e93d2a9fc60894383e4452ea3" title=
+"Sets the variance limit in a Live Ernst job.">ILBSetErnstGIVarianceLimit</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> vl);
+<a name="l00491"></a>00491 
+<a name="l00498"></a>00498 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#ae5fd67aa889802d364f7476bfd3da760" title=
+"Sets the GI diffuse boost in a Live Ernst job.">ILBSetErnstGIDiffuseBoost</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> boost);
+<a name="l00499"></a>00499 
+<a name="l00506"></a>00506 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a5f2f5675ea97d6f88b001d36b7fa7d5c" title=
+"Sets the GI emissive scale in a Live Ernst job.">ILBSetErnstGIEmissiveScale</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> scale);
+<a name="l00507"></a>00507 
+<a name="l00514"></a>00514 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#af8eb8c18b3d7a105e51087a39472de7a" title=
+"Sets the running state of a Live Ernst job.">ILBSetErnstRunningState</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastjob_8h.html#a91248952787709a6989775d2e0b4e9e1" title=
+"The different states for live job.">ILBErnstRunningState</a> state);
+<a name="l00515"></a>00515 
+<a name="l00525"></a>00525 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a6e4e8546ad5c0e0c0965dfdb350ac4f8" title=
+"Sets the render quality to use for a job.">ILBSetJobRenderQuality</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">float</span> quality);
+<a name="l00526"></a>00526 
+<a name="l00535"></a>00535 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#a2c25424b816e17f2bdbafa20da12df0d" title=
+"Explicitly sets the sampling settings to use for a job.">ILBSetJobRenderSamples</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">int</span> minSamples, <span class="keywordtype">int</span> maxSamples, <span class="keywordtype">float</span> varianceThreshold);
+<a name="l00536"></a>00536 
+<a name="l00543"></a>00543 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#aa8778c64a9ef66e0c1bbf95987bedcbd" title=
+"Sets the minimum and maximum number of light bounces to use for rendering.">ILBSetJobRenderDepth</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <span class="keywordtype">int</span> minDepth, <span class="keywordtype">int</span> maxDepth);
+<a name="l00544"></a>00544 
+<a name="l00550"></a>00550 ILB_DLL_FUNCTION <a class="code" href=
+"beastapitypes_8h.html#a2657cce356049da2f84cc6d938ce3206" title=
+"Status codes for Beast API calls.">ILBStatus</a> <a class="code"
+href="beastjob_8h.html#add50e31b2711d273a4a66767e689418d" title=
+"Enables or disables caustics in physical rendering.">ILBSetCausticsMode</a>(<a class="code"
+href="struct_i_l_b_job_handle.html" title=
+"Handle for Beast jobs Intentionally hidden implementation.">ILBJobHandle</a> job, <a class="code"
+href="beastjob_8h.html#a1986d6bad9b6ad283142dc0111b92183" title=
+"Controls the type of caustics to include in physical rendering (both Ernst and Beast)">ILBCausticsModeType</a> mode);
+<a name="l00551"></a>00551 
+<a name="l00552"></a>00552 <span class=
+"preprocessor">#ifdef __cplusplus</span>
+<a name="l00553"></a>00553 }
+<a name="l00554"></a>00554 <span class=
+"preprocessor">#endif // __cplusplus</span>
+<a name="l00555"></a>00555 
+<a name="l00556"></a>00556 <span class=
+"preprocessor">#endif//BEASTJOB_H</span>
+</pre></div>
+</div>
+</div>
+<div class="footer-block"><a href=
+"javascript:doComments('../html/ac.cmtdialog.htm');"><span class=
+"comments-link">Please send us your comment about this
+page</span></a></div>
+<br /></div>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	}
+</script>
+<script type="text/javascript">
+    if (document.location.protocol == "http:" || document.location.protocol == "https:")
+	{
+		try {
+			var pageTracker = _gat._getTracker("UA-2967772-176");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	}
+</script>
+    
+</body>
+</html>

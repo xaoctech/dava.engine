@@ -11,6 +11,8 @@ HMODULE(WINAPI* DllImport::fnLoadLibraryW)(LPCWSTR lpLibFileName);
 MMRESULT(WINAPI* DllImport::fnTimeGetDevCaps)(LPTIMECAPS ptc, UINT cbtc) = nullptr;
 MMRESULT(WINAPI* DllImport::fnTimeBeginPeriod)(UINT uPeriod) = nullptr;
 MMRESULT(WINAPI* DllImport::fnTimeEndPeriod)(UINT uPeriod) = nullptr;
+UINT(WINAPI* DllImport::fnMapVirtualKey)(UINT uCode, UINT uMapType) = nullptr;
+
 // clang-format on
 
 void DllImport::Initialize()
@@ -34,6 +36,12 @@ void DllImport::Initialize()
             fnTimeGetDevCaps = reinterpret_cast<decltype(fnTimeGetDevCaps)>(::GetProcAddress(hwinmm, "timeGetDevCaps"));
             fnTimeBeginPeriod = reinterpret_cast<decltype(fnTimeBeginPeriod)>(::GetProcAddress(hwinmm, "timeBeginPeriod"));
             fnTimeEndPeriod = reinterpret_cast<decltype(fnTimeEndPeriod)>(::GetProcAddress(hwinmm, "timeEndPeriod"));
+        }
+
+        HMODULE huser32 = fnLoadLibraryW(L"User32.dll");
+        if (huser32 != nullptr)
+        {
+            fnMapVirtualKey = reinterpret_cast<decltype(fnMapVirtualKey)>(::GetProcAddress(huser32, "MapVirtualKeyW"));
         }
     }
 }

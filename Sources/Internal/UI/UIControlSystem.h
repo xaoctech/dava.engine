@@ -1,16 +1,13 @@
 #pragma once
 
-#include "Base/Any.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
-#include "Base/Singleton.h"
+#include "Base/RefPtr.h"
 #include "Engine/Private/EnginePrivateFwd.h"
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
-
-#include "UI/UIControl.h"
-#include "UI/UIEvent.h"
+#include "Input/InputElements.h"
 #include "UI/Components/UISingleComponent.h"
+#include "UI/UIEvent.h"
 
 #define FRAME_SKIP 5
 
@@ -19,32 +16,26 @@
 */
 namespace DAVA
 {
-class UIScreen;
-class UISystem;
-class UILayoutSystem;
-class UIStyleSheetSystem;
+class Mouse;
+class ScreenSwitchListener;
+class UIComponent;
+class UIControl;
 class UIFocusSystem;
 class UIInputSystem;
+class UILayoutSystem;
+class UIPopup;
+class UIRenderSystem;
+class UIScreen;
+class UIScreenTransition;
 class UIScreenshoter;
 class UISoundSystem;
+class UIStyleSheetSystem;
+class UISystem;
+class UITextSystem;
 class UIUpdateSystem;
-class UIRenderSystem;
-class UIScreenTransition;
-class UIPopup;
-
-class ScreenSwitchListener
-{
-public:
-    virtual ~ScreenSwitchListener() = default;
-
-    virtual void OnScreenWillSwitch(UIScreen* newScreen)
-    {
-    }
-
-    virtual void OnScreenDidSwitch(UIScreen* newScreen)
-    {
-    }
-};
+class UIEventsSystem;
+class VirtualCoordinatesSystem;
+struct InputEvent;
 
 /**
 	 \brief	UIControlSystem it's a core of the all controls work.
@@ -53,15 +44,8 @@ public:
 		Also ControlSystem processed all user input events to the controls.
 	 */
 
-class UIControlSystem : public Singleton<UIControlSystem>
+class UIControlSystem final
 {
-protected:
-    ~UIControlSystem();
-    /**
-	 \brief Don't call this constructor!
-	 */
-    UIControlSystem();
-
 public:
     /**
 	 \brief Sets the requested screen as current.
@@ -143,6 +127,9 @@ public:
 	 \brief Sets the current screen to 0 LOL.
 	 */
     void Reset();
+
+    bool HandleInputEvent(const InputEvent& inputEvent);
+
     /**
 	 \brief Calls by the system for input processing.
 	 */
@@ -304,6 +291,7 @@ public:
         return nullptr;
     }
 
+    UITextSystem* GetTextSystem() const;
     UILayoutSystem* GetLayoutSystem() const;
     UIInputSystem* GetInputSystem() const;
     UIFocusSystem* GetFocusSystem() const;
@@ -311,12 +299,17 @@ public:
     UIUpdateSystem* GetUpdateSystem() const;
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIRenderSystem* GetRenderSystem() const;
+    UIEventsSystem* GetEventsSystem() const;
 
     void SetDoubleTapSettings(float32 time, float32 inch);
 
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
 private:
+    UIControlSystem();
+    ~UIControlSystem();
+    void Init();
+
     void ProcessScreenLogic();
 
     void NotifyListenersWillSwitch(UIScreen* screen);
@@ -324,16 +317,23 @@ private:
     bool CheckTimeAndPosition(UIEvent* newEvent);
     int32 CalculatedTapCount(UIEvent* newEvent);
 
+    UIEvent MakeUIEvent(const InputEvent& inputEvent) const;
+    eModifierKeys GetKeyboardModifierKeys() const;
+    static eMouseButtons TranslateMouseElementToButtons(eInputElements element);
+
     friend class Private::EngineBackend;
 
     Vector<std::unique_ptr<UISystem>> systems;
     Vector<std::unique_ptr<UISingleComponent>> singleComponents;
+
+    UITextSystem* textSystem = nullptr;
     UILayoutSystem* layoutSystem = nullptr;
     UIStyleSheetSystem* styleSheetSystem = nullptr;
     UIInputSystem* inputSystem = nullptr;
     UISoundSystem* soundSystem = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
     UIRenderSystem* renderSystem = nullptr;
+    UIEventsSystem* eventsSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 
