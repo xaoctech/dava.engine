@@ -13,7 +13,9 @@ namespace CollisionShapeComponentDetail
 {
 enum
 {
-    CCD_FLAG = 1 << 29
+    // additional flags of shape that are used in physx shader function for collision detection
+    // values are mapped on physx::PxFilterData::word3
+    CCD_FLAG = 1 // first bit of physx::PxFilterData::word3 signals is CCD enabled for shape of not
 };
 } // namespace CollisionShapeComponentDetail
 
@@ -126,7 +128,7 @@ CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* s
     return reinterpret_cast<CollisionShapeComponent*>(shape->userData);
 }
 
-void CollisionShapeComponent::SetCCDActive(physx::PxShape* shape, bool isCCDActive)
+void CollisionShapeComponent::SetCCDEnabled(physx::PxShape* shape, bool isCCDActive)
 {
     DVASSERT(shape != nullptr);
     physx::PxFilterData fd = shape->getSimulationFilterData();
@@ -142,7 +144,7 @@ void CollisionShapeComponent::SetCCDActive(physx::PxShape* shape, bool isCCDActi
     shape->setSimulationFilterData(fd);
 }
 
-bool CollisionShapeComponent::IsCCDActive(const physx::PxFilterData& filterData)
+bool CollisionShapeComponent::IsCCDEnabled(const physx::PxFilterData& filterData)
 {
     return filterData.word3 & CollisionShapeComponentDetail::CCD_FLAG ? true : false;
 }
@@ -202,6 +204,8 @@ void CollisionShapeComponent::UpdateLocalProperties()
     physx::PxFilterData filterData = shape->getSimulationFilterData();
     filterData.word1 = typeMask;
     filterData.word2 = typeMaskToCollideWith;
+    // be careful and do not change first bit in filterData.word3 (CCD flag) as this flag is setting
+    // directly from PhysicsSystem::UpdateComponents and should be synchronized with CCD flag of actor.
     shape->setSimulationFilterData(filterData);
 }
 

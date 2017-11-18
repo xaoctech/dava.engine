@@ -42,8 +42,7 @@ public:
     uint32 GetTypeMaskToCollideWith() const;
 
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
-    static void SetCCDActive(physx::PxShape* shape, bool isCCDActive);
-    static bool IsCCDActive(const physx::PxFilterData& filterData);
+    static bool IsCCDEnabled(const physx::PxFilterData& filterData);
 
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
@@ -70,6 +69,7 @@ private:
 
     friend class PhysicsSystem;
     void SetPxShape(physx::PxShape* shape);
+    static void SetCCDEnabled(physx::PxShape* shape, bool isCCDActive);
 
     DAVA_VIRTUAL_REFLECTION(CollisionShapeComponent, Component);
 };

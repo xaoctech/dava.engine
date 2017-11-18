@@ -140,7 +140,7 @@ void DynamicBodyComponent::SetCCDEnabled(bool isCCDEnabled)
     if (isCCDEnabled != enableCCD)
     {
         enableCCD = isCCDEnabled;
-        SheduleUpdate();
+        ScheduleUpdate();
     }
 }
 

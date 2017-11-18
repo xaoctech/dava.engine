@@ -190,7 +190,7 @@ physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
     physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | // notify about ongoing contacts
     physx::PxPairFlag::eNOTIFY_CONTACT_POINTS; // report contact points
 
-    if (CollisionShapeComponent::IsCCDActive(filterData0) || CollisionShapeComponent::IsCCDActive(filterData1))
+    if (CollisionShapeComponent::IsCCDEnabled(filterData0) || CollisionShapeComponent::IsCCDEnabled(filterData1))
     {
         pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT; // report continuous collision detection contacts
     }
@@ -1208,7 +1208,7 @@ void PhysicsSystem::UpdateComponents()
         if (bodyComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
         {
             DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(bodyComponent);
-            bool isCCDActive = dynamicBody->IsCCDEnabled();
+            bool isCCDEnabled = dynamicBody->IsCCDEnabled();
 
             physx::PxRigidDynamic* actor = dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>();
             DVASSERT(actor != nullptr);
@@ -1218,7 +1218,7 @@ void PhysicsSystem::UpdateComponents()
             {
                 physx::PxShape* shape = nullptr;
                 actor->getShapes(&shape, 1, shapeIndex);
-                CollisionShapeComponent::SetCCDActive(shape, isCCDActive);
+                CollisionShapeComponent::SetCCDEnabled(shape, isCCDEnabled);
             }
         }
     }
