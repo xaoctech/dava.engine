@@ -59,6 +59,7 @@ public:
 
     physx::PxMaterial* GetMaterial(const FastName& materialName) const;
     Vector<FastName> GetMaterialNames() const;
+    void ReleaseMaterials();
 
     physx::PxAllocatorCallback* GetAllocator() const;
 
@@ -68,7 +69,7 @@ public:
     const Vector<uint32>& GetCharacterControllerComponentTypes() const;
 
 private:
-    void CheckMaterials() const;
+    void LazyLoadMaterials() const;
     void LoadMaterials();
 
 private:

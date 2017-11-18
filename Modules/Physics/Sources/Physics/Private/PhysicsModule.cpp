@@ -513,7 +513,7 @@ physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
 
 physx::PxMaterial* PhysicsModule::GetMaterial(const FastName& materialName) const
 {
-    CheckMaterials();
+    LazyLoadMaterials();
     if (materialName.IsValid() == false)
     {
         return defaultMaterial;
@@ -531,7 +531,7 @@ physx::PxMaterial* PhysicsModule::GetMaterial(const FastName& materialName) cons
 
 Vector<FastName> PhysicsModule::GetMaterialNames() const
 {
-    CheckMaterials();
+    LazyLoadMaterials();
     Vector<FastName> names;
     names.reserve(materials.size());
 
@@ -543,7 +543,28 @@ Vector<FastName> PhysicsModule::GetMaterialNames() const
     return names;
 }
 
-void PhysicsModule::CheckMaterials() const
+void PhysicsModule::ReleaseMaterials()
+{
+    if (defaultMaterial == nullptr)
+    {
+        return;
+    }
+
+    DVASSERT(defaultMaterial->getReferenceCount() == 1);
+    defaultMaterial->release();
+    defaultMaterial = nullptr;
+
+    for (const auto& materialNode : materials)
+    {
+        physx::PxMaterial* material = materialNode.second;
+        DVASSERT(material->getReferenceCount() == 1);
+        material->release();
+    }
+
+    materials.clear();
+}
+
+void PhysicsModule::LazyLoadMaterials() const
 {
     if (defaultMaterial == nullptr)
     {

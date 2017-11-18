@@ -102,7 +102,7 @@ public:
         return AnyFn();
     }
 
-    Vector<Reflection::Method> GetMethods(const ReflectedObject& object, const ValueWrapper* vw) const
+    Vector<Reflection::Method> GetMethods(const ReflectedObject& object, const ValueWrapper* vw) const override
     {
         return Vector<Reflection::Method>();
     }
@@ -148,7 +148,7 @@ public:
 template <typename First, typename Second>
 struct AnyCompare<TArc::ReflectedPairsVector<First, Second>>
 {
-    using AnyT = TArc::ReflectedPairsVector<typename First, typename Second>;
+    using AnyT = TArc::ReflectedPairsVector<First, Second>;
     static bool IsEqual(const Any& v1, const Any& v2)
     {
         return v1.Get<AnyT>().values == v2.Get<AnyT>().values;

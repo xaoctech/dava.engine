@@ -8,7 +8,6 @@
 #include <Engine/Engine.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
-#include <Scene3D/Components/SingleComponents/CollisionSingleComponent.h>
 #include <Entity/Component.h>
 
 #include <physx/PxRigidDynamic.h>

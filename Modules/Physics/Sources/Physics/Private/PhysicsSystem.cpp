@@ -818,7 +818,7 @@ void PhysicsSystem::InitNewObjects()
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
             desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
-            desc.material = physics->GetDefaultMaterial();
+            desc.material = physics->GetMaterial(FastName());
             DVASSERT(desc.isValid());
 
             controller = controllerManager->createController(desc);
@@ -831,7 +831,7 @@ void PhysicsSystem::InitNewObjects()
             desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
-            desc.material = physics->GetDefaultMaterial();
+            desc.material = physics->GetMaterial(FastName());
             desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
             DVASSERT(desc.isValid());
 
@@ -1170,6 +1170,23 @@ void PhysicsSystem::UpdateComponents()
                 }
             }
         }
+
+        if (bodyComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(bodyComponent);
+            bool isCCDEnabled = dynamicBody->IsCCDEnabled();
+
+            physx::PxRigidDynamic* actor = dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>();
+            DVASSERT(actor != nullptr);
+
+            physx::PxU32 shapesCount = actor->getNbShapes();
+            for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
+            {
+                physx::PxShape* shape = nullptr;
+                actor->getShapes(&shape, 1, shapeIndex);
+                CollisionShapeComponent::SetCCDEnabled(shape, isCCDEnabled);
+            }
+        }
     }
 
     for (CharacterControllerComponent* controllerComponent : characterControllerComponentsUpdatePending)
@@ -1205,23 +1222,6 @@ void PhysicsSystem::UpdateComponents()
             {
                 controller->setPosition(PhysicsMath::Vector3ToPxExtendedVec3(controllerComponent->teleportDestination));
                 controllerComponent->teleported = false;
-            }
-        }
-
-        if (bodyComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
-        {
-            DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(bodyComponent);
-            bool isCCDEnabled = dynamicBody->IsCCDEnabled();
-
-            physx::PxRigidDynamic* actor = dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>();
-            DVASSERT(actor != nullptr);
-
-            physx::PxU32 shapesCount = actor->getNbShapes();
-            for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
-            {
-                physx::PxShape* shape = nullptr;
-                actor->getShapes(&shape, 1, shapeIndex);
-                CollisionShapeComponent::SetCCDEnabled(shape, isCCDEnabled);
             }
         }
     }
