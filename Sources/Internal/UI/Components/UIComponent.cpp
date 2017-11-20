@@ -1,7 +1,5 @@
 #include "UI/Components/UIComponent.h"
 #include "UI/UIControl.h"
-#include "UI/RichContent/UIRichContentAliasesComponent.h"
-
 #include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
@@ -53,14 +51,24 @@ RefPtr<UIComponent> UIComponent::SafeCreateByType(const Type* componentType)
 
 bool UIComponent::IsMultiple(const Type* componentType)
 {
-    if (componentType == Type::Instance<UIRichContentAliasesComponent>())
-    {
-        return true;
-    }
-    else
+    if (componentType == nullptr)
     {
         return false;
     }
+
+    const ReflectedType* refType = ReflectedTypeDB::GetByType(componentType);
+    if (refType == nullptr)
+    {
+        return false;
+    }
+
+    const ReflectedStructure* structure = refType->GetStructure();
+    if (structure == nullptr || structure->meta == nullptr)
+    {
+        return false;
+    }
+
+    return structure->meta->GetMeta<M::Multiple>() != nullptr;
 }
 
 RefPtr<UIComponent> UIComponent::SafeClone() const

@@ -23,7 +23,7 @@
 #include <QCheckBox>
 #include <QKeyEvent>
 
-MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* tarcUi, QWidget* parent)
+MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* tarcUi, DAVA::TArc::OperationInvoker* invoker, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow())
 #if defined(__DAVAENGINE_MACOS__)
@@ -36,6 +36,7 @@ MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* t
 
     ui->propertiesWidget->SetAccessor(accessor);
     ui->propertiesWidget->SetUI(tarcUi);
+    ui->propertiesWidget->SetInvoker(invoker);
 
     setWindowIcon(QIcon(":/icon.ico"));
     DebugTools::ConnectToUI(ui.get());

@@ -1,24 +1,25 @@
 #include "UIScreens/UIViewScreen.h"
 
-#include <Base/ScopedPtr.h>
 #include <Base/ObjectFactory.h>
+#include <Base/ScopedPtr.h>
 #include <CommandLine/ProgramOptions.h>
 #include <Engine/Engine.h>
-#include <FileSystem/LocalizationSystem.h>
 #include <FileSystem/FileSystem.h>
-#include <Render/2D/TextBlock.h>
+#include <FileSystem/LocalizationSystem.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
+#include <Render/2D/TextBlock.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Sound/SoundSystem.h>
+#include <UI/DefaultUIPackageBuilder.h>
+#include <UI/Flow/UIFlowStateSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
 #include <UI/Styles/UIStyleSheetSystem.h>
-#include <UI/Update/UIUpdateComponent.h>
-#include <UI/DefaultUIPackageBuilder.h>
 #include <UI/UIControlBackground.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/UIStaticText.h>
 #include <UI/UIYamlLoader.h>
+#include <UI/Update/UIUpdateComponent.h>
 #include <Utils/UTF8Utils.h>
 
 namespace UIViewScreenDetails
@@ -117,10 +118,18 @@ void UIViewScreen::UnloadResources()
 {
     using namespace DAVA;
 
-    GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+    if (GetPrimaryWindow())
+    {
+        GetPrimaryWindow()->visibleFrameChanged.Disconnect(visibleFrameChangedToken);
+    }
 
     FilePath::RemoveResourcesFolder(projectPath + "/DataSource/");
     FilePath::RemoveResourcesFolder(projectPath + "/Data/");
+
+    UIControlSystem* scene = GetScene() != nullptr ? GetScene() : Engine::Instance()->GetContext()->uiControlSystem;
+    scene->SetFlowRoot(nullptr);
+    UIFlowStateSystem* stateSystem = scene->GetSystem<UIFlowStateSystem>();
+    stateSystem->DeactivateAllStates();
 
     BaseScreen::UnloadResources();
 }
@@ -174,6 +183,7 @@ void UIViewScreen::SetupUI()
 
     FilePath testedYaml = options->GetOption("-testedYaml").AsString();
     String testedControlName = options->GetOption("-testedCtrl").AsString();
+    String testedControlPath = options->GetOption("-testedPath").AsString();
 
     RefPtr<UIControl> placeHolderRoot = UIViewScreenDetails::LoadControl(placeHolderYaml, placeHolderRootControl);
     if (placeHolderRoot)
@@ -192,8 +202,19 @@ void UIViewScreen::SetupUI()
         RefPtr<UIControl> testedControl = UIViewScreenDetails::LoadControl(testedYaml, testedControlName);
         if (testedControl)
         {
-            placeholder->AddControl(testedControl.Get());
             AddControl(placeHolderRoot.Get());
+            if (options->GetOption("-isFlow").AsBool())
+            {
+                UIControlSystem* scene = GetScene() != nullptr ? GetScene() : Engine::Instance()->GetContext()->uiControlSystem;
+                scene->SetFlowRoot(testedControl.Get());
+
+                UIFlowStateSystem* stateSystem = scene->GetSystem<UIFlowStateSystem>();
+                stateSystem->ActivateState(stateSystem->FindStateByPath(testedControlPath), false);
+            }
+            else
+            {
+                placeholder->AddControl(testedControl.Get());
+            }
         }
         else
         {
