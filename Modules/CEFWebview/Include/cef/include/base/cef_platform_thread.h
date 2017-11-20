@@ -43,7 +43,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/threading/platform_thread.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -52,8 +52,8 @@
 #include "include/base/cef_build.h"
 #include "include/internal/cef_thread_internal.h"
 
-namespace base
-{
+namespace base {
+
 // Used for logging. Always an integer value.
 typedef cef_platform_thread_id_t PlatformThreadId;
 
@@ -65,57 +65,49 @@ typedef cef_platform_thread_id_t PlatformThreadId;
 // have no meaning there. Also, the internal identifier can be re-used
 // after a thread dies, so a PlatformThreadRef cannot be reliably used
 // to distinguish a new thread from an old, dead thread.
-class PlatformThreadRef
-{
-public:
-    typedef cef_platform_thread_handle_t RefType;
+class PlatformThreadRef {
+ public:
+  typedef cef_platform_thread_handle_t RefType;
 
-    PlatformThreadRef()
-        : id_(0)
-    {
-    }
+  PlatformThreadRef()
+      : id_(0) {
+  }
 
-    explicit PlatformThreadRef(RefType id)
-        : id_(id)
-    {
-    }
+  explicit PlatformThreadRef(RefType id)
+      : id_(id) {
+  }
 
-    bool operator==(PlatformThreadRef other) const
-    {
-        return id_ == other.id_;
-    }
+  bool operator==(PlatformThreadRef other) const {
+    return id_ == other.id_;
+  }
 
-    bool is_null() const
-    {
-        return id_ == 0;
-    }
-
-private:
-    RefType id_;
+  bool is_null() const {
+    return id_ == 0;
+  }
+ private:
+  RefType id_;
 };
 
 // A namespace for low-level thread functions.
 // Chromium uses a class with static methods but CEF uses an actual namespace
 // to avoid linker problems with the sandbox libaries on Windows.
-namespace PlatformThread
-{
+namespace PlatformThread {
+
 // Gets the current thread id, which may be useful for logging purposes.
-inline PlatformThreadId CurrentId()
-{
-    return cef_get_current_platform_thread_id();
+inline PlatformThreadId CurrentId() {
+  return cef_get_current_platform_thread_id();
 }
 
 // Gets the current thread reference, which can be used to check if
 // we're on the right thread quickly.
-inline PlatformThreadRef CurrentRef()
-{
-    return PlatformThreadRef(cef_get_current_platform_thread_handle());
+inline PlatformThreadRef CurrentRef() {
+  return PlatformThreadRef(cef_get_current_platform_thread_handle());
 }
 
-} // namespace PlatformThread
+}  // namespace PlatformThread
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_PLATFORM_THREAD_H_
+#endif  // CEF_INCLUDE_BASE_PLATFORM_THREAD_H_

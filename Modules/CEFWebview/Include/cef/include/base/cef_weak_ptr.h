@@ -104,7 +104,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/memory/weak_ptr.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -115,125 +115,113 @@
 #include "include/base/cef_template_util.h"
 #include "include/base/cef_thread_checker.h"
 
-namespace base
-{
-template <typename T>
-class SupportsWeakPtr;
-template <typename T>
-class WeakPtr;
+namespace base {
 
-namespace cef_internal
-{
+template <typename T> class SupportsWeakPtr;
+template <typename T> class WeakPtr;
+
+namespace cef_internal {
 // These classes are part of the WeakPtr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
-class WeakReference
-{
-public:
-    // Although Flag is bound to a specific thread, it may be deleted from another
-    // via base::WeakPtr::~WeakPtr().
-    class Flag : public RefCountedThreadSafe<Flag>
-    {
-    public:
-        Flag();
-
-        void Invalidate();
-        bool IsValid() const;
-
-    private:
-        friend class base::RefCountedThreadSafe<Flag>;
-
-        ~Flag();
-
-        // The current Chromium implementation uses SequenceChecker instead of
-        // ThreadChecker to support SequencedWorkerPools. CEF does not yet expose
-        // the concept of SequencedWorkerPools.
-        ThreadChecker thread_checker_;
-        bool is_valid_;
-    };
-
-    WeakReference();
-    explicit WeakReference(const Flag* flag);
-    ~WeakReference();
-
-    bool is_valid() const;
-
-private:
-    scoped_refptr<const Flag> flag_;
-};
-
-class WeakReferenceOwner
-{
-public:
-    WeakReferenceOwner();
-    ~WeakReferenceOwner();
-
-    WeakReference GetRef() const;
-
-    bool HasRefs() const
-    {
-        return flag_.get() && !flag_->HasOneRef();
-    }
+class WeakReference {
+ public:
+  // Although Flag is bound to a specific thread, it may be deleted from another
+  // via base::WeakPtr::~WeakPtr().
+  class Flag : public RefCountedThreadSafe<Flag> {
+   public:
+    Flag();
 
     void Invalidate();
+    bool IsValid() const;
 
-private:
-    mutable scoped_refptr<WeakReference::Flag> flag_;
+   private:
+    friend class base::RefCountedThreadSafe<Flag>;
+
+    ~Flag();
+
+    // The current Chromium implementation uses SequenceChecker instead of
+    // ThreadChecker to support SequencedWorkerPools. CEF does not yet expose
+    // the concept of SequencedWorkerPools.
+    ThreadChecker thread_checker_;
+    bool is_valid_;
+  };
+
+  WeakReference();
+  explicit WeakReference(const Flag* flag);
+  ~WeakReference();
+
+  bool is_valid() const;
+
+ private:
+  scoped_refptr<const Flag> flag_;
+};
+
+class WeakReferenceOwner {
+ public:
+  WeakReferenceOwner();
+  ~WeakReferenceOwner();
+
+  WeakReference GetRef() const;
+
+  bool HasRefs() const {
+    return flag_.get() && !flag_->HasOneRef();
+  }
+
+  void Invalidate();
+
+ private:
+  mutable scoped_refptr<WeakReference::Flag> flag_;
 };
 
 // This class simplifies the implementation of WeakPtr's type conversion
 // constructor by avoiding the need for a public accessor for ref_.  A
 // WeakPtr<T> cannot access the private members of WeakPtr<U>, so this
 // base class gives us a way to access ref_ in a protected fashion.
-class WeakPtrBase
-{
-public:
-    WeakPtrBase();
-    ~WeakPtrBase();
+class WeakPtrBase {
+ public:
+  WeakPtrBase();
+  ~WeakPtrBase();
 
-protected:
-    explicit WeakPtrBase(const WeakReference& ref);
+ protected:
+  explicit WeakPtrBase(const WeakReference& ref);
 
-    WeakReference ref_;
+  WeakReference ref_;
 };
 
 // This class provides a common implementation of common functions that would
 // otherwise get instantiated separately for each distinct instantiation of
 // SupportsWeakPtr<>.
-class SupportsWeakPtrBase
-{
-public:
-    // A safe static downcast of a WeakPtr<Base> to WeakPtr<Derived>. This
-    // conversion will only compile if there is exists a Base which inherits
-    // from SupportsWeakPtr<Base>. See base::AsWeakPtr() below for a helper
-    // function that makes calling this easier.
-    template <typename Derived>
-    static WeakPtr<Derived> StaticAsWeakPtr(Derived* t)
-    {
-        typedef
+class SupportsWeakPtrBase {
+ public:
+  // A safe static downcast of a WeakPtr<Base> to WeakPtr<Derived>. This
+  // conversion will only compile if there is exists a Base which inherits
+  // from SupportsWeakPtr<Base>. See base::AsWeakPtr() below for a helper
+  // function that makes calling this easier.
+  template<typename Derived>
+  static WeakPtr<Derived> StaticAsWeakPtr(Derived* t) {
+    typedef
         is_convertible<Derived, cef_internal::SupportsWeakPtrBase&> convertible;
-        COMPILE_ASSERT(convertible::value,
-                       AsWeakPtr_argument_inherits_from_SupportsWeakPtr);
-        return AsWeakPtrImpl<Derived>(t, *t);
-    }
+    COMPILE_ASSERT(convertible::value,
+                   AsWeakPtr_argument_inherits_from_SupportsWeakPtr);
+    return AsWeakPtrImpl<Derived>(t, *t);
+  }
 
-private:
-    // This template function uses type inference to find a Base of Derived
-    // which is an instance of SupportsWeakPtr<Base>. We can then safely
-    // static_cast the Base* to a Derived*.
-    template <typename Derived, typename Base>
-    static WeakPtr<Derived> AsWeakPtrImpl(
-    Derived* t, const SupportsWeakPtr<Base>&)
-    {
-        WeakPtr<Base> ptr = t->Base::AsWeakPtr();
-        return WeakPtr<Derived>(ptr.ref_, static_cast<Derived*>(ptr.ptr_));
-    }
+ private:
+  // This template function uses type inference to find a Base of Derived
+  // which is an instance of SupportsWeakPtr<Base>. We can then safely
+  // static_cast the Base* to a Derived*.
+  template <typename Derived, typename Base>
+  static WeakPtr<Derived> AsWeakPtrImpl(
+      Derived* t, const SupportsWeakPtr<Base>&) {
+    WeakPtr<Base> ptr = t->Base::AsWeakPtr();
+    return WeakPtr<Derived>(ptr.ref_, static_cast<Derived*>(ptr.ptr_));
+  }
 };
 
-} // namespace cef_internal
+}  // namespace cef_internal
 
-template <typename T>
-class WeakPtrFactory;
+template <typename T> class WeakPtrFactory;
 
 // The WeakPtr class holds a weak reference to |T*|.
 //
@@ -249,85 +237,65 @@ class WeakPtrFactory;
 //     foo->method();
 //
 template <typename T>
-class WeakPtr : public cef_internal::WeakPtrBase
-{
-public:
-    WeakPtr()
-        : ptr_(NULL)
-    {
-    }
+class WeakPtr : public cef_internal::WeakPtrBase {
+ public:
+  WeakPtr() : ptr_(NULL) {
+  }
 
-    // Allow conversion from U to T provided U "is a" T. Note that this
-    // is separate from the (implicit) copy constructor.
-    template <typename U>
-    WeakPtr(const WeakPtr<U>& other)
-        : WeakPtrBase(other)
-        , ptr_(other.ptr_)
-    {
-    }
+  // Allow conversion from U to T provided U "is a" T. Note that this
+  // is separate from the (implicit) copy constructor.
+  template <typename U>
+  WeakPtr(const WeakPtr<U>& other) : WeakPtrBase(other), ptr_(other.ptr_) {
+  }
 
-    T* get() const
-    {
-        return ref_.is_valid() ? ptr_ : NULL;
-    }
+  T* get() const { return ref_.is_valid() ? ptr_ : NULL; }
 
-    T& operator*() const
-    {
-        DCHECK(get() != NULL);
-        return *get();
-    }
-    T* operator->() const
-    {
-        DCHECK(get() != NULL);
-        return get();
-    }
+  T& operator*() const {
+    DCHECK(get() != NULL);
+    return *get();
+  }
+  T* operator->() const {
+    DCHECK(get() != NULL);
+    return get();
+  }
 
-    // Allow WeakPtr<element_type> to be used in boolean expressions, but not
-    // implicitly convertible to a real bool (which is dangerous).
-    //
-    // Note that this trick is only safe when the == and != operators
-    // are declared explicitly, as otherwise "weak_ptr1 == weak_ptr2"
-    // will compile but do the wrong thing (i.e., convert to Testable
-    // and then do the comparison).
-private:
-    typedef T* WeakPtr::*Testable;
+  // Allow WeakPtr<element_type> to be used in boolean expressions, but not
+  // implicitly convertible to a real bool (which is dangerous).
+  //
+  // Note that this trick is only safe when the == and != operators
+  // are declared explicitly, as otherwise "weak_ptr1 == weak_ptr2"
+  // will compile but do the wrong thing (i.e., convert to Testable
+  // and then do the comparison).
+ private:
+  typedef T* WeakPtr::*Testable;
 
-public:
-    operator Testable() const
-    {
-        return get() ? &WeakPtr::ptr_ : NULL;
-    }
+ public:
+  operator Testable() const { return get() ? &WeakPtr::ptr_ : NULL; }
 
-    void reset()
-    {
-        ref_ = cef_internal::WeakReference();
-        ptr_ = NULL;
-    }
+  void reset() {
+    ref_ = cef_internal::WeakReference();
+    ptr_ = NULL;
+  }
 
-private:
-    // Explicitly declare comparison operators as required by the bool
-    // trick, but keep them private.
-    template <class U>
-    bool operator==(WeakPtr<U> const&) const;
-    template <class U>
-    bool operator!=(WeakPtr<U> const&) const;
+ private:
+  // Explicitly declare comparison operators as required by the bool
+  // trick, but keep them private.
+  template <class U> bool operator==(WeakPtr<U> const&) const;
+  template <class U> bool operator!=(WeakPtr<U> const&) const;
 
-    friend class cef_internal::SupportsWeakPtrBase;
-    template <typename U>
-    friend class WeakPtr;
-    friend class SupportsWeakPtr<T>;
-    friend class WeakPtrFactory<T>;
+  friend class cef_internal::SupportsWeakPtrBase;
+  template <typename U> friend class WeakPtr;
+  friend class SupportsWeakPtr<T>;
+  friend class WeakPtrFactory<T>;
 
-    WeakPtr(const cef_internal::WeakReference& ref, T* ptr)
-        : WeakPtrBase(ref)
-        ,
-        ptr_(ptr)
-    {
-    }
+  WeakPtr(const cef_internal::WeakReference& ref, T* ptr)
+      : WeakPtrBase(ref),
+        ptr_(ptr) {
+  }
 
-    // This pointer is only valid when ref_.is_valid() is true.  Otherwise, its
-    // value is undefined (as opposed to NULL).
-    T* ptr_;
+  // This pointer is only valid when ref_.is_valid() is true.  Otherwise, its
+  // value is undefined (as opposed to NULL).
+  T* ptr_;
 };
 
 // A class may be composed of a WeakPtrFactory and thereby
@@ -336,43 +304,36 @@ private:
 // useful when working with primitive types.  For example, you could have a
 // WeakPtrFactory<bool> that is used to pass around a weak reference to a bool.
 template <class T>
-class WeakPtrFactory
-{
-public:
-    explicit WeakPtrFactory(T* ptr)
-        : ptr_(ptr)
-    {
-    }
+class WeakPtrFactory {
+ public:
+  explicit WeakPtrFactory(T* ptr) : ptr_(ptr) {
+  }
 
-    ~WeakPtrFactory()
-    {
-        ptr_ = NULL;
-    }
+  ~WeakPtrFactory() {
+    ptr_ = NULL;
+  }
 
-    WeakPtr<T> GetWeakPtr()
-    {
-        DCHECK(ptr_);
-        return WeakPtr<T>(weak_reference_owner_.GetRef(), ptr_);
-    }
+  WeakPtr<T> GetWeakPtr() {
+    DCHECK(ptr_);
+    return WeakPtr<T>(weak_reference_owner_.GetRef(), ptr_);
+  }
 
-    // Call this method to invalidate all existing weak pointers.
-    void InvalidateWeakPtrs()
-    {
-        DCHECK(ptr_);
-        weak_reference_owner_.Invalidate();
-    }
+  // Call this method to invalidate all existing weak pointers.
+  void InvalidateWeakPtrs() {
+    DCHECK(ptr_);
+    weak_reference_owner_.Invalidate();
+  }
 
-    // Call this method to determine if any weak pointers exist.
-    bool HasWeakPtrs() const
-    {
-        DCHECK(ptr_);
-        return weak_reference_owner_.HasRefs();
-    }
+  // Call this method to determine if any weak pointers exist.
+  bool HasWeakPtrs() const {
+    DCHECK(ptr_);
+    return weak_reference_owner_.HasRefs();
+  }
 
-private:
-    cef_internal::WeakReferenceOwner weak_reference_owner_;
-    T* ptr_;
-    DISALLOW_IMPLICIT_CONSTRUCTORS(WeakPtrFactory);
+ private:
+  cef_internal::WeakReferenceOwner weak_reference_owner_;
+  T* ptr_;
+  DISALLOW_IMPLICIT_CONSTRUCTORS(WeakPtrFactory);
 };
 
 // A class may extend from SupportsWeakPtr to let others take weak pointers to
@@ -381,26 +342,20 @@ private:
 // weak pointers to the class until after the derived class' members have been
 // destroyed, its use can lead to subtle use-after-destroy issues.
 template <class T>
-class SupportsWeakPtr : public cef_internal::SupportsWeakPtrBase
-{
-public:
-    SupportsWeakPtr()
-    {
-    }
+class SupportsWeakPtr : public cef_internal::SupportsWeakPtrBase {
+ public:
+  SupportsWeakPtr() {}
 
-    WeakPtr<T> AsWeakPtr()
-    {
-        return WeakPtr<T>(weak_reference_owner_.GetRef(), static_cast<T*>(this));
-    }
+  WeakPtr<T> AsWeakPtr() {
+    return WeakPtr<T>(weak_reference_owner_.GetRef(), static_cast<T*>(this));
+  }
 
-protected:
-    ~SupportsWeakPtr()
-    {
-    }
+ protected:
+  ~SupportsWeakPtr() {}
 
-private:
-    cef_internal::WeakReferenceOwner weak_reference_owner_;
-    DISALLOW_COPY_AND_ASSIGN(SupportsWeakPtr);
+ private:
+  cef_internal::WeakReferenceOwner weak_reference_owner_;
+  DISALLOW_COPY_AND_ASSIGN(SupportsWeakPtr);
 };
 
 // Helper function that uses type deduction to safely return a WeakPtr<Derived>
@@ -422,13 +377,12 @@ private:
 //   base::WeakPtr<Derived> ptr = derived.AsWeakPtr();  // Fails.
 
 template <typename Derived>
-WeakPtr<Derived> AsWeakPtr(Derived* t)
-{
-    return cef_internal::SupportsWeakPtrBase::StaticAsWeakPtr<Derived>(t);
+WeakPtr<Derived> AsWeakPtr(Derived* t) {
+  return cef_internal::SupportsWeakPtrBase::StaticAsWeakPtr<Derived>(t);
 }
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_WEAK_PTR_H_
+#endif  // CEF_INCLUDE_BASE_CEF_WEAK_PTR_H_

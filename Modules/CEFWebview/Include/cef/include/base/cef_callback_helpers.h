@@ -49,7 +49,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/callback_helpers.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -59,37 +59,35 @@
 #include "include/base/cef_callback.h"
 #include "include/base/cef_macros.h"
 
-namespace base
-{
+namespace base {
+
 template <typename Sig>
-base::Callback<Sig> ResetAndReturn(base::Callback<Sig>* cb)
-{
-    base::Callback<Sig> ret(*cb);
-    cb->Reset();
-    return ret;
+base::Callback<Sig> ResetAndReturn(base::Callback<Sig>* cb) {
+  base::Callback<Sig> ret(*cb);
+  cb->Reset();
+  return ret;
 }
 
 // ScopedClosureRunner is akin to scoped_ptr for Closures. It ensures that the
 // Closure is executed and deleted no matter how the current scope exits.
-class ScopedClosureRunner
-{
-public:
-    ScopedClosureRunner();
-    explicit ScopedClosureRunner(const Closure& closure);
-    ~ScopedClosureRunner();
+class ScopedClosureRunner {
+ public:
+  ScopedClosureRunner();
+  explicit ScopedClosureRunner(const Closure& closure);
+  ~ScopedClosureRunner();
 
-    void Reset();
-    void Reset(const Closure& closure);
-    Closure Release() WARN_UNUSED_RESULT;
+  void Reset();
+  void Reset(const Closure& closure);
+  Closure Release() WARN_UNUSED_RESULT;
 
-private:
-    Closure closure_;
+ private:
+  Closure closure_;
 
-    DISALLOW_COPY_AND_ASSIGN(ScopedClosureRunner);
+  DISALLOW_COPY_AND_ASSIGN(ScopedClosureRunner);
 };
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_CALLBACK_HELPERS_H_
+#endif  // CEF_INCLUDE_BASE_CEF_CALLBACK_HELPERS_H_

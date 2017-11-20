@@ -40,7 +40,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/threading/thread_collision_warner.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -166,144 +166,122 @@
 
 #endif
 
-namespace base
-{
+namespace base {
+
 // The class ThreadCollisionWarner uses an Asserter to notify the collision
 // AsserterBase is the interfaces and DCheckAsserter is the default asserter
 // used. During the unit tests is used another class that doesn't "DCHECK"
 // in case of collision (check thread_collision_warner_unittests.cc)
-struct AsserterBase
-{
-    virtual ~AsserterBase()
-    {
-    }
-    virtual void warn() = 0;
+struct AsserterBase {
+  virtual ~AsserterBase() {}
+  virtual void warn() = 0;
 };
 
-struct DCheckAsserter : public AsserterBase
-{
-    virtual ~DCheckAsserter()
-    {
-    }
-    virtual void warn() OVERRIDE;
+struct DCheckAsserter : public AsserterBase {
+  virtual ~DCheckAsserter() {}
+  virtual void warn() OVERRIDE;
 };
 
-class ThreadCollisionWarner
-{
-public:
-    // The parameter asserter is there only for test purpose
-    explicit ThreadCollisionWarner(AsserterBase* asserter = new DCheckAsserter())
-        : valid_thread_id_(0)
-        ,
-        counter_(0)
-        ,
-        asserter_(asserter)
-    {
+class ThreadCollisionWarner {
+ public:
+  // The parameter asserter is there only for test purpose
+  explicit ThreadCollisionWarner(AsserterBase* asserter = new DCheckAsserter())
+      : valid_thread_id_(0),
+        counter_(0),
+        asserter_(asserter) {}
+
+  ~ThreadCollisionWarner() {
+    delete asserter_;
+  }
+
+  // This class is meant to be used through the macro
+  // DFAKE_SCOPED_LOCK_THREAD_LOCKED
+  // it doesn't leave the critical section, as opposed to ScopedCheck,
+  // because the critical section being pinned is allowed to be used only
+  // from one thread
+  class Check {
+   public:
+    explicit Check(ThreadCollisionWarner* warner)
+        : warner_(warner) {
+      warner_->EnterSelf();
     }
 
-    ~ThreadCollisionWarner()
-    {
-        delete asserter_;
+    ~Check() {}
+
+   private:
+    ThreadCollisionWarner* warner_;
+
+    DISALLOW_COPY_AND_ASSIGN(Check);
+  };
+
+  // This class is meant to be used through the macro
+  // DFAKE_SCOPED_LOCK
+  class ScopedCheck {
+   public:
+    explicit ScopedCheck(ThreadCollisionWarner* warner)
+        : warner_(warner) {
+      warner_->Enter();
     }
 
-    // This class is meant to be used through the macro
-    // DFAKE_SCOPED_LOCK_THREAD_LOCKED
-    // it doesn't leave the critical section, as opposed to ScopedCheck,
-    // because the critical section being pinned is allowed to be used only
-    // from one thread
-    class Check
-    {
-    public:
-        explicit Check(ThreadCollisionWarner* warner)
-            : warner_(warner)
-        {
-            warner_->EnterSelf();
-        }
+    ~ScopedCheck() {
+      warner_->Leave();
+    }
 
-        ~Check()
-        {
-        }
+   private:
+    ThreadCollisionWarner* warner_;
 
-    private:
-        ThreadCollisionWarner* warner_;
+    DISALLOW_COPY_AND_ASSIGN(ScopedCheck);
+  };
 
-        DISALLOW_COPY_AND_ASSIGN(Check);
-    };
+  // This class is meant to be used through the macro
+  // DFAKE_SCOPED_RECURSIVE_LOCK
+  class ScopedRecursiveCheck {
+   public:
+    explicit ScopedRecursiveCheck(ThreadCollisionWarner* warner)
+        : warner_(warner) {
+      warner_->EnterSelf();
+    }
 
-    // This class is meant to be used through the macro
-    // DFAKE_SCOPED_LOCK
-    class ScopedCheck
-    {
-    public:
-        explicit ScopedCheck(ThreadCollisionWarner* warner)
-            : warner_(warner)
-        {
-            warner_->Enter();
-        }
+    ~ScopedRecursiveCheck() {
+      warner_->Leave();
+    }
 
-        ~ScopedCheck()
-        {
-            warner_->Leave();
-        }
+   private:
+    ThreadCollisionWarner* warner_;
 
-    private:
-        ThreadCollisionWarner* warner_;
+    DISALLOW_COPY_AND_ASSIGN(ScopedRecursiveCheck);
+  };
 
-        DISALLOW_COPY_AND_ASSIGN(ScopedCheck);
-    };
+ private:
+  // This method stores the current thread identifier and does a DCHECK
+  // if a another thread has already done it, it is safe if same thread
+  // calls this multiple time (recursion allowed).
+  void EnterSelf();
 
-    // This class is meant to be used through the macro
-    // DFAKE_SCOPED_RECURSIVE_LOCK
-    class ScopedRecursiveCheck
-    {
-    public:
-        explicit ScopedRecursiveCheck(ThreadCollisionWarner* warner)
-            : warner_(warner)
-        {
-            warner_->EnterSelf();
-        }
+  // Same as EnterSelf but recursion is not allowed.
+  void Enter();
 
-        ~ScopedRecursiveCheck()
-        {
-            warner_->Leave();
-        }
+  // Removes the thread_id stored in order to allow other threads to
+  // call EnterSelf or Enter.
+  void Leave();
 
-    private:
-        ThreadCollisionWarner* warner_;
+  // This stores the thread id that is inside the critical section, if the
+  // value is 0 then no thread is inside.
+  volatile subtle::Atomic32 valid_thread_id_;
 
-        DISALLOW_COPY_AND_ASSIGN(ScopedRecursiveCheck);
-    };
+  // Counter to trace how many time a critical section was "pinned"
+  // (when allowed) in order to unpin it when counter_ reaches 0.
+  volatile subtle::Atomic32 counter_;
 
-private:
-    // This method stores the current thread identifier and does a DCHECK
-    // if a another thread has already done it, it is safe if same thread
-    // calls this multiple time (recursion allowed).
-    void EnterSelf();
+  // Here only for class unit tests purpose, during the test I need to not
+  // DCHECK but notify the collision with something else.
+  AsserterBase* asserter_;
 
-    // Same as EnterSelf but recursion is not allowed.
-    void Enter();
-
-    // Removes the thread_id stored in order to allow other threads to
-    // call EnterSelf or Enter.
-    void Leave();
-
-    // This stores the thread id that is inside the critical section, if the
-    // value is 0 then no thread is inside.
-    volatile subtle::Atomic32 valid_thread_id_;
-
-    // Counter to trace how many time a critical section was "pinned"
-    // (when allowed) in order to unpin it when counter_ reaches 0.
-    volatile subtle::Atomic32 counter_;
-
-    // Here only for class unit tests purpose, during the test I need to not
-    // DCHECK but notify the collision with something else.
-    AsserterBase* asserter_;
-
-    DISALLOW_COPY_AND_ASSIGN(ThreadCollisionWarner);
+  DISALLOW_COPY_AND_ASSIGN(ThreadCollisionWarner);
 };
 
-} // namespace base
+}  // namespace base
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_THREAD_COLLISION_WARNER_H_
+#endif  // CEF_INCLUDE_BASE_CEF_THREAD_COLLISION_WARNER_H_

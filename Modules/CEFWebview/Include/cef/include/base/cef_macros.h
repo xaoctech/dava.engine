@@ -35,13 +35,13 @@
 #if defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/macros.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
 
-#include <stddef.h> // For size_t.
-#include "include/base/cef_build.h" // For COMPILER_MSVC
+#include <stddef.h>  // For size_t.
+#include "include/base/cef_build.h"  // For COMPILER_MSVC
 
 #if !defined(ALLOW_THIS_IN_INITIALIZER_LIST)
 #if defined(COMPILER_MSVC)
@@ -49,8 +49,7 @@
 // MSVC_PUSH_DISABLE_WARNING pushes |n| onto a stack of warnings to be disabled.
 // The warning remains disabled until popped by MSVC_POP_WARNING.
 #define MSVC_PUSH_DISABLE_WARNING(n) __pragma(warning(push)) \
-__pragma(warning(disable \
-                 : n))
+                                     __pragma(warning(disable:n))
 
 // MSVC_PUSH_WARNING_LEVEL pushes |n| as the global warning level.  The level
 // remains in effect until popped by MSVC_POP_WARNING().  Use 0 to disable all
@@ -71,13 +70,13 @@ __pragma(warning(disable \
 // http://msdn.microsoft.com/en-us/library/3c594ae3(VS.80).aspx
 #define ALLOW_THIS_IN_INITIALIZER_LIST(code) MSVC_PUSH_DISABLE_WARNING(4355) \
                                              code \
-    MSVC_POP_WARNING()
-#else // !COMPILER_MSVC
+                                             MSVC_POP_WARNING()
+#else  // !COMPILER_MSVC
 
 #define ALLOW_THIS_IN_INITIALIZER_LIST(code) code
 
-#endif // !COMPILER_MSVC
-#endif // !ALLOW_THIS_IN_INITIALIZER_LIST
+#endif  // !COMPILER_MSVC
+#endif  // !ALLOW_THIS_IN_INITIALIZER_LIST
 
 #if !defined(arraysize)
 
@@ -96,19 +95,19 @@ __pragma(warning(disable \
 // Note that the function doesn't need an implementation, as we only
 // use its type.
 template <typename T, size_t N>
-char(&ArraySizeHelper(T(&array)[N]))[N];
+char (&ArraySizeHelper(T (&array)[N]))[N];
 
 // That gcc wants both of these prototypes seems mysterious. VC, for
 // its part, can't decide which to use (another mystery). Matching of
 // template overloads: the final frontier.
 #ifndef _MSC_VER
 template <typename T, size_t N>
-char(&ArraySizeHelper(const T(&array)[N]))[N];
+char (&ArraySizeHelper(const T (&array)[N]))[N];
 #endif
 
 #define arraysize(array) (sizeof(ArraySizeHelper(array)))
 
-#endif // !arraysize
+#endif  // !arraysize
 
 #if !defined(DISALLOW_COPY_AND_ASSIGN)
 
@@ -118,7 +117,7 @@ char(&ArraySizeHelper(const T(&array)[N]))[N];
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
 
-#endif // !DISALLOW_COPY_AND_ASSIGN
+#endif  // !DISALLOW_COPY_AND_ASSIGN
 
 #if !defined(DISALLOW_IMPLICIT_CONSTRUCTORS)
 
@@ -132,7 +131,7 @@ char(&ArraySizeHelper(const T(&array)[N]))[N];
   TypeName();                                    \
   DISALLOW_COPY_AND_ASSIGN(TypeName)
 
-#endif // !DISALLOW_IMPLICIT_CONSTRUCTORS
+#endif  // !DISALLOW_IMPLICIT_CONSTRUCTORS
 
 #if !defined(COMPILE_ASSERT)
 
@@ -158,18 +157,17 @@ char(&ArraySizeHelper(const T(&array)[N]))[N];
 
 #else
 
-namespace cef
-{
+namespace cef {
+
 template <bool>
-struct CompileAssert
-{
+struct CompileAssert {
 };
 
-} // namespace cef
+}  // namespace cef
 
 #define COMPILE_ASSERT(expr, msg) \
   typedef cef::CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1] \
-    ALLOW_UNUSED_TYPE
+      ALLOW_UNUSED_TYPE
 
 // Implementation details of COMPILE_ASSERT:
 //
@@ -212,10 +210,10 @@ struct CompileAssert
 //   This is to avoid running into a bug in MS VC 7.1, which
 //   causes ((0.0) ? 1 : -1) to incorrectly evaluate to 1.
 
-#endif // !(__cplusplus >= 201103L)
+#endif  // !(__cplusplus >= 201103L)
 
-#endif // !defined(COMPILE_ASSERT)
+#endif  // !defined(COMPILE_ASSERT)
 
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_MACROS_H_
+#endif  // CEF_INCLUDE_BASE_CEF_MACROS_H_

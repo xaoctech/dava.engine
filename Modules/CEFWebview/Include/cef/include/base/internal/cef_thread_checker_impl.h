@@ -36,39 +36,37 @@
 #include "include/base/cef_lock.h"
 #include "include/base/cef_platform_thread.h"
 
-namespace base
-{
-namespace cef_internal
-{
+namespace base {
+namespace cef_internal {
+
 // Real implementation of ThreadChecker, for use in debug mode, or
 // for temporary use in release mode (e.g. to CHECK on a threading issue
 // seen only in the wild).
 //
 // Note: You should almost always use the ThreadChecker class to get the
 // right version for your build configuration.
-class ThreadCheckerImpl
-{
-public:
-    ThreadCheckerImpl();
-    ~ThreadCheckerImpl();
+class ThreadCheckerImpl {
+ public:
+  ThreadCheckerImpl();
+  ~ThreadCheckerImpl();
 
-    bool CalledOnValidThread() const;
+  bool CalledOnValidThread() const;
 
-    // Changes the thread that is checked for in CalledOnValidThread.  This may
-    // be useful when an object may be created on one thread and then used
-    // exclusively on another thread.
-    void DetachFromThread();
+  // Changes the thread that is checked for in CalledOnValidThread.  This may
+  // be useful when an object may be created on one thread and then used
+  // exclusively on another thread.
+  void DetachFromThread();
 
-private:
-    void EnsureThreadIdAssigned() const;
+ private:
+  void EnsureThreadIdAssigned() const;
 
-    mutable base::Lock lock_;
-    // This is mutable so that CalledOnValidThread can set it.
-    // It's guarded by |lock_|.
-    mutable PlatformThreadRef valid_thread_id_;
+  mutable base::Lock lock_;
+  // This is mutable so that CalledOnValidThread can set it.
+  // It's guarded by |lock_|.
+  mutable PlatformThreadRef valid_thread_id_;
 };
 
-} // namespace cef_internal
-} // namespace base
+}  // namespace cef_internal
+}  // namespace base
 
-#endif // CEF_INCLUDE_BASE_INTERNAL_THREAD_CHECKER_IMPL_H_
+#endif  // CEF_INCLUDE_BASE_INTERNAL_THREAD_CHECKER_IMPL_H_

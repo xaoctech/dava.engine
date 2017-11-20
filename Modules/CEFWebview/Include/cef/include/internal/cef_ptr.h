@@ -144,31 +144,18 @@
 // </p>
 ///
 template <class T>
-class CefRefPtr : public scoped_refptr<T>
-{
-public:
-    typedef scoped_refptr<T> parent;
+class CefRefPtr : public scoped_refptr<T> {
+ public:
+  typedef scoped_refptr<T> parent;
 
-    CefRefPtr()
-        : parent()
-    {
-    }
+  CefRefPtr() : parent() {}
 
-    CefRefPtr(T* p)
-        : parent(p)
-    {
-    }
+  CefRefPtr(T* p) : parent(p) {}
 
-    CefRefPtr(const scoped_refptr<T>& r)
-        : parent(r)
-    {
-    }
+  CefRefPtr(const scoped_refptr<T>& r) : parent(r) {}
 
-    template <typename U>
-    CefRefPtr(const scoped_refptr<U>& r)
-        : parent(r)
-    {
-    }
+  template <typename U>
+  CefRefPtr(const scoped_refptr<U>& r) : parent(r) {}
 };
 
-#endif // CEF_INCLUDE_INTERNAL_CEF_PTR_H_
+#endif  // CEF_INCLUDE_INTERNAL_CEF_PTR_H_

@@ -49,281 +49,280 @@ class CefDOMNode;
 // be called on the render process main thread.
 ///
 /*--cef(source=client)--*/
-class CefDOMVisitor : public virtual CefBase
-{
-public:
-    ///
-    // Method executed for visiting the DOM. The document object passed to this
-    // method represents a snapshot of the DOM at the time this method is
-    // executed. DOM objects are only valid for the scope of this method. Do not
-    // keep references to or attempt to access any DOM objects outside the scope
-    // of this method.
-    ///
-    /*--cef()--*/
-    virtual void Visit(CefRefPtr<CefDOMDocument> document) = 0;
+class CefDOMVisitor : public virtual CefBase {
+ public:
+  ///
+  // Method executed for visiting the DOM. The document object passed to this
+  // method represents a snapshot of the DOM at the time this method is
+  // executed. DOM objects are only valid for the scope of this method. Do not
+  // keep references to or attempt to access any DOM objects outside the scope
+  // of this method.
+  ///
+  /*--cef()--*/
+  virtual void Visit(CefRefPtr<CefDOMDocument> document) =0;
 };
+
 
 ///
 // Class used to represent a DOM document. The methods of this class should only
 // be called on the render process main thread thread.
 ///
 /*--cef(source=library)--*/
-class CefDOMDocument : public virtual CefBase
-{
-public:
-    typedef cef_dom_document_type_t Type;
+class CefDOMDocument : public virtual CefBase {
+ public:
+  typedef cef_dom_document_type_t Type;
 
-    ///
-    // Returns the document type.
-    ///
-    /*--cef(default_retval=DOM_DOCUMENT_TYPE_UNKNOWN)--*/
-    virtual Type GetType() = 0;
+  ///
+  // Returns the document type.
+  ///
+  /*--cef(default_retval=DOM_DOCUMENT_TYPE_UNKNOWN)--*/
+  virtual Type GetType() =0;
 
-    ///
-    // Returns the root document node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetDocument() = 0;
+  ///
+  // Returns the root document node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetDocument() =0;
 
-    ///
-    // Returns the BODY node of an HTML document.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetBody() = 0;
+  ///
+  // Returns the BODY node of an HTML document.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetBody() =0;
 
-    ///
-    // Returns the HEAD node of an HTML document.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetHead() = 0;
+  ///
+  // Returns the HEAD node of an HTML document.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetHead() =0;
 
-    ///
-    // Returns the title of an HTML document.
-    ///
-    /*--cef()--*/
-    virtual CefString GetTitle() = 0;
+  ///
+  // Returns the title of an HTML document.
+  ///
+  /*--cef()--*/
+  virtual CefString GetTitle() =0;
 
-    ///
-    // Returns the document element with the specified ID value.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetElementById(const CefString& id) = 0;
+  ///
+  // Returns the document element with the specified ID value.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetElementById(const CefString& id) =0;
 
-    ///
-    // Returns the node that currently has keyboard focus.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetFocusedNode() = 0;
+  ///
+  // Returns the node that currently has keyboard focus.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetFocusedNode() =0;
 
-    ///
-    // Returns true if a portion of the document is selected.
-    ///
-    /*--cef()--*/
-    virtual bool HasSelection() = 0;
+  ///
+  // Returns true if a portion of the document is selected.
+  ///
+  /*--cef()--*/
+  virtual bool HasSelection() =0;
 
-    ///
-    // Returns the selection offset within the start node.
-    ///
-    /*--cef()--*/
-    virtual int GetSelectionStartOffset() = 0;
+  ///
+  // Returns the selection offset within the start node.
+  ///
+  /*--cef()--*/
+  virtual int GetSelectionStartOffset() =0;
 
-    ///
-    // Returns the selection offset within the end node.
-    ///
-    /*--cef()--*/
-    virtual int GetSelectionEndOffset() = 0;
+  ///
+  // Returns the selection offset within the end node.
+  ///
+  /*--cef()--*/
+  virtual int GetSelectionEndOffset() =0;
 
-    ///
-    // Returns the contents of this selection as markup.
-    ///
-    /*--cef()--*/
-    virtual CefString GetSelectionAsMarkup() = 0;
+  ///
+  // Returns the contents of this selection as markup.
+  ///
+  /*--cef()--*/
+  virtual CefString GetSelectionAsMarkup() =0;
 
-    ///
-    // Returns the contents of this selection as text.
-    ///
-    /*--cef()--*/
-    virtual CefString GetSelectionAsText() = 0;
+  ///
+  // Returns the contents of this selection as text.
+  ///
+  /*--cef()--*/
+  virtual CefString GetSelectionAsText() =0;
 
-    ///
-    // Returns the base URL for the document.
-    ///
-    /*--cef()--*/
-    virtual CefString GetBaseURL() = 0;
+  ///
+  // Returns the base URL for the document.
+  ///
+  /*--cef()--*/
+  virtual CefString GetBaseURL() =0;
 
-    ///
-    // Returns a complete URL based on the document base URL and the specified
-    // partial URL.
-    ///
-    /*--cef()--*/
-    virtual CefString GetCompleteURL(const CefString& partialURL) = 0;
+  ///
+  // Returns a complete URL based on the document base URL and the specified
+  // partial URL.
+  ///
+  /*--cef()--*/
+  virtual CefString GetCompleteURL(const CefString& partialURL) =0;
 };
+
 
 ///
 // Class used to represent a DOM node. The methods of this class should only be
 // called on the render process main thread.
 ///
 /*--cef(source=library)--*/
-class CefDOMNode : public virtual CefBase
-{
-public:
-    typedef std::map<CefString, CefString> AttributeMap;
-    typedef cef_dom_node_type_t Type;
+class CefDOMNode : public virtual CefBase {
+ public:
+  typedef std::map<CefString, CefString> AttributeMap;
+  typedef cef_dom_node_type_t Type;
 
-    ///
-    // Returns the type for this node.
-    ///
-    /*--cef(default_retval=DOM_NODE_TYPE_UNSUPPORTED)--*/
-    virtual Type GetType() = 0;
+  ///
+  // Returns the type for this node.
+  ///
+  /*--cef(default_retval=DOM_NODE_TYPE_UNSUPPORTED)--*/
+  virtual Type GetType() =0;
 
-    ///
-    // Returns true if this is a text node.
-    ///
-    /*--cef()--*/
-    virtual bool IsText() = 0;
+  ///
+  // Returns true if this is a text node.
+  ///
+  /*--cef()--*/
+  virtual bool IsText() =0;
 
-    ///
-    // Returns true if this is an element node.
-    ///
-    /*--cef()--*/
-    virtual bool IsElement() = 0;
+  ///
+  // Returns true if this is an element node.
+  ///
+  /*--cef()--*/
+  virtual bool IsElement() =0;
 
-    ///
-    // Returns true if this is an editable node.
-    ///
-    /*--cef()--*/
-    virtual bool IsEditable() = 0;
+  ///
+  // Returns true if this is an editable node.
+  ///
+  /*--cef()--*/
+  virtual bool IsEditable() =0;
 
-    ///
-    // Returns true if this is a form control element node.
-    ///
-    /*--cef()--*/
-    virtual bool IsFormControlElement() = 0;
+  ///
+  // Returns true if this is a form control element node.
+  ///
+  /*--cef()--*/
+  virtual bool IsFormControlElement() =0;
 
-    ///
-    // Returns the type of this form control element node.
-    ///
-    /*--cef()--*/
-    virtual CefString GetFormControlElementType() = 0;
+  ///
+  // Returns the type of this form control element node.
+  ///
+  /*--cef()--*/
+  virtual CefString GetFormControlElementType() =0;
 
-    ///
-    // Returns true if this object is pointing to the same handle as |that|
-    // object.
-    ///
-    /*--cef()--*/
-    virtual bool IsSame(CefRefPtr<CefDOMNode> that) = 0;
+  ///
+  // Returns true if this object is pointing to the same handle as |that|
+  // object.
+  ///
+  /*--cef()--*/
+  virtual bool IsSame(CefRefPtr<CefDOMNode> that) =0;
 
-    ///
-    // Returns the name of this node.
-    ///
-    /*--cef()--*/
-    virtual CefString GetName() = 0;
+  ///
+  // Returns the name of this node.
+  ///
+  /*--cef()--*/
+  virtual CefString GetName() =0;
 
-    ///
-    // Returns the value of this node.
-    ///
-    /*--cef()--*/
-    virtual CefString GetValue() = 0;
+  ///
+  // Returns the value of this node.
+  ///
+  /*--cef()--*/
+  virtual CefString GetValue() =0;
 
-    ///
-    // Set the value of this node. Returns true on success.
-    ///
-    /*--cef()--*/
-    virtual bool SetValue(const CefString& value) = 0;
+  ///
+  // Set the value of this node. Returns true on success.
+  ///
+  /*--cef()--*/
+  virtual bool SetValue(const CefString& value) =0;
 
-    ///
-    // Returns the contents of this node as markup.
-    ///
-    /*--cef()--*/
-    virtual CefString GetAsMarkup() = 0;
+  ///
+  // Returns the contents of this node as markup.
+  ///
+  /*--cef()--*/
+  virtual CefString GetAsMarkup() =0;
 
-    ///
-    // Returns the document associated with this node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMDocument> GetDocument() = 0;
+  ///
+  // Returns the document associated with this node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMDocument> GetDocument() =0;
 
-    ///
-    // Returns the parent node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetParent() = 0;
+  ///
+  // Returns the parent node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetParent() =0;
 
-    ///
-    // Returns the previous sibling node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetPreviousSibling() = 0;
+  ///
+  // Returns the previous sibling node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetPreviousSibling() =0;
 
-    ///
-    // Returns the next sibling node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetNextSibling() = 0;
+  ///
+  // Returns the next sibling node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetNextSibling() =0;
 
-    ///
-    // Returns true if this node has child nodes.
-    ///
-    /*--cef()--*/
-    virtual bool HasChildren() = 0;
+  ///
+  // Returns true if this node has child nodes.
+  ///
+  /*--cef()--*/
+  virtual bool HasChildren() =0;
 
-    ///
-    // Return the first child node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetFirstChild() = 0;
+  ///
+  // Return the first child node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetFirstChild() =0;
 
-    ///
-    // Returns the last child node.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefDOMNode> GetLastChild() = 0;
+  ///
+  // Returns the last child node.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefDOMNode> GetLastChild() =0;
 
-    // The following methods are valid only for element nodes.
+  // The following methods are valid only for element nodes.
 
-    ///
-    // Returns the tag name of this element.
-    ///
-    /*--cef()--*/
-    virtual CefString GetElementTagName() = 0;
+  ///
+  // Returns the tag name of this element.
+  ///
+  /*--cef()--*/
+  virtual CefString GetElementTagName() =0;
 
-    ///
-    // Returns true if this element has attributes.
-    ///
-    /*--cef()--*/
-    virtual bool HasElementAttributes() = 0;
+  ///
+  // Returns true if this element has attributes.
+  ///
+  /*--cef()--*/
+  virtual bool HasElementAttributes() =0;
 
-    ///
-    // Returns true if this element has an attribute named |attrName|.
-    ///
-    /*--cef()--*/
-    virtual bool HasElementAttribute(const CefString& attrName) = 0;
+  ///
+  // Returns true if this element has an attribute named |attrName|.
+  ///
+  /*--cef()--*/
+  virtual bool HasElementAttribute(const CefString& attrName) =0;
 
-    ///
-    // Returns the element attribute named |attrName|.
-    ///
-    /*--cef()--*/
-    virtual CefString GetElementAttribute(const CefString& attrName) = 0;
+  ///
+  // Returns the element attribute named |attrName|.
+  ///
+  /*--cef()--*/
+  virtual CefString GetElementAttribute(const CefString& attrName) =0;
 
-    ///
-    // Returns a map of all element attributes.
-    ///
-    /*--cef()--*/
-    virtual void GetElementAttributes(AttributeMap& attrMap) = 0;
+  ///
+  // Returns a map of all element attributes.
+  ///
+  /*--cef()--*/
+  virtual void GetElementAttributes(AttributeMap& attrMap) =0;
 
-    ///
-    // Set the value for the element attribute named |attrName|. Returns true on
-    // success.
-    ///
-    /*--cef()--*/
-    virtual bool SetElementAttribute(const CefString& attrName,
-                                     const CefString& value) = 0;
+  ///
+  // Set the value for the element attribute named |attrName|. Returns true on
+  // success.
+  ///
+  /*--cef()--*/
+  virtual bool SetElementAttribute(const CefString& attrName,
+                                   const CefString& value) =0;
 
-    ///
-    // Returns the inner text of the element.
-    ///
-    /*--cef()--*/
-    virtual CefString GetElementInnerText() = 0;
+  ///
+  // Returns the inner text of the element.
+  ///
+  /*--cef()--*/
+  virtual CefString GetElementInnerText() =0;
 };
 
-#endif // CEF_INCLUDE_CEF_DOM_H_
+#endif  // CEF_INCLUDE_CEF_DOM_H_

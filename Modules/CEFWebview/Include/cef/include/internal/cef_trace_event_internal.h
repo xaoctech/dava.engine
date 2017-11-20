@@ -119,6 +119,6 @@ CEF_EXPORT void cef_trace_event_async_end(const char* category,
 
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif  // __cplusplus
 
-#endif // CEF_INCLUDE_INTERNAL_CEF_TRACE_EVENT_INTERNAL_H_
+#endif  // CEF_INCLUDE_INTERNAL_CEF_TRACE_EVENT_INTERNAL_H_

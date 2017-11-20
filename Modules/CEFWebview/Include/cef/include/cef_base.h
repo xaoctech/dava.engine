@@ -51,70 +51,60 @@
 // Interface defining the reference count implementation methods. All framework
 // classes must extend the CefBase class.
 ///
-class CefBase
-{
-public:
-    ///
-    // Called to increment the reference count for the object. Should be called
-    // for every new copy of a pointer to a given object.
-    ///
-    virtual void AddRef() const = 0;
+class CefBase {
+ public:
+  ///
+  // Called to increment the reference count for the object. Should be called
+  // for every new copy of a pointer to a given object.
+  ///
+  virtual void AddRef() const =0;
 
-    ///
-    // Called to decrement the reference count for the object. Returns true if
-    // the reference count is 0, in which case the object should self-delete.
-    ///
-    virtual bool Release() const = 0;
+  ///
+  // Called to decrement the reference count for the object. Returns true if
+  // the reference count is 0, in which case the object should self-delete.
+  ///
+  virtual bool Release() const =0;
 
-    ///
-    // Returns true if the reference count is 1.
-    ///
-    virtual bool HasOneRef() const = 0;
+  ///
+  // Returns true if the reference count is 1.
+  ///
+  virtual bool HasOneRef() const =0;
 
-protected:
-    virtual ~CefBase()
-    {
-    }
+ protected:
+  virtual ~CefBase() {}
 };
 
 ///
 // Class that implements atomic reference counting.
 ///
-class CefRefCount
-{
-public:
-    CefRefCount()
-        : ref_count_(0)
-    {
-    }
+class CefRefCount {
+ public:
+  CefRefCount() : ref_count_(0) {}
 
-    ///
-    // Increment the reference count.
-    ///
-    void AddRef() const
-    {
-        base::AtomicRefCountInc(&ref_count_);
-    }
+  ///
+  // Increment the reference count.
+  ///
+  void AddRef() const {
+    base::AtomicRefCountInc(&ref_count_); 
+  }
 
-    ///
-    // Decrement the reference count. Returns true if the reference count is 0.
-    ///
-    bool Release() const
-    {
-        return !base::AtomicRefCountDec(&ref_count_);
-    }
+  ///
+  // Decrement the reference count. Returns true if the reference count is 0.
+  ///
+  bool Release() const {
+    return !base::AtomicRefCountDec(&ref_count_);
+  }
 
-    ///
-    // Returns true if the reference count is 1.
-    ///
-    bool HasOneRef() const
-    {
-        return base::AtomicRefCountIsOne(&ref_count_);
-    }
+  ///
+  // Returns true if the reference count is 1.
+  ///
+  bool HasOneRef() const {
+    return base::AtomicRefCountIsOne(&ref_count_);
+  }
 
-private:
-    mutable base::AtomicRefCount ref_count_;
-    DISALLOW_COPY_AND_ASSIGN(CefRefCount);
+ private:
+  mutable base::AtomicRefCount ref_count_;
+  DISALLOW_COPY_AND_ASSIGN(CefRefCount);
 };
 
 ///
@@ -176,8 +166,7 @@ private:
   public:                                                                  \
     class AutoLock {                                                       \
      public:                                                               \
-      explicit AutoLock(ClassName* base) \
-            : base_(base) { base_->Lock(); }  \
+      explicit AutoLock(ClassName* base) : base_(base) { base_->Lock(); }  \
       ~AutoLock() { base_->Unlock(); }                                     \
      private:                                                              \
       ClassName* base_;                                                    \
@@ -188,4 +177,4 @@ private:
   private:                                                                 \
     base::Lock lock_;
 
-#endif // CEF_INCLUDE_CEF_BASE_H_
+#endif  // CEF_INCLUDE_CEF_BASE_H_

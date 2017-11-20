@@ -48,53 +48,45 @@
 // will be called on the browser process main thread unless otherwise indicated.
 ///
 /*--cef(source=client)--*/
-class CefBrowserProcessHandler : public virtual CefBase
-{
-public:
-    ///
-    // Called on the browser process UI thread immediately after the CEF context
-    // has been initialized.
-    ///
-    /*--cef()--*/
-    virtual void OnContextInitialized()
-    {
-    }
+class CefBrowserProcessHandler : public virtual CefBase {
+ public:
+  ///
+  // Called on the browser process UI thread immediately after the CEF context
+  // has been initialized.
+  ///
+  /*--cef()--*/
+  virtual void OnContextInitialized() {}
 
-    ///
-    // Called before a child process is launched. Will be called on the browser
-    // process UI thread when launching a render process and on the browser
-    // process IO thread when launching a GPU or plugin process. Provides an
-    // opportunity to modify the child process command line. Do not keep a
-    // reference to |command_line| outside of this method.
-    ///
-    /*--cef()--*/
-    virtual void OnBeforeChildProcessLaunch(
-    CefRefPtr<CefCommandLine> command_line)
-    {
-    }
+  ///
+  // Called before a child process is launched. Will be called on the browser
+  // process UI thread when launching a render process and on the browser
+  // process IO thread when launching a GPU or plugin process. Provides an
+  // opportunity to modify the child process command line. Do not keep a
+  // reference to |command_line| outside of this method.
+  ///
+  /*--cef()--*/
+  virtual void OnBeforeChildProcessLaunch(
+      CefRefPtr<CefCommandLine> command_line) {}
 
-    ///
-    // Called on the browser process IO thread after the main thread has been
-    // created for a new render process. Provides an opportunity to specify extra
-    // information that will be passed to
-    // CefRenderProcessHandler::OnRenderThreadCreated() in the render process. Do
-    // not keep a reference to |extra_info| outside of this method.
-    ///
-    /*--cef()--*/
-    virtual void OnRenderProcessThreadCreated(
-    CefRefPtr<CefListValue> extra_info)
-    {
-    }
+  ///
+  // Called on the browser process IO thread after the main thread has been
+  // created for a new render process. Provides an opportunity to specify extra
+  // information that will be passed to
+  // CefRenderProcessHandler::OnRenderThreadCreated() in the render process. Do
+  // not keep a reference to |extra_info| outside of this method.
+  ///
+  /*--cef()--*/
+  virtual void OnRenderProcessThreadCreated(
+      CefRefPtr<CefListValue> extra_info) {}
 
-    ///
-    // Return the handler for printing on Linux. If a print handler is not
-    // provided then printing will not be supported on the Linux platform.
-    ///
-    /*--cef()--*/
-    virtual CefRefPtr<CefPrintHandler> GetPrintHandler()
-    {
-        return NULL;
-    }
+  ///
+  // Return the handler for printing on Linux. If a print handler is not
+  // provided then printing will not be supported on the Linux platform.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefPrintHandler> GetPrintHandler() {
+    return NULL;
+  }
 };
 
-#endif // CEF_INCLUDE_CEF_BROWSER_PROCESS_HANDLER_H_
+#endif  // CEF_INCLUDE_CEF_BROWSER_PROCESS_HANDLER_H_

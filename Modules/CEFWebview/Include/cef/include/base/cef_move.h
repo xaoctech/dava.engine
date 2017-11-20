@@ -39,7 +39,7 @@
 #elif defined(BUILDING_CEF_SHARED)
 // When building CEF include the Chromium header directly.
 #include "base/move.h"
-#else // !BUILDING_CEF_SHARED
+#else  // !BUILDING_CEF_SHARED
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
@@ -243,8 +243,7 @@
 #define MOVE_ONLY_TYPE_FOR_CPP_03(type, rvalue_type) \
  private: \
   struct rvalue_type { \
-    explicit rvalue_type(type* object) \
-            : object(object) {} \
+    explicit rvalue_type(type* object) : object(object) {} \
     type* object; \
   }; \
   type(type&); \
@@ -255,6 +254,6 @@
   typedef void MoveOnlyTypeForCPP03; \
  private:
  
-#endif // !BUILDING_CEF_SHARED
+#endif  // !BUILDING_CEF_SHARED
 
-#endif // CEF_INCLUDE_BASE_CEF_MOVE_H_
+#endif  // CEF_INCLUDE_BASE_CEF_MOVE_H_

@@ -58,32 +58,27 @@
 // for declaring a CefRunnableMethodTraits that disables refcounting.
 
 template <class T>
-struct CefRunnableMethodTraits
-{
-    CefRunnableMethodTraits()
-    {
-    }
+struct CefRunnableMethodTraits {
+  CefRunnableMethodTraits() {
+  }
 
-    ~CefRunnableMethodTraits()
-    {
-    }
+  ~CefRunnableMethodTraits() {
+  }
 
-    void RetainCallee(T* obj)
-    {
+  void RetainCallee(T* obj) {
 #ifndef NDEBUG
-        // Catch NewCefRunnableMethod being called in an object's constructor.
-        // This isn't safe since the method can be invoked before the constructor
-        // completes, causing the object to be deleted.
-        obj->AddRef();
-        obj->Release();
+    // Catch NewCefRunnableMethod being called in an object's constructor.
+    // This isn't safe since the method can be invoked before the constructor
+    // completes, causing the object to be deleted.
+    obj->AddRef();
+    obj->Release();
 #endif
-        obj->AddRef();
-    }
+    obj->AddRef();
+  }
 
-    void ReleaseCallee(T* obj)
-    {
-        obj->Release();
-    }
+  void ReleaseCallee(T* obj) {
+    obj->Release();
+  }
 };
 
 // Convenience macro for declaring a CefRunnableMethodTraits that disables
@@ -105,8 +100,8 @@ struct CefRunnableMethodTraits
 // This is different from DISALLOW_COPY_AND_ASSIGN which is declared inside the
 // class.
 #define DISABLE_RUNNABLE_METHOD_REFCOUNT(TypeName) \
-  template <> \
-    struct CefRunnableMethodTraits<TypeName> {          \
+  template <>                                      \
+  struct CefRunnableMethodTraits<TypeName> {          \
     void RetainCallee(TypeName* manager) {}        \
     void ReleaseCallee(TypeName* manager) {}       \
   }
@@ -139,89 +134,77 @@ struct CefRunnableMethodTraits
 // CefRunnableMethod and NewCefRunnableMethod implementation ------------------
 
 template <class T, class Method, class Params>
-class CefRunnableMethod : public CefTask
-{
-public:
-    CefRunnableMethod(T* obj, Method meth, const Params& params)
-        : obj_(obj)
-        , meth_(meth)
-        , params_(params)
-    {
-        traits_.RetainCallee(obj_);
-    }
+class CefRunnableMethod : public CefTask {
+ public:
+  CefRunnableMethod(T* obj, Method meth, const Params& params)
+      : obj_(obj), meth_(meth), params_(params) {
+    traits_.RetainCallee(obj_);
+  }
 
-    ~CefRunnableMethod()
-    {
-        T* obj = obj_;
-        obj_ = NULL;
-        if (obj)
-            traits_.ReleaseCallee(obj);
-    }
+  ~CefRunnableMethod() {
+    T* obj = obj_;
+    obj_ = NULL;
+    if (obj)
+      traits_.ReleaseCallee(obj);
+  }
 
-    void Execute() OVERRIDE
-    {
-        if (obj_)
-            DispatchToMethod(obj_, meth_, params_);
-    }
+  void Execute() OVERRIDE {
+    if (obj_)
+      DispatchToMethod(obj_, meth_, params_);
+  }
 
-private:
-    T* obj_;
-    Method meth_;
-    Params params_;
-    CefRunnableMethodTraits<T> traits_;
+ private:
+  T* obj_;
+  Method meth_;
+  Params params_;
+  CefRunnableMethodTraits<T> traits_;
 
-    IMPLEMENT_REFCOUNTING(CefRunnableMethod);
+  IMPLEMENT_REFCOUNTING(CefRunnableMethod);
 };
 
 template <class T, class Method>
-inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple0>(
-    object, method, base::MakeTuple());
+inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method) {
+  return new CefRunnableMethod<T, Method, base::Tuple0>(
+      object, method, base::MakeTuple());
 }
 
 template <class T, class Method, class A>
 inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
-                                               const A& a)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple1<A>>(
-    object, method, base::MakeTuple(a));
+                                               const A& a) {
+  return new CefRunnableMethod<T, Method, base::Tuple1<A> >(
+      object, method, base::MakeTuple(a));
 }
 
 template <class T, class Method, class A, class B>
 inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
-                                               const A& a, const B& b)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple2<A, B>>(
-    object, method, base::MakeTuple(a, b));
+                                               const A& a, const B& b) {
+  return new CefRunnableMethod<T, Method, base::Tuple2<A, B> >(
+      object, method, base::MakeTuple(a, b));
 }
 
 template <class T, class Method, class A, class B, class C>
 inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
                                                const A& a, const B& b,
-                                               const C& c)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple3<A, B, C>>(
-    object, method, base::MakeTuple(a, b, c));
+                                               const C& c) {
+  return new CefRunnableMethod<T, Method, base::Tuple3<A, B, C> >(
+      object, method, base::MakeTuple(a, b, c));
 }
 
 template <class T, class Method, class A, class B, class C, class D>
 inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
                                                const A& a, const B& b,
-                                               const C& c, const D& d)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple4<A, B, C, D>>(
-    object, method, base::MakeTuple(a, b, c, d));
+                                               const C& c, const D& d) {
+  return new CefRunnableMethod<T, Method, base::Tuple4<A, B, C, D> >(
+      object, method, base::MakeTuple(a, b, c, d));
 }
 
 template <class T, class Method, class A, class B, class C, class D, class E>
 inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
                                                const A& a, const B& b,
                                                const C& c, const D& d,
-                                               const E& e)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple5<A, B, C, D, E>>(
-    object, method, base::MakeTuple(a, b, c, d, e));
+                                               const E& e) {
+  return new CefRunnableMethod<T, Method, base::Tuple5<A, B, C, D, E> >(
+      object, method, base::MakeTuple(a, b, c, d, e));
 }
 
 template <class T, class Method, class A, class B, class C, class D, class E,
@@ -229,10 +212,9 @@ template <class T, class Method, class A, class B, class C, class D, class E,
 inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
                                                const A& a, const B& b,
                                                const C& c, const D& d,
-                                               const E& e, const F& f)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple6<A, B, C, D, E, F>>(
-    object, method, base::MakeTuple(a, b, c, d, e, f));
+                                               const E& e, const F& f) {
+  return new CefRunnableMethod<T, Method, base::Tuple6<A, B, C, D, E, F> >(
+      object, method, base::MakeTuple(a, b, c, d, e, f));
 }
 
 template <class T, class Method, class A, class B, class C, class D, class E,
@@ -241,90 +223,78 @@ inline CefRefPtr<CefTask> NewCefRunnableMethod(T* object, Method method,
                                                const A& a, const B& b,
                                                const C& c, const D& d,
                                                const E& e, const F& f,
-                                               const G& g)
-{
-    return new CefRunnableMethod<T, Method, base::Tuple7<A, B, C, D, E, F, G>>(
-    object, method, base::MakeTuple(a, b, c, d, e, f, g));
+                                               const G& g) {
+  return new CefRunnableMethod<T, Method, base::Tuple7<A, B, C, D, E, F, G> >(
+      object, method, base::MakeTuple(a, b, c, d, e, f, g));
 }
 
 // CefRunnableFunction and NewCefRunnableFunction implementation --------------
 
 template <class Function, class Params>
-class CefRunnableFunction : public CefTask
-{
-public:
-    CefRunnableFunction(Function function, const Params& params)
-        : function_(function)
-        , params_(params)
-    {
-    }
+class CefRunnableFunction : public CefTask {
+ public:
+  CefRunnableFunction(Function function, const Params& params)
+      : function_(function), params_(params) {
+  }
 
-    ~CefRunnableFunction()
-    {
-    }
+  ~CefRunnableFunction() {
+  }
 
-    void Execute() OVERRIDE
-    {
-        if (function_)
-            DispatchToFunction(function_, params_);
-    }
+  void Execute() OVERRIDE {
+    if (function_)
+      DispatchToFunction(function_, params_);
+  }
 
-private:
-    Function function_;
-    Params params_;
+ private:
+  Function function_;
+  Params params_;
 
-    IMPLEMENT_REFCOUNTING(CefRunnableFunction);
+  IMPLEMENT_REFCOUNTING(CefRunnableFunction);
 };
 
 template <class Function>
-inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function)
-{
-    return new CefRunnableFunction<Function, base::Tuple0>(
-    function, base::MakeTuple());
+inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function) {
+  return new CefRunnableFunction<Function, base::Tuple0>(
+      function, base::MakeTuple());
 }
 
 template <class Function, class A>
 inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
-                                                 const A& a)
-{
-    return new CefRunnableFunction<Function, base::Tuple1<A>>(
-    function, base::MakeTuple(a));
+                                                 const A& a) {
+  return new CefRunnableFunction<Function, base::Tuple1<A> >(
+      function, base::MakeTuple(a));
 }
 
 template <class Function, class A, class B>
 inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
-                                                 const A& a, const B& b)
-{
-    return new CefRunnableFunction<Function, base::Tuple2<A, B>>(
-    function, base::MakeTuple(a, b));
+                                                 const A& a, const B& b) {
+  return new CefRunnableFunction<Function, base::Tuple2<A, B> >(
+      function, base::MakeTuple(a, b));
 }
 
 template <class Function, class A, class B, class C>
 inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
                                                  const A& a, const B& b,
-                                                 const C& c)
-{
-    return new CefRunnableFunction<Function, base::Tuple3<A, B, C>>(
-    function, base::MakeTuple(a, b, c));
+                                                 const C& c) {
+  return new CefRunnableFunction<Function, base::Tuple3<A, B, C> >(
+      function, base::MakeTuple(a, b, c));
 }
 
 template <class Function, class A, class B, class C, class D>
 inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
                                                  const A& a, const B& b,
-                                                 const C& c, const D& d)
-{
-    return new CefRunnableFunction<Function, base::Tuple4<A, B, C, D>>(
-    function, base::MakeTuple(a, b, c, d));
+                                                 const C& c, const D& d) {
+  return new CefRunnableFunction<Function, base::Tuple4<A, B, C, D> >(
+      function, base::MakeTuple(a, b, c, d));
 }
 
 template <class Function, class A, class B, class C, class D, class E>
 inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
                                                  const A& a, const B& b,
                                                  const C& c, const D& d,
-                                                 const E& e)
-{
-    return new CefRunnableFunction<Function, base::Tuple5<A, B, C, D, E>>(
-    function, base::MakeTuple(a, b, c, d, e));
+                                                 const E& e) {
+  return new CefRunnableFunction<Function, base::Tuple5<A, B, C, D, E> >(
+      function, base::MakeTuple(a, b, c, d, e));
 }
 
 template <class Function, class A, class B, class C, class D, class E,
@@ -332,10 +302,9 @@ template <class Function, class A, class B, class C, class D, class E,
 inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
                                                  const A& a, const B& b,
                                                  const C& c, const D& d,
-                                                 const E& e, const F& f)
-{
-    return new CefRunnableFunction<Function, base::Tuple6<A, B, C, D, E, F>>(
-    function, base::MakeTuple(a, b, c, d, e, f));
+                                                 const E& e, const F& f) {
+  return new CefRunnableFunction<Function, base::Tuple6<A, B, C, D, E, F> >(
+      function, base::MakeTuple(a, b, c, d, e, f));
 }
 
 template <class Function, class A, class B, class C, class D, class E,
@@ -344,10 +313,9 @@ inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
                                                  const A& a, const B& b,
                                                  const C& c, const D& d,
                                                  const E& e, const F& f,
-                                                 const G& g)
-{
-    return new CefRunnableFunction<Function, base::Tuple7<A, B, C, D, E, F, G>>(
-    function, base::MakeTuple(a, b, c, d, e, f, g));
+                                                 const G& g) {
+  return new CefRunnableFunction<Function, base::Tuple7<A, B, C, D, E, F, G> >(
+      function, base::MakeTuple(a, b, c, d, e, f, g));
 }
 
 template <class Function, class A, class B, class C, class D, class E,
@@ -356,11 +324,10 @@ inline CefRefPtr<CefTask> NewCefRunnableFunction(Function function,
                                                  const A& a, const B& b,
                                                  const C& c, const D& d,
                                                  const E& e, const F& f,
-                                                 const G& g, const H& h)
-{
-    return new CefRunnableFunction<Function,
-                                   base::Tuple8<A, B, C, D, E, F, G, H>>(
-    function, base::MakeTuple(a, b, c, d, e, f, g, h));
+                                                 const G& g, const H& h) {
+  return new CefRunnableFunction<Function,
+                                 base::Tuple8<A, B, C, D, E, F, G, H> >(
+      function, base::MakeTuple(a, b, c, d, e, f, g, h));
 }
 
-#endif // CEF_INCLUDE_CEF_RUNNABLE_H_
+#endif  // CEF_INCLUDE_CEF_RUNNABLE_H_
