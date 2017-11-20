@@ -19,6 +19,8 @@ set( HPP_FILES *.h
     Render/*.h
     Script/*.h
     Script/Private/*.h
+    Events/*.h
+    Events/Private/*.h
     )
 
 set( CPP_FILES *.cpp
@@ -42,6 +44,8 @@ set( CPP_FILES *.cpp
     Render/*.cpp
     Script/*.cpp
     Script/Private/*.cpp
+    Events/*.cpp
+    Events/Private/*.cpp
     )
 
 set( CPP_FILES_APPLE *.mm )
