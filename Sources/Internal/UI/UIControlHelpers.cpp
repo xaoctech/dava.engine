@@ -1,4 +1,5 @@
 #include "UIControlHelpers.h"
+#include "Reflection/ReflectedTypeDB.h"
 #include "UI/UIControl.h"
 #include "UI/UIList.h"
 #include "UI/UIScrollView.h"

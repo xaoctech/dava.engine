@@ -8,9 +8,7 @@
 #include "Engine/Engine.h"
 #include "Input/InputEvent.h"
 #include "Input/InputSystem.h"
-#include "Input/InputSystem.h"
 #include "Input/Keyboard.h"
-#include "Input/Mouse.h"
 #include "Input/Mouse.h"
 #include "Input/TouchScreen.h"
 #include "Logger/Logger.h"
@@ -21,6 +19,10 @@
 #include "Render/RenderHelper.h"
 #include "Render/Renderer.h"
 #include "Time/SystemTimer.h"
+#include "UI/Flow/Private/UIFlowTransitionAnimationSystem.h"
+#include "UI/Flow/UIFlowControllerSystem.h"
+#include "UI/Flow/UIFlowStateSystem.h"
+#include "UI/Flow/UIFlowViewSystem.h"
 #include "UI/Focus/UIFocusSystem.h"
 #include "UI/Input/UIInputSystem.h"
 #include "UI/Layouts/UILayoutSystem.h"
@@ -51,6 +53,10 @@ UIControlSystem::UIControlSystem()
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
+    AddSystem(std::make_unique<UIFlowStateSystem>());
+    AddSystem(std::make_unique<UIFlowViewSystem>());
+    AddSystem(std::make_unique<UIFlowControllerSystem>());
+
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
@@ -63,6 +69,8 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
     AddSystem(std::make_unique<UISoundSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
+
+    AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()));
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
@@ -328,14 +336,18 @@ void UIControlSystem::ProcessScreenLogic()
 
 void UIControlSystem::Update()
 {
+    float32 timeElapsed = SystemTimer::GetFrameDelta();
+    UpdateWithCustomTime(timeElapsed);
+}
+
+void UIControlSystem::UpdateWithCustomTime(float32 timeElapsed)
+{
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::UI_UPDATE);
 
     ProcessScreenLogic();
 
     if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_UI_CONTROL_SYSTEM))
     {
-        float32 timeElapsed = SystemTimer::GetFrameDelta();
-
         for (auto& system : systems)
         {
             system->Process(timeElapsed);
@@ -355,6 +367,7 @@ void UIControlSystem::Draw()
     resizePerFrame = 0;
 
     renderSystem->Render();
+    GetSystem<UIFlowTransitionAnimationSystem>()->Render();
 
     if (frameSkip > 0)
     {
@@ -660,7 +673,7 @@ void UIControlSystem::SetBiDiSupportEnabled(bool support)
 
 bool UIControlSystem::IsHostControl(const UIControl* control) const
 {
-    return (GetScreen() == control || GetPopupContainer() == control);
+    return (GetScreen() == control || GetPopupContainer() == control || GetFlowRoot() == control);
 }
 
 void UIControlSystem::RegisterControl(UIControl* control)
@@ -718,8 +731,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
     if (insertBeforeSystem)
     {
         auto insertIt = std::find_if(systems.begin(), systems.end(),
-                                     [insertBeforeSystem](const std::unique_ptr<UISystem>& systemPtr)
-                                     {
+                                     [insertBeforeSystem](const std::unique_ptr<UISystem>& systemPtr) {
                                          return systemPtr.get() == insertBeforeSystem;
                                      });
         DVASSERT(insertIt != systems.end());
@@ -735,8 +747,7 @@ void UIControlSystem::AddSystem(std::unique_ptr<UISystem> system, const UISystem
 std::unique_ptr<UISystem> UIControlSystem::RemoveSystem(const UISystem* system)
 {
     auto it = std::find_if(systems.begin(), systems.end(),
-                           [system](const std::unique_ptr<UISystem>& systemPtr)
-                           {
+                           [system](const std::unique_ptr<UISystem>& systemPtr) {
                                return systemPtr.get() == system;
                            });
 
@@ -822,6 +833,33 @@ void UIControlSystem::SetDoubleTapSettings(float32 time, float32 inch)
     DVASSERT((time > 0.0f) && (inch > 0.0f));
     doubleClickTime = time;
     doubleClickInchSquare = inch * inch;
+}
+
+void UIControlSystem::SetFlowRoot(UIControl* root)
+{
+    if (flowRoot == root)
+    {
+        return;
+    }
+
+    if (flowRoot)
+    {
+        flowRoot->InvokeInactive();
+        flowRoot->SetScene(nullptr);
+    }
+
+    flowRoot = root;
+
+    if (flowRoot)
+    {
+        flowRoot->SetScene(this);
+        flowRoot->InvokeActive(UIControl::eViewState::VISIBLE);
+    }
+}
+
+UIControl* UIControlSystem::GetFlowRoot() const
+{
+    return flowRoot.Get();
 }
 
 UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const

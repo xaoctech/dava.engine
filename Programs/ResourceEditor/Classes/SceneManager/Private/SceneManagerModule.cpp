@@ -212,8 +212,8 @@ void SceneManagerModule::PostInit()
     {
         return v.CanCast<DAVA::FilePath>() && !v.Cast<DAVA::FilePath>().IsEmpty();
     };
-    params.getMaximumCount = []() {
-        return 5;
+    params.getMaximumCount = [accessor]() {
+        return accessor->GetGlobalContext()->GetData<GeneralSettings>()->recentScenesCount;
     };
 
     recentItems.reset(new RecentMenuItems(std::move(params)));
@@ -221,6 +221,16 @@ void SceneManagerModule::PostInit()
                                          {
                                              OpenSceneByPath(DAVA::FilePath(scenePath));
                                          });
+
+    {
+        DAVA::TArc::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
+        fieldDescr.fieldName = DAVA::FastName("recentScenesCount");
+        fieldBinder->BindField(fieldDescr, [this](const DAVA::Any& v)
+                               {
+                                   recentItems->Truncate();
+                               });
+    }
 }
 
 void SceneManagerModule::CreateModuleControls(DAVA::TArc::UI* ui)

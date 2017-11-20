@@ -44,6 +44,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     ReflectionRegistrator<UIControl>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIControl* o) { o->Release(); })
+    .Field<const FastName& (UIControl::*)() const, void (UIControl::*)(const FastName&)>("name", &UIControl::GetName, &UIControl::SetName)[M::HiddenField()] // Hide because QE control Name property manually
     .Field("position", &UIControl::GetPosition, &UIControl::SetPosition)
     .Field("size", &UIControl::GetSize, &UIControl::SetSize)
     .Field("scale", &UIControl::GetScale, &UIControl::SetScale)
