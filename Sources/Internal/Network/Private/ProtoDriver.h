@@ -47,8 +47,6 @@ private:
         IChannelListener* service = nullptr;
     };
 
-    friend bool operator==(const std::shared_ptr<IChannel>&, uint32 channelId);
-
     enum eSendingFrameType
     {
         SENDING_DATA_FRAME = false,
