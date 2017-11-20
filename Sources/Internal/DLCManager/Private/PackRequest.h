@@ -142,7 +142,6 @@ private:
     Vector<FileRequest> requests;
     Vector<uint32> fileIndexes;
     String requestedPackName;
-    mutable Vector<uint32> dependencyCache;
 
     uint64 totalDownloadedSize = 0;
 

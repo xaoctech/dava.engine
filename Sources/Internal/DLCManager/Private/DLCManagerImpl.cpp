@@ -644,7 +644,7 @@ PackRequest* DLCManagerImpl::PrepareNewRequest(const String& requestedPackName)
 
 PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
 {
-    // TODO check DVASSERT(find(begin(requests), end(requests), [&](PackRequest* r) -> bool { return r->GetRequestedPackName() == requestedPackName;}) == end(requests));
+    DVASSERT(find_if(begin(requests), end(requests), [&](PackRequest* r) -> bool { return r->GetRequestedPackName() == requestedPackName; }) == end(requests));
 
     log << " requested: " << requestedPackName << '\n';
 
@@ -1298,7 +1298,7 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
             }
         }
 
-        Vector<uint32> deps = meta->GetPackDependencyIndexes(packName);
+        const Vector<uint32>& deps = meta->GetPackDependencyIndexes(packName);
 
         for (uint32 dependencyPack : deps)
         {
