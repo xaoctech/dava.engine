@@ -202,13 +202,17 @@ private:
     void WaitScanThreadToFinish();
     void StartDelayedRequests();
     // helper functions
-    void ReadLocalFileTableInfoBuffer();
+    bool ReadLocalFileTableInfoBuffer();
     void FillFileNameIndexes();
-    void SaveServerFooter();
-    void DeleteLocalMetaFiles();
+    bool SaveServerFooter();
+    void DeleteLocalMetaFile() const;
     void ContinueInitialization(float frameDelta);
-    void ReadContentAndExtractFileNames();
+    bool ReadContentAndExtractFileNames();
 
+    String BuildErrorMessageBadServerCrc(uint32 crc32) const;
+    static String BuildErrorMessageFailedRead(const FilePath& path);
+    void UpdateErrorMessageFailedRead();
+    static String BuildErrorMessageFailWrite(const FilePath& path);
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
@@ -216,7 +220,7 @@ private:
     void AddRequest(PackRequest* request);
     PackRequest* PrepareNewRequest(const String& requestedPackName);
     PackRequest* CreateNewRequest(const String& requestedPackName);
-    bool IsLocalMetaAlreadyExist() const;
+    bool IsLocalMetaAndFileTableAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
