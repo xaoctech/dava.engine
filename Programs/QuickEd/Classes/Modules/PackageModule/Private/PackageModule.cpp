@@ -27,8 +27,9 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/Utils/CommonFieldNames.h>
 
-#include <Engine/EngineContext.h>
 #include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Engine/Window.h>
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/LocalizationSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -116,6 +117,33 @@ bool CanInsertControlOrStyle(const PackageBaseNode* dest, PackageBaseNode* node,
     {
         return false;
     }
+}
+
+String BuildControlPath(ControlNode* targetNode, ControlNode* rootNode)
+{
+    static const String PATH_SEPARATOR("/");
+
+    UIControl* control = targetNode->GetControl();
+    UIControl* rootControl = rootNode->GetControl();
+
+    if (!control)
+        return "";
+
+    String controlPath = "";
+    while (control != rootControl)
+    {
+        if (controlPath.empty())
+        {
+            controlPath = String(control->GetName().c_str());
+        }
+        else
+        {
+            controlPath = String(control->GetName().c_str()) + PATH_SEPARATOR + controlPath;
+        }
+        control = control->GetParent();
+    }
+
+    return controlPath;
 }
 } // namespace PackageModuleDetails
 
@@ -1149,6 +1177,7 @@ void PackageModule::OnRunUIViewerFast()
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
+    using namespace PackageModuleDetails;
 
     DataContext* globalContext = GetAccessor()->GetGlobalContext();
     ProjectData* projectData = globalContext->GetData<ProjectData>();
@@ -1162,7 +1191,7 @@ void PackageModule::OnRunUIViewerFast()
         const ProjectData::Blank& blank = blanks[settings->selectedBlank];
         const ProjectData::Device& device = devices[settings->selectedDevice];
 
-        Window* primaryWindow = DAVA::GetPrimaryWindow();
+        Window* primaryWindow = GetPrimaryWindow();
         DVASSERT(primaryWindow != nullptr);
 
         Size2i screenSize(static_cast<int32>(primaryWindow->GetSize().dx), static_cast<int32>(primaryWindow->GetSize().dx));
@@ -1214,7 +1243,7 @@ void PackageModule::OnRunUIViewerFast()
         String fontsPath = "~res:/" + projectData->GetFontsConfigsDirectory().relative;
 
         Vector<ControlNode*> controlNodes;
-        PackageModuleDetails::CollectSelectedControls(documentData->GetSelectedNodes(), controlNodes, false, false);
+        CollectSelectedControls(documentData->GetSelectedNodes(), controlNodes, false, false);
         for (ControlNode* node : controlNodes)
         {
             ControlNode* rootNode = GetRootControlNode(node);
@@ -1241,6 +1270,13 @@ void PackageModule::OnRunUIViewerFast()
             args << "-testedCtrl";
             args << rootNode->GetName().c_str();
 
+            String testedPath = BuildControlPath(node, rootNode);
+            if (!testedPath.empty())
+            {
+                args << "-testedPath";
+                args << testedPath.c_str();
+            }
+
             args << "-screenWidth";
             args << Format("%d", screenSize.dx).c_str();
             args << "-screenHeight";
@@ -1265,6 +1301,11 @@ void PackageModule::OnRunUIViewerFast()
                 args << "-isRtl";
             }
 
+            if (settings->flowFlag)
+            {
+                args << "-isFlow";
+            }
+
             bool state = ProcessHelper::OpenApplication(QString::fromStdString(appPath.GetAbsolutePathname()), args);
             if (state == false)
             {
@@ -1284,10 +1325,12 @@ void PackageModule::OnRunUIViewer()
     PackageWidgetSettings* settings = GetAccessor()->GetGlobalContext()->GetData<PackageWidgetSettings>();
     dlg.SetDeviceIndex(static_cast<DAVA::int32>(settings->selectedDevice));
     dlg.SetBlankIndex(static_cast<DAVA::int32>(settings->selectedBlank));
+    dlg.SetFlowFlag(settings->flowFlag);
     if (dlg.exec() == QDialog::Accepted)
     {
         settings->selectedDevice = dlg.GetDeviceIndex();
         settings->selectedBlank = dlg.GetBlankIndex();
+        settings->flowFlag = dlg.GetFlowFlag();
         OnRunUIViewerFast();
     }
 }
