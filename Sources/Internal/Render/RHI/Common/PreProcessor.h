@@ -67,30 +67,14 @@ public:
 
     struct MacroStringBuffer
     {
-        enum class Transient : uint32
-        {
-        };
-        enum class Permanent : uint32
-        {
-        };
-
-        const char* transientValue = nullptr;
-        char value[MaxMacroNameLength]{};
+        const char* value = nullptr;
         uint32 length = 0;
-        bool isTransient = false;
 
         MacroStringBuffer() = default;
 
-        MacroStringBuffer(Permanent p, const char* nm, uint32 sz)
-            : length(sz)
-        {
-            memcpy(value, nm, std::min(sz, uint32(MaxMacroNameLength)));
-        }
-
-        MacroStringBuffer(Transient t, const char* nm, uint32 sz)
-            : transientValue(nm)
+        MacroStringBuffer(const char* nm, uint32 sz)
+            : value(nm)
             , length(sz)
-            , isTransient(true)
         {
         }
 
@@ -99,14 +83,9 @@ public:
             bool equals = false;
             if (length == r.length)
             {
-                equals = (strncmp(GetValue(), r.GetValue(), length) == 0);
+                equals = (strncmp(value, r.value, length) == 0);
             }
             return equals;
-        }
-
-        const char* GetValue() const
-        {
-            return isTransient ? transientValue : value;
         }
     };
 
@@ -114,20 +93,7 @@ public:
     {
         uint64 operator()(const MacroStringBuffer& m) const
         {
-            enum : uint32
-            {
-                _FNV_offset_basis = 2166136261U,
-                _FNV_prime = 16777619U,
-            };
-
-            const char* ptr = m.GetValue();
-            uint32 result = _FNV_offset_basis;
-            for (uint32 i = 0; i < m.length; ++i)
-            {
-                result ^= static_cast<uint32>(ptr[i]);
-                result *= _FNV_prime;
-            }
-            return result;
+            return DAVA::HashValue_N(m.value, m.length);
         }
     };
 

@@ -79,7 +79,7 @@ bool PerformMacroSubstitution(const char* source, char* targetBuffer, ptrdiff_t 
 
         if (tokenSize > 0)
         {
-            auto i = macro.find(PreProc::MacroStringBuffer(PreProc::MacroStringBuffer::Transient(), token, static_cast<uint32>(tokenSize)));
+            auto i = macro.find(PreProc::MacroStringBuffer(token, static_cast<uint32>(tokenSize)));
             if (i != macro.end())
             {
                 marcoFound = true;
@@ -746,9 +746,12 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
         evaluator.SetVariable(name, val);
 
     uint32 name_len = static_cast<uint32>(strlen(name));
-    MacroStringBuffer& macroValue = macro[MacroStringBuffer(MacroStringBuffer::Permanent(), name, name_len)];
-    PreprocessorHelpers::PerformMacroSubstitution(value, macroValue.value, MaxMacroNameLength, macro);
-    macroValue.length = static_cast<uint32>(strlen(macroValue.value));
+    char* macroValueBuffer = AllocBuffer(MaxMacroNameLength);
+    MacroStringBuffer mv(macroValueBuffer, 0);
+    ;
+    PreprocessorHelpers::PerformMacroSubstitution(value, macroValueBuffer, MaxMacroNameLength, macro);
+    mv.length = static_cast<uint32>(strlen(macroValueBuffer));
+    macro[MacroStringBuffer(name, name_len)] = mv;
 
     return true;
 }
@@ -769,7 +772,7 @@ char* PreProc::ExpandMacroInLine(char* txt)
 void PreProc::Undefine(const char* name)
 {
     evaluator.RemoveVariable(name);
-    macro.erase(MacroStringBuffer(MacroStringBuffer::Transient(), name, static_cast<uint32>(strlen(name))));
+    macro.erase(MacroStringBuffer(name, static_cast<uint32>(strlen(name))));
 }
 
 void PreProc::GenerateOutput(TextBuffer* output, LineVector& lines)
