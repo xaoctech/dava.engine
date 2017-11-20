@@ -3,7 +3,7 @@
 
 #include "StringConstants.h"
 #include "Scene/SceneHelper.h"
-#include "Utils/FileSystemUtils/FileSystemTagGuard.h"
+#include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
 #include <DavaTools/AssetCache/AssetCacheClient.h>
 

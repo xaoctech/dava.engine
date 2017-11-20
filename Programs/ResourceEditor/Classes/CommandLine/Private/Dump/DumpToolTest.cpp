@@ -1,6 +1,6 @@
-#include "CommandLine/DumpTool.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "Utils/FileSystemUtils/FileSystemTagGuard.h"
+#include "Classes/CommandLine/DumpTool.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
@@ -49,12 +49,9 @@ DAVA::Set<DAVA::String> ReadLinks()
 
 DAVA_TARC_TESTCLASS(DumpToolTest)
 {
-    void TestTags(const DAVA::String& tag)
+    void TestTags(const DAVA::Vector<DAVA::String>& tagList)
     {
         using namespace DAVA;
-
-        FileSystem* fs = GetEngineContext()->fileSystem;
-        TEST_VERIFY(fs->GetFilenamesTag() == tag);
 
         Set<String> dumpedLinks = DTestDetail::ReadLinks();
         TEST_VERIFY(dumpedLinks.empty() == false);
@@ -62,7 +59,16 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         auto it = std::find_if(std::begin(dumpedLinks), std::end(dumpedLinks), [](const String& link) {
             return link.find(CommandLineModuleTestUtils::SceneBuilder::tagJapan) != String::npos;
         });
-        TEST_VERIFY(it == std::end(dumpedLinks));
+
+        if (std::find(std::begin(tagList), std::end(tagList), CommandLineModuleTestUtils::SceneBuilder::tagJapan)
+            == std::end(tagList))
+        {
+            TEST_VERIFY(it == std::end(dumpedLinks));
+        }
+        else
+        {
+            TEST_VERIFY(it != std::end(dumpedLinks));
+        }
 
         it = std::find_if(std::begin(dumpedLinks), std::end(dumpedLinks), [](const String& link) {
             return link.find("China.slot/box_slot.sc2") != String::npos;
@@ -71,6 +77,14 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
 
         ScopedPtr<Scene> scene(new Scene());
         TEST_VERIFY(scene->LoadScene(DTestDetail::scenePathnameStr) == DAVA::SceneFileV2::eError::ERROR_NO_ERROR);
+
+        auto pathInLinks = [&dumpedLinks](const FilePath& path, const String& tag) -> bool
+        {
+            FilePath taggedPath = path;
+            taggedPath.ReplaceBasename(taggedPath.GetBasename() + tag);
+            auto it = std::find(std::begin(dumpedLinks), std::end(dumpedLinks), taggedPath.GetAbsolutePathname());
+            return it != std::end(dumpedLinks);
+        };
 
         uint32 entityCount = scene->GetChildrenCount();
         for (uint32 e = 0; e < entityCount; ++e)
@@ -88,14 +102,12 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             if (comp == nullptr)
                 continue;
 
-            auto pathInLinks = [&dumpedLinks, &tag](const FilePath& path) -> bool
+            for (const String& tag : tagList)
             {
-                FilePath taggedPath = path;
-                taggedPath.ReplaceBasename(taggedPath.GetBasename() + tag);
-                auto it = std::find(std::begin(dumpedLinks), std::end(dumpedLinks), taggedPath.GetAbsolutePathname());
-                return it != std::end(dumpedLinks);
-            };
-            TEST_VERIFY(pathInLinks(comp->GetConfigFilePath()) == true);
+                if (tag == CommandLineModuleTestUtils::SceneBuilder::tagJapan)
+                    continue;
+                TEST_VERIFY(pathInLinks(comp->GetConfigFilePath(), tag) == true);
+            }
 
             uint32 rbCount = ro->GetRenderBatchCount();
             for (uint32 r = 0; r < rbCount; ++r)
@@ -116,15 +128,17 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
                     TEST_VERIFY(dumpedLinks.count(tx.second->path.GetAbsolutePathname()) == 1);
 
                     std::unique_ptr<TextureDescriptor> texDescriptor(TextureDescriptor::CreateFromFile(tx.second->path));
-                    if (texDescriptor == nullptr)
-                        continue;
+                    TEST_VERIFY(texDescriptor != nullptr);
 
                     Vector<FilePath> pathes;
                     texDescriptor->CreateLoadPathnamesForGPU(eGPUFamily::GPU_ORIGIN, pathes);
                     for (const FilePath& p : pathes)
                     {
                         TEST_VERIFY(dumpedLinks.count(p.GetAbsolutePathname()) == 1);
-                        TEST_VERIFY(pathInLinks(p) == true);
+                        for (const String& tag : tagList)
+                        {
+                            TEST_VERIFY(pathInLinks(p, tag) == true);
+                        }
                     }
                 }
             }
@@ -140,6 +154,34 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
 
         ScopedPtr<Scene> scene(new Scene());
         TEST_VERIFY(scene->LoadScene(DTestDetail::scenePathnameStr) == DAVA::SceneFileV2::eError::ERROR_NO_ERROR);
+
+        auto testMaterial = [&dumpedLinks, &compressedGPUs](NMaterial* mat)
+        {
+            if (mat == nullptr)
+                return;
+
+            const UnorderedMap<FastName, MaterialTextureInfo*>& textures = mat->GetLocalTextures();
+            for (auto& tx : textures)
+            {
+                if (tx.first == FastName("heightmap"))
+                    continue;
+
+                TEST_VERIFY(dumpedLinks.count(tx.second->path.GetAbsolutePathname()) == 1);
+
+                std::unique_ptr<TextureDescriptor> texDescriptor(TextureDescriptor::CreateFromFile(tx.second->path));
+                TEST_VERIFY(texDescriptor != nullptr);
+
+                for (eGPUFamily gpu : compressedGPUs)
+                {
+                    Vector<FilePath> pathes;
+                    texDescriptor->CreateLoadPathnamesForGPU(gpu, pathes);
+                    for (const FilePath& p : pathes)
+                    {
+                        TEST_VERIFY(dumpedLinks.count(p.GetAbsolutePathname()) == 1);
+                    }
+                }
+            }
+        };
 
         uint32 entityCount = scene->GetChildrenCount();
         for (uint32 e = 0; e < entityCount; ++e)
@@ -158,35 +200,6 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             RenderObject* ro = GetRenderObject(child);
             if (ro == nullptr)
                 continue;
-
-            auto testMaterial = [&dumpedLinks, &compressedGPUs](NMaterial* mat)
-            {
-                if (mat == nullptr)
-                    return;
-
-                const UnorderedMap<FastName, MaterialTextureInfo*>& textures = mat->GetLocalTextures();
-                for (auto& tx : textures)
-                {
-                    if (tx.first == FastName("heightmap"))
-                        continue;
-
-                    TEST_VERIFY(dumpedLinks.count(tx.second->path.GetAbsolutePathname()) == 1);
-
-                    std::unique_ptr<TextureDescriptor> texDescriptor(TextureDescriptor::CreateFromFile(tx.second->path));
-                    if (texDescriptor == nullptr)
-                        continue;
-
-                    for (eGPUFamily gpu : compressedGPUs)
-                    {
-                        Vector<FilePath> pathes;
-                        texDescriptor->CreateLoadPathnamesForGPU(gpu, pathes);
-                        for (const FilePath& p : pathes)
-                        {
-                            TEST_VERIFY(dumpedLinks.count(p.GetAbsolutePathname()) == 1);
-                        }
-                    }
-                }
-            };
 
             if (ro->GetType() == RenderObject::TYPE_LANDSCAPE)
             {
@@ -286,34 +299,66 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
     {
         using namespace DAVA;
 
-        FileSystemTagGuard tagGuard(CommandLineModuleTestUtils::SceneBuilder::tagChina);
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
-        CommandLineModuleTestUtils::CreateProjectInfrastructure(DTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(DTestDetail::scenePathnameStr, DTestDetail::projectStr);
-
-        Vector<String> cmdLine =
         {
-          "ResourceEditor",
-          "-dump",
-          "-links",
-          "-indir",
-          FilePath(DTestDetail::scenePathnameStr).GetDirectory().GetAbsolutePathname(),
-          "-processfile",
-          FilePath(DTestDetail::scenePathnameStr).GetFilename(),
-          "-outfile",
-          FilePath(DTestDetail::linksStr).GetAbsolutePathname(),
-          "-gpu",
-          "origin",
-          "-taglist",
-          CommandLineModuleTestUtils::SceneBuilder::tagChina
-        };
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(DTestDetail::projectStr);
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(DTestDetail::scenePathnameStr, DTestDetail::projectStr);
 
-        std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-dump",
+              "-links",
+              "-indir",
+              FilePath(DTestDetail::scenePathnameStr).GetDirectory().GetAbsolutePathname(),
+              "-processfile",
+              FilePath(DTestDetail::scenePathnameStr).GetFilename(),
+              "-outfile",
+              FilePath(DTestDetail::linksStr).GetAbsolutePathname(),
+              "-gpu",
+              "origin",
+              "-taglist",
+              CommandLineModuleTestUtils::SceneBuilder::tagChina
+            };
 
-        TestTags(CommandLineModuleTestUtils::SceneBuilder::tagChina);
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        CommandLineModuleTestUtils::ClearTestFolder(DTestDetail::projectStr);
+            TestTags({ CommandLineModuleTestUtils::SceneBuilder::tagChina });
+
+            CommandLineModuleTestUtils::ClearTestFolder(DTestDetail::projectStr);
+        }
+
+        {
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(DTestDetail::projectStr);
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(DTestDetail::scenePathnameStr, DTestDetail::projectStr);
+
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-dump",
+              "-links",
+              "-indir",
+              FilePath(DTestDetail::scenePathnameStr).GetDirectory().GetAbsolutePathname(),
+              "-processfile",
+              FilePath(DTestDetail::scenePathnameStr).GetFilename(),
+              "-outfile",
+              FilePath(DTestDetail::linksStr).GetAbsolutePathname(),
+              "-gpu",
+              "origin",
+              "-taglist",
+              CommandLineModuleTestUtils::SceneBuilder::tagChina + ","
+              + CommandLineModuleTestUtils::SceneBuilder::tagJapan
+            };
+
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+
+            TestTags({ CommandLineModuleTestUtils::SceneBuilder::tagChina,
+                       CommandLineModuleTestUtils::SceneBuilder::tagJapan });
+
+            CommandLineModuleTestUtils::ClearTestFolder(DTestDetail::projectStr);
+        }
     }
 
     BEGIN_FILES_COVERED_BY_TESTS()

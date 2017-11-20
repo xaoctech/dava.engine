@@ -134,7 +134,6 @@ void CreateR2OCustomProperty(Entity* entity, FilePath pathname)
 
     FilePath folderPathname = pathname.GetDirectory();
     pathname.ReplaceBasename(entityName);
-    pathname.ReplaceDirectory(pathname.GetDirectory());
 
     ScopedPtr<Scene> referenceScene(new Scene);
     ScopedPtr<Entity> referenceEntity(entity->Clone());
@@ -514,37 +513,6 @@ void CreateProjectInfrastructure(const DAVA::FilePath& projectPathname)
     DAVA::FileSystem::Instance()->CopyFile("~res:/ResourceEditor/quality.template.yaml", qulityPath, true);
 }
 
-bool SceneBuilder::FilesIdentical(const FilePath& filePath1, const FilePath& filePath2)
-{
-    ScopedPtr<File> f1(File::Create(filePath1, File::OPEN | File::READ));
-    ScopedPtr<File> f2(File::Create(filePath2, File::OPEN | File::READ));
-
-    uint64 s1 = f1->GetSize();
-    uint64 s2 = f2->GetSize();
-
-    if (s1 != s2)
-    {
-        return false;
-    }
-
-    Vector<uint8> a1(s1);
-    Vector<uint8> a2(s2);
-    a1[0] = ~a2[0];
-    DVASSERT(::memcmp(static_cast<void*>(a1.data()), static_cast<void*>(a2.data()), s1) != 0);
-
-    uint32 r1 = f1->Read(static_cast<void*>(a1.data()), s1);
-    DVASSERT(r1 == s1);
-
-    uint32 r2 = f2->Read(static_cast<void*>(a2.data()), s2);
-    DVASSERT(r2 == s2);
-
-    if (::memcmp(static_cast<void*>(a1.data()), static_cast<void*>(a2.data()), s1) != 0)
-    {
-        return false;
-    }
-
-    return true;
-}
 
 String SceneBuilder::GetSceneRelativePathname(const FilePath& scenePath, const FilePath& dataSourcePath, const String& filename)
 {

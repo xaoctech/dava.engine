@@ -1,11 +1,13 @@
-#include "CommandLine/SceneSaverTool.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
-#include "TArc/Testing/TArcUnitTests.h"
+#include "Classes/CommandLine/SceneSaverTool.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include "Base/BaseTypes.h"
-#include "FileSystem/FileList.h"
-#include "Render/TextureDescriptor.h"
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
+
+#include <Base/BaseTypes.h>
+#include <Engine/Engine.h>
+#include <FileSystem/FileList.h>
+#include <Render/TextureDescriptor.h>
 
 namespace SSTestDetail
 {
@@ -71,6 +73,8 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
 
+        FileSystem* fs = GetEngineContext()->fileSystem;
+
         {
             CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::newProjectStr);
             FilePath dataSourcePath = SSTestDetail::projectStr + "DataSource/3d/";
@@ -95,7 +99,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::newScenePathnameStr));
+            TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
 
             CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::newProjectStr);
         }
@@ -110,6 +114,8 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
+
+        FileSystem* fs = GetEngineContext()->fileSystem;
 
         FilePath dataSourcePath = SSTestDetail::projectStr + "DataSource/3d/";
 
@@ -127,7 +133,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
         std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
         DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::scenePathnameStr));
+        TEST_VERIFY(fs->Exists(SSTestDetail::scenePathnameStr));
 
         CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::projectStr);
     }
@@ -139,6 +145,8 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SSTestDetail::scenePathnameStr, SSTestDetail::projectStr);
+
+        FileSystem* fs = GetEngineContext()->fileSystem;
 
         FilePath dataSourcePath = SSTestDetail::projectStr + "DataSource/3d/";
 
@@ -155,7 +163,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
         std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
         DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::projectStr + "DataSource/quality.yaml"));
+        TEST_VERIFY(fs->Exists(SSTestDetail::projectStr + "DataSource/quality.yaml"));
 
         CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::projectStr);
     }
@@ -175,7 +183,8 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
                                     SSTestDetail::scenePathnameStr,
                                     dataSourcePath,
                                     std::placeholders::_1);
-        auto filesAreIdentical = CommandLineModuleTestUtils::SceneBuilder::FilesIdentical;
+
+        FileSystem* fs = GetEngineContext()->fileSystem;
 
         String defaultSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::defaultSlotDir);
         String chinaSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::chinaSlotDir);
@@ -203,16 +212,16 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::newScenePathnameStr));
+            TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chinaSlotRelativePathname) == false);
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + chinaSlotRelativePathname) == false);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + boxTexture) == true);
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chineseBoxTexture) == false);
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + japaneseBoxTexture) == false);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + chineseBoxTexture) == false);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + japaneseBoxTexture) == false);
 
-            TEST_VERIFY(filesAreIdentical(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
 
             CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::newProjectStr);
         }
@@ -239,17 +248,56 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(SSTestDetail::newScenePathnameStr));
+            TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chinaSlotRelativePathname) == true);
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + chinaSlotRelativePathname) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + boxTexture) == true);
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + chineseBoxTexture) == true);
-            TEST_VERIFY(FileSystem::Instance()->Exists(newDataSourcePath + japaneseBoxTexture) == false);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + japaneseBoxTexture) == false);
 
-            TEST_VERIFY(filesAreIdentical(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
-            TEST_VERIFY(filesAreIdentical(newDataSourcePath + chineseBoxTexture, dataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(newDataSourcePath + chineseBoxTexture, dataSourcePath + chineseBoxTexture) == true);
+
+            CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::newProjectStr);
+        }
+
+        {
+            CommandLineModuleTestUtils::CreateProjectInfrastructure(SSTestDetail::newProjectStr);
+            TEST_VERIFY(CreateDummyCompressedFiles(dataSourcePath));
+
+            Vector<String> cmdLine =
+            {
+              "ResourceEditor",
+              "-scenesaver",
+              "-save",
+              "-indir",
+              dataSourcePath.GetAbsolutePathname(),
+              "-outdir",
+              newDataSourcePath.GetAbsolutePathname(),
+              "-processfile",
+              FilePath(SSTestDetail::scenePathnameStr).GetRelativePathname(dataSourcePath),
+              "-taglist",
+              CommandLineModuleTestUtils::SceneBuilder::tagChina + ","
+              + CommandLineModuleTestUtils::SceneBuilder::tagJapan
+            };
+
+            std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
+            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+
+            TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
+
+            TEST_VERIFY(fs->Exists(newDataSourcePath + chinaSlotRelativePathname) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + defaultSlotRelativePathname) == true);
+
+            TEST_VERIFY(fs->Exists(newDataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(fs->Exists(newDataSourcePath + japaneseBoxTexture) == true);
+
+            TEST_VERIFY(fs->CompareBinaryFiles(newDataSourcePath + boxTexture, dataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(newDataSourcePath + chineseBoxTexture, dataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(newDataSourcePath + japaneseBoxTexture, dataSourcePath + japaneseBoxTexture) == true);
 
             CommandLineModuleTestUtils::ClearTestFolder(SSTestDetail::newProjectStr);
         }

@@ -1,10 +1,11 @@
-#include "CommandLine/SceneExporterTool.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/CommandLine/SceneExporterTool.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
 #include <TArc/Testing/TArcUnitTests.h>
 
 #include <Base/BaseTypes.h>
+#include <Engine/Engine.h>
 #include <FileSystem/YamlNode.h>
 #include <FileSystem/YamlParser.h>
 #include <FileSystem/YamlEmitter.h>
@@ -44,6 +45,8 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
     {
         using namespace DAVA;
 
+        FileSystem* fs = GetEngineContext()->fileSystem;
+
         ScopedPtr<FileList> fileList(new FileList(folder));
         for (int32 i = 0, count = fileList->GetCount(); i < count; ++i)
         {
@@ -65,7 +68,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
                         TEST_VERIFY(pathes.size() == ((useHD) ? 2 : 1));
                         for (const FilePath& path : pathes)
                         {
-                            TEST_VERIFY(FileSystem::Instance()->Exists(path));
+                            TEST_VERIFY(fs->Exists(path));
                         }
                     }
                 }
@@ -208,6 +211,8 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
 
+        FileSystem* fs = GetEngineContext()->fileSystem;
+
         FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
 
@@ -233,7 +238,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + textureRelativePathname));
+            TEST_VERIFY(fs->Exists(dataPath + textureRelativePathname));
             TestExportedTextures(dataPath, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
 
             CommandLineModuleTestUtils::ClearTestFolder(dataPath);
@@ -275,6 +280,8 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
 
+        FileSystem* fs = GetEngineContext()->fileSystem;
+
         FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
         FilePath texturePathname = FindTexturePathname(dataSourcePath);
@@ -314,8 +321,8 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
         DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + sceneRelativePathname));
-        TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + textureRelativePathname));
+        TEST_VERIFY(fs->Exists(dataPath + sceneRelativePathname));
+        TEST_VERIFY(fs->Exists(dataPath + textureRelativePathname));
         TestExportedTextures(dataPath, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
 
         CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
@@ -328,6 +335,8 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SETestDetail::scenePathnameStr, SETestDetail::projectStr);
+
+        FileSystem* fs = GetEngineContext()->fileSystem;
 
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
         FilePath configPath = SETestDetail::projectStr + "config.yaml";
@@ -351,10 +360,10 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(SETestDetail::dataiOSStr + sceneRelativePathname));
+            TEST_VERIFY(fs->Exists(SETestDetail::dataiOSStr + sceneRelativePathname));
             TestExportedTextures(SETestDetail::dataiOSStr, { eGPUFamily::GPU_POWERVR_IOS }, false);
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(SETestDetail::dataAndroidStr + sceneRelativePathname));
+            TEST_VERIFY(fs->Exists(SETestDetail::dataAndroidStr + sceneRelativePathname));
             TestExportedTextures(SETestDetail::dataAndroidStr, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
         }
 
@@ -370,18 +379,34 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         FilePath dataPath = SETestDetail::projectStr + "Data/3d/";
         FilePath dataSourcePath = SETestDetail::projectStr + "DataSource/3d/";
 
+        FilePath slotYamlPath = SETestDetail::projectStr + "Data/Slot.yaml";
+        FilePath sourceDefaultSlotYamlPath = SETestDetail::projectStr + "DataSource/Slot.yaml";
+        FilePath sourceChineseSlotYamlPath = SETestDetail::projectStr + "DataSource/Slot.china.yaml";
+
         auto getRelativePath = Bind(CommandLineModuleTestUtils::SceneBuilder::GetSceneRelativePathname,
                                     SETestDetail::scenePathnameStr,
                                     dataSourcePath,
                                     std::placeholders::_1);
-        auto filesIdentical = CommandLineModuleTestUtils::SceneBuilder::FilesIdentical;
 
-        String defaultSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::defaultSlotDir);
-        String chinaSlotRelativePathname = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::chinaSlotDir);
+        FileSystem* fs = GetEngineContext()->fileSystem;
+
+        String defaultSlotDirPath = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::defaultSlotDir);
+        String chinaSlotDirPath = getRelativePath(CommandLineModuleTestUtils::SceneBuilder::chinaSlotDir);
         String boxTexture = getRelativePath("box.png");
         String chineseBoxTexture = getRelativePath("box.china.png");
 
         String sceneRelativePathname = FilePath(SETestDetail::scenePathnameStr).GetRelativePathname(dataSourcePath);
+
+        auto testSlotDirContents = [&fs, &dataPath](const String& sourceSlotPath)
+        {
+            String boxSlotName = "box_slot";
+            Vector<String> extensions{ ".sc2", ".png", ".tex" };
+            for (const String& ext : extensions)
+            {
+                String filePath = sourceSlotPath + boxSlotName + ext;
+                TEST_VERIFY(fs->Exists(dataPath + filePath) == true);
+            }
+        };
 
         {
             CommandLineModuleTestUtils::CreateProjectInfrastructure(SETestDetail::projectStr);
@@ -406,11 +431,15 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + chinaSlotRelativePathname) == true);
-            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + defaultSlotRelativePathname) == false);
+            TEST_VERIFY(fs->Exists(dataPath + chinaSlotDirPath) == true);
+            TEST_VERIFY(fs->Exists(dataPath + defaultSlotDirPath) == false);
 
-            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == true);
-            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + boxTexture) == false);
+            TEST_VERIFY(fs->CompareTextFiles(slotYamlPath, sourceChineseSlotYamlPath) == true);
+            TEST_VERIFY(fs->CompareTextFiles(slotYamlPath, sourceDefaultSlotYamlPath) == false);
+            testSlotDirContents(chinaSlotDirPath);
+
+            TEST_VERIFY(fs->CompareBinaryFiles(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(dataPath + boxTexture, dataSourcePath + boxTexture) == false);
 
             CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
         }
@@ -436,15 +465,15 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
             DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-            // Sanity check
-            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
-            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
+            TEST_VERIFY(fs->Exists(dataPath + chinaSlotDirPath) == false);
+            TEST_VERIFY(fs->Exists(dataPath + defaultSlotDirPath) == true);
 
-            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + chinaSlotRelativePathname) == false);
-            TEST_VERIFY(FileSystem::Instance()->Exists(dataPath + defaultSlotRelativePathname) == true);
+            TEST_VERIFY(fs->CompareTextFiles(slotYamlPath, sourceChineseSlotYamlPath) == false);
+            TEST_VERIFY(fs->CompareTextFiles(slotYamlPath, sourceDefaultSlotYamlPath) == true);
+            testSlotDirContents(defaultSlotDirPath);
 
-            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
-            TEST_VERIFY(filesIdentical(dataPath + boxTexture, dataSourcePath + boxTexture) == true);
+            TEST_VERIFY(fs->CompareBinaryFiles(dataPath + boxTexture, dataSourcePath + chineseBoxTexture) == false);
+            TEST_VERIFY(fs->CompareBinaryFiles(dataPath + boxTexture, dataSourcePath + boxTexture) == true);
 
             CommandLineModuleTestUtils::ClearTestFolder(SETestDetail::projectStr);
         }
