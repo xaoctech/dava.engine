@@ -58,7 +58,6 @@ void CanvasModule::CreateData()
     data->controlsView->workAreaSizeChanged.Connect(this, &CanvasModule::OnWorkAreaSizeChanged);
     data->controlsView->rootControlSizeChanged.Connect(this, &CanvasModule::OnRootControlSizeChanged);
     data->controlsView->rootControlPositionChanged.Connect(this, &CanvasModule::OnRootControlPositionChanged);
-    data->controlsView->needCentralizeChanged.Connect(this, &CanvasModule::OnNeedCentralizeChanged);
 
     accessor->GetGlobalContext()->CreateData(std::move(data));
 }
@@ -199,21 +198,6 @@ void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)
 void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     RecreateBgrColorActions();
-}
-
-void CanvasModule::OnNeedCentralizeChanged(bool needCentralize)
-{
-    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return;
-    }
-
-    CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
-    DAVA::Vector2 centerPosition = canvasModuleData->canvasDataAdapter->GetCenterPosition();
-
-    CanvasData* canvasData = activeContext->GetData<CanvasData>();
-    canvasData->SetPosition(centerPosition);
 }
 
 void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControlPos)
