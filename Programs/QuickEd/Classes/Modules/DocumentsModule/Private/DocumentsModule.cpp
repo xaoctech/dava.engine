@@ -241,7 +241,6 @@ void DocumentsModule::InitGlobalData()
     globalContext->CreateData(std::move(editorData));
 
     EditorSystemsManager* systemsManager = globalContext->GetData<EditorSystemsData>()->systemsManager.get();
-    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
     systemsManager->InitSystems();
 }
 
@@ -741,7 +740,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorSystemsData = globalContext->GetData<EditorSystemsData>();
-    if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
+    if (editorSystemsData->systemsManager->GetDisplayState() == eDisplayState::Emulation)
     {
         return;
     }
@@ -1131,6 +1130,7 @@ void DocumentsModule::ApplyFileChanges()
     ContextAccessor* accessor = GetAccessor();
 
     DocumentsWatcherData* watcherData = accessor->GetGlobalContext()->GetData<DocumentsWatcherData>();
+    DVASSERT(watcherData != nullptr);
 
     DAVA::Set<DAVA::TArc::DataContext::ContextID> changed;
     DAVA::Set<DAVA::TArc::DataContext::ContextID> removed;
@@ -1178,28 +1178,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::GetContextByPath(const QStri
     return ret;
 }
 
-void DocumentsModule::OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState)
-{
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return;
-    }
-    DocumentData* documentData = activeContext->GetData<DocumentData>();
-    DVASSERT(nullptr != documentData);
-    //TODO: move this code to the TransformSystem when systems will be moved to the TArc
-    if (dragState == EditorSystemsManager::Transform)
-    {
-        documentData->BeginBatch("transformations");
-    }
-    else if (previousState == EditorSystemsManager::Transform)
-    {
-        documentData->EndBatch();
-    }
-}
-
 void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsContainerNode* /*from*/)
 {
     using namespace DAVA::TArc;
@@ -1228,8 +1206,8 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
 
-    EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
-    if (displayState == EditorSystemsManager::Preview || displayState == EditorSystemsManager::Emulation)
+    eDisplayState displayState = systemsManager->GetDisplayState();
+    if (displayState == eDisplayState::Preview || displayState == eDisplayState::Emulation)
     {
         PackageNode* package = documentData->GetPackageNode();
         PackageControlsNode* packageControlsNode = package->GetPackageControlsNode();
