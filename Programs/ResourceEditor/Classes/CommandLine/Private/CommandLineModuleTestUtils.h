@@ -40,7 +40,7 @@ public:
     /*
     creates scene
     */
-    explicit SceneBuilder(const FilePath& scenePathname, const FilePath& projectPathname = "", Scene* scene = nullptr);
+    explicit SceneBuilder(const FilePath& scenePathname, const FilePath& projectPathname, Scene* scene = nullptr);
 
     /*
     saves scene into scenePathname passed to constructor
@@ -53,6 +53,27 @@ public:
     static void CreateFullScene(const FilePath& scenePathname, const FilePath& projectPathname = "", DAVA::Scene* scene = nullptr);
     static String GetSceneRelativePathname(const FilePath& scenePath, const FilePath& dataSourcePath, const String& filename);
 
+    class BoxBuilder final
+    {
+    public:
+        BoxBuilder& Create(const FilePath& newPath, const String& newName, const String& newTag);
+        BoxBuilder& AddRenderComponent();
+        BoxBuilder& AddGeometry();
+        BoxBuilder& AddSlotComponent(const String& slotName, const FilePath& configPath);
+        BoxBuilder& AddRefToOwner();
+        BoxBuilder& AddToScene(Scene* scene);
+        Entity* GetBox();
+
+    private:
+        void SetupMaterial(NMaterial* material, const String& fileName, const FastName& slotName);
+
+        Entity* box = nullptr;
+
+        FilePath path;
+        String tag;
+        String name;
+    };
+
     enum R2OMode
     {
         WITH_REF_TO_OWNER,
@@ -60,7 +81,7 @@ public:
     };
 
     Entity* AddCamera(R2OMode mode = WITHOUT_REF_TO_OWNER);
-    Entity* AddBox(R2OMode mode = WITHOUT_REF_TO_OWNER, const String& tag = "", const String& slotPath = "");
+    Entity* AddBox(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddLandscape(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddWater(R2OMode mode = WITHOUT_REF_TO_OWNER);
     Entity* AddSky(R2OMode mode = WITHOUT_REF_TO_OWNER);
@@ -72,7 +93,7 @@ public:
     /*
     adds 'reference to owner' scene to passed `entity`
     */
-    void AddR2O(Entity* entity, const FilePath& path = "");
+    void AddR2O(Entity* entity);
 
     const FilePath scenePathname;
     const FilePath projectPathname;

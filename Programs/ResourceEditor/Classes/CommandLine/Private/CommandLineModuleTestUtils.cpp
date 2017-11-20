@@ -229,72 +229,6 @@ Entity* CreateSkyEntity(const FilePath& scenePathname)
     return entity;
 }
 
-Entity* CreateBoxEntity(FilePath scenePathname, const FilePath& projectPathname, const String& name, const String& tag, bool slot)
-{
-    Entity* entity = new Entity();
-    entity->SetName(FastName(name));
-
-    auto setupMaterial = [&](NMaterial* material, const String& fileName, const FastName& slotName)
-    {
-        FilePath texturePathname = scenePathname;
-        texturePathname.ReplaceFilename(fileName);
-        CreateTextureFiles(texturePathname, 32u, 32u, PixelFormat::FORMAT_RGBA8888, tag);
-
-        ScopedPtr<Texture> texture(Texture::CreateFromFile(texturePathname));
-        material->AddTexture(slotName, texture);
-
-        material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_USED, true);
-        material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER, true);
-        material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER, true);
-
-        float32 lighmapSize = 64.0f;
-        material->AddProperty(NMaterialParamName::PARAM_LIGHTMAP_SIZE, &lighmapSize, rhi::ShaderProp::TYPE_FLOAT1, 1);
-    };
-
-    ScopedPtr<NMaterial> material(CreateMaterial(FastName("box"), NMaterialName::TEXTURE_LIGHTMAP_OPAQUE));
-    String texName = name + ".tex";
-    setupMaterial(material, texName, NMaterialTextureName::TEXTURE_ALBEDO);
-
-    ScopedPtr<PolygonGroup> geometry(CreatePolygonGroup());
-    ScopedPtr<Mesh> ro(new Mesh());
-    ro->AddPolygonGroup(geometry, material);
-    RenderComponent* rc = new RenderComponent(ro);
-    entity->AddComponent(rc);
-
-    if (slot)
-    {
-        return entity;
-    }
-
-    auto addGeometry = [&](int lod, int sw)
-    {
-        String g_name = Format("box_%d_%d.tex", lod, sw);
-        ScopedPtr<NMaterial> m(CreateMaterial(FastName("box"), NMaterialName::TEXTURE_LIGHTMAP_OPAQUE));
-        setupMaterial(m, g_name, NMaterialTextureName::TEXTURE_ALBEDO);
-
-        ScopedPtr<PolygonGroup> g(CreatePolygonGroup());
-        ScopedPtr<RenderBatch> batch(new RenderBatch());
-        batch->SetMaterial(m);
-        batch->SetPolygonGroup(g);
-        ro->AddRenderBatch(batch, lod, sw);
-    };
-
-    addGeometry(0, 0);
-    addGeometry(0, 1);
-    addGeometry(1, 0);
-    addGeometry(1, 1);
-
-    entity->AddComponent(new LodComponent());
-    entity->AddComponent(new SwitchComponent());
-
-    SlotComponent* slotComp = new SlotComponent();
-    slotComp->SetSlotName(FastName("someSlot"));
-    slotComp->SetConfigFilePath(projectPathname + "/DataSource/Slot.yaml");
-    entity->AddComponent(slotComp);
-
-    return entity;
-}
-
 Entity* CreateVegetationEntity(const FilePath& scenePathname)
 {
     FilePath customGeometryPathname = scenePathname;
@@ -473,6 +407,111 @@ std::unique_ptr<TextureLoadingGuard> CreateTextureGuard(const DAVA::Vector<DAVA:
     return std::make_unique<TextureLoadingGuard>(newLoadingOrder);
 }
 
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPath, const String& newName, const String& newTag)
+{
+    tag = newTag;
+    path = newPath;
+    name = newName;
+
+    box = new Entity();
+    box->SetName(FastName(name));
+
+    return *this;
+}
+
+void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& fileName, const FastName& slotName)
+{
+    DVASSERT(box != nullptr);
+    FilePath texturePath = path;
+    texturePath.ReplaceFilename(fileName);
+    Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, tag);
+
+    ScopedPtr<Texture> texture(Texture::CreateFromFile(texturePath));
+    material->AddTexture(slotName, texture);
+
+    material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_USED, true);
+    material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER, true);
+    material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER, true);
+
+    float32 lighmapSize = 64.0f;
+    material->AddProperty(NMaterialParamName::PARAM_LIGHTMAP_SIZE, &lighmapSize, rhi::ShaderProp::TYPE_FLOAT1, 1);
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddRenderComponent()
+{
+    DVASSERT(box != nullptr);
+    ScopedPtr<NMaterial> material(Detail::CreateMaterial(FastName(name), NMaterialName::TEXTURE_LIGHTMAP_OPAQUE));
+    String texName = name + ".tex";
+    SetupMaterial(material, texName, NMaterialTextureName::TEXTURE_ALBEDO);
+
+    ScopedPtr<PolygonGroup> geometry(Detail::CreatePolygonGroup());
+    ScopedPtr<Mesh> ro(new Mesh());
+    ro->AddPolygonGroup(geometry, material);
+
+    RenderComponent* rc = new RenderComponent(ro);
+    box->AddComponent(rc);
+
+    return *this;
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddGeometry()
+{
+    DVASSERT(box != nullptr);
+    auto addGeometry = [this](int lod, int sw)
+    {
+        String fileName = Format("%s_%d_%d.tex", name.c_str(), lod, sw);
+        ScopedPtr<NMaterial> m(Detail::CreateMaterial(FastName(name), NMaterialName::TEXTURE_LIGHTMAP_OPAQUE));
+        SetupMaterial(m, fileName, NMaterialTextureName::TEXTURE_ALBEDO);
+
+        ScopedPtr<PolygonGroup> g(Detail::CreatePolygonGroup());
+        ScopedPtr<RenderBatch> batch(new RenderBatch());
+        batch->SetMaterial(m);
+        batch->SetPolygonGroup(g);
+        RenderComponent* rc = static_cast<RenderComponent*>(box->GetComponent(Component::RENDER_COMPONENT));
+        DVASSERT(rc != nullptr);
+        Mesh* ro = static_cast<Mesh*>(rc->GetRenderObject());
+        ro->AddRenderBatch(batch, lod, sw);
+    };
+
+    addGeometry(0, 0);
+    addGeometry(0, 1);
+    addGeometry(1, 0);
+    addGeometry(1, 1);
+
+    box->AddComponent(new LodComponent());
+    box->AddComponent(new SwitchComponent());
+
+    return *this;
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddSlotComponent(const String& slotName, const FilePath& configPath)
+{
+    DVASSERT(box != nullptr);
+    SlotComponent* slotComp = new SlotComponent();
+    slotComp->SetSlotName(FastName(slotName));
+    slotComp->SetConfigFilePath(configPath);
+    box->AddComponent(slotComp);
+
+    return *this;
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddRefToOwner()
+{
+    Detail::CreateR2OCustomProperty(box, path);
+    return *this;
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddToScene(Scene* scene)
+{
+    scene->AddNode(box);
+    return *this;
+}
+
+Entity* SceneBuilder::BoxBuilder::GetBox()
+{
+    return box;
+}
+
 void CreateTestFolder(const DAVA::FilePath& folder)
 {
     ClearTestFolder(folder); // to be sure that we have no any data at project folder that could stay in case of crash or stopping of debugging
@@ -513,7 +552,6 @@ void CreateProjectInfrastructure(const DAVA::FilePath& projectPathname)
     DAVA::FileSystem::Instance()->CopyFile("~res:/ResourceEditor/quality.template.yaml", qulityPath, true);
 }
 
-
 String SceneBuilder::GetSceneRelativePathname(const FilePath& scenePath, const FilePath& dataSourcePath, const String& filename)
 {
     FilePath path = scenePath;
@@ -521,15 +559,47 @@ String SceneBuilder::GetSceneRelativePathname(const FilePath& scenePath, const F
     return path.GetRelativePathname(dataSourcePath);
 }
 
-void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePathname, const FilePath& projectPathname, DAVA::Scene* scene)
+void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePath& projectPath, DAVA::Scene* scene)
 {
-    SceneBuilder builder(scenePathname, projectPathname, scene);
+    SceneBuilder builder(scenePath, projectPath, scene);
+    scene = builder.scene.get();
     builder.AddCamera(SceneBuilder::WITH_REF_TO_OWNER);
-    builder.AddBox(SceneBuilder::WITH_REF_TO_OWNER);
-    builder.AddBox(SceneBuilder::WITH_REF_TO_OWNER, tagChina);
-    builder.AddBox(SceneBuilder::WITH_REF_TO_OWNER, tagJapan);
-    builder.AddBox(SceneBuilder::WITH_REF_TO_OWNER, tagDefault, chinaSlotDir);
-    builder.AddBox(SceneBuilder::WITH_REF_TO_OWNER, tagDefault, defaultSlotDir);
+
+    BoxBuilder boxBuilder;
+
+    boxBuilder.Create(scenePath, "box", tagDefault)
+    .AddRenderComponent()
+    .AddGeometry()
+    .AddSlotComponent("slot", projectPath + "/DataSource/Slot.yaml")
+    .AddRefToOwner()
+    .AddToScene(scene);
+
+    boxBuilder.Create(scenePath, "box", tagChina)
+    .AddRenderComponent()
+    .AddGeometry()
+    .AddRefToOwner()
+    .AddToScene(scene);
+
+    boxBuilder.Create(scenePath, "box", tagJapan)
+    .AddRenderComponent()
+    .AddGeometry()
+    .AddRefToOwner()
+    .AddToScene(scene);
+
+    FilePath chinaSlotPath = scenePath;
+    chinaSlotPath.ReplaceDirectory(chinaSlotPath.GetDirectory() + chinaSlotDir);
+
+    boxBuilder.Create(chinaSlotPath, "box_slot", tagDefault)
+    .AddRenderComponent()
+    .AddRefToOwner();
+
+    FilePath defaultSlotPath = scenePath;
+    defaultSlotPath.ReplaceDirectory(defaultSlotPath.GetDirectory() + defaultSlotDir);
+
+    boxBuilder.Create(defaultSlotPath, "box_slot", tagDefault)
+    .AddRenderComponent()
+    .AddRefToOwner();
+
     builder.AddLandscape(SceneBuilder::WITH_REF_TO_OWNER);
     builder.AddWater(SceneBuilder::WITH_REF_TO_OWNER);
     builder.AddSky(SceneBuilder::WITH_REF_TO_OWNER);
@@ -582,30 +652,21 @@ Entity* SceneBuilder::AddCamera(R2OMode mode)
     return cameraEntity;
 }
 
-Entity* SceneBuilder::AddBox(R2OMode mode, const String& tag, const String& slotPath)
+Entity* SceneBuilder::AddBox(R2OMode mode)
 {
-    FilePath targetPath = scenePathname;
-    bool hasSlot = false;
-    String name = "box";
-    if (slotPath != "")
+    BoxBuilder boxBuilder;
+    boxBuilder.Create(scenePathname, "box", tagDefault)
+    .AddRenderComponent()
+    .AddGeometry();
+
+    if (mode == SceneBuilder::WITH_REF_TO_OWNER)
     {
-        hasSlot = true;
-        name = "box_slot";
-        targetPath.ReplaceDirectory(targetPath.GetDirectory() + slotPath);
+        boxBuilder.AddRefToOwner();
     }
 
-    ScopedPtr<Entity> box(Detail::CreateBoxEntity(targetPath, projectPathname, name, tag, hasSlot));
-    if (hasSlot == false)
-    {
-        scene->AddNode(box);
-    }
+    boxBuilder.AddToScene(scene);
 
-    if (mode == WITH_REF_TO_OWNER)
-    {
-        AddR2O(box, targetPath);
-    }
-
-    return box;
+    return boxBuilder.GetBox();
 }
 
 Entity* SceneBuilder::AddLandscape(R2OMode mode)
@@ -714,15 +775,8 @@ Entity* SceneBuilder::AddEntityWithTestedComponents(R2OMode mode)
     return entity;
 }
 
-void SceneBuilder::AddR2O(Entity* entity, const FilePath& path)
+void SceneBuilder::AddR2O(Entity* entity)
 {
-    if (path.IsEmpty() == true)
-    {
-        Detail::CreateR2OCustomProperty(entity, scenePathname);
-    }
-    else
-    {
-        Detail::CreateR2OCustomProperty(entity, path);
-    }
+    Detail::CreateR2OCustomProperty(entity, scenePathname);
 }
 }
