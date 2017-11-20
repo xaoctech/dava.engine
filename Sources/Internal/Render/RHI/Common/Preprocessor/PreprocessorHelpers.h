@@ -77,7 +77,22 @@ inline char* SeekToCharacter(char* s, char value)
     return s;
 }
 
+inline const char* SeekToCharacter(const char* s, char value)
+{
+    DVASSERT(s != nullptr);
+
+    while ((*s != 0) && (*s != value))
+        ++s;
+
+    return s;
+}
+
 inline char* SeekToLineEnding(char* s)
+{
+    return SeekToCharacter(s, '\n');
+}
+
+inline const char* SeekToLineEnding(const char* s)
 {
     return SeekToCharacter(s, '\n');
 }

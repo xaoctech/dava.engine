@@ -31,8 +31,75 @@ struct DefaultFileCallback : public PreProc::FileCallback
         return (in.get() != nullptr) ? in->Read(dst, max_sz) : 0;
     }
 };
-
 static DefaultFileCallback defaultFileCallback;
+
+template <class T>
+T GetNextToken(T txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize)
+{
+    bool inRange = true;
+
+    T firstValidSymbol = txt;
+    while (inRange && !IsValidAlphaChar(*firstValidSymbol))
+    {
+        ++firstValidSymbol;
+        inRange = (firstValidSymbol - txt) < txtSize;
+    }
+
+    if (inRange)
+    {
+        T token = firstValidSymbol;
+        while (IsValidAlphaNumericChar(*token))
+            ++token;
+        tokenSize = token - firstValidSymbol;
+    }
+
+    return firstValidSymbol;
+}
+
+bool PerformMacroSubstitution(const char* source, char* targetBuffer, ptrdiff_t targetBufferSize, const PreProc::MacroMap& macro)
+{
+    bool marcoFound = false;
+
+    ptrdiff_t bufferPos = 0;
+
+    const char* ptr = source;
+    const char* ptrEnd = SeekToLineEnding(source);
+    while (ptr < ptrEnd)
+    {
+        ptrdiff_t tokenSize = 0;
+        const char* token = GetNextToken(ptr, ptrEnd - ptr, tokenSize);
+
+        if (token > ptr)
+        {
+            ptrdiff_t charactersSkipped = token - ptr;
+            DVASSERT(bufferPos + charactersSkipped < targetBufferSize);
+            memcpy(targetBuffer + bufferPos, ptr, charactersSkipped);
+            bufferPos += charactersSkipped;
+        }
+
+        if (tokenSize > 0)
+        {
+            auto i = macro.find(PreProc::MacroStringBuffer(PreProc::MacroStringBuffer::Transient(), token, static_cast<uint32>(tokenSize)));
+            if (i != macro.end())
+            {
+                marcoFound = true;
+                DVASSERT(bufferPos + i->second.length < targetBufferSize);
+                memcpy(targetBuffer + bufferPos, i->second.value, i->second.length);
+                bufferPos += i->second.length;
+            }
+            else
+            {
+                DVASSERT(bufferPos + tokenSize < targetBufferSize);
+                memcpy(targetBuffer + bufferPos, token, tokenSize);
+                bufferPos += tokenSize;
+            }
+        }
+
+        ptr = token + tokenSize;
+    }
+
+    return marcoFound;
+}
 }
 
 PreProc::PreProc(FileCallback* fc)
@@ -82,7 +149,6 @@ bool PreProc::Process(const char* src_text, TextBuffer* output)
 void PreProc::Clear()
 {
     Reset();
-    minMacroLength = InvalidValue;
     macro.clear();
 }
 
@@ -94,18 +160,15 @@ bool PreProc::AddDefine(const char* name, const char* value)
 void PreProc::Reset()
 {
     for (uint32 b = 0; b != buffer.size(); ++b)
-        ::free(buffer[b].mem);
+        ::free(buffer[b]);
     buffer.clear();
-
-    curFileName = "<buffer>";
 }
 
 char* PreProc::AllocBuffer(uint32 sz)
 {
-    Buffer buf;
-    buf.mem = ::calloc(1, sz);
-    buffer.push_back(buf);
-    return reinterpret_cast<char*>(buf.mem);
+    void* ptr = ::calloc(1, sz);
+    buffer.emplace_back(reinterpret_cast<char*>(ptr));
+    return buffer.back();
 }
 
 inline char* PreProc::GetExpression(char* txt, char** end) const
@@ -678,156 +741,35 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
         return false;
     }
 
-    float val;
-
+    float val = 0.0f;
     if (evaluator.Evaluate(value, &val))
-    {
-        variable.emplace_back();
-        strcpy(variable.back().name, name);
-        variable.back().val = int(val);
         evaluator.SetVariable(name, val);
-    }
-
-    char value2[1024] = {};
-    size_t value2_sz;
-
-    strcpy(value2, value);
-    value2_sz = strlen(value2) + 1;
-
-    bool expanded = false;
-    do
-    {
-        expanded = false;
-        for (const auto& m : macro)
-        {
-            char* t = strstr(value2, m.first.name);
-            if (t)
-            {
-                size_t name_l = m.first.nameLength;
-                size_t val_l = m.second.valueLength;
-                memmove(t + val_l, t + name_l, value2_sz - (t - value2) - name_l);
-                memcpy(t, m.second.value, val_l);
-                value2_sz += val_l - name_l;
-                expanded = true;
-                break;
-            }
-        }
-    }
-    while (expanded);
 
     uint32 name_len = static_cast<uint32>(strlen(name));
-    uint32 value_len = static_cast<uint32>(strlen(value2));
-    macro[MacroName(name, name_len)] = MacroValue(value2, value_len);
-    minMacroLength = std::min(minMacroLength, value_len);
+    MacroStringBuffer& macroValue = macro[MacroStringBuffer(MacroStringBuffer::Permanent(), name, name_len)];
+    PreprocessorHelpers::PerformMacroSubstitution(value, macroValue.value, MaxMacroNameLength, macro);
+    macroValue.length = static_cast<uint32>(strlen(macroValue.value));
 
     return true;
 }
 
-char* PreProc::GetToken(char* str, ptrdiff_t strSize, const char* m, ptrdiff_t tokenSize)
-{
-    char* result = nullptr;
-    char* position = strstr(str, m);
-    if ((position != nullptr) && ((position - str) < strSize))
-    {
-        char* l = position;
-        char* r = position;
-
-        while ((l > str) && IsValidAlphaNumericChar(*(l - 1)))
-            --l;
-
-        while ((r - str < strSize) && IsValidAlphaNumericChar(*r))
-            ++r;
-
-        char ending = *r;
-
-        *r = 0;
-        if ((l >= str) && ((r - l) == tokenSize) && (strcmp(m, l) == 0))
-            result = l;
-
-        *r = ending;
-    }
-    return result;
-}
-
-char* GetNextToken(char* txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize)
-{
-    bool inRange = true;
-
-    char* firstValidSymbol = txt;
-    while (inRange && !IsValidAlphaChar(*firstValidSymbol))
-    {
-        ++firstValidSymbol;
-        inRange = (firstValidSymbol - txt) < txtSize;
-    }
-
-    if (inRange)
-    {
-        char* token = firstValidSymbol;
-        while (IsValidAlphaNumericChar(*token))
-            ++token;
-        tokenSize = token - firstValidSymbol;
-    }
-
-    return firstValidSymbol;
-}
-
 char* PreProc::ExpandMacroInLine(char* txt)
 {
-    char* begin = txt;
-    char* result = begin;
-
-    char* lineEnding = SeekToLineEnding(txt);
-    ptrdiff_t sourceLength = lineEnding - txt;
-
-    *lineEnding = 0;
-
-    char* buffer = AllocBuffer(2048);
-    uint32 bufferPos = 0;
-
-    while (txt < lineEnding)
+    char* result = txt;
+    char localBuffer[MaxLocalStringLength]{};
+    if (PreprocessorHelpers::PerformMacroSubstitution(txt, localBuffer, MaxLocalStringLength, macro))
     {
-        ptrdiff_t tokenSize = 0;
-        char* token = GetNextToken(txt, lineEnding - txt, tokenSize);
-
-        ptrdiff_t charactersSkipped = token - txt;
-        if (charactersSkipped > 0)
-        {
-            memcpy(buffer + bufferPos, txt, charactersSkipped);
-            bufferPos += charactersSkipped;
-        }
-
-        if (tokenSize > 0)
-        {
-            char tokenEnding = *(token + tokenSize);
-            *(token + tokenSize) = 0;
-
-            auto i = macro.find(MacroName(token, tokenSize));
-            if (i != macro.end())
-            {
-                memcpy(buffer + bufferPos, i->second.value, i->second.valueLength);
-                bufferPos += i->second.valueLength;
-            }
-            else
-            {
-                memcpy(buffer + bufferPos, token, tokenSize);
-                bufferPos += tokenSize;
-            }
-
-            *(token + tokenSize) = tokenEnding;
-        }
-
-        txt = token + tokenSize;
+        uint32 resultStringLength = static_cast<uint32>(strlen(localBuffer));
+        result = AllocBuffer(resultStringLength + 1);
+        memcpy(result, localBuffer, resultStringLength);
     }
-
-    *lineEnding = '\n';
-
-    return buffer;
+    return result;
 }
 
 void PreProc::Undefine(const char* name)
 {
     evaluator.RemoveVariable(name);
-    macro.erase(MacroName(name, strlen(name)));
+    macro.erase(MacroStringBuffer(MacroStringBuffer::Transient(), name, static_cast<uint32>(strlen(name))));
 }
 
 void PreProc::GenerateOutput(TextBuffer* output, LineVector& lines)
