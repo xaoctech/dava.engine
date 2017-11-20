@@ -652,7 +652,7 @@ PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
 
     const uint32 requestedPackIndex = meta->GetPackIndex(requestedPackName);
 
-    const Vector<uint32>& depsList = meta->GetFullDependenciesList(requestedPackIndex);
+    const Vector<uint32>& depsList = meta->GetDependencies(requestedPackIndex);
 
     for (uint32 dependencyIndex : depsList)
     {
@@ -1281,58 +1281,31 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName)
 
     if (!IsInitialized())
     {
-        DVASSERT(false && "Initialization not finished. Files is scanning now.");
+        DVASSERT(false && "Initialization not finished. Files are scanning now.");
         log << "Initialization not finished. Files is scanning now." << std::endl;
         return false;
     }
-    // client wants only assert on bad pack name or dependency name
-    try
+
+    // check every file in requested pack and all it's dependencies
+    const uint32 packIndex = meta->GetPackIndex(packName);
+    const Vector<uint32>& deps = meta->GetDependencies(packIndex);
+
+    const auto& allFiles = usedPackFile.filesTable.data.files;
+    const size_t size = allFiles.size();
+
+    for (size_t fileIndex = 0; fileIndex < size; ++fileIndex)
     {
-        // check every file in requested pack and all it's dependencies
-        Vector<uint32> packFileIndexes = meta->GetFileIndexes(packName);
-        for (uint32 fileIndex : packFileIndexes)
+        const auto& fileInfo = allFiles[fileIndex];
+        if (fileInfo.metaIndex == packIndex || binary_search(begin(deps), end(deps), fileInfo.metaIndex))
         {
             if (!IsFileReady(fileIndex))
             {
                 return false;
             }
         }
-
-        const Vector<uint32>& deps = meta->GetPackDependencyIndexes(packName);
-
-        for (uint32 dependencyPack : deps)
-        {
-            const String& depPackName = meta->GetPackInfo(dependencyPack).packName;
-            if (!IsPackDownloaded(depPackName)) // recursive call
-            {
-                return false;
-            }
-        }
-    }
-    catch (Exception& e)
-    {
-        log << "Exception at `" << e.file << "`: " << e.line << '\n';
-        log << Debug::GetBacktraceString(e.callstack) << std::endl;
-        DVASSERT(false && "check out log file");
-        return false;
     }
 
     return true;
-}
-
-uint64 DLCManagerImpl::CountCompressedFileSize(const uint64& startCounterValue,
-                                               const Vector<uint32>& fileIndexes) const
-{
-    uint64 result = startCounterValue;
-    const auto& allFiles = usedPackFile.filesTable.data.files;
-
-    for (uint32 fileIndex : fileIndexes)
-    {
-        const auto& fileInfo = allFiles[fileIndex];
-        result += fileInfo.compressedSize;
-    }
-
-    return result;
 }
 
 DLCManager::InitStatus DLCManagerImpl::GetInitStatus() const
@@ -1366,19 +1339,16 @@ uint64 DLCManagerImpl::GetPackSize(const String& packName) const
     uint64 totalSize = 0;
     if (IsInitialized())
     {
-        Vector<uint32> fileIndexes = meta->GetFileIndexes(packName);
+        const uint32 packIndex = meta->GetPackIndex(packName);
+        const PackMetaData::Dependencies& dependencies = meta->GetDependencies(packIndex);
 
-        totalSize = CountCompressedFileSize(totalSize, fileIndexes);
-
-        uint32 packIndex = meta->GetPackIndex(packName);
-
-        const Vector<uint32>& dependencyIndexes = meta->GetFullDependenciesList(packIndex);
-
-        for (uint32 dependencyPackIndex : dependencyIndexes)
+        const auto& allFiles = usedPackFile.filesTable.data.files;
+        for (const auto& fileInfo : allFiles)
         {
-            const auto& packInfo = meta->GetPackInfo(dependencyPackIndex);
-            fileIndexes = meta->GetFileIndexes(packInfo.packName);
-            totalSize = CountCompressedFileSize(totalSize, fileIndexes);
+            if (fileInfo.metaIndex == packIndex || binary_search(begin(dependencies), end(dependencies), fileInfo.metaIndex))
+            {
+                totalSize += fileInfo.compressedSize;
+            }
         }
     }
     return totalSize;
@@ -1390,7 +1360,7 @@ const DLCManager::IRequest* DLCManagerImpl::RequestPack(const String& packName)
 
     log << "requested: " << packName << std::endl;
 
-    auto itPreloaded = preloadedPacks.find(packName);
+    const auto itPreloaded = preloadedPacks.find(packName);
     if (end(preloadedPacks) != itPreloaded)
     {
         const PreloadedPack& request = itPreloaded->second;
@@ -1417,18 +1387,18 @@ void DLCManagerImpl::SetRequestPriority(const IRequest* request)
 
     if (request != nullptr)
     {
-        const PackRequest* r = dynamic_cast<const PackRequest*>(request);
-
         log << __FUNCTION__ << " request: " << request->GetRequestedPackName() << std::endl;
 
+        const PackRequest* r = static_cast<const PackRequest*>(request);
         PackRequest* req = const_cast<PackRequest*>(r);
+
         if (IsInitialized())
         {
             requestManager->SetPriorityToRequest(req);
         }
         else
         {
-            auto it = std::find(begin(delayedRequests), end(delayedRequests), request);
+            const auto it = std::find(begin(delayedRequests), end(delayedRequests), request);
             if (it != end(delayedRequests))
             {
                 delayedRequests.erase(it);
@@ -1454,21 +1424,22 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
         const PackRequest* r = static_cast<const PackRequest*>(request);
         PackRequest* packRequest = const_cast<PackRequest*>(r);
 
-        Vector<uint32> deps = packRequest->GetDependencies();
-        for (uint32 dependent : deps)
+        const Vector<uint32>& directDependencies = packRequest->GetDirectDependencies();
+
+        for (uint32 dependent : directDependencies)
         {
             const String& depPackName = meta->GetPackInfo(dependent).packName;
             PackRequest* depRequest = FindRequest(depPackName);
             if (nullptr != depRequest)
             {
-                String packToRemove = depRequest->GetRequestedPackName();
+                const String packToRemove = depRequest->GetRequestedPackName();
                 RemovePack(packToRemove);
             }
         }
 
         requestManager->Remove(packRequest);
 
-        auto it = find(begin(requests), end(requests), request);
+        const auto it = find(begin(requests), end(requests), request);
         if (it != end(requests))
         {
             requests.erase(it);
@@ -1502,6 +1473,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             String errMsg = undeletedFiles.str();
             if (!errMsg.empty())
             {
+                log << "can't delete files: " << errMsg << std::endl;
                 Logger::Error("can't delete files: %s", errMsg.c_str());
             }
         }
@@ -1531,7 +1503,6 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
         }
     }
 
-    // TODO remove this code in future (after new meta data)
     {
         lastProgress.alreadyDownloaded = 0;
         lastProgress.inQueue = 0;
@@ -1555,10 +1526,7 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
         }
     }
 
-    // TODO inQueue, - calculated in runtime in PackRequest
-    // TODO alreadyDownloaded, - calculated in runtime in PackRequest
-
-    lastProgress.isRequestingEnabled = true;
+    lastProgress.isRequestingEnabled = IsRequestingEnabled();
 
     return lastProgress;
 }
@@ -1583,14 +1551,14 @@ DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& pack
 
     allPacks.clear();
 
-    size_t packsCount = meta->GetPacksCount();
+    const size_t packsCount = meta->GetPacksCount();
 
     allPacks.reserve(packsCount);
 
     for (const String& packName : packNames)
     {
         uint32 packIndex = meta->GetPackIndex(packName);
-        const Vector<uint32>& childrenPacks = meta->GetFullDependenciesList(packIndex);
+        const Vector<uint32>& childrenPacks = meta->GetDependencies(packIndex);
         for (const uint32 childPackIndex : childrenPacks)
         {
             allPacks.insert(childPackIndex);

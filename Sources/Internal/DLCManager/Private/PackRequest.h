@@ -29,16 +29,16 @@ public:
     bool Update();
     void Stop();
 
-    const String& GetRequestedPackName() const override;
+    const String& GetRequestedPackName() const final;
     /** recalculate full size with all dependencies */
-    Vector<uint32> GetDependencies() const;
+    const Vector<uint32>& GetDirectDependencies() const;
     /** return size of files within this request without dependencies */
-    uint64 GetSize() const override;
+    uint64 GetSize() const final;
     /** recalculate current downloaded size without dependencies */
-    uint64 GetDownloadedSize() const override;
+    uint64 GetDownloadedSize() const final;
 
     /** return true when all files loaded and ready */
-    bool IsDownloaded() const override;
+    bool IsDownloaded() const final;
 
     // clear redundant data to free memory
     void Finalize();
@@ -83,15 +83,15 @@ private:
         }
         bool OpenFile();
         /** Save next buffer bytes into memory or file, on error return differs from parameter size */
-        uint64 Save(const void* ptr, uint64 size) override;
+        uint64 Save(const void* ptr, uint64 size) final;
         /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
-        uint64 GetSeekPos() override;
+        uint64 GetSeekPos() final;
         /** Truncate file(or buffer) to zero length, return false on error */
-        bool Truncate() override;
+        bool Truncate() final;
         /** Close internal resource (file handle, socket, free memory) */
-        bool Close() override;
+        bool Close() final;
         /** Check internal state */
-        bool IsClosed() const override;
+        bool IsClosed() const final;
 
     private:
         std::ofstream fout;

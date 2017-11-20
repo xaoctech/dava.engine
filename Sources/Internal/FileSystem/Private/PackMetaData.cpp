@@ -107,7 +107,26 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     GenerateDependencyMatrix(numPacks);
 }
 
-const PackMetaData::Dependencies& PackMetaData::GetFullDependenciesList(uint32 packIndex) const
+bool PackMetaData::FindFileIndexIf(uint32 packIndexNeeded, const Function<bool(uint32)>& predicate) const
+{
+    DVASSERT(packIndexNeeded < packIndexes.size());
+
+    const uint32 size = packIndexes.size();
+    for (uint32 fileIndex = 0; fileIndex < size; ++fileIndex)
+    {
+        const uint32 packIndex = packIndexes[fileIndex];
+        if (packIndex == packIndexNeeded)
+        {
+            if (predicate(fileIndex))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+const PackMetaData::Dependencies& PackMetaData::GetDependencies(uint32 packIndex) const
 {
     // all dependent packs with all sub-dependencies
     DVASSERT(packIndex < dependencies.size());
@@ -145,7 +164,7 @@ void PackMetaData::GenerateDependencyMatrix(size_t numPacks)
 
 uint32 PackMetaData::GetPackIndex(const String& requestedPackName) const
 {
-    auto it = mapPackNameToPackIndex.find(requestedPackName);
+    const auto it = mapPackNameToPackIndex.find(requestedPackName);
     if (it != end(mapPackNameToPackIndex))
     {
         return it->second;
