@@ -31,7 +31,6 @@ void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFa
 {
     SetRunning(true);
 
-    resourcePacker2D.SetRunning(true);
     for (const auto& task : tasks)
     {
         const auto& inputDir = task.first;
@@ -52,7 +51,7 @@ void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFa
         resourcePacker2D.PackResources({ gpu });
         packTime = SystemTimer::GetMs() - packTime;
         Logger::Info("Sprites reload time: %.2lf sec", static_cast<float64>(packTime) / 1000.0);
-        if (!resourcePacker2D.IsRunning())
+        if (resourcePacker2D.IsCancelled())
         {
             break;
         }
@@ -69,7 +68,7 @@ void SpritesPacker::ReloadSprites(bool clearDirs, bool forceRepack, const eGPUFa
 
 void SpritesPacker::Cancel()
 {
-    resourcePacker2D.SetRunning(false);
+    resourcePacker2D.SetCanceled();
 }
 
 bool SpritesPacker::IsRunning() const
@@ -86,7 +85,7 @@ void SpritesPacker::SetRunning(bool arg)
         {
             emit Finished();
         }
-        String message = String("Sprites packer ") + (arg ? "started" : (resourcePacker2D.IsRunning() ? "finished" : "canceled"));
+        String message = String("Sprites packer ") + (arg ? "started" : (resourcePacker2D.IsCancelled() ? "canceled" : "finished"));
         Logger::FrameworkDebug(message.c_str());
         emit RunningStateChanged(arg);
     }
