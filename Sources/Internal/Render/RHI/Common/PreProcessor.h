@@ -61,7 +61,7 @@ private:
 public:
     enum : uint32
     {
-        MaxMacroNameLength = 128,
+        MaxMacroValueLength = 128,
         MaxLocalStringLength = 2048,
     };
 

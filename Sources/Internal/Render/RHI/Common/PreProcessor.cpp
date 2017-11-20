@@ -745,13 +745,23 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     if (evaluator.Evaluate(value, &val))
         evaluator.SetVariable(name, val);
 
-    uint32 name_len = static_cast<uint32>(strlen(name));
-    char* macroValueBuffer = AllocBuffer(MaxMacroNameLength);
-    MacroStringBuffer mv(macroValueBuffer, 0);
-    ;
-    PreprocessorHelpers::PerformMacroSubstitution(value, macroValueBuffer, MaxMacroNameLength, macro);
-    mv.length = static_cast<uint32>(strlen(macroValueBuffer));
-    macro[MacroStringBuffer(name, name_len)] = mv;
+    const char* macroValue = nullptr;
+    uint32 macroValueLength = 0;
+
+    char localBuffer[MaxMacroValueLength] = {};
+    if (PreprocessorHelpers::PerformMacroSubstitution(value, localBuffer, MaxMacroValueLength, macro))
+    {
+        macroValueLength = static_cast<uint32>(strlen(localBuffer));
+        char* macroValueBuffer = AllocBuffer(macroValueLength + 1);
+        memcpy(macroValueBuffer, localBuffer, macroValueLength);
+        macroValue = macroValueBuffer;
+    }
+    else
+    {
+        macroValue = value;
+        macroValueLength = static_cast<uint32>(strlen(value));
+    }
+    macro.emplace(MacroStringBuffer(name, static_cast<uint32>(strlen(name))), MacroStringBuffer(macroValue, macroValueLength));
 
     return true;
 }
