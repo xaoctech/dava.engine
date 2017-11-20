@@ -117,6 +117,11 @@ void EditorSystemsManager::InitFieldBinder()
 
 void EditorSystemsManager::OnInput(UIEvent* currentInput, eInputSource inputSource)
 {
+    if (accessor->GetActiveContext() == nullptr)
+    {
+        return;
+    }
+
     if (currentInput->device == eInputDevices::MOUSE)
     {
         mouseDelta = currentInput->point - lastMousePos;
@@ -290,6 +295,11 @@ void EditorSystemsManager::OnUpdate()
     using namespace DAVA;
 
     UpdateDisplayState();
+
+    if (accessor->GetActiveContext() == nullptr)
+    {
+        return;
+    }
 
     for (const auto& orderAndSystem : systems)
     {
