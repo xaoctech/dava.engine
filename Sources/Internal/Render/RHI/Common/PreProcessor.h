@@ -61,8 +61,8 @@ private:
 public:
     enum : uint32
     {
-        MaxMacroNameLength = 256,
-        MaxLocalStringLength = 8192,
+        MaxMacroNameLength = 128,
+        MaxLocalStringLength = 2048,
     };
 
     struct MacroStringBuffer
