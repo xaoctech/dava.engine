@@ -47,7 +47,6 @@ public:
     void SetEditorTitle(const QString& editorTitle);
 
     ProjectView* GetProjectView() const;
-    PackageWidget* GetPackageWidget() const;
 
 signals:
     void EmulationModeChanged(bool emulationMode);

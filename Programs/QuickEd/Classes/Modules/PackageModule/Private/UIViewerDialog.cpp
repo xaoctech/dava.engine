@@ -1,11 +1,11 @@
-#include "UI/Package/UIViewerDialog.h"
-#include "Modules/ProjectModule/ProjectData.h"
+#include "Classes/Modules/PackageModule/Private/UIViewerDialog.h"
+
+#include "Classes/Modules/ProjectModule/ProjectData.h"
 
 #include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/ComboBox.h>
 #include <TArc/Controls/Label.h>
 #include <TArc/Controls/QtBoxLayouts.h>
-
 #include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/Qt/QtString.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
