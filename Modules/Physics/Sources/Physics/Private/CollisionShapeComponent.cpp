@@ -9,13 +9,13 @@
 
 namespace DAVA
 {
-namespace CollisionShapeComponentDetail
+namespace CollisionShapeComponentDetails
 {
 enum
 {
     // additional flags of shape that are used in physx shader function for collision detection
-    // values are mapped on physx::PxFilterData::word3
-    CCD_FLAG = 1 // first bit of physx::PxFilterData::word3 signals is CCD enabled for shape of not
+    // values are mapped on physx::PxFilterData::word0
+    CCD_FLAG = 1 // first bit of physx::PxFilterData::word0 signals is CCD enabled for shape of not
 };
 } // namespace CollisionShapeComponentDetail
 
@@ -151,21 +151,22 @@ void CollisionShapeComponent::SetCCDEnabled(physx::PxShape* shape, bool isCCDAct
 {
     DVASSERT(shape != nullptr);
     physx::PxFilterData fd = shape->getSimulationFilterData();
-    physx::PxU32 ccdFlag = static_cast<physx::PxU32>(CollisionShapeComponentDetail::CCD_FLAG);
+    physx::PxU32 ccdFlag = static_cast<physx::PxU32>(CollisionShapeComponentDetails::CCD_FLAG);
     if (isCCDActive == true)
     {
-        fd.word3 |= ccdFlag;
+        fd.word0 |= ccdFlag;
     }
     else
     {
-        fd.word3 = fd.word3 & (~ccdFlag);
+        fd.word0 = fd.word3 & (~ccdFlag);
     }
     shape->setSimulationFilterData(fd);
 }
 
 bool CollisionShapeComponent::IsCCDEnabled(const physx::PxFilterData& filterData)
 {
-    return filterData.word3 & CollisionShapeComponentDetail::CCD_FLAG ? true : false;
+    using namespace CollisionShapeComponentDetails;
+    return (filterData.word0 & CCD_FLAG) == CCD_FLAG;
 }
 
 void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)

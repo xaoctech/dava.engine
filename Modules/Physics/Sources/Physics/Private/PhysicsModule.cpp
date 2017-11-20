@@ -609,13 +609,13 @@ void PhysicsModule::LoadMaterials()
 
         if (staticFriction < 0.0f)
         {
-            Logger::Error("Static friction in material %s has invalid value. Value should be great or equal zero", name.c_str());
+            Logger::Error("Static friction in material %s has invalid value. Value should be greater than or equal to zero", name.c_str());
             staticFriction = 0.0f;
         }
 
         if (dynamicFriction < 0.0f)
         {
-            Logger::Error("Dynamic friction in material %s has invalid value. Value should be great or equal zero", name.c_str());
+            Logger::Error("Dynamic friction in material %s has invalid value. Value should be greater than or equal to zero", name.c_str());
             dynamicFriction = 0.0f;
         }
 
