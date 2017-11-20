@@ -245,16 +245,7 @@ void PhysicsModule::Shutdown()
 {
     physx::PxCloseVehicleSDK();
 
-    if (defaultMaterial != nullptr)
-    {
-        defaultMaterial->release();
-    }
-
-    for (const auto& node : materials)
-    {
-        node.second->release();
-    }
-
+    ReleaseMaterials();
     if (cpuDispatcher != nullptr)
     {
         cpuDispatcher->release();

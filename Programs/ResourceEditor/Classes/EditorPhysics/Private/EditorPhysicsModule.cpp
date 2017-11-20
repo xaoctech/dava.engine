@@ -16,6 +16,7 @@
 #include <TArc/Qt/QtString.h>
 #include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
 #include <TArc/Controls/PropertyPanel/PropertyModelExtensions.h>
+#include <TArc/Controls/ComboBox.h>
 
 #include <Physics/PhysicsModule.h>
 #include <Physics/VehicleWheelComponent.h>

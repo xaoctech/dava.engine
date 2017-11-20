@@ -27,7 +27,9 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/Utils/CommonFieldNames.h>
 
+#include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <Engine/Window.h>
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/LocalizationSystem.h>
 #include <Reflection/ReflectedTypeDB.h>
