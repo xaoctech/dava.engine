@@ -1548,7 +1548,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             PackRequest* depRequest = FindRequest(depPackName);
             if (nullptr != depRequest)
             {
-                // make copy name to frevent UB, after deleting pack
+                // make copy name to prevent UB, after deleting pack
                 const String packToRemove = depRequest->GetRequestedPackName();
                 RemovePack(packToRemove);
             }
