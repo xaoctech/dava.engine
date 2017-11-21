@@ -211,6 +211,15 @@ String DLCManagerImpl::DumpToJsonProfilerTrace()
     return outputPath;
 }
 
+PackRequest* DLCManagerImpl::CastToPackRequest(const IRequest* request)
+{
+    // PackRequest is the only child - we can use static_cast
+    const PackRequest* r = static_cast<const PackRequest*>(request);
+    // we can change underlining object as we wish - user not
+    PackRequest* packRequest = const_cast<PackRequest*>(r);
+    return packRequest;
+}
+
 void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
 {
     if (EngineSettings::SETTING_PROFILE_DLC_MANAGER == value)
@@ -620,10 +629,7 @@ PackRequest* DLCManagerImpl::AddDelayedRequest(const String& requestedPackName)
 void DLCManagerImpl::RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) const
 {
     const auto removeIt = remove_if(begin(packIndexes), end(packIndexes), [&](uint32 index) { return IsFileReady(index); });
-    if (removeIt != end(packIndexes))
-    {
-        packIndexes.erase(removeIt, end(packIndexes));
-    }
+    packIndexes.erase(removeIt, end(packIndexes));
 }
 
 void DLCManagerImpl::AddRequest(PackRequest* request)
@@ -644,7 +650,7 @@ PackRequest* DLCManagerImpl::PrepareNewRequest(const String& requestedPackName)
 
 PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
 {
-    DVASSERT(find_if(begin(requests), end(requests), [&](PackRequest* r) -> bool { return r->GetRequestedPackName() == requestedPackName; }) == end(requests));
+    DVASSERT(nullptr == FindRequest(requestedPackName));
 
     log << " requested: " << requestedPackName << '\n';
 
@@ -1501,8 +1507,7 @@ void DLCManagerImpl::SetRequestPriority(const IRequest* request)
     {
         log << __FUNCTION__ << " request: " << request->GetRequestedPackName() << std::endl;
 
-        const PackRequest* r = static_cast<const PackRequest*>(request);
-        PackRequest* req = const_cast<PackRequest*>(r);
+        PackRequest* req = CastToPackRequest(request);
 
         if (IsInitialized())
         {
@@ -1533,8 +1538,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
     const IRequest* request = RequestPack(requestedPackName);
     if (request != nullptr)
     {
-        const PackRequest* r = static_cast<const PackRequest*>(request);
-        PackRequest* packRequest = const_cast<PackRequest*>(r);
+        PackRequest* packRequest = CastToPackRequest(request);
 
         const Vector<uint32>& directDependencies = packRequest->GetDirectDependencies();
 
@@ -1544,6 +1548,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             PackRequest* depRequest = FindRequest(depPackName);
             if (nullptr != depRequest)
             {
+                // copy localy name of pack to frevent UB, after deleting pack
                 const String packToRemove = depRequest->GetRequestedPackName();
                 RemovePack(packToRemove);
             }

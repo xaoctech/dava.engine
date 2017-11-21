@@ -16,7 +16,7 @@ class FileSystem;
 /**
 	Download several files with one request
 */
-class PackRequest : public DLCManager::IRequest
+class PackRequest final : public DLCManager::IRequest
 {
 public:
     PackRequest(DLCManagerImpl& packManager_, const String& packName, Vector<uint32> fileIndexes_);
@@ -70,7 +70,7 @@ private:
 	   1 - writing data to disk
 	   2 - checking data, moving files, and adding footer
 	*/
-    class DVPLWriter : public DLCDownloader::IWriter
+    class DVPLWriter final : public DLCDownloader::IWriter
     {
     public:
         DVPLWriter(FilePath& localPath_, uint32 sizeCompressed_, uint32 sizeUncompressed_, uint32 crc32Compressed_, Compressor::Type compressionType_)

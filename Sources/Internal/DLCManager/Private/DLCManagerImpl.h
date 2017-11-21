@@ -226,6 +226,7 @@ private:
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
     String DumpToJsonProfilerTrace();
+    static PackRequest* CastToPackRequest(const IRequest* request);
 
     enum class ScanState : uint32
     {
@@ -267,7 +268,7 @@ private:
     std::unique_ptr<RequestManager> requestManager;
     std::unique_ptr<PackMetaData> meta;
 
-    struct PreloadedPack : IRequest
+    struct PreloadedPack final : IRequest
     {
         explicit PreloadedPack(const String& pack)
             : packName(pack)

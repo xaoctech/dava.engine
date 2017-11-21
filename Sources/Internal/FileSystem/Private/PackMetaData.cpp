@@ -17,9 +17,9 @@ PackMetaData::PackMetaData(const void* ptr, std::size_t size)
     Deserialize(ptr, size);
 }
 
-void PackMetaData::ConvertStringWithNumbersToVector(const String& dependencies, Vector<uint32>& result) const
+Vector<uint32> PackMetaData::ConvertStringWithNumbersToVector(const String& dependencies) const
 {
-    result.clear();
+    Vector<uint32> result;
 
     const String delimiter(", ");
 
@@ -46,6 +46,7 @@ void PackMetaData::ConvertStringWithNumbersToVector(const String& dependencies, 
     }
 
     SortAndEraseDuplicates(result);
+    return result;
 }
 
 PackMetaData::PackMetaData(const FilePath& metaDb)
@@ -91,9 +92,7 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     {
         mapPackNameToPackIndex.emplace(name, static_cast<uint32>(packDependencies.size()));
 
-        Vector<uint32> requestIndexes;
-
-        ConvertStringWithNumbersToVector(dependency, requestIndexes);
+        Vector<uint32> requestIndexes = ConvertStringWithNumbersToVector(dependency);
 
         packDependencies.emplace_back(std::move(name), std::move(requestIndexes));
     };
@@ -146,11 +145,11 @@ void PackMetaData::GenerateDependencyMatrix(size_t numPacks)
     dependenciesMatrix.clear();
     dependenciesMatrix.resize(numPacks);
 
-    for (uint32 packIndex = 0; packIndex < numPacks; ++packIndex)
+    for (size_t packIndex = 0; packIndex < numPacks; ++packIndex)
     {
-        Dependencies& c = dependenciesMatrix[packIndex];
-        GenerateDependencyMatrixRow(packIndex, c);
-        SortAndEraseDuplicates(c);
+        Dependencies& depRow = dependenciesMatrix[packIndex];
+        GenerateDependencyMatrixRow(static_cast<uint32>(packIndex), depRow);
+        SortAndEraseDuplicates(depRow);
     }
 }
 
@@ -454,8 +453,7 @@ void PackMetaData::Deserialize(const void* ptr, size_t size)
         packName = line.substr(0, first_space);
         packDependency = line.substr(first_space + 1);
 
-        Vector<uint32> packDependencyIndexes;
-        ConvertStringWithNumbersToVector(packDependency, packDependencyIndexes);
+        Vector<uint32> packDependencyIndexes = ConvertStringWithNumbersToVector(packDependency);
 
         uint32 packIndex = static_cast<uint32>(packDependencies.size());
         mapPackNameToPackIndex.emplace(packName, packIndex);
