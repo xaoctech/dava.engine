@@ -1,28 +1,27 @@
-#include "QuickEdPackageBuilder.h"
+#include "Classes/Model/QuickEdPackageBuilder.h"
 
-#include "PackageHierarchy/PackageNode.h"
-#include "PackageHierarchy/ImportedPackagesNode.h"
-#include "PackageHierarchy/PackageControlsNode.h"
-
-#include "Model/ControlProperties/ControlPropertiesSection.h"
-#include "Model/ControlProperties/ComponentPropertiesSection.h"
-#include "Model/ControlProperties/ValueProperty.h"
-#include "Model/ControlProperties/CustomClassProperty.h"
-#include "Model/ControlProperties/RootProperty.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/StyleSheetNode.h"
-#include "Model/PackageHierarchy/StyleSheetsNode.h"
+#include "Classes/Model/ControlProperties/ComponentPropertiesSection.h"
+#include "Classes/Model/ControlProperties/ControlPropertiesSection.h"
+#include "Classes/Model/ControlProperties/CustomClassProperty.h"
+#include "Classes/Model/ControlProperties/NameProperty.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/ControlProperties/ValueProperty.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/ImportedPackagesNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetNode.h"
+#include "Classes/Model/PackageHierarchy/StyleSheetsNode.h"
 
 #include <Base/ObjectFactory.h>
 #include <Entity/ComponentManager.h>
 #include <FileSystem/YamlNode.h>
 #include <Reflection/ReflectedTypeDB.h>
-#include <UI/UIPackage.h>
-#include <UI/UIControl.h>
-#include <UI/UIControlPackageContext.h>
 #include <UI/Styles/UIStyleSheet.h>
 #include <UI/Styles/UIStyleSheetYamlLoader.h>
+#include <UI/UIControl.h>
+#include <UI/UIControlPackageContext.h>
+#include <UI/UIPackage.h>
 #include <Utils/Utils.h>
 
 using namespace DAVA;
@@ -122,6 +121,7 @@ void QuickEdPackageBuilder::ProcessStyleSheet(const DAVA::Vector<DAVA::UIStyleSh
 const ReflectedType* QuickEdPackageBuilder::BeginControlWithClass(const FastName& controlName, const String& className)
 {
     RefPtr<UIControl> control(ObjectFactory::Instance()->New<UIControl>(className));
+    ControlNode* node = ControlNode::CreateFromControl(control.Get());
     if (control.Valid())
     {
         if (className != QuickEdPackageBuilderDetails::EXCEPTION_CLASS_UI_TEXT_FIELD && className != QuickEdPackageBuilderDetails::EXCEPTION_CLASS_UI_LIST) //TODO: fix internal staticText for Win\Mac
@@ -131,16 +131,13 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithClass(const FastName
 
         if (controlName.IsValid())
         {
-            control->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
+            node->GetRootProperty()->GetNameProperty()->SetValue(controlName);
         }
     }
 
-    controlsStack.push_back(ControlDescr(ControlNode::CreateFromControl(control.Get()), true));
+    controlsStack.push_back(ControlDescr(node, true));
 
-    if (control != nullptr)
-        return ReflectedTypeDB::GetByPointer(control.Get());
-    else
-        return nullptr;
+    return (control != nullptr) ? ReflectedTypeDB::GetByPointer(control.Get()) : nullptr;
 }
 
 const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const FastName& controlName, const String& customClassName, const String& className)
@@ -156,6 +153,8 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const Fa
         control.Set(ObjectFactory::Instance()->New<UIControl>(className));
     }
 
+    ControlNode* node = ControlNode::CreateFromControl(control.Get());
+
     if (control.Valid())
     {
         if (className != QuickEdPackageBuilderDetails::EXCEPTION_CLASS_UI_TEXT_FIELD && className != QuickEdPackageBuilderDetails::EXCEPTION_CLASS_UI_LIST) //TODO: fix internal staticText for Win\Mac
@@ -165,18 +164,14 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const Fa
 
         if (controlName.IsValid())
         {
-            control->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
+            node->GetRootProperty()->GetNameProperty()->SetValue(controlName);
         }
     }
 
-    ControlNode* node = ControlNode::CreateFromControl(control.Get());
     node->GetRootProperty()->GetCustomClassProperty()->SetValue(customClassName);
     controlsStack.push_back(ControlDescr(node, true));
 
-    if (control != nullptr)
-        return ReflectedTypeDB::GetByPointer(control.Get());
-    else
-        return nullptr;
+    return (control != nullptr) ? ReflectedTypeDB::GetByPointer(control.Get()) : nullptr;
 }
 
 const ReflectedType* QuickEdPackageBuilder::BeginControlWithPrototype(const FastName& controlName, const String& packageName, const FastName& prototypeFastName, const String* customClassName, AbstractUIPackageLoader* loader)
@@ -198,10 +193,10 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPrototype(const Fast
         {
             if (importedPackage->GetName() == packageName)
             {
-                prototypeNode = importedPackage->GetPrototypes()->FindControlNodeByName(prototypeName);
+                prototypeNode = importedPackage->GetPrototypes()->FindChildByName(prototypeName);
                 if (prototypeNode == nullptr)
                 {
-                    prototypeNode = importedPackage->GetPackageControlsNode()->FindControlNodeByName(prototypeName);
+                    prototypeNode = importedPackage->GetPackageControlsNode()->FindChildByName(prototypeName);
                 }
                 break;
             }
@@ -233,7 +228,7 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPrototype(const Fast
 
     if (controlName.IsValid())
     {
-        node->GetControl()->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
+        node->GetRootProperty()->GetNameProperty()->SetValue(controlName);
     }
     controlsStack.push_back(ControlDescr(node, true));
 
@@ -250,12 +245,12 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPath(const String& p
         Split(pathName, "/", controlNames, false, true);
         for (const String& controlName : controlNames)
         {
-            ControlNode* child = control->FindByName(controlName);
+            ControlNode* child = control->FindChildByName(controlName);
             if (child == nullptr)
             {
                 RefPtr<UIControl> fakeControl(new UIControl());
-                fakeControl->SetName(controlName, UIControl::DO_NOT_GENERATE_ASSERT_ON_INCORRECT);
                 RefPtr<ControlNode> newChild(ControlNode::CreateFromControl(fakeControl.Get()));
+                newChild->GetRootProperty()->GetNameProperty()->SetValue(controlName);
 
                 results.AddResult(Result(Result::RESULT_ERROR, Format("Access to removed control by path '%s'", pathName.c_str())));
                 newChild->AddResult(Result(Result::RESULT_ERROR, "Control was removed in prototype"));

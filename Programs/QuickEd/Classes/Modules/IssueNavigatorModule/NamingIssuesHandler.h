@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/PackageListenerProxy.h"
+#include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
 
@@ -9,6 +9,7 @@ namespace DAVA
 namespace TArc
 {
 class ContextAccessor;
+class UI;
 }
 class UIControl;
 }
@@ -54,8 +55,6 @@ private:
     void SearchIssuesInPackage(PackageNode* package);
 
     PackageNode* GetPackage() const;
-    bool IsRootControl(const ControlNode* node) const;
-    DAVA::String GetPathToControl(const ControlNode* node) const;
     DAVA::UnorderedSet<ControlNode*> GetControlsByName(const DAVA::FastName& name);
 
     DuplicationsIssuesMap::iterator FindInDuplicationsIssues(ControlNode* node);

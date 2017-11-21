@@ -1,79 +1,115 @@
-#include "LayoutIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
 
-#include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
-
-#include <Engine/Engine.h>
-#include <UI/UIControlSystem.h>
-#include <UI/UIControl.h>
-#include <UI/Layouts/UILayoutSystem.h>
-#include <UI/Layouts/LayoutFormula.h>
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/ControlProperties/AbstractProperty.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/IssueNavigatorModule/ControlNodeInfo.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/WindowSubSystem/UI.h>
 
+#include <Engine/Engine.h>
+#include <UI/Layouts/LayoutFormula.h>
+#include <UI/Layouts/UILayoutSystem.h>
+#include <UI/UIControl.h>
+#include <UI/UIControlSystem.h>
+
+namespace LayoutIssuesHandlerDetails
+{
 using namespace DAVA;
+
+ControlNode* FindControlNodeRecursively(ControlsContainerNode* container, UIControl* control)
+{
+    for (ControlNode* node : *container)
+    {
+        if (node->GetControl() == control)
+        {
+            return node;
+        }
+    }
+
+    for (ControlNode* node : *container)
+    {
+        ControlNode* found = FindControlNodeRecursively(node, control);
+        if (found != nullptr)
+        {
+            return found;
+        }
+    }
+
+    return nullptr;
+}
+
+ControlNode* FindCorrespondingControlNode(PackageNode* packageNode, UIControl* control)
+{
+    ControlNode* found = FindControlNodeRecursively(packageNode->GetPackageControlsNode(), control);
+    if (found == nullptr)
+    {
+        found = FindControlNodeRecursively(packageNode->GetPrototypes(), control);
+    }
+
+    return found;
+}
+}
 
 LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
     : sectionId(sectionId_)
     , widget(widget_)
     , accessor(accessor_)
     , ui(ui_)
+    , packageListenerProxy(this, accessor_)
 {
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
+    accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 }
 
 LayoutIssuesHandler::~LayoutIssuesHandler()
 {
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
+    accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
 }
 
-void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
+void LayoutIssuesHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula)
 {
+    using namespace DAVA;
+    using namespace ControlNodeInfo;
+
     if (formula->HasError())
     {
         auto it = createdIssues[axis].find(control);
         if (it != createdIssues[axis].end())
         {
-            widget->ChangeMessage(sectionId, it->second, formula->GetErrorMessage());
+            if (widget.isNull() == false)
+            {
+                widget->ChangeMessage(sectionId, it->second.issueId, formula->GetErrorMessage());
+            }
         }
         else
         {
             const DocumentData* data = accessor->GetActiveContext()->GetData<DocumentData>();
             DVASSERT(data != nullptr);
 
-            String pathToControl = control->GetName().c_str(); // UIControlHelpers::GetControlPath() should be used after DF-14277 implementing
-
-            auto GetParentControl = [&](const UIControl* control) -> UIControl*
-            {
-                return IsRootControl(control) ? nullptr : control->GetParent();
-            };
-
-            for (UIControl* parentControl = GetParentControl(control);
-                 parentControl != nullptr;
-                 parentControl = GetParentControl(parentControl))
-            {
-                String name = "";
-                if (parentControl->GetName().IsValid())
-                {
-                    name = parentControl->GetName().c_str();
-                }
-                pathToControl = name + "/" + pathToControl;
-            }
+            ControlNode* controlNode = LayoutIssuesHandlerDetails::FindCorrespondingControlNode(data->GetPackageNode(), control);
+            DVASSERT(controlNode != nullptr);
 
             Issue issue;
             issue.sectionId = sectionId;
             issue.issueId = nextIssueId;
             issue.message = formula->GetErrorMessage();
             issue.packagePath = data->GetPackagePath().GetFrameworkPath();
-            issue.pathToControl = pathToControl;
+            issue.pathToControl = GetPathToControl(data->GetPackageNode(), controlNode);
             issue.propertyName = axis == Vector2::AXIS_X ? "SizePolicy/horizontalFormula" : "SizePolicy/verticalFormula";
 
             nextIssueId++;
-            widget->AddIssue(issue);
+            if (widget.isNull() == false)
+            {
+                widget->AddIssue(issue);
+            }
 
-            createdIssues[axis][control] = issue.issueId;
+            LayoutIssue layoutIssue;
+            layoutIssue.issueId = issue.issueId;
+            layoutIssue.controlNode = controlNode;
+            createdIssues[axis].emplace(control, std::move(layoutIssue));
 
             DAVA::TArc::NotificationParams notificationParams;
             notificationParams.title = "Error in formula";
@@ -87,7 +123,7 @@ void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis 
     }
 }
 
-void LayoutIssuesHandler::OnFormulaRemoved(UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula)
+void LayoutIssuesHandler::OnFormulaRemoved(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula)
 {
     RemoveIssue(control, axis);
 }
@@ -97,32 +133,37 @@ void LayoutIssuesHandler::RemoveIssue(DAVA::UIControl* control, DAVA::Vector2::e
     auto it = createdIssues[axis].find(control);
     if (it != createdIssues[axis].end())
     {
-        widget->RemoveIssue(sectionId, it->second);
+        if (widget.isNull() == false)
+        {
+            widget->RemoveIssue(sectionId, it->second.issueId);
+        }
         createdIssues[axis].erase(it);
     }
 }
 
-bool LayoutIssuesHandler::IsRootControl(const UIControl* control) const
+void LayoutIssuesHandler::ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property)
 {
-    const DocumentData* data = accessor->GetActiveContext()->GetData<DocumentData>();
-    DVASSERT(data != nullptr);
+    using namespace DAVA;
+    using namespace ControlNodeInfo;
 
-    PackageControlsNode* controls = data->GetPackageNode()->GetPackageControlsNode();
-    for (ControlNode* controlNode : *controls)
+    if (property->GetName() == "Name")
     {
-        if (controlNode->GetControl() == control)
+        const DocumentData* data = accessor->GetActiveContext()->GetData<DocumentData>();
+        DVASSERT(data != nullptr);
+
+        UIControl* control = node->GetControl();
+
+        for (auto& axisIssuesMap : createdIssues)
         {
-            return true;
+            auto it = axisIssuesMap.find(control);
+            if (it != axisIssuesMap.end())
+            {
+                LayoutIssue& issue = it->second;
+                if (widget.isNull() == false)
+                {
+                    widget->ChangePathToControl(sectionId, issue.issueId, GetPathToControl(data->GetPackageNode(), node));
+                }
+            }
         }
     }
-
-    PackageControlsNode* prototypes = data->GetPackageNode()->GetPrototypes();
-    for (ControlNode* controlNode : *prototypes)
-    {
-        if (controlNode->GetControl() == control)
-        {
-            return true;
-        }
-    }
-    return false;
 }

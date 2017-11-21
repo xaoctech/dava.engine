@@ -284,22 +284,19 @@ bool UIControl::AddControlToList(List<UIControl*>& controlsList, const String& c
     return false;
 }
 
-void UIControl::SetName(const String& name_, eGenerateAssert generateAssert)
+void UIControl::SetName(const String& name_)
 {
-    SetName(FastName(name_), generateAssert);
+    SetName(FastName(name_));
 }
 
-void UIControl::SetName(const FastName& name_, eGenerateAssert generateAssert)
+void UIControl::SetName(const FastName& name_)
 {
     if (name == name_)
     {
         return;
     }
 
-    if (generateAssert == GENERATE_ASSERT_ON_INCORRECT)
-    {
-        DVASSERT(UIControlHelpers::IsControlNameValid(name_), Format("Control name '%s' contains incorrect symbols", name_.c_str()).c_str());
-    }
+    DVASSERT(UIControlHelpers::IsControlNameValid(name_), Format("Control name '%s' contains incorrect symbols", name_.c_str()).c_str());
 
     name = name_;
 

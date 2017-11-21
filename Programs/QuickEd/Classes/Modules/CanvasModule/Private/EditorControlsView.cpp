@@ -147,8 +147,6 @@ BackgroundController::BackgroundController(UIControl* nestedControl_, DAVA::TArc
     , nestedControl(nestedControl_)
 {
     DVASSERT(nullptr != nestedControl);
-    String name = nestedControl->GetName().c_str();
-    name = name.empty() ? "unnamed" : name;
     gridControl->SetName(FastName("Grid_control_of_nestedControl"));
     counterpoiseControl->SetName(FastName("counterpoise_of_nestedControl"));
     positionHolderControl->SetName(FastName("Position_holder_of_nestedControl"));

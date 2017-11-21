@@ -285,7 +285,7 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
         if (pkgFound != libraryPackages.end())
         {
             PackageControlsNode* packageControls = pkgFound->Get()->GetPackageControlsNode();
-            ControlNode* controlNode = packageControls->FindControlNodeByName(pinnedControl.controlName);
+            ControlNode* controlNode = packageControls->FindChildByName(pinnedControl.controlName);
             if (controlNode != nullptr)
             {
                 QString controlIconPath;
