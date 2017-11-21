@@ -4,6 +4,7 @@
 #include "ValueProperty.h"
 #include "IntrospectionProperty.h"
 
+#include <Reflection/ReflectedMeta.h>
 #include <UI/UIControl.h>
 
 using namespace DAVA;

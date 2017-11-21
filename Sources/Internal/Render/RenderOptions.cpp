@@ -40,7 +40,7 @@ FastName optionsNames[RenderOptions::OPTIONS_COUNT] =
   FastName("Albedo mipmaps"),
   FastName("Lightmap mipmaps"),
 #if defined(LOCALIZATION_DEBUG)
-  FastName("Localization Warings"),
+  FastName("Localization Warnings"),
   FastName("Localization Errors"),
   FastName("Line Break Errors"),
 #endif

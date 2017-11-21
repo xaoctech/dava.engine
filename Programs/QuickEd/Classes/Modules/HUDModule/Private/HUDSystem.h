@@ -40,11 +40,11 @@ private:
     };
     struct HUD;
 
-    bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput) override;
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
-    void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void OnDragStateChanged(eDragState currentState, eDragState previousState) override;
+    void OnDisplayStateChanged(eDisplayState currentState, eDisplayState previousState) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
@@ -64,8 +64,6 @@ private:
 
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
-
-    HUDAreaInfo activeAreaInfo;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
     DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);
