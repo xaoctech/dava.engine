@@ -63,11 +63,12 @@ public:
         BoxBuilder& AddRefToOwner();
         BoxBuilder& AddToScene(Scene* scene);
         Entity* GetBox();
+        BoxBuilder& Reset();
 
     private:
         void SetupMaterial(NMaterial* material, const String& fileName, const FastName& slotName);
 
-        Entity* box = nullptr;
+        ScopedPtr<Entity> box = nullptr;
 
         FilePath path;
         String tag;

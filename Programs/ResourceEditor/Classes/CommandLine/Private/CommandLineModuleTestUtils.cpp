@@ -413,7 +413,8 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPa
     path = newPath;
     name = newName;
 
-    box = new Entity();
+    DVASSERT(box.get() == nullptr);
+    box = ScopedPtr<Entity>(new Entity());
     box->SetName(FastName(name));
 
     return *this;
@@ -421,7 +422,7 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPa
 
 void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& fileName, const FastName& slotName)
 {
-    DVASSERT(box != nullptr);
+    DVASSERT(box.get() != nullptr);
     FilePath texturePath = path;
     texturePath.ReplaceFilename(fileName);
     Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, tag);
@@ -439,7 +440,7 @@ void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& 
 
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddRenderComponent()
 {
-    DVASSERT(box != nullptr);
+    DVASSERT(box.get() != nullptr);
     ScopedPtr<NMaterial> material(Detail::CreateMaterial(FastName(name), NMaterialName::TEXTURE_LIGHTMAP_OPAQUE));
     String texName = name + ".tex";
     SetupMaterial(material, texName, NMaterialTextureName::TEXTURE_ALBEDO);
@@ -456,7 +457,7 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddRenderComponent()
 
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddGeometry()
 {
-    DVASSERT(box != nullptr);
+    DVASSERT(box.get() != nullptr);
     auto addGeometry = [this](int lod, int sw)
     {
         String fileName = Format("%s_%d_%d.tex", name.c_str(), lod, sw);
@@ -486,7 +487,7 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddGeometry()
 
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddSlotComponent(const String& slotName, const FilePath& configPath)
 {
-    DVASSERT(box != nullptr);
+    DVASSERT(box.get() != nullptr);
     SlotComponent* slotComp = new SlotComponent();
     slotComp->SetSlotName(FastName(slotName));
     slotComp->SetConfigFilePath(configPath);
@@ -509,7 +510,13 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddToScene(Scene* scene)
 
 Entity* SceneBuilder::BoxBuilder::GetBox()
 {
-    return box;
+    return box.get();
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Reset()
+{
+    box.reset(nullptr);
+    return *this;
 }
 
 void CreateTestFolder(const DAVA::FilePath& folder)
@@ -567,20 +574,23 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     BoxBuilder boxBuilder;
 
-    boxBuilder.Create(scenePath, "box", tagDefault)
+    boxBuilder
+    .Create(scenePath, "box", tagDefault)
     .AddRenderComponent()
     .AddGeometry()
     .AddSlotComponent("slot", projectPath + "/DataSource/Slot.yaml")
     .AddRefToOwner()
     .AddToScene(scene);
 
-    boxBuilder.Create(scenePath, "box", tagChina)
+    boxBuilder.Reset()
+    .Create(scenePath, "box", tagChina)
     .AddRenderComponent()
     .AddGeometry()
     .AddRefToOwner()
     .AddToScene(scene);
 
-    boxBuilder.Create(scenePath, "box", tagJapan)
+    boxBuilder.Reset()
+    .Create(scenePath, "box", tagJapan)
     .AddRenderComponent()
     .AddGeometry()
     .AddRefToOwner()
@@ -589,14 +599,16 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
     FilePath chinaSlotPath = scenePath;
     chinaSlotPath.ReplaceDirectory(chinaSlotPath.GetDirectory() + chinaSlotDir);
 
-    boxBuilder.Create(chinaSlotPath, "box_slot", tagDefault)
+    boxBuilder.Reset()
+    .Create(chinaSlotPath, "box_slot", tagDefault)
     .AddRenderComponent()
     .AddRefToOwner();
 
     FilePath defaultSlotPath = scenePath;
     defaultSlotPath.ReplaceDirectory(defaultSlotPath.GetDirectory() + defaultSlotDir);
 
-    boxBuilder.Create(defaultSlotPath, "box_slot", tagDefault)
+    boxBuilder.Reset()
+    .Create(defaultSlotPath, "box_slot", tagDefault)
     .AddRenderComponent()
     .AddRefToOwner();
 
