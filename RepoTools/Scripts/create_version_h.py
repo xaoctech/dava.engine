@@ -25,7 +25,7 @@ def main():
         titleName += '_[ {0} ]'.format( branch_info )
 
     print 'Title name - ', titleName
-    defineString = '#define APPLICATION_BUILD_VERSION " {0}"'.format( titleName )
+    defineString = '#define APPLICATION_BUILD_VERSION "{0}"'.format( titleName )
 
 ##
     myFile  = open( pathFileVersion, 'w')
