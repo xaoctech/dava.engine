@@ -12,11 +12,30 @@
 #include "Entity/Component.h"
 #include "Particles/ParticleEmitter.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Math/Vector.h"
 
 // particles-related commands
 #include "Commands2/ParticleEditorCommands.h"
 #include "Commands2/ParticleLayerCommands.h"
 #include "Commands2/Base/RECommandNotificationObject.h"
+
+namespace EditorParticlesSystemDetails
+{
+template <typename T>
+inline const DAVA::Vector<T*>& GetForceVector(T* force, DAVA::ParticleLayer* layer);
+
+template <>
+inline const DAVA::Vector<DAVA::ParticleForce*>& GetForceVector(DAVA::ParticleForce* force, DAVA::ParticleLayer* layer)
+{
+    return layer->GetParticleForces();
+}
+
+template <>
+inline const DAVA::Vector<DAVA::ParticleForceSimplified*>& GetForceVector(DAVA::ParticleForceSimplified* force, DAVA::ParticleLayer* layer)
+{
+    return layer->GetSimplifiedParticleForces();
+}
+}
 
 EditorParticlesSystem::EditorParticlesSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
@@ -91,6 +110,9 @@ void EditorParticlesSystem::Draw()
         selectedEmitterInstances.insert(instance);
     }
 
+    for (DAVA::ParticleForce* force : selection.ObjectsOfType<DAVA::ParticleForce>())
+        DrawParticleForces(force);
+
     for (auto entity : entities)
     {
         auto effect = entity->GetComponent<DAVA::ParticleEffectComponent>();
@@ -163,11 +185,12 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
     }
 
     DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
+
     wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
 
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
-                                 DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+    drawer->DrawAABoxCornersTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
+                                        DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
 void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitter, DAVA::Vector3 center)
@@ -217,6 +240,127 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitt
                                                                    DAVA::Color(0.0f, 0.0f, 0.7f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
+void EditorParticlesSystem::DrawParticleForces(DAVA::ParticleForce* force)
+{
+    using namespace DAVA;
+    using ForceType = ParticleForce::eType;
+
+    if (force->type == ForceType::GRAVITY)
+        return;
+
+    RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    DAVA::ParticleLayer* layer = GetForceOwner(force);
+    if (layer == nullptr)
+        return;
+
+    DAVA::ParticleEmitterInstance* emitterInstance = GetLayerOwner(layer);
+    DAVA::ParticleEffectComponent* effectComponent = emitterInstance->GetOwner();
+    DAVA::Entity* entity = effectComponent->GetEntity();
+    if (force->type == ForceType::VORTEX || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
+    {
+        float32 scale = 1.0f;
+        HoodSystem* hoodSystem = static_cast<SceneEditor2*>(GetScene())->hoodSystem;
+        if (hoodSystem != nullptr)
+            scale = hoodSystem->GetScale();
+
+        float32 arrowSize = scale;
+        float32 arrowBaseSize = 5.0f;
+        Vector3 emitterVector = force->direction;
+        Vector3 center;
+        if (force->worldAlign)
+        {
+            center = entity->GetWorldTransform().GetTranslationVector() + force->position;
+        }
+        else
+        {
+            Matrix4 wMat = entity->GetWorldTransform();
+            emitterVector = emitterVector * Matrix3(wMat);
+            center = force->position * wMat;
+        }
+        emitterVector.Normalize();
+        emitterVector *= arrowBaseSize * scale;
+
+        drawer->DrawArrow(center, center + emitterVector, arrowSize, Color(0.7f, 0.7f, 0.0f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
+    }
+
+    if (force->type == ForceType::PLANE_COLLISION)
+    {
+        Matrix4 wMat = entity->GetWorldTransform();
+        Vector3 forcePosition;
+        Vector3 wNormal;
+        if (force->worldAlign)
+        {
+            forcePosition = wMat.GetTranslationVector() + force->position;
+            wNormal = force->direction;
+        }
+        else
+        {
+            wNormal = force->direction * Matrix3(wMat);
+            forcePosition = force->position;
+            forcePosition = force->position * wMat;
+        }
+        wNormal.Normalize();
+        Vector3 cV(0.0f, 0.0f, 1.0f);
+        if (1.0f - Abs(cV.DotProduct(wNormal)) < EPSILON)
+            cV = Vector3(1.0f, 0.0f, 0.0f);
+        Matrix4 transform;
+        transform.BuildLookAtMatrix(forcePosition, forcePosition + wNormal, cV);
+        transform.Inverse();
+
+        float32 bbsize = force->planeScale * 0.5f;
+        drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
+                                     Color(0.0f, 0.7f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawAABoxTransformed(AABBox3(Vector3(-bbsize, -bbsize, -0.1f), Vector3(bbsize, bbsize, 0.01f)), transform,
+                                     Color(0.0f, 0.35f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+    else if (force->type == ForceType::POINT_GRAVITY)
+    {
+        float32 radius = force->pointGravityRadius;
+        Vector3 translation;
+        if (force->worldAlign)
+            translation = entity->GetWorldTransform().GetTranslationVector() + force->position;
+        else
+            translation = Selectable(force).GetWorldTransform().GetTranslationVector();
+
+        drawer->DrawIcosahedron(translation, radius, Color(0.0f, 0.3f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(translation, radius, Color(0.0f, 0.15f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+
+    if (force->isInfinityRange)
+        return;
+    if (force->GetShape() == ParticleForce::eShape::BOX)
+    {
+        Matrix4 wMat = entity->GetWorldTransform();
+        if (force->worldAlign)
+        {
+            Vector3 translation = wMat.GetTranslationVector();
+            wMat = Matrix4::IDENTITY;
+            wMat.SetTranslationVector(translation + force->position);
+        }
+        else
+            wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
+
+        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
+                                     Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+
+        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
+                                     Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+    else if (force->GetShape() == ParticleForce::eShape::SPHERE)
+    {
+        Matrix4 wMat = Selectable(force).GetWorldTransform();
+        if (force->worldAlign)
+        {
+            Vector3 translation = entity->GetWorldTransform().GetTranslationVector();
+            wMat = Matrix4::IDENTITY;
+            wMat.SetTranslationVector(translation + force->position);
+        }
+        float32 radius = force->GetRadius();
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+}
+
 void EditorParticlesSystem::AddEntity(DAVA::Entity* entity)
 {
     entities.push_back(entity);
@@ -245,9 +389,10 @@ void EditorParticlesSystem::RestartParticleEffects()
     }
 }
 
-DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* force) const
+template <typename T>
+DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(T* force) const
 {
-    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, DAVA::ParticleForce*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, DAVA::ParticleForce* force) -> DAVA::ParticleLayer*
+    DAVA::Function<DAVA::ParticleLayer*(DAVA::ParticleEmitter*, T*)> getForceOwner = [&getForceOwner](DAVA::ParticleEmitter* emitter, T* force) -> DAVA::ParticleLayer*
     {
         for (DAVA::ParticleLayer* layer : emitter->layers)
         {
@@ -259,8 +404,8 @@ DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner(DAVA::ParticleForce* f
                     return foundLayer;
                 }
             }
-
-            if (std::find(layer->forces.begin(), layer->forces.end(), force) != layer->forces.end())
+            const DAVA::Vector<T*>& forces = EditorParticlesSystemDetails::GetForceVector(force, layer);
+            if (std::find(forces.begin(), forces.end(), force) != forces.end())
             {
                 return layer;
             }
@@ -397,11 +542,16 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
             break;
         }
 
+        case CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE:
+        {
+            const CommandUpdateParticleSimplifiedForce* castedCmd = static_cast<const CommandUpdateParticleSimplifiedForce*>(command);
+            SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
+            break;
+        }
         case CMDID_PARTICLE_FORCE_UPDATE:
         {
             const CommandUpdateParticleForce* castedCmd = static_cast<const CommandUpdateParticleForce*>(command);
-            SceneSignals::Instance()->EmitParticleForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
-            break;
+            SceneSignals::Instance()->EmitParticleDragForceValueChanged(activeScene, castedCmd->GetLayer(), castedCmd->GetForceIndex());
         }
 
         case CMDID_PARTICLE_EFFECT_START_STOP:
@@ -472,7 +622,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
     static const DAVA::Vector<DAVA::uint32> commandIDs =
     {
       CMDID_PARTICLE_EMITTER_UPDATE, CMDID_PARTICLE_LAYER_UPDATE, CMDID_PARTICLE_LAYER_CHANGED_MATERIAL_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES, CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES, CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP,
-      CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE,
+      CMDID_PARTILCE_LAYER_UPDATE_TIME, CMDID_PARTICLE_LAYER_UPDATE_ENABLED, CMDID_PARTICLE_FORCE_UPDATE, CMDID_PARTICLE_SIMPLIFIED_FORCE_UPDATE,
       CMDID_PARTICLE_EFFECT_START_STOP, CMDID_PARTICLE_EFFECT_RESTART, CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML,
       CMDID_PARTICLE_EMITTER_SAVE_TO_YAML,
       CMDID_PARTICLE_INNER_EMITTER_LOAD_FROM_YAML, CMDID_PARTICLE_INNER_EMITTER_SAVE_TO_YAML,
@@ -485,3 +635,6 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
         commandNotification.ExecuteForAllCommands(processSingleCommand);
     }
 }
+
+template DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner<DAVA::ParticleForce>(DAVA::ParticleForce* force) const;
+template DAVA::ParticleLayer* EditorParticlesSystem::GetForceOwner<DAVA::ParticleForceSimplified>(DAVA::ParticleForceSimplified* force) const;

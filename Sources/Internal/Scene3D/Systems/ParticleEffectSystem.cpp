@@ -7,6 +7,8 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticlesRandom.h"
+#include "Particles/ParticleForces.h"
+#include "Particles/ParticleForce.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Time/SystemTimer.h"
 #include "Utils/Random.h"
@@ -110,6 +112,7 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
     , allowLodDegrade(false)
     , is2DMode(_is2DMode)
 {
+    ParticleForces::Init();
     if (scene) //for 2d particles there would be no scene
     {
         scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
@@ -355,9 +358,15 @@ void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
             AddToActive(effect);
         effect->state = ParticleEffectComponent::STATE_STARTING;
         effect->currRepeatsCont = 0;
+
+        ExtractGlobalForces(effect);
     }
     else if (event == EventSystem::STOP_PARTICLE_EFFECT)
+    {
         RemoveFromActive(effect);
+
+        RemoveForcesFromGlobal(effect);
+    }
 }
 
 void ParticleEffectSystem::Process(float32 timeElapsed)
@@ -499,6 +508,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
     AABBox3 bbox;
     List<ParticleGroup>::iterator it = effect->effectData.groups.begin();
+    bool isInverseCalculated = false;
     while (it != effect->effectData.groups.end())
     {
         ParticleGroup& group = *it;
@@ -507,6 +517,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         group.time += dt;
         float32 groupEndTime = group.layer->isLooped ? group.layer->loopEndTime : group.layer->endTime;
         float32 currLoopTime = group.time - group.loopStartTime;
+        float32 currLoopTimeNormalized = currLoopTime / (group.layer->endTime - group.layer->startTime);
         if (group.time > groupEndTime)
             group.finishingGroup = true;
 
@@ -519,25 +530,64 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
         }
 
         //prepare forces as they will now actually change in time even for already generated particles
-        static Vector<Vector3> currForceValues;
-        int32 forcesCount;
+        static Vector<Vector3> currSimplifiedForceValues;
+        int32 simplifiedForcesCount;
+
+        static Vector<ParticleForce*> effectAlignCurrForces;
+        static Vector<ParticleForce*> worldAlignCurrForces;
+        uint32 forcesCountWorldAlign = 0;
+        uint32 effectAlignForcesCount = 0;
+
+        static Matrix4 invWorld;
         if (group.head)
         {
-            forcesCount = static_cast<int32>(group.layer->forces.size());
-            if (forcesCount)
+            simplifiedForcesCount = static_cast<int32>(group.layer->GetSimplifiedParticleForces().size());
+            if (simplifiedForcesCount)
             {
-                currForceValues.resize(forcesCount);
-                for (int32 i = 0; i < forcesCount; ++i)
+                currSimplifiedForceValues.resize(simplifiedForcesCount);
+                for (int32 i = 0; i < simplifiedForcesCount; ++i)
                 {
-                    if (group.layer->forces[i]->force)
-                        currForceValues[i] = group.layer->forces[i]->force->GetValue(currLoopTime);
+                    if (group.layer->GetSimplifiedParticleForces()[i]->force)
+                        currSimplifiedForceValues[i] = group.layer->GetSimplifiedParticleForces()[i]->force->GetValue(currLoopTime);
                     else
-                        currForceValues[i] = Vector3(0, 0, 0);
+                        currSimplifiedForceValues[i] = Vector3(0, 0, 0);
+                }
+            }
+
+            uint32 allForcesCount = static_cast<uint32>(group.layer->GetParticleForces().size());
+            if (allForcesCount > 0)
+            {
+                effectAlignCurrForces.resize(allForcesCount);
+                worldAlignCurrForces.resize(allForcesCount);
+                for (uint32 i = 0; i < allForcesCount; ++i)
+                {
+                    DAVA::ParticleForce* currForce = group.layer->GetParticleForces()[i];
+                    if (currForce->isGlobal)
+                        continue;
+
+                    if (currForce->worldAlign)
+                    {
+                        currForce->worldPosition = currForce->position + worldTransformPtr->GetTranslationVector(); // Ignore emitter rotation.
+                        worldAlignCurrForces[forcesCountWorldAlign] = currForce;
+                        ++forcesCountWorldAlign;
+                    }
+                    else
+                    {
+                        effectAlignCurrForces[effectAlignForcesCount] = currForce;
+                        ++effectAlignForcesCount;
+                        if (!isInverseCalculated)
+                        {
+                            invWorld = GetInverseWithRemovedScale(*worldTransformPtr);
+                            isInverseCalculated = true;
+                        }
+                    }
                 }
             }
         }
+
         Particle* current = group.head;
         Particle* prev = nullptr;
+
         while (current)
         {
             current->life += dt;
@@ -558,7 +608,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
 
             if (group.layer->type != ParticleLayer::TYPE_PARTICLE_STRIPE)
             {
-                UpdateRegularParticleData(effect, current, group, overLifeTime, forcesCount, currForceValues, dt, bbox);
+                UpdateRegularParticleData(effect, current, group, overLifeTime, simplifiedForcesCount, currSimplifiedForceValues, dt, bbox, effectAlignCurrForces, effectAlignForcesCount, worldAlignCurrForces, forcesCountWorldAlign, *worldTransformPtr, invWorld, currLoopTimeNormalized);
             }
 
             if (group.layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
@@ -595,7 +645,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
             }
 
             if (group.layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE)
-                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currForceValues, forcesCount, group.layer->IsLodActive(effect->activeLodLevel));
+                UpdateStripe(current, effect->effectData, group, deltaTime, bbox, currSimplifiedForceValues, simplifiedForcesCount, group.layer->IsLodActive(effect->activeLodLevel));
 
             prev = current;
             current = current->next;
@@ -714,7 +764,7 @@ void ParticleEffectSystem::UpdateStripe(Particle* particle, ParticleEffectData& 
             Vector3 acceleration;
             for (int32 i = 0; i < forcesCount; ++i)
             {
-                acceleration += (layer->forces[i]->forceOverLife) ? (currForceValues[i] * layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+                acceleration += (layer->GetSimplifiedParticleForces()[i]->forceOverLife) ? (currForceValues[i] * layer->GetSimplifiedParticleForces()[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
             }
             nodeIter->speed += acceleration * dt;
         }
@@ -891,11 +941,12 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
     return particle;
 }
 
-void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox)
+void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 simplifiedForcesCount, Vector<Vector3>& currSimplifiedForceValues, float32 dt, AABBox3& bbox, Vector<ParticleForce*> effectAlignForces, uint32 effectAlignForcesCount, Vector<ParticleForce*> worldAlignForces, uint32 worldAlignForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife)
 {
     float32 currVelocityOverLife = 1.0f;
     if (group.layer->velocityOverLife)
         currVelocityOverLife = group.layer->velocityOverLife->GetValue(overLife);
+    Vector3 prevParticlePosition = particle->position;
     particle->position += particle->speed * (currVelocityOverLife * dt);
 
     float32 currSpinOverLife = 1.0f;
@@ -904,10 +955,35 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
     particle->angle += particle->spin * currSpinOverLife * dt;
 
     Vector3 acceleration(0.0f, 0.0f, 0.0f);
-    for (int32 i = 0; i < forcesCount; ++i)
+    for (int32 i = 0; i < simplifiedForcesCount; ++i)
     {
-        acceleration += (group.layer->forces[i]->forceOverLife) ? (currForceValues[i] * group.layer->forces[i]->forceOverLife->GetValue(overLife)) : currForceValues[i];
+        acceleration += (group.layer->GetSimplifiedParticleForces()[i]->forceOverLife) ? (currSimplifiedForceValues[i] * group.layer->GetSimplifiedParticleForces()[i]->forceOverLife->GetValue(overLife)) : currSimplifiedForceValues[i];
     }
+
+    for (uint32 i = 0; i < worldAlignForcesCount; ++i)
+        ParticleForces::ApplyForce(worldAlignForces[i], particle->speed, particle->position, dt, overLife, layerOverLife, Vector3(0.0f, 0.0f, -1.0f), particle, prevParticlePosition, worldAlignForces[i]->worldPosition);
+
+    if (effectAlignForcesCount > 0)
+    {
+        Vector3 effectSpacePosition;
+        Vector3 prevEffectSpacePosition;
+        Vector3 effectSpaceSpeed;
+        effectSpacePosition = particle->position * invWorld;
+        effectSpaceSpeed = particle->speed * Matrix3(invWorld);
+        if (group.layer->GetPlaneCollisiontForcesCount() > 0)
+            prevEffectSpacePosition = prevParticlePosition * invWorld;
+
+        for (uint32 i = 0; i < effectAlignForcesCount; ++i)
+            ParticleForces::ApplyForce(effectAlignForces[i], effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition, effectAlignForces[i]->position);
+
+        particle->speed = effectSpaceSpeed * Matrix3(world);
+        if (group.layer->GetAlterPositionForcesCount() > 0)
+            particle->position = effectSpacePosition * world;
+    }
+
+    if (group.layer->applyGlobalForces)
+        ApplyGlobalForces(particle, dt, overLife, layerOverLife, prevParticlePosition);
+
     particle->speed += acceleration * dt;
 
     if (group.layer->sizeOverLifeXY)
@@ -939,6 +1015,61 @@ void ParticleEffectSystem::UpdateRegularParticleData(ParticleEffectComponent* ef
                 else
                     particle->frame = group.layer->sprite->GetFrameCount() - 1;
             }
+        }
+    }
+}
+
+void ParticleEffectSystem::ApplyGlobalForces(Particle* particle, float32 dt, float32 overLife, float32 layerOverLife, Vector3 prevParticlePosition)
+{
+    for (auto& forcePair : globalForces)
+    {
+        ParticleEffectComponent* effect = forcePair.first;
+        TransformComponent* tr = GetTransformComponent(effect->GetEntity());
+        Matrix4* worldTransformPtr = tr->GetWorldTransformPtr();
+
+        for (ParticleForce* force : forcePair.second.worldAlignForces)
+        {
+            Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position;
+            if (force->isInfinityRange || (forceWorldPosition - particle->position).SquareLength() < force->GetSquaredRadius())
+                ParticleForces::ApplyForce(force, particle->speed, particle->position, dt, overLife, layerOverLife, Vector3(0.0f, 0.0f, -1.0f), particle, prevParticlePosition, forceWorldPosition);
+        }
+
+        if (!forcePair.second.effectAlignForces.empty())
+        {
+            bool inForceBoundingSphere = false;
+            for (ParticleForce* force : forcePair.second.effectAlignForces) // Check if particle position in at least one global effect aligned force's bounding sphere.
+            {
+                if (force->isInfinityRange)
+                {
+                    inForceBoundingSphere = true;
+                    break;
+                }
+                Vector3 forceWorldPosition = worldTransformPtr->GetTranslationVector() + force->position; // Do not rotate global forces if force position is not zero.
+                float32 sqrDist = (forceWorldPosition - particle->position).SquareLength();
+                if (sqrDist < force->GetSquaredRadius())
+                {
+                    inForceBoundingSphere = true;
+                    break;
+                }
+            }
+            if (!inForceBoundingSphere)
+                continue;
+
+            Matrix4 invWorld = GetInverseWithRemovedScale(*worldTransformPtr);
+
+            Vector3 effectSpacePosition = particle->position * invWorld;
+            Vector3 prevEffectSpacePosition = prevParticlePosition * invWorld;
+            Vector3 effectSpaceSpeed = particle->speed * Matrix3(invWorld);
+            bool transformPosition = false;
+            for (ParticleForce* force : forcePair.second.effectAlignForces)
+            {
+                if (force->CanAlterPosition())
+                    transformPosition = true;
+                ParticleForces::ApplyForce(force, effectSpaceSpeed, effectSpacePosition, dt, overLife, layerOverLife, -Vector3(invWorld._20, invWorld._21, invWorld._22), particle, prevEffectSpacePosition, force->position);
+            }
+            particle->speed = effectSpaceSpeed * Matrix3(*worldTransformPtr);
+            if (transformPosition)
+                particle->position = effectSpacePosition * (*worldTransformPtr);
         }
     }
 }
@@ -1087,5 +1218,42 @@ void ParticleEffectSystem::SimulateEffect(ParticleEffectComponent* effect)
     uint32 frames = static_cast<uint32>(effect->GetStartFromTime() * particleSystemFps);
     for (uint32 i = 0; i < frames; ++i)
         UpdateEffect(effect, delta, delta);
+}
+
+void ParticleEffectSystem::ExtractGlobalForces(ParticleEffectComponent* effect)
+{
+    auto it = globalForces.find(effect);
+    if (it != globalForces.end())
+        globalForces.erase(it);
+    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
+    {
+        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
+        ParticleEmitter* emitter = emitterInst->GetEmitter();
+        for (ParticleLayer* layer : emitter->layers)
+        {
+            for (ParticleForce* force : layer->GetParticleForces())
+            {
+                if (force->isGlobal)
+                {
+                    if (force->worldAlign)
+                        globalForces[effect].worldAlignForces.push_back(force);
+                    else
+                        globalForces[effect].effectAlignForces.push_back(force);
+                }
+            }
+        }
+    }
+}
+
+void ParticleEffectSystem::RemoveForcesFromGlobal(ParticleEffectComponent* effect)
+{
+    for (uint32 i = 0; i < effect->GetEmittersCount(); ++i)
+    {
+        ParticleEmitterInstance* emitterInst = effect->GetEmitterInstance(i);
+        ParticleEmitter* emitter = emitterInst->GetEmitter();
+        auto it = globalForces.find(effect);
+        if (it != globalForces.end())
+            globalForces.erase(it);
+    }
 }
 }
