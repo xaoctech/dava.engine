@@ -259,6 +259,12 @@ using NonSerializableComponent = Meta<Metas::NonSerializableComponent>;
 
 using Tooltip = Meta<Metas::Tooltip>;
 using IntColor = Meta<Metas::IntColor>;
+
+/** 
+    \ingroup metas
+    Marks UIComponent type as multiple instances per UIControl
+*/
+using Multiple = Meta<Metas::Multiple>;
 }
 
 } // namespace DAVA

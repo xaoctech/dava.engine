@@ -35,6 +35,7 @@ public:
     bool previewEnabled = false;
     DAVA::TextureConverter::eConvertQuality compressionQuality = DAVA::TextureConverter::ECQ_DEFAULT;
     bool showErrorDialog = true;
+    DAVA::uint32 recentScenesCount = 15;
 
     // Material Editor settings
     DAVA::Color materialEditorSwitchColor0 = DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f);

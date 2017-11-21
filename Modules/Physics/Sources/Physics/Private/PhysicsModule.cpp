@@ -8,6 +8,10 @@
 #include "Physics/MeshShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
 #include "Physics/HeightFieldShapeComponent.h"
+#include "Physics/VehicleCarComponent.h"
+#include "Physics/VehicleTankComponent.h"
+#include "Physics/VehicleChassisComponent.h"
+#include "Physics/VehicleWheelComponent.h"
 #include "Physics/BoxCharacterControllerComponent.h"
 #include "Physics/CapsuleCharacterControllerComponent.h"
 #include "Physics/WASDPhysicsControllerComponent.h"
@@ -34,7 +38,7 @@ namespace PhysicsModuleDetail
 {
 physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return nullptr;
@@ -55,7 +59,7 @@ physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
 
 void ReleasePvd()
 {
-    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebug");
+    IModule* physicsDebugModule = GetEngineContext()->moduleManager->GetModule("PhysicsDebugModule");
     if (physicsDebugModule == nullptr)
     {
         return;
@@ -164,6 +168,7 @@ PhysicsModule::PhysicsModule(Engine* engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsModule);
+
     bodyComponents.reserve(2);
     bodyComponents.push_back(Type::Instance<StaticBodyComponent>());
     bodyComponents.push_back(Type::Instance<DynamicBodyComponent>());
@@ -176,6 +181,12 @@ PhysicsModule::PhysicsModule(Engine* engine)
     shapeComponents.push_back(Type::Instance<MeshShapeComponent>());
     shapeComponents.push_back(Type::Instance<ConvexHullShapeComponent>());
     shapeComponents.push_back(Type::Instance<HeightFieldShapeComponent>());
+
+    vehicleComponents.reserve(4);
+    vehicleComponents.push_back(Type::Instance<VehicleCarComponent>());
+    vehicleComponents.push_back(Type::Instance<VehicleTankComponent>());
+    vehicleComponents.push_back(Type::Instance<VehicleChassisComponent>());
+    vehicleComponents.push_back(Type::Instance<VehicleWheelComponent>());
 
     characterControllerComponents.reserve(2);
     characterControllerComponents.push_back(Type::Instance<BoxCharacterControllerComponent>());
@@ -204,6 +215,10 @@ void PhysicsModule::Init()
     cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundation, cookingParams);
     DVASSERT(cooking);
 
+    PxInitVehicleSDK(*physics);
+    PxVehicleSetBasisVectors(PxVec3(0.0f, 0.0f, 1.0f), PxVec3(1.0f, 0.0f, 0.0f));
+    PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+
     static PhysicsModuleDetail::AssertHandler assertHandler;
     PxSetAssertHandler(assertHandler);
 
@@ -219,6 +234,11 @@ void PhysicsModule::Init()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightFieldShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CharacterControllerComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleCarComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleTankComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleChassisComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VehicleWheelComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BoxCharacterControllerComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CapsuleCharacterControllerComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WASDPhysicsControllerComponent);
@@ -226,6 +246,8 @@ void PhysicsModule::Init()
 
 void PhysicsModule::Shutdown()
 {
+    physx::PxCloseVehicleSDK();
+
     if (defaultMaterial != nullptr)
     {
         defaultMaterial->release();
@@ -471,6 +493,11 @@ physx::PxMaterial* PhysicsModule::GetDefaultMaterial() const
     return defaultMaterial;
 }
 
+physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
+{
+    return allocator;
+}
+
 const Vector<const Type*>& PhysicsModule::GetBodyComponentTypes() const
 {
     return bodyComponents;
@@ -479,6 +506,11 @@ const Vector<const Type*>& PhysicsModule::GetBodyComponentTypes() const
 const Vector<const Type*>& PhysicsModule::GetShapeComponentTypes() const
 {
     return shapeComponents;
+}
+
+const Vector<const Type*>& PhysicsModule::GetVehicleComponentTypes() const
+{
+    return vehicleComponents;
 }
 
 const Vector<const Type*>& PhysicsModule::GetCharacterControllerComponentTypes() const

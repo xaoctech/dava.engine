@@ -26,27 +26,27 @@ using namespace DAVA;
 
 namespace
 {
-const Array<HUDAreaInfo::eArea, 2> AreasToHide = { { HUDAreaInfo::PIVOT_POINT_AREA, HUDAreaInfo::ROTATE_AREA } };
+const Array<eArea, 2> AreasToHide = { { eArea::PIVOT_POINT_AREA, eArea::ROTATE_AREA } };
 }
 
-std::unique_ptr<ControlContainer> CreateControlContainer(HUDAreaInfo::eArea area, DAVA::TArc::ContextAccessor* accessor)
+std::unique_ptr<ControlContainer> CreateControlContainer(eArea area, DAVA::TArc::ContextAccessor* accessor)
 {
     switch (area)
     {
-    case HUDAreaInfo::PIVOT_POINT_AREA:
+    case eArea::PIVOT_POINT_AREA:
         return std::unique_ptr<ControlContainer>(new PivotPointControl(accessor));
-    case HUDAreaInfo::ROTATE_AREA:
+    case eArea::ROTATE_AREA:
         return std::unique_ptr<ControlContainer>(new RotateControl(accessor));
-    case HUDAreaInfo::TOP_LEFT_AREA:
-    case HUDAreaInfo::TOP_CENTER_AREA:
-    case HUDAreaInfo::TOP_RIGHT_AREA:
-    case HUDAreaInfo::CENTER_LEFT_AREA:
-    case HUDAreaInfo::CENTER_RIGHT_AREA:
-    case HUDAreaInfo::BOTTOM_LEFT_AREA:
-    case HUDAreaInfo::BOTTOM_CENTER_AREA:
-    case HUDAreaInfo::BOTTOM_RIGHT_AREA:
+    case eArea::TOP_LEFT_AREA:
+    case eArea::TOP_CENTER_AREA:
+    case eArea::TOP_RIGHT_AREA:
+    case eArea::CENTER_LEFT_AREA:
+    case eArea::CENTER_RIGHT_AREA:
+    case eArea::BOTTOM_LEFT_AREA:
+    case eArea::BOTTOM_CENTER_AREA:
+    case eArea::BOTTOM_RIGHT_AREA:
         return std::unique_ptr<ControlContainer>(new FrameRectControl(area, accessor));
-    case HUDAreaInfo::FRAME_AREA:
+    case eArea::FRAME_AREA:
         return std::unique_ptr<ControlContainer>(new FrameControl(FrameControl::SELECTION, accessor));
     default:
         DVASSERT(!"unacceptable value of area");
@@ -62,7 +62,7 @@ struct HUDSystem::HUD
     UIControl* control = nullptr;
     UIControl* hudControl = nullptr;
     std::unique_ptr<ControlContainer> container;
-    Map<HUDAreaInfo::eArea, ControlContainer*> hudControls;
+    Map<eArea, ControlContainer*> hudControls;
 };
 
 HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem, UIControl* hudControl_)
@@ -72,36 +72,36 @@ HUDSystem::HUD::HUD(ControlNode* node_, HUDSystem* hudSystem, UIControl* hudCont
     , container(new HUDContainer(node_))
 {
     container->SetName(String("Container_for_HUD_controls_of_node"));
-    DAVA::Vector<HUDAreaInfo::eArea> areas;
+    DAVA::Vector<eArea> areas;
     if (node->GetParent() != nullptr && node->GetParent()->GetControl() != nullptr)
     {
-        areas.reserve(HUDAreaInfo::AREAS_COUNT);
-        for (int area = HUDAreaInfo::AREAS_COUNT - 1; area >= HUDAreaInfo::AREAS_BEGIN; --area)
+        areas.reserve(eArea::AREAS_COUNT);
+        for (int area = eArea::AREAS_COUNT - 1; area >= eArea::AREAS_BEGIN; --area)
         {
             ControlTransformationSettings* settings = hudSystem->GetSettings();
-            if ((settings->showPivot == false && area == HUDAreaInfo::PIVOT_POINT_AREA) ||
-                (settings->showRotate == false && area == HUDAreaInfo::ROTATE_AREA))
+            if ((settings->showPivot == false && area == eArea::PIVOT_POINT_AREA) ||
+                (settings->showRotate == false && area == eArea::ROTATE_AREA))
             {
                 continue;
             }
-            areas.push_back(static_cast<HUDAreaInfo::eArea>(area));
+            areas.push_back(static_cast<eArea>(area));
         }
     }
     else
     {
         //custom areas for root control
         areas = {
-            HUDAreaInfo::TOP_LEFT_AREA,
-            HUDAreaInfo::TOP_CENTER_AREA,
-            HUDAreaInfo::TOP_RIGHT_AREA,
-            HUDAreaInfo::CENTER_LEFT_AREA,
-            HUDAreaInfo::CENTER_RIGHT_AREA,
-            HUDAreaInfo::BOTTOM_LEFT_AREA,
-            HUDAreaInfo::BOTTOM_CENTER_AREA,
-            HUDAreaInfo::BOTTOM_RIGHT_AREA
+            eArea::TOP_LEFT_AREA,
+            eArea::TOP_CENTER_AREA,
+            eArea::TOP_RIGHT_AREA,
+            eArea::CENTER_LEFT_AREA,
+            eArea::CENTER_RIGHT_AREA,
+            eArea::BOTTOM_LEFT_AREA,
+            eArea::BOTTOM_CENTER_AREA,
+            eArea::BOTTOM_RIGHT_AREA
         };
     }
-    for (HUDAreaInfo::eArea area : areas)
+    for (eArea area : areas)
     {
         std::unique_ptr<ControlContainer> controlContainer = CreateControlContainer(area, hudSystem->GetAccessor());
         hudControls[area] = controlContainer.get();
@@ -127,6 +127,7 @@ class HUDControl : public UIControl
 
 HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
+    , hudMap(CompareByLCA)
 {
     systemsDataWrapper = accessor->CreateWrapper(DAVA::ReflectedTypeDB::Get<EditorSystemsData>());
     GetSystemsManager()->magnetLinesChanged.Connect(this, &HUDSystem::OnMagnetLinesChanged);
@@ -134,7 +135,7 @@ HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
 
 HUDSystem::~HUDSystem() = default;
 
-BaseEditorSystem::eSystems HUDSystem::GetOrder() const
+eSystems HUDSystem::GetOrder() const
 {
     return eSystems::HUD;
 }
@@ -155,19 +156,7 @@ void HUDSystem::OnUpdate()
 
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     SelectedNodes selection = documentData->GetSelectedNodes();
-    for (auto iter = hudMap.begin(); iter != hudMap.end();)
-    {
-        ControlNode* node = iter->first;
-        if (selection.find(node) == selection.end())
-        {
-            iter = hudMap.erase(iter);
-        }
-        else
-        {
-            ++iter;
-        }
-    }
-
+    hudMap.clear();
     for (PackageBaseNode* node : selection)
     {
         ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
@@ -185,7 +174,7 @@ void HUDSystem::OnUpdate()
 
     for (const auto& iter : hudMap)
     {
-        for (HUDAreaInfo::eArea area : AreasToHide)
+        for (eArea area : AreasToHide)
         {
             auto hudControlsIter = iter.second->hudControls.find(area);
             if (hudControlsIter != iter.second->hudControls.end())
@@ -203,11 +192,12 @@ void HUDSystem::OnUpdate()
     }
 
     EditorSystemsData* systemsData = accessor->GetGlobalContext()->GetData<EditorSystemsData>();
-    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag &&
-        GetSystemsManager()->GetDisplayState() != EditorSystemsManager::Emulation &&
+    const EditorSystemsManager* systemsManager = GetSystemsManager();
+    if (systemsManager->GetDragState() == eDragState::NoDrag &&
+        systemsManager->GetDisplayState() != eDisplayState::Emulation &&
         systemsData->IsHighlightDisabled() == false)
     {
-        ControlNode* node = GetSystemsManager()->GetControlNodeAtPoint(hoveredPoint);
+        ControlNode* node = systemsManager->GetControlNodeAtPoint(systemsManager->GetLastMousePos());
         SetHighlight(node);
     }
     else
@@ -215,26 +205,32 @@ void HUDSystem::OnUpdate()
         SetHighlight(nullptr);
     }
 
-    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::NoDrag)
+    if (GetSystemsManager()->GetDragState() == eDragState::NoDrag)
     {
         bool findPivot = hudMap.size() == 1 && IsKeyPressed(eModifierKeys::CONTROL) && IsKeyPressed(eModifierKeys::ALT);
         eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
-        ProcessCursor(hoveredPoint, searchOrder);
+        ProcessCursor(systemsManager->GetLastMousePos(), searchOrder);
     }
 }
 
-void HUDSystem::ProcessInput(UIEvent* currentInput)
+void HUDSystem::ProcessInput(UIEvent* currentInput, eInputSource inputSource)
 {
+    const EditorSystemsManager* systemsManager = GetSystemsManager();
+
     UIEvent::Phase phase = currentInput->phase;
-    if (currentInput->point.x > 0.0f && currentInput->point.y > 0.0f)
+    if (inputSource == eInputSource::SYSTEM)
     {
         hoveredPoint = currentInput->point;
+    }
+    else
+    {
+        pressedPoint -= systemsManager->GetMouseDelta();
     }
 
     switch (phase)
     {
     case UIEvent::Phase::DRAG:
-        if (GetSystemsManager()->GetDragState() == EditorSystemsManager::SelectByRect)
+        if (systemsManager->GetDragState() == eDragState::SelectByRect)
         {
             Vector2 point(pressedPoint);
             Vector2 size(hoveredPoint - pressedPoint);
@@ -248,7 +244,6 @@ void HUDSystem::ProcessInput(UIEvent* currentInput)
                 point.y += size.y;
                 size.y *= -1.0f;
             }
-
             selectionRectControl->SetRect(Rect(point, size));
             selectionRectChanged.Emit(selectionRectControl->GetAbsoluteRect());
         }
@@ -378,7 +373,7 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
 
 void HUDSystem::ProcessCursor(const Vector2& pos, eSearchOrder searchOrder)
 {
-    if (GetSystemsManager()->GetDragState() == EditorSystemsManager::SelectByRect)
+    if (GetSystemsManager()->GetDragState() == eDragState::SelectByRect)
     {
         return;
     }
@@ -387,28 +382,24 @@ void HUDSystem::ProcessCursor(const Vector2& pos, eSearchOrder searchOrder)
 
 HUDAreaInfo HUDSystem::GetControlArea(const Vector2& pos, eSearchOrder searchOrder) const
 {
-    uint32 end = HUDAreaInfo::AREAS_BEGIN;
+    uint32 end = eArea::AREAS_BEGIN;
     int sign = 1;
     if (searchOrder == SEARCH_BACKWARD)
     {
-        if (HUDAreaInfo::AREAS_BEGIN != HUDAreaInfo::AREAS_COUNT)
+        if (eArea::AREAS_BEGIN != eArea::AREAS_COUNT)
         {
-            end = HUDAreaInfo::AREAS_COUNT - 1;
+            end = eArea::AREAS_COUNT - 1;
         }
         sign = -1;
     }
-    for (uint32 i = HUDAreaInfo::AREAS_BEGIN; i < HUDAreaInfo::AREAS_COUNT; ++i)
+    for (uint32 i = eArea::AREAS_BEGIN; i < eArea::AREAS_COUNT; ++i)
     {
-        for (const auto& iter : GetSortedControlList())
+        for (auto iter = hudMap.rbegin(); iter != hudMap.rend(); ++iter)
         {
-            ControlNode* node = dynamic_cast<ControlNode*>(iter);
-            DVASSERT(nullptr != node);
-            auto findIter = hudMap.find(node);
-            DVASSERT(findIter != hudMap.end(), "hud map corrupted");
-            const auto& hud = findIter->second;
+            const std::unique_ptr<HUD>& hud = iter->second;
             if (hud->container->GetVisibilityFlag() && !hud->container->IsHiddenForDebug())
             {
-                HUDAreaInfo::eArea area = static_cast<HUDAreaInfo::eArea>(end + sign * i);
+                eArea area = static_cast<eArea>(end + sign * i);
                 auto hudControlsIter = hud->hudControls.find(area);
                 if (hudControlsIter != hud->hudControls.end())
                 {
@@ -433,17 +424,17 @@ void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
     }
 }
 
-void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState)
+void HUDSystem::OnDragStateChanged(eDragState currentState, eDragState previousState)
 {
     switch (currentState)
     {
-    case EditorSystemsManager::SelectByRect:
+    case eDragState::SelectByRect:
         DVASSERT(selectionRectControl == nullptr);
         selectionRectControl.reset(new FrameControl(FrameControl::SELECTION_RECT, accessor));
         selectionRectControl->AddToParent(hudControl.Get());
         selectionByRectStarted.Emit();
         break;
-    case EditorSystemsManager::DragScreen:
+    case eDragState::DragScreen:
         UpdateHUDEnabled();
         break;
     default:
@@ -452,16 +443,16 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
 
     switch (previousState)
     {
-    case EditorSystemsManager::SelectByRect:
+    case eDragState::SelectByRect:
         DVASSERT(selectionRectControl != nullptr);
         selectionRectControl->RemoveFromParent(hudControl.Get());
         selectionRectControl = nullptr;
         selectionByRectFinished.Emit();
         break;
-    case EditorSystemsManager::Transform:
+    case eDragState::Transform:
         ClearMagnetLines();
         break;
-    case EditorSystemsManager::DragScreen:
+    case eDragState::DragScreen:
         UpdateHUDEnabled();
         break;
     default:
@@ -469,7 +460,7 @@ void HUDSystem::OnDragStateChanged(EditorSystemsManager::eDragState currentState
     }
 }
 
-void HUDSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState, EditorSystemsManager::eDisplayState)
+void HUDSystem::OnDisplayStateChanged(eDisplayState, eDisplayState)
 {
     UpdateHUDEnabled();
 }
@@ -490,7 +481,7 @@ void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
     hudControl = nullptr;
 }
 
-bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     using namespace DAVA::TArc;
 
@@ -499,42 +490,42 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
     {
         return false;
     }
-    EditorSystemsManager::eDisplayState displayState = GetSystemsManager()->GetDisplayState();
-    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
-    return (displayState == EditorSystemsManager::Edit || displayState == EditorSystemsManager::Preview)
-    && dragState != EditorSystemsManager::Transform;
+    eDisplayState displayState = GetSystemsManager()->GetDisplayState();
+    eDragState dragState = GetSystemsManager()->GetDragState();
+    return (displayState == eDisplayState::Edit || displayState == eDisplayState::Preview)
+    && dragState != eDragState::Transform;
 }
 
-EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput)
+eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     if (accessor->GetActiveContext() == nullptr)
     {
-        return EditorSystemsManager::NoDrag;
+        return eDragState::NoDrag;
     }
 
-    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
+    eDragState dragState = GetSystemsManager()->GetDragState();
     //ignore all input devices except mouse while selecting by rect
-    if (dragState == EditorSystemsManager::SelectByRect && currentInput->device != eInputDevices::MOUSE)
+    if (dragState == eDragState::SelectByRect && currentInput->device != eInputDevices::MOUSE)
     {
-        return EditorSystemsManager::SelectByRect;
+        return eDragState::SelectByRect;
     }
-    if (dragState == EditorSystemsManager::Transform || dragState == EditorSystemsManager::DragScreen)
+    if (dragState == eDragState::Transform || dragState == eDragState::DragScreen)
     {
-        return EditorSystemsManager::NoDrag;
+        return eDragState::NoDrag;
     }
 
     Vector2 point = currentInput->point;
     if (currentInput->phase == UIEvent::Phase::BEGAN
-        && dragState != EditorSystemsManager::SelectByRect)
+        && dragState != eDragState::SelectByRect)
     {
         pressedPoint = point;
     }
     if (currentInput->phase == UIEvent::Phase::DRAG)
     {
         //if we in selectByRect and still drag mouse - continue this state
-        if (dragState == EditorSystemsManager::SelectByRect)
+        if (dragState == eDragState::SelectByRect)
         {
-            return EditorSystemsManager::SelectByRect;
+            return eDragState::SelectByRect;
         }
         //check that we can draw rect
         Vector<ControlNode*> nodesUnderPoint;
@@ -554,11 +545,11 @@ EditorSystemsManager::eDragState HUDSystem::RequireNewState(DAVA::UIEvent* curre
             ControlTransformationSettings* settings = GetSettings();
             if (fabs(rectSize.dx) >= settings->minimumSelectionRectSize.dx || fabs(rectSize.dy) >= settings->minimumSelectionRectSize.dy)
             {
-                return EditorSystemsManager::SelectByRect;
+                return eDragState::SelectByRect;
             }
         }
     }
-    return EditorSystemsManager::NoDrag;
+    return eDragState::NoDrag;
 }
 
 void HUDSystem::ClearMagnetLines()
@@ -569,8 +560,8 @@ void HUDSystem::ClearMagnetLines()
 
 void HUDSystem::UpdateHUDEnabled()
 {
-    bool enabled = GetSystemsManager()->GetDragState() != EditorSystemsManager::DragScreen
-    && GetSystemsManager()->GetDisplayState() == EditorSystemsManager::Edit;
+    bool enabled = GetSystemsManager()->GetDragState() != eDragState::DragScreen
+    && GetSystemsManager()->GetDisplayState() == eDisplayState::Edit;
     hudControl->SetVisibilityFlag(enabled);
 }
 
@@ -582,31 +573,4 @@ ControlTransformationSettings* HUDSystem::GetSettings()
 DAVA::TArc::ContextAccessor* HUDSystem::GetAccessor()
 {
     return accessor;
-}
-
-SortedControlNodeSet HUDSystem::GetSortedControlList() const
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    SortedControlNodeSet sortedControls(CompareByLCA);
-
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return sortedControls;
-    }
-
-    DocumentData* documentData = activeContext->GetData<DocumentData>();
-    const SelectedNodes& selectedNodes = documentData->GetSelectedNodes();
-
-    for (PackageBaseNode* node : selectedNodes)
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (nullptr != controlNode && nullptr != controlNode->GetControl())
-        {
-            sortedControls.insert(controlNode);
-        }
-    }
-    return sortedControls;
 }

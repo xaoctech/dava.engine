@@ -521,6 +521,26 @@ RenderObject* CreateRenderObject(const physx::PxGeometryHolder& geometry, uint32
     return ro;
 }
 
+void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const UnorderedMap<Entity*, RenderObject*>& entityToRoMap)
+{
+    auto roIter = entityToRoMap.find(root);
+    if (roIter != entityToRoMap.end() && roIter->second != nullptr)
+    {
+        Matrix4* worldTransformPointer = root->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+        roIter->second->SetWorldTransformPtr(worldTransformPointer);
+        scene->renderSystem->MarkForUpdate(roIter->second);
+    }
+
+    const size_t childrenCount = root->GetChildrenCount();
+    for (int i = 0; i < childrenCount; ++i)
+    {
+        Entity* child = root->GetChild(i);
+        DVASSERT(child != nullptr);
+
+        MarkRenderObjectsForUpdateRecursively(scene, child, entityToRoMap);
+    }
+}
+
 } // namespace PhysicsDebugDrawSystemDetail
 
 uint32 PhysicsDebugDrawSystem::vertexLayoutId = static_cast<uint32>(-1);
@@ -675,22 +695,15 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
     {
         for (auto& pair : trSingle->worldTransformChanged.map)
         {
-            for (const Type* type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
+            for (Entity* e : pair.second)
             {
-                if (pair.first->GetComponentsCount(type) > 0)
-                {
-                    for (Entity* e : pair.second)
-                    {
-                        auto roIter = mapping.find(e);
-                        if (roIter != mapping.end() && roIter->second != nullptr)
-                        {
-                            Matrix4* worldTransformPointer = e->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-                            roIter->second->SetWorldTransformPtr(worldTransformPointer);
-                            GetScene()->renderSystem->MarkForUpdate(roIter->second);
-                        }
-                    }
-                }
+                MarkRenderObjectsForUpdateRecursively(GetScene(), e, mapping);
             }
+        }
+
+        for (DAVA::Entity* e : trSingle->localTransformChanged)
+        {
+            MarkRenderObjectsForUpdateRecursively(GetScene(), e, mapping);
         }
     }
 }

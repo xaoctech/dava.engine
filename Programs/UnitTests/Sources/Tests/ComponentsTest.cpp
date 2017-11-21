@@ -13,6 +13,10 @@
 #include "Entity/ComponentManager.h"
 #include "Entity/ComponentUtils.h"
 
+#include <Physics/PhysicsComponent.h>
+#include <Physics/StaticBodyComponent.h>
+#include <Physics/DynamicBodyComponent.h>
+
 using namespace DAVA;
 
 class SingleComponentSystem : public SceneSystem
@@ -296,6 +300,16 @@ DAVA_TESTCLASS (ComponentsTest)
         entity->AddComponent(new SwitchComponent());
         entity->AddComponent(new TextComponent());
 
+        DVASSERT(entity->GetComponent<TransformComponent>()->GetType()->Is<TransformComponent>());
+        DVASSERT(entity->GetComponent<LightComponent>()->GetType()->Is<LightComponent>());
+        DVASSERT(entity->GetComponent<ActionComponent>()->GetType()->Is<ActionComponent>());
+        DVASSERT(entity->GetComponent<AnimationComponent>()->GetType()->Is<AnimationComponent>());
+        DVASSERT(entity->GetComponent<CameraComponent>()->GetType()->Is<CameraComponent>());
+        DVASSERT(entity->GetComponent<CustomPropertiesComponent>()->GetType()->Is<CustomPropertiesComponent>());
+        DVASSERT(entity->GetComponent<ParticleEffectComponent>()->GetType()->Is<ParticleEffectComponent>());
+        DVASSERT(entity->GetComponent<SwitchComponent>()->GetType()->Is<SwitchComponent>());
+        DVASSERT(entity->GetComponent<SwitchComponent>()->GetType()->Is<SwitchComponent>());
+
         flags |= ComponentUtils::MakeComponentMask<LightComponent>();
         flags |= ComponentUtils::MakeComponentMask<ActionComponent>();
         flags |= ComponentUtils::MakeComponentMask<AnimationComponent>();
@@ -324,8 +338,6 @@ DAVA_TESTCLASS (ComponentsTest)
         TEST_VERIFY(ecf != flags);
         TEST_VERIFY(ecf == (flags ^ ComponentUtils::MakeComponentMask<TransformComponent>()));
 
-        entity->GetComponent<LightComponent>()->GetType() == Type::Instance<LightComponent>();
-
         const Vector<const Type*> types = {
             Type::Instance<LightComponent>(), Type::Instance<ActionComponent>(),
             Type::Instance<AnimationComponent>(), Type::Instance<CameraComponent>(),
@@ -344,6 +356,24 @@ DAVA_TESTCLASS (ComponentsTest)
         }
 
         SafeRelease(entity); // Components will be released in Entity destructor
+    }
+
+    DAVA_TEST (ComponentsInheritanceTest)
+    {
+        Entity* entity = new Entity();
+
+        entity->AddComponent(new DynamicBodyComponent());
+        entity->AddComponent(new StaticBodyComponent());
+
+        DVASSERT(entity->GetComponent<PhysicsComponent>() == nullptr);
+
+        PhysicsComponent* c1 = static_cast<PhysicsComponent*>(entity->GetComponent<DynamicBodyComponent>());
+        PhysicsComponent* c2 = static_cast<PhysicsComponent*>(entity->GetComponent<StaticBodyComponent>());
+
+        DVASSERT(c1->GetType() == Type::Instance<DynamicBodyComponent>());
+        DVASSERT(c2->GetType() == Type::Instance<StaticBodyComponent>());
+
+        SafeRelease(entity);
     }
 
     DAVA_TEST (RegisterEntityTest)

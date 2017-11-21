@@ -30,9 +30,7 @@ public:
     const Type* GetType() const;
     uint32 GetRuntimeIndex() const;
 
-    /**
-        Clone component. Then add cloned component to specified `toEntity` if `toEntity` is not nullptr. Return cloned component.
-    */
+    /** Clone component. Then add cloned component to specified `toEntity` if `toEntity` is not nullptr. Return cloned component. */
     virtual Component* Clone(Entity* toEntity) = 0;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -41,21 +39,15 @@ public:
     inline Entity* GetEntity() const;
     virtual void SetEntity(Entity* entity);
 
-    /**
-        \brief This function should be implemented in each node that have data nodes inside it.
-     */
+    /** This function should be implemented in each node that have data nodes inside it. */
     virtual void GetDataNodes(Set<DataNode*>& dataNodes);
 
-    /**
-        \brief This function optimize component before export.
-    */
+    /** This function optimizes component before export. */
     virtual void OptimizeBeforeExport()
     {
     }
 
-    /**
-        \brief Function to get data nodes of requested type to specific container you provide.
-    */
+    /** Function to get data nodes of requested type to specific container you provide. */
     template <template <typename> class Container, class T>
     void GetDataNodes(Container<T>& container);
 

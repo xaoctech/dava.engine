@@ -73,6 +73,8 @@ public:
     void SetReflectionVisible(bool visible);
     bool GetRefractionVisible() const;
     void SetRefractionVisible(bool visible);
+    bool GetClippingVisible() const;
+    void SetClippingVisible(bool visible);
 
     float32 GetStartFromTime() const;
     void SetStartFromTime(float32 time);
