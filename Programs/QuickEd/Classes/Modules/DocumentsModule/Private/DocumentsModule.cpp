@@ -197,10 +197,20 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     watcherData->Unwatch(path);
 }
 
+void DocumentsModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate();
+}
+
 void DocumentsModule::InitCentralWidget()
 {
     using namespace DAVA;
-    using namespace TArc;
+    using namespace DAVA::TArc;
 
     UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
@@ -958,6 +968,9 @@ void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& c
     {
         contextManager->DeleteContext(contextID);
     }
+
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate();
 }
 
 void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids)
@@ -1192,6 +1205,9 @@ void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsCo
         displayedRootControls.erase(nodeToRemove);
     }
     documentData->SetDisplayedRootControls(displayedRootControls);
+
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate(nodeToRemove);
 }
 
 void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int)
