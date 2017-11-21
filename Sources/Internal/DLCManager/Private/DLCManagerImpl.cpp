@@ -215,7 +215,7 @@ PackRequest* DLCManagerImpl::CastToPackRequest(const IRequest* request)
 {
     // PackRequest is the only child - we can use static_cast
     const PackRequest* r = static_cast<const PackRequest*>(request);
-    // we can change underlining object as we wish - user not
+    // we can change implementation object as we wish - user not
     PackRequest* packRequest = const_cast<PackRequest*>(r);
     return packRequest;
 }
@@ -1548,7 +1548,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
             PackRequest* depRequest = FindRequest(depPackName);
             if (nullptr != depRequest)
             {
-                // copy localy name of pack to frevent UB, after deleting pack
+                // make copy name to frevent UB, after deleting pack
                 const String packToRemove = depRequest->GetRequestedPackName();
                 RemovePack(packToRemove);
             }
