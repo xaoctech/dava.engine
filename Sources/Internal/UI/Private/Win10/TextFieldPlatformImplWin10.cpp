@@ -768,9 +768,8 @@ void TextFieldPlatformImpl::OnTextChanged()
         newText.erase(i, newText.end());
     }
 
-    bool textAccepted = true;
     auto self{ shared_from_this() };
-    RunOnMainThread([this, self, &newText, &textAccepted]() {
+    RunOnMainThreadAsync([this, self, newText]() {
         bool targetAlive = uiTextField != nullptr && textFieldDelegate != nullptr;
         if (targetAlive && programmaticTextChange && newText != lastProgrammaticText)
         {
