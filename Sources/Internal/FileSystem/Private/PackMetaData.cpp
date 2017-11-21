@@ -109,25 +109,6 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     GenerateDependencyMatrix(numPacks);
 }
 
-bool PackMetaData::FindFileIndexIf(uint32 packIndexNeeded, const Function<bool(uint32)>& predicate) const
-{
-    DVASSERT(packIndexNeeded < packIndexes.size());
-
-    const uint32 size = static_cast<uint32>(packIndexes.size());
-    for (uint32 fileIndex = 0; fileIndex < size; ++fileIndex)
-    {
-        const uint32 packIndex = packIndexes[fileIndex];
-        if (packIndex == packIndexNeeded)
-        {
-            if (predicate(fileIndex))
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 const PackMetaData::Dependencies& PackMetaData::GetDependencies(uint32 packIndex) const
 {
     // all dependent packs with all sub-dependencies
