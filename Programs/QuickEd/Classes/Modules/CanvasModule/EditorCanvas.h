@@ -17,19 +17,17 @@ public:
     EditorCanvas(DAVA::TArc::ContextAccessor* accessor);
 
 private:
-    bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    void ProcessInput(DAVA::UIEvent* currentInput) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
     eSystems GetOrder() const override;
     void OnUpdate() override;
 
-    void InitFieldBinder();
-    void OnMovableControlPositionChanged(const DAVA::Any& movableControlPosition);
+    void OnPositionChanged(const DAVA::Any& movableControlPosition);
     void OnScaleChanged(const DAVA::Any& scale);
-
-    void UpdateMovableControlState();
+    void MoveSceneByUpdate();
 
     CanvasDataAdapter canvasDataAdapter;
     DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
