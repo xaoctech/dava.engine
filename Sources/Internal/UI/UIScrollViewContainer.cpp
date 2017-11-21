@@ -131,17 +131,17 @@ void UIScrollViewContainer::Input(UIEvent* currentTouch)
 
         switch (currentTouch->phase)
         {
-        case UIEvent::Phase::BEGAN:
-        {
-            scrollStartInitialPosition = currentTouch->point;
-            scrollStartMovement = false;
-            state = STATE_SCROLL;
-            lockTouch = true;
-            oldPos = newPos;
-        }
-        break;
         case UIEvent::Phase::DRAG:
         {
+            if (!lockTouch)
+            {
+                scrollStartInitialPosition = currentTouch->point;
+                scrollStartMovement = false;
+                state = STATE_SCROLL;
+                lockTouch = true;
+                oldPos = newPos;
+            }
+
             if (state == STATE_SCROLL)
             {
                 scrollStartMovement = true;
@@ -186,36 +186,43 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
         if (IsPointInside(currentTouch->point))
         {
             currentScroll = nullptr;
-            mainTouch = currentTouch->touchId;
             PerformEvent(EVENT_TOUCH_DOWN, currentTouch);
             Input(currentTouch);
         }
     }
-    else if (currentTouch->touchId == mainTouch && currentTouch->phase == UIEvent::Phase::DRAG)
+    else if (currentTouch->phase == UIEvent::Phase::DRAG)
     {
-        // Don't scroll if touchTreshold is not exceeded
-        if ((Abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
-            (Abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
+        if (mainTouch == -1 && IsPointInside(currentTouch->point))
         {
-            UIScrollView* scrollView = DynamicTypeCheck<UIScrollView*>(this->GetParent());
-            DVASSERT(scrollView);
-            if (enableHorizontalScroll
-                && Abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold
-                && (!currentScroll || currentScroll == scrollView->GetHorizontalScroll()))
+            mainTouch = currentTouch->touchId;
+        }
+
+        if (currentTouch->touchId == mainTouch)
+        {
+            // Don't scroll if touchTreshold is not exceeded
+            if ((Abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
+                (Abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
             {
-                currentScroll = scrollView->GetHorizontalScroll();
+                UIScrollView* scrollView = DynamicTypeCheck<UIScrollView*>(this->GetParent());
+                DVASSERT(scrollView);
+                if (enableHorizontalScroll
+                    && Abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold
+                    && (!currentScroll || currentScroll == scrollView->GetHorizontalScroll()))
+                {
+                    currentScroll = scrollView->GetHorizontalScroll();
+                }
+                else if (enableVerticalScroll
+                         && (Abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold)
+                         && (!currentScroll || currentScroll == scrollView->GetVerticalScroll()))
+                {
+                    currentScroll = scrollView->GetVerticalScroll();
+                }
+                if (currentTouch->touchLocker != this && currentScroll)
+                {
+                    GetEngineContext()->uiControlSystem->SwitchInputToControl(mainTouch, this);
+                }
+                Input(currentTouch);
             }
-            else if (enableVerticalScroll
-                     && (Abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold)
-                     && (!currentScroll || currentScroll == scrollView->GetVerticalScroll()))
-            {
-                currentScroll = scrollView->GetVerticalScroll();
-            }
-            if (currentTouch->touchLocker != this && currentScroll)
-            {
-                GetEngineContext()->uiControlSystem->SwitchInputToControl(mainTouch, this);
-            }
-            Input(currentTouch);
         }
     }
     else if (currentTouch->touchId == mainTouch && currentTouch->phase == UIEvent::Phase::ENDED)

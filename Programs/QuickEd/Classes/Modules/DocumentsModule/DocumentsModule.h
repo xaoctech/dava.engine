@@ -84,7 +84,6 @@ private:
     void ApplyFileChanges();
     DAVA::TArc::DataContext::ContextID GetContextByPath(const QString& path) const;
 
-    void OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState);
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
 

@@ -36,14 +36,14 @@ Painter::Painter()
     textureMaterial = SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL);
 }
 
-void Painter::Draw(uint32 order, DrawTextParams params)
+void Painter::Draw(eSystems order, DrawTextParams params)
 {
     ApplyParamPos(params);
     Vector<DrawTextParams>& items = drawItems[order].drawTextItems;
     items.push_back(params);
 }
 
-void Painter::Draw(uint32 order, const DrawLineParams& params)
+void Painter::Draw(eSystems order, const DrawLineParams& params)
 {
     Vector<DrawLineParams>& items = drawItems[order].drawLineItems;
     items.push_back(params);
