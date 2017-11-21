@@ -43,25 +43,25 @@ Painting::Painter* BaseEditorSystem::GetPainter() const
     return painter;
 }
 
-void BaseEditorSystem::ProcessInput(DAVA::UIEvent* /*currentInput*/)
+void BaseEditorSystem::ProcessInput(DAVA::UIEvent* /*currentInput*/, eInputSource /*inputSource*/)
 {
 }
 
-bool BaseEditorSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool BaseEditorSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     return false;
 }
 
-EditorSystemsManager::eDragState BaseEditorSystem::RequireNewState(DAVA::UIEvent* currentInput)
+eDragState BaseEditorSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
-    return EditorSystemsManager::NoDrag;
+    return eDragState::NoDrag;
 }
 
-void BaseEditorSystem::OnDragStateChanged(EditorSystemsManager::eDragState /*currentState*/, EditorSystemsManager::eDragState /*previousState*/)
+void BaseEditorSystem::OnDragStateChanged(eDragState /*currentState*/, eDragState /*previousState*/)
 {
 }
 
-void BaseEditorSystem::OnDisplayStateChanged(EditorSystemsManager::eDisplayState /*currentState*/, EditorSystemsManager::eDisplayState /*previousState*/)
+void BaseEditorSystem::OnDisplayStateChanged(eDisplayState /*currentState*/, eDisplayState /*previousState*/)
 {
 }
 

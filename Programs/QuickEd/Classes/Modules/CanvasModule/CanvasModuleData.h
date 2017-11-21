@@ -9,6 +9,7 @@
 
 class EditorCanvas;
 class EditorControlsView;
+class CanvasDataAdapter;
 
 class CanvasModuleData : public DAVA::TArc::DataNode
 {
@@ -26,8 +27,9 @@ private:
 
     std::unique_ptr<EditorCanvas> editorCanvas;
     std::unique_ptr<EditorControlsView> controlsView;
-    DAVA::RefPtr<DAVA::UIControl> canvas;
+    std::unique_ptr<CanvasDataAdapter> canvasDataAdapter;
 
+    DAVA::RefPtr<DAVA::UIControl> canvas;
     struct ActionInfo
     {
         QString name;

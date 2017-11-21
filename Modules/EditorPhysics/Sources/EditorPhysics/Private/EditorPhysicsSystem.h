@@ -36,6 +36,7 @@ private:
 private:
     struct EntityInfo
     {
+        bool restoreLocalTransform;
         DAVA::Matrix4 originalTransform;
         bool isLocked;
     };

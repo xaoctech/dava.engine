@@ -7,6 +7,7 @@
 #include "Scene3D/Systems/Private/AsyncSlotExternalLoader.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/XMLParser.h"
+#include "FileSystem/XMLParserDelegate.h"
 #include "FileSystem/YamlNode.h"
 #include "Logger/Logger.h"
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TArc/Core/ClientModule.h>
+#include <TArc/Utils/QtConnections.h>
 
 #include <Reflection/Reflection.h>
 
@@ -13,5 +14,10 @@ public:
     void PostInit() override;
 
 private:
+    void CreateCarEntity();
+    void CreateTankEntity();
+
+private:
+    DAVA::TArc::QtConnections connections;
     DAVA_VIRTUAL_REFLECTION(EditorPhysicsModule, DAVA::TArc::ClientModule);
 };

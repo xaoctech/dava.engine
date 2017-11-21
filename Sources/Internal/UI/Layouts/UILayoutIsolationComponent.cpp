@@ -1,4 +1,6 @@
 #include "UILayoutIsolationComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Math/Vector.h"
 #include "Reflection/ReflectionRegistrator.h"
