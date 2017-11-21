@@ -4,8 +4,7 @@
 #include <Engine/Engine.h>
 #include <Job/JobManager.h>
 #include <Logger/Logger.h>
-#include <UI/Input/UIActionBindingComponent.h>
-#include <UI/Input/UIActionBindingComponent.h>
+#include <UI/Events/UIEventBindingComponent.h>
 #include <UI/Update/UIUpdateComponent.h>
 
 const static DAVA::float32 DEFAULT_TIMEOUT = 3.f;
@@ -26,22 +25,22 @@ void AssertTest::LoadResources()
     dialog->SetSize(DAVA::Vector2(500, 500));
     AddControl(dialog);
 
-    DAVA::UIActionBindingComponent* actions = dialog->GetComponent<DAVA::UIActionBindingComponent>();
+    auto actions = dialog->GetOrCreateComponent<DAVA::UIEventBindingComponent>();
     if (actions)
     {
-        actions->GetActionMap().Put(DAVA::FastName("ASSERT_ALWAYS"), [&]() {
+        actions->BindAction(DAVA::FastName("ASSERT_ALWAYS"), [&]() {
             DVASSERT_ALWAYS(false, "Demo assert");
         });
-        actions->GetActionMap().Put(DAVA::FastName("ASSERT"), [&]() {
+        actions->BindAction(DAVA::FastName("ASSERT"), [&]() {
             DVASSERT(false, "Demo assert");
         });
-        actions->GetActionMap().Put(DAVA::FastName("DELAYED_ASSERT"), [&]() {
+        actions->BindAction(DAVA::FastName("DELAYED_ASSERT"), [&]() {
             timeOut = DEFAULT_TIMEOUT;
         });
 
-        actions->GetActionMap().Put(DAVA::FastName("MSGBOX_MAINTHREAD"), DAVA::MakeFunction(this, &AssertTest::ShowMessageBoxFromMainThread));
-        actions->GetActionMap().Put(DAVA::FastName("MSGBOX_UITHREAD"), DAVA::MakeFunction(this, &AssertTest::ShowMessageBoxFromUIThread));
-        actions->GetActionMap().Put(DAVA::FastName("MSGBOX_OTHERTHREADS"), DAVA::MakeFunction(this, &AssertTest::ShowMessageBoxFromOtherThreads));
+        actions->BindAction(DAVA::FastName("MSGBOX_MAINTHREAD"), DAVA::MakeFunction(this, &AssertTest::ShowMessageBoxFromMainThread));
+        actions->BindAction(DAVA::FastName("MSGBOX_UITHREAD"), DAVA::MakeFunction(this, &AssertTest::ShowMessageBoxFromUIThread));
+        actions->BindAction(DAVA::FastName("MSGBOX_OTHERTHREADS"), DAVA::MakeFunction(this, &AssertTest::ShowMessageBoxFromOtherThreads));
     }
 
     countdownText = static_cast<DAVA::UIStaticText*>(dialog->FindByName("Countdown"));

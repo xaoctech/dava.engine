@@ -40,6 +40,7 @@ void CommandUpdateEmitter::Init(const FastName& name,
                                 ParticleEmitter::eType emitterType,
                                 RefPtr<PropertyLine<float32>> emissionRange,
                                 RefPtr<PropertyLine<Vector3>> emissionVector,
+                                RefPtr<PropertyLine<Vector3>> emissionVelocityVector,
                                 RefPtr<PropertyLine<float32>> radius,
                                 RefPtr<PropertyLine<float32>> emissionAngle,
                                 RefPtr<PropertyLine<float32>> emissionAngleVariation,
@@ -52,6 +53,7 @@ void CommandUpdateEmitter::Init(const FastName& name,
     this->emitterType = emitterType;
     this->emissionRange = emissionRange;
     this->emissionVector = emissionVector;
+    this->emissionVelocityVector = emissionVelocityVector;
     this->radius = radius;
     this->emissionAngle = emissionAngle;
     this->emissionAngleVariation = emissionAngleVariation;
@@ -69,6 +71,7 @@ void CommandUpdateEmitter::Redo()
     emitter->emitterType = emitterType;
     PropertyLineHelper::SetValueLine(emitter->emissionRange, emissionRange);
     PropertyLineHelper::SetValueLine(emitter->emissionVector, emissionVector);
+    PropertyLineHelper::SetValueLine(emitter->emissionVelocityVector, emissionVelocityVector);
     PropertyLineHelper::SetValueLine(emitter->radius, radius);
     PropertyLineHelper::SetValueLine(emitter->colorOverLife, colorOverLife);
     PropertyLineHelper::SetValueLine(emitter->size, size);

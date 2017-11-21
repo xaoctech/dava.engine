@@ -354,6 +354,11 @@ void SuspendRendering()
     RenderLoop::SuspendRender();
 }
 
+void SuspendRenderingAfterFrame()
+{
+    RenderLoop::SuspendRenderAfterFrame();
+}
+
 void ResumeRendering()
 {
     RenderLoop::ResumeRender();

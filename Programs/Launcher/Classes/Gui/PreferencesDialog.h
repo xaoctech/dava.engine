@@ -14,9 +14,9 @@ class PreferencesDialog : public QDialog, private Ui::PreferencesDialog
     Q_OBJECT
 
 public:
-    static void ShowPreferencesDialog(FileManager* fileManager, UrlsHolder* configDownloader, ConfigRefresher* configRefresher, QWidget* parent = nullptr);
+    static void ShowPreferencesDialog(ApplicationContext* context, ConfigRefresher* configRefresher, QWidget* parent = nullptr);
 
-    static void SavePreferences(FileManager* fileManager, UrlsHolder* configDownloader, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
+    static void SavePreferences(ApplicationContext* context, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
     static void LoadPreferences(ApplicationContext* context);
     static void LoadPreferences(ApplicationContext* context, BAManagerClient* commandListener, ConfigRefresher* configRefresher);
 
@@ -28,11 +28,10 @@ private slots:
 
 private:
     PreferencesDialog(QWidget* parent = nullptr);
-    void Init(FileManager* fileManager, UrlsHolder* configDownloader, ConfigRefresher* configRefresher);
+    void Init(ApplicationContext* context, ConfigRefresher* configRefresher);
     void AcceptData();
 
-    FileManager* fileManager = nullptr;
-    UrlsHolder* configDownloader = nullptr;
+    ApplicationContext* context = nullptr;
     ConfigRefresher* configRefresher = nullptr;
 
     QMap<UrlsHolder::eURLType, QLabel*> urlWidgets;

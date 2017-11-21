@@ -83,17 +83,12 @@ void MotionComponent::SimpleMotion::Update(float32 timeElapsed)
 
         if (animationClip->GetDuration() <= currentAnimationTime)
         {
-            isPlaying = (repeatsLeft > 0 || repeatsCount == 0);
-            if (isPlaying)
-            {
-                currentAnimationTime -= animationClip->GetDuration();
+            currentAnimationTime -= animationClip->GetDuration();
 
-                if (repeatsCount != 0)
-                    --repeatsLeft;
-            }
-            else
+            if (repeatsCount != 0)
             {
-                currentAnimationTime = 0.f;
+                --repeatsLeft;
+                isPlaying = (repeatsLeft > 0);
             }
         }
 
@@ -104,11 +99,6 @@ void MotionComponent::SimpleMotion::Update(float32 timeElapsed)
 bool MotionComponent::SimpleMotion::IsPlaying() const
 {
     return isPlaying;
-}
-
-bool MotionComponent::SimpleMotion::IsFinished() const
-{
-    return (repeatsCount > 0) && (isPlaying == false) && (currentAnimationTime != 0.f);
 }
 
 const FilePath& MotionComponent::SimpleMotion::GetAnimationPath() const
@@ -187,7 +177,7 @@ void MotionComponent::Deserialize(KeyedArchive* archive, SerializationContext* s
     simpleMotion->SetRepeatsCount(archive->GetUInt32("simpleMotion.repeatsCount"));
 }
 
-const MotionComponent::SimpleMotion* MotionComponent::GetSimpleMotion() const
+MotionComponent::SimpleMotion* MotionComponent::GetSimpleMotion() const
 {
     return simpleMotion;
 }

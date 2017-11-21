@@ -1,4 +1,5 @@
 #include "UIControlHelpers.h"
+#include "Reflection/ReflectedTypeDB.h"
 #include "UI/UIControl.h"
 #include "UI/UIList.h"
 #include "UI/UIScrollView.h"
@@ -60,6 +61,28 @@ bool ContainsOnlyAllowedSymbols(const String& str, UIControlHelpers::NameCheckSt
 
 namespace DAVA
 {
+UIComponent* UIControlHelpers::GetComponentByName(const UIControl* control, const String& componentName, uint32 index)
+{
+    const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(componentName);
+    if (control && rType)
+    {
+        const Type* type = rType->GetType();
+        return control->GetComponent(type, index);
+    }
+    return nullptr;
+}
+
+UIComponent* UIControlHelpers::GetOrCreateComponentByName(UIControl* control, const String& componentName, uint32 index)
+{
+    const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(componentName);
+    if (control && rType)
+    {
+        const Type* type = rType->GetType();
+        return control->GetOrCreateComponent(type, index);
+    }
+    return nullptr;
+}
+
 String UIControlHelpers::GetControlPath(const UIControl* control, const UIControl* rootControl /*= NULL*/)
 {
     using namespace UIControlHelpersDetails;
