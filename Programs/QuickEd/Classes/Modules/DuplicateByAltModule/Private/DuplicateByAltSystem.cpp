@@ -36,9 +36,6 @@ eSystems DuplicateByAltSystem::GetOrder() const
 
 void DuplicateByAltSystem::OnDragStateChanged(eDragState currentState, eDragState previousState)
 {
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
     if (currentState == eDragState::DuplicateByAlt)
     {
         duplicateRequest.Emit();
