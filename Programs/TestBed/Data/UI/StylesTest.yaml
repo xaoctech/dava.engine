@@ -29,14 +29,13 @@ Controls:
         SizePolicy:
             horizontalPolicy: "PercentOfParent"
             verticalPolicy: "PercentOfParent"
-        ActionBinding:
-            actions: "ADD; REMOVE; MORE"
+        UIShortcutEventComponent:
+            shortcuts: "ADD; REMOVE; MORE"
+        Focus: {}
     children:
     -   class: "UIControl"
         name: "TopPanel"
-        position: [10.000000, 10.000000]
         size: [535.000000, 536.000000]
-        classes: "test_text"
         components:
             LinearLayout:
                 orientation: "TopDown"
@@ -69,8 +68,8 @@ Controls:
                 noInput: false
                 exclusiveInput: true
                 components:
-                    Action:
-                        action: "ADD"
+                    UIInputEventComponent:
+                        onTouchUpInside: "ADD"
                     DebugRender:
                         enabled: true
                     UITextComponent:
@@ -83,8 +82,8 @@ Controls:
                 noInput: false
                 exclusiveInput: true
                 components:
-                    Action:
-                        action: "REMOVE"
+                    UIInputEventComponent:
+                        onTouchUpInside: "REMOVE"
                     DebugRender:
                         enabled: true
                     UITextComponent:
@@ -97,8 +96,8 @@ Controls:
                 noInput: false
                 exclusiveInput: true
                 components:
-                    Action:
-                        action: "MORE"
+                    UIInputEventComponent:
+                        onTouchUpInside: "MORE"
                     DebugRender:
                         enabled: true
                     UITextComponent:
@@ -135,8 +134,8 @@ Controls:
                 noInput: false
                 exclusiveInput: true
                 components:
-                    Action:
-                        action: "ADD_GLOBAL"
+                    UIInputEventComponent:
+                        onTouchUpInside: "ADD_GLOBAL"
                     DebugRender:
                         enabled: true
                     UITextComponent:
@@ -149,8 +148,8 @@ Controls:
                 noInput: false
                 exclusiveInput: true
                 components:
-                    Action:
-                        action: "REMOVE_GLOBAL"
+                    UIInputEventComponent:
+                        onTouchUpInside: "REMOVE_GLOBAL"
                     DebugRender:
                         enabled: true
                     UITextComponent:
