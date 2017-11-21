@@ -10,6 +10,7 @@
 #include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
+#include "Functional/Function.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
@@ -104,9 +105,11 @@ public:
         State_COUNT
     };
 
+    using DLCDownloaderFactory = Function<std::shared_ptr<DLCDownloader>(const DLCDownloader::Hints& hints)>;
+
     static const String& ToString(InitState state);
 
-    explicit DLCManagerImpl(Engine* engine_);
+    explicit DLCManagerImpl(Engine* engine_, const DLCDownloaderFactory& downloaderFactory_);
     ~DLCManagerImpl();
     void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
     void FillPreloadedPacks();
@@ -133,7 +136,7 @@ public:
 
     void Update(float frameDelta, bool inBackground);
 
-    bool IsPackDownloaded(const String& packName) override;
+    bool IsPackDownloaded(const String& packName) const override;
 
     uint64 GetPackSize(const String& packName) const override;
 
@@ -141,7 +144,7 @@ public:
 
     PackRequest* FindRequest(const String& requestedPackName) const;
 
-    bool IsPackInQueue(const String& packName) override;
+    bool IsPackInQueue(const String& packName) const override;
 
     bool IsAnyPackInQueue() const override;
 
@@ -319,7 +322,7 @@ private:
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session
 
-    std::unique_ptr<DLCDownloader> downloader;
+    std::shared_ptr<DLCDownloader> downloader;
 
     mutable UnorderedSet<uint32> allPacks; // reuse memory
 
@@ -329,6 +332,8 @@ private:
 
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
+
+    DLCDownloaderFactory downloaderFactory;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const

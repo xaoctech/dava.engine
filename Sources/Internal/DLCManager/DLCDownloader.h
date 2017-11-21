@@ -171,7 +171,12 @@ public:
         TaskStatus& operator=(const TaskStatus& other);
     };
 
-    struct Task;
+    struct Task
+    {
+        virtual ~Task()
+        {
+        }
+    };
 
     /** Start http request to find out content size. */
     virtual Task* StartGetContentSize(const String& srcUrl) = 0;

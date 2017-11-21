@@ -110,9 +110,10 @@ bool DLCManagerImpl::IsProfilingEnabled() const
     return value.Get<bool>(false);
 }
 
-DLCManagerImpl::DLCManagerImpl(Engine* engine_)
+DLCManagerImpl::DLCManagerImpl(Engine* engine_, const DLCDownloaderFactory& downloaderFactory_)
     : profiler(1024 * 16)
     , engine(*engine_)
+    , downloaderFactory(downloaderFactory_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -391,7 +392,7 @@ void DLCManagerImpl::CreateDownloader()
         downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
         downloaderHints.profiler = &profiler;
 
-        downloader.reset(DLCDownloader::Create(downloaderHints));
+        downloader = downloaderFactory(downloaderHints);
     }
 }
 
@@ -409,8 +410,6 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     log << __FUNCTION__ << std::endl;
 
-    CreateDownloader();
-
     if (!IsInitialized())
     {
         dirToDownloadedPacks = dirToDownloadPacks_;
@@ -424,6 +423,8 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         TestWriteAccessToPackDirectory(dirToDownloadPacks_);
         FillPreloadedPacks();
     }
+
+    CreateDownloader();
 
     // if Initialize called second time
     fullSizeServerData = 0;
@@ -1368,7 +1369,7 @@ void DLCManagerImpl::DeleteLocalMetaFile() const
     fs->DeleteFile(localCacheMeta);
 }
 
-bool DLCManagerImpl::IsPackDownloaded(const String& packName)
+bool DLCManagerImpl::IsPackDownloaded(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
 
@@ -1805,7 +1806,7 @@ bool DLCManagerImpl::IsAnyPackInQueue() const
     return false;
 }
 
-bool DLCManagerImpl::IsPackInQueue(const String& packName)
+bool DLCManagerImpl::IsPackInQueue(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
     if (!IsInitialized())

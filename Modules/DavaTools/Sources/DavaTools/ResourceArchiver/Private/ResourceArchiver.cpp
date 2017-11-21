@@ -404,7 +404,8 @@ const Compressor* GetCompressor(Compressor::Type compressorType)
 bool Pack(const Vector<CollectedFile>& collectedFiles,
           const DAVA::Compressor::Type compressionType,
           const FilePath& metaDb,
-          File* outputFile)
+          File* outputFile,
+          bool skipFileData)
 {
     PackFormat::PackFile packFile;
 
@@ -458,36 +459,47 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
             origFileBuffer.clear();
             compressedFileBuffer.clear();
 
-            if (fs->ReadFileContents(collectedFile.absPath, origFileBuffer) == false)
-            {
-                throw std::runtime_error("Can't read contents of " + collectedFile.absPath.GetAbsolutePathname());
-            }
-
             bool useCompressedBuffer = (compressionType != Compressor::Type::None);
             Compressor::Type useCompression = compressionType;
 
-            if (origFileBuffer.empty())
+            if (!skipFileData)
             {
-                useCompressedBuffer = false;
-                useCompression = Compressor::Type::None;
-            }
-
-            if (useCompressedBuffer)
-            {
-                if (!compressor->Compress(origFileBuffer, compressedFileBuffer))
+                if (fs->ReadFileContents(collectedFile.absPath, origFileBuffer) == false)
                 {
-                    throw std::runtime_error("Can't compress contents of " + collectedFile.absPath.GetAbsolutePathname());
+                    throw std::runtime_error("Can't read contents of " + collectedFile.absPath.GetAbsolutePathname());
                 }
 
-                if (compressedFileBuffer.size() < origFileBuffer.size())
-                {
-                    useCompressedBuffer = true;
-                }
-                else
+                if (origFileBuffer.empty())
                 {
                     useCompressedBuffer = false;
                     useCompression = Compressor::Type::None;
                 }
+
+                if (useCompressedBuffer)
+                {
+                    if (!compressor->Compress(origFileBuffer, compressedFileBuffer))
+                    {
+                        throw std::runtime_error("Can't compress contents of " + collectedFile.absPath.GetAbsolutePathname());
+                    }
+
+                    if (compressedFileBuffer.size() < origFileBuffer.size())
+                    {
+                        useCompressedBuffer = true;
+                    }
+                    else
+                    {
+                        useCompressedBuffer = false;
+                        useCompression = Compressor::Type::None;
+                    }
+                }
+            }
+            else
+            {
+                origFileBuffer.resize(1);
+                origFileBuffer[0] = 0;
+
+                useCompressedBuffer = false;
+                useCompression = Compressor::Type::None;
             }
 
             Vector<uint8>& useBuffer = (useCompressedBuffer ? compressedFileBuffer : origFileBuffer);
@@ -642,7 +654,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
     return true;
 }
 
-bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type compressionType, const FilePath& archivePath, const FilePath& metaDb)
+bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type compressionType, const FilePath& archivePath, const FilePath& metaDb, bool skipFileData)
 {
     if (archivePath.IsDirectoryPathname()) // generate DVPL's for each file
     {
@@ -714,7 +726,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type co
             return false;
         }
 
-        bool packWasSuccessfull = Pack(collectedFiles, compressionType, metaDb, outputFile);
+        bool packWasSuccessfull = Pack(collectedFiles, compressionType, metaDb, outputFile, skipFileData);
         outputFile.reset();
 
         if (packWasSuccessfull)
@@ -773,7 +785,7 @@ bool CreateArchive(const Params& params)
         }
     }
 
-    if (Pack(collectedFiles, params.compressionType, params.archivePath, params.metaDbPath))
+    if (Pack(collectedFiles, params.compressionType, params.archivePath, params.metaDbPath, params.skipFileData))
     {
         Logger::Info("packing done");
 

@@ -163,7 +163,7 @@ public:
     virtual bool IsRequestingEnabled() const = 0;
 
     /** Return true if pack is already downloaded. */
-    virtual bool IsPackDownloaded(const String& packName) = 0;
+    virtual bool IsPackDownloaded(const String& packName) const = 0;
 
     /** Return size of pack with all it's dependent packs from local meta without downloading
 	    or 0 if manager is not initialized */
@@ -175,7 +175,7 @@ public:
     virtual const IRequest* RequestPack(const String& packName) = 0;
 
     /** return true if pack currently is in download queue */
-    virtual bool IsPackInQueue(const String& packName) = 0;
+    virtual bool IsPackInQueue(const String& packName) const = 0;
 
     /** return true if download queue is not empty */
     virtual bool IsAnyPackInQueue() const;

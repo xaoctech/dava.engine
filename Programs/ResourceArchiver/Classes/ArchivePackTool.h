@@ -27,6 +27,7 @@ private:
     bool addHidden = false;
     bool useCache = false;
     bool genDvpl = false;
+    bool skipFileData = false;
     DAVA::AssetCacheClient::ConnectionParams assetCacheParams;
     DAVA::String logFileName;
     DAVA::String srcDir;

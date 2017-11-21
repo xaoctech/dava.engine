@@ -16,22 +16,7 @@ struct Buffer
     size_t size = 0;
 };
 
-struct IDownloaderSubTask
-{
-    DLCDownloader::Task& task;
-    int downloadOrderIndex = 0;
-
-    explicit IDownloaderSubTask(DLCDownloader::Task& t)
-        : task(t)
-    {
-    }
-    virtual ~IDownloaderSubTask();
-    virtual void OnDone(CURLMsg* msg) = 0;
-    virtual DLCDownloader::Task& GetTask() = 0;
-    virtual CURL* GetEasyHandle() = 0;
-    virtual DLCDownloader::IWriter& GetIWriter() = 0;
-    virtual Buffer GetBuffer() = 0;
-};
+struct IDownloaderSubTask;
 
 struct ICurlEasyStorage
 {
@@ -44,49 +29,6 @@ struct ICurlEasyStorage
     virtual IDownloaderSubTask& FindInMap(CURL* easy) = 0;
     virtual void UnMap(CURL* easy) = 0;
     virtual int GetChunkSize() = 0;
-};
-
-struct DLCDownloader::Task
-{
-    TaskInfo info;
-    TaskStatus status;
-    List<IDownloaderSubTask*> subTasksWorking;
-    List<IDownloaderSubTask*> subTasksReadyToWrite; // sorted list by subTaskIndex
-    int lastCreateSubTaskIndex = -1;
-    int lastWritenSubTaskIndex = -1;
-    std::shared_ptr<IWriter> writer;
-    bool userWriter = false;
-    ICurlEasyStorage& curlStorage;
-
-    int64 restOffset = -1;
-    int64 restSize = -1;
-
-    Task(ICurlEasyStorage& storage,
-         const String& srcUrl,
-         const String& dstPath,
-         TaskType taskType,
-         std::shared_ptr<IWriter> dstWriter,
-         int64 rangeOffset,
-         int64 rangeSize,
-         int32 timeout);
-    ~Task();
-
-    bool FlushWriterAndReset();
-    void PrepareForDownloading();
-    bool IsDone() const;
-    bool NeedDownloadMoreData() const;
-    void OnSubTaskDone();
-    void GenerateChunkSubRequests(const int chankSize);
-    void CorrectRangeToResumeDownloading();
-    void SetupFullDownload();
-    void SetupResumeDownload();
-    void SetupGetSizeDownload();
-
-    // error handles
-    static void OnErrorCurlMulti(int32 multiCode, Task& task, int32 line);
-    static void OnErrorCurlEasy(int32 easyCode, Task& task, int32 line);
-    static void OnErrorCurlErrno(int32 errnoVal, Task& task, int32 line);
-    static void OnErrorHttpCode(long httpCode, Task& task, int32 line);
 };
 
 class DLCDownloaderImpl : public DLCDownloader, public ICurlEasyStorage
@@ -120,6 +62,8 @@ public:
 
     void SetHints(const Hints& h) override;
 
+    struct TaskImpl;
+
 private:
     void Initialize();
     void Deinitialize();
@@ -150,16 +94,16 @@ private:
     void DownloadThreadFunc();
     void DeleteTask(Task* task);
     void RemoveDeletedTasks();
-    Task* AddOneMoreTask();
+    TaskImpl* AddOneMoreTask();
     int CurlPerform();
 
     struct WaitingDescTask
     {
-        Task* task = nullptr;
+        TaskImpl* task = nullptr;
         Semaphore* semaphore = nullptr;
     };
 
-    List<Task*> inputList;
+    List<TaskImpl*> inputList;
     Mutex mutexInputList; // to protect access to taskQueue
     List<WaitingDescTask> waitingTaskList;
     Mutex mutexWaitingList;
@@ -169,7 +113,7 @@ private:
     Thread::Id downloadThreadId = 0;
 
     // [start] next variables used only from Download thread
-    List<Task*> tasks;
+    List<TaskImpl*> tasks;
     UnorderedMap<CURL*, IDownloaderSubTask*> subtaskMap;
     List<CURL*> reusableHandles;
     CURLM* multiHandle = nullptr;
@@ -183,4 +127,5 @@ private:
     Hints hints; // read only params
     ProfilerCPU unusedProfiler;
 };
+
 } // end namespace DAVA
