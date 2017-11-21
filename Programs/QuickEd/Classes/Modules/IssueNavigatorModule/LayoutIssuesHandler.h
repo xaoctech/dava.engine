@@ -33,7 +33,7 @@ private:
     void OnFormulaRemoved(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula) override;
 
     // PackageListener
-    void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property);
+    void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
 
     void RemoveIssue(DAVA::UIControl* control, DAVA::Vector2::eAxis axis);
 

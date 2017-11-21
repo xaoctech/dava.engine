@@ -203,6 +203,8 @@ BackgroundController::BackgroundController(DAVA::UIControl* nestedControl_, DAVA
     using namespace DAVA;
 
     DVASSERT(nullptr != nestedControl);
+    String name = nestedControl->GetName().c_str();
+    name = name.empty() ? "unnamed" : name;
     gridControl->SetName(Format("Grid_control_of_%s", name.c_str()));
     gridControl->GetOrCreateComponent<MovableInEditorComponent>();
     counterpoiseControl->SetName(Format("counterpoise_of_%s", name.c_str()));

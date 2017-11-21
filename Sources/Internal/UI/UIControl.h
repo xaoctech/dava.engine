@@ -437,13 +437,8 @@ public:
     template <class T>
     inline void SortChildren(const T& predicate);
 
-    enum eGenerateAssert : bool
-    {
-        GENERATE_ASSERT_ON_INCORRECT = true,
-        DO_NOT_GENERATE_ASSERT_ON_INCORRECT = false
-    };
     /*
-     \brief Sets the conrtol name.
+     \brief Sets the control name.
         Later you can find control by this name.
      \param[in] name_ new control name.
      */

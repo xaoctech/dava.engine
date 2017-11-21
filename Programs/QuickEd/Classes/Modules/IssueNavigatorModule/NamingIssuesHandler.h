@@ -45,7 +45,7 @@ private:
     void CreateDuplicationsIssue(ControlNode* node);
     void AddToDuplicationsIssue(DuplicationsIssue& issue, ControlNode* node);
     void UpdateSymbolsIssue(DAVA::UnorderedMap<ControlNode*, DAVA::int32>::iterator& it);
-    void UpdateDuplicationsIssue(DuplicationsIssuesMap::iterator& it);
+    void UpdateDuplicationsIssue(DuplicationsIssue& issue);
 
     void RemoveSymbolsIssuesRecursively(ControlNode* node);
     void RemoveSymbolsIssue(ControlNode* node);
@@ -55,7 +55,7 @@ private:
     void SearchIssuesInPackage(PackageNode* package);
 
     PackageNode* GetPackage() const;
-    DAVA::UnorderedSet<ControlNode*> GetControlsByName(const DAVA::FastName& name);
+    DAVA::UnorderedSet<ControlNode*> GetControlsByName(const DAVA::String& name);
 
     DuplicationsIssuesMap::iterator FindInDuplicationsIssues(ControlNode* node);
 

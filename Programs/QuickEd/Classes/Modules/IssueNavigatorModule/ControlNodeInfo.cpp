@@ -16,12 +16,6 @@ ControlNode* GetParentNode(const PackageNode* package, const ControlNode* node)
 };
 } // namespace ControlNodeInfoDetail
 
-DAVA::FastName GetNameFromProperty(const ControlNode* node)
-{
-    NameProperty* nameProperty = node->GetRootProperty()->GetNameProperty();
-    return nameProperty->GetValue().Cast<DAVA::FastName>();
-}
-
 bool IsRootControl(const PackageNode* package, const ControlNode* node)
 {
     return ((node->GetParent() == package->GetPackageControlsNode()) || (node->GetParent() == package->GetPrototypes()));
@@ -32,16 +26,12 @@ DAVA::String GetPathToControl(const PackageNode* package, const ControlNode* nod
     using namespace DAVA;
     using namespace Detail;
 
-    FastName name = GetNameFromProperty(node);
-    String nameString = name.c_str();
-    DAVA::String pathToControl = nameString;
-
+    DAVA::String pathToControl = node->GetName();
     for (const ControlNode* nextNode = GetParentNode(package, node);
          nextNode != nullptr;
          nextNode = GetParentNode(package, nextNode))
     {
-        String parentName = GetNameFromProperty(nextNode).c_str();
-        pathToControl = parentName + "/" + pathToControl;
+        pathToControl = nextNode->GetName() + "/" + pathToControl;
     }
 
     return pathToControl;
