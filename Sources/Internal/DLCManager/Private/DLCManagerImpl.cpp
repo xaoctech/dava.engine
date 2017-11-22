@@ -452,6 +452,12 @@ void DLCManagerImpl::Deinitialize()
 
     log << __FUNCTION__ << std::endl;
 
+    error.DisconnectAll();
+    networkReady.DisconnectAll();
+    initializeFinished.DisconnectAll();
+    requestUpdated.DisconnectAll();
+    requestStartLoading.DisconnectAll();
+
     if (IsInitialized())
     {
         SetRequestingEnabled(false);
