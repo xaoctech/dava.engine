@@ -810,7 +810,8 @@ macro( setup_main_module )
                     target_link_libraries  ( ${MODULE_NAME} optimized ${FILE} )
                 endforeach ()
 
-                if (QT5_FOUND)
+                list (FIND FIND_PACKAGE QT5 _index)
+                if (NOT ${_index} MATCHES -1 )
                     link_with_qt5(${PROJECT_NAME})
                 endif()
 
