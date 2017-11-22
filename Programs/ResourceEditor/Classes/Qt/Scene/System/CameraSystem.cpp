@@ -64,12 +64,23 @@ void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     DAVA::Camera* cur = GetCamera(topCameraEntity);
 
-    // set debug camera position
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
     DAVA::RefPtr<DAVA::KeyedArchive> camArch;
     camArch.ConstructInplace();
     cur->SaveObject(camArch.Get());
     camArch = cameraProps.Get<DAVA::RefPtr<DAVA::KeyedArchive>>("archive", camArch);
-    cur->LoadObject(camArch.Get());
+    if (settings->cameraRestoreFullParameters == true)
+    {
+        // load all parameters
+        cur->LoadObject(camArch.Get());
+    }
+    else // restore only position
+    {
+        cur->SetPosition(camArch->GetByteArrayAsType("cam.position", cur->GetPosition()));
+        cur->SetTarget(camArch->GetByteArrayAsType("cam.target", cur->GetTarget()));
+        cur->SetUp(camArch->GetByteArrayAsType("cam.up", cur->GetUp()));
+        cur->SetLeft(camArch->GetByteArrayAsType("cam.left", cur->GetLeft()));
+    }
 
     // set active scene camera
     DAVA::FastName camName = cameraProps.Get<DAVA::FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
