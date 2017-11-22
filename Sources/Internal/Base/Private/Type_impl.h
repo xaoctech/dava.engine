@@ -133,6 +133,12 @@ inline unsigned long Type::GetTypeFlags() const
     return flags.to_ulong();
 }
 
+template <typename T>
+inline bool Type::Is() const
+{
+    return (this == Instance<T>());
+}
+
 inline bool Type::IsConst() const
 {
     return flags.test(static_cast<size_t>(eTypeFlag::isConst));

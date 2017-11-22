@@ -6,6 +6,7 @@
 #include "ImageTools/ImageTools.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Base/Result.h"
 #include "Render/2D/Sprite.h"
 
@@ -116,6 +117,13 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     inheritPostionCheckBox = new QCheckBox("Inherit Position");
     mainBox->addWidget(inheritPostionCheckBox);
     connect(inheritPostionCheckBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnValueChanged()));
+
+    applyGlobalForcesCheckBox = new QCheckBox("Apply Global Forces");
+    mainBox->addWidget(applyGlobalForcesCheckBox);
+    connect(applyGlobalForcesCheckBox,
             SIGNAL(stateChanged(int)),
             this,
             SLOT(OnValueChanged()));
@@ -650,7 +658,8 @@ void EmitterLayerWidget::OnValueChanged()
                          loopSpriteAnimationCheckBox->isChecked(),
                          propAnimSpeedOverLife.GetPropLine(),
                          static_cast<DAVA::float32>(pivotPointXSpinBox->value()),
-                         static_cast<DAVA::float32>(pivotPointYSpinBox->value()));
+                         static_cast<DAVA::float32>(pivotPointYSpinBox->value()),
+                         applyGlobalForcesCheckBox->isChecked());
 
     DVASSERT(GetActiveScene() != nullptr);
     GetActiveScene()->Exec(std::move(updateLayerCmd));
@@ -967,6 +976,8 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     enableCheckBox->setChecked(!layer->isDisabled);
     inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
+
+    applyGlobalForcesCheckBox->setChecked(layer->applyGlobalForces);
 
     isLongCheckBox->setChecked(layer->isLong);
     scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
@@ -1933,6 +1944,8 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
     spinTimeLine->setVisible(!isStripe);
     spinOverLifeTimeLine->setVisible(!isStripe);
 
+    applyGlobalForcesCheckBox->setVisible(!isSuperemitter);
+
     enableFlowCheckBox->setVisible(!isSuperemitter && !isStripe);
     flowLayoutWidget->setVisible(!isSuperemitter && enableFlowCheckBox->isChecked() && !isStripe);
 
@@ -2036,21 +2049,4 @@ void EmitterLayerWidget::OnLayerValueChanged()
     }
 
     blockSignals = false;
-}
-
-WheellIgnorantComboBox::WheellIgnorantComboBox(QWidget* parent /*= 0*/)
-    : QComboBox(parent)
-{
-}
-
-bool WheellIgnorantComboBox::event(QEvent* e)
-{
-    if (e->type() == QEvent::Wheel)
-    {
-        if (this->hasFocus() == false)
-        {
-            return false;
-        }
-    }
-    return QComboBox::event(e);
 }

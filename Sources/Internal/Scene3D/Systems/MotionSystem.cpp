@@ -100,7 +100,7 @@ void MotionSystem::Process(float32 timeElapsed)
         DVASSERT(motion->IsPlaying());
 
         motion->Update(timeElapsed);
-        if (motion->IsFinished())
+        if (!motion->IsPlaying())
         {
             motion->Stop();
             triggeredEvents.emplace_back(motionComponent, MotionComponent::EVENT_SINGLE_ANIMATION_ENDED);

@@ -366,6 +366,9 @@ Entity* CreateLightsEntity(const FilePath& scenePathname)
         archieve->SetInt32("editor.staticlight.shadowsamples", 1);
         archieve->SetFloat("editor.staticlight.falloffcutoff", BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE);
         archieve->SetFloat("editor.staticlight.falloffexponent", 1.f);
+        archieve->SetFloat("editor.staticlight.cone.angle", 90.0f);
+        archieve->SetFloat("editor.staticlight.cone.penumbra.angle", 0.0f);
+        archieve->SetFloat("editor.staticlight.cone.penumbra.exponent", 1.0f);
     };
 
     Entity* entity = new Entity();

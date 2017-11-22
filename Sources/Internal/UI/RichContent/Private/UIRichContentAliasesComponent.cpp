@@ -1,4 +1,6 @@
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
+#include "Engine/Engine.h"
+#include "Entity/ComponentManager.h"
 
 #include "Reflection/ReflectionRegistrator.h"
 
@@ -6,7 +8,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentAliasesComponent)
 {
-    ReflectionRegistrator<UIRichContentAliasesComponent>::Begin()
+    ReflectionRegistrator<UIRichContentAliasesComponent>::Begin()[M::Multiple()]
     .ConstructorByPointer()
     .DestructorByPointer([](UIRichContentAliasesComponent* o) { o->Release(); })
     .Field("aliases", &UIRichContentAliasesComponent::GetAliasesAsString, &UIRichContentAliasesComponent::SetAliasesFromString)

@@ -21,6 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GeneralSettings)
     .Field("PreviewEnabled", &GeneralSettings::previewEnabled)[DAVA::M::DisplayName("Show scene preview")]
     .Field("CompressionQuality", &GeneralSettings::compressionQuality)[DAVA::M::DisplayName("Compression quality"), DAVA::M::EnumT<DAVA::TextureConverter::eConvertQuality>()]
     .Field("ShowErrorDialog", &GeneralSettings::showErrorDialog)[DAVA::M::DisplayName("Show error dialog")]
+    .Field("recentScenesCount", &GeneralSettings::recentScenesCount)[DAVA::M::DisplayName("Number of recent scenes"), DAVA::M::Range(0, 50, 1)]
     .Field("materialEditorSwitchColor0", &GeneralSettings::materialEditorSwitchColor0)[DAVA::M::DisplayName("Switch 0 color"), DAVA::M::Group("Material Editor")]
     .Field("materialEditorSwitchColor1", &GeneralSettings::materialEditorSwitchColor1)[DAVA::M::DisplayName("Switch 1 color"), DAVA::M::Group("Material Editor")]
     .Field("materialEditorLod0Color", &GeneralSettings::materialEditorLodColor0)[DAVA::M::DisplayName("Lod 0 color"), DAVA::M::Group("Material Editor")]
