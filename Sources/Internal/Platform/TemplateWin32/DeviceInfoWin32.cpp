@@ -12,6 +12,7 @@
 #include "winsock2.h"
 #include "Iphlpapi.h"
 #include "TimeZones.h"
+#include "Logger/Logger.h"
 
 #include <VersionHelpers.h>
 
@@ -157,8 +158,56 @@ int32 DeviceInfoPrivate::GetZBufferSize()
 
 List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 {
-    List<DeviceInfo::StorageInfo> l;
-    return l;
+    List<DeviceInfo::StorageInfo> storageList;
+
+    DWORD drives = GetLogicalDrives();
+    std::bitset<32> bits(drives);
+    for (uint32 bitIndex = 0; bitIndex < 32; ++bitIndex)
+    {
+        if (bits.test(bitIndex))
+        {
+            const char driveName = 'A' + bitIndex;
+
+            DeviceInfo::StorageInfo info;
+
+            std::array<char, 4> drivePath = { driveName, ':', '\\', '\0' };
+
+            const UINT driveType = GetDriveTypeA(drivePath.data());
+
+            if (DRIVE_UNKNOWN == driveType)
+            {
+                Logger::Error("failed get drive type for: %s", drivePath.data());
+                continue;
+            }
+
+            info.type = driveType == DRIVE_FIXED ? DeviceInfo::STORAGE_TYPE_INTERNAL : DeviceInfo::STORAGE_TYPE_PRIMARY_EXTERNAL; // TODO think about it
+
+            DWORD SectorsPerCluster = 0;
+            DWORD BytesPerSector = 0;
+            DWORD NumberOfFreeClusters = 0;
+            DWORD TotalNumberOfClusters = 0;
+            const BOOL isOk = GetDiskFreeSpaceA(drivePath.data(), &SectorsPerCluster, &BytesPerSector, &NumberOfFreeClusters, &TotalNumberOfClusters);
+            if (isOk != 0) // non zero succeeds
+            {
+                info.freeSpace = static_cast<int64>(SectorsPerCluster) * BytesPerSector * NumberOfFreeClusters;
+                info.totalSpace = static_cast<int64>(SectorsPerCluster) * BytesPerSector * TotalNumberOfClusters;
+                info.readOnly = false;
+            }
+            else
+            {
+                // The calling application must have FILE_LIST_DIRECTORY access rights for this directory
+                info.readOnly = true;
+            }
+
+            info.removable = driveType == DRIVE_REMOVABLE;
+            info.emulated = driveType == DRIVE_REMOTE;
+            info.path = drivePath.data();
+
+            storageList.push_back(info);
+        }
+    }
+
+    return storageList;
 }
 
 String DeviceInfoPrivate::GetUDID()
