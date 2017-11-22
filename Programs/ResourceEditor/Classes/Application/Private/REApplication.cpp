@@ -39,6 +39,7 @@
 #include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
 
 #include <DocDirSetup/DocDirSetup.h>
+#include <Version/Version.h>
 
 #include <Particles/ParticleEmitter.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
@@ -172,6 +173,7 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
+    engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, DAVA::Version::CreateAppVersion("App Version: Resource Editor").c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
     engineContext->performanceSettings->SetPsPerformanceMaxFPS(10.0f);
