@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
+#include "Concurrency/Atomic.h"
 
 namespace DAVA
 {
@@ -19,12 +19,13 @@ public:
 
 private:
     Vector<EntityFamilyType*> families;
-    uint32 refCount = 0;
+    Atomic<int32> refCount;
 };
 
 template <typename EntityFamilyType>
 FamilyRepository<EntityFamilyType>::~FamilyRepository()
 {
+    // DVASSERT(refCount == 0);
     ReleaseAllFamilies();
 }
 
@@ -38,8 +39,8 @@ EntityFamilyType* FamilyRepository<EntityFamilyType>::GetOrCreate(const EntityFa
         families.push_back(new EntityFamilyType(localFamily));
         iter = families.end() - 1;
     }
-    (*iter)->refCount++; // Increase family ref counter
-    ++refCount; // Increase repository ref counter
+    (*iter)->refCount.Increment(); // Increase family ref counter
+    refCount.Increment(); // Increase repository ref counter
     return *iter;
 }
 
@@ -48,16 +49,16 @@ void FamilyRepository<EntityFamilyType>::ReleaseFamily(EntityFamilyType* family)
 {
     if (family != nullptr)
     {
-        DVASSERT(refCount > 0);
-        DVASSERT(family->refCount > 0);
+        DVASSERT(refCount.Get() > 0);
+        DVASSERT(family->refCount.Get() > 0);
 
-        --family->refCount;
-        --refCount;
-        if (0 == refCount)
+        family->refCount.Decrement();
+        int32 newRefCount = refCount.Decrement();
+        if (0 == newRefCount)
         {
             for (auto x : families)
             {
-                DVASSERT(x->refCount == 0);
+                DVASSERT(x->refCount.Get() == 0);
                 delete x;
             }
             families.clear();

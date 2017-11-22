@@ -27,7 +27,7 @@ private:
     Vector<uint32> componentsIndices;
     Vector<uint32> componentsCount;
     ComponentFlags componentsFlags;
-    uint32 refCount = 0;
+    Atomic<int32> refCount;
 
     template <typename EntityFamilyType>
     friend class FamilyRepository;
