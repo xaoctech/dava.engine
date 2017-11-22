@@ -56,9 +56,6 @@ public:
     */
     uint32 GetCRC32HashOfRegisteredSceneComponents();
 
-    //just increment counter
-    void RegisterFakeSceneComponent();
-
     /** Return total number of registered UIComponents. */
     uint32 GetUIComponentsCount() const;
 
@@ -74,8 +71,11 @@ public:
     /** Return runtimeType for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
     uint32 GetRuntimeComponentIndex(const Type* type) const;
 
-    /** Return Type of Scene Component for specified 'runtimeIndex'. Return nullptr if 'runtimeType' was not registered in ComponentManager. */
-    const Type* GetRegisteredSceneComponentTypeFromRuntimeIndex(uint32 runtimeIndex) const;
+    /** 
+        Return Type of Scene Component for specified component 'runtimeIndex'.
+        Return nullptr if component with 'runtimeIndex' was not registered in ComponentManager.
+    */
+    const Type* GetSceneComponentType(uint32 runtimeIndex) const;
 
     /** Return reference to sorted vector of registered UIComponents types. */
     const Vector<const Type*>& GetRegisteredUIComponents() const;

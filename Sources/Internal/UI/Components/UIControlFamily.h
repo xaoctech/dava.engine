@@ -1,10 +1,9 @@
 #pragma once
 
-
 #include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
+#include "Entity/Private/FamilyRepository.h"
 #include "UI/Components/UIComponent.h"
-#include "Entity/FamilyRepository.h"
 
 namespace DAVA
 {

@@ -133,17 +133,8 @@ uint32 ComponentManager::GetCRC32HashOfRegisteredSceneComponents()
     Vector<const String*> componentsPermanentNames;
     componentsPermanentNames.reserve(registeredSceneComponents.size());
 
-    const String fakeComponentName = "fakecomponent";
-
     for (const Type* type : registeredSceneComponents)
     {
-        // Special case for fake scene components
-        if (type == nullptr)
-        {
-            componentsPermanentNames.push_back(&fakeComponentName);
-            continue;
-        }
-
         const ReflectedType* refType = ReflectedTypeDB::GetLocalDB()->GetByType(type);
 
         DVASSERT(refType != nullptr);
@@ -156,7 +147,7 @@ uint32 ComponentManager::GetCRC32HashOfRegisteredSceneComponents()
         }
         else
         {
-            DVASSERT(false, "Permanent name is not registered for component class.");
+            DVASSERT(false, "Permanent name is not registered for component class. Hash will be incorrect.");
         }
     }
 
@@ -176,19 +167,11 @@ uint32 ComponentManager::GetCRC32HashOfRegisteredSceneComponents()
     return crc.Done();
 }
 
-void ComponentManager::RegisterFakeSceneComponent()
-{
-    ++runtimeSceneComponentsCount;
-    registeredSceneComponents.push_back(nullptr);
-
-    DVASSERT(sceneRuntimeIndexToType.size() == runtimeSceneComponentsCount);
-}
-
-const Type* ComponentManager::GetRegisteredSceneComponentTypeFromRuntimeIndex(uint32 runtimeIndex) const
+const Type* ComponentManager::GetSceneComponentType(uint32 runtimeIndex) const
 {
     const Type* ret = nullptr;
 
-    if (runtimeIndex < static_cast<uint32>(sceneRuntimeIndexToType.size()))
+    if (runtimeIndex < sceneRuntimeIndexToType.size())
     {
         ret = sceneRuntimeIndexToType[runtimeIndex];
     }

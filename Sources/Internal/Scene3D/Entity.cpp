@@ -8,6 +8,7 @@
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
 #include "Entity/ComponentManager.h"
+#include "Entity/ComponentUtils.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/Systems/EventSystem.h"
@@ -113,7 +114,7 @@ Component* Entity::GetOrCreateComponent(const Type* type, uint32 index)
     Component* ret = GetComponent(type, index);
     if (ret == nullptr)
     {
-        ret = Component::CreateByType(type);
+        ret = ComponentUtils::CreateByType(type);
         AddComponent(ret);
     }
 

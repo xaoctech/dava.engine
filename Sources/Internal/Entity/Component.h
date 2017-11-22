@@ -21,14 +21,9 @@ class Component : public Serializable, public InspBase
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_COMPONENT)
 
 public:
-    static Component* CreateByType(const Type* componentType);
-    template <typename T>
-    static T* CreateByType();
-
     ~Component() override;
 
     const Type* GetType() const;
-    uint32 GetRuntimeIndex() const;
 
     /** Clone component. Then add cloned component to specified `toEntity` if `toEntity` is not nullptr. Return cloned component. */
     virtual Component* Clone(Entity* toEntity) = 0;
@@ -53,38 +48,11 @@ public:
 
 protected:
     Entity* entity = 0;
-    mutable const Type* type = nullptr;
+    mutable const Type* typeCache = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);
 };
 
-template <typename T>
-inline T* Component::CreateByType()
-{
-    return DynamicTypeCheck<T*>(CreateByType(Type::Instance<T>()));
-}
+} // namespace DAVA
 
-inline Entity* Component::GetEntity() const
-{
-    return entity;
-};
-
-template <template <typename> class Container, class T>
-void Component::GetDataNodes(Container<T>& container)
-{
-    Set<DataNode*> objects;
-    GetDataNodes(objects);
-
-    Set<DataNode*>::const_iterator end = objects.end();
-    for (Set<DataNode*>::iterator t = objects.begin(); t != end; ++t)
-    {
-        DataNode* obj = *t;
-
-        T res = dynamic_cast<T>(obj);
-        if (res != nullptr)
-        {
-            container.push_back(res);
-        }
-    }
-}
-};
+#include "Entity/Private/Component_imp.h"

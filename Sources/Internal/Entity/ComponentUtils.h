@@ -5,12 +5,17 @@
 
 namespace DAVA
 {
+class Component;
+
 /** Component class utils */
 class ComponentUtils
 {
 public:
-    /** Return ComponentFlags with flag corresponding to 'runtimeComponentIndex' set to true */
-    static ComponentFlags MakeComponentMask(uint32 runtimeComponentIndex);
+    /** Return ptr to component of `componentType`. `componentType` should be derived from Component */
+    static Component* CreateByType(const Type* componentType);
+
+    /** Return runtime component index */
+    static uint32 GetRuntimeIndex(const Component* c);
 
     /** Return ComponentFlags with flag corresponding to 'componentType' set to true */
     static ComponentFlags MakeComponentMask(const Type* componentType);

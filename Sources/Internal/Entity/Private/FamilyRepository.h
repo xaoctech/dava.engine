@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/BaseTypes.h"
 #include "Debug/DVAssert.h"
-#include "Concurrency/Atomic.h"
 
 namespace DAVA
 {

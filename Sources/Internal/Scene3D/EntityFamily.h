@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity/FamilyRepository.h"
+#include "Entity/Private/FamilyRepository.h"
 
 namespace DAVA
 {
