@@ -67,6 +67,12 @@ void UpdateActorTransform(const Matrix4& tranform, physx::PxRigidActor* actor)
     }
 }
 
+void InitBounds(physx::PxShape* shape, const AABBox3& box)
+{
+    DVASSERT(shape->userData == nullptr);
+    shape->userData = new AABBox3(box);
+}
+
 void InitBounds(physx::PxRigidActor* actor, physx::PxShape* shape)
 {
     PxBounds3 bounds = actor->getWorldBounds();
@@ -88,8 +94,7 @@ void InitBounds(physx::PxRigidActor* actor, physx::PxShape* shape)
         bounds.minimum.z -= eps;
         bounds.maximum.z += eps;
     }
-    DVASSERT(shape->userData == nullptr);
-    shape->userData = new AABBox3(PhysicsMath::PxBounds3ToAABox3(bounds));
+    InitBounds(shape, AABBox3(PhysicsMath::PxBounds3ToAABox3(bounds)));
 }
 
 struct CollisionObj
@@ -180,7 +185,13 @@ CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderOb
             shape->setQueryFilterData(objectFilterData);
             rigidActor->attachShape(*shape);
 
-            InitBounds(rigidActor, shape);
+            AABBox3 bbox;
+            for (PolygonGroup* polygon : polygons)
+            {
+                bbox.AddAABBox(polygon->GetBoundingBox());
+            }
+
+            InitBounds(shape, bbox);
             UpdateActorTransform(transform, rigidActor);
 
             result.collisionObject = rigidActor;
@@ -403,6 +414,8 @@ ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, physx::PxShape* 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
 {
+    scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::SWITCH_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, DAVA::EventSystem::GEO_DECAL_CHANGED);
     DAVA::PhysicsModule* module = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::PhysicsModule>();
     DVASSERT(module != nullptr);
 
@@ -555,7 +568,7 @@ void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object, bool 
         return;
     }
 
-    if (object.CanBeCastedTo<DAVA::Entity>())
+    if (object.CanBeCastedTo<DAVA::Entity>() && shouldBeRecreated == false)
     {
         auto entity = object.AsEntity();
         RemoveEntity(entity);

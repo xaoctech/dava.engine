@@ -4,8 +4,9 @@
 #include "Classes/Commands2/ParticleEditorCommands.h"
 #include "Classes/DragNDropSupport/ReflectedMimeData.h"
 #include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/System/StructureSystem.h"
 #include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
+#include "Classes/Qt/Scene/System/StructureSystem.h"
+#include "Classes/SceneManager/SceneData.h"
 #include "Classes/Selection/SelectableGroup.h"
 
 #include <TArc/Core/ContextAccessor.h>
@@ -234,10 +235,14 @@ QVariant EntityTraits::GetValue(const Selectable& object, int itemRole) const
         DAVA::Camera* camera = DAVA::GetCamera(entity);
         if (camera != nullptr)
         {
-            DAVA::Scene* scene = entity->GetScene();
-            if (scene->GetCurrentCamera() == camera)
+            DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+            if (ctx != nullptr)
             {
-                result.push_back(DAVA::TArc::SharedIcon(":/QtIcons/eye.png"));
+                DAVA::Scene* scene = ctx->GetData<SceneData>()->GetScene().Get();
+                if (scene->GetCurrentCamera() == camera)
+                {
+                    result.push_back(DAVA::TArc::SharedIcon(":/QtIcons/eye.png"));
+                }
             }
         }
 
