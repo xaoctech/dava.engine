@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PNGIMAGEEXT_H__
-#define __DAVAENGINE_PNGIMAGEEXT_H__
+#pragma once
 
 #include "DavaTools/TexturePacker/Spritesheet.h"
 
@@ -63,6 +62,3 @@ inline uint32 ImageExt::GetHeight() const
     return internalData->GetHeight();
 }
 };
-
-
-#endif // __DAVAENGINE_PNGIMAGEEXT_H__

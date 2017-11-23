@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "FileSystem/FilePath.h"
-#include "FileSystem/File.h"
-#include "Render/Image/Image.h"
-#include "Functional/Function.h"
+#include <Base/BaseTypes.h>
+#include <FileSystem/FilePath.h>
+#include <FileSystem/File.h>
+#include <Render/Image/Image.h>
+#include <Functional/Function.h>
 
 namespace DAVA
 {

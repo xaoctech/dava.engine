@@ -1,10 +1,9 @@
-#ifndef __DAVAENGINE_DEFINITION_FILE_H__
-#define __DAVAENGINE_DEFINITION_FILE_H__
+#pragma once
 
-#include "Base/RefPtr.h"
-#include "Base/BaseTypes.h"
-#include "FileSystem/FilePath.h"
-#include "Math/Math2D.h"
+#include <Base/RefPtr.h>
+#include <Base/BaseTypes.h>
+#include <FileSystem/FilePath.h>
+#include <Math/Math2D.h>
 
 namespace DAVA
 {
@@ -42,6 +41,3 @@ public:
     uint32 spriteHeight = 0;
 };
 };
-
-
-#endif // __DAVAENGINE_DEFINITION_FILE_H__
