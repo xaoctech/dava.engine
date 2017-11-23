@@ -468,7 +468,7 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddGeometry()
         ScopedPtr<RenderBatch> batch(new RenderBatch());
         batch->SetMaterial(m);
         batch->SetPolygonGroup(g);
-        RenderComponent* rc = static_cast<RenderComponent*>(box->GetComponent(Component::RENDER_COMPONENT));
+        RenderComponent* rc = box->GetComponent<RenderComponent>();
         DVASSERT(rc != nullptr);
         Mesh* ro = static_cast<Mesh*>(rc->GetRenderObject());
         ro->AddRenderBatch(batch, lod, sw);
