@@ -59,17 +59,17 @@ void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder
     cameraProps.Set("activeCameraName", curCamName);
 }
 
-void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder)
+void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder, DAVA::TArc::ContextAccessor* accessor)
 {
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     DAVA::Camera* cur = GetCamera(topCameraEntity);
 
-    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<GlobalSceneSettings>();
     DAVA::RefPtr<DAVA::KeyedArchive> camArch;
     camArch.ConstructInplace();
     cur->SaveObject(camArch.Get());
     camArch = cameraProps.Get<DAVA::RefPtr<DAVA::KeyedArchive>>("archive", camArch);
-    if (settings->cameraRestoreFullParameters == true)
+    if (settings->cameraUseDefaultSettings == false)
     {
         // load all parameters
         cur->LoadObject(camArch.Get());

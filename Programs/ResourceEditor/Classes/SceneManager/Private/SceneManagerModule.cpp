@@ -854,7 +854,7 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     sceneData->scene = scene;
 
     CreateSceneProperties(sceneData.get());
-    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot());
+    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot(), accessor);
 
     DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
