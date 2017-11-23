@@ -96,7 +96,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
         frameX2.Create(reducedRect.dx, reducedRect.dy);
         frameX2.DrawImage(0, 0, &frameX, reducedRect);
 
-        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, k);
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, k, extension);
         frameX2.Write(fileWrite);
 
         frameRects[k].x = reducedRect.x;

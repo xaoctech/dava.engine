@@ -3,22 +3,20 @@
 
 namespace DAVA
 {
-static const char* DEFAULT_FRAME_EXTENSION = ".png";
-
-FilePath FramePathHelper::GetFramePathRelative(const FilePath& nameWithoutExt, int32 frameIndex)
+FilePath FramePathHelper::GetFramePathRelative(const FilePath& nameWithoutExt, int32 frameIndex, const String& extension)
 {
-    return FormatFramePath(nameWithoutExt.GetAbsolutePathname(), frameIndex);
+    return FormatFramePath(nameWithoutExt.GetAbsolutePathname(), frameIndex, extension);
 }
 
 FilePath FramePathHelper::GetFramePathAbsolute(const FilePath& directory, const String& nameWithoutExt,
-                                               int32 frameIndex)
+                                               int32 frameIndex, const String& extension)
 {
-    FilePath resultPath(directory, FormatFramePath(nameWithoutExt, frameIndex));
+    FilePath resultPath(directory, FormatFramePath(nameWithoutExt, frameIndex, extension));
     return resultPath;
 }
 
-String FramePathHelper::FormatFramePath(const String& fileNameWithoutExt, int32 frameIndex)
+String FramePathHelper::FormatFramePath(const String& fileNameWithoutExt, int32 frameIndex, const String& extension)
 {
-    return Format("%s_%d%s", fileNameWithoutExt.c_str(), frameIndex, DEFAULT_FRAME_EXTENSION);
+    return Format("%s_%d.%s", fileNameWithoutExt.c_str(), frameIndex, extension.c_str());
 }
 };
