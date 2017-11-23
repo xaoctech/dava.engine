@@ -19,8 +19,6 @@ public:
 
     UIJoypadComponent* Clone() const override;
 
-    ~UIJoypadComponent() = default;
-
     /**
         Get dynamic flag. If this flag is set, on first touch on the control joypad will be moved to its (touch) position.
         On touch release joypad will be moved to initial position.
@@ -150,6 +148,9 @@ public:
         Get transformed coords. Return result of transform function applied to original coords.
     */
     Vector2 GetTransformedCoords() const;
+
+protected:
+    ~UIJoypadComponent() = default;
 
 private:
     UIControl* stickArea;
