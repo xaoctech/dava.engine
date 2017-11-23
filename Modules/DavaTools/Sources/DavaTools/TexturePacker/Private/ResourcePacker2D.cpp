@@ -578,13 +578,13 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
                         shouldAcceptFile = defFile->LoadPSD(path, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose, file.outBasename);
                     }
-                    else if (CompareCaseInsensitive(file.ext, ".png") == 0)
-                    {
-                        shouldAcceptFile = defFile->LoadImage(path, processDir, file.outBasename);
-                    }
                     else if (CompareCaseInsensitive(file.ext, ".pngdef") == 0)
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(path, processDir, file.outBasename);
+                    }
+                    else if (TextureDescriptor::IsSupportedTextureExtension(file.ext) == true)
+                    {
+                        shouldAcceptFile = defFile->LoadImage(path, processDir, file.outBasename);
                     }
                     else
                     {
