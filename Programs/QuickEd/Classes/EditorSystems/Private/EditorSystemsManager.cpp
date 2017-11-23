@@ -101,12 +101,6 @@ void EditorSystemsManager::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnPackageChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
         fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnEmulationModeChanged));
@@ -300,6 +294,8 @@ void EditorSystemsManager::Invalidate(ControlNode* removedNode)
 void EditorSystemsManager::Invalidate()
 {
     SetActiveHUDArea(HUDAreaInfo());
+    magnetLinesChanged.Emit({});
+    SetDragState(eDragState::NoDrag);
 }
 
 void EditorSystemsManager::OnUpdate()
@@ -359,12 +355,6 @@ Vector2 EditorSystemsManager::GetMouseDelta() const
 DAVA::Vector2 EditorSystemsManager::GetLastMousePos() const
 {
     return lastMousePos;
-}
-
-void EditorSystemsManager::OnPackageChanged(const DAVA::Any& /*packageValue*/)
-{
-    magnetLinesChanged.Emit({});
-    SetDragState(eDragState::NoDrag);
 }
 
 eDragState EditorSystemsManager::GetDragState() const
