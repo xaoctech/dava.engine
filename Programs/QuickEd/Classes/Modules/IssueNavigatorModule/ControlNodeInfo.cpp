@@ -6,34 +6,25 @@
 #include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
 #include "Classes/Model/PackageHierarchy/ControlNode.h"
 
-namespace ControlNodeInfo
+bool ControlNodeInfo::IsRootControl(const ControlNode* node)
 {
-namespace Detail
-{
-ControlNode* GetParentNode(const PackageNode* package, const ControlNode* node)
-{
-    return IsRootControl(package, node) ? nullptr : dynamic_cast<ControlNode*>(node->GetParent());
-};
-} // namespace ControlNodeInfoDetail
-
-bool IsRootControl(const PackageNode* package, const ControlNode* node)
-{
-    return ((node->GetParent() == package->GetPackageControlsNode()) || (node->GetParent() == package->GetPrototypes()));
+    return ((node->GetParent() == node->GetPackage()->GetPackageControlsNode()) || (node->GetParent() == node->GetPackage()->GetPrototypes()));
 }
 
-DAVA::String GetPathToControl(const PackageNode* package, const ControlNode* node)
+DAVA::String ControlNodeInfo::GetPathToControl(const ControlNode* node)
 {
-    using namespace DAVA;
-    using namespace Detail;
+    auto getParentNode = [](const ControlNode* node) -> ControlNode*
+    {
+        return IsRootControl(node) ? nullptr : dynamic_cast<ControlNode*>(node->GetParent());
+    };
 
     DAVA::String pathToControl = node->GetName();
-    for (const ControlNode* nextNode = GetParentNode(package, node);
+    for (const ControlNode* nextNode = getParentNode(node);
          nextNode != nullptr;
-         nextNode = GetParentNode(package, nextNode))
+         nextNode = getParentNode(nextNode))
     {
         pathToControl = nextNode->GetName() + "/" + pathToControl;
     }
 
     return pathToControl;
-}
 }

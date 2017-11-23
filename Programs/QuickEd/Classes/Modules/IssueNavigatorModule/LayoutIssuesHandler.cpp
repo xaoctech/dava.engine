@@ -72,7 +72,6 @@ LayoutIssuesHandler::~LayoutIssuesHandler()
 void LayoutIssuesHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula)
 {
     using namespace DAVA;
-    using namespace ControlNodeInfo;
 
     if (formula->HasError())
     {
@@ -97,7 +96,7 @@ void LayoutIssuesHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vec
             issue.issueId = nextIssueId;
             issue.message = formula->GetErrorMessage();
             issue.packagePath = data->GetPackagePath().GetFrameworkPath();
-            issue.pathToControl = GetPathToControl(data->GetPackageNode(), controlNode);
+            issue.pathToControl = ControlNodeInfo::GetPathToControl(controlNode);
             issue.propertyName = axis == Vector2::AXIS_X ? "SizePolicy/horizontalFormula" : "SizePolicy/verticalFormula";
 
             nextIssueId++;
@@ -144,7 +143,6 @@ void LayoutIssuesHandler::RemoveIssue(DAVA::UIControl* control, DAVA::Vector2::e
 void LayoutIssuesHandler::ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property)
 {
     using namespace DAVA;
-    using namespace ControlNodeInfo;
 
     if (property->GetName() == "Name")
     {
@@ -161,7 +159,7 @@ void LayoutIssuesHandler::ControlPropertyWasChanged(ControlNode* node, AbstractP
                 LayoutIssue& issue = it->second;
                 if (widget.isNull() == false)
                 {
-                    widget->ChangePathToControl(sectionId, issue.issueId, GetPathToControl(data->GetPackageNode(), node));
+                    widget->ChangePathToControl(sectionId, issue.issueId, ControlNodeInfo::GetPathToControl(node));
                 }
             }
         }

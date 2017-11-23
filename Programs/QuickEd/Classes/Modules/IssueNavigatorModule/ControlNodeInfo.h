@@ -6,8 +6,9 @@
 class PackageNode;
 class ControlNode;
 
-namespace ControlNodeInfo
+class ControlNodeInfo
 {
-bool IsRootControl(const PackageNode* package, const ControlNode* node);
-DAVA::String GetPathToControl(const PackageNode* package, const ControlNode* node);
-}
+public:
+    static bool IsRootControl(const ControlNode* node);
+    static DAVA::String GetPathToControl(const ControlNode* node);
+};
