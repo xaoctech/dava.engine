@@ -169,7 +169,7 @@ private:
             }
 
             scene->Update(0.16f);
-            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(Mock::ProjectManagerModule::testScenePath, scene.Get());
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(Mock::ProjectManagerModule::testScenePath, Mock::ProjectManagerModule::testProjectPath, scene.Get());
         }
 
         CloseActiveScene();
