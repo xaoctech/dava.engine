@@ -10,6 +10,7 @@ namespace DAVA
 namespace TArc
 {
 class PropertiesHolder;
+class ContextAccessor;
 }
 }
 
@@ -30,7 +31,7 @@ public:
         systemIsEnabled = false;
     }
 
-    virtual void LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder)
+    virtual void LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder, DAVA::TArc::ContextAccessor* accessor)
     {
     }
 
