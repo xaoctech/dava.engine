@@ -158,7 +158,7 @@ void CollisionShapeComponent::SetCCDEnabled(physx::PxShape* shape, bool isCCDAct
     }
     else
     {
-        fd.word0 = fd.word3 & (~ccdFlag);
+        fd.word0 = fd.word0 & (~ccdFlag);
     }
     shape->setSimulationFilterData(fd);
 }
@@ -224,7 +224,7 @@ void CollisionShapeComponent::UpdateLocalProperties()
     physx::PxFilterData filterData = shape->getSimulationFilterData();
     filterData.word1 = typeMask;
     filterData.word2 = typeMaskToCollideWith;
-    // be careful and do not change first bit in filterData.word3 (CCD flag) as this flag is setting
+    // be careful and do not change first bit in filterData.word0 (CCD flag) as this flag is setting
     // directly from PhysicsSystem::UpdateComponents and should be synchronized with CCD flag of actor.
     shape->setSimulationFilterData(filterData);
 }
