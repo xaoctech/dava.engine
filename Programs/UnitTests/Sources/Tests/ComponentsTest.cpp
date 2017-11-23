@@ -350,7 +350,7 @@ DAVA_TESTCLASS (ComponentsTest)
             TEST_VERIFY(entity->GetComponent(type) != nullptr);
 
             ComponentMask m = ComponentUtils::MakeMask(type);
-            TEST_VERIFY((ecf & m) == m);
+            TEST_VERIFY((ecm & m) == m);
 
             TEST_VERIFY(entity->GetComponent(type)->GetType() == type);
         }
