@@ -34,12 +34,11 @@ if (NOT LINUX)
     find_dava_module( NetworkCore )
 endif()
 
-if ( WIN32 OR MACOS )
-    find_dava_module( AssetCache )
-    find_dava_module( ResourceArchiverModule )
-    find_dava_module( TextureCompression )
-    find_dava_module( TexturePacker )
-endif()
+find_dava_module( AssetCache )			# supported platforms are defined in module
+find_dava_module( ResourceArchiverModule )	# supported platforms are defined in module
+find_dava_module( TextureCompression )		# supported platforms are defined in module
+find_dava_module( TexturePacker )		# supported platforms are defined in module
+
 
 find_dava_module( Physics )
 find_dava_module( CEFWebview )
