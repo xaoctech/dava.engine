@@ -61,7 +61,7 @@ public:
     {
         Vector<ComboBoxFilterEditor::ComboBoxData> data;
 
-        auto& components = GetEngineContext()->componentManager->GetRegisteredComponents();
+        auto& components = GetEngineContext()->componentManager->GetRegisteredUIComponents();
         int32 i = 0;
         for (auto& c : components)
         {

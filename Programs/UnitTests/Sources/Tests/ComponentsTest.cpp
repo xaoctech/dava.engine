@@ -13,10 +13,6 @@
 #include "Entity/ComponentManager.h"
 #include "Entity/ComponentUtils.h"
 
-#include <Physics/PhysicsComponent.h>
-#include <Physics/StaticBodyComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-
 using namespace DAVA;
 
 class SingleComponentSystem : public SceneSystem
@@ -356,24 +352,6 @@ DAVA_TESTCLASS (ComponentsTest)
         }
 
         SafeRelease(entity); // Components will be released in Entity destructor
-    }
-
-    DAVA_TEST (ComponentsInheritanceTest)
-    {
-        Entity* entity = new Entity();
-
-        entity->AddComponent(new DynamicBodyComponent());
-        entity->AddComponent(new StaticBodyComponent());
-
-        DVASSERT(entity->GetComponent<PhysicsComponent>() == nullptr);
-
-        PhysicsComponent* c1 = static_cast<PhysicsComponent*>(entity->GetComponent<DynamicBodyComponent>());
-        PhysicsComponent* c2 = static_cast<PhysicsComponent*>(entity->GetComponent<StaticBodyComponent>());
-
-        DVASSERT(c1->GetType() == Type::Instance<DynamicBodyComponent>());
-        DVASSERT(c2->GetType() == Type::Instance<StaticBodyComponent>());
-
-        SafeRelease(entity);
     }
 
     DAVA_TEST (RegisterEntityTest)
