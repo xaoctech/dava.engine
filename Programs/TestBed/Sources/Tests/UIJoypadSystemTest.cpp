@@ -190,11 +190,11 @@ void UIJoypadSystemTest::InitJoypad()
 
     joypad->base = new UIControl({ 10.f, GetRect().dy - 250.f - 10.f, 300.f, 250.f });
     joypad->base->GetOrCreateComponent<UIDebugRenderComponent>();
-    joypad->activeArea = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_active.png");
-    joypad->inactiveArea = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_inactive.png");
-    joypad->activeArm = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_active.png");
-    joypad->inactiveArm = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_inactive.png");
-    joypad->arrow = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arrow.png");
+    joypad->activeArea = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_active.png", true);
+    joypad->inactiveArea = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_inactive.png", true);
+    joypad->activeArm = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_active.png", true);
+    joypad->inactiveArm = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_inactive.png", true);
+    joypad->arrow = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arrow.png", true);
 
     scale = areaSize / joypad->activeArea->GetSize().dx;
 
@@ -211,19 +211,21 @@ void UIJoypadSystemTest::InitJoypad()
     {
         if (c != nullptr)
         {
-            c->GetOrCreateComponent<UIControlBackground>()->SetDrawType(UIControlBackground::eDrawType::DRAW_STRETCH_BOTH);
+            c->GetOrCreateComponent<UIControlBackground>()->SetDrawType(UIControlBackground::eDrawType::DRAW_SCALE_TO_RECT);
             c->GetOrCreateComponent<UIControlBackground>()->SetPerPixelAccuracyType(UIControlBackground::ePerPixelAccuracyType::PER_PIXEL_ACCURACY_FORCED);
         }
     }
 
     joypad->stickArrow->GetComponent<DAVA::UIControlBackground>()->SetSprite(joypad->arrow.Get(), 0);
 
+    float32 radiusScale = joypad->activeArea->GetSize().dx / 380.f;
+
     joypad->component = joypad->base->GetOrCreateComponent<DAVA::UIJoypadComponent>();
     joypad->component->SetDynamicFlag(true);
     joypad->component->SetStickArea(joypad->stickArea.Get());
     joypad->component->SetStickArm(joypad->stickArm.Get());
     joypad->component->SetStickArrow(joypad->stickArrow.Get());
-    joypad->component->SetStickAreaRadius(155.f * scale);
+    joypad->component->SetStickAreaRadius(155.f * radiusScale * scale);
     joypad->component->SetInitialPosition({ 10.f, GetRect().dy - 100.f });
     joypad->component->SetCancelZone(cancelZone->GetAbsoluteRect());
     joypad->component->SetCoordsTransformFunction(UIJoypadComponent::CoordsTransformFn(

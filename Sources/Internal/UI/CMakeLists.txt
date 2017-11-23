@@ -18,6 +18,10 @@ set( HPP_FILES *.h
     Text/Private/*.h
     Render/*.h
     Joypad/*.h
+    Flow/*.h
+    Flow/Private/*.h
+    Flow/Services/*.h
+    Flow/Services/Private/*.h
     Events/*.h
     Events/Private/*.h
     )
@@ -42,6 +46,10 @@ set( CPP_FILES *.cpp
     Text/Private/*.cpp
     Render/*.cpp
     Joypad/Private/*.cpp
+    Flow/*.cpp
+    Flow/Private/*.cpp
+    Flow/Services/*.cpp
+    Flow/Services/Private/*.cpp
     Events/*.cpp
     Events/Private/*.cpp
     )

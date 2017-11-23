@@ -204,7 +204,7 @@ private:
             }
 
             scene->Update(0.16f);
-            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SMTest::testScenePath, scene.Get());
+            CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SMTest::testScenePath, SMTest::testProjectPath, scene.Get());
         }
 
         CloseActiveScene();
