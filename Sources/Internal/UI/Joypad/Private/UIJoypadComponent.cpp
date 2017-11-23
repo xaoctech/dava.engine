@@ -12,7 +12,6 @@ IMPLEMENT_UI_COMPONENT(UIJoypadComponent);
 DAVA_VIRTUAL_REFLECTION_IMPL(UIJoypadComponent)
 {
     ReflectionRegistrator<UIJoypadComponent>::Begin()
-    .ConstructorByValue()
     .ConstructorByPointer()
     .DestructorByPointer([](UIJoypadComponent* c) { SafeRelease(c); })
     .Field("stickArea", &UIJoypadComponent::GetStickArea, &UIJoypadComponent::SetStickArea)
