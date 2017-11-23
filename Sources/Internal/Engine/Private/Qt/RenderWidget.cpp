@@ -30,7 +30,6 @@ RenderWidget::RenderWidget(IWindowDelegate* widgetDelegate, uint32 width, uint32
     const DAVA::KeyedArchive* options = Engine::Instance()->GetOptions();
     int32 renderer = options->GetInt32("renderer", rhi::RHI_GLES2);
 
-    QWidget* renderWidgetImpl = nullptr;
     if (renderer == rhi::RHI_GLES2)
     {
         RenderWidgetOGL* oglWidget = new RenderWidgetOGL(widgetDelegate, width, height, this);
@@ -63,6 +62,22 @@ RenderWidget::~RenderWidget() = default;
 void RenderWidget::SetClientDelegate(IClientDelegate* delegate)
 {
     renderWidgetBackend->SetClientDelegate(delegate);
+}
+
+void RenderWidget::actionEvent(QActionEvent* event)
+{
+    if (event->type() == QEvent::ActionAdded)
+    {
+        renderWidgetImpl->insertAction(event->before(), event->action());
+    }
+    else if (event->type() == QEvent::ActionRemoved)
+    {
+        renderWidgetImpl->removeAction(event->action());
+    }
+    else
+    {
+        QWidget::actionEvent(event);
+    }
 }
 
 void RenderWidget::AcquireContext()
