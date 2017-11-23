@@ -42,7 +42,7 @@ void ComponentManager::RegisterComponent(const Type* type)
 
         DVASSERT(sceneRuntimeIndexToType.size() == runtimeSceneComponentsCount);
 
-        DVASSERT(static_cast<size_t>(runtimeSceneComponentsCount) < ComponentFlags().size());
+        DVASSERT(static_cast<size_t>(runtimeSceneComponentsCount) < ComponentMask().size());
 
         registeredSceneComponents.push_back(type);
     }

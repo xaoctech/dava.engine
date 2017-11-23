@@ -72,7 +72,7 @@ void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
     std::unique_ptr<UserNodeData> userData = std::make_unique<UserNodeData>();
     userData->system.reset(new UserNodeSystem(scene, GetBotSpawnPath()));
     userData->system->DisableSystem();
-    scene->AddSystem(userData->system.get(), DAVA::ComponentUtils::MakeComponentMask<DAVA::UserComponent>(), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(userData->system.get(), DAVA::ComponentUtils::MakeMask<DAVA::UserComponent>(), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(userData));
 }

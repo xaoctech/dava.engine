@@ -64,11 +64,11 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         //camera->SetPosition(Vector3(0, -10, 1));
 
         rotationControllerSystem = new DAVA::RotationControllerSystem(scene);
-        scene->AddSystem(rotationControllerSystem, ComponentUtils::MakeComponentMask<CameraComponent>() | ComponentUtils::MakeComponentMask<RotationControllerComponent>(),
+        scene->AddSystem(rotationControllerSystem, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<RotationControllerComponent>(),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
         wasdSystem = new WASDControllerSystem(scene);
-        scene->AddSystem(wasdSystem, ComponentUtils::MakeComponentMask<CameraComponent>() | ComponentUtils::MakeComponentMask<WASDControllerComponent>(),
+        scene->AddSystem(wasdSystem, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<WASDControllerComponent>(),
                          Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
         sceneView = new DAVA::UI3DView(GetRect());

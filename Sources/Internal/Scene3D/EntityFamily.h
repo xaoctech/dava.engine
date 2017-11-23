@@ -19,14 +19,14 @@ public:
 
     uint32 GetComponentIndex(const Type* type, uint32 index) const;
     uint32 GetComponentsCount(const Type* type) const;
-    ComponentFlags GetComponentsFlags() const;
+    ComponentMask GetComponentsMask() const;
 
     bool operator==(const EntityFamily& rhs) const;
 
 private:
     Vector<uint32> componentsIndices;
     Vector<uint32> componentsCount;
-    ComponentFlags componentsFlags;
+    ComponentMask componentsMask;
     Atomic<int32> refCount;
 
     template <typename EntityFamilyType>

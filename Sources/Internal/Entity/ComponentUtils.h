@@ -17,18 +17,18 @@ public:
     /** Return runtime component index */
     static uint32 GetRuntimeIndex(const Component* c);
 
-    /** Return ComponentFlags with flag corresponding to 'componentType' set to true */
-    static ComponentFlags MakeComponentMask(const Type* componentType);
+    /** Return ComponentMask with flag corresponding to 'componentType' set to true */
+    static ComponentMask MakeMask(const Type* componentType);
 
-    /** Return ComponentFlags with flag corresponding to 'ComponentType' set to true */
+    /** Return ComponentMask with flag corresponding to 'ComponentType' set to true */
     template <typename ComponentType>
-    static ComponentFlags MakeComponentMask();
+    static ComponentMask MakeMask();
 };
 
 template <typename ComponentType>
-ComponentFlags ComponentUtils::MakeComponentMask()
+ComponentMask ComponentUtils::MakeMask()
 {
-    return MakeComponentMask(Type::Instance<ComponentType>());
+    return MakeMask(Type::Instance<ComponentType>());
 }
 
 } // namespace DAVA

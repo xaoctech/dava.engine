@@ -147,7 +147,7 @@ public:
      */
     void UnregisterComponent(Entity* entity, Component* component);
 
-    virtual void AddSystem(SceneSystem* sceneSystem, ComponentFlags componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
+    virtual void AddSystem(SceneSystem* sceneSystem, ComponentMask componentFlags, uint32 processFlags = 0, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
     virtual void RemoveSystem(SceneSystem* sceneSystem);
     template <class T>
     T* GetSystem();

@@ -274,21 +274,21 @@ DAVA_TESTCLASS (ComponentsTest)
         SafeRelease(entity); // Components will be released in Entity destructor
     }
 
-    DAVA_TEST (EntityComponentsFlagsAndTypeTest)
+    DAVA_TEST (EntityComponentsMaskAndTypeTest)
     {
         Entity* entity = new Entity();
 
-        ComponentFlags flags = ComponentUtils::MakeComponentMask<TransformComponent>();
+        ComponentMask mask = ComponentUtils::MakeMask<TransformComponent>();
 
-        TEST_VERIFY((entity->GetAvailableComponentFlags() & flags) == flags); // TransformComponent is added in Entity constructor
+        TEST_VERIFY((entity->GetAvailableComponentMask() & mask) == mask); // TransformComponent is added in Entity constructor
 
         TransformComponent* c = entity->GetComponent<TransformComponent>();
 
-        TEST_VERIFY(entity->GetAvailableComponentFlags().test(Index(c)));
+        TEST_VERIFY(entity->GetAvailableComponentMask().test(Index(c)));
 
         entity->RemoveComponent<TransformComponent>();
 
-        TEST_VERIFY(entity->GetAvailableComponentFlags().none());
+        TEST_VERIFY(entity->GetAvailableComponentMask().none());
 
         entity->AddComponent(new TransformComponent());
         entity->AddComponent(new LightComponent());
@@ -310,17 +310,17 @@ DAVA_TESTCLASS (ComponentsTest)
         DVASSERT(entity->GetComponent<SwitchComponent>()->GetType()->Is<SwitchComponent>());
         DVASSERT(entity->GetComponent<SwitchComponent>()->GetType()->Is<SwitchComponent>());
 
-        flags |= ComponentUtils::MakeComponentMask<LightComponent>();
-        flags |= ComponentUtils::MakeComponentMask<ActionComponent>();
-        flags |= ComponentUtils::MakeComponentMask<AnimationComponent>();
-        flags |= ComponentUtils::MakeComponentMask<CameraComponent>();
-        flags |= ComponentUtils::MakeComponentMask<CustomPropertiesComponent>();
-        flags |= ComponentUtils::MakeComponentMask<ParticleEffectComponent>();
-        flags |= ComponentUtils::MakeComponentMask<SwitchComponent>();
-        flags |= ComponentUtils::MakeComponentMask<TextComponent>();
+        mask |= ComponentUtils::MakeMask<LightComponent>();
+        mask |= ComponentUtils::MakeMask<ActionComponent>();
+        mask |= ComponentUtils::MakeMask<AnimationComponent>();
+        mask |= ComponentUtils::MakeMask<CameraComponent>();
+        mask |= ComponentUtils::MakeMask<CustomPropertiesComponent>();
+        mask |= ComponentUtils::MakeMask<ParticleEffectComponent>();
+        mask |= ComponentUtils::MakeMask<SwitchComponent>();
+        mask |= ComponentUtils::MakeMask<TextComponent>();
 
-        TEST_VERIFY((entity->GetAvailableComponentFlags() & flags) == flags);
-        TEST_VERIFY(entity->GetAvailableComponentFlags() == flags);
+        TEST_VERIFY((entity->GetAvailableComponentMask() & mask) == mask);
+        TEST_VERIFY(entity->GetAvailableComponentMask() == mask);
 
         ComponentManager* cm = GetEngineContext()->componentManager;
 
@@ -328,15 +328,15 @@ DAVA_TESTCLASS (ComponentsTest)
         {
             Component* c = entity->GetComponent(type);
             bool flagShouldBeSet = c != nullptr;
-            TEST_VERIFY(flags.test(cm->GetRuntimeComponentIndex(type)) == flagShouldBeSet);
+            TEST_VERIFY(mask.test(cm->GetRuntimeComponentIndex(type)) == flagShouldBeSet);
         }
 
         entity->RemoveComponent<TransformComponent>();
 
-        ComponentFlags ecf = entity->GetAvailableComponentFlags();
+        ComponentMask ecm = entity->GetAvailableComponentMask();
 
-        TEST_VERIFY(ecf != flags);
-        TEST_VERIFY(ecf == (flags ^ ComponentUtils::MakeComponentMask<TransformComponent>()));
+        TEST_VERIFY(ecm != mask);
+        TEST_VERIFY(ecm == (mask ^ ComponentUtils::MakeMask<TransformComponent>()));
 
         const Vector<const Type*> types = {
             Type::Instance<LightComponent>(), Type::Instance<ActionComponent>(),
@@ -349,8 +349,8 @@ DAVA_TESTCLASS (ComponentsTest)
         {
             TEST_VERIFY(entity->GetComponent(type) != nullptr);
 
-            ComponentFlags f = ComponentUtils::MakeComponentMask(type);
-            TEST_VERIFY((ecf & f) == f);
+            ComponentMask m = ComponentUtils::MakeMask(type);
+            TEST_VERIFY((ecf & m) == m);
 
             TEST_VERIFY(entity->GetComponent(type)->GetType() == type);
         }
@@ -381,8 +381,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         e1->AddComponent(new LightComponent());
@@ -416,8 +416,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         scene->AddNode(e1);
@@ -475,8 +475,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -517,8 +517,8 @@ DAVA_TESTCLASS (ComponentsTest)
         Scene* scene = new Scene();
         SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene);
         SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene);
-        scene->AddSystem(testSystemLight, ComponentUtils::MakeComponentMask<LightComponent>());
-        scene->AddSystem(testSystemAction, ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystemLight, ComponentUtils::MakeMask<LightComponent>());
+        scene->AddSystem(testSystemAction, ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         e1->AddComponent(new ActionComponent());
@@ -650,7 +650,7 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
         MultiComponentSystem* testSystem = new MultiComponentSystem(scene);
-        scene->AddSystem(testSystem, ComponentUtils::MakeComponentMask<LightComponent>() | ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystem, ComponentUtils::MakeMask<LightComponent>() | ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -704,7 +704,7 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
         MultiComponentSystem* testSystem = new MultiComponentSystem(scene);
-        scene->AddSystem(testSystem, ComponentUtils::MakeComponentMask<LightComponent>() | ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystem, ComponentUtils::MakeMask<LightComponent>() | ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -752,7 +752,7 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
         MultiComponentSystem* testSystem = new MultiComponentSystem(scene);
-        scene->AddSystem(testSystem, ComponentUtils::MakeComponentMask<LightComponent>() | ComponentUtils::MakeComponentMask<ActionComponent>());
+        scene->AddSystem(testSystem, ComponentUtils::MakeMask<LightComponent>() | ComponentUtils::MakeMask<ActionComponent>());
 
         Entity* e1 = new Entity();
 
