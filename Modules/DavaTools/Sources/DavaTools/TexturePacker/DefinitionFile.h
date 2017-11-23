@@ -23,7 +23,7 @@ public:
     bool LoadPNGDef(const FilePath& filename, const FilePath& pathToProcess, String outputBasename = String());
 
     void ClearPackedFrames();
-    bool LoadPNG(const FilePath& fullname, const FilePath& processDirectoryPath, String outputBasename = String());
+    bool LoadImage(const FilePath& fullname, const FilePath& processDirectoryPath, String outputBasename = String());
     bool LoadPSD(const FilePath& fullname, const FilePath& processDirectoryPath,
                  DAVA::uint32 maxTextureSize, bool retainEmptyPixesl, bool useLayerNames,
                  bool verboseOutput, String outputBasename = String());
@@ -34,6 +34,7 @@ public:
 
 public:
     FilePath filename;
+    String extension = "png"; // default extension
     Vector<String> frameNames;
     Vector<Rect2i> frameRects;
     uint32 frameCount = 0;

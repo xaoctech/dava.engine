@@ -238,7 +238,7 @@ void TexturePacker::SaveResultSheets(const FilePath& outputPath, const char* bas
                 {
                     FilePath withoutExt(defFile->filename);
                     withoutExt.TruncateExtension();
-                    imagePath = FramePathHelper::GetFramePathRelative(withoutExt, frame);
+                    imagePath = FramePathHelper::GetFramePathRelative(withoutExt, frame, defFile->extension);
                     break;
                 }
             }

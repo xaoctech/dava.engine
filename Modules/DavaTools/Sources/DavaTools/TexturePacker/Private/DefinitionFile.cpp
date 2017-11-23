@@ -4,7 +4,10 @@
 
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
+#include <FileSystem/File.h>
 #include <Logger/Logger.h>
+#include <Render/TextureDescriptor.h>
+#include <Render/Image/Image.h>
 #include <Render/Image/LibPSDHelper.h>
 #include <Utils/StringFormat.h>
 
@@ -20,25 +23,26 @@ namespace DefinitionFileLocal
 bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bitDepth);
 }
 
-bool DefinitionFile::LoadPNG(const FilePath& filename_, const FilePath& processDir, String outputBasename)
+bool DefinitionFile::LoadImage(const FilePath& sourceFile, const FilePath& processDir, String outputBasename)
 {
     DVASSERT(processDir.IsDirectoryPathname());
 
+    extension = sourceFile.GetExtension();
+    DVASSERT(TextureDescriptor::IsSupportedTextureExtension(extension) == true);
+
     if (outputBasename.empty())
     {
-        outputBasename = filename_.GetBasename();
+        outputBasename = sourceFile.GetBasename();
     }
 
     filename = processDir + outputBasename + ".txt";
     frameCount = 1;
 
-    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(filename_, ".png");
-    ImageExt image;
-    bool read = image.Read(corespondingPngImage);
-    if (read)
+    ImageInfo info = ImageSystem::GetImageInfo(sourceFile);
+    if (info.format != PixelFormat::FORMAT_INVALID)
     {
-        spriteWidth = image.GetWidth();
-        spriteHeight = image.GetHeight();
+        spriteWidth = info.width;
+        spriteHeight = info.height;
 
         frameNames.resize(frameCount);
         frameRects.resize(frameCount);
@@ -47,11 +51,15 @@ bool DefinitionFile::LoadPNG(const FilePath& filename_, const FilePath& processD
         frameRects[0].dx = spriteWidth;
         frameRects[0].dy = spriteHeight;
 
-        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, 0);
-        FileSystem::Instance()->CopyFile(filename_, fileWrite);
-    }
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, 0, extension);
+        GetEngineContext()->fileSystem->CopyFile(sourceFile, fileWrite);
 
-    return read;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& processDir, String outputBasename)

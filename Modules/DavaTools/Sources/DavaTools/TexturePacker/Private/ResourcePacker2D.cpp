@@ -580,7 +580,7 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
                     }
                     else if (CompareCaseInsensitive(file.ext, ".png") == 0)
                     {
-                        shouldAcceptFile = defFile->LoadPNG(path, processDir, file.outBasename);
+                        shouldAcceptFile = defFile->LoadImage(path, processDir, file.outBasename);
                     }
                     else if (CompareCaseInsensitive(file.ext, ".pngdef") == 0)
                     {
