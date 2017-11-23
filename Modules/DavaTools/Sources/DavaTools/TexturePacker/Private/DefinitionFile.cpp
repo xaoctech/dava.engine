@@ -1,5 +1,5 @@
 #include "DavaTools/TexturePacker/DefinitionFile.h"
-#include "DavaTools/TexturePacker/PngImage.h"
+#include "DavaTools/TexturePacker/ImageExt.h"
 #include "DavaTools/TexturePacker/FramePathHelper.h"
 
 #include <FileSystem/FileSystem.h>
@@ -31,8 +31,8 @@ bool DefinitionFile::LoadPNG(const FilePath& filename_, const FilePath& processD
     filename = processDir + outputBasename + ".txt";
     frameCount = 1;
 
-    PngImageExt image;
     FilePath corespondingPngImage = FilePath::CreateWithNewExtension(filename_, ".png");
+    ImageExt image;
     bool read = image.Read(corespondingPngImage);
     if (read)
     {
@@ -71,7 +71,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
 
     String originalBasename = _filename.GetBasename();
 
-    PngImageExt image;
+    ImageExt image;
     FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
     image.Read(corespondingPngImage);
     spriteWidth = image.GetWidth() / frameCount;
@@ -83,7 +83,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
     frameNames.resize(frameCount);
     for (uint32 k = 0; k < frameCount; ++k)
     {
-        PngImageExt frameX;
+        ImageExt frameX;
         frameX.Create(spriteWidth, spriteHeight);
         frameX.DrawImage(0, 0, &image, Rect2i(k * spriteWidth, 0, spriteWidth, spriteHeight));
 
@@ -91,7 +91,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
         frameX.FindNonOpaqueRect(reducedRect);
         Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", originalBasename.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 
-        PngImageExt frameX2;
+        ImageExt frameX2;
         frameX2.Create(reducedRect.dx, reducedRect.dy);
         frameX2.DrawImage(0, 0, &frameX, reducedRect);
 

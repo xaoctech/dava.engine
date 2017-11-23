@@ -14,7 +14,7 @@
 namespace DAVA
 {
 class DefinitionFile;
-class PngImageExt;
+class ImageExt;
 class FilePath;
 
 struct SpriteItem
@@ -85,7 +85,7 @@ private:
     };
 
     Vector<ImageExportKeys> GetExportKeys(const Vector<eGPUFamily>& forGPUs);
-    void ExportImage(const PngImageExt& image, const Vector<ImageExportKeys>& exportKeys, const FilePath& exportedPathname);
+    void ExportImage(const ImageExt& image, const Vector<ImageExportKeys>& exportKeys, const FilePath& exportedPathname);
 
     rhi::TextureAddrMode GetDescriptorWrapMode();
     FilterItem GetDescriptorFilter(bool generateMipMaps = false);
@@ -102,7 +102,7 @@ private:
     bool WriteMultipleDefinition(const Vector<std::unique_ptr<SpritesheetLayout>>& usedAtlases, const FilePath& outputPath, const char* textureBasename, const DefinitionFile& defFile);
     void WriteDefinitionString(FILE* fp, const Rect2i& writeRect, const Rect2i& originRect, int textureIndex, const String& frameName);
 
-    void DrawToFinalImage(PngImageExt& finalImage, PngImageExt& drawedImage, const SpriteBoundsRect& drawRect, const Rect2i& frameRect);
+    void DrawToFinalImage(ImageExt& finalImage, ImageExt& drawedImage, const SpriteBoundsRect& drawRect, const Rect2i& frameRect);
 
     String MakeTextureName(const char* basename, uint32 textureIndex) const;
 
