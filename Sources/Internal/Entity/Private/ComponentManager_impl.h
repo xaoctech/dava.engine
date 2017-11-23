@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-
 template <class T>
 void ComponentManager::RegisterComponent()
 {

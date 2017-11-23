@@ -7,7 +7,6 @@
 
 namespace DAVA
 {
-
 ComponentManager::ComponentManager()
 {
     DVASSERT(runtimeTypeIndex == -1 && componentTypeIndex == -1);
