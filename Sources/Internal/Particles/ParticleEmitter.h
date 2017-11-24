@@ -87,6 +87,7 @@ public:
 
     RefPtr<PropertyLine<Vector3>> size;
     RefPtr<PropertyLine<Vector3>> emissionVector;
+    RefPtr<PropertyLine<Vector3>> emissionVelocityVector;
     RefPtr<PropertyLine<float32>> emissionRange;
     RefPtr<PropertyLine<float32>> radius;
     RefPtr<PropertyLine<float32>> emissionAngle;

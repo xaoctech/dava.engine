@@ -160,14 +160,14 @@ void FindInDocumentController::MoveSelection(DAVA::int32 step)
 
         if (context.currentSelection < 0)
         {
-            context.currentSelection = static_cast<int32>(context.results.size() - 1);
+            context.currentSelection = static_cast<DAVA::int32>(context.results.size() - 1);
         }
         else if (context.currentSelection >= context.results.size())
         {
             context.currentSelection = 0;
         }
 
-        TArc::DataContext* activeContext = accessor->GetActiveContext();
+        DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
         DVASSERT(activeContext != nullptr);
         DocumentData* data = activeContext->GetData<DocumentData>();
 

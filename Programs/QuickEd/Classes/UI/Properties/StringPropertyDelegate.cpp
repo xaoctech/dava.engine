@@ -32,6 +32,11 @@ void StringPropertyDelegate::setEditorData(QWidget* rawEditor, const QModelIndex
     {
         stringValue = StringToQString(value.Get<DAVA::String>());
     }
+    else if (value.CanGet<DAVA::FastName>())
+    {
+        const DAVA::FastName& fn = value.Get<DAVA::FastName>();
+        stringValue = fn.empty() ? "" : StringToQString(fn.c_str());
+    }
     else
     {
         DVASSERT(false);
@@ -60,6 +65,10 @@ bool StringPropertyDelegate::setModelData(QWidget* rawEditor, QAbstractItemModel
     if (value.CanGet<DAVA::String>())
     {
         value.Set<DAVA::String>(QStringToString(stringValue));
+    }
+    else if (value.CanGet<DAVA::FastName>())
+    {
+        value.Set<DAVA::FastName>(DAVA::FastName(QStringToString(stringValue)));
     }
     else
     {

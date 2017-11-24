@@ -1,39 +1,30 @@
-#include "Modules/DocumentsModule/DocumentsModule.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/DocumentsModule/EditorSystemsData.h"
-#include "Modules/DocumentsModule/Private/DocumentsWatcherData.h"
-#include "Modules/LegacySupportModule/Private/Project.h"
-
-#include "QECommands/ChangePropertyValueCommand.h"
-
-#include "UI/CommandExecutor.h"
-#include "Model/ControlProperties/RootProperty.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
-
-#include "Classes/Painter/Painter.h"
-
-#include "Classes/EditorSystems/SelectionSystem.h"
-#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/Application/QEGlobal.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/SelectionSystem.h"
 #include "Classes/EditorSystems/UserAssetsSettings.h"
-
-#include "Application/QEGlobal.h"
-
-#include "UI/Find/FindInDocumentController.h"
-#include "UI/mainwindow.h"
-#include "UI/ProjectView.h"
-#include "UI/Preview/PreviewWidget.h"
-#include "UI/Preview/PreviewWidgetSettings.h"
-#include "UI/Package/PackageWidget.h"
-#include "UI/Package/PackageModel.h"
-#include "UI/UIControl.h"
-
+#include "Classes/Interfaces/PackageActionsInterface.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/QuickEdPackageBuilder.h"
+#include "Classes/Model/YamlPackageSerializer.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/DocumentsModule/DocumentsModule.h"
+#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
+#include "Classes/Modules/DocumentsModule/Private/DocumentsWatcherData.h"
+#include "Classes/Modules/LegacySupportModule/Private/Project.h"
+#include "Classes/Modules/PackageModule/PackageWidgetSettings.h"
+#include "Classes/Painter/Painter.h"
+#include "Classes/QECommands/ChangePropertyValueCommand.h"
+#include "Classes/UI/CommandExecutor.h"
+#include "Classes/UI/Find/FindInDocumentController.h"
+#include "Classes/UI/Preview/PreviewWidget.h"
+#include "Classes/UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/UI/ProjectView.h"
+#include "Classes/UI/mainwindow.h"
 #include "Classes/Utils/DragNDropHelper.h"
-
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/QuickEdPackageBuilder.h"
-#include "Model/YamlPackageSerializer.h"
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -44,18 +35,19 @@
 
 #include <Base/Any.h>
 #include <Command/CommandStack.h>
-#include <UI/UIPackageLoader.h>
-#include <UI/Text/UITextComponent.h>
-#include <UI/Render/UIRenderSystem.h>
-#include <Render/Renderer.h>
-#include <Render/DynamicBufferAllocator.h>
-#include <Particles/ParticleEmitter.h>
+#include <Engine/Engine.h>
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
-#include <Reflection/Reflection.h>
 #include <Engine/Window.h>
-#include <Engine/Engine.h>
 #include <Functional/Signal.h>
+#include <Particles/ParticleEmitter.h>
+#include <Reflection/Reflection.h>
+#include <Render/DynamicBufferAllocator.h>
+#include <Render/Renderer.h>
+#include <UI/Render/UIRenderSystem.h>
+#include <UI/Text/UITextComponent.h>
+#include <UI/UIControl.h>
+#include <UI/UIPackageLoader.h>
 
 #include <QAction>
 #include <QApplication>
@@ -166,6 +158,24 @@ void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
     context->DeleteData<DocumentsWatcherData>();
 }
 
+void DocumentsModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
+{
+    if (interfaceType == DAVA::Type::Instance<Interfaces::PackageActionsInterface>())
+    {
+        Interfaces::PackageActionsInterface* packageActions = QueryInterface<Interfaces::PackageActionsInterface>();
+        previewWidget->RegisterPackageActions(packageActions);
+    }
+}
+
+void DocumentsModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
+{
+    if (interfaceType == DAVA::Type::Instance<Interfaces::PackageActionsInterface>() && previewWidget.isNull() == false)
+    {
+        Interfaces::PackageActionsInterface* packageActions = QueryInterface<Interfaces::PackageActionsInterface>();
+        previewWidget->UnregisterPackageActions(packageActions);
+    }
+}
+
 void DocumentsModule::OnContextCreated(DAVA::TArc::DataContext* context)
 {
     using namespace DAVA::TArc;
@@ -187,10 +197,20 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     watcherData->Unwatch(path);
 }
 
+void DocumentsModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne)
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate();
+}
+
 void DocumentsModule::InitCentralWidget()
 {
     using namespace DAVA;
-    using namespace TArc;
+    using namespace DAVA::TArc;
 
     UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
@@ -202,22 +222,14 @@ void DocumentsModule::InitCentralWidget()
     previewWidget->requestCloseTab.Connect(this, &DocumentsModule::CloseDocument);
     previewWidget->requestChangeTextInNode.Connect(this, &DocumentsModule::ChangeControlText);
     previewWidget->droppingFile.Connect(this, &DocumentsModule::OnDroppingFile);
-    connections.AddConnection(previewWidget, &PreviewWidget::OpenPackageFiles, MakeFunction(this, &DocumentsModule::OpenPackageFiles));
+    connections.AddConnection(previewWidget.data(), &PreviewWidget::OpenPackageFiles, MakeFunction(this, &DocumentsModule::OpenPackageFiles));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
-    ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget);
+    ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget.data());
 
     //legacy part. Remove it when package will be refactored
     MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
-
     connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
-    QObject::connect(previewWidget, &PreviewWidget::DropRequested, mainWindow->GetPackageWidget()->GetPackageModel(), &PackageModel::OnDropMimeData, Qt::DirectConnection);
-    QObject::connect(previewWidget, &PreviewWidget::DeleteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDelete);
-    QObject::connect(previewWidget, &PreviewWidget::ImportRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnImport);
-    QObject::connect(previewWidget, &PreviewWidget::CutRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnCut);
-    QObject::connect(previewWidget, &PreviewWidget::CopyRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnCopy);
-    QObject::connect(previewWidget, &PreviewWidget::PasteRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnPaste);
-    QObject::connect(previewWidget, &PreviewWidget::DuplicateRequested, mainWindow->GetPackageWidget(), &PackageWidget::OnDuplicate);
 }
 
 void DocumentsModule::InitGlobalData()
@@ -239,7 +251,6 @@ void DocumentsModule::InitGlobalData()
     globalContext->CreateData(std::move(editorData));
 
     EditorSystemsManager* systemsManager = globalContext->GetData<EditorSystemsData>()->systemsManager.get();
-    systemsManager->dragStateChanged.Connect(this, &DocumentsModule::OnDragStateChanged);
     systemsManager->InitSystems();
 }
 
@@ -483,7 +494,7 @@ void DocumentsModule::CreateViewActions()
             return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
         });
 
-        connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnIncrementScale));
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget.data(), &PreviewWidget::OnIncrementScale));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomSeparator }));
 
@@ -503,7 +514,7 @@ void DocumentsModule::CreateViewActions()
             return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
         });
 
-        connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::OnDecrementScale));
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget.data(), &PreviewWidget::OnDecrementScale));
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomInActionName }));
@@ -524,7 +535,7 @@ void DocumentsModule::CreateViewActions()
             return fieldValue.CanCast<PackageNode*>() && fieldValue.Cast<PackageNode*>() != nullptr;
         });
 
-        connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget, &PreviewWidget::SetActualScale));
+        connections.AddConnection(action, &QAction::triggered, MakeFunction(previewWidget.data(), &PreviewWidget::SetActualScale));
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomOutActionName }));
@@ -739,7 +750,7 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
     EditorSystemsData* editorSystemsData = globalContext->GetData<EditorSystemsData>();
-    if (editorSystemsData->systemsManager->GetDisplayState() == EditorSystemsManager::Emulation)
+    if (editorSystemsData->systemsManager->GetDisplayState() == eDisplayState::Emulation)
     {
         return;
     }
@@ -957,6 +968,9 @@ void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& c
     {
         contextManager->DeleteContext(contextID);
     }
+
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate();
 }
 
 void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids)
@@ -1129,6 +1143,7 @@ void DocumentsModule::ApplyFileChanges()
     ContextAccessor* accessor = GetAccessor();
 
     DocumentsWatcherData* watcherData = accessor->GetGlobalContext()->GetData<DocumentsWatcherData>();
+    DVASSERT(watcherData != nullptr);
 
     DAVA::Set<DAVA::TArc::DataContext::ContextID> changed;
     DAVA::Set<DAVA::TArc::DataContext::ContextID> removed;
@@ -1176,28 +1191,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::GetContextByPath(const QStri
     return ret;
 }
 
-void DocumentsModule::OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState)
-{
-    using namespace DAVA::TArc;
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return;
-    }
-    DocumentData* documentData = activeContext->GetData<DocumentData>();
-    DVASSERT(nullptr != documentData);
-    //TODO: move this code to the TransformSystem when systems will be moved to the TArc
-    if (dragState == EditorSystemsManager::Transform)
-    {
-        documentData->BeginBatch("transformations");
-    }
-    else if (previousState == EditorSystemsManager::Transform)
-    {
-        documentData->EndBatch();
-    }
-}
-
 void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsContainerNode* /*from*/)
 {
     using namespace DAVA::TArc;
@@ -1212,6 +1205,9 @@ void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsCo
         displayedRootControls.erase(nodeToRemove);
     }
     documentData->SetDisplayedRootControls(displayedRootControls);
+
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate(nodeToRemove);
 }
 
 void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int)
@@ -1226,8 +1222,8 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
     EditorSystemsData* editorData = globalContext->GetData<EditorSystemsData>();
     const EditorSystemsManager* systemsManager = editorData->GetSystemsManager();
 
-    EditorSystemsManager::eDisplayState displayState = systemsManager->GetDisplayState();
-    if (displayState == EditorSystemsManager::Preview || displayState == EditorSystemsManager::Emulation)
+    eDisplayState displayState = systemsManager->GetDisplayState();
+    if (displayState == eDisplayState::Preview || displayState == eDisplayState::Emulation)
     {
         PackageNode* package = documentData->GetPackageNode();
         PackageControlsNode* packageControlsNode = package->GetPackageControlsNode();
