@@ -1,7 +1,7 @@
 #include "Classes/Commands2/CreatePlaneLODCommand.h"
 #include <Classes/Commands2/RECommandIDs.h>
 #include "Classes/Qt/Scene/SceneHelper.h"
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Classes/Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 
 #include <Render/Material/NMaterialNames.h>
 #include <Scene3D/Lod/LodComponent.h>
@@ -59,7 +59,7 @@ void CreatePlaneLODCommand::CreateTextureFiles()
     DAVA::FilePath folder = request->texturePath.GetDirectory();
     DAVA::FileSystem::Instance()->CreateDirectory(folder, true);
     DAVA::ImageSystem::Save(request->texturePath, request->planeImage);
-    TextureDescriptorUtils::CreateOrUpdateDescriptor(request->texturePath);
+    RETextureDescriptorUtils::CreateOrUpdateDescriptor(request->texturePath);
 }
 
 void CreatePlaneLODCommand::DeleteTextureFiles()

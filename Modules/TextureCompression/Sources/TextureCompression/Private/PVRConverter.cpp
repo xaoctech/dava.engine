@@ -1,19 +1,18 @@
 #include "TextureCompression/Private/PVRConverter.h"
 
-#include "Render/TextureDescriptor.h"
-#include "FileSystem/FileSystem.h"
-#include "Utils/StringFormat.h"
-#include "Platform/Process.h"
-#include "Logger/Logger.h"
-
-#include "Render/GPUFamilyDescriptor.h"
-#include "Render/Image/LibPVRHelper.h"
-#include "Render/Image/LibTgaHelper.h"
-#include "Render/Image/ImageSystem.h"
-#include "Render/Image/ImageConvert.h"
-#include "Render/Image/Image.h"
-
-#include "Base/GlobalEnum.h"
+#include <Base/GlobalEnum.h>
+#include <Engine/Engine.h>
+#include <FileSystem/FileSystem.h>
+#include <Logger/Logger.h>
+#include <Platform/Process.h>
+#include <Render/TextureDescriptor.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Render/Image/LibPVRHelper.h>
+#include <Render/Image/LibTgaHelper.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/Image/ImageConvert.h>
+#include <Render/Image/Image.h>
+#include <Utils/StringFormat.h>
 
 namespace DAVA
 {
@@ -130,7 +129,7 @@ Vector<Image*> ProcessFloatImageSet(Vector<Image*>& sourceImages, PixelFormat in
     return outputImages;
 }
 
-FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo)
+FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo, const FilePath& outFolder)
 {
     Vector<Image*> sourceImages;
     ImageSystem::Load(descriptor.GetSourceTexturePathname(), sourceImages);
@@ -146,7 +145,7 @@ FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, 
     for (Image* image : sourceImages)
         SafeRelease(image);
 
-    FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
+    FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily, outFolder);
     eErrorCode saveResult = LibPVRHelper().Save(outputName, targetImages);
     if (saveResult != eErrorCode::SUCCESS)
     {
@@ -160,7 +159,7 @@ FilePath PVRConverter::ConvertFloatTexture(const TextureDescriptor& descriptor, 
     return outputName;
 }
 
-FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo)
+FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo, const FilePath& outFolder)
 {
     Vector<FilePath> faces;
     descriptor.GenerateFacePathnames(CUBEMAP_TMP_DIR, PVRTOOL_FACE_SUFFIXES, faces);
@@ -182,7 +181,7 @@ FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descript
             SafeRelease(image);
     }
 
-    FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily);
+    FilePath outputName = GetConvertedTexturePath(descriptor, gpuFamily, outFolder);
     eErrorCode saveResult = LibPVRHelper().SaveCubeMap(outputName, imagesToSave);
     if (saveResult != eErrorCode::SUCCESS)
     {
@@ -199,7 +198,7 @@ FilePath PVRConverter::ConvertFloatCubeTexture(const TextureDescriptor& descript
     return outputName;
 }
 
-FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC /* = true */)
+FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC, const FilePath& outFolder)
 {
 #ifdef __DAVAENGINE_WIN_UAP__
 
@@ -219,17 +218,17 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
     {
         if (descriptor.IsCubeMap())
         {
-            outputName = ConvertFloatCubeTexture(descriptor, gpuFamily, quality, sourceInfo);
+            outputName = ConvertFloatCubeTexture(descriptor, gpuFamily, quality, sourceInfo, outFolder);
         }
         else
         {
-            outputName = ConvertFloatTexture(descriptor, gpuFamily, quality, sourceInfo);
+            outputName = ConvertFloatTexture(descriptor, gpuFamily, quality, sourceInfo, outFolder);
         }
     }
     else
     {
         Vector<String> args;
-        GetToolCommandLine(descriptor, inputPathname, gpuFamily, quality, args);
+        GetToolCommandLine(descriptor, inputPathname, gpuFamily, quality, outFolder, args);
         Process process(pvrTexToolPathname, args);
         if (process.Run(false))
         {
@@ -247,7 +246,7 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
                 return FilePath();
             }
 
-            outputName = GetConvertedTexturePath(descriptor, gpuFamily);
+            outputName = GetConvertedTexturePath(descriptor, gpuFamily, outFolder);
         }
         else
         {
@@ -270,7 +269,7 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
 #endif
 }
 
-FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality)
+FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const FilePath& outFolder)
 {
     FilePath sourcePath = descriptor.GetSourceTexturePathname();
 
@@ -317,7 +316,7 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
     tempFileDescriptor.compression[eGPUFamily::GPU_ORIGIN].imageFormat = targetFormat;
 
     FilePath tempSourcePath = tempFileDescriptor.GetSourceTexturePathname();
-    FilePath tempConvertedPath = GetConvertedTexturePath(tempFileDescriptor, gpuFamily);
+    FilePath tempConvertedPath = GetConvertedTexturePath(tempFileDescriptor, gpuFamily, outFolder);
     SCOPE_EXIT
     {
         FileSystem::Instance()->DeleteFile(tempFileDescriptor.pathname);
@@ -341,7 +340,7 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
             return FilePath();
         }
 
-        FilePath convertedImgPath = ConvertToPvr(tempFileDescriptor, gpuFamily, quality, false);
+        FilePath convertedImgPath = ConvertToPvr(tempFileDescriptor, gpuFamily, quality, false, outFolder);
         if (convertedImgPath.IsEmpty())
         {
             return FilePath();
@@ -359,7 +358,7 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
 
     DVASSERT(convertedImages.empty() == false);
 
-    FilePath convertedTexturePath = GetConvertedTexturePath(descriptor, gpuFamily);
+    FilePath convertedTexturePath = GetConvertedTexturePath(descriptor, gpuFamily, outFolder);
     if (convertedImages.empty() || (ImageSystem::Save(convertedTexturePath, convertedImages, convertedImages.front()->format) != eErrorCode::SUCCESS))
     {
         return FilePath();
@@ -369,13 +368,13 @@ FilePath PVRConverter::ConvertNormalMapToPvr(const TextureDescriptor& descriptor
     return convertedTexturePath;
 }
 
-void PVRConverter::GetToolCommandLine(const TextureDescriptor& descriptor, const FilePath& fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args)
+void PVRConverter::GetToolCommandLine(const TextureDescriptor& descriptor, const FilePath& fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const FilePath& outFolder, Vector<String>& args)
 {
     DVASSERT(descriptor.compression);
     const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
 
     String format = pixelFormatToPVRFormat[static_cast<PixelFormat>(compression->format)];
-    FilePath outputFile = GetConvertedTexturePath(descriptor, gpuFamily);
+    FilePath outputFile = GetConvertedTexturePath(descriptor, gpuFamily, outFolder);
 
     // input file
     args.push_back("-i");
@@ -459,16 +458,21 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor& descriptor, const
     //args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
 }
 
-FilePath PVRConverter::GetConvertedTexturePath(const TextureDescriptor& descriptor, eGPUFamily gpuFamily)
+FilePath PVRConverter::GetConvertedTexturePath(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, const FilePath& outFolder)
 {
-    return descriptor.CreateMultiMipPathnameForGPU(gpuFamily);
+    FilePath retPath = descriptor.CreateMultiMipPathnameForGPU(gpuFamily);
+    if ((outFolder.IsEmpty() == false) && (outFolder.IsDirectoryPathname() == true))
+    {
+        retPath.ReplaceDirectory(outFolder);
+    }
+
+    return retPath;
 }
 
 void PVRConverter::SetPVRTexTool(const FilePath& textToolPathname)
 {
     pvrTexToolPathname = textToolPathname;
-
-    if (!FileSystem::Instance()->IsFile(pvrTexToolPathname))
+    if (DAVA::GetEngineContext()->fileSystem->Exists(pvrTexToolPathname) == false)
     {
         Logger::Error("PVRTexTool doesn't found in %s\n", pvrTexToolPathname.GetAbsolutePathname().c_str());
         pvrTexToolPathname = FilePath();

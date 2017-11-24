@@ -8,7 +8,6 @@
 # -DSTASH_LOGIN    = stash user login
 # -DSTASH_PASS     = stash user password
 #
-# -DIMAGE_UNPACKER = add to toolset ImageUnpacker [true/false]
 # -DCACHE_CLIENT   = add to toolset AssetCacheClient
 #
 # -DDEPLOY         = deploy build [true/false]
@@ -48,6 +47,9 @@ add_tool_package     ( QuickEd         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/
 add_tool_package     ( ResourceArchiver DEPENDS ResourceEditor )
 add_tool_package     ( ResourcePacker   DEPENDS ResourceEditor )
 add_tool_package     ( ResourcePatcher  DEPENDS ResourceEditor )
+
+add_tool_package     ( TexConverter     )
+add_tool_package     ( TexDependency    )
 
 add_tool_package     ( AssetCacheServer )
 add_tool_package     ( Dep )

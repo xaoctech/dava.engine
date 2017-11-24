@@ -19,7 +19,7 @@ ENUM_DECLARE(DAVA::TextureConverter::eConvertQuality)
 
 namespace DAVA
 {
-FilePath TextureConverter::ConvertTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, bool updateAfterConversion, eConvertQuality quality)
+FilePath TextureConverter::ConvertTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, bool updateAfterConversion, eConvertQuality quality, const FilePath& outFolder)
 {
     const TextureDescriptor::Compression* compression = &descriptor.compression[gpuFamily];
 
@@ -38,11 +38,11 @@ FilePath TextureConverter::ConvertTexture(const TextureDescriptor& descriptor, e
 
         if (descriptor.dataSettings.GetIsNormalMap())
         {
-            outputPath = PVRConverter::Instance()->ConvertNormalMapToPvr(descriptor, gpuFamily, quality);
+            outputPath = PVRConverter::Instance()->ConvertNormalMapToPvr(descriptor, gpuFamily, quality, outFolder);
         }
         else
         {
-            outputPath = PVRConverter::Instance()->ConvertToPvr(descriptor, gpuFamily, quality);
+            outputPath = PVRConverter::Instance()->ConvertToPvr(descriptor, gpuFamily, quality, true, outFolder);
         }
     }
     else if (compressedFormat == IMAGE_FORMAT_DDS)
@@ -52,11 +52,11 @@ FilePath TextureConverter::ConvertTexture(const TextureDescriptor& descriptor, e
 
         if (descriptor.IsCubeMap())
         {
-            outputPath = DXTConverter::ConvertCubemapToDxt(descriptor, gpuFamily);
+            outputPath = DXTConverter::ConvertCubemapToDxt(descriptor, gpuFamily, outFolder);
         }
         else
         {
-            outputPath = DXTConverter::ConvertToDxt(descriptor, gpuFamily);
+            outputPath = DXTConverter::ConvertToDxt(descriptor, gpuFamily, outFolder);
         }
     }
     else

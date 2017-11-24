@@ -529,7 +529,6 @@ FilePath SpeedTreeImporter::CopyTextureAndCreateDescriptor(const FilePath& textu
 
     FilePath copyPath = texturesDir + texturePath.GetFilename();
     FileSystem::Instance()->CopyFile(texturePath, copyPath, true);
-    //    TextureDescriptorUtils::CreateOrUpdateDescriptor(copyPath);
 
     return copyPath;
 }

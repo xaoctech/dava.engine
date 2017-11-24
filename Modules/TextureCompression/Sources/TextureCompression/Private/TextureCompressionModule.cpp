@@ -4,6 +4,7 @@
 
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
+#include <Logger/Logger.h>
 #include <Render/Image/ImageConverter.h>
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -15,12 +16,12 @@ TextureCompressionModule::TextureCompressionModule(Engine* engine_)
 {
     imageConverter.reset(new ImageConverterImpl());
 }
-
+    
 void TextureCompressionModule::Init()
 {
     DVASSERT(GetEngineContext()->imageConverter != nullptr);
     GetEngineContext()->imageConverter->SetImplementation(imageConverter.get());
-
+    
 #if defined(__DAVAENGINE_MACOS__)
     String pvrToolName = "PVRTexToolCLI";
 #elif defined(__DAVAENGINE_WINDOWS__)
@@ -28,9 +29,9 @@ void TextureCompressionModule::Init()
 #else //PLATFORMS
 #error "Unknown platform"
 #endif //PLATFORMS
-
+    
     FilePath pvrTexPath = "~res:/" + pvrToolName;
-
+    
     const Vector<String>& cmdLine = engine->GetCommandLine();
     if (GetEngineContext()->fileSystem->Exists(pvrTexPath) == true)
     {

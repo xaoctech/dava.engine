@@ -1,7 +1,7 @@
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Classes/Application/RESettings.h"
 #include "Classes/Application/REGlobal.h"
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Classes/Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 
 #include <FileSystem/FileSystem.h>
 
@@ -29,7 +29,7 @@ void TexturePathValidator::FixupInternal(QVariant& v) const
     if (v.type() == QVariant::String)
     {
         DAVA::FilePath texturePath = DAVA::FilePath(v.toString().toStdString());
-        if (DAVA::FileSystem::Instance()->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+        if (DAVA::FileSystem::Instance()->Exists(texturePath) && RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
         {
             DAVA::FilePath descriptorPath = DAVA::TextureDescriptor::GetDescriptorPathname(texturePath);
 

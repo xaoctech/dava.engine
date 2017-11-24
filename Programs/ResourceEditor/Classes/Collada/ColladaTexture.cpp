@@ -8,7 +8,7 @@
 #include "Utils/Utils.h"
 #include "Qt/Main/QtUtils.h"
 
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 
 namespace DAVA
 {
@@ -18,7 +18,7 @@ ColladaTexture::ColladaTexture(FCDImage* _image)
     image = _image;
 
     const FilePath texturePath(texturePathName);
-    bool pathApplied = (FileSystem::Instance()->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath));
+    bool pathApplied = (FileSystem::Instance()->Exists(texturePath) && RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath));
 
     if (!pathApplied)
     {
