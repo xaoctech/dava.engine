@@ -47,52 +47,52 @@ const PxFilterData objectFilterData = PxFilterData(0, 1, 0, 0);
 const PxU32 maxQueryTouchCount = 1024;
 const PxU32 maxOverlapTouchCount = 30000;
 
-void UpdateActorTransform(const Matrix4& tranform, physx::PxRigidActor* actor)
+void UpdateActorTransform(const Matrix4& tranform, PxRigidActor* actor)
 {
     Vector3 position;
     Vector3 scale;
     Quaternion rotation;
     tranform.Decomposition(position, scale, rotation);
 
-    actor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
+    actor->setGlobalPose(PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
     DVASSERT(actor->getNbShapes() == 1);
-    physx::PxShape* shape = nullptr;
+    PxShape* shape = nullptr;
     actor->getShapes(&shape, 1, 0);
-    if (shape->getGeometryType() == physx::PxGeometryType::eTRIANGLEMESH)
+    if (shape->getGeometryType() == PxGeometryType::eTRIANGLEMESH)
     {
-        physx::PxTriangleMeshGeometry geom;
+        PxTriangleMeshGeometry geom;
         shape->getTriangleMeshGeometry(geom);
         geom.scale.scale = PhysicsMath::Vector3ToPxVec3(scale);
         shape->setGeometry(geom);
     }
 }
 
-void InitBounds(physx::PxShape* shape, const AABBox3& box)
+void InitBounds(PxShape* shape, const AABBox3& box)
 {
     DVASSERT(shape->userData == nullptr);
     shape->userData = new AABBox3(box);
 }
 
-void InitBounds(physx::PxRigidActor* actor, physx::PxShape* shape)
+void InitBounds(PxRigidActor* actor, PxShape* shape)
 {
     PxBounds3 bounds = actor->getWorldBounds();
-    float32 eps = 0.01f;
-    if (FLOAT_EQUAL_EPS(bounds.minimum.x, bounds.maximum.x, eps))
+    float32 boundingBoxMinHalfSize = 0.01f;
+    if (FLOAT_EQUAL_EPS(bounds.minimum.x, bounds.maximum.x, boundingBoxMinHalfSize))
     {
-        bounds.minimum.x -= eps;
-        bounds.maximum.x += eps;
+        bounds.minimum.x -= boundingBoxMinHalfSize;
+        bounds.maximum.x += boundingBoxMinHalfSize;
     }
 
-    if (FLOAT_EQUAL_EPS(bounds.minimum.y, bounds.maximum.y, eps))
+    if (FLOAT_EQUAL_EPS(bounds.minimum.y, bounds.maximum.y, boundingBoxMinHalfSize))
     {
-        bounds.minimum.y -= eps;
-        bounds.maximum.y += eps;
+        bounds.minimum.y -= boundingBoxMinHalfSize;
+        bounds.maximum.y += boundingBoxMinHalfSize;
     }
 
-    if (FLOAT_EQUAL_EPS(bounds.minimum.z, bounds.maximum.z, eps))
+    if (FLOAT_EQUAL_EPS(bounds.minimum.z, bounds.maximum.z, boundingBoxMinHalfSize))
     {
-        bounds.minimum.z -= eps;
-        bounds.maximum.z += eps;
+        bounds.minimum.z -= boundingBoxMinHalfSize;
+        bounds.maximum.z += boundingBoxMinHalfSize;
     }
     InitBounds(shape, AABBox3(PhysicsMath::PxBounds3ToAABox3(bounds)));
 }
@@ -106,8 +106,6 @@ struct CollisionObj
 
 CollisionObj CreateBox(bool createCollision, bool recreate, const Matrix4& transform, const Vector3& halfSize, void* userData)
 {
-    using namespace DAVA;
-
     CollisionObj result;
     result.isValid = true;
     result.shouldRecreate = recreate;
@@ -117,7 +115,7 @@ CollisionObj CreateBox(bool createCollision, bool recreate, const Matrix4& trans
         PxActor* actor = module->CreateStaticActor();
         DVASSERT(actor != nullptr);
         PxRigidActor* rigidActor = actor->is<PxRigidActor>();
-        DVASSERT(rigidActor);
+        DVASSERT(rigidActor != nullptr);
         rigidActor->userData = userData;
 
         PxShape* shape = module->CreateBoxShape(halfSize);
@@ -134,8 +132,6 @@ CollisionObj CreateBox(bool createCollision, bool recreate, const Matrix4& trans
 
 CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderObject* ro, PhysicsGeometryCache* cache, void* userData)
 {
-    using namespace DAVA;
-
     CollisionObj result;
     result.isValid = true;
     if (createCollision)
@@ -206,8 +202,6 @@ CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderOb
 
 CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* userData)
 {
-    using namespace DAVA;
-
     CollisionObj result;
     result.isValid = true;
     result.shouldRecreate = true;
@@ -226,7 +220,7 @@ CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* u
             PxShape* shape = module->CreateHeightField(landscape, localPose);
             rigidActor->attachShape(*shape);
 
-            shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+            shape->setLocalPose(PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
             InitBounds(rigidActor, shape);
             shape->setQueryFilterData(landscapeFilterData);
 
@@ -240,18 +234,18 @@ CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* u
     return result;
 }
 
-AABBox3* GetBounds(physx::PxShape* shape)
+AABBox3* GetBounds(PxShape* shape)
 {
     DVASSERT(shape->userData != nullptr);
     return reinterpret_cast<AABBox3*>(shape->userData);
 }
 
-AABBox3* GetBounds(physx::PxRigidActor* actor)
+AABBox3* GetBounds(PxRigidActor* actor)
 {
     DVASSERT(actor != nullptr);
     DVASSERT(actor->getNbShapes() == 1);
 
-    physx::PxShape* shape = nullptr;
+    PxShape* shape = nullptr;
     actor->getShapes(&shape, 1, 0);
     return GetBounds(shape);
 }
@@ -313,13 +307,13 @@ ClassifyPlanesResult ClassifyObjectBoundingBox(const Selectable& object, const A
     return ClassifyPlanesResult::ContainsOrIntersects;
 }
 
-ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, physx::PxShape* shape, const Vector<Plane>& planes)
+ClassifyPlanesResult ClassifyBoxToPlanes(const Selectable& object, PxShape* shape, const Vector<Plane>& planes)
 {
     AABBox3 bounds = *GetBounds(shape);
     return ClassifyObjectBoundingBox(object, bounds, planes);
 }
 
-inline bool IsBothNegative(float v1, float v2)
+inline bool IsBothNegative(float32 v1, float32 v2)
 {
     return (((reinterpret_cast<uint32_t&>(v1) & 0x80000000) & (reinterpret_cast<uint32_t&>(v2) & 0x80000000)) >> 31) != 0;
 }
@@ -334,7 +328,7 @@ inline void SortDistances(float32 values[3])
         std::swap(values[1], values[0]);
 }
 
-ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxShape* shape, const Vector<Plane>& planes)
+ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, PxShape* shape, const Vector<Plane>& planes)
 {
     AABBox3 bounds = *GetBounds(shape);
     if (ClassifyObjectBoundingBox(object, bounds, planes) == ClassifyPlanesResult::Outside)
@@ -342,26 +336,26 @@ ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxSha
         return ClassifyPlanesResult::Outside;
     }
 
-    physx::PxTriangleMeshGeometry geomHolder;
+    PxTriangleMeshGeometry geomHolder;
     bool extractSuccessed = shape->getTriangleMeshGeometry(geomHolder);
     DVASSERT(extractSuccessed == true);
 
-    const physx::PxTriangleMesh* mesh = geomHolder.triangleMesh;
-    const physx::PxU32 triangleCount = mesh->getNbTriangles();
-    const physx::PxVec3* verticesPtr = mesh->getVertices();
+    const PxTriangleMesh* mesh = geomHolder.triangleMesh;
+    const PxU32 triangleCount = mesh->getNbTriangles();
+    const PxVec3* verticesPtr = mesh->getVertices();
     const void* indicesPtr = mesh->getTriangles();
 
-    const bool indices16Bits = mesh->getTriangleMeshFlags() & physx::PxTriangleMeshFlag::e16_BIT_INDICES;
+    const bool indices16Bits = mesh->getTriangleMeshFlags() & PxTriangleMeshFlag::e16_BIT_INDICES;
 
-    for (physx::PxU32 i = 0; i < triangleCount; ++i)
+    for (PxU32 i = 0; i < triangleCount; ++i)
     {
-        physx::PxU32 i0 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i];
-        physx::PxU32 i1 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i + 1] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i + 1];
-        physx::PxU32 i2 = indices16Bits ? static_cast<const physx::PxU16*>(indicesPtr)[3 * i + 2] : static_cast<const physx::PxU32*>(indicesPtr)[3 * i + 2];
+        PxU32 i0 = indices16Bits ? static_cast<const PxU16*>(indicesPtr)[3 * i] : static_cast<const PxU32*>(indicesPtr)[3 * i];
+        PxU32 i1 = indices16Bits ? static_cast<const PxU16*>(indicesPtr)[3 * i + 1] : static_cast<const PxU32*>(indicesPtr)[3 * i + 1];
+        PxU32 i2 = indices16Bits ? static_cast<const PxU16*>(indicesPtr)[3 * i + 2] : static_cast<const PxU32*>(indicesPtr)[3 * i + 2];
 
-        physx::PxVec3 v0 = verticesPtr[i0];
-        physx::PxVec3 v1 = verticesPtr[i1];
-        physx::PxVec3 v2 = verticesPtr[i2];
+        PxVec3 v0 = verticesPtr[i0];
+        PxVec3 v1 = verticesPtr[i1];
+        PxVec3 v2 = verticesPtr[i2];
 
         bool isOutSideFound = false;
         for (const Plane& globalPlane : planes)
@@ -391,16 +385,16 @@ ClassifyPlanesResult ClassifyMeshToPlanes(const Selectable& object, physx::PxSha
     return ClassifyPlanesResult::Outside;
 }
 
-ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, physx::PxShape* shape, const Vector<Plane>& planes)
+ClassifyPlanesResult ClassifyToPlanes(const Selectable& object, PxShape* shape, const Vector<Plane>& planes)
 {
-    physx::PxGeometryType::Enum type = shape->getGeometryType();
+    PxGeometryType::Enum type = shape->getGeometryType();
     switch (type)
     {
-    case physx::PxGeometryType::eBOX:
+    case PxGeometryType::eBOX:
         return ClassifyBoxToPlanes(object, shape, planes);
-    case physx::PxGeometryType::eTRIANGLEMESH:
+    case PxGeometryType::eTRIANGLEMESH:
         return ClassifyMeshToPlanes(object, shape, planes);
-    case physx::PxGeometryType::eHEIGHTFIELD:
+    case PxGeometryType::eHEIGHTFIELD:
         return ClassifyPlanesResult::Outside;
     default:
         DVASSERT(false);
