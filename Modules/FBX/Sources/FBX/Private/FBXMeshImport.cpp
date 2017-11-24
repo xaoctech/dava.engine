@@ -13,6 +13,8 @@
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Material/NMaterial.h"
 
+#define FBX_IMPORT_CREATE_MATERIAL_INSTANCES 1
+
 namespace DAVA
 {
 namespace FBXMeshImportDetails
@@ -52,7 +54,6 @@ struct FBXVertex
     Set<FBXImporterDetails::VertexInfluence, JointWeightComparator> joints;
 };
 
-static uint32 materialInstanceIndex = 0;
 Map<const FbxMesh*, GeometrySet> meshCache; //in ProcessedMesh::GeometrySet materials isn't retained. It's owned by materialCache
 
 FbxSurfaceMaterial* GetPolygonMaterial(FbxMesh* fbxMesh, int32 polygonIndex);
@@ -251,9 +252,12 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             PolygonGroup* polygonGroup = geometry.first;
             NMaterial* material = geometry.second;
 
+#if FBX_IMPORT_CREATE_MATERIAL_INSTANCES
             ScopedPtr<NMaterial> materialInstance(new NMaterial());
             materialInstance->SetParent(material);
-            materialInstance->SetMaterialName(FastName(Format("Instance%d", materialInstanceIndex++).c_str()));
+            materialInstance->SetMaterialName(FastName(Format("Instance%u", mesh->GetRenderBatchCount()).c_str()));
+            material = materialInstance.get();
+#endif
 
             auto splitedPolygons = MeshUtils::SplitSkinnedMeshGeometry(polygonGroup, SkinnedMesh::MAX_TARGET_JOINTS);
             for (auto& p : splitedPolygons)
@@ -263,7 +267,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 
                 ScopedPtr<RenderBatch> renderBatch(new RenderBatch());
                 renderBatch->SetPolygonGroup(pg);
-                renderBatch->SetMaterial(materialInstance);
+                renderBatch->SetMaterial(material);
 
                 mesh->AddRenderBatch(renderBatch);
                 mesh->SetJointTargets(renderBatch, p.second);
@@ -285,11 +289,15 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             PolygonGroup* polygonGroup = geometry.first;
             NMaterial* material = geometry.second;
 
+#if FBX_IMPORT_CREATE_MATERIAL_INSTANCES
             ScopedPtr<NMaterial> materialInstance(new NMaterial());
             materialInstance->SetParent(material);
-            materialInstance->SetMaterialName(FastName(Format("Instance%d", materialInstanceIndex++).c_str()));
+            materialInstance->SetMaterialName(FastName(Format("Instance%u", mesh->GetRenderBatchCount()).c_str()));
 
-            mesh->AddPolygonGroup(polygonGroup, materialInstance);
+            material = materialInstance.get();
+#endif
+
+            mesh->AddPolygonGroup(polygonGroup, material);
         }
 
         entity->AddComponent(new RenderComponent(mesh));
@@ -305,8 +313,6 @@ void ClearMeshCache()
         //in geometry cache material isn't retained
     }
     FBXMeshImportDetails::meshCache.clear();
-
-    FBXMeshImportDetails::materialInstanceIndex = 0;
 }
 
 }; //ns FBXImporterDetails
