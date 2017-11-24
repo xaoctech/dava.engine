@@ -139,6 +139,8 @@ void LibraryWidget::SetupFileTypes()
     LibraryWidgetDetail::FileType allFiles("All files");
     allFiles.filter << "*.dae";
     allFiles.filter << "*.fbx";
+    allFiles.filter << "*.3ds";
+    allFiles.filter << "*.obj";
     allFiles.filter << "*.sc2";
     allFiles.filter << sourceImagesList;
 
@@ -148,6 +150,8 @@ void LibraryWidget::SetupFileTypes()
     QStringList models;
     models << "*.dae"
            << "*.fbx"
+           << "*.3ds"
+           << "*.obj"
            << "*.sc2";
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Models", models));
 
@@ -155,6 +159,8 @@ void LibraryWidget::SetupFileTypes()
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Compressed Textures", compressedImagesList));
 
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("FBX", "*.fbx"));
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("3DS", "*.3ds"));
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("OBJ", "*.obj"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("DAE", "*.dae"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("SC2", "*.sc2"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("TEX", QString("*") + DAVA::TextureDescriptor::GetDescriptorExtension().c_str()));
@@ -335,13 +341,16 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
         QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsDae()));
         actionConvertAnimations->setData(fileInfoAsVariant);
     }
-    else if (pathname.IsEqualToExtension(".fbx"))
+    else if (pathname.IsEqualToExtension(".fbx") || pathname.IsEqualToExtension(".3ds") || pathname.IsEqualToExtension(".obj"))
     {
         QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertFBX()));
         actionConvert->setData(fileInfoAsVariant);
 
-        QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsFBX()));
-        actionConvertAnimations->setData(fileInfoAsVariant);
+        if (pathname.IsEqualToExtension(".fbx"))
+        {
+            QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsFBX()));
+            actionConvertAnimations->setData(fileInfoAsVariant);
+        }
     }
 
     contextMenu.addSeparator();
