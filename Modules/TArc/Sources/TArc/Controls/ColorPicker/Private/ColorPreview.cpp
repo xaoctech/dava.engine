@@ -35,13 +35,13 @@ void ColorPreview::SetDragPreviewSize(const QSize& _size)
 void ColorPreview::SetColorOld(const QColor& c)
 {
     cOld = c;
-    repaint();
+    update();
 }
 
 void ColorPreview::SetColorNew(const QColor& c)
 {
     cNew = c;
-    repaint();
+    update();
 }
 
 void ColorPreview::OnMousePress(const QPoint& pos)

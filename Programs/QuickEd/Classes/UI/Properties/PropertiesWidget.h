@@ -17,6 +17,7 @@ namespace TArc
 {
 class ContextAccessor;
 class UI;
+class OperationInvoker;
 }
 }
 
@@ -35,6 +36,7 @@ public:
 
     void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
     void SetUI(DAVA::TArc::UI* ui);
+    void SetInvoker(DAVA::TArc::OperationInvoker* invoker);
 
 public slots:
     void SetProject(const Project* project);
@@ -88,4 +90,5 @@ private:
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::TArc::UI* ui = nullptr;
+    DAVA::TArc::OperationInvoker* invoker = nullptr;
 };

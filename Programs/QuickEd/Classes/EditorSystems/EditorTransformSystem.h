@@ -1,8 +1,10 @@
 #pragma once
 
-#include "EditorSystems/BaseEditorSystem.h"
-#include "EditorSystems/EditorSystemsManager.h"
-#include "EditorSystems/SelectionContainer.h"
+#include "Classes/EditorSystems/BaseEditorSystem.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/EditorSystems/SelectionContainer.h"
+
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
 
 #include <TArc/DataProcessing/SettingsNode.h>
 
@@ -43,15 +45,15 @@ private:
     };
 
     using Directions = DAVA::Array<int, DAVA::Vector2::AXIS_COUNT>;
-    using CornersDirections = DAVA::Array<Directions, HUDAreaInfo::CORNERS_COUNT>;
+    using CornersDirections = DAVA::Array<Directions, eArea::CORNERS_COUNT>;
     static const CornersDirections cornersDirections;
 
     struct MoveInfo;
 
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput) override;
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void OnDragStateChanged(eDragState currentState, eDragState previousState) override;
     eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
@@ -93,7 +95,7 @@ private:
 
     bool CanMagnet() const;
 
-    HUDAreaInfo::eArea activeArea = HUDAreaInfo::NO_AREA;
+    eArea activeArea = eArea::NO_AREA;
     ControlNode* activeControlNode = nullptr;
     DAVA::Vector2 extraDelta;
     DAVA::Map<const ControlNode*, DAVA::Vector2> extraDeltaToMoveControls;
@@ -102,6 +104,7 @@ private:
     SelectedControls selectedControlNodes;
     DAVA::List<std::unique_ptr<MoveInfo>> nodesToMoveInfos;
     DAVA::Vector<DAVA::UIControl*> neighbours;
+    CanvasDataAdapter canvasDataAdapter;
 
     DAVA::UIGeometricData parentGeometricData;
     DAVA::UIGeometricData controlGeometricData;

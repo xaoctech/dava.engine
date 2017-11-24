@@ -53,8 +53,8 @@ public:
 
     void Add(const DAVA::String& recent);
     DAVA::Signal<DAVA::String> actionTriggered;
-
     DAVA::Vector<DAVA::String> Get() const;
+    void Truncate();
 
 private:
     void InitMenuItems();
