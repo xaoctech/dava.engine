@@ -870,12 +870,12 @@ void SceneEditor2::SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder* hold
     }
 }
 
-void SceneEditor2::LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder)
+void SceneEditor2::LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder, DAVA::TArc::ContextAccessor* accessor)
 {
     for (EditorSceneSystem* system : editorSystems)
     {
         DVASSERT(system != nullptr);
-        system->LoadLocalProperties(holder);
+        system->LoadLocalProperties(holder, accessor);
     }
 }
 
