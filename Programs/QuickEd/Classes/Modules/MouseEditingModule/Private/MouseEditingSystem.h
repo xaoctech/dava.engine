@@ -4,10 +4,10 @@
 
 #include <Functional/Signal.h>
 
-class DuplicateByAltSystem : public BaseEditorSystem
+class MouseEditingSystem : public BaseEditorSystem
 {
 public:
-    DuplicateByAltSystem(DAVA::TArc::ContextAccessor* accessor);
+    MouseEditingSystem(DAVA::TArc::ContextAccessor* accessor);
     DAVA::Signal<> duplicateRequest;
 
     eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
