@@ -41,16 +41,9 @@ void SkeletonPose::Override(const SkeletonPose& other)
 
     for (uint32 j = 0; j < jointCount; ++j)
     {
-        const JointTransform& otherTransform = other.GetJointTransform(j);
-
-        if (otherTransform.HasPosition())
-            SetPosition(j, otherTransform.GetPosition());
-
-        if (otherTransform.HasOrientation())
-            SetOrientation(j, otherTransform.GetOrientation());
-
-        if (otherTransform.HasScale())
-            SetScale(j, otherTransform.GetScale());
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, JointTransform::Override(transform0, transform1));
     }
 }
 

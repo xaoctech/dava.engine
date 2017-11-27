@@ -1,4 +1,4 @@
-#include "MotionState.h"
+#include "Motion.h"
 #include "MotionTransition.h"
 
 #include "FileSystem/YamlNode.h"
@@ -6,12 +6,12 @@
 
 namespace DAVA
 {
-MotionState::~MotionState()
+Motion::~Motion()
 {
     SafeDelete(blendTree);
 }
 
-void MotionState::Reset()
+void Motion::Reset()
 {
     rootOffset = Vector3();
     animationPrevPhaseIndex = 0;
@@ -19,7 +19,7 @@ void MotionState::Reset()
     animationPhase = 0.f;
 }
 
-void MotionState::Update(float32 dTime)
+void Motion::Update(float32 dTime)
 {
     if (blendTree == nullptr)
         return;
@@ -88,18 +88,18 @@ void MotionState::Update(float32 dTime)
     }
 }
 
-void MotionState::EvaluatePose(SkeletonPose* outPose) const
+void Motion::EvaluatePose(SkeletonPose* outPose) const
 {
     if (blendTree != nullptr)
         blendTree->EvaluatePose(animationCurrPhaseIndex, animationPhase, boundParams, outPose);
 }
 
-void MotionState::GetRootOffsetDelta(Vector3* offset) const
+void Motion::GetRootOffsetDelta(Vector3* offset) const
 {
     *offset = rootOffset;
 }
 
-void MotionState::SyncPhase(const MotionState* other, const MotionTransitionInfo* transitionInfo)
+void Motion::SyncPhase(const Motion* other, const MotionTransitionInfo* transitionInfo)
 {
     DVASSERT(transitionInfo != nullptr);
 
@@ -124,25 +124,25 @@ void MotionState::SyncPhase(const MotionState* other, const MotionTransitionInfo
     }
 }
 
-const Vector<FastName>& MotionState::GetBlendTreeParameters() const
+const Vector<FastName>& Motion::GetBlendTreeParameters() const
 {
     static Vector<FastName> empty;
     return (blendTree != nullptr) ? blendTree->GetParameterIDs() : empty;
 }
 
-void MotionState::BindSkeleton(const SkeletonComponent* skeleton)
+void Motion::BindSkeleton(const SkeletonComponent* skeleton)
 {
     if (blendTree != nullptr)
         blendTree->BindSkeleton(skeleton);
 }
 
-void MotionState::BindRootNode(const FastName& rootNodeID)
+void Motion::BindRootNode(const FastName& rootNodeID)
 {
     if (blendTree != nullptr)
         blendTree->BindRootNode(rootNodeID);
 }
 
-bool MotionState::BindParameter(const FastName& parameterID, const float32* param)
+bool Motion::BindParameter(const FastName& parameterID, const float32* param)
 {
     bool success = false;
     if (blendTree != nullptr)
@@ -160,23 +160,23 @@ bool MotionState::BindParameter(const FastName& parameterID, const float32* para
     return success;
 }
 
-void MotionState::UnbindParameters()
+void Motion::UnbindParameters()
 {
     std::fill(boundParams.begin(), boundParams.end(), nullptr);
 }
 
-void MotionState::AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, MotionState* dstState, uint32 srcPhase)
+void Motion::AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, Motion* dstMotion, uint32 srcPhase)
 {
     DVASSERT(transitionInfo != nullptr);
-    DVASSERT(dstState != nullptr);
+    DVASSERT(dstMotion != nullptr);
 
     TransitionKey key(trigger, srcPhase);
     DVASSERT(transitions.count(key) == 0);
 
-    transitions[key] = { transitionInfo, dstState };
+    transitions[key] = { transitionInfo, dstMotion };
 }
 
-const MotionState::TransitionInfo& MotionState::GetTransitionInfo(const FastName& trigger) const
+const Motion::TransitionInfo& Motion::GetTransitionInfo(const FastName& trigger) const
 {
     auto found = transitions.find(TransitionKey(trigger, animationCurrPhaseIndex));
     if (found != transitions.end())
@@ -190,17 +190,17 @@ const MotionState::TransitionInfo& MotionState::GetTransitionInfo(const FastName
     return emptyInfo;
 }
 
-void MotionState::LoadFromYaml(const YamlNode* stateNode)
+void Motion::LoadFromYaml(const YamlNode* motionNode)
 {
-    DVASSERT(stateNode);
+    DVASSERT(motionNode);
 
-    const YamlNode* stateIDNode = stateNode->Get("state-id");
-    if (stateIDNode != nullptr && stateIDNode->GetType() == YamlNode::TYPE_STRING)
+    const YamlNode* motionIDNode = motionNode->Get("motion-id");
+    if (motionIDNode != nullptr && motionIDNode->GetType() == YamlNode::TYPE_STRING)
     {
-        id = stateIDNode->AsFastName();
+        id = motionIDNode->AsFastName();
     }
 
-    const YamlNode* blendTreeNode = stateNode->Get("blend-tree");
+    const YamlNode* blendTreeNode = motionNode->Get("blend-tree");
     if (blendTreeNode != nullptr)
     {
         blendTree = BlendTree::LoadFromYaml(blendTreeNode);

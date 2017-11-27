@@ -12,7 +12,7 @@ class MotionSystem;
 class SimpleMotion;
 class SkeletonAnimation;
 class SkeletonComponent;
-class Motion;
+class MotionLayer;
 class YamlNode;
 class MotionComponent : public Component
 {
@@ -29,11 +29,11 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    uint32 GetMotionsCount() const;
-    Motion* GetMotion(uint32 index) const;
+    uint32 GetMotionLayersCount() const;
+    MotionLayer* GetMotionLayer(uint32 index) const;
 
-    const FilePath& GetMotionPath() const;
-    void SetMotionPath(const FilePath& path);
+    const FilePath& GetDescriptorPath() const;
+    void SetDescriptorPath(const FilePath& path);
 
     float32 GetPlaybackRate() const;
     void SetPlaybackRate(float32 rate);
@@ -49,8 +49,8 @@ protected:
     void ReloadFromFile();
     void GetDependenciesRecursive(const YamlNode* node, Set<FilePath>* dependencies) const;
 
-    FilePath motionPath;
-    Vector<Motion*> motions;
+    FilePath descriptorPath;
+    Vector<MotionLayer*> motionLayers;
 
     float32 playbackRate = 1.f;
     UnorderedMap<FastName, float32> parameters;

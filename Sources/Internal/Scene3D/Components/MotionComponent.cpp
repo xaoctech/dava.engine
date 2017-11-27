@@ -9,7 +9,7 @@
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/SkeletonAnimation/Motion.h"
+#include "Scene3D/SkeletonAnimation/MotionLayer.h"
 #include "Scene3D/SkeletonAnimation/SimpleMotion.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
@@ -22,10 +22,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
 {
     ReflectionRegistrator<MotionComponent>::Begin()
     .ConstructorByPointer()
-    .Field("motionPath", &MotionComponent::GetMotionPath, &MotionComponent::SetMotionPath)[M::DisplayName("Motion File")]
+    .Field("motionPath", &MotionComponent::GetDescriptorPath, &MotionComponent::SetDescriptorPath)[M::DisplayName("Motion File")]
     .Field("playbackRate", &MotionComponent::GetPlaybackRate, &MotionComponent::SetPlaybackRate)[M::DisplayName("Playback Rate"), M::Range(0.f, 1.f, 0.1f)]
     .Field("parameters", &MotionComponent::parameters)[M::DisplayName("Parameters")]
-    .Field("motions", &MotionComponent::motions)[M::DisplayName("Motions")]
+    .Field("motionLayers", &MotionComponent::motionLayers)[M::DisplayName("Motion Layers")]
     .Field("singleAnimationRepeatsCount", &MotionComponent::GetSingleAnimationRepeatsCount, &MotionComponent::SetSingleAnimationRepeatsCount)[M::DisplayName("Single animation Repeats")]
     .End();
 }
@@ -34,14 +34,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionComponent)
 
 MotionComponent::~MotionComponent()
 {
-    for (Motion*& m : motions)
-        SafeDelete(m);
+    for (MotionLayer*& layer : motionLayers)
+        SafeDelete(layer);
 }
 
 void MotionComponent::TriggerEvent(const FastName& trigger)
 {
-    for (Motion* motion : motions)
-        motion->TriggerEvent(trigger);
+    for (MotionLayer* layer : motionLayers)
+        layer->TriggerEvent(trigger);
 }
 
 void MotionComponent::SetParameter(const FastName& parameterID, float32 value)
@@ -55,7 +55,7 @@ Component* MotionComponent::Clone(Entity* toEntity)
 {
     MotionComponent* newComponent = new MotionComponent();
     newComponent->SetEntity(toEntity);
-    newComponent->SetMotionPath(GetMotionPath());
+    newComponent->SetDescriptorPath(GetDescriptorPath());
     newComponent->SetPlaybackRate(GetPlaybackRate());
     return newComponent;
 }
@@ -64,9 +64,9 @@ void MotionComponent::Serialize(KeyedArchive* archive, SerializationContext* ser
 {
     Component::Serialize(archive, serializationContext);
 
-    if (!motionPath.IsEmpty())
+    if (!descriptorPath.IsEmpty())
     {
-        String configRelativePath = motionPath.GetRelativePathname(serializationContext->GetScenePath());
+        String configRelativePath = descriptorPath.GetRelativePathname(serializationContext->GetScenePath());
         archive->SetString("motion.filepath", configRelativePath);
     }
 
@@ -91,85 +91,85 @@ void MotionComponent::Deserialize(KeyedArchive* archive, SerializationContext* s
     //////////////////////////////////////////////////////////////////////////
 
     if (!relativePath.empty())
-        SetMotionPath(serializationContext->GetScenePath() + relativePath);
+        SetDescriptorPath(serializationContext->GetScenePath() + relativePath);
 
     simpleMotionRepeatsCount = archive->GetUInt32("simpleMotion.repeatsCount");
     playbackRate = archive->GetFloat("motion.playbackRate", 1.f);
 }
 
-uint32 MotionComponent::GetMotionsCount() const
+uint32 MotionComponent::GetMotionLayersCount() const
 {
-    return uint32(motions.size());
+    return uint32(motionLayers.size());
 }
 
-Motion* MotionComponent::GetMotion(uint32 index) const
+MotionLayer* MotionComponent::GetMotionLayer(uint32 index) const
 {
-    DVASSERT(index < GetMotionsCount());
-    return motions[index];
+    DVASSERT(index < GetMotionLayersCount());
+    return motionLayers[index];
 }
 
-const FilePath& MotionComponent::GetMotionPath() const
+const FilePath& MotionComponent::GetDescriptorPath() const
 {
-    return motionPath;
+    return descriptorPath;
 }
 
-void MotionComponent::SetMotionPath(const FilePath& path)
+void MotionComponent::SetDescriptorPath(const FilePath& path)
 {
-    motionPath = path;
+    descriptorPath = path;
 
     Entity* entity = GetEntity();
     if (entity && entity->GetScene())
     {
-        entity->GetScene()->motionSingleComponent->reloadMotion.emplace_back(this);
+        entity->GetScene()->motionSingleComponent->reloadDescriptor.emplace_back(this);
     }
 }
 
 void MotionComponent::ReloadFromFile()
 {
-    for (Motion*& m : motions)
-        SafeDelete(m);
+    for (MotionLayer*& layer : motionLayers)
+        SafeDelete(layer);
 
-    motions.clear();
+    motionLayers.clear();
     parameters.clear();
     SafeDelete(simpleMotion);
 
-    if (motionPath.IsEmpty())
+    if (descriptorPath.IsEmpty())
         return;
 
-    if (motionPath.IsEqualToExtension(".anim"))
+    if (descriptorPath.IsEqualToExtension(".anim"))
     {
         simpleMotion = new SimpleMotion();
         simpleMotion->SetRepeatsCount(simpleMotionRepeatsCount);
 
-        ScopedPtr<AnimationClip> clip(AnimationClip::Load(motionPath));
+        ScopedPtr<AnimationClip> clip(AnimationClip::Load(descriptorPath));
         simpleMotion->SetAnimation(clip);
     }
-    else if (motionPath.IsEqualToExtension(".yaml"))
+    else if (descriptorPath.IsEqualToExtension(".yaml"))
     {
-        YamlParser* parser = YamlParser::Create(motionPath);
+        YamlParser* parser = YamlParser::Create(descriptorPath);
         if (parser != nullptr)
         {
             YamlNode* rootNode = parser->GetRootNode();
             if (rootNode)
             {
-                const YamlNode* motionsNode = rootNode->Get("Motions");
-                if (motionsNode != nullptr && motionsNode->GetType() == YamlNode::TYPE_ARRAY)
+                const YamlNode* motionLayersNode = rootNode->Get("motion-layers");
+                if (motionLayersNode != nullptr && motionLayersNode->GetType() == YamlNode::TYPE_ARRAY)
                 {
-                    uint32 motionsCount = motionsNode->GetCount();
-                    for (uint32 m = 0; m < motionsCount; ++m)
+                    uint32 motionLayersCount = motionLayersNode->GetCount();
+                    for (uint32 m = 0; m < motionLayersCount; ++m)
                     {
-                        const YamlNode* motionNode = motionsNode->Get(m);
-                        Motion* motion = Motion::LoadFromYaml(motionNode);
-                        if (motion != nullptr)
+                        const YamlNode* motionLayerNode = motionLayersNode->Get(m);
+                        MotionLayer* motionLayer = MotionLayer::LoadFromYaml(motionLayerNode);
+                        if (motionLayer != nullptr)
                         {
-                            motions.push_back(motion);
+                            motionLayers.push_back(motionLayer);
 
-                            for (const FastName& p : motion->GetParameterIDs())
+                            for (const FastName& p : motionLayer->GetParameterIDs())
                                 parameters[p] = 0.f;
                         }
                     }
 
-                    for (Motion* motion : motions)
+                    for (MotionLayer* motion : motionLayers)
                     {
                         for (const FastName& p : motion->GetParameterIDs())
                             motion->BindParameter(p, &parameters[p]);
@@ -186,13 +186,13 @@ Vector<FilePath> MotionComponent::GetDependencies() const
 {
     Vector<FilePath> result;
 
-    if (!motionPath.IsEmpty())
+    if (!descriptorPath.IsEmpty())
     {
-        result.push_back(motionPath);
+        result.push_back(descriptorPath);
 
-        if (motionPath.IsEqualToExtension(".yaml"))
+        if (descriptorPath.IsEqualToExtension(".yaml"))
         {
-            YamlParser* parser = YamlParser::Create(motionPath);
+            YamlParser* parser = YamlParser::Create(descriptorPath);
             if (parser != nullptr)
             {
                 Set<FilePath> dependencies;

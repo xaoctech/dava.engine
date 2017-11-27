@@ -50,7 +50,7 @@ void TestCharacterControllerModule::CheckCharacterResources()
             ScopedPtr<Entity> characterMeshEntity(characterSourceEntity->Clone());
             characterMeshEntity->SetName("Character");
             characterMeshEntity->AddComponent(new MotionComponent());
-            GetMotionComponent(characterMeshEntity)->SetMotionPath("~res:/TestCharacterControllerModule/character/character_motion.yaml");
+            GetMotionComponent(characterMeshEntity)->SetDescriptorPath("~res:/TestCharacterControllerModule/character/character_motion.yaml");
             testCharacterEntity->AddNode(characterMeshEntity);
 
             ScopedPtr<Scene> weaponScene(new Scene());

@@ -159,21 +159,21 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
 
     //////////////////////////////////////////////////////////////////////////
 
-    const static FastName WEAPON_MOTION_NAME("WeaponMotion");
-    const static FastName WEAPON_MOTION_RELOAD_STATE_ID("reload");
-    const static FastName WEAPON_MOTION_SHOOT_STATE_ID("shoot");
-    const static FastName WEAPON_MOTION_SHOOT_MARKER("shoot");
+    const static FastName WEAPON_MOTION_LAYER_ID("weapon-layer");
+    const static FastName WEAPON_RELOAD_MOTION_ID("reload");
+    const static FastName WEAPON_SHOOT_MOTION_ID("shoot");
+    const static FastName WEAPON_SHOOT_MARKER("shoot");
 
     MotionSingleComponent* msc = GetScene()->motionSingleComponent;
     if (waitReloadEnd)
     {
-        MotionSingleComponent::AnimationInfo reloadAnimationInfo(characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_RELOAD_STATE_ID);
+        MotionSingleComponent::AnimationInfo reloadAnimationInfo(characterMotionComponent, WEAPON_MOTION_LAYER_ID, WEAPON_RELOAD_MOTION_ID);
         waitReloadEnd = (msc->animationEnd.count(reloadAnimationInfo) == 0);
     }
 
     if (shootEffect != nullptr)
     {
-        const static MotionSingleComponent::AnimationInfo shootMarkerInfo(characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_SHOOT_STATE_ID, WEAPON_MOTION_SHOOT_MARKER);
+        const static MotionSingleComponent::AnimationInfo shootMarkerInfo(characterMotionComponent, WEAPON_MOTION_LAYER_ID, WEAPON_SHOOT_MOTION_ID, WEAPON_SHOOT_MARKER);
         if (msc->animationMarkerReached.count(shootMarkerInfo))
             GetParticleEffectComponent(shootEffect)->Start();
     }

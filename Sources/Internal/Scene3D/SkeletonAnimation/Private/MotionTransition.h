@@ -10,7 +10,7 @@
 
 namespace DAVA
 {
-class MotionState;
+class Motion;
 class SkeletonPose;
 class YamlNode;
 
@@ -22,7 +22,6 @@ public:
         TYPE_REPLACE,
         TYPE_CROSS_FADE,
         TYPE_FROZEN_FADE,
-        TYPE_STATE,
 
         TYPE_COUNT
     };
@@ -56,7 +55,7 @@ class MotionTransition
 public:
     MotionTransition() = default;
 
-    void Reset(const MotionTransitionInfo* transitionInfo, MotionState* srcState, MotionState* dstState);
+    void Reset(const MotionTransitionInfo* transitionInfo, Motion* srcMotion, Motion* dstMotion);
 
     void Update(float32 dTime);
     void Evaluate(SkeletonPose* outPose, Vector3* outOffset);
@@ -64,14 +63,14 @@ public:
     bool IsComplete() const;
     bool IsStarted() const;
 
-    bool CanBeInterrupted(const MotionTransitionInfo* other, const MotionState* srcState, const MotionState* dstState) const;
-    void Interrupt(const MotionTransitionInfo* other, MotionState* srcState, MotionState* dstState);
+    bool CanBeInterrupted(const MotionTransitionInfo* other, const Motion* srcMotion, const Motion* dstMotion) const;
+    void Interrupt(const MotionTransitionInfo* other, Motion* srcMotion, Motion* dstMotion);
 
 protected:
     const MotionTransitionInfo* transitionInfo = nullptr;
 
-    MotionState* srcState = nullptr;
-    MotionState* dstState = nullptr;
+    Motion* srcMotion = nullptr;
+    Motion* dstMotion = nullptr;
 
     SkeletonPose workPose;
     SkeletonPose frozenPose;

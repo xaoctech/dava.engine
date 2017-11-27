@@ -9,7 +9,7 @@
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
-#include "Scene3D/SkeletonAnimation/Motion.h"
+#include "Scene3D/SkeletonAnimation/MotionLayer.h"
 #include "Scene3D/SkeletonAnimation/SimpleMotion.h"
 
 namespace DAVA
@@ -35,7 +35,7 @@ void MotionSystem::AddEntity(Entity* entity)
     DVASSERT(motionSingleComponent != nullptr);
 
     MotionComponent* motionComponent = GetMotionComponent(entity);
-    motionSingleComponent->reloadMotion.push_back(motionComponent);
+    motionSingleComponent->reloadDescriptor.push_back(motionComponent);
 }
 
 void MotionSystem::RemoveEntity(Entity* entity)
@@ -64,7 +64,7 @@ void MotionSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_MOTION_SYSTEM);
     DVASSERT(motionSingleComponent != nullptr);
 
-    for (MotionComponent* motionComponent : motionSingleComponent->reloadMotion)
+    for (MotionComponent* motionComponent : motionSingleComponent->reloadDescriptor)
     {
         motionComponent->ReloadFromFile();
         FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
@@ -76,11 +76,11 @@ void MotionSystem::Process(float32 timeElapsed)
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
         DVASSERT(skeleton);
 
-        uint32 motionCount = motionComponent->GetMotionsCount();
-        for (uint32 m = 0; m < motionCount; ++m)
+        uint32 motionLayersCount = motionComponent->GetMotionLayersCount();
+        for (uint32 l = 0; l < motionLayersCount; ++l)
         {
-            Motion* motion = motionComponent->GetMotion(m);
-            motion->BindSkeleton(skeleton);
+            MotionLayer* motionLayer = motionComponent->GetMotionLayer(l);
+            motionLayer->BindSkeleton(skeleton);
         }
 
         FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
@@ -119,49 +119,46 @@ void MotionSystem::Process(float32 timeElapsed)
 
     for (MotionComponent* component : activeComponents)
     {
-        UpdateMotions(component, timeElapsed);
+        UpdateMotionLayers(component, timeElapsed);
     }
 }
 
-void MotionSystem::UpdateMotions(MotionComponent* motionComponent, float32 dTime)
+void MotionSystem::UpdateMotionLayers(MotionComponent* motionComponent, float32 dTime)
 {
     DVASSERT(motionComponent);
 
     SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-    if (skeleton != nullptr && (motionComponent->GetMotionsCount() != 0 || (motionComponent->simpleMotion != nullptr && motionComponent->simpleMotion->IsPlaying())))
+    if (skeleton != nullptr && (motionComponent->GetMotionLayersCount() != 0 || (motionComponent->simpleMotion != nullptr && motionComponent->simpleMotion->IsPlaying())))
     {
         dTime *= motionComponent->playbackRate;
         SkeletonPose resultPose = skeleton->GetDefaultPose();
 
-        uint32 motionCount = motionComponent->GetMotionsCount();
-        for (uint32 m = 0; m < motionCount; ++m)
+        uint32 motionLayersCount = motionComponent->GetMotionLayersCount();
+        for (uint32 l = 0; l < motionLayersCount; ++l)
         {
-            Motion* motion = motionComponent->GetMotion(m);
+            MotionLayer* motionLayer = motionComponent->GetMotionLayer(l);
 
-            motion->Update(dTime);
+            motionLayer->Update(dTime);
 
-            for (const auto& stateAnimationEnd : motion->GetEndedStateAnimations())
-                motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), stateAnimationEnd));
+            for (const auto& motionEnd : motionLayer->GetEndedMotions())
+                motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motionLayer->GetName(), motionEnd));
 
-            for (const auto& stateMarker : motion->GetReachedMarkers())
-                motionSingleComponent->animationMarkerReached.insert(MotionSingleComponent::AnimationInfo(motionComponent, motion->GetName(), stateMarker.first, stateMarker.second));
+            for (const auto& motionMarker : motionLayer->GetReachedMarkers())
+                motionSingleComponent->animationMarkerReached.insert(MotionSingleComponent::AnimationInfo(motionComponent, motionLayer->GetName(), motionMarker.first, motionMarker.second));
 
-            const SkeletonPose& pose = motion->GetCurrentSkeletonPose();
-            Motion::eMotionBlend blendMode = motion->GetBlendMode();
+            const SkeletonPose& pose = motionLayer->GetCurrentSkeletonPose();
+            MotionLayer::eMotionBlend blendMode = motionLayer->GetBlendMode();
             switch (blendMode)
             {
-            case Motion::BLEND_OVERRIDE:
+            case MotionLayer::BLEND_OVERRIDE:
                 resultPose.Override(pose);
-                motionComponent->rootOffsetDelta = motion->GetCurrentRootOffsetDelta();
+                motionComponent->rootOffsetDelta = motionLayer->GetCurrentRootOffsetDelta();
                 break;
-            case Motion::BLEND_ADD:
+            case MotionLayer::BLEND_ADD:
                 resultPose.Add(pose);
                 break;
-            case Motion::BLEND_DIFF:
+            case MotionLayer::BLEND_DIFF:
                 resultPose.Diff(pose);
-                break;
-            case Motion::BLEND_LERP:
-                resultPose.Lerp(pose, 0.5f /*TODO: *Skinning* motion-blend param*/);
                 break;
             default:
                 break;

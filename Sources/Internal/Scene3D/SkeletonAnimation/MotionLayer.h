@@ -8,20 +8,20 @@
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 
-#include "Private/MotionState.h"
+#include "Private/Motion.h"
 #include "Private/MotionTransition.h"
 
 namespace DAVA
 {
 class BlendTree;
 class YamlNode;
+class MotionLayer;
 class Motion;
-class MotionState;
 struct MotionTransitionInfo;
 
-class Motion
+class MotionLayer
 {
-    Motion() = default;
+    MotionLayer() = default;
 
 public:
     enum eMotionBlend
@@ -29,12 +29,11 @@ public:
         BLEND_OVERRIDE,
         BLEND_ADD,
         BLEND_DIFF,
-        BLEND_LERP,
 
         BLEND_COUNT
     };
 
-    static Motion* LoadFromYaml(const YamlNode* motionNode);
+    static MotionLayer* LoadFromYaml(const YamlNode* motionNode);
 
     const FastName& GetName() const;
     eMotionBlend GetBlendMode() const;
@@ -52,24 +51,24 @@ public:
     bool UnbindParameter(const FastName& parameterID);
     void UnbindParameters();
 
-    const Vector<FastName>& GetStateIDs() const;
+    const Vector<FastName>& GetMotionIDs() const;
     const Vector<std::pair<FastName, FastName>>& GetReachedMarkers() const;
-    const Vector<FastName>& GetEndedStateAnimations() const;
+    const Vector<FastName>& GetEndedMotions() const;
 
 protected:
-    FastName name;
+    FastName layerID;
     eMotionBlend blendMode = BLEND_COUNT;
 
-    Vector<MotionState> states;
+    Vector<Motion> motions;
     Vector<MotionTransitionInfo> transitions;
 
-    Vector<FastName> statesIDs;
+    Vector<FastName> motionsIDs;
     Vector<FastName> parameterIDs;
 
-    MotionTransition stateTransition; //transition from 'current' to 'next' state
-    MotionState* currentState = nullptr;
-    MotionState* nextState = nullptr;
-    MotionState* pendingState = nullptr;
+    MotionTransition motionTransition; //transition from 'current' to 'next' motion
+    Motion* currentMotion = nullptr;
+    Motion* nextMotion = nullptr;
+    Motion* pendingMotion = nullptr;
     MotionTransitionInfo* pendingTransition = nullptr;
 
     Vector3 currentRootOffsetDelta;
@@ -80,45 +79,45 @@ protected:
     uint32 rootNodeJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
 
     SkeletonPose currentPose;
-    Vector<std::pair<FastName, FastName>> reachedMarkers; /*[state-id, phase-id]*/
-    Vector<FastName> endedStateAnimations;
+    Vector<std::pair<FastName, FastName>> reachedMarkers; /*[motion-id, phase-id]*/
+    Vector<FastName> endedMotions;
 
-    DAVA_REFLECTION(Motion);
+    DAVA_REFLECTION(MotionLayer);
 };
 
-inline const FastName& Motion::GetName() const
+inline const FastName& MotionLayer::GetName() const
 {
-    return name;
+    return layerID;
 }
 
-inline Motion::eMotionBlend Motion::GetBlendMode() const
+inline MotionLayer::eMotionBlend MotionLayer::GetBlendMode() const
 {
     return blendMode;
 }
 
-inline const SkeletonPose& Motion::GetCurrentSkeletonPose() const
+inline const SkeletonPose& MotionLayer::GetCurrentSkeletonPose() const
 {
     return currentPose;
 }
 
-inline const Vector3& Motion::GetCurrentRootOffsetDelta() const
+inline const Vector3& MotionLayer::GetCurrentRootOffsetDelta() const
 {
     return currentRootOffsetDelta;
 }
 
-inline const Vector<FastName>& Motion::GetParameterIDs() const
+inline const Vector<FastName>& MotionLayer::GetParameterIDs() const
 {
     return parameterIDs;
 }
 
-inline const Vector<std::pair<FastName, FastName>>& Motion::GetReachedMarkers() const
+inline const Vector<std::pair<FastName, FastName>>& MotionLayer::GetReachedMarkers() const
 {
     return reachedMarkers;
 }
 
-inline const Vector<FastName>& Motion::GetEndedStateAnimations() const
+inline const Vector<FastName>& MotionLayer::GetEndedMotions() const
 {
-    return endedStateAnimations;
+    return endedMotions;
 }
 
 } //ns

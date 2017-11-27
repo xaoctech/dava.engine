@@ -16,25 +16,25 @@ class SkeletonPose;
 class YamlNode;
 struct MotionTransitionInfo;
 
-class MotionState
+class Motion
 {
 public:
-    MotionState() = default;
-    ~MotionState();
+    Motion() = default;
+    ~Motion();
 
     struct TransitionInfo
     {
         MotionTransitionInfo* info;
-        MotionState* state;
+        Motion* motion;
     };
 
-    void LoadFromYaml(const YamlNode* stateNode);
+    void LoadFromYaml(const YamlNode* motionNode);
 
     void Reset();
     void Update(float32 dTime);
     void EvaluatePose(SkeletonPose* outPose) const;
     void GetRootOffsetDelta(Vector3* offset) const;
-    void SyncPhase(const MotionState* withOther, const MotionTransitionInfo* transitionInfo);
+    void SyncPhase(const Motion* withOther, const MotionTransitionInfo* transitionInfo);
 
     bool IsAnimationEndReached() const;
     bool IsPhaseEndReached(uint32 phaseIndex) const;
@@ -51,7 +51,7 @@ public:
     bool BindParameter(const FastName& parameterID, const float32* param);
     void UnbindParameters();
 
-    void AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, MotionState* dstState, uint32 srcPhase = std::numeric_limits<uint32>::max());
+    void AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, Motion* dstMotion, uint32 srcPhase = std::numeric_limits<uint32>::max());
     const TransitionInfo& GetTransitionInfo(const FastName& trigger) const;
 
 protected:
@@ -99,27 +99,27 @@ protected:
     bool animationEndReached = false;
 };
 
-inline const FastName& MotionState::GetID() const
+inline const FastName& Motion::GetID() const
 {
     return id;
 }
 
-inline const Vector<FastName>& MotionState::GetReachedMarkers() const
+inline const Vector<FastName>& Motion::GetReachedMarkers() const
 {
     return reachedMarkers;
 }
 
-inline bool MotionState::IsAnimationEndReached() const
+inline bool Motion::IsAnimationEndReached() const
 {
     return animationEndReached;
 }
 
-inline bool MotionState::IsPhaseEndReached(uint32 phaseIndex) const
+inline bool Motion::IsPhaseEndReached(uint32 phaseIndex) const
 {
     return (animationPrevPhaseIndex == phaseIndex) && (animationCurrPhaseIndex != phaseIndex);
 }
 
-inline bool MotionState::IsMarkerReached(const FastName& marker) const
+inline bool Motion::IsMarkerReached(const FastName& marker) const
 {
     return reachedMarkersSet.count(marker) > 0;
 }

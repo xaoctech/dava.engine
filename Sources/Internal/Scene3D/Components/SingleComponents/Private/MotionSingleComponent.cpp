@@ -12,7 +12,7 @@ void MotionSingleComponent::Clear()
     simpleMotionFinished.clear();
 
     rebindSkeleton.clear();
-    reloadMotion.clear();
+    reloadDescriptor.clear();
 
     animationEnd.clear();
     animationMarkerReached.clear();
@@ -24,7 +24,7 @@ void MotionSingleComponent::EntityRemoved(const Entity* entity)
     if (component)
     {
         FindAndRemoveExchangingWithLast(rebindSkeleton, component);
-        FindAndRemoveExchangingWithLast(reloadMotion, component);
+        FindAndRemoveExchangingWithLast(reloadDescriptor, component);
         FindAndRemoveExchangingWithLast(startSimpleMotion, component);
         FindAndRemoveExchangingWithLast(stopSimpleMotion, component);
         FindAndRemoveExchangingWithLast(simpleMotionFinished, component);

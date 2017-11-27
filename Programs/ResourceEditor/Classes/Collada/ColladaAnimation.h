@@ -29,14 +29,14 @@ public:
     static void ExportAnimationData(ColladaSceneNode* node, ColladaAnimatinData* data);
 
 protected:
-    struct ColladaAnimatinTimeCmp
+    struct ColladaAnimationTimeCmp
     {
         bool operator()(float32 l, float32 r)
         {
-            return (!FLOAT_EQUAL(l, r)) ? (l < r) : false;
+            return !FLOAT_EQUAL(l, r) && (l < r);
         }
     };
-    using TimeStampSet = Set<float32, ColladaAnimatinTimeCmp>;
+    using TimeStampSet = Set<float32, ColladaAnimationTimeCmp>;
 
     static Matrix4 EvaluateMatrix(FCDTransform* transform, float32 time);
     static Vector3 EvaluateScale(FCDTransform* transform, float32 time);

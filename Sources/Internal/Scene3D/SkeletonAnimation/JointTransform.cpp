@@ -120,4 +120,20 @@ JointTransform JointTransform::Lerp(const JointTransform& t0, const JointTransfo
     return result;
 }
 
+JointTransform JointTransform::Override(const JointTransform& t0, const JointTransform& t1)
+{
+    JointTransform result = t0;
+
+    if (t1.HasPosition())
+        result.SetPosition(t1.GetPosition());
+
+    if (t1.HasOrientation())
+        result.SetOrientation(t1.GetOrientation());
+
+    if (t1.HasScale())
+        result.SetScale(t1.GetScale());
+
+    return result;
+}
+
 } //ns
