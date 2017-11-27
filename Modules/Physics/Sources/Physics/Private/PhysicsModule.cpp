@@ -22,7 +22,7 @@
 #include <Engine/EngineContext.h>
 #include <FileSystem/YamlParser.h>
 #include <FileSystem/YamlNode.h>
-#include <FileSystem/Filesystem.h>
+#include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Render/Highlevel/Landscape.h>
