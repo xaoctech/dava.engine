@@ -7,7 +7,7 @@
 
 namespace DAVA
 {
-class ImageExt
+class ImageExt final
 {
 public:
     ImageExt();
