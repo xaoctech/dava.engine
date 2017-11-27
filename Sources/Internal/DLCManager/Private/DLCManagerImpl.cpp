@@ -110,10 +110,9 @@ bool DLCManagerImpl::IsProfilingEnabled() const
     return value.Get<bool>(false);
 }
 
-DLCManagerImpl::DLCManagerImpl(Engine* engine_, const DLCDownloaderFactory& downloaderFactory_)
+DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : profiler(1024 * 16)
     , engine(*engine_)
-    , downloaderFactory(downloaderFactory_)
 {
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
@@ -386,13 +385,20 @@ void DLCManagerImpl::CreateDownloader()
 {
     if (!downloader)
     {
-        DLCDownloader::Hints downloaderHints;
-        downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
-        downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
-        downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
-        downloaderHints.profiler = &profiler;
+        if (hints.downloader)
+        {
+            downloader = hints.downloader;
+        }
+        else
+        {
+            DLCDownloader::Hints downloaderHints;
+            downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
+            downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
+            downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
+            downloaderHints.profiler = &profiler;
 
-        downloader = downloaderFactory(downloaderHints);
+            downloader = std::shared_ptr<DLCDownloader>(DLCDownloader::Create(downloaderHints));
+        }
     }
 }
 

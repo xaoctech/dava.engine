@@ -899,13 +899,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         {
             if (context->dlcManager == nullptr)
             {
-                auto dlcDownloaderFactory =
-                [](const DLCDownloader::Hints& hints)
-                {
-                    return std::shared_ptr<DLCDownloader>(DLCDownloader::Create(hints));
-                };
-
-                context->dlcManager = new DLCManagerImpl(engine, dlcDownloaderFactory);
+                context->dlcManager = new DLCManagerImpl(engine);
             }
         }
     }

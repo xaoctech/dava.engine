@@ -105,11 +105,9 @@ public:
         State_COUNT
     };
 
-    using DLCDownloaderFactory = Function<std::shared_ptr<DLCDownloader>(const DLCDownloader::Hints& hints)>;
-
     static const String& ToString(InitState state);
 
-    explicit DLCManagerImpl(Engine* engine_, const DLCDownloaderFactory& downloaderFactory_);
+    explicit DLCManagerImpl(Engine* engine_);
     ~DLCManagerImpl();
     void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
     void FillPreloadedPacks();
@@ -310,7 +308,7 @@ private:
     String uncompressedFileNames;
     UnorderedMap<String, const PackFormat::FileTableEntry*> mapFileData;
     Vector<uint32> startFileNameIndexesInUncompressedNames;
-    DLCDownloader::Task* downloadTask = nullptr;
+    DLCDownloader::ITask* downloadTask = nullptr;
     uint64 fullSizeServerData = 0;
     mutable Progress lastProgress;
 
@@ -332,8 +330,6 @@ private:
 
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
-
-    DLCDownloaderFactory downloaderFactory;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const

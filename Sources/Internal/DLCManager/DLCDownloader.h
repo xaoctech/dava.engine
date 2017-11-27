@@ -171,36 +171,34 @@ public:
         TaskStatus& operator=(const TaskStatus& other);
     };
 
-    struct Task
+    struct ITask
     {
-        virtual ~Task()
-        {
-        }
+        virtual ~ITask() = default;
     };
 
     /** Start http request to find out content size. */
-    virtual Task* StartGetContentSize(const String& srcUrl) = 0;
+    virtual ITask* StartGetContentSize(const String& srcUrl) = 0;
     /** Start downloading to dstPath file */
-    virtual Task* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
+    virtual ITask* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
     /** Start downloading to custom writer
 	    You can reuse customWriter after finish Task
 	*/
-    virtual Task* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
+    virtual ITask* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
     /** Resume downloading to file starting from current file size */
-    virtual Task* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
+    virtual ITask* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) = 0;
     /** Resume downloading to custom writer starting from current position
 	    You can reuse customWriter after finish Task
 	*/
-    virtual Task* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
+    virtual ITask* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) = 0;
 
     /**  Clear task data and free resources */
-    virtual void RemoveTask(Task* task) = 0;
+    virtual void RemoveTask(ITask* task) = 0;
 
     /** Wait for task status == finished */
-    virtual void WaitTask(Task* task) = 0;
+    virtual void WaitTask(ITask* task) = 0;
 
-    virtual const TaskInfo& GetTaskInfo(Task* task) = 0;
-    virtual const TaskStatus& GetTaskStatus(Task* task) = 0;
+    virtual const TaskInfo& GetTaskInfo(ITask* task) = 0;
+    virtual const TaskStatus& GetTaskStatus(ITask* task) = 0;
 
     /** You can customize internal curl behavior. Do it just after new
 	```DLCDownloader``` created and before any task started.*/

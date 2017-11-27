@@ -41,28 +41,28 @@ public:
     DLCDownloaderImpl(DLCDownloaderImpl&&) = delete;
     DLCDownloaderImpl& operator=(const DLCDownloader&) = delete;
 
-    Task* StartGetContentSize(const String& srcUrl) override;
+    ITask* StartGetContentSize(const String& srcUrl) override;
 
-    Task* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) override;
+    ITask* StartTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) override;
 
-    Task* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) override;
+    ITask* StartTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) override;
 
-    Task* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) override;
+    ITask* ResumeTask(const String& srcUrl, const String& dstPath, Range range = EmptyRange) override;
 
-    Task* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) override;
+    ITask* ResumeTask(const String& srcUrl, std::shared_ptr<IWriter> customWriter, Range range = EmptyRange) override;
 
     // Cancel download by ID (works for scheduled and current)
-    void RemoveTask(Task* task) override;
+    void RemoveTask(ITask* task) override;
 
     // wait for task status = finished
-    void WaitTask(Task* task) override;
+    void WaitTask(ITask* task) override;
 
-    const TaskInfo& GetTaskInfo(Task* task) override;
-    const TaskStatus& GetTaskStatus(Task* task) override;
+    const TaskInfo& GetTaskInfo(ITask* task) override;
+    const TaskStatus& GetTaskStatus(ITask* task) override;
 
     void SetHints(const Hints& h) override;
 
-    struct TaskImpl;
+    struct Task;
 
 private:
     void Initialize();
@@ -74,11 +74,11 @@ private:
     void ProcessMessagesFromMulti();
     void BalancingHandles();
 
-    Task* StartAnyTask(const String& srcUrl,
-                       const String& dsrPath,
-                       TaskType taskType,
-                       std::shared_ptr<IWriter> dstWriter,
-                       Range range = EmptyRange);
+    ITask* StartAnyTask(const String& srcUrl,
+                        const String& dsrPath,
+                        TaskType taskType,
+                        std::shared_ptr<IWriter> dstWriter,
+                        Range range = EmptyRange);
 
     // [start] implement ICurlEasyStorage interface
     CURL* CurlCreateHandle() override;
@@ -92,28 +92,28 @@ private:
     // [end] implement ICurlEasyStorage interface
 
     void DownloadThreadFunc();
-    void DeleteTask(Task* task);
+    void DeleteTask(ITask* task);
     void RemoveDeletedTasks();
-    TaskImpl* AddOneMoreTask();
+    Task* AddOneMoreTask();
     int CurlPerform();
 
     struct WaitingDescTask
     {
-        TaskImpl* task = nullptr;
+        Task* task = nullptr;
         Semaphore* semaphore = nullptr;
     };
 
-    List<TaskImpl*> inputList;
+    List<Task*> inputList;
     Mutex mutexInputList; // to protect access to taskQueue
     List<WaitingDescTask> waitingTaskList;
     Mutex mutexWaitingList;
-    List<Task*> removedList;
+    List<ITask*> removedList;
     Mutex mutexRemovedList;
 
     Thread::Id downloadThreadId = 0;
 
     // [start] next variables used only from Download thread
-    List<TaskImpl*> tasks;
+    List<Task*> tasks;
     UnorderedMap<CURL*, IDownloaderSubTask*> subtaskMap;
     List<CURL*> reusableHandles;
     CURLM* multiHandle = nullptr;

@@ -113,7 +113,7 @@ private:
                     uint64 startLoadingPos_,
                     uint64 sizeOfCompressedFile_,
                     uint64 sizeOfUncompressedFile_,
-                    DLCDownloader::Task* task_,
+                    DLCDownloader::ITask* task_,
                     Compressor::Type compressionType_,
                     Status status_);
         ~FileRequest();
@@ -126,7 +126,7 @@ private:
         uint64 sizeOfCompressedFile = 0;
         uint64 sizeOfUncompressedFile = 0;
         uint64 downloadedFileSize = 0;
-        DLCDownloader::Task* task = nullptr;
+        DLCDownloader::ITask* task = nullptr;
         Compressor::Type compressionType = Compressor::Type::Lz4HC;
         Status status = CheckLocalFile;
         std::shared_ptr<DVPLWriter> dvplWriter;
