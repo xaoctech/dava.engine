@@ -6,7 +6,7 @@ import jetbrains.buildServer.configs.kotlin.v10.buildSteps.ScriptBuildStep.*
 import jetbrains.buildServer.configs.kotlin.v10.buildSteps.script
 
 object dava_framework_Editors_ResourceEditorPublic_ResourceEditorMac : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDAVATools_mac)
+    template = "dava_framework_TemplateDAVATools_mac"
     uuid = "db086cbd-7fbb-4e40-8ef8-5d0f9806342a"
     extId = "dava_framework_Editors_ResourceEditorPublic_ResourceEditorMac"
     name = "ResourceEditor_mac"

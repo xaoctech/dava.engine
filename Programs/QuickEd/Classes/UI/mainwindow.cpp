@@ -10,7 +10,6 @@
 #include "QtTools/ReloadSprites/DialogReloadSprites.h"
 
 #include "DebugTools/DebugTools.h"
-#include "UI/Package/PackageModel.h"
 #include "UI/ProjectView.h"
 
 #include <TArc/Utils/Utils.h>
@@ -24,7 +23,7 @@
 #include <QCheckBox>
 #include <QKeyEvent>
 
-MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* tarcUi, QWidget* parent)
+MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* tarcUi, DAVA::TArc::OperationInvoker* invoker, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow())
 #if defined(__DAVAENGINE_MACOS__)
@@ -37,8 +36,7 @@ MainWindow::MainWindow(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* t
 
     ui->propertiesWidget->SetAccessor(accessor);
     ui->propertiesWidget->SetUI(tarcUi);
-    ui->packageWidget->SetAccessor(accessor);
-    ui->packageWidget->SetUI(tarcUi);
+    ui->propertiesWidget->SetInvoker(invoker);
 
     setWindowIcon(QIcon(":/icon.ico"));
     DebugTools::ConnectToUI(ui.get());
@@ -89,7 +87,6 @@ void MainWindow::SetupViewMenu()
     // Setup the common menu actions.
     QList<QAction*> dockWidgetToggleActions;
     dockWidgetToggleActions << ui->propertiesWidget->toggleViewAction()
-                            << ui->packageWidget->toggleViewAction()
                             << ui->toolBarGlobal->toggleViewAction();
 
     ui->Dock->insertActions(nullptr, dockWidgetToggleActions);
@@ -98,11 +95,6 @@ void MainWindow::SetupViewMenu()
 MainWindow::ProjectView* MainWindow::GetProjectView() const
 {
     return projectView;
-}
-
-PackageWidget* MainWindow::GetPackageWidget() const
-{
-    return ui->packageWidget;
 }
 
 void MainWindow::UpdateWindowTitle()

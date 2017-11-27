@@ -12,6 +12,7 @@
 #include <Functional/Functional.h>
 #include <Engine/PlatformApiQt.h>
 #include <Engine/Qt/RenderWidget.h>
+#include <UI/UIEvent.h>
 
 namespace CreatingControlsSystemDetails
 {
@@ -65,36 +66,36 @@ void CreatingControlsSystem::OnProjectPathChanged(const DAVA::Any& projectPath)
     CancelCreateByClick();
 }
 
-EditorSystemsManager::eDragState CreatingControlsSystem::RequireNewState(DAVA::UIEvent* currentInput)
+eDragState CreatingControlsSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*eInputSource*/)
 {
     using namespace CreatingControlsSystemDetails;
 
     if (controlYamlString.empty())
     {
-        return EditorSystemsManager::NoDrag;
+        return eDragState::NoDrag;
     }
     else if (IsEscPressed(currentInput))
     {
         isEscPressed = true;
-        return EditorSystemsManager::NoDrag;
+        return eDragState::NoDrag;
     }
     else if (IsLMBPressed(currentInput))
     {
         isLMBPressed = true;
-        return EditorSystemsManager::NoDrag;
+        return eDragState::NoDrag;
     }
     else
     {
-        return EditorSystemsManager::AddingControl;
+        return eDragState::AddingControl;
     }
 }
 
-bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool CreatingControlsSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     return (isEscPressed || isLMBPressed);
 }
 
-void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     using namespace DAVA;
 
@@ -110,9 +111,9 @@ void CreatingControlsSystem::ProcessInput(DAVA::UIEvent* currentInput)
     }
 }
 
-BaseEditorSystem::eSystems CreatingControlsSystem::GetOrder() const
+eSystems CreatingControlsSystem::GetOrder() const
 {
-    return CREATING_CONTROLS;
+    return eSystems::CREATING_CONTROLS;
 }
 
 void CreatingControlsSystem::SetCreateByClick(const DAVA::String& _controlYamlString)

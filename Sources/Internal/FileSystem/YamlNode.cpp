@@ -531,44 +531,42 @@ Any YamlNode::AsAny(const ReflectedStructure::Field* field) const
 {
     // TODO: Make better
     const Type* type = field->valueWrapper->GetType(ReflectedObject())->Decay();
-    if (field->meta)
-    {
-        const M::Enum* emeta = field->meta->GetMeta<M::Enum>();
-        if (nullptr != emeta)
-        {
-            int32 val = 0;
-            if (GetType() == TYPE_STRING)
-            {
-                if (emeta->GetEnumMap()->ToValue(AsString().c_str(), val))
-                {
-                    return Any(val).ReinterpretCast(type);
-                }
-            }
-            DVASSERT(false);
-        }
+    const M::Enum* emeta = field->meta != nullptr ? field->meta->GetMeta<M::Enum>() : nullptr;
+    const M::Flags* fmeta = field->meta != nullptr ? field->meta->GetMeta<M::Flags>() : nullptr;
 
-        const M::Flags* fmeta = field->meta->GetMeta<M::Flags>();
-        if (nullptr != fmeta)
+    if (nullptr != emeta)
+    {
+        int32 val = 0;
+        if (GetType() == TYPE_STRING)
         {
-            int32 val = 0;
-            const uint32 count = GetCount();
-            for (uint32 i = 0; i < count; i++)
+            if (emeta->GetEnumMap()->ToValue(AsString().c_str(), val))
             {
-                const YamlNode* flagNode = Get(i);
-                int32 flag = 0;
-                if (fmeta->GetFlagsMap()->ToValue(flagNode->AsString().c_str(), flag))
-                {
-                    val |= flag;
-                }
-                else
-                {
-                    DVASSERT(false);
-                }
+                return Any(val).ReinterpretCast(type);
             }
-            return Any(val).ReinterpretCast(type);
         }
+        DVASSERT(false);
     }
-    else if (type == Type::Instance<bool>())
+    else if (nullptr != fmeta)
+    {
+        int32 val = 0;
+        const uint32 count = GetCount();
+        for (uint32 i = 0; i < count; i++)
+        {
+            const YamlNode* flagNode = Get(i);
+            int32 flag = 0;
+            if (fmeta->GetFlagsMap()->ToValue(flagNode->AsString().c_str(), flag))
+            {
+                val |= flag;
+            }
+            else
+            {
+                DVASSERT(false);
+            }
+        }
+        return Any(val).ReinterpretCast(type);
+    }
+
+    if (type == Type::Instance<bool>())
         return Any(AsBool());
     else if (type == Type::Instance<int32>())
         return Any(AsInt32());

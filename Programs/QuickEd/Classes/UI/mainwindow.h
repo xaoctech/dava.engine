@@ -25,6 +25,7 @@ namespace TArc
 {
 class ContextAccessor;
 class UI;
+class OperationInvoker;
 }
 }
 
@@ -39,14 +40,13 @@ class MainWindow : public QMainWindow, public DAVA::TrackedObject
 public:
     class ProjectView;
 
-    explicit MainWindow(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent = nullptr);
+    explicit MainWindow(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::TArc::OperationInvoker* invoker, QWidget* parent = nullptr);
 
     ~MainWindow() override;
 
     void SetEditorTitle(const QString& editorTitle);
 
     ProjectView* GetProjectView() const;
-    PackageWidget* GetPackageWidget() const;
 
 signals:
     void EmulationModeChanged(bool emulationMode);

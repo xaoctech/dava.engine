@@ -3,8 +3,6 @@
 #include "Animation/AnimatedObject.h"
 #include "Animation/Interpolation.h"
 #include "Base/BaseTypes.h"
-#include "Engine/Engine.h"
-#include "Entity/ComponentManager.h"
 #include "UI/Styles/UIStyleSheetPropertyDataBase.h"
 #include "UI/UIGeometricData.h"
 
@@ -1019,7 +1017,7 @@ public:
     template <class T>
     void RemoveComponent(int32 index = 0)
     {
-        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        static int32 runtimeType = TypeToRuntimeType(Type::Instance<T>());
         RemoveComponent(runtimeType, index);
     }
 
@@ -1036,9 +1034,13 @@ public:
     template <class T>
     inline T* GetComponent(uint32 index = 0) const
     {
-        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        static int32 runtimeType = TypeToRuntimeType(Type::Instance<T>());
         return DynamicTypeCheck<T*>(GetComponent(runtimeType, index));
     }
+
+    /** Return UIComponent with specified 'typeName' (reflection permament name) at specified 'index'.
+        Return nullptr if such component is not found. */
+    UIComponent* GetComponentByName(const String& typeName, uint32 index = 0) const;
 
     /**
     Return index in UIControl::components of specified 'component'. Return -1 if 'component' is not found in control.
@@ -1060,6 +1062,11 @@ public:
         return DynamicTypeCheck<T*>(GetOrCreateComponent(Type::Instance<T>(), index));
     }
 
+    /** Return UIComponent with specified 'typeName' at specified 'index'.
+    If such component is not found, new component with 'typeName' is created, added to control and returned.
+    In case of creation, the behavior is undefined until 'index' is 0. */
+    UIComponent* GetOrCreateComponentByName(const String& typeName, uint32 index = 0);
+
     /** Return total number of components. */
     uint32 GetComponentCount() const;
 
@@ -1072,7 +1079,7 @@ public:
     template <class T>
     inline uint32 GetComponentCount() const
     {
-        static int32 runtimeType = GetEngineContext()->componentManager->GetRuntimeType(Type::Instance<T>());
+        static int32 runtimeType = TypeToRuntimeType(Type::Instance<T>());
         return GetComponentCount(runtimeType);
     }
 
@@ -1085,6 +1092,8 @@ private:
     UIControlFamily* family;
     void RemoveComponent(const Vector<UIComponent*>::iterator& it);
     void UpdateFamily();
+
+    static int32 TypeToRuntimeType(const Type* type);
 
     /* Styles */
 public:
