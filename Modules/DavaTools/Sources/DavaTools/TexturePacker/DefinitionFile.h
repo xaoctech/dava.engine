@@ -34,7 +34,7 @@ public:
 
 public:
     FilePath filename;
-    String extension = "png"; // default extension
+    String extension = ".png"; // default extension
     Vector<String> frameNames;
     Vector<Rect2i> frameRects;
     uint32 frameCount = 0;

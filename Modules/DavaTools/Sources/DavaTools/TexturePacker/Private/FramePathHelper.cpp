@@ -17,6 +17,6 @@ FilePath FramePathHelper::GetFramePathAbsolute(const FilePath& directory, const 
 
 String FramePathHelper::FormatFramePath(const String& fileNameWithoutExt, int32 frameIndex, const String& extension)
 {
-    return Format("%s_%d.%s", fileNameWithoutExt.c_str(), frameIndex, extension.c_str());
+    return Format("%s_%d%s", fileNameWithoutExt.c_str(), frameIndex, extension.c_str());
 }
 };
