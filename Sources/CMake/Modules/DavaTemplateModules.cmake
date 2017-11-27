@@ -697,6 +697,7 @@ macro( setup_main_module )
                     add_library( ${MODULE_NAME} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
                 endif()
                 append_property( TARGET_MODULES_LIST ${MODULE_NAME} )  
+                append_property( ALL_TARGET_MODULES_LIST ${MODULE_NAME} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
 
@@ -774,16 +775,6 @@ macro( setup_main_module )
 
             endif()
 
-            if( CREATE_NEW_MODULE )
-                file_tree_check( "${CMAKE_CURRENT_LIST_DIR}" )
-
-                if( TARGET_FILE_TREE_FOUND )
-                    add_dependencies(  ${MODULE_NAME} FILE_TREE_${MODULE_NAME} )
-                endif()
-
-            endif()
-
-
             if( DEFINITIONS_PRIVATE )
                 add_definitions( ${DEFINITIONS_PRIVATE} )
             endif()
@@ -828,7 +819,7 @@ macro( setup_main_module )
                 endif()
 
                 if( COVERAGE AND MACOS )
-
+              
                     string(REPLACE ";" " " TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
                     string(REPLACE "\"" "" TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
 

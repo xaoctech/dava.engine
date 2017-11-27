@@ -26,6 +26,12 @@ print 'LAST_VERSIONS    ', LAST_VERSIONS
 
 if ( CURRENT_VERSIONS != LAST_VERSIONS ) :
     cmake_program = args.cmake_command
-    print 'Update cmake project !!!!', args.path_prj 
+    sys.stdout.write( 'Update cmake project\n' )
+
     call_string = [cmake_program, args.path_prj]
     subprocess.check_output(call_string)
+
+    sys.stdout.write( 'error: Automatic update cmake project. Please rebuild\n' )
+    sys.stdout.flush()
+
+sys.exit(CURRENT_VERSIONS != LAST_VERSIONS)
