@@ -22,6 +22,7 @@
 #include <Engine/EngineContext.h>
 #include <FileSystem/YamlParser.h>
 #include <FileSystem/YamlNode.h>
+#include <FileSystem/Filesystem.h>
 #include <Logger/Logger.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Render/Highlevel/Landscape.h>
@@ -566,7 +567,12 @@ void PhysicsModule::LazyLoadMaterials() const
 void PhysicsModule::LoadMaterials()
 {
     defaultMaterial = physics->createMaterial(0.5f, 0.5f, 0.1f);
-    RefPtr<YamlParser> parser(YamlParser::Create(DAVA::FilePath("~res:/physicsMaterials.yaml")));
+    DAVA::FilePath materialsYamlPath = DAVA::FilePath("~res:/physicsMaterials.yaml");
+    if (GetEngineContext()->fileSystem->Exists(materialsYamlPath) == false)
+    {
+        return;
+    }
+    RefPtr<YamlParser> parser(YamlParser::Create(materialsYamlPath));
     if (parser == nullptr)
     {
         return;
