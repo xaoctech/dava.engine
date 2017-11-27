@@ -393,10 +393,11 @@ HUDAreaInfo HUDSystem::GetControlArea(const Vector2& pos, eSearchOrder searchOrd
 
 void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
 {
-    if (activeAreaInfo.area != areaInfo.area || activeAreaInfo.owner != areaInfo.owner)
+    EditorSystemsManager* systemsManager = GetSystemsManager();
+    HUDAreaInfo currentHUDArea = systemsManager->GetCurrentHUDArea();
+    if (currentHUDArea.area != areaInfo.area || currentHUDArea.owner != areaInfo.owner)
     {
-        activeAreaInfo = areaInfo;
-        GetSystemsManager()->activeAreaChanged.Emit(activeAreaInfo);
+        systemsManager->SetActiveHUDArea(areaInfo);
     }
 }
 

@@ -29,8 +29,8 @@ public:
 
     void SetConvertQuality(const TextureConverter::eConvertQuality quality);
 
-    void SetRunning(bool arg);
-    bool IsRunning() const;
+    void SetCanceled(bool arg = true);
+    bool IsCancelled() const;
 
     void SetCacheClient(AssetCacheClient* cacheClient, const String& comment);
     bool IsUsingCache() const;
@@ -89,12 +89,12 @@ private:
 
     Set<String> errors;
 
-    std::atomic<bool> running;
+    std::atomic<bool> cancelled = { false };
 };
 
-inline bool ResourcePacker2D::IsRunning() const
+inline bool ResourcePacker2D::IsCancelled() const
 {
-    return running;
+    return cancelled;
 }
 };
 

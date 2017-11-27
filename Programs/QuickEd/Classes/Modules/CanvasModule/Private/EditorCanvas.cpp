@@ -186,6 +186,11 @@ void EditorCanvas::OnUpdate()
 eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     using namespace DAVA;
+    if (accessor->GetActiveContext() == nullptr)
+    {
+        return eDragState::NoDrag;
+    }
+
     Function<void(UIEvent*, bool)> setMouseButtonOnInput = [this](const UIEvent* currentInput, bool value) {
         if (currentInput->mouseButton == eMouseButtons::MIDDLE)
         {

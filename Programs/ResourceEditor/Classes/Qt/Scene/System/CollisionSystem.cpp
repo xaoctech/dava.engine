@@ -677,14 +677,16 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxWaypointScale);
             }
-            else
+            else if (entity->GetParent() != nullptr)
             {
                 result = CollisionDetails::InitCollision<CollisionBox>(createCollision, entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), debugBoxScale);
             }
         }
 
-        DVASSERT(result.isValid == true);
-        callback(entity, result.collisionObject);
+        if (result.isValid == true)
+        {
+            callback(entity, result.collisionObject);
+        }
     }
     else
     {

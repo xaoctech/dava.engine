@@ -86,7 +86,6 @@ DAVA_TESTCLASS (ResourcePackerTest)
         packer.InitFolders(inputDir, outputDir);
         packer.PackResources(requestedGPUs);
 
-        TEST_VERIFY(packer.IsRunning() == false);
         TEST_VERIFY(packer.GetErrors().empty() == true);
 
         for (const String& name : psdBaseNames)
@@ -120,7 +119,6 @@ DAVA_TESTCLASS (ResourcePackerTest)
         packer.InitFolders(inputDir, outputDir);
         packer.PackResources({ eGPUFamily::GPU_DX11 });
 
-        TEST_VERIFY(packer.IsRunning() == false);
         TEST_VERIFY(packer.GetErrors().empty() == false); // should contain error about incorrect flags for requested GPU
     }
 
@@ -147,7 +145,6 @@ DAVA_TESTCLASS (ResourcePackerTest)
         packer.InitFolders(inputDir, outputDir);
         packer.PackResources({ eGPUFamily::GPU_ORIGIN });
 
-        TEST_VERIFY(packer.IsRunning() == false);
         TEST_VERIFY(packer.GetErrors().empty() == true);
         TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "air.txt") == true);
         TEST_VERIFY(DAVA::GetEngineContext()->fileSystem->Exists(outputDir + "texture0.png") == true);
