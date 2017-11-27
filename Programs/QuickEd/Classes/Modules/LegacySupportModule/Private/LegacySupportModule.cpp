@@ -82,7 +82,7 @@ void LegacySupportModule::InitMainWindow()
     using namespace DAVA;
     using namespace TArc;
 
-    MainWindow* mainWindow = new MainWindow(GetAccessor(), GetUI());
+    MainWindow* mainWindow = new MainWindow(GetAccessor(), GetUI(), GetInvoker());
 
     const char* editorTitle = "DAVA Framework - QuickEd | %1-%2 [%3 bit]";
     uint32 bit = static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8);

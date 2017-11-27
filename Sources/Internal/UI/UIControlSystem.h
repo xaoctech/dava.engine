@@ -136,9 +136,14 @@ public:
     void OnInput(UIEvent* newEvent);
 
     /**
-	 \brief Callse very frame by the system for update.
+	 \brief Calls very frame by the system for update.
 	 */
     void Update();
+
+    /**
+	 \brief Update system with custom time elapsed value.
+	 */
+    void UpdateWithCustomTime(float32 timeElapsed);
 
     /**
      \brief Calls update logic for specific control. Used to make screenshoots.
@@ -305,6 +310,9 @@ public:
 
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
+    void SetFlowRoot(UIControl* root);
+    UIControl* GetFlowRoot() const;
+
 private:
     UIControlSystem();
     ~UIControlSystem();
@@ -364,5 +372,7 @@ private:
         RefPtr<UIControl> touchLocker; // last control has handled input
     };
     LastClickData lastClickData;
+
+    RefPtr<UIControl> flowRoot;
 };
 }

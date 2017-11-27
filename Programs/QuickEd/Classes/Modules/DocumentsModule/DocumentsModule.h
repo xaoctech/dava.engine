@@ -35,6 +35,8 @@ protected:
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
+    void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
+
 private:
     void InitCentralWidget();
     void InitGlobalData();
@@ -84,7 +86,6 @@ private:
     void ApplyFileChanges();
     DAVA::TArc::DataContext::ContextID GetContextByPath(const QString& path) const;
 
-    void OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState);
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
 

@@ -41,9 +41,9 @@ DistanceSystem::~DistanceSystem()
 {
 }
 
-BaseEditorSystem::eSystems DistanceSystem::GetOrder() const
+eSystems DistanceSystem::GetOrder() const
 {
-    return DISTANCE_LINES;
+    return eSystems::DISTANCE_LINES;
 }
 
 bool DistanceSystem::CanDrawDistances() const
@@ -154,13 +154,13 @@ void DistanceSystem::OnUpdate()
     DrawLines(selectedRect, highlightedRect, transformMatrix);
 }
 
-bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     //ignore keyboard events to not enable distances on alt+scroll combinations
     return currentInput->device != DAVA::eInputDevices::KEYBOARD;
 }
 
-void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     canDrawDistancesAfterInput = (currentInput->phase == DAVA::UIEvent::Phase::MOVE);
 }

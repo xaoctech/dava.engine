@@ -14,6 +14,7 @@
 #undef DrawState
 #undef GetCommandLine
 #undef GetClassName
+#undef GetMessage
 #undef Yield
 #undef ERROR
 #undef DELETE

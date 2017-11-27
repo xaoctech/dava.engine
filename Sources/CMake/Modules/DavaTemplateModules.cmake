@@ -135,7 +135,8 @@ set(  GLOBAL_PROPERTY_VALUES ${MAIN_MODULE_VALUES}  TARGET_MODULES_LIST
                                                     QT_LINKAGE_LIST 
                                                     QT_LINKAGE_LIST_VALUE 
                                                     DEPENDENT_LIST
-                                                    GROUP_SOURCE )
+                                                    GROUP_SOURCE 
+                                                    PLUGIN_LIST )
 #
 macro( reset_MAIN_MODULE_VALUES )
     foreach( VALUE ${GLOBAL_PROPERTY_VALUES} GLOBAL_DEFINITIONS )

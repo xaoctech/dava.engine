@@ -118,6 +118,33 @@ bool CanInsertControlOrStyle(const PackageBaseNode* dest, PackageBaseNode* node,
         return false;
     }
 }
+
+String BuildControlPath(ControlNode* targetNode, ControlNode* rootNode)
+{
+    static const String PATH_SEPARATOR("/");
+
+    UIControl* control = targetNode->GetControl();
+    UIControl* rootControl = rootNode->GetControl();
+
+    if (!control)
+        return "";
+
+    String controlPath = "";
+    while (control != rootControl)
+    {
+        if (controlPath.empty())
+        {
+            controlPath = String(control->GetName().c_str());
+        }
+        else
+        {
+            controlPath = String(control->GetName().c_str()) + PATH_SEPARATOR + controlPath;
+        }
+        control = control->GetParent();
+    }
+
+    return controlPath;
+}
 } // namespace PackageModuleDetails
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PackageModule)
@@ -194,7 +221,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Import package";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::New);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->importPackageAction = action;
 
@@ -217,7 +244,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Add Style";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence("Ctrl+S"));
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -241,7 +268,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Cut";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Cut);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->cutAction = action;
 
@@ -268,7 +295,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Copy";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Copy);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->copyAction = action;
 
@@ -295,7 +322,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Paste";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Paste);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->pasteAction = action;
 
@@ -324,7 +351,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Duplicate";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->duplicateAction = action;
 
@@ -365,7 +392,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Copy Control Path";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -391,7 +418,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Rename";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -414,7 +441,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Delete";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
         action->setShortcut(QKeySequence::Delete);
 #if defined Q_OS_MAC
         action->setShortcuts({ QKeySequence::Delete, QKeySequence(Qt::Key_Backspace) });
@@ -447,7 +474,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move up";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Up);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveUpAction = action;
 
@@ -471,7 +498,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move down";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Down);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveDownAction = action;
 
@@ -495,7 +522,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move left";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Left);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveLeftAction = action;
 
@@ -519,7 +546,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move right";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Right);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveRightAction = action;
 
@@ -544,7 +571,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Run UIViewer Fast";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -580,7 +607,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Run UIViewer";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -619,7 +646,7 @@ void PackageModule::CreateActions()
     {
         QtAction* action = new QtAction(accessor, jumpToPrototypeActionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_J);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->jumpToPrototypeAction = action;
 
@@ -648,7 +675,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Find Prototype Instances";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_J);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->findPrototypeInstancesAction = action;
 
@@ -678,7 +705,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Collapse all";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -1150,6 +1177,7 @@ void PackageModule::OnRunUIViewerFast()
 {
     using namespace DAVA;
     using namespace DAVA::TArc;
+    using namespace PackageModuleDetails;
 
     DataContext* globalContext = GetAccessor()->GetGlobalContext();
     ProjectData* projectData = globalContext->GetData<ProjectData>();
@@ -1163,7 +1191,7 @@ void PackageModule::OnRunUIViewerFast()
         const ProjectData::Blank& blank = blanks[settings->selectedBlank];
         const ProjectData::Device& device = devices[settings->selectedDevice];
 
-        Window* primaryWindow = DAVA::GetPrimaryWindow();
+        Window* primaryWindow = GetPrimaryWindow();
         DVASSERT(primaryWindow != nullptr);
 
         Size2i screenSize(static_cast<int32>(primaryWindow->GetSize().dx), static_cast<int32>(primaryWindow->GetSize().dx));
@@ -1215,7 +1243,7 @@ void PackageModule::OnRunUIViewerFast()
         String fontsPath = "~res:/" + projectData->GetFontsConfigsDirectory().relative;
 
         Vector<ControlNode*> controlNodes;
-        PackageModuleDetails::CollectSelectedControls(documentData->GetSelectedNodes(), controlNodes, false, false);
+        CollectSelectedControls(documentData->GetSelectedNodes(), controlNodes, false, false);
         for (ControlNode* node : controlNodes)
         {
             ControlNode* rootNode = GetRootControlNode(node);
@@ -1242,6 +1270,13 @@ void PackageModule::OnRunUIViewerFast()
             args << "-testedCtrl";
             args << rootNode->GetName().c_str();
 
+            String testedPath = BuildControlPath(node, rootNode);
+            if (!testedPath.empty())
+            {
+                args << "-testedPath";
+                args << testedPath.c_str();
+            }
+
             args << "-screenWidth";
             args << Format("%d", screenSize.dx).c_str();
             args << "-screenHeight";
@@ -1266,6 +1301,11 @@ void PackageModule::OnRunUIViewerFast()
                 args << "-isRtl";
             }
 
+            if (settings->flowFlag)
+            {
+                args << "-isFlow";
+            }
+
             bool state = ProcessHelper::OpenApplication(QString::fromStdString(appPath.GetAbsolutePathname()), args);
             if (state == false)
             {
@@ -1285,10 +1325,12 @@ void PackageModule::OnRunUIViewer()
     PackageWidgetSettings* settings = GetAccessor()->GetGlobalContext()->GetData<PackageWidgetSettings>();
     dlg.SetDeviceIndex(static_cast<DAVA::int32>(settings->selectedDevice));
     dlg.SetBlankIndex(static_cast<DAVA::int32>(settings->selectedBlank));
+    dlg.SetFlowFlag(settings->flowFlag);
     if (dlg.exec() == QDialog::Accepted)
     {
         settings->selectedDevice = dlg.GetDeviceIndex();
         settings->selectedBlank = dlg.GetBlankIndex();
+        settings->flowFlag = dlg.GetFlowFlag();
         OnRunUIViewerFast();
     }
 }
