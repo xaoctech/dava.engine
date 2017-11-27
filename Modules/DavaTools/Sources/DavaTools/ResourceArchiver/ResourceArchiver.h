@@ -18,7 +18,7 @@ struct Params
     FilePath logPath;
     FilePath baseDirPath;
     FilePath metaDbPath;
-    bool skipFileData = false;
+    bool dummyFileData = false;
     AssetCacheClient* assetCacheClient = nullptr;
 };
 

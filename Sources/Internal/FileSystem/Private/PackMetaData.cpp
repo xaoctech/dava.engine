@@ -41,7 +41,6 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     db << "SELECT path, pack_index FROM files"
     >> [&](std::string name, int packIndex)
     {
-        fileNames.push_back(name);
         packIndexes.push_back(packIndex);
     };
 
@@ -205,11 +204,6 @@ const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) 
     Logger::Error("error: can't find packName: %s", packName.c_str());
     DVASSERT(false, "debug packName value");
     DAVA_THROW(Exception, "no such packName: " + packName);
-}
-
-const String& PackMetaData::GetFileName(const uint32 fileIndex) const
-{
-    return fileNames[fileIndex];
 }
 
 Vector<uint8> PackMetaData::Serialize() const
