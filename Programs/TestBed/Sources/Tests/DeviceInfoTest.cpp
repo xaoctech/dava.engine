@@ -92,8 +92,18 @@ void DeviceInfoTest::UpdateTestInfo()
         break;
     };
     infoStream << ", signalStrength: " << int(netInfo.signalStrength) << "\n";
-    infoStream << "GetStoragesList() :"
-               << "Size: " << (DeviceInfo::GetStoragesList().size()) << L"\n";
+    infoStream << "GetStoragesList() :\n";
+    auto list = DeviceInfo::GetStoragesList();
+    for(auto item : list)
+    {
+        infoStream << "    type: " << item.type << " "
+        << "    freeSpace: " << item.freeSpace / (1024 * 1024 * 1024) << "Gb "
+        << "    totalSpace: " << item.totalSpace / (1024 * 1024 * 1024) << "Gb "
+        << "    emulated: " << item.emulated << " "
+        << "    readOnly: " << item.readOnly << " "
+        << "    removable: " << item.removable << " "
+        << "    path: " << item.path.GetAbsolutePathname() << "\n";
+    }
     infoStream << "GetCpuCount() :" << (DeviceInfo::GetCpuCount()) << L"\n";
     infoStream << "GetCarrierName() :" << DeviceInfo::GetCarrierName() << L"\n";
 
