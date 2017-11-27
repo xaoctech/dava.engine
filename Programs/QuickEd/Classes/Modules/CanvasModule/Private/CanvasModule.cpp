@@ -1,12 +1,16 @@
-#include "Modules/CanvasModule/CanvasModule.h"
-#include "Modules/CanvasModule/CanvasModuleData.h"
-#include "Modules/CanvasModule/EditorCanvas.h"
-#include "Modules/CanvasModule/EditorControlsView.h"
-#include "Modules/CanvasModule/CanvasData.h"
-#include "UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/Modules/CanvasModule/CanvasModule.h"
+#include "Classes/Modules/CanvasModule/CanvasModuleData.h"
+#include "Classes/Modules/CanvasModule/EditorCanvas.h"
+#include "Classes/Modules/CanvasModule/EditorControlsView.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
 
-#include "Interfaces/EditorSystemsManagerInteface.h"
+#include "Classes/UI/Preview/PreviewWidgetSettings.h"
+#include "Classes/UI/Preview/Data/CentralWidgetData.h"
 
+#include "Classes/Interfaces/EditorSystemsManagerInteface.h"
+
+#include <TArc/Core/FieldBinder.h>
 #include <TArc/DataProcessing/Common.h>
 #include <TArc/Qt/QtIcon.h>
 #include <TArc/Utils/ModuleCollection.h>
@@ -34,6 +38,7 @@ CanvasModule::CanvasModule()
 void CanvasModule::PostInit()
 {
     CreateData();
+    InitFieldBinder();
     CreateMenuSeparator();
     RecreateBgrColorActions();
 
@@ -43,10 +48,44 @@ void CanvasModule::PostInit()
 
 void CanvasModule::CreateData()
 {
+    DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+
     std::unique_ptr<CanvasModuleData> data = std::make_unique<CanvasModuleData>();
-    data->editorCanvas = std::make_unique<EditorCanvas>(GetAccessor());
-    data->controlsView = std::make_unique<EditorControlsView>(data->canvas.Get(), GetAccessor());
-    GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
+    data->editorCanvas = std::make_unique<EditorCanvas>(accessor);
+    data->controlsView = std::make_unique<EditorControlsView>(data->canvas.Get(), accessor);
+    data->canvasDataAdapter = std::make_unique<CanvasDataAdapter>(accessor);
+
+    data->controlsView->workAreaSizeChanged.Connect(this, &CanvasModule::OnWorkAreaSizeChanged);
+    data->controlsView->rootControlSizeChanged.Connect(this, &CanvasModule::OnRootControlSizeChanged);
+    data->controlsView->rootControlPositionChanged.Connect(this, &CanvasModule::OnRootControlPositionChanged);
+    data->controlsView->needCentralizeChanged.Connect(this, &CanvasModule::OnNeedCentralizeChanged);
+
+    accessor->GetGlobalContext()->CreateData(std::move(data));
+}
+
+void CanvasModule::InitFieldBinder()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    Function<void(const Any&)> tryCentralize = [this](const Any&) {
+        CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+        canvasModuleData->canvasDataAdapter->TryCentralizeScene();
+    };
+
+    fieldBinder.reset(new FieldBinder(GetAccessor()));
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CanvasData>();
+        fieldDescr.fieldName = FastName(CanvasData::workAreaSizePropertyName);
+        fieldBinder->BindField(fieldDescr, tryCentralize);
+    }
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
+        fieldDescr.fieldName = FastName(CentralWidgetData::viewSizePropertyName);
+        fieldBinder->BindField(fieldDescr, tryCentralize);
+    }
 }
 
 void CanvasModule::CreateMenuSeparator()
@@ -160,6 +199,57 @@ void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)
 void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     RecreateBgrColorActions();
+}
+
+void CanvasModule::OnNeedCentralizeChanged(bool needCentralize)
+{
+    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
+
+    CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
+    DAVA::Vector2 centerPosition = canvasModuleData->canvasDataAdapter->GetCenterPosition();
+
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
+    canvasData->SetPosition(centerPosition);
+}
+
+void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControlPos)
+{
+    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
+
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
+    canvasData->rootRelativePosition = rootControlPos;
+}
+
+void CanvasModule::OnRootControlSizeChanged(const DAVA::Vector2& rootControlSize)
+{
+    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
+
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
+    canvasData->rootControlSize = rootControlSize;
+}
+
+void CanvasModule::OnWorkAreaSizeChanged(const DAVA::Vector2& workAreaSize)
+{
+    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
+
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
+    canvasData->workAreaSize = workAreaSize;
 }
 
 DECL_GUI_MODULE(CanvasModule);

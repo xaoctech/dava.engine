@@ -1,4 +1,6 @@
-#include "UI/Preview/ScrollBarAdapter.h"
+#include "Classes/UI/Preview/ScrollBarAdapter.h"
+
+#include "Classes/Modules/CanvasModule/CanvasData.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
@@ -34,24 +36,49 @@ ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::TArc
 
 int ScrollBarAdapter::GetPosition() const
 {
-    return static_cast<int>(canvasDataAdapter.GetPosition()[orientation]);
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return 0;
+    }
+
+    CanvasData* canvasData = activeContext->GetData<CanvasData>();
+
+    float32 minPos = GetMinPos();
+    float32 maxPos = GetMaxPos();
+    float32 position = canvasDataAdapter.GetPosition()[orientation];
+
+    return minPos + maxPos - position;
 }
 
 void ScrollBarAdapter::SetPosition(int value)
 {
-    DAVA::Vector2 position = canvasDataAdapter.GetPosition();
-    position[orientation] = static_cast<DAVA::float32>(value);
-    canvasDataAdapter.SetPosition(position);
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+    DataContext* activeContext = accessor->GetActiveContext();
+    if (activeContext == nullptr)
+    {
+        return;
+    }
+
+    int position = GetPosition();
+    Vector2 delta(0.0f, 0.0f);
+    delta[orientation] = position - value;
+    canvasDataAdapter.MoveScene(delta);
 }
 
 int ScrollBarAdapter::GetMinPos() const
 {
-    return static_cast<int>(canvasDataAdapter.GetMinimumPosition()[orientation]);
+    DAVA::float32 realMinPos = canvasDataAdapter.GetMinPos()[orientation];
+    return realMinPos;
 }
 
 int ScrollBarAdapter::GetMaxPos() const
 {
-    return static_cast<int>(canvasDataAdapter.GetMaximumPosition()[orientation]);
+    DAVA::float32 realMaxPos = canvasDataAdapter.GetMaxPos()[orientation];
+    return realMaxPos;
 }
 
 int ScrollBarAdapter::GetPageStep() const
@@ -66,7 +93,14 @@ bool ScrollBarAdapter::IsEnabled() const
 
 bool ScrollBarAdapter::IsVisible() const
 {
-    return GetMaxPos() > 0;
+    using namespace DAVA;
+    DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+    if (active == nullptr)
+    {
+        return false;
+    }
+
+    return GetMaxPos() - GetMinPos() > 0;
 }
 
 Qt::Orientation ScrollBarAdapter::GetOrientation() const

@@ -7,6 +7,8 @@
 namespace DAVA
 {
 class Component;
+class ParticleForce;
+
 class ParticleEffectSystem : public SceneSystem
 {
     friend class ParticleEffectComponent;
@@ -20,6 +22,7 @@ public:
         Texture* noise = nullptr;
         Texture* alphaRemapTexture = nullptr;
         eBlending blending = BLENDING_ALPHABLEND;
+        uint64 layerId = 1;
         bool enableFog = false;
         bool enableFrameBlend = false;
         bool enableFlow = false;
@@ -29,9 +32,14 @@ public:
         bool useFresnelToAlpha = false;
         bool enableAlphaRemap = false;
         bool usePerspectiveMapping = false;
+        bool useThreePointGradient = false;
 
         bool operator==(const MaterialData& rhs)
         {
+            bool isEqualByGradient = useThreePointGradient == rhs.useThreePointGradient;
+            if (isEqualByGradient && useThreePointGradient)
+                isEqualByGradient = layerId == rhs.layerId;
+
             return texture == rhs.texture
             && enableFog == rhs.enableFog
             && enableFrameBlend == rhs.enableFrameBlend
@@ -45,7 +53,8 @@ public:
             && blending == rhs.blending
             && enableAlphaRemap == rhs.enableAlphaRemap
             && alphaRemapTexture == rhs.alphaRemapTexture
-            && usePerspectiveMapping == rhs.usePerspectiveMapping;
+            && usePerspectiveMapping == rhs.usePerspectiveMapping
+            && isEqualByGradient;
         }
     };
 
@@ -80,9 +89,9 @@ protected:
     void RemoveFromActive(ParticleEffectComponent* effect);
 
     void UpdateActiveLod(ParticleEffectComponent* effect);
-    void UpdateEffect(ParticleEffectComponent* effect, float32 time, float32 shortEffectTime);
+    void UpdateEffect(ParticleEffectComponent* effect, float32 deltaTime, float32 shortEffectTime);
     Particle* GenerateNewParticle(ParticleEffectComponent* effect, ParticleGroup& group, float32 currLoopTime, const Matrix4& worldTransform);
-    void UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& layer, float32 overLife, int32 forcesCount, Vector<Vector3>& currForceValues, float32 dt, AABBox3& bbox);
+    void UpdateRegularParticleData(ParticleEffectComponent* effect, Particle* particle, const ParticleGroup& group, float32 overLife, int32 simplifiedForcesCount, Vector<Vector3>& currSimplifiedForceValues, float32 dt, AABBox3& bbox, Vector<ParticleForce*> effectAlignForces, uint32 effectAlignForcesCount, Vector<ParticleForce*> worldAlignForces, uint32 worldAlignForcesCount, const Matrix4& world, const Matrix4& invWorld, float32 layerOverLife);
 
     void PrepareEmitterParameters(Particle* particle, ParticleGroup& group, const Matrix4& worldTransform);
     void AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox);
@@ -90,19 +99,28 @@ protected:
     void RunEmitter(ParticleEffectComponent* effect, ParticleEmitter* emitter, const Vector3& spawnPosition, int32 positionSource = 0);
 
 private:
+    void ApplyGlobalForces(Particle* particle, float32 dt, float32 overLife, float32 layerOverLife, Vector3 prevParticlePosition);
     void UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, Vector<Vector3>& currForceValues, int32 forcesCount, bool isActive);
     void SimulateEffect(ParticleEffectComponent* effect);
 
     Map<String, float32> globalExternalValues;
     Vector<ParticleEffectComponent*> activeComponents;
 
+    struct EffectGlobalForcesData
+    {
+        Vector<ParticleForce*> worldAlignForces;
+        Vector<ParticleForce*> effectAlignForces;
+    };
+    void RemoveForcesFromGlobal(ParticleEffectComponent* effect);
+    void ExtractGlobalForces(ParticleEffectComponent* effect);
+
 private: //materials stuff
     NMaterial* particleBaseMaterial;
     Vector<std::pair<MaterialData, NMaterial*>> particlesMaterials;
+    Map<ParticleEffectComponent*, EffectGlobalForcesData> globalForces;
     NMaterial* AcquireMaterial(const MaterialData& materialData);
 
     bool allowLodDegrade;
-
     bool is2DMode;
 };
 

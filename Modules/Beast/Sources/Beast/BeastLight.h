@@ -33,6 +33,7 @@ private:
     void CreateAmbientLight();
     void SetIntensity();
     bool GetCastShadows();
+    void SetShadowParameters();
 
     const ILBLinearRGB& GetColor() const;
     const ILBMatrix4x4& GetMatrix() const;
@@ -41,6 +42,11 @@ private:
     DAVA::float32 GetShadowRadius();
     DAVA::float32 GetFalloffCutoff();
     DAVA::float32 GetFalloffExponent();
+    DAVA::float32 GetConeAngle();
+    DAVA::float32 GetConePenumbraAngle();
+    DAVA::float32 GetConePenumbraExponent();
+
+    DAVA::float32 GetFloat(const DAVA::String& key, DAVA::float32 defaultValue);
 
 private:
     ILBLightHandle light = nullptr;
