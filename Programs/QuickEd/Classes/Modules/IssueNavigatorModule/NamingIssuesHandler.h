@@ -15,11 +15,12 @@ class UIControl;
 
 class ControlNode;
 class IssueNavigatorWidget;
+class IssueHelper;
 
 class NamingIssuesHandler : public PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IssueHelper& issueHelper);
     ~NamingIssuesHandler() override = default;
 
     // PackageListener
@@ -63,7 +64,7 @@ private:
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* navigatorWidget = nullptr;
 
-    DAVA::int32 nextIssueId = 0;
+    IssueHelper& issueHelper;
 
     DAVA::UnorderedMap<ControlNode*, DAVA::int32> symbolsIssues;
     DuplicationsIssuesMap duplicationIssues;

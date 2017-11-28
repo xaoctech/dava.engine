@@ -229,11 +229,15 @@ void PackageNode::RefreshProperty(ControlNode* node, AbstractProperty* property)
 void PackageNode::AddComponent(ControlNode* node, ComponentPropertiesSection* section)
 {
     node->GetRootProperty()->AddComponentPropertiesSection(section);
+    for (PackageListener* listener : listeners)
+        listener->ControlAddComponent(node, section);
 }
 
 void PackageNode::RemoveComponent(ControlNode* node, ComponentPropertiesSection* section)
 {
     node->GetRootProperty()->RemoveComponentPropertiesSection(section);
+    for (PackageListener* listener : listeners)
+        listener->ControlRemoveComponent(node, section);
 }
 
 void PackageNode::AttachPrototypeComponent(ControlNode* node, ComponentPropertiesSection* section, ComponentPropertiesSection* prototypeSection)

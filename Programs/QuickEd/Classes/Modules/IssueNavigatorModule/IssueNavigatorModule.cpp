@@ -3,6 +3,7 @@
 #include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 #include "Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
 #include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
@@ -34,8 +35,9 @@ void IssueNavigatorModule::PostInit()
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
-    layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));
-    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), sectionId++, widget));
+    layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget, issueHelper));
+    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), sectionId++, widget, issueHelper));
+    eventsIssuesHandler.reset(new EventsIssuesHandler(GetAccessor(), sectionId++, widget, issueHelper));
 }
 
 void IssueNavigatorModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)

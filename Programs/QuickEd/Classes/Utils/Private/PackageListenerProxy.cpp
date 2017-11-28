@@ -65,6 +65,16 @@ void PackageListenerProxy::StylePropertyWasChanged(StyleSheetNode* node, Abstrac
     listener->StylePropertyWasChanged(node, property);
 }
 
+void PackageListenerProxy::ControlAddComponent(ControlNode* node, ComponentPropertiesSection* section)
+{
+    listener->ControlAddComponent(node, section);
+}
+
+void PackageListenerProxy::ControlRemoveComponent(ControlNode* node, ComponentPropertiesSection* section)
+{
+    listener->ControlRemoveComponent(node, section);
+}
+
 void PackageListenerProxy::ControlWillBeAdded(ControlNode* node, ControlsContainerNode* destination, int index)
 {
     listener->ControlWillBeAdded(node, destination, index);

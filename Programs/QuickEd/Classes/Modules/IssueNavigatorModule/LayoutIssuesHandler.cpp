@@ -1,6 +1,7 @@
 #include "LayoutIssuesHandler.h"
 
 #include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
+#include "Modules/IssueNavigatorModule/IssueHelper.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
@@ -15,10 +16,11 @@
 
 using namespace DAVA;
 
-LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
+LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IssueHelper& issueHelper_)
     : sectionId(sectionId_)
     , widget(widget_)
     , accessor(accessor_)
+    , issueHelper(issueHelper_)
 {
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 }
@@ -63,13 +65,12 @@ void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis 
 
             Issue issue;
             issue.sectionId = sectionId;
-            issue.issueId = nextIssueId;
+            issue.issueId = issueHelper.NextIssueId();
             issue.message = formula->GetErrorMessage();
             issue.packagePath = data->GetPackagePath().GetFrameworkPath();
             issue.pathToControl = pathToControl;
             issue.propertyName = axis == Vector2::AXIS_X ? "SizePolicy/horizontalFormula" : "SizePolicy/verticalFormula";
 
-            nextIssueId++;
             widget->AddIssue(issue);
 
             createdIssues[axis][control] = issue.issueId;

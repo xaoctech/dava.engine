@@ -318,6 +318,12 @@ bool UIControlHelpers::IsControlNameValid(const FastName& controlName, NameCheck
     return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str(), strictness);
 }
 
+bool UIControlHelpers::IsEventNameValid(const FastName& eventName, NameCheckStrictness strictness)
+{
+    using namespace UIControlHelpersDetails;
+    return eventName.empty() || (!IsReservedName(eventName) && ContainsOnlyAllowedSymbols(eventName.c_str(), strictness));
+}
+
 void UIControlHelpers::ScrollToRect(DAVA::UIControl* control, const Rect& rect, float32 animationTime, bool toTopLeftForBigControls)
 {
     UIList* list = dynamic_cast<UIList*>(control);
