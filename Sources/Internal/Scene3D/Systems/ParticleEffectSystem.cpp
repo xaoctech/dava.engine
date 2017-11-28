@@ -97,6 +97,16 @@ NMaterial* ParticleEffectSystem::AcquireMaterial(const MaterialData& materialDat
         material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_PERSPECTIVE_MAPPING, 1);
     }
 
+    if (materialData.useThreePointGradient)
+    {
+        material->AddFlag(NMaterialFlagName::FLAG_PARTICLES_THREE_POINT_GRADIENT, 1);
+        float32 tmp[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_WHITE, tmp, rhi::ShaderProp::TYPE_FLOAT4);
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK, tmp, rhi::ShaderProp::TYPE_FLOAT4);
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE, tmp, rhi::ShaderProp::TYPE_FLOAT4);
+        material->AddProperty(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, tmp, rhi::ShaderProp::TYPE_FLOAT1);
+    }
+
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, materialData.texture);
     material->AddFlag(NMaterialFlagName::FLAG_BLENDING, materialData.blending);
 
@@ -182,6 +192,9 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
                 matData.enableAlphaRemap = layer->enableAlphaRemap;
                 matData.alphaRemapTexture = alphaRemap;
                 matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+                matData.useThreePointGradient = layer->useThreePointGradient;
+                uintptr_t layerIdPtr = reinterpret_cast<uintptr_t>(layer);
+                matData.layerId = static_cast<uint64>(layerIdPtr);
 
                 AcquireMaterial(matData);
             }
@@ -191,7 +204,7 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
 
 void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleEmitter* emitter, const Vector3& spawnPosition, int32 positionSource)
 {
-    for (auto layer : emitter->layers)
+    for (ParticleLayer* layer : emitter->layers)
     {
         bool isLodActive = layer->IsLodActive(effect->activeLodLevel);
         if (!isLodActive && emitter->shortEffect) //layer could never become active
@@ -225,6 +238,9 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
             matData.enableAlphaRemap = layer->enableAlphaRemap;
             matData.alphaRemapTexture = alphaRemap;
             matData.usePerspectiveMapping = layer->usePerspectiveMapping && layer->type == ParticleLayer::TYPE_PARTICLE_STRIPE;
+            matData.useThreePointGradient = layer->useThreePointGradient;
+            uintptr_t layerIdPtr = reinterpret_cast<uintptr_t>(layer);
+            matData.layerId = static_cast<uint64>(layerIdPtr);
 
             group.material = AcquireMaterial(matData);
         }

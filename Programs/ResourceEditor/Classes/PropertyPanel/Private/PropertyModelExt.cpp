@@ -15,7 +15,13 @@
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/Utils/ReflectedPairsVector.h>
 
+#include <Physics/CollisionShapeComponent.h>
+
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
 #include <Entity/ComponentManager.h>
@@ -26,8 +32,10 @@
 #include <Engine/PlatformApiQt.h>
 #include <Functional/Function.h>
 #include <Base/Any.h>
+#include <Base/FastName.h>
 #include <Base/StaticSingleton.h>
 #include <Base/TypeInheritance.h>
+#include <Base/BaseTypes.h>
 
 #include <QToolButton>
 #include <QHBoxLayout>

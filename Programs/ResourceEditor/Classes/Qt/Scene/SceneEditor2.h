@@ -50,6 +50,7 @@ namespace DAVA
 namespace TArc
 {
 class PropertiesHolder;
+class ContextAccessor;
 }
 }
 
@@ -175,7 +176,7 @@ public:
     void Deactivate() override;
 
     void EnableEditorSystems();
-    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
+    void LoadSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder, DAVA::TArc::ContextAccessor* accessor);
     void SaveSystemsLocalProperties(DAVA::TArc::PropertiesHolder* holder);
 
     DAVA::uint32 GetFramesCount() const;

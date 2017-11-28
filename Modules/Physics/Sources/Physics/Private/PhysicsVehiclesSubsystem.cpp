@@ -271,7 +271,7 @@ PhysicsVehiclesSubsystem::PhysicsVehiclesSubsystem(Scene* scene, physx::PxScene*
 
     vehicleSceneQueryData = VehicleSceneQueryData::Allocate(MAX_VEHICLES_COUNT, PX_MAX_NB_WHEELS, 1, MAX_VEHICLES_COUNT, WheelSceneQueryPreFilterBlocking, NULL, *allocator);
     batchQuery = VehicleSceneQueryData::SetUpBatchedSceneQuery(0, *vehicleSceneQueryData, pxScene);
-    frictionPairs = CreateFrictionPairs(physics->GetDefaultMaterial());
+    frictionPairs = CreateFrictionPairs(physics->GetMaterial(FastName()));
 }
 
 PhysicsVehiclesSubsystem::~PhysicsVehiclesSubsystem()
