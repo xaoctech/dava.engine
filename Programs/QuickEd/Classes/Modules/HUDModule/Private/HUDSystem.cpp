@@ -213,6 +213,11 @@ void HUDSystem::OnUpdate()
     }
 }
 
+void HUDSystem::Invalidate()
+{
+    SetHighlight(nullptr);
+}
+
 void HUDSystem::ProcessInput(UIEvent* currentInput, eInputSource inputSource)
 {
     const EditorSystemsManager* systemsManager = GetSystemsManager();

@@ -77,3 +77,7 @@ void BaseEditorSystem::DeleteCanvasControls(const CanvasControls& canvasControls
 void BaseEditorSystem::OnUpdate()
 {
 }
+
+void BaseEditorSystem::Invalidate()
+{
+}

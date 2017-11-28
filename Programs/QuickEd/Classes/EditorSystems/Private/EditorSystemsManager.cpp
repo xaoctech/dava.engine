@@ -296,6 +296,11 @@ void EditorSystemsManager::Invalidate()
     SetActiveHUDArea(HUDAreaInfo());
     magnetLinesChanged.Emit({});
     SetDragState(eDragState::NoDrag);
+
+    for (const auto& orderAndSystem : systems)
+    {
+        orderAndSystem.second->Invalidate();
+    }
 }
 
 void EditorSystemsManager::OnUpdate()
