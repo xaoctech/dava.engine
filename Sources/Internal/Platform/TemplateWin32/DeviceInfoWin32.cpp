@@ -160,10 +160,10 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 {
     List<DeviceInfo::StorageInfo> storageList;
 
-    DWORD drives = GetLogicalDrives();
+    const DWORD drives = GetLogicalDrives();
     if (0 == drives)
     {
-        Logger::Error("failed GetLogicalDrives. lastError code=%#X", GetLastError());
+        Logger::Error("GetLogicalDrives failed, error=%#X", GetLastError());
         return storageList;
     }
     std::bitset<32> bits(drives);
@@ -179,9 +179,9 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 
             const UINT driveType = GetDriveTypeA(drivePath.data());
 
-            if (DRIVE_UNKNOWN == driveType)
+            if (DRIVE_UNKNOWN == driveType || DRIVE_NO_ROOT_DIR == driveType)
             {
-                Logger::Error("failed GetDriveType for: %s", drivePath.data());
+                Logger::Error("GetDriveType failed for: %s", drivePath.data());
                 continue;
             }
 
@@ -196,11 +196,11 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
             {
                 info.freeSpace = static_cast<int64>(SectorsPerCluster) * BytesPerSector * NumberOfFreeClusters;
                 info.totalSpace = static_cast<int64>(SectorsPerCluster) * BytesPerSector * TotalNumberOfClusters;
-                info.readOnly = false;
+                info.readOnly = DRIVE_FIXED != driveType;
             }
             else
             {
-                Logger::Error("failed GetDiskFreeSpace for: %s. lastError code=%#X", drivePath.data(), GetLastError());
+                Logger::Error("GetDiskFreeSpace failed for: %s. error=%#X", drivePath.data(), GetLastError());
                 continue;
             }
 
