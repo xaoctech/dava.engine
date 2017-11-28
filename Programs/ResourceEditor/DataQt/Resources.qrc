@@ -66,6 +66,24 @@
         <file>QtIcons/effect.png</file>
         <file>QtIcons/emitter_particle.png</file>
         <file>QtIcons/force.png</file>
+        <file>QtIcons/turtle.png</file>
+        <file>QtIcons/turtle_bnw.png</file>
+        <file>QtIcons/remove_turtle.png</file>
+        <file>QtIcons/vortex_ico.png</file>
+        <file>QtIcons/vortex_ico_remove.png</file>
+        <file>QtIcons/vortex_ico_red.png</file>
+        <file>QtIcons/gravity.png</file>
+        <file>QtIcons/gravity_red.png</file>
+        <file>QtIcons/gravity_remove.png</file>
+        <file>QtIcons/plane_coll.png</file>
+        <file>QtIcons/plane_coll_red.png</file>
+        <file>QtIcons/plane_coll_remove.png</file>
+        <file>QtIcons/pointGravity.png</file>
+        <file>QtIcons/pointGravity_red.png</file>
+        <file>QtIcons/pointGravity_remove.png</file>
+        <file>QtIcons/wind_p.png</file>
+        <file>QtIcons/wind_p_red.png</file>
+        <file>QtIcons/wind_p_remove.png</file>
         <file>QtIcons/external.png</file>
         <file>QtIcons/layer_particle.png</file>
         <file>QtIcons/node.png</file>

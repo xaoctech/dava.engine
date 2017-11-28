@@ -26,7 +26,8 @@ public:
         DropingEntity,
         DropingLayer,
         DropingEmitter,
-        DropingForce
+        DropingForceSimplified,
+        DropingParticleForce
     };
 
     enum CustomFlags

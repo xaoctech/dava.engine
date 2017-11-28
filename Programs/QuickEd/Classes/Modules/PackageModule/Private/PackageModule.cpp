@@ -221,7 +221,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Import package";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::New);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->importPackageAction = action;
 
@@ -244,7 +244,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Add Style";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence("Ctrl+S"));
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -268,7 +268,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Cut";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Cut);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->cutAction = action;
 
@@ -295,7 +295,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Copy";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Copy);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->copyAction = action;
 
@@ -322,7 +322,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Paste";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence::Paste);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->pasteAction = action;
 
@@ -351,7 +351,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Duplicate";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->duplicateAction = action;
 
@@ -392,7 +392,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Copy Control Path";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -418,7 +418,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Rename";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -441,7 +441,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Delete";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
         action->setShortcut(QKeySequence::Delete);
 #if defined Q_OS_MAC
         action->setShortcuts({ QKeySequence::Delete, QKeySequence(Qt::Key_Backspace) });
@@ -474,7 +474,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move up";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Up);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveUpAction = action;
 
@@ -498,7 +498,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move down";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Down);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveDownAction = action;
 
@@ -522,7 +522,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move left";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Left);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveLeftAction = action;
 
@@ -546,7 +546,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Move right";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_Right);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->moveRightAction = action;
 
@@ -571,7 +571,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Run UIViewer Fast";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -607,7 +607,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Run UIViewer";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
@@ -646,7 +646,7 @@ void PackageModule::CreateActions()
     {
         QtAction* action = new QtAction(accessor, jumpToPrototypeActionName);
         action->setShortcut(Qt::ControlModifier + Qt::Key_J);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->jumpToPrototypeAction = action;
 
@@ -675,7 +675,7 @@ void PackageModule::CreateActions()
         const QString actionName = "Find Prototype Instances";
         QtAction* action = new QtAction(accessor, actionName);
         action->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_J);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         packageData->findPrototypeInstancesAction = action;
 
@@ -705,7 +705,7 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Collapse all";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();

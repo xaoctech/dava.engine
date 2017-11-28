@@ -21,7 +21,7 @@ struct EffectTreeData
 {
     DAVA::ParticleEmitter* emmiter;
     DAVA::ParticleLayer* layer;
-    DAVA::ParticleForce* force;
+    DAVA::ParticleForceSimplified* force;
     DAVA::int32 externalParamId;
 };
 
@@ -180,19 +180,19 @@ protected:
 
     DAVA::ModifiablePropertyLineBase* GetEmitterLine(DAVA::ParticleEmitter* emitter, EmitterExternals lineId);
     DAVA::ModifiablePropertyLineBase* GetLayerLine(DAVA::ParticleLayer* layer, LayerExternals lineId);
-    DAVA::ModifiablePropertyLineBase* GetForceLine(DAVA::ParticleForce* force, ForceExternals lineId);
+    DAVA::ModifiablePropertyLineBase* GetForceLine(DAVA::ParticleForceSimplified* force, ForceExternals lineId);
 
     void SetEmitterLineModifiable(DAVA::ParticleEmitter* emitter, EmitterExternals lineId);
     void SetLayerLineModifiable(DAVA::ParticleLayer* layer, LayerExternals lineId);
-    void SetForceLineModifiable(DAVA::ParticleForce* force, ForceExternals lineId);
+    void SetForceLineModifiable(DAVA::ParticleForceSimplified* force, ForceExternals lineId);
 
     void RemoveEmitterLineModifiable(DAVA::ParticleEmitter* emitter, EmitterExternals lineId);
     void RemoveLayerLineModifiable(DAVA::ParticleLayer* layer, LayerExternals lineId);
-    void RemoveForceLineModifiable(DAVA::ParticleForce* force, ForceExternals lineId);
+    void RemoveForceLineModifiable(DAVA::ParticleForceSimplified* force, ForceExternals lineId);
 
     bool EditEmitterModifiable(DAVA::ParticleEmitter* emitter, EmitterExternals lineId, bool onAdd = false);
     bool EditLayerModifiable(DAVA::ParticleLayer* layer, LayerExternals lineId, bool onAdd = false);
-    bool EditForceModifiable(DAVA::ParticleForce* force, ForceExternals lineId, bool onAdd = false);
+    bool EditForceModifiable(DAVA::ParticleForceSimplified* force, ForceExternals lineId, bool onAdd = false);
 
     template <class T>
     bool EditModificationLine(DAVA::RefPtr<DAVA::PropertyLine<T>>& line, bool onAdd)
