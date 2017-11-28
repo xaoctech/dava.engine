@@ -277,6 +277,15 @@ ParticleLayer* ParticleLayer::Clone()
     if (colorRandom)
         dstLayer->colorRandom.Set(colorRandom->Clone());
 
+    if (gradientColorForWhite)
+        dstLayer->gradientColorForWhite.Set(gradientColorForWhite->Clone());
+
+    if (gradientColorForBlack)
+        dstLayer->gradientColorForBlack.Set(gradientColorForBlack->Clone());
+
+    if (gradientColorForMiddle)
+        dstLayer->gradientColorForMiddle.Set(gradientColorForMiddle->Clone());
+
     if (alphaOverLife)
         dstLayer->alphaOverLife.Set(alphaOverLife->Clone());
 
@@ -285,6 +294,9 @@ ParticleLayer* ParticleLayer::Clone()
 
     if (angleVariation)
         dstLayer->angleVariation.Set(angleVariation->Clone());
+
+    if (gradientMiddlePointLine)
+        dstLayer->gradientMiddlePointLine.Set(gradientMiddlePointLine->Clone());
 
     SafeRelease(dstLayer->innerEmitter);
     if (innerEmitter)
@@ -305,6 +317,7 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->inheritPosition = inheritPosition;
     dstLayer->stripeInheritPositionOnlyForBaseVertex = stripeInheritPositionOnlyForBaseVertex;
     dstLayer->usePerspectiveMapping = usePerspectiveMapping;
+    dstLayer->useThreePointGradient = useThreePointGradient;
     dstLayer->startTime = startTime;
     dstLayer->endTime = endTime;
 
@@ -344,6 +357,8 @@ ParticleLayer* ParticleLayer::Clone()
     dstLayer->noisePath = noisePath;
     dstLayer->enableNoise = enableNoise;
     dstLayer->enableNoiseScroll = enableNoiseScroll;
+
+    dstLayer->gradientMiddlePoint = gradientMiddlePoint;
 
     dstLayer->applyGlobalForces = applyGlobalForces;
 
@@ -643,6 +658,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     colorRandom = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("colorRandom"));
     alphaOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaOverLife"));
 
+    gradientColorForWhite = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("gradientColorForWhite"));
+    gradientColorForBlack = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("gradientColorForBlack"));
+    gradientColorForMiddle = PropertyLineYamlReader::CreatePropertyLine<Color>(node->Get("gradientColorForMiddle"));
+
     const YamlNode* frameOverLifeEnabledNode = node->Get("frameOverLifeEnabled");
     if (frameOverLifeEnabledNode)
     {
@@ -690,6 +709,15 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     {
         alphaRemapLoopCount = alphaRemapLoopCountNode->AsFloat();
     }
+
+    gradientMiddlePoint = 0.5f;
+    const YamlNode* gradientMiddlePointNode = node->Get("gradientMiddlePoint");
+    if (gradientMiddlePointNode)
+    {
+        gradientMiddlePoint = gradientMiddlePointNode->AsFloat();
+    }
+
+    gradientMiddlePointLine = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("gradientMiddlePointLine"));
 
     alphaRemapOverLife = PropertyLineYamlReader::CreatePropertyLine<float32>(node->Get("alphaRemapOverLife"));
 
@@ -948,6 +976,10 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     if (usePerspectiveMappingNode)
         usePerspectiveMapping = usePerspectiveMappingNode->AsBool();
 
+    const YamlNode* useThreePointGradientNode = node->Get("useThreePointGradient");
+    if (useThreePointGradientNode)
+        useThreePointGradient = useThreePointGradientNode->AsBool();
+
     const YamlNode* applyGlobalForcesNode = node->Get("applyGlobalForces");
     if (applyGlobalForcesNode)
         applyGlobalForces = applyGlobalForcesNode->AsBool();
@@ -1067,6 +1099,9 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Add("scaleVelocityBase", scaleVelocityBase);
     layerNode->Add("scaleVelocityFactor", scaleVelocityFactor);
 
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "gradientMiddlePointLine", gradientMiddlePointLine);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "gradientMiddlePoint", gradientMiddlePoint);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaRemapOverLife", this->alphaRemapOverLife);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "flowSpeed", this->flowSpeed);
@@ -1109,6 +1144,10 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "colorRandom", this->colorRandom);
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(layerNode, "alphaOverLife", this->alphaOverLife);
 
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "gradientColorForWhite", this->gradientColorForWhite);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "gradientColorForBlack", this->gradientColorForBlack);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "gradientColorForMiddle", this->gradientColorForMiddle);
+
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(layerNode, "colorOverLife", this->colorOverLife);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(layerNode, "frameOverLifeEnabled", this->frameOverLifeEnabled);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(layerNode, "frameOverLifeFPS", this->frameOverLifeFPS);
@@ -1128,6 +1167,8 @@ void ParticleLayer::SaveToYamlNode(const FilePath& configPath, YamlNode* parentN
     layerNode->Set("stripeInheritPositionForBase", stripeInheritPositionOnlyForBaseVertex);
     layerNode->Set("usePerspectiveMapping", usePerspectiveMapping);
     layerNode->Set("applyGlobalForces", applyGlobalForces);
+
+    layerNode->Set("useThreePointGradient", useThreePointGradient);
 
     layerNode->Set("particleOrientation", particleOrientation);
 
@@ -1310,6 +1351,7 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(stripeColorOverLife.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(alphaRemapOverLife.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientMiddlePointLine.Get(), modifiables);
 
     PropertyLineHelper::AddIfModifiable(flowSpeed.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(flowSpeedVariation.Get(), modifiables);
@@ -1338,6 +1380,9 @@ void ParticleLayer::GetModifableLines(List<ModifiablePropertyLineBase*>& modifia
     PropertyLineHelper::AddIfModifiable(spinVariation.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(spinOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(colorRandom.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientColorForWhite.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientColorForBlack.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(gradientColorForMiddle.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(alphaOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(colorOverLife.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(angle.Get(), modifiables);
