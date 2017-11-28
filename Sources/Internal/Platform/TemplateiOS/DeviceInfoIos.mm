@@ -433,8 +433,8 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
         return l;
     }
 
-    info.totalSpace = stat_data.f_frsize * stat_data.f_blocks;
-    info.freeSpace = stat_data.f_frsize * stat_data.f_bavail;
+    info.totalSpace = static_cast<int64>(stat_data.f_frsize) * stat_data.f_blocks;
+    info.freeSpace = static_cast<int64>(stat_data.f_frsize) * stat_data.f_bavail;
 
     info.readOnly = false;
     info.removable = false;
