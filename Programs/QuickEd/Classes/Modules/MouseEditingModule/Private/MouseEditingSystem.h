@@ -10,6 +10,13 @@ public:
     MouseEditingSystem(DAVA::TArc::ContextAccessor* accessor);
     DAVA::Signal<> duplicateRequest;
 
+private:
+    enum eDuplicationState
+    {
+        READY_TO_DUPLICATE,
+        DUPLICATION_DONE
+    };
+
     eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
     eSystems GetOrder() const override;
 
@@ -18,5 +25,5 @@ public:
     bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
     void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
 
-    bool duplicated = false;
+    eDuplicationState duplicationState = READY_TO_DUPLICATE;
 };
