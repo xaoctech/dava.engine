@@ -161,6 +161,11 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
     List<DeviceInfo::StorageInfo> storageList;
 
     DWORD drives = GetLogicalDrives();
+    if (0 == drives)
+    {
+        Logger::Error("failed GetLogicalDrives. lastError code=%#X", GetLastError());
+        return storageList;
+    }
     std::bitset<32> bits(drives);
     for (uint32 bitIndex = 0; bitIndex < 32; ++bitIndex)
     {
@@ -176,7 +181,7 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 
             if (DRIVE_UNKNOWN == driveType)
             {
-                Logger::Error("failed get drive type for: %s", drivePath.data());
+                Logger::Error("failed GetDriveType for: %s", drivePath.data());
                 continue;
             }
 
@@ -195,8 +200,8 @@ List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
             }
             else
             {
-                // The calling application must have FILE_LIST_DIRECTORY access rights for this directory
-                info.readOnly = true;
+                Logger::Error("failed GetDiskFreeSpace for: %s. lastError code=%#X", drivePath.data(), GetLastError());
+                continue;
             }
 
             info.removable = driveType == DRIVE_REMOVABLE;
