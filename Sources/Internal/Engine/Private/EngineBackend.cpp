@@ -940,7 +940,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 
 void EngineBackend::DestroySubsystems()
 {
-    // Shutdown subsustems
+    // Shutdown subsystems
     if (context->uiControlSystem != nullptr)
     {
         context->uiControlSystem->Shutdown();
@@ -961,7 +961,8 @@ void EngineBackend::DestroySubsystems()
         context->jobManager->WaitMainJobs();
     }
 
-// Free subsustems
+// Free subsystems
+
 #ifdef __DAVAENGINE_AUTOTESTING__
     SafeRelease(context->autotestingSystem);
 #endif
