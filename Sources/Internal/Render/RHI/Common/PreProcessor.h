@@ -54,46 +54,52 @@ private:
     int32 GetNameAndValue(char* txt, char** name, char** value, char** end) const;
     void ReportExprEvalError(uint32 line_n);
     char* ExpandMacroInLine(char* txt);
-    char* GetToken(char* str, ptrdiff_t strSize, const char* m, ptrdiff_t tokenSize);
+
+    char* GetNextToken(char* txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize);
+    const char* GetNextToken(const char* txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize);
+
+public:
+    enum : uint32
+    {
+        MaxMacroValueLength = 128,
+        MaxLocalStringLength = 2048,
+    };
+
+    struct MacroStringBuffer
+    {
+        const char* value = nullptr;
+        uint32 length = 0;
+
+        MacroStringBuffer() = default;
+
+        MacroStringBuffer(const char* nm, uint32 sz)
+            : value(nm)
+            , length(sz)
+        {
+        }
+
+        bool operator==(const MacroStringBuffer& r) const
+        {
+            bool equals = false;
+            if (length == r.length)
+            {
+                equals = (strncmp(value, r.value, length) == 0);
+            }
+            return equals;
+        }
+    };
+
+    struct MacroStringBufferHash
+    {
+        uint64 operator()(const MacroStringBuffer& m) const
+        {
+            return DAVA::HashValue_N(m.value, m.length);
+        }
+    };
+
+    using MacroMap = UnorderedMap<MacroStringBuffer, MacroStringBuffer, MacroStringBufferHash>;
 
 private:
-    struct Buffer
-    {
-        void* mem;
-    };
-
-    struct Var
-    {
-        char name[64];
-        int32 val;
-    };
-
-    struct Macro
-    {
-        char name[128];
-        char value[128];
-        uint32 name_len = 0;
-        uint32 value_len = 0;
-
-        Macro(const char* nm, uint32 nmLen, const char* val, uint32 valLen)
-            : name_len(nmLen)
-            , value_len(valLen)
-        {
-            memset(name, 0, sizeof(name));
-            memset(value, 0, sizeof(value));
-            strncpy(name, nm, std::min<size_t>(name_len, sizeof(name)));
-            strncpy(value, val, std::min<size_t>(value_len, sizeof(value)));
-        }
-
-        bool operator<(const Macro& r) const
-        {
-            if (name_len == r.name_len)
-                return strcmp(name, r.name) > 0;
-
-            return name_len > r.name_len;
-        }
-    };
-
     enum : uint32
     {
         InvalidValue = static_cast<uint32>(-1)
@@ -109,12 +115,10 @@ private:
         CarriageReturn = '\r',
     };
 
-    Vector<Buffer> buffer;
-    Vector<Var> variable;
-    Set<Macro> macro;
+    MacroMap macro;
+    Vector<char*> buffer;
     ExpressionEvaluator evaluator;
     FileCallback* fileCB = nullptr;
     const char* curFileName = "<buffer>";
-    uint32 minMacroLength = InvalidValue;
 };
 }

@@ -30,24 +30,24 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
         DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
         fs->CreateDirectory(AddSwitchTestDetails::testFolder, true);
     }
-    
+
     void Cleanup()
     {
         DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
         fs->DeleteDirectoryFiles(AddSwitchTestDetails::testFolder);
         fs->DeleteDirectory(AddSwitchTestDetails::testFolder);
     }
-    
+
     DAVA_TEST (CreateSwitch)
     {
         using namespace DAVA;
-        
+
         Setup();
-        
+
         { // create scene and save it
             using namespace CommandLineModuleTestUtils;
-            
-            SceneBuilder builder(AddSwitchTestDetails::testScenePath, nullptr);
+            CreateProjectInfrastructure(AddSwitchTestDetails::testFolder);
+            SceneBuilder builder(AddSwitchTestDetails::testScenePath, AddSwitchTestDetails::testFolder);
 
             { // without chidren
                 Vector<Entity* >entities;
@@ -55,33 +55,33 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                 KeyedArchive *archive = GetCustomPropertiesArchieve(simpleEntity);
                 archive->SetInt32("CollisionType", 1);
                 entities.push_back(simpleEntity);
-                
+
                 Entity* simpleEntityCrashed = builder.AddWater(SceneBuilder::WITH_REF_TO_OWNER);
                 KeyedArchive *archiveCrashed = GetCustomPropertiesArchieve(simpleEntityCrashed);
                 archiveCrashed->SetInt32("CollisionType", 2);
                 entities.push_back(simpleEntityCrashed);
-                
+
                 SwitchEntityCreator creator;
                 for(Entity* e: entities)
                 {
                     TEST_VERIFY(creator.HasRenderObjectsRecursive(e) == true);
                     TEST_VERIFY(creator.HasSwitchComponentsRecursive(e) == false);
                 }
-                
+
                 ScopedPtr<Entity> switchEntity(creator.CreateSwitchEntity(entities));
                 TEST_VERIFY(creator.HasSwitchComponentsRecursive(switchEntity) == true);
                 builder.scene->AddNode(switchEntity);
-                
+
                 KeyedArchive *archiveSwitch = GetCustomPropertiesArchieve(switchEntity);
                 TEST_VERIFY(archiveSwitch != nullptr)
-                
+
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionType", 0) == 1);
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionTypeCrashed", 0) == 2);
-                
+
                 SwitchComponent* sw = GetSwitchComponent(switchEntity);
                 sw->SetSwitchIndex(1);
             }
-            
+
             { //with children
                 Vector<Entity* >entities;
                 Entity* simpleEntity = builder.AddWater(SceneBuilder::R2OMode::WITH_REF_TO_OWNER);
@@ -90,35 +90,35 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                 KeyedArchive *archive = GetCustomPropertiesArchieve(simpleEntity);
                 archive->SetInt32("CollisionType", 1);
                 entities.push_back(simpleEntity);
-                
+
                 Entity* simpleEntityCrashed = builder.AddWater(SceneBuilder::WITH_REF_TO_OWNER);
                 KeyedArchive *archiveCrashed = GetCustomPropertiesArchieve(simpleEntityCrashed);
                 archiveCrashed->SetInt32("CollisionType", 2);
                 entities.push_back(simpleEntityCrashed);
-                
+
                 SwitchEntityCreator creator;
                 for(Entity* e: entities)
                 {
                     TEST_VERIFY(creator.HasRenderObjectsRecursive(e) == true);
                     TEST_VERIFY(creator.HasSwitchComponentsRecursive(e) == false);
                 }
-                
+
                 ScopedPtr<Entity> switchEntity(creator.CreateSwitchEntity(entities));
                 TEST_VERIFY(creator.HasSwitchComponentsRecursive(switchEntity) == true);
                 builder.scene->AddNode(switchEntity);
                 switchEntity->SetName("switchWithoutChildren");
-                
+
                 KeyedArchive *archiveSwitch = GetCustomPropertiesArchieve(switchEntity);
                 TEST_VERIFY(archiveSwitch != nullptr)
-                
+
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionType", 0) == 1);
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionTypeCrashed", 0) == 2);
-                
+
                 SwitchComponent* sw = GetSwitchComponent(switchEntity);
                 sw->SetSwitchIndex(0);
             }
         }
-        
+
         { // load scene and test it
             ScopedPtr<Scene> scene(new Scene());
             SceneFileV2::eError sceneLoadResult = scene->LoadScene(AddSwitchTestDetails::testScenePath);
@@ -134,14 +134,14 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                     TEST_VERIFY(sw->GetSwitchIndex() == index);
                 }
             };
-            
+
             testSwitch(ResourceEditor::SWITCH_NODE_NAME, 1);
             testSwitch(FastName("switchWithoutChildren"), 0);
         }
-        
+
         Cleanup();
     }
-    
+
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(TArc)
     DECLARE_COVERED_FILES("SwitchEntityCreator.cpp")

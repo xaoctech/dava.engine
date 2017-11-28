@@ -35,7 +35,7 @@ find_dava_module( CEFWebview )
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
 
-dava_add_definitions(-DLOCALIZATION_DEBUG)
+list( APPEND DAVA_COMPONENTS DAVA_LOCALIZATION_DEBUG )
 
 
 if( NOT WINDOWS_UAP AND ( MACOS OR WIN32 ) )

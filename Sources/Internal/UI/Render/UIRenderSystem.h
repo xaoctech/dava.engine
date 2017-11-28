@@ -28,6 +28,7 @@ public:
     const UIGeometricData& GetBaseGeometricData() const;
     UIScreenshoter* GetScreenshoter() const;
     int32 GetUI3DViewCount() const;
+    RenderSystem2D* GetRenderSystem2D() const;
 
     void SetClearColor(const Color& clearColor);
     void SetUseClearPass(bool useClearPass);

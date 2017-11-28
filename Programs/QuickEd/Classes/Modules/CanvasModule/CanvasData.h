@@ -15,8 +15,6 @@ public:
 
     //size of all controls without scale and margins
     static DAVA::FastName workAreaSizePropertyName;
-    //size of all controls with scale and margins
-    static DAVA::FastName canvasSizePropertyName;
 
     //canvas position
     //used by scrollBars and inputs in CanvasSystem
@@ -31,9 +29,6 @@ public:
     //predefined scales list
     static DAVA::FastName predefinedScalesPropertyName;
 
-    //centralize control on view
-    static DAVA::FastName needCentralizePropertyName;
-
     //reference point are set to keep visible some area. Usually it's a cursor position or screen center
     //later it can be selection area center
     //reference point must be set before changing scale
@@ -41,7 +36,7 @@ public:
     static DAVA::FastName referencePointPropertyName;
 
     DAVA::Vector2 GetWorkAreaSize() const;
-    DAVA::Vector2 GetCanvasSize() const;
+    DAVA::Vector2 GetRootControlSize() const;
 
     DAVA::Vector2 GetPosition() const;
 
@@ -54,29 +49,28 @@ public:
 
     DAVA::Vector2 GetRootPosition() const;
 
-    bool IsCentralizeRequired() const;
-    DAVA::float32 GetMargin() const;
+    DAVA::Vector2 GetMargin() const;
 
 private:
+    friend class CanvasModule;
+    friend class CanvasDataAdapter;
+
     void SetWorkAreaSize(const DAVA::Vector2& size);
-    void SetPosition(const DAVA::Vector2& position);
+    void SetPosition(const DAVA::Vector2& displacement);
     void SetRootPosition(const DAVA::Vector2& rootPosition);
     void SetScale(DAVA::float32 scale);
 
     DAVA::Vector2 workAreaSize;
+    DAVA::Vector2 rootControlSize;
 
     DAVA::Vector2 position;
 
-    //root control position in a in abs coordinates hierarchy
-    DAVA::Vector2 rootPosition;
-
-    //work area scale
+    //distance from top left corner to root control top left
+    DAVA::Vector2 rootRelativePosition;
     DAVA::float32 scale = 1.0f;
     DAVA::Vector<DAVA::float32> predefinedScales;
 
-    const DAVA::float32 margin = 50.0f;
-
-    bool needCentralize = false;
+    const DAVA::Vector2 margin = DAVA::Vector2(50.0f, 50.0f);
 
     DAVA_VIRTUAL_REFLECTION(CanvasData, DAVA::TArc::DataNode);
 };
