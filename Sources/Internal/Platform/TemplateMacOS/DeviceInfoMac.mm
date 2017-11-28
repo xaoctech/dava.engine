@@ -197,37 +197,37 @@ DeviceInfo::NetworkInfo DeviceInfoPrivate::GetNetworkInfo()
 List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 {
     List<DeviceInfo::StorageInfo> l;
-    
+
     DeviceInfo::StorageInfo info;
-    
+
     info.type = DeviceInfo::STORAGE_TYPE_INTERNAL;
-    
+
     const char* home = ::getenv("HOME");
     if (nullptr == home)
     {
         Logger::Error("HOME env not found");
         return l;
     }
-    
+
     struct statvfs stat_data;
-    
-    if(0 != ::statvfs(home, &stat_data))
+
+    if (0 != ::statvfs(home, &stat_data))
     {
         Logger::Error("failed get filesystem info for path: %s, error: %s", home, ::strerror(errno));
         return l;
     }
-    
+
     info.totalSpace = stat_data.f_frsize * stat_data.f_blocks;
     info.freeSpace = stat_data.f_frsize * stat_data.f_bavail;
-    
+
     info.readOnly = false;
     info.removable = false;
     info.emulated = false;
-    
+
     info.path = home;
-    
+
     l.push_back(info);
-    
+
     return l;
 }
 
