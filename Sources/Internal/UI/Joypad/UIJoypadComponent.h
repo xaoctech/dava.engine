@@ -32,34 +32,34 @@ public:
     void SetDynamicFlag(bool dynamic);
 
     /**
-        Get stick area control.
+        Get stick area control path. Empty string is returned if area control is not set.
     */
-    UIControl* GetStickArea() const;
+    const String& GetStickAreaControlPath() const;
 
     /**
         Set stick area control. Input for this control will be disabled, pivot will be set to {0.5, 0.5}.
     */
-    void SetStickArea(UIControl* stickArea_);
+    void SetStickAreaControlPath(const String& areaControlPath);
 
     /**
-        Get stick arm control.
+        Get stick arm control path. Empty string is returned if area control is not set.
     */
-    UIControl* GetStickArm() const;
+    const String& GetStickArmControlPath() const;
 
     /**
         Set stick arm control. Input for this control will be disabled, pivot will be set to {0.5, 0.5}.
     */
-    void SetStickArm(UIControl* stickArm_);
+    void SetStickArmControlPath(const String& armControlPath);
 
     /**
-        Get stick arrow control.
+        Get stick area control path. Empty string is returned if area control is not set.
     */
-    UIControl* GetStickArrow() const;
+    const String& GetStickArrowControlPath() const;
 
     /**
         Set stick arrow control. Input for this control will be disabled, pivot will be set to {0.5, 0.5}.
     */
-    void SetStickArrow(UIControl* stickArrow_);
+    void SetStickArrowControlPath(const String& arrowControlPath);
 
     /**
         Get coords transform function.
@@ -99,7 +99,7 @@ public:
     /**
         Set original stick coords. Used by UIJoypadSystem, don't use it manually.
     */
-    void SetOriginalCoords(Vector2 coords_);
+    void SetOriginalCoords(Vector2 coords);
 
     /**
         Get initial position.
@@ -136,26 +136,35 @@ public:
     /**
         Get cancel zone.
     */
-    const Rect& GetCancelZone() const;
+    const Vector4& GetCancelZone() const;
 
     /**
         Set cancel zone. If stick in a active faze and touch position will cross this zone, active faze will be canceled.
         Should be in virtual coords.
     */
-    void SetCancelZone(const Rect& zone);
+    void SetCancelZone(const Vector4& zone);
 
     /**
         Get transformed coords. Return result of transform function applied to original coords.
     */
     Vector2 GetTransformedCoords() const;
 
+    /** Get stick area control */
+    UIControl* GetStickArea();
+
+    /** Get stick arm control */
+    UIControl* GetStickArm();
+
+    /** Get stick arrow control */
+    UIControl* GetStickArrow();
+
 protected:
     ~UIJoypadComponent() = default;
 
 private:
-    UIControl* stickArea;
-    UIControl* stickArm;
-    UIControl* stickArrow;
+    String stickAreaControlPath;
+    String stickArmControlPath;
+    String stickArrowControlPath;
 
     CoordsTransformFn coordsTransformFn;
 
@@ -169,7 +178,7 @@ private:
 
     float32 activationThreshold = 1e-5f;
 
-    Rect cancelZone = { 0.f, 0.f, 0.f, 0.f };
+    Vector4 cancelZone = Vector4::Zero;
     float32 cancelRadius = 1e9;
 };
 }

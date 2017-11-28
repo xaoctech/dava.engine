@@ -7,16 +7,14 @@
 
 namespace DAVA
 {
-IMPLEMENT_UI_COMPONENT(UIJoypadComponent);
-
 DAVA_VIRTUAL_REFLECTION_IMPL(UIJoypadComponent)
 {
     ReflectionRegistrator<UIJoypadComponent>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIJoypadComponent* c) { SafeRelease(c); })
-    .Field("stickArea", &UIJoypadComponent::GetStickArea, &UIJoypadComponent::SetStickArea)
-    .Field("stickArm", &UIJoypadComponent::GetStickArm, &UIJoypadComponent::SetStickArm)
-    .Field("stickArrow", &UIJoypadComponent::GetStickArrow, &UIJoypadComponent::SetStickArrow)
+    .Field("stickAreaControlPath", &UIJoypadComponent::GetStickAreaControlPath, &UIJoypadComponent::SetStickAreaControlPath)
+    .Field("stickArmControlPath", &UIJoypadComponent::GetStickArmControlPath, &UIJoypadComponent::SetStickArmControlPath)
+    .Field("stickArrowControlPath", &UIJoypadComponent::GetStickArrowControlPath, &UIJoypadComponent::SetStickArrowControlPath)
     .Field("stickAreaRadius", &UIJoypadComponent::GetStickAreaRadius, &UIJoypadComponent::SetStickAreaRadius)
     .Field("isActive", &UIJoypadComponent::IsActive, &UIJoypadComponent::SetActiveFlag)
     .Field("isDynamic", &UIJoypadComponent::IsDynamic, &UIJoypadComponent::SetDynamicFlag)
@@ -29,11 +27,13 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIJoypadComponent)
     .End();
 }
 
+IMPLEMENT_UI_COMPONENT(UIJoypadComponent);
+
 UIJoypadComponent::UIJoypadComponent(const UIJoypadComponent& other)
     : UIComponent(other)
-    , stickArrow(other.stickArrow)
-    , stickArm(other.stickArm)
-    , stickArea(other.stickArea)
+    , stickAreaControlPath(other.stickAreaControlPath)
+    , stickArmControlPath(other.stickArmControlPath)
+    , stickArrowControlPath(other.stickArrowControlPath)
     , coordsTransformFn(other.coordsTransformFn)
     , stickAreaRadius(other.stickAreaRadius)
     , isDynamic(other.isDynamic)
@@ -61,52 +61,34 @@ void UIJoypadComponent::SetDynamicFlag(bool dynamic)
     isDynamic = dynamic;
 }
 
-UIControl* UIJoypadComponent::GetStickArea() const
+const String& UIJoypadComponent::GetStickAreaControlPath() const
 {
-    return stickArea;
+    return stickAreaControlPath;
 }
 
-void UIJoypadComponent::SetStickArea(UIControl* stickArea_)
+void UIJoypadComponent::SetStickAreaControlPath(const String& areaControlPath)
 {
-    if (stickArea_ != nullptr)
-    {
-        stickArea_->SetPivot({ 0.5f, 0.5f });
-        stickArea_->SetInputEnabled(false);
-    }
-
-    stickArea = stickArea_;
+    stickAreaControlPath = areaControlPath;
 }
 
-UIControl* UIJoypadComponent::GetStickArm() const
+const String& UIJoypadComponent::GetStickArmControlPath() const
 {
-    return stickArm;
+    return stickArmControlPath;
 }
 
-void UIJoypadComponent::SetStickArm(UIControl* stickArm_)
+void UIJoypadComponent::SetStickArmControlPath(const String& armControlPath)
 {
-    if (stickArm_ != nullptr)
-    {
-        stickArm_->SetPivot({ 0.5f, 0.5f });
-        stickArm_->SetInputEnabled(false);
-    }
-
-    stickArm = stickArm_;
+    stickArmControlPath = armControlPath;
 }
 
-UIControl* UIJoypadComponent::GetStickArrow() const
+const String& UIJoypadComponent::GetStickArrowControlPath() const
 {
-    return stickArrow;
+    return stickArrowControlPath;
 }
 
-void UIJoypadComponent::SetStickArrow(UIControl* stickArrow_)
+void UIJoypadComponent::SetStickArrowControlPath(const String& arrowControlPath)
 {
-    if (stickArrow_ != nullptr)
-    {
-        stickArrow_->SetPivot({ 0.5f, 0.5f });
-        stickArrow_->SetInputEnabled(false);
-    }
-
-    stickArrow = stickArrow_;
+    stickArrowControlPath = arrowControlPath;
 }
 
 void UIJoypadComponent::SetCoordsTransformFunction(CoordsTransformFn fn)
@@ -179,12 +161,12 @@ void UIJoypadComponent::SetCancelRadius(float32 radius)
     cancelRadius = radius;
 }
 
-const Rect& UIJoypadComponent::GetCancelZone() const
+const Vector4& UIJoypadComponent::GetCancelZone() const
 {
     return cancelZone;
 }
 
-void UIJoypadComponent::SetCancelZone(const Rect& zone)
+void UIJoypadComponent::SetCancelZone(const Vector4& zone)
 {
     cancelZone = zone;
 }
@@ -199,5 +181,32 @@ Vector2 UIJoypadComponent::GetTransformedCoords() const
     }
 
     return coords;
+}
+
+UIControl* UIJoypadComponent::GetStickArea()
+{
+    UIControl* c = GetControl();
+
+    UIControl* stickArea = (!stickAreaControlPath.empty() && c != nullptr ? c->FindByPath(stickAreaControlPath) : nullptr);
+
+    return stickArea;
+}
+
+UIControl* UIJoypadComponent::GetStickArm()
+{
+    UIControl* c = GetControl();
+
+    UIControl* stickArm = (!stickArmControlPath.empty() && c != nullptr ? c->FindByPath(stickArmControlPath) : nullptr);
+
+    return stickArm;
+}
+
+UIControl* UIJoypadComponent::GetStickArrow()
+{
+    UIControl* c = GetControl();
+
+    UIControl* stickArrow = (!stickArrowControlPath.empty() && c != nullptr ? c->FindByPath(stickArrowControlPath) : nullptr);
+
+    return stickArrow;
 }
 }

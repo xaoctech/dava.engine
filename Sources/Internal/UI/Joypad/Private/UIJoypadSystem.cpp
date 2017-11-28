@@ -1,5 +1,6 @@
 #include "UI/Joypad/UIJoypadSystem.h"
 #include "UI/Joypad/UIJoypadComponent.h"
+#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 
@@ -108,8 +109,6 @@ void UIJoypadSystem::Process(float32 elapsedTime)
     }
 
     auto ResetState = [this](UIJoypadComponent* component) {
-        DVASSERT(component->GetControl()->GetAbsoluteRect().PointInside(component->GetInitialPosition()));
-
         ComponentState& state = componentsStates[component];
         state.initialTouch = state.currentTouch = component->GetInitialPosition();
         state.isCanceled = false;
@@ -137,23 +136,14 @@ void UIJoypadSystem::Process(float32 elapsedTime)
 
         if (!isActive)
         {
-            if (component->IsActive() || state.initialTouch != component->GetInitialPosition() || state.isCanceled)
-            {
-                ResetState(component);
-            }
-
+            ResetState(component);
             continue;
         }
 
         const Vector<UIEvent>& events = scene->GetAllInputs();
         auto iter = std::find_if(events.begin(), events.end(), [&control](const UIEvent& event) { return event.touchLocker == control; });
 
-        if (iter == events.end())
-        {
-            DVASSERT(false);
-            ResetState(component);
-            continue;
-        }
+        DVASSERT(iter != events.end());
 
         Vector2 touchPoint = iter->point;
 
@@ -163,17 +153,15 @@ void UIJoypadSystem::Process(float32 elapsedTime)
         }
 
         float32 radius = (state.initialTouch - touchPoint).Length();
-        bool isCanceled = component->GetCancelZone().PointInside(touchPoint) || radius > component->GetCancelRadius();
+        const Vector4& tmp = component->GetCancelZone();
+        Rect cancelZone = { tmp.x, tmp.y, tmp.z, tmp.w };
+
+        bool isCanceled = cancelZone.PointInside(touchPoint) || radius > component->GetCancelRadius();
 
         if (isCanceled)
         {
-            if (component->IsActive())
-            {
-                ResetState(component);
-            }
-
+            ResetState(component);
             state.isCanceled = true;
-
             continue;
         }
 
@@ -181,11 +169,8 @@ void UIJoypadSystem::Process(float32 elapsedTime)
         {
             component->SetActiveFlag(true);
 
-            if (state.currentTouch != touchPoint)
-            {
-                state.currentTouch = touchPoint;
-                needUpdate.insert(component);
-            }
+            state.currentTouch = touchPoint;
+            needUpdate.insert(component);
         }
     }
 
@@ -256,6 +241,8 @@ void UIJoypadSystem::UpdateComponents()
         {
             if (c != nullptr)
             {
+                c->SetPivot({ .5f, .5f });
+                c->SetInputEnabled(false);
                 c->SetAbsolutePosition(correctedPosition);
             }
         }
