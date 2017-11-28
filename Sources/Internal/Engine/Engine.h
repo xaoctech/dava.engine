@@ -327,6 +327,7 @@ public:
     void SetScreenTimeoutEnabled(bool enabled);
 
 public:
+    Signal<> registerUserComponentsAndSystems; //!< Emited just before initializing subsustems, place here user types/components/systems registation. Note: should be connected before Engine::Init(...) call.
     Signal<> gameLoopStarted; //!< Emited just before entring game loop. Note: native windows are not created yet and renderer is not initialized.
     Signal<> gameLoopStopped; //!< Emited after exiting game loop, application should prepare to terminate.
     Signal<> cleanup; //!< Last signal emited by Engine, after this signal dava.engine is dead.
