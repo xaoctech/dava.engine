@@ -75,12 +75,6 @@ void CanvasModule::InitFieldBinder()
     fieldBinder.reset(new FieldBinder(GetAccessor()));
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<CanvasData>();
-        fieldDescr.fieldName = FastName(CanvasData::workAreaSizePropertyName);
-        fieldBinder->BindField(fieldDescr, tryCentralize);
-    }
-    {
-        FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
         fieldDescr.fieldName = FastName(CentralWidgetData::viewSizePropertyName);
         fieldBinder->BindField(fieldDescr, tryCentralize);
@@ -234,6 +228,7 @@ void CanvasModule::OnWorkAreaSizeChanged(const DAVA::Vector2& workAreaSize)
 
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
     canvasData->workAreaSize = workAreaSize;
+    GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>()->canvasDataAdapter->TryCentralizeScene();
 }
 
 DECL_GUI_MODULE(CanvasModule);
