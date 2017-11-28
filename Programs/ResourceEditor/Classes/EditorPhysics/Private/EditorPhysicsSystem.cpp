@@ -3,6 +3,7 @@
 #include <Physics/PhysicsModule.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/DynamicBodyComponent.h>
+#include <Physics/SphereShapeComponent.h>
 
 #include <Engine/Engine.h>
 #include <Scene3D/Entity.h>
@@ -93,6 +94,8 @@ void EditorPhysicsSystem::PrepareForRemove()
 
 void EditorPhysicsSystem::Process(DAVA::float32 timeElapsed)
 {
+    using namespace DAVA;
+
     if (state != eSimulationState::STOPPED)
     {
         for (auto& node : transformMap)
