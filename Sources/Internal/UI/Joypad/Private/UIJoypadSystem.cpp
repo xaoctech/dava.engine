@@ -1,6 +1,5 @@
 #include "UI/Joypad/UIJoypadSystem.h"
 #include "UI/Joypad/UIJoypadComponent.h"
-#include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
 

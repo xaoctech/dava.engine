@@ -37,6 +37,7 @@ void UIJoypadSystemTest::LoadResources()
     areaSprites.second = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_inactive.png", true);
     armSprites.first = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_active.png", true);
     armSprites.second = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_inactive.png", true);
+    arrowSprite = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arrow.png", true);
 
     for (UIControl* c : stuff->GetChildren())
     {
@@ -56,14 +57,13 @@ void UIJoypadSystemTest::LoadResources()
             }
             );
 
-            binding->BindAction(
-            touchUpIn,
-            [this, c]() {
-                c->RemoveClass(FastName("touchDown"));
-                c->AddClass(FastName("hoverOn"));
+            if (StringUtils::StartsWith(c->GetName().c_str(), "BtnToggleStick"))
+            {
+                binding->BindAction(
+                touchUpIn,
+                [this, c]() {
+                    c->RemoveClass(FastName("touchDown"));
 
-                if (StringUtils::StartsWith(c->GetName().c_str(), "BtnToggleStick"))
-                {
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Area"))
                         ToggleStickElement(eStickElements::STICK_AREA, c);
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Arm"))
@@ -71,8 +71,8 @@ void UIJoypadSystemTest::LoadResources()
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Arrow"))
                         ToggleStickElement(eStickElements::STICK_ARROW, c);
                 }
+                );
             }
-            );
 
             binding->BindAction(
             touchUpOut,
@@ -84,29 +84,25 @@ void UIJoypadSystemTest::LoadResources()
         }
     }
 
-    toggleVisibility = stuff->FindByName("BtnToggleVisibility");
-    toggleDynamic = stuff->FindByName("BtnToggleDynamic");
-    cancelZone = stuff->FindByName("CancelZone");
-    radius = static_cast<UITextField*>(stuff->FindByName("Radius"));
-    coords = stuff->FindByName("Coords");
+    UIControl* setRadius = stuff->FindByName("BtnSetRadius");
+    UIControl* tgVis = stuff->FindByName("BtnToggleVisibility");
+    UIControl* tgDyn = stuff->FindByName("BtnToggleDynamic");
 
-    toggleVisibility->GetComponent<UIEventBindingComponent>()->BindAction(
-    touchUpIn,
-    [this]() {
-        toggleVisibility->RemoveClass(FastName("touchDown"));
-        toggleVisibility->AddClass(FastName("hoverOn"));
-        ToggleVisibility();
+    auto p = [](auto&& f, auto&& s) { return std::make_pair(f, s); };
+    for (auto& x : { p(setRadius, &UIJoypadSystemTest::SetRadius), p(tgVis, &UIJoypadSystemTest::ToggleVisibility), p(tgDyn, &UIJoypadSystemTest::ToggleDynamic) })
+    {
+        x.first->GetComponent<UIEventBindingComponent>()->BindAction(
+        touchUpIn,
+        [this, x]() {
+            x.first->RemoveClass(FastName("touchDown"));
+            (this->*x.second)(x.first);
+        }
+        );
     }
-    );
 
-    toggleDynamic->GetComponent<UIEventBindingComponent>()->BindAction(
-    touchUpIn,
-    [this]() {
-        toggleDynamic->RemoveClass(FastName("touchDown"));
-        toggleDynamic->AddClass(FastName("hoverOn"));
-        ToggleDynamic();
-    }
-    );
+    radius = static_cast<UITextField*>(base->FindByName("Radius"));
+    cancelZone = base->FindByName("CancelZone");
+    coords = base->FindByName("Coords");
 
     AddControl(base);
 
@@ -129,6 +125,11 @@ void UIJoypadSystemTest::LoadResources()
     UIControl* arm = joypadBase->FindByName("StickArm");
     UIControl* arrow = joypadBase->FindByName("StickArrow");
 
+    if (arrow != nullptr)
+    {
+        arrow->GetOrCreateComponent<UIControlBackground>()->SetSprite(arrowSprite.Get());
+    }
+
     stickElements[eStickElements::STICK_AREA] = area;
     stickElements[eStickElements::STICK_ARM] = arm;
     stickElements[eStickElements::STICK_ARROW] = arrow;
@@ -146,10 +147,8 @@ void UIJoypadSystemTest::UnloadResources()
 
     GetEngineContext()->inputSystem->RemoveHandler(inputHandler);
 
-    joypad.Set(nullptr);
-    toggleVisibility.Set(nullptr);
-    toggleDynamic.Set(nullptr);
     cancelZone.Set(nullptr);
+    joypad.Set(nullptr);
     coords.Set(nullptr);
     radius.Set(nullptr);
 
@@ -164,7 +163,7 @@ void UIJoypadSystemTest::OnUpdate(float32 timeElapsed)
 
         if (isActive || wasActive)
         {
-            auto& tmp = cancelZone->GetAbsoluteRect();
+            const Rect& tmp = cancelZone->GetAbsoluteRect();
             joypad->SetCancelZone({ tmp.x, tmp.y, tmp.dx, tmp.dy });
 
             Vector2 joypadPos = joypad->GetTransformedCoords();
@@ -195,24 +194,25 @@ void UIJoypadSystemTest::OnUpdate(float32 timeElapsed)
     }
 }
 
-void UIJoypadSystemTest::ToggleVisibility()
+void UIJoypadSystemTest::ToggleVisibility(UIControl* c)
 {
     UIControl* base = joypad->GetControl();
 
     bool isVisibleNow = !base->IsVisible();
 
     base->SetVisibilityFlag(isVisibleNow);
-    toggleVisibility->GetComponent<UIDebugRenderComponent>()->SetDrawColor(isVisibleNow ? Color::Green : Color::Red);
-    toggleVisibility->GetComponent<UITextComponent>()->SetText(String("Toggle visibility (KB_V) ") + (isVisibleNow ? "[ON]" : "[OFF]"));
+    c->GetComponent<UIDebugRenderComponent>()->SetDrawColor(isVisibleNow ? Color::Green : Color::Red);
+    c->GetComponent<UITextComponent>()->SetText(String("Toggle visibility (KB_V) ") + (isVisibleNow ? "[ON]" : "[OFF]"));
 }
 
-void UIJoypadSystemTest::ToggleDynamic()
+void UIJoypadSystemTest::ToggleDynamic(UIControl* c)
 {
     bool isDynamicNow = !joypad->IsDynamic();
 
     joypad->SetDynamicFlag(isDynamicNow);
-    toggleDynamic->GetComponent<UIDebugRenderComponent>()->SetDrawColor(isDynamicNow ? Color::Green : Color::Red);
-    toggleDynamic->GetComponent<UITextComponent>()->SetText(String("Toggle dynamic (KB_V) ") + (isDynamicNow ? "[ON]" : "[OFF]"));
+
+    c->GetComponent<UIDebugRenderComponent>()->SetDrawColor(isDynamicNow ? Color::Green : Color::Red);
+    c->GetComponent<UITextComponent>()->SetText(String("Toggle dynamic (KB_V) ") + (isDynamicNow ? "[ON]" : "[OFF]"));
 }
 
 void UIJoypadSystemTest::ToggleStickElement(eStickElements e, UIControl* c)
@@ -248,7 +248,7 @@ void UIJoypadSystemTest::ToggleStickElement(eStickElements e, UIControl* c)
     t->SetText(s.substr(0, s.find("[")) + String(willBeRemoved ? "[OFF]" : "[ON]"));
 }
 
-void UIJoypadSystemTest::SetRadius()
+void UIJoypadSystemTest::SetRadius(UIControl*)
 {
     radius->ReleaseFocus();
 
@@ -276,34 +276,33 @@ void UIJoypadSystemTest::SetRadius()
 
 bool UIJoypadSystemTest::OnInputEvent(const InputEvent& event)
 {
-    // Handle release only
-    if (!event.digitalState.IsJustReleased())
+    if (!event.digitalState.IsJustReleased() || joypad == nullptr)
     {
         return false;
     }
 
-    UIControl* base = joypad->GetControl()->GetParent();
+    UIControl* stuff = joypad->GetControl()->GetParent()->FindByName("StuffBase");
     bool handled = true;
 
     switch (event.elementId)
     {
     case eInputElements::KB_V:
-        ToggleVisibility();
+        ToggleVisibility(stuff->FindByName("BtnToggleVisibility"));
         break;
     case eInputElements::KB_D:
-        ToggleDynamic();
+        ToggleDynamic(stuff->FindByName("BtnToggleDynamic"));
         break;
     case eInputElements::KB_A:
-        ToggleStickElement(eStickElements::STICK_AREA, base->FindByName("BtnToggleStickArea"));
+        ToggleStickElement(eStickElements::STICK_AREA, stuff->FindByName("BtnToggleStickArea"));
         break;
     case eInputElements::KB_M:
-        ToggleStickElement(eStickElements::STICK_ARM, base->FindByName("BtnToggleStickArm"));
+        ToggleStickElement(eStickElements::STICK_ARM, stuff->FindByName("BtnToggleStickArm"));
         break;
     case eInputElements::KB_W:
-        ToggleStickElement(eStickElements::STICK_ARROW, base->FindByName("BtnToggleStickArrow"));
+        ToggleStickElement(eStickElements::STICK_ARROW, stuff->FindByName("BtnToggleStickArrow"));
         break;
     case eInputElements::KB_ENTER:
-        SetRadius();
+        SetRadius(stuff->FindByName("BtnSetRadius"));
         break;
     default:
         handled = false;
