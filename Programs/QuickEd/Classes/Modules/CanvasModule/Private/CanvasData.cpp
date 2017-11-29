@@ -53,9 +53,9 @@ DAVA::Vector2 CanvasData::GetPosition() const
     return position;
 }
 
-void CanvasData::SetPosition(const DAVA::Vector2& displacement_)
+void CanvasData::SetPosition(const DAVA::Vector2& position_)
 {
-    position = displacement_;
+    position = position_;
 }
 
 DAVA::Vector2 CanvasData::GetRootPosition() const
