@@ -38,7 +38,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             builder.AddBox(CommandLineModuleTestUtils::SceneBuilder::WITH_REF_TO_OWNER);
         }
 
@@ -55,7 +55,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             Entity* box = builder.AddBox(CommandLineModuleTestUtils::SceneBuilder::WITHOUT_REF_TO_OWNER);
             Matrix4 notIdentityMatrix;
             notIdentityMatrix.Zero();
@@ -76,7 +76,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             builder.AddBox();
             builder.AddBox();
         }
@@ -94,7 +94,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             Entity* box1 = builder.AddBox();
             Entity* box2 = builder.AddBox();
 
@@ -119,7 +119,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             Entity* box1 = builder.AddBox();
 
             box1->AddComponent(new CustomPropertiesComponent);
@@ -141,7 +141,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             Entity* box1 = builder.AddBox();
 
             box1->AddComponent(new CustomPropertiesComponent);
@@ -186,7 +186,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         };
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             builder.AddBox();
             ConvertTextures(builder.scene);
         }
@@ -204,7 +204,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             builder.AddBox();
             // textures were not converted: verification should be failed
         }
@@ -222,7 +222,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             builder.AddBox();
 
             Set<NMaterial*> materials;
@@ -247,7 +247,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr);
+            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
             builder.AddBox();
 
             Set<NMaterial*> materials;

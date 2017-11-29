@@ -3,6 +3,7 @@
 
 #include "StringConstants.h"
 #include "Scene/SceneHelper.h"
+#include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
 #include <AssetCache/AssetCacheClient.h>
 
@@ -74,26 +75,6 @@ void CalculateSceneKey(const DAVA::FilePath& scenePathname, const DAVA::String& 
 
 namespace SceneExporterDetails
 {
-class FileSystemTagGuard final
-{
-public:
-    FileSystemTagGuard(const DAVA::String newFilenamesTag)
-    {
-        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
-        oldFilenamesTag = fs->GetFilenamesTag();
-        fs->SetFilenamesTag(newFilenamesTag);
-    }
-
-    ~FileSystemTagGuard()
-    {
-        DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
-        fs->SetFilenamesTag(oldFilenamesTag);
-    }
-
-private:
-    DAVA::String oldFilenamesTag;
-};
-
 bool SaveExportedObjects(const DAVA::FilePath& linkPathname, const DAVA::Vector<SceneExporter::ExportedObjectCollection>& exportedObjects)
 {
     using namespace DAVA;
@@ -1035,7 +1016,7 @@ bool SceneExporter::ExportObjects(const ExportedObjectCollection& exportedObject
         {
             DAVA::Vector<DAVA::SlotSystem::ItemsCache::Item> items;
             { // load tagged config
-                SceneExporterDetails::FileSystemTagGuard tagGuard(exportingParams.filenamesTag);
+                FileSystemTagGuard tagGuard(exportingParams.filenamesTag);
                 items = SlotSystem::ParseConfig(exportingParams.dataSourceFolder + slot.relativePathname);
             }
 

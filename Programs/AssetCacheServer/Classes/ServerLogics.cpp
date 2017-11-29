@@ -16,7 +16,7 @@ void ServerLogics::Init(DAVA::AssetCache::ServerNetProxy* server_, const DAVA::S
     dataBase = dataBase_;
 }
 
-void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
+void ServerLogics::OnAddChunkToCache(const std::shared_ptr<DAVA::Net::IChannel>& channel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint64 dataSize, DAVA::uint32 numOfChunks, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunkData)
 {
     hasIncomingRequestsRecently = true;
 
@@ -34,7 +34,7 @@ void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::A
 
     auto Error = [&](const char* err)
     {
-        Logger::Error("Wrong request: %s. Client %p, key %s chunk#%u", err, channel, Brief(key).c_str(), chunkNumber);
+        Logger::Error("Wrong request: %s. Client %p, key %s chunk#%u", err, channel.get(), Brief(key).c_str(), chunkNumber);
         DiscardTask();
     };
 
@@ -122,7 +122,7 @@ void ServerLogics::OnAddChunkToCache(DAVA::Net::IChannel* channel, const DAVA::A
     serverProxy->SendAddedToCache(channel, key, true);
 }
 
-DAVA::List<ServerLogics::DataAddTask>::iterator ServerLogics::GetOrCreateAddTask(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key)
+DAVA::List<ServerLogics::DataAddTask>::iterator ServerLogics::GetOrCreateAddTask(const std::shared_ptr<DAVA::Net::IChannel>& channel, const DAVA::AssetCache::CacheItemKey& key)
 {
     using namespace DAVA;
     List<ServerLogics::DataAddTask>::iterator it = std::find_if(dataAddTasks.begin(), dataAddTasks.end(), [&](const DataAddTask& task)
@@ -178,7 +178,7 @@ ServerLogics::DataGetMap::iterator ServerLogics::GetOrCreateGetTask(const DAVA::
     return taskIter;
 }
 
-void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber)
+void ServerLogics::OnChunkRequestedFromCache(const std::shared_ptr<DAVA::Net::IChannel>& clientChannel, const DAVA::AssetCache::CacheItemKey& key, DAVA::uint32 chunkNumber)
 {
     hasIncomingRequestsRecently = true;
 
@@ -187,7 +187,7 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
 
     auto Error = [&](const char* err)
     {
-        Logger::Error("Wrong chunk request: %s. Client %p, key %s, chunk %u", err, clientChannel, Brief(key).c_str(), chunkNumber);
+        Logger::Error("Wrong chunk request: %s. Client %p, key %s, chunk %u", err, clientChannel.get(), Brief(key).c_str(), chunkNumber);
         Vector<uint8> empty;
         serverProxy->SendChunk(clientChannel, key, 0, 0, 0, empty);
     };
@@ -237,49 +237,49 @@ void ServerLogics::OnChunkRequestedFromCache(DAVA::Net::IChannel* clientChannel,
     }
 }
 
-void ServerLogics::OnRemoveFromCache(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key)
+void ServerLogics::OnRemoveFromCache(const std::shared_ptr<DAVA::Net::IChannel>& channel, const DAVA::AssetCache::CacheItemKey& key)
 {
     hasIncomingRequestsRecently = true;
 
     if ((nullptr != serverProxy) && (nullptr != dataBase) && (nullptr != channel))
     {
-        DAVA::Logger::Debug("Receiving remove from cache: key %s, channel %p", Brief(key).c_str(), channel);
+        DAVA::Logger::Debug("Receiving remove from cache: key %s, channel %p", Brief(key).c_str(), channel.get());
         bool removed = dataBase->Remove(key);
         DAVA::Logger::Debug("Sending data %s removed", (removed ? "is" : "is not"));
         serverProxy->SendRemovedFromCache(channel, key, removed);
     }
 }
 
-void ServerLogics::OnClearCache(DAVA::Net::IChannel* channel)
+void ServerLogics::OnClearCache(const std::shared_ptr<DAVA::Net::IChannel>& channel)
 {
     hasIncomingRequestsRecently = true;
 
-    DAVA::Logger::Debug("Receiving clearing of cache from channel %p", channel);
+    DAVA::Logger::Debug("Receiving clearing of cache from channel %p", channel.get());
     dataBase->ClearStorage();
     DAVA::Logger::Debug("Sending storage is cleared");
     serverProxy->SendCleared(channel, true);
 }
 
-void ServerLogics::OnWarmingUp(DAVA::Net::IChannel* channel, const DAVA::AssetCache::CacheItemKey& key)
+void ServerLogics::OnWarmingUp(const std::shared_ptr<DAVA::Net::IChannel>& channel, const DAVA::AssetCache::CacheItemKey& key)
 {
-    DAVA::Logger::Debug("Receiving warming up request from channel %p key %s", channel, Brief(key).c_str());
+    DAVA::Logger::Debug("Receiving warming up request from channel %p key %s", channel.get(), Brief(key).c_str());
     if (nullptr != dataBase)
     {
         dataBase->UpdateAccessTimestamp(key);
     }
 }
 
-void ServerLogics::OnStatusRequested(DAVA::Net::IChannel* channel)
+void ServerLogics::OnStatusRequested(const std::shared_ptr<DAVA::Net::IChannel>& channel)
 {
     hasIncomingRequestsRecently = true;
 
-    DAVA::Logger::Debug("Received status request from channel %p", channel);
+    DAVA::Logger::Debug("Received status request from channel %p", channel.get());
     serverProxy->SendStatus(channel);
 }
 
-void ServerLogics::OnChannelClosed(DAVA::Net::IChannel* channel, const DAVA::char8*)
+void ServerLogics::OnChannelClosed(const std::shared_ptr<DAVA::Net::IChannel>& channel, const DAVA::char8*)
 {
-    DAVA::Logger::Debug("Channel %p is closed", channel);
+    DAVA::Logger::Debug("Channel %p is closed", channel.get());
     RemoveClientFromTasks(channel);
 }
 
@@ -465,7 +465,7 @@ void ServerLogics::RequestNextChunk(ServerLogics::DataGetMap::iterator it)
     task.dataStatus = DataGetTask::WAITING_NEXT_CHUNK;
 }
 
-void ServerLogics::SendChunkToClient(DataGetMap::iterator taskIt, DAVA::Net::IChannel* clientChannel, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk)
+void ServerLogics::SendChunkToClient(DataGetMap::iterator taskIt, const std::shared_ptr<DAVA::Net::IChannel>& clientChannel, DAVA::uint32 chunkNumber, const DAVA::Vector<DAVA::uint8>& chunk)
 {
     DataGetTask& task = taskIt->second;
     DataGetTask::ClientStatus& client = task.clients[clientChannel];
@@ -487,7 +487,7 @@ void ServerLogics::SendChunkToClients(ServerLogics::DataGetMap::iterator taskIt,
     const DAVA::AssetCache::CacheItemKey& key = taskIt->first;
     DataGetTask& task = taskIt->second;
 
-    for (std::pair<DAVA::Net::IChannel* const, DataGetTask::ClientStatus>& client : task.clients)
+    for (std::pair<std::shared_ptr<DAVA::Net::IChannel> const, DataGetTask::ClientStatus>& client : task.clients)
     {
         if (client.second.status == DataGetTask::WAITING_NEXT_CHUNK && client.second.waitingChunk == chunkNumber)
         {
@@ -501,7 +501,7 @@ void ServerLogics::SendChunkToClients(ServerLogics::DataGetMap::iterator taskIt,
 void ServerLogics::RemoveTaskIfChunksAreSent(ServerLogics::DataGetMap::iterator taskIt)
 {
     DataGetTask& task = taskIt->second;
-    bool allChunksAreSent = std::all_of(task.clients.begin(), task.clients.end(), [](std::pair<DAVA::Net::IChannel* const, DataGetTask::ClientStatus>& client)
+    bool allChunksAreSent = std::all_of(task.clients.begin(), task.clients.end(), [](std::pair<std::shared_ptr<DAVA::Net::IChannel> const, DataGetTask::ClientStatus>& client)
                                         {
                                             return client.second.lastChunkWasSent == true;
                                         });
@@ -565,7 +565,7 @@ void ServerLogics::CancelGetTask(ServerLogics::DataGetMap::iterator it)
         const DAVA::AssetCache::CacheItemKey& key = it->first;
         DataGetTask& task = it->second;
 
-        for (const std::pair<DAVA::Net::IChannel* const, DataGetTask::ClientStatus>& client : task.clients)
+        for (const std::pair<std::shared_ptr<DAVA::Net::IChannel>, DataGetTask::ClientStatus>& client : task.clients)
         {
             switch (client.second.status)
             {
@@ -585,7 +585,7 @@ void ServerLogics::CancelGetTask(ServerLogics::DataGetMap::iterator it)
     }
 }
 
-void ServerLogics::RemoveClientFromTasks(DAVA::Net::IChannel* clientChannel)
+void ServerLogics::RemoveClientFromTasks(const std::shared_ptr<DAVA::Net::IChannel>& clientChannel)
 {
     for (auto it = dataGetTasks.begin(); it != dataGetTasks.end();)
     {

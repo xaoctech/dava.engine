@@ -9,7 +9,7 @@ namespace RHIHeapTestDetails
 const uint32 MaxBlockCount = 8192;
 const uint32 PageSize = 2 * 1024 * 1024;
 uint8* BaseAddress = reinterpret_cast<uint8*>(0x0100);
-using TestHeap = SimpleRemoteHeap<RHIHeapTestDetails::MaxBlockCount>;
+using TestHeap = rhi::SimpleRemoteHeap;
 }
 
 DAVA_TESTCLASS (RHIHeapTest)
@@ -49,9 +49,9 @@ DAVA_TESTCLASS (RHIHeapTest)
 
     DAVA_TEST (Alloc_Free)
     {
-        RHIHeapTestDetails::TestHeap heap;
+        RHIHeapTestDetails::TestHeap heap(RHIHeapTestDetails::MaxBlockCount);
         heap.initialize(RHIHeapTestDetails::BaseAddress, RHIHeapTestDetails::PageSize);
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
+        TEST_VERIFY(heap.Empty());
         uint32 allocSize = 2;
         while (allocSize <= RHIHeapTestDetails::PageSize)
         {
@@ -61,19 +61,18 @@ DAVA_TESTCLASS (RHIHeapTest)
             TEST_VERIFY(ptr <= RHIHeapTestDetails::BaseAddress + RHIHeapTestDetails::PageSize);
 
             heap.free(ptr);
-            TEST_VERIFY(heap.has_allocated_blocks() == false);
+            TEST_VERIFY(heap.Empty());
 
             allocSize *= 2;
         }
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
-        heap.uninitialize();
+        TEST_VERIFY(heap.Empty());
     }
 
     DAVA_TEST (AllocAll_FreeAll)
     {
-        RHIHeapTestDetails::TestHeap heap;
+        RHIHeapTestDetails::TestHeap heap(RHIHeapTestDetails::MaxBlockCount);
         heap.initialize(RHIHeapTestDetails::BaseAddress, RHIHeapTestDetails::PageSize);
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
+        TEST_VERIFY(heap.Empty());
 
         uint32 allocSize = 256;
         uint32 allocCount = RHIHeapTestDetails::PageSize / allocSize;
@@ -86,32 +85,33 @@ DAVA_TESTCLASS (RHIHeapTest)
             TEST_VERIFY(pointers[i] >= RHIHeapTestDetails::BaseAddress);
             TEST_VERIFY(pointers[i] <= RHIHeapTestDetails::BaseAddress + RHIHeapTestDetails::PageSize);
         }
-        TEST_VERIFY(heap.has_allocated_blocks() == true);
+        TEST_VERIFY(heap.Empty() == false);
 
         for (uint32 i = 0; i < allocCount; ++i)
         {
             heap.free(pointers[i]);
         }
 
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
-        heap.uninitialize();
+        TEST_VERIFY(heap.Empty());
     }
 
     DAVA_TEST (Alloc_Free_Interleaved)
     {
-        SimpleRemoteHeap<RHIHeapTestDetails::MaxBlockCount> heap;
+        rhi::SimpleRemoteHeap heap(RHIHeapTestDetails::MaxBlockCount);
         heap.initialize(RHIHeapTestDetails::BaseAddress, RHIHeapTestDetails::PageSize);
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
+        TEST_VERIFY(heap.Empty());
         AllocFreeInterleaved(&heap);
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
-        heap.uninitialize();
+        TEST_VERIFY(heap.Empty());
     }
 
-    DAVA_TEST (Alloc_Free_Interleaved_Multithreaded)
+    /*
+     * Remote heap is not thread-safe anymore, sorry
+     *
+    DAVA_TEST(Alloc_Free_Interleaved_Multithreaded)
     {
-        SimpleRemoteHeap<RHIHeapTestDetails::MaxBlockCount> heap;
+        rhi::SimpleRemoteHeap heap(RHIHeapTestDetails::MaxBlockCount);
         heap.initialize(RHIHeapTestDetails::BaseAddress, RHIHeapTestDetails::PageSize);
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
+        TEST_VERIFY(heap.Empty());
 
         Function<void()> fn = Bind(&RHIHeapTest::AllocFreeInterleaved, this, &heap);
         ScopedPtr<Thread> t1(Thread::Create(fn));
@@ -124,7 +124,7 @@ DAVA_TESTCLASS (RHIHeapTest)
         t2->Join();
         t3->Join();
 
-        TEST_VERIFY(heap.has_allocated_blocks() == false);
-        heap.uninitialize();
+        TEST_VERIFY(heap.Empty());
     }
+    // */
 };
