@@ -104,13 +104,13 @@ void ResourcePacker2D::SetConvertQuality(const TextureConverter::eConvertQuality
     quality = arg;
 }
 
-void ResourcePacker2D::SetRunning(bool arg)
+void ResourcePacker2D::SetCanceled(bool arg)
 {
-    if (arg != running)
+    cancelled = arg;
+    if (cancelled)
     {
-        Logger::FrameworkDebug(arg ? "ResourcePacker2D was started" : "ResourcePacker2D was stopped");
+        Logger::FrameworkDebug("Resource packing is cancelled");
     }
-    running = arg;
 }
 void ResourcePacker2D::InitFolders(const FilePath& inputPath, const FilePath& outputPath)
 {
@@ -124,13 +124,10 @@ void ResourcePacker2D::InitFolders(const FilePath& inputPath, const FilePath& ou
 
 void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
 {
-    SetRunning(true);
-    SCOPE_EXIT
-    {
-        SetRunning(false);
-    };
+    SetCanceled(false);
 
-    Logger::FrameworkDebug("\nInput: %s \nOutput: %s \nExclude: %s",
+    Logger::FrameworkDebug("Starting resource packing");
+    Logger::FrameworkDebug("\nInput: %s \nOutput: %s \nRoot: %s",
                            inputGfxDirectory.GetAbsolutePathname().c_str(),
                            outputGfxDirectory.GetAbsolutePathname().c_str(),
                            rootDirectory.GetAbsolutePathname().c_str());
@@ -138,12 +135,14 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
     if (FileSystem::Instance()->Exists(inputGfxDirectory) == false)
     {
         AddError(Format("Input folder is not exist: '%s'", inputGfxDirectory.GetStringValue().c_str()));
+        SetCanceled();
         return;
     }
 
     if (StringUtils::HasWhitespace(texturePostfix))
     {
         AddError(Format("Texture name postfix '%s' has whitespaces", texturePostfix.c_str()).c_str());
+        SetCanceled();
         return;
     }
 
@@ -174,12 +173,14 @@ void ResourcePacker2D::PackResources(const Vector<eGPUFamily>& forGPUs)
     else
     {
         AddError(Format("Unknown algorithm: '%s'", alg.c_str()));
+        SetCanceled();
         return;
     }
 
     if (tag.empty() == false && std::find(allTags.begin(), allTags.end(), tag) == allTags.end())
     {
         AddError(Format("Tag '%s' is not found in allTags", tag.c_str()));
+        SetCanceled();
         return;
     }
 
@@ -369,7 +370,7 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
 
     DVASSERT(inputDir.IsDirectoryPathname() && outputDir.IsDirectoryPathname());
 
-    if (!running)
+    if (cancelled)
     {
         return;
     }
@@ -562,7 +563,7 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
                 definitionFileList.reserve(pickedFiles.size());
                 for (PickedFile& file : pickedFiles)
                 {
-                    if (running == false)
+                    if (cancelled)
                     {
                         break;
                     }

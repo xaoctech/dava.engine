@@ -35,6 +35,8 @@ protected:
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
 
+    void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
+
 private:
     void InitCentralWidget();
     void InitGlobalData();

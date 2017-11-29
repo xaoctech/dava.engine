@@ -34,6 +34,7 @@
 #include "UI/Sound/UISoundSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/Script/UIScriptSystem.h"
 #include "UI/Events/UIEventsSystem.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIEvent.h"
@@ -59,6 +60,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
+    AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
     AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem

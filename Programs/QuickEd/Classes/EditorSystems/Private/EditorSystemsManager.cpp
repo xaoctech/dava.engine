@@ -44,8 +44,6 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
 
     rootControl->SetName(FastName("root_control"));
 
-    activeAreaChanged.Connect(this, &EditorSystemsManager::OnActiveHUDAreaChanged);
-
     InitDAVAScreen();
 
     InitFieldBinder();
@@ -280,9 +278,23 @@ void EditorSystemsManager::UpdateDisplayState()
     }
 }
 
-void EditorSystemsManager::OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo)
+void EditorSystemsManager::SetActiveHUDArea(const HUDAreaInfo& areaInfo)
 {
     currentHUDArea = areaInfo;
+    activeAreaChanged.Emit(currentHUDArea);
+}
+
+void EditorSystemsManager::Invalidate(ControlNode* removedNode)
+{
+    if (removedNode == currentHUDArea.owner)
+    {
+        SetActiveHUDArea(HUDAreaInfo());
+    }
+}
+
+void EditorSystemsManager::Invalidate()
+{
+    SetActiveHUDArea(HUDAreaInfo());
 }
 
 void EditorSystemsManager::OnUpdate()
