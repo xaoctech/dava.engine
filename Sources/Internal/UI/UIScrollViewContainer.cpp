@@ -151,7 +151,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
     {
         if (currentTouch->touchId != mainTouch &&
             mainTouch != -1 &&
-            !GetEngineContext()->uiControlSystem->GetInputSystem()->HasTouchLocker(this))
+            !GetEngineContext()->uiControlSystem->GetInputSystem()->IsAnyInputLockedByControl(this))
         {
             // Workaround for missed 'CancelInput()' in rare case.
             // Force reset internal 'touch id' when control has not active 'touchLocker' in UIInputSystem.

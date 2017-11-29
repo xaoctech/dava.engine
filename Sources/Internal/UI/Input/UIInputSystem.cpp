@@ -203,7 +203,7 @@ const Vector<UIEvent>& UIInputSystem::GetAllInputs() const
     return touchEvents;
 }
 
-bool UIInputSystem::HasTouchLocker(const UIControl* control) const
+bool UIInputSystem::IsAnyInputLockedByControl(const UIControl* control) const
 {
     return touchEvents.end() != std::find_if(touchEvents.begin(), touchEvents.end(), [control](const UIEvent& event) {
                return event.touchLocker == control;
