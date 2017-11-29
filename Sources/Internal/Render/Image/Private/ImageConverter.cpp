@@ -11,7 +11,7 @@ bool ImageConverter::CanConvert(PixelFormat srcFormat, PixelFormat dstFormat) co
 {
     if (implementation != nullptr)
     {
-        return implementation->CanConvertImpl(srcFormat, dstFormat);
+        return implementation->CanConvert(srcFormat, dstFormat);
     }
     return false;
 }
@@ -20,18 +20,8 @@ bool ImageConverter::Convert(const Image* srcImage, Image* dstImage) const
 {
     if (implementation != nullptr)
     {
-        return implementation->ConvertImpl(srcImage, dstImage);
+        return implementation->Convert(srcImage, dstImage);
     }
-    return false;
-}
-
-bool ImageConverter::CanConvertImpl(PixelFormat srcFormat, PixelFormat dstFormat) const
-{
-    return false;
-}
-
-bool ImageConverter::ConvertImpl(const Image* srcImage, Image* dstImage) const
-{
     return false;
 }
 

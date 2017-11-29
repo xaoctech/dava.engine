@@ -9,9 +9,9 @@ namespace DAVA
 class Image;
 class ImageConverterImpl : public ImageConverter
 {
-protected:
-    bool CanConvertImpl(PixelFormat srcFormat, PixelFormat dstFormat) const;
-    bool ConvertImpl(const Image* srcImage, Image* dstImage) const;
+public:
+    bool CanConvert(PixelFormat srcFormat, PixelFormat dstFormat) const;
+    bool Convert(const Image* srcImage, Image* dstImage) const;
 };
 
 } //DAVA

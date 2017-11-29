@@ -8,5 +8,6 @@ class Version final
 {
 public:
     static String CreateAppVersion(const String& appName);
+    static String GetVersion();
 };
 }

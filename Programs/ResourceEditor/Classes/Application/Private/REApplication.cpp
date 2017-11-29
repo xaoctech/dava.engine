@@ -8,8 +8,6 @@
 #include "Classes/Application/RESettings.h"
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 
-#include <TextureCompression/PVRConverter.h>
-
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/EditorConfig.h"
 
@@ -140,13 +138,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
-
-#if defined(__DAVAENGINE_MACOS__)
-    const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI";
-#elif defined(__DAVAENGINE_WIN32__)
-    const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI.exe";
-#endif
-    DAVA::PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
     DAVA::ParticleEmitter::FORCE_DEEP_CLONE = true;
     DAVA::QualitySettingsSystem::Instance()->SetKeepUnusedEntities(true);

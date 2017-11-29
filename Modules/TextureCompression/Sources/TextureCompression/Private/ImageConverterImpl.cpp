@@ -9,7 +9,7 @@
 
 namespace DAVA
 {
-bool ImageConverterImpl::CanConvertImpl(PixelFormat srcFormat, PixelFormat dstFormat) const
+bool ImageConverterImpl::CanConvert(PixelFormat srcFormat, PixelFormat dstFormat) const
 {
     if (srcFormat == FORMAT_RGBA8888)
     { //compress
@@ -24,7 +24,7 @@ bool ImageConverterImpl::CanConvertImpl(PixelFormat srcFormat, PixelFormat dstFo
     return false;
 }
 
-bool ImageConverterImpl::ConvertImpl(const Image* srcImage, Image* dstImage) const
+bool ImageConverterImpl::Convert(const Image* srcImage, Image* dstImage) const
 {
     DVASSERT(srcImage != nullptr && dstImage != nullptr);
     if (PixelFormatDescriptor::IsAtcFormat(srcImage->format))
