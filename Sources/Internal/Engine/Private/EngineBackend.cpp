@@ -931,7 +931,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 #endif
 
     // Register user types, components and systems
-    engine->registerUserComponentsAndSystems.Emit();
+    engine->registerUserTypes.Emit();
 
     // Init subsystems
     context->moduleManager->InitModules();
