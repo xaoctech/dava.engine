@@ -16,11 +16,15 @@ void ComponentManager::RegisterComponent()
 
 inline bool ComponentManager::IsRegisteredUIComponent(const Type* type) const
 {
+    DVASSERT(type != nullptr);
+
     return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(eComponentType::UI_COMPONENT)));
 }
 
 inline bool ComponentManager::IsRegisteredSceneComponent(const Type* type) const
 {
+    DVASSERT(type != nullptr);
+
     return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(eComponentType::SCENE_COMPONENT)));
 }
 

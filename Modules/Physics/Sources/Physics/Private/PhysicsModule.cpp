@@ -508,7 +508,7 @@ const Vector<const Type*>& PhysicsModule::GetCharacterControllerComponentTypes()
     return characterControllerComponents;
 }
 
-physx::PxMaterial * PhysicsModule::GetMaterial(const FastName& materialName) const
+physx::PxMaterial* PhysicsModule::GetMaterial(const FastName& materialName) const
 {
     LazyLoadMaterials();
     if (materialName.IsValid() == false)

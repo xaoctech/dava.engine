@@ -17,6 +17,8 @@ ComponentManager::ComponentManager()
 
 void ComponentManager::RegisterComponent(const Type* type)
 {
+    DVASSERT(type != nullptr);
+
     const Type* sceneComponentType = Type::Instance<Component>();
     const Type* uiComponentType = Type::Instance<UIComponent>();
 

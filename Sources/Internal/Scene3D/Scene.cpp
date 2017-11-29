@@ -1,4 +1,3 @@
-
 #include "Scene3D/Scene.h"
 
 #include "Concurrency/Thread.h"
@@ -544,9 +543,9 @@ void Scene::UnregisterComponent(Entity* entity, Component* component)
     }
 }
 
-void Scene::AddSystem(SceneSystem* sceneSystem, ComponentMask componentFlags, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/, SceneSystem* insertBeforeSceneForFixedProcess)
+void Scene::AddSystem(SceneSystem* sceneSystem, const ComponentMask& componentMask, uint32 processFlags /*= 0*/, SceneSystem* insertBeforeSceneForProcess /* = nullptr */, SceneSystem* insertBeforeSceneForInput /* = nullptr*/, SceneSystem* insertBeforeSceneForFixedProcess)
 {
-    sceneSystem->SetRequiredComponents(componentFlags);
+    sceneSystem->SetRequiredComponents(componentMask);
     systems.push_back(sceneSystem);
 
     auto insertSystemBefore = [sceneSystem](Vector<SceneSystem*>& container, SceneSystem* beforeThisSystem)

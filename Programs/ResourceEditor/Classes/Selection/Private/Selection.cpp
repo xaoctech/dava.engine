@@ -70,7 +70,7 @@ void ResetSelectionComponentMask()
     }
 }
 
-void SetSelectionComponentMask(DAVA::ComponentMask mask)
+void SetSelectionComponentMask(const DAVA::ComponentMask& mask)
 {
     SelectionData* selectionData = REGlobal::GetActiveDataNode<SelectionData>();
     if (selectionData != nullptr)
@@ -87,7 +87,7 @@ DAVA::ComponentMask GetSelectionComponentMask()
         return selectionData->GetSelectionComponentMask();
     }
 
-    return 0;
+    return DAVA::ComponentMask();
 }
 
 bool Lock()

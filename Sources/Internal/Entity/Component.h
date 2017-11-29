@@ -55,4 +55,4 @@ protected:
 
 } // namespace DAVA
 
-#include "Entity/Private/Component_imp.h"
+#include "Entity/Private/Component_impl.h"

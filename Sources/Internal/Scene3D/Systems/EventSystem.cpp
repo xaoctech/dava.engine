@@ -31,14 +31,14 @@ void EventSystem::GroupNotifyAllSystems(Vector<Component*>& components, uint32 e
     for (uint32 i = 0; i < size; ++i)
     {
         SceneSystem* system = container[i];
-        ComponentMask requiredComponentMask = system->GetRequiredComponents();
+        const ComponentMask& requiredComponentMask = system->GetRequiredComponents();
 
         uint32 componentsVectorSize = static_cast<uint32>(components.size());
         for (uint32 k = 0; k < componentsVectorSize; ++k)
         {
             Component* comp = components[k];
             Entity* entity = comp->GetEntity();
-            ComponentMask componentsInEntity = entity->GetAvailableComponentMask();
+            const ComponentMask& componentsInEntity = entity->GetAvailableComponentMask();
 
             if ((requiredComponentMask & componentsInEntity) == requiredComponentMask)
                 system->ImmediateEvent(comp, event);
@@ -50,11 +50,11 @@ void EventSystem::NotifyAllSystems(Component* component, uint32 event)
 {
     Vector<SceneSystem*>& container = registeredSystems[event];
     uint32 size = static_cast<uint32>(container.size());
-    ComponentMask componentsInEntity = component->GetEntity()->GetAvailableComponentMask();
+    const ComponentMask& componentsInEntity = component->GetEntity()->GetAvailableComponentMask();
     for (uint32 i = 0; i < size; ++i)
     {
         SceneSystem* system = container[i];
-        ComponentMask requiredComponentMask = system->GetRequiredComponents();
+        const ComponentMask& requiredComponentMask = system->GetRequiredComponents();
         if ((requiredComponentMask & componentsInEntity) == requiredComponentMask)
             system->ImmediateEvent(component, event);
     }

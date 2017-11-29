@@ -64,7 +64,7 @@ public:
     uint32 GetComponentCount(const Type* type) const;
     template <typename T>
     uint32 GetComponentCount() const;
-    inline ComponentMask GetAvailableComponentMask();
+    inline const ComponentMask& GetAvailableComponentMask() const;
 
     // working with children
     virtual void AddNode(Entity* node);
@@ -466,7 +466,7 @@ void Entity::GetChildEntitiesWithCondition(Container<Entity*, A>& container, Pre
     }
 }
 
-inline ComponentMask Entity::GetAvailableComponentMask()
+inline const ComponentMask& Entity::GetAvailableComponentMask() const
 {
     return family->GetComponentsMask();
 }

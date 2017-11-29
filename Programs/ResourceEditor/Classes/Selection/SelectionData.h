@@ -29,8 +29,8 @@ public:
 
     //Support old selectionSystem interface
     void ResetSelectionComponentMask();
-    void SetSelectionComponentMask(DAVA::ComponentMask mask);
-    DAVA::ComponentMask GetSelectionComponentMask() const;
+    void SetSelectionComponentMask(const DAVA::ComponentMask& mask);
+    const DAVA::ComponentMask& GetSelectionComponentMask() const;
 
     void SetSelectionAllowed(bool allowed);
     bool IsSelectionAllowed() const;

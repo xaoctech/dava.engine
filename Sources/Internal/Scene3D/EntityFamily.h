@@ -19,7 +19,7 @@ public:
 
     uint32 GetComponentIndex(const Type* type, uint32 index) const;
     uint32 GetComponentsCount(const Type* type) const;
-    ComponentMask GetComponentsMask() const;
+    const ComponentMask& GetComponentsMask() const;
 
     bool operator==(const EntityFamily& rhs) const;
 

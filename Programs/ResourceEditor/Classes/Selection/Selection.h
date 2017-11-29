@@ -20,7 +20,7 @@ DAVA::Entity* GetSelectableEntity(DAVA::Entity* selectionCandidate);
 bool IsEntitySelectable(DAVA::Entity* selectionCandidate);
 
 void ResetSelectionComponentMask();
-void SetSelectionComponentMask(DAVA::ComponentMask mask);
+void SetSelectionComponentMask(const DAVA::ComponentMask& mask);
 DAVA::ComponentMask GetSelectionComponentMask();
 
 bool Lock();
