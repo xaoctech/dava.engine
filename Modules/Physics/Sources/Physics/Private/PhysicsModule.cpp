@@ -483,37 +483,32 @@ physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, const Fas
     return shape;
 }
 
-const Vector<uint32>& PhysicsModule::GetBodyComponentTypes() const
-{
-    return bodyComponents;
-}
-
-const Vector<uint32>& PhysicsModule::GetShapeComponentTypes() const
-{
-    return shapeComponents;
-}
-
-const Vector<uint32>& PhysicsModule::GetVehicleComponentTypes() const
-{
-    return vehicleComponents;
-}
-
-const Vector<uint32>& PhysicsModule::GetCharacterControllerComponentTypes() const
-{
-    return characterControllerComponents;
-}
-
 physx::PxAllocatorCallback* PhysicsModule::GetAllocator() const
 {
     return allocator;
 }
 
-<<<<<<< HEAD
 const Vector<const Type*>& PhysicsModule::GetBodyComponentTypes() const
-== == ==
-=
+{
+    return bodyComponents;
+}
+
+const Vector<const Type*>& PhysicsModule::GetShapeComponentTypes() const
+{
+    return shapeComponents;
+}
+
+const Vector<const Type*>& PhysicsModule::GetVehicleComponentTypes() const
+{
+    return vehicleComponents;
+}
+
+const Vector<const Type*>& PhysicsModule::GetCharacterControllerComponentTypes() const
+{
+    return characterControllerComponents;
+}
+
 physx::PxMaterial * PhysicsModule::GetMaterial(const FastName& materialName) const
->>>>>>> origin/development
 {
     LazyLoadMaterials();
     if (materialName.IsValid() == false)
@@ -531,12 +526,7 @@ physx::PxMaterial * PhysicsModule::GetMaterial(const FastName& materialName) con
     return defaultMaterial;
 }
 
-<<<<<<< HEAD
-const Vector<const Type*>& PhysicsModule::GetShapeComponentTypes() const
-== == ==
-=
 Vector<FastName> PhysicsModule::GetMaterialNames() const
->>>>>>> origin/development
 {
     LazyLoadMaterials();
     Vector<FastName> names;
@@ -550,12 +540,7 @@ Vector<FastName> PhysicsModule::GetMaterialNames() const
     return names;
 }
 
-<<<<<<< HEAD
-const Vector<const Type*>& PhysicsModule::GetVehicleComponentTypes() const
-== == ==
-=
 void PhysicsModule::ReleaseMaterials()
->>>>>>> origin/development
 {
     if (defaultMaterial == nullptr)
     {
@@ -576,12 +561,7 @@ void PhysicsModule::ReleaseMaterials()
     materials.clear();
 }
 
-<<<<<<< HEAD
-const Vector<const Type*>& PhysicsModule::GetCharacterControllerComponentTypes() const
-== == ==
-=
 void PhysicsModule::LazyLoadMaterials() const
->>>>>>> origin/development
 {
     if (defaultMaterial == nullptr)
     {
