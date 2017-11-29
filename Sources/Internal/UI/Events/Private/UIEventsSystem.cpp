@@ -5,10 +5,9 @@
 #include "UI/Input/UIInputSystem.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlSystem.h"
-//TODO
-//#include "UI/Flow/UIFlowControllerComponent.h"
-//#include "UI/Flow/UIFlowStateSystem.h"
-//#include "UI/Script/UIScriptSystem.h"
+#include "UI/Flow/UIFlowControllerComponent.h"
+#include "UI/Flow/UIFlowStateSystem.h"
+#include "UI/Script/UIScriptSystem.h"
 
 namespace DAVA
 {
@@ -114,7 +113,7 @@ bool UIEventsSystem::SendEvent(UIControl* control, const FastName& event)
     // Send event to state system
     if (!processed)
     {
-        //TODO processed = GetScene()->GetSystem<UIFlowStateSystem>()->ProcessEvent(event);
+        processed = GetScene()->GetSystem<UIFlowStateSystem>()->ProcessEvent(event);
     }
     return processed;
 }
@@ -146,28 +145,8 @@ bool UIEventsSystem::ProcessEventOnContol(UIControl* sceneControl, const FastNam
 
     if (!processed)
     {
-        //TODO processed = GetScene()->GetSystem<UIScriptSystem>()->ProcessEvent(sceneControl, event);
+        processed = GetScene()->GetSystem<UIScriptSystem>()->ProcessEvent(sceneControl, event);
     }
-    // Check UIController in scene hierarchy
-    // if (!processed)
-    // {
-    //     processed = ProcessEventOnController(sceneControl, event);
-    // }
-
-    // Check UIController in flow hierarchy
-    // if (!processed && checkFlow)
-    // {
-    //     UIFlowViewComponent* viewComponent = GetScene()->GetSystem<UIFlowViewSystem>()->GetLinkedComponent(sceneControl);
-    //     if (viewComponent)
-    //     {
-    //         // Send event to flow graph
-    //         UIControl* flowControl = viewComponent->GetControl();
-    //         if (flowControl)
-    //         {
-    //             processed = ProcessEventOnController(flowControl, event);
-    //         }
-    //     }
-    // }
 
     return processed;
 }
@@ -183,20 +162,6 @@ bool UIEventsSystem::ProcessEventOnBinding(UIControl* sceneControl, const FastNa
     }
     return processed;
 }
-
-// bool UIEventsSystem::ProcessEventOnController(UIControl* control, const FastName& event)
-// {
-//     UIFlowControllerComponent* controllerComponent = control->GetComponent<UIFlowControllerComponent>();
-//     if (controllerComponent)
-//     {
-//         UIFlowController* controller = GetScene()->GetSystem<UIFlowControllerSystem>()->GetController(controllerComponent);
-//         if (controller)
-//         {
-//             return controller->ProcessEvent(event);
-//         }
-//     }
-//     return false;
-// }
 
 void UIEventsSystem::ProcessControlEvent(int32 eventType, const UIEvent* uiEvent, UIControl* control)
 {

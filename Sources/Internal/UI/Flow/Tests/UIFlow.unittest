@@ -9,9 +9,8 @@
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/DefaultUIPackageBuilder.h"
-// TODO: uncomment after merging Events
-// #include "UI/Events/UIEventsSingleComponent.h"
-// #include "UI/Events/UIEventsSystem.h"
+#include "UI/Events/UIEventsSingleComponent.h"
+#include "UI/Events/UIEventsSystem.h"
 #include "UI/Flow/Private/UIFlowTransitionTransaction.h"
 #include "UI/Flow/Services/UIFlowSystemService.h"
 #include "UI/Flow/UIFlowContext.h"
@@ -136,7 +135,7 @@ DAVA_TESTCLASS (UIFlowTest)
     RefPtr<UIControl> uiRoot;
     UIControlSystem* controlSys = nullptr;
     UIFlowStateSystem* stateSys = nullptr;
-    //    UIEventsSingleComponent* eventComp = nullptr;
+    UIEventsSingleComponent* eventComp = nullptr;
 
     UIFlowTest()
     {
@@ -161,7 +160,7 @@ DAVA_TESTCLASS (UIFlowTest)
         }
 
         stateSys = controlSys->GetSystem<UIFlowStateSystem>();
-        //        eventComp = controlSys->GetSingleComponent<UIEventsSingleComponent>();
+        eventComp = controlSys->GetSingleComponent<UIEventsSingleComponent>();
     }
 
     ~UIFlowTest()
@@ -190,10 +189,9 @@ DAVA_TESTCLASS (UIFlowTest)
         }
     }
 
-    void DispatchEvent(const String& e)
+    void SendEvent(const String& e)
     {
-        // TODO: uncomment after merging Events
-        //        eventComp->DispatchEvent(controlSys->GetScreen(), FastName(e));
+        eventComp->SendEvent(controlSys->GetScreen(), FastName(e));
     }
 
     bool HasControl(const String& path)
@@ -311,9 +309,9 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(stateSys->GetCurrentSingleState() == state2);
 
         // By event
-        //        DispatchEvent("BACK");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
+        SendEvent("BACK");
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == state1);
     }
 
     DAVA_TEST (HistorySiblings)
@@ -415,17 +413,17 @@ DAVA_TESTCLASS (UIFlowTest)
         TEST_VERIFY(model != nullptr);
         TEST_VERIFY(model->GetFloat64("a") == 1.0);
 
-        //        DispatchEvent("INC_A");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(model->GetFloat64("a") == 2.0);
-        //
-        //        stateSys->DeactivateAllStates();
-        //        SystemsUpdate();
-        //
-        //        model = data->GetArchive("model");
-        //        TEST_VERIFY(model->Count() == 0);
-        //
-        //        TEST_VERIFY(data->GetInt32("testStep") == CONTROLLER_STEPS_COUNT);
+        SendEvent("INC_A");
+        SystemsUpdate();
+        TEST_VERIFY(model->GetFloat64("a") == 2.0);
+
+        stateSys->DeactivateAllStates();
+        SystemsUpdate();
+
+        model = data->GetArchive("model");
+        TEST_VERIFY(model->Count() == 0);
+
+        TEST_VERIFY(data->GetInt32("testStep") == CONTROLLER_STEPS_COUNT);
     }
 
     DAVA_TEST (NativeController)
@@ -442,13 +440,13 @@ DAVA_TESTCLASS (UIFlowTest)
         stateSys->ActivateState(state, false);
         SystemsUpdate();
 
-        //        DispatchEvent("INC_A");
-        //        SystemsUpdate();
-        //
-        //        stateSys->DeactivateAllStates();
-        //        SystemsUpdate();
-        //
-        //        TEST_VERIFY(data->GetInt32("testStep") == CONTROLLER_STEPS_COUNT);
+        SendEvent("INC_A");
+        SystemsUpdate();
+
+        stateSys->DeactivateAllStates();
+        SystemsUpdate();
+
+        TEST_VERIFY(data->GetInt32("testStep") == CONTROLLER_STEPS_COUNT);
     }
 
     DAVA_TEST (MultipleStates)
@@ -488,35 +486,35 @@ DAVA_TESTCLASS (UIFlowTest)
         SystemsUpdate();
         TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("./DefaultState"));
 
-        //        DispatchEvent("STATE1");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
-        //
-        //        DispatchEvent("STATE2");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State2"));
-        //
-        //        DispatchEvent("BASIC_GROUP");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
-        //
-        //        DispatchEvent("STATE2_BG");
-        //        SystemsUpdate();
-        //        WaitBackgroundTransactions();
-        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State2"));
-        //
-        //        DispatchEvent("FWD_STATE1");
-        //        SystemsUpdate();
-        //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
-        //
-        //        DispatchEvent("SUBSTATE");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(stateSys->IsStateActive(stateSys->FindStateByPath("^/SubState")));
-        //
-        //        DispatchEvent("SUBSTATE_OFF");
-        //        SystemsUpdate();
-        //        TEST_VERIFY(!stateSys->IsStateActive(stateSys->FindStateByPath("^/SubState")));
+        SendEvent("STATE1");
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
+
+        SendEvent("STATE2");
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State2"));
+
+        SendEvent("BASIC_GROUP");
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
+
+        SendEvent("STATE2_BG");
+        SystemsUpdate();
+        WaitBackgroundTransactions();
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State2"));
+
+        SendEvent("FWD_STATE1");
+        SystemsUpdate();
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->GetCurrentSingleState() == stateSys->FindStateByPath("^/**/State1"));
+
+        SendEvent("SUBSTATE");
+        SystemsUpdate();
+        TEST_VERIFY(stateSys->IsStateActive(stateSys->FindStateByPath("^/SubState")));
+
+        SendEvent("SUBSTATE_OFF");
+        SystemsUpdate();
+        TEST_VERIFY(!stateSys->IsStateActive(stateSys->FindStateByPath("^/SubState")));
     }
 
     DAVA_TEST (ControllerComponent)
