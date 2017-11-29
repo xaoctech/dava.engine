@@ -1,4 +1,4 @@
-#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/Private/PVRConverter.h"
 
 #include "Render/TextureDescriptor.h"
 #include "FileSystem/FileSystem.h"

@@ -1,6 +1,6 @@
 #include "TextureCompression/TextureCompressionModule.h"
 #include "TextureCompression/Private/ImageConverterImpl.h"
-#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/Private/PVRConverter.h"
 
 #include <Engine/Engine.h>
 #include <Render/Image/ImageConverter.h>

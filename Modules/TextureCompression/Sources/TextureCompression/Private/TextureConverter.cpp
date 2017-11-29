@@ -1,6 +1,6 @@
 #include "TextureCompression/TextureConverter.h"
-#include "TextureCompression/DXTConverter.h"
-#include "TextureCompression/PVRConverter.h"
+#include "TextureCompression/Private/DXTConverter.h"
+#include "TextureCompression/Private/PVRConverter.h"
 
 #include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
