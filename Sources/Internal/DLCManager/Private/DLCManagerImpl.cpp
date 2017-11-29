@@ -658,31 +658,25 @@ PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
 {
     DVASSERT(nullptr == FindRequest(requestedPackName));
 
-    log << " requested: " << requestedPackName << '\n';
+    log << " requested: " << requestedPackName << std::endl;
 
     PackRequest* request = PrepareNewRequest(requestedPackName);
 
-    const uint32 requestedPackIndex = meta->GetPackIndex(requestedPackName);
+    // we have to do it recursively becouse order of dependency metter
+    const Vector<uint32>& depsList = meta->GetPackDependencyIndexes(requestedPackName);
 
-    const Vector<uint32>& depsList = meta->GetDependencies(requestedPackIndex);
-
-    for (uint32 dependencyIndex : depsList)
+    for (const uint32 dependencyIndex : depsList)
     {
         const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(dependencyIndex);
         const String& depPackName = packInfo.packName;
 
         if (nullptr == FindRequest(depPackName))
         {
-            log << " requested: " << depPackName << '\n';
-
-            PackRequest* dependentRequest = PrepareNewRequest(depPackName);
-            AddRequest(dependentRequest);
+            CreateNewRequest(depPackName);
         }
     }
 
     AddRequest(request);
-
-    log << std::flush;
 
     return request;
 }
