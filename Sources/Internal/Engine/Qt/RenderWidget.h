@@ -34,6 +34,9 @@ private:
     RenderWidget(IWindowDelegate* widgetDelegate, uint32 width, uint32 height);
     ~RenderWidget();
 
+    // QWidget
+    void actionEvent(QActionEvent* event) override;
+
     void AcquireContext();
     void ReleaseContext();
 
@@ -43,6 +46,7 @@ private:
     void InitCustomRenderParams(rhi::InitParam& params);
 
     RenderWidgetBackend* renderWidgetBackend = nullptr;
+    QWidget* renderWidgetImpl = nullptr;
 };
 
 } // namespace DAVA

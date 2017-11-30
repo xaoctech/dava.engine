@@ -50,6 +50,7 @@ private:
 
     eSystems GetOrder() const override;
     void OnUpdate() override;
+    void Invalidate() override;
 
     void SetHighlight(ControlNode* node);
 

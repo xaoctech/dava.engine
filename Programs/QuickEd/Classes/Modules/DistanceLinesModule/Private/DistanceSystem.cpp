@@ -61,12 +61,6 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return false;
-    }
-
     DVASSERT(getHighlight != nullptr);
 
     ControlNode* highlightedNode = getHighlight();
@@ -75,6 +69,8 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     Set<ControlNode*> selectedControls = documentData->GetSelectedControls();
     if (selectedControls.size() != 1)

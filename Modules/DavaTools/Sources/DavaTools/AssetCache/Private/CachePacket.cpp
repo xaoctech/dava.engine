@@ -41,7 +41,7 @@ bool ReadFromBuffer(File* buffer, Vector<uint8>& data, uint32 dataSize)
 };
 }
 
-bool CachePacket::SendTo(Net::IChannel* channel)
+bool CachePacket::SendTo(std::shared_ptr<Net::IChannel> channel)
 {
     DVASSERT(channel);
 

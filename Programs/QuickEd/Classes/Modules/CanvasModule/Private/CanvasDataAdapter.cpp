@@ -1,5 +1,8 @@
 #include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
 #include "Classes/Modules/CanvasModule/CanvasData.h"
+
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+
 #include "Classes/UI/Preview/Data/CentralWidgetData.h"
 
 #include <TArc/Core/ContextAccessor.h>
@@ -38,8 +41,9 @@ void CanvasDataAdapter::MoveScene(const DAVA::Vector2& delta, bool force)
         return;
     }
 
-    Vector2 newPosition = canvasData->GetPosition() + delta;
+    Vector2 newPosition = GetPosition() + delta;
     canvasData->SetPosition(newPosition);
+    canvasData->forceCentralize = false;
     if (force == false)
     {
         TryCentralizeScene();
@@ -55,7 +59,8 @@ void CanvasDataAdapter::TryCentralizeScene()
     {
         return;
     }
-    Vector2 position = canvasData->GetPosition();
+
+    Vector2 position = GetPosition();
     Vector2 minPos = GetMinPos();
     Vector2 maxPos = GetMaxPos();
     Vector2 clampedNewPos(Clamp(position.x, minPos.x, maxPos.x), Clamp(position.y, minPos.y, maxPos.y));
@@ -71,8 +76,14 @@ DAVA::Vector2 CanvasDataAdapter::GetPosition() const
     {
         return Vector2(0.0f, 0.0f);
     }
-
-    return canvasData->GetPosition();
+    if (canvasData->forceCentralize)
+    {
+        return GetCenterPosition();
+    }
+    else
+    {
+        return canvasData->GetPosition();
+    }
 }
 
 DAVA::Vector2 CanvasDataAdapter::GetCenterPosition() const
