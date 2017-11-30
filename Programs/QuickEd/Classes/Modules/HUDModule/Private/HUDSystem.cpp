@@ -213,6 +213,11 @@ void HUDSystem::OnUpdate()
     }
 }
 
+void HUDSystem::Invalidate()
+{
+    SetHighlight(nullptr);
+}
+
 void HUDSystem::ProcessInput(UIEvent* currentInput, eInputSource inputSource)
 {
     const EditorSystemsManager* systemsManager = GetSystemsManager();
@@ -486,8 +491,7 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inpu
 {
     using namespace DAVA::TArc;
 
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (hudControl->IsVisible() == false || activeContext == nullptr)
+    if (hudControl->IsVisible() == false)
     {
         return false;
     }
@@ -499,11 +503,6 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inpu
 
 eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return eDragState::NoDrag;
-    }
-
     eDragState dragState = GetSystemsManager()->GetDragState();
     //ignore all input devices except mouse while selecting by rect
     if (dragState == eDragState::SelectByRect && currentInput->device != eInputDevices::MOUSE)

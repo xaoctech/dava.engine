@@ -350,6 +350,52 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     alphaOverLifeTimeLine = new TimeLineWidget(this);
     InitWidget(alphaOverLifeTimeLine);
 
+    useThreePointGradientBox = new QCheckBox("Use three point gradient");
+    mainBox->addWidget(useThreePointGradientBox);
+    connect(useThreePointGradientBox,
+            SIGNAL(stateChanged(int)),
+            this,
+            SLOT(OnThreePointGradientPropertiesChanged()));
+    gradientColorForBlackPicker = new GradientPickerWidget(this);
+    mainBox->addWidget(gradientColorForBlackPicker);
+    connect(gradientColorForBlackPicker,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnThreePointGradientPropertiesChanged()));
+    gradientColorForMiddlePicker = new GradientPickerWidget(this);
+    mainBox->addWidget(gradientColorForMiddlePicker);
+    connect(gradientColorForMiddlePicker,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnThreePointGradientPropertiesChanged()));
+    gradientColorForWhitePicker = new GradientPickerWidget(this);
+    mainBox->addWidget(gradientColorForWhitePicker);
+    connect(gradientColorForWhitePicker,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnThreePointGradientPropertiesChanged()));
+    gradientMiddlePointTimeLine = new TimeLineWidget(this);
+    connect(gradientMiddlePointTimeLine,
+            SIGNAL(ValueChanged()),
+            this,
+            SLOT(OnThreePointGradientPropertiesChanged()));
+    mainBox->addWidget(gradientMiddlePointTimeLine);
+    QHBoxLayout* threePointGradHLayout = new QHBoxLayout();
+    gradientMiddlePointLabel = new QLabel("Three point gradient middle point");
+    gradientMiddlePointSpin = new EventFilterDoubleSpinBox();
+    gradientMiddlePointSpin->setMinimum(0.0f);
+    gradientMiddlePointSpin->setMaximum(1.0f);
+    gradientMiddlePointSpin->setSingleStep(0.01f);
+    gradientMiddlePointSpin->setDecimals(3);
+    gradientMiddlePointSpin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    threePointGradHLayout->addWidget(gradientMiddlePointLabel);
+    threePointGradHLayout->addWidget(gradientMiddlePointSpin);
+    connect(gradientMiddlePointSpin,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(OnThreePointGradientPropertiesChanged()));
+    mainBox->addLayout(threePointGradHLayout);
+
     QHBoxLayout* frameOverlifeLayout = new QHBoxLayout();
     frameOverlifeCheckBox = new QCheckBox("frame over life", this);
     connect(frameOverlifeCheckBox, SIGNAL(stateChanged(int)),
@@ -893,6 +939,34 @@ void EmitterLayerWidget::OnAlphaRemapPropertiesChanged()
     emit ValueChanged();
 }
 
+void EmitterLayerWidget::OnThreePointGradientPropertiesChanged()
+{
+    if (blockSignals)
+        return;
+
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForBlack;
+    gradientColorForBlackPicker->GetValues(propGradientColorForBlack.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForMiddle;
+    gradientColorForMiddlePicker->GetValues(propGradientColorForMiddle.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::Color> propGradientColorForWhite;
+    gradientColorForWhitePicker->GetValues(propGradientColorForWhite.GetPropsPtr());
+    DAVA::PropLineWrapper<DAVA::float32> propGradientMiddlePoint;
+    gradientMiddlePointTimeLine->GetValue(0, propGradientMiddlePoint.GetPropsPtr());
+
+    CommandChangeThreePointGradientProperties::ThreePointGradientParams params;
+    params.useThreePointGradient = useThreePointGradientBox->isChecked();
+    params.gradientMiddlePointLine = propGradientMiddlePoint.GetPropLine();
+    params.gradientColorForBlack = propGradientColorForBlack.GetPropLine();
+    params.gradientColorForMiddle = propGradientColorForMiddle.GetPropLine();
+    params.gradientColorForWhite = propGradientColorForWhite.GetPropLine();
+    params.gradientMiddlePoint = static_cast<DAVA::float32>(gradientMiddlePointSpin->value());
+
+    DVASSERT(GetActiveScene() != nullptr);
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeThreePointGradientProperties(layer, std::move(params))));
+
+    emit ValueChanged();
+}
+
 void EmitterLayerWidget::OnLodsChanged()
 {
     if (blockSignals)
@@ -976,6 +1050,9 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     enableCheckBox->setChecked(!layer->isDisabled);
     inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
+
+    useThreePointGradientBox->setChecked(layer->useThreePointGradient);
+    gradientMiddlePointSpin->setValue(layer->gradientMiddlePoint);
 
     applyGlobalForcesCheckBox->setChecked(layer->applyGlobalForces);
 
@@ -1198,11 +1275,24 @@ void EmitterLayerWidget::Update(bool updateMinimized)
 
     colorOverLifeGradient->Init(0, 1, "color over life");
     colorOverLifeGradient->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->colorOverLife)).GetProps());
-
     alphaOverLifeTimeLine->Init(0, 1, updateMinimized);
     alphaOverLifeTimeLine->SetMinLimits(0);
     alphaOverLifeTimeLine->SetMaxLimits(1.f);
     alphaOverLifeTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->alphaOverLife)).GetProps(), Qt::blue, "alpha over life");
+
+    gradientColorForBlackPicker->Init(0, 1, "Gradient color for black");
+    gradientColorForBlackPicker->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForBlack)).GetProps());
+
+    gradientColorForMiddlePicker->Init(0, 1, "Gradient color for middle");
+    gradientColorForMiddlePicker->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForMiddle)).GetProps());
+
+    gradientColorForWhitePicker->Init(0, 1, "Gradient color for white");
+    gradientColorForWhitePicker->SetValues(DAVA::PropLineWrapper<DAVA::Color>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientColorForWhite)).GetProps());
+
+    gradientMiddlePointTimeLine->Init(0.0f, 1.0f, updateMinimized);
+    gradientMiddlePointTimeLine->SetMinLimits(0.001f);
+    gradientMiddlePointTimeLine->SetMaxLimits(0.999f);
+    gradientMiddlePointTimeLine->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(layer->gradientMiddlePointLine)).GetProps(), Qt::red, "gradient middle point");
 
     frameOverlifeCheckBox->setChecked(layer->frameOverLifeEnabled);
     frameOverlifeFPSSpin->setValue(layer->frameOverLifeFPS);
@@ -1974,6 +2064,14 @@ void EmitterLayerWidget::SetLayerMode(eLayerMode layerMode)
     colorRandomGradient->setVisible(!isSuperemitter);
     colorOverLifeGradient->setVisible(!isSuperemitter);
     alphaOverLifeTimeLine->setVisible(!isSuperemitter);
+
+    gradientColorForWhitePicker->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientColorForBlackPicker->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientColorForMiddlePicker->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientMiddlePointTimeLine->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientMiddlePointLabel->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    gradientMiddlePointSpin->setVisible(!isSuperemitter && useThreePointGradientBox->isChecked());
+    useThreePointGradientBox->setVisible(!isSuperemitter);
 
     frameOverlifeCheckBox->setVisible(!isSuperemitter && !isStripe);
     frameOverlifeFPSSpin->setVisible(!isSuperemitter && !isStripe);
