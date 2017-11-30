@@ -52,7 +52,7 @@ enum eType
         RefPtr<File> file(File::Create(path, File::CREATE | File::WRITE)); \
         TEST_VERIFY(file != nullptr); \
         TEST_VERIFY(file->WriteString(ss.str(), false)); \
-        FilterInfo t(Type, std::make_shared<FilterClassName>(##__VA_ARGS__), path, QStringList()); \
+        FilterInfo t(Type, std::make_shared<FilterClassName>(__VA_ARGS__), path, QStringList()); \
         filterInfos.push_back(t); \
 }
 
@@ -63,7 +63,7 @@ enum eType
         RefPtr<File> file(File::Create(path, File::CREATE | File::WRITE)); \
         TEST_VERIFY(file != nullptr); \
         TEST_VERIFY(file->WriteString(ss.str(), false)); \
-        FilterInfo t(Type, std::make_shared<FilterClassName>(##__VA_ARGS__), path, { Item1 }); \
+        FilterInfo t(Type, std::make_shared<FilterClassName>(__VA_ARGS__), path, { Item1 }); \
         filterInfos.push_back(t); \
 }
 
@@ -74,7 +74,7 @@ enum eType
         RefPtr<File> file(File::Create(path, File::CREATE | File::WRITE)); \
         TEST_VERIFY(file != nullptr); \
         TEST_VERIFY(file->WriteString(ss.str(), false)); \
-        FilterInfo t(Type, std::make_shared<FilterClassName>(##__VA_ARGS__), path, { Item1, Item2 }); \
+        FilterInfo t(Type, std::make_shared<FilterClassName>(__VA_ARGS__), path, { Item1, Item2 }); \
         filterInfos.push_back(t); \
 }
 
