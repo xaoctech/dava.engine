@@ -44,8 +44,6 @@ EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor
 
     rootControl->SetName(FastName("root_control"));
 
-    activeAreaChanged.Connect(this, &EditorSystemsManager::OnActiveHUDAreaChanged);
-
     InitDAVAScreen();
 
     InitFieldBinder();
@@ -103,12 +101,6 @@ void EditorSystemsManager::InitFieldBinder()
     }
     {
         FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnPackageChanged));
-    }
-    {
-        FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<EditorSystemsData>();
         fieldDescr.fieldName = FastName(EditorSystemsData::emulationModePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &EditorSystemsManager::OnEmulationModeChanged));
@@ -117,6 +109,11 @@ void EditorSystemsManager::InitFieldBinder()
 
 void EditorSystemsManager::OnInput(UIEvent* currentInput, eInputSource inputSource)
 {
+    if (accessor->GetActiveContext() == nullptr)
+    {
+        return;
+    }
+
     if (currentInput->device == eInputDevices::MOUSE)
     {
         mouseDelta = currentInput->point - lastMousePos;
@@ -280,9 +277,30 @@ void EditorSystemsManager::UpdateDisplayState()
     }
 }
 
-void EditorSystemsManager::OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo)
+void EditorSystemsManager::SetActiveHUDArea(const HUDAreaInfo& areaInfo)
 {
     currentHUDArea = areaInfo;
+    activeAreaChanged.Emit(currentHUDArea);
+}
+
+void EditorSystemsManager::Invalidate(ControlNode* removedNode)
+{
+    if (removedNode == currentHUDArea.owner)
+    {
+        SetActiveHUDArea(HUDAreaInfo());
+    }
+}
+
+void EditorSystemsManager::Invalidate()
+{
+    SetActiveHUDArea(HUDAreaInfo());
+    magnetLinesChanged.Emit({});
+    SetDragState(eDragState::NoDrag);
+
+    for (const auto& orderAndSystem : systems)
+    {
+        orderAndSystem.second->Invalidate();
+    }
 }
 
 void EditorSystemsManager::OnUpdate()
@@ -290,6 +308,11 @@ void EditorSystemsManager::OnUpdate()
     using namespace DAVA;
 
     UpdateDisplayState();
+
+    if (accessor->GetActiveContext() == nullptr)
+    {
+        return;
+    }
 
     for (const auto& orderAndSystem : systems)
     {
@@ -337,12 +360,6 @@ Vector2 EditorSystemsManager::GetMouseDelta() const
 DAVA::Vector2 EditorSystemsManager::GetLastMousePos() const
 {
     return lastMousePos;
-}
-
-void EditorSystemsManager::OnPackageChanged(const DAVA::Any& /*packageValue*/)
-{
-    magnetLinesChanged.Emit({});
-    SetDragState(eDragState::NoDrag);
 }
 
 eDragState EditorSystemsManager::GetDragState() const

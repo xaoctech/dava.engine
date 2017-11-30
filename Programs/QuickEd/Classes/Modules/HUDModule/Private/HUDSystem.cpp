@@ -213,6 +213,11 @@ void HUDSystem::OnUpdate()
     }
 }
 
+void HUDSystem::Invalidate()
+{
+    SetHighlight(nullptr);
+}
+
 void HUDSystem::ProcessInput(UIEvent* currentInput, eInputSource inputSource)
 {
     const EditorSystemsManager* systemsManager = GetSystemsManager();
@@ -417,10 +422,11 @@ HUDAreaInfo HUDSystem::GetControlArea(const Vector2& pos, eSearchOrder searchOrd
 
 void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
 {
-    if (activeAreaInfo.area != areaInfo.area || activeAreaInfo.owner != areaInfo.owner)
+    EditorSystemsManager* systemsManager = GetSystemsManager();
+    HUDAreaInfo currentHUDArea = systemsManager->GetCurrentHUDArea();
+    if (currentHUDArea.area != areaInfo.area || currentHUDArea.owner != areaInfo.owner)
     {
-        activeAreaInfo = areaInfo;
-        GetSystemsManager()->activeAreaChanged.Emit(activeAreaInfo);
+        systemsManager->SetActiveHUDArea(areaInfo);
     }
 }
 
@@ -485,8 +491,7 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inpu
 {
     using namespace DAVA::TArc;
 
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (hudControl->IsVisible() == false || activeContext == nullptr)
+    if (hudControl->IsVisible() == false)
     {
         return false;
     }
@@ -498,11 +503,6 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inpu
 
 eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return eDragState::NoDrag;
-    }
-
     eDragState dragState = GetSystemsManager()->GetDragState();
     //ignore all input devices except mouse while selecting by rect
     if (dragState == eDragState::SelectByRect && currentInput->device != eInputDevices::MOUSE)

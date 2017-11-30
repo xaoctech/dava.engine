@@ -120,6 +120,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("UIScriptComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);
 
     propertyNameTypeItemDelegates[PropertyPath("UIFlowViewComponent", "viewYaml")] = new ResourceFilePropertyDelegate(uiExtensions, "/UI/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("UIFlowControllerComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);

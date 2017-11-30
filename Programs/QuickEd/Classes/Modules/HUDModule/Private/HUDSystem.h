@@ -50,6 +50,7 @@ private:
 
     eSystems GetOrder() const override;
     void OnUpdate() override;
+    void Invalidate() override;
 
     void SetHighlight(ControlNode* node);
 
@@ -64,8 +65,6 @@ private:
 
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
-
-    HUDAreaInfo activeAreaInfo;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
     DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);

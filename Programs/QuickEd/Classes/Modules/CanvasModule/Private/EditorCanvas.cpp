@@ -26,10 +26,6 @@ EditorCanvas::EditorCanvas(DAVA::TArc::ContextAccessor* accessor)
 bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     using namespace DAVA;
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return false;
-    }
     if ((currentInput->device & eInputDevices::CLASS_POINTER) == eInputDevices::UNKNOWN)
     {
         return false;
@@ -48,11 +44,6 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputS
     using namespace DAVA::TArc;
 
     const EditorSystemsManager* systemsManager = GetSystemsManager();
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return;
-    }
 
 #if defined __DAVAENGINE_MACOS__
     const float32 direction = -1.0f;
@@ -133,6 +124,8 @@ void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputS
 
             Vector2 delta(0.0f, 0.0f);
 
+            DataContext* activeContext = accessor->GetActiveContext();
+            DVASSERT(activeContext != nullptr);
             CanvasData* canvasData = activeContext->GetData<CanvasData>();
             Vector2 viewSize = canvasDataAdapter.GetViewSize();
             Vector2 start(0.0f, 0.0f);
@@ -186,6 +179,7 @@ void EditorCanvas::OnUpdate()
 eDragState EditorCanvas::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     using namespace DAVA;
+
     Function<void(UIEvent*, bool)> setMouseButtonOnInput = [this](const UIEvent* currentInput, bool value) {
         if (currentInput->mouseButton == eMouseButtons::MIDDLE)
         {
