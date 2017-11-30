@@ -84,7 +84,7 @@ Any ControlNodeInformation::GetControlPropertyValue(const DAVA::ReflectedStructu
     return member.valueWrapper->GetValue(ReflectedObject(controlNode->GetControl()));
 }
 
-Any ControlNodeInformation::GetComponentPropertyValue(const DAVA::Type* /*componentType*/, DAVA::int32 /*componentIndex*/, const DAVA::ReflectedStructure::Field& member) const
+Any ControlNodeInformation::GetComponentPropertyValue(const DAVA::Type* componentType, DAVA::int32 componentIndex, const DAVA::ReflectedStructure::Field& member) const
 {
-    return member.valueWrapper->GetValue(ReflectedObject(controlNode->GetControl()));
+    return member.valueWrapper->GetValue(ReflectedObject(controlNode->GetControl()->GetComponent(componentType, componentIndex)));
 }

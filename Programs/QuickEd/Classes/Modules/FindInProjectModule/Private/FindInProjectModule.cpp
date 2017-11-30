@@ -75,19 +75,19 @@ void FindInProjectModule::PostInit()
     }
 
     {
-        QtAction* findErrosAndWarningAction = new QtAction(accessor, QObject::tr("Find Errors And Warnings"), nullptr);
+        QtAction* findErrorsAndWarningAction = new QtAction(accessor, QObject::tr("Find Errors And Warnings"), nullptr);
 
         KeyBindableActionInfo info;
         info.blockName = "Find";
         info.context = Qt::ApplicationShortcut;
-        MakeActionKeyBindable(findErrosAndWarningAction, info);
+        MakeActionKeyBindable(findErrorsAndWarningAction, info);
 
-        findErrosAndWarningAction->SetStateUpdationFunction(QtAction::Enabled, packageFieldDescr, updater);
+        findErrorsAndWarningAction->SetStateUpdationFunction(QtAction::Enabled, packageFieldDescr, updater);
 
-        connections.AddConnection(findErrosAndWarningAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindErrorsAndWarnings));
+        connections.AddConnection(findErrorsAndWarningAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindErrorsAndWarnings));
 
         TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findErrosAndWarningAction);
+        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findErrorsAndWarningAction);
     }
 
     FindInProjectDetail::FindInProjectData* data = new FindInProjectDetail::FindInProjectData();

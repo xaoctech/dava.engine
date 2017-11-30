@@ -309,5 +309,5 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LocalMockModule)
     .ConstructorByPointer()
     .End();
 }
-} //namespace SSIT
+} //namespace FilterTestDetails
 } //namespace DAVA

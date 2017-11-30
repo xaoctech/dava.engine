@@ -28,6 +28,7 @@ const DAVA::ReflectedStructure::Field* FindField(const char* nameStr)
 template <typename Type>
 Type GetValue(const ControlInformation* control, const DAVA::Type* componentType, const DAVA::ReflectedStructure::Field* field, Type defaultValue)
 {
+    DVASSERT(UIComponent::IsMultiple(componentType) == false);
     const DAVA::Any& value = control->GetComponentPropertyValue(componentType, 0, *field);
     if (value.CanCast<Type>())
     {
