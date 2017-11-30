@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 #include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
@@ -32,10 +33,16 @@ public:
 private:
     struct DuplicationsIssue
     {
-        DAVA::int32 issueId = 0;
+        Issue issue;
         DAVA::UnorderedSet<ControlNode*> controls;
     };
     using DuplicationsIssuesMap = DAVA::UnorderedMap<DAVA::FastName, DuplicationsIssue>;
+
+    struct PackageIssues
+    {
+        DAVA::UnorderedMap<ControlNode*, Issue> symbolsIssues;
+        DuplicationsIssuesMap duplicationIssues;
+    };
 
     void ValidateNameSymbolsCorrectnessForChildren(ControlsContainerNode* node);
     void ValidateNameSymbolsCorrectness(ControlNode* node);
@@ -44,13 +51,15 @@ private:
     void CreateSymbolsIssue(ControlNode* node);
     void CreateDuplicationsIssue(ControlNode* node);
     void AddToDuplicationsIssue(DuplicationsIssue& issue, ControlNode* node);
-    void UpdateSymbolsIssue(DAVA::UnorderedMap<ControlNode*, DAVA::int32>::iterator& it);
+    void UpdateSymbolsIssue(std::pair<ControlNode* const, Issue>& symbolsIssue);
     void UpdateDuplicationsIssue(DuplicationsIssue& issue);
 
     void RemoveSymbolsIssuesRecursively(ControlNode* node);
     void RemoveSymbolsIssue(ControlNode* node);
     void RemoveFromDuplicationsIssue(ControlNode* node);
-    void RemoveAllIssues();
+
+    void RemoveIssuesFromPanel();
+    void RestoreIssuesOnToPanel();
 
     void SearchIssuesInPackage(PackageNode* package);
 
@@ -59,13 +68,16 @@ private:
 
     DuplicationsIssuesMap::iterator FindInDuplicationsIssues(ControlNode* node);
 
+private:
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* navigatorWidget = nullptr;
 
     DAVA::int32 nextIssueId = 0;
 
-    DAVA::UnorderedMap<ControlNode*, DAVA::int32> symbolsIssues;
-    DuplicationsIssuesMap duplicationIssues;
+    DAVA::UnorderedMap<PackageNode*, PackageIssues> packageIssues;
+    PackageNode* currentPackage = nullptr;
+    DAVA::UnorderedMap<ControlNode*, Issue>* symbolsIssues = nullptr;
+    DuplicationsIssuesMap* duplicationIssues = nullptr;
 
     DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::TArc::UI* ui = nullptr;
