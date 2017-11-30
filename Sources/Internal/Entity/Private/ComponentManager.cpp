@@ -37,7 +37,7 @@ void ComponentManager::RegisterComponent(const Type* type)
         ++runtimeSceneComponentsCount;
 
         type->SetUserData(runtimeTypeIndex, Uint32ToVoidPtr(runtimeSceneComponentsCount));
-        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(eComponentType::SCENE_COMPONENT));
+        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT));
 
         sceneRuntimeIndexToType.push_back(type);
 
@@ -62,7 +62,7 @@ void ComponentManager::RegisterComponent(const Type* type)
         ++runtimeUIComponentsCount;
 
         type->SetUserData(runtimeTypeIndex, Uint32ToVoidPtr(runtimeUIComponentsCount));
-        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(eComponentType::UI_COMPONENT));
+        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(ComponentType::UI_COMPONENT));
 
         registeredUIComponents.push_back(type);
     }

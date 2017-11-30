@@ -11,16 +11,34 @@ class Component;
 class ComponentUtils
 {
 public:
-    /** Return ptr to component of `componentType`. `componentType` should be derived from Component */
+    /**
+        Return ptr to new component of `componentType`.
+        `nullptr` is returned in case if `componentType` is not derived from `Component` or not registered in the reflection db.
+    */
     static Component* CreateByType(const Type* componentType);
 
-    /** Return runtime component index */
-    static uint32 GetRuntimeIndex(const Component* c);
+    /**
+        Return ptr to new component of type corresponding to `runtimeIndex`.
+        `nullptr` is returned in case if type for `runtimeIndex` is not registered in ComponentManager.
+    */
+    static Component* CreateByRuntimeIndex(uint32 runtimeIndex);
 
-    /** Return ComponentMask with flag corresponding to 'componentType' set to true */
+    /**
+        Return runtime component index.
+        Behavior is undefined if `component` type is not registered in ComponentManager.
+    */
+    static uint32 GetRuntimeIndex(const Component* component);
+
+    /**
+        Return ComponentMask with flag corresponding to `componentType` set to true.
+        Behavior is undefined if `componentType` is not registered in ComponentManager.
+    */
     static ComponentMask MakeMask(const Type* componentType);
 
-    /** Return ComponentMask with flag corresponding to 'ComponentType' set to true */
+    /**
+        Return ComponentMask with flag corresponding to `ComponentType` set to true.
+        Behavior is undefined if `ComponentType` is not registered in ComponentManager.
+    */
     template <typename ComponentType>
     static ComponentMask MakeMask();
 };

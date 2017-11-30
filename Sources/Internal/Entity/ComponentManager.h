@@ -51,7 +51,7 @@ public:
     uint32 GetCRC32HashOfPreregisteredSceneComponents();
 
     /**
-        Return CRC32 hash of all registered scene components, including fake components.
+        Return CRC32 hash of all registered scene components.
         (Hash of string of concatenated permanent names sorted in ascending order)
     */
     uint32 GetCRC32HashOfRegisteredSceneComponents();
@@ -68,7 +68,7 @@ public:
     /** Check if specified 'type' was registered as Scene Component. */
     bool IsRegisteredSceneComponent(const Type* type) const;
 
-    /** Return runtimeType for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
+    /** Return runtime index for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
     uint32 GetRuntimeComponentIndex(const Type* type) const;
 
     /** 
@@ -77,10 +77,10 @@ public:
     */
     const Type* GetSceneComponentType(uint32 runtimeIndex) const;
 
-    /** Return reference to sorted vector of registered UIComponents types. */
+    /** Return const reference to sorted vector of registered UIComponents types. */
     const Vector<const Type*>& GetRegisteredUIComponents() const;
 
-    /** Return reference to sorted vector of registered Scene Components types. */
+    /** Return const reference to sorted vector of registered Scene Components types. */
     const Vector<const Type*>& GetRegisteredSceneComponents() const;
 
 private:
@@ -105,7 +105,7 @@ private:
     bool componentsWerePreregistered = false;
     uint32 crc32HashOfPreregisteredComponents;
 
-    enum eComponentType : uint32
+    enum ComponentType : uint32
     {
         UI_COMPONENT = 1,
         SCENE_COMPONENT

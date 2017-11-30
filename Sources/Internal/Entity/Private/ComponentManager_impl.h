@@ -18,14 +18,14 @@ inline bool ComponentManager::IsRegisteredUIComponent(const Type* type) const
 {
     DVASSERT(type != nullptr);
 
-    return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(eComponentType::UI_COMPONENT)));
+    return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(ComponentType::UI_COMPONENT)));
 }
 
 inline bool ComponentManager::IsRegisteredSceneComponent(const Type* type) const
 {
     DVASSERT(type != nullptr);
 
-    return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(eComponentType::SCENE_COMPONENT)));
+    return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT)));
 }
 
 inline uint32 ComponentManager::GetRuntimeComponentIndex(const Type* type) const
