@@ -21,7 +21,9 @@ namespace TArc
 int BaseApplication::Run()
 {
     InitTArcResources();
-    if (!AllowMultipleInstances())
+    Engine e;
+
+    if (!AllowMultipleInstances() && !CommandLineParser::CommandIsFound("--selftest"))
     {
         QtHelpers::RunGuard runGuard(GetInstanceKey());
         if (runGuard.TryToRun())
@@ -37,44 +39,45 @@ int BaseApplication::Run()
 
 int BaseApplication::RunImpl()
 {
-    Engine e;
     EngineInitInfo initInfo = GetInitInfo();
 
     // TODO remove this retain after merge with PR-2443
     SafeRetain(initInfo.options.Get());
 
-    e.cleanup.Connect(this, &BaseApplication::Cleanup);
+    Engine* engine = Engine::Instance();
+
+    Engine::Instance()->cleanup.Connect(this, &BaseApplication::Cleanup);
 
     if (CommandLineParser::CommandIsFound("--selftest"))
     {
         isTestEnv = true;
 
         SetupToolsAssertHandlers(eApplicationMode::TEST_MODE);
-        e.Init(eEngineRunMode::GUI_EMBEDDED, initInfo.modules, initInfo.options.Get());
+        engine->Init(eEngineRunMode::GUI_EMBEDDED, initInfo.modules, initInfo.options.Get());
         RegisterAnyCasts();
         RegisterEditorAnyCasts();
         RegisterReflectionExtensions();
 
-        const EngineContext* engineContext = e.GetContext();
+        const EngineContext* engineContext = engine->GetContext();
         DVASSERT(engineContext);
         Init(engineContext);
 
-        TestCore testCore(e);
-        return e.Run();
+        TestCore testCore(*engine);
+        return engine->Run();
     }
     else
     {
         SetupToolsAssertHandlers(initInfo.runMode == eEngineRunMode::CONSOLE_MODE ? eApplicationMode::CONSOLE_MODE : eApplicationMode::GUI_MODE);
-        e.Init(initInfo.runMode, initInfo.modules, initInfo.options.Get());
+        engine->Init(initInfo.runMode, initInfo.modules, initInfo.options.Get());
         RegisterAnyCasts();
         RegisterEditorAnyCasts();
         RegisterReflectionExtensions();
 
-        Core core(e);
+        Core core(*engine);
         Init(&core);
         core.PostInit();
         CreateModules(&core);
-        return e.Run();
+        return engine->Run();
     }
 }
 
