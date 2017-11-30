@@ -1,5 +1,4 @@
 #include "EditorPhysics/Private/PhysicsWidget.h"
-#include "EditorPhysics/Private/EditorIntegrationHelper.h"
 #include "EditorPhysics/Private/EditorPhysicsData.h"
 
 #include <TArc/Controls/Widget.h>

@@ -284,10 +284,6 @@ eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput, e
 bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     using namespace DAVA;
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return false;
-    }
 
     eDragState dragState = GetSystemsManager()->GetDragState();
     if (dragState == eDragState::Transform || currentInput->device == eInputDevices::KEYBOARD)
