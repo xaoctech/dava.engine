@@ -1013,10 +1013,8 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorder(DAVA::Vector2 deltaSiz
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
         if (directions[axis] != NO_DIRECTION)
         {
-            bool isSceneMoved = axis == Vector2::AXIS_Y
-            ?
-            (activeArea == TOP_LEFT_AREA || activeArea == TOP_CENTER_AREA || activeArea == TOP_RIGHT_AREA)
-            :
+            bool isSceneMoved = axis == Vector2::AXIS_Y ?
+            (activeArea == TOP_LEFT_AREA || activeArea == TOP_CENTER_AREA || activeArea == TOP_RIGHT_AREA) :
             (activeArea == BOTTOM_LEFT_AREA || activeArea == CENTER_LEFT_AREA || activeArea == TOP_LEFT_AREA);
 
             if (IsRootControl(activeControlNode) && isSceneMoved)
