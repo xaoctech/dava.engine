@@ -9,6 +9,7 @@
 #include "Classes/Commands2/DeleteLODCommand.h"
 #include "Classes/Commands2/EntityParentChangeCommand.h"
 #include "Classes/Commands2/InspMemberModifyCommand.h"
+#include "Classes/Commands2/BakeTransformCommand.h"
 
 #include "Classes/Selection/Selection.h"
 
@@ -67,33 +68,33 @@ void UpdateActorTransform(const Matrix4& tranform, PxRigidActor* actor)
     }
 }
 
-void InitBounds(PxShape* shape, const AABBox3& box)
+void InitBounds(PxShape* shape, AABBox3 box)
 {
     DVASSERT(shape->userData == nullptr);
+    float32 boundingBoxMinHalfSize = 0.01f;
+    if (FLOAT_EQUAL_EPS(box.min.x, box.max.x, boundingBoxMinHalfSize))
+    {
+        box.min.x -= boundingBoxMinHalfSize;
+        box.max.x += boundingBoxMinHalfSize;
+    }
+
+    if (FLOAT_EQUAL_EPS(box.min.y, box.max.y, boundingBoxMinHalfSize))
+    {
+        box.min.y -= boundingBoxMinHalfSize;
+        box.max.y += boundingBoxMinHalfSize;
+    }
+
+    if (FLOAT_EQUAL_EPS(box.min.z, box.max.z, boundingBoxMinHalfSize))
+    {
+        box.min.z -= boundingBoxMinHalfSize;
+        box.max.z += boundingBoxMinHalfSize;
+    }
     shape->userData = new AABBox3(box);
 }
 
 void InitBounds(PxRigidActor* actor, PxShape* shape)
 {
     PxBounds3 bounds = actor->getWorldBounds();
-    float32 boundingBoxMinHalfSize = 0.01f;
-    if (FLOAT_EQUAL_EPS(bounds.minimum.x, bounds.maximum.x, boundingBoxMinHalfSize))
-    {
-        bounds.minimum.x -= boundingBoxMinHalfSize;
-        bounds.maximum.x += boundingBoxMinHalfSize;
-    }
-
-    if (FLOAT_EQUAL_EPS(bounds.minimum.y, bounds.maximum.y, boundingBoxMinHalfSize))
-    {
-        bounds.minimum.y -= boundingBoxMinHalfSize;
-        bounds.maximum.y += boundingBoxMinHalfSize;
-    }
-
-    if (FLOAT_EQUAL_EPS(bounds.minimum.z, bounds.maximum.z, boundingBoxMinHalfSize))
-    {
-        bounds.minimum.z -= boundingBoxMinHalfSize;
-        bounds.maximum.z += boundingBoxMinHalfSize;
-    }
     InitBounds(shape, AABBox3(PhysicsMath::PxBounds3ToAABox3(bounds)));
 }
 
@@ -118,7 +119,7 @@ CollisionObj CreateBox(bool createCollision, bool recreate, const Matrix4& trans
         DVASSERT(rigidActor != nullptr);
         rigidActor->userData = userData;
 
-        PxShape* shape = module->CreateBoxShape(halfSize);
+        PxShape* shape = module->CreateBoxShape(halfSize, DAVA::FastName());
         shape->setQueryFilterData(objectFilterData);
         rigidActor->attachShape(*shape);
 
@@ -177,7 +178,7 @@ CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderOb
             DVASSERT(rigidActor);
             rigidActor->userData = userData;
 
-            PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), cache);
+            PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), DAVA::FastName(), cache);
             shape->setQueryFilterData(objectFilterData);
             rigidActor->attachShape(*shape);
 
@@ -217,7 +218,7 @@ CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* u
             rigidActor->userData = userData;
 
             Matrix4 localPose;
-            PxShape* shape = module->CreateHeightField(landscape, localPose);
+            PxShape* shape = module->CreateHeightField(landscape, DAVA::FastName(), localPose);
             rigidActor->attachShape(*shape);
 
             shape->setLocalPose(PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
@@ -785,6 +786,11 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
             auto cmd = static_cast<const ConvertToBillboardCommand*>(command);
             UpdateCollisionObject(Selectable(cmd->GetEntity()), true);
         }
+        else if (command->MatchCommandID(CMDID_BAKE_GEOMERTY))
+        {
+            auto cmd = static_cast<const BakeGeometryCommand*>(command);
+            UpdateCollisionObject(Selectable(cmd->GetEntity()), true);
+        }
     };
 
     commandNotification.ExecuteForAllCommands(processSingleCommand);
@@ -866,6 +872,17 @@ void SceneCollisionSystem::PrepareForRemove()
     objectsToAdd.clear();
     objectsToRemove.clear();
     objectsToUpdateTransform.clear();
+    for (const auto& node : objToPhysx)
+    {
+        DAVA::Vector<physx::PxShape*> shapes;
+        shapes.resize(node.second->getNbShapes());
+        node.second->getShapes(shapes.data(), static_cast<physx::PxU32>(shapes.size()), 0);
+        for (physx::PxShape* shape : shapes)
+        {
+            shape->release();
+        }
+        node.second->release();
+    }
     objToPhysx.clear();
     curLandscapeEntity = nullptr;
 }

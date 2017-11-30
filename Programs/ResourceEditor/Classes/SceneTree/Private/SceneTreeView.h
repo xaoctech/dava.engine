@@ -15,6 +15,7 @@ class ContextAccessor;
 } // namespace TArc
 } // namespace DAVA
 
+class QItemSelection;
 class QItemSelectionModel;
 class QDropEvent;
 class QDragMoveEvent;
@@ -47,6 +48,7 @@ protected:
     void OnItemExpanded(const QModelIndex& index);
     void OnItemCollapsed(const QModelIndex& index);
     void OnDoubleClicked(const QModelIndex& index);
+    void OnSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     void contextMenuEvent(QContextMenuEvent* e) override;
 

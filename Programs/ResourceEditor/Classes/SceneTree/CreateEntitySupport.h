@@ -34,6 +34,7 @@ public:
         VEGETATION_ENTITY,
         PATH_ENTITY,
         TEXT_ENTITY,
+        PHYSICS_ENTITIES,
         EDITOR_SPRITE
     };
 

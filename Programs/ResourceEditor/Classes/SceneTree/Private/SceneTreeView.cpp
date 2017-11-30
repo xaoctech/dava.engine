@@ -68,10 +68,16 @@ void SceneTreeView::UpdateControl(const DAVA::TArc::ControlDescriptor& descripto
 
     if (descriptor.IsChanged(Fields::SelectionModel) == true)
     {
-        QItemSelectionModel* selectionModel = GetFieldValue<QItemSelectionModel*>(Fields::SelectionModel, nullptr);
-        if (selectionModel != nullptr)
+        QItemSelectionModel* newSelectionModel = GetFieldValue<QItemSelectionModel*>(Fields::SelectionModel, nullptr);
+        if (newSelectionModel != nullptr)
         {
-            setSelectionModel(selectionModel);
+            QItemSelectionModel* prevSelectoinModel = selectionModel();
+            if (prevSelectoinModel != nullptr)
+            {
+                connections.RemoveConnection(prevSelectoinModel, &QItemSelectionModel::selectionChanged);
+            }
+            setSelectionModel(newSelectionModel);
+            connections.AddConnection(newSelectionModel, &QItemSelectionModel::selectionChanged, DAVA::MakeFunction(this, &SceneTreeView::OnSelectionChanged));
         }
     }
 }
@@ -98,6 +104,14 @@ void SceneTreeView::OnDoubleClicked(const QModelIndex& index)
         DAVA::AnyFn fn = model.GetMethod(doubleClickedName.c_str());
         DVASSERT(fn.IsValid() == true);
         fn.Invoke(index);
+    }
+}
+
+void SceneTreeView::OnSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+{
+    if (selected.isEmpty() == false)
+    {
+        scrollTo(selected.indexes().front());
     }
 }
 
