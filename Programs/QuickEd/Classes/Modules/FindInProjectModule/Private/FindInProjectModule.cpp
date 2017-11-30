@@ -56,7 +56,7 @@ void FindInProjectModule::PostInit()
         return !fieldValue.Cast<FilePath>(FilePath()).IsEmpty();
     };
 
-    const QString saveCurrentDocumentActionName = QStringLiteral("Select Current Document in File System");
+    const QString selectCurrentDocumentActionName = QStringLiteral("Select Current Document in File System");
     {
         QtAction* findInProjectAction = new QtAction(accessor, QObject::tr("Find in Project..."), nullptr);
 
@@ -70,7 +70,7 @@ void FindInProjectModule::PostInit()
 
         connections.AddConnection(findInProjectAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindInProject));
 
-        TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, saveCurrentDocumentActionName)));
+        TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findInProjectAction);
     }
 
@@ -86,7 +86,7 @@ void FindInProjectModule::PostInit()
 
         connections.AddConnection(findErrosAndWarningAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindErrorsAndWarnings));
 
-        TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, saveCurrentDocumentActionName)));
+        TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
         ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findErrosAndWarningAction);
     }
 
