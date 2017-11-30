@@ -84,125 +84,128 @@ macro( processing_mix_data )
     cmake_parse_arguments ( ARG "NOT_DATA_COPY"  "" "" ${ARGN} )
 
     load_property( PROPERTY_LIST MIX_APP_DATA )
-    if( ANDROID )
-        set( MIX_APP_DIR ${CMAKE_CURRENT_LIST_DIR}/Platforms/Android/${PROJECT_NAME}/assets )
-        set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
-    elseif(LINUX)
-        set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-    elseif( WINDOWS_UAP )
-        set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR}/MixResources )
-    elseif( DEPLOY )
-        if( NOT DEPLOY_DIR_DATA )
-            if( MACOS AND NOT MAC_DISABLE_BUNDLE)
-                set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app/Contents/Resources )
-            elseif( IOS )
-                set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app )                
-            else()
-                set( DEPLOY_DIR_DATA ${DEPLOY_DIR} )
-            endif()
-        endif()
 
-        set( MIX_APP_DIR ${DEPLOY_DIR_DATA} )     
-    else()
-
-        if( NOT MIX_APP_DIR )
+    if( MIX_APP_DATA )
+        if( ANDROID )
+            set( MIX_APP_DIR ${CMAKE_CURRENT_LIST_DIR}/Platforms/Android/${PROJECT_NAME}/assets )
+            set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
+        elseif(LINUX)
+            set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+        elseif( WINDOWS_UAP )
             set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR}/MixResources )
-        endif()
-
-        set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
-    endif()
-    
-    get_filename_component( MIX_APP_DIR ${MIX_APP_DIR} ABSOLUTE )
-
-    if( NOT ARG_NOT_DATA_COPY )
-        add_custom_target ( DATA_COPY_${PROJECT_NAME} )
-    endif()
-
-    foreach( ITEM ${MIX_APP_DATA} )
-
-        string(FIND ${ITEM} "=>" SYMBOL_FOUND)
-        if (${SYMBOL_FOUND} MATCHES -1)
-            string( REGEX REPLACE " " "" ITEM ${ITEM} )
-            string( REGEX REPLACE "=" ";" ITEM ${ITEM} )
-            list(GET ITEM 0 GROUP_PATH )
-            list(GET ITEM 1 DATA_PATH )
-
-            get_filename_component( DATA_PATH ${DATA_PATH} ABSOLUTE )
-            execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${MIX_APP_DIR}/${GROUP_PATH} )
-            if( NOT ARG_NOT_DATA_COPY )
-                if( IS_DIRECTORY  ${DATA_PATH} )
-                    if( WINDOWS_UAP )
-                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
-                    endif()
-                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
-                       COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${DATA_PATH} 
-                       ${MIX_APP_DIR}/${GROUP_PATH}
-                    )
+        elseif( DEPLOY )
+            if( NOT DEPLOY_DIR_DATA )
+                if( MACOS AND NOT MAC_DISABLE_BUNDLE)
+                    set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app/Contents/Resources )
+                elseif( IOS )
+                    set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app )                
                 else()
-                    if( WINDOWS_UAP )
-                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
-                    endif()
-                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
-                       COMMAND ${CMAKE_COMMAND} -E copy
-                       ${DATA_PATH} 
-                       ${MIX_APP_DIR}/${GROUP_PATH}
-                    )
+                    set( DEPLOY_DIR_DATA ${DEPLOY_DIR} )
                 endif()
             endif()
 
+            set( MIX_APP_DIR ${DEPLOY_DIR_DATA} )     
         else()
-            string( REGEX REPLACE " " "" ITEM ${ITEM} )
-            string( REGEX REPLACE "=>" ";" ITEM ${ITEM} )
-            list(GET ITEM 0 FILE_PATH )
-            list(GET ITEM 1 DATA_PATH )
 
-            if( NOT ARG_NOT_DATA_COPY )
-                get_filename_component(FILE_NAME ${FILE_PATH} NAME)
-
-                execute_process( COMMAND ${CMAKE_COMMAND} -E rename ${MIX_APP_DIR}/${FILE_PATH} ${MIX_APP_DIR}/${DATA_PATH}/${FILE_NAME} )
+            if( NOT MIX_APP_DIR )
+                set( MIX_APP_DIR ${CMAKE_CURRENT_BINARY_DIR}/MixResources )
             endif()
 
+            set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
+        endif()
+    
+        get_filename_component( MIX_APP_DIR ${MIX_APP_DIR} ABSOLUTE )
+
+        if( NOT ARG_NOT_DATA_COPY )
+            add_custom_target ( DATA_COPY_${PROJECT_NAME} )
         endif()
 
-    endforeach()
+        foreach( ITEM ${MIX_APP_DATA} )
 
+            string(FIND ${ITEM} "=>" SYMBOL_FOUND)
+            if (${SYMBOL_FOUND} MATCHES -1)
+                string( REGEX REPLACE " " "" ITEM ${ITEM} )
+                string( REGEX REPLACE "=" ";" ITEM ${ITEM} )
+                list(GET ITEM 0 GROUP_PATH )
+                list(GET ITEM 1 DATA_PATH )
 
-    if( WINDOWS_UAP )
-
-        file(GLOB LIST_FOLDER_ITEM  "${MIX_APP_DIR}/*" )
-        foreach( ITEM ${LIST_FOLDER_ITEM} )
-            if( IS_DIRECTORY ${ITEM} )
-                set( APP_DATA ${ITEM} ${APP_DATA} )
-            endif()
-        endforeach()
-
-    elseif( NOT DEPLOY )
-        file(GLOB LIST_FOLDER_ITEM  "${MIX_APP_DIR}/*" )
-        foreach( ITEM ${LIST_FOLDER_ITEM} )
-            if( IS_DIRECTORY ${ITEM} )
-
-                if( MAC_DISABLE_BUNDLE AND MACOS)                    
-                    get_filename_component( FOLDER_NAME ${ITEM}  NAME     )
-                    foreach( CONFIGURATION ${CMAKE_CONFIGURATION_TYPES} )
-                        foreach( TMP_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION} ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/Contents/Resources )
-                            execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory  ${TMP_DATA_DIR} )
-                            if( NOT EXISTS ${TMP_DATA_DIR}/${FOLDER_NAME} )
-                                execute_process( COMMAND ln -s ${MIX_APP_DIR}/${FOLDER_NAME} ${TMP_DATA_DIR}/${FOLDER_NAME}  )
-                            endif()
-                        endforeach()
-                    endforeach()
-                else()
-                    list( APPEND RESOURCES_LIST  ${ITEM}  )
+                get_filename_component( DATA_PATH ${DATA_PATH} ABSOLUTE )
+                execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${MIX_APP_DIR}/${GROUP_PATH} )
+                if( NOT ARG_NOT_DATA_COPY )
+                    if( IS_DIRECTORY  ${DATA_PATH} )
+                        if( WINDOWS_UAP )
+                            execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                        endif()
+                        ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                           COMMAND ${CMAKE_COMMAND} -E copy_directory
+                           ${DATA_PATH} 
+                           ${MIX_APP_DIR}/${GROUP_PATH}
+                        )
+                    else()
+                        if( WINDOWS_UAP )
+                            execute_process( COMMAND ${CMAKE_COMMAND} -E copy ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                        endif()
+                        ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                           COMMAND ${CMAKE_COMMAND} -E copy
+                           ${DATA_PATH} 
+                           ${MIX_APP_DIR}/${GROUP_PATH}
+                        )
+                    endif()
                 endif()
+
+            else()
+                string( REGEX REPLACE " " "" ITEM ${ITEM} )
+                string( REGEX REPLACE "=>" ";" ITEM ${ITEM} )
+                list(GET ITEM 0 FILE_PATH )
+                list(GET ITEM 1 DATA_PATH )
+
+                if( NOT ARG_NOT_DATA_COPY )
+                    get_filename_component(FILE_NAME ${FILE_PATH} NAME)
+
+                    execute_process( COMMAND ${CMAKE_COMMAND} -E rename ${MIX_APP_DIR}/${FILE_PATH} ${MIX_APP_DIR}/${DATA_PATH}/${FILE_NAME} )
+                endif()
+
             endif()
+
         endforeach()
-    endif()
 
-    if( NOT ARG_NOT_DATA_COPY )
-        reset_property ( MIX_APP_DATA )
-    endif()
 
+        if( WINDOWS_UAP )
+
+            file(GLOB LIST_FOLDER_ITEM  "${MIX_APP_DIR}/*" )
+            foreach( ITEM ${LIST_FOLDER_ITEM} )
+                if( IS_DIRECTORY ${ITEM} )
+                    set( APP_DATA ${ITEM} ${APP_DATA} )
+                endif()
+            endforeach()
+
+        elseif( NOT DEPLOY )
+            file(GLOB LIST_FOLDER_ITEM  "${MIX_APP_DIR}/*" )
+            foreach( ITEM ${LIST_FOLDER_ITEM} )
+                if( IS_DIRECTORY ${ITEM} )
+
+                    if( MAC_DISABLE_BUNDLE AND MACOS)                    
+                        get_filename_component( FOLDER_NAME ${ITEM}  NAME     )
+                        foreach( CONFIGURATION ${CMAKE_CONFIGURATION_TYPES} )
+                            foreach( TMP_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION} ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/Contents/Resources )
+                                execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory  ${TMP_DATA_DIR} )
+                                if( NOT EXISTS ${TMP_DATA_DIR}/${FOLDER_NAME} )
+                                    execute_process( COMMAND ln -s ${MIX_APP_DIR}/${FOLDER_NAME} ${TMP_DATA_DIR}/${FOLDER_NAME}  )
+                                endif()
+                            endforeach()
+                        endforeach()
+                    else()
+                        list( APPEND RESOURCES_LIST  ${ITEM}  )
+                    endif()
+                endif()
+            endforeach()
+        endif()
+
+        if( NOT ARG_NOT_DATA_COPY )
+            reset_property ( MIX_APP_DATA )
+        endif()
+
+    endif()
 endmacro ()
 
 macro(grab_libs OUTPUT_LIST_VAR LIB_LIST EXCLUDE_LIBS ADDITIONAL_LIBS)

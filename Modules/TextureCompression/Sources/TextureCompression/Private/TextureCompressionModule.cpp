@@ -20,13 +20,21 @@ void TextureCompressionModule::Init()
     DVASSERT(GetEngineContext()->imageConverter != nullptr);
     GetEngineContext()->imageConverter->SetImplementation(imageConverter.get());
 
+#if defined(__DAVAENGINE_MACOS__)
+    String pvrToolName = "PVRTexToolCLI";
+#elif defined(__DAVAENGINE_WINDOWS__)
+    String pvrToolName = "PVRTexToolCLI.exe";
+#else //PLATFORMS
+#error "Unknown platform"
+#endif //PLATFORMS
+
     if (engine->IsConsoleMode())
     {
         const Vector<String>& cmdLine = engine->GetCommandLine();
         if (cmdLine.empty() == false)
         {
             FilePath appPath = cmdLine[0];
-            PVRConverter::Instance()->SetPVRTexTool(appPath.GetDirectory() + "Data/PVRTexToolCLI");
+            PVRConverter::Instance()->SetPVRTexTool(appPath.GetDirectory() + "Data/" + pvrToolName);
         }
         else
         {
@@ -35,7 +43,7 @@ void TextureCompressionModule::Init()
     }
     else
     {
-        PVRConverter::Instance()->SetPVRTexTool("~res:/PVRTexToolCLI");
+        PVRConverter::Instance()->SetPVRTexTool("~res:/" + pvrToolName);
     }
 }
 
