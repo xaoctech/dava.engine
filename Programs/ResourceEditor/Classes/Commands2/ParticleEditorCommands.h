@@ -716,6 +716,11 @@ public:
 
     void Redo() override;
 
+    DAVA::ParticleEffectComponent* GetEffect() const
+    {
+        return selectedEffect;
+    }
+
     DAVA::ParticleEmitterInstance* GetEmitterInstance() const
     {
         return instance;

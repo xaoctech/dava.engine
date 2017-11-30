@@ -511,6 +511,24 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
             syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
         }
     });
+
+    commandNotification.ForEachWithCast<CommandLoadParticleEmitterFromYaml>(CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML, [&](const CommandLoadParticleEmitterFromYaml* command) {
+        DAVA::ParticleEffectComponent* component = command->GetEffect();
+        DAVA::Entity* entity = component->GetEntity();
+        DAVA::ParticleEmitterInstance* emitter = command->GetEmitterInstance();
+
+        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(Selectable(DAVA::Any(emitter)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
+    });
+
+    commandNotification.ForEachWithCast<CommandLoadInnerParticleEmitterFromYaml>(CMDID_PARTICLE_INNER_EMITTER_LOAD_FROM_YAML, [&](const CommandLoadInnerParticleEmitterFromYaml* command) {
+        DAVA::ParticleEmitterInstance* emitter = command->GetEmitterInstance();
+        DAVA::ParticleEffectComponent* component = GetScene()->GetSystem<EditorParticlesSystem>()->GetEmitterOwner(emitter);
+        DAVA::Entity* entity = component->GetEntity();
+
+        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(Selectable(DAVA::Any(emitter)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
+    });
 }
 
 const SceneTreeSystem::SyncSnapshot& SceneTreeSystem::GetSyncSnapshot() const
