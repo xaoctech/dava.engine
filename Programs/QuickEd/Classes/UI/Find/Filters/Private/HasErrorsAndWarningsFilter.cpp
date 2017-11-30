@@ -6,6 +6,8 @@
 #include <UI/Layouts/UISizePolicyComponent.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 
+#include <Reflection/ReflectedTypeDB.h>
+
 namespace HasErrorsAndWarningsFilterDetails
 {
 template <typename Component>
@@ -65,7 +67,7 @@ bool HasErrorsAndWarningsFilter::AcceptControl(const ControlInformation* control
     if (control->HasComponent(anchorComponentType) && control->HasComponent(sizePolicyComponentType))
     {
         UISizePolicyComponent::eSizePolicy hSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, sizePolicyComponentType, horizontalSizePolicyField, UISizePolicyComponent::eSizePolicy::IGNORE_SIZE);
-        UISizePolicyComponent::eSizePolicy vSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, sizePolicyComponentType, horizontalSizePolicyField, UISizePolicyComponent::eSizePolicy::IGNORE_SIZE);
+        UISizePolicyComponent::eSizePolicy vSizePolicy = HasErrorsAndWarningsFilterDetails::GetValue<UISizePolicyComponent::eSizePolicy>(control, sizePolicyComponentType, verticalSizePolicyField, UISizePolicyComponent::eSizePolicy::IGNORE_SIZE);
 
         bool anchorsEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, anchorsEnabledField, true);
         bool leftAnchorEnabled = HasErrorsAndWarningsFilterDetails::GetValue<bool>(control, anchorComponentType, leftAnchorEnabledField, false);
