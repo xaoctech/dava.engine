@@ -29,7 +29,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         param("appID", "%ProjectName%")
         param("baseArchiveNameWin", "%ProjectName%_win_")
         param("baseURLWin", "http://by1-davatool-01.corp.wargaming.local/dava.framework/win/Tools/%branchID%/")
-        text("beast_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
         param("branchID", "%teamcity.build.branch%")
         param("buildsPathWin", "//by1-davatool-01/win/Tools/%branchID%")
         param("configPathWin", "//by1-davatool-01/win/launcher/launcher_config.yaml")
@@ -57,7 +56,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
 
     vcs {
         root("dava_DavaFrameworkStash", "+:. => dava.framework")
-        root("dava_framework_DavaResourceeditorBeastBranch", "+:.=>/dava.resourceeditor.beast")
         root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
@@ -175,11 +173,4 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
             }
         }
     }
-
-    requirements {
-        doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
-        exists("MSBuildTools4.0_x86_Path")
-    }
-    
-    disableSettings("RQ_52")
 })

@@ -107,14 +107,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
             """.trimIndent()
         }
         script {
-            name = "Copy build result"
-            workingDir = "%pathToProjectApp_other%"
-            scriptContent = """
-                rmdir "%dava_dir%/Programs/UnitTests/Release" /S /Q
-                xcopy "%pathToProjectApp_other%" "%dava_dir%/Programs/UnitTests/Release" /I /S /H /E /R /Y
-            """.trimIndent()
-        }
-        script {
             name = "PackApp"
             workingDir = "%dava_scripts_dir%"
             scriptContent = "python pack_app.py --app_name %ProjectName% --out_path %pathToOutPackDir% --app_path %pathToProjectApp% --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number%"
@@ -174,10 +166,4 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
         }
     }
 
-    requirements {
-        doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
-        exists("MSBuildTools4.0_x86_Path")
-    }
-    
-    disableSettings("RQ_52", "RUNNER_9")
 })
