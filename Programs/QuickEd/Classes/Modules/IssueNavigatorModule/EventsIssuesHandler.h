@@ -17,34 +17,35 @@ class Type;
 
 class ControlNode;
 class IssueNavigatorWidget;
-class IssueHelper;
+class IndexGenerator;
 
 class EventsIssuesHandler : public PackageListener
 {
 public:
-    EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IssueHelper& issueHelper);
+    EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
     ~EventsIssuesHandler() override = default;
 
-    bool IsEventPropety(AbstractProperty* property);
 
     // PackageListener
     void ActivePackageNodeWasChanged(PackageNode* node) override;
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
-    void ControlAddComponent(ControlNode* node, ComponentPropertiesSection* section) override;
-    void ControlRemoveComponent(ControlNode* node, ComponentPropertiesSection* section) override;
+    void ControlComponentWasAdded(ControlNode* node, ComponentPropertiesSection* section) override;
+    void ControlComponentWasRemoved(ControlNode* node, ComponentPropertiesSection* section) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
     void ControlWasRemoved(ControlNode* node, ControlsContainerNode* from) override;
 
+private:
     struct EventIssue
     {
-        ControlNode* node;
-        const DAVA::Type* componentType;
+        ControlNode* node = nullptr;
+        const DAVA::Type* componentType = nullptr;
         DAVA::FastName propertyName;
-        DAVA::int32 issueId;
+        DAVA::int32 issueId = 0;
         bool toRemove = false;
     };
 
-private:
+    DAVA::String CreateIncorrectSymbolsMessage(EventIssue& eventIssue);
+    bool IsEventPropety(AbstractProperty* property);
     PackageNode* GetPackage() const;
     bool IsRootControl(const ControlNode* node) const;
     DAVA::String GetPathToControl(const ControlNode* node) const;
@@ -66,7 +67,7 @@ private:
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* navigatorWidget = nullptr;
 
-    IssueHelper& issueHelper;
+    IndexGenerator& indexGenerator;
     DAVA::Vector<EventIssue> issues;
 
     DAVA::UnorderedMap<const DAVA::Type*, DAVA::Set<DAVA::FastName>> componentsAndProperties;

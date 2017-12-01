@@ -15,12 +15,12 @@ class LayoutFormula;
 }
 
 class IssueNavigatorWidget;
-class IssueHelper;
+class IndexGenerator;
 
 class LayoutIssuesHandler : public DAVA::UILayoutSystemListener
 {
 public:
-    LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IssueHelper& issueHelper);
+    LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
     ~LayoutIssuesHandler() override;
 
     void OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula) override;
@@ -33,7 +33,7 @@ private:
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* widget = nullptr;
 
-    IssueHelper& issueHelper;
+    IndexGenerator& indexGenerator;
 
     DAVA::Array<DAVA::UnorderedMap<DAVA::UIControl*, DAVA::int32>, DAVA::Vector2::AXIS_COUNT> createdIssues;
 

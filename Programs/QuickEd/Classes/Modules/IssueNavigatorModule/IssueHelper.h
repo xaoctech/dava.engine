@@ -2,14 +2,14 @@
 
 #include <Base/BaseTypes.h>
 
-class IssueHelper
+class IndexGenerator
 {
     DAVA::int32 nextIssueId = 0;
 
 public:
-    IssueHelper(const IssueHelper&) = delete;
-    IssueHelper() = default;
-    ~IssueHelper() = default;
+    IndexGenerator(const IndexGenerator&) = delete;
+    IndexGenerator() = default;
+    ~IndexGenerator() = default;
 
     DAVA::int32 NextIssueId();
 };

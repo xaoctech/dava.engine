@@ -1,40 +1,30 @@
-#include "EventsIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
-#include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include "Modules/IssueNavigatorModule/IssueHelper.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Model/ControlProperties/AbstractProperty.h"
-#include "Model/ControlProperties/RootProperty.h"
-#include "Model/ControlProperties/NameProperty.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/ControlProperties/AbstractProperty.h"
+#include "Classes/Model/ControlProperties/NameProperty.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueHelper.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
+#include <Model/ControlProperties/ComponentPropertiesSection.h>
 
 #include <Base/Type.h>
-#include <UI/UIControlHelpers.h>
-#include <UI/UIControlSystem.h>
-#include <UI/UIControl.h>
-
 #include <UI/Events/UIInputEventComponent.h>
 #include <UI/Events/UIMovieEventComponent.h>
-
-#include <Model/ControlProperties/ComponentPropertiesSection.h>
+#include <UI/UIControl.h>
+#include <UI/UIControlHelpers.h>
+#include <UI/UIControlSystem.h>
 
 #include <TArc/Core/ContextAccessor.h>
 
-namespace EventsIssuesHandlerDetails
-{
-DAVA::String CreateIncorrectSymbolsMessage(EventsIssuesHandler::EventIssue& eventIssue)
-{
-    return DAVA::Format("Node '%s' event property '%s' contains incorrect symbols", eventIssue.node->GetName().c_str(), eventIssue.propertyName.c_str());
-}
-}
-
-EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IssueHelper& issueHelper_)
+EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IndexGenerator& indexGenerator_)
     : sectionId(sectionId_)
     , navigatorWidget(widget_)
     , accessor(accessor_)
     , packageListenerProxy(this, accessor_)
-    , issueHelper(issueHelper_)
+    , indexGenerator(indexGenerator_)
 {
     using namespace DAVA;
     componentsAndProperties[Type::Instance<UIInputEventComponent>()] = {
@@ -49,6 +39,11 @@ EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_,
         FastName("onStart"),
         FastName("onStop")
     };
+}
+
+DAVA::String EventsIssuesHandler::CreateIncorrectSymbolsMessage(EventIssue& eventIssue)
+{
+    return DAVA::Format("Node '%s' event property '%s' contains incorrect symbols", eventIssue.node->GetName().c_str(), eventIssue.propertyName.c_str());
 }
 
 bool EventsIssuesHandler::IsEventPropety(AbstractProperty* property)
@@ -97,19 +92,20 @@ DAVA::String EventsIssuesHandler::GetPathToControl(const ControlNode* node) cons
 
 void EventsIssuesHandler::CreateIssue(ControlNode* node, const DAVA::Type* componentType, const DAVA::String& propertyName)
 {
-    DAVA::int32 issueId = issueHelper.NextIssueId();
+    DAVA::int32 issueId = indexGenerator.NextIssueId();
 
     EventIssue eventIssue;
     eventIssue.node = node;
     eventIssue.componentType = componentType;
     eventIssue.propertyName = DAVA::FastName(propertyName.c_str());
     eventIssue.issueId = issueId;
+    eventIssue.toRemove = false;
     issues.push_back(eventIssue);
 
     Issue issue;
     issue.sectionId = sectionId;
     issue.issueId = issueId;
-    issue.message = EventsIssuesHandlerDetails::CreateIncorrectSymbolsMessage(eventIssue);
+    issue.message = CreateIncorrectSymbolsMessage(eventIssue);
     issue.packagePath = GetPackage()->GetPath().GetFrameworkPath();
     issue.pathToControl = GetPathToControl(node);
     issue.propertyName = propertyName;
@@ -122,7 +118,7 @@ void EventsIssuesHandler::UpdateNodeIssue(EventIssue& eventIssue)
 {
     ControlNode* node = eventIssue.node;
     DAVA::int32 issueId = eventIssue.issueId;
-    navigatorWidget->ChangeMessage(sectionId, issueId, EventsIssuesHandlerDetails::CreateIncorrectSymbolsMessage(eventIssue));
+    navigatorWidget->ChangeMessage(sectionId, issueId, CreateIncorrectSymbolsMessage(eventIssue));
     navigatorWidget->ChangePathToControl(sectionId, issueId, GetPathToControl(node));
 }
 
@@ -208,21 +204,21 @@ void EventsIssuesHandler::ControlPropertyWasChanged(ControlNode* node, AbstractP
     }
 }
 
-void EventsIssuesHandler::ControlAddComponent(ControlNode* node, ComponentPropertiesSection* section)
+void EventsIssuesHandler::ControlComponentWasAdded(ControlNode* node, ComponentPropertiesSection* section)
 {
-    if (section && componentsAndProperties.find(section->GetComponentType()) != componentsAndProperties.end())
+    DVASSERT(section != nullptr);
+    if (componentsAndProperties.find(section->GetComponentType()) != componentsAndProperties.end())
     {
         ValidateNode(node);
-        ValidateNodeForChildren(node);
     }
 }
 
-void EventsIssuesHandler::ControlRemoveComponent(ControlNode* node, ComponentPropertiesSection* section)
+void EventsIssuesHandler::ControlComponentWasRemoved(ControlNode* node, ComponentPropertiesSection* section)
 {
-    if (section && componentsAndProperties.find(section->GetComponentType()) != componentsAndProperties.end())
+    DVASSERT(section != nullptr);
+    if (componentsAndProperties.find(section->GetComponentType()) != componentsAndProperties.end())
     {
         ValidateNode(node);
-        ValidateNodeForChildren(node);
     }
 }
 
@@ -266,19 +262,18 @@ void EventsIssuesHandler::ValidateNode(ControlNode* node)
         auto it = componentsAndProperties.find(componentType);
         if (it != componentsAndProperties.end())
         {
+            Set<FastName>& componentProperties = it->second;
             // For each component from section properties
-            for (DAVA::uint32 idx = 0; idx < componentSection->GetCount(); idx++)
+            for (auto& property : *componentSection)
             {
-                // Is event property
-                auto property = componentSection->GetProperty(idx);
+                // Is event property?
                 FastName propertyName(property->GetName());
-                auto& componentProperties = it->second;
                 if (componentProperties.find(propertyName) != componentProperties.end())
                 {
                     Any propertyValue = property->GetValue();
                     FastName event = propertyValue.CanCast<FastName>() ? propertyValue.Cast<FastName>() : FastName();
                     // Check event format
-                    if (!UIControlHelpers::IsEventNameValid(event))
+                    if (UIControlHelpers::IsEventNameValid(event) == false)
                     {
                         auto IssueMatcher = [&](const EventIssue& issue)
                         {
@@ -293,6 +288,7 @@ void EventsIssuesHandler::ValidateNode(ControlNode* node)
                         else
                         {
                             UpdateNodeIssue(*issuesIt);
+                            issuesIt->toRemove = false;
                             issuesToRemoveCount--;
                         }
                     }

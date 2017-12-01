@@ -1,26 +1,26 @@
 #include "LayoutIssuesHandler.h"
 
-#include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include "Modules/IssueNavigatorModule/IssueHelper.h"
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueHelper.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 
 #include <Engine/Engine.h>
-#include <UI/UIControlSystem.h>
-#include <UI/UIControl.h>
-#include <UI/Layouts/UILayoutSystem.h>
 #include <UI/Layouts/LayoutFormula.h>
+#include <UI/Layouts/UILayoutSystem.h>
+#include <UI/UIControl.h>
+#include <UI/UIControlSystem.h>
 
 #include <TArc/Core/ContextAccessor.h>
 
 using namespace DAVA;
 
-LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IssueHelper& issueHelper_)
+LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IndexGenerator& indexGenerator_)
     : sectionId(sectionId_)
     , widget(widget_)
     , accessor(accessor_)
-    , issueHelper(issueHelper_)
+    , indexGenerator(indexGenerator_)
 {
     GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
 }
@@ -65,7 +65,7 @@ void LayoutIssuesHandler::OnFormulaProcessed(UIControl* control, Vector2::eAxis 
 
             Issue issue;
             issue.sectionId = sectionId;
-            issue.issueId = issueHelper.NextIssueId();
+            issue.issueId = indexGenerator.NextIssueId();
             issue.message = formula->GetErrorMessage();
             issue.packagePath = data->GetPackagePath().GetFrameworkPath();
             issue.pathToControl = pathToControl;

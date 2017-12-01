@@ -65,14 +65,14 @@ void PackageListenerProxy::StylePropertyWasChanged(StyleSheetNode* node, Abstrac
     listener->StylePropertyWasChanged(node, property);
 }
 
-void PackageListenerProxy::ControlAddComponent(ControlNode* node, ComponentPropertiesSection* section)
+void PackageListenerProxy::ControlComponentWasAdded(ControlNode* node, ComponentPropertiesSection* section)
 {
-    listener->ControlAddComponent(node, section);
+    listener->ControlComponentWasAdded(node, section);
 }
 
-void PackageListenerProxy::ControlRemoveComponent(ControlNode* node, ComponentPropertiesSection* section)
+void PackageListenerProxy::ControlComponentWasRemoved(ControlNode* node, ComponentPropertiesSection* section)
 {
-    listener->ControlRemoveComponent(node, section);
+    listener->ControlComponentWasRemoved(node, section);
 }
 
 void PackageListenerProxy::ControlWillBeAdded(ControlNode* node, ControlsContainerNode* destination, int index)
