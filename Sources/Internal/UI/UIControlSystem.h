@@ -313,6 +313,8 @@ public:
     void SetFlowRoot(UIControl* root);
     UIControl* GetFlowRoot() const;
 
+    void SetSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom);
+
 private:
     UIControlSystem();
     ~UIControlSystem();

@@ -57,6 +57,8 @@ enum class eSystems
     CANVAS,
     //this system must be drawn in background of all other systems
     PIXEL_GRID,
+
+    DISPLAY_FRAME,
     //this system creates HUD around controls and must be updated before HUD users
     HUD,
     //this system draw distance lines between controls

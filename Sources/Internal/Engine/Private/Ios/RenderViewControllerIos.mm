@@ -32,6 +32,11 @@
     return UIInterfaceOrientationMaskLandscape;
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden
+{
+    return true;
+}
+
 @end
 
 #endif // __DAVAENGINE_IPHONE__

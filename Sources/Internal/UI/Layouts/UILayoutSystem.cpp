@@ -172,6 +172,11 @@ void UILayoutSystem::SetRtl(bool rtl)
     sharedLayouter->SetRtl(rtl);
 }
 
+void UILayoutSystem::SetSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom)
+{
+    sharedLayouter->SetSafeAreaInsets(left, top, right, bottom);
+}
+
 void UILayoutSystem::ProcessControl(UIControl* control)
 {
     bool layoutDirty = control->IsLayoutDirty();
@@ -217,6 +222,10 @@ void UILayoutSystem::ManualApplyLayout(UIControl* control)
     Layouter localLayouter;
     localLayouter.SetRtl(sharedLayouter->IsRtl());
     localLayouter.SetVisibilityRect(sharedLayouter->GetVisibilityRect());
+    localLayouter.SetSafeAreaInsets(sharedLayouter->GetSafeAreaLeftInset(),
+                                    sharedLayouter->GetSafeAreaTopInset(),
+                                    sharedLayouter->GetSafeAreaRightInset(),
+                                    sharedLayouter->GetSafeAreaBottomInset());
     localLayouter.ApplyLayout(control);
 }
 

@@ -27,6 +27,8 @@ public:
     bool IsRtl() const;
     void SetRtl(bool rtl);
 
+    void SetSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom);
+
     bool IsAutoupdatesEnabled() const;
     void SetAutoupdatesEnabled(bool enabled);
 

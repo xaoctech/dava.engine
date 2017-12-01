@@ -149,6 +149,16 @@ MainDispatcherEvent MainDispatcherEvent::CreateWindowVisibleFrameChangedEvent(Wi
     return e;
 }
 
+MainDispatcherEvent MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(Window* window, float32 left, float32 top, float32 right, float32 bottom)
+{
+    MainDispatcherEvent e(WINDOW_SAFE_AREA_INSETS_CHANGED, window);
+    e.safeAreaInsetsEvent.left = left;
+    e.safeAreaInsetsEvent.top = top;
+    e.safeAreaInsetsEvent.right = right;
+    e.safeAreaInsetsEvent.bottom = bottom;
+    return e;
+}
+
 MainDispatcherEvent MainDispatcherEvent::CreateWindowKeyPressEvent(Window* window, eType keyEventType, uint32 keyScancode, uint32 keyVirtual, eModifierKeys modifierKeys, bool isRepeated)
 {
     DVASSERT(keyEventType == KEY_DOWN || keyEventType == KEY_UP || keyEventType == KEY_CHAR);
