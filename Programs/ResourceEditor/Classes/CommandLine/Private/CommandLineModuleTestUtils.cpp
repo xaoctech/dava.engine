@@ -44,12 +44,15 @@ namespace Detail
 {
 using namespace DAVA;
 
-bool CreateImageFile(const FilePath& imagePathname, uint32 width, uint32 height, PixelFormat format)
+bool CreateImageFile(const FilePath& imagePathname, uint32 width, uint32 height, PixelFormat format, uint8 fill = 0)
 {
     ScopedPtr<Image> image(Image::Create(width, height, format));
 
-    uint8 byte = Random::Instance()->Rand(255);
-    Memset(image->data, byte, image->dataSize);
+    if (fill == 0)
+    {
+        fill = Random::Instance()->Rand(255);
+    }
+    Memset(image->data, fill, image->dataSize);
 
     eErrorCode saved = ImageSystem::Save(imagePathname, image, image->format);
     return (saved == eErrorCode::SUCCESS);
@@ -93,13 +96,13 @@ PolygonGroup* CreatePolygonGroup()
     return renderData;
 }
 
-bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, const String& tag = "")
+bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, const String& tag = "", uint8 fill = 0)
 {
     FilePath taggedTexturePath = texturePathname;
     taggedTexturePath.ReplaceBasename(texturePathname.GetBasename() + tag);
 
     FilePath pngPathname = FilePath::CreateWithNewExtension(taggedTexturePath, ".png");
-    if (CreateImageFile(pngPathname, width, height, format))
+    if (CreateImageFile(pngPathname, width, height, format, fill))
     {
         TextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
 
@@ -420,12 +423,18 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPa
     return *this;
 }
 
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::SetTextureFill(uint8 newFill)
+{
+    fill = newFill;
+    return *this;
+}
+
 void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& fileName, const FastName& slotName)
 {
     DVASSERT(box.get() != nullptr);
     FilePath texturePath = path;
     texturePath.ReplaceFilename(fileName);
-    Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, tag);
+    Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, tag, fill);
 
     ScopedPtr<Texture> texture(Texture::CreateFromFile(texturePath));
     material->AddTexture(slotName, texture);
@@ -516,6 +525,7 @@ Entity* SceneBuilder::BoxBuilder::GetBox()
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Reset()
 {
     box.reset(nullptr);
+    fill = 0;
     return *this;
 }
 
@@ -576,6 +586,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     boxBuilder
     .Create(scenePath, "box", tagDefault)
+    .SetTextureFill(32)
     .AddRenderComponent()
     .AddGeometry()
     .AddSlotComponent("slot", projectPath + "/DataSource/Slot.yaml")
@@ -584,6 +595,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     boxBuilder.Reset()
     .Create(scenePath, "box", tagChina)
+    .SetTextureFill(64)
     .AddRenderComponent()
     .AddGeometry()
     .AddRefToOwner()
@@ -591,6 +603,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     boxBuilder.Reset()
     .Create(scenePath, "box", tagJapan)
+    .SetTextureFill(96)
     .AddRenderComponent()
     .AddGeometry()
     .AddRefToOwner()
