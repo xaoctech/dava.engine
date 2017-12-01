@@ -9,6 +9,7 @@ class HasErrorsAndWarningsFilter : public FindFilter
 public:
     HasErrorsAndWarningsFilter();
 
+private:
     FindFilter::ePackageStatus AcceptPackage(const PackageInformation* package) const override;
     bool AcceptControl(const ControlInformation* control) const override;
 
