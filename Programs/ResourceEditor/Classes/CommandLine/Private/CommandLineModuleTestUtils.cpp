@@ -44,15 +44,11 @@ namespace Detail
 {
 using namespace DAVA;
 
-bool CreateImageFile(const FilePath& imagePathname, uint32 width, uint32 height, PixelFormat format, uint8 fill = 0)
+bool CreateImageFile(const FilePath& imagePathname, uint32 width, uint32 height, PixelFormat format, uint8 color)
 {
     ScopedPtr<Image> image(Image::Create(width, height, format));
 
-    if (fill == 0)
-    {
-        fill = Random::Instance()->Rand(255);
-    }
-    Memset(image->data, fill, image->dataSize);
+    Memset(image->data, color, image->dataSize);
 
     eErrorCode saved = ImageSystem::Save(imagePathname, image, image->format);
     return (saved == eErrorCode::SUCCESS);
@@ -61,7 +57,7 @@ bool CreateImageFile(const FilePath& imagePathname, uint32 width, uint32 height,
 bool CreateHeightmapFile(const FilePath& heightmapPathname, uint32 width, PixelFormat format)
 {
     DVASSERT(format == PixelFormat::FORMAT_A8 || format == PixelFormat::FORMAT_A16);
-    return CreateImageFile(heightmapPathname, width, width, format);
+    return CreateImageFile(heightmapPathname, width, width, format, GetEngineContext()->random->Rand(255));
 }
 
 NMaterial* CreateMaterial(const FastName& materialName, const FastName& fxName)
@@ -96,13 +92,13 @@ PolygonGroup* CreatePolygonGroup()
     return renderData;
 }
 
-bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, const String& tag = "", uint8 fill = 0)
+bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, uint8 color, const String& tag = "")
 {
     FilePath taggedTexturePath = texturePathname;
     taggedTexturePath.ReplaceBasename(texturePathname.GetBasename() + tag);
 
     FilePath pngPathname = FilePath::CreateWithNewExtension(taggedTexturePath, ".png");
-    if (CreateImageFile(pngPathname, width, height, format, fill))
+    if (CreateImageFile(pngPathname, width, height, format, color))
     {
         TextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
 
@@ -180,7 +176,7 @@ Entity* CreateLandscapeEnity(const FilePath& scenePathname)
     {
         FilePath textuePathname = scenePathname;
         textuePathname.ReplaceFilename(fileName);
-        CreateTextureFiles(textuePathname, 2048u, 2048u, PixelFormat::FORMAT_RGBA8888);
+        CreateTextureFiles(textuePathname, 2048u, 2048u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
 
         ScopedPtr<Texture> texture(Texture::CreateFromFile(textuePathname));
         material->AddTexture(slotName, texture);
@@ -253,7 +249,7 @@ Entity* CreateVegetationEntity(const FilePath& scenePathname)
 
         FilePath texturePathname = scenePathname;
         texturePathname.ReplaceFilename("vegetation.texture.tex");
-        CreateTextureFiles(texturePathname, 128, 128u, PixelFormat::FORMAT_RGBA8888);
+        CreateTextureFiles(texturePathname, 128, 128u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
         ScopedPtr<Texture> vegetationTexture(Texture::CreateFromFile(texturePathname));
 
         for (uint32 i = 0; i < VEGETATION_ENTITY_LAYER_NAMES.size(); ++i)
@@ -289,7 +285,7 @@ Entity* CreateVegetationEntity(const FilePath& scenePathname)
 
     FilePath lightmapPathname = scenePathname;
     lightmapPathname.ReplaceFilename("vegetation.lightmap.tex");
-    CreateTextureFiles(lightmapPathname, 128, 128u, PixelFormat::FORMAT_RGBA8888);
+    CreateTextureFiles(lightmapPathname, 128, 128u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
     ro->SetLightmapAndGenerateDensityMap(lightmapPathname);
 
     RenderComponent* rc = new RenderComponent(ro);
@@ -415,6 +411,7 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPa
     tag = newTag;
     path = newPath;
     name = newName;
+    color = GetEngineContext()->random->Rand(255);
 
     DVASSERT(box.get() == nullptr);
     box = ScopedPtr<Entity>(new Entity());
@@ -423,9 +420,9 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPa
     return *this;
 }
 
-SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::SetTextureFill(uint8 newFill)
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::SetTextureColor(uint8 newColor)
 {
-    fill = newFill;
+    color = newColor;
     return *this;
 }
 
@@ -434,7 +431,7 @@ void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& 
     DVASSERT(box.get() != nullptr);
     FilePath texturePath = path;
     texturePath.ReplaceFilename(fileName);
-    Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, tag, fill);
+    Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, color, tag);
 
     ScopedPtr<Texture> texture(Texture::CreateFromFile(texturePath));
     material->AddTexture(slotName, texture);
@@ -525,7 +522,7 @@ Entity* SceneBuilder::BoxBuilder::GetBox()
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Reset()
 {
     box.reset(nullptr);
-    fill = 0;
+    color = GetEngineContext()->random->Rand(255);
     return *this;
 }
 
@@ -586,7 +583,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     boxBuilder
     .Create(scenePath, "box", tagDefault)
-    .SetTextureFill(32)
+    .SetTextureColor(32)
     .AddRenderComponent()
     .AddGeometry()
     .AddSlotComponent("slot", projectPath + "/DataSource/Slot.yaml")
@@ -595,7 +592,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     boxBuilder.Reset()
     .Create(scenePath, "box", tagChina)
-    .SetTextureFill(64)
+    .SetTextureColor(64)
     .AddRenderComponent()
     .AddGeometry()
     .AddRefToOwner()
@@ -603,7 +600,7 @@ void SceneBuilder::CreateFullScene(const DAVA::FilePath& scenePath, const FilePa
 
     boxBuilder.Reset()
     .Create(scenePath, "box", tagJapan)
-    .SetTextureFill(96)
+    .SetTextureColor(96)
     .AddRenderComponent()
     .AddGeometry()
     .AddRefToOwner()

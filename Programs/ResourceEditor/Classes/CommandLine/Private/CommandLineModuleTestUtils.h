@@ -57,7 +57,7 @@ public:
     {
     public:
         BoxBuilder& Create(const FilePath& newPath, const String& newName, const String& newTag);
-        BoxBuilder& SetTextureFill(uint8 newFill);
+        BoxBuilder& SetTextureColor(uint8 newColor);
         BoxBuilder& AddRenderComponent();
         BoxBuilder& AddGeometry();
         BoxBuilder& AddSlotComponent(const String& slotName, const FilePath& configPath);
@@ -71,7 +71,7 @@ public:
 
         ScopedPtr<Entity> box = nullptr;
 
-        uint8 fill = 0; // texture fill color. 0 means random
+        uint8 color;
         FilePath path;
         String tag;
         String name;
