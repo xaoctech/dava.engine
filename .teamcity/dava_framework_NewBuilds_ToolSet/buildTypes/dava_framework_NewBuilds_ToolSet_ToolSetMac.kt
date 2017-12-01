@@ -47,7 +47,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         param("ProjectName", "ToolSet")
         param("runPathMac", "%ProjectName%.app")
         param("runPathWin", "%ProjectName%.exe")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
         param("UNITY_BUILD", "true")
     }
 

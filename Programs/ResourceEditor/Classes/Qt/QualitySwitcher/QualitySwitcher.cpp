@@ -218,15 +218,6 @@ QualitySwitcher::QualitySwitcher(const std::shared_ptr<GlobalOperations>& global
             optionsLayout->addWidget(labOp, i, 0);
             optionsLayout->addWidget(checkOp, i, 1);
         }
-
-        //AppleMetal features preview
-        QLabel* labOp = new QLabel("Metal Enabled:", materialsGroup);
-        QCheckBox* checkOp = new QCheckBox(materialsGroup);
-        checkOp->setObjectName("MetalEnabledCheckBox");
-        checkOp->setChecked(DAVA::QualitySettingsSystem::Instance()->GetMetalPreview());
-        QObject::connect(checkOp, SIGNAL(clicked(bool)), this, SLOT(OnOptionClick(bool)));
-        optionsLayout->addWidget(labOp, optionsCount, 0);
-        optionsLayout->addWidget(checkOp, optionsCount, 1);
     }
 
     // buttons
@@ -455,18 +446,6 @@ void QualitySwitcher::ApplySettings()
                     optionSettingsChanged = true;
                 }
             }
-        }
-    }
-
-    QCheckBox* metalCheckBox = findChild<QCheckBox*>("MetalEnabledCheckBox");
-    if (nullptr != metalCheckBox)
-    {
-        bool checked = metalCheckBox->isChecked();
-        if (DAVA::QualitySettingsSystem::Instance()->GetMetalPreview() != checked)
-        {
-            DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(checked);
-            optionSettingsChanged = true;
-            materialSettingsChanged = true;
         }
     }
 

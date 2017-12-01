@@ -45,7 +45,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
         param("platform", "windows")
         param("ProjectName", "ToolSet")
         param("runPathWin", "%ProjectName%.exe")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
         checkbox("TEST", "false",
                   checked = "true", unchecked = "false")
         checkbox("UNITY_BUILD", "true",
