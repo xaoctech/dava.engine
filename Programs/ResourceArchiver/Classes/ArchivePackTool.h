@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "FileSystem/ResourceArchive.h"
 #include "CommandLineTool.h"
+
+#include <Base/BaseTypes.h>
 #include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <Compression/Compressor.h>
 
 class ArchivePackTool : public CommandLineTool
 {
@@ -26,7 +27,6 @@ private:
     DAVA::Compressor::Type compressionType;
     bool addHidden = false;
     bool useCache = false;
-    bool genDvpl = false;
     DAVA::AssetCacheClient::ConnectionParams assetCacheParams;
     DAVA::String logFileName;
     DAVA::String srcDir;

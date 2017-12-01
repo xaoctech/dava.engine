@@ -29,20 +29,18 @@ int CommandLineApplication::Process(const DAVA::Vector<DAVA::String>& cmdline)
         PrintUsage();
         return codeOk;
     }
-    else
-    {
-        for (auto& tool : tools)
-        {
-            bool parsed = tool->ParseOptions(cmdline);
-            if (parsed)
-            {
-                return tool->Process();
-            }
-        }
 
-        PrintUsage();
-        return codeParseError;
+    for (auto& tool : tools)
+    {
+        const bool parsed = tool->ParseOptions(cmdline);
+        if (parsed)
+        {
+            return tool->Process();
+        }
     }
+
+    PrintUsage();
+    return codeParseError;
 }
 
 int CommandLineApplication::Process(DAVA::uint32 argc, char* argv[])
@@ -52,20 +50,18 @@ int CommandLineApplication::Process(DAVA::uint32 argc, char* argv[])
         PrintUsage();
         return codeOk;
     }
-    else
-    {
-        for (auto& tool : tools)
-        {
-            bool parsed = tool->ParseOptions(argc, argv);
-            if (parsed)
-            {
-                return tool->Process();
-            }
-        }
 
-        PrintUsage();
-        return codeParseError;
+    for (auto& tool : tools)
+    {
+        const bool parsed = tool->ParseOptions(argc, argv);
+        if (parsed)
+        {
+            return tool->Process();
+        }
     }
+
+    PrintUsage();
+    return codeParseError;
 }
 
 void CommandLineApplication::PrintUsage()
@@ -87,5 +83,5 @@ void CommandLineApplication::PrintUsage()
         ss << std::endl;
     }
 
-    DAVA::Logger::Warning("%s", ss.str().c_str());
+    DAVA::Logger::Info("%s", ss.str().c_str());
 }

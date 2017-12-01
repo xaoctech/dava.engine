@@ -13,7 +13,7 @@ public:
     CommandLineApplication(DAVA::String appName);
     void SetParseErrorCode(int errorCode);
     void SetOkCode(int errorCode);
-    void AddTool(std::unique_ptr<CommandLineTool> tool); // todo : probably use multiple inheritance instead of AddTool()
+    void AddTool(std::unique_ptr<CommandLineTool> tool);
 
     int Process(const DAVA::Vector<DAVA::String>& cmdline);
     int Process(DAVA::uint32 argc, char* argv[]);

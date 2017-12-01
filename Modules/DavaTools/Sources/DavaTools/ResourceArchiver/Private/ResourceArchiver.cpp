@@ -280,12 +280,45 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
         return false;
     }
 
+    // validate that all full path are unique
+    auto it_uniq = std::unique(begin(collectedFiles), end(collectedFiles), [](const CollectedFile& l, const CollectedFile& r)
+                               {
+                                   return l.archivePath == r.archivePath;
+                                   ;
+                               });
+
+    if (it_uniq != end(collectedFiles))
+    {
+        Logger::Error("duplicate archivePath in collected values from DB:");
+        for (auto it = it_uniq; it != end(collectedFiles); ++it)
+        {
+            Logger::Error("archivePath: %s", (*it).archivePath.c_str());
+        }
+        return false;
+    }
+
+    // // validate that all absPath are unique
+    it_uniq = std::unique(begin(collectedFiles), end(collectedFiles), [](const CollectedFile& l, const CollectedFile& r)
+                          {
+                              return l.absPath == r.absPath;
+                          });
+
+    if (it_uniq != end(collectedFiles))
+    {
+        Logger::Error("duplicate absPath in collected values from DB:");
+        for (auto it = it_uniq; it != end(collectedFiles); ++it)
+        {
+            Logger::Error("absPath: %s", (*it).archivePath.c_str());
+        }
+        return false;
+    }
+
     return true;
 }
 
-bool CollectFiles(const Vector<String>& sources, const FilePath& baseDir, bool addHiddenFiles, Vector<CollectedFile>& collectedFiles)
+bool CollectFiles(const Vector<String>& sources, const FilePath& baseDir, const bool addHiddenFiles, Vector<CollectedFile>& collectedFiles)
 {
-    for (String source : sources)
+    for (const String& source : sources)
     {
         FilePath sourcePath;
         if (FilePath::IsAbsolutePathname(source))
@@ -300,6 +333,13 @@ bool CollectFiles(const Vector<String>& sources, const FilePath& baseDir, bool a
         else
         {
             sourcePath = baseDir + source;
+        }
+
+        const String resultPathString = sourcePath.GetStringValue();
+        if (String::npos != resultPathString.find_first_of("../") || String::npos != resultPathString.find_first_of("..\\"))
+        {
+            Logger::Error("Source path contains reletive parent folder: \"../\"");
+            return false;
         }
 
         if (false == FileSystem::Instance()->Exists(sourcePath))
@@ -320,8 +360,8 @@ bool CollectFiles(const Vector<String>& sources, const FilePath& baseDir, bool a
         }
         else
         {
-            Logger::Warning("Source '%s' doesn't belong to base dir %s and will be placed in archive root", sourcePath.GetAbsolutePathname().c_str(), baseDir.GetAbsolutePathname().c_str());
-            archivePath = (sourcePath.IsDirectoryPathname() ? sourcePath.GetLastDirectoryName() + '/' : sourcePath.GetFilename());
+            Logger::Error("Source '%s' doesn't belong to base dir %s and will be placed in archive root", sourcePath.GetAbsolutePathname().c_str(), baseDir.GetAbsolutePathname().c_str());
+            return false;
         }
 
         if (sourcePath.IsDirectoryPathname())
@@ -347,7 +387,7 @@ bool CollectFiles(const Vector<String>& sources, const FilePath& baseDir, bool a
                                            {
                                                if (left.absPath == right.absPath)
                                                {
-                                                   Logger::Warning("Skipping duplicate %s", left.absPath.GetAbsolutePathname().c_str());
+                                                   Logger::Error("Skipping duplicate %s archivePath: %s", left.absPath.GetAbsolutePathname().c_str(), left.archivePath.c_str());
                                                    return true;
                                                }
                                                else
@@ -355,7 +395,11 @@ bool CollectFiles(const Vector<String>& sources, const FilePath& baseDir, bool a
                                                    return false;
                                                }
                                            });
-    collectedFiles.erase(pointerAtDuplicates, collectedFiles.end());
+    if (pointerAtDuplicates != end(collectedFiles))
+    {
+        Logger::Error("Duplicated path to files are strange! Why do you duplicate it? Stop...");
+        return false;
+    }
 
     // check colliding files (they are different but have same archivePath and thus one will rewrite another during unpack)
     pointerAtDuplicates = std::unique(collectedFiles.begin(), collectedFiles.end(), [](const CollectedFile& left, const CollectedFile& right) -> bool
@@ -492,8 +536,6 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
 
             Vector<uint8>& useBuffer = (useCompressedBuffer ? compressedFileBuffer : origFileBuffer);
 
-            // TODO if (genDvpl)
-
             fileEntry.startPosition = dataOffset;
             fileEntry.originalSize = static_cast<uint32>(origFileBuffer.size());
             fileEntry.compressedSize = static_cast<uint32>(useBuffer.size());
@@ -506,7 +548,6 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
             }
             else
             {
-                // TODO work in progress for next DLC
                 // we have PackArchive with vector of FileInfo's
                 // from PackArchive we can get fileIndex
                 // with fileIndex from PackMetaData we can get packIndex
