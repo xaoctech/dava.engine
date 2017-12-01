@@ -20,6 +20,8 @@
 #include "Classes/Modules/ProjectModule/ProjectModule.h"
 #include "Classes/Modules/ProjectModule/ProjectData.h"
 
+#include "Classes/Model/QuickEdPackageBuilder.h"
+
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/TArcTestClass.h>
 #include <TArc/Testing/MockDefine.h>
@@ -41,12 +43,15 @@ namespace FilterTestDetails
 class LocalMockModule;
 enum eType
 {
+    //search inside current document in "find in project" and "find in document" modes
     DOCUMENT,
+    //search whole project in "find in project" mode only
     PROJECT
 };
 }
+
 #define CREATE_FILTER_FILE_INFO(Type, FilterClassName, CreateDocument, ...)  { \
-        FilePath path = projectPath + "/DataSource/UI/" + #FilterClassName + "Test.yaml"; \
+        FilePath path = GenerateFileName(#FilterClassName); \
         StringStream ss; \
         CreateDocument; \
         RefPtr<File> file(File::Create(path, File::CREATE | File::WRITE)); \
@@ -57,7 +62,7 @@ enum eType
 }
 
 #define CREATE_FILTER_FILE_INFO_1(Type, FilterClassName, CreateDocument, Item1, ...)  { \
-        FilePath path = projectPath + "/DataSource/UI/" + #FilterClassName + "Test.yaml"; \
+        FilePath path = GenerateFileName(#FilterClassName); \
         StringStream ss; \
         CreateDocument; \
         RefPtr<File> file(File::Create(path, File::CREATE | File::WRITE)); \
@@ -68,7 +73,7 @@ enum eType
 }
 
 #define CREATE_FILTER_FILE_INFO_2(Type, FilterClassName, CreateDocument, Item1, Item2, ...)  { \
-        FilePath path = projectPath + "/DataSource/UI/" + #FilterClassName + "Test.yaml"; \
+        FilePath path = GenerateFileName(#FilterClassName); \
         StringStream ss; \
         CreateDocument; \
         RefPtr<File> file(File::Create(path, File::CREATE | File::WRITE)); \
@@ -113,6 +118,7 @@ protected:
 
         InitFilterDocuments();
 
+        //collect all test files
         QStringList allFiles;
         for (FilterInfo filterInfo : filterInfos)
         {
@@ -141,7 +147,7 @@ protected:
                     foundItems.push_back(QString::fromStdString(path));
                 }
             });
-
+            //test find in project
             if (type == DOCUMENT)
             {
                 finder->Process({ QString::fromStdString(path.GetAbsolutePathname()) });
@@ -152,6 +158,24 @@ protected:
             }
             TEST_VERIFY(foundAny);
             TEST_VERIFY(itemsToFind == foundItems);
+
+            if (type == DOCUMENT)
+            {
+                //test find in document
+                foundItems.clear();
+                foundAny = false;
+
+                QuickEdPackageBuilder builder(GetAccessor()->GetEngineContext());
+                UIPackageLoader packageLoader(projectData->GetPrototypes());
+                bool packageLoaded = packageLoader.LoadPackage(path, &builder);
+                DVASSERT(packageLoaded);
+                RefPtr<PackageNode> packageRef = builder.BuildPackage();
+                DVASSERT(packageRef != nullptr);
+                finder->Process(packageRef.Get());
+
+                TEST_VERIFY(foundAny);
+                TEST_VERIFY(itemsToFind == foundItems);
+            }
         }
     }
 
@@ -167,6 +191,12 @@ protected:
            << UIPackage::CURRENT_VERSION
            << "\"\n";
         return ss.str();
+    }
+
+    FilePath GenerateFileName(const String& testName) const
+    {
+        static int counter = 0;
+        return projectPath + "/DataSource/UI/" + Format("%d_", counter++) + testName + "Test.yaml";
     }
 
     void InitFilterDocuments()
@@ -288,16 +318,28 @@ protected:
                                   "name",
                                   Vector<std::shared_ptr<FindFilter>>{ std::make_shared<ControlNameFilter>("name", true),
                                                                        std::make_shared<HasComponentFilter>(Type::Instance<UIControlBackground>()) });
+        CREATE_FILTER_FILE_INFO_1(DOCUMENT, PrototypeUsagesFilter,
+                                  ss << CreateHeader()
+                                     << "Prototypes:\n"
+                                     << "-   class: \"UIControl\"\n"
+                                     << "    name: \"1\"\n"
+                                     << "Controls:\n"
+                                     << "-   prototype: \"1\"\n"
+                                     << "    name: \"1_1\"\n",
+                                  "1_1",
+                                  path.GetFrameworkPath(), FastName("1"));
+
+        FilePath prototypesTestPath = std::get<FilePath>(filterInfos.back());
 
         CREATE_FILTER_FILE_INFO_2(PROJECT, PrototypeUsagesFilter,
                                   ss << CreateHeader()
                                      << "ImportedPackages:\n"
-                                     << "- \"~res:/UI/PackageVersionFilterTest.yaml\"\n"
+                                     << "- \"" + prototypesTestPath.GetFrameworkPath() + "\"\n"
                                      << "Controls:\n"
-                                     << "-   prototype: \"PackageVersionFilterTest/1\"\n"
+                                     << "-   prototype: \"" + prototypesTestPath.GetBasename() + "/1\"\n"
                                      << "    name: \"1\"\n",
-                                  "1_1", "1",
-                                  String("~res:/UI/PackageVersionFilterTest.yaml"), FastName("1"));
+                                  "1", "1_1",
+                                  prototypesTestPath.GetFrameworkPath(), FastName("1"));
     }
 
     DAVA_VIRTUAL_REFLECTION(LocalMockModule, TArc::ClientModule);
