@@ -4,6 +4,7 @@
 
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
+#include <Functional/Function.h>
 
 namespace DAVA
 {
@@ -18,13 +19,13 @@ class Type;
 class ControlNode;
 class IssueNavigatorWidget;
 class IndexGenerator;
+class IntrospectionProperty;
 
 class EventsIssuesHandler : public PackageListener
 {
 public:
     EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
     ~EventsIssuesHandler() override = default;
-
 
     // PackageListener
     void ActivePackageNodeWasChanged(PackageNode* node) override;
@@ -41,22 +42,26 @@ private:
         const DAVA::Type* componentType = nullptr;
         DAVA::FastName propertyName;
         DAVA::int32 issueId = 0;
-        bool toRemove = false;
+        bool wasFixed = false;
     };
+    using MatchFunction = DAVA::Function<bool(const EventIssue&)>;
 
     DAVA::String CreateIncorrectSymbolsMessage(EventIssue& eventIssue);
-    bool IsEventPropety(AbstractProperty* property);
     PackageNode* GetPackage() const;
     bool IsRootControl(const ControlNode* node) const;
     DAVA::String GetPathToControl(const ControlNode* node) const;
 
     void ValidateNode(ControlNode* node);
     void ValidateNodeForChildren(ControlsContainerNode* container);
+    void ValidateSection(ControlNode* node, ComponentPropertiesSection* componentSection, bool removeFixedIssues);
+    void ValidateProperty(ControlNode* node, const DAVA::Type* componentType, AbstractProperty* property, bool removeFixedIssues);
 
     void CreateIssue(ControlNode* node, const DAVA::Type* componentType, const DAVA::String& propertyName);
     void UpdateNodeIssue(EventIssue& issue);
 
+    void RemoveIssuesIf(MatchFunction matchPred);
     void RemoveNodeIssues(ControlNode* node, bool recursive);
+    void RemoveComponentIssues(ControlNode* node, const DAVA::Type* componentType);
     void RemoveAllIssues();
 
     void SearchIssuesInPackage(PackageNode* package);

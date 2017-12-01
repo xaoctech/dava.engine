@@ -9,8 +9,10 @@
 #include "Classes/Modules/IssueNavigatorModule/IssueHelper.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 #include <Model/ControlProperties/ComponentPropertiesSection.h>
+#include <Model/ControlProperties/IntrospectionProperty.h>
 
 #include <Base/Type.h>
+#include <Functional/Function.h>
 #include <UI/Events/UIInputEventComponent.h>
 #include <UI/Events/UIMovieEventComponent.h>
 #include <UI/UIControl.h>
@@ -44,20 +46,6 @@ EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_,
 DAVA::String EventsIssuesHandler::CreateIncorrectSymbolsMessage(EventIssue& eventIssue)
 {
     return DAVA::Format("Node '%s' event property '%s' contains incorrect symbols", eventIssue.node->GetName().c_str(), eventIssue.propertyName.c_str());
-}
-
-bool EventsIssuesHandler::IsEventPropety(AbstractProperty* property)
-{
-    ComponentPropertiesSection* componentSection = dynamic_cast<ComponentPropertiesSection*>(property->GetParent());
-    if (componentSection)
-    {
-        auto it = componentsAndProperties.find(componentSection->GetComponentType());
-        if (it != componentsAndProperties.end())
-        {
-            return it->second.find(DAVA::FastName(property->GetName())) != it->second.end();
-        }
-    }
-    return false;
 }
 
 PackageNode* EventsIssuesHandler::GetPackage() const
@@ -99,7 +87,7 @@ void EventsIssuesHandler::CreateIssue(ControlNode* node, const DAVA::Type* compo
     eventIssue.componentType = componentType;
     eventIssue.propertyName = DAVA::FastName(propertyName.c_str());
     eventIssue.issueId = issueId;
-    eventIssue.toRemove = false;
+    eventIssue.wasFixed = false;
     issues.push_back(eventIssue);
 
     Issue issue;
@@ -122,15 +110,15 @@ void EventsIssuesHandler::UpdateNodeIssue(EventIssue& eventIssue)
     navigatorWidget->ChangePathToControl(sectionId, issueId, GetPathToControl(node));
 }
 
-void EventsIssuesHandler::RemoveNodeIssues(ControlNode* node, bool recursive)
+void EventsIssuesHandler::RemoveIssuesIf(MatchFunction matchPred)
 {
     auto RemoveIssue = [&](EventIssue& issue)
     {
-        if (issue.node == node)
+        if (matchPred(issue))
         {
             DAVA::int32 issueId = issue.issueId;
             navigatorWidget->RemoveIssue(sectionId, issueId);
-            node->RemoveIssue(issueId);
+            issue.node->RemoveIssue(issueId);
             return true;
         }
         return false;
@@ -138,6 +126,11 @@ void EventsIssuesHandler::RemoveNodeIssues(ControlNode* node, bool recursive)
 
     auto it = std::remove_if(issues.begin(), issues.end(), RemoveIssue);
     issues.erase(it, issues.end());
+}
+
+void EventsIssuesHandler::RemoveNodeIssues(ControlNode* node, bool recursive)
+{
+    RemoveIssuesIf([&](const EventIssue& issue) { return issue.node == node; });
 
     if (recursive)
     {
@@ -148,18 +141,14 @@ void EventsIssuesHandler::RemoveNodeIssues(ControlNode* node, bool recursive)
     }
 }
 
+void EventsIssuesHandler::RemoveComponentIssues(ControlNode* node, const DAVA::Type* componentType)
+{
+    RemoveIssuesIf([&](const EventIssue& issue) { return issue.node == node && issue.componentType == componentType; });
+}
+
 void EventsIssuesHandler::RemoveAllIssues()
 {
-    auto RemoveIssue = [&](EventIssue& issue)
-    {
-        ControlNode* node = issue.node;
-        const DAVA::int32& issueId = issue.issueId;
-        node->RemoveIssue(issueId);
-        navigatorWidget->RemoveIssue(sectionId, issueId);
-    };
-
-    std::for_each(issues.begin(), issues.end(), RemoveIssue);
-    issues.clear();
+    RemoveIssuesIf([&](const EventIssue& issue) { return true; });
 }
 
 void EventsIssuesHandler::SearchIssuesInPackage(PackageNode* package)
@@ -171,8 +160,6 @@ void EventsIssuesHandler::SearchIssuesInPackage(PackageNode* package)
 
         ValidateNodeForChildren(packageControlsNode);
         ValidateNodeForChildren(packagePrototypesNode);
-
-        package->AddListener(this);
     }
 }
 
@@ -186,9 +173,17 @@ void EventsIssuesHandler::ActivePackageNodeWasChanged(PackageNode* package)
 
 void EventsIssuesHandler::ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property)
 {
-    if (IsEventPropety(property))
+    ComponentPropertiesSection* componentSection = dynamic_cast<ComponentPropertiesSection*>(property->GetParent());
+    if (componentSection)
     {
-        ValidateNode(node);
+        auto it = componentsAndProperties.find(componentSection->GetComponentType());
+        if (it != componentsAndProperties.end())
+        {
+            if (it->second.find(DAVA::FastName(property->GetName())) != it->second.end())
+            {
+                ValidateProperty(node, componentSection->GetComponentType(), property, true);
+            }
+        }
     }
 
     if (property->GetName() == "Name")
@@ -209,7 +204,7 @@ void EventsIssuesHandler::ControlComponentWasAdded(ControlNode* node, ComponentP
     DVASSERT(section != nullptr);
     if (componentsAndProperties.find(section->GetComponentType()) != componentsAndProperties.end())
     {
-        ValidateNode(node);
+        ValidateSection(node, section, true);
     }
 }
 
@@ -218,7 +213,7 @@ void EventsIssuesHandler::ControlComponentWasRemoved(ControlNode* node, Componen
     DVASSERT(section != nullptr);
     if (componentsAndProperties.find(section->GetComponentType()) != componentsAndProperties.end())
     {
-        ValidateNode(node);
+        RemoveComponentIssues(node, section->GetComponentType());
     }
 }
 
@@ -248,68 +243,87 @@ void EventsIssuesHandler::ValidateNode(ControlNode* node)
 {
     using namespace DAVA;
 
-    DAVA::int32 issuesToRemoveCount = 0;
     for (EventIssue& issue : issues)
     {
-        issue.toRemove = (issue.node == node);
-        issuesToRemoveCount += (issue.toRemove ? 1 : 0);
+        issue.wasFixed = (issue.node == node);
     }
 
     for (ComponentPropertiesSection* componentSection : node->GetRootProperty()->GetComponents())
     {
-        // Is event component
-        const Type* componentType = componentSection->GetComponentType();
-        auto it = componentsAndProperties.find(componentType);
-        if (it != componentsAndProperties.end())
-        {
-            Set<FastName>& componentProperties = it->second;
-            // For each component from section properties
-            for (auto& property : *componentSection)
-            {
-                // Is event property?
-                FastName propertyName(property->GetName());
-                if (componentProperties.find(propertyName) != componentProperties.end())
-                {
-                    Any propertyValue = property->GetValue();
-                    FastName event = propertyValue.CanCast<FastName>() ? propertyValue.Cast<FastName>() : FastName();
-                    // Check event format
-                    if (UIControlHelpers::IsEventNameValid(event) == false)
-                    {
-                        auto IssueMatcher = [&](const EventIssue& issue)
-                        {
-                            return issue.node == node && issue.componentType == componentType && issue.propertyName == propertyName;
-                        };
-                        auto issuesIt = std::find_if(issues.begin(), issues.end(), IssueMatcher);
+        ValidateSection(node, componentSection, false);
+    }
 
-                        if (issuesIt == issues.end())
-                        {
-                            CreateIssue(node, componentType, property->GetName());
-                        }
-                        else
-                        {
-                            UpdateNodeIssue(*issuesIt);
-                            issuesIt->toRemove = false;
-                            issuesToRemoveCount--;
-                        }
-                    }
-                }
+    RemoveIssuesIf([&](const EventIssue& issue) { return issue.wasFixed; });
+}
+
+void EventsIssuesHandler::ValidateSection(ControlNode* node, ComponentPropertiesSection* componentSection, bool removeFixedIssues)
+{
+    using namespace DAVA;
+
+    // Is event component
+    const Type* componentType = componentSection->GetComponentType();
+
+    if (removeFixedIssues)
+    {
+        for (EventIssue& issue : issues)
+        {
+            issue.wasFixed = (issue.node == node && issue.componentType == componentType);
+        }
+    }
+
+    auto it = componentsAndProperties.find(componentType);
+    if (it != componentsAndProperties.end())
+    {
+        Set<FastName>& componentProperties = it->second;
+        // For each component from section properties
+        for (auto& property : *componentSection)
+        {
+            // Is event property?
+            FastName propertyName(property->GetName());
+            if (componentProperties.find(propertyName) != componentProperties.end())
+            {
+                ValidateProperty(node, componentType, property, false);
             }
         }
     }
-    // Remove fixed issues
-    if (issuesToRemoveCount > 0)
+
+    if (removeFixedIssues)
     {
-        auto it = std::remove_if(issues.begin(), issues.end(), [&](const EventIssue& issue) {
-            if (issue.toRemove)
-            {
-                ControlNode* node = issue.node;
-                const DAVA::int32& issueId = issue.issueId;
-                node->RemoveIssue(issueId);
-                navigatorWidget->RemoveIssue(sectionId, issueId);
-                return true;
-            }
-            return false;
-        });
-        issues.erase(it, issues.end());
+        RemoveIssuesIf([&](const EventIssue& issue) { return issue.wasFixed; });
+    }
+}
+
+void EventsIssuesHandler::ValidateProperty(ControlNode* node, const DAVA::Type* componentType, AbstractProperty* property, bool removeFixedIssues)
+{
+    using namespace DAVA;
+
+    Any propertyValue = property->GetValue();
+    FastName propertyName(property->GetName());
+    FastName event = propertyValue.CanCast<FastName>() ? propertyValue.Cast<FastName>() : FastName();
+    // Check event format
+    if (UIControlHelpers::IsEventNameValid(event) == false)
+    {
+        auto IssueMatcher = [&](const EventIssue& issue)
+        {
+            return issue.node == node && issue.componentType == componentType && issue.propertyName == propertyName;
+        };
+        auto issuesIt = std::find_if(issues.begin(), issues.end(), IssueMatcher);
+
+        if (issuesIt == issues.end())
+        {
+            CreateIssue(node, componentType, property->GetName());
+        }
+        else
+        {
+            UpdateNodeIssue(*issuesIt);
+            issuesIt->wasFixed = false;
+        }
+    }
+    else
+    {
+        if (removeFixedIssues)
+        {
+            RemoveIssuesIf([&](const EventIssue& issue) { return issue.node == node && issue.componentType == componentType && issue.propertyName == propertyName; });
+        }
     }
 }
