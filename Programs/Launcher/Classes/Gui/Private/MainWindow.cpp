@@ -1,6 +1,5 @@
 #include "ui_mainwindow.h"
 #include "Gui/MainWindow.h"
-#include "Gui/ButtonsWidget.h"
 #include "Gui/Models/BranchesListModel.h"
 #include "Gui/Models/BranchesFilterModel.h"
 
@@ -32,6 +31,8 @@ struct ApplicationInfo
     Application* remote = nullptr;
     Application* local = nullptr;
 };
+
+const char* installedPropertyName = "installed";
 }
 
 class BranchListComparator
@@ -132,6 +133,13 @@ void MainWindow::ShowDebugString(const QString& str)
     AddText(str, Qt::blue);
 }
 
+void MainWindow::OnShowInFinder(int rowNum)
+{
+    QString appID, insVersionID, avVersionID;
+    GetTableApplicationIDs(rowNum, appID, insVersionID, avVersionID);
+    appManager->ShowApplicataionInExplorer(selectedBranchID, appID);
+}
+
 void MainWindow::OnRun(int rowNumber)
 {
     QString appID, insVersionID, avVersionID;
@@ -157,6 +165,42 @@ void MainWindow::OnRun(int rowNumber)
         params.appToStart = appID;
         appManager->InstallApplication(params);
     }
+}
+
+void MainWindow::OnRecent(int rowNumber)
+{
+    QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_AVAL);
+    QComboBox* cBox = dynamic_cast<QComboBox*>(cell);
+    if (cBox)
+    {
+        cBox->setCurrentIndex(0);
+
+        QWidget* buttons = ui->tableWidget->cellWidget(rowNumber, COLUMN_BUTTONS);
+        QWidget* refreshButton = buttons->layout()->itemAt(0)->widget();
+        if (refreshButton != nullptr)
+        {
+            refreshButton->setEnabled(false);
+        }
+    }
+}
+
+void MainWindow::OnDownload(int rowNumber)
+{
+    QString appID, insVersionID, avVersionID;
+    GetTableApplicationIDs(rowNumber, appID, insVersionID, avVersionID);
+
+    ConfigHolder* configHolder = appManager->GetConfigHolder();
+    AppVersion* newVersion = configHolder->remoteConfig.GetAppVersion(selectedBranchID, appID, avVersionID);
+    if (newVersion == nullptr)
+    {
+        ErrorMessenger::LogMessage(QtCriticalMsg, "can not found remote application or version OnInstall");
+        return;
+    }
+    InstallApplicationParams params;
+    params.branch = selectedBranchID;
+    params.app = appID;
+    params.newVersion = *newVersion;
+    appManager->InstallApplication(params);
 }
 
 void MainWindow::OnRemove(int rowNumber)
@@ -265,25 +309,46 @@ void MainWindow::ShowTable(QString branchID)
     int index = 0;
     for (QMap<QString, MainWindowDetails::ApplicationInfo>::Iterator iter = applications.begin(); iter != applications.end(); ++iter, ++index)
     {
-        ui->tableWidget->setCellWidget(index, COLUMN_APP_NAME, CreateAppNameTableItem(iter.key(), index));
+        ui->tableWidget->setCellWidget(index, COLUMN_APP_NAME, CreateAppNameTableItem(iter.key(), iter->local, index));
         if (iter->remote != nullptr)
         {
-            ui->tableWidget->setCellWidget(index, COLUMN_APP_AVAL, CreateAppAvalibleTableItem(iter->remote, index));
-        }
-        if (iter->local != nullptr)
-        {
-            ui->tableWidget->setCellWidget(index, COLUMN_APP_INS, CreateAppInstalledTableItem(iter->local->GetVersion(0)->id, index));
+            ui->tableWidget->setCellWidget(index, COLUMN_APP_AVAL, CreateAppAvalibleTableItem(iter->remote, iter->local, index));
         }
 
-        ButtonsWidget* butts = new ButtonsWidget(index, this);
-        butts->setRemoveEnabled(iter->local != nullptr);
-        ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, butts);
+        QWidget* buttonsWidget = new QWidget(this);
+        buttonsWidget->setLayout(new QHBoxLayout());
+        buttonsWidget->layout()->setContentsMargins(0, 0, 0, 0);
+        buttonsWidget->layout()->setSpacing(0);
+        QSize buttonSize(32, 32);
+
+        auto createButton = [this, buttonSize, index, buttonsWidget](const QString& toolTip, const QString& iconName, std::function<void()> f) {
+            QPushButton* button = new QPushButton(this);
+            button->setIcon(QIcon(":/Icons/" + iconName + ".png"));
+            button->setFixedSize(buttonSize);
+            button->setIconSize(buttonSize);
+            connect(button, &QPushButton::clicked, f);
+            buttonsWidget->layout()->addWidget(button);
+            return button;
+        };
+
+        bool canRefreshRecent = false;
+        if (iter->remote != nullptr && iter->remote->GetVerionsCount() > 1 && iter->local != nullptr && iter->local->versions.empty() == false)
+        {
+            canRefreshRecent = iter->remote->versions.back().id != iter->local->versions[0].id;
+        }
+
+        createButton(tr("Most recent version available!"), "recent", std::bind(&MainWindow::OnRecent, this, index))->setEnabled(canRefreshRecent);
+        createButton(tr("Download application only"), "download", std::bind(&MainWindow::OnDownload, this, index))->setEnabled(iter->remote != nullptr);
+        createButton(tr("Download and run application"), "run", std::bind(&MainWindow::OnRun, this, index))->setEnabled(iter->local != nullptr || iter->remote != nullptr);
+        createButton(tr("Remove application"), "delete", std::bind(&MainWindow::OnRemove, this, index))->setEnabled(iter->local != nullptr);
+        createButton(tr("Show in file system"), "show_in_finder", std::bind(&MainWindow::OnShowInFinder, this, index))->setEnabled(iter->local != nullptr);
+
+        ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, buttonsWidget);
     }
 
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     QHeaderView* hHeader = ui->tableWidget->horizontalHeader();
     hHeader->setSectionResizeMode(COLUMN_APP_NAME, QHeaderView::ResizeToContents);
-    hHeader->setSectionResizeMode(COLUMN_APP_INS, QHeaderView::Stretch);
     hHeader->setSectionResizeMode(COLUMN_APP_AVAL, QHeaderView::Stretch);
     hHeader->setSectionResizeMode(COLUMN_BUTTONS, QHeaderView::ResizeToContents);
 
@@ -393,7 +458,7 @@ void MainWindow::RefreshBranchesList()
     }
 }
 
-QWidget* MainWindow::CreateAppNameTableItem(const QString& stringID, int rowNum)
+QWidget* MainWindow::CreateAppNameTableItem(const QString& stringID, const Application* localApp, int rowNum)
 {
     QString string = appManager->GetString(stringID);
     QLabel* item = new QLabel(string);
@@ -418,6 +483,8 @@ QWidget* MainWindow::CreateAppNameTableItem(const QString& stringID, int rowNum)
     });
 
     item->setProperty(DAVA_CUSTOM_PROPERTY_NAME, stringID);
+    QString localAppName = (localApp == nullptr || localApp->versions.isEmpty()) ? "" : localApp->versions[0].id;
+    item->setProperty(MainWindowDetails::installedPropertyName, localAppName);
     item->setFont(tableFont);
 
     return item;
@@ -448,33 +515,42 @@ QWidget* MainWindow::CreateAppInstalledTableItem(const QString& stringID, int ro
         }
         else if (resultAction == showInFinderAction)
         {
-            QString appID, insVersionID, avVersionID;
-            GetTableApplicationIDs(rowNum, appID, insVersionID, avVersionID);
-            appManager->ShowApplicataionInExplorer(selectedBranchID, appID);
+            OnShowInFinder(rowNum);
         }
     });
 
     return item;
 }
 
-QWidget* MainWindow::CreateAppAvalibleTableItem(Application* app, int rowNum)
+QWidget* MainWindow::CreateAppAvalibleTableItem(Application* remote, Application* local, int rowNum)
 {
-    int versCount = app->GetVerionsCount();
+    int versCount = remote->GetVerionsCount();
     if (versCount == 1)
     {
-        return CreateAppInstalledTableItem(app->GetVersion(0)->id, rowNum);
+        return CreateAppInstalledTableItem(remote->GetVersion(0)->id, rowNum);
     }
     else
     {
         QComboBox* comboBox = new QComboBox();
         for (int j = versCount - 1; j >= 0; --j)
         {
-            comboBox->addItem(app->versions[j].id);
+            comboBox->addItem(remote->versions[j].id);
         }
         comboBox->view()->setTextElideMode(Qt::ElideLeft);
         comboBox->setFont(tableFont);
         comboBox->setFocusPolicy(Qt::NoFocus);
+
         comboBox->setCurrentIndex(0);
+        if (local != nullptr && local->versions.empty() == false)
+        {
+            for (int i = 0; i < versCount; ++i)
+            {
+                if (remote->versions[i].id == local->versions[0].id)
+                {
+                    comboBox->setCurrentIndex(versCount - i - 1);
+                }
+            }
+        }
 
 #ifdef Q_OS_MAC
         comboBox->setMaximumHeight(26);
@@ -491,11 +567,10 @@ void MainWindow::GetTableApplicationIDs(int rowNumber, QString& appID,
 
     cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_NAME);
     if (cell)
+    {
         appID = cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString();
-
-    cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_INS);
-    if (cell)
-        installedVersionID = cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString();
+        installedVersionID = cell->property(MainWindowDetails::installedPropertyName).toString();
+    }
 
     cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_AVAL);
     QComboBox* cBox = dynamic_cast<QComboBox*>(cell);

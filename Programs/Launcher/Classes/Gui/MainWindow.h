@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Gui/ButtonsWidget.h"
 #include "Core/Receiver.h"
 
 #include <QMainWindow>
@@ -40,17 +39,11 @@ public:
 
 signals:
     void RefreshClicked();
-    void RunClicked(int row);
-    void DownloadClicked(int row);
-    void RemoveClicked(int row);
 
     void ShowPreferences();
     void CancelClicked();
 
 private slots:
-    void OnRun(int rowNumber);
-    void OnRemove(int rowNumber);
-
     void OnListItemClicked(QModelIndex);
 
     void OnCellDoubleClicked(QModelIndex index);
@@ -58,15 +51,20 @@ private slots:
     void OnlinkClicked(QUrl url);
 
 private:
+    void OnRemove(int index);
+    void OnDownload(int index);
+    void OnShowInFinder(int index);
+    void OnRun(int index);
+    void OnRecent(int index);
     void RefreshBranchesList();
     void OnConnectedChanged(bool connected);
     void AddText(const QString& text, const QColor& color = Qt::black);
 
     void GetTableApplicationIDs(int rowNumber, QString& appID, QString& installedVersionID, QString& avalibleVersionID);
 
-    QWidget* CreateAppNameTableItem(const QString& stringID, int rowNum);
+    QWidget* CreateAppNameTableItem(const QString& stringID, const Application* localApp, int rowNum);
     QWidget* CreateAppInstalledTableItem(const QString& stringID, int rowNum);
-    QWidget* CreateAppAvalibleTableItem(Application* app, int rowNum);
+    QWidget* CreateAppAvalibleTableItem(Application* app, Application* local, int rowNum);
 
     void OnTaskStarted(const BaseTask* task);
     void OnTaskProgress(const BaseTask* task, quint32 progress);
