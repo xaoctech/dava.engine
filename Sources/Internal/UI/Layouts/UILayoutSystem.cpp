@@ -222,10 +222,7 @@ void UILayoutSystem::ManualApplyLayout(UIControl* control)
     Layouter localLayouter;
     localLayouter.SetRtl(sharedLayouter->IsRtl());
     localLayouter.SetVisibilityRect(sharedLayouter->GetVisibilityRect());
-    localLayouter.SetSafeAreaInsets(sharedLayouter->GetSafeAreaLeftInset(),
-                                    sharedLayouter->GetSafeAreaTopInset(),
-                                    sharedLayouter->GetSafeAreaRightInset(),
-                                    sharedLayouter->GetSafeAreaBottomInset());
+    localLayouter.SetSafeAreaInsets(sharedLayouter->GetSafeAreaInsets());
     localLayouter.ApplyLayout(control);
 }
 

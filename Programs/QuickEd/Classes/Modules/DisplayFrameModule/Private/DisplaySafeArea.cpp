@@ -1,10 +1,10 @@
-#include "Classes/Modules/DisplayFrameModule/DisplaySafeArea.h"
+#include "Modules/DisplayFrameModule/DisplaySafeArea.h"
 
-#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
-#include "Classes/Modules/DocumentsModule/DocumentData.h"
-#include "Classes/Modules/DocumentsModule/EditorSystemsData.h"
+#include "Modules/CanvasModule/CanvasDataAdapter.h"
+#include "Modules/DocumentsModule/DocumentData.h"
+#include "Modules/DocumentsModule/EditorSystemsData.h"
 
-#include "Classes/Painter/Painter.h"
+#include "Painter/Painter.h"
 
 #include <TArc/Core/ContextAccessor.h>
 
@@ -19,8 +19,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DisplaySafeAreaPreferences)
 {
     DAVA::ReflectionRegistrator<DisplaySafeAreaPreferences>::Begin()[DAVA::M::DisplayName("Display Safe Area"), DAVA::M::SettingsSortKey(80)]
     .ConstructorByPointer()
-    .Field("linesColor", &DisplaySafeAreaPreferences::linesColor)[DAVA::M::DisplayName("Color")]
     .Field("isVisible", &DisplaySafeAreaPreferences::isVisible)[DAVA::M::DisplayName("Is Visible")]
+    .Field("isEnabled", &DisplaySafeAreaPreferences::isEnabled)[DAVA::M::DisplayName("Is Enabled")]
+    .Field("linesColor", &DisplaySafeAreaPreferences::linesColor)[DAVA::M::DisplayName("Color")]
     .Field("leftInset", &DisplaySafeAreaPreferences::leftInset)[DAVA::M::DisplayName("Left Inset")]
     .Field("topInset", &DisplaySafeAreaPreferences::topInset)[DAVA::M::DisplayName("Top Inset")]
     .Field("rightInset", &DisplaySafeAreaPreferences::rightInset)[DAVA::M::DisplayName("Right Inset")]

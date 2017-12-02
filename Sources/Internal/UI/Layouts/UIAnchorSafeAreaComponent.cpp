@@ -13,13 +13,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIAnchorSafeAreaComponent)
     .ConstructorByPointer()
     .DestructorByPointer([](UIAnchorSafeAreaComponent* o) { o->Release(); })
     .Field("leftSafeInset", &UIAnchorSafeAreaComponent::IsUseLeftSafeInset, &UIAnchorSafeAreaComponent::SetUseLeftSafeInset)
-    .Field("leftVisibilityMargin", &UIAnchorSafeAreaComponent::IsUseLeftVisibilityMargin, &UIAnchorSafeAreaComponent::SetUseLeftVisibilityMargin)
-    .Field("rightSafeInset", &UIAnchorSafeAreaComponent::IsUseRightSafeInset, &UIAnchorSafeAreaComponent::SetUseRightSafeInset)
-    .Field("rightVisibilityMargin", &UIAnchorSafeAreaComponent::IsUseRightVisibilityMargin, &UIAnchorSafeAreaComponent::SetUseRightVisibilityMargin)
     .Field("topSafeInset", &UIAnchorSafeAreaComponent::IsUseTopSafeInset, &UIAnchorSafeAreaComponent::SetUseTopSafeInset)
-    .Field("topVisibilityMargin", &UIAnchorSafeAreaComponent::IsUseTopVisibilityMargin, &UIAnchorSafeAreaComponent::SetUseTopVisibilityMargin)
+    .Field("rightSafeInset", &UIAnchorSafeAreaComponent::IsUseRightSafeInset, &UIAnchorSafeAreaComponent::SetUseRightSafeInset)
     .Field("bottomSafeInset", &UIAnchorSafeAreaComponent::IsUseBottomSafeInset, &UIAnchorSafeAreaComponent::SetUseBottomSafeInset)
-    .Field("bottomVisibilityMargin", &UIAnchorSafeAreaComponent::IsUseBottomVisibilityMargin, &UIAnchorSafeAreaComponent::SetUseBottomVisibilityMargin)
     .End();
 }
 
@@ -53,16 +49,6 @@ void UIAnchorSafeAreaComponent::SetUseLeftSafeInset(bool use)
     SetFlag(FLAG_USE_LEFT_SAFE_INSET, use);
 }
 
-bool UIAnchorSafeAreaComponent::IsUseLeftVisibilityMargin() const
-{
-    return flags.test(FLAG_USE_LEFT_VISIBILITY_MARGIN);
-}
-
-void UIAnchorSafeAreaComponent::SetUseLeftVisibilityMargin(bool use)
-{
-    SetFlag(FLAG_USE_LEFT_VISIBILITY_MARGIN, use);
-}
-
 bool UIAnchorSafeAreaComponent::IsUseRightSafeInset() const
 {
     return flags.test(FLAG_USE_RIGHT_SAFE_INSET);
@@ -71,16 +57,6 @@ bool UIAnchorSafeAreaComponent::IsUseRightSafeInset() const
 void UIAnchorSafeAreaComponent::SetUseRightSafeInset(bool use)
 {
     SetFlag(FLAG_USE_RIGHT_SAFE_INSET, use);
-}
-
-bool UIAnchorSafeAreaComponent::IsUseRightVisibilityMargin() const
-{
-    return flags.test(FLAG_USE_RIGHT_VISIBILITY_MARGIN);
-}
-
-void UIAnchorSafeAreaComponent::SetUseRightVisibilityMargin(bool use)
-{
-    SetFlag(FLAG_USE_RIGHT_VISIBILITY_MARGIN, use);
 }
 
 bool UIAnchorSafeAreaComponent::IsUseTopSafeInset() const
@@ -93,16 +69,6 @@ void UIAnchorSafeAreaComponent::SetUseTopSafeInset(bool use)
     SetFlag(FLAG_USE_TOP_SAFE_INSET, use);
 }
 
-bool UIAnchorSafeAreaComponent::IsUseTopVisibilityMargin() const
-{
-    return flags.test(FLAG_USE_TOP_VISIBILITY_MARGIN);
-}
-
-void UIAnchorSafeAreaComponent::SetUseTopVisibilityMargin(bool use)
-{
-    SetFlag(FLAG_USE_TOP_VISIBILITY_MARGIN, use);
-}
-
 bool UIAnchorSafeAreaComponent::IsUseBottomSafeInset() const
 {
     return flags.test(FLAG_USE_BOTTOM_SAFE_INSET);
@@ -111,16 +77,6 @@ bool UIAnchorSafeAreaComponent::IsUseBottomSafeInset() const
 void UIAnchorSafeAreaComponent::SetUseBottomSafeInset(bool use)
 {
     SetFlag(FLAG_USE_BOTTOM_SAFE_INSET, use);
-}
-
-bool UIAnchorSafeAreaComponent::IsUseBottomVisibilityMargin() const
-{
-    return flags.test(FLAG_USE_BOTTOM_VISIBILITY_MARGIN);
-}
-
-void UIAnchorSafeAreaComponent::SetUseBottomVisibilityMargin(bool use)
-{
-    SetFlag(FLAG_USE_BOTTOM_VISIBILITY_MARGIN, use);
 }
 
 void UIAnchorSafeAreaComponent::SetFlag(eFlags flag, bool enabled)
