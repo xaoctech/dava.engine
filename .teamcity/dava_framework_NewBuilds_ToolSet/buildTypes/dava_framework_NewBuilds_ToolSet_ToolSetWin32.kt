@@ -25,7 +25,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
     """.trimIndent()
 
     params {
-        param("add_definitions", "-DWIN32_MODE=1,-DDAVA_MEMORY_PROFILER=0,-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=1,-DCUSTOM_DAVA_CONFIG_PATH_WIN=%DavaConfigWin%,-DIGNORE_FILE_TREE_CHECK=1,-DCHECK_DEPENDENT_FOLDERS=1,-DTEAMCITY_URL=https://teamcity2.wargaming.net,-DSTASH_URL=https://stash.wargaming.net,-DTEAMCITY_LOGIN=%teamcity_restapi_login%,-DTEAMCITY_PASS=%teamcity_restapi_password%,-DSTASH_LOGIN=%stash_restapi_login%,-DSTASH_PASS=%stash_restapi_password%,-DFRAMEWORK_BRANCH=%teamcity.build.branch%")
+        param("add_definitions", "-DDAVA_MEMORY_PROFILER=0,-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=1,-DCUSTOM_DAVA_CONFIG_PATH_WIN=%DavaConfigWin%,-DIGNORE_FILE_TREE_CHECK=1,-DCHECK_DEPENDENT_FOLDERS=1,-DTEAMCITY_URL=https://teamcity2.wargaming.net,-DSTASH_URL=https://stash.wargaming.net,-DTEAMCITY_LOGIN=%teamcity_restapi_login%,-DTEAMCITY_PASS=%teamcity_restapi_password%,-DSTASH_LOGIN=%stash_restapi_login%,-DSTASH_PASS=%stash_restapi_password%,-DFRAMEWORK_BRANCH=%teamcity.build.branch%")
         param("appID", "%ProjectName%")
         param("baseArchiveNameWin", "%ProjectName%_win_")
         param("baseURLWin", "http://by1-davatool-01.corp.wargaming.local/dava.framework/win/Tools/%branchID%/")
@@ -165,5 +165,4 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
             }
         }
     }
-
 })
