@@ -144,6 +144,7 @@ QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
     {
         SceneTreeItemV2* item = MapItem(index);
         DVASSERT(item != nullptr);
+        DVASSERT(item->object.ContainsObject() == true);
         return QVariant::fromValue(item->object.GetContainedObject());
     }
     default:
