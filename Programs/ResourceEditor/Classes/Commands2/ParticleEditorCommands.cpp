@@ -844,3 +844,19 @@ void CommandCloneParticleForce::Redo()
     clonedForce->forceName = selectedForce->forceName + " Clone";
     selectedLayer->AddForce(clonedForce);
 }
+
+CommandReloadEmitters::CommandReloadEmitters(DAVA::ParticleEffectComponent* component_)
+    : CommandAction(CMDID_PARTICLE_RELOAD_EMITTERS, "")
+    , component(component_)
+{
+}
+
+void CommandReloadEmitters::Redo()
+{
+    component->ReloadEmitters();
+}
+
+DAVA::ParticleEffectComponent* CommandReloadEmitters::GetComponent() const
+{
+    return component;
+}

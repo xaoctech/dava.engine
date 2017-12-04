@@ -783,3 +783,15 @@ protected:
     DAVA::ParticleEmitterInstance* instance = nullptr;
     DAVA::FilePath filePath;
 };
+
+class CommandReloadEmitters : public CommandAction
+{
+public:
+    CommandReloadEmitters(DAVA::ParticleEffectComponent* component_);
+    void Redo() override;
+
+    DAVA::ParticleEffectComponent* GetComponent() const;
+
+protected:
+    DAVA::ParticleEffectComponent* component;
+};

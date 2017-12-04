@@ -529,6 +529,19 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
         syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(Selectable(DAVA::Any(emitter)));
         syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
     });
+
+    commandNotification.ForEachWithCast<CommandReloadEmitters>(CMDID_PARTICLE_RELOAD_EMITTERS, [&](const CommandReloadEmitters* command) {
+        DAVA::ParticleEffectComponent* component = command->GetComponent();
+        DAVA::Entity* entity = component->GetEntity();
+
+        for (DAVA::uint32 i = 0; i < component->GetEmittersCount(); ++i)
+        {
+            DAVA::ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(Selectable(DAVA::Any(instance)));
+        }
+
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
+    });
 }
 
 const SceneTreeSystem::SyncSnapshot& SceneTreeSystem::GetSyncSnapshot() const
