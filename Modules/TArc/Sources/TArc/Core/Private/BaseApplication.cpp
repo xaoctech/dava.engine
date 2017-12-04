@@ -46,7 +46,7 @@ int BaseApplication::RunImpl()
 
     Engine* engine = Engine::Instance();
 
-    Engine::Instance()->cleanup.Connect(this, &BaseApplication::Cleanup);
+    engine->cleanup.Connect(this, &BaseApplication::Cleanup);
 
     if (CommandLineParser::CommandIsFound("--selftest"))
     {
