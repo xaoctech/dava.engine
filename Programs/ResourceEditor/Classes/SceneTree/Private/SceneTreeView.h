@@ -41,6 +41,7 @@ public:
     SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
 
     void AddAction(QAction* action);
+    static void EraseEmptyIndexes(DAVA::Set<QPersistentModelIndex>& indexes);
 
 protected:
     void UpdateControl(const DAVA::TArc::ControlDescriptor& descriptor) override;

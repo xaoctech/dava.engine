@@ -144,7 +144,7 @@ DAVA::int32 CalcParticleElementsDepth(DAVA::ParticleEffectComponent* component, 
         objectsPath.pop();
     }
 
-    DVASSERT(false);
+    DVASSERT(isEmitter == true);
     return 0;
 }
 
