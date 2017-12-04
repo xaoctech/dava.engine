@@ -952,6 +952,11 @@ void SceneTreeTraitsManager::BuildUnfetchedList(const Selectable& object,
                                                 const DAVA::Function<bool(const Selectable&)>& isFetchedFn,
                                                 DAVA::Vector<DAVA::int32>& unfetchedIndexes) const
 {
+    if (fetchBlocked == true)
+    {
+        return;
+    }
+
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
     {

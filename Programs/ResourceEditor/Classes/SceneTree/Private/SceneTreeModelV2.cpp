@@ -286,32 +286,35 @@ void SceneTreeModelV2::SyncChanges()
     };
 
     const SceneTreeSystem::SyncSnapshot& snapShot = system->GetSyncSnapshot();
-    for (const auto& node : snapShot.removedObjects)
     {
-        for (Selectable object : node.second)
+        SceneTreeTraitsManager::FetchBlocker guard(&traits);
+        for (const auto& node : snapShot.removedObjects)
         {
-            auto iter = mapping.find(object);
-            if (iter == mapping.end())
+            for (Selectable object : node.second)
             {
-                continue;
-            }
+                auto iter = mapping.find(object);
+                if (iter == mapping.end())
+                {
+                    continue;
+                }
 
-            SceneTreeItemV2* item = iter->second.get();
-            DVASSERT(item != nullptr);
+                SceneTreeItemV2* item = iter->second.get();
+                DVASSERT(item != nullptr);
 
-            SceneTreeItemV2* parentItem = item->parent;
-            DVASSERT(parentItem->children.empty() == false);
-            QModelIndex parentIndex = MapItem(parentItem);
-            beginRemoveRows(parentIndex, item->positionInParent, item->positionInParent);
-            eraseObject(item);
-            DAVA::int32 childrenCount = static_cast<DAVA::int32>(parentItem->children.size());
-            for (DAVA::int32 i = item->positionInParent; i < parentItem->children.size() - 1; ++i)
-            {
-                std::swap(parentItem->children[i], parentItem->children[i + 1]);
-                parentItem->children[i]->positionInParent = i;
+                SceneTreeItemV2* parentItem = item->parent;
+                DVASSERT(parentItem->children.empty() == false);
+                QModelIndex parentIndex = MapItem(parentItem);
+                beginRemoveRows(parentIndex, item->positionInParent, item->positionInParent);
+                eraseObject(item);
+                DAVA::int32 childrenCount = static_cast<DAVA::int32>(parentItem->children.size());
+                for (DAVA::int32 i = item->positionInParent; i < parentItem->children.size() - 1; ++i)
+                {
+                    std::swap(parentItem->children[i], parentItem->children[i + 1]);
+                    parentItem->children[i]->positionInParent = i;
+                }
+                parentItem->children.pop_back();
+                endRemoveRows();
             }
-            parentItem->children.pop_back();
-            endRemoveRows();
         }
     }
 
