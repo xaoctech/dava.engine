@@ -17,6 +17,7 @@ namespace ParticleForcesDetail
 {
 const int32 noiseWidth = 57;
 const int32 noiseHeight = 57;
+bool isNoiseGenerated = false;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
 
 void GenerateNoise()
@@ -32,10 +33,12 @@ void GenerateNoise()
             noise[i][j] = Generate2OctavesPerlin(q);
         }
     }
+    isNoiseGenerated = true;
 }
 
 const uint32 sphereRandomVectorsSize = 1024;
 Array<Vector3, sphereRandomVectorsSize> sphereRandomVectors;
+bool isSphereRandomVectorsGenerated = false;
 void GenerateSphereRandomVectors()
 {
     uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
@@ -50,6 +53,7 @@ void GenerateSphereRandomVectors()
         float32 sinPhi = std::sin(phi);
         sphereRandomVectors[i] = { sinPhi * std::cos(theta), sinPhi * std::sin(theta), cosPhi };
     }
+    isSphereRandomVectorsGenerated = true;
 }
 
 Vector3 GetNoiseValue(float32 particleOverLife, float32 frequency, uint32 clampedIndex)
@@ -83,8 +87,10 @@ inline void KillParticlePlaneCollision(const ParticleForce* force, Particle* par
 
 void Init()
 {
-    ParticleForcesDetail::GenerateNoise();
-    ParticleForcesDetail::GenerateSphereRandomVectors();
+    if (!ParticleForcesDetail::isNoiseGenerated)
+        ParticleForcesDetail::GenerateNoise();
+    if (!ParticleForcesDetail::isSphereRandomVectorsGenerated)
+        ParticleForcesDetail::GenerateSphereRandomVectors();
 }
 
 template <typename T>
