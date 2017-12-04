@@ -28,7 +28,7 @@
 ////Application table defines
 
 #define COLUMN_APP_NAME 0
-#define COLUMN_APP_AVAL 1
+#define COLUMN_APP_VERSION 1
 #define COLUMN_BUTTONS 2
 
 #define DAVA_CUSTOM_PROPERTY_NAME "DAVA_ID"

@@ -169,7 +169,7 @@ void MainWindow::OnRun(int rowNumber)
 
 void MainWindow::OnRecent(int rowNumber)
 {
-    QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_AVAL);
+    QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_VERSION);
     QComboBox* cBox = dynamic_cast<QComboBox*>(cell);
     if (cBox)
     {
@@ -182,6 +182,12 @@ void MainWindow::OnRecent(int rowNumber)
             refreshButton->setEnabled(false);
         }
     }
+}
+
+void MainWindow::CopyVersion(int rowNumber)
+{
+    QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_VERSION);
+    QApplication::clipboard()->setText(cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString());
 }
 
 void MainWindow::OnDownload(int rowNumber)
@@ -312,7 +318,7 @@ void MainWindow::ShowTable(QString branchID)
         ui->tableWidget->setCellWidget(index, COLUMN_APP_NAME, CreateAppNameTableItem(iter.key(), iter->local, index));
         if (iter->remote != nullptr)
         {
-            ui->tableWidget->setCellWidget(index, COLUMN_APP_AVAL, CreateAppAvalibleTableItem(iter->remote, iter->local, index));
+            ui->tableWidget->setCellWidget(index, COLUMN_APP_VERSION, CreateAppAvalibleTableItem(iter->remote, iter->local, index));
         }
 
         QWidget* buttonsWidget = new QWidget(this);
@@ -336,7 +342,7 @@ void MainWindow::ShowTable(QString branchID)
         {
             canRefreshRecent = iter->remote->versions.back().id != iter->local->versions[0].id;
         }
-
+        createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index));
         createButton(tr("Most recent version available!"), "recent", std::bind(&MainWindow::OnRecent, this, index))->setEnabled(canRefreshRecent);
         createButton(tr("Download application only"), "download", std::bind(&MainWindow::OnDownload, this, index))->setEnabled(iter->remote != nullptr);
         createButton(tr("Download and run application"), "run", std::bind(&MainWindow::OnRun, this, index))->setEnabled(iter->local != nullptr || iter->remote != nullptr);
@@ -349,7 +355,7 @@ void MainWindow::ShowTable(QString branchID)
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     QHeaderView* hHeader = ui->tableWidget->horizontalHeader();
     hHeader->setSectionResizeMode(COLUMN_APP_NAME, QHeaderView::ResizeToContents);
-    hHeader->setSectionResizeMode(COLUMN_APP_AVAL, QHeaderView::Stretch);
+    hHeader->setSectionResizeMode(COLUMN_APP_VERSION, QHeaderView::Stretch);
     hHeader->setSectionResizeMode(COLUMN_BUTTONS, QHeaderView::ResizeToContents);
 
     ui->tableWidget->setMaximumHeight(ui->tableWidget->sizeHint().height());
@@ -511,7 +517,7 @@ QWidget* MainWindow::CreateAppInstalledTableItem(const QString& stringID, int ro
 
         if (resultAction == copyAction)
         {
-            QApplication::clipboard()->setText(item->property(DAVA_CUSTOM_PROPERTY_NAME).toString());
+            CopyVersion(rowNum);
         }
         else if (resultAction == showInFinderAction)
         {
@@ -572,7 +578,7 @@ void MainWindow::GetTableApplicationIDs(int rowNumber, QString& appID,
         installedVersionID = cell->property(MainWindowDetails::installedPropertyName).toString();
     }
 
-    cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_AVAL);
+    cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_VERSION);
     QComboBox* cBox = dynamic_cast<QComboBox*>(cell);
     if (cBox)
         avalibleVersionID = cBox->currentText();
