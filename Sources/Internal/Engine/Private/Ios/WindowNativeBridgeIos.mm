@@ -98,12 +98,16 @@ bool WindowNativeBridge::CreateWindow()
 
     CGRect viewRect = [renderView bounds];
 
-    UIEdgeInsets safeAreaInsets = uiwindow.safeAreaInsets;
-
     dpi = Private::DeviceManagerImpl::GetIPhoneMainScreenDpi();
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCreatedEvent(window, viewRect.size.width, viewRect.size.height, viewRect.size.width * scale, viewRect.size.height * scale, dpi, eFullscreen::On));
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowVisibilityChangedEvent(window, true));
-    mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(window, safeAreaInsets.left, safeAreaInsets.top, safeAreaInsets.right, safeAreaInsets.bottom));
+
+    if (@available(iOS 11.0, *)) // [uiwindow respondsToSelector:@selector(safeAreaInsets)]
+    {
+        UIEdgeInsets safeAreaInsets = [uiwindow safeAreaInsets];
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(window, safeAreaInsets.left, safeAreaInsets.top, safeAreaInsets.right, safeAreaInsets.bottom));
+    }
+
     return true;
 }
 
