@@ -151,7 +151,8 @@ ControlNode* GetRootControl(ControlNode* node)
     for (PackageBaseNode *currentNode = node;
          currentNode != nullptr && currentNode->GetControl() != nullptr;
          result = currentNode, currentNode = currentNode->GetParent())
-        ;
+    {
+    };
 
     return dynamic_cast<ControlNode*>(result);
 }
