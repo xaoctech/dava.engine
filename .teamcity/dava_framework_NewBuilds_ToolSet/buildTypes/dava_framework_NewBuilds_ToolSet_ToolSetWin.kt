@@ -170,4 +170,8 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
             }
         }
     }
+
+    requirements {
+        exists("env.windows10")
+    }    
 })
