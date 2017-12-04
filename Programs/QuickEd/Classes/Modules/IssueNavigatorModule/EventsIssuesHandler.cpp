@@ -1,15 +1,14 @@
 #include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
 #include "Classes/Model/ControlProperties/AbstractProperty.h"
-#include "Classes/Model/ControlProperties/NameProperty.h"
+#include "Classes/Model/ControlProperties/ComponentPropertiesSection.h"
+#include "Classes/Model/ControlProperties/IntrospectionProperty.h"
 #include "Classes/Model/ControlProperties/RootProperty.h"
 #include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
 #include "Classes/Model/PackageHierarchy/PackageNode.h"
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueHelper.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include <Model/ControlProperties/ComponentPropertiesSection.h>
-#include <Model/ControlProperties/IntrospectionProperty.h>
 
 #include <Base/Type.h>
 #include <Functional/Function.h>
@@ -262,15 +261,6 @@ void EventsIssuesHandler::ValidateSection(ControlNode* node, ComponentProperties
 
     // Is event component
     const Type* componentType = componentSection->GetComponentType();
-
-    if (removeFixedIssues)
-    {
-        for (EventIssue& issue : issues)
-        {
-            issue.wasFixed = (issue.node == node && issue.componentType == componentType);
-        }
-    }
-
     auto it = componentsAndProperties.find(componentType);
     if (it != componentsAndProperties.end())
     {
@@ -282,14 +272,9 @@ void EventsIssuesHandler::ValidateSection(ControlNode* node, ComponentProperties
             FastName propertyName(property->GetName());
             if (componentProperties.find(propertyName) != componentProperties.end())
             {
-                ValidateProperty(node, componentType, property, false);
+                ValidateProperty(node, componentType, property, removeFixedIssues);
             }
         }
-    }
-
-    if (removeFixedIssues)
-    {
-        RemoveIssuesIf([&](const EventIssue& issue) { return issue.wasFixed; });
     }
 }
 
@@ -316,6 +301,7 @@ void EventsIssuesHandler::ValidateProperty(ControlNode* node, const DAVA::Type* 
         else
         {
             UpdateNodeIssue(*issuesIt);
+            // Mark unfixed issue
             issuesIt->wasFixed = false;
         }
     }
