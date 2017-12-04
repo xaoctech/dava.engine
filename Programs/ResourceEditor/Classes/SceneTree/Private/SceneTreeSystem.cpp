@@ -1,5 +1,6 @@
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
 
+#include "Classes/Commands2/SetFieldValueCommand.h"
 #include "Classes/Commands2/Base/RECommandNotificationObject.h"
 #include "Classes/Commands2/ParticleEditorCommands.h"
 #include "Classes/Commands2/ParticleEmitterMoveCommands.h"
@@ -242,6 +243,18 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     {
         return;
     }
+
+    commandNotification.ForEachWithCast<SetFieldValueCommand>(CMDID_REFLECTED_FIELD_MODIFY, [&](const SetFieldValueCommand* command) {
+        const DAVA::Reflection::Field& f = command->GetField();
+        if (f.key.CanCast<DAVA::FastName>() && f.key.Cast<DAVA::FastName>() == DAVA::Entity::EntityNameFieldName)
+        {
+            DAVA::ReflectedObject obj = f.ref.GetDirectObject();
+            if (obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::Entity>())
+            {
+                syncSnapshot.changedObjects.insert(Selectable(obj.GetPtr<DAVA::Entity>()));
+            }
+        }
+    });
 
     commandNotification.ForEachWithCast<CommandAddParticleEmitter>(CMDID_PARTICLE_EMITTER_ADD, [&](const CommandAddParticleEmitter* command) {
         static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitter>::value, "You should support undo for this command here");

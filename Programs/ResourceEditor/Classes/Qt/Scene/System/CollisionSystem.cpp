@@ -825,6 +825,11 @@ void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
     if (!systemIsEnabled || entity == nullptr)
         return;
 
+    if (entity == GetScene())
+    {
+        return;
+    }
+
     if (DAVA::GetLandscape(entity) != nullptr)
     {
         curLandscapeEntity = entity;
@@ -979,7 +984,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxWaypointScale), userData);
             }
-            else if (entity->GetParent() != nullptr)
+            else
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), userData);
             }
