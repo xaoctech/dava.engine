@@ -17,6 +17,7 @@
 #include <Time/DateTime.h>
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
+#include <Job/JobManager.h>
 
 #include <sqlite_modern_cpp.h>
 #include <algorithm>
@@ -450,146 +451,175 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
           const FilePath& metaDb,
           File* outputFile)
 {
-    PackFormat::PackFile packFile;
-
-    Vector<uint8> origFileBuffer;
-    Vector<uint8> compressedFileBuffer;
+    // validate input params
+    if (collectedFiles.empty())
+    {
+        Logger::Error("no files to commpress");
+        return false;
+    }
 
     const Compressor* compressor = nullptr;
     if (compressionType != Compressor::Type::None)
     {
         compressor = GetCompressor(compressionType);
-        DVASSERT(compressor, Format("Can't get '%s' compressor", GlobalEnumMap<Compressor::Type>::Instance()->ToString(static_cast<int>(compressionType))).c_str());
+        if (compressor == nullptr)
+        {
+            Logger::Error("Can't compressor");
+            return false;
+        }
     }
 
-    FileSystem* fs = FileSystem::Instance();
+    if (!metaDb.Exists())
+    {
+        Logger::Error("metaDB not exist");
+        return false;
+    }
+
+    if (outputFile == nullptr)
+    {
+        Logger::Error("outputFile is nullptr");
+        return false;
+    }
 
     // load metadata
     // CREATE TABLE IF NOT EXISTS files(path TEXT PRIMARY KEY, pack_index INTEGER NOT NULL);
     // CREATE TABLE IF NOT EXISTS packs(index INTEGER PRIMARY KEY, name TEXT UNIQUE, dependency TEXT NOT NULL);
     std::unique_ptr<PackMetaData> meta;
 
-    if (!metaDb.IsEmpty())
-    {
-        if (fs->Exists(metaDb))
-        {
-            try
-            {
-                meta.reset(new PackMetaData(metaDb));
-            }
-            catch (std::exception& ex)
-            {
-                Logger::Error("can't open metaDb: %s", ex.what());
-                return false;
-            }
-        }
-        else
-        {
-            Logger::Error("no metaDb found: %s", metaDb.GetAbsolutePathname().c_str());
-            return false;
-        }
-    }
-
-    uint64 dataOffset = 0;
-
     try
     {
-        for (uint32 fileIndex = 0; fileIndex < collectedFiles.size(); ++fileIndex)
-        {
-            const CollectedFile& collectedFile = collectedFiles[fileIndex];
-            PackFormat::FileTableEntry fileEntry = { 0 };
-
-            origFileBuffer.clear();
-            compressedFileBuffer.clear();
-
-            if (fs->ReadFileContents(collectedFile.absPath, origFileBuffer) == false)
-            {
-                throw std::runtime_error("Can't read contents of " + collectedFile.absPath.GetAbsolutePathname());
-            }
-
-            bool useCompressedBuffer = (compressionType != Compressor::Type::None);
-            Compressor::Type useCompression = compressionType;
-
-            if (origFileBuffer.empty())
-            {
-                useCompressedBuffer = false;
-                useCompression = Compressor::Type::None;
-            }
-
-            if (useCompressedBuffer)
-            {
-                if (!compressor->Compress(origFileBuffer, compressedFileBuffer))
-                {
-                    throw std::runtime_error("Can't compress contents of " + collectedFile.absPath.GetAbsolutePathname());
-                }
-
-                if (compressedFileBuffer.size() < origFileBuffer.size())
-                {
-                    useCompressedBuffer = true;
-                }
-                else
-                {
-                    useCompressedBuffer = false;
-                    useCompression = Compressor::Type::None;
-                }
-            }
-
-            Vector<uint8>& useBuffer = (useCompressedBuffer ? compressedFileBuffer : origFileBuffer);
-
-            fileEntry.startPosition = dataOffset;
-            fileEntry.originalSize = static_cast<uint32>(origFileBuffer.size());
-            fileEntry.compressedSize = static_cast<uint32>(useBuffer.size());
-            fileEntry.type = useCompression;
-            fileEntry.compressedCrc32 = CRC32::ForBuffer(useBuffer.data(), useBuffer.size());
-            fileEntry.originalCrc32 = CRC32::ForBuffer(origFileBuffer.data(), origFileBuffer.size());
-            if (!meta)
-            {
-                fileEntry.metaIndex = 0; // do it or your crc32 randomly change on same files
-            }
-            else
-            {
-                // we have PackArchive with vector of FileInfo's
-                // from PackArchive we can get fileIndex
-                // with fileIndex from PackMetaData we can get packIndex
-                // and later use metaIndex(packIndex) directly from FileInfo
-                // files table example
-                //|--------------------------------------|
-                //|file_path(sorted)----------|pack_index|
-                //|3d/gfx/uber_file.pvr       |         0|
-                //|--------------------------------------|
-                // packs table example
-                //|--------------------------------------|
-                //|pack_index|pack_name-----|pack_dep----|
-                //|         0|group_pack_1  |group_pack_0|
-                //|--------------------------------------|
-                // so packIndex(metaIndex) is duplicated in FileInfo's for now.
-                fileEntry.metaIndex = meta->GetPackIndexForFile(fileIndex);
-            }
-
-            dataOffset += static_cast<uint32>(useBuffer.size());
-
-            if (!WriteRawData(outputFile, useBuffer))
-            {
-                throw std::runtime_error("can't write buffer to output file");
-            }
-
-            packFile.filesTable.data.files.push_back(fileEntry);
-
-            static String deviceName = UTF8Utils::EncodeToUTF8(DeviceInfo::GetName());
-            DateTime dateTime = DateTime::Now();
-            String date = UTF8Utils::EncodeToUTF8(dateTime.GetLocalizedDate());
-            String time = UTF8Utils::EncodeToUTF8(dateTime.GetLocalizedTime());
-            Logger::Debug("%s | %s %s | Packed %s, orig size %u, compressed size %u, compression: %s, crc32: 0x%X",
-                          deviceName.c_str(), date.c_str(), time.c_str(),
-                          collectedFile.archivePath.c_str(), fileEntry.originalSize, fileEntry.compressedSize,
-                          GlobalEnumMap<Compressor::Type>::Instance()->ToString(static_cast<int>(fileEntry.type)), fileEntry.compressedCrc32);
-        };
+        meta.reset(new PackMetaData(metaDb));
     }
     catch (std::exception& ex)
     {
-        Logger::Error("%s", ex.what());
+        Logger::Error("can't open or parse metaDb: %s", ex.what());
         return false;
     }
+
+    const size_t numOfFiles = collectedFiles.size();
+    PackFormat::PackFile packFile;
+    packFile.filesTable.data.files.resize(numOfFiles);
+    Vector<Vector<uint8>> useBuffers;
+    useBuffers.resize(numOfFiles);
+
+    FileSystem* fs = FileSystem::Instance();
+    JobManager* jobManager = GetEngineContext()->jobManager;
+    DVASSERT(jobManager != nullptr);
+
+    std::atomic<uint32> countLoadedFiles = 0;
+
+    for (uint32 fileIndex = 0; fileIndex < numOfFiles; ++fileIndex)
+    {
+        jobManager->CreateWorkerJob([&, fileIndex]()
+                                    {
+                                        const CollectedFile& collectedFile = collectedFiles[fileIndex];
+                                        PackFormat::FileTableEntry& fileEntry = packFile.filesTable.data.files[fileIndex];
+
+                                        Vector<uint8> origFileBuffer;
+                                        Vector<uint8> compressedFileBuffer;
+
+                                        if (!fs->ReadFileContents(collectedFile.absPath, origFileBuffer))
+                                        {
+                                            Logger::Error("Can't read contents of: ", collectedFile.absPath.GetAbsolutePathname().c_str());
+                                            return;
+                                        }
+
+                                        bool useCompressedBuffer = (compressionType != Compressor::Type::None);
+                                        Compressor::Type useCompression = compressionType;
+
+                                        if (origFileBuffer.empty())
+                                        {
+                                            useCompressedBuffer = false;
+                                            useCompression = Compressor::Type::None;
+                                        }
+
+                                        if (useCompressedBuffer)
+                                        {
+                                            if (!compressor->Compress(origFileBuffer, compressedFileBuffer))
+                                            {
+                                                Logger::Error("Can't compress contents of: %s", collectedFile.absPath.GetAbsolutePathname().c_str());
+                                                return;
+                                            }
+
+                                            if (compressedFileBuffer.size() < origFileBuffer.size())
+                                            {
+                                                useCompressedBuffer = true;
+                                            }
+                                            else
+                                            {
+                                                useCompressedBuffer = false;
+                                                useCompression = Compressor::Type::None;
+                                            }
+                                        }
+
+                                        Vector<uint8>& useBuffer = (useCompressedBuffer ? compressedFileBuffer : origFileBuffer);
+
+                                        fileEntry.startPosition = 0; // later fill this field
+                                        fileEntry.originalSize = static_cast<uint32>(origFileBuffer.size());
+                                        fileEntry.compressedSize = static_cast<uint32>(useBuffer.size());
+                                        fileEntry.type = useCompression;
+                                        fileEntry.compressedCrc32 = CRC32::ForBuffer(useBuffer.data(), useBuffer.size());
+                                        fileEntry.originalCrc32 = CRC32::ForBuffer(origFileBuffer.data(), origFileBuffer.size());
+                                        if (!meta)
+                                        {
+                                            fileEntry.metaIndex = 0; // do it or your crc32 randomly change on same files
+                                        }
+                                        else
+                                        {
+                                            // we have PackArchive with vector of FileInfo's
+                                            // from PackArchive we can get fileIndex
+                                            // with fileIndex from PackMetaData we can get packIndex
+                                            // and later use metaIndex(packIndex) directly from FileInfo
+                                            // files table example
+                                            //|--------------------------------------|
+                                            //|file_path(sorted)----------|pack_index|
+                                            //|3d/gfx/uber_file.pvr       |         0|
+                                            //|--------------------------------------|
+                                            // packs table example
+                                            //|--------------------------------------|
+                                            //|pack_index|pack_name-----|pack_dep----|
+                                            //|         0|group_pack_1  |group_pack_0|
+                                            //|--------------------------------------|
+                                            // so packIndex(metaIndex) is duplicated in FileInfo's for now.
+                                            fileEntry.metaIndex = meta->GetPackIndexForFile(fileIndex);
+                                        }
+                                        useBuffers[fileIndex] = std::move(useBuffer);
+                                        ++countLoadedFiles;
+                                    });
+
+        if (fileIndex > 0 && fileIndex % 1000 == 0)
+        {
+            //HACK wait jobs executed (internaly 1024 max jobs)
+            if (fileIndex > 0 && fileIndex % 1000 == 0)
+            {
+                jobManager->WaitWorkerJobs();
+            }
+        }
+    } // end for fileIndex
+
+    jobManager->WaitWorkerJobs();
+
+    if (numOfFiles != countLoadedFiles)
+    {
+        return false;
+    }
+
+    // write all compressed content to output file and set startPosition fileEntry
+    for (uint64 fileIndex = 0, dataOffset = 0; fileIndex < numOfFiles; ++fileIndex)
+    {
+        PackFormat::FileTableEntry& fileEntry = packFile.filesTable.data.files[fileIndex];
+        fileEntry.startPosition = dataOffset;
+
+        const Vector<uint8>& useBuffer = useBuffers[fileIndex];
+        if (!WriteRawData(outputFile, useBuffer))
+        {
+            Logger::Error("can't write buffer to output file");
+            return false;
+        }
+        dataOffset += useBuffer.size();
+    }
+    useBuffers.clear();
+    useBuffers.shrink_to_fit(); // free memory
 
     Vector<uint8> metaBytes;
     if (meta)
@@ -610,7 +640,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
 
     if (!namesOriginal.empty())
     {
-        if (!GetCompressor(Compressor::Type::Lz4HC)->Compress(namesOriginal, namesBlock.compressedNames))
+        if (!LZ4HCCompressor().Compress(namesOriginal, namesBlock.compressedNames))
         {
             Logger::Error("Can't compress names block");
             return false;
@@ -619,7 +649,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
 
     namesBlock.compressedCrc32 = CRC32::ForBuffer(namesBlock.compressedNames.data(), namesBlock.compressedNames.size());
 
-    uint32 fileDataSize = static_cast<uint32>(filesDataBlock.files.size() * sizeof(PackFormat::FileTableEntry));
+    const uint32 fileDataSize = static_cast<uint32>(filesDataBlock.files.size() * sizeof(PackFormat::FileTableEntry));
     uint32 fileTableSize = fileDataSize + static_cast<uint32>(namesBlock.compressedNames.size() + sizeof(namesBlock.compressedCrc32));
 
     if (0 == fileDataSize)
@@ -647,7 +677,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
 
     if (fileTableSize > 0)
     {
-        uint32 numBytesWrite = outputFile->Write(tmpFileTable.data(), static_cast<uint32>(tmpFileTable.size()));
+        const uint32 numBytesWrite = outputFile->Write(tmpFileTable.data(), static_cast<uint32>(tmpFileTable.size()));
         if (numBytesWrite != tmpFileTable.size())
         {
             Logger::Error("Can't write fileTableBlock");
@@ -685,90 +715,24 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
 
 bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type compressionType, const FilePath& archivePath, const FilePath& metaDb)
 {
-    if (archivePath.IsDirectoryPathname()) // generate DVPL's for each file
+    ScopedPtr<File> outputFile(File::Create(archivePath, File::CREATE | File::WRITE));
+    if (!outputFile)
     {
-        for (const CollectedFile& collectedFile : collectedFiles)
-        {
-            ScopedPtr<File> file(File::Create(collectedFile.absPath, File::OPEN | File::READ));
-            if (!file)
-            {
-                Logger::Error("can't open: %s", collectedFile.absPath.GetAbsolutePathname().c_str());
-                return false;
-            }
-
-            Vector<uint8> in_bytes(static_cast<size_t>(file->GetSize()));
-            Vector<uint8> out_bytes;
-            uint32 read = file->Read(&in_bytes[0], static_cast<uint32>(in_bytes.size()));
-            if (read != in_bytes.size())
-            {
-                Logger::Error("can't read file: %s", collectedFile.absPath.GetAbsolutePathname().c_str());
-                return false;
-            }
-
-            if (!LZ4HCCompressor().Compress(in_bytes, out_bytes))
-            {
-                Logger::Error("can't compress file: %s", collectedFile.absPath.GetAbsolutePathname().c_str());
-                return false;
-            }
-            const FilePath outputFileName = archivePath + collectedFile.archivePath + ".dvpl";
-            const FilePath outputDir = outputFileName.GetDirectory();
-            if (!FileSystem::Instance()->IsDirectory(outputDir))
-            {
-                FileSystem::Instance()->CreateDirectory(outputDir, true);
-            }
-            ScopedPtr<File> outFile(File::Create(outputFileName, File::CREATE | File::WRITE));
-            if (!outFile)
-            {
-                Logger::Error("can't create output file: %s", outputFileName.GetAbsolutePathname().c_str());
-                return false;
-            }
-
-            uint32 written = outFile->Write(&out_bytes[0], static_cast<uint32>(out_bytes.size()));
-            if (written != out_bytes.size())
-            {
-                Logger::Error("can't write output file: %s", outputFileName.GetAbsolutePathname().c_str());
-                return false;
-            }
-
-            PackFormat::LitePack::Footer footer;
-            footer.crc32Compressed = CRC32::ForBuffer(&out_bytes[0], out_bytes.size());
-            footer.sizeCompressed = static_cast<uint32>(out_bytes.size());
-            footer.sizeUncompressed = static_cast<uint32>(in_bytes.size());
-            footer.type = Compressor::Type::Lz4HC;
-            footer.packMarkerLite = PackFormat::FILE_MARKER_LITE;
-
-            written = outFile->Write(&footer, sizeof(footer));
-            if (written != sizeof(footer))
-            {
-                Logger::Error("can't write footer to file: %s", outputFileName.GetAbsolutePathname().c_str());
-                return false;
-            }
-        }
-        return true;
+        Logger::Error("Can't create %s", archivePath.GetAbsolutePathname().c_str());
+        return false;
     }
-    else
+
+    if (!Pack(collectedFiles, compressionType, metaDb, outputFile))
     {
-        ScopedPtr<File> outputFile(File::Create(archivePath, File::CREATE | File::WRITE));
-        if (!outputFile)
-        {
-            Logger::Error("Can't create %s", archivePath.GetAbsolutePathname().c_str());
-            return false;
-        }
-
-        bool packWasSuccessfull = Pack(collectedFiles, compressionType, metaDb, outputFile);
         outputFile.reset();
-
-        if (packWasSuccessfull)
-        {
-            return true;
-        }
-
         if (!FileSystem::Instance()->DeleteFile(archivePath))
         {
             Logger::Error("Can't delete %s", archivePath.GetAbsolutePathname().c_str());
         }
         return false;
     }
+
+    return true;
 }
 
 bool CreateArchive(const Params& params)
@@ -780,55 +744,20 @@ bool CreateArchive(const Params& params)
     }
 
     Vector<CollectedFile> collectedFiles;
-    if (!params.metaDbPath.IsEmpty())
-    {
-        Logger::Info("collect only files from metaDB");
-        if (false == CollectFilesFromDB(params.baseDirPath, params.metaDbPath, collectedFiles))
-        {
-            Logger::Error("Collecting files error");
-            return false;
-        }
-    }
-    else if (false == CollectFiles(params.sourcesList, params.baseDirPath, params.addHiddenFiles, collectedFiles))
+
+    if (!CollectFilesFromDB(params.baseDirPath, params.metaDbPath, collectedFiles))
     {
         Logger::Error("Collecting files error");
         return false;
     }
 
-    if (params.archivePath.IsEmpty())
-    {
-        Logger::Error("Archive path is not set");
-        return false;
-    }
-
-    AssetCache::CacheItemKey keyForArchive;
-    AssetCache::CacheItemKey keyForLog;
-    if (params.assetCacheClient != nullptr)
-    {
-        const char* compressionStr = GlobalEnumMap<Compressor::Type>::Instance()->ToString(static_cast<int>(params.compressionType));
-        ConstructCacheKeys(keyForArchive, keyForLog, collectedFiles, compressionStr);
-
-        if (true == RetrieveFromCache(params.assetCacheClient, keyForArchive, keyForLog, params.archivePath, params.logPath))
-        {
-            return true;
-        }
-    }
-
     if (Pack(collectedFiles, params.compressionType, params.archivePath, params.metaDbPath))
     {
-        Logger::Info("packing done");
-
-        if (params.assetCacheClient != nullptr)
-        {
-            AddToCache(params.assetCacheClient, keyForArchive, keyForLog, params.archivePath, params.logPath);
-        }
         return true;
     }
-    else
-    {
-        Logger::Info("packing failed");
-        return false;
-    }
+
+    Logger::Info("packing failed");
+    return false;
 }
 
 } // namespace Archiver
