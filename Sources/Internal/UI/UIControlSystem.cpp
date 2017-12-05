@@ -34,6 +34,7 @@
 #include "UI/Sound/UISoundSystem.h"
 #include "UI/Styles/UIStyleSheetSystem.h"
 #include "UI/Text/UITextSystem.h"
+#include "UI/Script/UIScriptSystem.h"
 #include "UI/Events/UIEventsSystem.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIEvent.h"
@@ -42,6 +43,7 @@
 #include "UI/UIScreenTransition.h"
 #include "UI/UISystem.h"
 #include "UI/Update/UIUpdateSystem.h"
+#include "UI/Joypad/UIJoypadSystem.h"
 
 namespace DAVA
 {
@@ -59,6 +61,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
+    AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
     AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem
@@ -66,6 +69,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIScrollSystem>());
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
     AddSystem(std::make_unique<UISoundSystem>());
+    AddSystem(std::make_unique<UIJoypadSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
 
     AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()));
