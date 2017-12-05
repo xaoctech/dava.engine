@@ -13,11 +13,10 @@ namespace DAVA
 {
 namespace ParticleForces
 {
-namespace ParticleForcesDetail
+namespace ParticleForcesUtils
 {
 const int32 noiseWidth = 57;
 const int32 noiseHeight = 57;
-bool isNoiseGenerated = false;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
 
 void GenerateNoise()
@@ -33,12 +32,10 @@ void GenerateNoise()
             noise[i][j] = Generate2OctavesPerlin(q);
         }
     }
-    isNoiseGenerated = true;
 }
 
 const uint32 sphereRandomVectorsSize = 1024;
 Array<Vector3, sphereRandomVectorsSize> sphereRandomVectors;
-bool isSphereRandomVectorsGenerated = false;
 void GenerateSphereRandomVectors()
 {
     uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
@@ -53,7 +50,6 @@ void GenerateSphereRandomVectors()
         float32 sinPhi = std::sin(phi);
         sphereRandomVectors[i] = { sinPhi * std::cos(theta), sinPhi * std::sin(theta), cosPhi };
     }
-    isSphereRandomVectorsGenerated = true;
 }
 
 Vector3 GetNoiseValue(float32 particleOverLife, float32 frequency, uint32 clampedIndex)
@@ -83,14 +79,6 @@ inline void KillParticlePlaneCollision(const ParticleForce* force, Particle* par
     else
         effectSpaceVelocity = Vector3::Zero;
 }
-}
-
-void Init()
-{
-    if (!ParticleForcesDetail::isNoiseGenerated)
-        ParticleForcesDetail::GenerateNoise();
-    if (!ParticleForcesDetail::isSphereRandomVectorsGenerated)
-        ParticleForcesDetail::GenerateSphereRandomVectors();
 }
 
 template <typename T>
@@ -206,12 +194,12 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     uint64 particleIndex = static_cast<uint64>(partInd);
     Vector3 turbulence;
 
-    uint32 clampedIndex = particleIndex % ParticleForcesDetail::noiseWidth;
+    uint32 clampedIndex = particleIndex % ParticleForcesUtils::noiseWidth;
     float32 windMultiplier = 1.0f;
     float32 tubulencePower = GetValue(force, particleOverLife, layerOverLife, particle->life, force->turbulenceLine.Get(), force->windTurbulence);
     if (Abs(tubulencePower) > EPSILON)
     {
-        turbulence = ParticleForcesDetail::GetNoiseValue(particleOverLife, force->windTurbulenceFrequency, clampedIndex);
+        turbulence = ParticleForcesUtils::GetNoiseValue(particleOverLife, force->windTurbulenceFrequency, clampedIndex);
         if ((100 - force->backwardTurbulenceProbability) > clampedIndex % 100)
         {
             float32 dot = Normalize(force->direction).DotProduct(Normalize(turbulence));
@@ -223,7 +211,7 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     }
     if (Abs(force->windFrequency) > EPSILON)
     {
-        float32 noiseVal = ParticleForcesDetail::GetNoiseValue(particleOverLife, force->windFrequency, clampedIndex).x;
+        float32 noiseVal = ParticleForcesUtils::GetNoiseValue(particleOverLife, force->windFrequency, clampedIndex).x;
         windMultiplier = noiseVal + force->windBias;
     }
     Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
@@ -242,8 +230,8 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
     {
         uintptr_t partInd = reinterpret_cast<uintptr_t>(particle);
         uint64 particleIndex = static_cast<uint64>(partInd);
-        particleIndex %= ParticleForcesDetail::sphereRandomVectorsSize;
-        Vector3 forcePositionModified = forcePosition + ParticleForcesDetail::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
+        particleIndex %= ParticleForcesUtils::sphereRandomVectorsSize;
+        Vector3 forcePositionModified = forcePosition + ParticleForcesUtils::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
         forceDirection = forcePositionModified - position;
         float32 sqrDistToTarget = forceDirection.SquareLength();
         if (sqrDistToTarget > 0)
@@ -256,7 +244,7 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
     else
     {
         if (force->killParticles)
-            ParticleForcesDetail::KillParticle(particle);
+            ParticleForcesUtils::KillParticle(particle);
         else
             position = forcePosition - force->pointGravityRadius * toCenter;
     }
@@ -273,7 +261,7 @@ void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3&
     {
         if (velocity.SquareLength() < force->velocityThreshold * force->velocityThreshold)
         {
-            ParticleForcesDetail::KillParticlePlaneCollision(force, particle, velocity);
+            ParticleForcesUtils::KillParticlePlaneCollision(force, particle, velocity);
             return;
         }
 
@@ -307,10 +295,10 @@ void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3&
                 velocity *= std::uniform_real_distribution<float32>(force->rndReflectionForceMin, force->rndReflectionForceMax)(rng);
         }
         else
-            ParticleForcesDetail::KillParticlePlaneCollision(force, particle, velocity);
+            ParticleForcesUtils::KillParticlePlaneCollision(force, particle, velocity);
     }
     else if (bProj < 0.0f && aProj < 0.0f)
-        ParticleForcesDetail::KillParticlePlaneCollision(force, particle, velocity);
+        ParticleForcesUtils::KillParticlePlaneCollision(force, particle, velocity);
 }
 }
 }

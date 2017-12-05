@@ -11,7 +11,12 @@ struct Particle;
 
 namespace ParticleForces
 {
-void Init();
+namespace ParticleForcesUtils
+{
+void GenerateNoise();
+void GenerateSphereRandomVectors();
+}
+
 void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& down, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition);
 }
 }
