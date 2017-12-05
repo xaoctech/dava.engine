@@ -226,6 +226,7 @@ struct NotificationParams
     DAVA::Function<void()> callback;
 };
 
+class ControlProxy;
 class UI
 {
 public:
@@ -238,6 +239,7 @@ public:
 
     virtual void DeclareToolbar(const WindowKey& windowKey, const ActionPlacementInfo& toogleToolbarVisibility, const QString& toolbarName) = 0;
 
+    void AddControlView(const WindowKey& windowKey, const PanelKey& panelKey, ControlProxy* widget);
     virtual void AddView(const WindowKey& windowKey, const PanelKey& panelKey, QWidget* widget) = 0;
     virtual void AddAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, QAction* action) = 0;
     virtual void RemoveAction(const WindowKey& windowKey, const ActionPlacementInfo& placement, const QString& actionName) = 0;
@@ -245,6 +247,7 @@ public:
     virtual void ShowMessage(const WindowKey& windowKey, const QString& message, uint32 duration = 0) = 0;
     virtual void ClearMessage(const WindowKey& windowKey) = 0;
     virtual int ShowModalDialog(const WindowKey& parentWindow, QDialog* dialog) = 0;
+    virtual void ShowDialog(const WindowKey& parentWindow, QDialog* dialog) = 0;
     virtual ModalMessageParams::Button ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params) = 0;
     virtual void ShowNotification(const WindowKey& windowKey, const NotificationParams& params) const = 0;
 

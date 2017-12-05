@@ -4,11 +4,13 @@
 #include "MaterialEditor/MaterialEditor.h"
 
 #include <QComboBox>
-#include <QPushButton>
 #include <QGridLayout>
-#include <QVBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include "Commands2/ParticleEditorCommands.h"
 
 QualitySwitcher* QualitySwitcher::switcherDialog = nullptr;
 
@@ -299,22 +301,24 @@ void QualitySwitcher::UpdateParticlesToQuality()
     SceneSignals* sceneSignals = SceneSignals::Instance();
     globalOperations->ForEachScene([sceneSignals, this](SceneEditor2* scene)
                                    {
-                                       ReloadEntityEmitters(scene);
+                                       scene->BeginBatch("Switch particle quality");
+                                       ReloadEntityEmitters(scene, scene);
                                        sceneSignals->EmitStructureChanged(scene, nullptr);
+                                       scene->EndBatch();
                                    });
 }
 
-void QualitySwitcher::ReloadEntityEmitters(DAVA::Entity* e)
+void QualitySwitcher::ReloadEntityEmitters(SceneEditor2* scene, DAVA::Entity* e)
 {
     DAVA::ParticleEffectComponent* comp = GetEffectComponent(e);
     if (comp)
     {
-        comp->ReloadEmitters();
+        scene->Exec(std::make_unique<CommandReloadEmitters>(comp));
     }
 
     for (DAVA::int32 i = 0, sz = e->GetChildrenCount(); i < sz; ++i)
     {
-        ReloadEntityEmitters(e->GetChild(i));
+        ReloadEntityEmitters(scene, e->GetChild(i));
     }
 }
 

@@ -57,6 +57,17 @@ bool Selectable::operator<(const Selectable& other) const
     return DAVA::PointerValueAnyLess()(object, other.object);
 }
 
+const DAVA::ReflectedType* Selectable::GetObjectType() const
+{
+    if (ContainsObject() == false)
+    {
+        return nullptr;
+    }
+
+    DVASSERT(object.GetType()->IsPointer());
+    return DAVA::TArc::GetValueReflectedType(object);
+}
+
 void Selectable::SetBoundingBox(const DAVA::AABBox3& box)
 {
     boundingBox = box;

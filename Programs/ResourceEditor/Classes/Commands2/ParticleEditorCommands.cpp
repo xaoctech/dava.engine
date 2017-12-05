@@ -260,19 +260,23 @@ void CommandUpdateParticleLayer::Redo()
     // The same is for emitter type.
     if (layer->type != layerType)
     {
-        if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+        if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
+            deletedEmitter = DAVA::RefPtr<DAVA::ParticleEmitterInstance>::ConstructWithRetain(layer->innerEmitter);
             SafeRelease(layer->innerEmitter);
         }
         layer->type = layerType;
         if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            SafeRelease(layer->innerEmitter);
-            layer->innerEmitter = new ParticleEmitter();
+            DVASSERT(layer->innerEmitter == nullptr);
+            DAVA::ScopedPtr<ParticleEmitter> emitter(new ParticleEmitter());
             if (!layer->innerEmitterPath.IsEmpty())
             {
-                layer->innerEmitter->LoadFromYaml(layer->innerEmitterPath);
+                emitter->LoadFromYaml(layer->innerEmitterPath);
             }
+
+            layer->innerEmitter = new ParticleEmitterInstance(emitter);
+            createdEmitter = DAVA::RefPtr<DAVA::ParticleEmitterInstance>::ConstructWithRetain(layer->innerEmitter);
         }
         //TODO: restart in effect
     }
@@ -460,6 +464,11 @@ void CommandAddParticleEmitter::Redo()
     effectComponent->AddEmitterInstance(ScopedPtr<ParticleEmitter>(new ParticleEmitter()));
 }
 
+DAVA::Entity* CommandAddParticleEmitter::GetEntity() const
+{
+    return effectEntity;
+}
+
 CommandStartStopParticleEffect::CommandStartStopParticleEffect(DAVA::Entity* effect, bool isStart)
     : CommandAction(CMDID_PARTICLE_EFFECT_START_STOP)
 {
@@ -513,8 +522,9 @@ DAVA::Entity* CommandRestartParticleEffect::GetEntity() const
     return this->effectEntity;
 }
 
-CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(DAVA::ParticleEmitterInstance* emitter)
+CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(DAVA::ParticleEffectComponent* component_, DAVA::ParticleEmitterInstance* emitter)
     : CommandAction(CMDID_PARTICLE_EMITTER_LAYER_ADD)
+    , component(component_)
     , instance(emitter)
 {
 }
@@ -541,8 +551,9 @@ void CommandAddParticleEmitterLayer::Redo()
     instance->GetEmitter()->AddLayer(createdLayer);
 }
 
-CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEmitterInstance* emitter, ParticleLayer* layer)
-    : RECommand(CMDID_PARTICLE_EMITTER_LAYER_REMOVE)
+CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(DAVA::ParticleEffectComponent* component_, ParticleEmitterInstance* emitter, ParticleLayer* layer)
+    : RECommand(CMDID_PARTICLE_EMITTER_LAYER_REMOVE, "Remove Particle Layer")
+    , component(component_)
     , instance(emitter)
     , selectedLayer(SafeRetain(layer))
 {
@@ -607,8 +618,9 @@ void CommandCloneParticleEmitterLayer::Redo()
     instance->GetEmitter()->AddLayer(clonedLayer);
 }
 
-CommandAddParticleEmitterSimplifiedForce::CommandAddParticleEmitterSimplifiedForce(ParticleLayer* layer)
+CommandAddParticleEmitterSimplifiedForce::CommandAddParticleEmitterSimplifiedForce(DAVA::ParticleEffectComponent* component_, ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -624,11 +636,17 @@ void CommandAddParticleEmitterSimplifiedForce::Redo()
     newForce->Release();
 }
 
-CommandRemoveParticleEmitterSimplifiedForce::CommandRemoveParticleEmitterSimplifiedForce(ParticleLayer* layer, ParticleForceSimplified* force)
-    : CommandAction(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE)
+CommandRemoveParticleEmitterSimplifiedForce::CommandRemoveParticleEmitterSimplifiedForce(DAVA::ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForceSimplified* force)
+    : RECommand(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE, "Remove force")
+    , component(component_)
     , selectedLayer(layer)
-    , selectedForce(force)
+    , selectedForce(DAVA::SafeRetain(force))
 {
+}
+
+CommandRemoveParticleEmitterSimplifiedForce::~CommandRemoveParticleEmitterSimplifiedForce()
+{
+    DAVA::SafeRelease(selectedForce);
 }
 
 void CommandRemoveParticleEmitterSimplifiedForce::Redo()
@@ -639,8 +657,17 @@ void CommandRemoveParticleEmitterSimplifiedForce::Redo()
     selectedLayer->RemoveSimplifiedForce(selectedForce);
 }
 
-CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleLayer* layer)
+void CommandRemoveParticleEmitterSimplifiedForce::Undo()
+{
+    if ((selectedLayer == nullptr) || (selectedForce == nullptr))
+        return;
+
+    selectedLayer->AddSimplifiedForce(selectedForce);
+}
+
+CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_DRAG_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -650,8 +677,9 @@ void CommandAddParticleDrag::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::DRAG_FORCE);
 }
 
-CommandAddParticleVortex::CommandAddParticleVortex(DAVA::ParticleLayer* layer)
+CommandAddParticleVortex::CommandAddParticleVortex(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_VORTEX_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -661,8 +689,9 @@ void CommandAddParticleVortex::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::VORTEX);
 }
 
-CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleLayer* layer)
+CommandAddParticleGravity::CommandAddParticleGravity(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_GRAVITY_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -672,8 +701,9 @@ void CommandAddParticleGravity::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::GRAVITY);
 }
 
-CommandAddParticleWind::CommandAddParticleWind(DAVA::ParticleLayer* layer)
+CommandAddParticleWind::CommandAddParticleWind(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_WIND_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -683,8 +713,9 @@ void CommandAddParticleWind::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::WIND);
 }
 
-CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleLayer* layer)
+CommandAddParticlePointGravity::CommandAddParticlePointGravity(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_POINT_GRAVITY_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -694,8 +725,9 @@ void CommandAddParticlePointGravity::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::POINT_GRAVITY);
 }
 
-CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::ParticleLayer* layer)
+CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)
     : CommandAction(CMDID_PARTICLE_EMITTER_PLANE_COLLISION_ADD)
+    , component(component_)
     , selectedLayer(layer)
 {
 }
@@ -705,8 +737,9 @@ void CommandAddParticlePlaneCollision::Redo()
     ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::PLANE_COLLISION);
 }
 
-CommandRemoveParticleForce::CommandRemoveParticleForce(ParticleLayer* layer, ParticleForce* force)
+CommandRemoveParticleForce::CommandRemoveParticleForce(DAVA::ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForce* force)
     : RECommand(CMDID_PARTICLE_EMITTER_FORCE_REMOVE)
+    , component(component_)
     , selectedLayer(layer)
     , selectedForce(SafeRetain(force))
 {
@@ -807,8 +840,9 @@ void CommandSaveInnerParticleEmitterToYaml::Redo()
     instance->GetEmitter()->SaveToYaml(filePath);
 }
 
-CommandCloneParticleForce::CommandCloneParticleForce(DAVA::ParticleLayer* layer, DAVA::ParticleForce* force)
+CommandCloneParticleForce::CommandCloneParticleForce(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer, DAVA::ParticleForce* force)
     : CommandAction(CMDID_PARTICLE_EMITTER_FORCE_CLONE)
+    , component(component_)
     , selectedLayer(layer)
     , selectedForce(force)
 {
@@ -822,4 +856,20 @@ void CommandCloneParticleForce::Redo()
     ScopedPtr<ParticleForce> clonedForce(selectedForce->Clone());
     clonedForce->forceName = selectedForce->forceName + " Clone";
     selectedLayer->AddForce(clonedForce);
+}
+
+CommandReloadEmitters::CommandReloadEmitters(DAVA::ParticleEffectComponent* component_)
+    : CommandAction(CMDID_PARTICLE_RELOAD_EMITTERS, "")
+    , component(component_)
+{
+}
+
+void CommandReloadEmitters::Redo()
+{
+    component->ReloadEmitters();
+}
+
+DAVA::ParticleEffectComponent* CommandReloadEmitters::GetComponent() const
+{
+    return component;
 }
