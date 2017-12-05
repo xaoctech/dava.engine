@@ -8,6 +8,9 @@
 
 class EditorPhysicsModule : public DAVA::TArc::ClientModule
 {
+public:
+    EditorPhysicsModule();
+
 protected:
     void OnContextCreated(DAVA::TArc::DataContext* context) override;
     void OnContextDeleted(DAVA::TArc::DataContext* context) override;
@@ -16,10 +19,6 @@ protected:
 
     void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
     void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
-
-private:
-    void CreateCarEntity();
-    void CreateTankEntity();
 
 private:
     DAVA::TArc::QtConnections connections;

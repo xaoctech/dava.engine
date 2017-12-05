@@ -36,6 +36,7 @@ public:
     bool IsSelectionAllowed() const;
 
     bool Lock();
+    bool IsLocked() const;
     void Unlock();
 
     bool IsEntitySelectable(DAVA::Entity* selectionCandidate) const;

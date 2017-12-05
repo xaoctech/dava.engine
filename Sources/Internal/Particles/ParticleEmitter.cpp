@@ -5,6 +5,7 @@
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -529,4 +530,10 @@ void ParticleEmitter::InvertEmissionVectorCoordinates()
         key.value *= -1;
     }
 }
-};
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleEmitter)
+{
+    DAVA::ReflectionRegistrator<ParticleEmitter>::Begin()
+    .End();
+}
+}

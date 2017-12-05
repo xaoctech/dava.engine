@@ -16,12 +16,14 @@ QtAction::QtAction(ContextAccessor* accessor, const QString& text, QObject* pare
     : QAction(text, parent)
     , fieldBinder(accessor)
 {
+    setToolTip(text);
 }
 
 QtAction::QtAction(ContextAccessor* accessor, const QIcon& icon, const QString& text, QObject* parent)
     : QAction(icon, text, parent)
     , fieldBinder(accessor)
 {
+    setToolTip(text);
 }
 
 void QtAction::OnActionTriggered(bool checked, eActionState state, const FieldDescriptor& fieldDescr)
