@@ -255,16 +255,44 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
 
         FileSystem* fs = GetEngineContext()->fileSystem;
 
+        UnorderedMap<String, String> lowerPathMap;
+
         db << "SELECT path, pack_index FROM files"
-        >> [&](String path, int64 /*packIndex*/) // HACK we have to do request as "SELECT path, pack_index FROM files" to save order
+        >> [&](String path, int64 /*packIndex*/) // HACK we have to do request as "SELECT path, pack_index FROM files" to save order from sqlite
         {
             std::transform(begin(path), end(path), begin(path), [](char c) { return c == '\\' ? '/' : c; });
+
+            if (path.find("../") != String::npos)
+            {
+                Logger::Error("incorrect relative file path: %s (found \"../\")", path);
+                return false;
+            }
+
+            if (path.find("./") != String::npos)
+            {
+                Logger::Error("incorrect relative file path: %s (found \"./\")", path);
+                return false;
+            }
+
+            String lower = path;
+            std::transform(begin(lower), end(lower), begin(lower), [](char c) { return ::tolower(c); });
+
+            auto it = lowerPathMap.find(lower);
+            if (it != end(lowerPathMap))
+            {
+                Logger::Error("incorrect path differ only char register or the same: %s and %s", it->second.c_str(), path.c_str());
+                return false;
+            }
+            else
+            {
+                lowerPathMap.emplace(lower, path);
+            }
 
             FilePath fullPath = baseDirPath + path;
             if (!fs->Exists(fullPath))
             {
                 Logger::Error("can't find file: %s", fullPath.GetAbsolutePathname().c_str());
-                DAVA_THROW(Exception, "file not found");
+                return false;
             }
             else
             {
@@ -278,39 +306,6 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
     catch (std::exception& ex)
     {
         Logger::Error("%s", ex.what());
-        return false;
-    }
-
-    // validate that all full path are unique
-    auto it_uniq = std::unique(begin(collectedFiles), end(collectedFiles), [](const CollectedFile& l, const CollectedFile& r)
-                               {
-                                   return l.archivePath == r.archivePath;
-                                   ;
-                               });
-
-    if (it_uniq != end(collectedFiles))
-    {
-        Logger::Error("duplicate archivePath in collected values from DB:");
-        for (auto it = it_uniq; it != end(collectedFiles); ++it)
-        {
-            Logger::Error("archivePath: %s", (*it).archivePath.c_str());
-        }
-        return false;
-    }
-
-    // // validate that all absPath are unique
-    it_uniq = std::unique(begin(collectedFiles), end(collectedFiles), [](const CollectedFile& l, const CollectedFile& r)
-                          {
-                              return l.absPath == r.absPath;
-                          });
-
-    if (it_uniq != end(collectedFiles))
-    {
-        Logger::Error("duplicate absPath in collected values from DB:");
-        for (auto it = it_uniq; it != end(collectedFiles); ++it)
-        {
-            Logger::Error("absPath: %s", (*it).archivePath.c_str());
-        }
         return false;
     }
 

@@ -11,19 +11,14 @@ class CommandLineApplication
 {
 public:
     CommandLineApplication(DAVA::String appName);
-    void SetParseErrorCode(int errorCode);
-    void SetOkCode(int errorCode);
     void AddTool(std::unique_ptr<CommandLineTool> tool);
 
     int Process(const DAVA::Vector<DAVA::String>& cmdline);
-    int Process(DAVA::uint32 argc, char* argv[]);
 
 private:
     void PrintUsage();
 
     const DAVA::String appName;
-    int codeParseError = -1;
-    int codeOk = 0;
     DAVA::Vector<std::unique_ptr<CommandLineTool>> tools;
     DAVA::ProgramOptions helpOption;
 };
