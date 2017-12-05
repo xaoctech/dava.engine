@@ -86,6 +86,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
             scriptContent = """
                 ResourceEditor.exe --selftest
                 QuickEd.exe --selftest
+                ResourceArchiver.exe --selftest
             """.trimIndent()
         }
         script {
