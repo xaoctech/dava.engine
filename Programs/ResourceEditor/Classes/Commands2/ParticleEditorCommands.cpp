@@ -637,11 +637,16 @@ void CommandAddParticleEmitterSimplifiedForce::Redo()
 }
 
 CommandRemoveParticleEmitterSimplifiedForce::CommandRemoveParticleEmitterSimplifiedForce(DAVA::ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForceSimplified* force)
-    : CommandAction(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE)
+    : RECommand(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE, "Remove force")
     , component(component_)
     , selectedLayer(layer)
-    , selectedForce(force)
+    , selectedForce(DAVA::SafeRetain(force))
 {
+}
+
+CommandRemoveParticleEmitterSimplifiedForce::~CommandRemoveParticleEmitterSimplifiedForce()
+{
+    DAVA::SafeRelease(selectedForce);
 }
 
 void CommandRemoveParticleEmitterSimplifiedForce::Redo()
@@ -650,6 +655,14 @@ void CommandRemoveParticleEmitterSimplifiedForce::Redo()
         return;
 
     selectedLayer->RemoveSimplifiedForce(selectedForce);
+}
+
+void CommandRemoveParticleEmitterSimplifiedForce::Undo()
+{
+    if ((selectedLayer == nullptr) || (selectedForce == nullptr))
+        return;
+
+    selectedLayer->AddSimplifiedForce(selectedForce);
 }
 
 CommandAddParticleDrag::CommandAddParticleDrag(DAVA::ParticleEffectComponent* component_, DAVA::ParticleLayer* layer)

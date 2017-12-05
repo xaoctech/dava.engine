@@ -185,11 +185,13 @@ protected:
 };
 
 // Remove a force from Particle Emitter layer.
-class CommandRemoveParticleEmitterSimplifiedForce : public CommandAction
+class CommandRemoveParticleEmitterSimplifiedForce : public RECommand
 {
 public:
     CommandRemoveParticleEmitterSimplifiedForce(DAVA::ParticleEffectComponent* component, DAVA::ParticleLayer* layer, DAVA::ParticleForceSimplified* force);
+    ~CommandRemoveParticleEmitterSimplifiedForce();
     void Redo() override;
+    void Undo() override;
 
     DAVA::ParticleEffectComponent* GetEffectComponent() const
     {

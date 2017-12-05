@@ -395,12 +395,20 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
     });
 
     commandNotification.ForEachWithCast<CommandRemoveParticleEmitterSimplifiedForce>(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE, [&](const CommandRemoveParticleEmitterSimplifiedForce* command) {
-        static_assert(std::is_base_of<CommandAction, CommandRemoveParticleEmitterSimplifiedForce>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(Selectable(DAVA::Any(command->GetForce())));
+        if (commandNotification.redo == true)
+        {
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(Selectable(DAVA::Any(command->GetForce())));
+        }
+        else
+        {
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(Selectable(DAVA::Any(command->GetForce())));
+        }
     });
 
     commandNotification.ForEachWithCast<ParticleSimplifiedForceMoveCommand>(CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, [&](const ParticleSimplifiedForceMoveCommand* command) {
