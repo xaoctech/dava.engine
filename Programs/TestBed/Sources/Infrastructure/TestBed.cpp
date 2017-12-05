@@ -53,6 +53,7 @@
 #include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
 #include "Tests/SkillSystemTest.h"
+#include "Tests/UIJoypadSystemTest.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
@@ -410,6 +411,7 @@ void TestBed::RegisterTests()
     new SoundTest(*this);
     new AnyPerformanceTest(*this);
     new SkillSystemTest(*this);
+    new UIJoypadSystemTest(*this);
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
