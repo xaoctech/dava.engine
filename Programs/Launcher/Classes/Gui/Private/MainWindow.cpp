@@ -342,12 +342,12 @@ void MainWindow::ShowTable(QString branchID)
         {
             canRefreshRecent = iter->remote->versions.back().id != iter->local->versions[0].id;
         }
-        createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index));
         createButton(tr("Most recent version available!"), "recent", std::bind(&MainWindow::OnRecent, this, index))->setEnabled(canRefreshRecent);
         createButton(tr("Download application only"), "download", std::bind(&MainWindow::OnDownload, this, index))->setEnabled(iter->remote != nullptr);
         createButton(tr("Download and run application"), "run", std::bind(&MainWindow::OnRun, this, index))->setEnabled(iter->local != nullptr || iter->remote != nullptr);
         createButton(tr("Remove application"), "delete", std::bind(&MainWindow::OnRemove, this, index))->setEnabled(iter->local != nullptr);
         createButton(tr("Show in file system"), "show_in_finder", std::bind(&MainWindow::OnShowInFinder, this, index))->setEnabled(iter->local != nullptr);
+        createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index))->setEnabled(iter->local != nullptr);
 
         ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, buttonsWidget);
     }
@@ -557,6 +557,8 @@ QWidget* MainWindow::CreateAppAvalibleTableItem(Application* remote, Application
                 }
             }
         }
+
+        comboBox->setProperty(DAVA_CUSTOM_PROPERTY_NAME, comboBox->currentText());
 
 #ifdef Q_OS_MAC
         comboBox->setMaximumHeight(26);
