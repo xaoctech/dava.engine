@@ -58,7 +58,6 @@ void CanvasModule::CreateData()
     data->controlsView->workAreaSizeChanged.Connect(this, &CanvasModule::OnWorkAreaSizeChanged);
     data->controlsView->rootControlSizeChanged.Connect(this, &CanvasModule::OnRootControlSizeChanged);
     data->controlsView->rootControlPositionChanged.Connect(this, &CanvasModule::OnRootControlPositionChanged);
-    data->controlsView->needCentralizeChanged.Connect(this, &CanvasModule::OnNeedCentralizeChanged);
 
     accessor->GetGlobalContext()->CreateData(std::move(data));
 }
@@ -74,12 +73,6 @@ void CanvasModule::InitFieldBinder()
     };
 
     fieldBinder.reset(new FieldBinder(GetAccessor()));
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<CanvasData>();
-        fieldDescr.fieldName = FastName(CanvasData::workAreaSizePropertyName);
-        fieldBinder->BindField(fieldDescr, tryCentralize);
-    }
     {
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<CentralWidgetData>();
@@ -201,21 +194,6 @@ void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const D
     RecreateBgrColorActions();
 }
 
-void CanvasModule::OnNeedCentralizeChanged(bool needCentralize)
-{
-    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return;
-    }
-
-    CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
-    DAVA::Vector2 centerPosition = canvasModuleData->canvasDataAdapter->GetCenterPosition();
-
-    CanvasData* canvasData = activeContext->GetData<CanvasData>();
-    canvasData->SetPosition(centerPosition);
-}
-
 void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControlPos)
 {
     DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
@@ -250,6 +228,7 @@ void CanvasModule::OnWorkAreaSizeChanged(const DAVA::Vector2& workAreaSize)
 
     CanvasData* canvasData = activeContext->GetData<CanvasData>();
     canvasData->workAreaSize = workAreaSize;
+    GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>()->canvasDataAdapter->TryCentralizeScene();
 }
 
 DECL_GUI_MODULE(CanvasModule);

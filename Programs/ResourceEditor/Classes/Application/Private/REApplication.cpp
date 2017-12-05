@@ -149,7 +149,6 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 
     DAVA::ParticleEmitter::FORCE_DEEP_CLONE = true;
     DAVA::QualitySettingsSystem::Instance()->SetKeepUnusedEntities(true);
-    DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
     DAVA::FileSystem* fileSystem = engineContext->fileSystem;
