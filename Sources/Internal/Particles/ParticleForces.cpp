@@ -11,45 +11,34 @@
 
 namespace DAVA
 {
-namespace ParticleForces
-{
-namespace ParticleForcesUtils
+namespace ParticleForcesDetails
 {
 const int32 noiseWidth = 57;
 const int32 noiseHeight = 57;
 Array<Array<Vector3, noiseWidth>, noiseHeight> noise;
 
-void GenerateNoise()
-{
-    float32 xFactor = 2.0f / (noiseWidth - 1.0f);
-    float32 yFactor = 2.0f / (noiseHeight - 1.0f);
-    for (int32 i = 0; i < noiseWidth; ++i)
-    {
-        Vector2 q(i * xFactor, 0);
-        for (int32 j = 0; j < noiseHeight; ++j)
-        {
-            q.y = j * yFactor;
-            noise[i][j] = Generate2OctavesPerlin(q);
-        }
-    }
-}
-
 const uint32 sphereRandomVectorsSize = 1024;
 Array<Vector3, sphereRandomVectorsSize> sphereRandomVectors;
-void GenerateSphereRandomVectors()
-{
-    uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
-    std::mt19937 generator(seed);
 
-    std::uniform_real_distribution<float32> uinform01(0.0f, 1.0f);
-    for (uint32 i = 0; i < sphereRandomVectorsSize; ++i)
+template <typename T>
+T GetValue(const ParticleForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife, PropertyLine<T>* line, T value)
+{
+    if (line == nullptr)
+        return value;
+    switch (force->timingType)
     {
-        float32 theta = 2.0f * PI * uinform01(generator);
-        float32 cosPhi = 1.0f - 2.0f * uinform01(generator);
-        float32 phi = std::acos(cosPhi);
-        float32 sinPhi = std::sin(phi);
-        sphereRandomVectors[i] = { sinPhi * std::cos(theta), sinPhi * std::sin(theta), cosPhi };
+    case ParticleForce::eTimingType::CONSTANT:
+        return value;
+    case ParticleForce::eTimingType::OVER_PARTICLE_LIFE:
+        return line->GetValue(particleOverLife);
+    case ParticleForce::eTimingType::OVER_LAYER_LIFE:
+        return line->GetValue(layerOverLife);
+    case ParticleForce::eTimingType::SECONDS_PARTICLE_LIFE:
+        return line->GetValue(particleLife);
+    default:
+        return value;
     }
+    return value;
 }
 
 Vector3 GetNoiseValue(float32 particleOverLife, float32 frequency, uint32 clampedIndex)
@@ -78,68 +67,6 @@ inline void KillParticlePlaneCollision(const ParticleForce* force, Particle* par
         KillParticle(particle);
     else
         effectSpaceVelocity = Vector3::Zero;
-}
-}
-
-template <typename T>
-T GetValue(const ParticleForce* force, float32 particleOverLife, float32 layerOverLife, float32 particleLife, PropertyLine<T>* line, T value)
-{
-    if (line == nullptr)
-        return value;
-    switch (force->timingType)
-    {
-    case ParticleForce::eTimingType::CONSTANT:
-        return value;
-    case ParticleForce::eTimingType::OVER_PARTICLE_LIFE:
-        return line->GetValue(particleOverLife);
-    case ParticleForce::eTimingType::OVER_LAYER_LIFE:
-        return line->GetValue(layerOverLife);
-    case ParticleForce::eTimingType::SECONDS_PARTICLE_LIFE:
-        return line->GetValue(particleLife);
-    default:
-        return value;
-    }
-    return value;
-}
-
-void ApplyDragForce(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
-void ApplyVortex(const ParticleForce* force, Vector3& velocity, const Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
-void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, Particle* particle, const Vector3& forcePosition);
-void ApplyGravity(const ParticleForce* force, Vector3& velocity, const Vector3& down, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle);
-void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Particle* particle, const Vector3& forcePosition);
-void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3& position, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition);
-bool IsPositionInForceShape(const ParticleForce* force, const Vector3& particlePosition, const Vector3& forcePosition);
-
-void ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& down, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition)
-{
-    using ForceType = ParticleForce::eType;
-
-    if (!force->isActive || !IsPositionInForceShape(force, position, forcePosition))
-        return;
-    switch (force->type)
-    {
-    case ForceType::DRAG_FORCE:
-        ApplyDragForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        break;
-    case ForceType::VORTEX:
-        ApplyVortex(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        break;
-    case ForceType::GRAVITY:
-        ApplyGravity(force, velocity, down, dt, particleOverLife, layerOverLife, particle);
-        break;
-    case ForceType::WIND:
-        ApplyWind(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        break;
-    case ForceType::POINT_GRAVITY:
-        ApplyPointGravity(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
-        break;
-    case ForceType::PLANE_COLLISION:
-        ApplyPlaneCollision(force, velocity, position, particle, prevPosition, forcePosition);
-        break;
-    default:
-        DVASSERT(false, "Unsupported force.");
-        break;
-    }
 }
 
 inline bool IsPositionInForceShape(const ParticleForce* force, const Vector3& particlePosition, const Vector3& forcePosition)
@@ -194,12 +121,12 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     uint64 particleIndex = static_cast<uint64>(partInd);
     Vector3 turbulence;
 
-    uint32 clampedIndex = particleIndex % ParticleForcesUtils::noiseWidth;
+    uint32 clampedIndex = particleIndex % noiseWidth;
     float32 windMultiplier = 1.0f;
     float32 tubulencePower = GetValue(force, particleOverLife, layerOverLife, particle->life, force->turbulenceLine.Get(), force->windTurbulence);
     if (Abs(tubulencePower) > EPSILON)
     {
-        turbulence = ParticleForcesUtils::GetNoiseValue(particleOverLife, force->windTurbulenceFrequency, clampedIndex);
+        turbulence = GetNoiseValue(particleOverLife, force->windTurbulenceFrequency, clampedIndex);
         if ((100 - force->backwardTurbulenceProbability) > clampedIndex % 100)
         {
             float32 dot = Normalize(force->direction).DotProduct(Normalize(turbulence));
@@ -211,7 +138,7 @@ void ApplyWind(const ParticleForce* force, Vector3& velocity, Vector3& position,
     }
     if (Abs(force->windFrequency) > EPSILON)
     {
-        float32 noiseVal = ParticleForcesUtils::GetNoiseValue(particleOverLife, force->windFrequency, clampedIndex).x;
+        float32 noiseVal = GetNoiseValue(particleOverLife, force->windFrequency, clampedIndex).x;
         windMultiplier = noiseVal + force->windBias;
     }
     Vector3 forceStrength = GetValue(force, particleOverLife, layerOverLife, particle->life, force->forcePowerLine.Get(), force->forcePower) * dt;
@@ -230,8 +157,8 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
     {
         uintptr_t partInd = reinterpret_cast<uintptr_t>(particle);
         uint64 particleIndex = static_cast<uint64>(partInd);
-        particleIndex %= ParticleForcesUtils::sphereRandomVectorsSize;
-        Vector3 forcePositionModified = forcePosition + ParticleForcesUtils::sphereRandomVectors[particleIndex] * force->pointGravityRadius;
+        particleIndex %= sphereRandomVectorsSize;
+        Vector3 forcePositionModified = forcePosition + sphereRandomVectors[particleIndex] * force->pointGravityRadius;
         forceDirection = forcePositionModified - position;
         float32 sqrDistToTarget = forceDirection.SquareLength();
         if (sqrDistToTarget > 0)
@@ -244,7 +171,7 @@ void ApplyPointGravity(const ParticleForce* force, Vector3& velocity, Vector3& p
     else
     {
         if (force->killParticles)
-            ParticleForcesUtils::KillParticle(particle);
+            KillParticle(particle);
         else
             position = forcePosition - force->pointGravityRadius * toCenter;
     }
@@ -261,7 +188,7 @@ void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3&
     {
         if (velocity.SquareLength() < force->velocityThreshold * force->velocityThreshold)
         {
-            ParticleForcesUtils::KillParticlePlaneCollision(force, particle, velocity);
+            KillParticlePlaneCollision(force, particle, velocity);
             return;
         }
 
@@ -295,10 +222,73 @@ void ApplyPlaneCollision(const ParticleForce* force, Vector3& velocity, Vector3&
                 velocity *= std::uniform_real_distribution<float32>(force->rndReflectionForceMin, force->rndReflectionForceMax)(rng);
         }
         else
-            ParticleForcesUtils::KillParticlePlaneCollision(force, particle, velocity);
+            KillParticlePlaneCollision(force, particle, velocity);
     }
     else if (bProj < 0.0f && aProj < 0.0f)
-        ParticleForcesUtils::KillParticlePlaneCollision(force, particle, velocity);
+        KillParticlePlaneCollision(force, particle, velocity);
 }
+}
+
+void ParticleForces::ApplyForce(const ParticleForce* force, Vector3& velocity, Vector3& position, float32 dt, float32 particleOverLife, float32 layerOverLife, const Vector3& down, Particle* particle, const Vector3& prevPosition, const Vector3& forcePosition)
+{
+    using ForceType = ParticleForce::eType;
+
+    if (!force->isActive || !ParticleForcesDetails::IsPositionInForceShape(force, position, forcePosition))
+        return;
+    switch (force->type)
+    {
+    case ForceType::DRAG_FORCE:
+        ParticleForcesDetails::ApplyDragForce(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
+        break;
+    case ForceType::VORTEX:
+        ParticleForcesDetails::ApplyVortex(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
+        break;
+    case ForceType::GRAVITY:
+        ParticleForcesDetails::ApplyGravity(force, velocity, down, dt, particleOverLife, layerOverLife, particle);
+        break;
+    case ForceType::WIND:
+        ParticleForcesDetails::ApplyWind(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
+        break;
+    case ForceType::POINT_GRAVITY:
+        ParticleForcesDetails::ApplyPointGravity(force, velocity, position, dt, particleOverLife, layerOverLife, particle, forcePosition);
+        break;
+    case ForceType::PLANE_COLLISION:
+        ParticleForcesDetails::ApplyPlaneCollision(force, velocity, position, particle, prevPosition, forcePosition);
+        break;
+    default:
+        DVASSERT(false, "Unsupported force.");
+        break;
+    }
+}
+
+void ParticleForcesUtils::GenerateSphereRandomVectors()
+{
+    uint32 seed = static_cast<uint32>(std::chrono::system_clock::now().time_since_epoch().count());
+    std::mt19937 generator(seed);
+
+    std::uniform_real_distribution<float32> uinform01(0.0f, 1.0f);
+    for (uint32 i = 0; i < ParticleForcesDetails::sphereRandomVectorsSize; ++i)
+    {
+        float32 theta = 2.0f * PI * uinform01(generator);
+        float32 cosPhi = 1.0f - 2.0f * uinform01(generator);
+        float32 phi = std::acos(cosPhi);
+        float32 sinPhi = std::sin(phi);
+        ParticleForcesDetails::sphereRandomVectors[i] = { sinPhi * std::cos(theta), sinPhi * std::sin(theta), cosPhi };
+    }
+}
+
+void ParticleForcesUtils::GenerateNoise()
+{
+    float32 xFactor = 2.0f / (ParticleForcesDetails::noiseWidth - 1.0f);
+    float32 yFactor = 2.0f / (ParticleForcesDetails::noiseHeight - 1.0f);
+    for (int32 i = 0; i < ParticleForcesDetails::noiseWidth; ++i)
+    {
+        Vector2 q(i * xFactor, 0);
+        for (int32 j = 0; j < ParticleForcesDetails::noiseHeight; ++j)
+        {
+            q.y = j * yFactor;
+            ParticleForcesDetails::noise[i][j] = Generate2OctavesPerlin(q);
+        }
+    }
 }
 }

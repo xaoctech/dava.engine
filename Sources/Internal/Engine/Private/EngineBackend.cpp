@@ -838,8 +838,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 {
     context->allocatorFactory = new AllocatorFactory();
     context->random = new Random();
-    ParticleForces::ParticleForcesUtils::GenerateNoise();
-    ParticleForces::ParticleForcesUtils::GenerateSphereRandomVectors();
+    ParticleForcesUtils::GenerateNoise();
+    ParticleForcesUtils::GenerateSphereRandomVectors();
     context->performanceSettings = new PerformanceSettings();
     context->versionInfo = new VersionInfo();
     context->renderSystem2D = new RenderSystem2D();
