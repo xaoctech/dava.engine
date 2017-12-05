@@ -57,6 +57,7 @@ private:
     void OnRun(int index);
     void OnRecent(int index);
     void CopyVersion(int index);
+    void OpenUrl(int index);
     void RefreshBranchesList();
     void OnConnectedChanged(bool connected);
     void AddText(const QString& text, const QColor& color = Qt::black);

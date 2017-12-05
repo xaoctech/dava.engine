@@ -188,6 +188,16 @@ void MainWindow::CopyVersion(int rowNumber)
 {
     QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_VERSION);
     QApplication::clipboard()->setText(cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString());
+    AddText(tr("Version copied to the clipboard"), Qt::darkGreen);
+}
+
+void MainWindow::OpenUrl(int index)
+{
+    QString appID, insVersionID, avVersionID;
+    GetTableApplicationIDs(index, appID, insVersionID, avVersionID);
+    QString url = appManager->GetConfigHolder()->remoteConfig.GetAppVersion(selectedBranchID, appID, avVersionID)->url;
+    QApplication::clipboard()->setText(url);
+    AddText(tr("Url copied to the clipboard"), Qt::darkGreen);
 }
 
 void MainWindow::OnDownload(int rowNumber)
@@ -348,6 +358,7 @@ void MainWindow::ShowTable(QString branchID)
         createButton(tr("Remove application"), "delete", std::bind(&MainWindow::OnRemove, this, index))->setEnabled(iter->local != nullptr);
         createButton(tr("Show in file system"), "show_in_finder", std::bind(&MainWindow::OnShowInFinder, this, index))->setEnabled(iter->local != nullptr);
         createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index))->setEnabled(iter->local != nullptr);
+        createButton(tr("Open url"), "url", std::bind(&MainWindow::OpenUrl, this, index))->setEnabled(iter->remote != nullptr);
 
         ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, buttonsWidget);
     }
