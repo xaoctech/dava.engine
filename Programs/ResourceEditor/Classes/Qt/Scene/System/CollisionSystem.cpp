@@ -71,24 +71,10 @@ void UpdateActorTransform(const Matrix4& tranform, PxRigidActor* actor)
 void InitBounds(PxShape* shape, AABBox3 box)
 {
     DVASSERT(shape->userData == nullptr);
-    float32 boundingBoxMinHalfSize = 0.01f;
-    if (FLOAT_EQUAL_EPS(box.min.x, box.max.x, boundingBoxMinHalfSize))
-    {
-        box.min.x -= boundingBoxMinHalfSize;
-        box.max.x += boundingBoxMinHalfSize;
-    }
+    float32 inflateHalfSize = 0.01f;
+    box.min = box.min - inflateHalfSize;
+    box.max = box.max + inflateHalfSize;
 
-    if (FLOAT_EQUAL_EPS(box.min.y, box.max.y, boundingBoxMinHalfSize))
-    {
-        box.min.y -= boundingBoxMinHalfSize;
-        box.max.y += boundingBoxMinHalfSize;
-    }
-
-    if (FLOAT_EQUAL_EPS(box.min.z, box.max.z, boundingBoxMinHalfSize))
-    {
-        box.min.z -= boundingBoxMinHalfSize;
-        box.max.z += boundingBoxMinHalfSize;
-    }
     shape->userData = new AABBox3(box);
 }
 

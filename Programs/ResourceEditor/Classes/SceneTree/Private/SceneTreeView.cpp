@@ -74,6 +74,7 @@ void SceneTreeView::UpdateControl(const DAVA::TArc::ControlDescriptor& descripto
         if (expandedIndexList.size() == 1 && (*expandedIndexList.begin() == QModelIndex()))
         {
             expandedIndexList.clear();
+            collapseAll();
             QMetaObject::Connection conID = QObject::connect(this, &QTreeView::expanded, [this](const QModelIndex& index) {
                 expandedIndexList.insert(index);
             });
