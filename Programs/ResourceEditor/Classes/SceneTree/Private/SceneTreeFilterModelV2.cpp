@@ -33,12 +33,7 @@ void SceneTreeFilterModelV2::SetFilter(const QString& filter_)
 
 QVariant SceneTreeFilterModelV2::data(const QModelIndex& index, int role) const
 {
-    if (index.isValid() == false)
-    {
-        return QVariant();
-    }
-
-    if (role == Qt::BackgroundRole && filter.isEmpty() == false)
+    if (index.isValid() == false && role == Qt::BackgroundRole && filter.isEmpty() == false)
     {
         QHash<QModelIndex, FilterData>::const_iterator iter = filtrationData.constFind(mapToSource(index));
         DVASSERT(iter != filtrationData.cend());
