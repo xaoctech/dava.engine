@@ -3,6 +3,7 @@
 #include "TextureCompression/Private/PVRConverter.h"
 
 #include <Engine/Engine.h>
+#include <FileSystem/FileSystem.h>
 #include <Render/Image/ImageConverter.h>
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -28,22 +29,21 @@ void TextureCompressionModule::Init()
 #error "Unknown platform"
 #endif //PLATFORMS
 
-    if (engine->IsConsoleMode())
+    FilePath pvrTexPath = "~res:/" + pvrToolName;
+
+    const Vector<String>& cmdLine = engine->GetCommandLine();
+    if (GetEngineContext()->fileSystem->Exists(pvrTexPath) == true)
     {
-        const Vector<String>& cmdLine = engine->GetCommandLine();
-        if (cmdLine.empty() == false)
-        {
-            FilePath appPath = cmdLine[0];
-            PVRConverter::Instance()->SetPVRTexTool(appPath.GetDirectory() + "Data/" + pvrToolName);
-        }
-        else
-        {
-            Logger::Error("Cannot setup PVRTexTool pathname");
-        }
+        PVRConverter::Instance()->SetPVRTexTool(pvrTexPath);
+    }
+    else if (engine->IsConsoleMode() && cmdLine.empty() == false)
+    {
+        pvrTexPath = FilePath(cmdLine[0]).GetDirectory() + "Data/" + pvrToolName;
+        PVRConverter::Instance()->SetPVRTexTool(pvrTexPath);
     }
     else
     {
-        PVRConverter::Instance()->SetPVRTexTool("~res:/" + pvrToolName);
+        Logger::Error("Cannot setup PVRTexTool pathname");
     }
 }
 
