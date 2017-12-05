@@ -83,12 +83,25 @@ public class DavaGlobalLayoutState extends DavaActivity.ActivityListenerImpl imp
         if (l != null)
         {
             listeners.add(l);
+
+            if (!visibleFrame.isEmpty())
+            {
+                l.onVisibleFrameChanged(visibleFrame);
+            }
         }
     }
 
     public void removeGlobalLayoutListener(GlobalLayoutListener l)
     {
-        listeners.remove(l);
+        if (l != null)
+        {
+            listeners.remove(l);
+        }
+    }
+
+    public boolean hasGlobalLayoutListener(GlobalLayoutListener l)
+    {
+        return l != null && listeners.contains(l);
     }
 
     @Override

@@ -1,25 +1,26 @@
-#include "Input/InputSystem.h"
-
-#include "Modules/CanvasModule/CanvasData.h"
-
 #include "Classes/EditorSystems/EditorTransformSystem.h"
 #include "Classes/EditorSystems/EditorSystemsManager.h"
 #include "Classes/EditorSystems/ControlTransformationSettings.h"
+#include "Classes/EditorSystems/MovableInEditorComponent.h"
+#include "Classes/EditorSystems/CounterpoiseComponent.h"
 
-#include "Model/PackageHierarchy/PackageNode.h"
-#include "Model/PackageHierarchy/ControlNode.h"
-#include "Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
 
-#include "Modules/DocumentsModule/DocumentData.h"
-#include "Modules/PreferencesModule/PreferencesData.h"
+#include "Classes/Modules/CanvasModule/CanvasDataAdapter.h"
+#include "Classes/Modules/CanvasModule/CanvasData.h"
+#include "Classes/Modules/DocumentsModule/DocumentData.h"
+#include "Classes/Modules/PreferencesModule/PreferencesData.h"
 
-#include "QECommands/ChangePropertyValueCommand.h"
-#include "QECommands/ResizeCommand.h"
-#include "QECommands/ChangePivotCommand.h"
+#include "Classes/QECommands/ChangePropertyValueCommand.h"
+#include "Classes/QECommands/ResizeCommand.h"
+#include "Classes/QECommands/ChangePivotCommand.h"
 
 #include <TArc/Utils/Utils.h>
 #include <TArc/Core/ContextAccessor.h>
 
+#include <Input/InputSystem.h>
 #include <UI/UIEvent.h>
 #include <UI/UIControl.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -197,10 +198,22 @@ void CreateMagnetLinesForPivot(DAVA::Vector<MagnetLineInfo>& magnetLines, DAVA::
     magnetLines.emplace_back(targetBox, horizontalRect, &controlGeometricData, Vector2::AXIS_X);
     magnetLines.emplace_back(targetBox, verticalRect, &controlGeometricData, Vector2::AXIS_Y);
 }
+
+template <typename Component>
+UIControl* FindControlWithComponentInHierarchy(UIControl* control)
+{
+    while (control != nullptr && control->GetComponent<Component>() == nullptr)
+    {
+        control = control->GetParent();
+    }
+    DVASSERT(control != nullptr);
+    return control;
+}
 }
 
 EditorTransformSystem::EditorTransformSystem(DAVA::TArc::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
+    , canvasDataAdapter(accessor)
 {
     GetSystemsManager()->activeAreaChanged.Connect(this, &EditorTransformSystem::OnActiveAreaChanged);
 }
@@ -238,54 +251,49 @@ void EditorTransformSystem::OnActiveAreaChanged(const HUDAreaInfo& areaInfo)
     }
 }
 
-EditorSystemsManager::eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput)
+eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     using namespace DAVA;
-    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
-    if (dragState == EditorSystemsManager::Transform)
+    eDragState dragState = GetSystemsManager()->GetDragState();
+    if (dragState == eDragState::Transform)
     {
         if (currentInput->device == eInputDevices::MOUSE
             && currentInput->phase == UIEvent::Phase::ENDED
             && currentInput->mouseButton == eMouseButtons::LEFT)
         {
-            return EditorSystemsManager::NoDrag;
+            return eDragState::NoDrag;
         }
         else
         {
-            return EditorSystemsManager::Transform;
+            return eDragState::Transform;
         }
     }
 
     HUDAreaInfo areaInfo = GetSystemsManager()->GetCurrentHUDArea();
-    if (areaInfo.area != HUDAreaInfo::NO_AREA
+    if (areaInfo.area != eArea::NO_AREA
         && currentInput->phase == UIEvent::Phase::DRAG
-        && currentInput->mouseButton == eMouseButtons::LEFT
-        && dragState != EditorSystemsManager::SelectByRect)
+        && currentInput->mouseButton == eMouseButtons::LEFT)
     {
         //initialize start mouse position for correct rotation
         previousMousePos = currentInput->point;
-        return EditorSystemsManager::Transform;
+        return eDragState::Transform;
     }
-    return EditorSystemsManager::NoDrag;
+    return eDragState::NoDrag;
 }
 
-bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     using namespace DAVA;
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return false;
-    }
 
-    EditorSystemsManager::eDragState dragState = GetSystemsManager()->GetDragState();
-    if (dragState == EditorSystemsManager::Transform || currentInput->device == eInputDevices::KEYBOARD)
+    eDragState dragState = GetSystemsManager()->GetDragState();
+    if (dragState == eDragState::Transform || currentInput->device == eInputDevices::KEYBOARD)
     {
         return true;
     }
     return false;
 }
 
-void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     using namespace DAVA;
     switch (currentInput->phase)
@@ -303,7 +311,7 @@ void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput)
         break;
 
     case UIEvent::Phase::ENDED:
-        if (activeArea == HUDAreaInfo::ROTATE_AREA)
+        if (activeArea == eArea::ROTATE_AREA)
         {
             ClampAngle();
         }
@@ -313,19 +321,34 @@ void EditorTransformSystem::ProcessInput(DAVA::UIEvent* currentInput)
     }
 }
 
-void EditorTransformSystem::OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState)
+void EditorTransformSystem::OnDragStateChanged(eDragState dragState, eDragState previousState)
 {
-    if (dragState == EditorSystemsManager::Transform)
+    bool isRootControl = activeControlNode != nullptr && activeControlNode->GetParent()->GetControl() == nullptr;
+
+    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    DVASSERT(nullptr != documentData);
+
+    if (dragState == eDragState::Transform)
     {
         extraDelta.SetZero();
         extraDeltaToMoveControls.clear();
         PrepareDrag();
+
+        documentData->BeginBatch("transformations");
+    }
+
+    else if (previousState == eDragState::Transform)
+    {
+        documentData->EndBatch();
+        canvasDataAdapter.TryCentralizeScene();
     }
 }
 
-BaseEditorSystem::eSystems EditorTransformSystem::GetOrder() const
+eSystems EditorTransformSystem::GetOrder() const
 {
-    return TRANSFORM;
+    return eSystems::TRANSFORM;
 }
 
 void EditorTransformSystem::ProcessKey(DAVA::eInputElements key)
@@ -390,29 +413,29 @@ void EditorTransformSystem::ProcessDrag(const DAVA::Vector2& pos)
     Vector2 delta = GetSystemsManager()->GetMouseDelta();
     switch (activeArea)
     {
-    case HUDAreaInfo::FRAME_AREA:
+    case eArea::FRAME_AREA:
         MoveAllSelectedControlsByMouse(delta, CanMagnet());
         break;
-    case HUDAreaInfo::TOP_LEFT_AREA:
-    case HUDAreaInfo::TOP_CENTER_AREA:
-    case HUDAreaInfo::TOP_RIGHT_AREA:
-    case HUDAreaInfo::CENTER_LEFT_AREA:
-    case HUDAreaInfo::CENTER_RIGHT_AREA:
-    case HUDAreaInfo::BOTTOM_LEFT_AREA:
-    case HUDAreaInfo::BOTTOM_CENTER_AREA:
-    case HUDAreaInfo::BOTTOM_RIGHT_AREA:
+    case eArea::TOP_LEFT_AREA:
+    case eArea::TOP_CENTER_AREA:
+    case eArea::TOP_RIGHT_AREA:
+    case eArea::CENTER_LEFT_AREA:
+    case eArea::CENTER_RIGHT_AREA:
+    case eArea::BOTTOM_LEFT_AREA:
+    case eArea::BOTTOM_CENTER_AREA:
+    case eArea::BOTTOM_RIGHT_AREA:
     {
         bool withPivot = IsKeyPressed(eModifierKeys::ALT);
         bool rateably = IsKeyPressed(eModifierKeys::CONTROL);
         ResizeControl(delta, withPivot, rateably);
         break;
     }
-    case HUDAreaInfo::PIVOT_POINT_AREA:
+    case eArea::PIVOT_POINT_AREA:
     {
         MovePivot(delta);
         break;
     }
-    case HUDAreaInfo::ROTATE_AREA:
+    case eArea::ROTATE_AREA:
     {
         RotateControl(pos);
         break;
@@ -563,8 +586,7 @@ void EditorTransformSystem::CreateMagnetLinesToParent(const DAVA::Rect& box, con
 {
     using namespace DAVA;
     Rect parentBox(Vector2(), parentGD->size);
-
-    if (parentBox.GetSize()[axis] > 0.0f)
+    if (activeControlNode->GetParent()->GetControl() != nullptr && parentBox.GetSize()[axis] > 0.0f)
     {
         //0.0f is equal to control left and 1.0f is equal to control right
         //first value is share of selected control and second value is share of parent control
@@ -623,7 +645,16 @@ void EditorTransformSystem::CreateMagnetLinesToGuides(const DAVA::Rect& box, con
         PackageBaseNode* root = *rootControls.begin();
         PackageNode::AxisGuides values = package->GetAxisGuides(root->GetName(), axis);
 
-        Vector<float32> bordersToMagnet = { 0.0f, 0.5f, 1.0f };
+        Vector<float32> bordersToMagnet;
+        bool isRootControl = activeControlNode->GetParent()->GetControl() == nullptr;
+        if (isRootControl)
+        {
+            bordersToMagnet = { 0.5f, 1.0f };
+        }
+        else
+        {
+            bordersToMagnet = { 0.0f, 0.5f, 1.0f };
+        }
 
         lines.reserve(lines.size() + values.size() * bordersToMagnet.size());
 
@@ -755,9 +786,9 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
     using namespace DAVA;
     UIControl* control = activeControlNode->GetControl();
 
-    DVASSERT(activeArea != HUDAreaInfo::NO_AREA);
+    DVASSERT(activeArea != eArea::NO_AREA);
 
-    const Directions& directions = cornersDirections.at(activeArea - HUDAreaInfo::TOP_LEFT_AREA);
+    const Directions& directions = cornersDirections.at(activeArea - eArea::TOP_LEFT_AREA);
 
     Vector2 pivot(control->GetPivot());
 
@@ -772,7 +803,7 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
         const int direction = directions[axis];
 
         deltaSize[axis] *= direction;
-        deltaPosition[axis] *= direction == NEGATIVE_DIRECTION ? 1.0f - pivot[axis] : pivot[axis];
+        deltaPosition[axis] *= (direction == NEGATIVE_DIRECTION) ? 1.0f - pivot[axis] : pivot[axis];
 
         if (direction == NO_DIRECTION)
         {
@@ -855,9 +886,28 @@ void EditorTransformSystem::ResizeControl(DAVA::Vector2 delta, bool withPivot, b
 
     Vector2 originalPosition = positionProperty->GetValue().Cast<Vector2>();
     Vector2 finalPosition = originalPosition;
-    if (activeControlNode->GetParent() != nullptr && activeControlNode->GetParent()->GetControl() != nullptr)
+
+    bool isRootControl = activeControlNode->GetParent()->GetControl() == nullptr;
+    if (isRootControl == false)
     {
         finalPosition += deltaPosition;
+    }
+    else
+    {
+        CanvasDataAdapter canvasDataAdapter(accessor);
+        deltaPosition = Rotate(deltaPosition, -control->GetAngle());
+        deltaPosition /= control->GetScale();
+        deltaPosition -= adjustedSize * control->GetPivot();
+        deltaPosition *= parentGeometricData.scale * control->GetScale();
+        canvasDataAdapter.MoveScene(deltaPosition, true);
+
+        UIControl* movableInEditorParent = EditorTransformSystemDetail::FindControlWithComponentInHierarchy<MovableInEditorComponent>(control);
+        DVASSERT(movableInEditorParent != nullptr);
+        movableInEditorParent->SetSize(finalSize);
+
+        UIControl* counterPoiseParent = EditorTransformSystemDetail::FindControlWithComponentInHierarchy<CounterpoiseComponent>(control);
+        DVASSERT(counterPoiseParent != nullptr);
+        counterPoiseParent->SetPosition(counterPoiseParent->GetPosition() + adjustedSize * control->GetPivot());
     }
 
     Any positionValue(finalPosition);
@@ -1262,8 +1312,5 @@ bool EditorTransformSystem::CanMagnet() const
 {
     using namespace DAVA;
     float32 scaleToMagnet = 8.0f;
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
-    DVASSERT(activeContext != nullptr);
-    CanvasData* data = activeContext->GetData<CanvasData>();
-    return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->canMagnet && data->GetScale() <= scaleToMagnet;
+    return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>()->canMagnet && canvasDataAdapter.GetScale() <= scaleToMagnet;
 }

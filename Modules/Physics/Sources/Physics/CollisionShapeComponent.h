@@ -6,6 +6,8 @@
 
 #include <Reflection/Reflection.h>
 
+#include <physx/PxFiltering.h>
+
 namespace physx
 {
 class PxShape;
@@ -39,7 +41,11 @@ public:
     void SetTypeMaskToCollideWith(uint32 typeMaskToCollideWith);
     uint32 GetTypeMaskToCollideWith() const;
 
+    const FastName& GetMaterialName() const;
+    void SetMaterialName(const FastName& materialName);
+
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
+    static bool IsCCDEnabled(const physx::PxFilterData& filterData);
 
 protected:
 #if defined(__DAVAENGINE_DEBUG__)
@@ -61,11 +67,13 @@ private:
     float32 mass = 1.0f;
     uint32 typeMask = 0;
     uint32 typeMaskToCollideWith = 0;
+    FastName materialName;
 
     physx::PxShape* shape = nullptr;
 
     friend class PhysicsSystem;
     void SetPxShape(physx::PxShape* shape);
+    static void SetCCDEnabled(physx::PxShape* shape, bool isCCDActive);
 
     DAVA_VIRTUAL_REFLECTION(CollisionShapeComponent, Component);
 };

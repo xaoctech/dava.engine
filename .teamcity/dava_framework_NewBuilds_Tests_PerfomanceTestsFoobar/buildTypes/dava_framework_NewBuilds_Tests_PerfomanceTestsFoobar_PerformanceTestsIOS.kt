@@ -28,7 +28,6 @@ object dava_framework_NewBuilds_Tests_PerfomanceTestsFoobar_PerformanceTestsIOS 
         param("ResourceEditor_add_definitions", "-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=true,-DCUSTOM_DAVA_CONFIG_PATH_MAC=%DavaConfigMac%")
         param("ResourceEditor_pathToProject", "%system.teamcity.build.checkoutDir%/dava.framework/Programs/ResourceEditor")
         param("ResourceEditor_pathToProjectBuild", "%system.teamcity.build.checkoutDir%/b_ResourceEditor")
-        param("speedtree_branch", "trunk")
         param("statistic_end_time", "120000")
         param("statistic_start_time", "0")
         select("test", "All",
@@ -40,7 +39,6 @@ object dava_framework_NewBuilds_Tests_PerfomanceTestsFoobar_PerformanceTestsIOS 
     vcs {
         root("dava_DavaFrameworkStash", "+:.=>dava.framework")
         root(dava_framework_NewBuilds_Tests_PerfomanceTestsFoobar.vcsRoots.dava_framework_NewBuilds_Tests_PerfomanceTestsFoobar_DavaFrameworkPerformanceTes, "+:.=>performance.test")
-        root("dava_framework_DavaSpeedtreeBranch", "+:.=>/dava.speedtree")
 
         checkoutMode = CheckoutMode.ON_AGENT
     }

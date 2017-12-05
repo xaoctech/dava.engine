@@ -15,6 +15,7 @@ class ContextAccessor;
 } // namespace TArc
 } // namespace DAVA
 
+class QItemSelection;
 class QItemSelectionModel;
 class QDropEvent;
 class QDragMoveEvent;
@@ -40,6 +41,7 @@ public:
     SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
 
     void AddAction(QAction* action);
+    static void EraseEmptyIndexes(DAVA::Set<QPersistentModelIndex>& indexes);
 
 protected:
     void UpdateControl(const DAVA::TArc::ControlDescriptor& descriptor) override;
@@ -47,6 +49,7 @@ protected:
     void OnItemExpanded(const QModelIndex& index);
     void OnItemCollapsed(const QModelIndex& index);
     void OnDoubleClicked(const QModelIndex& index);
+    void OnSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     void contextMenuEvent(QContextMenuEvent* e) override;
 

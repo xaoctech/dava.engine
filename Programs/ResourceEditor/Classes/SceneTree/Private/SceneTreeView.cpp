@@ -17,6 +17,22 @@
 #include <QDragMoveEvent>
 #include <QDragLeaveEvent>
 
+void SceneTreeView::EraseEmptyIndexes(DAVA::Set<QPersistentModelIndex>& indexes)
+{
+    auto iter = indexes.begin();
+    while (iter != indexes.end())
+    {
+        if (iter->isValid() == false)
+        {
+            iter = indexes.erase(iter);
+        }
+        else
+        {
+            ++iter;
+        }
+    }
+}
+
 SceneTreeView::SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
     : ControlProxyImpl<QTreeView>(params, DAVA::TArc::ControlDescriptor(params.fields), accessor, model, parent)
     , defaultSelectionModel(new QItemSelectionModel(nullptr, this))
@@ -55,23 +71,43 @@ void SceneTreeView::UpdateControl(const DAVA::TArc::ControlDescriptor& descripto
     {
         DAVA::TArc::ScopedValueGuard<bool> guard(inExpandingSync, true);
         expandedIndexList = GetFieldValue(Fields::ExpandedIndexList, DAVA::Set<QPersistentModelIndex>());
-        collapseAll();
-        for (const QPersistentModelIndex& index : expandedIndexList)
+        if (expandedIndexList.size() == 1 && (*expandedIndexList.begin() == QModelIndex()))
         {
-            if (index.isValid() == true)
+            expandedIndexList.clear();
+            collapseAll();
+            QMetaObject::Connection conID = QObject::connect(this, &QTreeView::expanded, [this](const QModelIndex& index) {
+                expandedIndexList.insert(index);
+            });
+            expandAll();
+            QObject::disconnect(conID);
+            wrapper.SetFieldValue(GetFieldName(Fields::ExpandedIndexList), expandedIndexList);
+        }
+        else
+        {
+            collapseAll();
+            for (const QPersistentModelIndex& index : expandedIndexList)
             {
-                DVASSERT(static_cast<QAbstractItemView*>(this)->model() == index.model());
-                expand(index);
+                if (index.isValid() == true)
+                {
+                    DVASSERT(static_cast<QAbstractItemView*>(this)->model() == index.model());
+                    expand(index);
+                }
             }
         }
     }
 
     if (descriptor.IsChanged(Fields::SelectionModel) == true)
     {
-        QItemSelectionModel* selectionModel = GetFieldValue<QItemSelectionModel*>(Fields::SelectionModel, nullptr);
-        if (selectionModel != nullptr)
+        QItemSelectionModel* newSelectionModel = GetFieldValue<QItemSelectionModel*>(Fields::SelectionModel, nullptr);
+        if (newSelectionModel != nullptr)
         {
-            setSelectionModel(selectionModel);
+            QItemSelectionModel* prevSelectoinModel = selectionModel();
+            if (prevSelectoinModel != nullptr)
+            {
+                connections.RemoveConnection(prevSelectoinModel, &QItemSelectionModel::selectionChanged);
+            }
+            setSelectionModel(newSelectionModel);
+            connections.AddConnection(newSelectionModel, &QItemSelectionModel::selectionChanged, DAVA::MakeFunction(this, &SceneTreeView::OnSelectionChanged));
         }
     }
 }
@@ -80,6 +116,7 @@ void SceneTreeView::OnItemExpanded(const QModelIndex& index)
 {
     SCOPED_VALUE_GUARD(bool, inExpandingSync, true, void());
     expandedIndexList.insert(QPersistentModelIndex(index));
+    EraseEmptyIndexes(expandedIndexList);
     wrapper.SetFieldValue(GetFieldName(Fields::ExpandedIndexList), expandedIndexList);
 }
 
@@ -87,6 +124,7 @@ void SceneTreeView::OnItemCollapsed(const QModelIndex& index)
 {
     SCOPED_VALUE_GUARD(bool, inExpandingSync, true, void());
     expandedIndexList.erase(QPersistentModelIndex(index));
+    EraseEmptyIndexes(expandedIndexList);
     wrapper.SetFieldValue(GetFieldName(Fields::ExpandedIndexList), expandedIndexList);
 }
 
@@ -98,6 +136,14 @@ void SceneTreeView::OnDoubleClicked(const QModelIndex& index)
         DAVA::AnyFn fn = model.GetMethod(doubleClickedName.c_str());
         DVASSERT(fn.IsValid() == true);
         fn.Invoke(index);
+    }
+}
+
+void SceneTreeView::OnSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+{
+    if (selected.isEmpty() == false)
+    {
+        scrollTo(selected.indexes().front());
     }
 }
 

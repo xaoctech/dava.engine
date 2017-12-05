@@ -40,7 +40,7 @@ public:
     /*
     creates scene
     */
-    explicit SceneBuilder(const FilePath& scenePathname, Scene* scene = nullptr);
+    explicit SceneBuilder(const FilePath& scenePathname, const FilePath& projectPathname, Scene* scene = nullptr);
 
     /*
     saves scene into scenePathname passed to constructor
@@ -50,7 +50,32 @@ public:
     /*
     creates scene with all objects that can be added with SceneBuilder: camera, box etc.
     */
-    static void CreateFullScene(const FilePath& scenePathname, DAVA::Scene* scene = nullptr);
+    static void CreateFullScene(const FilePath& scenePathname, const FilePath& projectPathname = "", DAVA::Scene* scene = nullptr);
+    static String GetSceneRelativePathname(const FilePath& scenePath, const FilePath& dataSourcePath, const String& filename);
+
+    class BoxBuilder final
+    {
+    public:
+        BoxBuilder& Create(const FilePath& newPath, const String& newName, const String& newTag);
+        BoxBuilder& SetTextureColor(uint8 newColor);
+        BoxBuilder& AddRenderComponent();
+        BoxBuilder& AddGeometry();
+        BoxBuilder& AddSlotComponent(const String& slotName, const FilePath& configPath);
+        BoxBuilder& AddRefToOwner();
+        BoxBuilder& AddToScene(Scene* scene);
+        Entity* GetBox();
+        BoxBuilder& Reset();
+
+    private:
+        void SetupMaterial(NMaterial* material, const String& fileName, const FastName& slotName);
+
+        ScopedPtr<Entity> box = nullptr;
+
+        uint8 color;
+        FilePath path;
+        String tag;
+        String name;
+    };
 
     enum R2OMode
     {
@@ -74,6 +99,12 @@ public:
     void AddR2O(Entity* entity);
 
     const FilePath scenePathname;
+    const FilePath projectPathname;
     ScopedPtr<Scene> scene;
+    const static String tagChina;
+    const static String tagJapan;
+    const static String tagDefault;
+    const static String chinaSlotDir;
+    const static String defaultSlotDir;
 };
 };

@@ -26,6 +26,7 @@ public:
 
     EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor);
 
+    void RegisterEntity(DAVA::Entity* entity) override;
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
 

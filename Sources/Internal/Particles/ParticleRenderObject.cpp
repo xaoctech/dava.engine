@@ -294,6 +294,10 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
 
     uint32 verteciesAppended = 0;
     uint32 particleStride = vertexStride * 4;
+
+    if (begin->material && begin->layer->useThreePointGradient)
+        SetupThreePontGradient(*begin, begin->material);
+
     for (auto it = begin; it != end; ++it)
     {
         const ParticleGroup& group = *it;
@@ -345,9 +349,14 @@ void ParticleRenderObject::AppendParticleGroup(List<ParticleGroup>::iterator beg
                 {
                     ey = current->speed;
                     float32 vel = ey.Length();
+                    float32 base = 0.0f;
+                    if (vel < EPSILON)
+                        ey = Vector3(0.0f, 0.0f, 1.0f);
+                    else
+                        base = group.layer->scaleVelocityBase / vel;
                     ex = ey.CrossProduct(cameraDirection);
                     ex.Normalize();
-                    ey *= (group.layer->scaleVelocityBase / vel + group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
+                    ey *= (base + group.layer->scaleVelocityFactor); //optimized ex=(svBase+svFactor*vel)/vel
                 }
 
                 Vector3 left = ex * cos_angle + ey * sin_angle;
@@ -693,6 +702,33 @@ Vector3 ParticleRenderObject::GetStripeNormalizedSpeed(const StripeData& data)
 void ParticleRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &Matrix4::IDENTITY, reinterpret_cast<pointer_size>(&Matrix4::IDENTITY));
+}
+
+void ParticleRenderObject::SetupThreePontGradient(const ParticleGroup& group, NMaterial* material)
+{
+    // If you will use graphs and will create multiple instances of particle effect in scene - in editor all will be fine
+    // but in the game the values will be taken from last launched effect's layer. It is not a bug. If you want to use graphs you should
+    // create unique effects.
+    Color currColor = Color::Black;
+    float32 currLoopTime = group.time - group.loopStartTime;
+    float32 currLoopTimeNormalized = currLoopTime / group.loopDuration;
+
+    if (group.layer->gradientColorForWhite != nullptr)
+        currColor = group.layer->gradientColorForWhite->GetValue(currLoopTimeNormalized);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_WHITE, currColor.color);
+
+    if (group.layer->gradientColorForBlack != nullptr)
+        currColor = group.layer->gradientColorForBlack->GetValue(currLoopTimeNormalized);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_BLACK, currColor.color);
+
+    if (group.layer->gradientColorForMiddle != nullptr)
+        currColor = group.layer->gradientColorForMiddle->GetValue(currLoopTimeNormalized);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_COLOR_FOR_MIDDLE, currColor.color);
+
+    float32 middlePoint = group.layer->gradientMiddlePoint;
+    if (group.layer->gradientMiddlePointLine != nullptr)
+        middlePoint = group.layer->gradientMiddlePointLine->GetValue(currLoopTimeNormalized);
+    material->SetPropertyValue(NMaterialParamName::PARAM_PARTICLES_GRADIENT_MIDDLE_POINT, &middlePoint);
 }
 
 } //namespace

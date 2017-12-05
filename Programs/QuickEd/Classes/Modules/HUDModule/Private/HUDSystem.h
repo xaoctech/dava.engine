@@ -40,38 +40,37 @@ private:
     };
     struct HUD;
 
-    bool CanProcessInput(DAVA::UIEvent* currentInput) const override;
-    void ProcessInput(DAVA::UIEvent* currentInput) override;
-    EditorSystemsManager::eDragState RequireNewState(DAVA::UIEvent* currentInput) override;
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
-    void OnDisplayStateChanged(EditorSystemsManager::eDisplayState currentState, EditorSystemsManager::eDisplayState previousState) override;
+    bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
+    void ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    eDragState RequireNewState(DAVA::UIEvent* currentInput, eInputSource inputSource) override;
+    void OnDragStateChanged(eDragState currentState, eDragState previousState) override;
+    void OnDisplayStateChanged(eDisplayState currentState, eDisplayState previousState) override;
     CanvasControls CreateCanvasControls() override;
     void DeleteCanvasControls(const CanvasControls& canvasControls) override;
 
     eSystems GetOrder() const override;
     void OnUpdate() override;
+    void Invalidate() override;
 
     void SetHighlight(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
     void ClearMagnetLines();
 
-    void ProcessCursor(const DAVA::Vector2& pos, eSearchOrder searchOrder = SEARCH_FORWARD);
+    void SyncHudWithSelection();
     HUDAreaInfo GetControlArea(const DAVA::Vector2& pos, eSearchOrder searchOrder) const;
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
+    void UpdateHUDArea();
 
     void UpdateHUDEnabled();
-    SortedControlNodeSet GetSortedControlList() const;
 
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
 
-    HUDAreaInfo activeAreaInfo;
-
     DAVA::Vector2 pressedPoint; //corner of selection rect
     DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);
 
-    DAVA::Map<ControlNode*, std::unique_ptr<HUD>> hudMap;
+    DAVA::Map<PackageBaseNode*, std::unique_ptr<HUD>, LCAComparator> hudMap;
     std::unique_ptr<FrameControl> selectionRectControl;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetControls;
     DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>> magnetTargetControls;

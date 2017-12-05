@@ -5,6 +5,7 @@
 #include "Model/PackageHierarchy/PackageNode.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
+#include <Engine/Engine.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIControl.h>
 #include <UI/Layouts/UILayoutSystem.h>

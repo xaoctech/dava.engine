@@ -126,10 +126,31 @@ private:
     void CloneLayer();
     void RemoveLayer();
     void AddForce();
+    void AddDrag();
+    void AddVortex();
+    void AddGravity();
+    void AddWind();
+    void AddPointGravity();
+    void AddPlaneCollision();
+};
+
+class ParticleSimplifiedForceContextMenu : public BaseContextMenu
+{
+    using TBase = BaseContextMenu;
+
+public:
+    ParticleSimplifiedForceContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+
+protected:
+    void FillActions(QMenu& menu) override;
+
+private:
+    void RemoveForce();
 };
 
 class ParticleForceContextMenu : public BaseContextMenu
 {
+    //////////////////////////////////////////////////////////////////////////
     using TBase = BaseContextMenu;
 
 public:
@@ -139,6 +160,7 @@ protected:
     void FillActions(QMenu& menu) override;
 
 private:
+    void CloneForce();
     void RemoveForce();
 };
 

@@ -6,6 +6,7 @@
 
 #include <physx/PxQueryReport.h>
 #include <physx/PxSimulationEventCallback.h>
+#include <physx/PxForceMode.h>
 
 namespace physx
 {
@@ -17,13 +18,14 @@ class PxControllerManager;
 
 namespace DAVA
 {
-class Vector3;
 class Scene;
 class CollisionSingleComponent;
 class PhysicsModule;
 class PhysicsComponent;
+class DynamicBodyComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
+class PhysicsVehiclesSubsystem;
 class CharacterControllerComponent;
 
 class PhysicsSystem final : public SceneSystem
@@ -53,6 +55,9 @@ public:
     void ScheduleUpdate(CharacterControllerComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
+    void AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode);
+
+    PhysicsVehiclesSubsystem* GetVehiclesSystem();
 
 private:
     bool FetchResults(bool waitForFetchFinish);
@@ -60,7 +65,7 @@ private:
     void DrawDebugInfo();
 
     void InitNewObjects();
-    void AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
+    void AttachShapesRecursively(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale);
     void AttachShape(PhysicsComponent* bodyComponent, CollisionShapeComponent* shapeComponent, const Vector3& scale);
 
     void ReleaseShape(CollisionShapeComponent* component);
@@ -69,6 +74,7 @@ private:
     void SyncTransformToPhysx();
     void SyncEntityTransformToPhysx(Entity* entity);
     void UpdateComponents();
+    void ApplyForces();
 
     void MoveCharacterControllers(float32 timeElapsed);
 
@@ -100,6 +106,8 @@ private:
     physx::PxControllerManager* controllerManager = nullptr;
     PhysicsGeometryCache* geometryCache = nullptr;
 
+    PhysicsVehiclesSubsystem* vehiclesSubsystem = nullptr;
+
     Vector<PhysicsComponent*> physicsComponents;
     Vector<PhysicsComponent*> pendingAddPhysicsComponents;
 
@@ -115,6 +123,14 @@ private:
     Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
     Set<CharacterControllerComponent*> characterControllerComponentsUpdatePending;
 
+    struct PendingForce
+    {
+        DynamicBodyComponent* component = nullptr;
+        Vector3 force;
+        physx::PxForceMode::Enum mode;
+    };
+
+    Vector<PendingForce> forces;
     SimulationEventCallback simulationEventCallback;
 
     bool drawDebugInfo = false;

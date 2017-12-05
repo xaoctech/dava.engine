@@ -202,19 +202,23 @@ private:
     void WaitScanThreadToFinish();
     void StartDelayedRequests();
     // helper functions
-    void ReadLocalFileTableInfoBuffer();
+    bool ReadLocalFileTableInfoBuffer();
     void FillFileNameIndexes();
-    void SaveServerFooter();
-    void DeleteLocalMetaFiles();
+    bool SaveServerFooter();
+    void DeleteLocalMetaFile() const;
     void ContinueInitialization(float frameDelta);
-    void ReadContentAndExtractFileNames();
+    bool ReadContentAndExtractFileNames();
     uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
 
+    String BuildErrorMessageBadServerCrc(uint32 crc32) const;
+    static String BuildErrorMessageFailedRead(const FilePath& path);
+    void UpdateErrorMessageFailedRead();
+    static String BuildErrorMessageFailWrite(const FilePath& path);
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
     PackRequest* CreateNewRequest(const String& requestedPackName);
-    bool IsLocalMetaAlreadyExist() const;
+    bool IsLocalMetaAndFileTableAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
     void OnSettingsChanged(EngineSettings::eSetting value);
@@ -318,7 +322,6 @@ private:
     std::unique_ptr<DLCDownloader> downloader;
 
     mutable UnorderedSet<uint32> allPacks; // reuse memory
-    mutable PackMetaData::Children childrenPacks; // reuse memory
 
     // collect errno codes and count it, also remember last error code
     size_t errorCounter = 0;

@@ -111,7 +111,10 @@ void NotificationScreen::UnloadResources()
     Engine::Instance()->backgroundUpdate.Disconnect(this);
 
     LocalNotificationController::Instance()->Remove(notificationProgress);
+    notificationProgress = nullptr;
+
     LocalNotificationController::Instance()->Remove(notificationText);
+    notificationText = nullptr;
 
     BaseScreen::UnloadResources();
 

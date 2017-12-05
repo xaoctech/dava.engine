@@ -4,7 +4,10 @@
 #include "ValueProperty.h"
 #include "IntrospectionProperty.h"
 
-#include "UI/UIControl.h"
+#include <Reflection/ReflectedMeta.h>
+#include <UI/UIControl.h>
+
+#include <Reflection/ReflectedTypeDB.h>
 
 using namespace DAVA;
 
@@ -14,6 +17,11 @@ ControlPropertiesSection::ControlPropertiesSection(const DAVA::String& name, DAV
 {
     for (const Reflection::Field& field : fields)
     {
+        if (field.ref.GetMeta<M::HiddenField>() != nullptr)
+        {
+            continue;
+        }
+
         if (field.inheritFrom->GetType() == type)
         {
             String name = field.key.Cast<String>();
