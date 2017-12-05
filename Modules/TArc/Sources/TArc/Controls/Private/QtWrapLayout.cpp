@@ -186,7 +186,6 @@ void QtWrapLayoutPrivate::Layout(int32 width)
 {
     Q_Q(QtWrapLayout);
 
-    DVASSERT(items.empty() == false);
     if (items.empty())
     {
         return;

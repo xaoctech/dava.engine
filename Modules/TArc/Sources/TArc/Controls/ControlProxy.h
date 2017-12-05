@@ -75,6 +75,15 @@ public:
         SetupControl(accessor);
     }
 
+    ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, Reflection model_, QWidget* parent)
+        : TBase(parent)
+        , controlParams(params)
+        , descriptor(descriptor_)
+        , model(model_)
+    {
+        SetupControl(params.accessor);
+    }
+
     ~ControlProxyImpl() override
     {
         TearDown();
@@ -208,6 +217,15 @@ protected:
     virtual void UpdateControl(const ControlDescriptor& descriptor) = 0;
 
     template <typename Enum>
+    bool IsReadOnlyConstOfMeta(Enum valueRole) const
+    {
+        DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(valueRole));
+        DVASSERT(fieldValue.IsValid());
+
+        return fieldValue.IsReadonly() == true || fieldValue.GetMeta<DAVA::M::ReadOnly>() != nullptr;
+    }
+
+    template <typename Enum>
     bool IsValueReadOnly(const ControlDescriptor& descriptor, Enum valueRole, Enum readOnlyRole) const
     {
         DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(valueRole));
@@ -243,6 +261,14 @@ protected:
         }
 
         return defaultValue;
+    }
+
+    template <typename Enum>
+    void SetFieldValue(Enum role, const Any& value)
+    {
+        const FastName& fieldName = GetFieldName(role);
+        DVASSERT(fieldName.IsValid());
+        wrapper.SetFieldValue(fieldName, value);
     }
 
 protected:
