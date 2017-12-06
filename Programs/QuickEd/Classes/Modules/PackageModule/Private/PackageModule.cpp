@@ -244,7 +244,6 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Add Style";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcut(QKeySequence("Ctrl+S"));
         action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
