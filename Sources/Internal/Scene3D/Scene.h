@@ -57,6 +57,7 @@ class TransformSingleComponent;
 class MotionSingleComponent;
 class PhysicsSystem;
 class CollisionSingleComponent;
+class ScreenPositionSystem;
 
 class UIEvent;
 class RenderPass;
@@ -117,6 +118,8 @@ public:
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
 #endif
+
+        SCENE_SYSTEM_SCREEN_POSITION_FLAG = 1 << 20,
         SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
     };
 
@@ -183,6 +186,7 @@ public:
     SlotSystem* slotSystem = nullptr;
     GeoDecalSystem* geoDecalSystem = nullptr;
     PhysicsSystem* physicsSystem = nullptr;
+    ScreenPositionSystem* screenPositionSystem = nullptr;
 
     CollisionSingleComponent* collisionSingleComponent = nullptr;
     TransformSingleComponent* transformSingleComponent = nullptr;

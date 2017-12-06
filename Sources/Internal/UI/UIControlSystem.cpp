@@ -43,6 +43,7 @@
 #include "UI/UIScreenTransition.h"
 #include "UI/UISystem.h"
 #include "UI/Update/UIUpdateSystem.h"
+#include "UI/Scene3D/UIEntityMarkerSystem.h"
 
 namespace DAVA
 {
@@ -62,6 +63,9 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
+
+    AddSystem(std::make_unique<UIEntityMarkerSystem>());
+
     AddSystem(std::make_unique<UIStyleSheetSystem>());
     AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem
     AddSystem(std::make_unique<UILayoutSystem>());

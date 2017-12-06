@@ -97,6 +97,7 @@ REGISTER_CLASS(SnapToLandscapeControllerComponent);
 REGISTER_CLASS(GeoDecalComponent);
 REGISTER_CLASS(SlotComponent);
 REGISTER_CLASS(TextComponent);
+REGISTER_CLASS(ScreenPositionComponent);
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 REGISTER_CLASS(StaticBodyComponent);

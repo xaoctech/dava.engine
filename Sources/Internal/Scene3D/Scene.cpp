@@ -45,6 +45,7 @@
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Systems/UpdateSystem.h"
+#include "Scene3D/Systems/ScreenPositionSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
 #include "Sound/SoundSystem.h"
@@ -381,6 +382,12 @@ void Scene::CreateSystems()
     {
         geoDecalSystem = new GeoDecalSystem(this);
         AddSystem(geoDecalSystem, MAKE_COMPONENT_MASK(Component::GEO_DECAL_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_SCREEN_POSITION_FLAG & systemsMask)
+    {
+        screenPositionSystem = new ScreenPositionSystem(this);
+        AddSystem(screenPositionSystem, MAKE_COMPONENT_MASK(Component::SCREEN_POSITION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)

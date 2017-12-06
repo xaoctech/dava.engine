@@ -8,7 +8,7 @@
 #include "Render/Renderer.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
-#include "UI/Render/UISceneComponent.h"
+#include "UI/Scene3D/UISceneComponent.h"
 #include "UI/Text/Private/UITextSystemLink.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
