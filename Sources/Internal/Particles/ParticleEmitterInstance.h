@@ -9,8 +9,9 @@ class ParticleEffectComponent;
 class ParticleEmitterInstance : public BaseObject
 {
 public:
-    ParticleEmitterInstance(ParticleEffectComponent* owner, bool isInner = false);
-    ParticleEmitterInstance(ParticleEffectComponent* owner, ParticleEmitter* emitter, bool isInner = false);
+    ParticleEmitterInstance(ParticleEffectComponent* owner);
+    ParticleEmitterInstance(ParticleEmitter* emitter);
+    ParticleEmitterInstance(ParticleEffectComponent* owner, ParticleEmitter* emitter);
 
     ParticleEmitter* GetEmitter() const;
     const FilePath& GetFilePath() const;
@@ -22,16 +23,15 @@ public:
     void SetOwner(ParticleEffectComponent* owner);
 
     ParticleEmitterInstance* Clone() const;
-    ParticleEffectComponent* GetOwner() const;
 
-    bool IsInnerEmitter() const;
+    // GetOwner can return nullptr, if "this" is an inner emitter of ParticleLayer
+    ParticleEffectComponent* GetOwner() const;
 
 private:
     ParticleEffectComponent* owner = nullptr;
     RefPtr<ParticleEmitter> emitter;
     FilePath filePath;
     Vector3 spawnPosition;
-    bool isInnerEmitter = false;
 
     DAVA_VIRTUAL_REFLECTION(ParticleEmitterInstance, BaseObject);
 };
@@ -54,11 +54,6 @@ inline const Vector3& ParticleEmitterInstance::GetSpawnPosition() const
 inline ParticleEffectComponent* ParticleEmitterInstance::GetOwner() const
 {
     return owner;
-}
-
-inline bool ParticleEmitterInstance::IsInnerEmitter() const
-{
-    return isInnerEmitter;
 }
 
 inline void ParticleEmitterInstance::SetEmitter(ParticleEmitter* _emitter)

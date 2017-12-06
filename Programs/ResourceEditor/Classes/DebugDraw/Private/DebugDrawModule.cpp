@@ -246,6 +246,7 @@ void DebugDrawModule::PostInit()
         ComboBox::Params params(accessor, ui, mainWindowKey);
         params.fields[ComboBox::Fields::IsReadOnly] = "readOnly";
         params.fields[ComboBox::Fields::Value] = "currentObject";
+        params.fields[ComboBox::Fields::Enumerator] = "";
 
         ControlProxy* control = new ComboBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)));
         AttachWidgetToAction(action, control);

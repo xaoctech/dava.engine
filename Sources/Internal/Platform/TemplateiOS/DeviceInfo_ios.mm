@@ -1,20 +1,26 @@
-#include "Platform/TemplateiOS/DeviceInfo_ios.h"
-
 #include "Base/BaseTypes.h"
+
+#ifdef __DAVAENGINE_IPHONE__
+
+#include "Platform/TemplateiOS/DeviceInfo_ios.h"
+#include "Utils/StringFormat.h"
+#import "Utils/NSStringUtils.h"
 #include "Base/GlobalEnum.h"
 #include "Base/TemplateHelpers.h"
-#include "Utils/StringFormat.h"
-#include "Utils/NSStringUtils.h"
-
-#include "Platform/Reachability.h"
+#include "Logger/Logger.h"
 
 #import <UIKit/UIDevice.h>
 #import <UIKit/UIKit.h>
 #import <Foundation/NSLocale.h>
-#import <sys/utsname.h>
+
+#include <sys/utsname.h>
+#include <sys/statvfs.h>
+
 #import <AdSupport/ASIdentifierManager.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
+
+#import "Platform/Reachability.h"
 
 namespace DAVA
 {
@@ -408,6 +414,35 @@ DeviceInfo::NetworkInfo DeviceInfoPrivate::GetNetworkInfo()
 List<DeviceInfo::StorageInfo> DeviceInfoPrivate::GetStoragesList()
 {
     List<DeviceInfo::StorageInfo> l;
+    DeviceInfo::StorageInfo info;
+
+    info.type = DeviceInfo::STORAGE_TYPE_INTERNAL;
+
+    const char* home = ::getenv("HOME");
+    if (nullptr == home)
+    {
+        Logger::Error("HOME env not found");
+        return l;
+    }
+
+    struct statvfs stat_data;
+
+    if (0 != ::statvfs(home, &stat_data))
+    {
+        Logger::Error("failed get filesystem info for path: %s, error: %s", home, ::strerror(errno));
+        return l;
+    }
+
+    info.totalSpace = static_cast<int64>(stat_data.f_frsize) * stat_data.f_blocks;
+    info.freeSpace = static_cast<int64>(stat_data.f_frsize) * stat_data.f_bavail;
+
+    info.readOnly = false;
+    info.removable = false;
+    info.emulated = false;
+
+    info.path = home;
+
+    l.push_back(info);
     return l;
 }
 
@@ -428,3 +463,4 @@ String DeviceInfoPrivate::GetCarrierName()
     return StringFromNSString(lastCarrierName);
 }
 }
+#endif
