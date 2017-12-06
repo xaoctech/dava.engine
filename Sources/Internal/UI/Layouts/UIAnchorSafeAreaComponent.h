@@ -5,50 +5,56 @@
 
 namespace DAVA
 {
+/**
+ We can use this component to mark controls which we would like to move to safe 
+ area on iPhone X display.
+ 
+ Insets can has follow values:
+  - NONE - ignores insets on this side
+  - INSET - moves the control to safe area in any case
+  - INSET_ONLY_IF_NOTCH - move control if the iPhone X notch is on this side
+  - REVERSE - moves the control in opposit side (useful to move the control in one side but leave the internal background on previous place)
+ */
 class UIAnchorSafeAreaComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIAnchorCorrectionComponent, UIComponent);
 
 public:
+    enum class eInsetType
+    {
+        NONE,
+        INSET,
+        INSET_ONLY_IF_NOTCH,
+        REVERSE
+    };
+
     DECLARE_UI_COMPONENT(UIAnchorCorrectionComponent);
 
     UIAnchorSafeAreaComponent();
     UIAnchorSafeAreaComponent(const UIAnchorSafeAreaComponent& src);
 
-    bool IsUseLeftSafeInset() const;
-    void SetUseLeftSafeInset(bool use);
-
-    bool IsUseTopSafeInset() const;
-    void SetUseTopSafeInset(bool use);
-
-    bool IsUseRightSafeInset() const;
-    void SetUseRightSafeInset(bool use);
-
-    bool IsUseBottomSafeInset() const;
-    void SetUseBottomSafeInset(bool use);
-
-protected:
-    virtual ~UIAnchorSafeAreaComponent();
-
-private:
     UIAnchorSafeAreaComponent& operator=(const UIAnchorSafeAreaComponent&) = delete;
-
-public:
     UIAnchorSafeAreaComponent* Clone() const override;
 
+    eInsetType GetLeftInset() const;
+    void SetLeftInset(eInsetType inset);
+
+    eInsetType GetTopInset() const;
+    void SetTopInset(eInsetType inset);
+
+    eInsetType GetRightInset() const;
+    void SetRightInset(eInsetType inset);
+
+    eInsetType GetBottomInset() const;
+    void SetBottomInset(eInsetType inset);
+
 private:
-    enum eFlags
-    {
-        FLAG_USE_LEFT_SAFE_INSET,
-        FLAG_USE_TOP_SAFE_INSET,
-        FLAG_USE_RIGHT_SAFE_INSET,
-        FLAG_USE_BOTTOM_SAFE_INSET,
+    virtual ~UIAnchorSafeAreaComponent();
+    void MarkDirty();
 
-        FLAGS_COUNT
-    };
-
-    void SetFlag(eFlags flag, bool enabled);
-
-    std::bitset<FLAGS_COUNT> flags;
+    eInsetType leftInset = eInsetType::NONE;
+    eInsetType topInset = eInsetType::NONE;
+    eInsetType rightInset = eInsetType::NONE;
+    eInsetType bottomInset = eInsetType::NONE;
 };
 }

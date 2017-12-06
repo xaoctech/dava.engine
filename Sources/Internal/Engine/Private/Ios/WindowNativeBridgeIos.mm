@@ -102,11 +102,7 @@ bool WindowNativeBridge::CreateWindow()
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCreatedEvent(window, viewRect.size.width, viewRect.size.height, viewRect.size.width * scale, viewRect.size.height * scale, dpi, eFullscreen::On));
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowVisibilityChangedEvent(window, true));
 
-    if (@available(iOS 11.0, *)) // [uiwindow respondsToSelector:@selector(safeAreaInsets)]
-    {
-        UIEdgeInsets safeAreaInsets = [uiwindow safeAreaInsets];
-        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(window, safeAreaInsets.left, safeAreaInsets.top, safeAreaInsets.right, safeAreaInsets.bottom));
-    }
+    PostSafeAreaInsetsChanged();
 
     return true;
 }
@@ -162,6 +158,8 @@ void WindowNativeBridge::LoadView()
 
 void WindowNativeBridge::ViewWillTransitionToSize(float32 w, float32 h)
 {
+    PostSafeAreaInsetsChanged();
+
     // viewWillTransitionToSize can be called when device orientation changes
     // In some cases this won't lead to actual size changes
     // (i.e. when rotating from Landscape Left to Landscape Right)
@@ -223,6 +221,39 @@ void WindowNativeBridge::SetSurfaceScale(const float32 scale)
     CGSize size = [renderView bounds].size;
     CGSize surfaceSize = [renderView surfaceSize];
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSizeChangedEvent(window, size.width, size.height, surfaceSize.width, surfaceSize.height, scale, dpi, eFullscreen::On));
+}
+
+void WindowNativeBridge::PostSafeAreaInsetsChanged()
+{
+    SEL safeAreaSelector = NSSelectorFromString(@"safeAreaInsets");
+    if ([uiwindow respondsToSelector:safeAreaSelector])
+    {
+        NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:
+                                                 [[uiwindow class] instanceMethodSignatureForSelector:safeAreaSelector]];
+        [invocation setSelector:safeAreaSelector];
+        [invocation setTarget:uiwindow];
+        [invocation invoke];
+
+        UIEdgeInsets safeAreaInsets;
+        [invocation getReturnValue:&safeAreaInsets];
+
+        //
+        //    UIDeviceOrientationLandscapeRight
+        //    [UIDevice currentDevice].orientation;
+
+        ::UIScreen* screen = [ ::UIScreen mainScreen];
+        CGFloat scale = [screen scale];
+        bool isLeftNotch = safeAreaInsets.left > 0.0f && [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft;
+        bool isRightNotch = safeAreaInsets.right > 0.0f && [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight;
+
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(window,
+                                                                                              safeAreaInsets.left * scale,
+                                                                                              safeAreaInsets.top * scale,
+                                                                                              safeAreaInsets.right * scale,
+                                                                                              safeAreaInsets.bottom * scale,
+                                                                                              isLeftNotch,
+                                                                                              isRightNotch));
+    }
 }
 
 UIImage* RenderUIViewToImage(UIView* view)

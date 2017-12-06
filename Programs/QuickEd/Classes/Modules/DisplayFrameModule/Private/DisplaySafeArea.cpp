@@ -26,6 +26,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DisplaySafeAreaPreferences)
     .Field("topInset", &DisplaySafeAreaPreferences::topInset)[DAVA::M::DisplayName("Top Inset")]
     .Field("rightInset", &DisplaySafeAreaPreferences::rightInset)[DAVA::M::DisplayName("Right Inset")]
     .Field("bottomInset", &DisplaySafeAreaPreferences::bottomInset)[DAVA::M::DisplayName("Bottom Inset")]
+    .Field("leftNotch", &DisplaySafeAreaPreferences::isLeftNotch)[DAVA::M::DisplayName("Left Notch")]
+    .Field("rightNotch", &DisplaySafeAreaPreferences::isRightNotch)[DAVA::M::DisplayName("Right Notch")]
     .End();
 }
 
@@ -60,7 +62,7 @@ void DisplaySafeArea::OnUpdate()
     }
 
     DisplaySafeAreaPreferences* prefs = accessor->GetGlobalContext()->GetData<DisplaySafeAreaPreferences>();
-    if (!prefs->isVisible)
+    if (!prefs->isVisible || !prefs->isEnabled)
     {
         return;
     }

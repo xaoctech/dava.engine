@@ -68,6 +68,8 @@ struct WindowNativeBridge final
 
     //////////////////////////////////////////////////////////////////////////
 
+    void PostSafeAreaInsetsChanged();
+
     WindowImpl* windowImpl = nullptr;
     Window* window = nullptr;
     MainDispatcher* mainDispatcher = nullptr;

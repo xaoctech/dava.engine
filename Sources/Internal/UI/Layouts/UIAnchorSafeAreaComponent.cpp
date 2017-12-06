@@ -5,6 +5,14 @@
 #include "UI/UIControl.h"
 #include "Reflection/ReflectionRegistrator.h"
 
+ENUM_DECLARE(DAVA::UIAnchorSafeAreaComponent::eInsetType)
+{
+    ENUM_ADD_DESCR(static_cast<DAVA::int32>(DAVA::UIAnchorSafeAreaComponent::eInsetType::NONE), "NONE");
+    ENUM_ADD_DESCR(static_cast<DAVA::int32>(DAVA::UIAnchorSafeAreaComponent::eInsetType::INSET), "INSET");
+    ENUM_ADD_DESCR(static_cast<DAVA::int32>(DAVA::UIAnchorSafeAreaComponent::eInsetType::INSET_ONLY_IF_NOTCH), "INSET_ONLY_IF_NOTCH");
+    ENUM_ADD_DESCR(static_cast<DAVA::int32>(DAVA::UIAnchorSafeAreaComponent::eInsetType::REVERSE), "REVERSE");
+};
+
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIAnchorSafeAreaComponent)
@@ -12,10 +20,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIAnchorSafeAreaComponent)
     ReflectionRegistrator<UIAnchorSafeAreaComponent>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIAnchorSafeAreaComponent* o) { o->Release(); })
-    .Field("leftSafeInset", &UIAnchorSafeAreaComponent::IsUseLeftSafeInset, &UIAnchorSafeAreaComponent::SetUseLeftSafeInset)
-    .Field("topSafeInset", &UIAnchorSafeAreaComponent::IsUseTopSafeInset, &UIAnchorSafeAreaComponent::SetUseTopSafeInset)
-    .Field("rightSafeInset", &UIAnchorSafeAreaComponent::IsUseRightSafeInset, &UIAnchorSafeAreaComponent::SetUseRightSafeInset)
-    .Field("bottomSafeInset", &UIAnchorSafeAreaComponent::IsUseBottomSafeInset, &UIAnchorSafeAreaComponent::SetUseBottomSafeInset)
+    .Field("leftSafeInset", &UIAnchorSafeAreaComponent::GetLeftInset, &UIAnchorSafeAreaComponent::SetLeftInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("topSafeInset", &UIAnchorSafeAreaComponent::GetTopInset, &UIAnchorSafeAreaComponent::SetTopInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("rightSafeInset", &UIAnchorSafeAreaComponent::GetRightInset, &UIAnchorSafeAreaComponent::SetRightInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("bottomSafeInset", &UIAnchorSafeAreaComponent::GetBottomInset, &UIAnchorSafeAreaComponent::SetBottomInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
     .End();
 }
 
@@ -26,7 +34,10 @@ UIAnchorSafeAreaComponent::UIAnchorSafeAreaComponent()
 }
 
 UIAnchorSafeAreaComponent::UIAnchorSafeAreaComponent(const UIAnchorSafeAreaComponent& src)
-    : flags(src.flags)
+    : leftInset(src.leftInset)
+    , topInset(src.topInset)
+    , rightInset(src.rightInset)
+    , bottomInset(src.bottomInset)
 {
 }
 
@@ -39,55 +50,55 @@ UIAnchorSafeAreaComponent* UIAnchorSafeAreaComponent::Clone() const
     return new UIAnchorSafeAreaComponent(*this);
 }
 
-bool UIAnchorSafeAreaComponent::IsUseLeftSafeInset() const
+UIAnchorSafeAreaComponent::eInsetType UIAnchorSafeAreaComponent::GetLeftInset() const
 {
-    return flags.test(FLAG_USE_LEFT_SAFE_INSET);
+    return leftInset;
 }
 
-void UIAnchorSafeAreaComponent::SetUseLeftSafeInset(bool use)
+void UIAnchorSafeAreaComponent::SetLeftInset(eInsetType inset)
 {
-    SetFlag(FLAG_USE_LEFT_SAFE_INSET, use);
+    leftInset = inset;
+    MarkDirty();
 }
 
-bool UIAnchorSafeAreaComponent::IsUseRightSafeInset() const
+UIAnchorSafeAreaComponent::eInsetType UIAnchorSafeAreaComponent::GetTopInset() const
 {
-    return flags.test(FLAG_USE_RIGHT_SAFE_INSET);
+    return topInset;
 }
 
-void UIAnchorSafeAreaComponent::SetUseRightSafeInset(bool use)
+void UIAnchorSafeAreaComponent::SetTopInset(eInsetType inset)
 {
-    SetFlag(FLAG_USE_RIGHT_SAFE_INSET, use);
+    topInset = inset;
+    MarkDirty();
 }
 
-bool UIAnchorSafeAreaComponent::IsUseTopSafeInset() const
+UIAnchorSafeAreaComponent::eInsetType UIAnchorSafeAreaComponent::GetRightInset() const
 {
-    return flags.test(FLAG_USE_TOP_SAFE_INSET);
+    return rightInset;
 }
 
-void UIAnchorSafeAreaComponent::SetUseTopSafeInset(bool use)
+void UIAnchorSafeAreaComponent::SetRightInset(eInsetType inset)
 {
-    SetFlag(FLAG_USE_TOP_SAFE_INSET, use);
+    rightInset = inset;
+    MarkDirty();
 }
 
-bool UIAnchorSafeAreaComponent::IsUseBottomSafeInset() const
+UIAnchorSafeAreaComponent::eInsetType UIAnchorSafeAreaComponent::GetBottomInset() const
 {
-    return flags.test(FLAG_USE_BOTTOM_SAFE_INSET);
+    return bottomInset;
 }
 
-void UIAnchorSafeAreaComponent::SetUseBottomSafeInset(bool use)
+void UIAnchorSafeAreaComponent::SetBottomInset(eInsetType inset)
 {
-    SetFlag(FLAG_USE_BOTTOM_SAFE_INSET, use);
+    bottomInset = inset;
+    MarkDirty();
 }
 
-void UIAnchorSafeAreaComponent::SetFlag(eFlags flag, bool enabled)
+void UIAnchorSafeAreaComponent::MarkDirty()
 {
-    if (flags.test(flag) != enabled)
+    if (GetControl() != nullptr)
     {
-        flags.set(flag, enabled);
-        if (GetControl() != nullptr)
-        {
-            GetControl()->SetLayoutDirty();
-        }
+        GetControl()->SetLayoutDirty();
     }
 }
 }

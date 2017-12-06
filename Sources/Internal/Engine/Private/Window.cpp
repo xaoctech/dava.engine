@@ -465,10 +465,12 @@ void Window::HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e)
 
 void Window::HandleSafeAreaInsetsChanged(const Private::MainDispatcherEvent& e)
 {
-    uiControlSystem->SetSafeAreaInsets(e.safeAreaInsetsEvent.left,
-                                       e.safeAreaInsetsEvent.top,
-                                       e.safeAreaInsetsEvent.right,
-                                       e.safeAreaInsetsEvent.bottom);
+    uiControlSystem->SetPhysicalSafeAreaInsets(e.safeAreaInsetsEvent.left,
+                                               e.safeAreaInsetsEvent.top,
+                                               e.safeAreaInsetsEvent.right,
+                                               e.safeAreaInsetsEvent.bottom,
+                                               e.safeAreaInsetsEvent.isLeftNotch,
+                                               e.safeAreaInsetsEvent.isRightNotch);
 }
 
 void Window::HandleFocusChanged(const Private::MainDispatcherEvent& e)
