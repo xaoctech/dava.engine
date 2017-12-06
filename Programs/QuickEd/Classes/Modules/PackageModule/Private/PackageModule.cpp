@@ -161,6 +161,7 @@ void PackageModule::PostInit()
     CreateActions();
     RegisterGlobalOperation();
     RegisterInterface(static_cast<Interfaces::PackageActionsInterface*>(this));
+    RegisterOperation(QEGlobal::Duplicate.ID, this, &PackageModule::OnDuplicate);
 }
 
 void PackageModule::InitData()

@@ -16,7 +16,6 @@ object dava_framework_Editors_ResourceEditorPublic_ResourceEditorMac : BuildType
         param("appID", "RE")
         param("pathToProject", "%system.teamcity.build.checkoutDir%/dava.framework/Programs/%ProjectName%")
         param("ProjectName", "ResourceEditor")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     steps {
