@@ -8,6 +8,8 @@
 #include "SubValueProperty.h"
 
 #include <Base/BaseMath.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectedTypeDB.h>
 #include <Reflection/ReflectedMeta.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>

@@ -43,6 +43,7 @@
 #include "UI/UIScreenTransition.h"
 #include "UI/UISystem.h"
 #include "UI/Update/UIUpdateSystem.h"
+#include "UI/Joypad/UIJoypadSystem.h"
 
 namespace DAVA
 {
@@ -68,6 +69,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIScrollSystem>());
     AddSystem(std::make_unique<UIScrollBarLinkSystem>());
     AddSystem(std::make_unique<UISoundSystem>());
+    AddSystem(std::make_unique<UIJoypadSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
 
     AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()));

@@ -272,8 +272,7 @@ eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput, e
     HUDAreaInfo areaInfo = GetSystemsManager()->GetCurrentHUDArea();
     if (areaInfo.area != eArea::NO_AREA
         && currentInput->phase == UIEvent::Phase::DRAG
-        && currentInput->mouseButton == eMouseButtons::LEFT
-        && dragState != eDragState::SelectByRect)
+        && currentInput->mouseButton == eMouseButtons::LEFT)
     {
         //initialize start mouse position for correct rotation
         previousMousePos = currentInput->point;
@@ -285,10 +284,6 @@ eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput, e
 bool EditorTransformSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     using namespace DAVA;
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return false;
-    }
 
     eDragState dragState = GetSystemsManager()->GetDragState();
     if (dragState == eDragState::Transform || currentInput->device == eInputDevices::KEYBOARD)

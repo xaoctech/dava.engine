@@ -3,7 +3,6 @@
 #include "MaterialItem.h"
 
 #include "Scene/SceneEditor2.h"
-#include "Tools/MimeData/MimeDataHelper2.h"
 #include "Commands2/MaterialSwitchParentCommand.h"
 
 #include "Scene3D/Scene.h"

@@ -127,8 +127,6 @@ private:
 
     void OnDragStateChanged(eDragState currentState, eDragState previousState);
 
-    void OnPackageChanged(const DAVA::Any& package);
-
     const SortedControlNodeSet& GetDisplayedRootControls() const;
 
     //EditorSystemsManagerInteface

@@ -46,6 +46,11 @@ SceneCameraSystem::~SceneCameraSystem()
 
 void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder)
 {
+    if (curSceneCamera == nullptr)
+    {
+        return;
+    }
+
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     // Debug camera whole object archive
     DAVA::Camera* debugCam = GetCamera(topCameraEntity);
