@@ -15,7 +15,7 @@
 #elif defined(__DAVAENGINE_ANDROID__)
 #include "UI/Private/Android/MovieViewControl_android.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "UI/Private/Win10/MovieViewControl_winuap.h"
+#include "UI/Private/Win10/MovieViewControl_win10.h"
 #elif defined(__DAVAENGINE_WIN32__)
 #include "Platform/TemplateWin32/MovieViewControl_win.h"
 #else

@@ -18,7 +18,7 @@
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "UI/Private/Ios/TextFieldPlatformImpl_ios.h"
 #elif defined(__DAVAENGINE_WIN_UAP__) && !defined(DISABLE_NATIVE_TEXTFIELD)
-#include "UI/Private/Win10/TextFieldPlatformImpl_winuap.h"
+#include "UI/Private/Win10/TextFieldPlatformImpl_win10.h"
 #else
 #define DAVA_TEXTFIELD_USE_STB
 #include "UI/UITextFieldStb.h"

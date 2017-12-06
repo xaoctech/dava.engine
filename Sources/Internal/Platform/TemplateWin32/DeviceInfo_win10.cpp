@@ -17,7 +17,7 @@
 
 #include "Engine/Engine.h"
 #include "Engine/Private/Win10/PlatformCoreWin10.h"
-#include "Platform/TemplateWin32/DeviceInfo_winuap.h"
+#include "Platform/TemplateWin32/DeviceInfo_win10.h"
 
 __DAVAENGINE_WIN_UAP_INCOMPLETE_IMPLEMENTATION__MARKER__
 const wchar_t* KOSTIL_SURFACE_MOUSE = L"NTRG0001";

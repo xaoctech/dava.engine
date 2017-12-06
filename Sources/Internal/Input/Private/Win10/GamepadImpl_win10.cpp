@@ -1,4 +1,4 @@
-#include "Input/Private/Win10/GamepadImpl_winuap.h"
+#include "Input/Private/Win10/GamepadImpl_win10.h"
 #include "Input/Gamepad.h"
 
 namespace DAVA

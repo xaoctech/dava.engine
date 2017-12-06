@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Platform/OpenUDID.h"
+#include "Platform/OpenUDID_apple.h"
 
 @interface OpenUDIDiOS : OpenUDID
 {

@@ -1,4 +1,4 @@
-#include "UI/Private/Win10/MovieViewControl_winuap.h"
+#include "UI/Private/Win10/MovieViewControl_win10.h"
 
 #if defined(__DAVAENGINE_WIN_UAP__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)

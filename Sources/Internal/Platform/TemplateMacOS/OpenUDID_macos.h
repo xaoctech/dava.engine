@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Platform/OpenUDID.h"
+#include "Platform/OpenUDID_apple.h"
 
 #import <Foundation/Foundation.h>
 

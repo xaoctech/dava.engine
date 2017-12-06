@@ -13,7 +13,7 @@
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Input/Private/Android/GamepadImpl_android.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Input/Private/Win10/GamepadImpl_winuap.h"
+#include "Input/Private/Win10/GamepadImpl_win10.h"
 #elif defined(__DAVAENGINE_WIN32__)
 #include "Input/Private/Win32/GamepadImpl_win32.h"
 #elif defined(__DAVAENGINE_MACOS__)
