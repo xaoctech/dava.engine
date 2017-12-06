@@ -77,7 +77,8 @@ set( DAVA_PLATFORM_POSTFIXES_ID_ios     IOS )
 set( DAVA_PLATFORM_POSTFIXES_ID_macos   MACOS )
 set( DAVA_PLATFORM_POSTFIXES_ID_apple   MACOS IOS )
 set( DAVA_PLATFORM_POSTFIXES_ID_android ANDROID )
-set( DAVA_PLATFORM_POSTFIXES_ID_win     WIN )
+set( DAVA_PLATFORM_POSTFIXES_ID_win     WIN WINUAP )
+set( DAVA_PLATFORM_POSTFIXES_ID_win32   WIN )
 set( DAVA_PLATFORM_POSTFIXES_ID_winuap  WINUAP )
 set( DAVA_PLATFORM_POSTFIXES_ID_linux   LINUX )
 
@@ -86,6 +87,7 @@ set( DAVA_PLATFORM_POSTFIXES    _ios
                                 _apple
                                 _android
                                 _win 
+                                _win32
                                 _winuap 
                                 _linux )
 

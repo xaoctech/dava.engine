@@ -1,17 +1,17 @@
 #include "Input/Keyboard.h"
 
 #if defined(__DAVAENGINE_WIN32__)
-#include "Input/Private/Win32/KeyboardImplWin32.h"
+#include "Input/Private/Win32/KeyboardImpl_win32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Input/Private/Win10/KeyboardImplWin10.h"
+#include "Input/Private/Win10/KeyboardImpl_winuap.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "Input/Private/Mac/KeyboardImplMac.h"
+#include "Input/Private/Mac/KeyboardImpl_macos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Input/Private/Android/KeyboardImplAndroid.h"
+#include "Input/Private/Android/KeyboardImpl_android.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "Input/Private/Ios/KeyboardImplIos.h"
+#include "Input/Private/Ios/KeyboardImpl_ios.h"
 #elif defined(__DAVAENGINE_LINUX__)
-#include "Input/Private/Linux/KeyboardImplLinux.h"
+#include "Input/Private/Linux/KeyboardImpl_linux.h"
 #else
 #error "KeyboardDevice: unknown platform"
 #endif

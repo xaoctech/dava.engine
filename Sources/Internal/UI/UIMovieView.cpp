@@ -17,7 +17,7 @@
 #elif defined(__DAVAENGINE_WIN_UAP__)
 #include "UI/Private/Win10/MovieViewControlWin10.h"
 #elif defined(__DAVAENGINE_WIN32__)
-#include "Platform/TemplateWin32/MovieViewControlWin32.h"
+#include "Platform/TemplateWin32/MovieViewControl_win.h"
 #else
 // UIMovieView is not implemented for this platform yet, using stub one.
 #define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW

@@ -25,7 +25,7 @@
 #include "Network/NetConfig.h"
 #include <LoggerService/NetLogger.h>
 #include <LoggerService/ServiceInfo.h>
-#include "Platform/TemplateWin32/UAPNetworkHelper.h"
+#include "Platform/TemplateWin32/UAPNetworkHelper_win.h"
 #endif
 
 using namespace DAVA;
