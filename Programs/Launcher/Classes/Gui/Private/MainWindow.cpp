@@ -212,8 +212,18 @@ void MainWindow::OnRecent(int rowNumber)
 void MainWindow::CopyVersion(int rowNumber)
 {
     QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_VERSION);
-    QApplication::clipboard()->setText(cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString());
-    AddText(tr("Version copied to the clipboard"), Qt::darkGreen);
+    QString text;
+    QComboBox* cbx = qobject_cast<QComboBox*>(cell);
+    if (cbx != nullptr)
+    {
+        text = cbx->currentText();
+    }
+    else
+    {
+        text = cell->property(DAVA_CUSTOM_PROPERTY_NAME).toString();
+    }
+    QApplication::clipboard()->setText(text);
+    AddText(tr("Version %1 copied to the clipboard").arg(text), Qt::darkGreen);
 }
 
 void MainWindow::OpenUrl(int index)
@@ -434,7 +444,7 @@ void MainWindow::ShowTable(QString branchID)
         }
         if (userType == QA)
         {
-            createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index))->setEnabled(iter->local != nullptr);
+            createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index));
             createButton(tr("Open url"), "url", std::bind(&MainWindow::OpenUrl, this, index))->setEnabled(iter->remote != nullptr);
         }
         ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, buttonsWidget);
