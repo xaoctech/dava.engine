@@ -1,6 +1,6 @@
 #if !defined(DISABLE_NATIVE_WEBVIEW)
 
-#include "UI/Private/Android/WebViewControlAndroid.h"
+#include "UI/Private/Android/WebViewControl_android.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
 

@@ -1,6 +1,6 @@
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)
 
-#include "UI/Private/Android/MovieViewControlAndroid.h"
+#include "UI/Private/Android/MovieViewControl_android.h"
 #include "UI/UIControlSystem.h"
 
 #if defined(__DAVAENGINE_ANDROID__)

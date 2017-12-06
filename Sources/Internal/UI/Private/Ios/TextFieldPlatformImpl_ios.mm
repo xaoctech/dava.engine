@@ -13,8 +13,8 @@
 #include "UI/UIControlBackground.h"
 #include "UI/UITextField.h"
 #include "UI/UITextFieldDelegate.h"
-#include "UI/Private/Ios/TextFieldPlatformImplIos.h"
-#include "UI/Private/Ios/UITextFieldHolder.h"
+#include "UI/Private/Ios/TextFieldPlatformImpl_ios.h"
+#include "UI/Private/Ios/UITextFieldHolder_ios.h"
 #include "Utils/NSStringUtils.h"
 #include "Utils/UTF8Utils.h"
 

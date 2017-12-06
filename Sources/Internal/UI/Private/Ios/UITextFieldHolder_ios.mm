@@ -1,4 +1,4 @@
-#include "UI/Private/Ios/UITextFieldHolder.h"
+#include "UI/Private/Ios/UITextFieldHolder_ios.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 
@@ -7,7 +7,7 @@
 #include "Logger/Logger.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
-#include "UI/Private/Ios/TextFieldPlatformImplIos.h"
+#include "UI/Private/Ios/TextFieldPlatformImpl_ios.h"
 #include "Utils/NSStringUtils.h"
 #include "Utils/StringUtils.h"
 #include "Utils/UTF8Utils.h"

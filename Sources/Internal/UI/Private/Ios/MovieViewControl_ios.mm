@@ -1,4 +1,4 @@
-#include "UI/Private/Ios/MovieViewControlIos.h"
+#include "UI/Private/Ios/MovieViewControl_ios.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)

@@ -4,9 +4,9 @@
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_LINUX__)
     #include "UI/UIScreenManagerDefault.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-    #include "UI/UIScreenManageriPhone.h"
+    #include "UI/UIScreenManager_ios.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-    #include "UI/UIScreenManagerAndroid.h"
+    #include "UI/UIScreenManager_android.h"
 #else //PLATFORMS
 //other platforms
 #endif //PLATFORMS

@@ -1,4 +1,4 @@
-#import "UI/UIScreenManageriPhoneImpl.h"
+#import "UI/UIScreenManagerImpl_ios.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 

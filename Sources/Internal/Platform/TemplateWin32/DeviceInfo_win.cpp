@@ -11,7 +11,7 @@
 #include "Base/GlobalEnum.h"
 #include "winsock2.h"
 #include "Iphlpapi.h"
-#include "TimeZones.h"
+#include "TimeZones_win.h"
 #include "Logger/Logger.h"
 
 #include <VersionHelpers.h>

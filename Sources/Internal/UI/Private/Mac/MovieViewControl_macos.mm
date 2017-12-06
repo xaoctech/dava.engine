@@ -1,4 +1,4 @@
-#include "UI/Private/Mac/MovieViewControlMac.h"
+#include "UI/Private/Mac/MovieViewControl_macos.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)
