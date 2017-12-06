@@ -19,12 +19,14 @@
 #include <QLabel>
 #include <QVariant>
 #include <QComboBox>
+#include <QMessageBox>
 
 namespace MainWindowDetails
 {
 const QString stateKey = "mainWindow_state";
 const QString geometryKey = "mainWindow_geometry";
 const QString selectedBranchKey = "mainWindow_selectedBranch";
+const QString userTypeKey = "mainWindow_userType";
 
 struct ApplicationInfo
 {
@@ -33,6 +35,12 @@ struct ApplicationInfo
 };
 
 const char* installedPropertyName = "installed";
+
+QMap<int, QString> userTypes = {
+    { MainWindow::Designer, QObject::tr("Designer") },
+    { MainWindow::Programmer, QObject::tr("Programmer") },
+    { MainWindow::QA, QObject::tr("QA") }
+};
 }
 
 class BranchListComparator
@@ -58,6 +66,15 @@ MainWindow::MainWindow(GuiApplicationManager* appManager_, QWidget* parent)
     , appManager(appManager_)
 {
     ui->setupUi(this);
+
+    QSettings settings;
+    restoreGeometry(settings.value(MainWindowDetails::geometryKey).toByteArray());
+    restoreState(settings.value(MainWindowDetails::stateKey).toByteArray());
+    selectedBranchID = settings.value(MainWindowDetails::selectedBranchKey).toString();
+    userType = settings.value(MainWindowDetails::userTypeKey).toInt();
+
+    CreateUserTypeLayout();
+
     ui->textEdit_launcherStatus->document()->setMaximumBlockCount(1000);
     ui->textEdit_launcherStatus->setReadOnly(true);
 
@@ -66,6 +83,8 @@ MainWindow::MainWindow(GuiApplicationManager* appManager_, QWidget* parent)
 
     connect(ui->actionPreferences, &QAction::triggered, this, &MainWindow::ShowPreferences);
     connect(ui->pushButton_cancel, &QPushButton::clicked, this, &MainWindow::CancelClicked);
+
+    connect(ui->actionRemove_all_local_builds, &QAction::triggered, this, &MainWindow::OnRemoveAllBuilds);
 
     ui->tableWidget->setStyleSheet(TABLE_STYLESHEET);
     ui->tableWidget->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
@@ -90,11 +109,6 @@ MainWindow::MainWindow(GuiApplicationManager* appManager_, QWidget* parent)
     receiver.onProgress = std::bind(&MainWindow::OnTaskProgress, this, _1, _2);
     receiver.onFinished = std::bind(&MainWindow::OnTaskFinished, this, _1);
 
-    QSettings settings;
-    restoreGeometry(settings.value(MainWindowDetails::geometryKey).toByteArray());
-    restoreState(settings.value(MainWindowDetails::stateKey).toByteArray());
-    selectedBranchID = settings.value(MainWindowDetails::selectedBranchKey).toString();
-
     OnConnectedChanged(false);
 }
 
@@ -104,12 +118,30 @@ MainWindow::~MainWindow()
     settings.setValue(MainWindowDetails::geometryKey, saveGeometry());
     settings.setValue(MainWindowDetails::stateKey, saveState());
     settings.setValue(MainWindowDetails::selectedBranchKey, selectedBranchID);
+    settings.setValue(MainWindowDetails::userTypeKey, userType);
     SafeDelete(ui);
 }
 
 void MainWindow::OnlinkClicked(QUrl url)
 {
     QDesktopServices::openUrl(url);
+}
+
+void MainWindow::OnRemoveAllBuilds()
+{
+    QMessageBox::warning(this, tr("removing tools"), tr("Close all opened applications and press OK"));
+    AddText(tr("Removing folder DAVATools"), Qt::darkBlue);
+    bool buildsRemoved = FileManager::DeleteDirectory(appManager->GetContext()->fileManager.GetBaseAppsDirectory());
+    if (buildsRemoved)
+    {
+        appManager->GetConfigHolder()->localConfig.branches.clear();
+        appManager->GetConfigHolder()->localConfig.SaveToFile(FileManager::GetLocalConfigFilePath());
+        RefreshApps();
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("removing tools"), tr("Failed to remove folder DAVATools :( Now you need to reset your PC and restart operation"));
+    }
 }
 
 void MainWindow::OnCellDoubleClicked(QModelIndex index)
@@ -171,16 +203,9 @@ void MainWindow::OnRecent(int rowNumber)
 {
     QWidget* cell = ui->tableWidget->cellWidget(rowNumber, COLUMN_APP_VERSION);
     QComboBox* cBox = dynamic_cast<QComboBox*>(cell);
-    if (cBox)
+    if (cBox != nullptr && userType != Designer)
     {
         cBox->setCurrentIndex(0);
-
-        QWidget* buttons = ui->tableWidget->cellWidget(rowNumber, COLUMN_BUTTONS);
-        QWidget* refreshButton = buttons->layout()->itemAt(0)->widget();
-        if (refreshButton != nullptr)
-        {
-            refreshButton->setEnabled(false);
-        }
     }
 }
 
@@ -269,6 +294,43 @@ void MainWindow::OnNewsLoaded(const BaseTask* task)
     newsDataBuffer.close();
 }
 
+void MainWindow::CreateUserTypeLayout()
+{
+    QButtonGroup* buttonGroup = new QButtonGroup(this);
+    QHBoxLayout* userTypeLayout = new QHBoxLayout();
+    userTypeLayout->setContentsMargins(0, 0, 0, 0);
+    userTypeLayout->setSpacing(0);
+    QWidget* container = new QWidget();
+    container->setLayout(userTypeLayout);
+
+    QWidget* spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // toolBar is a pointer to an existing toolbar
+    ui->toolBar_actions->addWidget(spacer);
+
+    ui->toolBar_actions->addWidget(container);
+    auto createUserTypeButton = [buttonGroup, userTypeLayout](int id, const QString& buttonText, bool checked) {
+        QPushButton* button = new QPushButton(buttonText);
+        button->setCheckable(true);
+        button->setChecked(checked);
+        buttonGroup->addButton(button, id);
+        userTypeLayout->addWidget(button);
+    };
+
+    for (auto iter = MainWindowDetails::userTypes.begin(); iter != MainWindowDetails::userTypes.end(); ++iter)
+    {
+        createUserTypeButton(iter.key(), iter.value(), iter.key() == userType);
+    }
+
+    connect(buttonGroup, static_cast<void (QButtonGroup::*)(int, bool)>(&QButtonGroup::buttonToggled), [this](int id, bool toggled) {
+        if (toggled)
+        {
+            userType = id;
+            RefreshApps();
+        }
+    });
+}
+
 void MainWindow::ShowTable(QString branchID)
 {
     ConfigHolder* configHolder = appManager->GetConfigHolder();
@@ -336,12 +398,14 @@ void MainWindow::ShowTable(QString branchID)
         buttonsWidget->layout()->setContentsMargins(0, 0, 0, 0);
         buttonsWidget->layout()->setSpacing(0);
         QSize buttonSize(32, 32);
+        QSize iconSize(25, 25);
 
-        auto createButton = [this, buttonSize, index, buttonsWidget](const QString& toolTip, const QString& iconName, std::function<void()> f) {
+        auto createButton = [this, buttonSize, iconSize, index, buttonsWidget](const QString& toolTip, const QString& iconName, std::function<void()> f) {
             QPushButton* button = new QPushButton(this);
             button->setIcon(QIcon(":/Icons/" + iconName + ".png"));
             button->setFixedSize(buttonSize);
-            button->setIconSize(buttonSize);
+            button->setIconSize(iconSize);
+            button->setToolTip(toolTip);
             connect(button, &QPushButton::clicked, f);
             buttonsWidget->layout()->addWidget(button);
             return button;
@@ -352,14 +416,27 @@ void MainWindow::ShowTable(QString branchID)
         {
             canRefreshRecent = iter->remote->versions.back().id != iter->local->versions[0].id;
         }
-        createButton(tr("Most recent version available!"), "recent", std::bind(&MainWindow::OnRecent, this, index))->setEnabled(canRefreshRecent);
-        createButton(tr("Download application only"), "download", std::bind(&MainWindow::OnDownload, this, index))->setEnabled(iter->remote != nullptr);
-        createButton(tr("Download and run application"), "run", std::bind(&MainWindow::OnRun, this, index))->setEnabled(iter->local != nullptr || iter->remote != nullptr);
-        createButton(tr("Remove application"), "delete", std::bind(&MainWindow::OnRemove, this, index))->setEnabled(iter->local != nullptr);
-        createButton(tr("Show in file system"), "show_in_finder", std::bind(&MainWindow::OnShowInFinder, this, index))->setEnabled(iter->local != nullptr);
-        createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index))->setEnabled(iter->local != nullptr);
-        createButton(tr("Open url"), "url", std::bind(&MainWindow::OpenUrl, this, index))->setEnabled(iter->remote != nullptr);
 
+        if (userType != Designer)
+        {
+            createButton(tr("Most recent version available!"), "recent", std::bind(&MainWindow::OnRecent, this, index))->setEnabled(canRefreshRecent);
+        }
+
+        if (userType != Designer)
+        {
+            createButton(tr("Download application only"), "download", std::bind(&MainWindow::OnDownload, this, index))->setEnabled(iter->remote != nullptr);
+        }
+        createButton(tr("Download and run application"), "run", std::bind(&MainWindow::OnRun, this, index))->setEnabled(iter->local != nullptr || iter->remote != nullptr);
+        if (userType != Designer)
+        {
+            createButton(tr("Remove application"), "delete", std::bind(&MainWindow::OnRemove, this, index))->setEnabled(iter->local != nullptr);
+            createButton(tr("Show in file system"), "show_in_finder", std::bind(&MainWindow::OnShowInFinder, this, index))->setEnabled(iter->local != nullptr);
+        }
+        if (userType == QA)
+        {
+            createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index))->setEnabled(iter->local != nullptr);
+            createButton(tr("Open url"), "url", std::bind(&MainWindow::OpenUrl, this, index))->setEnabled(iter->remote != nullptr);
+        }
         ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, buttonsWidget);
     }
 
@@ -549,6 +626,20 @@ QWidget* MainWindow::CreateAppAvalibleTableItem(Application* remote, Application
     else
     {
         QComboBox* comboBox = new QComboBox();
+        connect(comboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [comboBox, this, rowNum](int inex) {
+            if (userType != Designer)
+            {
+                QWidget* buttons = ui->tableWidget->cellWidget(rowNum, COLUMN_BUTTONS);
+                if (buttons != nullptr)
+                {
+                    QWidget* refreshButton = buttons->layout()->itemAt(0)->widget();
+                    if (refreshButton != nullptr)
+                    {
+                        refreshButton->setEnabled(comboBox->currentIndex() != 0);
+                    }
+                }
+            }
+        });
         for (int j = versCount - 1; j >= 0; --j)
         {
             comboBox->addItem(remote->versions[j].id);

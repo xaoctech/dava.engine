@@ -24,6 +24,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum eUserType
+    {
+        Designer,
+        Programmer,
+        QA
+    };
+
     explicit MainWindow(GuiApplicationManager* appManager, QWidget* parent = 0);
     ~MainWindow();
 
@@ -50,6 +57,8 @@ private slots:
 
     void OnlinkClicked(QUrl url);
 
+    void OnRemoveAllBuilds();
+
 private:
     void OnRemove(int index);
     void OnDownload(int index);
@@ -74,6 +83,8 @@ private:
 
     void OnNewsLoaded(const BaseTask* task);
 
+    void CreateUserTypeLayout();
+
     Ui::MainWindow* ui = nullptr;
 
     QString selectedBranchID;
@@ -86,4 +97,6 @@ private:
     Receiver receiver;
 
     QBuffer newsDataBuffer;
+
+    int userType = Designer;
 };

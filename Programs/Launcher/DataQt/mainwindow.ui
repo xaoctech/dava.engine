@@ -140,6 +140,9 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
           <attribute name="verticalHeaderMinimumSectionSize">
            <number>16</number>
           </attribute>
+          <column/>
+          <column/>
+          <column/>
          </widget>
         </item>
         <item>
@@ -318,8 +321,15 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
     </property>
     <addaction name="actionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menuUtilities">
+    <property name="title">
+     <string>Utilities</string>
+    </property>
+    <addaction name="actionRemove_all_local_builds"/>
+   </widget>
    <addaction name="menuLauncher"/>
    <addaction name="menuConfiguration"/>
+   <addaction name="menuUtilities"/>
   </widget>
   <widget class="QToolBar" name="toolBar_actions">
    <property name="windowTitle">
@@ -359,6 +369,16 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
    </property>
    <property name="toolTip">
     <string>Launcher preferences</string>
+   </property>
+  </action>
+  <action name="actionRemove_all_local_builds">
+   <property name="text">
+    <string>Remove all builds</string>
+   </property>
+  </action>
+  <action name="actionRemove_all_builds_older_than_one_month">
+   <property name="text">
+    <string>Remove all builds older than one month</string>
    </property>
   </action>
  </widget>
