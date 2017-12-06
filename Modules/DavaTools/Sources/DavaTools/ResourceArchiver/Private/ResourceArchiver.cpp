@@ -264,13 +264,13 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
 
             if (path.find("../") != String::npos)
             {
-                Logger::Error("incorrect relative file path: %s (found \"../\")", path);
+                Logger::Error("incorrect relative file path: %s (found \"../\")", path.c_str());
                 return false;
             }
 
             if (path.find("./") != String::npos)
             {
-                Logger::Error("incorrect relative file path: %s (found \"./\")", path);
+                Logger::Error("incorrect relative file path: %s (found \"./\")", path.c_str());
                 return false;
             }
 
@@ -582,13 +582,10 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
                                         ++countLoadedFiles;
                                     });
 
+        //HACK wait jobs executed (internaly 1024 max jobs)
         if (fileIndex > 0 && fileIndex % 1000 == 0)
         {
-            //HACK wait jobs executed (internaly 1024 max jobs)
-            if (fileIndex > 0 && fileIndex % 1000 == 0)
-            {
-                jobManager->WaitWorkerJobs();
-            }
+            jobManager->WaitWorkerJobs();
         }
     } // end for fileIndex
 
