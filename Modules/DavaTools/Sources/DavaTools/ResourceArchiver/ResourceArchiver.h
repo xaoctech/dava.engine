@@ -5,7 +5,6 @@
 
 namespace DAVA
 {
-
 namespace ResourceArchiver
 {
 struct Params
