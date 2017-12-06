@@ -3,6 +3,7 @@
 #include <Base/BaseTypes.h>
 
 #include <QLayout>
+#include <QStyle>
 
 namespace DAVA
 {

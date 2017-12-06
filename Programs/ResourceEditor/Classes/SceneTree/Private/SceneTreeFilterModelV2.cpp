@@ -131,18 +131,18 @@ const DAVA::Vector<SceneTreeFilterBase*>& SceneTreeFilterModelV2::GetFiltersChai
     return filtersChain;
 }
 
-void SceneTreeFilterModelV2::AddFilterToChain(const ReflectedType* filterType, const FilterState& state)
+void SceneTreeFilterModelV2::AddFilterToChain(const DAVA::ReflectedType* filterType, const FilterState& state)
 {
     for (SceneTreeFilterBase* filterBase : filtersChain)
     {
-        const ReflectedType* filterBaseType = ReflectedTypeDB::GetByPointer(filterBase);
+        const DAVA::ReflectedType* filterBaseType = DAVA::ReflectedTypeDB::GetByPointer(filterBase);
         if (filterBaseType == filterType)
         {
             return;
         }
     }
 
-    SceneTreeFilterBase* createdFilter = filterType->CreateObject(ReflectedType::CreatePolicy::ByPointer).Cast<SceneTreeFilterBase*>();
+    SceneTreeFilterBase* createdFilter = filterType->CreateObject(DAVA::ReflectedType::CreatePolicy::ByPointer).Cast<SceneTreeFilterBase*>();
     createdFilter->SetEnabled(state.enabled);
     createdFilter->SetInverted(state.inverted);
     createdFilter->changed.Connect(this, &SceneTreeFilterModelV2::Refilter);
@@ -151,14 +151,14 @@ void SceneTreeFilterModelV2::AddFilterToChain(const ReflectedType* filterType, c
     Refilter();
 }
 
-void SceneTreeFilterModelV2::DeleteFilter(int32 filterIndex)
+void SceneTreeFilterModelV2::DeleteFilter(DAVA::int32 filterIndex)
 {
-    DVASSERT(filterIndex < static_cast<int32>(filtersChain.size()));
+    DVASSERT(filterIndex < static_cast<DAVA::int32>(filtersChain.size()));
     SceneTreeFilterBase* filterToDestroy = filtersChain[filterIndex];
-    const ReflectedType* filterType = ReflectedTypeDB::GetByPointer(filterToDestroy);
+    const DAVA::ReflectedType* filterType = DAVA::ReflectedTypeDB::GetByPointer(filterToDestroy);
     if (filterType->GetDtor() != nullptr)
     {
-        Any valueToDestroy(filterToDestroy);
+        DAVA::Any valueToDestroy(filterToDestroy);
         filterType->Destroy(std::move(valueToDestroy));
     }
     else

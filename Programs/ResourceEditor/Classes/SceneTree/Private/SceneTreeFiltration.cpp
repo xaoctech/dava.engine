@@ -12,8 +12,11 @@ bool SceneTreeFilterBase::IsEnabled() const
 
 void SceneTreeFilterBase::SetEnabled(bool isEnabled_)
 {
-    isEnabled = isEnabled_;
-    changed.Emit();
+    if (isEnabled != isEnabled_)
+    {
+        isEnabled = isEnabled_;
+        changed.Emit();
+    }
 }
 
 bool SceneTreeFilterBase::IsInverted() const
@@ -23,8 +26,11 @@ bool SceneTreeFilterBase::IsInverted() const
 
 void SceneTreeFilterBase::SetInverted(bool isInverted_)
 {
-    isInverted = isInverted_;
-    changed.Emit();
+    if (isInverted != isInverted_)
+    {
+        isInverted = isInverted_;
+        changed.Emit();
+    }
 }
 
 const char* SceneTreeFilterBase::titleFieldName = "title";
@@ -254,7 +260,7 @@ public:
             return false;
         }
 
-        return ro->GetType() == RenderObject::TYPE_LANDSCAPE;
+        return ro->GetType() == DAVA::RenderObject::TYPE_LANDSCAPE;
     }
 
     QString GetTitle() const override
@@ -288,7 +294,7 @@ public:
             return false;
         }
 
-        return ro->GetType() == RenderObject::TYPE_VEGETATION;
+        return ro->GetType() == DAVA::RenderObject::TYPE_VEGETATION;
     }
 
     QString GetTitle() const override
@@ -322,7 +328,7 @@ public:
             return false;
         }
 
-        return ro->GetType() == RenderObject::TYPE_SPRITE;
+        return ro->GetType() == DAVA::RenderObject::TYPE_SPRITE;
     }
 
     QString GetTitle() const override

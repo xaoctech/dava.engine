@@ -19,6 +19,7 @@
 #include <QInputDialog>
 #include <QWidgetAction>
 #include <QDebug>
+#include <QStyleOptionFrame>
 
 namespace DAVA
 {

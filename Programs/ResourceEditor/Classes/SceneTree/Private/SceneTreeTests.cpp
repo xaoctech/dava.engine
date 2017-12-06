@@ -379,8 +379,6 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
             QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::TArc::mainWindowKey, "SceneTreeFilterTextEdit");
             QTest::keyClicks(lineEdit, "Entity");
             QTest::keyClick(lineEdit, Qt::Key_Enter);
-            QTest::qSleep(7 * 300);
-            QTest::qWait(300);
         };
 
         auto step2 = [this, rawDummyPointer, rawFilterMatchedPointer]() {
@@ -405,8 +403,6 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
             QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::TArc::mainWindowKey, "SceneTreeFilterTextEdit");
             lineEdit->clear();
-            QTest::qSleep(7 * 300);
-            QTest::qWait(300);
         };
 
         auto step3 = [this]() {

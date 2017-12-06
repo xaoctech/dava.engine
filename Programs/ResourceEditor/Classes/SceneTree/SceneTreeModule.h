@@ -54,10 +54,10 @@ private:
 
     // Filtration
     const DAVA::Vector<SceneTreeFilterBase*>& GetFiltersChain() const;
-    void AddFilterToChain(const Any& filterTypeKey);
-    void RemoveFilterFromChain(const Any& filterIndex);
+    void AddFilterToChain(const DAVA::Any& filterTypeKey);
+    void RemoveFilterFromChain(const DAVA::Any& filterIndex);
 
-    ContentFilter::AvailableFilterBase* GetAvailableFilterTypes() const;
+    DAVA::ContentFilter::AvailableFilterBase* GetAvailableFilterTypes() const;
     void SaveCurrentChainAsFilterType(QString filterName) const;
 
 private:
