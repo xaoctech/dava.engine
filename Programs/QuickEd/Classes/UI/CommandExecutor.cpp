@@ -144,19 +144,6 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
     }
 }
 
-ControlNode* GetRootControl(ControlNode* node)
-{
-    PackageBaseNode* result = nullptr;
-
-    for (PackageBaseNode *currentNode = node;
-         currentNode != nullptr && currentNode->GetControl() != nullptr;
-         result = currentNode, currentNode = currentNode->GetParent())
-    {
-    };
-
-    return dynamic_cast<ControlNode*>(result);
-}
-
 ControlNode* GetInstanceRoot(ControlNode* instance, ControlNode* prototypeRoot)
 {
     for (ControlNode* currentNode = instance;
@@ -859,7 +846,8 @@ void CommandExecutor::RemoveControlImpl(ControlNode* node) const
 
 bool CommandExecutor::MoveControlImpl(ControlNode* moved, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
-    moved->Retain();
+    RefPtr<ControlNode> nodeGuard = RefPtr<ControlNode>::ConstructWithRetain(moved);
+
     ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(moved->GetParent());
     bool result = false;
     if (src != nullptr)
@@ -877,8 +865,8 @@ bool CommandExecutor::MoveControlImpl(ControlNode* moved, ControlsContainerNode*
 
             if (instances.empty() == false && destInstances.empty() == false)
             {
-                ControlNode* prototypeRootOfMoved = CommandExecutorDetails::GetRootControl(moved);
-                prototypeRootOfDest = CommandExecutorDetails::GetRootControl(destControl);
+                ControlNode* prototypeRootOfMoved = GetRootControlNode(moved);
+                prototypeRootOfDest = GetRootControlNode(destControl);
 
                 if (prototypeRootOfMoved == prototypeRootOfDest)
                 {
@@ -945,7 +933,6 @@ bool CommandExecutor::MoveControlImpl(ControlNode* moved, ControlsContainerNode*
         DVASSERT(false);
     }
 
-    moved->Release();
     return result;
 }
 
