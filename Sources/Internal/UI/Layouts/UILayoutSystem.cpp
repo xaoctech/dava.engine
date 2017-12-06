@@ -194,6 +194,15 @@ void UILayoutSystem::SetPhysicalSafeAreaInsets(float32 left, float32 top, float3
                                       vcs->ConvertPhysicalToVirtualY(bottom),
                                       isLeftNotch,
                                       isRightNotch);
+
+    if (currentScreen.Valid())
+    {
+        currentScreen->SetLayoutDirty();
+    }
+    if (popupContainer.Valid())
+    {
+        popupContainer->SetLayoutDirty();
+    }
 }
 
 void UILayoutSystem::ProcessControl(UIControl* control)

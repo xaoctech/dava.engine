@@ -237,10 +237,6 @@ void WindowNativeBridge::PostSafeAreaInsetsChanged()
         UIEdgeInsets safeAreaInsets;
         [invocation getReturnValue:&safeAreaInsets];
 
-        //
-        //    UIDeviceOrientationLandscapeRight
-        //    [UIDevice currentDevice].orientation;
-
         ::UIScreen* screen = [ ::UIScreen mainScreen];
         CGFloat scale = [screen scale];
         bool isLeftNotch = safeAreaInsets.left > 0.0f && [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft;
