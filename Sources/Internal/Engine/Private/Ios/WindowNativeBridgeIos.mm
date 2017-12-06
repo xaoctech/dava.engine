@@ -156,10 +156,13 @@ void WindowNativeBridge::LoadView()
     [renderViewController setView:renderView];
 }
 
-void WindowNativeBridge::ViewWillTransitionToSize(float32 w, float32 h)
+void WindowNativeBridge::OrientationChanged()
 {
     PostSafeAreaInsetsChanged();
+}
 
+void WindowNativeBridge::ViewWillTransitionToSize(float32 w, float32 h)
+{
     // viewWillTransitionToSize can be called when device orientation changes
     // In some cases this won't lead to actual size changes
     // (i.e. when rotating from Landscape Left to Landscape Right)
@@ -239,8 +242,9 @@ void WindowNativeBridge::PostSafeAreaInsetsChanged()
 
         ::UIScreen* screen = [ ::UIScreen mainScreen];
         CGFloat scale = [screen scale];
-        bool isLeftNotch = safeAreaInsets.left > 0.0f && [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeLeft;
-        bool isRightNotch = safeAreaInsets.right > 0.0f && [UIDevice currentDevice].orientation == UIDeviceOrientationLandscapeRight;
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        bool isLeftNotch = safeAreaInsets.left > 0.0f && orientation == UIInterfaceOrientationLandscapeRight;
+        bool isRightNotch = safeAreaInsets.right > 0.0f && orientation == UIInterfaceOrientationLandscapeLeft;
 
         mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(window,
                                                                                               safeAreaInsets.left * scale,
