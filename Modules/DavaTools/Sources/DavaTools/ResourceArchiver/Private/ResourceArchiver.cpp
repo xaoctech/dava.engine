@@ -265,13 +265,13 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
             if (path.find("../") != String::npos)
             {
                 Logger::Error("incorrect relative file path: %s (found \"../\")", path.c_str());
-                return false;
+                DAVA_THROW(Exception, "incorrect relative file path");
             }
 
             if (path.find("./") != String::npos)
             {
                 Logger::Error("incorrect relative file path: %s (found \"./\")", path.c_str());
-                return false;
+                DAVA_THROW(Exception, "incorrect relative file path");
             }
 
             String lower = path;
@@ -281,7 +281,7 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
             if (it != end(lowerPathMap))
             {
                 Logger::Error("incorrect path differ only char register or the same: %s and %s", it->second.c_str(), path.c_str());
-                return false;
+                DAVA_THROW(Exception, "incorrect relative file path");
             }
             else
             {
@@ -292,7 +292,7 @@ bool CollectFilesFromDB(const FilePath& baseDirPath, const FilePath& metaDbPath,
             if (!fs->Exists(fullPath))
             {
                 Logger::Error("can't find file: %s", fullPath.GetAbsolutePathname().c_str());
-                return false;
+                DAVA_THROW(Exception, "incorrect relative file path, file not found");
             }
             else
             {
