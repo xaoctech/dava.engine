@@ -232,7 +232,7 @@ void ContentFilter::UpdateControl(const TArc::ControlDescriptor& descriptor)
     }
 
     if (descriptor.IsChanged(Fields::SingleFilterDescriptor) == true ||
-        descriptor.IsChanged(Fields::FiltersChain))
+        descriptor.IsChanged(Fields::FiltersChain) == true)
     {
         RebuildFiltersWidgets();
         QWidget* filtersFrame = findChild<QWidget*>("filtersFrame");
@@ -373,7 +373,7 @@ void ContentFilter::AddFilterMenuAboutToShow()
                     p.fields[ReflectedButton::Fields::AutoRaise].BindConstValue(false);
                     p.fields[ReflectedButton::Fields::Clicked] = "renameAvailableFilter";
                     p.fields[ReflectedButton::Fields::BindedArgument].BindConstValue(filter->key);
-                    p.fields[ReflectedButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/ContentFilter/Private/Icons/rename.png"));
+                    p.fields[ReflectedButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/ContentFilter/Private/Resources/rename.png"));
                     p.fields[ReflectedButton::Fields::IconSize].BindConstValue(QSize(16, 16));
                     ReflectedButton* button = new ReflectedButton(p, p.accessor, thisModel, containerWidget->ToWidgetCast());
                     QWidget* buttonWidget = button->ToWidgetCast();
@@ -386,7 +386,7 @@ void ContentFilter::AddFilterMenuAboutToShow()
                     p.fields[DelayedToolButton::Fields::AutoRaise].BindConstValue(false);
                     p.fields[DelayedToolButton::Fields::Clicked] = "removeAvailableFilter";
                     p.fields[DelayedToolButton::Fields::BindedArgument].BindConstValue(filter->key);
-                    p.fields[DelayedToolButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/ContentFilter/Private/Icons/delete.png"));
+                    p.fields[DelayedToolButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/ContentFilter/Private/Resources/delete.png"));
                     p.fields[DelayedToolButton::Fields::IconSize].BindConstValue(QSize(16, 16));
                     p.fields[DelayedToolButton::Fields::DelayMs].BindConstValue(500);
                     p.fields[DelayedToolButton::Fields::ProgressBarColor].BindConstValue(QColor(Qt::red));

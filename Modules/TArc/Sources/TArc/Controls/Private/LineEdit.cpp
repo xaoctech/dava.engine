@@ -84,30 +84,7 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
     if (descriptor.IsChanged(Fields::Clearable))
     {
         bool needClearButton = GetFieldValue<bool>(Fields::Clearable, false);
-        if (needClearButton == false)
-        {
-            if (clearButton != nullptr)
-            {
-                layout()->removeWidget(clearButton);
-                clearButton->deleteLater();
-            }
-        }
-        else if (clearButton == nullptr)
-        {
-            QIcon clearIcon = SharedIcon(":/TArc/Resources/clear.png");
-            clearButton = new QPushButton(this);
-            clearButton->setFlat(true);
-            clearButton->setIcon(clearIcon);
-            clearButton->setCursor(QCursor(Qt::ArrowCursor));
-
-            QObject::connect(clearButton, &QToolButton::clicked, this, &QLineEdit::clear);
-            layout()->addWidget(clearButton);
-        }
-    }
-
-    if (descriptor.IsChanged(Fields::ClearButtonTooltip) && clearButton != nullptr)
-    {
-        clearButton->setToolTip(GetFieldValue<QString>(Fields::ClearButtonTooltip, QString("")));
+        setClearButtonEnabled(needClearButton);
     }
 }
 
@@ -154,14 +131,21 @@ void LineEdit::TextChanged(const QString& newText)
     RETURN_IF_MODEL_LOST(void());
     if (!isReadOnly())
     {
-        FastName immediateFieldName = GetFieldName(Fields::ImmediateText);
-        if (immediateFieldName.IsValid())
+        if (hasFocus() == true)
         {
-            AnyFn method = model.GetMethod(immediateFieldName.c_str());
-            if (method.IsValid())
+            FastName immediateFieldName = GetFieldName(Fields::ImmediateText);
+            if (immediateFieldName.IsValid())
             {
-                method.Invoke(newText.toStdString());
+                AnyFn method = model.GetMethod(immediateFieldName.c_str());
+                if (method.IsValid())
+                {
+                    method.Invoke(newText.toStdString());
+                }
             }
+        }
+        else
+        {
+            EditingFinished();
         }
     }
 }

@@ -15,12 +15,12 @@
       <file>Resources/clear.png</file>
       <file>Resources/filter.png</file>
       <file>Resources/save.png</file>
-      <file>ContentFilter/Private/Icons/disable.png</file>
-      <file>ContentFilter/Private/Icons/enabled.png</file>
-      <file>ContentFilter/Private/Icons/inverse-disabled.png</file>
-      <file>ContentFilter/Private/Icons/inverse-enabled.png</file>
-      <file>ContentFilter/Private/Icons/remove.png</file>
-      <file>ContentFilter/Private/Icons/delete.png</file>
-      <file>ContentFilter/Private/Icons/rename.png</file>
+      <file>ContentFilter/Private/Resources/disable.png</file>
+      <file>ContentFilter/Private/Resources/enabled.png</file>
+      <file>ContentFilter/Private/Resources/inverse-disabled.png</file>
+      <file>ContentFilter/Private/Resources/inverse-enabled.png</file>
+      <file>ContentFilter/Private/Resources/remove.png</file>
+      <file>ContentFilter/Private/Resources/delete.png</file>
+      <file>ContentFilter/Private/Resources/rename.png</file>
     </qresource>
 </RCC>

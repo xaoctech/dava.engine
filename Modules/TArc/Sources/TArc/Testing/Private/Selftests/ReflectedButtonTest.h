@@ -41,9 +41,9 @@ struct ReflectedButtonDataSource
         value = v;
     }
 
-    DAVA::int32 GetNewValue() const
+    void ChangeValue()
     {
-        return value + 3;
+        value += 3;
     }
 
     QString GetText() const
@@ -59,7 +59,7 @@ struct ReflectedButtonDataSource
     DAVA_REFLECTION(ReflectedButtonDataSource)
     {
         DAVA::ReflectionRegistrator<ReflectedButtonDataSource>::Begin()
-        .Method("newValue", &ReflectedButtonDataSource::GetNewValue)
+        .Method("changeValue", &ReflectedButtonDataSource::ChangeValue)
         .Field("value", &ReflectedButtonDataSource::GetValue, &ReflectedButtonDataSource::SetValue)
         .Field("icon", &ReflectedButtonDataSource::GetIcon, nullptr)
         .Field("text", &ReflectedButtonDataSource::GetText, nullptr)
@@ -88,7 +88,7 @@ public:
 
         {
             ReflectedButton::Params params(GetAccessor(), GetUI(), wndKey);
-            params.fields[ReflectedButton::Fields::Clicked] = "newValue";
+            params.fields[ReflectedButton::Fields::Clicked] = "changeValue";
             params.fields[ReflectedButton::Fields::Icon] = "icon";
             params.fields[ReflectedButton::Fields::Text] = "text";
             params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";
@@ -100,7 +100,7 @@ public:
 
         {
             ReflectedButton::Params params(GetAccessor(), GetUI(), wndKey);
-            params.fields[ReflectedButton::Fields::Clicked] = "newValue";
+            params.fields[ReflectedButton::Fields::Clicked] = "changeValue";
             params.fields[ReflectedButton::Fields::Icon] = "icon";
             params.fields[ReflectedButton::Fields::Text] = "text";
             params.fields[ReflectedButton::Fields::AutoRaise] = "autoRaise";

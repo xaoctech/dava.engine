@@ -23,9 +23,10 @@ void Label::UpdateControl(const ControlDescriptor& descriptor)
 {
     if (descriptor.IsChanged(Fields::Text))
     {
-        QString stringValue = GetFieldValue<QString>(Fields::Text, QString());
-        setText(stringValue);
-        setToolTip(stringValue);
+        DAVA::String stringValue = GetFieldValue<DAVA::String>(Fields::Text, DAVA::String());
+        QString v = QString::fromStdString(stringValue);
+        setText(v);
+        setToolTip(v);
     }
 }
 

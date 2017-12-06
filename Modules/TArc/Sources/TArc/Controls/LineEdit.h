@@ -32,7 +32,6 @@ public:
         IsEnabled,
         Validator, // const M::Validator*
         Clearable, // bool
-        ClearButtonTooltip, // QString
         FieldCount
     };
 
@@ -52,7 +51,6 @@ private:
     void ShowHint(const QString& message) override;
 
 private:
-    QPushButton* clearButton = nullptr;
     QtConnections connections;
 };
 } // namespace TArc
