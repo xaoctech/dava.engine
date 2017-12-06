@@ -501,7 +501,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
     JobManager* jobManager = GetEngineContext()->jobManager;
     DVASSERT(jobManager != nullptr);
 
-    std::atomic<uint32> countLoadedFiles = 0;
+    std::atomic<uint32> countLoadedFiles{ 0 };
 
     for (uint32 fileIndex = 0; fileIndex < numOfFiles; ++fileIndex)
     {
