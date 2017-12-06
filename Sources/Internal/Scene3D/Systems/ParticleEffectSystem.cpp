@@ -122,7 +122,6 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
     , allowLodDegrade(false)
     , is2DMode(_is2DMode)
 {
-    ParticleForces::Init();
     if (scene) //for 2d particles there would be no scene
     {
         scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
