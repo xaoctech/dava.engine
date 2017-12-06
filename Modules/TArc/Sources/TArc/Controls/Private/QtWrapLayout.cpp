@@ -347,7 +347,6 @@ void QtWrapLayoutPrivate::UpdateSizes()
         preferedSize = QSize(0, 0);
     }
 
-
     flags[SizeDirty] = false;
     flags[ExpandHorizontal] = expandH;
     flags[ExpandVertical] = expandV;
