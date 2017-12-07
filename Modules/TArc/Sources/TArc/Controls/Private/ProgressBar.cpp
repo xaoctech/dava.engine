@@ -1,0 +1,80 @@
+#include "TArc/Controls/ProgressBar.h"
+
+namespace DAVA
+{
+namespace TArc
+{
+ProgressBar::ProgressBar(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
+    : ControlProxyImpl<QProgressBar>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
+{
+}
+
+ProgressBar::ProgressBar(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent)
+    : ControlProxyImpl<QProgressBar>(params, ControlDescriptor(params.fields), accessor, model, parent)
+{
+}
+
+void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
+{
+    Reflection valueField = model.GetField(GetFieldName(Fields::Value));
+    DVASSERT(valueField.IsValid());
+    const Type* valueType = valueField.GetValueType();
+
+    int minV = std::numeric_limits<int>::lowest();
+    int maxV = std::numeric_limits<int>::max();
+
+    const M::Range* rangeMeta = nullptr;
+    FastName rangeFieldName = GetFieldName(Fields::Range);
+    if (rangeFieldName.IsValid())
+    {
+        rangeMeta = GetFieldValue<const M::Range*>(Fields::Range, nullptr);
+    }
+
+    if (rangeMeta == nullptr)
+    {
+        rangeMeta = valueField.GetMeta<M::Range>();
+    }
+
+    if (rangeMeta != nullptr)
+    {
+        minV = rangeMeta->minValue.Cast<int>(minV);
+        maxV = rangeMeta->maxValue.Cast<int>(maxV);
+    }
+
+    if (minV != minimum() || maxV != maximum())
+    {
+        setRange(minV, maxV);
+    }
+
+    if (changedFields.IsChanged(Fields::Value))
+    {
+        DAVA::Reflection field = model.GetField(changedFields.GetName(Fields::Value));
+        DVASSERT(field.IsValid());
+
+        DAVA::Any value = field.GetValue();
+        if (value.CanCast<int>())
+        {
+            int v = value.Cast<int>();
+            setValue(v);
+        }
+        else
+        {
+            setValue(0);
+        }
+    }
+
+    if (changedFields.IsChanged(Fields::Format))
+    {
+        DAVA::Reflection field = model.GetField(changedFields.GetName(Fields::Format));
+        DVASSERT(field.IsValid());
+
+        DAVA::Any value = field.GetValue();
+        if (value.CanCast<String>())
+        {
+            String v = value.Cast<String>();
+            setFormat(QString::fromStdString(v));
+        }
+    }
+}
+} //namespace TArc
+} //namespace DAVA
