@@ -635,6 +635,8 @@ struct UIManager::Impl : public QObject
     ClientModule* currentModule = nullptr;
     NotificationLayout notificationLayout;
 
+    QtConnections connections;
+
     struct ModuleResources
     {
         Vector<QPointer<QAction>> actions;
@@ -1068,15 +1070,50 @@ int UIManager::ShowModalDialog(const WindowKey& windowKey, QDialog* dlg)
     }
 
     PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
-    QRect dialogRect = pi.Get("geometry", QRect());
-    if (dialogRect.isValid())
-    {
-        dlg->setGeometry(dialogRect);
-    }
+    QByteArray dialogRect = pi.Get("geometry", QByteArray());
+    dlg->restoreGeometry(dialogRect);
 
     int result = dlg->exec();
-    pi.Set("geometry", dlg->geometry());
+    pi.Set("geometry", dlg->saveGeometry());
     return result;
+}
+
+void UIManager::ShowDialog(const WindowKey& windowKey, QDialog* dlg)
+{
+    bool isStayOnTop = dlg->windowFlags().testFlag(Qt::WindowStaysOnTopHint);
+
+    DVASSERT(dlg != nullptr);
+    UIManagerDetail::MainWindowInfo* windowInfo = impl->FindWindow(windowKey);
+    if (windowInfo != nullptr)
+    {
+        if (dlg->parent() != windowInfo->window.data())
+        {
+            dlg->setParent(windowInfo->window.data());
+        }
+    }
+
+    dlg->setWindowFlags(dlg->windowFlags() | Qt::Dialog);
+    if (isStayOnTop == true)
+    {
+        dlg->setWindowFlags(dlg->windowFlags() | Qt::WindowStaysOnTopHint);
+    }
+
+    QString dialogName = dlg->objectName();
+    if (dialogName.isEmpty() == true)
+    {
+        dialogName = dlg->windowTitle();
+    }
+
+    PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+    QByteArray dialogGeometry = pi.Get("geometry", QByteArray());
+    dlg->restoreGeometry(dialogGeometry);
+
+    impl->connections.AddConnection(dlg, &QDialog::finished, [this, dialogName, dlg](int) {
+        PropertiesItem pi = impl->propertiesHolder.CreateSubHolder(dialogName.toStdString());
+        pi.Set("geometry", dlg->saveGeometry());
+    });
+
+    dlg->show();
 }
 
 ModalMessageParams::Button UIManager::ShowModalMessage(const WindowKey& windowKey, const ModalMessageParams& params)

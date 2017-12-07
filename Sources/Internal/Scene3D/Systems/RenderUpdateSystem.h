@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
+#include "Base/UnordererMap.h"
 
 namespace DAVA
 {

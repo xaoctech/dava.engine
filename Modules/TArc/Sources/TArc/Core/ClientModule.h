@@ -51,13 +51,13 @@ protected:
     OperationInvoker* GetInvoker();
 
     template <typename Ret, typename Cls, typename... Args>
-    void RegisterOperation(int operationID, Cls* object, Ret (Cls::*fn)(Args...) const);
+    void RegisterOperation(DAVA::uint32 operationID, Cls* object, Ret (Cls::*fn)(Args...) const);
 
     template <typename Ret, typename Cls, typename... Args>
-    void RegisterOperation(int operationID, Cls* object, Ret (Cls::*fn)(Args...));
+    void RegisterOperation(DAVA::uint32 operationID, Cls* object, Ret (Cls::*fn)(Args...));
 
     template <typename... Args>
-    void InvokeOperation(int operationId, const Args&... args);
+    void InvokeOperation(DAVA::uint32 operationId, const Args&... args);
 
     template <typename TInterface>
     void RegisterInterface(TInterface* interface);
@@ -81,19 +81,19 @@ private:
 };
 
 template <typename Ret, typename Cls, typename... Args>
-inline void ClientModule::RegisterOperation(int operationID, Cls* object, Ret (Cls::*fn)(Args...) const)
+inline void ClientModule::RegisterOperation(uint32 operationID, Cls* object, Ret (Cls::*fn)(Args...) const)
 {
     coreInterface->RegisterOperation(operationID, AnyFn(fn).BindThis(object));
 }
 
 template <typename Ret, typename Cls, typename... Args>
-inline void ClientModule::RegisterOperation(int operationID, Cls* object, Ret (Cls::*fn)(Args...))
+inline void ClientModule::RegisterOperation(uint32 operationID, Cls* object, Ret (Cls::*fn)(Args...))
 {
     coreInterface->RegisterOperation(operationID, AnyFn(fn).BindThis(object));
 }
 
 template <typename... Args>
-inline void ClientModule::InvokeOperation(int operationId, const Args&... args)
+inline void ClientModule::InvokeOperation(uint32 operationId, const Args&... args)
 {
     coreInterface->Invoke(operationId, args...);
 }

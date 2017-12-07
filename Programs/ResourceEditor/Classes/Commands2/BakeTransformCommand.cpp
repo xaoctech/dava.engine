@@ -4,8 +4,9 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Entity.h"
 
-BakeGeometryCommand::BakeGeometryCommand(DAVA::RenderObject* _object, DAVA::Matrix4 _transform)
+BakeGeometryCommand::BakeGeometryCommand(DAVA::Entity* entity_, DAVA::RenderObject* _object, DAVA::Matrix4 _transform)
     : RECommand(CMDID_BAKE_GEOMERTY, "Bake geometry")
+    , entity(entity_)
     , object(_object)
     , transform(_transform)
 {
