@@ -11,18 +11,21 @@ namespace DAVA
 class Entity;
 class ScreenPositionComponent;
 
+/** Component for setup synchronization params between UIControl and Entity. */
 class UIEntityMarkerComponent : public UIComponent
 {
     DAVA_VIRTUAL_REFLECTION(UIEntityMarkerComponent, UIComponent);
     DECLARE_UI_COMPONENT(UIEntityMarkerComponent);
 
 public:
+    /** Describe ordering mode. */
     enum class OrderMode : int32
     {
-        NearFront = 0,
-        NearBack
+        NearFront = 0, //!< Marker for near Entity will be on front.
+        NearBack //!< marker for near Entity will be on back.
     };
 
+    /** Function declaration using for custom strategies. */
     using CustomStrategy = Function<void(UIControl*, UIEntityMarkerComponent*, ScreenPositionComponent*)>;
 
     UIEntityMarkerComponent();
@@ -31,35 +34,59 @@ public:
 
     UIEntityMarkerComponent* Clone() const override;
 
+    /** Return pointer to target Entity. */
     Entity* GetTargetEntity() const;
+    /** Setup target Entity with specified entity's pointer. */
     void SetTargetEntity(Entity* e);
 
+    /** Return enabled flag. */
     bool IsEnabled() const;
+    /** Setup enabled flag. */
     void SetEnabled(bool enable);
 
+    /** Return visibility synchronization flag. */
     bool IsSyncVisibilityEnabled() const;
+    /** Setup visibility synchronization flag. */
     void SetSyncVisibilityEnabled(bool enable);
 
+    /** Return position synchronization flag. */
     bool IsSyncPositionEnabled() const;
+    /** Setup position synchronization flag. */
     void SetSyncPositionEnabled(bool enable);
 
+    /** Return scale synchronization flag. */
     bool IsSyncScaleEnabled() const;
+    /** Setup scale synchronization flag. */
     void SetSyncScaleEnabled(bool enable);
+    /** Return scale factor value. */
     const Vector2& GetScaleFactor() const;
+    /** Setup scale factor value. New scale will calculated as `factor / distance`. */
     void SetScaleFactor(const Vector2& factor);
+    /** Return maximum scale value. */
     const Vector2& GetMaxScale() const;
+    /** Setup maximum scale value. */
     void SetMaxScale(const Vector2& s);
+    /** Return minimum scale value. */
     const Vector2& GetMinScale() const;
+    /** Setup minimum scale value. */
     void SetMinScale(const Vector2& s);
 
+    /** Return order synchronization flag. */
     bool IsSyncOrderEnabled() const;
+    /** Setup order synchronization flag. */
     void SetSyncOrderEnabled(bool enable);
+    /** Return ordering mode. */
     OrderMode GetOrderMode() const;
+    /** Setup ordering mode. */
     void SetOrderMode(OrderMode mode);
 
+    /** Return using custom strategy flag. */
     bool IsUseCustomStrategy() const;
+    /** Setup using custom strategy flag. */
     void SetUseCustomStrategy(bool enable);
+    /** Return custom strategy function. */
     const CustomStrategy& GetCustomStrategy() const;
+    /** Setup custom strategy function. */
     void SetCustomStrategy(const CustomStrategy& fn);
 
 protected:

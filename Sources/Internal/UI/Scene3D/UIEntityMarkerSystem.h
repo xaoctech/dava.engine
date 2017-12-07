@@ -10,6 +10,7 @@ class UIComponent;
 class UIControl;
 class UIEntityMarkerComponent;
 
+/** System for synchronization params between UIControl and Entity. */
 class UIEntityMarkerSystem : public UISystem
 {
 public:
