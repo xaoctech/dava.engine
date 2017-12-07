@@ -422,7 +422,20 @@ float32 SizeMeasuringAlgorithm::GetLayoutPadding() const
     }
     else if (linearLayout != nullptr && linearLayout->IsEnabled() && linearLayout->GetAxis() == axis)
     {
-        return linearLayout->GetPadding() * 2.0f;
+        float32 padding = linearLayout->GetPadding() * 2.0f;
+        if (linearLayout->IsSafeAreaPaddingInset())
+        {
+            if (axis == Vector2::AXIS_X)
+            {
+                padding += layouter.GetSafeAreaInsets().left + layouter.GetSafeAreaInsets().right;
+            }
+            else
+            {
+                padding += layouter.GetSafeAreaInsets().top + layouter.GetSafeAreaInsets().bottom;
+            }
+        }
+
+        return padding;
     }
     return 0.0f;
 }
