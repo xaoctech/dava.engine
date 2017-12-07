@@ -4,15 +4,21 @@ Prototypes:
 -   class: "UIControl"
     name: "Marker"
     position: [0.000000, 0.000000]
-    size: [58.000000, 40.000000]
+    size: [58.000000, 75.000000]
     pivot: [0.500000, 1.000000]
     noInput: true
     components:
         SizePolicy:
             horizontalPolicy: "PercentOfMaxChild"
-        UIEntityMarkerComponent: {}
-        UIEntityMarkerPositionComponent: {}
-        UIEntityMarkerVisibilityComponent: {}
+        UIEntityMarkerComponent:
+            syncVisibilityEnabled: true
+            syncPositionEnabled: true
+            syncScaleEnabled: true
+            scaleFactor: [15.000000, 15.000000]
+            maxScale: [1.500000, 1.500000]
+            minScale: [0.750000, 0.750000]
+            syncOrderEnabled: true
+            useCustomStrategy: true
     children:
     -   class: "UIControl"
         name: "Title"
@@ -21,12 +27,33 @@ Prototypes:
         components:
             SizePolicy:
                 horizontalPolicy: "PercentOfContent"
+            Anchor:
+                hCenterAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.666667, 0.000000, 0.000000, 1.000000]
             UITextComponent:
                 text: "Marker"
                 fontName: "Korinna_18"
     -   class: "UIControl"
+        name: "Distance"
+        position: [23.000000, 32.000000]
+        size: [12.000000, 32.000000]
+        noInput: true
+        components:
+            SizePolicy:
+                horizontalPolicy: "PercentOfContent"
+            Anchor:
+                hCenterAnchorEnabled: true
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.666667, 0.000000, 0.000000, 1.000000]
+            UITextComponent:
+                text: "0"
+                fontName: "Korinna_18"
+    -   class: "UIControl"
         name: "Point"
-        position: [29.000000, 40.000000]
+        position: [29.000000, 75.000000]
         size: [6.000000, 6.000000]
         pivot: [0.500000, 0.500000]
         noInput: true
@@ -37,31 +64,6 @@ Prototypes:
                 bottomAnchor: -3.000000
             Background:
                 drawType: "DRAW_FILL"
--   class: "UIControl"
-    name: "ScaleMarker"
-    size: [64.000000, 64.000000]
-    pivot: [0.500000, 0.000000]
-    components:
-        Background:
-            drawType: "DRAW_FILL"
-            color: [1.000000, 1.000000, 1.000000, 0.392157]
-        UIEntityMarkerComponent: {}
-        UIEntityMarkerScaleComponent:
-            depthToScaleFactor: [0.030000, 0.030000]
-    children:
-    -   class: "UIControl"
-        name: "Title"
-        size: [64.000000, 64.000000]
-        noInput: true
-        components:
-            SizePolicy:
-                horizontalPolicy: "PercentOfParent"
-                verticalPolicy: "PercentOfParent"
-            UITextComponent:
-                text: "Marker"
-                fontName: "Korinna_18"
-                color: [0.000000, 0.000000, 0.000000, 1.000000]
-                fitting: "FITTING_FILL"
 Controls:
 -   class: "UIControl"
     name: "Main"
@@ -81,7 +83,7 @@ Controls:
                 horizontalPolicy: "PercentOfParent"
                 verticalPolicy: "PercentOfParent"
     -   class: "UIControl"
-        name: "PositionMarkers"
+        name: "Markers"
         position: [0.000000, 0.000000]
         size: [637.000000, 451.000000]
         noInput: true
@@ -89,66 +91,3 @@ Controls:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
                 verticalPolicy: "PercentOfParent"
-        children:
-        -   prototype: "Marker"
-            name: "CubeMarker"
-            position: [35.000000, 417.000000]
-            children:
-            -   path: "Title"
-                components:
-                    UITextComponent:
-                        text: "Cube"
-        -   prototype: "Marker"
-            name: "ConeMarker"
-            position: [89.000000, 417.000000]
-            children:
-            -   path: "Title"
-                components:
-                    UITextComponent:
-                        text: "Cone"
-    -   class: "UIControl"
-        name: "ScaleMarkers"
-        position: [16.000000, 14.000000]
-        size: [193.000000, 64.000000]
-        components:
-            LinearLayout:
-                spacing: 5.000000
-            SizePolicy:
-                horizontalPolicy: "PercentOfChildrenSum"
-                verticalPolicy: "PercentOfMaxChild"
-        children:
-        -   class: "UIControl"
-            name: "Label"
-            size: [55.000000, 64.000000]
-            components:
-                SizePolicy:
-                    horizontalPolicy: "PercentOfContent"
-                    verticalPolicy: "PercentOfParent"
-                UITextComponent:
-                    text: "Scale:"
-                    fontName: "DejaVuSans_18"
-        -   class: "UIControl"
-            name: "Container"
-            position: [60.000000, 0.000000]
-            size: [133.000000, 64.000000]
-            components:
-                LinearLayout:
-                    spacing: 5.000000
-                SizePolicy:
-                    horizontalPolicy: "PercentOfChildrenSum"
-                    verticalPolicy: "PercentOfMaxChild"
-            children:
-            -   prototype: "ScaleMarker"
-                name: "CubeMarker"
-                children:
-                -   path: "Title"
-                    components:
-                        UITextComponent:
-                            text: "Cube"
-            -   prototype: "ScaleMarker"
-                name: "ConeMarker"
-                children:
-                -   path: "Title"
-                    components:
-                        UITextComponent:
-                            text: "Cone"

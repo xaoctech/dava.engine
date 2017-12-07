@@ -39,8 +39,8 @@ void GlobalEnumMap<T>::Register(const int e, const char* s)
 }
 
 #define ENUM_DECLARE(eType) template <> void GlobalEnumMap<eType>::RegisterAll()
-#define ENUM_ADD(eValue) Register(eValue, #eValue)
-#define ENUM_ADD_DESCR(eValue, eDescr) Register(eValue, eDescr)
+#define ENUM_ADD(eValue) Register(static_cast<int>(eValue), #eValue)
+#define ENUM_ADD_DESCR(eValue, eDescr) Register(static_cast<int>(eValue), eDescr)
 
 // Define:
 //	ENUM_DECLARE(AnyEnumType)

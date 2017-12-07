@@ -2,6 +2,7 @@
 #include "Infrastructure/TestBed.h"
 
 #include <Base/ScopedPtr.h>
+#include <Debug/DVAssert.h>
 #include <Render/Highlevel/Camera.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ScreenPositionComponent.h>
@@ -9,12 +10,14 @@
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/Controller/RotationControllerSystem.h>
 #include <Scene3D/Systems/Controller/WASDControllerSystem.h>
+#include <UI/Layouts/UISizePolicyComponent.h>
+#include <UI/Render/UIDebugRenderComponent.h>
 #include <UI/Scene3D/UIEntityMarkerComponent.h>
 #include <UI/Scene3D/UIEntityMarkerSystem.h>
-#include <UI/Layouts/UISizePolicyComponent.h>
+#include <UI/Text/UITextComponent.h>
 #include <UI/UI3DView.h>
 #include <UI/UIControl.h>
-#include <UI/Render/UIDebugRenderComponent.h>
+#include <Utils/StringFormat.h>
 
 using namespace DAVA;
 
@@ -32,6 +35,7 @@ void SceneTest::LoadResources()
     DAVA::UIPackageLoader().LoadPackage("~res:/UI/SceneTest.yaml", &pkgBuilder);
     UIControl* dialog = pkgBuilder.GetPackage()->GetControl("Main");
     AddControl(dialog);
+    BringChildBack(dialog);
 
     // Load scene
     ScopedPtr<Scene> scene(new Scene());
@@ -63,25 +67,34 @@ void SceneTest::LoadResources()
     DVASSERT(ui3dView);
     ui3dView->SetScene(scene);
 
-    UIControl* marker = dialog->FindByPath("PositionMarkers/**/CubeMarker");
-    UIEntityMarkerComponent* emc = marker->GetComponent<UIEntityMarkerComponent>();
-    DVASSERT(emc);
-    emc->SetTargetEntity(scene->FindByName("Cube"));
+    UIControl* markers = dialog->FindByPath("Markers");
+    DVASSERT(markers);
+    Vector<Entity*> entities;
+    scene->GetChildEntitiesWithComponent(entities, Component::SCREEN_POSITION_COMPONENT);
+    for (Entity* e : entities)
+    {
+        RefPtr<UIControl> marker = pkgBuilder.GetPackage()->GetPrototype(FastName("Marker"))->SafeClone();
+        DVASSERT(marker.Valid());
+        UIControl* titleCtrl = marker->FindByPath("Title");
+        DVASSERT(titleCtrl);
+        UITextComponent* titleText = titleCtrl->GetComponent<UITextComponent>();
+        DVASSERT(titleText);
+        titleText->SetText(e->GetName().c_str());
 
-    marker = dialog->FindByPath("PositionMarkers/**/ConeMarker");
-    emc = marker->GetComponent<UIEntityMarkerComponent>();
-    DVASSERT(emc);
-    emc->SetTargetEntity(scene->FindByName("Cone"));
+        UIEntityMarkerComponent* emc = marker->GetComponent<UIEntityMarkerComponent>();
+        DVASSERT(emc);
+        emc->SetTargetEntity(e);
+        emc->SetCustomStrategy([](UIControl* ctrl, UIEntityMarkerComponent* emc, ScreenPositionComponent* spc) {
+            UIControl* distanceCtrl = ctrl->FindByPath("Distance");
+            DVASSERT(distanceCtrl);
+            UITextComponent* distanceText = distanceCtrl->GetComponent<UITextComponent>();
+            DVASSERT(distanceText);
+            float32 distance = (spc->GetCameraPosition() - spc->GetWorldPosition()).Length();
+            distanceText->SetText(Format("%.3f", distance));
+        });
 
-    marker = dialog->FindByPath("ScaleMarkers/**/CubeMarker");
-    emc = marker->GetComponent<UIEntityMarkerComponent>();
-    DVASSERT(emc);
-    emc->SetTargetEntity(scene->FindByName("Cube"));
-
-    marker = dialog->FindByPath("ScaleMarkers/**/ConeMarker");
-    emc = marker->GetComponent<UIEntityMarkerComponent>();
-    DVASSERT(emc);
-    emc->SetTargetEntity(scene->FindByName("Cone"));
+        markers->AddControl(marker.Get());
+    }
 }
 
 void SceneTest::UnloadResources()
