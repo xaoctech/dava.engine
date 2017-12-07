@@ -59,6 +59,7 @@
 #include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
 #include "Tests/SkillSystemTest.h"
+#include "Tests/UIJoypadSystemTest.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
@@ -419,6 +420,7 @@ void TestBed::RegisterTests()
     new SoundTest(*this);
     new AnyPerformanceTest(*this);
     new SkillSystemTest(*this);
+    new UIJoypadSystemTest(*this);
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
@@ -590,6 +592,7 @@ void CheckDeviceInfoValid()
         Logger::Info("storage info: type=%d total_space=%lld free_space=%lld, read_only=%d, removable=%d, emulated=%d",
                      info.type, info.totalSpace, info.freeSpace, info.readOnly, info.removable, info.emulated);
     }
+    DVASSERT(storageInfo.size() > 0);
 
     uint32 cpuCount = DeviceInfo::GetCpuCount();
     Logger::Info("cpu_count: %d", cpuCount);

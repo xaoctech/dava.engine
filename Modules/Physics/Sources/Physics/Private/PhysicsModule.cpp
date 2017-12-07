@@ -547,14 +547,12 @@ void PhysicsModule::ReleaseMaterials()
         return;
     }
 
-    DVASSERT(defaultMaterial->getReferenceCount() == 1);
     defaultMaterial->release();
     defaultMaterial = nullptr;
 
     for (const auto& materialNode : materials)
     {
         physx::PxMaterial* material = materialNode.second;
-        DVASSERT(material->getReferenceCount() == 1);
         material->release();
     }
 

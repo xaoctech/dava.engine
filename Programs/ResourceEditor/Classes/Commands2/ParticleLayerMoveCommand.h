@@ -14,6 +14,21 @@ public:
     void Undo() override;
     void Redo() override;
 
+    DAVA::ParticleLayer* GetLayer() const
+    {
+        return layer;
+    }
+
+    DAVA::ParticleEmitterInstance* GetOldEmitter() const
+    {
+        return oldEmitter;
+    }
+
+    DAVA::ParticleEmitterInstance* GetNewEmitter() const
+    {
+        return newEmitter;
+    }
+
 private:
     DAVA::ParticleLayer* layer = nullptr;
     DAVA::ParticleEmitterInstance* oldEmitter = nullptr;

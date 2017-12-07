@@ -69,8 +69,8 @@ void CollectEmittersForSave(DAVA::ParticleEmitter* topLevelEmitter, DAVA::List<E
     {
         if (nullptr != layer->innerEmitter)
         {
-            CollectEmittersForSave(layer->innerEmitter, emitters, entityName);
-            emitters.emplace_back(EmitterDescriptor(layer->innerEmitter, layer, layer->innerEmitter->configPath, entityName));
+            CollectEmittersForSave(layer->innerEmitter->GetEmitter(), emitters, entityName);
+            emitters.emplace_back(EmitterDescriptor(layer->innerEmitter->GetEmitter(), layer, layer->innerEmitter->GetEmitter()->configPath, entityName));
         }
     }
 
@@ -164,7 +164,7 @@ SceneEditor2::SceneEditor2()
     AddSystem(editorLODSystem, DAVA::ComponentUtils::MakeMask<DAVA::LodComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
 
     editorStatisticsSystem = new EditorStatisticsSystem(this);
-    AddSystem(editorStatisticsSystem, DAVA::ComponentUtils::MakeMask<DAVA::RenderComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(editorStatisticsSystem, emptyMask, SCENE_SYSTEM_REQUIRE_PROCESS);
 
     visibilityCheckSystem = new VisibilityCheckSystem(this);
     AddSystem(visibilityCheckSystem, DAVA::ComponentUtils::MakeMask<DAVA::VisibilityCheckComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);

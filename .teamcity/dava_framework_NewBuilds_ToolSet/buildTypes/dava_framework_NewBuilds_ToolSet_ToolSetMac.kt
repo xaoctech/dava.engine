@@ -36,7 +36,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         param("pathToProject", "%system.teamcity.build.checkoutDir%/dava.framework/Programs/Toolset")
         param("pathToProjectApp_other", "%pathToProjectBuild%/app_other")
         param("ProjectName", "ToolSet")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {

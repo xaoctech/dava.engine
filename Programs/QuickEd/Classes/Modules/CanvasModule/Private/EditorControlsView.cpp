@@ -629,8 +629,6 @@ void EditorControlsView::OnRootContolsChanged(const SortedControlNodeSet& newRoo
     }
     needRecalculateBgrBeforeRender = true;
     OnUpdate();
-
-    needCentralizeChanged.Emit(true);
 }
 
 //later background controls must be a part of data and rootControlPos must be simple getter

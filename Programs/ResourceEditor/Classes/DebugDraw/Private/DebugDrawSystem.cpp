@@ -161,16 +161,14 @@ void DebugDrawSystem::Draw()
         DrawHangingObjects(entity);
         DrawSwitchesWithDifferentLods(entity);
         DrawDebugOctTree(entity);
+    }
 
-        //draw selected objects
-        const SelectableGroup& selection = Selection::GetSelection();
-        bool isSelected = selection.ContainsObject(entity);
-
-        if (isSelected)
-        {
-            DrawLightNode(entity, true);
-            DrawSelectedSoundNode(entity);
-        }
+    //draw selected objects
+    const SelectableGroup& selection = Selection::GetSelection();
+    for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
+    {
+        DrawLightNode(entity, true);
+        DrawSelectedSoundNode(entity);
     }
 }
 

@@ -55,6 +55,12 @@ EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccess
 {
 }
 
+void EditorSlotSystem::RegisterEntity(DAVA::Entity* entity)
+{
+    clonedEntityes.erase(entity);
+    SceneSystem::RegisterEntity(entity);
+}
+
 void EditorSlotSystem::AddEntity(DAVA::Entity* entity)
 {
     DVASSERT(entity->GetComponentCount<DAVA::SlotComponent>() > 0);
@@ -263,7 +269,10 @@ void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* new
         restoreSlots(e);
     }
 
-    clonedEntityes.insert(newEntity);
+    if (GetWaypointComponent(newEntity) != nullptr)
+    {
+        clonedEntityes.insert(newEntity);
+    }
 }
 
 DAVA::RefPtr<DAVA::KeyedArchive> EditorSlotSystem::SaveSlotsPreset(DAVA::Entity* entity)

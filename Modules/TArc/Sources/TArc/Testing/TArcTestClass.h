@@ -54,9 +54,17 @@ public:
     template <typename T>
     T* LookupSingleWidget(const WindowKey& wndKey, const QString& objectName) const
     {
-        QList<QWidget*> w = LookupWidget(wndKey, objectName);
-        TEST_VERIFY(w.size() == 1);
-        T* result = qobject_cast<T*>(w.front());
+        QList<QWidget*> widgetsList = LookupWidget(wndKey, objectName);
+        T* result = nullptr;
+        foreach (QWidget* w, widgetsList)
+        {
+            TEST_VERIFY(result == nullptr);
+            result = qobject_cast<T*>(w);
+            if (result != nullptr)
+            {
+                break;
+            }
+        }
         TEST_VERIFY(result != nullptr);
         return result;
     }

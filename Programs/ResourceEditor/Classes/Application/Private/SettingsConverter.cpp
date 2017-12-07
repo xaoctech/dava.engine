@@ -141,7 +141,6 @@ public:
         LOAD_SETTING(globalSceneSettings, selectionSequent, Scene_SelectionSequent, AsBool);
         LOAD_SETTING(globalSceneSettings, selectionOnClick, Scene_SelectionOnClick, AsBool);
         globalSceneSettings->selectionDrawMode = GetEnumValue(Scene_SelectionDrawMode, globalSceneSettings->selectionDrawMode);
-        globalSceneSettings->collisionDrawMode = GetEnumValue(Scene_CollisionDrawMode, globalSceneSettings->collisionDrawMode);
         LOAD_SETTING(globalSceneSettings, modificationByGizmoOnly, Scene_ModificationByGizmoOnly, AsBool);
         LOAD_SETTING(globalSceneSettings, gizmoScale, Scene_GizmoScale, AsFloat);
         LOAD_SETTING(globalSceneSettings, debugBoxScale, Scene_DebugBoxScale, AsFloat);

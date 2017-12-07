@@ -1,5 +1,4 @@
-#ifndef __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
-#define __RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__
+#pragma once
 
 #include <QWidget>
 #include <QMimeData>
@@ -24,16 +23,10 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent* event);
 
-    void ConvertQMimeDataFromSceneTree(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>&);
+    DAVA::Entity* ConvertQMimeDataFromFilePath(SceneEditor2* sceneEditor = NULL);
+    DAVA::Entity* ConvertFromMimeData(SceneEditor2* sceneEditor);
 
-    void ConvertQMimeDataFromFilePath(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>&,
-                                      SceneEditor2* sceneEditor = NULL);
-
-    void ConvertFromMimeData(const QMimeData* mimeData, DAVA::List<DAVA::Entity*>& retList, SceneEditor2* sceneEditor);
-
-    void SetEntities(const DAVA::List<DAVA::Entity*>& list, bool perfromRertain);
+    void SetEntities(DAVA::Entity* entity, bool perfromRetain);
 
     DAVA::List<DAVA::Entity*> entitiesToHold;
 };
-
-#endif /* defined(__RESOURCEEDITORQT__SELECENTITYTPATHWIDGET__) */
