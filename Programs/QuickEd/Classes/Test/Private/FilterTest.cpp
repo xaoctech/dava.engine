@@ -270,13 +270,14 @@ protected:
                                      << "            horizontalPolicy: \"FixedSize\"\n"
                                      << "        Anchor:\n"
                                      << "            leftAnchorEnabled: true\n"
+                                     << "            rightAnchorEnabled: true\n"
                                      << "-   class : \"UIControl\"\n"
                                      << "    name : \"2\"\n"
                                      << "    components:\n"
                                      << "        SizePolicy:\n"
                                      << "            horizontalPolicy: \"FixedSize\"\n"
                                      << "        Anchor:\n"
-                                     << "            topAnchorEnabled: true\n",
+                                     << "            leftAnchorEnabled: true\n",
                                   "1");
 
         CREATE_FILTER_FILE_INFO_1(DOCUMENT, HasErrorsFilter,
