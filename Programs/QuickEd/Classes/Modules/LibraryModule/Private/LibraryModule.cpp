@@ -546,7 +546,7 @@ void LibraryModule::ControlPropertyWasChanged(ControlNode* node, AbstractPropert
         auto nodeFound = data->prototypesActions.find(node);
         if (nodeFound != data->prototypesActions.end())
         {
-            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::String>());
+            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::FastName>().c_str());
             nodeFound->second.action->setText(newName);
             nodeFound->second.action->setObjectName(newName);
         }

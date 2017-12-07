@@ -18,11 +18,14 @@ class UIControl;
 class ControlNode;
 class IssueNavigatorWidget;
 
-class NamingIssuesHandler : public PackageListener
+class NamingIssuesHandler : public IssuesHandler, PackageListener
 {
 public:
     NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui_, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
     ~NamingIssuesHandler() override = default;
+
+    // IssuesHandler
+    void OnContextDeleted(DAVA::TArc::DataContext* current) override;
 
     // PackageListener
     void ActivePackageNodeWasChanged(PackageNode* node) override;
@@ -40,6 +43,7 @@ private:
 
     struct PackageIssues
     {
+        DAVA::TArc::DataContext* context = nullptr;
         DAVA::UnorderedMap<ControlNode*, Issue> symbolsIssues;
         DuplicationsIssuesMap duplicationIssues;
     };

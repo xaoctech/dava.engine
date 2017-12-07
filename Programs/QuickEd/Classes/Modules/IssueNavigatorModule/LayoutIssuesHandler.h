@@ -21,7 +21,7 @@ class LayoutFormula;
 
 class IssueNavigatorWidget;
 
-class LayoutIssuesHandler : public DAVA::UILayoutSystemListener, PackageListener
+class LayoutIssuesHandler : public IssuesHandler, DAVA::UILayoutSystemListener, PackageListener
 {
 public:
     LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
