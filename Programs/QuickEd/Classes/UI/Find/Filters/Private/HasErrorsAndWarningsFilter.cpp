@@ -9,7 +9,10 @@
 HasErrorsAndWarningsFilter::HasErrorsAndWarningsFilter()
     : anchorsSizePoliciesHolder(new AnchorsSizePoliciesChecker())
 {
+}
 
+HasErrorsAndWarningsFilter::~HasErrorsAndWarningsFilter()
+{
 }
 
 FindFilter::ePackageStatus HasErrorsAndWarningsFilter::AcceptPackage(const PackageInformation* package) const

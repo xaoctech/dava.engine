@@ -10,6 +10,7 @@ class HasErrorsAndWarningsFilter : public FindFilter
 {
 public:
     HasErrorsAndWarningsFilter();
+    ~HasErrorsAndWarningsFilter();
 
 private:
     FindFilter::ePackageStatus AcceptPackage(const PackageInformation* package) const override;
