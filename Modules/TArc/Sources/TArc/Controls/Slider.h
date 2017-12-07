@@ -16,27 +16,49 @@ class Slider : public ControlProxyImpl<QSlider>
     using TBase = ControlProxyImpl<QSlider>;
 
 public:
+    enum State
+    {
+        Idle,
+        Editing
+    };
+
     enum class Fields : uint32
     {
-        IsEnabled,
+        Enabled,
         Range, // const DAVA::M::Range*
         Value, // int
         Orientation, // Qt::Orientation
         ImmediateValue, // Method<void(int)>
+        EditingState, // Method<void(State)>
         FieldCount
     };
 
     DECLARE_CONTROL_PARAMS(Fields);
     Slider(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
     Slider(const Params& params, Reflection model, QWidget* parent = nullptr);
+    ~Slider();
+
+protected:
+    bool event(QEvent* e) override;
 
 private:
     void SetupControl();
     void UpdateControl(const ControlDescriptor& descriptor) override;
-    void UpdateRange();
+    bool UpdateRange();
+
+    void UnsureMapperCreated();
+    template <typename T>
+    bool CheckTypeAndCreateMapper(const DAVA::Type* t);
 
     void OnValuedChanged(int value);
-    void OnSliderUp();
+    void OnSliderPressed();
+    void OnSliderReleased();
+
+    class ValueMapper;
+    template <typename T>
+    class TValueMapper;
+
+    ValueMapper* mapper = nullptr;
 
     QtConnections connections;
 };
