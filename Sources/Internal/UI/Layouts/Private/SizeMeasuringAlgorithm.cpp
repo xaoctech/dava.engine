@@ -418,7 +418,17 @@ float32 SizeMeasuringAlgorithm::GetLayoutPadding() const
 {
     if (flowLayout && flowLayout->IsEnabled())
     {
-        return flowLayout->GetPaddingByAxis(axis) * 2.0f;
+        float32 padding = flowLayout->GetPaddingByAxis(axis) * 2.0f;
+        if (axis == Vector2::AXIS_X && flowLayout->IsHorizontalSafeAreaPaddingInset())
+        {
+            padding += layouter.GetSafeAreaInsets().left + layouter.GetSafeAreaInsets().right;
+        }
+        else if (axis == Vector2::AXIS_Y && flowLayout->IsVerticalSafeAreaPaddingInset())
+        {
+            padding += layouter.GetSafeAreaInsets().top + layouter.GetSafeAreaInsets().bottom;
+        }
+
+        return padding;
     }
     else if (linearLayout != nullptr && linearLayout->IsEnabled() && linearLayout->GetAxis() == axis)
     {
