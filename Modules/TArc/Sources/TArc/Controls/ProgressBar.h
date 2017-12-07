@@ -24,7 +24,7 @@ public:
 
     DECLARE_CONTROL_PARAMS(Fields);
     ProgressBar(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    ProgressBar(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    ProgressBar(const Params& params, Reflection model, QWidget* parent = nullptr);
 
 protected:
     void UpdateControl(const ControlDescriptor& changedFields) override;

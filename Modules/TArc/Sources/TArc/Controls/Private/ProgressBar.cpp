@@ -9,8 +9,8 @@ ProgressBar::ProgressBar(const Params& params, DataWrappersProcessor* wrappersPr
 {
 }
 
-ProgressBar::ProgressBar(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent)
-    : ControlProxyImpl<QProgressBar>(params, ControlDescriptor(params.fields), accessor, model, parent)
+ProgressBar::ProgressBar(const Params& params, Reflection model, QWidget* parent)
+    : ControlProxyImpl<QProgressBar>(params, ControlDescriptor(params.fields), params.accessor, model, parent)
 {
 }
 

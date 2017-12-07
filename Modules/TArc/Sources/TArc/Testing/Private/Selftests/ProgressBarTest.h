@@ -98,7 +98,7 @@ public:
         {
             ProgressBar::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ProgressBar::Fields::Value] = "value";
-            ProgressBar* edit = new ProgressBar(params, GetAccessor(), ref);
+            ProgressBar* edit = new ProgressBar(params, ref);
             edit->SetObjectName("ProgressBar_value");
             layout->AddControl(edit);
         }
@@ -107,7 +107,7 @@ public:
             ProgressBar::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ProgressBar::Fields::Value] = "noRangeValue";
             params.fields[ProgressBar::Fields::Range] = "rangeMeta";
-            ProgressBar* edit = new ProgressBar(params, GetAccessor(), ref);
+            ProgressBar* edit = new ProgressBar(params, ref);
             edit->SetObjectName("ProgressBar_metaRangeValue");
             layout->AddControl(edit);
         }
@@ -116,7 +116,7 @@ public:
             ProgressBar::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ProgressBar::Fields::Value] = "readOnlyValue";
             params.fields[ProgressBar::Fields::Range] = "rangeMeta";
-            ProgressBar* edit = new ProgressBar(params, GetAccessor(), ref);
+            ProgressBar* edit = new ProgressBar(params, ref);
             edit->SetObjectName("ProgressBar_readOnlyValue");
             layout->AddControl(edit);
         }
@@ -124,7 +124,7 @@ public:
         {
             ProgressBar::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ProgressBar::Fields::Value] = "noValue";
-            ProgressBar* edit = new ProgressBar(params, GetAccessor(), ref);
+            ProgressBar* edit = new ProgressBar(params, ref);
             edit->SetObjectName("ProgressBar_noValue");
             layout->AddControl(edit);
         }
@@ -133,7 +133,7 @@ public:
             ProgressBar::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ProgressBar::Fields::Value] = "value";
             params.fields[ProgressBar::Fields::Format] = "percentageFormat";
-            ProgressBar* edit = new ProgressBar(params, GetAccessor(), ref);
+            ProgressBar* edit = new ProgressBar(params, ref);
             edit->SetObjectName("ProgressBar_percentageFormat");
             layout->AddControl(edit);
         }
@@ -142,7 +142,7 @@ public:
             ProgressBar::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[ProgressBar::Fields::Value] = "value";
             params.fields[ProgressBar::Fields::Format] = "valueFormat";
-            ProgressBar* edit = new ProgressBar(params, GetAccessor(), ref);
+            ProgressBar* edit = new ProgressBar(params, ref);
             edit->SetObjectName("ProgressBar_valueFormat");
             layout->AddControl(edit);
         }
@@ -168,20 +168,6 @@ using Holder = TestModuleHolder<ProgressBarTestModule>;
 
 DAVA_TARC_TESTCLASS(ProgressBarTests)
 {
-    void SetFocus(QProgressBar * widget)
-    {
-        widget->clearFocus();
-        if (widget->isActiveWindow() == false)
-        {
-            QWidget* topLevel = widget;
-            while (topLevel->parent() != nullptr)
-                topLevel = topLevel->parentWidget();
-
-            qApp->setActiveWindow(topLevel);
-        }
-        widget->setFocus(Qt::MouseFocusReason);
-    }
-
     void RangedValueChangeTest(const QString& name)
     {
         using namespace ProgressBarTestDetails;
@@ -211,7 +197,6 @@ DAVA_TARC_TESTCLASS(ProgressBarTests)
     {
         using namespace ProgressBarTestDetails;
         QProgressBar* bar = LookupSingleWidget<QProgressBar>(wndKey, "ProgressBar_noValue");
-        SetFocus(bar);
 
         ProgressBarTestModule* module = Holder::moduleInstance;
         TEST_VERIFY(bar->value() == 0);
@@ -221,7 +206,6 @@ DAVA_TARC_TESTCLASS(ProgressBarTests)
     {
         using namespace ProgressBarTestDetails;
         QProgressBar* bar = LookupSingleWidget<QProgressBar>(wndKey, "ProgressBar_valueFormat");
-        SetFocus(bar);
 
         ProgressBarTestModule* module = Holder::moduleInstance;
 
@@ -232,7 +216,6 @@ DAVA_TARC_TESTCLASS(ProgressBarTests)
     {
         using namespace ProgressBarTestDetails;
         QProgressBar* bar = LookupSingleWidget<QProgressBar>(wndKey, "ProgressBar_percentageFormat");
-        SetFocus(bar);
 
         ProgressBarTestModule* module = Holder::moduleInstance;
 
