@@ -73,23 +73,23 @@ set( DAVA_PLATFORM_LIST IOS
                         LINUX
                         )
 
-set( DAVA_PLATFORM_POSTFIXES_ID_ios     IOS )
-set( DAVA_PLATFORM_POSTFIXES_ID_macos   MACOS )
-set( DAVA_PLATFORM_POSTFIXES_ID_apple   MACOS IOS )
-set( DAVA_PLATFORM_POSTFIXES_ID_android ANDROID )
-set( DAVA_PLATFORM_POSTFIXES_ID_win     WIN WINUAP )
-set( DAVA_PLATFORM_POSTFIXES_ID_win32   WIN )
-set( DAVA_PLATFORM_POSTFIXES_ID_win10   WINUAP )
-set( DAVA_PLATFORM_POSTFIXES_ID_linux   LINUX )
+set( DAVA_PLATFORM_POSTFIXES_ID_Ios     IOS )
+set( DAVA_PLATFORM_POSTFIXES_ID_Macos   MACOS )
+set( DAVA_PLATFORM_POSTFIXES_ID_Apple   MACOS IOS )
+set( DAVA_PLATFORM_POSTFIXES_ID_Android ANDROID )
+set( DAVA_PLATFORM_POSTFIXES_ID_Win     WIN WINUAP )
+set( DAVA_PLATFORM_POSTFIXES_ID_Win32   WIN )
+set( DAVA_PLATFORM_POSTFIXES_ID_Win10   WINUAP )
+set( DAVA_PLATFORM_POSTFIXES_ID_Linux   LINUX )
 
-set( DAVA_PLATFORM_POSTFIXES    _ios 
-                                _macos 
-                                _apple
-                                _android
-                                _win 
-                                _win32
-                                _win10 
-                                _linux )
+set( DAVA_PLATFORM_POSTFIXES    _Ios 
+                                _Macos 
+                                _Apple
+                                _Android
+                                _Win 
+                                _Win32
+                                _Win10 
+                                _Linux )
 
 if( IOS )
     set( DAVA_PLATFORM_CURRENT IOS )

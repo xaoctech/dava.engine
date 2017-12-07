@@ -1,17 +1,17 @@
 #include "Platform/DeviceInfo.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
-    #include "Platform/TemplateiOS/DeviceInfo_ios.h"
+    #include "Platform/TemplateiOS/DeviceInfo_Ios.h"
 #elif defined(__DAVAENGINE_MACOS__)
-    #include "Platform/TemplateMacOS/DeviceInfo_macos.h"
+    #include "Platform/TemplateMacOS/DeviceInfo_Macos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
     #include "Engine/Private/Android/DeviceInfoAndroid.h"
 #elif defined(__DAVAENGINE_WIN32__)
-    #include "Platform/TemplateWin32/DeviceInfo_win.h"
+    #include "Platform/TemplateWin32/DeviceInfo_Win.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-    #include "Platform/TemplateWin32/DeviceInfo_win10.h"
+    #include "Platform/TemplateWin32/DeviceInfo_Win10.h"
 #elif defined(__DAVAENGINE_LINUX__)
-    #include "Platform/Linux/DeviceInfo_linux.h"
+    #include "Platform/Linux/DeviceInfo_Linux.h"
 #endif
 
 namespace DAVA

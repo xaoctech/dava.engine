@@ -9,15 +9,15 @@
 #include "Platform/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/Ios/MovieViewControl_ios.h"
+#include "UI/Private/Ios/MovieViewControl_Ios.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/Mac/MovieViewControl_macos.h"
+#include "UI/Private/Mac/MovieViewControl_Macos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "UI/Private/Android/MovieViewControl_android.h"
+#include "UI/Private/Android/MovieViewControl_Android.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "UI/Private/Win10/MovieViewControl_win10.h"
+#include "UI/Private/Win10/MovieViewControl_Win10.h"
 #elif defined(__DAVAENGINE_WIN32__)
-#include "Platform/TemplateWin32/MovieViewControl_win.h"
+#include "Platform/TemplateWin32/MovieViewControl_Win.h"
 #else
 // UIMovieView is not implemented for this platform yet, using stub one.
 #define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
