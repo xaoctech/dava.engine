@@ -1,10 +1,11 @@
 #include "UI/UIScrollViewContainer.h"
 #include "Engine/Engine.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/Input/UIInputSystem.h"
+#include "UI/Scroll/UIScrollComponent.h"
 #include "UI/ScrollHelper.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIScrollView.h"
-#include "UI/Scroll/UIScrollComponent.h"
 
 namespace DAVA
 {
@@ -27,7 +28,6 @@ UIScrollViewContainer::UIScrollViewContainer(const Rect& rect)
     , newPos(0.f, 0.f)
     , currentScroll(NULL)
     , lockTouch(false)
-    , scrollStartMovement(false)
     , enableHorizontalScroll(true)
     , enableVerticalScroll(true)
 {
@@ -115,49 +115,6 @@ int32 UIScrollViewContainer::GetTouchTreshold()
 
 void UIScrollViewContainer::Input(UIEvent* currentTouch)
 {
-    if (UIEvent::Phase::WHEEL == currentTouch->phase)
-    {
-        Vector2 wheelDelta(currentTouch->wheelDelta.x * GetWheelSensitivity(), currentTouch->wheelDelta.y * GetWheelSensitivity());
-        if (currentTouch->device == eInputDevices::MOUSE && (currentTouch->modifiers & eModifierKeys::SHIFT) != eModifierKeys::NONE)
-        {
-            std::swap(wheelDelta.x, wheelDelta.y);
-        }
-        newScroll += wheelDelta;
-    }
-
-    if (currentTouch->touchId == mainTouch)
-    {
-        newPos = currentTouch->point;
-
-        switch (currentTouch->phase)
-        {
-        case UIEvent::Phase::DRAG:
-        {
-            if (!lockTouch)
-            {
-                scrollStartInitialPosition = currentTouch->point;
-                scrollStartMovement = false;
-                state = STATE_SCROLL;
-                lockTouch = true;
-                oldPos = newPos;
-            }
-
-            if (state == STATE_SCROLL)
-            {
-                scrollStartMovement = true;
-            }
-        }
-        break;
-        case UIEvent::Phase::ENDED:
-        {
-            lockTouch = false;
-            state = STATE_DECCELERATION;
-        }
-        break;
-        default:
-            break;
-        }
-    }
 }
 
 bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
@@ -178,30 +135,58 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
     {
         // Can't scroll - some child control already processed this input.
         mainTouch = -1;
+        lockTouch = false;
         return systemInput;
     }
 
-    if (currentTouch->phase == UIEvent::Phase::BEGAN && mainTouch == -1)
+    if (currentTouch->touchId == mainTouch && STATE_SCROLL == state)
     {
-        if (IsPointInside(currentTouch->point))
+        // Refresh 'scroll' target point
+        newPos = currentTouch->point;
+    }
+
+    switch (currentTouch->phase)
+    {
+    case UIEvent::Phase::BEGAN:
+    {
+        if (currentTouch->touchId != mainTouch &&
+            mainTouch != -1 &&
+            !GetEngineContext()->uiControlSystem->GetInputSystem()->IsAnyInputLockedByControl(this))
+        {
+            // Workaround for missed 'CancelInput()' in rare case.
+            // Force reset internal 'touch id' when control has not active 'touchLocker' in UIInputSystem.
+            mainTouch = -1;
+            lockTouch = false;
+        }
+
+        if (mainTouch == -1 && IsPointInside(currentTouch->point))
         {
             currentScroll = nullptr;
             PerformEvent(EVENT_TOUCH_DOWN, currentTouch);
-            Input(currentTouch);
+
+            mainTouch = currentTouch->touchId;
+            scrollStartInitialPosition = currentTouch->point;
+            newPos = currentTouch->point;
+            oldPos = newPos;
+            state = STATE_BEFORE_SCROLL;
+            lockTouch = true;
         }
     }
-    else if (currentTouch->phase == UIEvent::Phase::DRAG)
+    break;
+    case UIEvent::Phase::DRAG:
     {
-        if (mainTouch == -1 && IsPointInside(currentTouch->point))
-        {
-            mainTouch = currentTouch->touchId;
-        }
-
         if (currentTouch->touchId == mainTouch)
         {
-            // Don't scroll if touchTreshold is not exceeded
-            if ((Abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
-                (Abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
+            if (state == STATE_BEFORE_SCROLL)
+            {
+                // Don't scroll if touchTreshold is not exceeded
+                if ((Abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
+                    (Abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
+                {
+                    state = STATE_SCROLL;
+                }
+            }
+            if (state == STATE_SCROLL)
             {
                 UIScrollView* scrollView = DynamicTypeCheck<UIScrollView*>(this->GetParent());
                 DVASSERT(scrollView);
@@ -221,21 +206,35 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
                 {
                     GetEngineContext()->uiControlSystem->SwitchInputToControl(mainTouch, this);
                 }
-                Input(currentTouch);
             }
         }
     }
-    else if (currentTouch->touchId == mainTouch && currentTouch->phase == UIEvent::Phase::ENDED)
+    break;
+    case UIEvent::Phase::ENDED:
     {
-        Input(currentTouch);
-        mainTouch = -1;
+        if (currentTouch->touchId == mainTouch)
+        {
+            mainTouch = -1;
+            lockTouch = false;
+            state = STATE_DECCELERATION;
+        }
     }
-    else if (UIEvent::Phase::WHEEL == currentTouch->phase)
+    break;
+    case UIEvent::Phase::WHEEL:
     {
-        Input(currentTouch);
+        Vector2 wheelDelta(currentTouch->wheelDelta.x * GetWheelSensitivity(), currentTouch->wheelDelta.y * GetWheelSensitivity());
+        if (currentTouch->device == eInputDevices::MOUSE && (currentTouch->modifiers & eModifierKeys::SHIFT) != eModifierKeys::NONE)
+        {
+            std::swap(wheelDelta.x, wheelDelta.y);
+        }
+        newScroll += wheelDelta;
+    }
+    break;
+    default:
+        break;
     }
 
-    if (scrollStartMovement && currentTouch->touchId == mainTouch)
+    if (STATE_SCROLL == state && currentTouch->touchId == mainTouch)
     {
         return true;
     }

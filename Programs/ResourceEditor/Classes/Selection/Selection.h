@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Classes/Selection/Selectable.h"
+
 #include "Base/BaseTypes.h"
 
 namespace DAVA
@@ -16,6 +18,7 @@ void SetSelection(SelectableGroup& newSelection);
 
 void CancelSelection();
 
+Selectable GetSelectableObject(const Selectable& object);
 DAVA::Entity* GetSelectableEntity(DAVA::Entity* selectionCandidate);
 bool IsEntitySelectable(DAVA::Entity* selectionCandidate);
 

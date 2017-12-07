@@ -16,6 +16,7 @@ class UserNodeModule : public DAVA::TArc::ClientModule
 {
 public:
     static DAVA::FilePath GetBotSpawnPath();
+    UserNodeModule();
 
 protected:
     void PostInit() override;

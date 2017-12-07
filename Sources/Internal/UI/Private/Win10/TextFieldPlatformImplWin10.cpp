@@ -544,8 +544,11 @@ void TextFieldPlatformImpl::InstallTextEventHandlers()
     using ::Platform::Object;
     using ::Windows::UI::Xaml::RoutedEventHandler;
     using ::Windows::UI::Xaml::RoutedEventArgs;
+    using ::Windows::UI::Xaml::Controls::TextBox;
     using ::Windows::UI::Xaml::Controls::TextChangedEventHandler;
     using ::Windows::UI::Xaml::Controls::TextChangedEventArgs;
+    using ::Windows::UI::Xaml::Controls::TextBoxTextChangingEventArgs;
+    using ::Windows::Foundation::TypedEventHandler;
 
     std::weak_ptr<TextFieldPlatformImpl> self_weak(shared_from_this());
     auto selectionChanged = ref new RoutedEventHandler([this, self_weak](Object ^, RoutedEventArgs ^ ) {
@@ -556,8 +559,13 @@ void TextFieldPlatformImpl::InstallTextEventHandlers()
         if (auto self = self_weak.lock())
             OnTextChanged();
     });
+    auto textChanging = ref new TypedEventHandler<TextBox ^, TextBoxTextChangingEventArgs ^>([this, self_weak](Object ^, TextBoxTextChangingEventArgs ^ args) {
+        if (auto self = self_weak.lock())
+            OnTextChanging();
+    });
     nativeText->SelectionChanged += selectionChanged;
     nativeText->TextChanged += textChanged;
+    nativeText->TextChanging += textChanging;
 }
 
 void TextFieldPlatformImpl::InstallPasswordEventHandlers()
@@ -707,15 +715,8 @@ void TextFieldPlatformImpl::OnSelectionChanged()
     caretPosition = GetNativeCaretPosition();
 }
 
-void TextFieldPlatformImpl::OnTextChanged()
+void TextFieldPlatformImpl::OnTextChanging()
 {
-    if (ignoreTextChange || nullptr == nativeControl)
-    {
-        ignoreTextChange = false;
-        return;
-    }
-
-    WideString textToRestore;
     WideString newText(GetNativeText()->Data());
     if (IsMultiline())
     { // Remove '\r' characters
@@ -725,14 +726,10 @@ void TextFieldPlatformImpl::OnTextChanged()
 
     bool textAccepted = true;
     auto self{ shared_from_this() };
-    RunOnMainThread([this, self, &newText, &textAccepted, &textToRestore]() {
+    RunOnMainThread([this, self, &newText, &textAccepted]() {
         bool targetAlive = uiTextField != nullptr && textFieldDelegate != nullptr;
-        if (programmaticTextChange && targetAlive && newText != lastProgrammaticText)
-        {
-            // Event has originated from SetText() method so only notify delegate about text change
-            textFieldDelegate->TextFieldOnTextChanged(uiTextField, newText, lastProgrammaticText, UITextFieldDelegate::eReason::CODE);
-        }
-        else if (targetAlive)
+
+        if (targetAlive && !programmaticTextChange)
         {
             StringDiffResult diffR;
             StringDiff(curText, newText, diffR);
@@ -743,21 +740,49 @@ void TextFieldPlatformImpl::OnTextChanged()
                 diffR.originalStringDiffPosition,
                 static_cast<int32>(diffR.originalStringDiff.length()),
                 diffR.newStringDiff);
-                if (textAccepted)
-                    textFieldDelegate->TextFieldOnTextChanged(uiTextField, newText, curText, UITextFieldDelegate::eReason::USER);
             }
         }
-        programmaticTextChange = false;
-        textAccepted ? curText = newText : textToRestore = curText;
     });
 
     if (!textAccepted)
     {
-        // Restore control's text and caret position as before text change
-        SetNativeText(textToRestore);
+        //Restore control's text and caret position as before text change
+        SetNativeText(curText);
         SetNativeCaretPosition(savedCaretPosition);
         ignoreTextChange = true;
     }
+}
+
+void TextFieldPlatformImpl::OnTextChanged()
+{
+    if (ignoreTextChange || nullptr == nativeControl)
+    {
+        ignoreTextChange = false;
+        return;
+    }
+
+    WideString newText(GetNativeText()->Data());
+    if (IsMultiline())
+    { // Remove '\r' characters
+        auto i = std::remove_if(newText.begin(), newText.end(), [](wchar_t c) -> bool { return c == L'\r'; });
+        newText.erase(i, newText.end());
+    }
+
+    auto self{ shared_from_this() };
+    RunOnMainThreadAsync([this, self, newText]() {
+        bool targetAlive = uiTextField != nullptr && textFieldDelegate != nullptr;
+        if (targetAlive && programmaticTextChange && newText != lastProgrammaticText)
+        {
+            // Event has originated from SetText() method so only notify delegate about text change
+            textFieldDelegate->TextFieldOnTextChanged(uiTextField, newText, lastProgrammaticText, UITextFieldDelegate::eReason::CODE);
+        }
+        else if (targetAlive && newText != curText)
+        {
+            textFieldDelegate->TextFieldOnTextChanged(uiTextField, newText, curText, UITextFieldDelegate::eReason::USER);
+        }
+        curText = newText;
+        programmaticTextChange = false;
+    });
 }
 
 void TextFieldPlatformImpl::OnLayoutUpdated()

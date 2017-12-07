@@ -22,6 +22,7 @@ object Project : Project({
     buildType(dava_framework_ToolSet_ToolSetIos)
     buildType(dava_framework_NewBuilds_ToolSet_ToolSetMac)
     buildType(dava_framework_NewBuilds_ToolSet_ToolSetWin)
+    buildType(dava_framework_NewBuilds_ToolSet_ToolSetWin32)    
     buildType(dava_framework_ToolSet_ToolSetWin10)
     buildType(dava_framework_ToolSet_ToolSetLinux)
 

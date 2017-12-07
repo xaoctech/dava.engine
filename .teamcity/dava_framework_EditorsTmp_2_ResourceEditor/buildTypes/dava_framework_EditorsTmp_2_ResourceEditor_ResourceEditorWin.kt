@@ -15,16 +15,12 @@ object dava_framework_EditorsTmp_2_ResourceEditor_ResourceEditorWin : BuildType(
     params {
         param("add_definitions", "-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=true,-DCUSTOM_DAVA_CONFIG_PATH_WIN=%DavaConfigWin%")
         param("appID", "RE")
-        text("beast_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
         param("pathToProject", "%system.teamcity.build.checkoutDir%/dava.framework/Programs/%ProjectName%")
         param("ProjectName", "ResourceEditor")
         param("runPathWin", "ResourceEditor/dava.framework/Tools/ResourceEditor/ResourceEditor.exe")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
     }
 
     vcs {
-        root("dava_framework_DavaResourceeditorBeastBranch", "+:.=>/dava.resourceeditor.beast")
-
         cleanCheckout = true
     }
 
