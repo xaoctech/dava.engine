@@ -17,106 +17,103 @@ void InitTArcResources()
 namespace DAVA
 {
 namespace TArc
-{
-int BaseApplication::Run()
-{
-    InitTArcResources();
-    Engine e;
-
-    if (!AllowMultipleInstances() && !CommandLineParser::CommandIsFound("--selftest"))
     {
-        QtHelpers::RunGuard runGuard(GetInstanceKey());
-        if (runGuard.TryToRun())
+    int BaseApplication::Run()
         {
+            InitTArcResources();
+            if (!AllowMultipleInstances())
+            {
+                QtHelpers::RunGuard runGuard(GetInstanceKey());
+                if (runGuard.TryToRun())
+                {
+                    return RunImpl();
+                }
+                else
+                    return 0;
+            }
+
             return RunImpl();
         }
-        else
-            return 0;
-    }
 
-    return RunImpl();
-}
+        int BaseApplication::RunImpl()
+        {
+            Engine e;
+            EngineInitInfo initInfo = GetInitInfo();
 
-int BaseApplication::RunImpl()
-{
-    EngineInitInfo initInfo = GetInitInfo();
+            // TODO remove this retain after merge with PR-2443
+            SafeRetain(initInfo.options.Get());
 
-    // TODO remove this retain after merge with PR-2443
-    SafeRetain(initInfo.options.Get());
+            e.cleanup.Connect(this, &BaseApplication::Cleanup);
 
-    Engine* engine = Engine::Instance();
+            if (CommandLineParser::CommandIsFound("--selftest"))
+            {
+                isTestEnv = true;
 
-    engine->cleanup.Connect(this, &BaseApplication::Cleanup);
+                SetupToolsAssertHandlers(eApplicationMode::TEST_MODE);
+                e.Init(eEngineRunMode::GUI_EMBEDDED, initInfo.modules, initInfo.options.Get());
+                RegisterAnyCasts();
+                RegisterEditorAnyCasts();
+                RegisterReflectionExtensions();
 
-    if (CommandLineParser::CommandIsFound("--selftest"))
-    {
-        isTestEnv = true;
+                const EngineContext* engineContext = e.GetContext();
+                DVASSERT(engineContext);
+                Init(engineContext);
 
-        SetupToolsAssertHandlers(eApplicationMode::TEST_MODE);
-        engine->Init(eEngineRunMode::GUI_EMBEDDED, initInfo.modules, initInfo.options.Get());
-        RegisterAnyCasts();
-        RegisterEditorAnyCasts();
-        RegisterReflectionExtensions();
+                TestCore testCore(e);
+                return e.Run();
+            }
+            else
+            {
+                SetupToolsAssertHandlers(initInfo.runMode == eEngineRunMode::CONSOLE_MODE ? eApplicationMode::CONSOLE_MODE : eApplicationMode::GUI_MODE);
+                e.Init(initInfo.runMode, initInfo.modules, initInfo.options.Get());
+                RegisterAnyCasts();
+                RegisterEditorAnyCasts();
+                RegisterReflectionExtensions();
 
-        const EngineContext* engineContext = engine->GetContext();
-        DVASSERT(engineContext);
-        Init(engineContext);
+                Core core(e);
+                Init(&core);
+                core.PostInit();
+                CreateModules(&core);
+                return e.Run();
+            }
+        }
 
-        TestCore testCore(*engine);
-        return engine->Run();
-    }
-    else
-    {
-        SetupToolsAssertHandlers(initInfo.runMode == eEngineRunMode::CONSOLE_MODE ? eApplicationMode::CONSOLE_MODE : eApplicationMode::GUI_MODE);
-        engine->Init(initInfo.runMode, initInfo.modules, initInfo.options.Get());
-        RegisterAnyCasts();
-        RegisterEditorAnyCasts();
-        RegisterReflectionExtensions();
+        void BaseApplication::Init(const EngineContext* /*engineContext*/)
+        {
+        }
 
-        Core core(*engine);
-        Init(&core);
-        core.PostInit();
-        CreateModules(&core);
-        return engine->Run();
-    }
-}
+        void BaseApplication::Init(Core* tarcCore)
+        {
+            DVASSERT(tarcCore != nullptr);
+            Init(tarcCore->GetEngineContext());
+        }
 
-void BaseApplication::Init(const EngineContext* /*engineContext*/)
-{
-}
+        void BaseApplication::RegisterEditorAnyCasts()
+        {
+        }
 
-void BaseApplication::Init(Core* tarcCore)
-{
-    DVASSERT(tarcCore != nullptr);
-    Init(tarcCore->GetEngineContext());
-}
+        void BaseApplication::RegisterReflectionExtensions()
+        {
+        }
 
-void BaseApplication::RegisterEditorAnyCasts()
-{
-}
+        void BaseApplication::Cleanup()
+        {
+        }
 
-void BaseApplication::RegisterReflectionExtensions()
-{
-}
+        bool BaseApplication::AllowMultipleInstances() const
+        {
+            return true;
+        }
 
-void BaseApplication::Cleanup()
-{
-}
+        QString BaseApplication::GetInstanceKey() const
+        {
+            return QString();
+        }
 
-bool BaseApplication::AllowMultipleInstances() const
-{
-    return true;
-}
+        bool BaseApplication::IsTestEnvironment() const
+        {
+            return isTestEnv;
+        }
 
-QString BaseApplication::GetInstanceKey() const
-{
-    return QString();
-}
-
-bool BaseApplication::IsTestEnvironment() const
-{
-    return isTestEnv;
-}
-
-} // namespace TArc
+        } // namespace TArc
 } // namespace DAVA
