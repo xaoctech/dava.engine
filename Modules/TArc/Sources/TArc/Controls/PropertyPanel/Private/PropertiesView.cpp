@@ -345,6 +345,7 @@ void PropertiesView::SetupUI()
     }
 
     view = new PropertiesTreeView(this);
+    view->setIndentation(view->indentation() >> 1);
     view->setObjectName(QString("%1_propertiesview").arg(QString::fromStdString(params.settingsNodeName)));
     view->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed);
     layout->addWidget(view);

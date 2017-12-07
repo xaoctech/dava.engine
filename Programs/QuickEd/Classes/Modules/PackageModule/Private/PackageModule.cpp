@@ -161,6 +161,7 @@ void PackageModule::PostInit()
     CreateActions();
     RegisterGlobalOperation();
     RegisterInterface(static_cast<Interfaces::PackageActionsInterface*>(this));
+    RegisterOperation(QEGlobal::Duplicate.ID, this, &PackageModule::OnDuplicate);
 }
 
 void PackageModule::InitData()
@@ -243,7 +244,6 @@ void PackageModule::CreateActions()
     {
         const QString actionName = "Add Style";
         QtAction* action = new QtAction(accessor, actionName);
-        action->setShortcut(QKeySequence("Ctrl+S"));
         action->setShortcutContext(Qt::WidgetShortcut);
 
         FieldDescriptor fieldDescr;
