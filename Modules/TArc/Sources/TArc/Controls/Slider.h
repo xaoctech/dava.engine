@@ -51,6 +51,7 @@ private:
     class ValueMapper;
     template <typename T>
     class TValueMapper;
+    class DisabledMapper;
 
     ValueMapper* mapper = nullptr;
     Any cachedValue;
