@@ -71,7 +71,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIJoypadSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
 
-    AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()));
+    AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()), GetSystem<UIFlowViewSystem>());
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
