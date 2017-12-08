@@ -1,6 +1,6 @@
-#include "Classes/UI/Find/Filters/Private/AnchorsAndSizePoliciesChecker.h"
+#include "Classes/UI/Find/Filters/AnchorsAndSizePoliciesConflictFilter.h"
 
-AnchorsSizePoliciesChecker::AnchorsSizePoliciesChecker()
+AnchorsSizePoliciesConflictFilter::AnchorsSizePoliciesConflictFilter()
     : horizontalSizePolicyHolder("horizontalPolicy")
     , verticalSizePolicyHolder("verticalPolicy")
     , anchorsEnabledHolder("enabled")
@@ -13,7 +13,12 @@ AnchorsSizePoliciesChecker::AnchorsSizePoliciesChecker()
 {
 }
 
-bool AnchorsSizePoliciesChecker::HasConflicts(const ControlInformation* control) const
+FindFilter::ePackageStatus AnchorsSizePoliciesConflictFilter::AcceptPackage(const PackageInformation* package) const
+{
+    return PACKAGE_CAN_ACCEPT_CONTROLS;
+}
+
+bool AnchorsSizePoliciesConflictFilter::AcceptControl(const ControlInformation* control) const
 {
     using namespace DAVA;
 

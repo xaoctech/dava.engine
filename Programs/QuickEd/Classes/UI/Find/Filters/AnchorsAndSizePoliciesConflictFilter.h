@@ -1,19 +1,21 @@
 #pragma once
 
+#include "Classes/UI/Find/Filters/FindFilter.h"
+#include "Classes/UI/Find/Filters/FieldHolder.h"
 #include "Classes/UI/Find/PackageInformation/ControlInformation.h"
-#include "Classes/UI/Find/Filters/Private/FieldHolder.h"
 
 #include <UI/Layouts/UISizePolicyComponent.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 
-class AnchorsSizePoliciesChecker
+class AnchorsSizePoliciesConflictFilter : public FindFilter
 {
 public:
-    AnchorsSizePoliciesChecker();
-
-    bool HasConflicts(const ControlInformation* control) const;
+    AnchorsSizePoliciesConflictFilter();
 
 private:
+    FindFilter::ePackageStatus AcceptPackage(const PackageInformation* package) const override;
+    bool AcceptControl(const ControlInformation* control) const override;
+
     FieldHolder<DAVA::UISizePolicyComponent, DAVA::UISizePolicyComponent::eSizePolicy> horizontalSizePolicyHolder;
     FieldHolder<DAVA::UISizePolicyComponent, DAVA::UISizePolicyComponent::eSizePolicy> verticalSizePolicyHolder;
 

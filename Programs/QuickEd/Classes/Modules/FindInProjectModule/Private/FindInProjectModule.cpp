@@ -5,7 +5,8 @@
 #include "UI/Find/Widgets/FindInProjectDialog.h"
 #include "UI/Find/Widgets/FindInDocumentWidget.h"
 #include "UI/Find/FindInDocumentController.h"
-#include "UI/Find/Filters/HasErrorsAndWarningsFilter.h"
+#include "UI/Find/Filters/AnchorsAndSizePoliciesConflictFilter.h"
+#include "UI/Find/Filters/CompositeFilter.h"
 
 #include <TArc/DataProcessing/Common.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
@@ -116,7 +117,10 @@ void FindInProjectModule::OnFindInProject()
 
 void FindInProjectModule::OnFindErrorsAndWarnings()
 {
-    std::shared_ptr<FindFilter> filter = std::make_shared<HasErrorsAndWarningsFilter>();
+    DAVA::Vector<std::shared_ptr<FindFilter>> errorsAndWarningsFilters;
+    errorsAndWarningsFilters.push_back(std::make_shared<AnchorsSizePoliciesConflictFilter>());
+
+    std::shared_ptr<FindFilter> filter = std::make_shared<CompositeFilter>(errorsAndWarningsFilters);
 
     InvokeOperation(QEGlobal::FindInProject.ID, filter);
 }

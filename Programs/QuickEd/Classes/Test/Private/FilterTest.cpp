@@ -6,12 +6,12 @@
 
 #include "Classes/UI/Find/Filters/FindFilter.h"
 #include "Classes/UI/Find/Filters/AcceptsInputFilter.h"
+#include "Classes/UI/Find/Filters/AnchorsAndSizePoliciesConflictFilter.h"
 #include "Classes/UI/Find/Filters/CompositeFilter.h"
 #include "Classes/UI/Find/Filters/ControlNameFilter.h"
 #include "Classes/UI/Find/Filters/HasClassesFilter.h"
 #include "Classes/UI/Find/Filters/HasErrorsFilter.h"
 #include "Classes/UI/Find/Filters/HasComponentFilter.h"
-#include "Classes/UI/Find/Filters/HasErrorsAndWarningsFilter.h"
 #include "Classes/UI/Find/Filters/PackageVersionFilter.h"
 #include "Classes/UI/Find/Filters/NegationFilter.h"
 #include "Classes/UI/Find/Filters/PrototypeUsagesFilter.h"
@@ -259,8 +259,7 @@ protected:
                                      << "    name : \"2\"\n",
                                   "1",
                                   Type::Instance<UIControlBackground>());
-
-        CREATE_FILTER_FILE_INFO_1(DOCUMENT, HasErrorsAndWarningsFilter,
+        CREATE_FILTER_FILE_INFO_1(DOCUMENT, AnchorsSizePoliciesConflictFilter,
                                   ss << CreateHeader()
                                      << "Controls:\n"
                                      << "-   class: \"UIControl\"\n"
