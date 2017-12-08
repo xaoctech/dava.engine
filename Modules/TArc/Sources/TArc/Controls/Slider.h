@@ -16,7 +16,6 @@ class Slider : public ControlProxyImpl<QSlider>
     using TBase = ControlProxyImpl<QSlider>;
 
 public:
-
     enum class Fields : uint32
     {
         Enabled,
