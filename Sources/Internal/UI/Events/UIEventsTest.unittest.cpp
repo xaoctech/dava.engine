@@ -220,9 +220,9 @@ DAVA_TESTCLASS (UIEventsTest)
         Vector<bool> results;
         Vector<FastName> eventNames;
 
-        for (int32 idx = 0; idx < eventTypes.size(); idx++)
+        for (size_type idx = 0; idx < eventTypes.size(); idx++)
         {
-            FastName name(Format("TEST_EVENT_%d", idx));
+            FastName name(Format("TEST_EVENT_%u", idx));
             eventNames.push_back(name);
             results.push_back(false);
 
@@ -239,7 +239,7 @@ DAVA_TESTCLASS (UIEventsTest)
         input->SetOnHoverSetEvent(eventNames[4]);
         input->SetOnHoverRemovedEvent(eventNames[5]);
 
-        for (int32 idx = 0; idx < eventTypes.size(); idx++)
+        for (size_type idx = 0; idx < eventTypes.size(); idx++)
         {
             TEST_VERIFY(!results[idx]);
             sys->ProcessControlEvent(eventTypes[idx], nullptr, childText.Get());
