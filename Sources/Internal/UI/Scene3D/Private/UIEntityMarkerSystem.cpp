@@ -48,7 +48,10 @@ void UIEntityMarkerSystem::UnregisterComponent(UIControl* control, UIComponent* 
 void UIEntityMarkerSystem::Process(float32 elapsedTime)
 {
     bool hasOrdering = false;
-    struct SafeFloat { float32 val = 0.f; };
+    struct SafeFloat
+    {
+        float32 val = 0.f;
+    };
     Map<UIControl*, Map<UIControl*, SafeFloat>> orderMap;
 
     for (UIEntityMarkerComponent* component : components)
@@ -62,15 +65,15 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
         if (spc)
         {
             Vector3 positionAndDepth = spc->GetScreenPositionAndDepth();
-            float32 squaredDistance = (spc->GetCameraPosition() - spc->GetWorldPosition()).SquareLength();
+            Vector3 distance = spc->GetWorldPosition() - spc->GetCameraPosition();
             UIControl* control = component->GetControl();
 
             if (component->IsSyncVisibilityEnabled())
             {
-                bool visible = positionAndDepth.z > 0.f && spc->GetCameraViewport().PointInside(Vector2(positionAndDepth.x, positionAndDepth.y));
+                const bool visible = distance.DotProduct(spc->GetCameraDirection()) > 0.f;
                 control->SetVisibilityFlag(visible);
 
-                if(!visible)
+                if (!visible)
                 {
                     // Skip next steps for invisible controls
                     continue;
@@ -84,13 +87,13 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
 
             if (component->IsSyncScaleEnabled())
             {
-                if (squaredDistance > 0.f)
+                if (distance.SquareLength() > 0.f)
                 {
                     const Vector2& factor = component->GetScaleFactor();
                     const Vector2& maxScale = component->GetMaxScale();
                     const Vector2& minScale = component->GetMinScale();
-                    const float32 distsance = std::sqrtf(squaredDistance);
-                    
+                    const float32 distsance = distance.Length();
+
                     Vector2 scale(Clamp(factor.x / distsance, minScale.x, maxScale.x),
                                   Clamp(factor.y / distsance, minScale.y, maxScale.y));
 
@@ -105,14 +108,14 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
             if (component->IsSyncOrderEnabled() && control->GetParent())
             {
                 hasOrdering = true;
-                switch(component->GetOrderMode())
+                switch (component->GetOrderMode())
                 {
-                    case UIEntityMarkerComponent::OrderMode::NearFront:
-                        orderMap[control->GetParent()][control] = SafeFloat{-squaredDistance};
-                        break;
-                    case UIEntityMarkerComponent::OrderMode::NearBack:
-                        orderMap[control->GetParent()][control] = SafeFloat{squaredDistance};
-                        break;
+                case UIEntityMarkerComponent::OrderMode::NearFront:
+                    orderMap[control->GetParent()][control] = SafeFloat{ -distance.SquareLength() };
+                    break;
+                case UIEntityMarkerComponent::OrderMode::NearBack:
+                    orderMap[control->GetParent()][control] = SafeFloat{ distance.SquareLength() };
+                    break;
                 }
             }
 
@@ -125,12 +128,12 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
 
     if (hasOrdering)
     {
-        for(auto& pair : orderMap)
+        for (auto& pair : orderMap)
         {
             UIControl* parent = pair.first;
             Map<UIControl*, SafeFloat>& order = pair.second;
-            
-            parent->SortChildren([&order](UIControl* a, UIControl* b){
+
+            parent->SortChildren([&order](UIControl* a, UIControl* b) {
                 return order[a].val < order[b].val;
             });
         }

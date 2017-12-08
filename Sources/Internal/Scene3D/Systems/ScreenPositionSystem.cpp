@@ -44,7 +44,6 @@ void ScreenPositionSystem::Process(float32 timeElapsed)
     Vector3 cameraPosition;
     Vector3 cameraDirection;
     Matrix4 cameraViewProjMatrix;
-    Rect cameraViewport;
     Camera* camera = GetScene()->GetCurrentCamera();
     if (camera)
     {
@@ -52,11 +51,7 @@ void ScreenPositionSystem::Process(float32 timeElapsed)
         cameraDirection = camera->GetDirection();
         cameraViewProjMatrix = camera->GetViewProjMatrix();
     }
-    if (ui3dView)
-    {
-        cameraViewport = ui3dView->GetAbsoluteRect();
-    }
-
+    
     for (ScreenPositionComponent* component : components)
     {
         Vector3 worldPosition = component->GetEntity()->GetWorldTransform().GetTranslationVector();
@@ -64,18 +59,16 @@ void ScreenPositionSystem::Process(float32 timeElapsed)
         component->SetCameraPosition(cameraPosition);
         component->SetCameraDirection(cameraDirection);
         component->SetCameraViewProjMatrix(cameraViewProjMatrix);
-        component->SetCameraViewport(cameraViewport);
+        component->SetCameraViewport(viewport);
         component->SetWorldPosition(worldPosition);
 
-        // TODO: Need frustum test? camera->GetFrustum()->IsInside(worldPosition, 1.0f);
-
-        if (camera && cameraViewport.dx > 0.f && cameraViewport.dy > 0.f)
+        if (camera && viewport.dx > 0.f && viewport.dy > 0.f)
         {
             if (FLOAT_EQUAL(worldPosition.z, camera->GetPosition().z)) // Check entity and camera Z position
             {
                 worldPosition.z += DAVA::EPSILON; // Fix Z position
             }
-            component->SetScreenPositionAndDepth(camera->GetOnScreenPositionAndDepth(worldPosition, cameraViewport));
+            component->SetScreenPositionAndDepth(camera->GetOnScreenPositionAndDepth(worldPosition, viewport));
         }
         else
         {
@@ -84,13 +77,13 @@ void ScreenPositionSystem::Process(float32 timeElapsed)
     }
 }
 
-void ScreenPositionSystem::SetUI3DView(UI3DView* view)
+const Rect& ScreenPositionSystem::GetViewport() const
 {
-    ui3dView = view;
+    return viewport;
 }
 
-UI3DView* ScreenPositionSystem::GetUI3DView() const
+void ScreenPositionSystem::SetViewport(const Rect& r)
 {
-    return ui3dView;
+    viewport = r;
 }
 }

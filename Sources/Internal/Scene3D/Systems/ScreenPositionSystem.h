@@ -3,11 +3,11 @@
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
 #include "Entity/SceneSystem.h"
+#include "Math/Rect.h"
 
 namespace DAVA
 {
 class ScreenPositionComponent;
-class UI3DView;
 
 /** System collects information about screen position of entities from current camera. */
 class ScreenPositionSystem : public SceneSystem
@@ -20,13 +20,13 @@ public:
     void PrepareForRemove() override;
     void Process(float32 timeElapsed) override;
 
-    /** Return pointer to UI3DView with current scene. */
-    void SetUI3DView(UI3DView* view);
-    /** Setup pointer to UI3DView with current scene. */
-    UI3DView* GetUI3DView() const;
+    /** Return stored scene viewport. */
+    const Rect& GetViewport() const;
+    /** Setup scene viewport. */
+    void SetViewport(const Rect& r);
 
 private:
     Vector<ScreenPositionComponent*> components;
-    UI3DView* ui3dView = nullptr;
+    Rect viewport;
 };
 }
