@@ -42,8 +42,6 @@ public:
     int32 value = 3;
     bool isEnabled = true;
     const DAVA::M::Range* range = nullptr;
-    Slider::State editingState = Slider::Idle;
-    bool stateWasChanged = false;
 
     int32 GetValue() const
     {
@@ -55,17 +53,11 @@ public:
         value = value_;
     }
 
-    void SetEditingState(Slider::State state)
-    {
-        editingState = state;
-    }
-
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SliderData)
     {
         ReflectionRegistrator<SliderData>::Begin()
         .Field("value", &SliderData::GetValue, &SliderData::SetValue)
         .Field("enabled", &SliderData::isEnabled)
-        .Method("state", &SliderData::SetEditingState)
         .End();
     }
 };
@@ -91,7 +83,6 @@ public:
             params.fields[Slider::Fields::Enabled] = "enabled";
             params.fields[Slider::Fields::Range].BindConstValue(model.range);
             params.fields[Slider::Fields::Orientation].BindConstValue(Qt::Horizontal);
-            params.fields[Slider::Fields::EditingState] = "state";
             Slider* edit = new Slider(params, ref);
             edit->ForceUpdate();
             edit->SetObjectName("Slider");

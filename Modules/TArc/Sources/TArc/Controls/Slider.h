@@ -16,11 +16,6 @@ class Slider : public ControlProxyImpl<QSlider>
     using TBase = ControlProxyImpl<QSlider>;
 
 public:
-    enum State
-    {
-        Idle,
-        Editing
-    };
 
     enum class Fields : uint32
     {
@@ -29,7 +24,6 @@ public:
         Value, // int
         Orientation, // Qt::Orientation
         ImmediateValue, // Method<void(int)>
-        EditingState, // Method<void(State)>
         FieldCount
     };
 
@@ -53,12 +47,14 @@ private:
     void OnValuedChanged(int value);
     void OnSliderPressed();
     void OnSliderReleased();
+    void SetImmediateValue(const Any& v);
 
     class ValueMapper;
     template <typename T>
     class TValueMapper;
 
     ValueMapper* mapper = nullptr;
+    Any cachedValue;
 
     QtConnections connections;
 };
