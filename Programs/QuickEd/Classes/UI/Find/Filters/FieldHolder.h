@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Classes/UI/Find/PackageInformation/ControlInformation.h"
+
 #include <Reflection/ReflectedTypeDB.h>
+
+#include <UI/Components/UIComponent.h>
 
 template <typename Component, typename T>
 class FieldHolder
@@ -13,9 +17,11 @@ public:
 
     T Get(const ControlInformation* control, T defaultValue) const
     {
-        const DAVA::Type* componentType = DAVA::Type::Instance<Component>();
-        DVASSERT(DAVA::UIComponent::IsMultiple(componentType) == false);
-        const DAVA::Any& value = control->GetComponentPropertyValue(componentType, 0, *field);
+        using namespace DAVA;
+
+        const Type* componentType = Type::Instance<Component>();
+        DVASSERT(UIComponent::IsMultiple(componentType) == false);
+        Any value = control->GetComponentPropertyValue(componentType, 0, *field);
         if (value.CanCast<T>())
         {
             return value.Cast<T>();
