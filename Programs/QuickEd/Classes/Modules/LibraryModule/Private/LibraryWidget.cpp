@@ -24,6 +24,7 @@ void LibraryWidget::InitUI()
 {
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
     verticalLayout->setSpacing(5);
+    verticalLayout->setContentsMargins(0, 0, 0, 0);
 
     treeView = new QTreeView(this);
     treeView->setDragEnabled(true);

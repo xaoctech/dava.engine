@@ -86,12 +86,12 @@ public:
     DAVA::float32 cameraFOV = 70.0f;
     DAVA::float32 cameraNear = 1.0f;
     DAVA::float32 cameraFar = 5000.0f;
+    bool cameraUseDefaultSettings = true;
     DAVA::float32 heightOnLandscape = 2.0f;
     DAVA::float32 heightOnLandscapeStep = 0.5f;
     bool selectionSequent = false;
     bool selectionOnClick = false;
     SelectionSystemDrawMode selectionDrawMode = SelectionSystemDrawMode::SS_DRAW_DEFAULT;
-    CollisionSystemDrawMode collisionDrawMode = CollisionSystemDrawMode::CS_DRAW_DEFAULT;
     bool modificationByGizmoOnly = false;
     DAVA::float32 gizmoScale = 1.0f;
     DAVA::float32 debugBoxScale = 1.0f;

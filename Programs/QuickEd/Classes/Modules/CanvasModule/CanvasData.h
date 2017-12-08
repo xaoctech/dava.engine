@@ -73,4 +73,6 @@ private:
     const DAVA::Vector2 margin = DAVA::Vector2(50.0f, 50.0f);
 
     DAVA_VIRTUAL_REFLECTION(CanvasData, DAVA::TArc::DataNode);
+
+    bool forceCentralize = true;
 };

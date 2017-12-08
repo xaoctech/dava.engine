@@ -31,7 +31,10 @@ EqualResult CheckEqualWithCacheUpdating(const std::shared_ptr<PropertyNode>& sou
             return FullyEqual;
         }
 
-        if (sourceChild->field.ref.HasFields() == false && newChild->field.ref.HasFields() == false)
+        bool hasFields = sourceChild->field.ref.HasFields() == false && newChild->field.ref.HasFields() == false;
+        bool valueIsPointer = sourceChild->field.ref.GetValueType()->IsPointer();
+
+        if (hasFields == false || valueIsPointer == false)
         {
             sourceChild->cachedValue = newChild->cachedValue;
             return ValueChanged;

@@ -7,13 +7,19 @@
 class BakeGeometryCommand : public RECommand
 {
 public:
-    BakeGeometryCommand(DAVA::RenderObject* _object, DAVA::Matrix4 _transform);
+    BakeGeometryCommand(DAVA::Entity* entity, DAVA::RenderObject* _object, DAVA::Matrix4 _transform);
     ~BakeGeometryCommand();
 
     void Undo() override;
     void Redo() override;
 
+    DAVA::Entity* GetEntity() const
+    {
+        return entity;
+    }
+
 protected:
+    DAVA::Entity* entity;
     DAVA::RenderObject* object;
     DAVA::Matrix4 transform;
 };

@@ -15,10 +15,24 @@ public:
     bool MatchCommandIDs(const DAVA::Vector<DAVA::uint32>& commandIDVector) const;
     void ForEach(const DAVA::Function<void(const RECommand*)>& callback, DAVA::uint32 commandId) const;
 
+    template <typename T>
+    void ForEachWithCast(DAVA::uint32 commandId, const DAVA::Function<void(const T*)>& callback) const;
+
     const RECommand* command = nullptr;
     const RECommandBatch* batch = nullptr;
     bool redo = true;
 };
+
+template <typename T>
+void RECommandNotificationObject::ForEachWithCast(DAVA::uint32 commandId, const DAVA::Function<void(const T*)>& callback) const
+{
+    static_assert(std::is_base_of<RECommand, T>::value, "Cast target should be derived from RECommand");
+
+    auto fn = [callback](const RECommand* command) {
+        callback(static_cast<const T*>(command));
+    };
+    ForEach(fn, commandId);
+}
 
 class REDependentCommandsHolder
 {
