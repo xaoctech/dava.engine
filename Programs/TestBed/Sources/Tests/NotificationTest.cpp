@@ -171,8 +171,8 @@ void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerD
         notificationText->Show();
     }
 
-    notificationText->SetTitle(L"Application is on foreground!");
-    notificationText->SetText(L"This text appeared at button press ");
+    notificationText->SetTitle("Application is on foreground!");
+    notificationText->SetText("This text appeared at button press ");
 
     hideNotificationText->GetOrCreateComponent<UIDebugRenderComponent>();
 }
@@ -180,7 +180,7 @@ void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerD
 void NotificationScreen::OnNotifyTextDelayed(BaseObject* obj, void* data, void* callerData)
 {
     int delayInSeconds = std::atoi(UTF8Utils::EncodeToUTF8(notificationDelayTextField->GetText()).c_str());
-    LocalNotificationController::Instance()->PostDelayedNotification(L"Test Delayed notification Title", L"Some text", delayInSeconds);
+    LocalNotificationController::Instance()->PostDelayedNotification("Test Delayed notification Title", "Some text", delayInSeconds);
 }
 
 void NotificationScreen::OnNotifyCancelDelayed(BaseObject* obj, void* data, void* callerData)
@@ -202,7 +202,7 @@ void NotificationScreen::OnNotifyProgress(BaseObject* obj, void* data, void* cal
 {
     if (nullptr == notificationProgress)
     {
-        notificationProgress = LocalNotificationController::Instance()->CreateNotificationProgress(L"", L"", 100, 0);
+        notificationProgress = LocalNotificationController::Instance()->CreateNotificationProgress("", "", 100, 0);
         notificationProgress->SetAction(Message(this, &NotificationScreen::OnNotificationProgressPressed));
     }
     else
@@ -210,8 +210,8 @@ void NotificationScreen::OnNotifyProgress(BaseObject* obj, void* data, void* cal
         notificationProgress->Show();
     }
 
-    notificationProgress->SetTitle(L"Fake Download Progress");
-    notificationProgress->SetText(L"You pressed the button");
+    notificationProgress->SetTitle("Fake Download Progress");
+    notificationProgress->SetText("You pressed the button");
 
     hideNotificationProgress->GetOrCreateComponent<UIDebugRenderComponent>()->SetEnabled(true);
 }
