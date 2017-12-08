@@ -308,7 +308,7 @@ ColladaMeshInstance* ColladaScene::CreateMeshInstance(ColladaMesh* mesh, FCDGeom
             printf(" material: %s", material->material->GetDaeId().c_str());
             if (material->hasDiffuseTexture)
             {
-                wprintf(L" diffuse texture: %lS\n", (wchar_t*)(material->diffuseTexture->image->GetFilename().c_str()));
+                wprintf(L" diffuse texture: %ls\n", (wchar_t*)(material->diffuseTexture->image->GetFilename().c_str()));
             }
             printf("\n");
         }
