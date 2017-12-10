@@ -62,6 +62,7 @@
 #include "Entity/ComponentManager.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Utils/Random.h"
+#include "Debug/DebugOverlay.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Private/Android/AssetsManagerAndroid.h"
@@ -913,7 +914,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->actionSystem = new ActionSystem();
         context->uiScreenManager = new UIScreenManager();
         context->localNotificationController = new LocalNotificationController();
-
+        context->debugOverlay = new DebugOverlay();
+        
 #if defined(__DAVAENGINE_STEAM__)
         Steam::Init();
 #endif
@@ -938,6 +940,12 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 
 void EngineBackend::DestroySubsystems()
 {
+    if (context->debugOverlay != nullptr)
+    {
+        delete context->debugOverlay;
+        context->debugOverlay = nullptr;
+    }
+
 #ifdef __DAVAENGINE_AUTOTESTING__
     if (context->autotestingSystem != nullptr)
     {
