@@ -1,20 +1,23 @@
 #include "Debug/DebugOverlay.h"
 
+#include "Concurrency/Thread.h"
+#include "Debug/Private/ImGui.h"
+#include "Debug/Private/ImGuiUtils.h"
+#include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerGPU.h"
+#include "Debug/ProfilerMarkerNames.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
-#include "Concurrency/Thread.h"
-#include "Debug/Private/ImGui.h"
-#include "Debug/ProfilerGPU.h"
-#include "Debug/ProfilerCPU.h"
-#include "Debug/ProfilerMarkerNames.h"
 
 #include "Debug/DebugOverlayItem.h"
 #include "Debug/Private/DebugOverlayItemEngineSettings.h"
 #include "Debug/Private/DebugOverlayItemLogger.h"
+#include "Debug/Private/DebugOverlayItemProfiler.h"
 #include "Debug/Private/DebugOverlayItemRenderOptions.h"
 #include "Debug/Private/DebugOverlayItemRenderStats.h"
-#include "Debug/Private/DebugOverlayItemProfiler.h"
+
+#include <imgui/imgui_internal.h>
 
 namespace DAVA
 {
@@ -177,12 +180,12 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
         {
             if (ImGui::Button("Debug views"))
             {
-                ImGui::OpenPopup("DebugViewsPopup");
+                ImGui::OpenPopup("DebugOverlayViewsPopup");
             }
 
             ImGui::SetNextWindowPos(ImVec2(20.0f, ImGui::GetWindowSize().y + 20.0f));
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
-            if (ImGui::BeginPopup("DebugViewsPopup"))
+            if (ImGui::BeginPopup("DebugOverlayViewsPopup"))
             {
                 for (ItemData& itemData : items)
                 {
@@ -202,45 +205,109 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
         ImGui::End();
         ImGui::PopStyleVar(2);
 
-        Size2f surfaceSize = window->GetSize();
+        Vector2 imGuiScreenSize = ImGuiUtils::GetImGuiVirtualScreenSize();
 
-        float32 scale = window->GetDPI() / 200.f;
-        float32 buttonSide = 50.f * scale;
+        float32 scale = ImGuiUtils::GetScale();
 
-        ImGui::SetNextWindowPos(ImVec2(surfaceSize.dx - buttonSide - 20.f, 0.0f));
+        float32 buttonSide = Max(40.f, 40.f * (window->GetDPI() / 300.f)) / scale;
+        Vector2 hLine = { buttonSide * 0.5f, buttonSide * 0.1f };
+        Vector2 vLine = { buttonSide * 0.1f, buttonSide * 0.5f };
+
+        // For '+' and '-'
+        auto DrawLine = [buttonSide](Vector2 pos, const Vector2& size) {
+            pos.x += buttonSide / 2.f - size.x / 2.f;
+            pos.y += buttonSide / 2.f;
+            ImGui::GetWindowDrawList()->AddLine({ pos.x, pos.y }, { pos.x + size.x, pos.y }, 0xFFFFFFFF, size.y);
+        };
+
+        auto DrawEqualSign = [buttonSide](Vector2 pos, const Vector2& size) {
+            pos.x += buttonSide / 2.f - size.x / 2.f;
+            pos.y += buttonSide / 2.f - size.y;
+            ImGui::GetWindowDrawList()->AddLine({ pos.x, pos.y }, { pos.x + size.x, pos.y }, 0xFFFFFFFF, size.y);
+            pos.y += 2.f * size.y;
+            ImGui::GetWindowDrawList()->AddLine({ pos.x, pos.y }, { pos.x + size.x, pos.y }, 0xFFFFFFFF, size.y);
+        };
+
+        auto DrawRect = [buttonSide](Vector2 pos, const Vector2& size) {
+            pos.x += buttonSide * 0.1f;
+            pos.y += buttonSide * 0.1f;
+            ImGui::GetWindowDrawList()->AddRectFilled({ pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, 0xFFFFFFFF);
+        };
+
+        float32 x = imGuiScreenSize.dx / scale - buttonSide - 20.f / scale;
+        float32 y = -buttonSide;
+
+        const float32 maxScale = 2.5f;
+        const float32 minScale = 0.5f;
+        const float32 scaleStep = 0.075f;
+
+        auto NextButton = [&y, scale, buttonSide]() {
+            y += buttonSide + 20.f / scale;
+            ImGui::SetCursorPosY(y);
+        };
+
+        ImGui::SetNextWindowPos(ImVec2(x, 0.f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImColor(0, 0, 0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
-        if (ImGui::Begin("DebugOverlayScaleButtons", nullptr, windowFlags))
+        if (ImGui::Begin("DebugOverlayButtons", nullptr, windowFlags))
         {
-            ImGui::SetCursorPosY(20.f);
+            NextButton();
 
             PushColor(0.3f);
-            if (ImGui::Button("+", { buttonSide, buttonSide }) && ImGui::GetIO().FontGlobalScale <= 5.0f)
+            // We can't leave button id empty, but characters after '##' will be ignored and will not be shown on the button.
+            if (ImGui::Button("##incScale", { buttonSide, buttonSide }) && scale < maxScale)
             {
-                ImGui::GetIO().FontGlobalScale += 0.1f;
-                ImGui::GetStyle().ScrollbarSize += 2.f;
+                ImGuiUtils::SetScaleFromNextFrame(scale + scaleStep);
             }
             PopColor();
 
-            ImGui::SetCursorPosY(buttonSide + 40.f);
+            // Draw '+'
+            DrawLine({ x, y }, hLine);
+            DrawLine({ x, y }, vLine);
+
+            NextButton();
 
             PushColor(0.6f);
-            if (ImGui::Button("=", { buttonSide, buttonSide }))
+            if (ImGui::Button("##resetScale", { buttonSide, buttonSide }))
             {
-                ImGui::GetIO().FontGlobalScale = 1.f;
-                ImGui::GetStyle().ScrollbarSize = 15.f; // TODO: think about mult. style imgui
+                ImGuiUtils::SetScaleFromNextFrame(1.f);
             }
             PopColor();
 
-            ImGui::SetCursorPosY(2.f * buttonSide + 60.f);
+            DrawEqualSign({ x, y }, hLine);
+
+            NextButton();
 
             PushColor(1.f);
-            if (ImGui::Button("-", { buttonSide, buttonSide }) && ImGui::GetIO().FontGlobalScale >= 0.5f)
+            if (ImGui::Button("##decScale", { buttonSide, buttonSide }) && scale > minScale)
             {
-                ImGui::GetIO().FontGlobalScale -= 0.1f;
-                ImGui::GetStyle().ScrollbarSize -= 2.f;
+                ImGuiUtils::SetScaleFromNextFrame(scale - scaleStep);
             }
             PopColor();
+
+            // Draw '-'
+            DrawLine({ x, y }, hLine);
+
+            NextButton();
+            NextButton();
+
+            PushColor(0.1f);
+            if (ImGui::Button("##resetWindowsPosition", { buttonSide, buttonSide }))
+            {
+                ImGuiContext* ctx = ImGui::GetCurrentContext();
+
+                for (ImGuiWindow* window : ctx->Windows)
+                {
+                    if (std::strncmp(window->Name, "DebugOverlay", 12 /* strlen("DebugOverlay") */) != 0)
+                    {
+                        window->PosFloat.x = 0.f;
+                        window->PosFloat.y = 0.f;
+                    }
+                }
+            }
+            PopColor();
+
+            DrawRect({ x, y }, { buttonSide * 0.5f, buttonSide * 0.5f });
         }
         ImGui::End();
         ImGui::PopStyleVar(1);

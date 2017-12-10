@@ -53,7 +53,6 @@ void DebugOverlayItemLogger::Draw()
     {
         static ImGuiTextFilter filter;
         filter.Draw();
-
         ImGui::Separator();
 
         ImGui::BeginChild("Scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);

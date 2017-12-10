@@ -53,8 +53,8 @@
 #include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
 #include "Tests/SkillSystemTest.h"
-#include "Tests/UIJoypadSystemTest.h"
 #include "Tests/DebugOverlayTest.h"
+#include "Tests/UIJoypadSystemTest.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"

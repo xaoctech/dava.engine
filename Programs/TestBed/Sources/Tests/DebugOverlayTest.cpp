@@ -82,11 +82,15 @@ void DebugOverlayTest::UnloadResources()
 
     GetPrimaryWindow()->update.Disconnect(this);
 
+    DebugOverlay* overlay = GetEngineContext()->debugOverlay;
+
     if (itemRegistered)
     {
-        GetEngineContext()->debugOverlay->UnregisterItem(&testItem);
+        overlay->UnregisterItem(&testItem);
         itemRegistered = false;
     }
+
+    overlay->Hide();
 }
 
 void DebugOverlayTest::OnWindowUpdate(DAVA::Window* window, DAVA::float32 dt)
