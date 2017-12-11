@@ -199,7 +199,7 @@ DAVA_TARC_TESTCLASS(ProgressBarTests)
         QProgressBar* bar = LookupSingleWidget<QProgressBar>(wndKey, "ProgressBar_noValue");
 
         ProgressBarTestModule* module = Holder::moduleInstance;
-        TEST_VERIFY(bar->value() == 0);
+        TEST_VERIFY(bar->value() == bar->minimum());
     }
 
     DAVA_TEST (ValueFormatTest)

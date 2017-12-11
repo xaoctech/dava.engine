@@ -18,17 +18,13 @@ void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
 {
     Reflection valueField = model.GetField(GetFieldName(Fields::Value));
     DVASSERT(valueField.IsValid());
-    const Type* valueType = valueField.GetValueType();
 
     int minV = std::numeric_limits<int>::lowest();
     int maxV = std::numeric_limits<int>::max();
 
     const M::Range* rangeMeta = nullptr;
     FastName rangeFieldName = GetFieldName(Fields::Range);
-    if (rangeFieldName.IsValid())
-    {
-        rangeMeta = GetFieldValue<const M::Range*>(Fields::Range, nullptr);
-    }
+    rangeMeta = GetFieldValue<const M::Range*>(Fields::Range, nullptr);
 
     if (rangeMeta == nullptr)
     {
@@ -59,7 +55,7 @@ void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
         }
         else
         {
-            setValue(0);
+            setValue(minimum());
         }
     }
 
