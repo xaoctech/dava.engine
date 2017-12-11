@@ -737,6 +737,12 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
     using namespace DAVA;
     DVASSERT(renderObject != nullptr);
 
+    SceneData* sceneData = REGlobal::GetActiveDataNode<SceneData>();
+    DVASSERT(sceneData != nullptr);
+
+    SceneEditor2* currentScene = sceneData->GetScene().Get();
+    DVASSERT(renderObject != nullptr);
+
     SpeedTreeInfo info;
 
     int32 rbCount = renderObject->GetRenderBatchCount();
@@ -745,7 +751,23 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
     {
         RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
 
-        if (lodIndex > 0)
+        ForceValues forceValues = currentScene->editorLODSystem->GetForceValues();
+        const bool forceLayerSelected = (forceValues.flag & ForceValues::APPLY_LAYER) == ForceValues::APPLY_LAYER;
+
+        if (forceLayerSelected && forceValues.layer != -1)
+        {
+            if (forceValues.layer == EditorLODSystem::LAST_LOD_LAYER)
+            {
+                int32 maxLodIndex = renderObject->GetMaxLodIndex();
+                DAVA::int32 lastLayer = DAVA::Max(0, maxLodIndex);
+
+                if (lodIndex != lastLayer)
+                    continue;
+            }
+            else if (lodIndex != forceValues.layer)
+                continue;
+        }
+        else if (lodIndex > 0)
             continue;
 
         PolygonGroup* pg = rb->GetPolygonGroup();
@@ -775,7 +797,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
 
             Vector4 pivot;
             pg->GetPivot(i1, pivot);
-
+            
 #define CALCULATE_TRIANGLE_SQUEARE(v1, v2, v3) ((((v2) - (v1)).CrossProduct((v3) - (v1))).Length() / 2.f)
 
             if (pivot.w > DAVA::EPSILON) //billboard
@@ -806,7 +828,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
                 DAVA::Vector3(v3.x, v3.y, 0.f)
                 );
             }
-
+            
 #undef CALCULATE_TRIANGLE_SQUEARE
         }
     }
