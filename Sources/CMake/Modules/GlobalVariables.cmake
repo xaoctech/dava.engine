@@ -74,15 +74,17 @@ set( DAVA_PLATFORM_POSTFIXES_ID_Win     WIN WINUAP )
 set( DAVA_PLATFORM_POSTFIXES_ID_Win32   WIN )
 set( DAVA_PLATFORM_POSTFIXES_ID_Win10   WINUAP )
 set( DAVA_PLATFORM_POSTFIXES_ID_Linux   LINUX )
+set( DAVA_PLATFORM_POSTFIXES_ID_Posix   LINUX ANDROID MACOS IOS )
 
-set( DAVA_PLATFORM_POSTFIXES    _Ios 
-                                _Macos 
-                                _Apple
-                                _Android
-                                _Win 
-                                _Win32
-                                _Win10 
-                                _Linux )
+set( DAVA_PLATFORM_POSTFIXES    Ios 
+                                Macos 
+                                Apple
+                                Android
+                                Win 
+                                Win32
+                                Win10 
+                                Linux
+                                Posix )
 
 if( IOS )
     set( DAVA_PLATFORM_CURRENT IOS )

@@ -74,7 +74,7 @@
 #include "Infrastructure/NativeDelegateIos.h"
 #include "Infrastructure/NativeDelegateWin10.h"
 #ifdef __DAVAENGINE_WIN_UAP__
-#include <Platform/TemplateWin32/UAPNetworkHelper_Win.h>
+#include <Platform/TemplateWin32/UAPNetworkHelper.Win.h>
 #endif
 
 void CheckDeviceInfoValid();
