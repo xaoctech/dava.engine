@@ -583,6 +583,7 @@ void CheckDeviceInfoValid()
         Logger::Info("storage info: type=%d total_space=%lld free_space=%lld, read_only=%d, removable=%d, emulated=%d",
                      info.type, info.totalSpace, info.freeSpace, info.readOnly, info.removable, info.emulated);
     }
+    DVASSERT(storageInfo.size() > 0);
 
     uint32 cpuCount = DeviceInfo::GetCpuCount();
     Logger::Info("cpu_count: %d", cpuCount);

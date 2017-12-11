@@ -50,6 +50,8 @@ public:
     bool IsNew() const;
     /** Return true if transaction was done. */
     bool IsFinished() const;
+    /** Return true if transaction is animating now. */
+    bool IsAnimating() const;
 
     /** Build activating and deactivating queues across targat stataes. */
     void BuildTransaction(UIFlowStateSystem* system);
