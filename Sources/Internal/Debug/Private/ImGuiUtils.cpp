@@ -11,7 +11,7 @@ namespace DAVA
 {
 void ImGuiUtils::SetScale(float32 scale)
 {
-    ImGui::Settings::scale = ImGui::Settings::scaleFromNextFrame = scale;
+    ImGui::Settings::scale = ImGui::Settings::pendingScale = scale;
 }
 
 float32 ImGuiUtils::GetScale()
@@ -19,65 +19,55 @@ float32 ImGuiUtils::GetScale()
     return ImGui::Settings::scale;
 }
 
-void ImGuiUtils::SetScaleFromNextFrame(float32 scale)
+void ImGuiUtils::SetPendingScale(float32 scale)
 {
-    ImGui::Settings::scaleFromNextFrame = scale;
+    ImGui::Settings::pendingScale = scale;
 }
 
-void ImGuiUtils::SetImGuiVirtualScreenSize(const Vector2& virtualScreenSize)
-{
-    ImGui::Settings::virtualScreenSize = virtualScreenSize;
-}
-
-Vector2 ImGuiUtils::GetImGuiVirtualScreenSize()
-{
-    return ImGui::Settings::virtualScreenSize;
-}
-
-float32 ImGuiUtils::GetImGuiVirtualToPhysicalScreenSizeScale()
+float32 ImGuiUtils::GetImGuiScreenToPhysicalScreenSizeScale()
 {
     VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Size2i screen = vcs->GetPhysicalScreenSize();
-    float32 scaleX = static_cast<float32>(screen.dx) / ImGui::Settings::virtualScreenSize.dx;
-    float32 scaleY = static_cast<float32>(screen.dy) / ImGui::Settings::virtualScreenSize.dy;
+    float32 scaleX = static_cast<float32>(screen.dx) / ImGui::Settings::screenWidth;
+    float32 scaleY = static_cast<float32>(screen.dy) / ImGui::Settings::screenHeight;
 
     return Min(scaleX, scaleY);
 }
 
-Vector2 ImGuiUtils::ConvertInputCoordsToImGuiVirtualCoords(const Vector2& inputCoords)
+Vector2 ImGuiUtils::ConvertInputCoordsToImGuiCoords(const Vector2& inputCoords)
 {
     VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Vector2 coords = vcs->ConvertInputToVirtual(inputCoords);
     Vector2 physCoords = vcs->ConvertVirtualToPhysical(coords);
 
-    return physCoords / GetImGuiVirtualToPhysicalScreenSizeScale();
+    return physCoords / GetImGuiScreenToPhysicalScreenSizeScale();
 }
 
-Vector2 ImGuiUtils::ConvertPhysicalCoordsToImGuiVirtualCoords(const Vector2& physicalCoords)
+Vector2 ImGuiUtils::ConvertPhysicalCoordsToImGuiCoords(const Vector2& physicalCoords)
 {
-    return physicalCoords / GetImGuiVirtualToPhysicalScreenSizeScale();
+    return physicalCoords / GetImGuiScreenToPhysicalScreenSizeScale();
 }
 
-Vector2 ImGuiUtils::ConvertVirtualCoordsToImGuiVirtualCoords(const Vector2& virtualCoords)
+Vector2 ImGuiUtils::ConvertVirtualCoordsToImGuiCoords(const Vector2& virtualCoords)
 {
     VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Vector2 coords = vcs->ConvertVirtualToPhysical(virtualCoords);
-    return ConvertPhysicalCoordsToImGuiVirtualCoords(coords);
+    return ConvertPhysicalCoordsToImGuiCoords(coords);
 }
 
-Vector2 ImGuiUtils::ConvertImGuiVirtualCoordsToPhysicalCoords(const Vector2& virtualCoords)
+Vector2 ImGuiUtils::ConvertImGuiCoordsToPhysicalCoords(const Vector2& virtualCoords)
 {
-    return virtualCoords * GetImGuiVirtualToPhysicalScreenSizeScale();
+    return virtualCoords * GetImGuiScreenToPhysicalScreenSizeScale();
 }
 
-Vector2 ImGuiUtils::ConvertImGuiVirtualCoordsToVirtualCoords(const Vector2& virtualCoords)
+Vector2 ImGuiUtils::ConvertImGuiCoordsToVirtualCoords(const Vector2& virtualCoords)
 {
     VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
-    Vector2 coords = ConvertImGuiVirtualCoordsToPhysicalCoords(virtualCoords);
+    Vector2 coords = ConvertImGuiCoordsToPhysicalCoords(virtualCoords);
     return vcs->ConvertPhysicalToVirtual(coords);
 }
 } // namespace DAVA

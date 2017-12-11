@@ -205,8 +205,6 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
         ImGui::End();
         ImGui::PopStyleVar(2);
 
-        Vector2 imGuiScreenSize = ImGuiUtils::GetImGuiVirtualScreenSize();
-
         float32 scale = ImGuiUtils::GetScale();
 
         float32 buttonSide = Max(40.f, 40.f * (window->GetDPI() / 300.f)) / scale;
@@ -234,7 +232,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             ImGui::GetWindowDrawList()->AddRectFilled({ pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, 0xFFFFFFFF);
         };
 
-        float32 x = imGuiScreenSize.dx / scale - buttonSide - 20.f / scale;
+        float32 x = static_cast<float32>(ImGui::Settings::screenWidth - 20) / scale - buttonSide;
         float32 y = -buttonSide;
 
         const float32 maxScale = 2.5f;
@@ -257,7 +255,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             // We can't leave button id empty, but characters after '##' will be ignored and will not be shown on the button.
             if (ImGui::Button("##incScale", { buttonSide, buttonSide }) && scale < maxScale)
             {
-                ImGuiUtils::SetScaleFromNextFrame(scale + scaleStep);
+                ImGuiUtils::SetPendingScale(scale + scaleStep);
             }
             PopColor();
 
@@ -270,7 +268,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             PushColor(0.6f);
             if (ImGui::Button("##resetScale", { buttonSide, buttonSide }))
             {
-                ImGuiUtils::SetScaleFromNextFrame(1.f);
+                ImGuiUtils::SetPendingScale(1.f);
             }
             PopColor();
 
@@ -281,7 +279,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             PushColor(1.f);
             if (ImGui::Button("##decScale", { buttonSide, buttonSide }) && scale > minScale)
             {
-                ImGuiUtils::SetScaleFromNextFrame(scale - scaleStep);
+                ImGuiUtils::SetPendingScale(scale - scaleStep);
             }
             PopColor();
 
