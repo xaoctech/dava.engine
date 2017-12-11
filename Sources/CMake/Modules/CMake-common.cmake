@@ -96,13 +96,13 @@ macro( processing_mix_data )
             if( MACOS AND NOT MAC_DISABLE_BUNDLE)
                 set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app/Contents/Resources )
             elseif( IOS )
-                set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app )                
+                set( DEPLOY_DIR_DATA ${DEPLOY_DIR}/${PROJECT_NAME}.app )
             else()
                 set( DEPLOY_DIR_DATA ${DEPLOY_DIR} )
             endif()
         endif()
 
-        set( MIX_APP_DIR ${DEPLOY_DIR_DATA} )     
+        set( MIX_APP_DIR ${DEPLOY_DIR_DATA} )
     else()
 
         if( NOT MIX_APP_DIR )
@@ -111,7 +111,7 @@ macro( processing_mix_data )
 
         set( DAVA_DEBUGGER_WORKING_DIRECTORY ${MIX_APP_DIR} )
     endif()
-    
+
     get_filename_component( MIX_APP_DIR ${MIX_APP_DIR} ABSOLUTE )
 
     if( NOT ARG_NOT_DATA_COPY )
@@ -132,20 +132,20 @@ macro( processing_mix_data )
             if( NOT ARG_NOT_DATA_COPY )
                 if( IS_DIRECTORY  ${DATA_PATH} )
                     if( WINDOWS_UAP )
-                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )
                     endif()
-                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}
                        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${DATA_PATH} 
+                       ${DATA_PATH}
                        ${MIX_APP_DIR}/${GROUP_PATH}
                     )
                 else()
                     if( WINDOWS_UAP )
-                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )                
+                        execute_process( COMMAND ${CMAKE_COMMAND} -E copy ${DATA_PATH} ${MIX_APP_DIR}/${GROUP_PATH} )
                     endif()
-                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
+                    ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}
                        COMMAND ${CMAKE_COMMAND} -E copy
-                       ${DATA_PATH} 
+                       ${DATA_PATH}
                        ${MIX_APP_DIR}/${GROUP_PATH}
                     )
                 endif()
@@ -182,7 +182,7 @@ macro( processing_mix_data )
         foreach( ITEM ${LIST_FOLDER_ITEM} )
             if( IS_DIRECTORY ${ITEM} )
 
-                if( MAC_DISABLE_BUNDLE AND MACOS)                    
+                if( MAC_DISABLE_BUNDLE AND MACOS)
                     get_filename_component( FOLDER_NAME ${ITEM}  NAME     )
                     foreach( CONFIGURATION ${CMAKE_CONFIGURATION_TYPES} )
                         foreach( TMP_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION} ${CMAKE_CURRENT_BINARY_DIR}/${CONFIGURATION}/Contents/Resources )
@@ -232,53 +232,55 @@ endmacro()
 #   PROJECT_HEADER_FILE_ONLY
 macro (define_source)
     cmake_parse_arguments ( ARG ""  "RECURSIVE_CALL" "SOURCE;SOURCE_RECURSE;GROUP_SOURCE;GROUP_STRINGS;IGNORE_ITEMS" ${ARGN} )
-    
+    list( APPEND ARG_IGNORE_ITEMS ".unittest.cpp" )
     get_property( DEFINE_SOURCE_LIST GLOBAL PROPERTY DEFINE_SOURCE_LIST )
     list( APPEND DEFINE_SOURCE_LIST "define_source" )
-    set_property(GLOBAL PROPERTY DEFINE_SOURCE_LIST ${DEFINE_SOURCE_LIST} ) 
-    
+    set_property(GLOBAL PROPERTY DEFINE_SOURCE_LIST ${DEFINE_SOURCE_LIST} )
+
     if( NOT ARG_RECURSIVE_CALL )
         set( PROJECT_SOURCE_FILES )
         set( PROJECT_SOURCE_FILES_CPP )
         set( PROJECT_SOURCE_FILES_HPP )
         set( PROJECT_HEADER_FILE_ONLY )
-        
+
         if( NOT ARG_SOURCE AND NOT ARG_SOURCE_RECURSE )
             set( ARG_SOURCE ${CMAKE_CURRENT_LIST_DIR} )
         endif()
-        
+
         list( LENGTH DEFINE_SOURCE_LIST LENGTH_DEFINE_SOURCE_LIST  )
-        
+
         if( LENGTH_DEFINE_SOURCE_LIST EQUAL 1 )
             foreach ( ITEM_ARG_SOURCE ${ARG_SOURCE} ${ARG_SOURCE_RECURSE} )
                 get_filename_component( ITEM_ARG_SOURCE ${ITEM_ARG_SOURCE} ABSOLUTE )
-                if( IS_DIRECTORY ${ITEM_ARG_SOURCE} ) 
+                if( IS_DIRECTORY ${ITEM_ARG_SOURCE} )
                     set( FOLDER_NAME ${ITEM_ARG_SOURCE} )
                 else()
                     get_filename_component( FOLDER_NAME ${ITEM_ARG_SOURCE}  DIRECTORY    )
                 endif()
                 append_property( PROJECT_FOLDERS ${FOLDER_NAME} )
+                append_property( ALL_PROJECTS_FOLDERS ${FOLDER_NAME} )
+
                 list(APPEND TARGET_FOLDERS_${PROJECT_NAME} ${FOLDER_NAME} )
             endforeach ()
         endif()
     endif()
-    
+
     foreach ( ITEM_ARG_SOURCE_RECURSE ${ARG_SOURCE_RECURSE} )
         get_filename_component( ITEM_ARG_SOURCE_RECURSE ${ITEM_ARG_SOURCE_RECURSE} ABSOLUTE )
         file( GLOB_RECURSE LIST_SOURCE_RECURSE ${ITEM_ARG_SOURCE_RECURSE} )
         list( APPEND ARG_SOURCE ${LIST_SOURCE_RECURSE} )
     endforeach ()
-    
+
     set( FILE_EXTENSIONS_CPP .c .cc .cpp )
-    set( FILE_EXTENSIONS_HPP .h .hpp )        
+    set( FILE_EXTENSIONS_HPP .h .hpp )
     if( APPLE )
         list( APPEND FILE_EXTENSIONS_CPP .m .mm )
-    endif()  
-    
+    endif()
+
     foreach ( ITEM_ARG_SOURCE ${ARG_SOURCE} )
         get_filename_component( ITEM_ARG_SOURCE ${ITEM_ARG_SOURCE} ABSOLUTE )
         get_filename_component( FOLDER_NAME ${ITEM_ARG_SOURCE}  NAME_WE     )
-        
+
         if( IS_DIRECTORY ${ITEM_ARG_SOURCE} )
             file( GLOB FIND_CMAKELIST "${ITEM_ARG_SOURCE}/CMakeLists.txt")
             if( FIND_CMAKELIST AND ARG_RECURSIVE_CALL )
@@ -303,21 +305,21 @@ macro (define_source)
             foreach ( ITEM_LIST_SOURCE ${LIST_SOURCE} )
                 get_filename_component( ITEM_EXT ${ITEM_LIST_SOURCE} EXT )
                 set( IGNORE_FLAG )
-                
+
                 foreach( IGNORE_MASK ${ARG_IGNORE_ITEMS} )
                     if( ${ITEM_LIST_SOURCE} MATCHES ${IGNORE_MASK} )
                         set( IGNORE_FLAG true )
                         break()
                     endif()
                 endforeach()
-                
+
                 if( NOT IGNORE_FLAG AND ITEM_EXT)
                     foreach( EXT CPP HPP )
                         list (FIND FILE_EXTENSIONS_${EXT} ${ITEM_EXT} _index)
                         if (${_index} GREATER -1)
                             list( APPEND PROJECT_SOURCE_FILES_${EXT} ${ITEM_LIST_SOURCE} )
                             list( APPEND PROJECT_SOURCE_FILES ${ITEM_LIST_SOURCE} )
-                        endif() 
+                        endif()
                     endforeach()
                 endif()
             endforeach ()
@@ -325,19 +327,15 @@ macro (define_source)
     endforeach ()
 
     source_group( "" FILES ${PROJECT_SOURCE_FILES} )
-    
+
     get_property( DEFINE_SOURCE_LIST GLOBAL PROPERTY DEFINE_SOURCE_LIST )
     list( REMOVE_AT  DEFINE_SOURCE_LIST 0 )
-    set_property(GLOBAL PROPERTY DEFINE_SOURCE_LIST ${DEFINE_SOURCE_LIST} )        
-    
+    set_property(GLOBAL PROPERTY DEFINE_SOURCE_LIST ${DEFINE_SOURCE_LIST} )
+
     list( LENGTH DEFINE_SOURCE_LIST LENGTH_DEFINE_SOURCE_LIST  )
     if ( NOT LENGTH_DEFINE_SOURCE_LIST )
         #message( "Project ${CMAKE_CURRENT_LIST_DIR}" )
         get_property( PROJECT_FOLDERS GLOBAL PROPERTY PROJECT_FOLDERS )
-        list ( LENGTH PROJECT_FOLDERS LENGTH_PROJECT_FOLDERS )
-        if ( ${LENGTH_PROJECT_FOLDERS} GREATER "0" )
-           list( REMOVE_DUPLICATES PROJECT_FOLDERS )
-        endif()
 
         set( IGNORE_GROOP_ITEMS )
         if( ARG_GROUP_STRINGS )
@@ -347,13 +345,13 @@ macro (define_source)
                 list( REMOVE_AT  FILES 0 )
                 source_group( "${FILE_GROUP}" FILES ${FILES} )
                 list( APPEND IGNORE_GROOP_ITEMS ${FILES} )
-            endforeach () 
+            endforeach ()
         endif()
 
         foreach ( ITEM ${PROJECT_FOLDERS}  )
             file(RELATIVE_PATH RELATIVE_PATH ${CMAKE_CURRENT_LIST_DIR} ${ITEM})
             #message( "    ${RELATIVE_PATH}")
-            #message( "    ${ITEM}")            
+            #message( "    ${ITEM}")
             file( GLOB_RECURSE LIST_SOURCE ${ITEM}/* )
 
             foreach ( ITEM_LIST_SOURCE ${LIST_SOURCE} )
@@ -364,24 +362,24 @@ macro (define_source)
                     get_filename_component( ITEM_LIST_SOURCE ${ITEM_LIST_SOURCE} REALPATH )
 
                     string(REGEX REPLACE "${ITEM}/" "" FILE_GROUP ${ITEM_LIST_SOURCE} )
-                    
+
                     if( RELATIVE_PATH )
                         set( FILE_GROUP ${RELATIVE_PATH}/${FILE_GROUP} )
                     else()
                         set( FILE_GROUP ${FILE_GROUP} )
                     endif()
-                    
+
                     get_filename_component( FILE_GROUP_NAME ${FILE_GROUP} NAME )
                     string(REGEX REPLACE "/" "\\\\" FILE_GROUP ${FILE_GROUP})
                     string(REGEX REPLACE "\\\\${FILE_GROUP_NAME}" "" FILE_GROUP ${FILE_GROUP})
-                    string( REGEX REPLACE "^[..\\\\]+" "_EXT_" FILE_GROUP ${FILE_GROUP} )               
-                    
+                    string( REGEX REPLACE "^[..\\\\]+" "_EXT_" FILE_GROUP ${FILE_GROUP} )
+
                     get_filename_component( FILE_GROUP_EXT ${FILE_GROUP} EXT )
                     if( FILE_GROUP_EXT )
                         source_group( "" FILES ${ITEM_LIST_SOURCE} )
                     else()
                         source_group( "${FILE_GROUP}" FILES ${ITEM_LIST_SOURCE} )
-                        #message( "    ${FILE_GROUP}")                     
+                        #message( "    ${FILE_GROUP}")
                     endif()
                 endif()
 
@@ -391,13 +389,13 @@ macro (define_source)
                     if (${_index} MATCHES -1 )
                         set_source_files_properties( ${ITEM_LIST_SOURCE} PROPERTIES HEADER_FILE_ONLY TRUE )
                         list( APPEND PROJECT_HEADER_FILE_ONLY ${ITEM_LIST_SOURCE} )
-                    endif() 
+                    endif()
                 endif()
 
             endforeach ()
-            #message( " ")  
-        endforeach ()  
-        
+            #message( " ")
+        endforeach ()
+
         foreach ( ITEM_ARG_GROUP_SOURCE ${ARG_GROUP_SOURCE} )
             set( GROUP_PREFIX    ${ITEM_ARG_GROUP_SOURCE} )
             list ( LENGTH ${ITEM_ARG_GROUP_SOURCE} LENGTH_ITEM_ARG_GROUP_SOURCE )
@@ -406,9 +404,7 @@ macro (define_source)
                 source_group( "${ITEM_ARG_GROUP_SOURCE}" FILES ${${ITEM_ARG_GROUP_SOURCE}} )
             endif()
         endforeach () 
-
-        #message( "")
-        reset_property( PROJECT_FOLDERS )    
+        set_property(GLOBAL PROPERTY PROJECT_FOLDERS  ) 
     endif()
 
     if( TARGET_FOLDERS_${PROJECT_NAME} )
@@ -431,11 +427,11 @@ macro (define_source_files)
     # Source files are defined by globbing source files in current source directory and also by including the extra source files if provided
     if (NOT ARG_GLOB_CPP_PATTERNS)
         set (ARG_GLOB_CPP_PATTERNS *.c *.cc *.cpp )    # Default glob pattern
-        if( APPLE )  
+        if( APPLE )
             list ( APPEND ARG_GLOB_CPP_PATTERNS *.m *.mm )
         endif  ()
     endif ()
-    
+
     if (NOT ARG_GLOB_H_PATTERNS)
         set (ARG_GLOB_H_PATTERNS *.h *.hpp)
     endif ()
@@ -444,25 +440,25 @@ macro (define_source_files)
     set ( H_FILES )
 
     set ( CPP_FILES_RECURSE )
-    set ( H_FILES_RECURSE )    
+    set ( H_FILES_RECURSE )
 
     file( GLOB CPP_FILES ${ARG_GLOB_CPP_PATTERNS} )
     file( GLOB H_FILES ${ARG_GLOB_H_PATTERNS} )
 
     file( GLOB_RECURSE CPP_FILES_RECURSE ${ARG_GLOB_RECURSE_CPP_PATTERNS} )
-    file( GLOB_RECURSE H_FILES_RECURSE ${ARG_GLOB_RECURSE_H_PATTERNS} )    
+    file( GLOB_RECURSE H_FILES_RECURSE ${ARG_GLOB_RECURSE_H_PATTERNS} )
 
     list( APPEND CPP_FILES ${ARG_EXTRA_CPP_FILES} )
     list( APPEND H_FILES ${ARG_EXTRA_H_FILES}  )
 
     list( APPEND CPP_FILES ${CPP_FILES_RECURSE} )
     list( APPEND H_FILES   ${H_FILES_RECURSE} )
-      
+
     set ( SOURCE_FILES ${CPP_FILES} ${H_FILES} )
-    
+
     source_group( "" FILES ${SOURCE_FILES} )
 
-    # Optionally enable PCH                                                                                                                                                 
+    # Optionally enable PCH
     if (ARG_PCH)
         enable_pch ()
     endif ()
@@ -490,59 +486,60 @@ macro (define_source_files)
         endforeach ()
         endforeach ()
     endif ()
-   
+
     # Optionally accumulate source files at parent scope
     if (ARG_PARENT_SCOPE)
         set (${DIR_NAME}_CPP_FILES ${CPP_FILES} PARENT_SCOPE)
         set (${DIR_NAME}_H_FILES ${H_FILES} PARENT_SCOPE)
     # Optionally put source files into further sub-group (only works for current scope due to CMake limitation)
     endif ()
-        
+
 endmacro ()
 
 #
 macro (define_source_folders )
 
     cmake_parse_arguments (ARG "RECURSIVE_CALL" "" "SRC_ROOT;ERASE_FOLDERS" ${ARGN})
-    
+
     IF( NOT ARG_RECURSIVE_CALL )
-        set( PROJECT_SOURCE_FILES  ) 
-        set( PROJECT_SOURCE_FILES_CPP  ) 
-        set( PROJECT_SOURCE_FILES_HPP  ) 
-         
+        set( PROJECT_SOURCE_FILES  )
+        set( PROJECT_SOURCE_FILES_CPP  )
+        set( PROJECT_SOURCE_FILES_HPP  )
+
         IF( ARG_SRC_ROOT )
             FOREACH( FOLDER_ITEM ${ARG_SRC_ROOT} )
                 get_filename_component ( PATH ${FOLDER_ITEM} REALPATH ) 
                 list ( APPEND  DAVA_FOLDERS ${PATH} ) 
+                append_property( ALL_PROJECTS_FOLDERS ${PATH} )
             ENDFOREACH()
         ELSE()
-            list ( APPEND DAVA_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR} ) 
+            list ( APPEND DAVA_FOLDERS ${CMAKE_CURRENT_SOURCE_DIR} )
         ENDIF()
-        
+
         set( DAVA_FOLDERS ${DAVA_FOLDERS} PARENT_SCOPE )
 
     ENDIF()
-    
-    set( SOURCE_FOLDERS  )
-    
-    IF( ARG_SRC_ROOT )
-    
-        FOREACH( FOLDER_ITEM ${ARG_SRC_ROOT} )
-            get_filename_component ( FOLDER_ITEM ${FOLDER_ITEM} REALPATH ) 
 
-            set ( CPP_PATTERNS ${FOLDER_ITEM}/*.c ${FOLDER_ITEM}/*.cpp )    
-            if( APPLE )  
+    set( SOURCE_FOLDERS  )
+
+    IF( ARG_SRC_ROOT )
+
+        FOREACH( FOLDER_ITEM ${ARG_SRC_ROOT} )
+            get_filename_component ( FOLDER_ITEM ${FOLDER_ITEM} REALPATH )
+
+            set ( CPP_PATTERNS ${FOLDER_ITEM}/*.c ${FOLDER_ITEM}/*.cpp )
+            if( APPLE )
                 list ( APPEND CPP_PATTERNS ${FOLDER_ITEM}/*.m  ${FOLDER_ITEM}/*.mm )
             endif  ()
-        
+
             define_source_files ( GLOB_CPP_PATTERNS ${CPP_PATTERNS}
                                   GLOB_H_PATTERNS   ${FOLDER_ITEM}/*.h ${FOLDER_ITEM}/*.hpp )
-                                  
+
             FILE( GLOB LIST_SOURCE_FOLDERS "${FOLDER_ITEM}/*" )
 
-            list ( APPEND SOURCE_FOLDERS  ${LIST_SOURCE_FOLDERS} ) 
-            list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} ) 
-            list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   ) 
+            list ( APPEND SOURCE_FOLDERS  ${LIST_SOURCE_FOLDERS} )
+            list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} )
+            list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   )
             list ( APPEND PROJECT_SOURCE_FILES      ${CPP_FILES} ${H_FILES} )
 
         ENDFOREACH()
@@ -551,23 +548,23 @@ macro (define_source_folders )
         define_source_files ( )
         FILE( GLOB SOURCE_FOLDERS "*" )
 
-        list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} ) 
-        list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   ) 
+        list ( APPEND PROJECT_SOURCE_FILES_CPP  ${CPP_FILES} )
+        list ( APPEND PROJECT_SOURCE_FILES_HPP  ${H_FILES}   )
         list ( APPEND PROJECT_SOURCE_FILES      ${CPP_FILES} ${H_FILES} )
 
     ENDIF()
-               
+
     FOREACH(FOLDER_ITEM ${SOURCE_FOLDERS})
         IF( IS_DIRECTORY "${FOLDER_ITEM}" )
-            get_filename_component ( FOLDER_NAME ${FOLDER_ITEM} NAME ) 
+            get_filename_component ( FOLDER_NAME ${FOLDER_ITEM} NAME )
             set( NOT_FIND_ERASE_ITEM 1 )
             FOREACH( ERASE_ITEM ${ARG_ERASE_FOLDERS} )
                 IF( ${FOLDER_NAME} STREQUAL ${ERASE_ITEM} )
                     set( NOT_FIND_ERASE_ITEM 0 )
-                    break()     
+                    break()
                 ENDIF()
             ENDFOREACH()
-        
+
             IF( ${NOT_FIND_ERASE_ITEM} )
                 FILE(GLOB FIND_CMAKELIST "${FOLDER_ITEM}/CMakeLists.txt")
                 IF( FIND_CMAKELIST )
@@ -580,9 +577,9 @@ macro (define_source_folders )
                     endif()
 
                     add_subdirectory ( ${FOLDER_ITEM} )
-                    list ( APPEND PROJECT_SOURCE_FILES ${${FOLDER_NAME}_CPP_FILES} ${${FOLDER_NAME}_H_FILES} )    
-                    list ( APPEND PROJECT_SOURCE_FILES_CPP  ${${FOLDER_NAME}_CPP_FILES} ) 
-                    list ( APPEND PROJECT_SOURCE_FILES_HPP  ${${FOLDER_NAME}_H_FILES}   ) 
+                    list ( APPEND PROJECT_SOURCE_FILES ${${FOLDER_NAME}_CPP_FILES} ${${FOLDER_NAME}_H_FILES} )
+                    list ( APPEND PROJECT_SOURCE_FILES_CPP  ${${FOLDER_NAME}_CPP_FILES} )
+                    list ( APPEND PROJECT_SOURCE_FILES_HPP  ${${FOLDER_NAME}_H_FILES}   )
                 ELSE()
                     list (APPEND PROJECT_SOURCE_FILES ${CPP_FILES} ${H_FILES})
                     define_source_folders( SRC_ROOT ${FOLDER_ITEM} ERASE_FOLDERS ${ARG_ERASE_FOLDERS} RECURSIVE_CALL )
@@ -590,7 +587,7 @@ macro (define_source_folders )
             ENDIF()
         ENDIF()
     ENDFOREACH()
-    
+
 endmacro ()
 
 #
@@ -703,8 +700,8 @@ macro( save_property  )
 
     foreach( PROPERTY ${ARG_PROPERTY_LIST} )
         if( ${PROPERTY} )
-            append_property( ${PROPERTY}  "${${PROPERTY}}" )  
-            #message( "append_property - ${PROPERTY} ${${PROPERTY}}") 
+            append_property( ${PROPERTY}  "${${PROPERTY}}" )
+            #message( "append_property - ${PROPERTY} ${${PROPERTY}}")
         endif()
     endforeach()
 
@@ -716,7 +713,7 @@ macro ( add_content_win_uap_single CONTENT_DIR )
     set( CONTENT_LIST)
     set( CONTENT_LIST_TMP)
     file ( GLOB_RECURSE CONTENT_LIST_TMP "${CONTENT_DIR}/*")
-    
+
     #check svn dir (it happens)
     FOREACH( ITEM ${CONTENT_LIST_TMP} )
 
@@ -726,7 +723,7 @@ macro ( add_content_win_uap_single CONTENT_DIR )
         endif()
 
     ENDFOREACH()
-    
+
     list ( APPEND ADDED_CONTENT_SRC ${CONTENT_LIST} )
     set ( GROUP_PREFIX "Content\\" )
     get_filename_component ( CONTENT_DIR_ABS ${CONTENT_DIR} ABSOLUTE )
@@ -736,26 +733,26 @@ macro ( add_content_win_uap_single CONTENT_DIR )
     FOREACH( ITEM ${CONTENT_LIST} )
         get_filename_component ( ITEM ${ITEM} ABSOLUTE )
         #message("Item: ${ITEM}")
-        
+
         #add item to project source group "Content"
         get_filename_component ( ITEM_PATH ${ITEM} PATH )
         STRING( REGEX REPLACE "${CONTENT_DIR_PATH}" "" ITEM_GROUP ${ITEM_PATH} )
-        
+
         #remove the first '/' symbol
         STRING ( SUBSTRING ${ITEM_GROUP} 0 1 FIRST_SYMBOL )
         if (FIRST_SYMBOL STREQUAL "/")
             STRING ( SUBSTRING ${ITEM_GROUP} 1 -1 ITEM_GROUP )
         endif ()
-        
+
         #reverse the slashes
         STRING( REGEX REPLACE "/" "\\\\" ITEM_GROUP ${ITEM_GROUP} )
         #message( "Group prefix: ${GROUP_PREFIX}" )
         #message( "Item group: ${ITEM_GROUP}" )
         source_group( ${GROUP_PREFIX}${ITEM_GROUP} FILES ${ITEM} )
-        
+
         #set deployment properties to item
         set_property( SOURCE ${ITEM} PROPERTY VS_DEPLOYMENT_CONTENT 1 )
-        
+
         #all resources deploys in specified location
         if ( DAVA_WIN_UAP_RESOURCES_DEPLOYMENT_LOCATION )
             set ( DEPLOYMENT_LOCATION "${DAVA_WIN_UAP_RESOURCES_DEPLOYMENT_LOCATION}\\${ITEM_GROUP}" )
@@ -763,7 +760,7 @@ macro ( add_content_win_uap_single CONTENT_DIR )
             set ( DEPLOYMENT_LOCATION "${ITEM_GROUP}" )
         endif ()
         set_property( SOURCE ${ITEM} PROPERTY VS_DEPLOYMENT_LOCATION ${DEPLOYMENT_LOCATION} )
-        
+
     ENDFOREACH()
 
 endmacro ()
@@ -781,32 +778,32 @@ macro ( add_static_config_libs_win_uap CONFIG_TYPE LIBS_LOCATION OUTPUT_LIB_LIST
 
     #take one platform
     list ( GET WINDOWS_UAP_PLATFORMS 0 REF_PLATFORM )
-    
+
     #resolve libs location path
     STRING( REGEX REPLACE "CONFIGURATION_TAG" "${CONFIG_TYPE}" CONCRETE_CONF_LIBS_LOCATION ${LIBS_LOCATION} )
     STRING( REGEX REPLACE "ARCHITECTURE_TAG" "${REF_PLATFORM}" CONCRETE_LIBS_LOCATION ${CONCRETE_CONF_LIBS_LOCATION} )
-    
+
     #find all libs for specified platform
     file ( GLOB REF_LIB_LIST "${CONCRETE_LIBS_LOCATION}/*.lib" )
-    
+
     #find all libs for all platforms
     FOREACH ( LIB_ARCH ${WINDOWS_UAP_PLATFORMS} )
         STRING( REGEX REPLACE "ARCHITECTURE_TAG" "${LIB_ARCH}" CONCRETE_ARCH_LIBS_LOCATION ${CONCRETE_CONF_LIBS_LOCATION} )
         file ( GLOB LIB_LIST "${CONCRETE_ARCH_LIBS_LOCATION}/*.lib" )
-        
+
         #add to list only filenames
         FOREACH ( LIB ${LIB_LIST} )
             get_filename_component ( LIB_FILE ${LIB} NAME )
             list( APPEND LIB_FILE_LIST ${LIB_FILE} )
         ENDFOREACH ()
     ENDFOREACH ()
-    
+
     #unique all platforms' lib list
     list ( LENGTH LIB_FILE_LIST LIB_FILE_LIST_SIZE )
     if ( LIB_FILE_LIST_SIZE )
         list ( REMOVE_DUPLICATES LIB_FILE_LIST )
     endif ()
-    
+
     #compare lists size
     list ( LENGTH REF_LIB_LIST REF_LIB_LIST_SIZE )
     list ( LENGTH LIB_FILE_LIST LIB_FILE_LIST_SIZE )
@@ -817,7 +814,7 @@ macro ( add_static_config_libs_win_uap CONFIG_TYPE LIBS_LOCATION OUTPUT_LIB_LIST
         message ( FATAL_ERROR "Equality checking of static lib sets failed. "
                               "Make sure that lib sets are equal for all architectures in ${CONFIG_TYPE} configuration" )
     endif ()
-    
+
     #append every lib to output lib list
     FOREACH ( LIB ${REF_LIB_LIST} )
         #replace platform specified part of path on VS Platform variable
@@ -862,7 +859,7 @@ endmacro ()
 
 macro ( add_dynamic_config_lib_win_uap CONFIG_TYPE LIBS_LOCATION OUTPUT_LIB_LIST )
 
-    #search dll's 
+    #search dll's
     FOREACH ( LIB_ARCH ${WINDOWS_UAP_PLATFORMS} )
         file ( GLOB LIB_LIST "${LIBS_LOCATION}/${LIB_ARCH}/${CONFIG_TYPE}/*.dll" )
         list ( APPEND "${OUTPUT_LIB_LIST}_${CONFIG_TYPE}" ${LIB_LIST} )

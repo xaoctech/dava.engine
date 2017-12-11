@@ -18,13 +18,10 @@
 #include "Classes/Qt/SpritesPacker/SpritesPackerModule.h"
 #include "Classes/Qt/TextureBrowser/TextureBrowser.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
-#include "Classes/Qt/Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "Classes/Qt/Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "Classes/Qt/Tools/DeveloperTools/DeveloperTools.h"
-#include "Classes/Qt/Tools/HangingObjectsHeight/HangingObjectsHeight.h"
 #include "Classes/Qt/Tools/HeightDeltaTool/HeightDeltaTool.h"
 #include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
-#include "Classes/Qt/Tools/QtLabelWithActions/QtLabelWithActions.h"
 #include "Classes/Qt/Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
 #include "Classes/Qt/Tools/ExportSceneDialog/ExportSceneDialog.h"
 #include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
@@ -189,8 +186,6 @@ QtMainWindow::QtMainWindow(DAVA::TArc::UI* tarcUI_, QWidget* parent)
     , ui(new Ui::MainWindow)
     , globalInvalidate(false)
     , modificationWidget(nullptr)
-    , addSwitchEntityDialog(nullptr)
-    , hangingObjectsWidget(nullptr)
     , developerTools(new DeveloperTools(this))
 #if defined(__DAVAENGINE_MACOS__)
     , shortcutChecker(this)
@@ -272,8 +267,6 @@ QtMainWindow::~QtMainWindow()
 
     REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->logWidgetState = dataToSave;
 
-    DAVA::SafeDelete(addSwitchEntityDialog);
-
     TextureBrowser::Instance()->Release();
     MaterialEditor::Instance()->Release();
 
@@ -297,7 +290,6 @@ void QtMainWindow::AfterInjectInit()
 
 void QtMainWindow::SetupWidget()
 {
-    ui->sceneTree->Init(globalOperations);
     ui->scrollAreaWidgetContents->Init(globalOperations);
 }
 
@@ -362,7 +354,6 @@ void QtMainWindow::SetupMainMenu()
     ui->Dock->addAction(ui->dockSceneInfo->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditor->toggleViewAction());
     ui->Dock->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
-    ui->Dock->addAction(ui->dockSceneTree->toggleViewAction());
     ui->Dock->addAction(ui->dockLODEditor->toggleViewAction());
     ui->Dock->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
 
@@ -419,9 +410,6 @@ void QtMainWindow::SetupStatusBar()
 
 void QtMainWindow::SetupDocks()
 {
-    QObject::connect(ui->sceneTreeFilterClear, SIGNAL(pressed()), ui->sceneTreeFilterEdit, SLOT(clear()));
-    QObject::connect(ui->sceneTreeFilterEdit, SIGNAL(textChanged(const QString&)), ui->sceneTree, SLOT(SetFilter(const QString&)));
-
     QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->sceneInfo, SLOT(UpdateInfoByTimer()));
 
     // Run Action Event dock
@@ -502,26 +490,6 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionTileMapEditor, SIGNAL(triggered()), this, SLOT(OnTilemaskEditor()));
     QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
     QObject::connect(ui->actionWayEditor, SIGNAL(triggered()), this, SLOT(OnWayEditor()));
-
-    QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
-    QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
-    QObject::connect(ui->actionAddEmptyEntity, SIGNAL(triggered()), this, SLOT(OnEmptyEntity()));
-    QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
-    QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
-    QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
-    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(On2DCameraDialog()));
-    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(On2DSpriteDialog()));
-    QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
-
-    QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), this, SLOT(RemoveSelection()));
-    QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
-    QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
-    QObject::connect(ui->actionReloadSelectedEntitiesTextures, SIGNAL(triggered()), ui->sceneTree, SLOT(ReloadSelectedEntitiesTextures()));
-    QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
-    QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
-    QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
-    QObject::connect(ui->actionAddPath, SIGNAL(triggered()), this, SLOT(OnAddPathEntity()));
-    QObject::connect(ui->actionTextEntity, SIGNAL(triggered()), this, SLOT(OnAddTextEntity()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
@@ -611,7 +579,6 @@ void QtMainWindow::EnableProjectActions(bool enable)
 void QtMainWindow::EnableSceneActions(bool enable)
 {
     ui->dockLODEditor->setEnabled(enable);
-    ui->dockSceneTree->setEnabled(enable);
     ui->dockSceneInfo->setEnabled(enable);
 
     ui->actionModifySelect->setEnabled(enable);
@@ -640,7 +607,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionSaveTiledTexture->setEnabled(enable);
 
     ui->Edit->setEnabled(enable);
-    ui->menuCreateNode->setEnabled(enable);
     ui->Scene->setEnabled(enable);
     ui->menuLightView->setEnabled(enable);
 
@@ -669,7 +635,6 @@ void QtMainWindow::UpdateTagDependentActionsState(const DAVA::Any& value)
     ui->actionTileMapEditor->setEnabled(enable);
     ui->actionShowNotPassableLandscape->setEnabled(enable);
     ui->actionRulerTool->setEnabled(enable);
-    ui->actionVisibilityCheckTool->setEnabled(enable);
     ui->actionCustomColorsEditor->setEnabled(enable);
 }
 
@@ -749,25 +714,6 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2* scene, const RECommandNoti
 // ###################################################################################################
 // Mainwindow Qt actions
 // ###################################################################################################
-
-void QtMainWindow::OnUndo()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() != nullptr)
-    {
-        scene->Undo();
-    }
-}
-
-void QtMainWindow::OnRedo()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() != nullptr)
-    {
-        scene->Redo();
-    }
-}
-
 void QtMainWindow::OnEditorGizmoToggle(bool show)
 {
     ui->actionShowEditorGizmo->setChecked(show);
@@ -990,210 +936,6 @@ void QtMainWindow::OnImageSplitter()
 {
     ImageSplitterDialog dlg(this);
     dlg.exec();
-}
-
-void QtMainWindow::OnSwitchEntityDialog()
-{
-    if (nullptr != addSwitchEntityDialog)
-    {
-        return;
-    }
-    addSwitchEntityDialog = new AddSwitchEntityDialog(this);
-    addSwitchEntityDialog->show();
-    connect(addSwitchEntityDialog, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
-}
-
-void QtMainWindow::UnmodalDialogFinished(int)
-{
-    QObject* sender = QObject::sender();
-    disconnect(sender, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
-    if (sender == addSwitchEntityDialog)
-    {
-        addSwitchEntityDialog = nullptr;
-    }
-}
-
-void QtMainWindow::OnAddLandscape()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> entityToProcess(new DAVA::Entity());
-        entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
-        entityToProcess->SetLocked(true);
-
-        DAVA::ScopedPtr<DAVA::Landscape> newLandscape(new DAVA::Landscape());
-
-        DAVA::RenderComponent* component = new DAVA::RenderComponent();
-        component->SetRenderObject(newLandscape);
-        entityToProcess->AddComponent(component);
-
-        DAVA::AABBox3 bboxForLandscape;
-        DAVA::float32 defaultLandscapeSize = 600.0f;
-        DAVA::float32 defaultLandscapeHeight = 50.0f;
-
-        bboxForLandscape.AddPoint(DAVA::Vector3(-defaultLandscapeSize / 2.f, -defaultLandscapeSize / 2.f, 0.f));
-        bboxForLandscape.AddPoint(DAVA::Vector3(defaultLandscapeSize / 2.f, defaultLandscapeSize / 2.f, defaultLandscapeHeight));
-        newLandscape->BuildLandscapeFromHeightmapImage("", bboxForLandscape);
-
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(entityToProcess, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnAddVegetation()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::VegetationRenderObject> vro(new DAVA::VegetationRenderObject());
-        DAVA::RenderComponent* rc = new DAVA::RenderComponent();
-        rc->SetRenderObject(vro);
-
-        DAVA::ScopedPtr<DAVA::Entity> vegetationNode(new DAVA::Entity());
-        vegetationNode->AddComponent(rc);
-        vegetationNode->SetName(ResourceEditor::VEGETATION_NODE_NAME);
-        vegetationNode->SetLocked(true);
-
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(vegetationNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnLightDialog()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-        sceneNode->AddComponent(new DAVA::LightComponent(DAVA::ScopedPtr<DAVA::Light>(new DAVA::Light)));
-        sceneNode->SetName(ResourceEditor::LIGHT_NODE_NAME);
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnCameraDialog()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-        DAVA::ScopedPtr<DAVA::Camera> camera(new DAVA::Camera());
-
-        camera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
-        camera->SetPosition(DAVA::Vector3(0.0f, 0.0f, 0.0f));
-        camera->SetTarget(DAVA::Vector3(1.0f, 0.0f, 0.0f));
-        camera->SetupPerspective(70.0f, 320.0f / 480.0f, 1.0f, 5000.0f);
-        camera->SetAspect(1.0f);
-        camera->RebuildCameraFromValues();
-
-        sceneNode->AddComponent(new DAVA::CameraComponent(camera));
-        sceneNode->AddComponent(new DAVA::WASDControllerComponent());
-        sceneNode->AddComponent(new DAVA::RotationControllerComponent());
-
-        sceneNode->SetName(ResourceEditor::CAMERA_NODE_NAME);
-
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnUserNodeDialog()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-        sceneNode->AddComponent(new DAVA::UserComponent());
-        sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnAddTextEntity()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> textEntity(new DAVA::Entity());
-        textEntity->AddComponent(new DAVA::TextComponent());
-        textEntity->SetName("TextEntity");
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(textEntity, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnParticleEffectDialog()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-        sceneNode->AddComponent(new DAVA::ParticleEffectComponent());
-        sceneNode->AddComponent(new DAVA::LodComponent());
-        sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::On2DCameraDialog()
-{
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-        DAVA::ScopedPtr<DAVA::Camera> camera(new DAVA::Camera());
-
-        DAVA::float32 w = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dx;
-        DAVA::float32 h = DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect().dy;
-        DAVA::float32 aspect = w / h;
-        camera->SetupOrtho(w, aspect, 1, 1000);
-        camera->SetPosition(DAVA::Vector3(0, 0, -10000));
-        camera->SetZFar(10000);
-        camera->SetTarget(DAVA::Vector3(0, 0, 0));
-        camera->SetUp(DAVA::Vector3(0, -1, 0));
-        camera->RebuildCameraFromValues();
-
-        sceneNode->AddComponent(new DAVA::CameraComponent(camera));
-        sceneNode->SetName("Camera 2D");
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::On2DSpriteDialog()
-{
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
-    DVASSERT(data != nullptr);
-    DAVA::FilePath projectPath = data->GetParticlesGfxPath();
-
-    QString filePath = FileDialog::getOpenFileName(nullptr, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.psd)"));
-    if (filePath.isEmpty())
-        return;
-
-    filePath = filePath.replace("/DataSource/", "/Data/");
-    filePath.remove(filePath.size() - 4, 4);
-
-    DAVA::ScopedPtr<DAVA::Sprite> sprite(DAVA::Sprite::Create(filePath.toStdString()));
-    if (!sprite)
-        return;
-
-    DAVA::ScopedPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
-    sceneNode->SetName(ResourceEditor::EDITOR_SPRITE);
-
-    DAVA::ScopedPtr<DAVA::SpriteObject> spriteObject(new DAVA::SpriteObject(sprite, 0, DAVA::Vector2(1, 1), DAVA::Vector2(0.5f * sprite->GetWidth(), 0.5f * sprite->GetHeight())));
-    spriteObject->AddFlag(DAVA::RenderObject::ALWAYS_CLIPPING_VISIBLE);
-    sceneNode->AddComponent(new DAVA::RenderComponent(spriteObject));
-    DAVA::Matrix4 m = DAVA::Matrix4(1, 0, 0, 0,
-                                    0, 1, 0, 0,
-                                    0, 0, -1, 0,
-                                    0, 0, 0, 1);
-    sceneNode->SetLocalTransform(m);
-    DAVA::RefPtr<SceneEditor2> sceneEditor = MainWindowDetails::GetCurrentScene();
-    if (sceneEditor)
-    {
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(sceneNode, sceneEditor.Get())));
-    }
-}
-
-void QtMainWindow::OnAddEntityFromSceneTree()
-{
-    ui->menuAdd->exec(QCursor::pos());
 }
 
 void QtMainWindow::OnOpenHelp()
@@ -1469,7 +1211,6 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
     ui->actionHeightMapEditor->setChecked(false);
     ui->actionRulerTool->setChecked(false);
     ui->actionTileMapEditor->setChecked(false);
-    ui->actionVisibilityCheckTool->setChecked(false);
     ui->actionShowNotPassableLandscape->setChecked(false);
 
     DAVA::int32 tools = scene->GetEnabledTools();
@@ -1761,49 +1502,6 @@ void QtMainWindow::SynchronizeStateWithUI()
     OnManualModifMode();
 }
 
-void QtMainWindow::OnEmptyEntity()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    DAVA::ScopedPtr<DAVA::Entity> newEntity(new DAVA::Entity());
-    newEntity->SetName(ResourceEditor::ENTITY_NAME);
-
-    scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(newEntity, scene.Get())));
-}
-
-void QtMainWindow::OnAddWindEntity()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (!scene)
-        return;
-
-    DAVA::ScopedPtr<DAVA::Entity> windEntity(new DAVA::Entity());
-    windEntity->SetName(ResourceEditor::WIND_NODE_NAME);
-
-    DAVA::Matrix4 ltMx = DAVA::Matrix4::MakeTranslation(DAVA::Vector3(0.f, 0.f, 20.f));
-    GetTransformComponent(windEntity)->SetLocalTransform(&ltMx);
-
-    windEntity->AddComponent(new DAVA::WindComponent());
-
-    scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(windEntity, scene.Get())));
-}
-
-void QtMainWindow::OnAddPathEntity()
-{
-    DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
-    if (scene.Get() == nullptr)
-        return;
-
-    DAVA::ScopedPtr<DAVA::Entity> pathEntity(new DAVA::Entity());
-    pathEntity->SetName(ResourceEditor::PATH_NODE_NAME);
-    DAVA::PathComponent* pc = new DAVA::PathComponent();
-
-    pathEntity->AddComponent(pc);
-    scene->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(pathEntity, scene.Get())));
-}
-
 bool QtMainWindow::CanEnableLandscapeEditor() const
 {
     DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
@@ -1942,11 +1640,6 @@ void QtMainWindow::SetActionCheckedSilently(QAction* action, bool checked)
     action->blockSignals(b);
 }
 
-void QtMainWindow::RemoveSelection()
-{
-    ::RemoveSelection(MainWindowDetails::GetCurrentScene().Get());
-}
-
 bool QtMainWindow::SetVisibilityToolEnabledIfPossible(bool enabled)
 {
     DAVA::RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
@@ -2022,9 +1715,6 @@ void QtMainWindow::CallAction(ID id, DAVA::Any&& args)
                                        });
     }
     break;
-    case GlobalOperations::SetNameAsFilter:
-        ui->sceneTreeFilterEdit->setText(args.Cast<DAVA::String>().c_str());
-        break;
     case GlobalOperations::ShowMaterial:
         OnMaterialEditor(args.Cast<DAVA::NMaterial*>());
         break;

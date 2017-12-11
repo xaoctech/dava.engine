@@ -7,6 +7,8 @@
 #include "Physics/CapsuleShapeComponent.h"
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
+#include "Physics/StaticBodyComponent.h"
+#include "Physics/DynamicBodyComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/PhysicsUtils.h"
 #include "Physics/BoxCharacterControllerComponent.h"
@@ -189,6 +191,11 @@ physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
     physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | // notify about a first contact
     physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | // notify about ongoing contacts
     physx::PxPairFlag::eNOTIFY_CONTACT_POINTS; // report contact points
+
+    if (CollisionShapeComponent::IsCCDEnabled(filterData0) || CollisionShapeComponent::IsCCDEnabled(filterData1))
+    {
+        pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT; // report continuous collision detection contacts
+    }
 
     return physx::PxFilterFlag::eDEFAULT;
 }
@@ -452,6 +459,23 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
             physicsScene->removeActor(*actor);
             physicsComponent->ReleasePxActor();
         }
+
+        if (componentType == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            size_t index = 0;
+            while (index < forces.size())
+            {
+                PendingForce& force = forces[index];
+                if (force.component == component)
+                {
+                    RemoveExchangingWithLast(forces, index);
+                }
+                else
+                {
+                    ++index;
+                }
+            }
+        }
     }
 
     using namespace PhysicsSystemDetail;
@@ -571,6 +595,7 @@ void PhysicsSystem::Process(float32 timeElapsed)
         }
         else
         {
+            ApplyForces();
             DrawDebugInfo();
 
             vehiclesSubsystem->Simulate(timeElapsed);
@@ -795,7 +820,7 @@ void PhysicsSystem::InitNewObjects()
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
             desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
-            desc.material = physics->GetDefaultMaterial();
+            desc.material = physics->GetMaterial(FastName());
             DVASSERT(desc.isValid());
 
             controller = controllerManager->createController(desc);
@@ -808,7 +833,7 @@ void PhysicsSystem::InitNewObjects()
             desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
-            desc.material = physics->GetDefaultMaterial();
+            desc.material = physics->GetMaterial(FastName());
             desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
             DVASSERT(desc.isValid());
 
@@ -873,24 +898,24 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     case Component::BOX_SHAPE_COMPONENT:
     {
         BoxShapeComponent* boxShape = static_cast<BoxShapeComponent*>(component);
-        shape = physics->CreateBoxShape(boxShape->GetHalfSize());
+        shape = physics->CreateBoxShape(boxShape->GetHalfSize(), component->GetMaterialName());
     }
     break;
     case Component::CAPSULE_SHAPE_COMPONENT:
     {
         CapsuleShapeComponent* capsuleShape = static_cast<CapsuleShapeComponent*>(component);
-        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight());
+        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight(), component->GetMaterialName());
     }
     break;
     case Component::SPHERE_SHAPE_COMPONENT:
     {
         SphereShapeComponent* sphereShape = static_cast<SphereShapeComponent*>(component);
-        shape = physics->CreateSphereShape(sphereShape->GetRadius());
+        shape = physics->CreateSphereShape(sphereShape->GetRadius(), component->GetMaterialName());
     }
     break;
     case Component::PLANE_SHAPE_COMPONENT:
     {
-        shape = physics->CreatePlaneShape();
+        shape = physics->CreatePlaneShape(component->GetMaterialName());
     }
     break;
     case Component::CONVEX_HULL_SHAPE_COMPONENT:
@@ -900,7 +925,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         Vector3 scale = AccumulateMeshInfo(entity, groups);
         if (groups.empty() == false)
         {
-            shape = physics->CreateConvexHullShape(std::move(groups), scale, geometryCache);
+            shape = physics->CreateConvexHullShape(std::move(groups), scale, component->GetMaterialName(), geometryCache);
         }
         else
         {
@@ -915,7 +940,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         Vector3 scale = AccumulateMeshInfo(entity, groups);
         if (groups.empty() == false)
         {
-            shape = physics->CreateMeshShape(std::move(groups), scale, geometryCache);
+            shape = physics->CreateMeshShape(std::move(groups), scale, component->GetMaterialName(), geometryCache);
         }
         else
         {
@@ -930,7 +955,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         if (landscape != nullptr)
         {
             Matrix4 localPose;
-            shape = physics->CreateHeightField(landscape, localPose);
+            shape = physics->CreateHeightField(landscape, component->GetMaterialName(), localPose);
             component->SetLocalPose(localPose);
         }
         else
@@ -1097,11 +1122,14 @@ PhysicsVehiclesSubsystem* PhysicsSystem::GetVehiclesSystem()
 
 void PhysicsSystem::UpdateComponents()
 {
+    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     for (CollisionShapeComponent* shapeComponent : collisionComponentsUpdatePending)
     {
         shapeComponent->UpdateLocalProperties();
         physx::PxShape* shape = shapeComponent->GetPxShape();
         DVASSERT(shape != nullptr);
+        physx::PxMaterial* material = module->GetMaterial(shapeComponent->GetMaterialName());
+        shape->setMaterials(&material, 1);
         physx::PxActor* actor = shape->getActor();
         if (actor != nullptr)
         {
@@ -1142,6 +1170,23 @@ void PhysicsSystem::UpdateComponents()
 
                     physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
                 }
+            }
+        }
+
+        if (bodyComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(bodyComponent);
+            bool isCCDEnabled = dynamicBody->IsCCDEnabled();
+
+            physx::PxRigidDynamic* actor = dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>();
+            DVASSERT(actor != nullptr);
+
+            physx::PxU32 shapesCount = actor->getNbShapes();
+            for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
+            {
+                physx::PxShape* shape = nullptr;
+                actor->getShapes(&shape, 1, shapeIndex);
+                CollisionShapeComponent::SetCCDEnabled(shape, isCCDEnabled);
             }
         }
     }
@@ -1228,6 +1273,31 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
             entity->SetLocalTransform(transform);
         }
     }
+}
+
+void PhysicsSystem::AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode)
+{
+    PendingForce pendingForce;
+    pendingForce.component = component;
+    pendingForce.force = force;
+    pendingForce.mode = mode;
+
+    forces.push_back(pendingForce);
+}
+
+void PhysicsSystem::ApplyForces()
+{
+    for (const PendingForce& force : forces)
+    {
+        physx::PxActor* actor = force.component->GetPxActor();
+        DVASSERT(actor != nullptr);
+        physx::PxRigidBody* rigidBody = actor->is<physx::PxRigidBody>();
+        DVASSERT(rigidBody != nullptr);
+
+        rigidBody->addForce(PhysicsMath::Vector3ToPxVec3(force.force), force.mode);
+    }
+
+    forces.clear();
 }
 
 } // namespace DAVA

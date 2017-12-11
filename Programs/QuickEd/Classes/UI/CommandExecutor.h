@@ -76,7 +76,6 @@ private:
     void RemoveComponentImpl(ControlNode* node, ComponentPropertiesSection* section);
     bool IsNodeInHierarchy(const PackageBaseNode* node) const;
 
-    static bool IsControlNodesHasSameParentControlNode(const ControlNode* n1, const ControlNode* n2);
     DocumentData* GetDocumentData() const;
     ProjectData* GetProjectData() const;
 
