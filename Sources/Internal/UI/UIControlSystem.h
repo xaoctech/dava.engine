@@ -319,6 +319,7 @@ private:
     UIControlSystem();
     ~UIControlSystem();
     void Init();
+    void Shutdown();
 
     void ProcessScreenLogic();
 

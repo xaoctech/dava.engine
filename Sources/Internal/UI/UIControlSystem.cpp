@@ -54,14 +54,13 @@ UIControlSystem::UIControlSystem()
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
+    AddSystem(std::make_unique<UIInputSystem>());
+    AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIFlowStateSystem>());
     AddSystem(std::make_unique<UIFlowViewSystem>());
     AddSystem(std::make_unique<UIFlowControllerSystem>());
-
-    AddSystem(std::make_unique<UIInputSystem>());
-    AddSystem(std::make_unique<UIEventsSystem>());
-    AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIScriptSystem>());
+    AddSystem(std::make_unique<UIUpdateSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());
     AddSystem(std::make_unique<UITextSystem>()); // Must be before UILayoutSystem
@@ -72,7 +71,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIJoypadSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
 
-    AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()));
+    AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()), GetSystem<UIFlowViewSystem>());
 
     inputSystem = GetSystem<UIInputSystem>();
     styleSheetSystem = GetSystem<UIStyleSheetSystem>();
@@ -90,28 +89,6 @@ UIControlSystem::UIControlSystem()
 
 UIControlSystem::~UIControlSystem()
 {
-    inputSystem->SetPopupContainer(nullptr);
-    inputSystem->SetCurrentScreen(nullptr);
-    styleSheetSystem->SetPopupContainer(RefPtr<UIControl>());
-    styleSheetSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    layoutSystem->SetPopupContainer(RefPtr<UIControl>());
-    layoutSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    renderSystem->SetPopupContainer(RefPtr<UIControl>());
-    renderSystem->SetCurrentScreen(RefPtr<UIScreen>());
-
-    popupContainer->InvokeInactive();
-    popupContainer->SetScene(nullptr);
-    popupContainer = nullptr;
-
-    if (currentScreen.Valid())
-    {
-        currentScreen->InvokeInactive();
-        currentScreen->SetScene(nullptr);
-        currentScreen = nullptr;
-    }
-
-    lastClickData.touchLocker = nullptr;
-
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
@@ -135,6 +112,31 @@ void UIControlSystem::Init()
     styleSheetSystem->SetPopupContainer(popupContainer);
     layoutSystem->SetPopupContainer(popupContainer);
     renderSystem->SetPopupContainer(popupContainer);
+}
+
+void UIControlSystem::Shutdown()
+{
+    inputSystem->SetPopupContainer(nullptr);
+    inputSystem->SetCurrentScreen(nullptr);
+    styleSheetSystem->SetPopupContainer(RefPtr<UIControl>());
+    styleSheetSystem->SetCurrentScreen(RefPtr<UIScreen>());
+    layoutSystem->SetPopupContainer(RefPtr<UIControl>());
+    layoutSystem->SetCurrentScreen(RefPtr<UIScreen>());
+    renderSystem->SetPopupContainer(RefPtr<UIControl>());
+    renderSystem->SetCurrentScreen(RefPtr<UIScreen>());
+
+    popupContainer->InvokeInactive();
+    popupContainer->SetScene(nullptr);
+    popupContainer = nullptr;
+
+    if (currentScreen.Valid())
+    {
+        currentScreen->InvokeInactive();
+        currentScreen->SetScene(nullptr);
+        currentScreen = nullptr;
+    }
+
+    lastClickData.touchLocker = nullptr;
 }
 
 void UIControlSystem::SetScreen(UIScreen* _nextScreen)

@@ -92,6 +92,11 @@ bool UIFlowTransitionTransaction::IsFinished() const
     return state == State::Finish;
 }
 
+bool UIFlowTransitionTransaction::IsAnimating() const
+{
+    return state == State::Animate;
+}
+
 void UIFlowTransitionTransaction::BuildTransaction(UIFlowStateSystem* system)
 {
     activateQueue.clear();
