@@ -198,7 +198,7 @@ class CoverageReport():
                     subProcessContinue = False
                     continue
             except IOError as err:
-                sys.stdout.write(err.message)
+                sys.stdout.write('error: [ {} ]'.format(err.message))
                 sys.stdout.flush()
 
     def __load_json_cover_data( self ):
