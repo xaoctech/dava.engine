@@ -4,6 +4,7 @@
 #include "UI/UIList.h"
 #include "UI/UIScrollView.h"
 #include "Utils/Utils.h"
+#include "Reflection/ReflectedTypeDB.h"
 
 namespace UIControlHelpersDetails
 {

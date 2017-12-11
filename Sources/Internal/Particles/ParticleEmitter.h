@@ -12,6 +12,7 @@
 #include "Particles/ParticleLayer.h"
 #include "FileSystem/FilePath.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -110,5 +111,7 @@ private:
 
     void ReleaseFromCache(const FilePath& name);
     static EmitterCacheMap emitterCache;
+
+    DAVA_VIRTUAL_REFLECTION(ParticleEmitter, BaseObject);
 };
 }

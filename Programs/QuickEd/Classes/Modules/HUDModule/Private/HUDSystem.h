@@ -50,22 +50,22 @@ private:
 
     eSystems GetOrder() const override;
     void OnUpdate() override;
+    void Invalidate() override;
 
     void SetHighlight(ControlNode* node);
 
     void OnMagnetLinesChanged(const DAVA::Vector<MagnetLineInfo>& magnetLines);
     void ClearMagnetLines();
 
-    void ProcessCursor(const DAVA::Vector2& pos, eSearchOrder searchOrder = SEARCH_FORWARD);
+    void SyncHudWithSelection();
     HUDAreaInfo GetControlArea(const DAVA::Vector2& pos, eSearchOrder searchOrder) const;
     void SetNewArea(const HUDAreaInfo& HUDAreaInfo);
+    void UpdateHUDArea();
 
     void UpdateHUDEnabled();
 
     ControlTransformationSettings* GetSettings();
     DAVA::TArc::ContextAccessor* GetAccessor();
-
-    HUDAreaInfo activeAreaInfo;
 
     DAVA::Vector2 pressedPoint; //corner of selection rect
     DAVA::Vector2 hoveredPoint = DAVA::Vector2(-1.0f, -1.0f);

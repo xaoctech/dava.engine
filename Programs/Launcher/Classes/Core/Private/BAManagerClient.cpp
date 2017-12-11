@@ -91,7 +91,7 @@ void BAManagerClient::SendReply(eResult result, const QString& message, const QS
     data.append("&key=");
     QString key = GetProtocolKey();
     data.append(key.isEmpty() ? "NULL" : key);
-    data.append(QString("&version='%1'").arg(LAUNCHER_VER));
+    data.append(QString("&version=%1").arg(LAUNCHER_VER));
     data.append("&res_code=");
     data.append(QString::number(static_cast<int>(result)));
     data.append("&message='");
@@ -112,6 +112,7 @@ void BAManagerClient::AskForCommands()
     data.append("&key=");
     QString key = GetProtocolKey();
     data.append(key.isEmpty() ? "NULL" : key);
+    data.append(QString("&version=%1").arg(LAUNCHER_VER));
     data.append("&os=");
     data.append(platformString);
     Post(urlStr, data);

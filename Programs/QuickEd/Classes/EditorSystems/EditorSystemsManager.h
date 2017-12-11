@@ -96,6 +96,10 @@ public:
     void FocusPreviousChild();
     void ClearSelection();
     void SelectNode(ControlNode* node);
+    void SetActiveHUDArea(const HUDAreaInfo& areaInfo);
+
+    void Invalidate(ControlNode* removedNode);
+    void Invalidate();
 
     DAVA::Signal<const HUDAreaInfo& /*areaInfo*/> activeAreaChanged;
     DAVA::Signal<const DAVA::Vector<MagnetLineInfo>& /*magnetLines*/> magnetLinesChanged;
@@ -113,7 +117,6 @@ private:
 
     void OnEmulationModeChanged(const DAVA::Any& emulationMode);
     void OnRootContolsChanged(const DAVA::Any& rootControls);
-    void OnActiveHUDAreaChanged(const HUDAreaInfo& areaInfo);
 
     void OnUpdate();
 
@@ -123,8 +126,6 @@ private:
     void InitDAVAScreen();
 
     void OnDragStateChanged(eDragState currentState, eDragState previousState);
-
-    void OnPackageChanged(const DAVA::Any& package);
 
     const SortedControlNodeSet& GetDisplayedRootControls() const;
 

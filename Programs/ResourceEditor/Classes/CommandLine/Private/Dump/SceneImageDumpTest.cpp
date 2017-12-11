@@ -34,7 +34,7 @@ DAVA_TARC_TESTCLASS(SceneImageDumpTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SIDTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SIDTestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SIDTestDetail::scenePathnameStr, SIDTestDetail::projectStr);
 
         Vector<String> cmdLine =
         {

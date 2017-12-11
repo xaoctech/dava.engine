@@ -46,6 +46,11 @@ SceneCameraSystem::~SceneCameraSystem()
 
 void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder)
 {
+    if (curSceneCamera == nullptr)
+    {
+        return;
+    }
+
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     // Debug camera whole object archive
     DAVA::Camera* debugCam = GetCamera(topCameraEntity);
@@ -59,17 +64,28 @@ void SceneCameraSystem::SaveLocalProperties(DAVA::TArc::PropertiesHolder* holder
     cameraProps.Set("activeCameraName", curCamName);
 }
 
-void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder)
+void SceneCameraSystem::LoadLocalProperties(DAVA::TArc::PropertiesHolder* holder, DAVA::TArc::ContextAccessor* accessor)
 {
     DAVA::TArc::PropertiesItem cameraProps = holder->CreateSubHolder("SceneCameraSystem");
     DAVA::Camera* cur = GetCamera(topCameraEntity);
 
-    // set debug camera position
+    GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<GlobalSceneSettings>();
     DAVA::RefPtr<DAVA::KeyedArchive> camArch;
     camArch.ConstructInplace();
     cur->SaveObject(camArch.Get());
     camArch = cameraProps.Get<DAVA::RefPtr<DAVA::KeyedArchive>>("archive", camArch);
-    cur->LoadObject(camArch.Get());
+    if (settings->cameraUseDefaultSettings == false)
+    {
+        // load all parameters
+        cur->LoadObject(camArch.Get());
+    }
+    else // restore only position
+    {
+        cur->SetPosition(camArch->GetByteArrayAsType("cam.position", cur->GetPosition()));
+        cur->SetTarget(camArch->GetByteArrayAsType("cam.target", cur->GetTarget()));
+        cur->SetUp(camArch->GetByteArrayAsType("cam.up", cur->GetUp()));
+        cur->SetLeft(camArch->GetByteArrayAsType("cam.left", cur->GetLeft()));
+    }
 
     // set active scene camera
     DAVA::FastName camName = cameraProps.Get<DAVA::FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
