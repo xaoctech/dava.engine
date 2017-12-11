@@ -189,8 +189,8 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity* effectEntity, DAVA::Partic
     wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
 
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    drawer->DrawAABoxCornersTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
-                                        DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+    drawer->DrawAABoxTransformed(DAVA::AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
+                                 DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
 }
 
 void EditorParticlesSystem::DrawVectorArrow(DAVA::ParticleEmitterInstance* emitter, DAVA::Vector3 center)

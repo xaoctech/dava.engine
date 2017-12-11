@@ -684,9 +684,8 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 Vector<Entity*> children;
                 entity->GetChildEntitiesWithCondition(children, [component](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == component; });
 
-                for (size_t i = 0; i < children.size(); ++i)
+                for (Entity* child : children)
                 {
-                    Entity* child = children[i];
                     DVASSERT(child != nullptr);
 
                     Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(child);
