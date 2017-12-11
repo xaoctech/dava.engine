@@ -74,26 +74,27 @@ void MotionSystem::Process(float32 timeElapsed)
     for (MotionComponent* motionComponent : motionSingleComponent->rebindSkeleton)
     {
         SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-        DVASSERT(skeleton);
-
-        uint32 motionLayersCount = motionComponent->GetMotionLayersCount();
-        for (uint32 l = 0; l < motionLayersCount; ++l)
+        if (skeleton != nullptr)
         {
-            MotionLayer* motionLayer = motionComponent->GetMotionLayer(l);
-            motionLayer->BindSkeleton(skeleton);
-        }
+            uint32 motionLayersCount = motionComponent->GetMotionLayersCount();
+            for (uint32 l = 0; l < motionLayersCount; ++l)
+            {
+                MotionLayer* motionLayer = motionComponent->GetMotionLayer(l);
+                motionLayer->BindSkeleton(skeleton);
+            }
 
-        FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
-        activeComponents.emplace_back(motionComponent);
+            FindAndRemoveExchangingWithLast(activeComponents, motionComponent);
+            activeComponents.emplace_back(motionComponent);
 
-        SkeletonPose defaultPose = skeleton->GetDefaultPose();
-        SimpleMotion* simpleMotion = motionComponent->simpleMotion;
-        if (simpleMotion != nullptr)
-        {
-            simpleMotion->BindSkeleton(skeleton);
-            simpleMotion->EvaluatePose(&defaultPose);
+            SkeletonPose defaultPose = skeleton->GetDefaultPose();
+            SimpleMotion* simpleMotion = motionComponent->simpleMotion;
+            if (simpleMotion != nullptr)
+            {
+                simpleMotion->BindSkeleton(skeleton);
+                simpleMotion->EvaluatePose(&defaultPose);
+            }
+            skeleton->ApplyPose(defaultPose);
         }
-        skeleton->ApplyPose(defaultPose);
     }
 
     for (MotionComponent* motionComponent : motionSingleComponent->stopSimpleMotion)
