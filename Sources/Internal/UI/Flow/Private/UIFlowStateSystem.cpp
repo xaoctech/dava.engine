@@ -8,8 +8,7 @@
 #include "FileSystem/YamlParser.h"
 #include "Logger/Logger.h"
 #include "UI/DefaultUIPackageBuilder.h"
-//TODO: Uncomment after merging Events
-//#include "UI/Events/UIEventsSingleComponent.h"
+#include "UI/Events/UIEventsSingleComponent.h"
 #include "UI/Flow/Private/UIFlowTransitionTransaction.h"
 #include "UI/Flow/Private/UIFlowUtils.h"
 #include "UI/Flow/UIFlowContext.h"
@@ -228,132 +227,130 @@ void UIFlowStateSystem::ApplyTransition()
 
 bool UIFlowStateSystem::ProcessEvent(const FastName& eventName)
 {
-    return false;
-    // TODO: Uncoment after merging new Events
-    //    UIControl* root = GetScene()->GetFlowRoot();
-    //    if (root == nullptr)
-    //    {
-    //        return false;
-    //    }
-    //
-    //    List<UIFlowStateComponent*> eventQueue;
-    //    UIFlowStateComponent* state = root->GetComponent<UIFlowStateComponent>();
-    //    eventQueue.push_back(state);
-    //    UIFlowUtils::BuildActivatedQueue(this, eventQueue);
-    //
-    //    bool processed = false;
-    //    for (auto rit = eventQueue.rbegin(); rit != eventQueue.rend() && !processed; ++rit)
-    //    {
-    //        UIFlowStateComponent* state = *rit;
-    //        UIControl* stateControl = state->GetControl();
-    //
-    //        // Process controller
-    //        UIFlowControllerSystem* controllerSys = GetScene()->GetSystem<UIFlowControllerSystem>();
-    //        UIFlowControllerComponent* controllerComponent = stateControl->GetComponent<UIFlowControllerComponent>();
-    //        if (controllerComponent && controllerSys)
-    //        {
-    //            UIFlowController* controller = controllerSys->GetController(controllerComponent);
-    //            if (controller)
-    //            {
-    //                processed = controller->ProcessEvent(eventName);
-    //                if (processed)
-    //                {
-    //                    break;
-    //                }
-    //            }
-    //        }
-    //
-    //        // Process transitions
-    //        UIFlowTransitionComponent* trans = stateControl->GetComponent<UIFlowTransitionComponent>();
-    //        if (trans)
-    //        {
-    //            const UIFlowTransitionComponent::TransitionMap& transitions = trans->GetTransitionMap();
-    //            for (const UIFlowTransitionComponent::TransitionRule& rule : transitions)
-    //            {
-    //                if (rule.event != eventName)
-    //                {
-    //                    continue;
-    //                }
-    //
-    //                switch (rule.operation)
-    //                {
-    //                case UIFlowTransitionComponent::ACTIVATE_STATE:
-    //                case UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND:
-    //                {
-    //                    UIControl* findStateControl = stateControl->FindByPath(rule.statePath);
-    //                    if (findStateControl)
-    //                    {
-    //                        ActivateState(findStateControl->GetComponent<UIFlowStateComponent>(), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
-    //                    }
-    //                    else
-    //                    {
-    //                        ActivateState(FindStateByPath(rule.statePath), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
-    //                    }
-    //                    break;
-    //                }
-    //                case UIFlowTransitionComponent::DEACTIVATE_STATE:
-    //                case UIFlowTransitionComponent::DEACTIVATE_STATE_BACKGROUND:
-    //                {
-    //                    if (rule.statePath.empty() || rule.statePath == "@") // TODO: make support edit empty value in QE
-    //                    {
-    //                        DeactivateState(state, rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
-    //                    }
-    //                    else
-    //                    {
-    //                        UIControl* findStateControl = stateControl->FindByPath(rule.statePath);
-    //                        if (findStateControl)
-    //                        {
-    //                            DeactivateState(findStateControl->GetComponent<UIFlowStateComponent>(), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
-    //                        }
-    //                        else
-    //                        {
-    //                            DeactivateState(FindStateByPath(rule.statePath), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
-    //                        }
-    //                    }
-    //                    break;
-    //                }
-    //                case UIFlowTransitionComponent::PRELOAD_STATE:
-    //                case UIFlowTransitionComponent::PRELOAD_STATE_BACKGROUND:
-    //                {
-    //                    UIControl* findStateControl = stateControl->FindByPath(rule.statePath);
-    //                    if (findStateControl)
-    //                    {
-    //                        PreloadState(findStateControl->GetComponent<UIFlowStateComponent>(), rule.operation == UIFlowTransitionComponent::PRELOAD_STATE_BACKGROUND);
-    //                    }
-    //                    else
-    //                    {
-    //                        PreloadState(FindStateByPath(rule.statePath), rule.operation == UIFlowTransitionComponent::PRELOAD_STATE_BACKGROUND);
-    //                    }
-    //                    break;
-    //                }
-    //                case UIFlowTransitionComponent::SEND_EVENT:
-    //                {
-    //                    UIEventsSingleComponent* events = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
-    //                    if (events)
-    //                    {
-    //                        events->DispatchEvent(state->GetControl(), rule.sendEvent);
-    //                    }
-    //                    break;
-    //                }
-    //                case UIFlowTransitionComponent::HISTORY_BACK:
-    //                {
-    //                    HistoryBack();
-    //                    break;
-    //                }
-    //                default:
-    //                    DVASSERT(false);
-    //                    break;
-    //                };
-    //                processed = true;
-    //            }
-    //            if (processed)
-    //            {
-    //                break;
-    //            }
-    //        }
-    //    }
-    //
-    //    return processed;
+    UIControl* root = GetScene()->GetFlowRoot();
+    if (root == nullptr)
+    {
+        return false;
+    }
+
+    List<UIFlowStateComponent*> eventQueue;
+    UIFlowStateComponent* state = root->GetComponent<UIFlowStateComponent>();
+    eventQueue.push_back(state);
+    UIFlowUtils::BuildActivatedQueue(this, eventQueue);
+
+    bool processed = false;
+    for (auto rit = eventQueue.rbegin(); rit != eventQueue.rend() && !processed; ++rit)
+    {
+        UIFlowStateComponent* state = *rit;
+        UIControl* stateControl = state->GetControl();
+
+        // Process controller
+        UIFlowControllerSystem* controllerSys = GetScene()->GetSystem<UIFlowControllerSystem>();
+        UIFlowControllerComponent* controllerComponent = stateControl->GetComponent<UIFlowControllerComponent>();
+        if (controllerComponent && controllerSys)
+        {
+            UIFlowController* controller = controllerSys->GetController(controllerComponent);
+            if (controller)
+            {
+                processed = controller->ProcessEvent(eventName);
+                if (processed)
+                {
+                    break;
+                }
+            }
+        }
+
+        // Process transitions
+        UIFlowTransitionComponent* trans = stateControl->GetComponent<UIFlowTransitionComponent>();
+        if (trans)
+        {
+            const UIFlowTransitionComponent::TransitionMap& transitions = trans->GetTransitionMap();
+            for (const UIFlowTransitionComponent::TransitionRule& rule : transitions)
+            {
+                if (rule.event != eventName)
+                {
+                    continue;
+                }
+
+                switch (rule.operation)
+                {
+                case UIFlowTransitionComponent::ACTIVATE_STATE:
+                case UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND:
+                {
+                    UIControl* findStateControl = stateControl->FindByPath(rule.statePath);
+                    if (findStateControl)
+                    {
+                        ActivateState(findStateControl->GetComponent<UIFlowStateComponent>(), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
+                    }
+                    else
+                    {
+                        ActivateState(FindStateByPath(rule.statePath), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
+                    }
+                    break;
+                }
+                case UIFlowTransitionComponent::DEACTIVATE_STATE:
+                case UIFlowTransitionComponent::DEACTIVATE_STATE_BACKGROUND:
+                {
+                    if (rule.statePath.empty() || rule.statePath == "@") // TODO: make support edit empty value in QE
+                    {
+                        DeactivateState(state, rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
+                    }
+                    else
+                    {
+                        UIControl* findStateControl = stateControl->FindByPath(rule.statePath);
+                        if (findStateControl)
+                        {
+                            DeactivateState(findStateControl->GetComponent<UIFlowStateComponent>(), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
+                        }
+                        else
+                        {
+                            DeactivateState(FindStateByPath(rule.statePath), rule.operation == UIFlowTransitionComponent::ACTIVATE_STATE_BACKGROUND);
+                        }
+                    }
+                    break;
+                }
+                case UIFlowTransitionComponent::PRELOAD_STATE:
+                case UIFlowTransitionComponent::PRELOAD_STATE_BACKGROUND:
+                {
+                    UIControl* findStateControl = stateControl->FindByPath(rule.statePath);
+                    if (findStateControl)
+                    {
+                        PreloadState(findStateControl->GetComponent<UIFlowStateComponent>(), rule.operation == UIFlowTransitionComponent::PRELOAD_STATE_BACKGROUND);
+                    }
+                    else
+                    {
+                        PreloadState(FindStateByPath(rule.statePath), rule.operation == UIFlowTransitionComponent::PRELOAD_STATE_BACKGROUND);
+                    }
+                    break;
+                }
+                case UIFlowTransitionComponent::SEND_EVENT:
+                {
+                    UIEventsSingleComponent* events = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+                    if (events)
+                    {
+                        events->SendEvent(state->GetControl(), rule.sendEvent);
+                    }
+                    break;
+                }
+                case UIFlowTransitionComponent::HISTORY_BACK:
+                {
+                    HistoryBack();
+                    break;
+                }
+                default:
+                    DVASSERT(false);
+                    break;
+                };
+                processed = true;
+            }
+            if (processed)
+            {
+                break;
+            }
+        }
+    }
+
+    return processed;
 }
 
 void UIFlowStateSystem::StartActivation(UIFlowStateComponent* state)
@@ -444,12 +441,12 @@ void UIFlowStateSystem::FinishActivation(UIFlowStateComponent* state)
     default:
         break;
     }
-    // TODO: Uncomment after merging Events
-    //    UIEventsSingleComponent* eventSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
-    //    for (const FastName& event : state->GetActivateEvents())
-    //    {
-    //        eventSingle->DispatchEvent(state->GetControl(), event);
-    //    }
+
+    UIEventsSingleComponent* eventSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+    for (const FastName& event : state->GetActivateEvents())
+    {
+        eventSingle->SendEvent(state->GetControl(), event);
+    }
 
     links[state].status = StateLink::Activated;
 }
@@ -540,12 +537,11 @@ void UIFlowStateSystem::FinishDeactivation(UIFlowStateComponent* state)
         context->ReleaseService(FastName(s.name));
     }
 
-    // TODO: Uncomment after merging Events
-    //    UIEventsSingleComponent* eventSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
-    //    for (const FastName& event : state->GetDeactivateEvents())
-    //    {
-    //        eventSingle->DispatchEvent(state->GetControl(), event);
-    //    }
+    UIEventsSingleComponent* eventSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+    for (const FastName& event : state->GetDeactivateEvents())
+    {
+        eventSingle->SendEvent(state->GetControl(), event);
+    }
 
     // Update system's states
     switch (state->GetStateType())

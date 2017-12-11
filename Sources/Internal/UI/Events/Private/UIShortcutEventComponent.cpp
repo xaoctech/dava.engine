@@ -112,7 +112,7 @@ void UIShortcutEventComponent::SetShortcutsFromString(const String& value)
 
             if (str.size() > 1)
             {
-                shortcut = KeyboardShortcut(StringUtils::Trim(str[1]));
+                shortcut = KeyboardShortcut::ParseFromString(StringUtils::Trim(str[1]));
             }
 
             eventShortcuts.push_back(KeyBinding(eventName, shortcut));

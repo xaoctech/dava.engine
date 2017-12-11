@@ -155,9 +155,9 @@ DAVA_TESTCLASS (UIEventsTest)
         UIEventsSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIEventsSystem>();
 
         // Component action bind
-        KeyboardShortcut shortcutF1(String("F1"));
-        KeyboardShortcut shortcutF2(String("F2"));
-        KeyboardShortcut shortcutF3(String("F3"));
+        KeyboardShortcut shortcutF1 = KeyboardShortcut::ParseFromString(String("F1"));
+        KeyboardShortcut shortcutF2 = KeyboardShortcut::ParseFromString(String("F2"));
+        KeyboardShortcut shortcutF3 = KeyboardShortcut::ParseFromString(String("F3"));
         auto TEST_EVENT = FastName("TEST");
 
         auto shortcuts = childText->GetOrCreateComponent<UIShortcutEventComponent>();
