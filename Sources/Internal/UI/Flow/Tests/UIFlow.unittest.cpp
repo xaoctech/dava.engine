@@ -196,7 +196,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     bool HasControl(const String& path)
     {
-        return controlSys->GetScreen()->FindByPath(path);
+        return controlSys->GetScreen()->FindByPath(path) != nullptr;
     }
 
     void SetUp(const String& testName) override
