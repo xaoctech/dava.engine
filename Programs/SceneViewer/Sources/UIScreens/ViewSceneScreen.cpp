@@ -108,7 +108,15 @@ void ViewSceneScreen::RemoveSceneFromScreen()
     if (scene)
     {
         if (!characterSpawned)
+        {
             RemoveCameraControllerSystems();
+        }
+        else
+        {
+            DAVA::TestCharacterControllerModule* characterModule = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::TestCharacterControllerModule>();
+            characterModule->DisableController(scene);
+            characterSpawned = false;
+        }
 
         SafeDelete(rotationControllerSystem);
         SafeDelete(wasdSystem);
