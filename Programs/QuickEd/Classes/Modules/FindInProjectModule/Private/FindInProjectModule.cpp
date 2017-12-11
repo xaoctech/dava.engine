@@ -120,8 +120,8 @@ void FindInProjectModule::OnFindErrorsAndWarnings()
     DAVA::Vector<std::shared_ptr<FindFilter>> errorsAndWarningsFilters;
     errorsAndWarningsFilters.push_back(std::make_shared<AnchorsSizePoliciesConflictFilter>());
 
-    std::shared_ptr<FindFilter> filter = std::make_shared<CompositeFilter>(errorsAndWarningsFilters);
-
+    std::shared_ptr<CompositeFilter> filter = std::make_shared<CompositeFilter>(errorsAndWarningsFilters);
+    filter->SetCompositionType(CompositeFilter::OR);
     InvokeOperation(QEGlobal::FindInProject.ID, filter);
 }
 
