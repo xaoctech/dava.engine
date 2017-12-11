@@ -6,12 +6,20 @@ if( MACOS AND COVERAGE )
         set( COVERAGE_ARGS "''" )
     endif()
 
+    list ( APPEND DAVA_FOLDERS ${PROJECT_FOLDERS} )
+    list ( APPEND DAVA_FOLDERS ${DAVA_ENGINE_DIR} )
+
+    string(REPLACE ";" " " TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
+    string(REPLACE "\"" "" TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
+    
+
     string(REPLACE ";" " " DAVA_FOLDERS "${DAVA_FOLDERS}" )
     string(REPLACE "\"" "" DAVA_FOLDERS "${DAVA_FOLDERS}" )
 
     add_definitions( -DTEST_COVERAGE )
     add_definitions( -DDAVA_FOLDERS="${DAVA_FOLDERS}" )
     add_definitions( -DDAVA_UNITY_FOLDER="${CMAKE_CURRENT_BINARY_DIR}/unity_pack" )
+    add_definitions( -DTARGET_FOLDERS_${PROJECT_NAME}="${TARGET_FOLDERS_${PROJECT_NAME}}" )
 
     if( MAC_DISABLE_BUNDLE )
         set( APP_ATRIBUTE )

@@ -4,7 +4,6 @@ include ( CMake-common )
 
 set( JOIN_PROJECT_NAME 1 )
 set( DAVA_MEGASOLUTION      1 )
-set( IGNORE_FILE_TREE_CHECK 1 )
 
 if( NOT DEPLOY_DIR )
     set( CURRENT_DEPLOY_DIR     ${CMAKE_BINARY_DIR}/app )
@@ -138,6 +137,8 @@ macro ( prepare_tools )
         configure_file( ${CMAKE_CURRENT_LIST_DIR}/Scripts/start_tests.py
                         ${CMAKE_BINARY_DIR}/app_other/start_tests.py  )
     endif()
+
+    file_tree_check()
 
 endmacro()
 
