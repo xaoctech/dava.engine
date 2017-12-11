@@ -12,9 +12,58 @@
 
 namespace DAVA
 {
-PackMetaData::PackMetaData(const void* ptr, std::size_t size)
+Vector<String> FileNamesTree::GetPathElements(const String& relativeFilePath)
+{
+    // TODO better in future use string_view
+    Vector<String> tokens;
+    const size_t countNames = 1 + std::count_if(begin(relativeFilePath), end(relativeFilePath), [](char value) { return value == '/'; });
+    tokens.reserve(countNames);
+    Split(relativeFilePath, "/", tokens);
+    return tokens;
+}
+
+void FileNamesTree::Add(const String& relativeFilePath)
+{
+    Vector<String> tokens = GetPathElements(relativeFilePath);
+    Node* currentNode = &treeRoot;
+    for (String& element : tokens)
+    {
+        Node& node = currentNode->children[element];
+        currentNode = &node;
+    }
+}
+
+bool FileNamesTree::Find(const String& relativeFilePath) const
+{
+    Vector<String> tokens = GetPathElements(relativeFilePath);
+    const Node* currentNode = &treeRoot;
+    for (String& element : tokens)
+    {
+        const auto it = currentNode->children.find(element);
+        if (it != end(currentNode->children))
+        {
+            currentNode = &it->second;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+PackMetaData::PackMetaData(const void* ptr, std::size_t size, const String& fileNames)
 {
     Deserialize(ptr, size);
+
+    const size_t sizeOfNames = fileNames.size();
+    size_t index = 0;
+
+    while (index != String::npos)
+    {
+        namesTree.Add(&fileNames[index]);
+        index = fileNames.find('\0', index + 1);
+    }
 }
 
 Vector<uint32> PackMetaData::ConvertStringWithNumbersToVector(const String& dependencies) const
@@ -71,8 +120,9 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     packIndexes.reserve(numIndexes);
 
     db << "SELECT path, pack_index FROM files"
-    >> [&](std::string, int packIndex)
+    >> [&](std::string path, int packIndex)
     {
+        namesTree.Add(path);
         packIndexes.push_back(packIndex);
     };
 
@@ -220,6 +270,11 @@ const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) 
     Logger::Error("error: can't find packName: %s", packName.c_str());
     DVASSERT(false, "debug packName value");
     DAVA_THROW(Exception, "no such packName: " + packName);
+}
+
+const FileNamesTree& PackMetaData::GetFileNamesTree() const
+{
+    return namesTree;
 }
 
 Vector<uint8> PackMetaData::Serialize() const

@@ -412,7 +412,7 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     profiler.Start();
 
-    bool isFirstTimeCall = (log.is_open() == false);
+    const bool isFirstTimeCall = (log.is_open() == false);
 
     DumpInitialParams(dirToDownloadPacks_, urlToServerSuperpack_, hints_);
 
@@ -1274,7 +1274,7 @@ void DLCManagerImpl::LoadPacksDataFromMeta()
             DAVA_THROW(Exception, "can't read localCacheMeta hash not match");
         }
 
-        meta.reset(new PackMetaData(buffer.data(), buffer.size()));
+        meta.reset(new PackMetaData(buffer.data(), buffer.size(), uncompressedFileNames));
 
         const size_t numFiles = meta->GetFileCount();
         scanFileReady.resize(numFiles);
@@ -1795,6 +1795,21 @@ bool DLCManagerImpl::IsAnyPackInQueue() const
     if (IsInitialized())
     {
         return !requestManager->Empty();
+    }
+    return false;
+}
+
+bool DLCManagerImpl::IsKnownFile(const String& relativeFileName) const
+{
+    // TODO implement it
+    //if (localFilesTree.find(relativeFileName))
+    //{
+    //    return true;
+    //}
+    auto& remoteFilesTree = GetMeta().GetFileNamesTree();
+    if (remoteFilesTree.Find(relativeFileName))
+    {
+        return true;
     }
     return false;
 }

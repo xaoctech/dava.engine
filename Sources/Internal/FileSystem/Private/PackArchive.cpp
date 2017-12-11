@@ -128,6 +128,7 @@ PackArchive::PackArchive(RefPtr<File>& file_, const FilePath& archiveName_)
         DAVA_THROW(DAVA::Exception, "incorrect marker in pack file: " + fileName);
     }
 
+    String fileNames;
     if (footerBlock.info.numFiles > 0)
     {
         uint64 startFilesTableBlock = size - (sizeof(packFile.footer) + packFile.footer.info.filesTableSize);
@@ -152,8 +153,6 @@ PackArchive::PackArchive(RefPtr<File>& file_, const FilePath& archiveName_)
             DAVA_THROW(DAVA::Exception, "crc32 not match in filesTable in file: " + fileName);
         }
 
-        String fileNames;
-
         ExtractFileTableData(footerBlock, tmpBuffer, fileNames, packFile.filesTable);
 
         FillFilesInfo(packFile, fileNames, mapFileData, filesInfo);
@@ -173,7 +172,7 @@ PackArchive::PackArchive(RefPtr<File>& file_, const FilePath& archiveName_)
         {
             DAVA_THROW(Exception, "can't read meta");
         }
-        packMeta.reset(new PackMetaData(&metaBlock[0], metaBlock.size()));
+        packMeta.reset(new PackMetaData(&metaBlock[0], metaBlock.size(), fileNames));
     }
 }
 

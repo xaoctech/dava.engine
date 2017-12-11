@@ -120,6 +120,7 @@ public:
     {
         String logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
         String preloadedPacks = ""; //!< list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
+        String localPacksDB = ""; //!< path to sqlite3 DB with files and packs tables to generate local meta data
         int64 limitRequestUpdateIterationUs = 500; //!< max time to update requestManager in microseconds
         uint32 maxSameErrorCounter = 10; //!< if for example EBUSY error occurred try same operation again while counter below this value
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
@@ -131,6 +132,7 @@ public:
         uint32 downloaderChunkBufSize = 512 * 1024; //!< 512Kb RAM buffer for one handle, you can set any value in bytes
         uint32 profilerSamplerCounts = 1024 * 2; //!< number of counters in profiler ring buffer
         bool fireSignalsInBackground = false; //!< if false, signals are accumulated and will be fired only when an app returns to foreground
+        bool validateLocalPacksFiles = false; //!< if true, check every file exist in ~res:/
     };
 
     /** Start complex initialization process. You can call it again if need.
@@ -179,6 +181,9 @@ public:
 
     /** return true if download queue is not empty */
     virtual bool IsAnyPackInQueue() const;
+
+    /** return true if local sqlite.db or remote *.dvpk has info with relativeFileName */
+    virtual bool IsKnownFile(const String& relativeFileName) const;
 
     /** Update request queue to first download dependency of selected request
         and then request itself */

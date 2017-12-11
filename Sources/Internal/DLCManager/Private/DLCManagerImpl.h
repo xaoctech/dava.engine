@@ -145,6 +145,8 @@ public:
 
     bool IsAnyPackInQueue() const final;
 
+    bool IsKnownFile(const String& relativeFileName) const final;
+
     void SetRequestPriority(const IRequest* request) final;
 
     void RemovePack(const String& packName) final;
