@@ -171,6 +171,7 @@ void SceneTreeFilterModelV2::DeleteFilter(DAVA::int32 filterIndex)
 
 void SceneTreeFilterModelV2::Refilter()
 {
+    bool infoWasEmpty = filtrationData.empty();
     filtrationData.clear();
     if (filter.isEmpty() == false || filtersChain.empty() == false)
     {
@@ -180,5 +181,9 @@ void SceneTreeFilterModelV2::Refilter()
         }
         PrepareFiltrationData(sourceModel(), QModelIndex());
     }
-    invalidate();
+
+    if (filtrationData.empty() == false || infoWasEmpty == false)
+    {
+        invalidate();
+    }
 }
