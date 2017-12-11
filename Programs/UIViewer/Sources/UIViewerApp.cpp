@@ -112,7 +112,7 @@ void UIViewerApp::OnActionTriggered(DAVA::Action action)
         keyboardShowed = !keyboardShowed;
         if (keyboardShowed)
         {
-            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, virtualKeyboardHeight));
+            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, static_cast<float32>(virtualKeyboardHeight)));
         }
         else
         {
