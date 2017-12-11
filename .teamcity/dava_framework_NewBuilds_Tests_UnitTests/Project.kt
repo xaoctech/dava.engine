@@ -18,7 +18,6 @@ object Project : Project({
     buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsAndroid)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin32)
-    buildType(dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework_2)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework)
 
