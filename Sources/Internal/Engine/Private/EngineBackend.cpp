@@ -837,6 +837,7 @@ void EngineBackend::UninstallEventFilter(void* token)
 
 void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 {
+    // Create subsystems
     context->allocatorFactory = new AllocatorFactory();
     context->random = new Random();
     ParticleForcesUtils::GenerateNoise();
@@ -846,7 +847,6 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->renderSystem2D = new RenderSystem2D();
 
     context->uiControlSystem = new UIControlSystem();
-    context->uiControlSystem->Init();
 
     context->animationManager = new AnimationManager();
     context->fontManager = new FontManager();
@@ -926,8 +926,6 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     }
 
     context->moduleManager = new ModuleManager(GetEngine());
-    context->moduleManager->InitModules();
-
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
 
@@ -936,22 +934,48 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
 #endif
+
+    // Register user types, components and systems
+    engine->registerUserTypes.Emit();
+
+    // Init subsystems
+    context->moduleManager->InitModules();
+    context->uiControlSystem->Init();
 }
 
 void EngineBackend::DestroySubsystems()
 {
     if (context->debugOverlay != nullptr)
     {
-        delete context->debugOverlay;
+        delete context->debugOverlay; // Private destructor
         context->debugOverlay = nullptr;
     }
 
-#ifdef __DAVAENGINE_AUTOTESTING__
-    if (context->autotestingSystem != nullptr)
+    // Shutdown subsystems
+    if (context->uiControlSystem != nullptr)
     {
-        context->autotestingSystem->Release();
-        context->autotestingSystem = nullptr;
+        context->uiControlSystem->Shutdown();
     }
+    if (context->moduleManager != nullptr)
+    {
+        context->moduleManager->ShutdownModules();
+    }
+    if (context->pluginManager != nullptr)
+    {
+        context->pluginManager->UnloadPlugins();
+    }
+    if (context->jobManager != nullptr)
+    {
+        // Wait job completion before releasing singletons
+        // But client should stop its jobs on response to signals Engine::gameLoopStopped or Engine::cleanup
+        context->jobManager->WaitWorkerJobs();
+        context->jobManager->WaitMainJobs();
+    }
+
+// Free subsystems
+
+#ifdef __DAVAENGINE_AUTOTESTING__
+    SafeRelease(context->autotestingSystem);
 #endif
 
     if (!IsConsoleMode())
@@ -964,31 +988,14 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->analyticsCore);
     SafeDelete(context->settings);
 
-    if (context->moduleManager != nullptr)
-    {
-        context->moduleManager->ShutdownModules();
-        delete context->moduleManager;
-        context->moduleManager = nullptr;
-    }
-    if (context->pluginManager != nullptr)
-    {
-        context->pluginManager->UnloadPlugins();
-        delete context->pluginManager;
-        context->pluginManager = nullptr;
-    }
-    if (context->jobManager != nullptr)
-    {
-        // Wait job completion before releasing singletons
-        // But client should stop its jobs on response to signals Engine::gameLoopStopped or Engine::cleanup
-        context->jobManager->WaitWorkerJobs();
-        context->jobManager->WaitMainJobs();
-    }
+    SafeDelete(context->moduleManager);
+    SafeDelete(context->pluginManager);
 
     SafeRelease(context->localNotificationController);
     SafeRelease(context->uiScreenManager);
     if (context->uiControlSystem)
     {
-        delete context->uiControlSystem;
+        delete context->uiControlSystem; // Private destructor
         context->uiControlSystem = nullptr;
     }
     SafeRelease(context->fontManager);
@@ -1006,7 +1013,7 @@ void EngineBackend::DestroySubsystems()
 
     if (context->actionSystem != nullptr)
     {
-        delete context->actionSystem;
+        delete context->actionSystem; // Private destructor
         context->actionSystem = nullptr;
     }
 
@@ -1014,7 +1021,7 @@ void EngineBackend::DestroySubsystems()
 
     if (context->inputSystem != nullptr)
     {
-        delete context->inputSystem;
+        delete context->inputSystem; // Private destructor
         context->inputSystem = nullptr;
     }
 
@@ -1027,7 +1034,7 @@ void EngineBackend::DestroySubsystems()
     SafeRelease(context->fileSystem);
     if (context->deviceManager != nullptr)
     {
-        delete context->deviceManager;
+        delete context->deviceManager; // Private destructor
         context->deviceManager = nullptr;
     }
     SafeDelete(context->componentManager);
