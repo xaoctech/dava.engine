@@ -87,8 +87,8 @@ void NameProperty::ApplyValue(const DAVA::Any& newValue)
 
     if (newValue.CanCast<FastName>())
     {
-        value = newValue;
         FastName name = newValue.Cast<FastName>();
+        value = Any(name);
         if (UIControlHelpers::IsControlNameValid(name))
         {
             controlNode->GetControl()->SetName(name);
