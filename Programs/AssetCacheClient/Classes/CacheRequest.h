@@ -1,7 +1,7 @@
 #ifndef __CACHE_REQUEST_H__
 #define __CACHE_REQUEST_H__
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 #include "CommandLine/ProgramOptions.h"
 
 namespace DAVA

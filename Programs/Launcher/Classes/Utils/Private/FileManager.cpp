@@ -17,7 +17,7 @@
 namespace FileManagerDetails
 {
 const QString tempSelfUpdateDir = "selfupdate/";
-const QString baseAppDir = "DAVATools/";
+const QString baseAppDir = "";
 const QString tempDir = baseAppDir + "temp/";
 
 QStringList DeployDirectories()
