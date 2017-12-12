@@ -1799,6 +1799,11 @@ bool DLCManagerImpl::IsAnyPackInQueue() const
     return false;
 }
 
+bool DLCManager::IsKnownFile(const String& relativeFileName) const
+{
+    return false;
+}
+
 bool DLCManagerImpl::IsKnownFile(const String& relativeFileName) const
 {
     // TODO implement it
