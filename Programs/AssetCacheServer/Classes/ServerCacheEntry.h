@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DavaTools/AssetCache/CachedItemValue.h>
+#include <AssetCache/CachedItemValue.h>
 #include <Base/BaseTypes.h>
 #include <chrono>
 

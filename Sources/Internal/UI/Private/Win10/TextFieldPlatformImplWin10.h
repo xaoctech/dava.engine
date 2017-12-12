@@ -169,6 +169,7 @@ private: // Event handlers
     void OnKeyDown(Windows::UI::Xaml::Input::KeyRoutedEventArgs ^ args);
     void OnGotFocus();
     void OnLostFocus();
+    void OnTextChanging();
     void OnTextChanged();
     void OnLayoutUpdated();
 

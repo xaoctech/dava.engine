@@ -18,10 +18,8 @@ set( DAVA_STATIC_LIBRARIES_IOS      ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libcrypto
                                     )
 
 set( DAVA_STATIC_LIBRARIES_MACOS    ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libFColladaS.a
-                                    ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libPVRTexLib.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libcrypto.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libcurl_macos.a
-                                    ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libdxt_macos.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libfreetype_macos.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libicucommon_macos.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libjpeg_macos.a
@@ -39,9 +37,6 @@ set( DAVA_STATIC_LIBRARIES_MACOS    ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libFColla
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libxml_macos.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libyaml_macos.a
                                     ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libsqlite3.a
-                                    )
-
-set( DAVA_DYNAMIC_LIBRARIES_MACOS   ${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libTextureConverter.dylib 
                                     )
 
 set( DAVA_STATIC_LIBRARIES_ANDROID  "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libxml.a"
@@ -68,7 +63,6 @@ set( DAVA_STATIC_LIBRARIES_ANDROID  "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libxml.a
 
 set( DAVA_STATIC_LIBRARIES_LINUX
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libcurl.a"
-                                    "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libdxt.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libfreetype.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/libjpeg.a"
                                     "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/liblua.a"
@@ -99,7 +93,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glew32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/icucommon.lib"         
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libcurl.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libdxt.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libeay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libjpeg.lib"
@@ -110,8 +103,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/unibreak.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/zlib.lib"   
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/avcodec.lib"
@@ -131,7 +122,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/glew32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/icucommon.lib"         
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libcurl.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libdxt.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libeay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libjpeg.lib"
@@ -142,8 +132,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/TextureConverterD.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/unibreak.lib"  
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/zlib.lib" 
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/avcodec.lib"
@@ -164,7 +152,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/icucommon.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libjpeg.lib"              
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libcurl.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libdxt.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libeay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/ssleay32.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libmongodb.lib"
@@ -174,8 +161,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/unibreak.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/libuv.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/zlib.lib" 
@@ -199,7 +184,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/icucommon.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libjpeg.lib"            
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libcurl.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libdxt.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libmongodb.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpsd.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libuv.lib"
@@ -207,8 +191,6 @@ if( WIN )
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libxml2.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libyaml.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/libpng.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/PVRTexLib.lib"
-                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/TextureConverter_d.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/unibreak.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/zlib.lib"
                        "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Debug/avcodec.lib"
@@ -247,8 +229,6 @@ if( WIN )
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/D3DCompiler_43.dll" 
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/d3dx9_43.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/glew32.dll"
-                                      "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/PVRTexLib.dll"
-                                      "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/TextureConverter.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcr120.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcp120.dll"
                                       "${DAVA_THIRD_PARTY_LIBRARIES_PATH}/Release/msvcp140.dll"

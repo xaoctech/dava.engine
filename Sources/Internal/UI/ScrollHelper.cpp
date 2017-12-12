@@ -301,7 +301,7 @@ float ScrollHelper::GetPosition(float32 positionDelta, float32 timeDelta, bool i
 
 void ScrollHelper::ScrollToPosition(float32 newPos, float32 scrollTimeSec /* = 0.3f*/)
 {
-    if (FLOAT_EQUAL_EPS(newPos, position, 1.f))
+    if (FLOAT_EQUAL_EPS(newPos, scrollToPos, 1.f))
     {
         return;
     }
