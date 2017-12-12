@@ -5,7 +5,7 @@
 #include "Scene/SceneHelper.h"
 #include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>

@@ -1,6 +1,6 @@
 #include "GetRequest.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 #include <FileSystem/FileSystem.h>
 #include <Time/SystemTimer.h>

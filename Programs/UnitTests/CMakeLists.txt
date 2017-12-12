@@ -27,11 +27,6 @@ if (LINUX)
     dava_add_definitions(-DDISABLE_NATIVE_WEBVIEW)
 endif()
 
-if ( WIN32 OR MACOS )
-    find_dava_module( DavaTools )
-endif()
-
-
 if (NOT LINUX)
     # Enable sound after fmod libraries
     set ( DAVA_COMPONENTS Sound )
@@ -39,12 +34,19 @@ if (NOT LINUX)
     find_dava_module( NetworkCore )
 endif()
 
+find_dava_module( AssetCache )			# supported platforms are defined in module
+find_dava_module( ResourceArchiverModule )	# supported platforms are defined in module
+find_dava_module( TextureCompression )		# supported platforms are defined in module
+find_dava_module( TexturePacker )		# supported platforms are defined in module
+
+
 find_dava_module( Physics )
 find_dava_module( CEFWebview )
 find_dava_module( Sample )
 find_dava_module( LoggerService  )
 find_dava_module( EmbeddedWebServer  )
 find_dava_module( DocDirSetup  )
+find_dava_module( Version )
 
 find_package( Steam REQUIRED )
 

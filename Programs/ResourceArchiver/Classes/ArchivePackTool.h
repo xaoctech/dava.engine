@@ -3,7 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "FileSystem/ResourceArchive.h"
 #include "CommandLineTool.h"
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 class ArchivePackTool : public CommandLineTool
 {

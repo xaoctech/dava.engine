@@ -1,7 +1,7 @@
 #ifndef __IMAGE_TOOLS_H__
 #define __IMAGE_TOOLS_H__
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TextureCompression/TextureConverter.h>
 
 #include <Render/Image/Image.h>
 #include <FileSystem/FilePath.h>

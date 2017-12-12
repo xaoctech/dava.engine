@@ -89,28 +89,6 @@ UIControlSystem::UIControlSystem()
 
 UIControlSystem::~UIControlSystem()
 {
-    inputSystem->SetPopupContainer(nullptr);
-    inputSystem->SetCurrentScreen(nullptr);
-    styleSheetSystem->SetPopupContainer(RefPtr<UIControl>());
-    styleSheetSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    layoutSystem->SetPopupContainer(RefPtr<UIControl>());
-    layoutSystem->SetCurrentScreen(RefPtr<UIScreen>());
-    renderSystem->SetPopupContainer(RefPtr<UIControl>());
-    renderSystem->SetCurrentScreen(RefPtr<UIScreen>());
-
-    popupContainer->InvokeInactive();
-    popupContainer->SetScene(nullptr);
-    popupContainer = nullptr;
-
-    if (currentScreen.Valid())
-    {
-        currentScreen->InvokeInactive();
-        currentScreen->SetScene(nullptr);
-        currentScreen = nullptr;
-    }
-
-    lastClickData.touchLocker = nullptr;
-
     soundSystem = nullptr;
     inputSystem = nullptr;
     styleSheetSystem = nullptr;
@@ -134,6 +112,31 @@ void UIControlSystem::Init()
     styleSheetSystem->SetPopupContainer(popupContainer);
     layoutSystem->SetPopupContainer(popupContainer);
     renderSystem->SetPopupContainer(popupContainer);
+}
+
+void UIControlSystem::Shutdown()
+{
+    inputSystem->SetPopupContainer(nullptr);
+    inputSystem->SetCurrentScreen(nullptr);
+    styleSheetSystem->SetPopupContainer(RefPtr<UIControl>());
+    styleSheetSystem->SetCurrentScreen(RefPtr<UIScreen>());
+    layoutSystem->SetPopupContainer(RefPtr<UIControl>());
+    layoutSystem->SetCurrentScreen(RefPtr<UIScreen>());
+    renderSystem->SetPopupContainer(RefPtr<UIControl>());
+    renderSystem->SetCurrentScreen(RefPtr<UIScreen>());
+
+    popupContainer->InvokeInactive();
+    popupContainer->SetScene(nullptr);
+    popupContainer = nullptr;
+
+    if (currentScreen.Valid())
+    {
+        currentScreen->InvokeInactive();
+        currentScreen->SetScene(nullptr);
+        currentScreen = nullptr;
+    }
+
+    lastClickData.touchLocker = nullptr;
 }
 
 void UIControlSystem::SetScreen(UIScreen* _nextScreen)

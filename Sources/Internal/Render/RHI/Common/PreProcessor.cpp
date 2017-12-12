@@ -83,7 +83,7 @@ bool PerformMacroSubstitution(const char* source, char* targetBuffer, ptrdiff_t 
             if (i != macro.end())
             {
                 marcoFound = true;
-                DVASSERT(bufferPos + i->second.length < targetBufferSize);
+                DVASSERT(bufferPos + static_cast<ptrdiff_t>(i->second.length) < targetBufferSize);
                 memcpy(targetBuffer + bufferPos, i->second.value, i->second.length);
                 bufferPos += i->second.length;
             }

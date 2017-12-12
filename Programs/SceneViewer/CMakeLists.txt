@@ -14,6 +14,8 @@ find_dava_module( TestCharacterController )
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
 
 find_dava_module( ScenePerformanceTests )
+find_dava_module( Version )
+find_dava_module( Physics )
 
 include_directories   ( "Sources" )
 
@@ -44,4 +46,3 @@ if ( WINDOWS_UAP )
 endif ()
 
 setup_main_executable()
-convert_graphics()
