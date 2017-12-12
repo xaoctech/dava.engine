@@ -11,6 +11,8 @@ find_dava_module( ScenePerformanceTests )
 find_dava_module( LoggerService )
 find_dava_module( MemoryProfilerService )
 find_dava_module( DocDirSetup )
+find_dava_module( Version )
+find_dava_module( Physics )
 
 include_directories   ( "Sources" )
 
@@ -41,4 +43,3 @@ if ( WINDOWS_UAP )
 endif ()
 
 setup_main_executable()
-convert_graphics()

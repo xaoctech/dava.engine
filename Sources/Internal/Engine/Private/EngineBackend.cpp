@@ -50,6 +50,7 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/ImageSystem.h"
+#include "Render/Image/ImageConverter.h"
 #include "Render/Renderer.h"
 #include "Render/RHI/rhi_ShaderSource.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
@@ -925,6 +926,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->logger->EnableConsoleMode();
     }
 
+    context->imageConverter = new ImageConverter();
+
     context->moduleManager = new ModuleManager(GetEngine());
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
@@ -1039,6 +1042,8 @@ void EngineBackend::DestroySubsystems()
     }
     SafeDelete(context->componentManager);
     SafeDelete(context->logger);
+
+    SafeDelete(context->imageConverter);
 }
 
 void EngineBackend::OnRenderingError(rhi::RenderingError err, void* param)

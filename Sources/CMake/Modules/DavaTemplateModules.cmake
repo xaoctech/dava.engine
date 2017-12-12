@@ -552,9 +552,11 @@ macro( setup_main_module )
 
         list( APPEND ALL_SRC  ${PROJECT_SOURCE_FILES} )
         list( APPEND ALL_SRC_HEADER_FILE_ONLY  ${PROJECT_HEADER_FILE_ONLY} )
+        list( APPEND MIX_APP_DATA  ${MIX_APP_DATA_${DAVA_PLATFORM_CURRENT}} )
 
         set_project_files_properties( "${ALL_SRC}" )
         
+
         #"SAVE PROPERTY"
         save_property( PROPERTY_LIST 
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}          
