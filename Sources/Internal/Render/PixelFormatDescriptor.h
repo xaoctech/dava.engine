@@ -38,6 +38,10 @@ public:
     static bool IsFloatPixelFormat(PixelFormat fmt);
     static void GetFloatFormatInfo(uint32 width, PixelFormat format, uint32& channels, uint32& channelSize, uint32& pitch);
 
+    static bool IsDxtFormat(PixelFormat format);
+    static bool IsAtcFormat(PixelFormat format);
+    static bool IsPVRFormat(PixelFormat format);
+
 private:
     static UnorderedMap<PixelFormat, PixelFormatDescriptor, std::hash<uint8>> pixelDescriptors;
 

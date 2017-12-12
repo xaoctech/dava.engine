@@ -8,10 +8,10 @@ LazyUpdater::LazyUpdater(Updater updater_, QObject* parent /* = nullptr */)
 {
 }
 
-void LazyUpdater::Update()
+void LazyUpdater::Update(int msecDelay)
 {
     ++counter;
-    QTimer::singleShot(0, this, &LazyUpdater::OnTimer);
+    QTimer::singleShot(msecDelay, this, &LazyUpdater::OnTimer);
 }
 
 void LazyUpdater::OnTimer()

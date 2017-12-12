@@ -5,7 +5,7 @@
 #include "Scene/SceneHelper.h"
 #include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -314,7 +314,7 @@ void CollectParticleConfigs(DAVA::Scene* scene, const DAVA::FilePath& dataSource
         {
             if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
             {
-                collectSuperEmitters(layer->innerEmitter);
+                collectSuperEmitters(layer->innerEmitter->GetEmitter());
             }
         }
     };

@@ -14,7 +14,7 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.VcsTrigger.*
 import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 
 object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
-    template(dava_framework.buildTypes.dava_framework_TemplateDavaTools_win)
+    template = "dava_framework_TemplateDavaTools_win"
     uuid = "191a53b3-3a4a-4c0d-8aec-6bebec5048c0"
     extId = "dava_framework_NewBuilds_ToolSet_ToolSetWin"
     name = "ToolSet_win"
@@ -27,7 +27,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
 
     params {
         param("add_definitions", "-DDAVA_MEMORY_PROFILER=0,-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=true,-DCUSTOM_DAVA_CONFIG_PATH_WIN=%DavaConfigWin%,-DIGNORE_FILE_TREE_CHECK=true")
-        text("beast_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
         param("env.build_failed", "true")
         param("env.from_commit", "0")
         param("LAUNCHER_ENABLE", "0")
@@ -35,20 +34,18 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         param("pathToProjectApp_other", "%pathToProjectBuild%/app_other")
         param("pathToProjectBuild", "%system.teamcity.build.checkoutDir%/b_%ProjectName%")
         param("ProjectName", "ToolSet")
-        text("speedtree_branch", "trunk", display = ParameterDisplay.PROMPT, allowEmpty = true)
         checkbox("TEST", "false",
-                  checked = "true", unchecked = "false")
+                checked = "true", unchecked = "false")
         param("UNITY_BUILD", "true")
         param("use_incredi_build", "false")
     }
 
     vcs {
-        root("dava_framework_DavaResourceeditorBeastBranch", "+:.=>/dava.resourceeditor.beast")
         root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
     }
 
-     steps {
+    steps {
         script {
             name = "get stash commit"
             id = "RUNNER_633"
@@ -148,6 +145,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
     requirements {
         doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
     }
-    
+
     disableSettings("RQ_52", "RUNNER_9")
 })

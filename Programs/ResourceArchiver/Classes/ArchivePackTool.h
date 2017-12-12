@@ -2,7 +2,6 @@
 
 #include "CommandLineTool.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
 #include <Compression/Compressor.h>
 
 class ArchivePackTool : public CommandLineTool

@@ -25,6 +25,7 @@ public:
     enum class Fields : uint32
     {
         Text,
+        ImmediateText, // method<void(const DAVA::String& text)>
         PlaceHolder,
         IsReadOnly,
         IsEnabled,
@@ -42,6 +43,7 @@ private:
 
     void SetupControl();
     void EditingFinished();
+    void TextChanged(const QString& newText);
 
     M::ValidationResult Validate(const Any& value) const override;
     void ShowHint(const QString& message) override;

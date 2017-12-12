@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Math/AABBox3.h>
 #include <Math/Matrix4.h>
 #include <Math/Quaternion.h>
 #include <Math/Color.h>
@@ -74,6 +75,11 @@ inline physx::PxQuat QuaternionToPxQuat(const Quaternion& in)
 inline Color PxColorToColor(const physx::PxU32 color)
 {
     return Color(color);
+}
+
+inline AABBox3 PxBounds3ToAABox3(const physx::PxBounds3& bounds)
+{
+    return AABBox3(PxVec3ToVector3(bounds.minimum), PxVec3ToVector3(bounds.maximum));
 }
 
 } // namespace PhysicsMath

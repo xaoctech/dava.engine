@@ -804,6 +804,7 @@ void AnyToLua(lua_State* L, const Any& value)
 {
 #define CANGET(t) (value.CanGet<t>())
 #define IFPUSH(t, luaFn) if CANGET(t) { luaFn(L, value.Get<t>()); }
+#define IFPUSH_WITH_CAST(t, luaFn, luaType) if CANGET(t) { luaFn(L, static_cast<luaType>(value.Get<t>())); }
 
     if (value.IsEmpty())
     {
@@ -812,11 +813,11 @@ void AnyToLua(lua_State* L, const Any& value)
     else IFPUSH(int8, lua_pushinteger)
     else IFPUSH(int16, lua_pushinteger)
     else IFPUSH(int32, lua_pushinteger)
-    else IFPUSH(int64, lua_pushinteger)
+    else IFPUSH_WITH_CAST(int64, lua_pushinteger, lua_Integer)
     else IFPUSH(uint8, lua_pushinteger)
     else IFPUSH(uint16, lua_pushinteger)
     else IFPUSH(uint32, lua_pushinteger)
-    else IFPUSH(uint64, lua_pushinteger)
+    else IFPUSH_WITH_CAST(uint64, lua_pushinteger, lua_Integer)
     else IFPUSH(float32, lua_pushnumber)
     else IFPUSH(float64, lua_pushnumber)
     else IFPUSH(char8, lua_pushinteger)
