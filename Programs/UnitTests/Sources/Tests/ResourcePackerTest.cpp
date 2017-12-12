@@ -3,8 +3,7 @@
 
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
 
-#include <DavaTools/TexturePacker/ResourcePacker2D.h>
-#include <DavaTools/TextureCompression/PVRConverter.h>
+#include <TexturePacker/ResourcePacker2D.h>
 
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
@@ -20,12 +19,6 @@ DAVA_TESTCLASS (ResourcePackerTest)
 
     ResourcePackerTest()
     {
-#if defined(__DAVAENGINE_MACOS__)
-        const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI";
-#elif defined(__DAVAENGINE_WIN32__)
-        const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI.exe";
-#endif
-        DAVA::PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
     }
 
     void ClearWorkingFolders()
