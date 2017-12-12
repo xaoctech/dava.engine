@@ -232,7 +232,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             ImGui::GetWindowDrawList()->AddRectFilled({ pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, 0xFFFFFFFF);
         };
 
-        float32 x = static_cast<float32>(ImGui::Settings::screenWidth - 20) / scale - buttonSide;
+        float32 x = static_cast<float32>(ImGui::screenWidth - 20) / scale - buttonSide;
         float32 y = -buttonSide;
 
         const float32 maxScale = 2.5f;
@@ -255,7 +255,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             // We can't leave button id empty, but characters after '##' will be ignored and will not be shown on the button.
             if (ImGui::Button("##incScale", { buttonSide, buttonSide }) && scale < maxScale)
             {
-                ImGuiUtils::SetPendingScale(scale + scaleStep);
+                ImGuiUtils::SetScaleAsync(scale + scaleStep);
             }
             PopColor();
 
@@ -268,7 +268,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             PushColor(0.6f);
             if (ImGui::Button("##resetScale", { buttonSide, buttonSide }))
             {
-                ImGuiUtils::SetPendingScale(1.f);
+                ImGuiUtils::SetScaleAsync(1.f);
             }
             PopColor();
 
@@ -279,7 +279,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
             PushColor(1.f);
             if (ImGui::Button("##decScale", { buttonSide, buttonSide }) && scale > minScale)
             {
-                ImGuiUtils::SetPendingScale(scale - scaleStep);
+                ImGuiUtils::SetScaleAsync(scale - scaleStep);
             }
             PopColor();
 

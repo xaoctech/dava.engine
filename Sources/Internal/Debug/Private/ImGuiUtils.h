@@ -15,7 +15,7 @@ public:
     static float32 GetScale();
 
     /** Set ImGui interface scale from next frame. */
-    static void SetPendingScale(float32 scale);
+    static void SetScaleAsync(float32 scale);
 
     /** Get ImGui screen size to physical screen size scale. */
     static float32 GetImGuiScreenToPhysicalScreenSizeScale();
