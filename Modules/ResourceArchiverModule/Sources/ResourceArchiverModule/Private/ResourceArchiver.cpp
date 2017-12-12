@@ -598,7 +598,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
     }
 
     // write all compressed content to output file and set startPosition fileEntry
-    for (uint64 fileIndex = 0, dataOffset = 0; fileIndex < numOfFiles; ++fileIndex)
+    for (size_t fileIndex = 0, dataOffset = 0; fileIndex < numOfFiles; ++fileIndex)
     {
         PackFormat::FileTableEntry& fileEntry = packFile.filesTable.data.files[fileIndex];
         fileEntry.startPosition = dataOffset;
