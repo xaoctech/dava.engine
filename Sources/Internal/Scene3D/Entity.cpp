@@ -482,9 +482,7 @@ void Entity::Save(KeyedArchive* archive, SerializationContext* serializationCont
 
         ReflectedMeta* meta = refType->GetStructure()->meta.get();
 
-        DVASSERT(meta != nullptr);
-
-        bool isSerializable = meta->GetMeta<M::NonSerializableComponent>() == nullptr;
+        bool isSerializable = meta == nullptr || meta->GetMeta<M::NonSerializableComponent>() == nullptr;
 
         if (isSerializable)
         {
