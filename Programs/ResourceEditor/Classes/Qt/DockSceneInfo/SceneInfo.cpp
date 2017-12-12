@@ -737,49 +737,27 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
     using namespace DAVA;
     DVASSERT(renderObject != nullptr);
 
-    SceneData* sceneData = REGlobal::GetActiveDataNode<SceneData>();
-    DVASSERT(sceneData != nullptr);
-
-    SceneEditor2* currentScene = sceneData->GetScene().Get();
-    DVASSERT(renderObject != nullptr);
-
     SpeedTreeInfo info;
 
-    int32 rbCount = renderObject->GetRenderBatchCount();
-    int32 lodIndex, switchIndex;
+    int32 rbCount = renderObject->GetActiveRenderBatchCount();
     for (int32 i = 0; i < rbCount; ++i)
     {
-        RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
-
-        ForceValues forceValues = currentScene->editorLODSystem->GetForceValues();
-        const bool forceLayerSelected = (forceValues.flag & ForceValues::APPLY_LAYER) == ForceValues::APPLY_LAYER;
-
-        if (forceLayerSelected && forceValues.layer != -1)
-        {
-            if (forceValues.layer == EditorLODSystem::LAST_LOD_LAYER)
-            {
-                int32 maxLodIndex = renderObject->GetMaxLodIndex();
-                DAVA::int32 lastLayer = DAVA::Max(0, maxLodIndex);
-
-                if (lodIndex != lastLayer)
-                    continue;
-            }
-            else if (lodIndex != forceValues.layer)
-                continue;
-        }
-        else if (lodIndex > 0)
-            continue;
+        RenderBatch* rb = renderObject->GetActiveRenderBatch(i);
 
         PolygonGroup* pg = rb->GetPolygonGroup();
 
         if ((pg->GetFormat() & DAVA::EVF_PIVOT4) == 0)
+        {
             continue;
+        }
 
         String fxName = rb->GetMaterial()->GetEffectiveFXName().c_str();
         std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
 
         if ((strstr(fxName.c_str(), "alphatest") == nullptr) && (strstr(fxName.c_str(), "alphablend") == nullptr))
+        {
             continue;
+        }
 
         int32 triangleCount = pg->GetPrimitiveCount();
         for (int32 t = 0; t < triangleCount; t++)
