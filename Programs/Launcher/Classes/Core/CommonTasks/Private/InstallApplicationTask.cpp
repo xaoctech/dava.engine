@@ -22,7 +22,9 @@ InstallApplicationTask::InstallApplicationTask(ApplicationContext* appContext, C
 
 QString InstallApplicationTask::GetDescription() const
 {
-    return QObject::tr("Installing application %1").arg(LauncherUtils::GetAppName(params.app, params.newVersion.isToolSet));
+    return QObject::tr("Installing %1 from branch %2")
+    .arg(LauncherUtils::GetAppName(params.app, params.newVersion.isToolSet))
+    .arg(params.branch);
 }
 
 void InstallApplicationTask::Run()
@@ -37,7 +39,9 @@ void InstallApplicationTask::Run()
         return;
     }
 
-    QString description = QObject::tr("Downloading application %1").arg(LauncherUtils::GetAppName(params.app, params.newVersion.isToolSet));
+    QString description = QObject::tr("Downloading %1 from branch %2")
+                          .arg(LauncherUtils::GetAppName(params.app, params.newVersion.isToolSet))
+                          .arg(params.branch);
     std::unique_ptr<BaseTask> task = appContext->CreateTask<DownloadTask>(description, params.newVersion.url, &fileToWrite);
 
     Receiver receiver;

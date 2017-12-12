@@ -97,6 +97,14 @@ String UTF8Utils::EncodeToUTF8(const WideString& wstring)
     return result;
 };
 
+String UTF8Utils::EncodeToUTF8(const char32_t* str)
+{
+    String utf8string;
+    const char32_t* strEnd = str + std::char_traits<char32_t>::length(str);
+    utf8::utf32to8(str, strEnd, back_inserter(utf8string));
+    return utf8string;
+}
+
 String UTF8Utils::Trim(const String& str)
 {
     return UTF8Utils::TrimLeft(UTF8Utils::TrimRight(str));

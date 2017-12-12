@@ -19,7 +19,6 @@
 #include <DocDirSetup/DocDirSetup.h>
 
 #include <Render/Renderer.h>
-#include <DavaTools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
 
 #include <UI/UIControlSystem.h>
@@ -28,6 +27,7 @@
 #include <UI/Layouts/UILayoutSystem.h>
 #include <UI/RichContent/UIRichContentSystem.h>
 #include <UI/Scroll/UIScrollBarLinkSystem.h>
+#include <UI/Script/UIScriptSystem.h>
 
 #include <FileSystem/FileSystem.h>
 
@@ -72,12 +72,6 @@ DAVA::TArc::BaseApplication::EngineInitInfo QEApplication::GetInitInfo() const
 void QEApplication::Init(const DAVA::EngineContext* engineContext)
 {
     using namespace DAVA;
-#if defined(__DAVAENGINE_MACOS__)
-    const String pvrTexToolPath = "~res:/PVRTexToolCLI";
-#elif defined(__DAVAENGINE_WIN32__)
-    const String pvrTexToolPath = "~res:/PVRTexToolCLI.exe";
-#endif
-    PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
     Texture::SetPixelization(true);
 
@@ -104,6 +98,7 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetLayoutSystem()->SetAutoupdatesEnabled(true);
     uiControlSystem->GetSystem<UIScrollBarLinkSystem>()->SetRestoreLinks(true);
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
+    uiControlSystem->GetSystem<UIScriptSystem>()->SetPauseProcessing(true);
 
     UIEventsSystem* eventsSystem = uiControlSystem->GetSystem<UIEventsSystem>();
     eventsSystem->BindGlobalShortcut(KeyboardShortcut(eInputElements::KB_LEFT), UIInputSystem::ACTION_FOCUS_LEFT);

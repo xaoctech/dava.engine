@@ -154,20 +154,7 @@ void HUDSystem::OnUpdate()
         return;
     }
 
-    DocumentData* documentData = activeContext->GetData<DocumentData>();
-    SelectedNodes selection = documentData->GetSelectedNodes();
-    hudMap.clear();
-    for (PackageBaseNode* node : selection)
-    {
-        ControlNode* controlNode = dynamic_cast<ControlNode*>(node);
-        if (controlNode != nullptr)
-        {
-            if (hudMap.find(controlNode) == hudMap.end())
-            {
-                hudMap[controlNode] = std::make_unique<HUD>(controlNode, this, hudControl.Get());
-            }
-        }
-    }
+    SyncHudWithSelection();
 
     //show Rotate and Pivot only if only one control is selected
     bool showAreas = hudMap.size() == 1;
@@ -207,10 +194,13 @@ void HUDSystem::OnUpdate()
 
     if (GetSystemsManager()->GetDragState() == eDragState::NoDrag)
     {
-        bool findPivot = hudMap.size() == 1 && IsKeyPressed(eModifierKeys::CONTROL) && IsKeyPressed(eModifierKeys::ALT);
-        eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
-        ProcessCursor(systemsManager->GetLastMousePos(), searchOrder);
+        UpdateHUDArea();
     }
+}
+
+void HUDSystem::Invalidate()
+{
+    SetHighlight(nullptr);
 }
 
 void HUDSystem::ProcessInput(UIEvent* currentInput, eInputSource inputSource)
@@ -371,15 +361,6 @@ void HUDSystem::OnMagnetLinesChanged(const Vector<MagnetLineInfo>& magnetLines)
     }
 }
 
-void HUDSystem::ProcessCursor(const Vector2& pos, eSearchOrder searchOrder)
-{
-    if (GetSystemsManager()->GetDragState() == eDragState::SelectByRect)
-    {
-        return;
-    }
-    SetNewArea(GetControlArea(pos, searchOrder));
-}
-
 HUDAreaInfo HUDSystem::GetControlArea(const Vector2& pos, eSearchOrder searchOrder) const
 {
     uint32 end = eArea::AREAS_BEGIN;
@@ -425,6 +406,16 @@ void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
     }
 }
 
+void HUDSystem::UpdateHUDArea()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    bool findPivot = hudMap.size() == 1 && IsKeyPressed(eModifierKeys::CONTROL) && IsKeyPressed(eModifierKeys::ALT);
+    eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
+    SetNewArea(GetControlArea(GetSystemsManager()->GetLastMousePos(), searchOrder));
+}
+
 void HUDSystem::OnDragStateChanged(eDragState currentState, eDragState previousState)
 {
     switch (currentState)
@@ -437,6 +428,10 @@ void HUDSystem::OnDragStateChanged(eDragState currentState, eDragState previousS
         break;
     case eDragState::DragScreen:
         UpdateHUDEnabled();
+        break;
+    case eDragState::DuplicateByAlt:
+        SyncHudWithSelection();
+        UpdateHUDArea();
         break;
     default:
         break;
@@ -486,8 +481,7 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inpu
 {
     using namespace DAVA::TArc;
 
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (hudControl->IsVisible() == false || activeContext == nullptr)
+    if (hudControl->IsVisible() == false)
     {
         return false;
     }
@@ -499,11 +493,6 @@ bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inpu
 
 eDragState HUDSystem::RequireNewState(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
-    if (accessor->GetActiveContext() == nullptr)
-    {
-        return eDragState::NoDrag;
-    }
-
     eDragState dragState = GetSystemsManager()->GetDragState();
     //ignore all input devices except mouse while selecting by rect
     if (dragState == eDragState::SelectByRect && currentInput->device != eInputDevices::MOUSE)
@@ -557,6 +546,22 @@ void HUDSystem::ClearMagnetLines()
 {
     static const Vector<MagnetLineInfo> emptyVector;
     OnMagnetLinesChanged(emptyVector);
+}
+
+void HUDSystem::SyncHudWithSelection()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    SelectedControls selection = documentData->GetSelectedControls();
+    hudMap.clear();
+    for (ControlNode* node : selection)
+    {
+        hudMap[node] = std::make_unique<HUD>(node, this, hudControl.Get());
+    }
 }
 
 void HUDSystem::UpdateHUDEnabled()
