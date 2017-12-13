@@ -25,7 +25,7 @@
 #include "Network/NetConfig.h"
 #include <LoggerService/NetLogger.h>
 #include <LoggerService/ServiceInfo.h>
-#include "Platform/TemplateWin32/UAPNetworkHelper.Win.h"
+#include "Platform/TemplateWin32/UAPNetworkHelper.h"
 #endif
 
 #include <Version/Version.h>
