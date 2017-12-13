@@ -205,6 +205,30 @@ void UILayoutSystem::SetPhysicalSafeAreaInsets(float32 left, float32 top, float3
     }
 }
 
+float32 UILayoutSystem::GetSafeAreaLeftInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualX(physicalLeftSafeAreaInset);
+}
+
+float32 UILayoutSystem::GetSafeAreaTopInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualY(physicalTopSafeAreaInset);
+}
+
+float32 UILayoutSystem::GetSafeAreaRightInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualX(physicalRightSafeAreaInset);
+}
+
+float32 UILayoutSystem::GetSafeAreaBottomInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualY(physicalBottomSafeAreaInset);
+}
+
 void UILayoutSystem::ProcessControl(UIControl* control)
 {
     bool layoutDirty = control->IsLayoutDirty();

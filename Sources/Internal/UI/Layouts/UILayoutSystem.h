@@ -32,6 +32,11 @@ public:
      */
     void SetPhysicalSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom, bool isLeftNotch, bool isRightNotch);
 
+    float32 GetSafeAreaLeftInset() const;
+    float32 GetSafeAreaTopInset() const;
+    float32 GetSafeAreaRightInset() const;
+    float32 GetSafeAreaBottomInset() const;
+
     bool IsAutoupdatesEnabled() const;
     void SetAutoupdatesEnabled(bool enabled);
 
