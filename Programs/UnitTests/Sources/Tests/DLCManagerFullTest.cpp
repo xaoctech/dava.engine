@@ -292,8 +292,8 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
         FileSystem* fs = FileSystem::Instance();
 
-        FilePath destPath = documentRootDir + "superpack_for_unittests.dvpk";
-        FilePath srcPath = "~res:/superpack_for_unittests.dvpk";
+        const FilePath destPath = documentRootDir + "superpack_for_unittests.dvpk";
+        const FilePath srcPath = "~res:/TestData/DLCManagerFullTest/superpack_for_unittests.dvpk";
         if (!fs->IsFile(srcPath))
         {
             Logger::Error("no super pack file!");
@@ -324,13 +324,10 @@ DAVA_TESTCLASS (DLCManagerFullTest)
             char fullUrl[1024] = { 0 };
             sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
 
-            const String pack1("fakePack1");
-            const String pack2("secondFakePack2");
+            FilePath dbPath("~res:/TestData/DLCManagerFullTest/local_fake_meta.db");
+            TEST_VERIFY(fs->IsFile(dbPath) == true);
 
-            std::stringstream ss;
-            ss << pack1 << '\n' << pack2;
-
-            hints.preloadedPacks = ss.str();
+            hints.localPacksDB = dbPath.GetAbsolutePathname();
 
             dlcManager.Initialize(packDir,
                                   fullUrl,
@@ -340,14 +337,13 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
             TEST_VERIFY(true == dlcManager.IsRequestingEnabled());
 
-            TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack1));
-            TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack2));
-
+            const String pack1("fake_pack_00");
             const DLCManager::IRequest* request1 = dlcManager.RequestPack(pack1);
             TEST_VERIFY(request1 != nullptr);
             TEST_VERIFY(request1->GetRequestedPackName() == pack1);
             TEST_VERIFY(request1->IsDownloaded());
 
+            const String pack2("fake_pack_01");
             const DLCManager::IRequest* request2 = dlcManager.RequestPack(pack2);
             TEST_VERIFY(request2 != nullptr);
             TEST_VERIFY(request2->GetRequestedPackName() == pack2);

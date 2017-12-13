@@ -387,30 +387,31 @@ void DLCManagerImpl::CreateDownloader()
     }
 }
 
-void DLCManagerImpl::CreateLocalPacks(const DLCManager::Hints& hints_)
+void DLCManagerImpl::CreateLocalPacks(const String& localPacksDB)
 {
-    if (!hints_.localPacksDB.empty())
+    if (!localPacksDB.empty())
     {
         try
         {
-            metaLocal = std::make_unique<PackMetaData>(hints_.localPacksDB);
+            metaLocal = std::make_unique<PackMetaData>(localPacksDB);
         }
         catch (std::exception& ex)
         {
             std::stringstream ss;
-            ss << "can't load locat meta data from: " << hints_.localPacksDB << "\nerror: " << ex.what();
+            ss << "can't load locat meta data from: " << localPacksDB << "\nerror: " << ex.what();
             log << ss.str() << std::endl;
             Logger::Error("%s", ss.str().c_str());
 
             DAVA_THROW(Exception, "can't load local meta");
         }
+        // add all local packs
         const size_t packsCount = metaLocal->GetPacksCount();
         for (size_t i = 0; i < packsCount; ++i)
         {
             const auto& packInfo = metaLocal->GetPackInfo(static_cast<uint32>(i));
             packInfo.packName;
-            // add all local packs with empty file indexes - everything should be inside application
-            requests.push_back(new PackRequest(*this, packInfo.packName, Vector<uint32>()));
+            PackRequest* request = new PackRequest(packInfo.packName);
+            AddRequest(request);
         }
     }
 }
@@ -459,7 +460,7 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     if (isFirstTimeCall)
     {
-        CreateLocalPacks(hints_);
+        CreateLocalPacks(hints_.localPacksDB);
         SetRequestingEnabled(true);
         startInitializationTime = SystemTimer::GetMs();
     }
@@ -652,7 +653,10 @@ void DLCManagerImpl::RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) co
 void DLCManagerImpl::AddRequest(PackRequest* request)
 {
     requests.push_back(request);
-    requestManager->Push(request);
+    if (!request->IsDownloaded())
+    {
+        requestManager->Push(request);
+    }
     requestNameHashes.insert(std::hash<String>{}(request->GetRequestedPackName()));
 }
 

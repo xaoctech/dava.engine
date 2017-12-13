@@ -215,7 +215,7 @@ private:
     void TestPackDirectoryExist() const;
     void DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
     void CreateDownloader();
-    void CreateLocalPacks(const Hints& hints_);
+    void CreateLocalPacks(const String& localPacksDB);
 
     String BuildErrorMessageBadServerCrc(uint32 crc32) const;
     static String BuildErrorMessageFailedRead(const FilePath& path);
