@@ -866,6 +866,11 @@ UIControl* UIControlSystem::GetFlowRoot() const
     return flowRoot.Get();
 }
 
+void UIControlSystem::SetPhysicalSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom, bool isLeftNotch, bool isRightNotch)
+{
+    layoutSystem->SetPhysicalSafeAreaInsets(left, top, right, bottom, isLeftNotch, isRightNotch);
+}
+
 UIEvent UIControlSystem::MakeUIEvent(const InputEvent& inputEvent) const
 {
     UIEvent uie;

@@ -16,7 +16,7 @@ public:
     void Apply(ControlLayoutData& data, Vector2::eAxis axis, bool onlyForIgnoredControls);
     void Apply(ControlLayoutData& data, Vector2::eAxis axis, bool onlyForIgnoredControls, int32 firstIndex, int32 lastIndex);
 
-    static void ApplyAnchor(ControlLayoutData& data, Vector2::eAxis axis, float32 min, float32 max, bool isRtl);
+    static void ApplyAnchor(ControlLayoutData& data, Vector2::eAxis axis, float32 min, float32 max, bool isRtl, const Layouter& layouter);
 
 private:
     Layouter& layouter;

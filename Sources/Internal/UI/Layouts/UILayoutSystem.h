@@ -27,6 +27,11 @@ public:
     bool IsRtl() const;
     void SetRtl(bool rtl);
 
+    /**
+     Engine Core uses this method to provide the iPhoneX displays safe area to layout system.  
+     */
+    void SetPhysicalSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom, bool isLeftNotch, bool isRightNotch);
+
     bool IsAutoupdatesEnabled() const;
     void SetAutoupdatesEnabled(bool enabled);
 
@@ -71,6 +76,13 @@ private:
     Token visibleFrameChangedToken;
     Token virtualSizeChangedToken;
     Token inputSizeChangedToken;
+
+    float32 physicalLeftSafeAreaInset = 0.0f;
+    float32 physicalTopSafeAreaInset = 0.0f;
+    float32 physicalRightSafeAreaInset = 0.0f;
+    float32 physicalBottomSafeAreaInset = 0.0f;
+    bool isLeftNotch = false;
+    bool isRightNotch = false;
 
     friend UILayoutSystemTest;
 };
