@@ -58,6 +58,7 @@ struct WindowNativeBridge final
     //////////////////////////////////////////////////////////////////////////
     // Notifications from RenderViewController
     void LoadView();
+    void OrientationChanged();
     void ViewWillTransitionToSize(float32 w, float32 h);
 
     //////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,8 @@ struct WindowNativeBridge final
     void TouchesEnded(NSSet* touches);
 
     //////////////////////////////////////////////////////////////////////////
+
+    void PostSafeAreaInsetsChanged();
 
     WindowImpl* windowImpl = nullptr;
     Window* window = nullptr;
