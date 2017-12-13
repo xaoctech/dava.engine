@@ -117,8 +117,8 @@ class Preparation:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Utility tool to delete files from the repository that are not in the whitelist.')
-    parser.add_argument('--path', required=False, help='Example: --path /var/git/repo', default='C:\Users\m_molokovskih\Wargaming\dava.framework')
-    parser.add_argument('--repo', required=False, help='Example: --repo my-repo.git', default='C:\Users\m_molokovskih\Wargaming\dava.framework')
+    parser.add_argument('--path', required=True, help='Example: --path /var/git/repo')
+    parser.add_argument('--repo', required=True, help='Example: --repo my-repo.git')
 
     args = parser.parse_args()
 

@@ -65,8 +65,8 @@
 /Modules/TArc
 /Modules/Tools
 /Programs
-!/Programs\NetworkTestGame\Data
-!/Programs\NetworkTestGame\DataSource
+!/Programs/NetworkTestGame/Data
+!/Programs/NetworkTestGame/DataSource
 /RepoTools
 /Sources
 /Thirdparty
