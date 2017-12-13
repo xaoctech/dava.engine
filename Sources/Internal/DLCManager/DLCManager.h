@@ -119,7 +119,7 @@ public:
     struct Hints
     {
         String logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
-        String preloadedPacks = ""; //!< list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
+        String preloadedPacks = ""; //!< (DEPRECATED use localPacksDB) list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
         String localPacksDB = ""; //!< path to sqlite3 DB with files and packs tables to generate local meta data
         int64 limitRequestUpdateIterationUs = 500; //!< max time to update requestManager in microseconds
         uint32 maxSameErrorCounter = 10; //!< if for example EBUSY error occurred try same operation again while counter below this value

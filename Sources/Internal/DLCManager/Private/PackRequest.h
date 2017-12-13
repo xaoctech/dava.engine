@@ -19,15 +19,17 @@ class FileSystem;
 class PackRequest final : public DLCManager::IRequest
 {
 public:
+    /** used for local packs */
+    explicit PackRequest(const String& packName);
     PackRequest(DLCManagerImpl& packManager_, const String& packName, Vector<uint32> fileIndexes_);
-    void CancelCurrentDownloadRequests();
     PackRequest(DLCManagerImpl& packManager_, const String& requestedPackName);
-
     ~PackRequest() override;
 
     void Start();
     bool Update();
     void Stop();
+
+    void CancelCurrentDownloadRequests();
 
     const String& GetRequestedPackName() const final;
     /** recalculate full size with all dependencies */
