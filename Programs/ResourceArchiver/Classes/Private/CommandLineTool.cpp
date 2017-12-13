@@ -64,11 +64,9 @@ int CommandLineTool::Process()
     {
         return ProcessInternal();
     }
-    else
-    {
-        PrintUsage();
-        return codeParseError;
-    }
+
+    PrintUsage();
+    return codeParseError;
 }
 
 void CommandLineTool::PrepareEnvironment() const
