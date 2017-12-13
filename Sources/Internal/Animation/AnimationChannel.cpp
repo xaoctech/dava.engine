@@ -4,27 +4,18 @@
 
 namespace DAVA
 {
-AnimationChannel::State::State()
-{
-    Memset(value, 0, sizeof(value));
-}
-
-const float32* AnimationChannel::State::GetChannelValue() const
-{
-    return value;
-}
-
 uint32 AnimationChannel::Bind(const uint8* _data)
 {
-    dimension = keyStride = keysCount = 0;
     keysData = nullptr;
+    dimension = 0;
+    keyStride = keysCount = 0;
 
     const uint8* dataptr = _data;
     if (_data != nullptr && *reinterpret_cast<const uint32*>(_data) == ANIMATION_CHANNEL_DATA_SIGNATURE)
     {
         dataptr += 4; //skip signature
 
-        dimension = uint32(*dataptr);
+        dimension = *dataptr;
         dataptr += 1;
 
         interpolation = eInterpolation(*dataptr);
@@ -45,14 +36,17 @@ uint32 AnimationChannel::Bind(const uint8* _data)
 
     return uint32(keysData - _data) + keysCount * keyStride;
 }
+
 #define KEY_DATA_SIZE (dimension * sizeof(float32))
 #define KEY_TIME(keyIndex) (*reinterpret_cast<const float32*>(keysData + (keyIndex)*keyStride))
 #define KEY_DATA(keyIndex) (reinterpret_cast<const float32*>(keysData + (keyIndex)*keyStride + sizeof(float32)))
 #define KEY_META(keyIndex) (KEY_DATA(keyIndex) + KEY_DATA_SIZE) //tangents for bezier interpolation
 
-void AnimationChannel::Evaluate(float32 time, State* state) const
+void AnimationChannel::Evaluate(float32 time, float32* outData, uint32 dataSize) const
 {
-    uint32 k = state->startKey;
+    DVASSERT(dataSize >= GetDimension());
+
+    uint32 k = startKey;
 
     if (KEY_TIME(k) > time)
     {
@@ -64,18 +58,18 @@ void AnimationChannel::Evaluate(float32 time, State* state) const
         if (KEY_TIME(k) > time)
             break;
 
-        state->startKey = k;
+        startKey = k;
     }
 
     if (k == 0)
     {
-        Memcpy(state->value, KEY_DATA(0), KEY_DATA_SIZE);
+        Memcpy(outData, KEY_DATA(0), KEY_DATA_SIZE);
         return;
     }
 
     if (k == keysCount)
     {
-        Memcpy(state->value, KEY_DATA(keysCount - 1), KEY_DATA_SIZE);
+        Memcpy(outData, KEY_DATA(keysCount - 1), KEY_DATA_SIZE);
         return;
     }
 
@@ -88,11 +82,11 @@ void AnimationChannel::Evaluate(float32 time, State* state) const
     {
     case INTERPOLATION_LINEAR:
     {
-        for (uint32 d = 0; d < dimension; ++d)
+        for (uint32 d = 0; d < uint32(dimension); ++d)
         {
             float32 v0 = *(KEY_DATA(k0) + d);
             float32 v1 = *(KEY_DATA(k) + d);
-            state->value[d] = Lerp(v0, v1, t);
+            *(outData + d) = Lerp(v0, v1, t);
         }
     }
     break;
@@ -106,7 +100,7 @@ void AnimationChannel::Evaluate(float32 time, State* state) const
         q.Slerp(q0, q, t);
         q.Normalize();
 
-        Memcpy(state->value, q.data, KEY_DATA_SIZE);
+        Memcpy(outData, q.data, KEY_DATA_SIZE);
     }
     break;
 
@@ -120,6 +114,7 @@ void AnimationChannel::Evaluate(float32 time, State* state) const
         break;
     }
 }
+
 #undef KEY_DATA_SIZE
 #undef KEY_TIME
 #undef KEY_DATA

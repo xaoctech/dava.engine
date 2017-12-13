@@ -310,4 +310,9 @@ const PackMetaData& PackArchive::GetMeta() const
     return *packMeta;
 }
 
+const PackFormat::PackFile& PackArchive::GetPackFile() const
+{
+    return packFile;
+}
+
 } // end namespace DAVA
