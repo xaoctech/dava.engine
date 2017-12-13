@@ -12,18 +12,17 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutComponent)
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowLayoutComponent* o) { o->Release(); })
     .Field("enabled", &UIFlowLayoutComponent::IsEnabled, &UIFlowLayoutComponent::SetEnabled)
-    .Field("orientation", &UIFlowLayoutComponent::GetOrientation, &UIFlowLayoutComponent::SetOrientation)
-    [
-    M::EnumT<eOrientation>()
-    ]
+    .Field("orientation", &UIFlowLayoutComponent::GetOrientation, &UIFlowLayoutComponent::SetOrientation)[M::EnumT<eOrientation>()]
     .Field("hPadding", &UIFlowLayoutComponent::GetHorizontalPadding, &UIFlowLayoutComponent::SetHorizontalPadding)
     .Field("hDynamicPadding", &UIFlowLayoutComponent::IsDynamicHorizontalPadding, &UIFlowLayoutComponent::SetDynamicHorizontalPadding)
     .Field("hDynamicInLinePadding", &UIFlowLayoutComponent::IsDynamicHorizontalInLinePadding, &UIFlowLayoutComponent::SetDynamicHorizontalInLinePadding)
+    .Field("hSafeAreaPaddingInset", &UIFlowLayoutComponent::IsHorizontalSafeAreaPaddingInset, &UIFlowLayoutComponent::SetHorizontalSafeAreaPaddingInset)
     .Field("hSpacing", &UIFlowLayoutComponent::GetHorizontalSpacing, &UIFlowLayoutComponent::SetHorizontalSpacing)
     .Field("hDynamicSpacing", &UIFlowLayoutComponent::IsDynamicHorizontalSpacing, &UIFlowLayoutComponent::SetDynamicHorizontalSpacing)
     .Field("vPadding", &UIFlowLayoutComponent::GetVerticalPadding, &UIFlowLayoutComponent::SetVerticalPadding)
     .Field("vDynamicPadding", &UIFlowLayoutComponent::IsDynamicVerticalPadding, &UIFlowLayoutComponent::SetDynamicVerticalPadding)
     .Field("vSpacing", &UIFlowLayoutComponent::GetVerticalSpacing, &UIFlowLayoutComponent::SetVerticalSpacing)
+    .Field("vSafeAreaPaddingInset", &UIFlowLayoutComponent::IsVerticalSafeAreaPaddingInset, &UIFlowLayoutComponent::SetVerticalSafeAreaPaddingInset)
     .Field("vDynamicSpacing", &UIFlowLayoutComponent::IsDynamicVerticalSpacing, &UIFlowLayoutComponent::SetDynamicVerticalSpacing)
     .Field("skipInvisible", &UIFlowLayoutComponent::IsSkipInvisibleControls, &UIFlowLayoutComponent::SetSkipInvisibleControls)
     .Field("useRtl", &UIFlowLayoutComponent::IsUseRtl, &UIFlowLayoutComponent::SetUseRtl)
@@ -125,6 +124,16 @@ void UIFlowLayoutComponent::SetDynamicHorizontalInLinePadding(bool dynamic)
     SetFlag(FLAG_DYNAMIC_HORIZONTAL_IN_LINE_PADDING, dynamic);
 }
 
+bool UIFlowLayoutComponent::IsHorizontalSafeAreaPaddingInset() const
+{
+    return flags.test(FLAG_HORIZONTAL_SAFE_AREA_PADDING);
+}
+
+void UIFlowLayoutComponent::SetHorizontalSafeAreaPaddingInset(bool inset)
+{
+    SetFlag(FLAG_HORIZONTAL_SAFE_AREA_PADDING, inset);
+}
+
 bool UIFlowLayoutComponent::IsDynamicHorizontalSpacing() const
 {
     return flags.test(FLAG_DYNAMIC_HORIZONTAL_SPACING);
@@ -170,6 +179,16 @@ void UIFlowLayoutComponent::SetDynamicVerticalPadding(bool dynamic)
 bool UIFlowLayoutComponent::IsDynamicVerticalSpacing() const
 {
     return flags.test(FLAG_DYNAMIC_VERTICAL_SPACING);
+}
+
+bool UIFlowLayoutComponent::IsVerticalSafeAreaPaddingInset() const
+{
+    return flags.test(FLAG_VERTICAL_SAFE_AREA_PADDING);
+}
+
+void UIFlowLayoutComponent::SetVerticalSafeAreaPaddingInset(bool inset)
+{
+    SetFlag(FLAG_VERTICAL_SAFE_AREA_PADDING, inset);
 }
 
 void UIFlowLayoutComponent::SetDynamicVerticalSpacing(bool dynamic)

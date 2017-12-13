@@ -20,6 +20,8 @@ if (NOT LINUX)
 endif()
 
 find_dava_module( CEFWebview )
+find_dava_module( Version )
+
 
 # add physics
 find_dava_module( Physics )
