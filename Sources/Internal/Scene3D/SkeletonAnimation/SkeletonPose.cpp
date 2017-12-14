@@ -1,21 +1,63 @@
 #include "SkeletonPose.h"
+#include "Math/MathHelpers.h"
 
 namespace DAVA
 {
-SkeletonPose::SkeletonPose(uint32 nodeCount)
+SkeletonPose::SkeletonPose(uint32 jointCount)
 {
-    SetNodeCount(nodeCount);
+    SetJointCount(jointCount);
 }
 
-void SkeletonPose::Add(const SkeletonPose& pose)
+void SkeletonPose::Add(const SkeletonPose& other)
 {
-    //TODO
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
+
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, transform0.AppendTransform(transform1));
+    }
 }
 
-SkeletonPose SkeletonPose::Blend(const SkeletonPose& p0, const SkeletonPose& p1, float32 ratio)
+void SkeletonPose::Diff(const SkeletonPose& other)
 {
-    //TODO
-    return p0;
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
+
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, transform0.GetInverse().AppendTransform(transform1));
+    }
+}
+
+void SkeletonPose::Override(const SkeletonPose& other)
+{
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
+
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, JointTransform::Override(transform0, transform1));
+    }
+}
+
+void SkeletonPose::Lerp(const SkeletonPose& other, float32 factor)
+{
+    uint32 jointCount = other.GetJointsCount();
+    SetJointCount(Max(GetJointsCount(), jointCount));
+
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const JointTransform& transform0 = GetJointTransform(j);
+        const JointTransform& transform1 = other.GetJointTransform(j);
+        SetTransform(j, JointTransform::Lerp(transform0, transform1, factor));
+    }
 }
 
 } //ns

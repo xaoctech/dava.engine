@@ -2,7 +2,7 @@
 
 #include "CacheDB.h"
 
-#include <DavaTools/AssetCache/AssetCache.h>
+#include <AssetCache/AssetCache.h>
 
 #include <FileSystem/DynamicMemoryFile.h>
 

@@ -1,6 +1,6 @@
 #include "SpritesPacker.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 #include <Render/2D/Sprite.h>
 #include <Logger/Logger.h>

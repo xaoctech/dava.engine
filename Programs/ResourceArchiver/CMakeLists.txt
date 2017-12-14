@@ -7,7 +7,8 @@ set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}
 
 include      ( CMake-common )
 
-find_dava_module( DavaTools )
+find_dava_module( AssetCache )
+find_dava_module( ResourceArchiverModule )
 find_dava_module( DocDirSetup )
 dava_add_definitions ( -DCONSOLE )
 find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS )
