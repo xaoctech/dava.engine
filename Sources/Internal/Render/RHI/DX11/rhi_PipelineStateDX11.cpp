@@ -123,6 +123,8 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateInputLayout(const VertexLayout& la
             elem[elemCount].SemanticName = "BLENDINDICES";
         }
         break;
+        default:
+            break;
         }
 
         switch (layout.ElementDataType(i))
@@ -146,6 +148,8 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateInputLayout(const VertexLayout& la
             }
         }
         break;
+        default:
+            break;
         }
 
         if (layout.ElementSemantics(i) == VS_COLOR)
@@ -250,6 +254,8 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateCompatibleInputLayout(const Vertex
                 elem[elemCount].SemanticName = "BLENDINDICES";
             }
             break;
+            default:
+                break;
             }
 
             switch (vbLayout.ElementDataType(vb_elem_i))
@@ -273,6 +279,8 @@ ID3D11InputLayout* PipelineStateDX11_t::CreateCompatibleInputLayout(const Vertex
                 }
             }
             break;
+            default:
+                break;
             }
 
             if (vbLayout.ElementSemantics(vb_elem_i) == VS_COLOR)

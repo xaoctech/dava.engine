@@ -238,6 +238,8 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             }
         }
         break;
+        default:
+            break;
         }
     }
 

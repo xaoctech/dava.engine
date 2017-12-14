@@ -172,7 +172,7 @@ void Announcer::AcceptorHandleConnect(TCPAcceptor* acceptor, int32 error)
         size_t length = dataCallback(sizeof(tcpBuffer), tcpBuffer);
         if (length > 0)
         {
-            auto socketWriteHandler = [this, socketCloseHandler](TCPSocket* socket, int32, const Buffer*, size_t) {
+            auto socketWriteHandler = [socketCloseHandler](TCPSocket* socket, int32, const Buffer*, size_t) {
                 socket->Close(socketCloseHandler);
             };
 

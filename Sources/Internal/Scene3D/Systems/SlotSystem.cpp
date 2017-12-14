@@ -322,8 +322,8 @@ void SlotSystem::ExternalEntityLoader::AddEntity(Entity* parent, Entity* child)
 
 SlotSystem::SlotSystem(Scene* scene)
     : SceneSystem(scene)
-    , sharedCache(new ItemsCache())
     , externalEntityLoader(new AsyncSlotExternalLoader())
+    , sharedCache(new ItemsCache())
 {
 }
 

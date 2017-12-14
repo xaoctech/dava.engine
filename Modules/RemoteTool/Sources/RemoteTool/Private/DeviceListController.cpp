@@ -23,12 +23,12 @@
 
 DeviceListController::DeviceListController(DAVA::TArc::UI* ui, QObject* parent)
     : QObject(parent)
-    , ui(ui)
     , model(NULL)
     , loggerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
-    , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
     , loggerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
     , profilerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , ui(ui)
 {
     using namespace DAVA;
     using namespace DAVA::Net;
