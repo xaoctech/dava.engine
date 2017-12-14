@@ -252,7 +252,7 @@ void NotificationScreen::OnNotificationStressTest(BaseObject* obj, void* data, v
     for (int i = 0; i < 550; ++i)
     {
         notificationController->RemoveAllDelayedNotifications();
-        notificationController->PostDelayedNotification(L"Stress test", L"Notification stress test", 30);
+        notificationController->PostDelayedNotification("Stress test", "Notification stress test", 30);
     }
     Logger::Info("Notification stress test finished");
 }
