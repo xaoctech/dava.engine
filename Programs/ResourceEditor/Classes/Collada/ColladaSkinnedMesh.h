@@ -13,7 +13,6 @@ public:
     struct Joint
     {
         FCDSkinControllerJoint* joint;
-        FCDSkinControllerJoint* parentJoint;
         ColladaSceneNode* node;
         int32 index;
         int32 parentIndex;
@@ -52,7 +51,7 @@ public:
     ColladaMesh* mesh = nullptr;
 
 private:
-    void LinkJoints(ColladaSceneNode* node, Joint* parentJoint);
+    void LinkJoints(ColladaSceneNode* node, int32 parentJointIndex = -1);
     void BuildJointsHierarhy();
 };
 };

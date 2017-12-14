@@ -1,7 +1,6 @@
 #include "UIViewerApp.h"
 #include "UIScreens/UIViewScreen.h"
 
-#include <DAVAVersion.h>
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
 #include <DeviceManager/DeviceManager.h>
@@ -19,9 +18,9 @@
 #include <Utils/StringFormat.h>
 
 #include <DocDirSetup/DocDirSetup.h>
-
 #include <LoggerService/NetLogger.h>
 #include <LoggerService/ServiceInfo.h>
+#include <Version/Version.h>
 
 namespace UIViewerAppPrivate
 {
@@ -112,7 +111,7 @@ void UIViewerApp::OnActionTriggered(DAVA::Action action)
         keyboardShowed = !keyboardShowed;
         if (keyboardShowed)
         {
-            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, virtualKeyboardHeight));
+            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, static_cast<float32>(virtualKeyboardHeight)));
         }
         else
         {
@@ -147,7 +146,7 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
     physicalToVirtualScale.dx = static_cast<float32>(virtualSize.dx) / windowSize.dx;
     physicalToVirtualScale.dy = static_cast<float32>(virtualSize.dy) / windowSize.dy;
 
-    String title = DAVA::Format("DAVA Engine - UI Viewer | %s [%u bit]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8));
+    String title = Version::CreateAppVersion("UI Viewer");
     w->SetTitleAsync(title);
     w->SetSizeAsync(windowSize);
     w->SetVirtualSize(static_cast<float32>(virtualSize.dx), static_cast<float32>(virtualSize.dy));
@@ -176,7 +175,9 @@ void UIViewerApp::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, D
     vcs->RegisterAvailableResourceSize(vSize.dx, vSize.dy, "Gfx");
     vcs->RegisterAvailableResourceSize(vSize.dx * 2, vSize.dy * 2, "Gfx2");
 
-    String title = Format("DAVA Engine - UI Viewer | %s [%u bit] | [%d x %d] - [%d x %d]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8), static_cast<int32>(size.dx), static_cast<int32>(size.dy), vSize.dx, vSize.dy);
+    String title = Format("%s | [%d x %d] - [%d x %d]",
+                          Version::CreateAppVersion("UI Viewer").c_str(),
+                          static_cast<int32>(size.dx), static_cast<int32>(size.dy), vSize.dx, vSize.dy);
     window->SetTitleAsync(title);
 }
 

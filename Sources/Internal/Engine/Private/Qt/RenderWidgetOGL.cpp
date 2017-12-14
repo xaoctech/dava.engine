@@ -224,7 +224,7 @@ void RenderWidgetOGL::InitCustomRenderParams(rhi::InitParam& params)
     params.threadedRenderFrameCount = 1;
     params.acquireContextFunc = &AcquireContextImpl;
     params.releaseContextFunc = &ReleaseContextImpl;
-    params.defaultFrameBuffer = reinterpret_cast<void*>(quickWindow()->renderTarget()->handle());
+    params.defaultFrameBuffer = reinterpret_cast<void*>(static_cast<intptr_t>(quickWindow()->renderTarget()->handle()));
 }
 
 void RenderWidgetOGL::AcquireContext()

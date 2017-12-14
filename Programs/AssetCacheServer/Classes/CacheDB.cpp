@@ -2,7 +2,7 @@
 #include "ServerCacheEntry.h"
 #include "PrintHelpers.h"
 
-#include <DavaTools/AssetCache/CachedItemValue.h>
+#include <AssetCache/CachedItemValue.h>
 
 #include <FileSystem/File.h>
 #include <FileSystem/FileSystem.h>

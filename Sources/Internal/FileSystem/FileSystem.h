@@ -85,7 +85,7 @@ public:
 		\brief Function to retrieve current working directory
 		\returns current working directory
 	 */
-    virtual const FilePath& GetCurrentWorkingDirectory();
+    virtual FilePath GetCurrentWorkingDirectory();
 
     /**
 		\brief Function to retrieve directory, which contain executable binary file
@@ -303,17 +303,18 @@ private:
 
     virtual eCreateDirectoryResult CreateExactDirectory(const FilePath& filePath);
 
-    FilePath currentWorkingDirectory;
-    FilePath currentDocDirectory;
+    FilePath currentDocDirectory; // TODO how it influence on multithreading with FS?
 
     struct ResourceArchiveItem
     {
         ResourceArchiveItem() = default;
         ResourceArchiveItem(const ResourceArchiveItem&) = delete;
-        ResourceArchiveItem(ResourceArchiveItem&& other)
-            : archive(std::move(other.archive))
-            , attachPath(std::move(other.attachPath))
-            , archiveFilePath(std::move(other.archiveFilePath))
+        ResourceArchiveItem(ResourceArchiveItem&& other) noexcept
+        : archive(std::move(other.archive))
+          ,
+          attachPath(std::move(other.attachPath))
+          ,
+          archiveFilePath(std::move(other.archiveFilePath))
         {
         }
 
