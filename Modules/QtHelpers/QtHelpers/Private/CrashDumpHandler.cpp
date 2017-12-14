@@ -3,7 +3,10 @@
 #include <Base/Platform.h>
 #include <Debug/DebuggerDetection.h>
 #if defined(__DAVAENGINE_WIN32__)
+#pragma warning(push)
+#pragma warning(disable : 4091) // 'typedef ': ignored on left of '' when no variable is declared
     #include <imagehlp.h>
+#pragma warning(pop)
 #endif
 
 namespace DAVA
