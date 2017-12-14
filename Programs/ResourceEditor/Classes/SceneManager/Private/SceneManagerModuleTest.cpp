@@ -20,6 +20,7 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/QtDelayedExecutor.h>
+#include <TArc/Testing/GMockInclude.h>
 
 #include <Physics/CharacterControllerComponent.h>
 
@@ -33,8 +34,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QTest>
-
-#include <gmock/gmock.h>
 
 namespace SMTest
 {

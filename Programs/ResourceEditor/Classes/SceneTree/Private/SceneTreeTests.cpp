@@ -16,6 +16,7 @@
 #include <TArc/Testing/MockDefine.h>
 #include <TArc/Testing/MockListener.h>
 #include <TArc/Testing/TArcUnitTests.h>
+#include <TArc/Testing/GMockInclude.h>
 
 #include <Base/Any.h>
 #include <Scene3D/Components/Controller/WASDControllerComponent.h>
@@ -26,8 +27,6 @@
 #include <QTreeView>
 #include <QtTest>
 #include <QVariant>
-
-#include <gmock/gmock.h>
 
 DAVA_TARC_TESTCLASS(SceneTreeTests)
 {
