@@ -573,4 +573,9 @@ bool PackMetaData::HasDependency(uint32 packWithDependency, uint32 dependency) c
     return binary_search(begin(dep), end(dep), dependency);
 }
 
+bool PackMetaData::HasPack(const String& packName) const
+{
+    return mapPackNameToPackIndex.find(packName) != end(mapPackNameToPackIndex);
+}
+
 } // end namespace DAVA

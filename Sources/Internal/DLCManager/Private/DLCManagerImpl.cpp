@@ -248,6 +248,8 @@ void DLCManagerImpl::ClearResouces()
         }
         scanThread->Release();
         scanThread = nullptr;
+        scanState = ScanState::Wait;
+        // TODO in UnitTests too fast metaRemoteDataLoadedSem.
     }
 
     for (auto request : requests)
@@ -463,6 +465,10 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         CreateLocalPacks(hints_.localPacksDB);
         SetRequestingEnabled(true);
         startInitializationTime = SystemTimer::GetMs();
+        if (urlToSuperPack.empty())
+        {
+            initState = InitState::Ready;
+        }
     }
 }
 
@@ -1545,6 +1551,12 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
         return;
     }
 
+    if (HasLocalMeta() && GetLocalMeta().HasPack(requestedPackName))
+    {
+        Logger::Error("local pack: %s can't be removed", requestedPackName.c_str());
+        return;
+    }
+
     const IRequest* request = RequestPack(requestedPackName);
     if (request != nullptr)
     {
@@ -1862,18 +1874,21 @@ const String& DLCManagerImpl::GetSuperPackUrl() const
 
 String DLCManagerImpl::GetRelativeFilePath(uint32 fileIndex)
 {
-    uint32 startOfFilePath = startFileNameIndexesInUncompressedNames.at(fileIndex);
+    const uint32 startOfFilePath = startFileNameIndexesInUncompressedNames.at(fileIndex);
     return &uncompressedFileNames.at(startOfFilePath);
 }
 
 void DLCManagerImpl::StartScanDownloadedFiles()
 {
-    if (ScanState::Wait == scanState)
+    if (!urlToSuperPack.empty())
     {
-        scanState = ScanState::Starting;
-        scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
-        scanThread->SetName("DLC::ThreadScanFunc");
-        scanThread->Start();
+        if (ScanState::Wait == scanState)
+        {
+            scanState = ScanState::Starting;
+            scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
+            scanThread->SetName("DLC::ThreadScanFunc");
+            scanThread->Start();
+        }
     }
 }
 
@@ -1957,11 +1972,11 @@ void DLCManagerImpl::ThreadScanFunc()
 {
     Thread* thisThread = Thread::Current();
     // scan files in download dir
-    int64 startTime = SystemTimer::GetMs();
+    const int64 startTime = SystemTimer::GetMs();
 
     ScanFiles(dirToDownloadedPacks, localFiles);
 
-    int64 finishScan = SystemTimer::GetMs() - startTime;
+    const int64 finishScan = SystemTimer::GetMs() - startTime;
 
     Logger::Info("finish scan files for: %fsec total files: %ld", finishScan / 1000.f, localFiles.size());
 
@@ -1974,6 +1989,10 @@ void DLCManagerImpl::ThreadScanFunc()
 
     if (thisThread->IsCancelling() || metaRemote == nullptr)
     {
+        if (metaRemote == nullptr)
+        {
+            Logger::Error("remote meta not loaded");
+        }
         return;
     }
 

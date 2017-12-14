@@ -47,7 +47,7 @@ struct FSMTest02
     State state = WaitInitializationFinished;
     DAVA::float32 time = 0.0f;
     DAVA::float32 waitSecondConnect = 10.0f;
-    const DAVA::float32 timeout = 120.f;
+    const DAVA::float32 timeout = 1200.f; // TODO revert after debug back to 120.f
     DAVA::DLCManager::Progress progressAfterInit;
 
     void Cleanup(DAVA::DLCManager& dlcManager)
@@ -78,7 +78,7 @@ struct FSMTest02
         using namespace DAVA;
         DLCManager& dlcManager = *GetEngineContext()->dlcManager;
 
-        DAVA::float32 dt = DAVA::SystemTimer::GetRealFrameDelta();
+        const float32 dt = SystemTimer::GetRealFrameDelta();
         time += dt;
 
         switch (state)
@@ -241,6 +241,47 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         }
     }
 
+    DAVA_TEST (TestInitOnlyLocalMeta)
+    {
+        using namespace DAVA;
+
+        DLCManager& dlcManager = *GetEngineContext()->dlcManager;
+        try
+        {
+            DLCManager::Hints hints;
+            hints.localPacksDB = "~res:/TestData/DLCManagerFullTest/local_fake_meta.db";
+            dlcManager.Initialize("~doc:/packs/", "", hints);
+        }
+        catch (std::exception& ex)
+        {
+            Logger::Error("can't initialize DLCManager without remote url, exception: %s", ex.what());
+            TEST_VERIFY(false && "failed init dlc_manager without url");
+        }
+
+        dlcManager.Deinitialize();
+    }
+
+    DAVA_TEST (TestInitOnlyRemoteMeta)
+    {
+        using namespace DAVA;
+
+        DLCManager& dlcManager = *GetEngineContext()->dlcManager;
+        try
+        {
+            const DLCManager::Hints hints;
+            char fullUrl[1024] = { 0 };
+            sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
+            dlcManager.Initialize("~doc:/packs/", fullUrl, hints);
+        }
+        catch (std::exception& ex)
+        {
+            Logger::Error("can't initialize DLCManager without remote url, exception: %s", ex.what());
+            TEST_VERIFY(false && "failed init dlc_manager without url");
+        }
+
+        dlcManager.Deinitialize();
+    }
+
     DAVA_TEST (TestInitializeBadFolder01)
     {
         using namespace DAVA;
@@ -316,7 +357,7 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         auto hints = DLCManager::Hints();
         hints.retryConnectMilliseconds = 3000;
 
-        FilePath packDir("~doc:/UnitTests/DLCManagerTest/packs/");
+        const FilePath packDir("~doc:/UnitTests/DLCManagerTest/packs/");
         FileSystem::Instance()->DeleteDirectory(packDir, true);
 
         try
