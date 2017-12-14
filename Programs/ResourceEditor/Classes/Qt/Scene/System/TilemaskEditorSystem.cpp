@@ -107,8 +107,8 @@ LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditi
         return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSENT;
     }
 
-    Selection::Lock();
-    modifSystem->SetLocked(true);
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked);
 
     landscapeSize = drawSystem->GetTextureSize(textureLevel);
     copyPasteFrom = DAVA::Vector2(-1.f, -1.f);
@@ -144,8 +144,7 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
     FinishEditing();
     needCreateUndo = false;
 
-    Selection::Unlock();
-    modifSystem->SetLocked(false);
+    ReleaseInputLock(GetScene());
 
     drawSystem->DisableCursor();
     drawSystem->DisableCustomDraw();

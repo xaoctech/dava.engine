@@ -589,7 +589,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) cons
 
 void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -784,7 +784,7 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
 
 void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint32 event)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -808,7 +808,7 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (entity == GetScene())
@@ -840,7 +840,7 @@ void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 
 void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (curLandscapeEntity == entity)

@@ -48,8 +48,8 @@ LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEdit
         return enableCustomDrawError;
     }
 
-    Selection::Lock();
-    modifSystem->SetLocked(true);
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked == true);
 
     landscapeSize = drawSystem->GetHeightmapProxy()->Size();
     copyPasteFrom = DAVA::Vector2(-1.f, -1.f);
@@ -73,8 +73,7 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
 
     FinishEditing(false);
 
-    Selection::Unlock();
-    modifSystem->SetLocked(false);
+    ReleaseInputLock(GetScene());
 
     drawSystem->DisableCursor();
     drawSystem->DisableCustomDraw();

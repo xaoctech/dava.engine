@@ -112,6 +112,9 @@ public:
     template <typename T>
     T* LookupEditorSystem();
 
+    bool AcquireInputLock(EditorSceneSystem* system);
+    void ReleaseInputLock(EditorSceneSystem* system);
+
     // save/load
     DAVA::SceneFileV2::eError LoadScene(const DAVA::FilePath& path) override;
     DAVA::SceneFileV2::eError SaveScene(const DAVA::FilePath& pathname, bool saveForGame = false) override;
@@ -194,6 +197,7 @@ protected:
 
     DAVA::Vector<EditorSceneSystem*> editorSystems;
     DAVA::Vector<EditorSceneSystem*> landscapeEditorSystems;
+    EditorSceneSystem* inputLockedByThis = nullptr;
     DAVA::Vector<DAVA::Entity*> editorEntities;
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder);
