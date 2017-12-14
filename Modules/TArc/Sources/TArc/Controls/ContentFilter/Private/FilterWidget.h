@@ -31,6 +31,8 @@ public:
     Signal<> requestRemoving;
     Signal<> updateRequire;
 
+    void ResetModel(Reflection model);
+
 protected:
     void paintEvent(QPaintEvent* e) override;
     void contextMenuEvent(QContextMenuEvent* e) override;

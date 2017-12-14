@@ -245,21 +245,15 @@ void ContentFilter::UpdateControl(const TArc::ControlDescriptor& descriptor)
 void ContentFilter::RebuildFiltersWidgets()
 {
     using namespace TArc;
-    for (ControlProxy* control : filterWidgets)
+    Vector<std::pair<FilterWidget*, QLayoutItem*>> filterItems;
+    for (int i = 0; i < filtersLayout->count(); ++i)
     {
-        control->TearDown();
-    }
-    filterWidgets.clear();
-
-    while (filtersLayout->count() > 0)
-    {
-        QLayoutItem* item = filtersLayout->itemAt(filtersLayout->count() - 1);
-        filtersLayout->removeItem(item);
+        QLayoutItem* item = filtersLayout->itemAt(i);
         QWidget* w = item->widget();
-        delete item;
         if (w != nullptr)
         {
-            w->deleteLater();
+            FilterWidget* filterWidget = static_cast<FilterWidget*>(w);
+            filterItems.emplace_back(filterWidget, item);
         }
     }
 
@@ -274,22 +268,41 @@ void ContentFilter::RebuildFiltersWidgets()
     p.fields[FilterWidget::Fields::Inversed] = names.inversedRole;
     p.fields[FilterWidget::Fields::Title] = names.nameRole;
 
-    filterWidgets.reserve(filters.size());
+    size_t widgetIndex = 0;
     for (const Reflection::Field& filter : filters)
     {
-        FilterWidget* filterWidget = new FilterWidget(p, processor, filter.ref, this);
-        filterWidget->updateRequire.Connect(this, &ContentFilter::OnUpdateFilterWidgets);
-        filterWidget->requestRemoving.Connect(Bind(&ContentFilter::OnRemoveFilterFromChain, this, filter.key, static_cast<TArc::ControlProxy*>(filterWidget)));
-        filterWidgets.push_back(filterWidget);
-        filtersLayout->addWidget(filterWidget);
+        if (widgetIndex < filterItems.size())
+        {
+            FilterWidget* w = filterItems[widgetIndex].first;
+            w->ResetModel(filter.ref);
+            w->ForceUpdate();
+            widgetIndex++;
+        }
+        else
+        {
+            FilterWidget* filterWidget = new FilterWidget(p, processor, filter.ref, this);
+            filterWidget->updateRequire.Connect(this, &ContentFilter::OnUpdateFilterWidgets);
+            filterWidget->requestRemoving.Connect(Bind(&ContentFilter::OnRemoveFilterFromChain, this, filter.key, static_cast<TArc::ControlProxy*>(filterWidget)));
+            filterWidgets.insert(filterWidget);
+            filtersLayout->addWidget(filterWidget);
 
-        QAction* deleteAllFilters = new QAction("Delete all filters", filterWidget->ToWidgetCast());
-        connections.AddConnection(deleteAllFilters, &QAction::triggered, MakeFunction(this, &ContentFilter::ClearFilterChain));
-        filterWidget->ToWidgetCast()->addAction(deleteAllFilters);
+            QAction* deleteAllFilters = new QAction("Delete all filters", filterWidget->ToWidgetCast());
+            connections.AddConnection(deleteAllFilters, &QAction::triggered, MakeFunction(this, &ContentFilter::ClearFilterChain));
+            filterWidget->ToWidgetCast()->addAction(deleteAllFilters);
 
-        QAction* disableAllFilters = new QAction("Disable all filters", filterWidget->ToWidgetCast());
-        connections.AddConnection(disableAllFilters, &QAction::triggered, MakeFunction(this, &ContentFilter::DisableAllFilters));
-        filterWidget->ToWidgetCast()->addAction(disableAllFilters);
+            QAction* disableAllFilters = new QAction("Disable all filters", filterWidget->ToWidgetCast());
+            connections.AddConnection(disableAllFilters, &QAction::triggered, MakeFunction(this, &ContentFilter::DisableAllFilters));
+            filterWidget->ToWidgetCast()->addAction(disableAllFilters);
+        }
+    }
+
+    for (size_t i = widgetIndex; i < filterItems.size(); ++i)
+    {
+        FilterWidget* w = filterItems[i].first;
+        w->TearDown();
+        filterWidgets.erase(w);
+        filtersLayout->removeItem(filterItems[i].second);
+        w->ToWidgetCast()->deleteLater();
     }
 }
 
@@ -477,8 +490,6 @@ void ContentFilter::OnUpdateFilterWidgets()
 
 void ContentFilter::OnRemoveFilterFromChain(const Any& filterKey, TArc::ControlProxy* filterControl)
 {
-    filterControl->TearDown();
-
     FastName removeMethodName = GetFieldName(Fields::RemoveFilterFromChain);
     DVASSERT(removeMethodName.IsValid() == true);
 
