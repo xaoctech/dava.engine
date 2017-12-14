@@ -26,4 +26,6 @@ private:
     std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
 
     DAVA_VIRTUAL_REFLECTION(DisplayFrameModule, DAVA::TArc::ClientModule);
+
+    DAVA::Token virtualSizeChangedToken;
 };
