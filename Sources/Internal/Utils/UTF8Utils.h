@@ -67,6 +67,7 @@ inline WideString SafeEncodeToWideString(const String& utf8String, eSafeEncodeEr
      \returns string in UTF8 format, contained in DAVA::String
      */
 String EncodeToUTF8(const WideString& wstring);
+String EncodeToUTF8(const char32_t* str);
 
 template <typename CHARTYPE>
 String MakeUTF8String(const CHARTYPE* value);
@@ -81,6 +82,12 @@ template <>
 inline String MakeUTF8String<char16>(const char16* value)
 {
     return EncodeToUTF8(WideString(value));
+}
+
+template <>
+inline String MakeUTF8String<char32_t>(const char32_t* value)
+{
+    return EncodeToUTF8(value);
 }
 
 /**

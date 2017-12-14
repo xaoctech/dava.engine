@@ -105,7 +105,7 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             unsigned cmd1_cnt = 1;
             DX9Command cmd1[32] =
             {
-              DX9Command::CREATE_TEXTURE, { desc.width, desc.height, mip_count, usage, fmt, pool, uint64_t(&tex9), 0 }
+              DX9Command::CREATE_TEXTURE, { desc.width, desc.height, mip_count, usage, static_cast<uint64>(fmt), static_cast<uint64>(pool), uint64_t(&tex9), 0 }
             };
 
             DVASSERT(desc.levelCount <= countof(desc.initialData));
@@ -170,7 +170,7 @@ bool TextureDX9_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             uint32 cmd1_cnt = 1;
             DX9Command cmd1[128] =
             {
-              { DX9Command::CREATE_CUBE_TEXTURE, { desc.width, mip_count, usage, DX9_TextureFormat(desc.format), pool, uint64_t(&cubetex9), NULL } }
+              { DX9Command::CREATE_CUBE_TEXTURE, { desc.width, mip_count, usage, static_cast<uint64>(DX9_TextureFormat(desc.format)), static_cast<uint64>(pool), uint64_t(&cubetex9), NULL } }
             };
 
             DVASSERT(desc.levelCount * 6 <= countof(desc.initialData));
@@ -348,7 +348,7 @@ dx9_Texture_Map(Handle tex, unsigned level, TextureFace face)
         DVASSERT(face != TEXTURE_FACE_NONE);
 
         D3DCUBEMAP_FACES f = textureFaceToD3DFace[face];
-        DX9Command cmd = { DX9Command::READ_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), level, face, data_sz, format, uint64(self->mappedData) } };
+        DX9Command cmd = { DX9Command::READ_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), level, static_cast<uint64>(face), data_sz, static_cast<uint64>(format), uint64(self->mappedData) } };
         ExecDX9(&cmd, 1, false);
         if (SUCCEEDED(cmd.retval))
         {
@@ -367,7 +367,7 @@ dx9_Texture_Map(Handle tex, unsigned level, TextureFace face)
 
             if (self->rt_tex9 == nullptr)
             {
-                DX9Command cmd1 = { DX9Command::CREATE_TEXTURE, { self->CreationDesc().width, self->CreationDesc().height, 1, 0, DX9_TextureFormat(format), D3DPOOL_SYSTEMMEM, uint64_t(&self->rt_tex9), 0 } };
+                DX9Command cmd1 = { DX9Command::CREATE_TEXTURE, { self->CreationDesc().width, self->CreationDesc().height, 1, 0, static_cast<uint64>(DX9_TextureFormat(format)), D3DPOOL_SYSTEMMEM, uint64_t(&self->rt_tex9), 0 } };
 
                 ExecDX9(&cmd1, 1, false);
 
@@ -389,7 +389,7 @@ dx9_Texture_Map(Handle tex, unsigned level, TextureFace face)
         if (dataAvailable)
         {
             IDirect3DTexture9** tex = (self->CreationDesc().isRenderTarget) ? &self->rt_tex9 : &self->tex9;
-            DX9Command cmd = { DX9Command::READ_TEXTURE_LEVEL, { uint64_t(tex), level, data_sz, format, uint64(self->mappedData) } };
+            DX9Command cmd = { DX9Command::READ_TEXTURE_LEVEL, { uint64_t(tex), level, data_sz, static_cast<uint64>(format), uint64(self->mappedData) } };
             ExecDX9(&cmd, 1, false);
             if (SUCCEEDED(cmd.retval))
             {
@@ -419,14 +419,14 @@ dx9_Texture_Unmap(Handle tex)
     if (self->cubetex9)
     {
         D3DCUBEMAP_FACES f = textureFaceToD3DFace[self->mappedFace];
-        DX9Command cmd = { DX9Command::UPDATE_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), self->mappedLevel, f, uint64(self->mappedData), data_sz, self->CreationDesc().format } };
+        DX9Command cmd = { DX9Command::UPDATE_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), self->mappedLevel, static_cast<uint64>(f), uint64(self->mappedData), data_sz, static_cast<uint64>(self->CreationDesc().format) } };
         ExecDX9(&cmd, 1, false);
         hr = cmd.retval;
     }
     else
     {
         IDirect3DTexture9** tex = (self->CreationDesc().isRenderTarget) ? &self->rt_tex9 : &self->tex9;
-        DX9Command cmd = { DX9Command::UPDATE_TEXTURE_LEVEL, { uint64_t(tex), self->mappedLevel, uint64(self->mappedData), data_sz, self->CreationDesc().format } };
+        DX9Command cmd = { DX9Command::UPDATE_TEXTURE_LEVEL, { uint64_t(tex), self->mappedLevel, uint64(self->mappedData), data_sz, static_cast<uint64>(self->CreationDesc().format) } };
         ExecDX9(&cmd, 1, false);
         hr = cmd.retval;
     }
@@ -464,14 +464,14 @@ dx9_Texture_Update(Handle tex, const void* data, uint32 level, TextureFace face)
     {
         DVASSERT(face != TEXTURE_FACE_NONE);
         D3DCUBEMAP_FACES f = textureFaceToD3DFace[face];
-        DX9Command cmd = { DX9Command::UPDATE_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), level, f, uint64(data), data_sz, self->CreationDesc().format } };
+        DX9Command cmd = { DX9Command::UPDATE_CUBETEXTURE_LEVEL, { uint64_t(&self->cubetex9), level, static_cast<uint64>(f), uint64(data), data_sz, static_cast<uint64>(self->CreationDesc().format) } };
         ExecDX9(&cmd, 1, false);
         hr = cmd.retval;
     }
     else
     {
         IDirect3DTexture9** tex = (self->CreationDesc().isRenderTarget) ? &self->rt_tex9 : &self->tex9;
-        DX9Command cmd = { DX9Command::UPDATE_TEXTURE_LEVEL, { uint64_t(tex), level, uint64(data), data_sz, self->CreationDesc().format } };
+        DX9Command cmd = { DX9Command::UPDATE_TEXTURE_LEVEL, { uint64_t(tex), level, uint64(data), data_sz, static_cast<uint64>(self->CreationDesc().format) } };
         ExecDX9(&cmd, 1, false);
         hr = cmd.retval;
     }

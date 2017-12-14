@@ -275,10 +275,8 @@ elseif( WARNINGS_AS_ERRORS )
             -Wno-import-preprocessor-directive-pedantic" )
 
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
-    elseif( WIN32 )
-        # Temporarily disable treating warnings as errors to speed up porting to Visual Studio 2017
-        # TODO: do not forget to enable warnings as errors
-        # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
+    elseif( WIN32 )        
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
     endif()
 
 endif()
