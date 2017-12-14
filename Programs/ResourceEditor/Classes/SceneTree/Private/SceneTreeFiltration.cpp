@@ -3,6 +3,10 @@
 
 #include <Entity/Component.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Particles/ParticleForce.h>
+#include <Particles/ParticleForceSimplified.h>
+#include <Particles/ParticleEmitterInstance.h>
+#include <Particles/ParticleLayer.h>
 #include <Scene3D/Entity.h>
 
 bool SceneTreeFilterBase::IsEnabled() const
@@ -45,34 +49,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SceneTreeFilterBase)
     .Field(inversedFieldName, &SceneTreeFilterBase::IsInverted, &SceneTreeFilterBase::SetInverted)
     .End();
 }
-
-class EmptyEntityFilter : public SceneTreeFilterBase
-{
-public:
-    QString GetTitle() const override
-    {
-        return QStringLiteral("Empty entity");
-    }
-
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* /*accessor*/) const override
-    {
-        if (object.CanBeCastedTo<DAVA::Entity>() == false)
-        {
-            return false;
-        }
-
-        DAVA::Entity* entity = object.Cast<DAVA::Entity>();
-        return entity->GetComponentCount() == 0;
-    }
-
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EmptyEntityFilter, SceneTreeFilterBase)
-    {
-        DAVA::ReflectionRegistrator<EmptyEntityFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Empty entity")]
-        .ConstructorByPointer()
-        .DestructorByPointer()
-        .End();
-    }
-};
 
 template <DAVA::Component::eType ComponentType>
 class ComponentFilter : public SceneTreeFilterBase
@@ -226,7 +202,7 @@ class ParticleForceFilter : public SceneTreeFilterBase
 public:
     bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
     {
-        return object.CanBeCastedTo<DAVA::ParticleForce>();
+        return object.CanBeCastedTo<DAVA::ParticleForce>() || object.CanBeCastedTo<DAVA::ParticleForceSimplified>();
     }
 
     QString GetTitle() const override
@@ -447,7 +423,6 @@ public:
 
 void RegisterPredefinedFilters()
 {
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EmptyEntityFilter);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LightComponentFilter);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CameraComponentFilter);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserNodeComponentFilter);

@@ -7,6 +7,7 @@
 #include <Reflection/Reflection.h>
 
 #include <QWidget>
+#include <QPointer>
 
 class QPaintEvent;
 namespace DAVA
@@ -46,6 +47,7 @@ protected:
 
 private:
     DAVA::TArc::QtConnections connections;
+    QPointer<QPushButton> titleButton = nullptr;
 
     DAVA_REFLECTION(FilterWidget);
 };
