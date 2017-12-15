@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DavaTools/TexturePacker/Spritesheet.h"
+#include "TexturePacker/Spritesheet.h"
 
 #include <Base/BaseTypes.h>
 #include <Render/Image/Image.h>

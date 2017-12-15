@@ -1,6 +1,6 @@
-#include "DavaTools/TexturePacker/DefinitionFile.h"
-#include "DavaTools/TexturePacker/ImageExt.h"
-#include "DavaTools/TexturePacker/FramePathHelper.h"
+#include "TexturePacker/DefinitionFile.h"
+#include "TexturePacker/ImageExt.h"
+#include "TexturePacker/FramePathHelper.h"
 
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>

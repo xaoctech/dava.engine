@@ -1,9 +1,9 @@
-#include "DavaTools/TexturePacker/TexturePacker.h"
-#include "DavaTools/TexturePacker/Spritesheet.h"
-#include "DavaTools/TexturePacker/ImageExt.h"
-#include "DavaTools/TexturePacker/DefinitionFile.h"
-#include "DavaTools/TextureCompression/TextureConverter.h"
-#include "DavaTools/TexturePacker/FramePathHelper.h"
+#include "TexturePacker/TexturePacker.h"
+#include "TexturePacker/Spritesheet.h"
+#include "TexturePacker/ImageExt.h"
+#include "TexturePacker/DefinitionFile.h"
+#include "TextureCompression/TextureConverter.h"
+#include "TexturePacker/FramePathHelper.h"
 
 #include <CommandLine/CommandLineParser.h>
 #include <Render/TextureDescriptor.h>
