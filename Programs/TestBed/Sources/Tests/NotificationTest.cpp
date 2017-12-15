@@ -24,6 +24,8 @@ NotificationScreen::NotificationScreen(TestBed& app)
 
 void NotificationScreen::LoadResources()
 {
+    notificationController = GetEngineContext()->localNotificationController;
+
     BaseScreen::LoadResources();
     Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
     DVASSERT(font);
@@ -84,6 +86,15 @@ void NotificationScreen::LoadResources()
     hideNotificationProgress->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NotificationScreen::OnHideProgress));
     AddControl(hideNotificationProgress);
 
+    notificationStressTest = new UIButton(Rect(500, 300, 450, 60));
+    notificationStressTest->SetStateFont(0xFF, font);
+    notificationStressTest->SetStateFontColor(0xFF, Color::White);
+    notificationStressTest->SetStateText(0xFF, L"Stress test (30 s)");
+
+    notificationStressTest->GetOrCreateComponent<UIDebugRenderComponent>();
+    notificationStressTest->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &NotificationScreen::OnNotificationStressTest));
+    AddControl(notificationStressTest);
+
     activateFromNotification = new UIStaticText(Rect(10, 400, 450, 60));
     activateFromNotification->SetTextColor(Color::White);
     activateFromNotification->SetFont(font);
@@ -99,7 +110,7 @@ void NotificationScreen::LoadResources()
     notificationDelayTextField->SetText(L"5");
     AddControl(notificationDelayTextField);
 
-    LocalNotificationController::Instance()->RequestPermissions();
+    notificationController->RequestPermissions();
 
     SafeRelease(font);
 
@@ -110,10 +121,10 @@ void NotificationScreen::UnloadResources()
 {
     Engine::Instance()->backgroundUpdate.Disconnect(this);
 
-    LocalNotificationController::Instance()->Remove(notificationProgress);
+    notificationController->Remove(notificationProgress);
     notificationProgress = nullptr;
 
-    LocalNotificationController::Instance()->Remove(notificationText);
+    notificationController->Remove(notificationText);
     notificationText = nullptr;
 
     BaseScreen::UnloadResources();
@@ -124,6 +135,7 @@ void NotificationScreen::UnloadResources()
     SafeRelease(showNotificationProgress);
     SafeRelease(hideNotificationProgress);
     SafeRelease(notificationDelayTextField);
+    SafeRelease(notificationStressTest);
 }
 
 void NotificationScreen::Update(float32 timeElapsed)
@@ -161,7 +173,7 @@ void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerD
 {
     if (nullptr == notificationText)
     {
-        notificationText = LocalNotificationController::Instance()->CreateNotificationText();
+        notificationText = notificationController->CreateNotificationText();
         notificationText->Update();
 
         notificationText->SetAction(Message(this, &NotificationScreen::OnNotificationTextPressed));
@@ -180,12 +192,12 @@ void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerD
 void NotificationScreen::OnNotifyTextDelayed(BaseObject* obj, void* data, void* callerData)
 {
     int delayInSeconds = std::atoi(UTF8Utils::EncodeToUTF8(notificationDelayTextField->GetText()).c_str());
-    LocalNotificationController::Instance()->PostDelayedNotification(L"Test Delayed notification Title", L"Some text", delayInSeconds);
+    notificationController->PostDelayedNotification(L"Test Delayed notification Title", L"Some text", delayInSeconds);
 }
 
 void NotificationScreen::OnNotifyCancelDelayed(BaseObject* obj, void* data, void* callerData)
 {
-    LocalNotificationController::Instance()->RemoveAllDelayedNotifications();
+    notificationController->RemoveAllDelayedNotifications();
 }
 
 void NotificationScreen::OnHideText(BaseObject* obj, void* data, void* callerData)
@@ -202,7 +214,7 @@ void NotificationScreen::OnNotifyProgress(BaseObject* obj, void* data, void* cal
 {
     if (nullptr == notificationProgress)
     {
-        notificationProgress = LocalNotificationController::Instance()->CreateNotificationProgress(L"", L"", 100, 0);
+        notificationProgress = notificationController->CreateNotificationProgress(L"", L"", 100, 0);
         notificationProgress->SetAction(Message(this, &NotificationScreen::OnNotificationProgressPressed));
     }
     else
@@ -232,4 +244,15 @@ void NotificationScreen::OnNotificationTextPressed(BaseObject* obj, void* data, 
 
 void NotificationScreen::OnNotificationProgressPressed(BaseObject* obj, void* data, void* callerData)
 {
+}
+
+void NotificationScreen::OnNotificationStressTest(BaseObject* obj, void* data, void* callerData)
+{
+    Logger::Info("Starting notification stress test");
+    for (int i = 0; i < 550; ++i)
+    {
+        notificationController->RemoveAllDelayedNotifications();
+        notificationController->PostDelayedNotification(L"Stress test", L"Notification stress test", 30);
+    }
+    Logger::Info("Notification stress test finished");
 }
