@@ -1,4 +1,4 @@
-#include "DavaTools/TexturePacker/FramePathHelper.h"
+#include "TexturePacker/FramePathHelper.h"
 #include <Utils/StringFormat.h>
 
 namespace DAVA

@@ -148,6 +148,11 @@ void RenderSystem::UnregisterMaterial(NMaterial* material)
     */
 }
 
+void RenderSystem::PrepareForShutdown()
+{
+    renderHierarchy->PrepareForShutdown();
+}
+
 void RenderSystem::SetGlobalMaterial(NMaterial* newGlobalMaterial)
 {
     Set<DataNode*> dataNodes;

@@ -83,7 +83,11 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "visibilityMargins.left"
                        << "visibilityMargins.right"
                        << "visibilityMargins.top"
-                       << "visibilityMargins.bottom";
+                       << "visibilityMargins.bottom"
+                       << "safeAreaInsets.left"
+                       << "safeAreaInsets.right"
+                       << "safeAreaInsets.top"
+                       << "safeAreaInsets.bottom";
 
     propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
@@ -120,6 +124,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("UIScriptComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);
 
     propertyNameTypeItemDelegates[PropertyPath("UIFlowViewComponent", "viewYaml")] = new ResourceFilePropertyDelegate(uiExtensions, "/UI/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("UIFlowControllerComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);

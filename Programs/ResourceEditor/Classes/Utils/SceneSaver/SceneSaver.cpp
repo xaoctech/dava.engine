@@ -287,13 +287,9 @@ void SceneSaver::CopyAnimationClips(DAVA::Entity* node)
     for (DAVA::uint32 i = 0; i < node->GetComponentCount(DAVA::Component::MOTION_COMPONENT); ++i)
     {
         DAVA::MotionComponent* component = static_cast<DAVA::MotionComponent*>(node->GetComponent(DAVA::Component::MOTION_COMPONENT, i));
-        const DAVA::MotionComponent::SimpleMotion* motion = component->GetSimpleMotion();
-        if (motion)
-        {
-            const DAVA::FilePath& animationPath = motion->GetAnimationPath();
-            if (!animationPath.IsEmpty())
-                sceneUtils.AddFile(animationPath);
-        }
+        DAVA::Vector<DAVA::FilePath> dependencies = component->GetDependencies();
+        for (const DAVA::FilePath& fp : dependencies)
+            sceneUtils.AddFile(fp);
     }
 
     for (DAVA::int32 i = 0; i < node->GetChildrenCount(); i++)
@@ -427,7 +423,7 @@ void SceneSaver::CopyEmitter(DAVA::ParticleEmitter* emitter)
     {
         if (layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            CopyEmitter(layers[i]->innerEmitter);
+            CopyEmitter(layers[i]->innerEmitter->GetEmitter());
         }
         else
         {

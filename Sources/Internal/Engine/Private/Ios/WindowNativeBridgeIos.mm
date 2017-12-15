@@ -97,9 +97,13 @@ bool WindowNativeBridge::CreateWindow()
     [uiwindow setRootViewController:renderViewController];
 
     CGRect viewRect = [renderView bounds];
+
     dpi = Private::DeviceManagerImpl::GetIPhoneMainScreenDpi();
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowCreatedEvent(window, viewRect.size.width, viewRect.size.height, viewRect.size.width * scale, viewRect.size.height * scale, dpi, eFullscreen::On));
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowVisibilityChangedEvent(window, true));
+
+    PostSafeAreaInsetsChanged();
+
     return true;
 }
 
@@ -150,6 +154,11 @@ void WindowNativeBridge::ReturnUIViewToPool(UIView* view)
 void WindowNativeBridge::LoadView()
 {
     [renderViewController setView:renderView];
+}
+
+void WindowNativeBridge::OrientationChanged()
+{
+    PostSafeAreaInsetsChanged();
 }
 
 void WindowNativeBridge::ViewWillTransitionToSize(float32 w, float32 h)
@@ -215,6 +224,36 @@ void WindowNativeBridge::SetSurfaceScale(const float32 scale)
     CGSize size = [renderView bounds].size;
     CGSize surfaceSize = [renderView surfaceSize];
     mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSizeChangedEvent(window, size.width, size.height, surfaceSize.width, surfaceSize.height, scale, dpi, eFullscreen::On));
+}
+
+void WindowNativeBridge::PostSafeAreaInsetsChanged()
+{
+    SEL safeAreaSelector = NSSelectorFromString(@"safeAreaInsets");
+    if ([uiwindow respondsToSelector:safeAreaSelector])
+    {
+        NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:
+                                                 [[uiwindow class] instanceMethodSignatureForSelector:safeAreaSelector]];
+        [invocation setSelector:safeAreaSelector];
+        [invocation setTarget:uiwindow];
+        [invocation invoke];
+
+        UIEdgeInsets safeAreaInsets;
+        [invocation getReturnValue:&safeAreaInsets];
+
+        ::UIScreen* screen = [ ::UIScreen mainScreen];
+        CGFloat scale = [screen scale];
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        bool isLeftNotch = safeAreaInsets.left > 0.0f && orientation == UIInterfaceOrientationLandscapeRight;
+        bool isRightNotch = safeAreaInsets.right > 0.0f && orientation == UIInterfaceOrientationLandscapeLeft;
+
+        mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowSafeAreaInsetsChangedEvent(window,
+                                                                                              safeAreaInsets.left * scale,
+                                                                                              safeAreaInsets.top * scale,
+                                                                                              safeAreaInsets.right * scale,
+                                                                                              safeAreaInsets.bottom * scale,
+                                                                                              isLeftNotch,
+                                                                                              isRightNotch));
+    }
 }
 
 UIImage* RenderUIViewToImage(UIView* view)

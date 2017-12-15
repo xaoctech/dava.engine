@@ -1,6 +1,6 @@
-#include "DavaTools/TexturePacker/ResourcePacker2D.h"
-#include "DavaTools/TexturePacker/DefinitionFile.h"
-#include "DavaTools/TexturePacker/TexturePacker.h"
+#include "TexturePacker/ResourcePacker2D.h"
+#include "TexturePacker/DefinitionFile.h"
+#include "TexturePacker/TexturePacker.h"
 
 #include <CommandLine/CommandLineParser.h>
 #include <Engine/Engine.h>

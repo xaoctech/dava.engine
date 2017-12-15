@@ -24,7 +24,7 @@ class EngineBackend;
     \ingroup engine
     Utility function to get engine context.
 
-    Behaviour is undefined when called before `Engine` instantiated or after 'Engine::cleanup' signal emited.
+    Behaviour is undefined when called before `Engine` instantiated or after 'Engine::cleanup' signal emitted.
     Another but longer way to get context is to call `Engine::Instance()->GetContext()`.
 */
 const EngineContext* GetEngineContext();
@@ -33,7 +33,7 @@ const EngineContext* GetEngineContext();
     \ingroup engine
     Utility function to get primary window.
 
-    Behaviour is undefined when called before `Engine` instantiated or after 'Engine::cleanup' signal has emited.
+    Behaviour is undefined when called before `Engine` instantiated or after 'Engine::cleanup' signal has emitted.
     Return `nullptr` if called before `Engine::Init` or if `Engine` has been initialized with `eEngineRunMode::CONSOLE_MODE` mode.
     Another but longer way to get primary window is to call `Engine::Instance()->PrimaryWindow()`.
 */
@@ -43,7 +43,7 @@ Window* GetPrimaryWindow();
     \ingroup engine
     Utility function to run asynchronous task on DAVA main thread.
 
-    Behaviour is undefined when called after `Engine::cleanup` signal has emited.
+    Behaviour is undefined when called after `Engine::cleanup` signal has emitted.
 */
 void RunOnMainThreadAsync(const Function<void()>& task);
 
@@ -52,7 +52,7 @@ void RunOnMainThreadAsync(const Function<void()>& task);
     Utility function to run task on DAVA main thread and wait its completion blocking caller thread.
 
     This function should not be called before `Engine::Run` is executed since it can lead to deadlock.
-    Behaviour is undefined when called after `Engine::cleanup` signal has emited.
+    Behaviour is undefined when called after `Engine::cleanup` signal has emitted.
 */
 void RunOnMainThread(const Function<void()>& task);
 
@@ -63,7 +63,7 @@ void RunOnMainThread(const Function<void()>& task);
     Behaviour is undefined:
         - if Engine is initialized with console run mode.
         - if called before `Engine::Init` method which create instance of primary window.
-        - if called after `Engine::windowDestroyed` signal emited for primary window.
+        - if called after `Engine::windowDestroyed` signal emitted for primary window.
 */
 void RunOnUIThreadAsync(const Function<void()>& task);
 
@@ -73,8 +73,8 @@ void RunOnUIThreadAsync(const Function<void()>& task);
 
     Behaviour is undefined:
         - if Engine is initialized with console run mode.
-        - if called before `Engine::windowCreated` signal emited for primary window.
-        - if called after `Engine::windowDestroyed` signal emited for primary window.
+        - if called before `Engine::windowCreated` signal emitted for primary window.
+        - if called after `Engine::windowDestroyed` signal emitted for primary window.
 */
 void RunOnUIThread(const Function<void()>& task);
 
@@ -327,20 +327,21 @@ public:
     void SetScreenTimeoutEnabled(bool enabled);
 
 public:
-    Signal<> gameLoopStarted; //!< Emited just before entring game loop. Note: native windows are not created yet and renderer is not initialized.
-    Signal<> gameLoopStopped; //!< Emited after exiting game loop, application should prepare to terminate.
-    Signal<> cleanup; //!< Last signal emited by Engine, after this signal dava.engine is dead.
-    Signal<Window*> windowCreated; //!< Emited when native window is created and renderer is initialized.
-    Signal<Window*> windowDestroyed; //!< Emited just before native window is destroyed. After this signal no one should use window.
-    Signal<> beginFrame; //!< Emited at the beginning of frame when application is in foreground.
-    Signal<float32> update; //!< Emited on each frame when application is in foreground (not suspended). Note: rendering should be performed on `Window::update`, `Window::draw` signals.
-    Signal<> endFrame; //!< Emited at the end of frame when application is in foreground.
-    Signal<float32> backgroundUpdate; //!< Emited on each frame when application is suspended.
-    Signal<> suspended; //!< Emited when application has entered suspended state. This signal is fired only on platforms
-    //!< that support suspending: Win10, iOS, Android. Rendering is stopped but `backgroundUpdate` signal is emited if system permits.
-    Signal<> resumed; //!< Emited when application exits suspended state.
+    Signal<> registerUserTypes; //!< Emitted just before initializing subsystems, place here user types/reflections/components/systems registration. Note: should be connected before Engine::Init(...) call.
+    Signal<> gameLoopStarted; //!< Emitted just before entering game loop. Note: native windows are not created yet and renderer is not initialized.
+    Signal<> gameLoopStopped; //!< Emitted after exiting game loop, application should prepare to terminate.
+    Signal<> cleanup; //!< Last signal emitted by Engine, after this signal dava.engine is dead.
+    Signal<Window*> windowCreated; //!< Emitted when native window is created and renderer is initialized.
+    Signal<Window*> windowDestroyed; //!< Emitted just before native window is destroyed. After this signal no one should use window.
+    Signal<> beginFrame; //!< Emitted at the beginning of frame when application is in foreground.
+    Signal<float32> update; //!< Emitted on each frame when application is in foreground (not suspended). Note: rendering should be performed on `Window::update`, `Window::draw` signals.
+    Signal<> endFrame; //!< Emitted at the end of frame when application is in foreground.
+    Signal<float32> backgroundUpdate; //!< Emitted on each frame when application is suspended.
+    Signal<> suspended; //!< Emitted when application has entered suspended state. This signal is fired only on platforms
+    //!< that support suspending: Win10, iOS, Android. Rendering is stopped but `backgroundUpdate` signal is emitted if system permits.
+    Signal<> resumed; //!< Emitted when application exits suspended state.
 
-    Signal<rhi::RenderingError> renderingError; //!< Emited when rendering is not possible anymore, can be invoked from any thread.
+    Signal<rhi::RenderingError> renderingError; //!< Emitted when rendering is not possible anymore, can be invoked from any thread.
     //!< Application should be gracefully closed (with optional message to user depending on error value)
     //!< Ignoring this signal or continuing work after it may lead to undefined behaviour
 

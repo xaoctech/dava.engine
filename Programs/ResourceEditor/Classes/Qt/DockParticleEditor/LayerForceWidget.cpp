@@ -122,7 +122,7 @@ void LayerForceWidget::BuildTimingSection()
     SetupSpin(forcePowerSpin);
     mainLayout->addWidget(forcePowerSpin);
 
-    QHBoxLayout* startEndTimeLayout = new QHBoxLayout(this);
+    QHBoxLayout* startEndTimeLayout = new QHBoxLayout();
     startTimeLabel = new QLabel("Start time:");
     startTimeSpin = new EventFilterDoubleSpinBox();
     SetupSpin(startTimeSpin);
@@ -138,7 +138,7 @@ void LayerForceWidget::BuildTimingSection()
     randomizeReflectionForce = new QCheckBox("Randomize reflection force");
     connect(randomizeReflectionForce, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(randomizeReflectionForce);
-    QHBoxLayout* rndForceLayout = new QHBoxLayout(this);
+    QHBoxLayout* rndForceLayout = new QHBoxLayout();
     rndReflectionForceMinLabel = new QLabel("Force random min multiplier:");
     rndReflectionForceMinSpin = new EventFilterDoubleSpinBox();
     SetupSpin(rndReflectionForceMinSpin);
@@ -151,7 +151,7 @@ void LayerForceWidget::BuildTimingSection()
     rndForceLayout->addWidget(rndReflectionForceMaxSpin);
     mainLayout->addLayout(rndForceLayout);
 
-    QHBoxLayout* freqLayout = new QHBoxLayout(this);
+    QHBoxLayout* freqLayout = new QHBoxLayout();
     windFreqLabel = new QLabel("Wind frequency:");
     windFreqSpin = new EventFilterDoubleSpinBox();
     SetupSpin(windFreqSpin);
@@ -159,7 +159,7 @@ void LayerForceWidget::BuildTimingSection()
     freqLayout->addWidget(windFreqSpin);
     mainLayout->addLayout(freqLayout);
 
-    QHBoxLayout* biasLayout = new QHBoxLayout(this);
+    QHBoxLayout* biasLayout = new QHBoxLayout();
     windBiasLabel = new QLabel("Wind bias:");
     windBiasSpin = new EventFilterDoubleSpinBox();
     SetupSpin(windBiasSpin);
@@ -340,7 +340,7 @@ void LayerForceWidget::BuildWindSection()
     windSeparator->setFrameShape(QFrame::HLine);
     mainLayout->addWidget(windSeparator);
 
-    QHBoxLayout* turbLayout = new QHBoxLayout(this);
+    QHBoxLayout* turbLayout = new QHBoxLayout();
     windTurbLabel = new QLabel("Wind turbulence:");
     windTurbSpin = new EventFilterDoubleSpinBox();
     SetupSpin(windTurbSpin);
@@ -352,7 +352,7 @@ void LayerForceWidget::BuildWindSection()
     connect(turbulenceTimeLine, SIGNAL(ValueChanged()), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(turbulenceTimeLine);
 
-    QHBoxLayout* turbFreqLayout = new QHBoxLayout(this);
+    QHBoxLayout* turbFreqLayout = new QHBoxLayout();
     windTurbFreqLabel = new QLabel("Wind turbulence frequency:");
     windTurbFreqSpin = new EventFilterDoubleSpinBox();
     SetupSpin(windTurbFreqSpin);
@@ -360,7 +360,7 @@ void LayerForceWidget::BuildWindSection()
     turbFreqLayout->addWidget(windTurbFreqSpin);
     mainLayout->addLayout(turbFreqLayout);
 
-    QHBoxLayout* backTurbLayout = new QHBoxLayout(this);
+    QHBoxLayout* backTurbLayout = new QHBoxLayout();
     backTurbLabel = new QLabel("Backward turbulence probability:");
     backTurbSpin = new EventFilterDoubleSpinBox();
     SetupSpin(backTurbSpin, 1, 0);
@@ -375,7 +375,7 @@ void LayerForceWidget::BuildPointGravitySection()
     pointGravitySeparator->setFrameShape(QFrame::HLine);
     mainLayout->addWidget(pointGravitySeparator);
 
-    QHBoxLayout* pointGravityRadLayout = new QHBoxLayout(this);
+    QHBoxLayout* pointGravityRadLayout = new QHBoxLayout();
     pointGravityRadiusLabel = new QLabel("Point gravity radius:");
     pointGravityRadiusSpin = new EventFilterDoubleSpinBox();
     SetupSpin(pointGravityRadiusSpin);
@@ -395,7 +395,7 @@ void LayerForceWidget::BuildPlaneCollisionSection()
     planeCollisionSeparator = new QFrame();
     planeCollisionSeparator->setFrameShape(QFrame::HLine);
     mainLayout->addWidget(planeCollisionSeparator);
-    QHBoxLayout* planeScaleLayout = new QHBoxLayout(this);
+    QHBoxLayout* planeScaleLayout = new QHBoxLayout();
     planeScaleLabel = new QLabel("Plane scale (editor visualization):");
     planeScaleSpin = new EventFilterDoubleSpinBox();
     SetupSpin(planeScaleSpin);
@@ -407,7 +407,7 @@ void LayerForceWidget::BuildPlaneCollisionSection()
     connect(normalAsReflectionVector, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
     mainLayout->addWidget(normalAsReflectionVector);
 
-    QHBoxLayout* reflectionChaosLayout = new QHBoxLayout(this);
+    QHBoxLayout* reflectionChaosLayout = new QHBoxLayout();
     reflectionChaosLabel = new QLabel("Reflection chaos:");
     reflectionChaosSpin = new EventFilterDoubleSpinBox();
     SetupSpin(reflectionChaosSpin);
@@ -415,7 +415,7 @@ void LayerForceWidget::BuildPlaneCollisionSection()
     reflectionChaosLayout->addWidget(reflectionChaosSpin);
     mainLayout->addLayout(reflectionChaosLayout);
 
-    QHBoxLayout* velocityThresholdLayout = new QHBoxLayout(this);
+    QHBoxLayout* velocityThresholdLayout = new QHBoxLayout();
     velocityThresholdLabel = new QLabel("Velocity threshold:");
     velocityThresholdSpin = new EventFilterDoubleSpinBox();
     SetupSpin(velocityThresholdSpin);
@@ -423,7 +423,7 @@ void LayerForceWidget::BuildPlaneCollisionSection()
     velocityThresholdLayout->addWidget(velocityThresholdSpin);
     mainLayout->addLayout(velocityThresholdLayout);
 
-    QHBoxLayout* reflectionPercentLayout = new QHBoxLayout(this);
+    QHBoxLayout* reflectionPercentLayout = new QHBoxLayout();
     reflectionPercentLabel = new QLabel("Reflection percent:");
     reflectionPercentSpin = new EventFilterDoubleSpinBox();
     SetupSpin(reflectionPercentSpin, 1.0f, 0);

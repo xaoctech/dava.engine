@@ -247,6 +247,14 @@ void Scene::CreateSystems()
         AddSystem(animationSystem, MAKE_COMPONENT_MASK(Component::ANIMATION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
+    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
+    {
+        motionSingleComponent = new MotionSingleComponent();
+
+        motionSystem = new MotionSystem(this);
+        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
     {
@@ -263,14 +271,6 @@ void Scene::CreateSystems()
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
     AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
-
-    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
-    {
-        motionSystem = new MotionSystem(this);
-        AddSystem(motionSystem, MAKE_COMPONENT_MASK(Component::SKELETON_COMPONENT) | MAKE_COMPONENT_MASK(Component::MOTION_COMPONENT), SCENE_SYSTEM_REQUIRE_PROCESS);
-
-        motionSingleComponent = new MotionSingleComponent();
-    }
 
     if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
     {
@@ -421,6 +421,8 @@ Scene::~Scene()
     physicsSystem = nullptr;
 #endif
 
+    renderSystem->PrepareForShutdown();
+
     size_t size = systems.size();
     for (size_t k = 0; k < size; ++k)
     {
@@ -439,9 +441,6 @@ Scene::~Scene()
         SafeRelease(c);
     cameras.clear();
 
-    RemoveAllChildren();
-    SafeRelease(sceneGlobalMaterial);
-
     for (SingletonComponent* s : singletonComponents)
     {
         SafeDelete(s);
@@ -457,6 +456,10 @@ Scene::~Scene()
     systemsToProcess.clear();
     systemsToInput.clear();
     systemsToFixedProcess.clear();
+
+    RemoveAllChildren();
+    SafeRelease(sceneGlobalMaterial);
+
     cache.ClearAll();
 
     SafeDelete(eventSystem);

@@ -6,8 +6,8 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Scene3D/Converters/SpeedTreeConverter.h"
 #include "Scene3D/Lod/LodComponent.h"
-#include <DavaTools/TexturePacker/DefinitionFile.h>
-#include <DavaTools/TexturePacker/TexturePacker.h>
+#include <TexturePacker/DefinitionFile.h>
+#include <TexturePacker/TexturePacker.h>
 
 namespace DAVA
 {

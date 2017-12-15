@@ -1,9 +1,9 @@
 #ifndef __DAVAENGINE_TEXTURE_PACKER_H__
 #define __DAVAENGINE_TEXTURE_PACKER_H__
 
-#include "DavaTools/TextureCompression/TextureConverter.h"
-#include "DavaTools/TexturePacker/Spritesheet.h"
-#include "DavaTools/TexturePacker/DefinitionFile.h"
+#include "TextureCompression/TextureConverter.h"
+#include "TexturePacker/Spritesheet.h"
+#include "TexturePacker/DefinitionFile.h"
 
 #include <Base/BaseTypes.h>
 #include <Functional/Function.h>

@@ -218,6 +218,10 @@ void SceneInfo::RefreshSpeedTreeInfoSelection()
 void SceneInfo::InitializeLODSectionInFrame()
 {
     QtPropertyData* header = CreateInfoHeader("LOD in Frame");
+    QtPropertyToolButton* button = header->AddButton(QtPropertyToolButton::ACTIVE_ALWAYS);
+    button->setIcon(QIcon(":/QtIcons/refresh.png"));
+    button->setAutoRaise(false);
+    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::RefreshLODInfoInFrame);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -233,6 +237,10 @@ void SceneInfo::InitializeLODSectionInFrame()
 void SceneInfo::InitializeLODSectionForSelection()
 {
     QtPropertyData* header = CreateInfoHeader("LOD Info for Selected Entities");
+    QtPropertyToolButton* button = header->AddButton(QtPropertyToolButton::ACTIVE_ALWAYS);
+    button->setIcon(QIcon(":/QtIcons/refresh.png"));
+    button->setAutoRaise(false);
+    QObject::connect(button, &QToolButton::clicked, this, &SceneInfo::RefreshLODInfoForSelection);
 
     for (DAVA::int32 i = 0; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -578,8 +586,11 @@ void SceneInfo::UpdateInfoByTimer()
         return;
 
     Refresh3DDrawInfo();
-    RefreshLODInfoInFrame();
-    RefreshLODInfoForSelection();
+    if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame == true)
+    {
+        RefreshLODInfoInFrame();
+        RefreshLODInfoForSelection();
+    }
 
     CollectSpeedInfo(&Selection::GetSelection());
     RefreshSpeedTreeInfoSelection();
@@ -653,7 +664,10 @@ void SceneInfo::OnSelectionChanged(const DAVA::Any& selectionAny)
         const SelectableGroup& selection = selectionAny.Get<SelectableGroup>();
         ClearSelectionData();
         CollectSelectedRenderObjects(&selection);
-        RefreshLODInfoForSelection();
+        if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame == true)
+        {
+            RefreshLODInfoForSelection();
+        }
 
         CollectSpeedInfo(&selection);
         RefreshSpeedTreeInfoSelection();
@@ -725,25 +739,25 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
 
     SpeedTreeInfo info;
 
-    int32 rbCount = renderObject->GetRenderBatchCount();
-    int32 lodIndex, switchIndex;
+    int32 rbCount = renderObject->GetActiveRenderBatchCount();
     for (int32 i = 0; i < rbCount; ++i)
     {
-        RenderBatch* rb = renderObject->GetRenderBatch(i, lodIndex, switchIndex);
-
-        if (lodIndex > 0)
-            continue;
+        RenderBatch* rb = renderObject->GetActiveRenderBatch(i);
 
         PolygonGroup* pg = rb->GetPolygonGroup();
 
         if ((pg->GetFormat() & DAVA::EVF_PIVOT4) == 0)
+        {
             continue;
+        }
 
         String fxName = rb->GetMaterial()->GetEffectiveFXName().c_str();
         std::transform(fxName.begin(), fxName.end(), fxName.begin(), ::tolower);
 
         if ((strstr(fxName.c_str(), "alphatest") == nullptr) && (strstr(fxName.c_str(), "alphablend") == nullptr))
+        {
             continue;
+        }
 
         int32 triangleCount = pg->GetPrimitiveCount();
         for (int32 t = 0; t < triangleCount; t++)
@@ -761,7 +775,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
 
             Vector4 pivot;
             pg->GetPivot(i1, pivot);
-
+            
 #define CALCULATE_TRIANGLE_SQUEARE(v1, v2, v3) ((((v2) - (v1)).CrossProduct((v3) - (v1))).Length() / 2.f)
 
             if (pivot.w > DAVA::EPSILON) //billboard
@@ -792,7 +806,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
                 DAVA::Vector3(v3.x, v3.y, 0.f)
                 );
             }
-
+            
 #undef CALCULATE_TRIANGLE_SQUEARE
         }
     }

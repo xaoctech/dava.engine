@@ -4,11 +4,13 @@
 #include "MaterialEditor/MaterialEditor.h"
 
 #include <QComboBox>
-#include <QPushButton>
 #include <QGridLayout>
-#include <QVBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include "Commands2/ParticleEditorCommands.h"
 
 QualitySwitcher* QualitySwitcher::switcherDialog = nullptr;
 
@@ -218,15 +220,6 @@ QualitySwitcher::QualitySwitcher(const std::shared_ptr<GlobalOperations>& global
             optionsLayout->addWidget(labOp, i, 0);
             optionsLayout->addWidget(checkOp, i, 1);
         }
-
-        //AppleMetal features preview
-        QLabel* labOp = new QLabel("Metal Enabled:", materialsGroup);
-        QCheckBox* checkOp = new QCheckBox(materialsGroup);
-        checkOp->setObjectName("MetalEnabledCheckBox");
-        checkOp->setChecked(DAVA::QualitySettingsSystem::Instance()->GetMetalPreview());
-        QObject::connect(checkOp, SIGNAL(clicked(bool)), this, SLOT(OnOptionClick(bool)));
-        optionsLayout->addWidget(labOp, optionsCount, 0);
-        optionsLayout->addWidget(checkOp, optionsCount, 1);
     }
 
     // buttons
@@ -308,22 +301,24 @@ void QualitySwitcher::UpdateParticlesToQuality()
     SceneSignals* sceneSignals = SceneSignals::Instance();
     globalOperations->ForEachScene([sceneSignals, this](SceneEditor2* scene)
                                    {
-                                       ReloadEntityEmitters(scene);
+                                       scene->BeginBatch("Switch particle quality");
+                                       ReloadEntityEmitters(scene, scene);
                                        sceneSignals->EmitStructureChanged(scene, nullptr);
+                                       scene->EndBatch();
                                    });
 }
 
-void QualitySwitcher::ReloadEntityEmitters(DAVA::Entity* e)
+void QualitySwitcher::ReloadEntityEmitters(SceneEditor2* scene, DAVA::Entity* e)
 {
     DAVA::ParticleEffectComponent* comp = GetEffectComponent(e);
     if (comp)
     {
-        comp->ReloadEmitters();
+        scene->Exec(std::make_unique<CommandReloadEmitters>(comp));
     }
 
     for (DAVA::int32 i = 0, sz = e->GetChildrenCount(); i < sz; ++i)
     {
-        ReloadEntityEmitters(e->GetChild(i));
+        ReloadEntityEmitters(scene, e->GetChild(i));
     }
 }
 
@@ -455,18 +450,6 @@ void QualitySwitcher::ApplySettings()
                     optionSettingsChanged = true;
                 }
             }
-        }
-    }
-
-    QCheckBox* metalCheckBox = findChild<QCheckBox*>("MetalEnabledCheckBox");
-    if (nullptr != metalCheckBox)
-    {
-        bool checked = metalCheckBox->isChecked();
-        if (DAVA::QualitySettingsSystem::Instance()->GetMetalPreview() != checked)
-        {
-            DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(checked);
-            optionSettingsChanged = true;
-            materialSettingsChanged = true;
         }
     }
 

@@ -1,9 +1,9 @@
 #ifndef __DAVAENGINE_RESOURCEPACKER2D_H__
 #define __DAVAENGINE_RESOURCEPACKER2D_H__
 
-#include "DavaTools/TextureCompression/TextureConverter.h"
-#include "DavaTools/TexturePacker/Spritesheet.h"
-#include "DavaTools/AssetCache/AssetCacheClient.h"
+#include "TextureCompression/TextureConverter.h"
+#include "TexturePacker/Spritesheet.h"
+#include "AssetCache/AssetCacheClient.h"
 
 #include <Base/BaseTypes.h>
 #include <Render/RenderBase.h>

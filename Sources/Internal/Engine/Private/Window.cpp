@@ -263,6 +263,9 @@ bool Window::EventHandler(const Private::MainDispatcherEvent& e)
     case MainDispatcherEvent::WINDOW_VISIBLE_FRAME_CHANGED:
         HandleVisibleFrameChanged(e);
         break;
+    case MainDispatcherEvent::WINDOW_SAFE_AREA_INSETS_CHANGED:
+        HandleSafeAreaInsetsChanged(e);
+        break;
     default:
         isHandled = false;
         break;
@@ -458,6 +461,19 @@ void Window::HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e)
 {
     Rect visibleRect(e.visibleFrameEvent.x, e.visibleFrameEvent.y, e.visibleFrameEvent.width, e.visibleFrameEvent.height);
     visibleFrameChanged.Emit(this, visibleRect);
+}
+
+void Window::HandleSafeAreaInsetsChanged(const Private::MainDispatcherEvent& e)
+{
+    if (uiControlSystem)
+    {
+        uiControlSystem->SetPhysicalSafeAreaInsets(e.safeAreaInsetsEvent.left,
+                                                   e.safeAreaInsetsEvent.top,
+                                                   e.safeAreaInsetsEvent.right,
+                                                   e.safeAreaInsetsEvent.bottom,
+                                                   e.safeAreaInsetsEvent.isLeftNotch,
+                                                   e.safeAreaInsetsEvent.isRightNotch);
+    }
 }
 
 void Window::HandleFocusChanged(const Private::MainDispatcherEvent& e)
