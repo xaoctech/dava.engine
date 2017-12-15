@@ -11,7 +11,6 @@
 #include <Time/SystemTimer.h>
 
 #include "UnitTests/UnitTests.h"
-#include <Platform/DeviceInfo.h>
 
 #if !defined(__DAVAENGINE_WIN_UAP__) && !defined(__DAVAENGINE_IOS__)
 
@@ -47,7 +46,7 @@ struct FSMTest02
     State state = WaitInitializationFinished;
     DAVA::float32 time = 0.0f;
     DAVA::float32 waitSecondConnect = 10.0f;
-    const DAVA::float32 timeout = 1200.f; // TODO revert after debug back to 120.f
+    const DAVA::float32 timeout = 120.f;
     DAVA::DLCManager::Progress progressAfterInit;
 
     void Cleanup(DAVA::DLCManager& dlcManager)

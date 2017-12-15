@@ -10,20 +10,16 @@
 #include "Base/Exception.h"
 #include "Time/SystemTimer.h"
 #include "Engine/Engine.h"
-#include "Debug/Backtrace.h"
 #include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
-#include "Debug/Private/ImGui.h"
 
 #include <iomanip>
 
 namespace DAVA
 {
-static const String timeoutString("dlcmanager_timeout");
-
 DLCManager::~DLCManager() = default;
 DLCManager::IRequest::~IRequest() = default;
 
@@ -249,7 +245,11 @@ void DLCManagerImpl::ClearResouces()
         scanThread->Release();
         scanThread = nullptr;
         scanState = ScanState::Wait;
-        // TODO in UnitTests too fast metaRemoteDataLoadedSem.
+        // reset semaphore in default state.
+        // We can't know exactly if metaRemoteDataLoadedSem.Wait() was called in scanThread or not
+        // ManualResetEvent but it seem redundant in this case
+        metaRemoteDataLoadedSem.~Semaphore();
+        new (&metaRemoteDataLoadedSem) Semaphore();
     }
 
     for (auto request : requests)

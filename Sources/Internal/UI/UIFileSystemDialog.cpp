@@ -346,7 +346,7 @@ void UIFileSystemDialog::RefreshList()
     while (true)
     {
         p = static_cast<int32>(curDirPath.rfind("/", p));
-        if (p != static_cast<int32>(curDirPath.npos))
+        if (static_cast<size_t>(p) != curDirPath.npos)
         {
             p--;
             outCnt++;
