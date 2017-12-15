@@ -8,6 +8,7 @@
 
 #include <QWidget>
 #include <QPointer>
+#include <QBrush>
 
 class QPaintEvent;
 namespace DAVA
@@ -47,9 +48,13 @@ protected:
     void ToggleInversing();
     void RemoveFilter();
 
+    void UpdateTitlePalette(bool isEnabled);
+
 private:
     DAVA::TArc::QtConnections connections;
     QPointer<QPushButton> titleButton = nullptr;
+    QBrush disabledBrush;
+    QBrush enabledBrush;
 
     DAVA_REFLECTION(FilterWidget);
 };

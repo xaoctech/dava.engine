@@ -304,6 +304,8 @@ void ContentFilter::RebuildFiltersWidgets()
         filtersLayout->removeItem(filterItems[i].second);
         w->ToWidgetCast()->deleteLater();
     }
+
+    OnUpdateFilterWidgets();
 }
 
 void ContentFilter::SetImmediateText(const String& immText)
@@ -640,6 +642,8 @@ void ContentFilter::DisableAllFilters()
     {
         filter.ref.GetField(names.enabledRole).SetValue(false);
     }
+
+    OnUpdateFilterWidgets();
 }
 
 DAVA_REFLECTION_IMPL(ContentFilter)
