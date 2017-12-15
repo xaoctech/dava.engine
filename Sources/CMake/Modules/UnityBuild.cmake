@@ -1,12 +1,21 @@
 macro( generated_unity_sources SOURCE_FILES )  
 
-    list ( LENGTH ${SOURCE_FILES} SOURCE_FILES_LIST_LEN )
-    if ( ${SOURCE_FILES_LIST_LEN} GREATER "0" )
-       list( REMOVE_DUPLICATES ${SOURCE_FILES} )
-    endif()
-
     if( UNITY_BUILD )
         message(STATUS ">>> Unity packages ${PROJECT_NAME} info" )
+
+        #"find python"
+        find_package( PythonInterp   )
+
+        if( NOT PYTHONINTERP_FOUND )
+            set( PYTHON_EXECUTABLE python )
+        endif()
+
+        #"remove duplicates"
+        list ( LENGTH ${SOURCE_FILES} SOURCE_FILES_LIST_LEN )
+        if ( ${SOURCE_FILES_LIST_LEN} GREATER "0" )
+           list( REMOVE_DUPLICATES ${SOURCE_FILES} )
+        endif()
+
 
         #"ARG"
         set( CUSTOM_PACK_MAX_NUMBER 20 )        
@@ -153,19 +162,42 @@ macro( generated_unity_sources SOURCE_FILES )
             endif()
         
             foreach( index RANGE 1 ${${PTYPE}_PACK_SIZE}  )
-                set( HEADERS_LIST )
+                math( EXPR index_pack "${index} + ${PACK_IDX}" )
+                set ( ${PTYPE}_NAME ${CMAKE_CURRENT_BINARY_DIR}/unity_pack/${PROJECT_NAME}_${index_pack}_${PTYPE}.${${PTYPE}_PACK_EXP} )
+            
+                #"calculation files hash"
+                EXECUTE_PROCESS(
+                    COMMAND ${PYTHON_EXECUTABLE} "${DAVA_SCRIPTS_FILES_PATH}/file_tree_hash.py" ${${PTYPE}_PACK_${index}} "--file_mode"
+                    OUTPUT_VARIABLE SOURCE_FILES_HASH
+                )
+                string(REPLACE "\n" "" SOURCE_FILES_HASH "${SOURCE_FILES_HASH}" )
+
+
+                #"checking exist of the pack"
+                set( UNITY_PACK_EXISTS )
+                if( EXISTS ${${PTYPE}_NAME} )
+                    file(STRINGS ${${PTYPE}_NAME} SOURCE_FILES_HASH_READ LIMIT_COUNT 1)
+                    string(REGEX MATCH "[^- ]+$"  SOURCE_FILES_HASH_READ ${SOURCE_FILES_HASH_READ})
+                    if( ${SOURCE_FILES_HASH} STREQUAL ${SOURCE_FILES_HASH_READ})
+                        set( UNITY_PACK_EXISTS true )
+                    endif()
+                endif()
+
+                set( HEADERS_LIST "//file hash - ${SOURCE_FILES_HASH}")
+
                 foreach( PACH ${${PTYPE}_PACK_${index}} )
                     get_filename_component( PACH ${PACH} ABSOLUTE )
                     list( APPEND HEADERS_LIST "#include \"${PACH}\"" ) 
                     set_source_files_properties( ${PACH} PROPERTIES HEADER_FILE_ONLY TRUE )
                 endforeach()
-                string(REPLACE ";" "\n" HEADERS_LIST "${HEADERS_LIST}" )            
-                math( EXPR index_pack "${index} + ${PACK_IDX}" )
-                set ( ${PTYPE}_NAME ${CMAKE_CURRENT_BINARY_DIR}/unity_pack/${PROJECT_NAME}_${index_pack}_${PTYPE}.${${PTYPE}_PACK_EXP} )
-                
+
+                if( NOT UNITY_PACK_EXISTS )
+                    string(REPLACE ";" "\n" HEADERS_LIST "${HEADERS_LIST}" )            
+                    file( WRITE ${${PTYPE}_NAME} ${HEADERS_LIST})
+                    #message( "generated pack     - ${${PTYPE}_NAME}")
+                endif()
+
                 list( APPEND ${PTYPE}_PACK_LIST ${${PTYPE}_NAME} )
-                file( WRITE ${${PTYPE}_NAME} ${HEADERS_LIST})
-                #message( "generated pack     - ${${PTYPE}_NAME}")
             endforeach()
 
             math( EXPR PACK_IDX "${PACK_IDX} + ${${PTYPE}_PACK_SIZE}" )
