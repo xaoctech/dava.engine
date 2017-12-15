@@ -186,12 +186,6 @@ void QtWrapLayoutPrivate::Layout(int32 width)
 {
     Q_Q(QtWrapLayout);
 
-    DVASSERT(items.empty() == false);
-    if (items.empty())
-    {
-        return;
-    }
-
     // Early out if we have no changes that would cause a change in vertical layout
     if (width == layoutWidth && flags[Dirty] == false && flags[SizeDirty] == false)
     {
@@ -202,6 +196,11 @@ void QtWrapLayoutPrivate::Layout(int32 width)
     layoutHeight = 0;
     layoutColumnWidths.clear();
     layoutRowHeights.clear();
+
+    if (items.empty())
+    {
+        return;
+    }
 
     int32 userVSpacing = q->GetVerticalSpacing();
     int32 userHSpacing = q->GetHorizontalSpacing();
@@ -325,21 +324,28 @@ void QtWrapLayoutPrivate::UpdateSizes()
     minSize = QSize(0, 0);
     preferedSize = QSize(0, 0);
 
-    for (QtWrapLayoutItem* item : items)
+    if (items.empty() == false)
     {
-        item->Update();
-        minSize = minSize.expandedTo(item->minSize);
-        preferedSize.rwidth() += item->sizeHint.width();
-        preferedSize.rheight() = Max(preferedSize.height(), item->sizeHint.height());
-        Qt::Orientations expandOrientation = item->ExpandingDirections();
-        expandH |= (expandOrientation & Qt::Horizontal) != 0;
-        expandV |= (expandOrientation & Qt::Vertical) != 0;
+        for (QtWrapLayoutItem* item : items)
+        {
+            item->Update();
+            minSize = minSize.expandedTo(item->minSize);
+            preferedSize.rwidth() += item->sizeHint.width();
+            preferedSize.rheight() = Max(preferedSize.height(), item->sizeHint.height());
+            Qt::Orientations expandOrientation = item->ExpandingDirections();
+            expandH |= (expandOrientation & Qt::Horizontal) != 0;
+            expandV |= (expandOrientation & Qt::Vertical) != 0;
+        }
+        int leftMargin, topMargin, rightMargin, bottomMargin;
+        q->getContentsMargins(&leftMargin, &topMargin, &rightMargin, &bottomMargin);
+        minSize.rwidth() += (leftMargin + rightMargin);
+        preferedSize.rwidth() += (items.size() > 1) ? (static_cast<int32>(items.size()) - 1) * q->GetHorizontalSpacing() : 0;
     }
-
-    int leftMargin, topMargin, rightMargin, bottomMargin;
-    q->getContentsMargins(&leftMargin, &topMargin, &rightMargin, &bottomMargin);
-    minSize.rwidth() += (leftMargin + rightMargin);
-    preferedSize.rwidth() += (items.size() > 1) ? (static_cast<int32>(items.size()) - 1) * q->GetHorizontalSpacing() : 0;
+    else
+    {
+        minSize = QSize(0, 0);
+        preferedSize = QSize(0, 0);
+    }
 
     flags[SizeDirty] = false;
     flags[ExpandHorizontal] = expandH;
@@ -439,6 +445,7 @@ QLayoutItem* QtWrapLayout::takeAt(int index)
         return nullptr;
 
     QtWrapLayoutItem* wrapItem = d->items[index];
+    d->items.erase(d->items.begin() + index);
     QLayoutItem* item = wrapItem->item;
     wrapItem->item = 0;
     delete wrapItem;
