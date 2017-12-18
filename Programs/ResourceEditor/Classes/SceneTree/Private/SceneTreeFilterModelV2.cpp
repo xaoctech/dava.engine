@@ -3,6 +3,7 @@
 #include "Classes/SceneTree/SceneTreeFiltration.h"
 
 #include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/DataProcessing/AnyQMetaType.h>
 
 #include <Base/BaseTypes.h>
 #include <Base/Type.h>

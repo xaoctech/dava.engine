@@ -1,6 +1,6 @@
 #include "TArc/Controls/QtFlowLayout.h"
 
-class QWidget;
+#include <QWidget>
 
 namespace DAVA
 {

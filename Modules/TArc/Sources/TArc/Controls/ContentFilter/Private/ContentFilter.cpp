@@ -10,6 +10,7 @@
 #include "TArc/Qt/QtSize.h"
 #include "TArc/Qt/QtString.h"
 #include "TArc/DataProcessing/AnyQMetaType.h"
+#include "TArc/Utils/Utils.h"
 
 #include <Engine/PlatformApiQt.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -177,7 +178,7 @@ void ContentFilter::SetupControl()
 
         QToolButton* toolButton = new QToolButton(this);
         toolButton->setFixedSize(24, 24);
-        toolButton->setIcon(SharedIcon(":/TArc/Resources/filter.png"));
+        toolButton->setIcon(DAVA::TArc::SharedIcon(":/TArc/Resources/filter.png"));
         toolButton->setPopupMode(QToolButton::InstantPopup);
         toolButton->setAutoRaise(false);
         toolButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -210,7 +211,7 @@ void ContentFilter::SetupControl()
         ReflectedButton::Params params(controlParams.accessor, controlParams.ui, controlParams.wndKey);
         params.fields[ReflectedButton::Fields::AutoRaise].BindConstValue(false);
         params.fields[ReflectedButton::Fields::Enabled] = "isSaveButtonEnabled";
-        params.fields[ReflectedButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/Resources/save.png"));
+        params.fields[ReflectedButton::Fields::Icon].BindConstValue(DAVA::TArc::SharedIcon(":/TArc/Resources/save.png"));
         params.fields[ReflectedButton::Fields::Tooltip].BindConstValue(QStringLiteral("Save current filters chain"));
         params.fields[ReflectedButton::Fields::Clicked] = "saveFiltesChain";
         params.fields[ReflectedButton::Fields::Visible] = "hasFilters";
@@ -389,7 +390,7 @@ void ContentFilter::AddFilterMenuAboutToShow()
                     p.fields[ReflectedButton::Fields::AutoRaise].BindConstValue(false);
                     p.fields[ReflectedButton::Fields::Clicked] = "renameAvailableFilter";
                     p.fields[ReflectedButton::Fields::BindedArgument].BindConstValue(filter->key);
-                    p.fields[ReflectedButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/ContentFilter/Private/Resources/rename.png"));
+                    p.fields[ReflectedButton::Fields::Icon].BindConstValue(DAVA::TArc::SharedIcon(":/TArc/ContentFilter/Private/Resources/rename.png"));
                     p.fields[ReflectedButton::Fields::IconSize].BindConstValue(QSize(16, 16));
                     ReflectedButton* button = new ReflectedButton(p, p.accessor, thisModel, containerWidget->ToWidgetCast());
                     QWidget* buttonWidget = button->ToWidgetCast();
@@ -402,7 +403,7 @@ void ContentFilter::AddFilterMenuAboutToShow()
                     p.fields[DelayedToolButton::Fields::AutoRaise].BindConstValue(false);
                     p.fields[DelayedToolButton::Fields::Clicked] = "removeAvailableFilter";
                     p.fields[DelayedToolButton::Fields::BindedArgument].BindConstValue(filter->key);
-                    p.fields[DelayedToolButton::Fields::Icon].BindConstValue(SharedIcon(":/TArc/ContentFilter/Private/Resources/delete.png"));
+                    p.fields[DelayedToolButton::Fields::Icon].BindConstValue(DAVA::TArc::SharedIcon(":/TArc/ContentFilter/Private/Resources/delete.png"));
                     p.fields[DelayedToolButton::Fields::IconSize].BindConstValue(QSize(16, 16));
                     p.fields[DelayedToolButton::Fields::DelayMs].BindConstValue(500);
                     p.fields[DelayedToolButton::Fields::ProgressBarColor].BindConstValue(QColor(Qt::red));
