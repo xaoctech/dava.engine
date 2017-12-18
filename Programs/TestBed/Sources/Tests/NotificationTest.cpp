@@ -183,8 +183,8 @@ void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerD
         notificationText->Show();
     }
 
-    notificationText->SetTitle(L"Application is on foreground!");
-    notificationText->SetText(L"This text appeared at button press ");
+    notificationText->SetTitle("Application is on foreground!");
+    notificationText->SetText("This text appeared at button press ");
 
     hideNotificationText->GetOrCreateComponent<UIDebugRenderComponent>();
 }
@@ -192,7 +192,7 @@ void NotificationScreen::OnNotifyText(BaseObject* obj, void* data, void* callerD
 void NotificationScreen::OnNotifyTextDelayed(BaseObject* obj, void* data, void* callerData)
 {
     int delayInSeconds = std::atoi(UTF8Utils::EncodeToUTF8(notificationDelayTextField->GetText()).c_str());
-    notificationController->PostDelayedNotification(L"Test Delayed notification Title", L"Some text", delayInSeconds);
+    notificationController->PostDelayedNotification("Test Delayed notification Title", "Some text", delayInSeconds);
 }
 
 void NotificationScreen::OnNotifyCancelDelayed(BaseObject* obj, void* data, void* callerData)
@@ -214,7 +214,7 @@ void NotificationScreen::OnNotifyProgress(BaseObject* obj, void* data, void* cal
 {
     if (nullptr == notificationProgress)
     {
-        notificationProgress = notificationController->CreateNotificationProgress(L"", L"", 100, 0);
+        notificationProgress = notificationController->CreateNotificationProgress("", "", 100, 0);
         notificationProgress->SetAction(Message(this, &NotificationScreen::OnNotificationProgressPressed));
     }
     else
@@ -222,8 +222,8 @@ void NotificationScreen::OnNotifyProgress(BaseObject* obj, void* data, void* cal
         notificationProgress->Show();
     }
 
-    notificationProgress->SetTitle(L"Fake Download Progress");
-    notificationProgress->SetText(L"You pressed the button");
+    notificationProgress->SetTitle("Fake Download Progress");
+    notificationProgress->SetText("You pressed the button");
 
     hideNotificationProgress->GetOrCreateComponent<UIDebugRenderComponent>()->SetEnabled(true);
 }
@@ -252,7 +252,7 @@ void NotificationScreen::OnNotificationStressTest(BaseObject* obj, void* data, v
     for (int i = 0; i < 550; ++i)
     {
         notificationController->RemoveAllDelayedNotifications();
-        notificationController->PostDelayedNotification(L"Stress test", L"Notification stress test", 30);
+        notificationController->PostDelayedNotification("Stress test", "Notification stress test", 30);
     }
     Logger::Info("Notification stress test finished");
 }

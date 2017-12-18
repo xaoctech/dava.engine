@@ -15,11 +15,11 @@ class LocalNotificationAndroid : public LocalNotificationImpl
 {
 public:
     LocalNotificationAndroid(const String& _id);
-    void SetAction(const WideString& action) override;
+    void SetAction(const String& action) override;
     void Hide() override;
-    void ShowText(const WideString& title, const WideString& text, const bool useSound) override;
-    void ShowProgress(const WideString& title, const WideString& text, const uint32 total, const uint32 progress, bool useSound) override;
-    void PostDelayedNotification(WideString const& title, WideString const& text, int delaySeconds, bool useSound) override;
+    void ShowText(const String& title, const String& text, const bool useSound) override;
+    void ShowProgress(const String& title, const String& text, const uint32 total, const uint32 progress, bool useSound) override;
+    void PostDelayedNotification(String const& title, String const& text, int delaySeconds, bool useSound) override;
     void RemoveAllDelayedNotifications() override;
 
 private:
