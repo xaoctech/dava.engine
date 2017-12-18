@@ -396,7 +396,6 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, const D
     DecalVertex* points_tmp = reinterpret_cast<DecalVertex*>(decalVertexData_tmp);
 
     int32 geometryFormat = info.polygonGroup->GetFormat();
-    DVASSERT((geometryFormat & EVF_JOINTINDEX) == 0); //not support soft-skinning yet
 
     uint32 triangleCount = static_cast<uint32>(info.polygonGroup->GetIndexCount() / 3);
     for (uint32 triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
@@ -456,8 +455,15 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
     buffer.reserve(3 * sizeof(DecalVertex) * info.polygonGroup->GetIndexCount());
     if (info.useSkinning)
     {
-        DVASSERT((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_HARD_JOINTINDEX));
-        GetSkinnedMeshGeometry(info, config, buffer);
+        if ((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_HARD_JOINTINDEX))
+        {
+            GetSkinnedMeshGeometry(info, config, buffer);
+        }
+        else
+        {
+            // we are no supporting soft skinning yet
+            return false;
+        }
     }
     else
     {
