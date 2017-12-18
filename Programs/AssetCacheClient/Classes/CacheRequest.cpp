@@ -1,7 +1,7 @@
 #include "CacheRequest.h"
 
 #include <Engine/Engine.h>
-#include <DavaTools/AssetCache/AssetCacheConstants.h>
+#include <AssetCache/AssetCacheConstants.h>
 
 #include <Time/SystemTimer.h>
 #include <Concurrency/Thread.h>

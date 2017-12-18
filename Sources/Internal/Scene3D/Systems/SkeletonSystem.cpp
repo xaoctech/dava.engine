@@ -1,15 +1,16 @@
+#include "SkeletonSystem.h"
+
 #include "Animation/AnimationTrack.h"
-#include "Scene3D/Systems/SkeletonSystem.h"
+#include "Debug/ProfilerCPU.h"
+#include "Debug/ProfilerMarkerNames.h"
+#include "Render/Highlevel/SkinnedMesh.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/SkeletonAnimation/JointTransform.h"
-#include "Render/Highlevel/SkinnedMesh.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Debug/ProfilerCPU.h"
-#include "Debug/ProfilerMarkerNames.h"
 
 #define RE_DEBUG_PROCESS_TEST_SKINNED_MESHES 0
 
@@ -109,7 +110,7 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
             Vector<Vector3> positions(component->GetJointsCount());
             for (uint32 i = 0; i < component->GetJointsCount(); ++i)
             {
-                positions[i] = component->objectSpaceTransforms[i].position * worldTransform;
+                positions[i] = component->objectSpaceTransforms[i].GetPosition() * worldTransform;
             }
 
             const Vector<SkeletonComponent::Joint>& joints = component->jointsArray;
@@ -213,17 +214,14 @@ void SkeletonSystem::RebuildSkeleton(SkeletonComponent* skeleton)
     skeleton->finalTransforms.resize(jointsCount);
     skeleton->inverseBindTransforms.resize(jointsCount);
     skeleton->objectSpaceBoxes.resize(jointsCount);
-    skeleton->jointMap.clear();
 
     DVASSERT(skeleton->jointsArray.size() < SkeletonComponent::INFO_PARENT_MASK);
     for (uint32 i = 0, sz = static_cast<int32>(skeleton->jointsArray.size()); i < sz; ++i)
     {
         DVASSERT((skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || (skeleton->jointsArray[i].parentIndex < i)); //order
         DVASSERT((skeleton->jointsArray[i].parentIndex == SkeletonComponent::INVALID_JOINT_INDEX) || ((skeleton->jointsArray[i].parentIndex & SkeletonComponent::INFO_PARENT_MASK) == skeleton->jointsArray[i].parentIndex)); //parent fits mask
-        DVASSERT(skeleton->jointMap.find(skeleton->jointsArray[i].uid) == skeleton->jointMap.end()); //duplicate bone name
 
         skeleton->jointInfo[i] = skeleton->jointsArray[i].parentIndex | SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-        skeleton->jointMap[skeleton->jointsArray[i].uid] = i;
 
         JointTransform localTransform;
         localTransform.Construct(skeleton->jointsArray[i].bindTransform);
@@ -264,9 +262,11 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
                 {
                     component->GetJoint(j).bindTransform.GetTranslationVector();
 
+                    Vector3 position = component->GetJoint(j).bindTransform.GetTranslationVector();
+                    position.z += 5.f * sinf(float32(j + t));
+
                     JointTransform transform;
-                    transform.position = component->GetJoint(j).bindTransform.GetTranslationVector();
-                    transform.position.z += 5.f * sinf(float32(j + t));
+                    transform.SetPosition(position);
 
                     component->SetJointTransform(j, transform);
                 }
@@ -275,11 +275,7 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
             {
                 for (uint32 i = 0, sz = component->GetJointsCount(); i < sz; ++i)
                 {
-                    float32 fi = t;
-
-                    JointTransform transform = component->GetJointTransform(i);
-                    transform.orientation.Construct(Vector3(0.f, 1.f, 0.f), fi);
-                    component->SetJointTransform(i, transform);
+                    component->SetJointOrientation(i, Quaternion::MakeRotationFastY(t));
                 }
             }
         }

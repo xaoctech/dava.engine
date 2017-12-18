@@ -7,7 +7,8 @@ set(CPP_FILES_RECURSE *.cpp *.mm)
 
 set(INCLUDES "${CMAKE_CURRENT_LIST_DIR}")
 set(FIND_PACKAGE QT5 )
-set(FIND_MODULE  DavaTools TArc)
+set(FIND_MODULE  TexturePacker              
+                 TArc)
 
 set(QT_UI_FILES "${CMAKE_CURRENT_LIST_DIR}/*.ui")
 set(QT_RES_FILES "${CMAKE_CURRENT_LIST_DIR}/*.qrc")

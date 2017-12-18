@@ -2,7 +2,7 @@
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
 
-#include <DavaTools/Version.h>
+#include <Version/Version.h>
 
 #include <QProcess>
 #include <QNetworkAccessManager>
@@ -66,7 +66,7 @@ void SharedDataRequester::OnGetPoolsFinished()
 
     QString s = QString("http://ba-manager.wargaming.net/modules/jsonAPI/acs/api.php?cmd=getShared&key=%1&version=%2")
                 .arg(getRequestOwnID ? QString::number(getRequestOwnID) : "NULL")
-                .arg(APPLICATION_BUILD_VERSION);
+                .arg(DAVA::Version::GetVersion().c_str());
 
     //DAVA::Logger::Debug("Sending request: %s", s.toStdString().c_str());
     getServersRequest = networkManager->get(QNetworkRequest(QUrl(s)));

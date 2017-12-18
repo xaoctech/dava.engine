@@ -333,6 +333,7 @@ private:
     void HandleDpiChanged(const Private::MainDispatcherEvent& e);
     void HandleCancelInput(const Private::MainDispatcherEvent& e);
     void HandleVisibleFrameChanged(const Private::MainDispatcherEvent& e);
+    void HandleSafeAreaInsetsChanged(const Private::MainDispatcherEvent& e);
     void HandleFocusChanged(const Private::MainDispatcherEvent& e);
     void HandleVisibilityChanged(const Private::MainDispatcherEvent& e);
     void HandleTrackpadGesture(const Private::MainDispatcherEvent& e);

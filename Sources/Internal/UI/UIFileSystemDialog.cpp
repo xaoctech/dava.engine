@@ -341,12 +341,14 @@ void UIFileSystemDialog::RefreshList()
     int32 cnt = files->GetCount();
     int32 outCnt = 0;
     int32 p = -1;
+    size_t npos = String::npos;
+    int32 iNpos = static_cast<int32>(npos);
 
     String curDirPath = currentDir.GetDirectory().GetAbsolutePathname();
     while (true)
     {
         p = static_cast<int32>(curDirPath.rfind("/", p));
-        if (p != static_cast<int32>(curDirPath.npos))
+        if (p != iNpos)
         {
             p--;
             outCnt++;
