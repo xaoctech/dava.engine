@@ -39,9 +39,13 @@ UIAnchorSafeAreaComponent::UIAnchorSafeAreaComponent()
 
 UIAnchorSafeAreaComponent::UIAnchorSafeAreaComponent(const UIAnchorSafeAreaComponent& src)
     : leftInset(src.leftInset)
+    , leftInsetCorrection(src.leftInsetCorrection)
     , topInset(src.topInset)
+    , topInsetCorrection(src.topInsetCorrection)
     , rightInset(src.rightInset)
+    , rightInsetCorrection(src.rightInsetCorrection)
     , bottomInset(src.bottomInset)
+    , bottomInsetCorrection(src.bottomInsetCorrection)
 {
 }
 
