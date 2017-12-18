@@ -385,13 +385,13 @@ void DLCManagerImpl::CreateDownloader()
         }
         else
         {
-        DLCDownloader::Hints downloaderHints;
-        downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
-        downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
-        downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
-        downloaderHints.profiler = &profiler;
+            DLCDownloader::Hints downloaderHints;
+            downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
+            downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
+            downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
+            downloaderHints.profiler = &profiler;
 
-        downloader = std::shared_ptr<DLCDownloader>(DLCDownloader::Create(downloaderHints));
+            downloader = std::shared_ptr<DLCDownloader>(DLCDownloader::Create(downloaderHints));
         }
     }
 }
