@@ -69,7 +69,7 @@ macro( generated_unity_sources SOURCE_FILES )
             endforeach()
 
             #"Ext"
-            get_filename_component( ITEM_EXT ${ITEM} EXT )
+            string(REGEX MATCH "\\.[^.]+$"  ITEM_EXT ${ITEM})
 
             #"Put in custom packs"
             foreach( index RANGE 1 ${CUSTOM_PACK_MAX_NUMBER} )
