@@ -411,7 +411,6 @@ void DLCManagerImpl::CreateLocalPacks(const String& localPacksDB)
         for (size_t i = 0; i < packsCount; ++i)
         {
             const auto& packInfo = metaLocal->GetPackInfo(static_cast<uint32>(i));
-            packInfo.packName;
             PackRequest* request = new PackRequest(packInfo.packName);
             AddRequest(request);
         }
@@ -1821,27 +1820,37 @@ bool DLCManagerImpl::IsAnyPackInQueue() const
     return false;
 }
 
-bool DLCManager::IsKnownFile(const String&) const
+bool DLCManager::IsKnownFile(const FilePath&) const
 {
     return false;
 }
 
-bool DLCManagerImpl::IsKnownFile(const String& relativeFileName) const
+bool DLCManagerImpl::IsKnownFile(const FilePath& path) const
 {
+    String rel;
+    if (path.StartsWith("~res:/"))
+    {
+        rel = path.GetRelativePathname("~res:/");
+    }
+    else
+    {
+        rel = path.GetRelativePathname();
+    }
+
     if (HasLocalMeta())
     {
-        auto& meta = GetLocalMeta();
-        auto& tree = meta.GetFileNamesTree();
-        if (tree.Find(relativeFileName))
+        const auto& meta = GetLocalMeta();
+        const auto& tree = meta.GetFileNamesTree();
+        if (tree.Find(rel))
         {
             return true;
         }
     }
     if (HasRemoteMeta())
     {
-        auto& meta = GetRemoteMeta();
-        auto& remoteFilesTree = meta.GetFileNamesTree();
-        if (remoteFilesTree.Find(relativeFileName))
+        const auto& meta = GetRemoteMeta();
+        const auto& remoteFilesTree = meta.GetFileNamesTree();
+        if (remoteFilesTree.Find(rel))
         {
             return true;
         }

@@ -182,8 +182,9 @@ public:
     /** return true if download queue is not empty */
     virtual bool IsAnyPackInQueue() const;
 
-    /** return true if local sqlite.db or remote *.dvpk has info with relativeFileName */
-    virtual bool IsKnownFile(const String& relativeFileName) const;
+    /** Find out if local sqlite.db or remote *.dvpk has info about relativeFileName. 
+     *  Note! Remote files info works after full initialization done */
+    virtual bool IsKnownFile(const FilePath& relativeFileName) const;
 
     /** Update request queue to first download dependency of selected request
         and then request itself */

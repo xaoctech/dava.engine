@@ -59,10 +59,13 @@ PackMetaData::PackMetaData(const void* ptr, std::size_t size, const String& file
     const size_t sizeOfNames = fileNames.size();
     size_t index = 0;
 
-    while (index != String::npos)
+    while (index < fileNames.size())
     {
-        namesTree.Add(&fileNames[index]);
-        index = fileNames.find('\0', index + 1);
+        // TODO in future do it with std::string_view
+        const char* filePath = &fileNames[index];
+        namesTree.Add(filePath);
+        // start of next substring after null character
+        index = fileNames.find('\0', index + 1) + 1;
     }
 }
 

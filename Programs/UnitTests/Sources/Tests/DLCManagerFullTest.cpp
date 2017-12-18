@@ -86,6 +86,11 @@ struct FSMTest02
         {
             if (dlcManager.IsInitialized())
             {
+                TEST_VERIFY(dlcManager.IsKnownFile("3d/Maps/test/images/SycamoreLeaves5.png"));
+                TEST_VERIFY(dlcManager.IsKnownFile(FilePath("~res:/3d/Maps/test/images/SycamoreLeaves5.png")));
+                TEST_VERIFY(dlcManager.IsKnownFile(FilePath("~res:/3d/Maps/test/images/SycamoreLeaves5.png").GetAbsolutePathname()));
+                TEST_VERIFY(dlcManager.IsKnownFile(FilePath(FilePath("~res:/3d/Maps/test/images/SycamoreLeaves5.png").GetAbsolutePathname())));
+
                 uint64 sizeOfPack = dlcManager.GetPackSize("8");
 
                 // size from superpack_for_unittests.dvpk without any meta
@@ -256,6 +261,10 @@ DAVA_TESTCLASS (DLCManagerFullTest)
             Logger::Error("can't initialize DLCManager without remote url, exception: %s", ex.what());
             TEST_VERIFY(false && "failed init dlc_manager without url");
         }
+
+        TEST_VERIFY(dlcManager.IsKnownFile("some/not/existing/path"));
+        TEST_VERIFY(dlcManager.IsKnownFile(FilePath("some/not/existing/path")));
+        TEST_VERIFY(dlcManager.IsKnownFile(FilePath("~res:/some/not/existing/path")));
 
         dlcManager.Deinitialize();
     }

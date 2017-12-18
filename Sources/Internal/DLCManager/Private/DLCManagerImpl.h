@@ -140,7 +140,7 @@ public:
 
     bool IsAnyPackInQueue() const final;
 
-    bool IsKnownFile(const String& relativeFileName) const final;
+    bool IsKnownFile(const FilePath& relativeFileName) const final;
 
     void SetRequestPriority(const IRequest* request) final;
 
@@ -336,7 +336,7 @@ inline const PackMetaData& DLCManagerImpl::GetRemoteMeta() const
 inline const PackMetaData& DLCManagerImpl::GetLocalMeta() const
 {
     DVASSERT(metaRemote.get() != nullptr);
-    return *metaRemote;
+    return *metaLocal;
 }
 
 inline bool DLCManagerImpl::HasLocalMeta() const
