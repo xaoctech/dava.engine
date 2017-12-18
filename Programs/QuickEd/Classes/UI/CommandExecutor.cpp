@@ -143,6 +143,21 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
         control->GetControl()->SetName(newName);
     }
 }
+
+ControlNode* GetInstanceRoot(ControlNode* instance, ControlNode* prototypeRoot)
+{
+    for (ControlNode* currentNode = instance;
+         currentNode != nullptr;
+         currentNode = dynamic_cast<ControlNode*>(currentNode->GetParent()))
+    {
+        if (currentNode->GetPrototype() == prototypeRoot)
+        {
+            return currentNode;
+        }
+    }
+
+    return nullptr;
+}
 }
 
 CommandExecutor::CommandExecutor(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_)
@@ -825,44 +840,81 @@ void CommandExecutor::RemoveControlImpl(ControlNode* node) const
     }
 }
 
-bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* dest, DAVA::int32 destIndex) const
+bool CommandExecutor::MoveControlImpl(ControlNode* moved, ControlsContainerNode* dest, DAVA::int32 destIndex) const
 {
-    node->Retain();
-    ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(node->GetParent());
+    RefPtr<ControlNode> nodeGuard = RefPtr<ControlNode>::ConstructWithRetain(moved);
+
+    ControlsContainerNode* src = dynamic_cast<ControlsContainerNode*>(moved->GetParent());
     bool result = false;
-    if (src)
+    if (src != nullptr)
     {
-        int32 srcIndex = src->GetIndex(node);
-        DocumentData* data = GetDocumentData();
-        data->ExecCommand<RemoveControlCommand>(node, src, srcIndex);
+        Vector<ControlNode*> instances = moved->GetInstances();
+        Vector<ControlNode*> destInstances;
 
-        Vector<ControlNode*> instances = node->GetInstances();
+        bool ofSamePrototype = false;
+        ControlNode* prototypeRootOfDest = nullptr;
 
-        if (IsNodeInHierarchy(dest))
+        ControlNode* destControl = dynamic_cast<ControlNode*>(dest);
+        if (destControl != nullptr)
         {
-            data->ExecCommand<InsertControlCommand>(node, dest, destIndex);
+            destInstances = destControl->GetInstances();
 
-            ControlNode* destControl = dynamic_cast<ControlNode*>(dest);
-            if (destControl)
+            if (instances.empty() == false && destInstances.empty() == false)
             {
-                for (ControlNode* destInstance : destControl->GetInstances())
-                {
-                    auto it = std::find_if(instances.begin(), instances.end(), [destInstance](const ControlNode* node) {
-                        return IsControlNodesHasSameParentControlNode(node, destInstance);
-                    });
+                ControlNode* prototypeRootOfMoved = GetRootControlNode(moved);
+                prototypeRootOfDest = GetRootControlNode(destControl);
 
-                    if (it != instances.end())
-                    {
-                        ControlNode* srcInstance = *it;
-                        instances.erase(it);
-                        MoveControlImpl(srcInstance, destInstance, destIndex);
-                    }
-                    else
-                    {
-                        ControlNode* copy = ControlNode::CreateFromPrototypeChild(node);
-                        InsertControlImpl(copy, destInstance, destIndex);
-                        SafeRelease(copy);
-                    }
+                if (prototypeRootOfMoved == prototypeRootOfDest)
+                {
+                    ofSamePrototype = true;
+                }
+                else if (instances.size() > 1)
+                {
+                    DAVA::TArc::NotificationParams params;
+                    params.title = "Ambiguity of move operation";
+                    params.message = Result(Result::RESULT_WARNING, "Can't match source and destination instances. Result may be incorrect");
+                    ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+                }
+            }
+        }
+
+        int32 srcIndex = src->GetIndex(moved);
+        DocumentData* data = GetDocumentData();
+        data->ExecCommand<RemoveControlCommand>(moved, src, srcIndex);
+
+        if (IsNodeInHierarchy(dest) == true)
+        {
+            data->ExecCommand<InsertControlCommand>(moved, dest, destIndex);
+
+            for (ControlNode* destInstance : destInstances)
+            {
+                Vector<ControlNode*>::iterator instanceIt = instances.end();
+
+                if (ofSamePrototype == true)
+                {
+                    ControlNode* instanceRootOfDest = CommandExecutorDetails::GetInstanceRoot(destInstance, prototypeRootOfDest);
+                    instanceIt = std::find_if(instances.begin(), instances.end(), [instanceRootOfDest](ControlNode* instance)
+                                              {
+                                                  return instanceRootOfDest->IsParentOf(instance);
+                                              });
+                }
+                else if (instances.empty() == false)
+                {
+                    // get first src instance because it is no matter, we have ambiguity there
+                    instanceIt = instances.begin();
+                }
+
+                if (instanceIt != instances.end())
+                {
+                    ControlNode* src = *instanceIt;
+                    instances.erase(instanceIt);
+                    MoveControlImpl(src, destInstance, destIndex);
+                }
+                else
+                {
+                    ControlNode* copy = ControlNode::CreateFromPrototypeChild(moved);
+                    InsertControlImpl(copy, destInstance, destIndex);
+                    SafeRelease(copy);
                 }
             }
 
@@ -877,7 +929,6 @@ bool CommandExecutor::MoveControlImpl(ControlNode* node, ControlsContainerNode* 
         DVASSERT(false);
     }
 
-    node->Release();
     return result;
 }
 
@@ -929,25 +980,6 @@ bool CommandExecutor::IsNodeInHierarchy(const PackageBaseNode* node) const
             return true;
         p = p->GetParent();
     }
-    return false;
-}
-
-bool CommandExecutor::IsControlNodesHasSameParentControlNode(const ControlNode* n1, const ControlNode* n2)
-{
-    for (const PackageBaseNode* t1 = n1; t1 != nullptr; t1 = t1->GetParent())
-    {
-        if (t1->GetControl() != nullptr)
-        {
-            for (const PackageBaseNode* t2 = n2; t2 != nullptr; t2 = t2->GetParent())
-            {
-                if (t2 == t1)
-                {
-                    return true;
-                }
-            }
-        }
-    }
-
     return false;
 }
 

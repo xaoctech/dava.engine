@@ -186,7 +186,7 @@ public:
         return wrappersProcessor.CreateWrapper(accessor, activeContext != nullptr ? activeContext : globalContext);
     }
 
-    PropertiesItem CreatePropertiesNode(const String& nodeName) override
+    PropertiesItem CreatePropertiesNode(const String& nodeName) const override
     {
         DVASSERT(propertiesHolder != nullptr);
         return propertiesHolder->CreateSubHolder(nodeName);
@@ -443,7 +443,7 @@ public:
     }
 
 private:
-    void RegisterOperation(int operationID, AnyFn&& fn) override
+    void RegisterOperation(uint32 operationID, AnyFn&& fn) override
     {
     }
     DataContext::ContextID CreateContext(Vector<std::unique_ptr<TArcDataNode>>&& initialData) override
@@ -462,25 +462,25 @@ private:
         return nullptr;
     }
 
-    void Invoke(int operationId) override
+    void Invoke(uint32 operationId) override
     {
     }
-    void Invoke(int operationId, const Any& a) override
+    void Invoke(uint32 operationId, const Any& a) override
     {
     }
-    void Invoke(int operationId, const Any& a1, const Any& a2) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2) override
     {
     }
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3) override
     {
     }
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4) override
     {
     }
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5) override
     {
     }
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5, const Any& a6) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5, const Any& a6) override
     {
     }
 
@@ -614,7 +614,7 @@ public:
         controllerModule->OnRenderSystemInitialized(w);
     }
 
-    void RegisterOperation(int operationID, AnyFn&& fn) override
+    void RegisterOperation(uint32 operationID, AnyFn&& fn) override
     {
         auto iter = globalOperations.find(operationID);
         if (iter != globalOperations.end())
@@ -705,42 +705,42 @@ public:
         return PlatformApi::Qt::GetRenderWidget();
     }
 
-    void Invoke(int operationId) override
+    void Invoke(uint32 operationId) override
     {
         InvokeImpl(operationId);
     }
 
-    void Invoke(int operationId, const Any& a) override
+    void Invoke(uint32 operationId, const Any& a) override
     {
         InvokeImpl(operationId, a);
     }
-    void Invoke(int operationId, const Any& a1, const Any& a2) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2) override
     {
         InvokeImpl(operationId, a1, a2);
     }
 
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3) override
     {
         InvokeImpl(operationId, a1, a2, a3);
     }
 
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4) override
     {
         InvokeImpl(operationId, a1, a2, a3, a4);
     }
 
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5) override
     {
         InvokeImpl(operationId, a1, a2, a3, a4, a5);
     }
 
-    void Invoke(int operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5, const Any& a6) override
+    void Invoke(uint32 operationId, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5, const Any& a6) override
     {
         InvokeImpl(operationId, a1, a2, a3, a4, a5, a6);
     }
 
     template <typename... Args>
-    void InvokeImpl(int operationId, const Args&... args)
+    void InvokeImpl(uint32 operationId, const Args&... args)
     {
         if (invokeListener != nullptr)
         {

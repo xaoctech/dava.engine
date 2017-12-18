@@ -9,6 +9,12 @@ append_property( PLATFORM_DEFINITIONS_WINUAP "-D__DAVAENGINE_WINDOWS__;-D__DAVAE
 append_property( PLATFORM_DEFINITIONS_LINUX "-D__DAVAENGINE_LINUX__;-D__DAVAENGINE_POSIX__" )
 
 
+if ( DAVA_MEMORY_PROFILER )
+    # add definition to compile with memoryprofiler enabled
+    append_property( PLATFORM_DEFINITIONS_${DAVA_PLATFORM_CURRENT} -DDAVA_MEMORY_PROFILING_ENABLE )  
+endif()
+
+
 if( APPLE )
     set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebinfo;AdHoc"  CACHE STRING
         "Semicolon separated list of supported configuration types [Debug|Release|AdHoc]"
@@ -269,10 +275,8 @@ elseif( WARNINGS_AS_ERRORS )
             -Wno-import-preprocessor-directive-pedantic" )
 
         set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LOCAL_DISABLED_WARNINGS}" ) # warnings as errors
-    elseif( WIN32 )
-        # Temporarily disable treating warnings as errors to speed up porting to Visual Studio 2017
-        # TODO: do not forget to enable warnings as errors
-        # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
+    elseif( WIN32 )        
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
     endif()
 
 endif()

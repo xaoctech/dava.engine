@@ -9,15 +9,15 @@
 #include "Platform/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "UI/Private/Ios/MovieViewControlIos.h"
+#include "UI/Private/Ios/MovieViewControl.Ios.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "UI/Private/Mac/MovieViewControlMac.h"
+#include "UI/Private/Mac/MovieViewControl.Macos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "UI/Private/Android/MovieViewControlAndroid.h"
+#include "UI/Private/Android/MovieViewControl.Android.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "UI/Private/Win10/MovieViewControlWin10.h"
+#include "UI/Private/Win10/MovieViewControl.Win10.h"
 #elif defined(__DAVAENGINE_WIN32__)
-#include "Platform/TemplateWin32/MovieViewControlWin32.h"
+#include "Platform/TemplateWin32/MovieViewControl.Win.h"
 #else
 // UIMovieView is not implemented for this platform yet, using stub one.
 #define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
@@ -27,6 +27,8 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/Update/UIUpdateComponent.h"
+#include "UI/Events/UIMovieEventComponent.h"
+#include "UI/Events/UIEventsSingleComponent.h"
 
 namespace DAVA
 {
@@ -35,6 +37,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
     ReflectionRegistrator<UIMovieView>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieView* o) { o->Release(); })
+    .Method<void (UIMovieView::*)(const FilePath& moviePath)>("OpenMovie", &UIMovieView::OpenMovie)
+    .Method("Play", &UIMovieView::Play)
+    .Method("Stop", &UIMovieView::Stop)
+    .Method("Pause", &UIMovieView::Pause)
+    .Method("Resume", &UIMovieView::Resume)
+    .Method("IsPlaying", &UIMovieView::IsPlaying)
     .End();
 }
 
@@ -50,6 +58,11 @@ UIMovieView::UIMovieView(const Rect& rect)
 UIMovieView::~UIMovieView()
 {
     movieViewControl->OwnerIsDying();
+}
+
+void UIMovieView::OpenMovie(const FilePath& moviePath)
+{
+    movieViewControl->OpenMovie(moviePath, OpenMovieParams());
 }
 
 void UIMovieView::OpenMovie(const FilePath& moviePath, const OpenMovieParams& params)
@@ -121,6 +134,28 @@ void UIMovieView::Update(float32 timeElapsed)
 {
     UIControl::Update(timeElapsed);
     movieViewControl->Update();
+
+    bool playing = IsPlaying();
+    if (lastPlayingState != playing)
+    {
+        UIMovieEventComponent* events = GetComponent<UIMovieEventComponent>();
+        if (events)
+        {
+            FastName event = lastPlayingState ? events->GetStopEvent() : events->GetStartEvent();
+            if (event.IsValid())
+            {
+                if (GetScene())
+                {
+                    UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
+                    if (eventsSingle)
+                    {
+                        eventsSingle->SendEvent(this, event);
+                    }
+                }
+            }
+        }
+        lastPlayingState = playing;
+    }
 }
 
 void UIMovieView::OnVisible()

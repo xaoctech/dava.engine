@@ -8,7 +8,7 @@ class QLayout;
 
 namespace DAVA
 {
-class Widget : private QWidget, public ControlProxy
+class Widget : protected QWidget, public ControlProxy
 {
 public:
     explicit Widget(QWidget* parent = nullptr);

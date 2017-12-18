@@ -3,6 +3,8 @@
 #include <REPlatform/Global/CommandLineModule.h>
 #include <DavaTools/TextureCompression/TextureConverter.h>
 
+#include <TextureCompression/TextureConverter.h>
+
 #include <Render/TextureDescriptor.h>
 #include <Reflection/ReflectionRegistrator.h>
 

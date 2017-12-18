@@ -20,13 +20,15 @@ if (NOT LINUX)
 endif()
 
 find_dava_module( CEFWebview )
+find_dava_module( Version )
+
 
 # add physics
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
 
-#for toolset
-dava_add_definitions(-DLOCALIZATION_DEBUG)
+#without this line another unique instance of DAVA will be created
+list( APPEND DAVA_COMPONENTS DAVA_LOCALIZATION_DEBUG )
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 

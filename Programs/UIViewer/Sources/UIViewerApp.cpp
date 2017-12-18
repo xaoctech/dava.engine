@@ -1,7 +1,6 @@
 #include "UIViewerApp.h"
 #include "UIScreens/UIViewScreen.h"
 
-#include <DAVAVersion.h>
 #include <Debug/DVAssert.h>
 #include <Debug/DVAssertDefaultHandlers.h>
 #include <DeviceManager/DeviceManager.h>
@@ -19,9 +18,9 @@
 #include <Utils/StringFormat.h>
 
 #include <DocDirSetup/DocDirSetup.h>
-
 #include <LoggerService/NetLogger.h>
 #include <LoggerService/ServiceInfo.h>
+#include <Version/Version.h>
 
 namespace UIViewerAppPrivate
 {
@@ -37,6 +36,8 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
 {
     using namespace DAVA;
 
+    Assert::SetupDefaultHandlers();
+
     engine.gameLoopStarted.Connect(this, &UIViewerApp::OnAppStarted);
     engine.windowCreated.Connect(this, &UIViewerApp::OnWindowCreated);
     engine.gameLoopStopped.Connect(this, &UIViewerApp::OnAppFinished);
@@ -51,6 +52,7 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
     options.AddOption("-blankPath", VariantType(String("")), "Path to placeholder control");
     options.AddOption("-testedYaml", VariantType(String("")), "Path to tested yaml");
     options.AddOption("-testedCtrl", VariantType(String("")), "Name of tested control");
+    options.AddOption("-testedPath", VariantType(String("")), "Path of tested control");
 
     options.AddOption("-screenWidth", VariantType(1024), "Requested width of screen");
     options.AddOption("-screenHeight", VariantType(1024), "Requested height of screen");
@@ -64,6 +66,7 @@ UIViewerApp::UIViewerApp(DAVA::Engine& engine_, const DAVA::Vector<DAVA::String>
 
     options.AddOption("-locale", VariantType(String("en")), "Language");
     options.AddOption("-isRtl", VariantType(true), "Use rtl or no");
+    options.AddOption("-isFlow", VariantType(false), "Load target yaml as UI Flow config");
 
     optionsAreParsed = options.Parse(cmdLine);
 
@@ -108,7 +111,7 @@ void UIViewerApp::OnActionTriggered(DAVA::Action action)
         keyboardShowed = !keyboardShowed;
         if (keyboardShowed)
         {
-            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, virtualKeyboardHeight));
+            w->visibleFrameChanged.Emit(w, Rect(0, 0, w->GetSize().dx, static_cast<float32>(virtualKeyboardHeight)));
         }
         else
         {
@@ -143,7 +146,7 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
     physicalToVirtualScale.dx = static_cast<float32>(virtualSize.dx) / windowSize.dx;
     physicalToVirtualScale.dy = static_cast<float32>(virtualSize.dy) / windowSize.dy;
 
-    String title = DAVA::Format("DAVA Engine - UI Viewer | %s [%u bit]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8));
+    String title = Version::CreateAppVersion("UI Viewer");
     w->SetTitleAsync(title);
     w->SetSizeAsync(windowSize);
     w->SetVirtualSize(static_cast<float32>(virtualSize.dx), static_cast<float32>(virtualSize.dy));
@@ -152,6 +155,12 @@ void UIViewerApp::OnWindowCreated(DAVA::Window* w)
 
     uiViewScreen = new UIViewScreen(w, (optionsAreParsed) ? &options : nullptr);
     UIScreenManager::Instance()->SetFirst(uiViewScreen->GetScreenID());
+}
+
+void UIViewerApp::OnWindowDestroyed(DAVA::Window* w)
+{
+    DAVA::UIScreenManager::Instance()->ResetScreen();
+    SafeRelease(uiViewScreen);
 }
 
 void UIViewerApp::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, DAVA::Size2f surfaceSize)
@@ -166,15 +175,17 @@ void UIViewerApp::OnWindowSizeChanged(DAVA::Window* window, DAVA::Size2f size, D
     vcs->RegisterAvailableResourceSize(vSize.dx, vSize.dy, "Gfx");
     vcs->RegisterAvailableResourceSize(vSize.dx * 2, vSize.dy * 2, "Gfx2");
 
-    String title = Format("DAVA Engine - UI Viewer | %s [%u bit] | [%d x %d] - [%d x %d]", DAVAENGINE_VERSION, static_cast<uint32>(sizeof(pointer_size) * 8), static_cast<int32>(size.dx), static_cast<int32>(size.dy), vSize.dx, vSize.dy);
+    String title = Format("%s | [%d x %d] - [%d x %d]",
+                          Version::CreateAppVersion("UI Viewer").c_str(),
+                          static_cast<int32>(size.dx), static_cast<int32>(size.dy), vSize.dx, vSize.dy);
     window->SetTitleAsync(title);
 }
 
 void UIViewerApp::OnAppFinished()
 {
+    SafeRelease(uiViewScreen);
     servicesProvider.reset();
     netLogger.reset();
-    SafeRelease(uiViewScreen);
 }
 
 void UIViewerApp::OnSuspend()
@@ -216,24 +227,22 @@ DAVA::KeyedArchive* CreateOptions()
     appOptions->SetInt32("max_render_pass_count", 64);
     appOptions->SetInt32("max_command_buffer_count", 64);
     appOptions->SetInt32("max_packet_list_count", 64);
+    appOptions->SetInt32("rhi_threaded_frame_count", 2);
 
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     //appOptions->SetInt32("renderer", rhi::RHI_METAL);
-    appOptions->SetInt32("rhi_threaded_frame_count", 2);
     appOptions->SetBool("iPhone_autodetectScreenScaleFactor", true);
 
 #elif defined(__DAVAENGINE_WIN_UAP__)
     appOptions->SetInt32("bpp", 32);
     appOptions->SetInt32("renderer", rhi::RHI_DX11);
-    appOptions->SetInt32("rhi_threaded_frame_count", 2);
 
 #else
 #if defined(__DAVAENGINE_WIN32__)
     //appOptions->SetInt32("renderer", rhi::RHI_DX9);
     //appOptions->SetInt32("renderer", rhi::RHI_DX9);
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
-    appOptions->SetInt32("rhi_threaded_frame_count", 2);
 #elif defined(__DAVAENGINE_MACOS__)
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
 #endif
@@ -262,6 +271,7 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     DAVA::FileSystem* fileSystem = e.GetContext()->fileSystem;
 
     DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UIViewer");
+    e.GetContext()->logger->SetLogFilename("UIViewer.txt");
 
     UIViewerApp app(e, cmdline);
     return e.Run();

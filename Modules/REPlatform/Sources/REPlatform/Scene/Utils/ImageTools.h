@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TextureCompression/TextureConverter.h>
 
 #include <FileSystem/FilePath.h>
 #include <Render/Image/Image.h>

@@ -11,11 +11,26 @@ class ParticleEmitterInstance;
 class ParticleLayerMoveCommand : public RECommand
 {
 public:
-    ParticleLayerMoveCommand(ParticleEmitterInstance* oldEmitter, ParticleLayer* layer, ParticleEmitterInstance* newEmitter, ParticleLayer* newBefore = NULL);
+    ParticleLayerMoveCommand(ParticleEmitterInstance* oldEmitter, ParticleLayer* layer, ParticleEmitterInstance* newEmitter, ParticleLayer* newBefore = nullptr);
     ~ParticleLayerMoveCommand();
 
     void Undo() override;
     void Redo() override;
+
+    ParticleLayer* GetLayer() const
+    {
+        return layer;
+    }
+
+    ParticleEmitterInstance* GetOldEmitter() const
+    {
+        return oldEmitter;
+    }
+
+    ParticleEmitterInstance* GetNewEmitter() const
+    {
+        return newEmitter;
+    }
 
 private:
     ParticleLayer* layer = nullptr;

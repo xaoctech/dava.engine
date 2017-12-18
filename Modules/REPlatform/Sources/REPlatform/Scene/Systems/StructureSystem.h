@@ -28,12 +28,12 @@ public:
     ~StructureSystem();
 
     void Process(float32 timeElapsed) override;
-    void SceneDidLoaded() override;
 
     void Move(const SelectableGroup& objects, Entity* newParent, Entity* newBefore);
     void MoveEmitter(const Vector<ParticleEmitterInstance*>& emitters, const Vector<ParticleEffectComponent*>& oldEffects, ParticleEffectComponent* newEffect, int dropAfter);
     void MoveLayer(const Vector<ParticleLayer*>& layers, const Vector<ParticleEmitterInstance*>& oldEmitters, ParticleEmitterInstance* newEmitter, ParticleLayer* newBefore);
-    void MoveForce(const Vector<ParticleForce*>& forces, const Vector<ParticleLayer*>& oldLayers, ParticleLayer* newLayer);
+    void MoveSimplifiedForce(const Vector<ParticleForceSimplified*>& forces, const Vector<ParticleLayer*>& oldLayers, ParticleLayer* newLayer);
+    void MoveParticleForce(const Vector<ParticleForce*>& forces, const Vector<ParticleLayer*>& oldLayers, ParticleLayer* newLayer);
 
     void Remove(const SelectableGroup& objects);
 

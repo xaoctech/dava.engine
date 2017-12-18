@@ -17,6 +17,21 @@ public:
     void Undo() override;
     void Redo() override;
 
+    ParticleEffectComponent* GetOldComponent() const
+    {
+        return oldEffect;
+    }
+
+    ParticleEffectComponent* GetNewComponent() const
+    {
+        return newEffect;
+    }
+
+    ParticleEmitterInstance* GetEmitterInstance() const
+    {
+        return instance.Get();
+    }
+
 private:
     RefPtr<ParticleEmitterInstance> instance;
     ParticleEffectComponent* oldEffect;

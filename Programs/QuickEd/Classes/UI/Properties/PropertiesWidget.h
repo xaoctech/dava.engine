@@ -15,6 +15,7 @@ namespace DAVA
 {
 class ContextAccessor;
 class UI;
+class OperationInvoker;
 }
 
 class Project;
@@ -32,6 +33,7 @@ public:
 
     void SetAccessor(DAVA::ContextAccessor* accessor);
     void SetUI(DAVA::UI* ui);
+    void SetInvoker(DAVA::OperationInvoker* invoker);
 
 public slots:
     void SetProject(const Project* project);
@@ -85,4 +87,5 @@ private:
 
     DAVA::ContextAccessor* accessor = nullptr;
     DAVA::UI* ui = nullptr;
+    DAVA::OperationInvoker* invoker = nullptr;
 };

@@ -42,6 +42,7 @@ signals:
     void ParticleEmitterValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter);
     void ParticleLayerValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer);
     void ParticleForceValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+    void ParticleDragForceValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
     // particles - effect started/stopped.
     void ParticleEffectStateChanged(DAVA::SceneEditor2* scene, DAVA::Entity* effect, bool isStarted);
@@ -127,6 +128,11 @@ public:
     void EmitParticleForceValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
     {
         emit ParticleForceValueChanged(scene, layer, forceIndex);
+    }
+
+    void EmitParticleDragForceValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex)
+    {
+        emit ParticleDragForceValueChanged(scene, layer, forceIndex);
     }
 
     void EmitParticleEffectStateChanged(DAVA::SceneEditor2* scene, DAVA::Entity* effect, bool isStarted)

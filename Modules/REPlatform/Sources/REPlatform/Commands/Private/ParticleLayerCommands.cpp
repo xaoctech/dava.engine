@@ -330,4 +330,56 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeAlphaRemapProperties)
     .End();
 }
 
-} // namespace DAVA
+CommandChangeThreePointGradientProperties::CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer_, ThreePointGradientParams&& params)
+    : RECommand("Change Three Point Gradient Properties")
+    , layer(layer_)
+    , newParams(params)
+{
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        oldParams.gradientColorForBlack = layer->gradientColorForBlack;
+        oldParams.gradientColorForMiddle = layer->gradientColorForMiddle;
+        oldParams.gradientColorForWhite = layer->gradientColorForWhite;
+        oldParams.useThreePointGradient = layer->useThreePointGradient;
+        oldParams.gradientMiddlePointLine = layer->gradientMiddlePointLine;
+        oldParams.gradientMiddlePoint = layer->gradientMiddlePoint;
+    }
+}
+
+void CommandChangeThreePointGradientProperties::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandChangeThreePointGradientProperties::Redo()
+{
+    ApplyParams(newParams);
+}
+
+DAVA::ParticleLayer* CommandChangeThreePointGradientProperties::GetLayer() const
+{
+    return layer;
+}
+
+void CommandChangeThreePointGradientProperties::ApplyParams(ThreePointGradientParams& params)
+{
+    if (layer != nullptr)
+    {
+        PropertyLineHelper::SetValueLine(layer->gradientColorForBlack, params.gradientColorForBlack);
+        PropertyLineHelper::SetValueLine(layer->gradientColorForMiddle, params.gradientColorForMiddle);
+        PropertyLineHelper::SetValueLine(layer->gradientColorForWhite, params.gradientColorForWhite);
+        PropertyLineHelper::SetValueLine(layer->gradientMiddlePointLine, params.gradientMiddlePointLine);
+
+        layer->gradientMiddlePoint = params.gradientMiddlePoint;
+        layer->useThreePointGradient = params.useThreePointGradient;
+    }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeThreePointGradientProperties)
+{
+    ReflectionRegistrator<CommandChangeThreePointGradientProperties>::Begin()
+    .End();
+}
+
+} // namesapce DAVA

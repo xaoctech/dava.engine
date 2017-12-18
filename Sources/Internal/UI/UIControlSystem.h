@@ -33,6 +33,7 @@ class UIStyleSheetSystem;
 class UISystem;
 class UITextSystem;
 class UIUpdateSystem;
+class UIEventsSystem;
 class VirtualCoordinatesSystem;
 struct InputEvent;
 
@@ -135,9 +136,14 @@ public:
     void OnInput(UIEvent* newEvent);
 
     /**
-	 \brief Callse very frame by the system for update.
+	 \brief Calls very frame by the system for update.
 	 */
     void Update();
+
+    /**
+	 \brief Update system with custom time elapsed value.
+	 */
+    void UpdateWithCustomTime(float32 timeElapsed);
 
     /**
      \brief Calls update logic for specific control. Used to make screenshoots.
@@ -298,15 +304,22 @@ public:
     UIUpdateSystem* GetUpdateSystem() const;
     UIStyleSheetSystem* GetStyleSheetSystem() const;
     UIRenderSystem* GetRenderSystem() const;
+    UIEventsSystem* GetEventsSystem() const;
 
     void SetDoubleTapSettings(float32 time, float32 inch);
 
     VirtualCoordinatesSystem* vcs = nullptr; // TODO: Should be completely removed in favor of direct DAVA::Window methods
 
+    void SetFlowRoot(UIControl* root);
+    UIControl* GetFlowRoot() const;
+
+    void SetPhysicalSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom, bool isLeftNotch, bool isRightNotch);
+
 private:
     UIControlSystem();
     ~UIControlSystem();
     void Init();
+    void Shutdown();
 
     void ProcessScreenLogic();
 
@@ -331,6 +344,7 @@ private:
     UISoundSystem* soundSystem = nullptr;
     UIUpdateSystem* updateSystem = nullptr;
     UIRenderSystem* renderSystem = nullptr;
+    UIEventsSystem* eventsSystem = nullptr;
 
     Vector<ScreenSwitchListener*> screenSwitchListeners;
 
@@ -361,5 +375,7 @@ private:
         RefPtr<UIControl> touchLocker; // last control has handled input
     };
     LastClickData lastClickData;
+
+    RefPtr<UIControl> flowRoot;
 };
 }

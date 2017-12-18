@@ -64,6 +64,7 @@ public:
     size_t GetUsedMemory() const;
 
     float32 GetTimeElapsed();
+    float32 GetMsSinceEpoch();
 
     // Test organization API
     void OnTestStart(const String& testName);

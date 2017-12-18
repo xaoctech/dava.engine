@@ -49,8 +49,8 @@ public:
 
     void Add(const String& recent);
     Signal<String> actionTriggered;
-
     Vector<String> Get() const;
+    void Truncate();
 
 private:
     void InitMenuItems();

@@ -1,27 +1,67 @@
 #include "Classes/UserNodeModule/UserNodeModule.h"
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
 #include "Classes/UserNodeModule/Private/UserNodeData.h"
+#include "Classes/SceneTree/CreateEntitySupport.h"
 
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 
 #include <FileSystem/FilePath.h>
+#include <Functional/Function.h>
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Entity.h>
+
+namespace UserNodeModuleDetail
+{
+class UserNodeEntityCreator : public SimpleEntityCreator
+{
+    using TBase = SimpleEntityCreator;
+
+public:
+    static DAVA::RefPtr<DAVA::Entity> CreateEntity()
+    {
+        DAVA::RefPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
+        sceneNode->AddComponent(new DAVA::UserComponent());
+        sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
+
+        return sceneNode;
+    }
+
+    UserNodeEntityCreator()
+        : TBase(eMenuPointOrder::USER_NODE_ENITY, DAVA::TArc::SharedIcon(":/QtIcons/user_object.png"),
+                QStringLiteral("User Node"), DAVA::MakeFunction(&UserNodeEntityCreator::CreateEntity))
+    {
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(UserNodeEntityCreator, TBase)
+    {
+        DAVA::ReflectionRegistrator<UserNodeEntityCreator>::Begin()
+        .ConstructorByPointer()
+        .End();
+    }
+};
+} // namespace UserNodeModuleDetail
 
 DAVA::FilePath UserNodeModule::GetBotSpawnPath()
 {
     return "~res:/ResourceEditor/3DObjects/Botspawn/tanksbox.sc2";
 }
 
+UserNodeModule::UserNodeModule()
+{
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(UserNodeModuleDetail::UserNodeEntityCreator, "UserNodeEntityCreator");
+}
+
 void UserNodeModule::PostInit()
 {
-    using namespace DAVA;
     using namespace DAVA;
 
     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/user_object.png"), QString("Custom UserNode Drawing Enabled"));

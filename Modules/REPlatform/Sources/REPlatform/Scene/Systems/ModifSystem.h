@@ -6,10 +6,12 @@
 #include "REPlatform/Scene/SceneTypes.h"
 
 #include <Entity/SceneSystem.h>
+#include <Entity/SceneSystem.h>
+#include <Functional/Signal.h>
+#include <Math/Matrix4.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Scene3D/Entity.h>
 #include <UI/UIEvent.h>
-#include "Functional/Signal.h"
 
 namespace DAVA
 {
@@ -82,7 +84,7 @@ public:
     void SetPivotPoint(Selectable::TransformPivot pp);
     Selectable::TransformPivot GetPivotPoint() const;
 
-    DAVA::Signal<DAVA::SceneEditor2*, const DAVA::SelectableGroup*> mouseOverSelection;
+    Signal<SceneEditor2*, const SelectableGroup*> mouseOverSelection;
 
 private:
     enum CloneState : uint32

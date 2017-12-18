@@ -218,8 +218,7 @@ void SceneValidator::ValidateParticleEmitter(ParticleEmitterInstance* instance, 
     {
         if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            ScopedPtr<ParticleEmitterInstance> instance(new ParticleEmitterInstance(nullptr, layer->innerEmitter, true));
-            ValidateParticleEmitter(instance, owner);
+            ValidateParticleEmitter(layer->innerEmitter, owner);
         }
     }
 }

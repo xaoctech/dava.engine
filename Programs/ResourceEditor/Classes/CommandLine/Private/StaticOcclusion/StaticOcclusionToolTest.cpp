@@ -49,7 +49,7 @@ DAVA_TARC_TESTCLASS(StaticOcclusionToolTest)
 
         std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard = CommandLineModuleTestUtils::CreateTextureGuard({ eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(SOTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SOTestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(SOTestDetail::scenePathnameStr, SOTestDetail::projectStr);
 
         Vector<String> cmdLine =
         {

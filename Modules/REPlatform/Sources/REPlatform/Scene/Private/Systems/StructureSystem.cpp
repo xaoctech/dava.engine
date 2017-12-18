@@ -14,6 +14,7 @@
 #include "REPlatform/Commands/ParticleLayerRemoveCommand.h"
 #include "REPlatform/Commands/ParticleForceMoveCommand.h"
 #include "REPlatform/Commands/ParticleForceRemoveCommand.h"
+#include "REPlatform/Commands/ParticleForceSimplifiedRemoveCommand.h"
 #include "REPlatform/Deprecated/SceneValidator.h"
 
 #include <TArc/Core/Deprecated.h>
@@ -194,7 +195,22 @@ void StructureSystem::MoveLayer(const Vector<ParticleLayer*>& layers, const Vect
     EmitChanged();
 }
 
-void StructureSystem::MoveForce(const Vector<ParticleForce*>& forces, const Vector<ParticleLayer*>& oldLayers, ParticleLayer* newLayer)
+void StructureSystem::MoveSimplifiedForce(const Vector<ParticleForceSimplified*>& forces, const DAVA::Vector<DAVA::ParticleLayer*>& oldLayers, DAVA::ParticleLayer* newLayer)
+{
+    SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
+    if (sceneEditor == nullptr)
+        return;
+
+    sceneEditor->BeginBatch("Move particle simplified force", static_cast<uint32>(forces.size()));
+    for (size_t i = 0; i < forces.size(); ++i)
+    {
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new ParticleSimplifiedForceMoveCommand(forces[i], oldLayers[i], newLayer)));
+    }
+    sceneEditor->EndBatch();
+    EmitChanged();
+}
+
+void StructureSystem::MoveParticleForce(const Vector<ParticleForce*>& forces, const Vector<ParticleLayer*>& oldLayers, ParticleLayer* newLayer)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     if (sceneEditor == nullptr)
@@ -421,7 +437,8 @@ void StructureSystem::SceneDidLoaded()
 void StructureSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
 {
     if (commandNotification.MatchCommandTypes<ParticleLayerRemoveCommand, ParticleLayerMoveCommand,
-                                              ParticleForceRemoveCommand, ParticleForceMoveCommand>() == true)
+                                              ParticleForceRemoveCommand, ParticleForceMoveCommand,
+                                              ParticleForceSimplifiedRemoveCommand, ParticleSimplifiedForceMoveCommand>() == true)
     {
         EmitChanged();
     }

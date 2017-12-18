@@ -24,7 +24,10 @@ endif()
 
 find_package( QT5 REQUIRED )
 
-find_dava_module( DavaTools )
+find_dava_module( AssetCache )
+find_dava_module( TextureCompression )
+find_dava_module( TexturePacker )
+find_dava_module( Version )
 find_dava_module( QtHelpers )
 find_dava_module( QtTools )
 find_dava_module( DocDirSetup )
@@ -37,6 +40,7 @@ list( APPEND DAVA_COMPONENTS DAVA_PLATFORM_QT )
 list( APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
 list( APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
 list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
+list( APPEND DAVA_COMPONENTS DAVA_LOCALIZATION_DEBUG )
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 

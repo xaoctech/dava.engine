@@ -8,7 +8,7 @@
 #include <QPaintEvent>
 
 #define BACKGROUND_COLOR (DAVA::Color(0x80, 0x80, 0x80, 0xff) / 255.f)
-#define BORDER_COLOR DAVA::Color::Black
+#define BORDER_COLOR2 DAVA::Color::Black
 #define EMPTY_WIDGET_COLOR DAVA::Color::Black
 #define DEFAULT_GRADIENT_COLOR DAVA::Color::White
 #define UNSELECTED_MARKER_COLOR DAVA::Color::White
@@ -125,7 +125,7 @@ void GradientPickerWidget::paintEvent(QPaintEvent*)
         painter.drawText(textRect, Qt::AlignHCenter | Qt::AlignVCenter, legend);
     }
 
-    pen.setColor(ColorToQColor(BORDER_COLOR));
+    pen.setColor(ColorToQColor(BORDER_COLOR2));
     painter.setPen(pen);
     painter.drawRect(graphRect);
 

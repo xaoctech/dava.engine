@@ -30,8 +30,7 @@
 #define TEXTURE_PREVIEW_SIZE_SMALL 24
 #define BORDER_MARGIN 1
 #define BORDER_COLOR QColor(0, 0, 0, 25)
-#define SELECTION_BORDER_COLOR QColor(0, 0, 0, 50)
-#define SELECTION_COLOR_ALPHA 100
+#define SELECTION_BORDER_COLOR_MACRO QColor(0, 0, 0, 50)
 #define INFO_TEXT_COLOR QColor(0, 0, 0, 100)
 #define FORMAT_INFO_WIDTH 3
 #define FORMAT_INFO_SPACING 1
@@ -132,7 +131,7 @@ void TextureListDelegate::drawPreviewBig(QPainter* painter, const QStyleOptionVi
         if (option.state & QStyle::State_Selected)
         {
             painter->setBrush(option.palette.highlight());
-            painter->setPen(SELECTION_BORDER_COLOR);
+            painter->setPen(SELECTION_BORDER_COLOR_MACRO);
             painter->drawRect(borderRect);
         }
 
@@ -285,7 +284,7 @@ void TextureListDelegate::drawPreviewSmall(QPainter* painter, const QStyleOption
         if (option.state & QStyle::State_Selected)
         {
             painter->setBrush(option.palette.highlight());
-            painter->setPen(SELECTION_BORDER_COLOR);
+            painter->setPen(SELECTION_BORDER_COLOR_MACRO);
             painter->drawRect(borderRect);
         }
 

@@ -80,8 +80,8 @@ void CollectEmittersForSave(ParticleEmitter* topLevelEmitter, List<EmitterDescri
     {
         if (nullptr != layer->innerEmitter)
         {
-            CollectEmittersForSave(layer->innerEmitter, emitters, entityName);
-            emitters.emplace_back(EmitterDescriptor(layer->innerEmitter, layer, layer->innerEmitter->configPath, entityName));
+            CollectEmittersForSave(layer->innerEmitter->GetEmitter(), emitters, entityName);
+            emitters.emplace_back(EmitterDescriptor(layer->innerEmitter->GetEmitter(), layer, layer->innerEmitter->GetEmitter()->configPath, entityName));
         }
     }
 
@@ -203,10 +203,9 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
         }
     }
 
-    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<Command>& cmd)
-                  {
-                      cmd->Redo();
-                  });
+    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<Command>& cmd) {
+        cmd->Redo();
+    });
 
     ExtractEditorEntities();
 
@@ -237,10 +236,9 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
         landscapeEditorDrawSystem->SetTileMaskTexture(tilemaskTexture);
     }
 
-    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<Command>& cmd)
-                  {
-                      cmd->Undo();
-                  });
+    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<Command>& cmd) {
+        cmd->Undo();
+    });
 
     InjectEditorEntities();
 
@@ -255,7 +253,6 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
 void SceneEditor2::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags, SceneSystem* insertBeforeSceneForProcess, SceneSystem* insertBeforeSceneForInput, SceneSystem* insertBeforeSceneForFixedProcess)
 {
     Scene::AddSystem(sceneSystem, componentFlags, processFlags, insertBeforeSceneForProcess, insertBeforeSceneForInput);
-
     EditorSceneSystem* editorSystem = dynamic_cast<EditorSceneSystem*>(sceneSystem);
     if (editorSystem != nullptr)
     {
@@ -805,21 +802,21 @@ void SceneEditor2::EnableEditorSystems()
     }
 }
 
-void SceneEditor2::SaveSystemsLocalProperties(DAVA::PropertiesHolder* holder)
+void SceneEditor2::SaveSystemsLocalProperties(PropertiesHolder* holder)
 {
-    for (DAVA::EditorSceneSystem* system : editorSystems)
+    for (EditorSceneSystem* system : editorSystems)
     {
         DVASSERT(system != nullptr);
         system->SaveLocalProperties(holder);
     }
 }
 
-void SceneEditor2::LoadSystemsLocalProperties(DAVA::PropertiesHolder* holder)
+void SceneEditor2::LoadSystemsLocalProperties(PropertiesHolder* holder, ContextAccessor* accessor)
 {
-    for (DAVA::EditorSceneSystem* system : editorSystems)
+    for (EditorSceneSystem* system : editorSystems)
     {
         DVASSERT(system != nullptr);
-        system->LoadLocalProperties(holder);
+        system->LoadLocalProperties(holder, accessor);
     }
 }
 

@@ -6,6 +6,58 @@
 
 namespace DAVA
 {
+ParticleSimplifiedForceMoveCommand::ParticleSimplifiedForceMoveCommand(ParticleForceSimplified* _force, ParticleLayer* _oldLayer, ParticleLayer* _newLayer)
+    : RECommand("Move particle simplified force")
+    , force(_force)
+    , oldLayer(_oldLayer)
+    , newLayer(_newLayer)
+{
+    SafeRetain(force);
+}
+
+ParticleSimplifiedForceMoveCommand::~ParticleSimplifiedForceMoveCommand()
+{
+    SafeRelease(force);
+}
+
+void ParticleSimplifiedForceMoveCommand::Undo()
+{
+    if (NULL != force)
+    {
+        if (NULL != newLayer)
+        {
+            newLayer->RemoveSimplifiedForce(force);
+        }
+
+        if (NULL != oldLayer)
+        {
+            oldLayer->AddSimplifiedForce(force);
+        }
+    }
+}
+
+void ParticleSimplifiedForceMoveCommand::Redo()
+{
+    if (NULL != force)
+    {
+        if (NULL != oldLayer)
+        {
+            oldLayer->RemoveSimplifiedForce(force);
+        }
+
+        if (NULL != newLayer)
+        {
+            newLayer->AddSimplifiedForce(force);
+        }
+    }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ParticleSimplifiedForceMoveCommand)
+{
+    ReflectionRegistrator<ParticleSimplifiedForceMoveCommand>::Begin()
+    .End();
+}
+
 ParticleForceMoveCommand::ParticleForceMoveCommand(ParticleForce* _force, ParticleLayer* _oldLayer, ParticleLayer* _newLayer)
     : RECommand("Move particle force")
     , force(_force)

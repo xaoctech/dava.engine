@@ -46,6 +46,7 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyItemDelegates[AbstractProperty::TYPE_ENUM] = new EnumPropertyDelegate(this);
     anyItemDelegates[Type::Instance<Vector2>()] = new Vector2PropertyDelegate(this);
     anyItemDelegates[Type::Instance<String>()] = new StringPropertyDelegate(this);
+    anyItemDelegates[Type::Instance<FastName>()] = new StringPropertyDelegate(this);
     anyItemDelegates[Type::Instance<Color>()] = new ColorPropertyDelegate(this);
     anyItemDelegates[Type::Instance<WideString>()] = new StringPropertyDelegate(this);
     anyItemDelegates[Type::Instance<FilePath>()] = new FilePathPropertyDelegate(this);
@@ -65,6 +66,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     const QList<QString> particleExtensions{ Project::Get3dFileExtension() };
     const QList<QString> spineSkeletonExtensions{ ".json", ".skel" };
     const QList<QString> spineAtlasExtensions{ ".atlas" };
+    const QList<QString> uiExtensions{ ".yaml" };
+    const QList<QString> luaExtensions{ ".lua" };
 
     QStringList formulaCompletions;
     formulaCompletions << "childrenSum"
@@ -80,9 +83,12 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "visibilityMargins.left"
                        << "visibilityMargins.right"
                        << "visibilityMargins.top"
-                       << "visibilityMargins.bottom";
+                       << "visibilityMargins.bottom"
+                       << "safeAreaInsets.left"
+                       << "safeAreaInsets.right"
+                       << "safeAreaInsets.top"
+                       << "safeAreaInsets.bottom";
 
-    propertyNameTypeItemDelegates[PropertyPath("*", "actions")] = new TablePropertyDelegate(QList<QString>({ "Action", "Shortcut" }), this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "detail")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
@@ -118,6 +124,14 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("UISpineAttachControlsToBonesComponent", "bonesBinds")] = new TablePropertyDelegate(QList<QString>({ "Bone", "Control" }), this);
 
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("UIScriptComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);
+
+    propertyNameTypeItemDelegates[PropertyPath("UIFlowViewComponent", "viewYaml")] = new ResourceFilePropertyDelegate(uiExtensions, "/UI/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("UIFlowControllerComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("UIFlowTransitionComponent", "transitions")] = new TablePropertyDelegate(QList<QString>({ "Event", "Action", "New State or Event" }), this);
+    propertyNameTypeItemDelegates[PropertyPath("UIFlowStateComponent", "services")] = new TablePropertyDelegate(QList<QString>({ "Alias", "Typename" }), this);
+
+    propertyNameTypeItemDelegates[PropertyPath("UIShortcutEventComponent", "shortcuts")] = new TablePropertyDelegate(QList<QString>({ "Event", "Shortcut" }), this);
 }
 
 PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
@@ -271,6 +285,16 @@ AbstractPropertyDelegate* PropertiesTreeItemDelegate::GetCustomItemDelegateForIn
 void PropertiesTreeItemDelegate::SetProject(const Project* project)
 {
     context.project = project;
+}
+
+void PropertiesTreeItemDelegate::SetInvoker(DAVA::OperationInvoker* invoker_)
+{
+    context.invoker = invoker_;
+}
+
+DAVA::OperationInvoker* PropertiesTreeItemDelegate::GetInvoker()
+{
+    return context.invoker;
 }
 
 void PropertiesTreeItemDelegate::SetAccessor(DAVA::ContextAccessor* accessor_)

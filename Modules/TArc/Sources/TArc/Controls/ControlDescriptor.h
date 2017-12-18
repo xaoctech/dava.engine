@@ -1,8 +1,8 @@
 #pragma once
 
+#include <Base/Any.h>
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
-
 #include <Debug/DVAssert.h>
 
 namespace DAVA
@@ -16,10 +16,14 @@ public:
     DescriptorNode& operator=(const String& name);
     DescriptorNode& operator=(const FastName& name);
 
+    void BindConstValue(const DAVA::Any& value);
+
     const FastName& GetName() const;
+    const DAVA::Any& GetValue() const;
 
 private:
-    FastName fieldName;
+    DAVA::FastName fieldName;
+    DAVA::Any value;
 };
 
 inline const FastName& DescriptorNode::GetName() const
@@ -65,6 +69,7 @@ public:
     struct Field
     {
         FastName name;
+        DAVA::Any constValue;
         bool isChanged = false;
     };
 
@@ -77,6 +82,8 @@ public:
     const FastName& GetName(Enum value) const;
     template <typename Enum>
     bool IsChanged(Enum value) const;
+    template <typename Enum>
+    const DAVA::Any& GetConstValue(Enum value) const;
 
     Vector<Field> fieldNames;
 };
@@ -91,6 +98,7 @@ ControlDescriptor::ControlDescriptor(const ControlDescriptorBuilder<Enum>& descr
     {
         Field& f = fieldNames[static_cast<size_t>(iter.first)];
         f.name = iter.second.GetName();
+        f.constValue = iter.second.GetValue();
     }
 }
 
@@ -118,6 +126,15 @@ const FastName& ControlDescriptor::GetName(Enum value) const
     DVASSERT(index < fieldNames.size());
 
     return fieldNames[index].name;
+}
+
+template <typename Enum>
+const DAVA::Any& ControlDescriptor::GetConstValue(Enum value) const
+{
+    size_t index = static_cast<size_t>(value);
+    DVASSERT(index < fieldNames.size());
+
+    return fieldNames[index].constValue;
 }
 
 template <typename Enum>

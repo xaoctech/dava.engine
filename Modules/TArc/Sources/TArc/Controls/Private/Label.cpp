@@ -21,31 +21,10 @@ void Label::UpdateControl(const ControlDescriptor& descriptor)
 {
     if (descriptor.IsChanged(Fields::Text))
     {
-        Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Text));
-        DVASSERT(fieldValue.IsValid());
-
-        QString stringValue;
-        Any value = fieldValue.GetValue();
-        if (value.IsEmpty() == true)
-        {
-            stringValue = QString(MultipleValuesString);
-        }
-        else if (value.CanCast<QString>())
-        {
-            stringValue = value.Cast<QString>();
-        }
-        else if (value.CanCast<String>())
-        {
-            stringValue = QString::fromStdString(value.Cast<String>());
-        }
-        else
-        {
-            DVASSERT(false);
-            stringValue = QString("ALARM!!! Cast from %1 to String is not registered").arg(value.GetType()->GetName());
-        }
-
-        setText(stringValue);
-        setToolTip(stringValue);
+        DAVA::String stringValue = GetFieldValue<DAVA::String>(Fields::Text, DAVA::String());
+        QString v = QString::fromStdString(stringValue);
+        setText(v);
+        setToolTip(v);
     }
 }
 } // namespace DAVA

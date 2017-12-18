@@ -6,7 +6,7 @@
 #include <REPlatform/Global/StringConstants.h>
 #include <REPlatform/Scene/BaseTransformProxies.h>
 
-#include <DavaTools/Version.h>
+#include <Version/Version.h>
 
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
@@ -57,8 +57,9 @@ LaunchModule::~LaunchModule()
 
 void LaunchModule::PostInit()
 {
-    DAVA::Selectable::AddTransformProxyForClass<DAVA::Entity, DAVA::EntityTransformProxy>();
-    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, DAVA::EmitterTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::Entity, EntityTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, EmitterTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleForce, ParticleForceTransformProxy>();
 
     delayedExecutor.DelayedExecute([this]() {
         InvokeOperation(DAVA::OpenLastProjectOperation.ID);
@@ -73,8 +74,10 @@ void LaunchModule::UnpackHelpDoc()
     DAVA::PropertiesItem versionsInfo = GetAccessor()->CreatePropertiesNode("VersionsInfo");
     const DAVA::EngineContext* engineContext = GetAccessor()->GetEngineContext();
     DAVA::String editorVer = versionsInfo.Get("EditorVersion", DAVA::String(""));
+
     DAVA::FilePath docsPath = DAVA::FilePath(DAVA::ResourceEditor::DOCUMENTATION_PATH);
-    if (editorVer != APPLICATION_BUILD_VERSION || !engineContext->fileSystem->Exists(docsPath))
+    DAVA::String title = DAVA::Version::CreateAppVersion("Resource Editor");
+    if (editorVer != title || !engineContext->fileSystem->Exists(docsPath))
     {
         DAVA::Logger::FrameworkDebug("Unpacking Help...");
         try
@@ -90,5 +93,5 @@ void LaunchModule::UnpackHelpDoc()
             DVASSERT(false && "can't upack Help.docs");
         }
     }
-    versionsInfo.Set("EditorVersion", DAVA::String(APPLICATION_BUILD_VERSION));
+    versionsInfo.Set("EditorVersion", title);
 }

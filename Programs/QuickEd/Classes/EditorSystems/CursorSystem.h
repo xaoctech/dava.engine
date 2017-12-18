@@ -16,12 +16,12 @@ public:
     ~CursorSystem() override = default;
 
 private:
-    void OnDragStateChanged(EditorSystemsManager::eDragState currentState, EditorSystemsManager::eDragState previousState) override;
+    void OnDragStateChanged(eDragState currentState, eDragState previousState) override;
     eSystems GetOrder() const override;
 
     void OnActiveAreaChanged(const HUDAreaInfo& areaInfo);
 
-    QPixmap CreatePixmapForArea(float angle, const HUDAreaInfo::eArea area) const;
+    QPixmap CreatePixmapForArea(float angle, const eArea area) const;
     QPixmap CreatePixmap(const QString& address) const;
 
     static QMap<QString, QPixmap> cursorpixes;

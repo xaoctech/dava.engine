@@ -68,6 +68,12 @@ bool SelectionData::Lock()
     return wasLocked;
 }
 
+bool SelectionData::IsLocked() const
+{
+    DVASSERT(selectionSystem);
+    return selectionSystem->IsLocked();
+}
+
 void SelectionData::Unlock()
 {
     DVASSERT(selectionSystem);

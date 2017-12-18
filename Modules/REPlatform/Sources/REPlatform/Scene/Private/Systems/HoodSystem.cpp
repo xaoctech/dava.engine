@@ -6,12 +6,57 @@
 #include "REPlatform/Scene/SceneEditor2.h"
 #include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
 
+#include <TArc/Core/Deprecated.h>
+
 #include <Base/AlignedAllocator.h>
 #include <Scene3D/Scene.h>
-#include <TArc/Core/Deprecated.h>
 
 namespace DAVA
 {
+class SceneCollisionDebugDrawer final : public btIDebugDraw
+{
+public:
+    SceneCollisionDebugDrawer(DAVA::RenderHelper* drawer_)
+        : dbgMode(0)
+        , drawer(drawer_)
+    {
+    }
+
+    void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override
+    {
+        DAVA::Vector3 davaFrom(from.x(), from.y(), from.z());
+        DAVA::Vector3 davaTo(to.x(), to.y(), to.z());
+        DAVA::Color davaColor(color.x(), color.y(), color.z(), 1.0f);
+
+        drawer->DrawLine(davaFrom, davaTo, davaColor, DAVA::RenderHelper::DRAW_WIRE_DEPTH);
+    }
+
+    void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override
+    {
+        DAVA::Color davaColor(color.x(), color.y(), color.z(), 1.0f);
+        drawer->DrawIcosahedron(DAVA::Vector3(PointOnB.x(), PointOnB.y(), PointOnB.z()), distance / 20.f, davaColor, DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+    }
+
+    void reportErrorWarning(const char* warningString) override
+    {
+    }
+    void draw3dText(const btVector3& location, const char* textString) override
+    {
+    }
+    void setDebugMode(int debugMode) override
+    {
+        dbgMode = debugMode;
+    }
+    int getDebugMode() const override
+    {
+        return dbgMode;
+    }
+
+protected:
+    int dbgMode;
+    DAVA::RenderHelper* drawer;
+};
+
 HoodSystem::HoodSystem(Scene* scene)
     : SceneSystem(scene)
 {

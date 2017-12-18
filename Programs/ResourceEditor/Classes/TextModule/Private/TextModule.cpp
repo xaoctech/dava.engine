@@ -1,6 +1,7 @@
 #include "Classes/TextModule/TextModule.h"
 #include "Classes/TextModule/Private/EditorTextSystem.h"
 #include "Classes/TextModule/Private/TextModuleData.h"
+#include "Classes/SceneTree/CreateEntitySupport.h"
 
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/Scene/SceneEditor2.h>
@@ -8,16 +9,56 @@
 #include <TArc/DataProcessing/Common.h>
 
 #include <TArc/Utils/ModuleCollection.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
-#include <TArc/WindowSubSystem/ActionUtils.h>
 
-#include <Reflection/ReflectionRegistrator.h>
 #include <Engine/PlatformApiQt.h>
+#include <Reflection/ReflectionRegistrator.h>
+
+namespace TextModuleDetail
+{
+class TextEntityCreator : public SimpleEntityCreator
+{
+    using TBase = SimpleEntityCreator;
+
+public:
+    static DAVA::RefPtr<DAVA::Entity> CreateEntity()
+    {
+        DAVA::RefPtr<DAVA::Entity> textEntity(new DAVA::Entity());
+        textEntity->AddComponent(new DAVA::TextComponent());
+        textEntity->SetName("TextEntity");
+
+        return textEntity;
+    }
+
+    TextEntityCreator()
+        : TBase(eMenuPointOrder::TEXT_ENTITY, DAVA::TArc::SharedIcon(":/QtIcons/text_component.png"),
+                QStringLiteral("Text Entity"), &TextEntityCreator::CreateEntity)
+    {
+    }
+
+    DAVA_VIRTUAL_REFLECTION(TextEntityCreator, TBase);
+};
+
+DAVA_VIRTUAL_REFLECTION_IMPL(TextEntityCreator)
+{
+    DAVA::ReflectionRegistrator<TextEntityCreator>::Begin()
+    .ConstructorByPointer()
+    .End();
+}
+
+} // namespace TextModuleDetail
+
+TextModule::TextModule()
+{
+    using namespace TextModuleDetail;
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TextEntityCreator);
+}
 
 void TextModule::PostInit()
 {
-    using namespace DAVA;
     using namespace DAVA;
 
     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/text_component.png"), QString("Text Drawing Enabled"));

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "TArc/Testing/TArcTestClass.h"
+#include "TArc/Testing/GMockInclude.h"
 #include "UnitTests/UnitTests.h"
 
-#include <gmock/gmock.h>
 
 #define DAVA_TARC_TESTCLASS(classname) \
     DAVA_TESTCLASS_CUSTOM_BASE_AND_FACTORY(classname, DAVA::TArcTestClass, DAVA::TArcTestClassHolderFactory)

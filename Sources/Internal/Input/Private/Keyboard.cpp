@@ -1,17 +1,17 @@
 #include "Input/Keyboard.h"
 
 #if defined(__DAVAENGINE_WIN32__)
-#include "Input/Private/Win32/KeyboardImplWin32.h"
+#include "Input/Private/Win32/KeyboardImpl.Win32.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Input/Private/Win10/KeyboardImplWin10.h"
+#include "Input/Private/Win10/KeyboardImpl.Win10.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "Input/Private/Mac/KeyboardImplMac.h"
+#include "Input/Private/Mac/KeyboardImpl.Macos.h"
 #elif defined(__DAVAENGINE_ANDROID__)
-#include "Input/Private/Android/KeyboardImplAndroid.h"
+#include "Input/Private/Android/KeyboardImpl.Android.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "Input/Private/Ios/KeyboardImplIos.h"
+#include "Input/Private/Ios/KeyboardImpl.Ios.h"
 #elif defined(__DAVAENGINE_LINUX__)
-#include "Input/Private/Linux/KeyboardImplLinux.h"
+#include "Input/Private/Linux/KeyboardImpl.Linux.h"
 #else
 #error "KeyboardDevice: unknown platform"
 #endif
@@ -199,6 +199,12 @@ void Keyboard::CreateAndSendKeyInputEvent(eInputElements elementId, DigitalEleme
 
 void Keyboard::CreateAndSendCharInputEvent(char32_t charCode, bool charRepeated, Window* window, int64 timestamp)
 {
+    // Null character. Ignore it for now, as many others applications do.
+    if (charCode == 0)
+    {
+        return;
+    }
+
     DVASSERT(charCode > 0);
 
     InputEvent inputEvent;

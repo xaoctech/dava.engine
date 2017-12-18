@@ -41,9 +41,9 @@ DistanceSystem::~DistanceSystem()
 {
 }
 
-BaseEditorSystem::eSystems DistanceSystem::GetOrder() const
+eSystems DistanceSystem::GetOrder() const
 {
-    return DISTANCE_LINES;
+    return eSystems::DISTANCE_LINES;
 }
 
 bool DistanceSystem::CanDrawDistances() const
@@ -60,12 +60,6 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
-    DataContext* activeContext = accessor->GetActiveContext();
-    if (activeContext == nullptr)
-    {
-        return false;
-    }
-
     DVASSERT(getHighlight != nullptr);
 
     ControlNode* highlightedNode = getHighlight();
@@ -74,6 +68,8 @@ bool DistanceSystem::CanDrawDistances() const
         return false;
     }
 
+    DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     Set<ControlNode*> selectedControls = documentData->GetSelectedControls();
     if (selectedControls.size() != 1)
@@ -152,13 +148,13 @@ void DistanceSystem::OnUpdate()
     DrawLines(selectedRect, highlightedRect, transformMatrix);
 }
 
-bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput) const
+bool DistanceSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
     //ignore keyboard events to not enable distances on alt+scroll combinations
     return currentInput->device != DAVA::eInputDevices::KEYBOARD;
 }
 
-void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput)
+void DistanceSystem::ProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/)
 {
     canDrawDistancesAfterInput = (currentInput->phase == DAVA::UIEvent::Phase::MOVE);
 }

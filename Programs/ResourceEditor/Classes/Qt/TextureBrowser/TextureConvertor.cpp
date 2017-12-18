@@ -8,7 +8,7 @@
 
 #include <TArc/Core/Deprecated.h>
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TextureCompression/TextureConverter.h>
 
 #include <Render/Image/LibDdsHelper.h>
 #include <FileSystem/FileSystem.h>

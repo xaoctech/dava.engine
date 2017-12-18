@@ -13,6 +13,7 @@ class Project;
 namespace DAVA
 {
 class ContextAccessor;
+class OperationInvoker;
 }
 
 class PropertiesContext
@@ -20,6 +21,7 @@ class PropertiesContext
 public:
     const Project* project = nullptr;
     DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::OperationInvoker* invoker = nullptr;
 };
 
 class PropertiesTreeItemDelegate : public QStyledItemDelegate
@@ -38,6 +40,9 @@ public:
 
     void SetProject(const Project* project);
     void SetAccessor(DAVA::ContextAccessor* accessor);
+
+    void SetInvoker(DAVA::OperationInvoker* invoker);
+    DAVA::OperationInvoker* GetInvoker();
 
     void emitCommitData(QWidget* editor);
     void emitCloseEditor(QWidget* editor, QAbstractItemDelegate::EndEditHint hint);

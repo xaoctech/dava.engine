@@ -3,9 +3,9 @@
 #include "Classes/Qt/Tools/HangingObjectsHeight/HangingObjectsHeight.h"
 #include "Classes/Qt/Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
 
-#include "REPlatform/Scene/Systems/HoodSystem.h"
-#include "REPlatform/Scene/Systems/ModifSystem.h"
-#include "REPlatform/Scene/Systems/WayEditSystem.h"
+#include <REPlatform/Scene/Systems/HoodSystem.h>
+#include <REPlatform/Scene/Systems/ModifSystem.h>
+#include <REPlatform/Scene/Systems/WayEditSystem.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/Scene/Systems/DebugDrawSystem.h>
 
@@ -245,6 +245,7 @@ void DebugDrawModule::PostInit()
         ComboBox::Params params(accessor, ui, mainWindowKey);
         params.fields[ComboBox::Fields::IsReadOnly] = "readOnly";
         params.fields[ComboBox::Fields::Value] = "currentObject";
+        params.fields[ComboBox::Fields::Enumerator] = "";
 
         ControlProxy* control = new ComboBox(params, accessor, DAVA::Reflection::Create(DAVA::ReflectedObject(this)));
         AttachWidgetToAction(action, control);

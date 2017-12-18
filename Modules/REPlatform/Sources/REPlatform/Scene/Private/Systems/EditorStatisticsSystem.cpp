@@ -24,6 +24,14 @@ struct TrianglesData
     Vector<RenderObject*> renderObjects;
 };
 
+DAVA_VIRTUAL_REFLECTION_IMPL(RenderStatsSettings)
+{
+    DAVA::ReflectionRegistrator<RenderStatsSettings>::Begin()[DAVA::M::DisplayName("Render statistics")]
+    .ConstructorByPointer()
+    .Field("calculatePerFrame", &RenderStatsSettings::calculatePerFrame)[DAVA::M::DisplayName(" Calculate per frame")]
+    .End();
+}
+
 namespace EditorStatisticsSystemInternal
 {
 static const int32 SIZE_OF_TRIANGLES = LodComponent::MAX_LOD_LAYERS + 1;
@@ -130,6 +138,7 @@ void EnumerateRenderObjects(const SelectableGroup& group, Vector<RenderObject*>&
 }
 EditorStatisticsSystem::EditorStatisticsSystem(Scene* scene)
     : SceneSystem(scene)
+    , binder(new DAVA::FieldBinder(Deprecated::GetAccessor()))
 {
     triangles.resize(eEditorMode::MODE_COUNT);
     for (uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
@@ -137,38 +146,71 @@ EditorStatisticsSystem::EditorStatisticsSystem(Scene* scene)
         triangles[m].storedTriangles.resize(EditorStatisticsSystemInternal::SIZE_OF_TRIANGLES, 0);
         triangles[m].visibleTriangles.resize(EditorStatisticsSystemInternal::SIZE_OF_TRIANGLES, 0);
     }
-}
 
-void EditorStatisticsSystem::AddEntity(Entity* entity)
-{
-    if (HasComponent(entity, Component::RENDER_COMPONENT))
     {
-        AddComponent(entity, GetRenderComponent(entity));
+        DAVA::TArc::FieldDescriptor descr;
+        descr.type = DAVA::ReflectedTypeDB::Get<RenderStatsSettings>();
+        descr.fieldName = DAVA::FastName("calculatePerFrame");
+        binder->BindField(descr, [this](const DAVA::Any& v) {
+            calculatePerFrame = v.Cast<bool>(true);
+        });
+    }
+
+    {
+        DAVA::TArc::FieldDescriptor descr;
+        descr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
+        descr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        binder->BindField(descr, [this](const DAVA::Any& v) {
+            EmitInvalidateUI(FLAG_TRIANGLES);
+        });
     }
 }
 
-void EditorStatisticsSystem::RemoveEntity(Entity* entity)
+void EditorStatisticsSystem::RegisterEntity(Entity* entity)
 {
-    if (HasComponent(entity, Component::RENDER_COMPONENT))
+    if (HasComponent(entity, Component::RENDER_COMPONENT) || HasComponent(entity, Component::LOD_COMPONENT))
     {
-        RemoveComponent(entity, GetRenderComponent(entity));
+        EmitInvalidateUI(FLAG_TRIANGLES);
     }
 }
 
-void EditorStatisticsSystem::AddComponent(Entity* entity, Component* component)
+void EditorStatisticsSystem::UnregisterEntity(Entity* entity)
 {
+    if (HasComponent(entity, Component::RENDER_COMPONENT) || HasComponent(entity, Component::LOD_COMPONENT))
+    {
+        EmitInvalidateUI(FLAG_TRIANGLES);
+    }
 }
 
-void EditorStatisticsSystem::RemoveComponent(Entity* entity, Component* component)
+void EditorStatisticsSystem::RegisterComponent(Entity* entity, Component* component)
 {
+    uint32 type = component->GetType();
+    if (type == Component::RENDER_COMPONENT || type == Component::LOD_COMPONENT)
+    {
+        EmitInvalidateUI(FLAG_TRIANGLES);
+    }
+}
+
+void EditorStatisticsSystem::UnregisterComponent(Entity* entity, Component* component)
+{
+    uint32 type = component->GetType();
+    if (type == Component::RENDER_COMPONENT || type == Component::LOD_COMPONENT)
+    {
+        EmitInvalidateUI(FLAG_TRIANGLES);
+    }
 }
 
 void EditorStatisticsSystem::PrepareForRemove()
 {
 }
 
-const Vector<uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, bool allTriangles) const
+const Vector<uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, bool allTriangles)
 {
+    if (calculatePerFrame == false && initialized == true)
+    {
+        CalculateTriangles();
+    }
+
     if (allTriangles)
     {
         return triangles[mode].storedTriangles;
@@ -179,7 +221,11 @@ const Vector<uint32>& EditorStatisticsSystem::GetTriangles(eEditorMode mode, boo
 
 void EditorStatisticsSystem::Process(float32 timeElapsed)
 {
-    CalculateTriangles();
+    initialized = true;
+    if (calculatePerFrame == true)
+    {
+        CalculateTriangles();
+    }
     DispatchSignals();
 }
 
@@ -262,6 +308,21 @@ void EditorStatisticsSystem::DispatchSignals()
     }
 
     invalidateUIflag = FLAG_NONE;
+}
+
+void EditorStatisticsSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
+{
+    static DAVA::Vector<DAVA::uint32> commandIDs = {
+        CMDID_DELETE_RENDER_BATCH,
+        CMDID_LOD_COPY_LAST_LOD,
+        CMDID_LOD_CREATE_PLANE,
+        CMDID_LOD_DELETE
+    };
+
+    if (commandNotification.MatchCommandIDs(commandIDs))
+    {
+        EmitInvalidateUI(FLAG_TRIANGLES);
+    }
 }
 
 void EditorStatisticsSystem::AddDelegate(EditorStatisticsSystemUIDelegate* uiDelegate)

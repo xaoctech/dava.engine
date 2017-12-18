@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Application/QEGlobal.h"
-#include "EditorSystems/EditorSystemsManager.h"
-
-#include "Utils/PackageListenerProxy.h"
+#include "Classes/Application/QEGlobal.h"
+#include "Classes/EditorSystems/EditorSystemsManager.h"
+#include "Classes/UI/Preview/PreviewWidget.h"
+#include "Classes/Utils/PackageListenerProxy.h"
 
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -11,7 +11,6 @@
 #include <TArc/Utils/QtDelayedExecutor.h>
 
 class FindInDocumentController;
-class PreviewWidget;
 class EditorSystemsManager;
 class PackageNode;
 class ControlNode;
@@ -30,9 +29,13 @@ protected:
 
     void PostInit() override;
     void OnWindowClosed(const DAVA::WindowKey& key) override;
+    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
+    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
     void OnContextCreated(DAVA::DataContext* context) override;
     void OnContextDeleted(DAVA::DataContext* context) override;
+
+    void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
 
 private:
     void InitCentralWidget();
@@ -83,14 +86,13 @@ private:
     void ApplyFileChanges();
     DAVA::DataContext::ContextID GetContextByPath(const QString& path) const;
 
-    void OnDragStateChanged(EditorSystemsManager::eDragState dragState, EditorSystemsManager::eDragState previousState);
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
 
     void OnSelectInFileSystem();
     void OnDroppingFile(bool droppingFile);
 
-    PreviewWidget* previewWidget = nullptr;
+    QPointer<PreviewWidget> previewWidget;
     DAVA::QtConnections connections;
 
     DAVA::QtDelayedExecutor delayedExecutor;

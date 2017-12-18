@@ -29,16 +29,13 @@ void RecentMenuItems::Add(const String& recent)
 
 void RecentMenuItems::RemoveMenuItems()
 {
-    Vector<String> actions = Get();
+    PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
+    Vector<String> actions = item.Get<Vector<String>>(RecentMenuItemsDetails::recentItemsKey);
+
     for (const String& action : actions)
     {
         ActionPlacementInfo placement(CreateMenuPoint(params.menuSubPath));
         params.ui->RemoveAction(params.windowKey, placement, QString::fromStdString(action));
-    }
-
-    if (actions.empty() && params.recentMenuName.isEmpty() == false)
-    { // // remove menu for recent items without recent items
-        params.ui->RemoveAction(params.windowKey, params.recentMenuPlacementInfo, params.recentMenuName);
     }
 }
 
@@ -106,6 +103,19 @@ Vector<String> RecentMenuItems::Get() const
     uint32 size = Min(static_cast<uint32>(retVector.size()), recentFilesMaxCount);
     retVector.resize(size);
     return retVector;
+}
+
+void RecentMenuItems::Truncate()
+{
+    RemoveMenuItems();
+
+    {
+        Vector<String> truncatedRecentItems = Get();
+        PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
+        item.Set(RecentMenuItemsDetails::recentItemsKey, truncatedRecentItems);
+    }
+
+    InitMenuItems();
 }
 
 RecentMenuItems::Params::Params(const WindowKey& windowKey_, ContextAccessor* accessor_, const String& propertiesItemKey_)

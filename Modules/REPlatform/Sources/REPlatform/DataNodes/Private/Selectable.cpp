@@ -59,6 +59,17 @@ bool Selectable::operator<(const Selectable& other) const
     return PointerValueAnyLess()(object, other.object);
 }
 
+const ReflectedType* Selectable::GetObjectType() const
+{
+    if (ContainsObject() == false)
+    {
+        return nullptr;
+    }
+
+    DVASSERT(object.GetType()->IsPointer());
+    return GetValueReflectedType(object);
+}
+
 void Selectable::SetBoundingBox(const AABBox3& box)
 {
     boundingBox = box;

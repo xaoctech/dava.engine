@@ -7,8 +7,9 @@
 
 namespace DAVA
 {
-BakeGeometryCommand::BakeGeometryCommand(DAVA::RenderObject* _object, DAVA::Matrix4 _transform)
+BakeGeometryCommand::BakeGeometryCommand(Entity* entity_, RenderObject* _object, Matrix4 _transform)
     : RECommand("Bake geometry")
+    , entity(entity_)
     , object(_object)
     , transform(_transform)
 {

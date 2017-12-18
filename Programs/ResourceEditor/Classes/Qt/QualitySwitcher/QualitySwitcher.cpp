@@ -5,6 +5,7 @@
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
 #include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
+#include <REPlatform/Commands/ParticleEditorCommands.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/Deprecated.h>
@@ -231,15 +232,6 @@ QualitySwitcher::QualitySwitcher()
             optionsLayout->addWidget(labOp, i, 0);
             optionsLayout->addWidget(checkOp, i, 1);
         }
-
-        //AppleMetal features preview
-        QLabel* labOp = new QLabel("Metal Enabled:", materialsGroup);
-        QCheckBox* checkOp = new QCheckBox(materialsGroup);
-        checkOp->setObjectName("MetalEnabledCheckBox");
-        checkOp->setChecked(DAVA::QualitySettingsSystem::Instance()->GetMetalPreview());
-        QObject::connect(checkOp, SIGNAL(clicked(bool)), this, SLOT(OnOptionClick(bool)));
-        optionsLayout->addWidget(labOp, optionsCount, 0);
-        optionsLayout->addWidget(checkOp, optionsCount, 1);
     }
 
     // buttons
@@ -321,22 +313,24 @@ void QualitySwitcher::UpdateParticlesToQuality()
     SceneSignals* sceneSignals = SceneSignals::Instance();
     DAVA::Deprecated::GetAccessor()->ForEachContext([sceneSignals, this](const DAVA::DataContext& ctx) {
         DAVA::SceneEditor2* scene = ctx.GetData<DAVA::SceneData>()->GetScene().Get();
-        ReloadEntityEmitters(scene);
+        scene->BeginBatch("Switch particle quality");
+        ReloadEntityEmitters(scene, scene);
         sceneSignals->EmitStructureChanged(scene, nullptr);
+        scene->EndBatch();
     });
 }
 
-void QualitySwitcher::ReloadEntityEmitters(DAVA::Entity* e)
+void QualitySwitcher::ReloadEntityEmitters(DAVA::SceneEditor2* scene, DAVA::Entity* e)
 {
     DAVA::ParticleEffectComponent* comp = GetEffectComponent(e);
     if (comp)
     {
-        comp->ReloadEmitters();
+        scene->Exec(std::make_unique<CommandReloadEmitters>(comp));
     }
 
     for (DAVA::int32 i = 0, sz = e->GetChildrenCount(); i < sz; ++i)
     {
-        ReloadEntityEmitters(e->GetChild(i));
+        ReloadEntityEmitters(scene, e->GetChild(i));
     }
 }
 
@@ -468,18 +462,6 @@ void QualitySwitcher::ApplySettings()
                     optionSettingsChanged = true;
                 }
             }
-        }
-    }
-
-    QCheckBox* metalCheckBox = findChild<QCheckBox*>("MetalEnabledCheckBox");
-    if (nullptr != metalCheckBox)
-    {
-        bool checked = metalCheckBox->isChecked();
-        if (DAVA::QualitySettingsSystem::Instance()->GetMetalPreview() != checked)
-        {
-            DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(checked);
-            optionSettingsChanged = true;
-            materialSettingsChanged = true;
         }
     }
 

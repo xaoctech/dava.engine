@@ -50,11 +50,6 @@ void VegetationGeometry::CustomGeometryEntityData::SetMaterial(NMaterial* mat)
     }
 }
 
-int32 VegetationGeometry::RandomShuffleFunc(int32 limit)
-{
-    return (GetEngineContext()->random->Rand() % limit);
-}
-
 bool VegetationGeometry::ClusterByMatrixCompareFunction(const ClusterResolutionData& a,
                                                         const ClusterResolutionData& b)
 {
@@ -275,7 +270,9 @@ void VegetationGeometry::GenerateClusterPositionData(const Vector<VegetationLaye
         {
             densityId[i] = (i % maxDensityLevels);
         }
-        std::random_shuffle(densityId.begin(), densityId.end(), RandomShuffleFunc);
+        std::random_shuffle(densityId.begin(), densityId.end(), [random](Vector<uint32>::difference_type diff) {
+            return (random->Rand() % diff);
+        });
 
         layerRanges[layerIndex].index = currentIndex;
         layerRanges[layerIndex].size = totalClusterCount;

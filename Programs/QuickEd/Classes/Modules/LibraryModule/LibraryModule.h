@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Classes/Modules/LibraryModule/LibraryData.h"
-#include "Classes/Model/PackageHierarchy/PackageListener.h"
+#include "Classes/Utils/PackageListenerProxy.h"
 
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
@@ -16,6 +16,7 @@ class QtAction;
 
 class LibraryModule : public DAVA::ClientModule, PackageListener
 {
+    // ClientModule
     void PostInit() override;
 
     void InitData();
@@ -43,11 +44,11 @@ class LibraryModule : public DAVA::ClientModule, PackageListener
     void AddControlAction(ControlNode* controlNode, bool isPrototype, const QUrl& menuPoint, const QUrl& toolbarMenuPoint, LibraryData::ActionsMap& actionsMap);
     void RemoveControlAction(ControlNode* node, LibraryData::ActionsMap& actionsMap);
 
-    void OnPackageChanged(const DAVA::Any& package);
     void OnProjectPathChanged(const DAVA::Any& projectPath);
     void OnControlCreateTriggered(ControlNode* node, bool makePrototype);
 
-    // PackageListener
+    // PackageListenerProxy
+    void ActivePackageNodeWasChanged(PackageNode* node) override;
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int row) override;
     void ControlWillBeRemoved(ControlNode* node, ControlsContainerNode* from) override;
@@ -58,8 +59,14 @@ class LibraryModule : public DAVA::ClientModule, PackageListener
 
     LibraryData* GetLibraryData();
 
+    QString GenerateUniqueName();
+
     std::unique_ptr<DAVA::FieldBinder> fieldBinder;
     DAVA::QtConnections connections;
+
+    PackageListenerProxy packageListenerProxy;
+
+    DAVA::uint64 uniqueNumber = 0;
 
     DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::ClientModule);
 };

@@ -38,6 +38,7 @@ public:
     bool IsSelectionAllowed() const;
 
     bool Lock();
+    bool IsLocked() const;
     void Unlock();
 
     bool IsEntitySelectable(Entity* selectionCandidate) const;

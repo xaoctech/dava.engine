@@ -24,7 +24,7 @@
 
 namespace DAVA
 {
-CustomColorsSystem::CustomColorsSystem(DAVA::Scene* scene)
+CustomColorsSystem::CustomColorsSystem(Scene* scene)
     : LandscapeEditorSystem(scene, DefaultCursorPath())
 {
     SetColor(colorIndex);
@@ -58,11 +58,11 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
     scene->GetSystem<EntityModificationSystem>()->SetLocked(true);
-    landscapeSize = DAVA::Landscape::CUSTOM_COLOR_TEXTURE_SIZE;
+    landscapeSize = Landscape::CUSTOM_COLOR_TEXTURE_SIZE;
 
-    DAVA::FilePath filePath = GetCurrentSaveFileName();
+    FilePath filePath = GetCurrentSaveFileName();
     DVASSERT(!filePath.IsEmpty());
-    if (DAVA::Engine::Instance()->GetContext()->fileSystem->Exists(filePath))
+    if (Engine::Instance()->GetContext()->fileSystem->Exists(filePath))
     {
         const bool isTextureLoaded = LoadTexture(filePath, false);
         drawSystem->GetCustomColorsProxy()->ResetLoadedState(isTextureLoaded);
@@ -76,7 +76,7 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
     drawSystem->SetCursorTexture(cursorTexture);
     SetBrushSize(curToolSize);
 
-    DAVA::Texture* customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Texture* customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
     drawSystem->GetLandscapeProxy()->SetToolTexture(customColorsTexture, true);
 
     if (!toolImageTexture)
@@ -126,7 +126,7 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
     return !enabled;
 }
 
-void CustomColorsSystem::Process(DAVA::float32 timeElapsed)
+void CustomColorsSystem::Process(float32 timeElapsed)
 {
     if (!IsLandscapeEditingEnabled())
     {
@@ -143,7 +143,7 @@ void CustomColorsSystem::Process(DAVA::float32 timeElapsed)
     }
 }
 
-bool CustomColorsSystem::Input(DAVA::UIEvent* event)
+bool CustomColorsSystem::Input(UIEvent* event)
 {
     if (!IsLandscapeEditingEnabled())
     {
@@ -152,13 +152,13 @@ bool CustomColorsSystem::Input(DAVA::UIEvent* event)
 
     UpdateCursorPosition();
 
-    if (event->mouseButton == DAVA::eMouseButtons::LEFT)
+    if (event->mouseButton == eMouseButtons::LEFT)
     {
-        DAVA::Vector3 point;
+        Vector3 point;
 
         switch (event->phase)
         {
-        case DAVA::UIEvent::Phase::BEGAN:
+        case UIEvent::Phase::BEGAN:
             if (isIntersectsLandscape)
             {
                 UpdateToolImage();
@@ -167,10 +167,10 @@ bool CustomColorsSystem::Input(DAVA::UIEvent* event)
             }
             break;
 
-        case DAVA::UIEvent::Phase::DRAG:
+        case UIEvent::Phase::DRAG:
             break;
 
-        case DAVA::UIEvent::Phase::ENDED:
+        case UIEvent::Phase::ENDED:
             FinishEditing(true);
             break;
 
@@ -181,9 +181,9 @@ bool CustomColorsSystem::Input(DAVA::UIEvent* event)
     return false;
 }
 
-void CustomColorsSystem::InputCancelled(DAVA::UIEvent* event)
+void CustomColorsSystem::InputCancelled(UIEvent* event)
 {
-    if (IsLandscapeEditingEnabled() && (event->mouseButton == DAVA::eMouseButtons::LEFT))
+    if (IsLandscapeEditingEnabled() && (event->mouseButton == eMouseButtons::LEFT))
     {
         FinishEditing(true);
     }
@@ -195,14 +195,14 @@ void CustomColorsSystem::FinishEditing(bool applyModification)
     {
         if (applyModification)
         {
-            DAVA::Rect updatedRect = GetUpdatedRect();
+            Rect updatedRect = GetUpdatedRect();
             if (updatedRect.dx > 0 && updatedRect.dy > 0)
             {
                 SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
                 DVASSERT(scene);
 
-                DAVA::ScopedPtr<DAVA::Image> image(drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromMemory());
-                scene->Exec(std::unique_ptr<DAVA::Command>(new ModifyCustomColorsCommand(originalImage, image, drawSystem->GetCustomColorsProxy(), updatedRect, false)));
+                ScopedPtr<Image> image(drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromMemory());
+                scene->Exec(std::unique_ptr<Command>(new ModifyCustomColorsCommand(originalImage, image, drawSystem->GetCustomColorsProxy(), updatedRect, false)));
             }
         }
         SafeRelease(originalImage);
@@ -214,9 +214,9 @@ void CustomColorsSystem::UpdateToolImage(bool force)
 {
 }
 
-void CustomColorsSystem::CreateToolImage(const DAVA::FilePath& filePath)
+void CustomColorsSystem::CreateToolImage(const FilePath& filePath)
 {
-    DAVA::Texture* toolTexture = CreateSingleMipTexture(filePath);
+    Texture* toolTexture = CreateSingleMipTexture(filePath);
     if (!toolTexture)
     {
         return;
@@ -230,55 +230,55 @@ void CustomColorsSystem::CreateToolImage(const DAVA::FilePath& filePath)
 
 void CustomColorsSystem::UpdateBrushTool()
 {
-    DAVA::Texture* colorTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Texture* colorTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
 
-    DAVA::Vector2 spriteSize = DAVA::Vector2(cursorSize, cursorSize) * landscapeSize;
-    DAVA::Vector2 spritePos = cursorPosition * landscapeSize - spriteSize / 2.f;
+    Vector2 spriteSize = Vector2(cursorSize, cursorSize) * landscapeSize;
+    Vector2 spritePos = cursorPosition * landscapeSize - spriteSize / 2.f;
 
-    DAVA::Rect updatedRect;
+    Rect updatedRect;
     updatedRect.SetPosition(spritePos);
     updatedRect.SetSize(spriteSize);
     AddRectToAccumulator(updatedRect);
 
     auto brushMaterial = drawSystem->GetCustomColorsProxy()->GetBrushMaterial();
-    DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
-    desc.priority = DAVA::PRIORITY_SERVICE_2D;
+    RenderSystem2D::RenderTargetPassDescriptor desc;
+    desc.priority = PRIORITY_SERVICE_2D;
     desc.colorAttachment = colorTexture->handle;
     desc.depthAttachment = colorTexture->handleDepthStencil;
     desc.width = colorTexture->GetWidth();
     desc.height = colorTexture->GetHeight();
     desc.clearTarget = false;
     desc.transformVirtualToPhysical = false;
-    DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
-    DAVA::RenderSystem2D::Instance()->DrawTexture(toolImageTexture, brushMaterial, drawColor, updatedRect);
-    DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
+    RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
+    RenderSystem2D::Instance()->DrawTexture(toolImageTexture, brushMaterial, drawColor, updatedRect);
+    RenderSystem2D::Instance()->EndRenderTargetPass();
 }
 
 void CustomColorsSystem::ResetAccumulatorRect()
 {
-    DAVA::float32 inf = std::numeric_limits<DAVA::float32>::infinity();
-    updatedRectAccumulator = DAVA::Rect(inf, inf, -inf, -inf);
+    float32 inf = std::numeric_limits<float32>::infinity();
+    updatedRectAccumulator = Rect(inf, inf, -inf, -inf);
 }
 
-void CustomColorsSystem::AddRectToAccumulator(const DAVA::Rect& rect)
+void CustomColorsSystem::AddRectToAccumulator(const Rect& rect)
 {
     updatedRectAccumulator = updatedRectAccumulator.Combine(rect);
 }
 
-DAVA::Rect CustomColorsSystem::GetUpdatedRect()
+Rect CustomColorsSystem::GetUpdatedRect()
 {
-    DAVA::Rect r = updatedRectAccumulator;
+    Rect r = updatedRectAccumulator;
     drawSystem->ClampToTexture(LandscapeProxy::LANDSCAPE_TEXTURE_TOOL, r);
 
     return r;
 }
 
-void CustomColorsSystem::SetBrushSize(DAVA::int32 brushSize, bool updateDrawSystem /*= true*/)
+void CustomColorsSystem::SetBrushSize(int32 brushSize, bool updateDrawSystem /*= true*/)
 {
     if (brushSize > 0)
     {
         curToolSize = brushSize;
-        cursorSize = static_cast<DAVA::float32>(brushSize) / landscapeSize;
+        cursorSize = static_cast<float32>(brushSize) / landscapeSize;
         if (updateDrawSystem)
         {
             drawSystem->SetCursorSize(cursorSize);
@@ -286,7 +286,7 @@ void CustomColorsSystem::SetBrushSize(DAVA::int32 brushSize, bool updateDrawSyst
     }
 }
 
-void CustomColorsSystem::SetColor(DAVA::int32 colorIndex)
+void CustomColorsSystem::SetColor(int32 colorIndex)
 {
     ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
     if (data == nullptr)
@@ -296,8 +296,8 @@ void CustomColorsSystem::SetColor(DAVA::int32 colorIndex)
 
     if (data->GetEditorConfig() != nullptr)
     {
-        DAVA::Vector<DAVA::Color> customColors = data->GetEditorConfig()->GetColorPropertyValues("LandscapeCustomColors");
-        if (colorIndex >= 0 && colorIndex < static_cast<DAVA::int32>(customColors.size()))
+        Vector<Color> customColors = data->GetEditorConfig()->GetColorPropertyValues("LandscapeCustomColors");
+        if (colorIndex >= 0 && colorIndex < static_cast<int32>(customColors.size()))
         {
             drawColor = customColors[colorIndex];
             this->colorIndex = colorIndex;
@@ -312,26 +312,26 @@ void CustomColorsSystem::StoreOriginalState()
     ResetAccumulatorRect();
 }
 
-void CustomColorsSystem::SaveTexture(const DAVA::FilePath& filePath)
+void CustomColorsSystem::SaveTexture(const FilePath& filePath)
 {
     if (filePath.IsEmpty())
         return;
 
-    DAVA::Texture* customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Texture* customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
 
     rhi::HSyncObject frameSyncObject = rhi::GetCurrentFrameSyncObject();
-    DAVA::Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [this, customColorsTexture, filePath, frameSyncObject](rhi::HSyncObject syncObject)
-                                         {
-                                             if (frameSyncObject != syncObject)
-                                                 return;
+    Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [this, customColorsTexture, filePath, frameSyncObject](rhi::HSyncObject syncObject)
+                                   {
+                                       if (frameSyncObject != syncObject)
+                                           return;
 
-                                             DAVA::Image* image = customColorsTexture->CreateImageFromMemory();
-                                             DAVA::ImageSystem::Save(filePath, image);
-                                             DAVA::SafeRelease(image);
+                                       Image* image = customColorsTexture->CreateImageFromMemory();
+                                       ImageSystem::Save(filePath, image);
+                                       SafeRelease(image);
 
-                                             StoreSaveFileName(filePath);
-                                             drawSystem->GetCustomColorsProxy()->ResetChanges();
-                                         });
+                                       StoreSaveFileName(filePath);
+                                       drawSystem->GetCustomColorsProxy()->ResetChanges();
+                                   });
 }
 
 void CustomColorsSystem::SaveTexture()
@@ -339,20 +339,20 @@ void CustomColorsSystem::SaveTexture()
     SaveTexture(GetCurrentSaveFileName());
 }
 
-bool CustomColorsSystem::LoadTexture(const DAVA::FilePath& filePath, bool createUndo)
+bool CustomColorsSystem::LoadTexture(const FilePath& filePath, bool createUndo)
 {
     if (filePath.IsEmpty())
         return false;
 
-    DAVA::Vector<DAVA::Image*> images;
-    DAVA::ImageSystem::Load(filePath, images);
+    Vector<Image*> images;
+    ImageSystem::Load(filePath, images);
     if (images.empty())
         return false;
 
-    DAVA::Image* image = images.front();
+    Image* image = images.front();
     if (CouldApplyImage(image, filePath.GetFilename()))
     {
-        AddRectToAccumulator(DAVA::Rect(DAVA::Vector2(0.f, 0.f), DAVA::Vector2(image->GetWidth(), image->GetHeight())));
+        AddRectToAccumulator(Rect(Vector2(0.f, 0.f), Vector2(image->GetWidth(), image->GetHeight())));
 
         if (createUndo)
         {
@@ -363,7 +363,7 @@ bool CustomColorsSystem::LoadTexture(const DAVA::FilePath& filePath, bool create
 
             scene->BeginBatch("Load custom colors texture", 2);
             StoreSaveFileName(filePath);
-            scene->Exec(std::unique_ptr<DAVA::Command>(new ModifyCustomColorsCommand(originalImage, image, drawSystem->GetCustomColorsProxy(), GetUpdatedRect(), true)));
+            scene->Exec(std::unique_ptr<Command>(new ModifyCustomColorsCommand(originalImage, image, drawSystem->GetCustomColorsProxy(), GetUpdatedRect(), true)));
             scene->EndBatch();
 
             SafeRelease(originalImage);
@@ -371,50 +371,50 @@ bool CustomColorsSystem::LoadTexture(const DAVA::FilePath& filePath, bool create
         else
         {
             SafeRelease(loadedTexture);
-            loadedTexture = DAVA::Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
+            loadedTexture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
 
-            DAVA::Texture* target = drawSystem->GetCustomColorsProxy()->GetTexture();
+            Texture* target = drawSystem->GetCustomColorsProxy()->GetTexture();
 
-            DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
-            desc.priority = DAVA::PRIORITY_SERVICE_2D;
+            RenderSystem2D::RenderTargetPassDescriptor desc;
+            desc.priority = PRIORITY_SERVICE_2D;
             desc.colorAttachment = target->handle;
             desc.depthAttachment = target->handleDepthStencil;
             desc.width = target->GetWidth();
             desc.height = target->GetHeight();
             desc.clearTarget = false;
             desc.transformVirtualToPhysical = false;
-            DAVA::RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
-            DAVA::RenderSystem2D::Instance()->DrawTexture(loadedTexture, DAVA::RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, DAVA::Color::White);
-            DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
+            RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
+            RenderSystem2D::Instance()->DrawTexture(loadedTexture, RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White);
+            RenderSystem2D::Instance()->EndRenderTargetPass();
         }
     }
 
-    for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+    for_each(images.begin(), images.end(), SafeRelease<Image>);
     return true;
 }
 
-bool CustomColorsSystem::CouldApplyImage(DAVA::Image* image, const DAVA::String& imageName) const
+bool CustomColorsSystem::CouldApplyImage(Image* image, const String& imageName) const
 {
     if (image == nullptr)
     {
         return false;
     }
 
-    if (image->GetPixelFormat() != DAVA::FORMAT_RGBA8888)
+    if (image->GetPixelFormat() != FORMAT_RGBA8888)
     {
-        DAVA::Logger::Error("[CustomColorsSystem] %s has wrong format (%s). We need RGBA888", imageName.c_str(), GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(image->GetPixelFormat()));
+        Logger::Error("[CustomColorsSystem] %s has wrong format (%s). We need RGBA888", imageName.c_str(), GlobalEnumMap<PixelFormat>::Instance()->ToString(image->GetPixelFormat()));
         return false;
     }
 
-    const DAVA::Texture* oldTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    const Texture* oldTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
     if (oldTexture != nullptr)
     {
-        const DAVA::Size2i imageSize(image->GetWidth(), image->GetHeight());
-        const DAVA::Size2i textureSize(oldTexture->GetWidth(), oldTexture->GetHeight());
+        const Size2i imageSize(image->GetWidth(), image->GetHeight());
+        const Size2i textureSize(oldTexture->GetWidth(), oldTexture->GetHeight());
 
         if (imageSize != textureSize)
         {
-            DAVA::Logger::Error("[CustomColorsSystem] %s has wrong size (%d x %d). We need (%d x %d)", imageName.c_str(), imageSize.dx, imageSize.dy, textureSize.dx, textureSize.dy);
+            Logger::Error("[CustomColorsSystem] %s has wrong size (%d x %d). We need (%d x %d)", imageName.c_str(), imageSize.dx, imageSize.dy, textureSize.dx, textureSize.dy);
             return false;
         }
     }
@@ -422,9 +422,9 @@ bool CustomColorsSystem::CouldApplyImage(DAVA::Image* image, const DAVA::String&
     return true;
 }
 
-void CustomColorsSystem::StoreSaveFileName(const DAVA::FilePath& filePath)
+void CustomColorsSystem::StoreSaveFileName(const FilePath& filePath)
 {
-    std::unique_ptr<DAVA::Command> command = CreateSaveFileNameCommand(GetRelativePathToProjectPath(filePath));
+    std::unique_ptr<Command> command = CreateSaveFileNameCommand(GetRelativePathToProjectPath(filePath));
     if (command)
     {
         SceneEditor2* sc = static_cast<SceneEditor2*>(GetScene());
@@ -432,78 +432,78 @@ void CustomColorsSystem::StoreSaveFileName(const DAVA::FilePath& filePath)
     }
 }
 
-std::unique_ptr<DAVA::Command> CustomColorsSystem::CreateSaveFileNameCommand(const DAVA::String& filePath)
+std::unique_ptr<Command> CustomColorsSystem::CreateSaveFileNameCommand(const String& filePath)
 {
-    DAVA::KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+    KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
     bool keyExists = customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
 
     if (keyExists)
     {
-        DAVA::String curPath = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
+        String curPath = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
         if (curPath != filePath)
         {
-            return std::unique_ptr<KeyeadArchiveSetValueCommand>(new KeyeadArchiveSetValueCommand(customProps, ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, DAVA::VariantType(filePath)));
+            return std::unique_ptr<KeyeadArchiveSetValueCommand>(new KeyeadArchiveSetValueCommand(customProps, ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, VariantType(filePath)));
         }
     }
     else
     {
-        return std::unique_ptr<KeyedArchiveAddValueCommand>(new KeyedArchiveAddValueCommand(customProps, ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, DAVA::VariantType(filePath)));
+        return std::unique_ptr<KeyedArchiveAddValueCommand>(new KeyedArchiveAddValueCommand(customProps, ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP, VariantType(filePath)));
     }
 
-    return std::unique_ptr<DAVA::Command>();
+    return std::unique_ptr<Command>();
 }
 
-DAVA::FilePath CustomColorsSystem::GetCurrentSaveFileName()
+FilePath CustomColorsSystem::GetCurrentSaveFileName()
 {
-    DAVA::String currentSaveName;
+    String currentSaveName;
 
-    DAVA::KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
+    KeyedArchive* customProps = drawSystem->GetLandscapeCustomProperties();
     if (customProps && customProps->IsKeyExists(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP))
     {
         currentSaveName = customProps->GetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP);
     }
 
-    DAVA::FilePath currentTexturePath = GetAbsolutePathFromProjectPath(currentSaveName);
+    FilePath currentTexturePath = GetAbsolutePathFromProjectPath(currentSaveName);
     if (currentTexturePath.IsEmpty())
     {
-        DAVA::FilePath scenePathName = static_cast<SceneEditor2*>(GetScene())->GetScenePath();
+        FilePath scenePathName = static_cast<SceneEditor2*>(GetScene())->GetScenePath();
         scenePathName.ReplaceExtension("");
 
-        DAVA::Texture* colorMapTexture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(DAVA::Landscape::TEXTURE_COLOR);
+        Texture* colorMapTexture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(Landscape::TEXTURE_COLOR);
         DVASSERT(colorMapTexture != nullptr);
 
-        DAVA::FilePath colorMapDir = colorMapTexture->GetPathname().GetDirectory();
+        FilePath colorMapDir = colorMapTexture->GetPathname().GetDirectory();
         currentTexturePath = colorMapDir + (scenePathName.GetFilename() + "_passability.png");
     }
 
     return currentTexturePath;
 }
 
-DAVA::FilePath CustomColorsSystem::GetScenePath()
+FilePath CustomColorsSystem::GetScenePath()
 {
     return static_cast<SceneEditor2*>(GetScene())->GetScenePath().GetDirectory();
 }
 
-DAVA::String CustomColorsSystem::GetRelativePathToScenePath(const DAVA::FilePath& absolutePath)
+String CustomColorsSystem::GetRelativePathToScenePath(const FilePath& absolutePath)
 {
     if (absolutePath.IsEmpty())
-        return DAVA::String();
+        return String();
 
     return absolutePath.GetRelativePathname(GetScenePath());
 }
 
-DAVA::FilePath CustomColorsSystem::GetAbsolutePathFromScenePath(const DAVA::String& relativePath)
+FilePath CustomColorsSystem::GetAbsolutePathFromScenePath(const String& relativePath)
 {
     if (relativePath.empty())
-        return DAVA::FilePath();
+        return FilePath();
 
     return (GetScenePath() + relativePath);
 }
 
-DAVA::String CustomColorsSystem::GetRelativePathToProjectPath(const DAVA::FilePath& absolutePath)
+String CustomColorsSystem::GetRelativePathToProjectPath(const FilePath& absolutePath)
 {
     if (absolutePath.IsEmpty())
-        return DAVA::String();
+        return String();
 
     ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
@@ -511,22 +511,22 @@ DAVA::String CustomColorsSystem::GetRelativePathToProjectPath(const DAVA::FilePa
     return absolutePath.GetRelativePathname(data->GetProjectPath());
 }
 
-DAVA::FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const DAVA::String& relativePath)
+FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relativePath)
 {
     if (relativePath.empty())
-        return DAVA::FilePath();
+        return FilePath();
 
     ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
     DVASSERT(data != nullptr);
     return data->GetProjectPath() + relativePath;
 }
 
-DAVA::int32 CustomColorsSystem::GetBrushSize()
+int32 CustomColorsSystem::GetBrushSize()
 {
     return curToolSize;
 }
 
-DAVA::int32 CustomColorsSystem::GetColor()
+int32 CustomColorsSystem::GetColor()
 {
     return colorIndex;
 }

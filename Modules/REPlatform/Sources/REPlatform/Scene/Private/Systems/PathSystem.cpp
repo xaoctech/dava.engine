@@ -387,6 +387,11 @@ void PathSystem::Process(float32 timeElapsed)
     }
     entitiesForExpand.clear();
 
+    if (isEditingEnabled == false)
+    {
+        return;
+    }
+
     const SelectableGroup& selection = GetScene()->GetSystem<SelectionSystem>()->GetSelection();
     if (currentSelection != selection)
     {

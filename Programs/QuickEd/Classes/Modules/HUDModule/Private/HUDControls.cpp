@@ -47,7 +47,7 @@ RefPtr<UIControl> CreateFrameBorderControl(FrameControl::eBorder border)
 }
 }
 
-ControlContainer::ControlContainer(const HUDAreaInfo::eArea area_)
+ControlContainer::ControlContainer(const eArea area_)
     : area(area_)
     , drawable(new UIControl())
 {
@@ -55,7 +55,7 @@ ControlContainer::ControlContainer(const HUDAreaInfo::eArea area_)
 
 ControlContainer::~ControlContainer() = default;
 
-HUDAreaInfo::eArea ControlContainer::GetArea() const
+eArea ControlContainer::GetArea() const
 {
     return area;
 }
@@ -117,7 +117,7 @@ bool ControlContainer::IsDrawableControl(DAVA::UIControl* control) const
 }
 
 HUDContainer::HUDContainer(const ControlNode* node_)
-    : ControlContainer(HUDAreaInfo::NO_AREA)
+    : ControlContainer(eArea::NO_AREA)
     , node(node_)
 {
     DVASSERT(nullptr != node);
@@ -165,9 +165,9 @@ void HUDContainer::InitFromGD(const UIGeometricData& gd)
 
         for (const std::unique_ptr<ControlContainer>& child : children)
         {
-            HUDAreaInfo::eArea area = child->GetArea();
+            eArea area = child->GetArea();
             bool childVisible = child->GetSystemVisible() && changedGD.scale.x > 0.0f && changedGD.scale.y > 0.0f;
-            if (area != HUDAreaInfo::FRAME_AREA)
+            if (area != eArea::FRAME_AREA)
             {
                 childVisible &= !controlIsMoveOnly;
             }
@@ -181,7 +181,7 @@ void HUDContainer::InitFromGD(const UIGeometricData& gd)
 }
 
 FrameControl::FrameControl(eType type_, DAVA::ContextAccessor* accessor)
-    : ControlContainer(HUDAreaInfo::FRAME_AREA)
+    : ControlContainer(eArea::FRAME_AREA)
     , type(type_)
 {
     drawable->SetName(FastName("Frame_Control"));
@@ -269,7 +269,7 @@ Rect FrameControl::GetSubControlRect(const DAVA::Rect& rect, eBorder border) con
     }
 }
 
-FrameRectControl::FrameRectControl(const HUDAreaInfo::eArea area_, DAVA::ContextAccessor* accessor)
+FrameRectControl::FrameRectControl(const eArea area_, DAVA::ContextAccessor* accessor)
     : ControlContainer(area_)
 {
     UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
@@ -279,17 +279,17 @@ FrameRectControl::FrameRectControl(const HUDAreaInfo::eArea area_, DAVA::Context
     FilePath spritePath;
     switch (area)
     {
-    case HUDAreaInfo::TOP_LEFT_AREA:
-    case HUDAreaInfo::TOP_RIGHT_AREA:
-    case HUDAreaInfo::BOTTOM_LEFT_AREA:
-    case HUDAreaInfo::BOTTOM_RIGHT_AREA:
+    case eArea::TOP_LEFT_AREA:
+    case eArea::TOP_RIGHT_AREA:
+    case eArea::BOTTOM_LEFT_AREA:
+    case eArea::BOTTOM_RIGHT_AREA:
         spritePath = settings->cornerRectPath2;
         rectSize = Vector2(8.0f, 8.0f);
         break;
-    case HUDAreaInfo::TOP_CENTER_AREA:
-    case HUDAreaInfo::BOTTOM_CENTER_AREA:
-    case HUDAreaInfo::CENTER_LEFT_AREA:
-    case HUDAreaInfo::CENTER_RIGHT_AREA:
+    case eArea::TOP_CENTER_AREA:
+    case eArea::BOTTOM_CENTER_AREA:
+    case eArea::CENTER_LEFT_AREA:
+    case eArea::CENTER_RIGHT_AREA:
         spritePath = settings->borderRectPath2;
         rectSize = Vector2(8.0f, 8.0f);
         break;
@@ -315,21 +315,21 @@ Vector2 FrameRectControl::GetPos(const DAVA::Rect& rect) const
 {
     switch (area)
     {
-    case HUDAreaInfo::TOP_LEFT_AREA:
+    case eArea::TOP_LEFT_AREA:
         return Vector2(0.0f, 0.0f);
-    case HUDAreaInfo::TOP_CENTER_AREA:
+    case eArea::TOP_CENTER_AREA:
         return Vector2(rect.dx / 2.0f, 0.0f);
-    case HUDAreaInfo::TOP_RIGHT_AREA:
+    case eArea::TOP_RIGHT_AREA:
         return Vector2(rect.dx, 0.0f);
-    case HUDAreaInfo::CENTER_LEFT_AREA:
+    case eArea::CENTER_LEFT_AREA:
         return Vector2(0, rect.dy / 2.0f);
-    case HUDAreaInfo::CENTER_RIGHT_AREA:
+    case eArea::CENTER_RIGHT_AREA:
         return Vector2(rect.dx, rect.dy / 2.0f);
-    case HUDAreaInfo::BOTTOM_LEFT_AREA:
+    case eArea::BOTTOM_LEFT_AREA:
         return Vector2(0, rect.dy);
-    case HUDAreaInfo::BOTTOM_CENTER_AREA:
+    case eArea::BOTTOM_CENTER_AREA:
         return Vector2(rect.dx / 2.0f, rect.dy);
-    case HUDAreaInfo::BOTTOM_RIGHT_AREA:
+    case eArea::BOTTOM_RIGHT_AREA:
         return Vector2(rect.dx, rect.dy);
     default:
         DVASSERT(!"wrong area passed to hud control");
@@ -338,7 +338,7 @@ Vector2 FrameRectControl::GetPos(const DAVA::Rect& rect) const
 }
 
 PivotPointControl::PivotPointControl(DAVA::ContextAccessor* accessor)
-    : ControlContainer(HUDAreaInfo::PIVOT_POINT_AREA)
+    : ControlContainer(eArea::PIVOT_POINT_AREA)
 {
     UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
     drawable->SetName(FastName("pivot_point_control"));
@@ -357,7 +357,7 @@ void PivotPointControl::InitFromGD(const UIGeometricData& gd)
 }
 
 RotateControl::RotateControl(DAVA::ContextAccessor* accessor)
-    : ControlContainer(HUDAreaInfo::ROTATE_AREA)
+    : ControlContainer(eArea::ROTATE_AREA)
 {
     UserAssetsSettings* settings = accessor->GetGlobalContext()->GetData<UserAssetsSettings>();
     drawable->SetName(FastName("rotate_control"));

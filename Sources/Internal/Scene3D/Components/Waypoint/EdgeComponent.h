@@ -3,7 +3,6 @@
 #include "Entity/Component.h"
 #include "Scene3D/Components/Waypoint/PathComponent.h"
 #include "Reflection/Reflection.h"
-#include "Base/Introspection.h"
 
 namespace DAVA
 {

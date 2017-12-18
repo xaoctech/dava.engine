@@ -8,7 +8,7 @@
 #include <QtTools/ReloadSprites/DialogReloadSprites.h>
 #include <QtTools/ReloadSprites/SpritesPacker.h>
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 #include <Engine/Engine.h>
 #include <Functional/Function.h>

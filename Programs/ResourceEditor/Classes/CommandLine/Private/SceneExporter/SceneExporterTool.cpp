@@ -7,8 +7,8 @@
 
 #include <TArc/Utils/ModuleCollection.h>
 
-#include <DavaTools/AssetCache/AssetCache.h>
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <AssetCache/AssetCache.h>
+#include <TextureCompression/TextureConverter.h>
 
 #include <Base/ScopedPtr.h>
 #include <Logger/Logger.h>

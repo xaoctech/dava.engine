@@ -1,6 +1,10 @@
 #pragma once
 
 #include "REPlatform/Scene/SceneTypes.h"
+#include "REPlatform/Scene/Systems/EditorSceneSystem.h"
+
+#include <TArc/Core/FieldBinder.h>
+#include <TArc/DataProcessing/SettingsNode.h>
 
 #include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
@@ -14,7 +18,16 @@ class EditorStatisticsSystemUIDelegate;
 class Camera;
 
 struct TrianglesData;
-class EditorStatisticsSystem : public SceneSystem
+
+class RenderStatsSettings : public DAVA::SettingsNode
+{
+public:
+    bool calculatePerFrame = true;
+
+    DAVA_VIRTUAL_REFLECTION(RenderStatsSettings, DAVA::TArc::SettingsNode);
+};
+
+class EditorStatisticsSystem : public SceneSystem, public EditorSceneSystem
 {
     enum eStatisticsSystemFlag : uint32
     {
@@ -28,10 +41,11 @@ public:
 
     EditorStatisticsSystem(Scene* scene);
 
-    void AddEntity(Entity* entity) override;
-    void RemoveEntity(Entity* entity) override;
-    void AddComponent(Entity* entity, Component* component) override;
-    void RemoveComponent(Entity* entity, Component* component) override;
+    void RegisterEntity(Entity* entity) override;
+    void UnregisterEntity(Entity* entity) override;
+
+    void RegisterComponent(Entity* entity, Component* component) override;
+    void UnregisterComponent(Entity* entity, Component* component) override;
     void PrepareForRemove() override;
 
     void Process(float32 timeElapsed) override;
@@ -51,11 +65,16 @@ private:
     void DispatchSignals();
     //signals
 
+    void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
+
 private:
     Vector<TrianglesData> triangles;
 
     Vector<EditorStatisticsSystemUIDelegate*> uiDelegates;
     uint32 invalidateUIflag = FLAG_NONE;
+    std::unique_ptr<DAVA::FieldBinder> binder;
+    bool calculatePerFrame = true;
+    bool initialized = false;
 };
 
 class EditorStatisticsSystemUIDelegate

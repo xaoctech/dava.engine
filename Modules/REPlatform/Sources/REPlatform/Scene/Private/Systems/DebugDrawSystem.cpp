@@ -150,16 +150,14 @@ void DebugDrawSystem::Draw()
         DrawHangingObjects(entity);
         DrawSwitchesWithDifferentLods(entity);
         DrawDebugOctTree(entity);
+    }
 
-        //draw selected objects
-        const SelectableGroup& selection = GetScene()->GetSystem<SelectionSystem>()->GetSelection();
-        bool isSelected = selection.ContainsObject(entity);
-
-        if (isSelected)
-        {
-            DrawLightNode(entity, true);
-            DrawSelectedSoundNode(entity);
-        }
+    //draw selected objects
+    const SelectableGroup& selection = Selection::GetSelection();
+    for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
+    {
+        DrawLightNode(entity, true);
+        DrawSelectedSoundNode(entity);
     }
 }
 
@@ -255,9 +253,7 @@ void DebugDrawSystem::DrawLightNode(Entity* entity, bool isSelected)
 
             direction.Normalize();
             direction = direction * worldBox.GetSize().x;
-
             center -= (direction / 2);
-
             drawer->DrawArrow(center + direction, center, direction.Length() / 2, Color(1.0f, 1.0f, 0, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
         }
         else if (light->GetType() == Light::TYPE_POINT)
@@ -278,6 +274,50 @@ void DebugDrawSystem::DrawLightNode(Entity* entity, bool isSelected)
                     drawer->DrawCircle(worldCenter, Vector3(0.0f, 0.0f, 1.0f), distance, segmentCount, Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
                 }
             }
+        }
+        else if (light->GetType() == Light::TYPE_SPOT)
+        {
+            float coneAngle = DAVA::PI / 2.0f;
+            float penumbraAngle = 0.0f;
+            KeyedArchive* properties = GetCustomPropertiesArchieve(entity);
+            if (properties != nullptr)
+            {
+                VariantType* value = properties->GetVariant("editor.staticlight.cone.angle");
+                if (value->GetType() == VariantType::TYPE_FLOAT)
+                {
+                    coneAngle = value->AsFloat() * DAVA::PI / 180.0f;
+                }
+
+                value = properties->GetVariant("editor.staticlight.cone.penumbra.angle");
+                if (value->GetType() == VariantType::TYPE_FLOAT)
+                {
+                    penumbraAngle = value->AsFloat() * DAVA::PI / 180.0f;
+                }
+            }
+
+            Vector3 center = worldBox.GetCenter();
+            Vector3 direction = light->GetDirection();
+            direction.Normalize();
+
+            center -= 0.5f * direction;
+            drawer->DrawArrow(center, center + direction, 0.5f * direction.Length(), DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+
+            float32 innerRadius = std::sin(0.5f * coneAngle);
+            float32 outerRadius = std::sin(0.5f * std::max(coneAngle, coneAngle + penumbraAngle));
+            uint32 sgm = 16;
+            float32 dt = 0.2f;
+            float32 t = dt;
+            while (t <= 1.0f)
+            {
+                drawer->DrawCircle(center + t * direction, direction, t * innerRadius, sgm, Color(1.0f, 1.0f, 0.5f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                if (outerRadius > innerRadius)
+                {
+                    drawer->DrawCircle(center + t * direction, direction, t * outerRadius, sgm, Color(1.0f, 1.0f, 0.0f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                }
+                t += dt;
+            }
+            drawer->DrawCircle(center + direction, direction, outerRadius, sgm, Color(1.0f, 1.0f, 0.0f, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
+            drawer->DrawCircle(center + direction, direction, innerRadius, sgm, Color(1.0f, 1.0f, 0.5f, 0.3f), DAVA::RenderHelper::DRAW_SOLID_DEPTH);
         }
         else
         {

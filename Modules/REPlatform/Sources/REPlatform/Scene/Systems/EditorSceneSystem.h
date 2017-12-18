@@ -7,6 +7,7 @@ namespace DAVA
 class RECommandNotificationObject;
 class REDependentCommandsHolder;
 class PropertiesHolder;
+class ContextAccessor;
 
 class EditorSceneSystem
 {
@@ -25,7 +26,7 @@ public:
         systemIsEnabled = false;
     }
 
-    virtual void LoadLocalProperties(DAVA::PropertiesHolder* holder)
+    virtual void LoadLocalProperties(DAVA::PropertiesHolder* holder, DAVA::ContextAccessor* accessor)
     {
     }
 

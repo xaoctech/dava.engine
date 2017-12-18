@@ -2,9 +2,10 @@
 
 #include "REPlatform/Commands/RECommand.h"
 
-#include <Scene3D/Scene.h>
-#include <Scene3D/Components/Waypoint/PathComponent.h>
 #include <Base/BaseTypes.h>
+#include <Reflection/Reflection.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Scene.h>
 
 namespace DAVA
 {

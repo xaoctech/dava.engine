@@ -236,7 +236,7 @@ void DataWrapper::Sync(bool notifyListener)
                 }
             }
 
-            if (!fieldNames.empty())
+            if (!fieldNames.empty() || listenerWasChanged == true)
             {
                 NotifyListener(notifyListener, fieldNames);
             }

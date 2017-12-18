@@ -19,13 +19,9 @@
 #include <QPointer>
 
 class RECommandNotificationObject;
-class AddSwitchEntityDialog;
-class QtLabelWithActions;
-class HangingObjectsHeight;
 class DeveloperTools;
 class VersionInfoWidget;
 class DeviceListController;
-class SpritesPackerModule;
 class ErrorDialogOutput;
 
 namespace DAVA
@@ -61,11 +57,6 @@ public:
 
     // qt actions slots
 public slots:
-    void RemoveSelection();
-
-    void OnUndo();
-    void OnRedo();
-
     void OnEditorGizmoToggle(bool show);
     void OnViewLightmapCanvas(bool show);
     void OnShowStaticOcclusionToggle(bool show);
@@ -98,22 +89,6 @@ public slots:
 
     void OnCubemapEditor();
     void OnImageSplitter();
-
-    void OnAddLandscape();
-    void OnAddVegetation();
-    void OnLightDialog();
-    void OnCameraDialog();
-    void OnEmptyEntity();
-    void OnAddWindEntity();
-    void OnAddPathEntity();
-    void OnAddTextEntity();
-
-    void OnUserNodeDialog();
-    void OnSwitchEntityDialog();
-    void OnParticleEffectDialog();
-    void On2DCameraDialog();
-    void On2DSpriteDialog();
-    void OnAddEntityFromSceneTree();
 
     void OnOpenHelp();
 
@@ -170,6 +145,7 @@ private slots:
 
     void OnGlobalInvalidateTimeout();
     void UnmodalDialogFinished(int);
+    void EditorLightEnabled(bool enabled);
 
     void DebugVersionInfo();
     void OnConsoleItemClicked(const QString& data);
@@ -184,9 +160,6 @@ private:
     ModificationWidget* modificationWidget;
 
     QComboBox* objectTypesWidget;
-
-    AddSwitchEntityDialog* addSwitchEntityDialog;
-    HangingObjectsHeight* hangingObjectsWidget;
 
     void EnableSceneActions(bool enable);
     void EnableProjectActions(bool enable);

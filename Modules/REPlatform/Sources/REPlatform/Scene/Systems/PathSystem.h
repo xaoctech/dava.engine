@@ -4,6 +4,7 @@
 #include "REPlatform/Scene/Systems/ModifSystem.h"
 #include "REPlatform/Scene/Systems/SystemDelegates.h"
 
+#include <Base/BaseTypes.h>
 #include <Base/FastName.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Components/Waypoint/EdgeComponent.h>

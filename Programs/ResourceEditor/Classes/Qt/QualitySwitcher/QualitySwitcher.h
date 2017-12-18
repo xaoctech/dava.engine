@@ -20,7 +20,7 @@ protected:
 
     void UpdateEntitiesToQuality(DAVA::Entity* e);
     void UpdateParticlesToQuality();
-    void ReloadEntityEmitters(DAVA::Entity* e);
+    void ReloadEntityEmitters(SceneEditor2* scene, DAVA::Entity* e);
     void SetSettingsDirty(bool dirty);
     void ApplySettings();
 

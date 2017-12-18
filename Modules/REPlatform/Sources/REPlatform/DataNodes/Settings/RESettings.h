@@ -3,8 +3,8 @@
 #include <TArc/DataProcessing/SettingsNode.h>
 #include <TArc/Qt/QtByteArray.h>
 
-#include <DavaTools/AssetCache/AssetCacheConstants.h>
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <AssetCache/AssetCacheConstants.h>
+#include <TextureCompression/TextureConverter.h>
 
 #include <Base/BaseTypes.h>
 #include <Math/Color.h>

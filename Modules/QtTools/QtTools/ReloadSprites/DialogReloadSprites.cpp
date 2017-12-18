@@ -5,7 +5,7 @@
 #include "QtTools/ReloadSprites/SpritesPacker.h"
 #include "QtTools/ConsoleWidget/LoggerOutputObject.h"
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
+#include <TextureCompression/TextureConverter.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/Qt/QtByteArray.h>
 

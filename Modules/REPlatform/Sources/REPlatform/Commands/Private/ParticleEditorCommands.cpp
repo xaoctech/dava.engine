@@ -3,11 +3,46 @@
 
 #include "REPlatform/Global/StringConstants.h"
 
-#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Base/BaseTypes.h>
+#include <Base/RefPtr.h>
+#include <Math/Vector.h>
+#include <Particles/ParticleEmitter.h>
+#include <Particles/ParticleEmitterInstance.h>
+#include <Particles/ParticleForceSimplified.h>
+#include <Particles/ParticlePropertyLine.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Systems/ParticlesQualitySettings.h>
+#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
+namespace ParticleEditorCommandsDetail
+{
+using ForceType = ParticleForce::eType;
+Map<ForceType, String> forceNames =
+{
+  { ForceType::DRAG_FORCE, "Drag" },
+  { ForceType::WIND, "Wind" },
+  { ForceType::VORTEX, "Vortex" },
+  { ForceType::GRAVITY, "Gravity" },
+  { ForceType::POINT_GRAVITY, "Point Gravity" },
+  { ForceType::PLANE_COLLISION, "Plane Collision" }
+};
+
+void AddNewForceToLayer(ParticleLayer* layer, ParticleForce::eType forceType)
+{
+    if (layer == nullptr)
+        return;
+    ScopedPtr<ParticleForce> newForce(new ParticleForce(layer));
+    newForce->type = forceType;
+    newForce->forceName = ParticleEditorCommandsDetail::forceNames[forceType];
+
+    layer->AddForce(newForce);
+}
+}
+
 CommandUpdateEffect::CommandUpdateEffect(ParticleEffectComponent* effect)
     : CommandAction()
     , particleEffect(effect)
@@ -41,6 +76,7 @@ void CommandUpdateEmitter::Init(const FastName& name,
                                 ParticleEmitter::eType emitterType,
                                 RefPtr<PropertyLine<float32>> emissionRange,
                                 RefPtr<PropertyLine<Vector3>> emissionVector,
+                                RefPtr<PropertyLine<Vector3>> emissionVelocityVector,
                                 RefPtr<PropertyLine<float32>> radius,
                                 RefPtr<PropertyLine<float32>> emissionAngle,
                                 RefPtr<PropertyLine<float32>> emissionAngleVariation,
@@ -53,6 +89,7 @@ void CommandUpdateEmitter::Init(const FastName& name,
     this->emitterType = emitterType;
     this->emissionRange = emissionRange;
     this->emissionVector = emissionVector;
+    this->emissionVelocityVector = emissionVelocityVector;
     this->radius = radius;
     this->emissionAngle = emissionAngle;
     this->emissionAngleVariation = emissionAngleVariation;
@@ -70,6 +107,7 @@ void CommandUpdateEmitter::Redo()
     emitter->emitterType = emitterType;
     PropertyLineHelper::SetValueLine(emitter->emissionRange, emissionRange);
     PropertyLineHelper::SetValueLine(emitter->emissionVector, emissionVector);
+    PropertyLineHelper::SetValueLine(emitter->emissionVelocityVector, emissionVelocityVector);
     PropertyLineHelper::SetValueLine(emitter->radius, radius);
     PropertyLineHelper::SetValueLine(emitter->colorOverLife, colorOverLife);
     PropertyLineHelper::SetValueLine(emitter->size, size);
@@ -141,7 +179,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
                                       RefPtr<PropertyLine<float32>> animSpeedOverLife,
 
                                       float32 pivotPointX,
-                                      float32 pivotPointY)
+                                      float32 pivotPointY,
+                                      bool applyGlobalForces)
 {
     this->layerName = layerName;
     this->layerType = layerType;
@@ -188,6 +227,8 @@ void CommandUpdateParticleLayer::Init(const String& layerName,
 
     this->pivotPointX = pivotPointX;
     this->pivotPointY = pivotPointY;
+
+    this->applyGlobalForces = applyGlobalForces;
 }
 
 void CommandUpdateParticleLayer::Redo()
@@ -235,24 +276,30 @@ void CommandUpdateParticleLayer::Redo()
     layer->loopEndTime = loopEndTime;
     layer->loopVariation = loopVariation;
 
+    layer->applyGlobalForces = applyGlobalForces;
+
     layer->SetPivotPoint(Vector2(pivotPointX, pivotPointY));
 
     // The same is for emitter type.
     if (layer->type != layerType)
     {
-        if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+        if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
+            deletedEmitter = RefPtr<ParticleEmitterInstance>::ConstructWithRetain(layer->innerEmitter);
             SafeRelease(layer->innerEmitter);
         }
         layer->type = layerType;
         if (layerType == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            SafeRelease(layer->innerEmitter);
-            layer->innerEmitter = new ParticleEmitter();
+            DVASSERT(layer->innerEmitter == nullptr);
+            ScopedPtr<ParticleEmitter> emitter(new ParticleEmitter());
             if (!layer->innerEmitterPath.IsEmpty())
             {
-                layer->innerEmitter->LoadFromYaml(layer->innerEmitterPath);
+                emitter->LoadFromYaml(layer->innerEmitterPath);
             }
+
+            layer->innerEmitter = new ParticleEmitterInstance(emitter);
+            createdEmitter = RefPtr<ParticleEmitterInstance>::ConstructWithRetain(layer->innerEmitter);
         }
         //TODO: restart in effect
     }
@@ -333,24 +380,125 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandUpdateParticleLayerLods)
     .End();
 }
 
-CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer, uint32 forceId)
+CommandUpdateParticleSimplifiedForce::CommandUpdateParticleSimplifiedForce(ParticleLayer* layer, uint32 forceId)
     : CommandAction()
 {
     this->layer = layer;
     this->forceId = forceId;
 }
 
-void CommandUpdateParticleForce::Init(RefPtr<PropertyLine<Vector3>> force,
-                                      RefPtr<PropertyLine<float32>> forcesOverLife)
+void CommandUpdateParticleSimplifiedForce::Init(RefPtr<PropertyLine<Vector3>> force,
+                                                RefPtr<PropertyLine<float32>> forcesOverLife)
 {
     PropertyLineHelper::SetValueLine(this->force, force);
     PropertyLineHelper::SetValueLine(this->forcesOverLife, forcesOverLife);
 }
 
+void CommandUpdateParticleSimplifiedForce::Redo()
+{
+    layer->GetSimplifiedParticleForces()[forceId]->force = force;
+    layer->GetSimplifiedParticleForces()[forceId]->forceOverLife = forcesOverLife;
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandUpdateParticleSimplifiedForce)
+{
+    ReflectionRegistrator<CommandUpdateParticleSimplifiedForce>::Begin()
+    .End();
+}
+
+//////////////////////////////////////////////////////////////////////////
+CommandUpdateParticleForce::CommandUpdateParticleForce(ParticleLayer* layer_, uint32 forceId_, ForceParams&& params)
+    : CommandAction()
+    , layer(layer_)
+    , forceId(forceId_)
+    , newParams(params)
+{
+    DVASSERT(forceId < static_cast<uint32>(layer->GetParticleForces().size()));
+    DVASSERT(layer != nullptr);
+    if (layer != nullptr)
+    {
+        ParticleForce* force = layer->GetParticleForces()[forceId];
+        oldParams.isActive = force->isActive;
+        oldParams.useInfinityRange = force->isInfinityRange;
+        oldParams.killParticles = force->killParticles;
+        oldParams.normalAsReflectionVector = force->normalAsReflectionVector;
+        oldParams.randomizeReflectionForce = force->randomizeReflectionForce;
+        oldParams.worldAlign = force->worldAlign;
+        oldParams.pointGravityUseRandomPointsOnSphere = force->pointGravityUseRandomPointsOnSphere;
+        oldParams.isGlobal = force->isGlobal;
+        oldParams.boxSize = force->GetBoxSize();
+        oldParams.radius = force->GetRadius();
+        oldParams.forcePower = force->forcePower;
+        oldParams.shape = force->GetShape();
+        oldParams.forceName = force->forceName;
+        oldParams.timingType = force->timingType;
+        oldParams.forcePowerLine = force->forcePowerLine;
+        oldParams.turbulenceLine = force->turbulenceLine;
+        oldParams.direction = force->direction;
+        oldParams.windFrequency = force->windFrequency;
+        oldParams.windTurbulence = force->windTurbulence;
+        oldParams.pointGravityRadius = force->pointGravityRadius;
+        oldParams.rndReflectionForceMin = force->rndReflectionForceMin;
+        oldParams.rndReflectionForceMax = force->rndReflectionForceMax;
+        oldParams.planeScale = force->planeScale;
+        oldParams.reflectionChaos = force->reflectionChaos;
+        oldParams.windTurbulenceFrequency = force->windTurbulenceFrequency;
+        oldParams.windBias = force->windBias;
+        oldParams.backwardTurbulenceProbability = force->backwardTurbulenceProbability;
+        oldParams.reflectionPercent = force->reflectionPercent;
+        oldParams.velocityThreshold = force->velocityThreshold;
+        oldParams.startTime = force->startTime;
+        oldParams.endTime = force->endTime;
+    }
+}
+
 void CommandUpdateParticleForce::Redo()
 {
-    layer->forces[forceId]->force = force;
-    layer->forces[forceId]->forceOverLife = forcesOverLife;
+    ApplyParams(newParams);
+}
+
+void CommandUpdateParticleForce::Undo()
+{
+    ApplyParams(oldParams);
+}
+
+void CommandUpdateParticleForce::ApplyParams(ForceParams& params)
+{
+    if (layer != nullptr && forceId < layer->GetParticleForces().size())
+    {
+        ParticleForce* force = layer->GetParticleForces()[forceId];
+        force->isActive = params.isActive;
+        force->SetBoxSize(params.boxSize);
+        force->SetRadius(params.radius);
+        force->forcePower = params.forcePower;
+        force->SetShape(params.shape);
+        force->isInfinityRange = params.useInfinityRange;
+        force->killParticles = params.killParticles;
+        force->pointGravityUseRandomPointsOnSphere = params.pointGravityUseRandomPointsOnSphere;
+        force->isGlobal = params.isGlobal;
+        force->forceName = params.forceName;
+        force->timingType = params.timingType;
+        force->direction = params.direction;
+        force->windFrequency = params.windFrequency;
+        force->windTurbulence = params.windTurbulence;
+        force->windTurbulenceFrequency = params.windTurbulenceFrequency;
+        force->windBias = params.windBias;
+        force->backwardTurbulenceProbability = params.backwardTurbulenceProbability;
+        force->pointGravityRadius = params.pointGravityRadius;
+        force->planeScale = params.planeScale;
+        force->reflectionChaos = params.reflectionChaos;
+        force->normalAsReflectionVector = params.normalAsReflectionVector;
+        force->randomizeReflectionForce = params.randomizeReflectionForce;
+        force->worldAlign = params.worldAlign;
+        force->rndReflectionForceMin = params.rndReflectionForceMin;
+        force->rndReflectionForceMax = params.rndReflectionForceMax;
+        force->velocityThreshold = params.velocityThreshold;
+        force->reflectionPercent = params.reflectionPercent;
+        force->startTime = params.startTime;
+        force->endTime = params.endTime;
+        PropertyLineHelper::SetValueLine(force->forcePowerLine, params.forcePowerLine);
+        PropertyLineHelper::SetValueLine(force->turbulenceLine, params.turbulenceLine);
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CommandUpdateParticleForce)
@@ -373,6 +521,11 @@ void CommandAddParticleEmitter::Redo()
     ParticleEffectComponent* effectComponent = GetEffectComponent(effectEntity);
     DVASSERT(effectComponent);
     effectComponent->AddEmitterInstance(ScopedPtr<ParticleEmitter>(new ParticleEmitter()));
+}
+
+Entity* CommandAddParticleEmitter::GetEntity() const
+{
+    return effectEntity;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleEmitter)
@@ -446,8 +599,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandRestartParticleEffect)
     .End();
 }
 
-CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(ParticleEmitterInstance* emitter)
+CommandAddParticleEmitterLayer::CommandAddParticleEmitterLayer(ParticleEffectComponent* component_, ParticleEmitterInstance* emitter)
     : CommandAction()
+    , component(component_)
     , instance(emitter)
 {
 }
@@ -480,19 +634,30 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleEmitterLayer)
     .End();
 }
 
-CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEmitterInstance* emitter, ParticleLayer* layer)
-    : CommandAction()
+CommandRemoveParticleEmitterLayer::CommandRemoveParticleEmitterLayer(ParticleEffectComponent* component_, ParticleEmitterInstance* emitter, ParticleLayer* layer)
+    : RECommand("Remove Particle Layer")
+    , component(component_)
     , instance(emitter)
-    , selectedLayer(layer)
+    , selectedLayer(SafeRetain(layer))
 {
+    DVASSERT(instance != nullptr);
+    DVASSERT(selectedLayer != nullptr);
 }
 
 void CommandRemoveParticleEmitterLayer::Redo()
 {
-    if ((selectedLayer == nullptr) || (instance == nullptr))
-        return;
+    selectedLayerIndex = instance->GetEmitter()->RemoveLayer(selectedLayer);
+}
 
-    instance->GetEmitter()->RemoveLayer(selectedLayer);
+void CommandRemoveParticleEmitterLayer::Undo()
+{
+    DVASSERT(selectedLayerIndex != -1);
+    instance->GetEmitter()->InsertLayer(selectedLayer, selectedLayerIndex);
+}
+
+CommandRemoveParticleEmitterLayer::~CommandRemoveParticleEmitterLayer()
+{
+    SafeRelease(selectedLayer);
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CommandRemoveParticleEmitterLayer)
@@ -554,47 +719,201 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandCloneParticleEmitterLayer)
     .End();
 }
 
-CommandAddParticleEmitterForce::CommandAddParticleEmitterForce(ParticleLayer* layer)
+CommandAddParticleEmitterSimplifiedForce::CommandAddParticleEmitterSimplifiedForce(ParticleEffectComponent* component_, ParticleLayer* layer)
     : CommandAction()
+    , component(component_)
     , selectedLayer(layer)
 {
 }
 
-void CommandAddParticleEmitterForce::Redo()
+void CommandAddParticleEmitterSimplifiedForce::Redo()
 {
     if (selectedLayer == nullptr)
         return;
 
     // Add the new Force to the Layer.
-    ParticleForce* newForce = new ParticleForce(RefPtr<PropertyLine<Vector3>>(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32>>(NULL));
-    selectedLayer->AddForce(newForce);
+    ParticleForceSimplified* newForce = new ParticleForceSimplified(RefPtr<PropertyLine<Vector3>>(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32>>(NULL));
+    selectedLayer->AddSimplifiedForce(newForce);
     newForce->Release();
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleEmitterForce)
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleEmitterSimplifiedForce)
 {
-    ReflectionRegistrator<CommandAddParticleEmitterForce>::Begin()
+    ReflectionRegistrator<CommandAddParticleEmitterSimplifiedForce>::Begin()
     .End();
 }
 
-CommandRemoveParticleEmitterForce::CommandRemoveParticleEmitterForce(ParticleLayer* layer, ParticleForce* force)
-    : CommandAction()
+CommandRemoveParticleEmitterSimplifiedForce::CommandRemoveParticleEmitterSimplifiedForce(ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForceSimplified* force)
+    : RECommand("Remove force")
+    , component(component_)
     , selectedLayer(layer)
-    , selectedForce(force)
+    , selectedForce(SafeRetain(force))
 {
 }
 
-void CommandRemoveParticleEmitterForce::Redo()
+CommandRemoveParticleEmitterSimplifiedForce::~CommandRemoveParticleEmitterSimplifiedForce()
+{
+    SafeRelease(selectedForce);
+}
+
+void CommandRemoveParticleEmitterSimplifiedForce::Redo()
 {
     if ((selectedLayer == nullptr) || (selectedForce == nullptr))
         return;
 
+    selectedLayer->RemoveSimplifiedForce(selectedForce);
+}
+
+void CommandRemoveParticleEmitterSimplifiedForce::Undo()
+{
+    if ((selectedLayer == nullptr) || (selectedForce == nullptr))
+        return;
+
+    selectedLayer->AddSimplifiedForce(selectedForce);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandRemoveParticleEmitterSimplifiedForce)
+{
+    ReflectionRegistrator<CommandRemoveParticleEmitterSimplifiedForce>::Begin()
+    .End();
+}
+
+CommandAddParticleDrag::CommandAddParticleDrag(ParticleEffectComponent* component_, ParticleLayer* layer)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticleDrag::Redo()
+{
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::DRAG_FORCE);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleDrag)
+{
+    ReflectionRegistrator<CommandAddParticleDrag>::Begin()
+    .End();
+}
+
+CommandAddParticleVortex::CommandAddParticleVortex(ParticleEffectComponent* component_, ParticleLayer* layer)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticleVortex::Redo()
+{
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::VORTEX);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleVortex)
+{
+    ReflectionRegistrator<CommandAddParticleVortex>::Begin()
+    .End();
+}
+
+CommandAddParticleGravity::CommandAddParticleGravity(ParticleEffectComponent* component_, ParticleLayer* layer)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticleGravity::Redo()
+{
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::GRAVITY);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleGravity)
+{
+    ReflectionRegistrator<CommandAddParticleGravity>::Begin()
+    .End();
+}
+
+CommandAddParticleWind::CommandAddParticleWind(ParticleEffectComponent* component_, ParticleLayer* layer)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticleWind::Redo()
+{
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::WIND);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticleWind)
+{
+    ReflectionRegistrator<CommandAddParticleWind>::Begin()
+    .End();
+}
+
+CommandAddParticlePointGravity::CommandAddParticlePointGravity(ParticleEffectComponent* component_, ParticleLayer* layer)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticlePointGravity::Redo()
+{
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::POINT_GRAVITY);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticlePointGravity)
+{
+    ReflectionRegistrator<CommandAddParticlePointGravity>::Begin()
+    .End();
+}
+
+CommandAddParticlePlaneCollision::CommandAddParticlePlaneCollision(ParticleEffectComponent* component_, ParticleLayer* layer)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+{
+}
+
+void CommandAddParticlePlaneCollision::Redo()
+{
+    ParticleEditorCommandsDetail::AddNewForceToLayer(selectedLayer, ParticleForce::eType::PLANE_COLLISION);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandAddParticlePlaneCollision)
+{
+    ReflectionRegistrator<CommandAddParticlePlaneCollision>::Begin()
+    .End();
+}
+
+CommandRemoveParticleForce::CommandRemoveParticleForce(ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForce* force)
+    : RECommand()
+    , component(component_)
+    , selectedLayer(layer)
+    , selectedForce(SafeRetain(force))
+{
+    DVASSERT(selectedLayer != nullptr);
+    DVASSERT(selectedForce != nullptr);
+}
+
+void CommandRemoveParticleForce::Redo()
+{
     selectedLayer->RemoveForce(selectedForce);
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(CommandRemoveParticleEmitterForce)
+void CommandRemoveParticleForce::Undo()
 {
-    ReflectionRegistrator<CommandRemoveParticleEmitterForce>::Begin()
+    selectedLayer->AddForce(selectedForce);
+}
+
+CommandRemoveParticleForce::~CommandRemoveParticleForce()
+{
+    SafeRelease(selectedForce);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandRemoveParticleForce)
+{
+    ReflectionRegistrator<CommandRemoveParticleForce>::Begin()
     .End();
 }
 
@@ -697,6 +1016,52 @@ void CommandSaveInnerParticleEmitterToYaml::Redo()
 DAVA_VIRTUAL_REFLECTION_IMPL(CommandSaveInnerParticleEmitterToYaml)
 {
     ReflectionRegistrator<CommandSaveInnerParticleEmitterToYaml>::Begin()
+    .End();
+}
+
+CommandCloneParticleForce::CommandCloneParticleForce(ParticleEffectComponent* component_, ParticleLayer* layer, ParticleForce* force)
+    : CommandAction()
+    , component(component_)
+    , selectedLayer(layer)
+    , selectedForce(force)
+{
+}
+
+void CommandCloneParticleForce::Redo()
+{
+    if ((selectedLayer == nullptr) || (selectedForce == nullptr))
+        return;
+
+    ScopedPtr<ParticleForce> clonedForce(selectedForce->Clone());
+    clonedForce->forceName = selectedForce->forceName + " Clone";
+    selectedLayer->AddForce(clonedForce);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandCloneParticleForce)
+{
+    ReflectionRegistrator<CommandCloneParticleForce>::Begin()
+    .End();
+}
+
+CommandReloadEmitters::CommandReloadEmitters(ParticleEffectComponent* component_)
+    : CommandAction()
+    , component(component_)
+{
+}
+
+void CommandReloadEmitters::Redo()
+{
+    component->ReloadEmitters();
+}
+
+ParticleEffectComponent* CommandReloadEmitters::GetComponent() const
+{
+    return component;
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(CommandReloadEmitters)
+{
+    ReflectionRegistrator<CommandReloadEmitters>::Begin()
     .End();
 }
 } // namespace DAVA

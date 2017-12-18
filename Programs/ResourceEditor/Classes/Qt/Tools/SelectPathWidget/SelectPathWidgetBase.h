@@ -1,12 +1,16 @@
-#ifndef __RESOURCEEDITORQT__SELECTPATHWIDGET__
-#define __RESOURCEEDITORQT__SELECTPATHWIDGET__
+#pragma once
+
+#include "Classes/Selection/Selectable.h"
+
+#include <TArc/Qt/QtString.h>
+
+#include <Base/BaseTypes.h>
 
 #include <QWidget>
 #include <QMimeData>
-#include <qlineedit.h>
-#include <qtoolbutton.h>
+#include <QLineEdit>
+#include <QToolButton>
 
-#include "DAVAEngine.h"
 namespace DAVA
 {
 class SceneEditor2;
@@ -66,7 +70,7 @@ protected:
 
     virtual void Init(DAVA::String& _openDialogDefualtPath, DAVA::String& _relativPath, DAVA::String _openFileDialogTitle, DAVA::String _fileFormatDescriotion);
 
-    virtual void HandlePathSelected(DAVA::String name);
+    virtual void HandlePathSelected(const DAVA::String& name);
 
     DAVA::String ConvertToRelativPath(const DAVA::String& path);
 
@@ -85,10 +89,15 @@ protected:
     DAVA::List<DAVA::String> allowedFormatsList;
 
     DAVA::String openFileDialogTitle;
-
-    QMimeData mimeData;
-
     bool checkForProjectPath;
+
+    // droppedData
+    QString selectedPath;
+    Selectable droppedObject;
+
+    bool IsMimeDataCanBeDropped(const QMimeData* data) const;
+
+    static const QString MIME_URI_LIST_NAME;
 
 protected slots:
 
@@ -100,5 +109,3 @@ private:
     QToolButton* clearButton;
     QToolButton* openButton;
 };
-
-#endif /* defined(__RESOURCEEDITORQT__SELECTPATHWIDGET__) */

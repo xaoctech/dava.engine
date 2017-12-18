@@ -7,11 +7,15 @@
 #include "Physics/CapsuleShapeComponent.h"
 #include "Physics/SphereShapeComponent.h"
 #include "Physics/PlaneShapeComponent.h"
+#include "Physics/StaticBodyComponent.h"
+#include "Physics/DynamicBodyComponent.h"
 #include "Physics/PhysicsGeometryCache.h"
+#include "Physics/PhysicsUtils.h"
 #include "Physics/BoxCharacterControllerComponent.h"
 #include "Physics/CapsuleCharacterControllerComponent.h"
 #include "Physics/CollisionSingleComponent.h"
 #include "Physics/Private/PhysicsMath.h"
+#include "Physics/PhysicsVehiclesSubsystem.h"
 
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
@@ -70,6 +74,15 @@ void UpdateGlobalPose(physx::PxRigidActor* actor, const Matrix4& m, Vector3& sca
     actor->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
 }
 
+void UpdateShapeLocalPose(physx::PxShape* shape, const Matrix4& m)
+{
+    Vector3 position;
+    Vector3 scale;
+    Quaternion rotation;
+    m.Decomposition(position, scale, rotation);
+    shape->setLocalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(position), PhysicsMath::QuaternionToPxQuat(rotation)));
+}
+
 bool IsCollisionShapeType(uint32 componentType)
 {
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
@@ -116,6 +129,33 @@ Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
     return scale;
 }
 
+PhysicsComponent* GetParentPhysicsComponent(Entity* entity)
+{
+    PhysicsComponent* physicsComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT));
+    if (physicsComponent == nullptr)
+    {
+        physicsComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT));
+    }
+
+    if (physicsComponent != nullptr)
+    {
+        return physicsComponent;
+    }
+    else
+    {
+        // Move up in the hierarchy
+        Entity* parent = entity->GetParent();
+        if (parent != nullptr)
+        {
+            return GetParentPhysicsComponent(parent);
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+}
+
 const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
 } // namespace
 
@@ -151,6 +191,11 @@ physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
     physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | // notify about a first contact
     physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | // notify about ongoing contacts
     physx::PxPairFlag::eNOTIFY_CONTACT_POINTS; // report contact points
+
+    if (CollisionShapeComponent::IsCCDEnabled(filterData0) || CollisionShapeComponent::IsCCDEnabled(filterData1))
+    {
+        pairFlags |= physx::PxPairFlag::eDETECT_CCD_CONTACT; // report continuous collision detection contacts
+    }
 
     return physx::PxFilterFlag::eDEFAULT;
 }
@@ -270,6 +315,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 
     physicsScene = physics->CreateScene(sceneConfig, FilterShader, &simulationEventCallback);
 
+    vehiclesSubsystem = new PhysicsVehiclesSubsystem(scene, physicsScene);
     controllerManager = PxCreateControllerManager(*physicsScene);
 }
 
@@ -279,6 +325,9 @@ PhysicsSystem::~PhysicsSystem()
     {
         FetchResults(true);
     }
+
+    SafeDelete(vehiclesSubsystem);
+
     DVASSERT(simulationBlock != nullptr);
     SafeDelete(geometryCache);
 
@@ -322,6 +371,8 @@ void PhysicsSystem::RegisterEntity(Entity* entity)
     }
 
     processEntity(entity, Component::RENDER_COMPONENT);
+
+    vehiclesSubsystem->RegisterEntity(entity);
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
@@ -355,6 +406,8 @@ void PhysicsSystem::UnregisterEntity(Entity* entity)
     }
 
     processEntity(entity, Component::RENDER_COMPONENT);
+
+    vehiclesSubsystem->UnregisterEntity(entity);
 }
 
 void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
@@ -385,6 +438,8 @@ void PhysicsSystem::RegisterComponent(Entity* entity, Component* component)
             waitRenderInfoComponents.erase(iter);
         }
     }
+
+    vehiclesSubsystem->RegisterComponent(entity, component);
 }
 
 void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
@@ -413,6 +468,23 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
             }
             physicsScene->removeActor(*actor);
             physicsComponent->ReleasePxActor();
+        }
+
+        if (componentType == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            size_t index = 0;
+            while (index < forces.size())
+            {
+                PendingForce& force = forces[index];
+                if (force.component == component)
+                {
+                    RemoveExchangingWithLast(forces, index);
+                }
+                else
+                {
+                    ++index;
+                }
+            }
         }
     }
 
@@ -471,6 +543,8 @@ void PhysicsSystem::UnregisterComponent(Entity* entity, Component* component)
         collisionProcess(Component::MESH_SHAPE_COMPONENT);
         collisionProcess(Component::HEIGHT_FIELD_SHAPE_COMPONENT);
     }
+
+    vehiclesSubsystem->UnregisterComponent(entity, component);
 }
 
 void PhysicsSystem::PrepareForRemove()
@@ -531,11 +605,13 @@ void PhysicsSystem::Process(float32 timeElapsed)
         }
         else
         {
+            ApplyForces();
             DrawDebugInfo();
 
+            vehiclesSubsystem->Simulate(timeElapsed);
             MoveCharacterControllers(timeElapsed);
-
             physicsScene->simulate(timeElapsed, nullptr, simulationBlock, simulationBlockSize);
+
             isSimulationRunning = true;
         }
     }
@@ -553,6 +629,8 @@ void PhysicsSystem::SetSimulationEnabled(bool isEnabled)
         }
 
         isSimulationEnabled = isEnabled;
+
+        vehiclesSubsystem->OnSimulationEnabled(isSimulationEnabled);
     }
 }
 
@@ -584,9 +662,6 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
         physx::PxU32 actorsCount = 0;
         physx::PxActor** actors = physicsScene->getActiveActors(actorsCount);
 
-        Vector<Entity*> activeEntities;
-        activeEntities.reserve(actorsCount);
-
         for (physx::PxU32 i = 0; i < actorsCount; ++i)
         {
             physx::PxActor* actor = actors[i];
@@ -601,20 +676,28 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
                 DVASSERT(rigidActor != nullptr);
 
+                // Update entity's transform and its shapes down the hierarchy recursively
+
                 Matrix4 scaleMatrix = Matrix4::MakeScale(component->currentScale);
-
                 entity->SetWorldTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
-                activeEntities.push_back(entity);
-            }
-        }
 
-        Scene* scene = GetScene();
-        if (scene->transformSingleComponent != nullptr)
-        {
-            for (Entity* entity : activeEntities)
-            {
-                DVASSERT(entity->GetScene() == scene);
-                scene->transformSingleComponent->worldTransformChanged.Push(entity);
+                Vector<Entity*> children;
+                entity->GetChildEntitiesWithCondition(children, [component](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == component; });
+
+                for (Entity* child : children)
+                {
+                    DVASSERT(child != nullptr);
+
+                    Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(child);
+                    if (shapes.size() > 0)
+                    {
+                        // Update entity using just first shape for now
+                        CollisionShapeComponent* shape = shapes[0];
+
+                        Matrix4 scaleMatrix = Matrix4::MakeScale(shape->scale);
+                        child->SetLocalTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
+                    }
+                }
             }
         }
     }
@@ -684,7 +767,7 @@ void PhysicsSystem::InitNewObjects()
         component->currentScale = scale;
 
         Entity* entity = component->GetEntity();
-        AttachShape(entity, component, scale);
+        AttachShapesRecursively(entity, component, scale);
 
         physicsScene->addActor(*(component->GetPxActor()));
         physicsComponents.push_back(component);
@@ -701,19 +784,14 @@ void PhysicsSystem::InitNewObjects()
             Vector3 position, scale, rotation;
             worldTransform.Decomposition(position, scale, rotation);
 
-            PhysicsComponent* staticBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::STATIC_BODY_COMPONENT, 0));
-            if (staticBodyComponent != nullptr)
+            PhysicsComponent* physicsComponent = PhysicsSystemDetail::GetParentPhysicsComponent(entity);
+            if (physicsComponent != nullptr)
             {
-                AttachShape(staticBodyComponent, component, scale);
-            }
-            else
-            {
-                PhysicsComponent* dynamicBodyComponent = static_cast<PhysicsComponent*>(entity->GetComponent(Component::DYNAMIC_BODY_COMPONENT, 0));
-                if (dynamicBodyComponent != nullptr)
-                {
-                    AttachShape(dynamicBodyComponent, component, scale);
+                AttachShape(physicsComponent, component, scale);
 
-                    physx::PxRigidDynamic* dynamicActor = dynamicBodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+                if (physicsComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
+                {
+                    physx::PxRigidDynamic* dynamicActor = physicsComponent->GetPxActor()->is<physx::PxRigidDynamic>();
                     DVASSERT(dynamicActor != nullptr);
                     if (dynamicActor->getActorFlags().isSet(physx::PxActorFlag::eDISABLE_SIMULATION) == false &&
                         dynamicActor->getRigidBodyFlags().isSet(physx::PxRigidBodyFlag::eKINEMATIC) == false)
@@ -751,7 +829,7 @@ void PhysicsSystem::InitNewObjects()
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
             desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
-            desc.material = physics->GetDefaultMaterial();
+            desc.material = physics->GetMaterial(FastName());
             DVASSERT(desc.isValid());
 
             controller = controllerManager->createController(desc);
@@ -764,7 +842,7 @@ void PhysicsSystem::InitNewObjects()
             desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
-            desc.material = physics->GetDefaultMaterial();
+            desc.material = physics->GetMaterial(FastName());
             desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
             DVASSERT(desc.isValid());
 
@@ -797,7 +875,7 @@ void PhysicsSystem::AttachShape(PhysicsComponent* bodyComponent, CollisionShapeC
     }
 }
 
-void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale)
+void PhysicsSystem::AttachShapesRecursively(Entity* entity, PhysicsComponent* bodyComponent, const Vector3& scale)
 {
     for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
     {
@@ -805,6 +883,18 @@ void PhysicsSystem::AttachShape(Entity* entity, PhysicsComponent* bodyComponent,
         {
             AttachShape(bodyComponent, static_cast<CollisionShapeComponent*>(entity->GetComponent(type, i)), scale);
         }
+    }
+
+    const int32 childrenCount = entity->GetChildrenCount();
+    for (int32 i = 0; i < childrenCount; ++i)
+    {
+        Entity* child = entity->GetChild(i);
+        if (child->GetComponent(Component::DYNAMIC_BODY_COMPONENT) || child->GetComponent(Component::STATIC_BODY_COMPONENT))
+        {
+            continue;
+        }
+
+        AttachShapesRecursively(child, bodyComponent, scale);
     }
 }
 
@@ -817,24 +907,24 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     case Component::BOX_SHAPE_COMPONENT:
     {
         BoxShapeComponent* boxShape = static_cast<BoxShapeComponent*>(component);
-        shape = physics->CreateBoxShape(boxShape->GetHalfSize());
+        shape = physics->CreateBoxShape(boxShape->GetHalfSize(), component->GetMaterialName());
     }
     break;
     case Component::CAPSULE_SHAPE_COMPONENT:
     {
         CapsuleShapeComponent* capsuleShape = static_cast<CapsuleShapeComponent*>(component);
-        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight());
+        shape = physics->CreateCapsuleShape(capsuleShape->GetRadius(), capsuleShape->GetHalfHeight(), component->GetMaterialName());
     }
     break;
     case Component::SPHERE_SHAPE_COMPONENT:
     {
         SphereShapeComponent* sphereShape = static_cast<SphereShapeComponent*>(component);
-        shape = physics->CreateSphereShape(sphereShape->GetRadius());
+        shape = physics->CreateSphereShape(sphereShape->GetRadius(), component->GetMaterialName());
     }
     break;
     case Component::PLANE_SHAPE_COMPONENT:
     {
-        shape = physics->CreatePlaneShape();
+        shape = physics->CreatePlaneShape(component->GetMaterialName());
     }
     break;
     case Component::CONVEX_HULL_SHAPE_COMPONENT:
@@ -844,7 +934,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         Vector3 scale = AccumulateMeshInfo(entity, groups);
         if (groups.empty() == false)
         {
-            shape = physics->CreateConvexHullShape(std::move(groups), scale, geometryCache);
+            shape = physics->CreateConvexHullShape(std::move(groups), scale, component->GetMaterialName(), geometryCache);
         }
         else
         {
@@ -859,7 +949,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         Vector3 scale = AccumulateMeshInfo(entity, groups);
         if (groups.empty() == false)
         {
-            shape = physics->CreateMeshShape(std::move(groups), scale, geometryCache);
+            shape = physics->CreateMeshShape(std::move(groups), scale, component->GetMaterialName(), geometryCache);
         }
         else
         {
@@ -874,7 +964,7 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
         if (landscape != nullptr)
         {
             Matrix4 localPose;
-            shape = physics->CreateHeightField(landscape, localPose);
+            shape = physics->CreateHeightField(landscape, component->GetMaterialName(), localPose);
             component->SetLocalPose(localPose);
         }
         else
@@ -891,6 +981,13 @@ physx::PxShape* PhysicsSystem::CreateShape(CollisionShapeComponent* component, P
     if (shape != nullptr)
     {
         component->SetPxShape(shape);
+
+        // It's user's responsibility to setup drivable surfaces to work with vehicles
+        // For simplicity do it for every landscape by default
+        if (component->GetType() == Component::HEIGHT_FIELD_SHAPE_COMPONENT)
+        {
+            vehiclesSubsystem->SetupDrivableSurface(component);
+        }
     }
 
     return shape;
@@ -939,6 +1036,17 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
             {
                 physx::PxShape* shape = nullptr;
                 rigidActor->getShapes(&shape, 1, i);
+
+                // Update local pose for nested shapes
+
+                CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
+                DVASSERT(shapeComponent->GetEntity() != nullptr);
+                if (shapeComponent->GetEntity() != e)
+                {
+                    PhysicsSystemDetail::UpdateShapeLocalPose(shape, shapeComponent->GetEntity()->GetLocalTransform());
+                }
+
+                // Update geometry scale
 
                 physx::PxGeometryHolder geomHolder = shape->getGeometry();
 
@@ -1016,13 +1124,21 @@ bool PhysicsSystem::Raycast(const Vector3& origin, const Vector3& direction, flo
                                  static_cast<PxReal>(distance), callback);
 }
 
+PhysicsVehiclesSubsystem* PhysicsSystem::GetVehiclesSystem()
+{
+    return vehiclesSubsystem;
+}
+
 void PhysicsSystem::UpdateComponents()
 {
+    PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     for (CollisionShapeComponent* shapeComponent : collisionComponentsUpdatePending)
     {
         shapeComponent->UpdateLocalProperties();
         physx::PxShape* shape = shapeComponent->GetPxShape();
         DVASSERT(shape != nullptr);
+        physx::PxMaterial* material = module->GetMaterial(shapeComponent->GetMaterialName());
+        shape->setMaterials(&material, 1);
         physx::PxActor* actor = shape->getActor();
         if (actor != nullptr)
         {
@@ -1035,26 +1151,51 @@ void PhysicsSystem::UpdateComponents()
     {
         bodyComponent->UpdateLocalProperties();
 
-        physx::PxRigidDynamic* dynamicActor = bodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
-        if (dynamicActor != nullptr)
+        // Recalculate mass
+        // Ignore vehicles, VehiclesSubsystem is responsible for setting correct values
+
+        Entity* entity = bodyComponent->GetEntity();
+        if (entity->GetComponent(Component::VEHICLE_CAR_COMPONENT) == nullptr &&
+            entity->GetComponent(Component::VEHICLE_TANK_COMPONENT) == nullptr)
         {
-            physx::PxU32 shapesCount = dynamicActor->getNbShapes();
-            if (shapesCount > 0)
+            physx::PxRigidDynamic* dynamicActor = bodyComponent->GetPxActor()->is<physx::PxRigidDynamic>();
+            if (dynamicActor != nullptr)
             {
-                Vector<physx::PxShape*> shapes(shapesCount, nullptr);
-                physx::PxU32 extractedShapesCount = dynamicActor->getShapes(shapes.data(), shapesCount);
-                DVASSERT(shapesCount == extractedShapesCount);
-
-                Vector<physx::PxReal> masses;
-                masses.reserve(shapesCount);
-
-                for (physx::PxShape* shape : shapes)
+                physx::PxU32 shapesCount = dynamicActor->getNbShapes();
+                if (shapesCount > 0)
                 {
-                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
-                    masses.push_back(shapeComponent->GetMass());
-                }
+                    Vector<physx::PxShape*> shapes(shapesCount, nullptr);
+                    physx::PxU32 extractedShapesCount = dynamicActor->getShapes(shapes.data(), shapesCount);
+                    DVASSERT(shapesCount == extractedShapesCount);
 
-                physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
+                    Vector<physx::PxReal> masses;
+                    masses.reserve(shapesCount);
+
+                    for (physx::PxShape* shape : shapes)
+                    {
+                        CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
+                        masses.push_back(shapeComponent->GetMass());
+                    }
+
+                    physx::PxRigidBodyExt::setMassAndUpdateInertia(*dynamicActor, masses.data(), static_cast<physx::PxU32>(masses.size()));
+                }
+            }
+        }
+
+        if (bodyComponent->GetType() == Component::DYNAMIC_BODY_COMPONENT)
+        {
+            DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(bodyComponent);
+            bool isCCDEnabled = dynamicBody->IsCCDEnabled();
+
+            physx::PxRigidDynamic* actor = dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>();
+            DVASSERT(actor != nullptr);
+
+            physx::PxU32 shapesCount = actor->getNbShapes();
+            for (physx::PxU32 shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex)
+            {
+                physx::PxShape* shape = nullptr;
+                actor->getShapes(&shape, 1, shapeIndex);
+                CollisionShapeComponent::SetCCDEnabled(shape, isCCDEnabled);
             }
         }
     }
@@ -1137,10 +1278,35 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
             DVASSERT(entity != nullptr);
 
             Matrix4 transform = entity->GetLocalTransform();
-            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getPosition()));
+            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getFootPosition()));
             entity->SetLocalTransform(transform);
         }
     }
+}
+
+void PhysicsSystem::AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode)
+{
+    PendingForce pendingForce;
+    pendingForce.component = component;
+    pendingForce.force = force;
+    pendingForce.mode = mode;
+
+    forces.push_back(pendingForce);
+}
+
+void PhysicsSystem::ApplyForces()
+{
+    for (const PendingForce& force : forces)
+    {
+        physx::PxActor* actor = force.component->GetPxActor();
+        DVASSERT(actor != nullptr);
+        physx::PxRigidBody* rigidBody = actor->is<physx::PxRigidBody>();
+        DVASSERT(rigidBody != nullptr);
+
+        rigidBody->addForce(PhysicsMath::Vector3ToPxVec3(force.force), force.mode);
+    }
+
+    forces.clear();
 }
 
 } // namespace DAVA

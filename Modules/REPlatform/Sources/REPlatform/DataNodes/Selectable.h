@@ -5,10 +5,11 @@
 #include <Base/Any.h>
 #include <Base/Type.h>
 #include <Base/TypeInheritance.h>
+#include <Debug/DVAssert.h>
 #include <Reflection/ReflectedType.h>
 #include <Scene3D/Entity.h>
 
-#include <type_traits>
+#include <functional>
 
 namespace DAVA
 {
@@ -60,6 +61,8 @@ public:
     // added for compatibility with sorted containers
     bool operator<(const Selectable& other) const;
 
+    const ReflectedType* GetObjectType() const;
+
     template <typename T>
     bool CanBeCastedTo() const;
 
@@ -93,7 +96,10 @@ private:
 template <typename T>
 bool Selectable::CanBeCastedTo() const
 {
-    DVASSERT(ContainsObject() == true);
+    if (ContainsObject() == false)
+    {
+        return false;
+    }
     DVASSERT(object.GetType()->IsPointer());
     const ReflectedType* t = GetValueReflectedType(object);
     DVASSERT(t != nullptr);
@@ -154,3 +160,17 @@ inline bool Selectable::ContainsObject() const
     return object.IsEmpty() == false;
 }
 } // namespace DAVA
+
+namespace std
+{
+template <>
+struct hash<DAVA::Selectable>
+{
+    size_t operator()(const DAVA::Selectable& object) const
+    {
+        const DAVA::Any& obj = object.GetContainedObject();
+        DVASSERT(obj.GetType()->IsPointer() == true);
+        return reinterpret_cast<size_t>(obj.Get<void*>());
+    }
+};
+} // namespace std

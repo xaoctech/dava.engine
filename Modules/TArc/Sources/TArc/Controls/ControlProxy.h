@@ -200,7 +200,7 @@ protected:
     template <typename Enum>
     FastName GetFieldName(Enum fieldMark) const
     {
-        return descriptor.fieldNames[static_cast<size_t>(fieldMark)].name;
+        return descriptor.GetName(fieldMark);
     }
 
     virtual void UpdateControl(const ControlDescriptor& descriptor) = 0;
@@ -208,6 +208,12 @@ protected:
     template <typename Enum>
     bool IsValueReadOnly(const ControlDescriptor& descriptor, Enum valueRole, Enum readOnlyRole) const
     {
+        Any constValue = descriptor.GetConstValue(valueRole);
+        if (constValue.IsEmpty() == false)
+        {
+            return true;
+        }
+
         Reflection fieldValue = model.GetField(descriptor.GetName(valueRole));
         DVASSERT(fieldValue.IsValid());
 
@@ -230,6 +236,12 @@ protected:
     template <typename CastType, typename Enum>
     CastType GetFieldValue(Enum role, const CastType& defaultValue) const
     {
+        DAVA::Any constValue = descriptor.GetConstValue(role);
+        if (constValue.IsEmpty() == false)
+        {
+            return constValue.Cast<CastType>(defaultValue);
+        }
+
         const FastName& fieldName = GetFieldName(role);
         if (fieldName.IsValid() == true)
         {

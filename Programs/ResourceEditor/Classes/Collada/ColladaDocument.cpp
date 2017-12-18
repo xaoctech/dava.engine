@@ -22,7 +22,7 @@
 
 namespace DAVA
 {
-eColladaErrorCodes ColladaDocument::Open(const char* filename)
+eColladaErrorCodes ColladaDocument::Open(const char* filename, bool animationsOnly)
 {
     document = FCollada::NewTopDocument();
     bool val = FCollada::LoadDocumentFromFile(document, FUStringConversion::ToFString(filename));
@@ -39,77 +39,77 @@ eColladaErrorCodes ColladaDocument::Open(const char* filename)
 
     colladaScene = new ColladaScene(loadedRootNode);
 
-    FCDGeometryLibrary* geometryLibrary = document->GetGeometryLibrary();
-
-    DAVA::Logger::FrameworkDebug("* Export geometry: %d\n", (int)geometryLibrary->GetEntityCount());
-    for (int entityIndex = 0; entityIndex < (int)geometryLibrary->GetEntityCount(); ++entityIndex)
+    if (!animationsOnly)
     {
-        FCDGeometry* geometry = geometryLibrary->GetEntity(entityIndex);
-        if (geometry->IsMesh())
+        FCDGeometryLibrary* geometryLibrary = document->GetGeometryLibrary();
+
+        DAVA::Logger::FrameworkDebug("* Export geometry: %d\n", (int)geometryLibrary->GetEntityCount());
+        for (int entityIndex = 0; entityIndex < (int)geometryLibrary->GetEntityCount(); ++entityIndex)
         {
-            FCDGeometryMesh* geometryMesh = geometry->GetMesh();
-            colladaScene->colladaMeshes.push_back(new ColladaMesh(geometryMesh, 0, 0));
+            FCDGeometry* geometry = geometryLibrary->GetEntity(entityIndex);
+            if (geometry->IsMesh())
+            {
+                FCDGeometryMesh* geometryMesh = geometry->GetMesh();
+                colladaScene->colladaMeshes.push_back(new ColladaMesh(geometryMesh, 0, 0));
+            }
+        }
+
+        FCDImageLibrary* imageLibrary = document->GetImageLibrary();
+        for (int entityIndex = 0; entityIndex < (int)imageLibrary->GetEntityCount(); ++entityIndex)
+        {
+            FCDImage* texture = imageLibrary->GetEntity(entityIndex);
+            colladaScene->colladaTextures.push_back(new ColladaTexture(texture));
+        }
+
+        FCDLightLibrary* lightLibrary = document->GetLightLibrary();
+
+        for (int entityIndex = 0; entityIndex < (int)lightLibrary->GetEntityCount(); ++entityIndex)
+        {
+            FCDLight* light = lightLibrary->GetEntity(entityIndex);
+            colladaScene->colladaLights.push_back(new ColladaLight(light));
+        }
+
+        FCDMaterialLibrary* materialLibrary = document->GetMaterialLibrary();
+
+        for (int entityIndex = 0; entityIndex < (int)materialLibrary->GetEntityCount(); ++entityIndex)
+        {
+            FCDMaterial* material = materialLibrary->GetEntity(entityIndex);
+            colladaScene->colladaMaterials.push_back(new ColladaMaterial(colladaScene, material));
+        }
+
+        FCDCameraLibrary* cameraLibrary = document->GetCameraLibrary();
+        DAVA::Logger::FrameworkDebug("Cameras:%d\n", cameraLibrary->GetEntityCount());
+
+        for (int entityIndex = 0; entityIndex < (int)cameraLibrary->GetEntityCount(); ++entityIndex)
+        {
+            FCDCamera* cam = cameraLibrary->GetEntity(entityIndex);
+            colladaScene->colladaCameras.push_back(new ColladaCamera(cam));
+        }
+
+        FCDControllerLibrary* controllerLibrary = document->GetControllerLibrary();
+
+        DAVA::Logger::FrameworkDebug("* Export animation controllers: %d\n", controllerLibrary->GetEntityCount());
+        for (int entityIndex = 0; entityIndex < (int)controllerLibrary->GetEntityCount(); ++entityIndex)
+        {
+            FCDController* controller = controllerLibrary->GetEntity(entityIndex);
+            colladaScene->colladaSkinnedMeshes.push_back(new ColladaSkinnedMesh(controller));
+        }
+
+        colladaScene->ExportScene();
+
+        for (int k = 0; k < (int)colladaScene->colladaSkinnedMeshes.size(); ++k)
+        {
+            colladaScene->colladaSkinnedMeshes[k]->BuildJoints(colladaScene->rootNode);
         }
     }
-
-    //	ilInit();
-    //	iluInit();
-    //
-    //	ilEnable(IL_ORIGIN_SET);
-    //	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
-
-    FCDImageLibrary* imageLibrary = document->GetImageLibrary();
-    for (int entityIndex = 0; entityIndex < (int)imageLibrary->GetEntityCount(); ++entityIndex)
+    else
     {
-        FCDImage* texture = imageLibrary->GetEntity(entityIndex);
-        colladaScene->colladaTextures.push_back(new ColladaTexture(texture));
-    }
-    //	ilShutDown();
-
-    FCDLightLibrary* lightLibrary = document->GetLightLibrary();
-
-    for (int entityIndex = 0; entityIndex < (int)lightLibrary->GetEntityCount(); ++entityIndex)
-    {
-        FCDLight* light = lightLibrary->GetEntity(entityIndex);
-        colladaScene->colladaLights.push_back(new ColladaLight(light));
-    }
-
-    FCDMaterialLibrary* materialLibrary = document->GetMaterialLibrary();
-
-    for (int entityIndex = 0; entityIndex < (int)materialLibrary->GetEntityCount(); ++entityIndex)
-    {
-        FCDMaterial* material = materialLibrary->GetEntity(entityIndex);
-        colladaScene->colladaMaterials.push_back(new ColladaMaterial(colladaScene, material));
-    }
-
-    FCDCameraLibrary* cameraLibrary = document->GetCameraLibrary();
-    DAVA::Logger::FrameworkDebug("Cameras:%d\n", cameraLibrary->GetEntityCount());
-
-    for (int entityIndex = 0; entityIndex < (int)cameraLibrary->GetEntityCount(); ++entityIndex)
-    {
-        FCDCamera* cam = cameraLibrary->GetEntity(entityIndex);
-        colladaScene->colladaCameras.push_back(new ColladaCamera(cam));
+        colladaScene->ExportScene();
     }
 
     FCDAnimationLibrary* animationLibrary = document->GetAnimationLibrary();
     FCDAnimationClipLibrary* animationClipLibrary = document->GetAnimationClipLibrary();
     DAVA::Logger::FrameworkDebug("[A] Animations:%d Clips:%d\n", animationLibrary->GetEntityCount(), animationClipLibrary->GetEntityCount());
-
-    FCDControllerLibrary* controllerLibrary = document->GetControllerLibrary();
-
-    DAVA::Logger::FrameworkDebug("* Export animation controllers: %d\n", controllerLibrary->GetEntityCount());
-    for (int entityIndex = 0; entityIndex < (int)controllerLibrary->GetEntityCount(); ++entityIndex)
-    {
-        FCDController* controller = controllerLibrary->GetEntity(entityIndex);
-        colladaScene->colladaSkinnedMeshes.push_back(new ColladaSkinnedMesh(controller));
-    }
-
-    colladaScene->ExportScene();
-
-    for (int k = 0; k < (int)colladaScene->colladaSkinnedMeshes.size(); ++k)
-    {
-        colladaScene->colladaSkinnedMeshes[k]->BuildJoints(colladaScene->rootNode);
-    }
 
     ExportNodeAnimations(document, document->GetVisualSceneInstance());
     colladaScene->SetExclusiveAnimation(0);
@@ -198,6 +198,7 @@ void ColladaDocument::GetAnimationTimeInfo(FCDocument* document, float32& retTim
 
 void ColladaDocument::Close()
 {
+    SafeDelete(colladaScene);
     SAFE_RELEASE(document);
 }
 

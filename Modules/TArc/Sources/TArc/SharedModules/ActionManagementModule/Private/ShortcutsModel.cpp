@@ -2,8 +2,17 @@
 
 namespace DAVA
 {
+namespace ShortcursModelDetails
+{
+bool IsContextCoflicted(Qt::ShortcutContext left, Qt::ShortcutContext right)
+{
+    return left == Qt::WindowShortcut || left == Qt::ApplicationShortcut || right == Qt::WindowShortcut || right == Qt::ApplicationShortcut;
+}
+} // namespace ShortcursModelDetails
+
 void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
 {
+    using namespace ShortcursModelDetails;
     beginResetModel();
     blocks.clear();
     actions.clear();
@@ -36,7 +45,7 @@ void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
 
                 foreach (const QKeySequence& seq2, conflicted.sequences)
                 {
-                    if (seq1.matches(seq2) != QKeySequence::NoMatch)
+                    if (seq1.matches(seq2) != QKeySequence::NoMatch && IsContextCoflicted(conflicted.context, action.context))
                     {
                         QString conflictedAction = QString("%1.%2").arg(conflicted.blockName).arg(conflicted.actionName);
                         if (conflitsWith.isEmpty())

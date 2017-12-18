@@ -6,8 +6,27 @@
 
 namespace DAVA
 {
-struct ParticleLayer;
 class ParticleForce;
+class ParticleForceSimplified;
+struct ParticleLayer;
+
+class ParticleSimplifiedForceMoveCommand : public RECommand
+{
+public:
+    ParticleSimplifiedForceMoveCommand(ParticleForceSimplified* force, ParticleLayer* oldLayer, ParticleLayer* newLayer);
+    ~ParticleSimplifiedForceMoveCommand();
+
+    void Undo() override;
+    void Redo() override;
+
+    ParticleForceSimplified* force;
+    ParticleLayer* oldLayer;
+    ParticleLayer* newLayer;
+
+private:
+    DAVA_VIRTUAL_REFLECTION(ParticleSimplifiedForceMoveCommand, RECommand);
+};
+
 class ParticleForceMoveCommand : public RECommand
 {
 public:

@@ -314,8 +314,7 @@ void SceneDumper::DumpEmitter(ParticleEmitterInstance* instance, Set<FilePath>& 
 
         if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            ScopedPtr<ParticleEmitterInstance> instance(new ParticleEmitterInstance(nullptr, layer->innerEmitter, true));
-            DumpEmitter(instance, links, gfxFolders);
+            DumpEmitter(layer->innerEmitter, links, gfxFolders);
         }
         else
         {
@@ -374,12 +373,10 @@ void SceneDumper::DumpAnimations(MotionComponent* motionComponent, Set<FilePath>
 {
     if (motionComponent != nullptr)
     {
-        const MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
-        if (motion)
+        Vector<FilePath> dependencies = motionComponent->GetDependencies();
+        for (const FilePath& fp : dependencies)
         {
-            const FilePath& animationPath = motion->GetAnimationPath();
-            if (!animationPath.IsEmpty())
-                links.insert(animationPath.GetAbsolutePathname());
+            links.insert(fp.GetAbsolutePathname());
         }
     }
 }

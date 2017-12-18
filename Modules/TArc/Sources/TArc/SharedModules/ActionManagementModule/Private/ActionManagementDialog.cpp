@@ -23,7 +23,8 @@
 
 ENUM_DECLARE(Qt::ShortcutContext)
 {
-    ENUM_ADD_DESCR(Qt::WidgetWithChildrenShortcut, "Widget");
+    ENUM_ADD_DESCR(Qt::WidgetShortcut, "Widget");
+    ENUM_ADD_DESCR(Qt::WidgetWithChildrenShortcut, "WidgetWithChildren");
     ENUM_ADD_DESCR(Qt::WindowShortcut, "Window");
     ENUM_ADD_DESCR(Qt::ApplicationShortcut, "Application");
 }

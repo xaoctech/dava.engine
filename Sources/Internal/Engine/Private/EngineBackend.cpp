@@ -40,6 +40,7 @@
 #include "Network/NetCore.h"
 #include "Notification/LocalNotificationController.h"
 #include "DLCManager/Private/DLCManagerImpl.h"
+#include "Particles/ParticleForces.h"
 #include "Platform/DeviceInfo.h"
 #include "Platform/Steam.h"
 #include "PluginManager/PluginManager.h"
@@ -49,6 +50,7 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/ImageSystem.h"
+#include "Render/Image/ImageConverter.h"
 #include "Render/Renderer.h"
 #include "Render/RHI/rhi_ShaderSource.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
@@ -434,8 +436,9 @@ int32 EngineBackend::OnFrame()
         if (drawSingleFrameWhileSuspended)
         {
             Logger::Info("EngineBackend::OnFrame, rendering single frame while suspended");
-            ResumeRenderer();
+            rhi::ResumeRendering();
             UpdateAndDrawWindows(frameDelta, true);
+            rhi::SuspendRenderingAfterFrame(); //suspends rendering at least one frame after it was resumed
         }
         BackgroundUpdate(frameDelta);
     }
@@ -652,7 +655,12 @@ void EngineBackend::HandleAppSuspended(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppSuspended: enter");
 
         appIsSuspended = true;
-        SuspendRenderer();
+
+        // Warning: Application can ruin something if rendering is done in application suspended state.
+        // So we have to ensure that if application suspend|resume state is changed, render state is also immediately changed.
+        // Please NEVER add some additional `if` checks here.
+        if (Renderer::IsInitialized())
+            rhi::SuspendRendering();
         rhi::ShaderSourceCache::Save("~doc:/ShaderSource.bin");
         engine->suspended.Emit();
 
@@ -667,7 +675,12 @@ void EngineBackend::HandleAppResumed(const MainDispatcherEvent& e)
         Logger::Info("EngineBackend::HandleAppResumed: enter");
 
         appIsSuspended = false;
-        ResumeRenderer();
+
+        // Warning: Application can ruin something if rendering is done in application suspended state.
+        // So we have to ensure that if application suspend|resume state is changed, render state is also immediately changed.
+        // Please NEVER add some additional `if` checks here.
+        if (Renderer::IsInitialized())
+            rhi::ResumeRendering();
         engine->resumed.Emit();
 
         Logger::Info("EngineBackend::HandleAppResumed: leave");
@@ -824,14 +837,16 @@ void EngineBackend::UninstallEventFilter(void* token)
 
 void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 {
+    // Create subsystems
     context->allocatorFactory = new AllocatorFactory();
     context->random = new Random();
+    ParticleForcesUtils::GenerateNoise();
+    ParticleForcesUtils::GenerateSphereRandomVectors();
     context->performanceSettings = new PerformanceSettings();
     context->versionInfo = new VersionInfo();
     context->renderSystem2D = new RenderSystem2D();
 
     context->uiControlSystem = new UIControlSystem();
-    context->uiControlSystem->Init();
 
     context->animationManager = new AnimationManager();
     context->fontManager = new FontManager();
@@ -909,9 +924,9 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->logger->EnableConsoleMode();
     }
 
-    context->moduleManager = new ModuleManager(GetEngine());
-    context->moduleManager->InitModules();
+    context->imageConverter = new ImageConverter();
 
+    context->moduleManager = new ModuleManager(GetEngine());
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
 
@@ -920,16 +935,42 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
 #endif
+
+    // Register user types, components and systems
+    engine->registerUserTypes.Emit();
+
+    // Init subsystems
+    context->moduleManager->InitModules();
+    context->uiControlSystem->Init();
 }
 
 void EngineBackend::DestroySubsystems()
 {
-#ifdef __DAVAENGINE_AUTOTESTING__
-    if (context->autotestingSystem != nullptr)
+    // Shutdown subsystems
+    if (context->uiControlSystem != nullptr)
     {
-        context->autotestingSystem->Release();
-        context->autotestingSystem = nullptr;
+        context->uiControlSystem->Shutdown();
     }
+    if (context->moduleManager != nullptr)
+    {
+        context->moduleManager->ShutdownModules();
+    }
+    if (context->pluginManager != nullptr)
+    {
+        context->pluginManager->UnloadPlugins();
+    }
+    if (context->jobManager != nullptr)
+    {
+        // Wait job completion before releasing singletons
+        // But client should stop its jobs on response to signals Engine::gameLoopStopped or Engine::cleanup
+        context->jobManager->WaitWorkerJobs();
+        context->jobManager->WaitMainJobs();
+    }
+
+// Free subsystems
+
+#ifdef __DAVAENGINE_AUTOTESTING__
+    SafeRelease(context->autotestingSystem);
 #endif
 
     if (!IsConsoleMode())
@@ -942,31 +983,14 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->analyticsCore);
     SafeDelete(context->settings);
 
-    if (context->moduleManager != nullptr)
-    {
-        context->moduleManager->ShutdownModules();
-        delete context->moduleManager;
-        context->moduleManager = nullptr;
-    }
-    if (context->pluginManager != nullptr)
-    {
-        context->pluginManager->UnloadPlugins();
-        delete context->pluginManager;
-        context->pluginManager = nullptr;
-    }
-    if (context->jobManager != nullptr)
-    {
-        // Wait job completion before releasing singletons
-        // But client should stop its jobs on response to signals Engine::gameLoopStopped or Engine::cleanup
-        context->jobManager->WaitWorkerJobs();
-        context->jobManager->WaitMainJobs();
-    }
+    SafeDelete(context->moduleManager);
+    SafeDelete(context->pluginManager);
 
     SafeRelease(context->localNotificationController);
     SafeRelease(context->uiScreenManager);
     if (context->uiControlSystem)
     {
-        delete context->uiControlSystem;
+        delete context->uiControlSystem; // Private destructor
         context->uiControlSystem = nullptr;
     }
     SafeRelease(context->fontManager);
@@ -984,7 +1008,7 @@ void EngineBackend::DestroySubsystems()
 
     if (context->actionSystem != nullptr)
     {
-        delete context->actionSystem;
+        delete context->actionSystem; // Private destructor
         context->actionSystem = nullptr;
     }
 
@@ -992,7 +1016,7 @@ void EngineBackend::DestroySubsystems()
 
     if (context->inputSystem != nullptr)
     {
-        delete context->inputSystem;
+        delete context->inputSystem; // Private destructor
         context->inputSystem = nullptr;
     }
 
@@ -1005,11 +1029,13 @@ void EngineBackend::DestroySubsystems()
     SafeRelease(context->fileSystem);
     if (context->deviceManager != nullptr)
     {
-        delete context->deviceManager;
+        delete context->deviceManager; // Private destructor
         context->deviceManager = nullptr;
     }
     SafeDelete(context->componentManager);
     SafeDelete(context->logger);
+
+    SafeDelete(context->imageConverter);
 }
 
 void EngineBackend::OnRenderingError(rhi::RenderingError err, void* param)
@@ -1045,24 +1071,6 @@ void EngineBackend::SetScreenTimeoutEnabled(bool enabled)
 bool EngineBackend::IsRunning() const
 {
     return isRunning;
-}
-
-void EngineBackend::SuspendRenderer()
-{
-    if (Renderer::IsInitialized() && !rendererSuspended)
-    {
-        rhi::SuspendRendering();
-        rendererSuspended = true;
-    }
-}
-
-void EngineBackend::ResumeRenderer()
-{
-    if (Renderer::IsInitialized() && rendererSuspended)
-    {
-        rhi::ResumeRendering();
-        rendererSuspended = false;
-    }
 }
 
 void EngineBackend::DrawSingleFrameWhileSuspended()

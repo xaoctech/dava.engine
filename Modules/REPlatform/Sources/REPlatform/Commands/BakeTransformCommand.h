@@ -11,13 +11,19 @@ class RenderObject;
 class BakeGeometryCommand : public RECommand
 {
 public:
-    BakeGeometryCommand(RenderObject* _object, Matrix4 _transform);
+    BakeGeometryCommand(Entity* entity, RenderObject* _object, Matrix4 _transform);
     ~BakeGeometryCommand();
 
     void Undo() override;
     void Redo() override;
 
+    Entity* GetEntity() const
+    {
+        return entity;
+    }
+
 protected:
+    Entity* entity;
     RenderObject* object;
     Matrix4 transform;
 

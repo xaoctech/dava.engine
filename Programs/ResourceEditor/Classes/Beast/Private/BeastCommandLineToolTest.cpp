@@ -92,7 +92,7 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
         Texture::SetGPULoadingOrder({ eGPUFamily::GPU_ORIGIN });
 
         CommandLineModuleTestUtils::CreateProjectInfrastructure(BCLTestDetail::projectStr);
-        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(BCLTestDetail::scenePathnameStr);
+        CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(BCLTestDetail::scenePathnameStr, BCLTestDetail::projectStr);
 
         Vector<String> cmdLine =
         {

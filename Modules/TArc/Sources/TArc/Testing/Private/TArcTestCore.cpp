@@ -1,5 +1,6 @@
 #include "TArc/Testing/TArcTestCore.h"
 #include "TArc/Testing/Private/DeadCodeTrick.h"
+#include "TArc/Testing/GMockInclude.h"
 
 #include "Engine/Engine.h"
 #include "Engine/PlatformApiQt.h"
@@ -14,7 +15,6 @@
 
 #include <QTimer>
 #include <QApplication>
-#include <gmock/gmock.h>
 
 namespace DAVA
 {

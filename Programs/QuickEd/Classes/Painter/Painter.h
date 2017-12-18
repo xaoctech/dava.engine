@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Classes/EditorSystems/EditorSystemsConstants.h"
+
 #include <Base/RefPtr.h>
 #include <Base/BaseTypes.h>
 #include <Math/Color.h>
@@ -59,8 +61,8 @@ class Painter final
 public:
     Painter();
 
-    void Draw(uint32 order, DrawTextParams params);
-    void Draw(uint32 order, const DrawLineParams& params);
+    void Draw(eSystems order, DrawTextParams params);
+    void Draw(eSystems order, const DrawLineParams& params);
 
     void OnFrame(Window* window);
 
@@ -83,7 +85,7 @@ private:
         Vector<DrawLineParams> drawLineItems;
     };
 
-    Map<uint32, DrawItems> drawItems;
+    Map<eSystems, DrawItems> drawItems;
 
     float32 cachedSpread = 0.0f;
 };

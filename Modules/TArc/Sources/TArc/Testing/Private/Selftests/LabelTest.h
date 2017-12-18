@@ -61,7 +61,7 @@ struct LabelDataSource
         return text;
     }
 
-    Any multipleValues;
+    Any multipleValues = DAVA::TArc::MultipleValuesString;
 
     Matrix2 m2;
     Matrix3 m3;

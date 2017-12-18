@@ -27,6 +27,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SizeMeasuringAlgorithm)
     .Field("maxLimit", &SizeMeasuringAlgorithm::GetMaxLimit, nullptr)
     .Field("value", &SizeMeasuringAlgorithm::GetValue, nullptr)
     .Field("visibilityMargins", &SizeMeasuringAlgorithm::CalculateVisibilityMargins, nullptr)
+    .Field("safeAreaInsets", &SizeMeasuringAlgorithm::GetSafeAreaInsets, nullptr)
     .Method("min", &SizeMeasuringAlgorithm::Min)
     .Method("max", &SizeMeasuringAlgorithm::Max)
     .Method("clamp", &SizeMeasuringAlgorithm::Clamp)
@@ -417,11 +418,34 @@ float32 SizeMeasuringAlgorithm::GetLayoutPadding() const
 {
     if (flowLayout && flowLayout->IsEnabled())
     {
-        return flowLayout->GetPaddingByAxis(axis) * 2.0f;
+        float32 padding = flowLayout->GetPaddingByAxis(axis) * 2.0f;
+        if (axis == Vector2::AXIS_X && flowLayout->IsHorizontalSafeAreaPaddingInset())
+        {
+            padding += layouter.GetSafeAreaInsets().left + layouter.GetSafeAreaInsets().right;
+        }
+        else if (axis == Vector2::AXIS_Y && flowLayout->IsVerticalSafeAreaPaddingInset())
+        {
+            padding += layouter.GetSafeAreaInsets().top + layouter.GetSafeAreaInsets().bottom;
+        }
+
+        return padding;
     }
     else if (linearLayout != nullptr && linearLayout->IsEnabled() && linearLayout->GetAxis() == axis)
     {
-        return linearLayout->GetPadding() * 2.0f;
+        float32 padding = linearLayout->GetPadding() * 2.0f;
+        if (linearLayout->IsSafeAreaPaddingInset())
+        {
+            if (axis == Vector2::AXIS_X)
+            {
+                padding += layouter.GetSafeAreaInsets().left + layouter.GetSafeAreaInsets().right;
+            }
+            else
+            {
+                padding += layouter.GetSafeAreaInsets().top + layouter.GetSafeAreaInsets().bottom;
+            }
+        }
+
+        return padding;
     }
     return 0.0f;
 }
@@ -493,5 +517,10 @@ const LayoutMargins& SizeMeasuringAlgorithm::CalculateVisibilityMargins()
         visibilityMargins.bottom = DAVA::Max(0.f, (parentPos + parentSize) - (visibilityRect.y + visibilityRect.dy));
     }
     return visibilityMargins;
+}
+
+const LayoutMargins& SizeMeasuringAlgorithm::GetSafeAreaInsets()
+{
+    return layouter.GetSafeAreaInsets();
 }
 }

@@ -17,11 +17,36 @@ PackMetaData::PackMetaData(const void* ptr, std::size_t size)
     Deserialize(ptr, size);
 }
 
-void PackMetaData::CollectDependencies(uint32 packIndex, Children& out) const
+Vector<uint32> PackMetaData::ConvertStringWithNumbersToVector(const String& dependencies) const
 {
-    // all dependent packs with all sub-dependencies
-    DVASSERT(packIndex < children.size());
-    out = children[packIndex];
+    Vector<uint32> result;
+
+    const String delimiter(", ");
+
+    Vector<String> requestNamesStr;
+    Split(dependencies, delimiter, requestNamesStr);
+
+    // convert every name from string representation of index to packName
+    for (String& pack : requestNamesStr)
+    {
+        unsigned long i = 0;
+        try
+        {
+            i = stoul(pack);
+        }
+        catch (std::exception& ex)
+        {
+            const String errStr = Format("bad dependency index: value: %s, error: %s.", pack.c_str(), ex.what());
+            Logger::Error("%s", errStr.c_str());
+            DAVA_THROW(Exception, errStr);
+        }
+
+        uint32 index = static_cast<uint32>(i);
+        result.push_back(index);
+    }
+
+    SortAndEraseDuplicates(result);
+    return result;
 }
 
 PackMetaData::PackMetaData(const FilePath& metaDb)
@@ -66,31 +91,71 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     >> [&](std::string name, std::string dependency)
     {
         mapPackNameToPackIndex.emplace(name, static_cast<uint32>(packDependencies.size()));
-        packDependencies.push_back(PackInfo{ name, dependency });
+
+        Vector<uint32> requestIndexes = ConvertStringWithNumbersToVector(dependency);
+
+        packDependencies.emplace_back(std::move(name), std::move(requestIndexes));
     };
 
     // debug check that max index of fileIndex exist in packIndex
-    auto it = max_element(begin(packIndexes), end(packIndexes));
-    uint32 maxIndex = *it;
+    const auto it = max_element(begin(packIndexes), end(packIndexes));
+    const uint32 maxIndex = *it;
     if (maxIndex >= packDependencies.size())
     {
         DAVA_THROW(Exception, "read metadata error - too big index bad meta");
     }
 
-    children.clear();
-    children.resize(numPacks);
+    GenerateDependencyMatrix(numPacks);
+}
 
-    for (uint32 packIndex = 0; packIndex < numPacks; ++packIndex)
+const PackMetaData::Dependencies& PackMetaData::GetDependencies(uint32 packIndex) const
+{
+    // all dependent packs with all sub-dependencies
+    DVASSERT(packIndex < dependenciesMatrix.size());
+    return dependenciesMatrix[packIndex];
+}
+
+void PackMetaData::GenerateDependencyMatrixRow(uint32 packIndex, Dependencies& out) const
+{
+    const String& packName = GetPackInfo(packIndex).packName;
+    for (uint32 childPack : GetPackDependencyIndexes(packName))
     {
-        Children& c = children[packIndex];
-        CollectDependencies(packIndex, c);
-        c.shrink_to_fit();
+        out.push_back(childPack);
+        GenerateDependencyMatrixRow(childPack, out);
+    }
+}
+
+void PackMetaData::SortAndEraseDuplicates(Dependencies& c)
+{
+    // if we are loading from old superpack metadata we have to sort and remove duplicates
+    if (!c.empty()
+        && (!is_sorted(begin(c), end(c)) || adjacent_find(begin(c), end(c)) != end(c)))
+    {
+        sort(begin(c), end(c));
+        const auto last = unique(begin(c), end(c));
+        if (last != end(c))
+        {
+            c.erase(last, end(c));
+        }
+    }
+}
+
+void PackMetaData::GenerateDependencyMatrix(size_t numPacks)
+{
+    dependenciesMatrix.clear();
+    dependenciesMatrix.resize(numPacks);
+
+    for (size_t packIndex = 0; packIndex < numPacks; ++packIndex)
+    {
+        Dependencies& depRow = dependenciesMatrix[packIndex];
+        GenerateDependencyMatrixRow(static_cast<uint32>(packIndex), depRow);
+        SortAndEraseDuplicates(depRow);
     }
 }
 
 uint32 PackMetaData::GetPackIndex(const String& requestedPackName) const
 {
-    auto it = mapPackNameToPackIndex.find(requestedPackName);
+    const auto it = mapPackNameToPackIndex.find(requestedPackName);
     if (it != end(mapPackNameToPackIndex))
     {
         return it->second;
@@ -99,38 +164,10 @@ uint32 PackMetaData::GetPackIndex(const String& requestedPackName) const
     DAVA_THROW(Exception, "no such pack name: " + requestedPackName);
 }
 
-Vector<uint32> PackMetaData::GetPackDependencyIndexes(const String& requestedPackName) const
+const Vector<uint32>& PackMetaData::GetPackDependencyIndexes(const String& requestedPackName) const
 {
-    using namespace DAVA;
-    Vector<uint32> requestIndexes;
-
     const PackInfo& packInfo = GetPackInfo(requestedPackName);
-    const String& dependencies = packInfo.packDependencies;
-    const String delimiter(", ");
-
-    Vector<String> requestNamesStr;
-    Split(dependencies, delimiter, requestNamesStr);
-
-    // convert every name from string representation of index to packName
-    for (String& pack : requestNamesStr)
-    {
-        try
-        {
-            unsigned long i = stoul(pack);
-            uint32 index = static_cast<uint32>(i);
-            DVASSERT(index < GetPacksCount());
-            requestIndexes.push_back(index);
-        }
-        catch (std::exception& ex)
-        {
-            String str = Format("bad dependency index for pack: %s, index value: %s, error: %s.",
-                                packInfo.packName.c_str(), pack.c_str(), ex.what());
-            Logger::Error("%s", str.c_str());
-            DAVA_THROW(Exception, str);
-        }
-    }
-
-    return requestIndexes;
+    return packInfo.packDependencies;
 }
 
 Vector<uint32> PackMetaData::GetFileIndexes(const String& requestedPackName) const
@@ -176,7 +213,7 @@ const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) 
     auto it = mapPackNameToPackIndex.find(packName);
     if (it != end(mapPackNameToPackIndex))
     {
-        uint32 packIndex = it->second;
+        const uint32 packIndex = it->second;
         return GetPackInfo(packIndex);
     }
 
@@ -193,21 +230,34 @@ Vector<uint8> PackMetaData::Serialize() const
     Vector<uint8> compBytes;
     uint32 uncompressedSize = 0;
     {
-        String bytes;
         std::stringstream ss;
 
         for (const PackInfo& tuple : packDependencies)
         {
             const String& packName = tuple.packName;
-            const String& depend = tuple.packDependencies;
-            ss << packName << ' ' << depend << '\n';
+            //const String& depend = tuple.packDependencies;
+            ss << packName << ' ';
+            for (const uint32& packDepIndex : tuple.packDependencies)
+            {
+                ss << packDepIndex;
+                if (&packDepIndex != &tuple.packDependencies.back())
+                {
+                    // not last element
+                    ss << ", ";
+                }
+                else
+                {
+                    // last element no ,
+                }
+            }
+            ss << '\n';
         }
 
-        bytes = ss.str();
+        const String bytes = ss.str();
 
         uncompressedSize = static_cast<uint32>(bytes.size());
 
-        Vector<uint8> v(begin(bytes), end(bytes));
+        const Vector<uint8> v(cbegin(bytes), cend(bytes));
 
         LZ4Compressor compressor;
 
@@ -243,7 +293,7 @@ Vector<uint8> PackMetaData::Serialize() const
         DAVA_THROW(Exception, "write num_files failed");
     }
 
-    uint32 sizeOfFilesMetaIndexes = static_cast<uint32>(packIndexes.size() * sizeof(uint32));
+    const uint32 sizeOfFilesMetaIndexes = static_cast<uint32>(packIndexes.size() * sizeof(uint32));
     if (sizeOfFilesMetaIndexes != file->Write(&packIndexes[0], sizeOfFilesMetaIndexes))
     {
         DAVA_THROW(Exception, "write meta file indexes failed");
@@ -267,7 +317,7 @@ Vector<uint8> PackMetaData::Serialize() const
     }
 
     // write children table
-    uint32 numPacksWithChildren = static_cast<uint32>(count_if(begin(children), end(children), [](const Children& c)
+    uint32 numPacksWithChildren = static_cast<uint32>(count_if(begin(dependenciesMatrix), end(dependenciesMatrix), [](const Dependencies& c)
                                                                {
                                                                    return !c.empty();
                                                                }));
@@ -277,9 +327,9 @@ Vector<uint8> PackMetaData::Serialize() const
         DAVA_THROW(Exception, "write numPacksWithChildren failed");
     }
 
-    for (uint32 childPackIndex = 0; childPackIndex < children.size(); ++childPackIndex)
+    for (uint32 childPackIndex = 0; childPackIndex < dependenciesMatrix.size(); ++childPackIndex)
     {
-        const Children& child = children[childPackIndex];
+        const Dependencies& child = dependenciesMatrix[childPackIndex];
         if (!child.empty())
         {
             if (4 != file->Write(&childPackIndex, sizeof(childPackIndex)))
@@ -291,7 +341,7 @@ Vector<uint8> PackMetaData::Serialize() const
             {
                 DAVA_THROW(Exception, "write numChildPacks failed");
             }
-            uint32 numBytes = numChildPacks * sizeof(child[0]);
+            const uint32 numBytes = numChildPacks * sizeof(child[0]);
             if (numBytes != file->Write(&child[0], numBytes))
             {
                 DAVA_THROW(Exception, "write numBytes failed");
@@ -392,23 +442,27 @@ void PackMetaData::Deserialize(const void* ptr, size_t size)
     istream ss(&outBuf);
 
     // now parse decompressed packs data line by line (%s %s\n) format
+    // TODO make parsing without redundant copy of strings
     for (string line, packName, packDependency; getline(ss, line);)
     {
-        auto first_space = line.find(' ');
+        const auto first_space = line.find(' ');
         if (first_space == string::npos)
         {
             DAVA_THROW(Exception, "can't parse packs and dependencies");
         }
         packName = line.substr(0, first_space);
         packDependency = line.substr(first_space + 1);
+
+        Vector<uint32> packDependencyIndexes = ConvertStringWithNumbersToVector(packDependency);
+
         uint32 packIndex = static_cast<uint32>(packDependencies.size());
-        packDependencies.push_back(PackInfo{ packName, packDependency });
         mapPackNameToPackIndex.emplace(packName, packIndex);
+        packDependencies.emplace_back(std::move(packName), std::move(packDependencyIndexes));
     }
 
     // debug check that max index of fileIndex exist in packIndex
-    auto it = std::max_element(begin(packIndexes), end(packIndexes));
-    uint32 maxIndex = *it;
+    const auto it = max_element(cbegin(packIndexes), cend(packIndexes));
+    const uint32 maxIndex = *it;
     if (maxIndex >= packDependencies.size())
     {
         DAVA_THROW(Exception, "read metadata error - too big index bad meta");
@@ -422,7 +476,7 @@ void PackMetaData::Deserialize(const void* ptr, size_t size)
         DAVA_THROW(Exception, "read numPacksWithChildren failed");
     }
 
-    children.resize(packIndexes.size());
+    dependenciesMatrix.resize(packDependencies.size());
 
     for (; numPacksWithChildren > 0; --numPacksWithChildren)
     {
@@ -439,31 +493,29 @@ void PackMetaData::Deserialize(const void* ptr, size_t size)
         {
             DAVA_THROW(Exception, "read numChildPacks failed");
         }
-        Children& child = children[childPackIndex];
-        child.resize(numChildPacks);
+        Dependencies& dependenciesRow = dependenciesMatrix[childPackIndex];
+        dependenciesRow.resize(numChildPacks);
 
-        uint32 numBytes = numChildPacks * sizeof(child[0]);
-        file.read(reinterpret_cast<char*>(&child[0]), numBytes);
+        const uint32 numBytes = numChildPacks * sizeof(dependenciesRow[0]);
+        file.read(reinterpret_cast<char*>(&dependenciesRow[0]), numBytes);
         if (!file)
         {
             DAVA_THROW(Exception, "read numBytes failed");
         }
+
+        SortAndEraseDuplicates(dependenciesRow);
     }
 }
 
-bool PackMetaData::IsChild(uint32 parentPackIndex, uint32 childPackIndex) const
+bool PackMetaData::HasDependency(uint32 packWithDependency, uint32 dependency) const
 {
-    if (parentPackIndex >= children.size())
-    {
-        return false;
-    }
-    const Children& childPacks = children[parentPackIndex];
-    auto it = find(begin(childPacks), end(childPacks), childPackIndex);
-    if (it != end(childPacks))
-    {
-        return true;
-    }
-    return false;
+    DVASSERT(packWithDependency < packIndexes.size());
+    DVASSERT(dependency < packIndexes.size());
+
+    const Dependencies& dep = dependenciesMatrix[packWithDependency];
+    // now we know list of dependencies is sorted and all elements are unique,
+    // so we can use binary_search
+    return binary_search(begin(dep), end(dep), dependency);
 }
 
 } // end namespace DAVA

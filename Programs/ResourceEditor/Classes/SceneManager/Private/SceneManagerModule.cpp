@@ -215,7 +215,11 @@ void SceneManagerModule::PostInit()
     ProjectManagerData* projectData = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(projectData != nullptr);
 
-    connections.AddConnection(projectData->GetSpritesModules(), &DAVA::SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
+    const DAVA::SpritesPackerModule* packer = projectData->GetSpritesModules();
+    if (packer != nullptr)
+    {
+        connections.AddConnection(packer, &DAVA::SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
+    }
 
     DAVA::UI* ui = GetUI();
 
@@ -241,8 +245,8 @@ void SceneManagerModule::PostInit()
     {
         return v.CanCast<DAVA::FilePath>() && !v.Cast<DAVA::FilePath>().IsEmpty();
     };
-    params.getMaximumCount = []() {
-        return 5;
+    params.getMaximumCount = [accessor]() {
+        return accessor->GetGlobalContext()->GetData<GeneralSettings>()->recentScenesCount;
     };
 
     recentItems.reset(new RecentMenuItems(std::move(params)));
@@ -250,6 +254,16 @@ void SceneManagerModule::PostInit()
                                          {
                                              OpenSceneByPath(DAVA::FilePath(scenePath));
                                          });
+
+    {
+        DAVA::TArc::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
+        fieldDescr.fieldName = DAVA::FastName("recentScenesCount");
+        fieldBinder->BindField(fieldDescr, [this](const DAVA::Any& v)
+                               {
+                                   recentItems->Truncate();
+                               });
+    }
 }
 
 void SceneManagerModule::CreateModuleControls(DAVA::UI* ui)
@@ -738,13 +752,6 @@ void SceneManagerModule::CreateNewScene()
     using namespace DAVA;
     ContextManager* contextManager = GetContextManager();
 
-    UI* ui = GetUI();
-    WaitDialogParams waitDlgParams;
-    waitDlgParams.message = QStringLiteral("Creating new scene");
-    waitDlgParams.needProgressBar = false;
-
-    std::unique_ptr<WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
-
     DAVA::FilePath scenePath = QString("newscene%1.sc2").arg(++newSceneCounter).toStdString();
     DAVA::RefPtr<SceneEditor2> scene = OpenSceneImpl(scenePath);
 
@@ -875,7 +882,7 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     sceneData->scene = scene;
 
     CreateSceneProperties(sceneData.get());
-    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot());
+    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot(), accessor);
 
     DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));

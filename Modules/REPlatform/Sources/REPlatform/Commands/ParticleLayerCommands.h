@@ -198,4 +198,33 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(CommandChangeAlphaRemapProperties, RECommand);
 };
+
+class CommandChangeThreePointGradientProperties : public RECommand
+{
+public:
+    struct ThreePointGradientParams
+    {
+        RefPtr<PropertyLine<Color>> gradientColorForWhite;
+        RefPtr<PropertyLine<Color>> gradientColorForBlack;
+        RefPtr<PropertyLine<Color>> gradientColorForMiddle;
+        RefPtr<PropertyLine<float32>> gradientMiddlePointLine;
+        float32 gradientMiddlePoint = 0.5f;
+        bool useThreePointGradient = false;
+    };
+
+    CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer, ThreePointGradientParams&& params);
+    void Undo() override;
+    void Redo() override;
+
+    ParticleLayer* GetLayer() const;
+
+private:
+    void ApplyParams(ThreePointGradientParams& params);
+
+    ThreePointGradientParams newParams;
+    ThreePointGradientParams oldParams;
+    ParticleLayer* layer = nullptr;
+
+    DAVA_VIRTUAL_REFLECTION(CommandChangeThreePointGradientProperties, RECommand);
+};
 } // namespace DAVA

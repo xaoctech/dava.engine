@@ -5,6 +5,7 @@
 #include "TArc/Controls/PropertyPanel/Private/ReflectionPathTree.h"
 #include "TArc/Controls/PropertyPanel/PropertiesView.h"
 #include "TArc/WindowSubSystem/UI.h"
+#include "TArc/Testing/GMockInclude.h"
 
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -14,8 +15,6 @@
 
 #include <QTreeView>
 #include <QAbstractItemModel>
-
-#include <gmock/gmock.h>
 
 namespace PropertiesViewTestsDetail
 {
