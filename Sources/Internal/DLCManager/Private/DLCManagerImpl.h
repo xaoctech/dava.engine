@@ -10,6 +10,7 @@
 #include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
+#include "Functional/Function.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
@@ -133,7 +134,7 @@ public:
 
     void Update(float frameDelta, bool inBackground);
 
-    bool IsPackDownloaded(const String& packName) final;
+    bool IsPackDownloaded(const String& packName) const final;
 
     uint64 GetPackSize(const String& packName) const final;
 
@@ -141,7 +142,7 @@ public:
 
     PackRequest* FindRequest(const String& requestedPackName) const;
 
-    bool IsPackInQueue(const String& packName) final;
+    bool IsPackInQueue(const String& packName) const final;
 
     bool IsAnyPackInQueue() const final;
 
@@ -311,7 +312,7 @@ private:
     String uncompressedFileNames;
     UnorderedMap<String, const PackFormat::FileTableEntry*> mapFileData;
     Vector<uint32> startFileNameIndexesInUncompressedNames;
-    DLCDownloader::Task* downloadTask = nullptr;
+    DLCDownloader::ITask* downloadTask = nullptr;
     uint64 fullSizeServerData = 0;
     mutable Progress lastProgress;
 
@@ -323,7 +324,7 @@ private:
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session
 
-    std::unique_ptr<DLCDownloader> downloader;
+    std::shared_ptr<DLCDownloader> downloader;
 
     mutable UnorderedSet<uint32> allPacks; // reuse memory
 
