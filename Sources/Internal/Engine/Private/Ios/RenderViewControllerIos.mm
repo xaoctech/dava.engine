@@ -3,6 +3,7 @@
 #if defined(__DAVAENGINE_IPHONE__)
 
 #include "Engine/Private/Ios/WindowNativeBridgeIos.h"
+#import <UIKit/UIScreenEdgePanGestureRecognizer.h>
 
 @implementation RenderViewController
 
