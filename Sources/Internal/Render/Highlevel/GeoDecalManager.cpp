@@ -11,11 +11,12 @@ namespace DAVA
 struct GeoDecalManager::DecalBuildInfo
 {
     AABBox3 boundingBox;
+    RenderObject* renderObject = nullptr;
+    RenderBatch* sourceBatch = nullptr;
     PolygonGroup* polygonGroup = nullptr;
     NMaterial* material = nullptr;
     Vector3 projectionAxis;
     Matrix4 projectionSpaceTransform;
-    SkinnedMesh::JointTargetsData jointsData;
     int32 lodIndex = -1;
     int32 switchIndex = -1;
     bool useCustomNormal = false;
@@ -178,6 +179,7 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
     proj.BuildOrtho(boxMin.x, boxMax.x, boxMin.y, boxMax.y, -boxMax.z, -boxMin.z, false);
 
     DecalBuildInfo info;
+    info.renderObject = ro;
     info.projectionAxis = dir;
     info.projectionSpaceTransform = view * proj;
     info.useCustomNormal = FileSystem::Instance()->Exists(config.normal);
@@ -196,18 +198,11 @@ GeoDecalManager::Decal GeoDecalManager::BuildDecal(const DecalConfig& config, co
         {
             int32 lodIndex = -1;
             int32 switchIndex = -1;
-            RenderBatch* sourceBatch = ro->GetRenderBatch(i, lodIndex, switchIndex);
-            info.polygonGroup = sourceBatch->GetPolygonGroup();
-            info.material = sourceBatch->GetMaterial();
+            info.sourceBatch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+            info.polygonGroup = info.sourceBatch->GetPolygonGroup();
+            info.material = info.sourceBatch->GetMaterial();
             info.lodIndex = lodIndex;
             info.switchIndex = switchIndex;
-
-            if (info.useSkinning)
-            {
-                SkinnedMesh* mesh = static_cast<SkinnedMesh*>(ro);
-                info.jointsData = mesh->GetJointTargetsData(sourceBatch);
-            }
-
             BuildDecal(info, config, decalBatchProvider);
         }
     }
@@ -390,6 +385,9 @@ void GeoDecalManager::GetStaticMeshGeometry(const DecalBuildInfo& info, const De
 
 void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, const DecalConfig& config, Vector<uint8>& buffer)
 {
+    SkinnedMesh* mesh = static_cast<SkinnedMesh*>(info.renderObject);
+    const SkinnedMesh::JointTargetsData& jointTargetsData = mesh->GetJointTargetsData(info.sourceBatch);
+
     const AABBox3 clipSpaceBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 2.0f);
 
     uint8 decalVertexData[MAX_CLIPPED_POLYGON_CAPACITY * sizeof(DecalVertex)];
@@ -423,10 +421,9 @@ void GeoDecalManager::GetSkinnedMeshGeometry(const DecalBuildInfo& info, const D
                 info.polygonGroup->GetBinormal(idx[j], points[j].binormal);
 
             info.polygonGroup->GetHardJointIndex(idx[j], points[j].jointIndex);
-            DVASSERT(points[j].jointIndex < int32(info.jointsData.jointsDataCount));
 
-            Vector4 weightedVertexPosition = info.jointsData.positions[points[j].jointIndex];
-            Vector4 weightedVertexQuaternion = info.jointsData.quaternions[points[j].jointIndex];
+            Vector4 weightedVertexPosition = jointTargetsData.positions[points[j].jointIndex];
+            Vector4 weightedVertexQuaternion = jointTargetsData.quaternions[points[j].jointIndex];
             Vector3 tmpVec = 2.0f * weightedVertexQuaternion.GetVector3().CrossProduct(points[j].originalPoint);
             points[j].actualPoint = weightedVertexPosition.GetVector3() + weightedVertexPosition.w *
             (points[j].originalPoint + weightedVertexQuaternion.w * tmpVec + weightedVertexQuaternion.GetVector3().CrossProduct(tmpVec));
@@ -457,8 +454,9 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
 
     Vector<uint8_t> buffer;
     buffer.reserve(3 * sizeof(DecalVertex) * info.polygonGroup->GetIndexCount());
-    if ((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_HARD_JOINTINDEX))
+    if (info.useSkinning)
     {
+        DVASSERT((geometryFormat & EVF_JOINTINDEX) || (geometryFormat & EVF_HARD_JOINTINDEX));
         GetSkinnedMeshGeometry(info, config, buffer);
     }
     else
@@ -560,6 +558,12 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
     batch->UpdateAABBoxFromSource();
     static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(batch, info.lodIndex, info.switchIndex);
 
+    if (info.useSkinning)
+    {
+        SkinnedMesh* mesh = static_cast<SkinnedMesh*>(info.renderObject);
+        mesh->SetJointTargets(batch, mesh->GetJointTargets(info.sourceBatch));
+    }
+
     if (config.debugOverlayEnabled)
     {
         /*
@@ -572,6 +576,12 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
         debugBatch->SetMaterial(debugMaterial);
         debugBatch->UpdateAABBoxFromSource();
         static_cast<GeoDecalRenderBatchProvider*>(batchProvider)->EmplaceRenderBatch(debugBatch, info.lodIndex, info.switchIndex);
+
+        if (info.useSkinning)
+        {
+            SkinnedMesh* mesh = static_cast<SkinnedMesh*>(info.renderObject);
+            mesh->SetJointTargets(debugBatch, mesh->GetJointTargets(info.sourceBatch));
+        }
     }
 
     return true;
