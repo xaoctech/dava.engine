@@ -1865,7 +1865,7 @@ bool DLCManagerImpl::IsKnownFile(const FilePath& path) const
     return false;
 }
 
-bool DLCManagerImpl::IsPackInQueue(const String& packName)
+bool DLCManagerImpl::IsPackInQueue(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
     if (!IsInitialized())

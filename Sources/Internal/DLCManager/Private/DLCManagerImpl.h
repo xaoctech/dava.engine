@@ -336,7 +336,7 @@ inline const PackMetaData& DLCManagerImpl::GetRemoteMeta() const
 
 inline const PackMetaData& DLCManagerImpl::GetLocalMeta() const
 {
-    DVASSERT(metaRemote.get() != nullptr);
+    DVASSERT(metaLocal.get() != nullptr);
     return *metaLocal;
 }
 
