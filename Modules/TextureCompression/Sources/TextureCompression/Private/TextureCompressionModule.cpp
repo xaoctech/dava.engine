@@ -16,7 +16,7 @@ TextureCompressionModule::TextureCompressionModule(Engine* engine_)
 {
     imageConverter.reset(new ImageConverterImpl());
 }
-    
+
 void TextureCompressionModule::Init()
 {
     DVASSERT(GetEngineContext()->imageConverter != nullptr);
@@ -29,9 +29,9 @@ void TextureCompressionModule::Init()
 #else //PLATFORMS
 #error "Unknown platform"
 #endif //PLATFORMS
-    
+
     FilePath pvrTexPath = "~res:/" + pvrToolName;
-    
+
     const Vector<String>& cmdLine = engine->GetCommandLine();
     if (GetEngineContext()->fileSystem->Exists(pvrTexPath) == true)
     {

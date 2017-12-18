@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Base/Vector.h"
+
 namespace DAVA
 {
 /**
