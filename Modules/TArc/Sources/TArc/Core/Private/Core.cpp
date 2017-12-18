@@ -185,7 +185,7 @@ public:
         return wrappersProcessor.CreateWrapper(accessor, activeContext != nullptr ? activeContext : globalContext);
     }
 
-    PropertiesItem CreatePropertiesNode(const String& nodeName) override
+    PropertiesItem CreatePropertiesNode(const String& nodeName) const override
     {
         DVASSERT(propertiesHolder != nullptr);
         return propertiesHolder->CreateSubHolder(nodeName);

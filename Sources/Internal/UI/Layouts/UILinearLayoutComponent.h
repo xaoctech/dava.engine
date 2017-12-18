@@ -53,6 +53,9 @@ public:
     bool IsDynamicPadding() const;
     void SetDynamicPadding(bool dynamic);
 
+    bool IsSafeAreaPaddingInset() const;
+    void SetSafeAreaPaddingInset(bool inset);
+
     bool IsDynamicSpacing() const;
     void SetDynamicSpacing(bool dynamic);
     bool IsUseRtl() const;
@@ -68,6 +71,7 @@ private:
         FLAG_ORIENTATION_VERTICAL,
         FLAG_ORIENTATION_INVERSE,
         FLAG_DYNAMIC_PADDING,
+        FLAG_SAFE_AREA_PADDING_INSET,
         FLAG_DYNAMIC_SPACING,
         FLAG_RTL,
         FLAG_SKIP_INVISIBLE_CONTROLS,

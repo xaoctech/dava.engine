@@ -51,6 +51,9 @@ public:
     bool IsDynamicHorizontalInLinePadding() const;
     void SetDynamicHorizontalInLinePadding(bool dynamic);
 
+    bool IsHorizontalSafeAreaPaddingInset() const;
+    void SetHorizontalSafeAreaPaddingInset(bool inset);
+
     bool IsDynamicHorizontalSpacing() const;
     void SetDynamicHorizontalSpacing(bool dynamic);
 
@@ -62,6 +65,9 @@ public:
 
     bool IsDynamicVerticalPadding() const;
     void SetDynamicVerticalPadding(bool dynamic);
+
+    bool IsVerticalSafeAreaPaddingInset() const;
+    void SetVerticalSafeAreaPaddingInset(bool inset);
 
     bool IsDynamicVerticalSpacing() const;
     void SetDynamicVerticalSpacing(bool dynamic);
@@ -81,8 +87,10 @@ private:
         FLAG_ENABLED,
         FLAG_DYNAMIC_HORIZONTAL_PADDING,
         FLAG_DYNAMIC_HORIZONTAL_IN_LINE_PADDING,
+        FLAG_HORIZONTAL_SAFE_AREA_PADDING,
         FLAG_DYNAMIC_HORIZONTAL_SPACING,
         FLAG_DYNAMIC_VERTICAL_PADDING,
+        FLAG_VERTICAL_SAFE_AREA_PADDING,
         FLAG_DYNAMIC_VERTICAL_SPACING,
         FLAG_USE_RTL,
         FLAG_SKIP_INVISIBLE_CONTROLS,

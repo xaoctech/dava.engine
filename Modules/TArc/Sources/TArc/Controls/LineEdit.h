@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QFlags>
 
+class QPushButton;
 namespace DAVA
 {
 namespace TArc
@@ -30,6 +31,7 @@ public:
         IsReadOnly,
         IsEnabled,
         Validator, // const M::Validator*
+        Clearable, // bool
         FieldCount
     };
 

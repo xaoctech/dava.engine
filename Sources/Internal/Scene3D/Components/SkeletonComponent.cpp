@@ -43,30 +43,47 @@ void SkeletonComponent::SetJoints(const Vector<Joint>& config)
     jointsArray = config;
 
     GlobalEventSystem::Instance()->Event(this, EventSystem::SKELETON_CONFIG_CHANGED);
+
+    UpdateJointsMap();
+    UpdateDefaultPose();
 }
 
-SkeletonPose SkeletonComponent::GetDefaultPose() const
+void SkeletonComponent::UpdateDefaultPose()
 {
     uint32 jointCount = uint32(jointsArray.size());
-    SkeletonPose pose(jointCount);
 
-    JointTransform transform;
+    defaultPose.SetJointCount(jointCount);
     for (uint32 j = 0; j < jointCount; ++j)
     {
-        transform.Construct(jointsArray[j].bindTransform);
-        pose.SetJointIndex(j, j);
-        pose.SetTransform(j, transform);
+        defaultPose.SetTransform(j, JointTransform(jointsArray[j].bindTransform));
     }
+}
 
-    return pose;
+const SkeletonPose& SkeletonComponent::GetDefaultPose() const
+{
+    return defaultPose;
 }
 
 void SkeletonComponent::ApplyPose(const SkeletonPose& pose)
 {
-    uint32 nodeCount = pose.GetNodeCount();
-    for (uint32 n = 0; n < nodeCount; ++n)
+    uint32 minJoints = Min(GetJointsCount(), pose.GetJointsCount());
+    for (uint32 j = 0; j < minJoints; ++j)
     {
-        SetJointTransform(pose.GetJointIndex(n), pose.GetJointTransform(n));
+        const JointTransform& poseTransform = pose.GetJointTransform(j);
+
+        if (poseTransform.IsEmpty())
+            continue;
+
+        JointTransform& transform = localSpaceTransforms[j];
+
+        if (poseTransform.HasPosition())
+            transform.SetPosition(poseTransform.GetPosition());
+        if (poseTransform.HasOrientation())
+            transform.SetOrientation(poseTransform.GetOrientation());
+        if (poseTransform.HasScale())
+            transform.SetScale(poseTransform.GetScale());
+
+        SetJointTransform(j, transform);
     }
 }
 
@@ -74,7 +91,7 @@ Component* SkeletonComponent::Clone(Entity* toEntity)
 {
     SkeletonComponent* newComponent = new SkeletonComponent();
     newComponent->SetEntity(toEntity);
-    newComponent->jointsArray = jointsArray;
+    newComponent->SetJoints(jointsArray);
     return newComponent;
 }
 
@@ -107,6 +124,7 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
 
     uint32 jointsCount = archive->GetUInt32("jointsCount", static_cast<uint32>(jointsArray.size()));
     jointsArray.resize(jointsCount);
+
     KeyedArchive* jointsArch = archive->GetArchive("joints");
     for (uint32 i = 0; i < jointsCount; ++i)
     {
@@ -119,6 +137,22 @@ void SkeletonComponent::Deserialize(KeyedArchive* archive, SerializationContext*
         joint.bbox.max = jointArch->GetVector3("joint.bbox.max");
         joint.bindTransform = jointArch->GetMatrix4("joint.bindPose");
         joint.bindTransformInv = jointArch->GetMatrix4("joint.invBindPose");
+    }
+
+    UpdateJointsMap();
+    UpdateDefaultPose();
+}
+
+void SkeletonComponent::UpdateJointsMap()
+{
+    jointMap.clear();
+    uint32 jointCount = uint32(jointsArray.size());
+    for (uint32 j = 0; j < jointCount; ++j)
+    {
+        const FastName& jointUID = jointsArray[j].uid;
+        DVASSERT(jointMap.count(jointUID) == 0); //duplicate bone name
+
+        jointMap[jointUID] = j;
     }
 }
 

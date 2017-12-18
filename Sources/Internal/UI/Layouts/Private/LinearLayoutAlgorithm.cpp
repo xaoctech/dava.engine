@@ -39,6 +39,11 @@ void LinearLayoutAlgorithm::SetDynamicPadding(bool dynamicPadding_)
     dynamicPadding = dynamicPadding_;
 }
 
+void LinearLayoutAlgorithm::SetSafeAreaPaddingInset(bool paddingInset_)
+{
+    safeAreaPaddingInset = paddingInset_;
+}
+
 void LinearLayoutAlgorithm::SetDynamicSpacing(bool dynamicSpacing_)
 {
     dynamicSpacing = dynamicSpacing_;
@@ -71,7 +76,39 @@ void LinearLayoutAlgorithm::Apply(ControlLayoutData& data, Vector2::eAxis axis, 
 
 void LinearLayoutAlgorithm::InitializeParams(ControlLayoutData& data, Vector2::eAxis axis, int32 firstIndex, int32 lastIndex)
 {
-    padding = initialPadding;
+    leadingPadding = initialPadding;
+    trailingPadding = initialPadding;
+
+    if (safeAreaPaddingInset)
+    {
+        if (axis == Vector2::AXIS_X)
+        {
+            if (inverse)
+            {
+                leadingPadding += layouter.GetSafeAreaInsets().right;
+                trailingPadding += layouter.GetSafeAreaInsets().left;
+            }
+            else
+            {
+                leadingPadding += layouter.GetSafeAreaInsets().left;
+                trailingPadding += layouter.GetSafeAreaInsets().right;
+            }
+        }
+        else
+        {
+            if (inverse)
+            {
+                leadingPadding += layouter.GetSafeAreaInsets().bottom;
+                trailingPadding += layouter.GetSafeAreaInsets().top;
+            }
+            else
+            {
+                leadingPadding += layouter.GetSafeAreaInsets().top;
+                trailingPadding += layouter.GetSafeAreaInsets().bottom;
+            }
+        }
+    }
+
     spacing = initialSpacing;
 
     fixedSize = 0.0f;
@@ -102,7 +139,7 @@ void LinearLayoutAlgorithm::InitializeParams(ControlLayoutData& data, Vector2::e
 
     currentSize = data.GetSize(axis);
     spacesCount = childrenCount - 1;
-    contentSize = currentSize - padding * 2.0f;
+    contentSize = currentSize - leadingPadding - trailingPadding;
     restSize = contentSize - fixedSize - spacesCount * spacing;
 }
 
@@ -202,7 +239,7 @@ void LinearLayoutAlgorithm::CalculateDynamicPaddingAndSpaces(ControlLayoutData& 
             float32 delta = restSize * (1.0f - totalPercent / 100.0f) / cnt;
             if (dynamicPadding)
             {
-                padding += delta;
+                leadingPadding += delta;
             }
 
             if (dynamicSpacing)
@@ -215,10 +252,10 @@ void LinearLayoutAlgorithm::CalculateDynamicPaddingAndSpaces(ControlLayoutData& 
 
 void LinearLayoutAlgorithm::PlaceChildren(ControlLayoutData& data, Vector2::eAxis axis, int32 firstIndex, int32 lastIndex)
 {
-    float32 position = padding;
+    float32 position = leadingPadding;
     if (inverse)
     {
-        position = data.GetSize(axis) - padding;
+        position = data.GetSize(axis) - leadingPadding;
     }
     Vector<ControlLayoutData>& layoutData = layouter.GetLayoutData();
     for (int32 i = firstIndex; i <= lastIndex; i++)

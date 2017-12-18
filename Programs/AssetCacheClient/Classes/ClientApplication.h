@@ -3,7 +3,7 @@
 
 #include "Base/BaseTypes.h"
 
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 class CacheRequest;
 class ClientApplication final
