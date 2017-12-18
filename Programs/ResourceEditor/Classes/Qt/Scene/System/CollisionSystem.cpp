@@ -579,7 +579,11 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) cons
             auto entity = wrapper.AsEntity();
             for (DAVA::int32 i = 0, e = entity->GetChildrenCount(); i < e; ++i)
             {
-                aabox.AddAABBox(GetBoundingBox(entity->GetChild(i)));
+                DAVA::Entity* childEntity = entity->GetChild(i);
+                DAVA::AABBox3 entityBox = GetBoundingBox(childEntity);
+                DAVA::AABBox3 entityTransformedBox;
+                entityBox.GetTransformedBox(childEntity->GetLocalTransform(), entityTransformedBox);
+                aabox.AddAABBox(entityTransformedBox);
             }
         }
     }

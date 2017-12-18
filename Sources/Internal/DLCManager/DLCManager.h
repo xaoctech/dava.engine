@@ -5,6 +5,7 @@
 
 namespace DAVA
 {
+class DLCDownloader;
 class FilePath;
 
 /**
@@ -124,6 +125,7 @@ public:
         int64 limitRequestUpdateIterationUs = 500; //!< max time to update requestManager in microseconds
         uint32 maxSameErrorCounter = 10; //!< if for example EBUSY error occurred try same operation again while counter below this value
         uint32 retryConnectMilliseconds = 5000; //!< try to reconnect to server if `Offline` state default every 5 seconds
+        std::shared_ptr<DLCDownloader> downloader; //!< (can be null) pass your custom downloader if you want, downloader hints are not set to custom downloaders
         uint32 maxFilesToDownload = 0; //!< user should fill this value default value average files count in Data
         uint32 timeoutForDownload = 30; //!< this value passed to DownloadManager
         int64 timeoutForInitialization = 60; //!< timeout(sec) for initialization after which fire signal fileErrorOccured("dlcmanager_timeout", EHOSTUNREACH)
@@ -165,7 +167,7 @@ public:
     virtual bool IsRequestingEnabled() const = 0;
 
     /** Return true if pack is already downloaded. */
-    virtual bool IsPackDownloaded(const String& packName) = 0;
+    virtual bool IsPackDownloaded(const String& packName) const = 0;
 
     /** Return size of pack with all it's dependent packs from remote meta without downloading
 	    or 0 if manager is not initialized */
@@ -177,7 +179,7 @@ public:
     virtual const IRequest* RequestPack(const String& packName) = 0;
 
     /** return true if pack currently is in download queue */
-    virtual bool IsPackInQueue(const String& packName) = 0;
+    virtual bool IsPackInQueue(const String& packName) const = 0;
 
     /** return true if download queue is not empty */
     virtual bool IsAnyPackInQueue() const;
