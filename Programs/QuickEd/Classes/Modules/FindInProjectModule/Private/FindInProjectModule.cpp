@@ -122,7 +122,7 @@ void FindInProjectModule::OnFindErrorsAndWarnings()
 
     std::shared_ptr<CompositeFilter> filter = std::make_shared<CompositeFilter>(errorsAndWarningsFilters);
     filter->SetCompositionType(CompositeFilter::OR);
-    InvokeOperation(QEGlobal::FindInProject.ID, filter);
+    InvokeOperation(QEGlobal::FindInProject.ID, std::static_pointer_cast<FindFilter>(filter));
 }
 
 DECL_GUI_MODULE(FindInProjectModule);
