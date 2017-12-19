@@ -22,6 +22,7 @@ public:
         Texture* noise = nullptr;
         Texture* alphaRemapTexture = nullptr;
         eBlending blending = BLENDING_ALPHABLEND;
+        uint64 layerId = 1;
         bool enableFog = false;
         bool enableFrameBlend = false;
         bool enableFlow = false;
@@ -31,9 +32,14 @@ public:
         bool useFresnelToAlpha = false;
         bool enableAlphaRemap = false;
         bool usePerspectiveMapping = false;
+        bool useThreePointGradient = false;
 
         bool operator==(const MaterialData& rhs)
         {
+            bool isEqualByGradient = useThreePointGradient == rhs.useThreePointGradient;
+            if (isEqualByGradient && useThreePointGradient)
+                isEqualByGradient = layerId == rhs.layerId;
+
             return texture == rhs.texture
             && enableFog == rhs.enableFog
             && enableFrameBlend == rhs.enableFrameBlend
@@ -47,7 +53,8 @@ public:
             && blending == rhs.blending
             && enableAlphaRemap == rhs.enableAlphaRemap
             && alphaRemapTexture == rhs.alphaRemapTexture
-            && usePerspectiveMapping == rhs.usePerspectiveMapping;
+            && usePerspectiveMapping == rhs.usePerspectiveMapping
+            && isEqualByGradient;
         }
     };
 

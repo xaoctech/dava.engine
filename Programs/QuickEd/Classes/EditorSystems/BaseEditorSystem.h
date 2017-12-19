@@ -57,4 +57,6 @@ private:
 
     virtual eSystems GetOrder() const = 0;
     virtual void OnUpdate();
+
+    virtual void Invalidate();
 };

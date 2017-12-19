@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QFlags>
 
+class QPushButton;
 namespace DAVA
 {
 namespace TArc
@@ -25,10 +26,12 @@ public:
     enum class Fields : uint32
     {
         Text,
+        ImmediateText, // method<void(const DAVA::String& text)>
         PlaceHolder,
         IsReadOnly,
         IsEnabled,
         Validator, // const M::Validator*
+        Clearable, // bool
         FieldCount
     };
 
@@ -42,6 +45,7 @@ private:
 
     void SetupControl();
     void EditingFinished();
+    void TextChanged(const QString& newText);
 
     M::ValidationResult Validate(const Any& value) const override;
     void ShowHint(const QString& message) override;

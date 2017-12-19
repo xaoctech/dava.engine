@@ -167,7 +167,17 @@ const PackageBaseNode* ReduceDepth(const PackageBaseNode* node, uint32 reduceVal
     }
     return node;
 }
-} //unnamed namepace
+} //unnamed namespace
+
+bool IsControlNode(PackageBaseNode* node)
+{
+    return node != nullptr && node->GetControl() != nullptr;
+}
+
+bool IsRootControl(PackageBaseNode* node)
+{
+    return IsControlNode(node) && IsControlNode(node->GetParent()) == false;
+}
 
 bool CompareByLCA(const PackageBaseNode* left, const PackageBaseNode* right)
 {

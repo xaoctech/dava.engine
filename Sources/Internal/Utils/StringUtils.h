@@ -226,5 +226,58 @@ bool ContainsIgnoreCase(const StringType& string, const StringType& toFind,
     return false;
 }
 
+/**
+* \brief Case-insensitive string comparison.
+* \return true if strings are equals; false in other case.
+*/
+template <typename StringType>
+bool CompareIgnoreCase(const StringType& a, const StringType& b,
+                       const std::locale& locale = std::locale())
+{
+    using CharType = typename StringType::value_type;
+    if (a.length() == b.length())
+    {
+        return std::equal(b.begin(), b.end(), a.begin(),
+                          [&locale](CharType char1, CharType char2) {
+                              return std::toupper(char1, locale) == std::toupper(char2, locale);
+                          });
+    }
+    return false;
+}
+
+/**
+* \brief Convert string to lower case.
+*/
+template <typename StringType>
+StringType ToLowerCase(const StringType& string,
+                       const std::locale& locale = std::locale())
+{
+    using CharType = typename StringType::value_type;
+    StringType ret;
+    ret.resize(string.length());
+    std::transform(string.begin(), string.end(), ret.begin(),
+                   [&locale](CharType char1) {
+                       return std::tolower(char1, locale);
+                   });
+    return ret;
+}
+
+/**
+* \brief Convert string to upper case.
+*/
+template <typename StringType>
+StringType ToUpperCase(const StringType& string,
+                       const std::locale& locale = std::locale())
+{
+    using CharType = typename StringType::value_type;
+    StringType ret;
+    ret.resize(string.length());
+    std::transform(string.begin(), string.end(), ret.begin(),
+                   [&locale](CharType char1) {
+                       return std::toupper(char1, locale);
+                   });
+    return ret;
+}
+
 } // end namespace StringUtils
 } // end namespace DAVA

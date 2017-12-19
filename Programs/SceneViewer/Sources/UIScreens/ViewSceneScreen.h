@@ -64,12 +64,15 @@ private:
     void OnButtonSelectFromRes(DAVA::BaseObject* caller, void* param, void* callerData);
     void OnButtonSelectFromDoc(DAVA::BaseObject* caller, void* param, void* callerData);
     void OnButtonSelectFromExt(DAVA::BaseObject* caller, void* param, void* callerData);
+    void OnButtonToggleSpawnCharacter(DAVA::BaseObject* caller, void* param, void* callerData);
 
     void UpdateInfo(DAVA::float32 timeElapsed);
     void UpdatePerformanceTest(DAVA::float32 timeElapsed);
     void ProcessUserInput(DAVA::float32 timeElapsed);
 
     void SetCameraAtCenter(DAVA::Camera* camera);
+    void AddCameraControllerSystems();
+    void RemoveCameraControllerSystems();
 
     void LoadScene();
     void ReloadScene();
@@ -91,19 +94,16 @@ private:
     MenuItem* qualitySettingsMenuItem = nullptr;
     MenuItem* reloadShadersMenuItem = nullptr;
     MenuItem* performanceTestMenuItem = nullptr;
-
-    //     DAVA::uint64 drawTime = 0;
-    //     DAVA::uint64 updateTime = 0;
+    MenuItem* characterSpawnMenuItem = nullptr;
 
     DAVA::RotationControllerSystem* rotationControllerSystem = nullptr;
     DAVA::WASDControllerSystem* wasdSystem = nullptr;
-
-    //     Vector2 cursorPosition;
-    //     float32 cursorSize = 0.1f;
 
     DAVA::FpsMeter fpsMeter;
 
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
     GridTest gridTest;
 #endif
+
+    bool characterSpawned = false;
 };

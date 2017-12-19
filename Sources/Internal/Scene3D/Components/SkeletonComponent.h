@@ -2,14 +2,15 @@
 
 #include "Animation/AnimationTrack.h"
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 #include "Debug/DVAssert.h"
 #include "Entity/Component.h"
 #include "Math/AABBox3.h"
+#include "Reflection/Reflection.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SkeletonAnimation/JointTransform.h"
 #include "Scene3D/SkeletonAnimation/SkeletonPose.h"
-#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -52,17 +53,26 @@ public:
     const JointTransform& GetJointTransform(uint32 jointIndex) const;
     const JointTransform& GetJointObjectSpaceTransform(uint32 jointIndex) const;
 
-    SkeletonPose GetDefaultPose() const;
+    const SkeletonPose& GetDefaultPose() const;
     void ApplyPose(const SkeletonPose& pose);
     void SetJointTransform(uint32 jointIndex, const JointTransform& transform);
+
+    void SetJointPosition(uint32 jointIndex, const Vector3& position);
+    void SetJointOrientation(uint32 jointIndex, const Quaternion& orientation);
+    void SetJointScale(uint32 jointIndex, float32 scale);
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
 private:
+    void UpdateJointsMap();
+    void SetJointUpdated(uint32 jointIndex);
+    void UpdateDefaultPose();
+
     /*config time*/
     Vector<Joint> jointsArray;
+    SkeletonPose defaultPose;
 
     /*runtime*/
     const static uint32 INFO_PARENT_MASK = 0xffffff;
@@ -80,7 +90,7 @@ private:
     //bounding boxes
     Vector<AABBox3> objectSpaceBoxes;
 
-    Map<FastName, uint32> jointMap;
+    UnorderedMap<FastName, uint32> jointMap;
 
     uint32 startJoint = 0u; //first joint in the list that was updated this frame - cache this value to optimize processing
     bool configUpdated = true;
@@ -93,9 +103,9 @@ private:
 
 inline uint32 SkeletonComponent::GetJointIndex(const FastName& uid) const
 {
-    Map<FastName, uint32>::const_iterator it = jointMap.find(uid);
-    if (jointMap.end() != it)
-        return it->second;
+    auto found = jointMap.find(uid);
+    if (jointMap.end() != found)
+        return found->second;
     else
         return INVALID_JOINT_INDEX;
 }
@@ -125,10 +135,33 @@ inline const JointTransform& SkeletonComponent::GetJointObjectSpaceTransform(uin
 
 inline void SkeletonComponent::SetJointTransform(uint32 jointIndex, const JointTransform& transform)
 {
+    SetJointUpdated(jointIndex);
+    localSpaceTransforms[jointIndex] = transform;
+}
+
+inline void SkeletonComponent::SetJointPosition(uint32 jointIndex, const Vector3& position)
+{
+    SetJointUpdated(jointIndex);
+    localSpaceTransforms[jointIndex].SetPosition(position);
+}
+
+inline void SkeletonComponent::SetJointOrientation(uint32 jointIndex, const Quaternion& orientation)
+{
+    SetJointUpdated(jointIndex);
+    localSpaceTransforms[jointIndex].SetOrientation(orientation);
+}
+
+inline void SkeletonComponent::SetJointScale(uint32 jointIndex, float32 scale)
+{
+    SetJointUpdated(jointIndex);
+    localSpaceTransforms[jointIndex].SetScale(scale);
+}
+
+inline void SkeletonComponent::SetJointUpdated(uint32 jointIndex)
+{
     DVASSERT(jointIndex < GetJointsCount());
 
     jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
-    localSpaceTransforms[jointIndex] = transform;
     startJoint = Min(startJoint, jointIndex);
 }
 

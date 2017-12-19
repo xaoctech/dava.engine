@@ -16,7 +16,7 @@ class FileSystem;
 /**
 	Download several files with one request
 */
-class PackRequest : public DLCManager::IRequest
+class PackRequest final : public DLCManager::IRequest
 {
 public:
     PackRequest(DLCManagerImpl& packManager_, const String& packName, Vector<uint32> fileIndexes_);
@@ -29,16 +29,16 @@ public:
     bool Update();
     void Stop();
 
-    const String& GetRequestedPackName() const override;
+    const String& GetRequestedPackName() const final;
     /** recalculate full size with all dependencies */
-    Vector<uint32> GetDependencies() const;
+    const Vector<uint32>& GetDirectDependencies() const;
     /** return size of files within this request without dependencies */
-    uint64 GetSize() const override;
+    uint64 GetSize() const final;
     /** recalculate current downloaded size without dependencies */
-    uint64 GetDownloadedSize() const override;
+    uint64 GetDownloadedSize() const final;
 
     /** return true when all files loaded and ready */
-    bool IsDownloaded() const override;
+    bool IsDownloaded() const final;
 
     // clear redundant data to free memory
     void Finalize();
@@ -47,6 +47,10 @@ public:
 
     /** this request depends on other, so other should be downloaded first */
     bool IsSubRequest(const PackRequest* other) const;
+
+    bool IsLoadingStarted() const;
+
+    void StartLoading();
 
 private:
     void InitializeFileRequests();
@@ -70,7 +74,7 @@ private:
 	   1 - writing data to disk
 	   2 - checking data, moving files, and adding footer
 	*/
-    class DVPLWriter : public DLCDownloader::IWriter
+    class DVPLWriter final : public DLCDownloader::IWriter
     {
     public:
         DVPLWriter(FilePath& localPath_, uint32 sizeCompressed_, uint32 sizeUncompressed_, uint32 crc32Compressed_, Compressor::Type compressionType_)
@@ -83,15 +87,15 @@ private:
         }
         bool OpenFile();
         /** Save next buffer bytes into memory or file, on error return differs from parameter size */
-        uint64 Save(const void* ptr, uint64 size) override;
+        uint64 Save(const void* ptr, uint64 size) final;
         /** Return current size of saved byte stream, return ```std::numeric_limits<uint64>::max()``` value on error */
-        uint64 GetSeekPos() override;
+        uint64 GetSeekPos() final;
         /** Truncate file(or buffer) to zero length, return false on error */
-        bool Truncate() override;
+        bool Truncate() final;
         /** Close internal resource (file handle, socket, free memory) */
-        bool Close() override;
+        bool Close() final;
         /** Check internal state */
-        bool IsClosed() const override;
+        bool IsClosed() const final;
 
     private:
         std::ofstream fout;
@@ -113,7 +117,7 @@ private:
                     uint64 startLoadingPos_,
                     uint64 sizeOfCompressedFile_,
                     uint64 sizeOfUncompressedFile_,
-                    DLCDownloader::Task* task_,
+                    DLCDownloader::ITask* task_,
                     Compressor::Type compressionType_,
                     Status status_);
         ~FileRequest();
@@ -126,7 +130,7 @@ private:
         uint64 sizeOfCompressedFile = 0;
         uint64 sizeOfUncompressedFile = 0;
         uint64 downloadedFileSize = 0;
-        DLCDownloader::Task* task = nullptr;
+        DLCDownloader::ITask* task = nullptr;
         Compressor::Type compressionType = Compressor::Type::Lz4HC;
         Status status = CheckLocalFile;
         std::shared_ptr<DVPLWriter> dvplWriter;
@@ -142,7 +146,6 @@ private:
     Vector<FileRequest> requests;
     Vector<uint32> fileIndexes;
     String requestedPackName;
-    mutable Vector<uint32> dependencyCache;
 
     uint64 totalDownloadedSize = 0;
 
@@ -153,6 +156,12 @@ private:
     bool delayedRequest = true;
     bool fileRequestsInitialized = false;
     bool mutable isDownloaded = false;
+    bool isLoadingStarted = false;
 };
+
+inline bool PackRequest::IsLoadingStarted() const
+{
+    return isLoadingStarted;
+}
 
 } // end namespace DAVA

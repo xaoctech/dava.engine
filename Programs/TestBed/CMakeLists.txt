@@ -34,6 +34,7 @@ find_dava_module( CEFWebview )
 
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
+find_dava_module( Version )
 
 list( APPEND DAVA_COMPONENTS DAVA_LOCALIZATION_DEBUG )
 
