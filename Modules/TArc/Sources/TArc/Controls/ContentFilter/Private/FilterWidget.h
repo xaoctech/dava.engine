@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TArc/Controls/ControlProxy.h"
+#include "TArc/Utils/QtConnections.h"
 #include "TArc/Qt/QtIcon.h"
 
 #include <Functional/Signal.h>

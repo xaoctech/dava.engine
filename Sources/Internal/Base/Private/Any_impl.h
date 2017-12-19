@@ -217,6 +217,12 @@ T Any::Cast(const T& defaultValue) const
 }
 
 template <>
+inline bool Any::CanCast<const Any&>() const
+{
+    return true;
+}
+
+template <>
 inline bool Any::CanCast<Any>() const
 {
     return true;
@@ -230,6 +236,18 @@ inline Any Any::Cast<Any>() const
 
 template <>
 inline Any Any::Cast<Any>(const Any& defaultValue) const
+{
+    return *this;
+}
+
+template <>
+inline const Any& Any::Cast<const Any&>() const
+{
+    return *this;
+}
+
+template <>
+inline const Any& Any::Cast<const Any&>(const Any& defaultValue) const
 {
     return *this;
 }
