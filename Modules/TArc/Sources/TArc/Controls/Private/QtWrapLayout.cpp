@@ -184,6 +184,11 @@ void QtWrapLayoutPrivate::Layout(int32 width)
 {
     Q_Q(QtWrapLayout);
 
+    if (items.empty())
+    {
+        return;
+    }
+
     // Early out if we have no changes that would cause a change in vertical layout
     if (width == layoutWidth && flags[Dirty] == false && flags[SizeDirty] == false)
     {
@@ -194,11 +199,6 @@ void QtWrapLayoutPrivate::Layout(int32 width)
     layoutHeight = 0;
     layoutColumnWidths.clear();
     layoutRowHeights.clear();
-
-    if (items.empty())
-    {
-        return;
-    }
 
     int32 userVSpacing = q->GetVerticalSpacing();
     int32 userHSpacing = q->GetHorizontalSpacing();

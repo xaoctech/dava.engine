@@ -1,30 +1,46 @@
-#include "NameProperty.h"
+#include "Classes/Model/ControlProperties/NameProperty.h"
 
-#include "PropertyVisitor.h"
-#include "../PackageHierarchy/ControlNode.h"
+#include "Classes/Model/ControlProperties/PropertyVisitor.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
 
-#include "UI/UIControl.h"
-
-using namespace DAVA;
+#include <UI/UIControl.h>
+#include <UI/UIControlHelpers.h>
 
 NameProperty::NameProperty(ControlNode* controlNode_, const NameProperty* sourceProperty, eCloneType cloneType)
-    : ValueProperty("Name", Type::Instance<String>())
-    , controlNode(controlNode_) // weak ptr
+    : ValueProperty("Name", DAVA::Type::Instance<DAVA::String>())
+    , controlNode(controlNode_)
 {
-    if (sourceProperty)
+    using namespace DAVA;
+
+    FastName name;
+    if (sourceProperty != nullptr)
     {
-        controlNode->GetControl()->SetName(sourceProperty->GetValue().Cast<FastName>());
+        name = sourceProperty->GetValue().Cast<FastName>();
 
         if (cloneType == CT_INHERIT && controlNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE_CHILD)
         {
             AttachPrototypeProperty(sourceProperty);
         }
     }
-}
+    else
+    {
+        name = controlNode->GetControl()->GetName();
+    }
 
-NameProperty::~NameProperty()
-{
-    controlNode = nullptr; // weak ptr
+    if (name.IsValid() == false)
+    {
+        name = FastName("");
+    }
+
+    value = name;
+    if (UIControlHelpers::IsControlNameValid(name))
+    {
+        controlNode->GetControl()->SetName(name);
+    }
+    else
+    {
+        controlNode->GetControl()->SetName("generated");
+    }
 }
 
 void NameProperty::Refresh(DAVA::int32 refreshFlags)
@@ -50,9 +66,9 @@ NameProperty::ePropertyType NameProperty::GetType() const
     return TYPE_VARIANT;
 }
 
-Any NameProperty::GetValue() const
+DAVA::Any NameProperty::GetValue() const
 {
-    return Any(controlNode->GetName());
+    return value;
 }
 
 bool NameProperty::IsOverriddenLocally() const
@@ -65,11 +81,18 @@ ControlNode* NameProperty::GetControlNode() const
     return controlNode;
 }
 
-void NameProperty::ApplyValue(const DAVA::Any& value)
+void NameProperty::ApplyValue(const DAVA::Any& newValue)
 {
-    if (value.CanGet<String>())
+    using namespace DAVA;
+
+    if (newValue.CanCast<FastName>())
     {
-        controlNode->GetControl()->SetName(value.Cast<FastName>());
+        FastName name = newValue.Cast<FastName>();
+        value = Any(name);
+        if (UIControlHelpers::IsControlNameValid(name))
+        {
+            controlNode->GetControl()->SetName(name);
+        }
     }
     else
     {

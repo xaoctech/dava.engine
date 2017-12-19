@@ -29,6 +29,7 @@
 #include "Model/PackageHierarchy/ImportedPackagesNode.h"
 
 #include "Model/ControlProperties/ComponentPropertiesSection.h"
+#include "Model/ControlProperties/NameProperty.h"
 #include "Model/ControlProperties/RootProperty.h"
 #include "Model/ControlProperties/StyleSheetRootProperty.h"
 #include "Model/ControlProperties/StyleSheetProperty.h"
@@ -140,7 +141,7 @@ void EnsureControlNameIsUnique(ControlNode* control, const PackageNode* package,
     if (IsNameExists(origName, dest, siblingTopContainer))
     {
         String newName = ProduceUniqueName(origName, dest, siblingTopContainer);
-        control->GetControl()->SetName(newName);
+        control->GetRootProperty()->GetNameProperty()->SetValue(newName);
     }
 }
 

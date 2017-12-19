@@ -47,6 +47,11 @@ void ObjectPlacementSystem::PlaceOnLandscape() const
         return;
     }
     const DAVA::SelectableGroup& selection = GetScene()->GetSystem<DAVA::SelectionSystem>()->GetSelection();
+
+    selection.RemoveIf([this](const Selectable& obj) {
+        return obj.AsEntity()->GetLocked();
+    });
+
     modificationSystem->PlaceOnLandscape(selection);
 }
 
@@ -74,6 +79,10 @@ void ObjectPlacementSystem::PlaceAndAlign() const
     using namespace DAVA;
 
     const SelectableGroup& entities = GetScene()->GetSystem<SelectionSystem>()->GetSelection();
+
+    entities.RemoveIf([this](const Selectable& obj) {
+        return obj.AsEntity()->GetLocked();
+    });
 
     Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities, GetScene());
     if (modifEntities.empty())

@@ -4,6 +4,9 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/DataProcessing/DataContext.h>
+
 #include <Entity/Component.h>
 #include <Particles/ParticleEmitterInstance.h>
 #include <Particles/ParticleForce.h>
@@ -12,6 +15,7 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Entity.h>
+#include <Scene3D/Components/ComponentHelpers.h>
 
 namespace DAVA
 {

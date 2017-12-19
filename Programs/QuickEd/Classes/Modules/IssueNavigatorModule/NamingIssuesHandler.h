@@ -1,23 +1,28 @@
 #pragma once
 
-#include "Utils/PackageListenerProxy.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
+#include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
 
 namespace DAVA
 {
 class ContextAccessor;
+class UI;
 class UIControl;
 }
 
 class ControlNode;
 class IssueNavigatorWidget;
 
-class NamingIssuesHandler : public PackageListener
+class NamingIssuesHandler : public IssuesHandler, PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    NamingIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::UI* ui_, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
     ~NamingIssuesHandler() override = default;
+
+    // IssuesHandler
+    void OnContextDeleted(DAVA::TArc::DataContext* current) override;
 
     // PackageListener
     void ActivePackageNodeWasChanged(PackageNode* node) override;
@@ -28,10 +33,17 @@ public:
 private:
     struct DuplicationsIssue
     {
-        DAVA::int32 issueId = 0;
+        Issue issue;
         DAVA::UnorderedSet<ControlNode*> controls;
     };
     using DuplicationsIssuesMap = DAVA::UnorderedMap<DAVA::FastName, DuplicationsIssue>;
+
+    struct PackageIssues
+    {
+        DAVA::TArc::DataContext* context = nullptr;
+        DAVA::UnorderedMap<ControlNode*, Issue> symbolsIssues;
+        DuplicationsIssuesMap duplicationIssues;
+    };
 
     void ValidateNameSymbolsCorrectnessForChildren(ControlsContainerNode* node);
     void ValidateNameSymbolsCorrectness(ControlNode* node);
@@ -40,31 +52,35 @@ private:
     void CreateSymbolsIssue(ControlNode* node);
     void CreateDuplicationsIssue(ControlNode* node);
     void AddToDuplicationsIssue(DuplicationsIssue& issue, ControlNode* node);
-    void UpdateSymbolsIssue(DAVA::UnorderedMap<ControlNode*, DAVA::int32>::iterator& it);
-    void UpdateDuplicationsIssue(DuplicationsIssuesMap::iterator& it);
+    void UpdateSymbolsIssue(std::pair<ControlNode* const, Issue>& symbolsIssue);
+    void UpdateDuplicationsIssue(DuplicationsIssue& issue);
 
     void RemoveSymbolsIssuesRecursively(ControlNode* node);
     void RemoveSymbolsIssue(ControlNode* node);
     void RemoveFromDuplicationsIssue(ControlNode* node);
-    void RemoveAllIssues();
+
+    void RemoveIssuesFromPanel();
+    void RestoreIssuesOnToPanel();
 
     void SearchIssuesInPackage(PackageNode* package);
 
     PackageNode* GetPackage() const;
-    bool IsRootControl(const ControlNode* node) const;
-    DAVA::String GetPathToControl(const ControlNode* node) const;
-    DAVA::UnorderedSet<ControlNode*> GetControlsByName(const DAVA::FastName& name);
+    DAVA::UnorderedSet<ControlNode*> GetControlsByName(const DAVA::String& name);
 
     DuplicationsIssuesMap::iterator FindInDuplicationsIssues(ControlNode* node);
 
+private:
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* navigatorWidget = nullptr;
 
     DAVA::int32 nextIssueId = 0;
 
-    DAVA::UnorderedMap<ControlNode*, DAVA::int32> symbolsIssues;
-    DuplicationsIssuesMap duplicationIssues;
+    DAVA::UnorderedMap<PackageNode*, PackageIssues> packageIssues;
+    PackageNode* currentPackage = nullptr;
+    DAVA::UnorderedMap<ControlNode*, Issue>* symbolsIssues = nullptr;
+    DuplicationsIssuesMap* duplicationIssues = nullptr;
 
     DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
     PackageListenerProxy packageListenerProxy;
 };

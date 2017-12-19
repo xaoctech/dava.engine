@@ -272,7 +272,7 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
         if (pkgFound != libraryPackages.end())
         {
             PackageControlsNode* packageControls = pkgFound->Get()->GetPackageControlsNode();
-            ControlNode* controlNode = packageControls->FindControlNodeByName(pinnedControl.controlName);
+            ControlNode* controlNode = packageControls->FindChildByName(pinnedControl.controlName);
             if (controlNode != nullptr)
             {
                 QString controlIconPath;
@@ -537,7 +537,7 @@ void LibraryModule::ControlPropertyWasChanged(ControlNode* node, AbstractPropert
         auto nodeFound = data->prototypesActions.find(node);
         if (nodeFound != data->prototypesActions.end())
         {
-            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::String>());
+            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::FastName>().c_str());
             nodeFound->second.action->setText(newName);
         }
     }

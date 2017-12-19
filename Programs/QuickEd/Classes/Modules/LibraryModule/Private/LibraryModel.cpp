@@ -245,7 +245,7 @@ void LibraryModel::ControlPropertyWasChanged(ControlNode* node, AbstractProperty
             auto item = itemFromIndex(index);
             if (nullptr != item)
             {
-                auto text = QString::fromStdString(property->GetValue().Get<String>());
+                auto text = QString::fromStdString(property->GetValue().Get<FastName>().c_str());
                 item->setText(text);
             }
         }
