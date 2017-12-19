@@ -1,8 +1,7 @@
 #pragma once
 
 #include "TArc/Core/OperationInvoker.h"
-
-#include <gmock/gmock.h>
+#include "TArc/Testing/GMockInclude.h"
 
 namespace DAVA
 {

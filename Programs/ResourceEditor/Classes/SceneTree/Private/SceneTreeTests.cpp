@@ -16,6 +16,7 @@
 #include <TArc/Testing/MockDefine.h>
 #include <TArc/Testing/MockListener.h>
 #include <TArc/Testing/TArcUnitTests.h>
+#include <TArc/Testing/GMockInclude.h>
 
 #include <Base/Any.h>
 #include <Scene3D/Components/Controller/WASDControllerComponent.h>
@@ -26,8 +27,6 @@
 #include <QTreeView>
 #include <QtTest>
 #include <QVariant>
-
-#include <gmock/gmock.h>
 
 DAVA_TARC_TESTCLASS(SceneTreeTests)
 {
@@ -100,15 +99,18 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     DAVA_TEST (SceneTreeCreationTest)
     {
+        DAVA::Logger::Info("SceneTreeCreationTest start");
         sceneTreeView = LookupSingleWidget<QTreeView>(DAVA::TArc::mainWindowKey, QStringLiteral("SceneTreeView"));
         TEST_VERIFY(sceneTreeView != nullptr);
         TEST_VERIFY(sceneTreeView->model() == nullptr);
         TEST_VERIFY(sceneTreeView->rootIndex().isValid() == false);
         TEST_VERIFY(sceneTreeView->indexBelow(sceneTreeView->rootIndex()).isValid() == false);
+        DAVA::Logger::Info("SceneTreeCreationTest end");
     }
 
     DAVA_TEST (LightAndCameraTest)
     {
+        DAVA::Logger::Info("LightAndCameraTest start");
         TEST_VERIFY(sceneTreeView != nullptr);
 
         using namespace DAVA::TArc;
@@ -123,17 +125,22 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
         ForceSyncSceneTree();
 
         auto finalStep = [this]() {
+            DAVA::Logger::Info("LightAndCameraTest final step start");
             MatchEntitiesWithScene();
             InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            DAVA::Logger::Info("LightAndCameraTest final step end");
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
         .WillOnce(Invoke(finalStep))
         .WillOnce(Return());
+
+        DAVA::Logger::Info("LightAndCameraTest end");
     }
 
     DAVA_TEST (SwitchScenesTest)
     {
+        DAVA::Logger::Info("SwitchScenesTest start");
         TEST_VERIFY(sceneTreeView != nullptr);
 
         using namespace DAVA::TArc;
@@ -393,8 +400,8 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
             TEST_VERIFY(visibleEntities.count(rawFilterMatchedPointer) == 1);
             TEST_VERIFY(visibleEntities.count(rawDummyPointer) == 1);
 
-            QToolButton* clearButton = LookupSingleWidget<QToolButton>(DAVA::TArc::mainWindowKey, "ClearFilterTextButton");
-            QTest::mouseClick(clearButton, Qt::LeftButton, Qt::KeyboardModifiers());
+            QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::TArc::mainWindowKey, "SceneTreeFilterTextEdit");
+            lineEdit->clear();
         };
 
         auto step3 = [this]() {

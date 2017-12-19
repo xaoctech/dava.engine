@@ -394,13 +394,20 @@ void DLCManagerImpl::CreateDownloader()
 {
     if (!downloader)
     {
-        DLCDownloader::Hints downloaderHints;
-        downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
-        downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
-        downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
-        downloaderHints.profiler = &profiler;
+        if (hints.downloader)
+        {
+            downloader = hints.downloader;
+        }
+        else
+        {
+            DLCDownloader::Hints downloaderHints;
+            downloaderHints.numOfMaxEasyHandles = static_cast<int>(hints.downloaderMaxHandles);
+            downloaderHints.chunkMemBuffSize = static_cast<int>(hints.downloaderChunkBufSize);
+            downloaderHints.timeout = static_cast<int>(hints.timeoutForDownload);
+            downloaderHints.profiler = &profiler;
 
-        downloader.reset(DLCDownloader::Create(downloaderHints));
+            downloader = std::shared_ptr<DLCDownloader>(DLCDownloader::Create(downloaderHints));
+        }
     }
 }
 
@@ -418,8 +425,6 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     log << __FUNCTION__ << std::endl;
 
-    CreateDownloader();
-
     if (!IsInitialized())
     {
         dirToDownloadedPacks = dirToDownloadPacks_;
@@ -433,6 +438,8 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         TestWriteAccessToPackDirectory(dirToDownloadPacks_);
         FillPreloadedPacks();
     }
+
+    CreateDownloader();
 
     // if Initialize called second time
     fullSizeServerData = 0;
@@ -1388,7 +1395,7 @@ void DLCManagerImpl::DeleteLocalMetaFile() const
     fs->DeleteFile(localCacheMeta);
 }
 
-bool DLCManagerImpl::IsPackDownloaded(const String& packName)
+bool DLCManagerImpl::IsPackDownloaded(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
 
@@ -1799,7 +1806,7 @@ bool DLCManagerImpl::IsAnyPackInQueue() const
     return false;
 }
 
-bool DLCManagerImpl::IsPackInQueue(const String& packName)
+bool DLCManagerImpl::IsPackInQueue(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
     if (!IsInitialized())

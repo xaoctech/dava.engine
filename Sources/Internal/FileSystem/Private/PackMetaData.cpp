@@ -71,7 +71,7 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     packIndexes.reserve(numIndexes);
 
     db << "SELECT path, pack_index FROM files"
-    >> [&](std::string, int packIndex)
+    >> [&](std::string name, int packIndex)
     {
         packIndexes.push_back(packIndex);
     };
