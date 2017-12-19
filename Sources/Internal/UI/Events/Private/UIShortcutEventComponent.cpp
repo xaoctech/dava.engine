@@ -4,6 +4,7 @@
 #include "Utils/Utils.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
+#include <UI/UIControlHelpers.h>
 
 namespace DAVA
 {
@@ -108,17 +109,20 @@ void UIShortcutEventComponent::SetShortcutsFromString(const String& value)
         if (str.size() > 0 && !str[0].empty())
         {
             FastName eventName(StringUtils::Trim(str[0]));
-            KeyboardShortcut shortcut;
 
-            if (str.size() > 1)
+            if (UIControlHelpers::IsEventNameValid(eventName))
             {
-                shortcut = KeyboardShortcut::ParseFromString(StringUtils::Trim(str[1]));
-            }
+                KeyboardShortcut shortcut;
+                if (str.size() > 1)
+                {
+                    shortcut = KeyboardShortcut::ParseFromString(StringUtils::Trim(str[1]));
+                }
 
-            eventShortcuts.push_back(KeyBinding(eventName, shortcut));
-            if (shortcut.GetKey() != eInputElements::NONE)
-            {
-                inputMap.BindEvent(shortcut, eventName);
+                eventShortcuts.push_back(KeyBinding(eventName, shortcut));
+                if (shortcut.GetKey() != eInputElements::NONE)
+                {
+                    inputMap.BindEvent(shortcut, eventName);
+                }
             }
         }
     }
