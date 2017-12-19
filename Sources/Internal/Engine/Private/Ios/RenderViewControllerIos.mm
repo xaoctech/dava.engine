@@ -21,6 +21,16 @@
     bridge->LoadView();
 }
 
+- (void)viewDidLoad
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+}
+
+- (void)orientationChanged:(NSNotification*)notification
+{
+    bridge->OrientationChanged();
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     bridge->ViewWillTransitionToSize(size.width, size.height);
@@ -30,6 +40,11 @@
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskLandscape;
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden
+{
+    return true;
 }
 
 @end

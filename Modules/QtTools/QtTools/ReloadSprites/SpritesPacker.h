@@ -1,8 +1,8 @@
 #ifndef __SPRITES_PACKER_H__
 #define __SPRITES_PACKER_H__
 
-#include <DavaTools/TextureCompression/TextureConverter.h>
-#include <DavaTools/TexturePacker/ResourcePacker2D.h>
+#include <TextureCompression/TextureConverter.h>
+#include <TexturePacker/ResourcePacker2D.h>
 
 #include <Render/RenderBase.h>
 

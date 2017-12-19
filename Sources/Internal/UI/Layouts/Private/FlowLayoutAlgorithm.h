@@ -32,7 +32,7 @@ private:
     void CalculateVerticalDynamicPaddingAndSpaces(ControlLayoutData& data);
     void LayoutLineVertically(ControlLayoutData& data, int32 firstIndex, int32 lastIndex, float32 top, float32 bottom);
 
-    void CorrectPaddingAndSpacing(float32& padding, float32& spacing, bool dynamicPadding, bool dynamicSpacing, float32 restSize, int32 childrenCount);
+    void CorrectPaddingAndSpacing(float32& leadingPadding, float32& trailingPadding, float32& spacing, bool dynamicPadding, bool dynamicSpacing, float32 restSize, int32 childrenCount);
     void SortLineItemsByContentDirection(int32 firstIndex, int32 lastIndex, List<uint32>& order, int32& realLastIndex);
 
 private:
@@ -41,13 +41,15 @@ private:
     bool inverse = false;
     bool skipInvisible = true;
 
-    float32 horizontalPadding = 0.0f;
+    float32 horizontalLeadingPadding = 0.0f;
+    float32 horizontalTrailingPadding = 0.0f;
     float32 horizontalSpacing = 0.0f;
     bool dynamicHorizontalPadding = false;
     bool dynamicHorizontalInLinePadding = false;
     bool dynamicHorizontalSpacing = false;
 
-    float32 verticalPadding = 0.0f;
+    float32 topPadding = 0.0f;
+    float32 bottomPadding = 0.0f;
     float32 verticalSpacing = 0.0f;
     bool dynamicVerticalPadding = false;
     bool dynamicVerticalSpacing = false;

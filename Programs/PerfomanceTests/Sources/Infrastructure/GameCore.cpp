@@ -11,6 +11,8 @@
 #include "Tests/MaterialsTest.h"
 #include "Tests/LoadingTest.h"
 
+#include <Version/Version.h>
+
 #include <fstream>
 #include <algorithm>
 
@@ -164,7 +166,9 @@ void GameCore::LoadMaps(const String& testName, Vector<std::pair<String, String>
 void GameCore::OnWindowCreated(DAVA::Window* w)
 {
     w->SetSizeAsync({ SCREEN_WIDTH, SCREEN_HEIGHT });
-    w->SetTitleAsync("Performance Tests");
+
+    String title = Version::CreateAppVersion("Performance Tests");
+    w->SetTitleAsync(title);
 }
 
 void GameCore::Cleanup()

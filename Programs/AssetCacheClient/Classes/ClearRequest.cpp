@@ -1,5 +1,5 @@
 #include "ClearRequest.h"
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+#include <AssetCache/AssetCacheClient.h>
 
 ClearRequest::ClearRequest()
     : CacheRequest("clear")

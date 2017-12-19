@@ -19,7 +19,6 @@
 #include <DocDirSetup/DocDirSetup.h>
 
 #include <Render/Renderer.h>
-#include <DavaTools/TextureCompression/PVRConverter.h>
 #include <Particles/ParticleEmitter.h>
 
 #include <UI/UIControlSystem.h>
@@ -73,12 +72,6 @@ DAVA::TArc::BaseApplication::EngineInitInfo QEApplication::GetInitInfo() const
 void QEApplication::Init(const DAVA::EngineContext* engineContext)
 {
     using namespace DAVA;
-#if defined(__DAVAENGINE_MACOS__)
-    const String pvrTexToolPath = "~res:/PVRTexToolCLI";
-#elif defined(__DAVAENGINE_WIN32__)
-    const String pvrTexToolPath = "~res:/PVRTexToolCLI.exe";
-#endif
-    PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
 
     Texture::SetPixelization(true);
 

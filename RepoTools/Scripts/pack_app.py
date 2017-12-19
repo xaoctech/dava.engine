@@ -7,15 +7,6 @@ from zip import zipdir
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
  
-def GetDavaVersion( pathToFramework ):
-    os.chdir(pathToFramework)
-    file = open("Sources/Internal/DAVAVersion.h");
-    p = re.compile('DAVAENGINE_VERSION "([\w\.]+)"');
-    davaVersion = p.findall(file.read());
-    file.close();
-    davaVersion = "".join(davaVersion)
-    davaVersion = '[' + davaVersion.replace( '.', '_') + ']'
-    return davaVersion
 
 def GetGitVersion( pathToFramework ):
     os.chdir(pathToFramework)
@@ -34,10 +25,6 @@ def ArchiveName( app_name, dava_path, build_number ):
         archiveName  = [ app_name ]
 
     if dava_path :
-        if app_name :
-            versionDava  = GetDavaVersion( dava_path )
-            archiveName += [ versionDava ]
-
         versionGit   = GetGitVersion( dava_path )
         archiveName += [ versionGit ]
 
@@ -66,10 +53,7 @@ def main():
         ignore_file_masks = options.ignore_file_masks.split(' ')
 
     if options.dava_path :
-        versionDava  = GetDavaVersion( options.dava_path )
         versionGit   = GetGitVersion ( options.dava_path ) 
-
-        archiveName += [ versionDava ]
         archiveName += [ versionGit ]
 
     if options.build_number :

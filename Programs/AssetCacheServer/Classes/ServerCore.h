@@ -1,7 +1,7 @@
 #pragma once
 
-#include <DavaTools/AssetCache/ServerNetProxy.h>
-#include <DavaTools/AssetCache/ClientNetProxy.h>
+#include <AssetCache/ServerNetProxy.h>
+#include <AssetCache/ClientNetProxy.h>
 
 #include "ServerLogics.h"
 #include "ApplicationSettings.h"

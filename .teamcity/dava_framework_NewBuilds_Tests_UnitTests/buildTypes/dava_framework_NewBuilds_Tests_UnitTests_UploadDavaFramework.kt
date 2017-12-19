@@ -28,26 +28,43 @@ object dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework : BuildType(
     steps {
         script {
             name = "git clone stash"
-            enabled = false
             workingDir = "dava.framework"
             scriptContent = """
                 git clone https://%stash_hostname%/scm/df/dava.framework.git .
-                git remote add dava_git https://%remote_login%:%remote_pass%@github.com/dava/dava.framework.git
+                git remote add dava_github https://%remote_login%:%remote_pass%@github.com/dava/dava.framework.git
             """.trimIndent()
         }
         script {
-            name = "Clearing"
-            enabled = false
+            name = "Clearing development branch"
             workingDir = "dava.framework/Bin/RepoTools/Scripts/GithubTools"
-            scriptContent = "python github_preparation.py --path %dava_dir% --repo %dava_dir%"
+            scriptContent = """
+                git checkout -b development origin/development
+                python github_preparation.py --path %dava_dir% --repo %dava_dir%
+            """.trimIndent()
         }
         script {
-            name = "git push"
-            enabled = false
+            name = "Clearing server branch"
+            workingDir = "dava.framework/Bin/RepoTools/Scripts/GithubTools"
+            scriptContent = """
+                git checkout -b server origin/server
+                python github_preparation.py --path %dava_dir% --repo %dava_dir%
+            """.trimIndent()
+        }
+        script {
+            name = "Clearing new_render_ branch"
+            workingDir = "dava.framework/Bin/RepoTools/Scripts/GithubTools"
+            scriptContent = """
+                git checkout -b new_render_ origin/new_render_
+                python github_preparation.py --path %dava_dir% --repo %dava_dir%
+            """.trimIndent()
+        }
+        script {
+            name = "Git push to github"
             workingDir = "dava.framework"
             scriptContent = """
-                git pull dava_git development
-                git push dava_git development --force
+                git push -u dava_github development --force
+                git push -u dava_github server --force
+                git push -u dava_github new_render_ --force
             """.trimIndent()
         }
     }
