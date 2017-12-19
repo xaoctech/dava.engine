@@ -2,12 +2,12 @@
 
 #include "Classes/Modules/PackageModule/Private/PackageWidget.h"
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 class PackageNode;
 class QAction;
 
-class PackageData : public DAVA::TArc::DataNode
+class PackageData : public DAVA::TArcDataNode
 {
 public:
 private:
@@ -33,5 +33,5 @@ private:
     PackageWidget* packageWidget = nullptr;
     DAVA::Map<PackageNode*, PackageContext> packageWidgetContexts;
 
-    DAVA_VIRTUAL_REFLECTION(PackageData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(PackageData, DAVA::TArcDataNode);
 };

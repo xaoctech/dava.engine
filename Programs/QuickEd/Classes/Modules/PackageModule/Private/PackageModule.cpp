@@ -43,7 +43,6 @@
 namespace PackageModuleDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
 template <typename NodeType>
 void CollectSelectedNodes(const SelectedNodes& selectedNodes, Vector<NodeType*>& nodes, bool forCopy, bool forRemove)
@@ -166,8 +165,6 @@ void PackageModule::PostInit()
 
 void PackageModule::InitData()
 {
-    using namespace DAVA::TArc;
-
     std::unique_ptr<PackageData> packageData = std::make_unique<PackageData>();
     GetAccessor()->GetGlobalContext()->CreateData(std::move(packageData));
 
@@ -178,7 +175,6 @@ void PackageModule::InitData()
 void PackageModule::CreateActions()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
@@ -207,7 +203,7 @@ void PackageModule::CreateActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateInvisiblePoint());
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     };
 
     auto addSeparatorIntoTreeView = [packageWidget]()
@@ -667,7 +663,7 @@ void PackageModule::CreateActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint("Find", { InsertionParams::eInsertionMethod::AfterItem, "Find file in project..." }));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // Find Prototype Instances
@@ -696,7 +692,7 @@ void PackageModule::CreateActions()
 
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint("Find", { InsertionParams::eInsertionMethod::AfterItem, jumpToPrototypeActionName }));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     addSeparatorIntoTreeView();
@@ -724,7 +720,7 @@ void PackageModule::CreateActions()
 
 void PackageModule::CreatePackageWidget()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
 
@@ -740,7 +736,7 @@ void PackageModule::CreatePackageWidget()
     panelInfo.area = Qt::LeftDockWidgetArea;
     PanelKey panelKey("Package", panelInfo);
 
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, panelKey, packageData->packageWidget);
+    GetUI()->AddView(DAVA::mainWindowKey, panelKey, packageData->packageWidget);
 }
 
 void PackageModule::RegisterGlobalOperation()
@@ -748,10 +744,9 @@ void PackageModule::RegisterGlobalOperation()
     RegisterOperation(QEGlobal::DropIntoPackageNode.ID, this, &PackageModule::OnDropIntoPackageNode);
 }
 
-void PackageModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void PackageModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     PackageWidget* packageWidget = packageData->packageWidget;
@@ -820,7 +815,7 @@ void PackageModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const 
     }
 }
 
-void PackageModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void PackageModule::OnContextDeleted(DAVA::DataContext* context)
 {
     DocumentData* documentData = context->GetData<DocumentData>();
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
@@ -971,7 +966,7 @@ void PackageModule::OnCopy()
 
 void PackageModule::OnPaste()
 {
-    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* activeContext = GetAccessor()->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     DVASSERT(nullptr != documentData);
@@ -1005,7 +1000,6 @@ void PackageModule::OnPaste()
 void PackageModule::OnDuplicate()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DocumentData* documentData = GetAccessor()->GetActiveContext()->GetData<DocumentData>();
     SelectedNodes nodes = documentData->GetSelectedNodes();
@@ -1042,7 +1036,7 @@ void PackageModule::OnDuplicate()
 void PackageModule::OnCopyControlPath()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace PackageModuleDetails;
 
     DocumentData* documentData = GetAccessor()->GetActiveContext()->GetData<DocumentData>();
@@ -1086,7 +1080,7 @@ void PackageModule::OnRename()
 void PackageModule::OnDelete()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace PackageModuleDetails;
 
     DocumentData* documentData = GetAccessor()->GetActiveContext()->GetData<DocumentData>();
@@ -1176,7 +1170,7 @@ void PackageModule::OnMoveRight()
 void PackageModule::OnRunUIViewerFast()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace PackageModuleDetails;
 
     DataContext* globalContext = GetAccessor()->GetGlobalContext();
@@ -1321,7 +1315,7 @@ void PackageModule::OnRunUIViewerFast()
 
 void PackageModule::OnRunUIViewer()
 {
-    UIViewerDialog dlg(GetAccessor(), GetUI(), GetUI()->GetWindow(DAVA::TArc::mainWindowKey));
+    UIViewerDialog dlg(GetAccessor(), GetUI(), GetUI()->GetWindow(DAVA::mainWindowKey));
     PackageWidgetSettings* settings = GetAccessor()->GetGlobalContext()->GetData<PackageWidgetSettings>();
     dlg.SetDeviceIndex(static_cast<DAVA::int32>(settings->selectedDevice));
     dlg.SetBlankIndex(static_cast<DAVA::int32>(settings->selectedBlank));
@@ -1338,7 +1332,6 @@ void PackageModule::OnRunUIViewer()
 void PackageModule::OnJumpToPrototype()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
@@ -1359,7 +1352,6 @@ void PackageModule::OnJumpToPrototype()
 void PackageModule::OnFindPrototypeInstances()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
@@ -1579,17 +1571,16 @@ void PackageModule::PushErrorMessage(const DAVA::String& errorMessage)
 {
     DAVA::Logger::Error(errorMessage.c_str());
 
-    DAVA::TArc::NotificationParams notifParams;
+    DAVA::NotificationParams notifParams;
     notifParams.title = "Error";
     notifParams.message.message = errorMessage;
     notifParams.message.type = DAVA::Result::RESULT_ERROR;
-    GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notifParams);
+    GetUI()->ShowNotification(DAVA::mainWindowKey, notifParams);
 }
 
 void PackageModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     QString path = QString::fromStdString(packagePath.GetAbsolutePathname());
     QString name = QString::fromStdString(controlName);
@@ -1609,4 +1600,4 @@ void PackageModule::SetNewSelection(const SelectedNodes& selection)
     packageData->packageWidget->OnSelectionChanged(selection);
 }
 
-DECL_GUI_MODULE(PackageModule);
+DECL_TARC_MODULE(PackageModule);

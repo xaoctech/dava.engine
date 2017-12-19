@@ -217,6 +217,11 @@ public:
         pluginsManager.reset(new TArcPluginManager(applicationName, pluginsFolder));
         Vector<String> errors;
         pluginsManager->LoadPlugins(errors);
+
+        for (String errorMsg : errors)
+        {
+            DAVA::Logger::Error(errorMsg.c_str());
+        }
     }
 
     template <typename T>

@@ -870,10 +870,10 @@ bool CommandExecutor::MoveControlImpl(ControlNode* moved, ControlsContainerNode*
                 }
                 else if (instances.size() > 1)
                 {
-                    DAVA::TArc::NotificationParams params;
+                    DAVA::NotificationParams params;
                     params.title = "Ambiguity of move operation";
                     params.message = Result(Result::RESULT_WARNING, "Can't match source and destination instances. Result may be incorrect");
-                    ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+                    ui->ShowNotification(DAVA::mainWindowKey, params);
                 }
             }
         }

@@ -40,7 +40,6 @@ bool EditorCanvas::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*i
 void EditorCanvas::ProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     const EditorSystemsManager* systemsManager = GetSystemsManager();
 
@@ -251,7 +250,6 @@ void EditorCanvas::OnScaleChanged(const DAVA::Any& scaleValue)
 void EditorCanvas::MoveSceneByUpdate()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     EditorSystemsManager* systemsManager = GetSystemsManager();
     Vector2 mousePos = systemsManager->GetLastMousePos();

@@ -101,7 +101,7 @@ UIViewerDialog::UIViewerDialog(DAVA::ContextAccessor* accessor_, DAVA::UI* ui, Q
         QtHBoxLayout* lineLayout = new QtHBoxLayout();
         lineLayout->addWidget(new QLabel("Load as UI flow: ", this));
 
-        CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[CheckBox::Fields::Checked] = "flowFlag";
         lineLayout->AddControl(new CheckBox(params, accessor, reflectedModel));
         boxLayout->addLayout(lineLayout);

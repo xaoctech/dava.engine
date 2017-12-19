@@ -726,8 +726,12 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
 
     commandNotification.ForEach<SetFieldValueCommand>([&](const SetFieldValueCommand* cmd) {
         const FastName HEIGHTMAP_PATH("heightmapPath");
+        const FastName HEIGHTMAP_SIZE("size");
         const Reflection::Field& field = cmd->GetField();
-        if (field.key.Cast<FastName>(FastName("")) == HEIGHTMAP_PATH)
+        DAVA::ReflectedObject obj = field.ref.GetDirectObject();
+        bool isLandscape = obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::Landscape>();
+        DAVA::FastName fieldKey = field.key.Cast<DAVA::FastName>(DAVA::FastName(""));
+        if (isLandscape == true && (fieldKey == HEIGHTMAP_PATH || fieldKey == HEIGHTMAP_SIZE))
         {
             UpdateCollisionObject(Selectable(curLandscapeEntity), true);
         }

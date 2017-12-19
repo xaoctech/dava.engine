@@ -5,15 +5,15 @@
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
 #include <Base/Type.h>
+#include <Debug/DVAssert.h>
+#include <Engine/EngineContext.h>
+#include <Engine/Private/EngineBackend.h>
 #include <PluginManager/Plugin.h>
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <ReflectionDeclaration/Private/AnyCasts.h>
-#include <Engine/EngineContext.h>
-#include <Engine/Private/EngineBackend.h>
-
-#include <Render/RHI/rhi_Public.h>
 #include <Render/Renderer.h>
+#include <Render/RHI/rhi_Public.h>
 
 namespace DAVA
 {
@@ -38,8 +38,8 @@ public:
         String pluginName;
         String shortDescription;
         String fullDescription;
-        int32 majorVersion;
-        int32 minorVersion;
+        int32 majorVersion = 0;
+        int32 minorVersion = 0;
     };
 
     TArcPlugin(const EngineContext* context);
@@ -75,11 +75,11 @@ private:
 } // namespace DAVA
 
 #define CREATE_PLUGINS_ARRAY_FUNCTION_NAME CreatePluginsArray
-#define DELETE_PLUGINS_ARRAY DeletePluginArray
+#define DELETE_PLUGINS_ARRAY_FUNCTION_NAME DeletePluginArray
 #define DESTROY_PLUGIN_FUNCTION_NAME DestroyPlugin
 
-using TCreatePluginFn = DAVA::TArcPlugin** (*)(const DAVA::EngineContext* context);
-using TDestroyPluginsArray = void (*)(DAVA::TArcPlugin** pluginsArray);
+using TCreatePluginsArrayFn = DAVA::TArcPlugin** (*)(const DAVA::EngineContext* context);
+using TDestroyPluginsArrayFn = void (*)(DAVA::TArcPlugin** pluginsArray);
 using TDestroyPluginFn = void (*)(DAVA::TArcPlugin* plugin);
 
 #define START_PLUGINS_DECLARATION()\
@@ -88,7 +88,7 @@ extern "C" { \
     { \
         delete plugin; \
     } \
-    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGINS_ARRAY(DAVA::TArcPlugin** pluginsArray) \
+    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGINS_ARRAY_FUNCTION_NAME(DAVA::TArcPlugin** pluginsArray) \
     { \
         delete[] pluginsArray; \
     } \
@@ -114,6 +114,7 @@ extern "C" { \
 
 #define DECLARE_PLUGIN(moduleType, descr)\
     { \
+        DVASSERT(counter < 32); \
         plugins[counter++] = new DAVA::TypedTArcPlugin<moduleType>(context, descr); \
     }
 

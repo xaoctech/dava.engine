@@ -29,7 +29,7 @@ class PackageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PackageWidget(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, QWidget* parent = 0);
+    explicit PackageWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, QWidget* parent = 0);
 
     PackageModel* GetPackageModel() const;
 

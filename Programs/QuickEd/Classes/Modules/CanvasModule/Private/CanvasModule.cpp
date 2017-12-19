@@ -48,7 +48,7 @@ void CanvasModule::PostInit()
 
 void CanvasModule::CreateData()
 {
-    DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+    DAVA::ContextAccessor* accessor = GetAccessor();
 
     std::unique_ptr<CanvasModuleData> data = std::make_unique<CanvasModuleData>();
     data->editorCanvas = std::make_unique<EditorCanvas>(accessor);
@@ -65,7 +65,6 @@ void CanvasModule::CreateData()
 void CanvasModule::InitFieldBinder()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Function<void(const Any&)> tryCentralize = [this](const Any&) {
         CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();

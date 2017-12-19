@@ -37,7 +37,7 @@ ScrollBarAdapter::ScrollBarAdapter(DAVA::Vector2::eAxis orientation_, DAVA::Cont
 int ScrollBarAdapter::GetPosition() const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext == nullptr)
     {
@@ -56,7 +56,7 @@ int ScrollBarAdapter::GetPosition() const
 void ScrollBarAdapter::SetPosition(int value)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext == nullptr)
     {
@@ -94,7 +94,7 @@ bool ScrollBarAdapter::IsEnabled() const
 bool ScrollBarAdapter::IsVisible() const
 {
     using namespace DAVA;
-    DAVA::TArc::DataContext* active = accessor->GetActiveContext();
+    DAVA::DataContext* active = accessor->GetActiveContext();
     if (active == nullptr)
     {
         return false;

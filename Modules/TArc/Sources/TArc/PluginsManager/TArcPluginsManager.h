@@ -27,7 +27,7 @@ private:
     struct PluginNode
     {
         Vector<TArcPlugin*> pluginInstances;
-        PluginHandle handle;
+        PluginHandle handle = nullptr;
         String libraryPath;
     };
 

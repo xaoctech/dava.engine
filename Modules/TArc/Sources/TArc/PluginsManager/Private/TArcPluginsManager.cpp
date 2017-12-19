@@ -26,30 +26,28 @@ TArcPluginManager::~TArcPluginManager()
 
 void TArcPluginManager::LoadPlugins(Vector<String>& errors)
 {
-#define REPORT_LOADING_ERROR(error)\
-    errors.push_back(error);\
-    continue
-
     UnorderedMap<String, size_t> pluginsMap;
 
     const EngineContext* ctx = GetEngineContext();
     Vector<FilePath> plugins = PluginManager::LookupPlugins(pluginsFolder, PluginManager::Auto);
-    for (FilePath& filePath : plugins)
+    for (const FilePath& filePath : plugins)
     {
         String absPath = filePath.GetAbsolutePathname();
         PluginHandle handle = OpenPlugin(absPath.c_str());
         if (handle == nullptr)
         {
-            REPORT_LOADING_ERROR(Format("Couldn't load dynamic library %s", absPath.c_str()));
+            errors.push_back(Format("Couldn't load dynamic library %s", absPath.c_str()));
+            continue;
         }
 
-        TCreatePluginFn createFn = LoadFunction<TCreatePluginFn>(handle, PLUGIN_MANAGER_STR_VALUE(CREATE_PLUGINS_ARRAY_FUNCTION_NAME));
+        TCreatePluginsArrayFn createFn = LoadFunction<TCreatePluginsArrayFn>(handle, PLUGIN_MANAGER_STR_VALUE(CREATE_PLUGINS_ARRAY_FUNCTION_NAME));
         if (createFn == nullptr)
         {
-            REPORT_LOADING_ERROR(Format("Dynamic library %s doesn't contains TArcPlugin", absPath.c_str()));
+            errors.push_back(Format("Dynamic library %s doesn't contains TArcPlugin", absPath.c_str()));
+            continue;
         }
 
-        TDestroyPluginsArray destroyArray = LoadFunction<TDestroyPluginsArray>(handle, PLUGIN_MANAGER_STR_VALUE(DELETE_PLUGINS_ARRAY));
+        TDestroyPluginsArrayFn destroyArray = LoadFunction<TDestroyPluginsArrayFn>(handle, PLUGIN_MANAGER_STR_VALUE(DELETE_PLUGINS_ARRAY_FUNCTION_NAME));
 
         TArcPlugin** plugins = createFn(ctx);
         int32 index = 0;
@@ -65,22 +63,25 @@ void TArcPluginManager::LoadPlugins(Vector<String>& errors)
             ++index;
             if (pluginInstance == nullptr)
             {
-                REPORT_LOADING_ERROR(Format("Dynamic librray %s can't create plugin", absPath.c_str()));
+                errors.push_back(Format("Dynamic librray %s can't create plugin", absPath.c_str()));
+                continue;
             }
 
             const TArcPlugin::PluginDescriptor& descriptor = pluginInstance->GetDescription();
             if (applicationName != descriptor.applicationName)
             {
-                REPORT_LOADING_ERROR(Format("Plugin %s loaded from %s isn't matched by applicationName. Plugin's application name is %s, plugins manager is configured for %s",
-                                            descriptor.pluginName.c_str(), absPath.c_str(), descriptor.applicationName.c_str(), applicationName.c_str()));
+                errors.push_back(Format("Plugin %s loaded from %s isn't matched by applicationName. Plugin's application name is %s, plugins manager is configured for %s",
+                                        descriptor.pluginName.c_str(), absPath.c_str(), descriptor.applicationName.c_str(), applicationName.c_str()));
+                continue;
             }
 
             auto iter = pluginsMap.find(descriptor.pluginName);
             if (iter != pluginsMap.end())
             {
                 String path = pluginsCollection[iter->second].libraryPath;
-                REPORT_LOADING_ERROR(Format("Plugin's name conflict. Libraries %s and %s contains plugin with same name %s. The last one will be ignored",
-                                            path.c_str(), absPath.c_str(), descriptor.pluginName.c_str()));
+                errors.push_back(Format("Plugin's name conflict. Libraries %s and %s contains plugin with same name %s. The last one will be ignored",
+                                        path.c_str(), absPath.c_str(), descriptor.pluginName.c_str()));
+                continue;
             }
 
             node.pluginInstances.push_back(pluginInstance);
@@ -98,6 +99,12 @@ void TArcPluginManager::UnloadPlugins()
     for (PluginNode& node : pluginsCollection)
     {
         TDestroyPluginFn destroyFn = LoadFunction<TDestroyPluginFn>(node.handle, PLUGIN_MANAGER_STR_VALUE(DESTROY_PLUGIN_FUNCTION_NAME));
+        DVASSERT(destroyFn != nullptr);
+        if (destroyFn == nullptr)
+        {
+            continue;
+        }
+
         for (TArcPlugin* instance : node.pluginInstances)
         {
             destroyFn(instance);

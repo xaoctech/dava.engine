@@ -475,8 +475,6 @@ void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 
 bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
-    using namespace DAVA::TArc;
-
     if (hudControl->IsVisible() == false)
     {
         return false;
@@ -547,7 +545,6 @@ void HUDSystem::ClearMagnetLines()
 void HUDSystem::SyncHudWithSelection()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);

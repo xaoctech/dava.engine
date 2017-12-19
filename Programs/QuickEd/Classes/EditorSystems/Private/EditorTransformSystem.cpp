@@ -325,7 +325,7 @@ void EditorTransformSystem::OnDragStateChanged(eDragState dragState, eDragState 
 {
     bool isRootControl = activeControlNode != nullptr && activeControlNode->GetParent()->GetControl() == nullptr;
 
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     DVASSERT(nullptr != documentData);

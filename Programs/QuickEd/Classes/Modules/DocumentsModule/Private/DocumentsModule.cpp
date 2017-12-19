@@ -174,7 +174,7 @@ void DocumentsModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceT
     }
 }
 
-void DocumentsModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void DocumentsModule::OnContextCreated(DAVA::DataContext* context)
 {
     using namespace DAVA;
     DocumentData* data = context->GetData<DocumentData>();
@@ -195,7 +195,7 @@ void DocumentsModule::OnContextDeleted(DAVA::DataContext* context)
     watcherData->Unwatch(path);
 }
 
-void DocumentsModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne)
+void DocumentsModule::OnContextWillBeChanged(DAVA::DataContext* current, DAVA::DataContext* newOne)
 {
     using namespace DAVA;
 

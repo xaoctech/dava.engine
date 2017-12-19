@@ -104,7 +104,7 @@ void PropertiesWidget::SetUI(DAVA::UI* ui_)
     ui = ui_;
 }
 
-void PropertiesWidget::SetInvoker(DAVA::TArc::OperationInvoker* invoker_)
+void PropertiesWidget::SetInvoker(DAVA::OperationInvoker* invoker_)
 {
     invoker = invoker_;
     propertiesItemsDelegate->SetInvoker(invoker_);

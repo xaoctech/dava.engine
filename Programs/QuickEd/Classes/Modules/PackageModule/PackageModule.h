@@ -12,11 +12,11 @@
 class QMimeData;
 class PackageBaseNode;
 
-class PackageModule : public DAVA::TArc::ClientModule, Interfaces::PackageActionsInterface, private DAVA::TArc::DataListener
+class PackageModule : public DAVA::ClientModule, Interfaces::PackageActionsInterface, private DAVA::DataListener
 {
     // ClientModule
     void PostInit() override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
     // PackageActionsInterface
     QAction* GetImportPackageAction() override;
@@ -29,7 +29,7 @@ class PackageModule : public DAVA::TArc::ClientModule, Interfaces::PackageAction
     QAction* GetFindPrototypeInstancesAction() override;
 
     // DataListener
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
     void InitData();
     void CreateActions();
@@ -81,8 +81,8 @@ class PackageModule : public DAVA::TArc::ClientModule, Interfaces::PackageAction
 
     void SetNewSelection(const SelectedNodes& selection);
 
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::DataWrapper documentDataWrapper;
+    DAVA::QtConnections connections;
+    DAVA::DataWrapper documentDataWrapper;
 
-    DAVA_VIRTUAL_REFLECTION(PackageModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(PackageModule, DAVA::ClientModule);
 };

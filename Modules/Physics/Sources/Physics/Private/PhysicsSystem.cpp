@@ -299,8 +299,8 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
         simulationBlockSize = options->GetUInt32("physics.simulationBlockSize", PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE);
         DVASSERT((simulationBlockSize % (16 * 1024)) == 0); // simulationBlockSize must be 16K multiplier
 
-        gravity = options->GetVector3("physics.gravity", Vector3(0, 0, -9.81f));
-        threadCount = options->GetUInt32("physics.threadCount", 2);
+        gravity = options->GetVector3("physics.gravity", gravity);
+        threadCount = options->GetUInt32("physics.threadCount", threadCount);
     }
 
     const EngineContext* ctx = GetEngineContext();

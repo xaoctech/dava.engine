@@ -57,7 +57,7 @@
 #include <QTimer>
 #include <QLabel>
 
-PreviewWidget::PreviewWidget(DAVA::ContextAccessor* accessor_, DAVA::TArc::OperationInvoker* invoker_, DAVA::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
+PreviewWidget::PreviewWidget(DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, DAVA::UI* ui_, DAVA::RenderWidget* renderWidget, EditorSystemsManager* systemsManager_)
     : QFrame(nullptr)
     , accessor(accessor_)
     , invoker(invoker_)

@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow, public DAVA::TrackedObject
 public:
     class ProjectView;
 
-    explicit MainWindow(DAVA::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::TArc::OperationInvoker* invoker, QWidget* parent = nullptr);
+    explicit MainWindow(DAVA::ContextAccessor* accessor, DAVA::UI* ui, DAVA::OperationInvoker* invoker, QWidget* parent = nullptr);
 
     ~MainWindow() override;
 
