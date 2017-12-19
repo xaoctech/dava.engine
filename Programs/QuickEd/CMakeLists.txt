@@ -24,7 +24,10 @@ endif()
 
 find_package( QT5 REQUIRED )
 
-find_dava_module( DavaTools )
+find_dava_module( AssetCache )
+find_dava_module( TextureCompression )
+find_dava_module( TexturePacker )
+find_dava_module( Version )
 find_dava_module( QtHelpers )
 find_dava_module( QtTools )
 find_dava_module( DocDirSetup )

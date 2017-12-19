@@ -7,6 +7,7 @@
 
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockDefine.h>
+#include <TArc/Testing/GMockInclude.h>
 #include <TArc/Testing/MockListener.h>
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
@@ -32,8 +33,6 @@
 #include <QMenu>
 #include <QAction>
 #include <QTest>
-
-#include <gmock/gmock.h>
 
 #include <memory>
 

@@ -13,7 +13,6 @@ public:
     KeyboardShortcut();
     KeyboardShortcut(const KeyboardShortcut& shortcut);
     KeyboardShortcut(eInputElements key_, eModifierKeys modifiers_ = eModifierKeys::NONE);
-    KeyboardShortcut(const String& str);
 
     ~KeyboardShortcut();
 
@@ -24,6 +23,8 @@ public:
     eInputElements GetKey() const;
     eModifierKeys GetModifiers() const;
     String ToString() const;
+
+    static KeyboardShortcut ParseFromString(const String& str);
 
 private:
     eInputElements key = eInputElements::NONE;

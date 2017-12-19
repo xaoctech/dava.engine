@@ -106,8 +106,8 @@ void SkinnedMesh::UpdateJointTransforms(const Vector<JointTransform>& finalTrans
             DVASSERT(transformIndex < uint32(finalTransforms.size()));
 
             const JointTransform& finalTransform = finalTransforms[transformIndex];
-            data.positions[j] = Vector4(Vector3(finalTransform.position.data), finalTransform.scale);
-            data.quaternions[j] = Vector4(finalTransform.orientation.data);
+            data.positions[j] = Vector4(Vector3(finalTransform.GetPosition().data), finalTransform.GetScale());
+            data.quaternions[j] = Vector4(finalTransform.GetOrientation().data);
         }
     }
 }

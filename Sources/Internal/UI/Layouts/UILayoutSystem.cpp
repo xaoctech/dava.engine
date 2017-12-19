@@ -60,6 +60,12 @@ void UILayoutSystem::RegisterSystem()
         });
         virtualSizeChangedToken = GetScene()->vcs->virtualSizeChanged.Connect([&](const Size2i& size) {
             UpdateVisibilityRect(Rect(0.f, 0.f, static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
+            SetPhysicalSafeAreaInsets(physicalLeftSafeAreaInset,
+                                      physicalTopSafeAreaInset,
+                                      physicalRightSafeAreaInset,
+                                      physicalBottomSafeAreaInset,
+                                      isLeftNotch,
+                                      isRightNotch);
         });
         inputSizeChangedToken = GetScene()->vcs->inputAreaSizeChanged.Connect([&](const Size2i& size) {
             Vector2 s = GetScene()->vcs->ConvertInputToVirtual(Vector2(static_cast<float32>(size.dx), static_cast<float32>(size.dy)));
@@ -172,6 +178,57 @@ void UILayoutSystem::SetRtl(bool rtl)
     sharedLayouter->SetRtl(rtl);
 }
 
+void UILayoutSystem::SetPhysicalSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom, bool isLeftNotch_, bool isRightNotch_)
+{
+    physicalLeftSafeAreaInset = left;
+    physicalTopSafeAreaInset = top;
+    physicalRightSafeAreaInset = right;
+    physicalBottomSafeAreaInset = bottom;
+    isLeftNotch = isLeftNotch_;
+    isRightNotch = isRightNotch_;
+
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    sharedLayouter->SetSafeAreaInsets(vcs->ConvertPhysicalToVirtualX(left),
+                                      vcs->ConvertPhysicalToVirtualY(top),
+                                      vcs->ConvertPhysicalToVirtualX(right),
+                                      vcs->ConvertPhysicalToVirtualY(bottom),
+                                      isLeftNotch,
+                                      isRightNotch);
+
+    if (currentScreen.Valid())
+    {
+        currentScreen->SetLayoutDirty();
+    }
+    if (popupContainer.Valid())
+    {
+        popupContainer->SetLayoutDirty();
+    }
+}
+
+float32 UILayoutSystem::GetSafeAreaLeftInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualX(physicalLeftSafeAreaInset);
+}
+
+float32 UILayoutSystem::GetSafeAreaTopInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualY(physicalTopSafeAreaInset);
+}
+
+float32 UILayoutSystem::GetSafeAreaRightInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualX(physicalRightSafeAreaInset);
+}
+
+float32 UILayoutSystem::GetSafeAreaBottomInset() const
+{
+    VirtualCoordinatesSystem* vcs = GetScene()->vcs;
+    return vcs->ConvertPhysicalToVirtualY(physicalBottomSafeAreaInset);
+}
+
 void UILayoutSystem::ProcessControl(UIControl* control)
 {
     bool layoutDirty = control->IsLayoutDirty();
@@ -217,6 +274,7 @@ void UILayoutSystem::ManualApplyLayout(UIControl* control)
     Layouter localLayouter;
     localLayouter.SetRtl(sharedLayouter->IsRtl());
     localLayouter.SetVisibilityRect(sharedLayouter->GetVisibilityRect());
+    localLayouter.SetSafeAreaInsets(sharedLayouter->GetSafeAreaInsets(), isLeftNotch, isRightNotch);
     localLayouter.ApplyLayout(control);
 }
 

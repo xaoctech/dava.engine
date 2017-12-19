@@ -61,6 +61,7 @@ object dava_framework_Launcher_LauncherMacOS : BuildType({
     }
 
     failureConditions {
+        executionTimeoutMin = 15
         errorMessage = true
     }
 

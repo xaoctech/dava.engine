@@ -6,17 +6,6 @@
 
 namespace DAVA
 {
-AnimationTrack::State::State(uint32 channelCount)
-{
-    channelStates.resize(channelCount);
-}
-
-const float32* AnimationTrack::State::GetChannelStateValue(uint32 channel) const
-{
-    DVASSERT(channel < uint32(channelStates.size()));
-    return channelStates[channel].GetChannelValue();
-}
-
 uint32 AnimationTrack::Bind(const uint8* _data)
 {
     channels.clear();
@@ -52,18 +41,10 @@ uint32 AnimationTrack::Bind(const uint8* _data)
     return uint32(dataptr - _data);
 }
 
-void AnimationTrack::Evaluate(float32 dTime, State* state) const
+void AnimationTrack::Evaluate(float32 time, uint32 channel, float32* outData, uint32 dataSize) const
 {
-    for (uint32 c = 0; c < GetChannelsCount(); ++c)
-    {
-        channels[c].channel.Evaluate(dTime, &state->channelStates[c]);
-    }
-}
-
-const float32* AnimationTrack::GetStateValue(const State* state, uint32 channel) const
-{
-    DVASSERT(channel < uint32(state->channelStates.size()));
-    return state->channelStates[channel].GetChannelValue();
+    DVASSERT(channel < GetChannelsCount());
+    channels[channel].channel.Evaluate(time, outData, dataSize);
 }
 
 uint32 AnimationTrack::GetChannelsCount() const
@@ -75,5 +56,20 @@ AnimationTrack::eChannelTarget AnimationTrack::GetChannelTarget(uint32 channel) 
 {
     DVASSERT(channel < GetChannelsCount());
     return channels[channel].target;
+}
+
+uint32 AnimationTrack::GetChannelValueSize(uint32 channel) const
+{
+    DVASSERT(channel < GetChannelsCount());
+    return channels[channel].channel.GetDimension();
+}
+
+uint32 AnimationTrack::GetMaxChannelValueSize() const
+{
+    uint32 maxChannelSize = 0;
+    for (const Channel& channel : channels)
+        maxChannelSize = Max(maxChannelSize, channel.channel.GetDimension());
+
+    return maxChannelSize;
 }
 }
