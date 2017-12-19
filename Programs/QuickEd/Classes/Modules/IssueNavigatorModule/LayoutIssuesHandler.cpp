@@ -110,10 +110,10 @@ void LayoutIssuesHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vec
             layoutIssue.controlNode = controlNode;
             createdIssues[axis].emplace(control, std::move(layoutIssue));
 
-            DAVA::TArc::NotificationParams notificationParams;
+            DAVA::NotificationParams notificationParams;
             notificationParams.title = "Error in formula";
             notificationParams.message = Result(Result::RESULT_ERROR, issue.message);
-            ui->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+            ui->ShowNotification(DAVA::mainWindowKey, notificationParams);
         }
     }
     else

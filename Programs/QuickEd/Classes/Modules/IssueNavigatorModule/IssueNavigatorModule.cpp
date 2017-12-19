@@ -38,7 +38,7 @@ void IssueNavigatorModule::PostInit()
     issuesHandlers.emplace_back(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
 }
 
-void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
+void IssueNavigatorModule::OnContextWasChanged(DAVA::DataContext* current, DAVA::DataContext* oldOne)
 {
     for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
     {
@@ -46,7 +46,7 @@ void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current,
     }
 }
 
-void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void IssueNavigatorModule::OnContextDeleted(DAVA::DataContext* context)
 {
     for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
     {

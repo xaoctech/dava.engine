@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 Any SliderComponentValue::GetMultipleValue() const
 {
     return Any();
@@ -109,5 +107,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SliderComponentValue)
     .Method("immediateValue", &SliderComponentValue::SetImmediateSliderValue)
     .End();
 }
-} // namespace TArc
 } // namespace DAVA

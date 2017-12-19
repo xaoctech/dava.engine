@@ -22,9 +22,8 @@
 namespace SliderTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
-WindowKey wndKey = DAVA::TArc::mainWindowKey;
+WindowKey wndKey = DAVA::mainWindowKey;
 
 class SliderData : public ReflectionBase
 {

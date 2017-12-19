@@ -22,7 +22,7 @@ public:
     ~NamingIssuesHandler() override = default;
 
     // IssuesHandler
-    void OnContextDeleted(DAVA::TArc::DataContext* current) override;
+    void OnContextDeleted(DAVA::DataContext* current) override;
 
     // PackageListener
     void ActivePackageNodeWasChanged(PackageNode* node) override;
@@ -40,7 +40,7 @@ private:
 
     struct PackageIssues
     {
-        DAVA::TArc::DataContext* context = nullptr;
+        DAVA::DataContext* context = nullptr;
         DAVA::UnorderedMap<ControlNode*, Issue> symbolsIssues;
         DuplicationsIssuesMap duplicationIssues;
     };
