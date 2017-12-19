@@ -7,7 +7,7 @@ project               ( ResourceEditor )
 get_filename_component( FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 get_filename_component( RE_PATH "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
-set (ADD_TERRAIN_PLUGIN true)
+set (ADD_TERRAIN_PLUGIN false)
 if (ADD_TERRAIN_PLUGIN)
 set                   ( WARNINGS_AS_ERRORS false )
 else()
