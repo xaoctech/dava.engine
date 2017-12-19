@@ -30,8 +30,10 @@
 #include "REPlatform/Scene/Systems/WayEditSystem.h"
 #include "REPlatform/Scene/Utils/SceneExporter.h"
 
-#include <QtTools/ConsoleWidget/PointerSerializer.h>
 #include <TArc/Utils/RenderContextGuard.h>
+#include <TArc/Core/ContextAccessor.h>
+
+#include <QtTools/ConsoleWidget/PointerSerializer.h>
 
 // framework
 #include <Command/Command.h>

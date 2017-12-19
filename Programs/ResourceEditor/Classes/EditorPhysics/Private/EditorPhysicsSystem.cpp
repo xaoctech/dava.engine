@@ -1,4 +1,4 @@
-#include "EditorPhysics/Private/EditorPhysicsSystem.h"
+#include "Classes/EditorPhysics/Private/EditorPhysicsSystem.h"
 
 #include <Physics/PhysicsModule.h>
 #include <Physics/PhysicsSystem.h>

@@ -3,6 +3,11 @@
 #include "Scene3D/Entity.h"
 #include <QDialog>
 
+namespace DAVA
+{
+class SceneEditor2;
+} // namespace DAVA
+
 class GlobalOperations;
 class QualitySwitcher : public QDialog
 {
@@ -20,7 +25,7 @@ protected:
 
     void UpdateEntitiesToQuality(DAVA::Entity* e);
     void UpdateParticlesToQuality();
-    void ReloadEntityEmitters(SceneEditor2* scene, DAVA::Entity* e);
+    void ReloadEntityEmitters(DAVA::SceneEditor2* scene, DAVA::Entity* e);
     void SetSettingsDirty(bool dirty);
     void ApplySettings();
 

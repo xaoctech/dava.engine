@@ -2,12 +2,15 @@
 
 #include <Base/String.h>
 
+namespace DAVA
+{
 class FileSystemTagGuard final
 {
 public:
-    FileSystemTagGuard(const DAVA::String newFilenamesTag);
+    FileSystemTagGuard(const String newFilenamesTag);
     ~FileSystemTagGuard();
 
 private:
-    DAVA::String oldFilenamesTag;
+    String oldFilenamesTag;
 };
+} // namespace DAVA

@@ -23,8 +23,6 @@
 #include <REPlatform/Deprecated/SceneValidator.h>
 #include <REPlatform/Scene/Systems/VisibilityCheckSystem.h>
 
-#include <DavaTools/TextureCompression/PVRConverter.h>
-
 #include <QtTools/InitQtTools.h>
 
 #include <TArc/Core/Core.h>

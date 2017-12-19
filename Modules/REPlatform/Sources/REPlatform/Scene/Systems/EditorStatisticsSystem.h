@@ -24,7 +24,7 @@ class RenderStatsSettings : public DAVA::SettingsNode
 public:
     bool calculatePerFrame = true;
 
-    DAVA_VIRTUAL_REFLECTION(RenderStatsSettings, DAVA::TArc::SettingsNode);
+    DAVA_VIRTUAL_REFLECTION(RenderStatsSettings, DAVA::SettingsNode);
 };
 
 class EditorStatisticsSystem : public SceneSystem, public EditorSceneSystem
@@ -50,7 +50,7 @@ public:
 
     void Process(float32 timeElapsed) override;
 
-    const Vector<uint32>& GetTriangles(eEditorMode mode, bool allTriangles) const;
+    const Vector<uint32>& GetTriangles(eEditorMode mode, bool allTriangles);
 
     void AddDelegate(EditorStatisticsSystemUIDelegate* uiDelegate);
     void RemoveDelegate(EditorStatisticsSystemUIDelegate* uiDelegate);

@@ -1,5 +1,5 @@
-#include "EditorPhysics/Private/PhysicsWidget.h"
-#include "EditorPhysics/Private/EditorPhysicsData.h"
+#include "Classes/EditorPhysics/Private/PhysicsWidget.h"
+#include "Classes/EditorPhysics/Private/EditorPhysicsData.h"
 
 #include <TArc/Controls/Widget.h>
 #include <TArc/Controls/Label.h>

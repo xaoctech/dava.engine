@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EditorPhysics/Private/EditorPhysicsSystem.h"
+#include "Classes/EditorPhysics/Private/EditorPhysicsSystem.h"
 
 #include <TArc/DataProcessing/TArcDataNode.h>
 

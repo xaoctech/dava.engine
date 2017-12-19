@@ -1,7 +1,6 @@
 #pragma once
 
 #include <REPlatform/Global/CommandLineModule.h>
-#include <DavaTools/TextureCompression/TextureConverter.h>
 
 #include <TextureCompression/TextureConverter.h>
 

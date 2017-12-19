@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes/Selection/Selectable.h"
+#include <REPlatform/DataNodes/Selectable.h>
 
 #include <TArc/Qt/QtString.h>
 
@@ -11,6 +11,8 @@
 #include <QMimeData>
 #include <QVariant>
 
+namespace DAVA
+{
 class ReflectedMimeData : public QMimeData
 {
 public:
@@ -76,3 +78,4 @@ private:
 private:
     DAVA::Vector<Selectable> objects;
 };
+} // namespace DAVA

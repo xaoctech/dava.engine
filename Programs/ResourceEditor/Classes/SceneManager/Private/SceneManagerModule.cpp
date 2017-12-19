@@ -256,7 +256,7 @@ void SceneManagerModule::PostInit()
                                          });
 
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
+        DAVA::FieldDescriptor fieldDescr;
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
         fieldDescr.fieldName = DAVA::FastName("recentScenesCount");
         fieldBinder->BindField(fieldDescr, [this](const DAVA::Any& v)

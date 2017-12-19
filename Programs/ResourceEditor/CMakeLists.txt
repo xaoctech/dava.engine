@@ -7,7 +7,12 @@ project               ( ResourceEditor )
 get_filename_component( FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
 get_filename_component( RE_PATH "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
+set (ADD_TERRAIN_PLUGIN true)
+if (ADD_TERRAIN_PLUGIN)
+set                   ( WARNINGS_AS_ERRORS false )
+else()
 set                   ( WARNINGS_AS_ERRORS true )
+endif()
 set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${FRAMEWORK_PATH}/Sources/CMake/Modules/" )
 set                   ( TOOL_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
 
@@ -27,6 +32,7 @@ find_dava_module( TexturePacker )
 find_dava_module( TextureCompression )
 find_dava_module( Version )
 
+
 if (NOT PUBLIC_BUILD)
     find_dava_module( SpeedTree )
     find_dava_module( Beast )
@@ -40,7 +46,7 @@ list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
 find_package(DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-if (WIN32)
+if (WIN32 AND ADD_TERRAIN_PLUGIN)
   add_plugin(TerrainConverter "${FRAMEWORK_PATH}/Programs/REPlugins/TerrainConverter")
 endif()
 

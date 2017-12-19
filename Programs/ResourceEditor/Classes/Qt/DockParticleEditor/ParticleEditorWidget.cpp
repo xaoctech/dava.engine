@@ -1,6 +1,7 @@
 #include "ParticleEditorWidget.h"
 #include "EmitterLayerWidget.h"
 #include "LayerForceWidget.h"
+#include "LayerForceSimplifiedWidget.h"
 #include "ParticleEmitterPropertiesWidget.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 
@@ -230,6 +231,7 @@ void ParticleEditorWidget::ProcessSelection(DAVA::SceneEditor2* scene, const DAV
     if (selection.GetSize() != 1)
         return;
 
+    DAVA::EditorParticlesSystem* system = scene->GetSystem<DAVA::EditorParticlesSystem>();
     const auto& obj = selection.GetFirst();
     if (obj.CanBeCastedTo<DAVA::Entity>())
     {
@@ -245,13 +247,13 @@ void ParticleEditorWidget::ProcessSelection(DAVA::SceneEditor2* scene, const DAV
     {
         shouldReset = false;
         DAVA::ParticleEmitterInstance* instance = obj.Cast<DAVA::ParticleEmitterInstance>();
-        DAVA::ParticleEffectComponent* component = scene->particlesSystem->GetEmitterOwner(instance);
+        DAVA::ParticleEffectComponent* component = system->GetEmitterOwner(instance);
         SwitchEditorToEmitterMode(scene, component, instance);
     }
     else if (obj.CanBeCastedTo<DAVA::ParticleLayer>())
     {
         DAVA::ParticleLayer* layer = obj.Cast<DAVA::ParticleLayer>();
-        DAVA::ParticleEmitterInstance* instance = scene->GetSystem<DAVA::EditorParticlesSystem>()->GetRootEmitterLayerOwner(layer);
+        DAVA::ParticleEmitterInstance* instance = system->GetRootEmitterLayerOwner(layer);
         if (instance != nullptr)
         {
             shouldReset = false;
@@ -262,7 +264,7 @@ void ParticleEditorWidget::ProcessSelection(DAVA::SceneEditor2* scene, const DAV
     else if (obj.CanBeCastedTo<DAVA::ParticleForceSimplified>())
     {
         DAVA::ParticleForceSimplified* force = obj.Cast<DAVA::ParticleForceSimplified>();
-        DAVA::ParticleLayer* layer = scene->particlesSystem->GetForceOwner(force);
+        DAVA::ParticleLayer* layer = system->GetForceOwner(force);
         if (layer != nullptr)
         {
             auto i = std::find(layer->GetSimplifiedParticleForces().begin(), layer->GetSimplifiedParticleForces().end(), force);
@@ -276,7 +278,7 @@ void ParticleEditorWidget::ProcessSelection(DAVA::SceneEditor2* scene, const DAV
     else if (obj.CanBeCastedTo<DAVA::ParticleForce>())
     {
         DAVA::ParticleForce* force = obj.Cast<DAVA::ParticleForce>();
-        DAVA::ParticleLayer* layer = scene->GetSystem<DAVA::EditorParticlesSystem>()->GetForceOwner(force);
+        DAVA::ParticleLayer* layer = system->GetForceOwner(force);
         if (layer != nullptr)
         {
             auto i = std::find(layer->GetParticleForces().begin(), layer->GetParticleForces().end(), force);

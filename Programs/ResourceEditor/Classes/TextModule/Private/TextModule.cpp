@@ -1,7 +1,8 @@
 #include "Classes/TextModule/TextModule.h"
 #include "Classes/TextModule/Private/EditorTextSystem.h"
 #include "Classes/TextModule/Private/TextModuleData.h"
-#include "Classes/SceneTree/CreateEntitySupport.h"
+
+#include <REPlatform/Global/SceneTree/CreateEntitySupport.h>
 
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/Scene/SceneEditor2.h>
@@ -16,12 +17,13 @@
 
 #include <Engine/PlatformApiQt.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/TextComponent.h>
 
 namespace TextModuleDetail
 {
-class TextEntityCreator : public SimpleEntityCreator
+class TextEntityCreator : public DAVA::SimpleEntityCreator
 {
-    using TBase = SimpleEntityCreator;
+    using TBase = DAVA::SimpleEntityCreator;
 
 public:
     static DAVA::RefPtr<DAVA::Entity> CreateEntity()
@@ -34,7 +36,7 @@ public:
     }
 
     TextEntityCreator()
-        : TBase(eMenuPointOrder::TEXT_ENTITY, DAVA::TArc::SharedIcon(":/QtIcons/text_component.png"),
+        : TBase(eMenuPointOrder::TEXT_ENTITY, DAVA::SharedIcon(":/QtIcons/text_component.png"),
                 QStringLiteral("Text Entity"), &TextEntityCreator::CreateEntity)
     {
     }

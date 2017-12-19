@@ -1,14 +1,20 @@
-#include "Classes/SceneTree/SceneTreeFiltration.h"
-#include "Classes/Selection/SelectionData.h"
+#include "REPlatform/Global/SceneTree/SceneTreeFiltration.h"
+#include "REPlatform/DataNodes/SelectionData.h"
+#include "REPlatform/DataNodes/Selectable.h"
+
+#include <TArc/Core/ContextAccessor.h>
 
 #include <Entity/Component.h>
-#include <Reflection/ReflectionRegistrator.h>
+#include <Particles/ParticleEmitterInstance.h>
 #include <Particles/ParticleForce.h>
 #include <Particles/ParticleForceSimplified.h>
-#include <Particles/ParticleEmitterInstance.h>
 #include <Particles/ParticleLayer.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Entity.h>
 
+namespace DAVA
+{
 bool SceneTreeFilterBase::IsEnabled() const
 {
     return isEnabled;
@@ -43,21 +49,21 @@ const char* SceneTreeFilterBase::inversedFieldName = "inverted";
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SceneTreeFilterBase)
 {
-    DAVA::ReflectionRegistrator<SceneTreeFilterBase>::Begin()
+    ReflectionRegistrator<SceneTreeFilterBase>::Begin()
     .Field(titleFieldName, &SceneTreeFilterBase::GetTitle, nullptr)
     .Field(enabledFieldName, &SceneTreeFilterBase::IsEnabled, &SceneTreeFilterBase::SetEnabled)
     .Field(inversedFieldName, &SceneTreeFilterBase::IsInverted, &SceneTreeFilterBase::SetInverted)
     .End();
 }
 
-template <DAVA::Component::eType ComponentType>
+template <Component::eType ComponentType>
 class ComponentFilter : public SceneTreeFilterBase
 {
 public:
     ComponentFilter()
     {
-        const DAVA::ReflectedType* type = DAVA::ReflectedTypeDB::GetByPointer(this);
-        const DAVA::M::DisplayName* displayName = DAVA::TArc::GetReflectedTypeMeta<DAVA::M::DisplayName>(type);
+        const ReflectedType* type = ReflectedTypeDB::GetByPointer(this);
+        const M::DisplayName* displayName = GetReflectedTypeMeta<M::DisplayName>(type);
         if (displayName != nullptr)
         {
             title = QString::fromStdString(displayName->displayName);
@@ -73,15 +79,15 @@ public:
         return title;
     }
 
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* /*accessor*/) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* /*accessor*/) const override
     {
-        if (object.CanBeCastedTo<DAVA::Entity>() == false)
+        if (object.CanBeCastedTo<Entity>() == false)
         {
             return false;
         }
 
-        DAVA::Entity* entity = object.Cast<DAVA::Entity>();
-        return DAVA::HasComponent(entity, ComponentType);
+        Entity* entity = object.Cast<Entity>();
+        return HasComponent(entity, ComponentType);
     }
 
 private:
@@ -90,64 +96,64 @@ private:
     DAVA_VIRTUAL_REFLECTION(ComponentFilter, SceneTreeFilterBase);
 };
 
-using LightComponentFilter = ComponentFilter<DAVA::Component::LIGHT_COMPONENT>;
+using LightComponentFilter = ComponentFilter<Component::LIGHT_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(LightComponentFilter)
 {
-    DAVA::ReflectionRegistrator<LightComponentFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Light")]
+    ReflectionRegistrator<LightComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Light")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using CameraComponentFilter = ComponentFilter<DAVA::Component::CAMERA_COMPONENT>;
+using CameraComponentFilter = ComponentFilter<Component::CAMERA_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(CameraComponentFilter)
 {
-    DAVA::ReflectionRegistrator<CameraComponentFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Camera")]
+    ReflectionRegistrator<CameraComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Camera")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using UserNodeComponentFilter = ComponentFilter<DAVA::Component::USER_COMPONENT>;
+using UserNodeComponentFilter = ComponentFilter<Component::USER_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(UserNodeComponentFilter)
 {
-    DAVA::ReflectionRegistrator<UserNodeComponentFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("User Node")]
+    ReflectionRegistrator<UserNodeComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("User Node")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using SwitchNodeComponentFilter = ComponentFilter<DAVA::Component::SWITCH_COMPONENT>;
+using SwitchNodeComponentFilter = ComponentFilter<Component::SWITCH_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SwitchNodeComponentFilter)
 {
-    DAVA::ReflectionRegistrator<SwitchNodeComponentFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Switch")]
+    ReflectionRegistrator<SwitchNodeComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Switch")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using ParticleEffectFilter = ComponentFilter<DAVA::Component::PARTICLE_EFFECT_COMPONENT>;
+using ParticleEffectFilter = ComponentFilter<Component::PARTICLE_EFFECT_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ParticleEffectFilter)
 {
-    DAVA::ReflectionRegistrator<ParticleEffectFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Particle Effect Node")]
+    ReflectionRegistrator<ParticleEffectFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Particle Effect Node")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using WindFilter = ComponentFilter<DAVA::Component::WIND_COMPONENT>;
+using WindFilter = ComponentFilter<Component::WIND_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(WindFilter)
 {
-    DAVA::ReflectionRegistrator<WindFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Wind")]
+    ReflectionRegistrator<WindFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Wind")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using PathFilter = ComponentFilter<DAVA::Component::PATH_COMPONENT>;
+using PathFilter = ComponentFilter<Component::PATH_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(PathFilter)
 {
-    DAVA::ReflectionRegistrator<PathFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Path")]
+    ReflectionRegistrator<PathFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Path")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
@@ -156,9 +162,9 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(PathFilter)
 class ParticleEmitterFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        return object.CanBeCastedTo<DAVA::ParticleEmitterInstance>();
+        return object.CanBeCastedTo<ParticleEmitterInstance>();
     }
 
     QString GetTitle() const override
@@ -168,7 +174,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticleEmitterFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<ParticleEmitterFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Particle Emitter")]
+        ReflectionRegistrator<ParticleEmitterFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Particle Emitter")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
@@ -178,9 +184,9 @@ public:
 class ParticleLayerFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        return object.CanBeCastedTo<DAVA::ParticleLayer>();
+        return object.CanBeCastedTo<ParticleLayer>();
     }
 
     QString GetTitle() const override
@@ -190,7 +196,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticleLayerFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<ParticleLayerFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Particle Layer")]
+        ReflectionRegistrator<ParticleLayerFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Particle Layer")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
@@ -200,9 +206,9 @@ public:
 class ParticleForceFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        return object.CanBeCastedTo<DAVA::ParticleForce>() || object.CanBeCastedTo<DAVA::ParticleForceSimplified>();
+        return object.CanBeCastedTo<ParticleForce>() || object.CanBeCastedTo<ParticleForceSimplified>();
     }
 
     QString GetTitle() const override
@@ -212,7 +218,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticleForceFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<ParticleForceFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Particle Force")]
+        ReflectionRegistrator<ParticleForceFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Particle Force")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
@@ -222,21 +228,21 @@ public:
 class LandscapeFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        if (object.CanBeCastedTo<DAVA::Entity>() == false)
+        if (object.CanBeCastedTo<Entity>() == false)
         {
             return false;
         }
 
-        DAVA::Entity* entity = object.Cast<DAVA::Entity>();
-        DAVA::RenderObject* ro = DAVA::GetRenderObject(entity);
+        Entity* entity = object.Cast<Entity>();
+        RenderObject* ro = GetRenderObject(entity);
         if (ro == nullptr)
         {
             return false;
         }
 
-        return ro->GetType() == DAVA::RenderObject::TYPE_LANDSCAPE;
+        return ro->GetType() == RenderObject::TYPE_LANDSCAPE;
     }
 
     QString GetTitle() const override
@@ -246,7 +252,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(LandscapeFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<LandscapeFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Landscape")]
+        ReflectionRegistrator<LandscapeFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Landscape")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
@@ -256,21 +262,21 @@ public:
 class VegetationFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        if (object.CanBeCastedTo<DAVA::Entity>() == false)
+        if (object.CanBeCastedTo<Entity>() == false)
         {
             return false;
         }
 
-        DAVA::Entity* entity = object.Cast<DAVA::Entity>();
-        DAVA::RenderObject* ro = DAVA::GetRenderObject(entity);
+        Entity* entity = object.Cast<Entity>();
+        RenderObject* ro = GetRenderObject(entity);
         if (ro == nullptr)
         {
             return false;
         }
 
-        return ro->GetType() == DAVA::RenderObject::TYPE_VEGETATION;
+        return ro->GetType() == RenderObject::TYPE_VEGETATION;
     }
 
     QString GetTitle() const override
@@ -280,7 +286,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(VegetationFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<VegetationFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Vegetation")]
+        ReflectionRegistrator<VegetationFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Vegetation")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
@@ -290,21 +296,21 @@ public:
 class EditorSpriteFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        if (object.CanBeCastedTo<DAVA::Entity>() == false)
+        if (object.CanBeCastedTo<Entity>() == false)
         {
             return false;
         }
 
-        DAVA::Entity* entity = object.Cast<DAVA::Entity>();
-        DAVA::RenderObject* ro = DAVA::GetRenderObject(entity);
+        Entity* entity = object.Cast<Entity>();
+        RenderObject* ro = GetRenderObject(entity);
         if (ro == nullptr)
         {
             return false;
         }
 
-        return ro->GetType() == DAVA::RenderObject::TYPE_SPRITE;
+        return ro->GetType() == RenderObject::TYPE_SPRITE;
     }
 
     QString GetTitle() const override
@@ -314,80 +320,80 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(EditorSpriteFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<EditorSpriteFilter>::Begin()[DAVA::M::Group("Object Type"), DAVA::M::DisplayName("Editor Sprite")]
+        ReflectionRegistrator<EditorSpriteFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Editor Sprite")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
     }
 };
 
-using ActionFilter = ComponentFilter<DAVA::Component::ACTION_COMPONENT>;
+using ActionFilter = ComponentFilter<Component::ACTION_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ActionFilter)
 {
-    DAVA::ReflectionRegistrator<ActionFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Action")]
+    ReflectionRegistrator<ActionFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Action")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using QualitySettingsFilter = ComponentFilter<DAVA::Component::QUALITY_SETTINGS_COMPONENT>;
+using QualitySettingsFilter = ComponentFilter<Component::QUALITY_SETTINGS_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(QualitySettingsFilter)
 {
-    DAVA::ReflectionRegistrator<QualitySettingsFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Quality Settings")]
+    ReflectionRegistrator<QualitySettingsFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Quality Settings")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using StaticOcclusionFilter = ComponentFilter<DAVA::Component::STATIC_OCCLUSION_COMPONENT>;
+using StaticOcclusionFilter = ComponentFilter<Component::STATIC_OCCLUSION_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(StaticOcclusionFilter)
 {
-    DAVA::ReflectionRegistrator<StaticOcclusionFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Static Occlusion")]
+    ReflectionRegistrator<StaticOcclusionFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Static Occlusion")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using SoundFilter = ComponentFilter<DAVA::Component::SOUND_COMPONENT>;
+using SoundFilter = ComponentFilter<Component::SOUND_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SoundFilter)
 {
-    DAVA::ReflectionRegistrator<SoundFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Sound")]
+    ReflectionRegistrator<SoundFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Sound")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using WaveFilter = ComponentFilter<DAVA::Component::WAVE_COMPONENT>;
+using WaveFilter = ComponentFilter<Component::WAVE_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(WaveFilter)
 {
-    DAVA::ReflectionRegistrator<WaveFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Wave")]
+    ReflectionRegistrator<WaveFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Wave")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using SkeletonFilter = ComponentFilter<DAVA::Component::SKELETON_COMPONENT>;
+using SkeletonFilter = ComponentFilter<Component::SKELETON_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SkeletonFilter)
 {
-    DAVA::ReflectionRegistrator<SkeletonFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Skeleton")]
+    ReflectionRegistrator<SkeletonFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Skeleton")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using VisibilityFilter = ComponentFilter<DAVA::Component::VISIBILITY_CHECK_COMPONENT>;
+using VisibilityFilter = ComponentFilter<Component::VISIBILITY_CHECK_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(VisibilityFilter)
 {
-    DAVA::ReflectionRegistrator<VisibilityFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Visibility")]
+    ReflectionRegistrator<VisibilityFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Visibility")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
 }
 
-using LodFilter = ComponentFilter<DAVA::Component::LOD_COMPONENT>;
+using LodFilter = ComponentFilter<Component::LOD_COMPONENT>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(LodFilter)
 {
-    DAVA::ReflectionRegistrator<LodFilter>::Begin()[DAVA::M::Group("Component Filter"), DAVA::M::DisplayName("Lod")]
+    ReflectionRegistrator<LodFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Lod")]
     .ConstructorByPointer()
     .DestructorByPointer()
     .End();
@@ -396,9 +402,9 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(LodFilter)
 class InSelectionFilter : public SceneTreeFilterBase
 {
 public:
-    bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const override
+    bool IsMatched(const Selectable& object, ContextAccessor* accessor) const override
     {
-        DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+        DataContext* ctx = accessor->GetActiveContext();
 
         SelectionData* data = ctx->GetData<SelectionData>();
         return data->GetSelection().ContainsObject(object.GetContainedObject());
@@ -414,7 +420,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(InSelectionFilter, SceneTreeFilterBase)
     {
-        DAVA::ReflectionRegistrator<InSelectionFilter>::Begin()[DAVA::M::DisplayName("In selection")]
+        ReflectionRegistrator<InSelectionFilter>::Begin()[M::DisplayName("In selection")]
         .ConstructorByPointer()
         .DestructorByPointer()
         .End();
@@ -447,3 +453,4 @@ void RegisterPredefinedFilters()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LodFilter);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InSelectionFilter);
 }
+} // namespace DAVA

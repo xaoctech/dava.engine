@@ -34,7 +34,7 @@ struct EntityToModify
     Matrix4 fromWorldZero;
 };
 
-Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities);
+Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scene* scene);
 void ApplyModificationToScene(Scene* scene, const Vector<EntityToModify>& entities);
 
 class EntityModificationSystem : public SceneSystem, public SelectionSystemDelegate

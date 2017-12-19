@@ -63,5 +63,4 @@ private:
     ContextAccessor* accessor = nullptr;
     std::unique_ptr<WaitHandle> waitDialogHandle;
 };
-
 } // namespace DAVA

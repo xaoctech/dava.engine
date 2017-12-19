@@ -32,6 +32,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
     .Field("cameraFOV", &GlobalSceneSettings::cameraFOV)[M::DisplayName("Camera FOV"), M::Group("Camera")]
     .Field("cameraNear", &GlobalSceneSettings::cameraNear)[M::DisplayName("Camera near"), M::Group("Camera")]
     .Field("cameraFar", &GlobalSceneSettings::cameraFar)[M::DisplayName("Camera far"), M::Group("Camera")]
+    .Field("cameraRestoreFullParameters", &GlobalSceneSettings::cameraUseDefaultSettings)[M::DisplayName("Use default settings for editor.camera"), M::Group("Camera")]
     .Field("heightOnLandscape", &GlobalSceneSettings::heightOnLandscape)[M::DisplayName("Height"), M::Group("Snap camera to landscape")]
     .Field("heightOnLandscapeStep", &GlobalSceneSettings::heightOnLandscapeStep)[M::DisplayName("Height step"), M::Group("Snap camera to landscape")]
     .Field("selectionSequent", &GlobalSceneSettings::selectionSequent)[M::DisplayName("Select Sequent"), M::Group("Selection")]

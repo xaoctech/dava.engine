@@ -1,7 +1,13 @@
 #include "REPlatform/Scene/Systems/EditorStatisticsSystem.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
 
+#include "REPlatform/Commands/CopyLastLODCommand.h"
+#include "REPlatform/Commands/CreatePlaneLODCommand.h"
+#include "REPlatform/Commands/DeleteLODCommand.h"
+#include "REPlatform/Commands/DeleteRenderBatchCommand.h"
+#include "REPlatform/Commands/RECommandNotificationObject.h"
 #include "REPlatform/DataNodes/SelectableGroup.h"
+#include "REPlatform/DataNodes/SelectionData.h"
 #include "REPlatform/DataNodes/Settings/RESettings.h"
 
 #include <TArc/Core/Deprecated.h>
@@ -26,9 +32,9 @@ struct TrianglesData
 
 DAVA_VIRTUAL_REFLECTION_IMPL(RenderStatsSettings)
 {
-    DAVA::ReflectionRegistrator<RenderStatsSettings>::Begin()[DAVA::M::DisplayName("Render statistics")]
+    ReflectionRegistrator<RenderStatsSettings>::Begin()[M::DisplayName("Render statistics")]
     .ConstructorByPointer()
-    .Field("calculatePerFrame", &RenderStatsSettings::calculatePerFrame)[DAVA::M::DisplayName(" Calculate per frame")]
+    .Field("calculatePerFrame", &RenderStatsSettings::calculatePerFrame)[M::DisplayName(" Calculate per frame")]
     .End();
 }
 
@@ -138,7 +144,7 @@ void EnumerateRenderObjects(const SelectableGroup& group, Vector<RenderObject*>&
 }
 EditorStatisticsSystem::EditorStatisticsSystem(Scene* scene)
     : SceneSystem(scene)
-    , binder(new DAVA::FieldBinder(Deprecated::GetAccessor()))
+    , binder(new FieldBinder(Deprecated::GetAccessor()))
 {
     triangles.resize(eEditorMode::MODE_COUNT);
     for (uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
@@ -148,19 +154,19 @@ EditorStatisticsSystem::EditorStatisticsSystem(Scene* scene)
     }
 
     {
-        DAVA::TArc::FieldDescriptor descr;
-        descr.type = DAVA::ReflectedTypeDB::Get<RenderStatsSettings>();
-        descr.fieldName = DAVA::FastName("calculatePerFrame");
-        binder->BindField(descr, [this](const DAVA::Any& v) {
+        FieldDescriptor descr;
+        descr.type = ReflectedTypeDB::Get<RenderStatsSettings>();
+        descr.fieldName = FastName("calculatePerFrame");
+        binder->BindField(descr, [this](const Any& v) {
             calculatePerFrame = v.Cast<bool>(true);
         });
     }
 
     {
-        DAVA::TArc::FieldDescriptor descr;
-        descr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
-        descr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
-        binder->BindField(descr, [this](const DAVA::Any& v) {
+        FieldDescriptor descr;
+        descr.type = ReflectedTypeDB::Get<SelectionData>();
+        descr.fieldName = FastName(SelectionData::selectionPropertyName);
+        binder->BindField(descr, [this](const Any& v) {
             EmitInvalidateUI(FLAG_TRIANGLES);
         });
     }
@@ -312,14 +318,8 @@ void EditorStatisticsSystem::DispatchSignals()
 
 void EditorStatisticsSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
 {
-    static DAVA::Vector<DAVA::uint32> commandIDs = {
-        CMDID_DELETE_RENDER_BATCH,
-        CMDID_LOD_COPY_LAST_LOD,
-        CMDID_LOD_CREATE_PLANE,
-        CMDID_LOD_DELETE
-    };
-
-    if (commandNotification.MatchCommandIDs(commandIDs))
+    if (commandNotification.MatchCommandTypes<DeleteRenderBatchCommand, CopyLastLODToLod0Command,
+                                              CreatePlaneLODCommand, DeleteLODCommand>())
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }

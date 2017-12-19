@@ -20,6 +20,7 @@ class RECommandStack;
 class EditorSceneSystem;
 class Command;
 class PropertiesHolder;
+class ContextAccessor;
 
 class SceneEditor2 : public Scene
 {
@@ -118,7 +119,7 @@ public:
     Entity* Clone(Entity* dstNode /* = NULL */) override;
 
     void EnableEditorSystems();
-    void LoadSystemsLocalProperties(DAVA::PropertiesHolder* holder);
+    void LoadSystemsLocalProperties(DAVA::PropertiesHolder* holder, ContextAccessor* accessor);
     void SaveSystemsLocalProperties(DAVA::PropertiesHolder* holder);
 
     uint32 GetFramesCount() const;

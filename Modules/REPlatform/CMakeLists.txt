@@ -1,6 +1,7 @@
 set(MODULE_NAME REPlatform)
 
 set(MODULE_TYPE STATIC)
+set(PLATFORMS_SUPPORTED WIN MACOS)
 
 set(HPP_FILES_RECURSE Sources/REPlatform/*.h )
 set(CPP_FILES_RECURSE Sources/REPlatform/*.cpp)

@@ -144,8 +144,6 @@ private slots:
     void SceneDeactivated(DAVA::SceneEditor2* scene);
 
     void OnGlobalInvalidateTimeout();
-    void UnmodalDialogFinished(int);
-    void EditorLightEnabled(bool enabled);
 
     void DebugVersionInfo();
     void OnConsoleItemClicked(const QString& data);

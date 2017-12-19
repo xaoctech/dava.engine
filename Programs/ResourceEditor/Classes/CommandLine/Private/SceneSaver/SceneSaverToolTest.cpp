@@ -210,7 +210,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
 
@@ -246,7 +246,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
 
@@ -284,7 +284,7 @@ DAVA_TARC_TESTCLASS(SceneSaverToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneSaverTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(SSTestDetail::newScenePathnameStr));
 

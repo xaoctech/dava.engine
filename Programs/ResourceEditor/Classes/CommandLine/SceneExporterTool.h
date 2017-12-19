@@ -2,7 +2,8 @@
 
 #include <REPlatform/Global/CommandLineModule.h>
 #include <REPlatform/Scene/Utils/SceneExporter.h>
-#include <DavaTools/AssetCache/AssetCacheClient.h>
+
+#include <AssetCache/AssetCacheClient.h>
 
 #include <Reflection/ReflectionRegistrator.h>
 

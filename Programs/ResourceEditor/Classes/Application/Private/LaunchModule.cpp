@@ -13,9 +13,10 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Core/Deprecated.h>
 
-#include <Particles/ParticleEmitterInstance.h>
-#include <FileSystem/ResourceArchive.h>
 #include <FileSystem/FileSystem.h>
+#include <FileSystem/ResourceArchive.h>
+#include <Particles/ParticleEmitterInstance.h>
+#include <Particles/ParticleForce.h>
 
 class LaunchModule::FirstSceneCreator : public QObject, private DAVA::DataListener
 {
@@ -57,9 +58,9 @@ LaunchModule::~LaunchModule()
 
 void LaunchModule::PostInit()
 {
-    DAVA::Selectable::AddTransformProxyForClass<DAVA::Entity, EntityTransformProxy>();
-    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, EmitterTransformProxy>();
-    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleForce, ParticleForceTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::Entity, DAVA::EntityTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleEmitterInstance, DAVA::EmitterTransformProxy>();
+    DAVA::Selectable::AddTransformProxyForClass<DAVA::ParticleForce, DAVA::ParticleForceTransformProxy>();
 
     delayedExecutor.DelayedExecute([this]() {
         InvokeOperation(DAVA::OpenLastProjectOperation.ID);

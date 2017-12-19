@@ -1,6 +1,5 @@
 #include "Classes/CommandLine/DumpTool.h"
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
 #include <REPlatform/Scene/Utils/SceneDumper.h>
 
@@ -14,6 +13,7 @@
 #include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/SlotComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 
@@ -98,7 +98,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             if (ro->GetType() != RenderObject::TYPE_MESH)
                 continue;
 
-            SlotComponent* comp = static_cast<SlotComponent*>(child->GetComponent(DAVA::Component::SLOT_COMPONENT));
+            SlotComponent* comp = static_cast<DAVA::SlotComponent*>(child->GetComponent(DAVA::Component::SLOT_COMPONENT));
             if (comp == nullptr)
                 continue;
 
@@ -145,7 +145,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         }
     }
 
-    void TestLinks(SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
+    void TestLinks(DAVA::SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
     {
         using namespace DAVA;
 
@@ -322,7 +322,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestTags({ CommandLineModuleTestUtils::SceneBuilder::tagChina });
 
@@ -352,7 +352,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestTags({ CommandLineModuleTestUtils::SceneBuilder::tagChina,
                        CommandLineModuleTestUtils::SceneBuilder::tagJapan });

@@ -1,17 +1,20 @@
-#include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
+#include "REPlatform/Scene/Utils/FileSystemTagGuard.h"
 
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
 
-FileSystemTagGuard::FileSystemTagGuard(const DAVA::String newFilenamesTag)
+namespace DAVA
 {
-    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+FileSystemTagGuard::FileSystemTagGuard(const String newFilenamesTag)
+{
+    FileSystem* fs = GetEngineContext()->fileSystem;
     oldFilenamesTag = fs->GetFilenamesTag();
     fs->SetFilenamesTag(newFilenamesTag);
 }
 
 FileSystemTagGuard::~FileSystemTagGuard()
 {
-    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+    FileSystem* fs = GetEngineContext()->fileSystem;
     fs->SetFilenamesTag(oldFilenamesTag);
 }
+} // namespace DAVA

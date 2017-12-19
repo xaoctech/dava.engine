@@ -27,8 +27,8 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent* event);
 
-    DAVA::Entity* ConvertQMimeDataFromFilePath(SceneEditor2* sceneEditor = NULL);
-    DAVA::Entity* ConvertFromMimeData(SceneEditor2* sceneEditor);
+    DAVA::Entity* ConvertQMimeDataFromFilePath(DAVA::SceneEditor2* sceneEditor = NULL);
+    DAVA::Entity* ConvertFromMimeData(DAVA::SceneEditor2* sceneEditor);
 
     void SetEntities(DAVA::Entity* entity, bool perfromRetain);
 

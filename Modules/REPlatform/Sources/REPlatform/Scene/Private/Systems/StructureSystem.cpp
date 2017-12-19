@@ -14,7 +14,6 @@
 #include "REPlatform/Commands/ParticleLayerRemoveCommand.h"
 #include "REPlatform/Commands/ParticleForceMoveCommand.h"
 #include "REPlatform/Commands/ParticleForceRemoveCommand.h"
-#include "REPlatform/Commands/ParticleForceSimplifiedRemoveCommand.h"
 #include "REPlatform/Deprecated/SceneValidator.h"
 
 #include <TArc/Core/Deprecated.h>
@@ -425,20 +424,11 @@ void StructureSystem::Process(float32 timeElapsed)
     }
 }
 
-void StructureSystem::SceneDidLoaded()
-{
-    Scene* scene = GetScene();
-    for (int32 i = 0, e = scene->GetChildrenCount(); i < e; ++i)
-    {
-        CheckAndMarkSolid(scene->GetChild(i));
-    }
-}
-
 void StructureSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
 {
     if (commandNotification.MatchCommandTypes<ParticleLayerRemoveCommand, ParticleLayerMoveCommand,
                                               ParticleForceRemoveCommand, ParticleForceMoveCommand,
-                                              ParticleForceSimplifiedRemoveCommand, ParticleSimplifiedForceMoveCommand>() == true)
+                                              ParticleSimplifiedForceMoveCommand>() == true)
     {
         EmitChanged();
     }

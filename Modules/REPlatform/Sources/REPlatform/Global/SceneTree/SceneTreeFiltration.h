@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes/Selection/Selectable.h"
+#include "REPlatform/DataNodes/Selectable.h"
 
 #include <TArc/Qt/QtString.h>
 
@@ -9,12 +9,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-} // namespace TArc
-} // namespace DAVA
-
 class SceneTreeFilterBase : public DAVA::ReflectionBase
 {
 public:
@@ -22,7 +17,7 @@ public:
 
     // Is matched should implement inly forward logic.
     // Filtration controller will invert filtration subset if needed and ignore filter if it disabled.
-    virtual bool IsMatched(const Selectable& object, DAVA::TArc::ContextAccessor* accessor) const = 0;
+    virtual bool IsMatched(const Selectable& object, ContextAccessor* accessor) const = 0;
     virtual QString GetTitle() const = 0;
 
     bool IsEnabled() const;
@@ -31,7 +26,7 @@ public:
     bool IsInverted() const;
     void SetInverted(bool isInverted);
 
-    DAVA::Signal<> changed;
+    Signal<> changed;
 
     static const char* titleFieldName;
     static const char* enabledFieldName;
@@ -41,7 +36,9 @@ private:
     bool isEnabled = true;
     bool isInverted = false;
 
-    DAVA_VIRTUAL_REFLECTION(SceneTreeFilterBase, DAVA::ReflectionBase);
+    DAVA_VIRTUAL_REFLECTION(SceneTreeFilterBase, ReflectionBase);
 };
 
 void RegisterPredefinedFilters();
+
+} // namespace DAVA

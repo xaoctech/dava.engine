@@ -2,6 +2,7 @@
 
 #include "Classes/Project/ProjectManagerModule.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
+#include "Classes/Selection/SelectionModule.h"
 
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 #include "Classes/MockModules/MockProjectManagerModule.h"
@@ -434,5 +435,6 @@ private:
     DECLARE_TESTED_MODULE(ReflectionExtensionsModule)
     DECLARE_TESTED_MODULE(Mock::ProjectManagerModule)
     DECLARE_TESTED_MODULE(SceneManagerModule)
+    DECLARE_TESTED_MODULE(SelectionModule)
     END_TESTED_MODULES()
 };

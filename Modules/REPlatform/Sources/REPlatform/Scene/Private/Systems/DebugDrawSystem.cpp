@@ -153,7 +153,7 @@ void DebugDrawSystem::Draw()
     }
 
     //draw selected objects
-    const SelectableGroup& selection = Selection::GetSelection();
+    const SelectableGroup& selection = GetScene()->GetSystem<SelectionSystem>()->GetSelection();
     for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
     {
         DrawLightNode(entity, true);

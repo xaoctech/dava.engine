@@ -274,7 +274,7 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
     if (force->type == ForceType::VORTEX || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
     {
         float32 scale = 1.0f;
-        HoodSystem* hoodSystem = static_cast<SceneEditor2*>(GetScene())->hoodSystem;
+        HoodSystem* hoodSystem = GetScene()->GetSystem<HoodSystem>();
         if (hoodSystem != nullptr)
             scale = hoodSystem->GetScale();
 
@@ -537,6 +537,52 @@ ParticleEmitterInstance* EditorParticlesSystem::GetRootEmitterLayerOwner(Particl
             if (hasLayerOwner(emitterInstance, layer))
             {
                 return emitterInstance;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+ParticleEmitterInstance* EditorParticlesSystem::GetDirectEmitterLayerOwner(ParticleLayer* layer) const
+{
+    using TFunctor = Function<ParticleEmitterInstance*(ParticleEmitterInstance*, ParticleLayer*)>;
+    TFunctor lookUpEmitter = [&lookUpEmitter](ParticleEmitterInstance* emitter, ParticleLayer* layer) -> ParticleEmitterInstance* {
+        for (ParticleLayer* l : emitter->GetEmitter()->layers)
+        {
+            if (l == layer)
+            {
+                return emitter;
+            }
+
+            if (l->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+            {
+                DVASSERT(l->innerEmitter != nullptr);
+                ParticleEmitterInstance* result = lookUpEmitter(l->innerEmitter, layer);
+                if (result != nullptr)
+                {
+                    return result;
+                }
+            }
+        }
+
+        return nullptr;
+    };
+
+    for (Entity* entity : entities)
+    {
+        ParticleEffectComponent* effectComponent = GetEffectComponent(entity);
+        uint32 emittersCount = effectComponent->GetEmittersCount();
+        for (uint32 id = 0; id < emittersCount; ++id)
+        {
+            ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(id);
+            DVASSERT(emitterInstance != nullptr);
+
+            ParticleEmitterInstance* wantedEmitter = lookUpEmitter(emitterInstance, layer);
+
+            if (wantedEmitter != nullptr)
+            {
+                return wantedEmitter;
             }
         }
     }

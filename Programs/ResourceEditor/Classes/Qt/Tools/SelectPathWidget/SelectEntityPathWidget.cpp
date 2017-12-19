@@ -58,12 +58,12 @@ void SelectEntityPathWidget::dragEnterEvent(QDragEnterEvent* event)
     }
 }
 
-DAVA::Entity* SelectEntityPathWidget::GetOutputEntity(SceneEditor2* editor)
+DAVA::Entity* SelectEntityPathWidget::GetOutputEntity(DAVA::SceneEditor2* editor)
 {
     return ConvertFromMimeData(editor);
 }
 
-DAVA::Entity* SelectEntityPathWidget::ConvertFromMimeData(SceneEditor2* sceneEditor)
+DAVA::Entity* SelectEntityPathWidget::ConvertFromMimeData(DAVA::SceneEditor2* sceneEditor)
 {
     if (droppedObject.CanBeCastedTo<DAVA::Entity>())
     {
@@ -79,7 +79,7 @@ DAVA::Entity* SelectEntityPathWidget::ConvertFromMimeData(SceneEditor2* sceneEdi
     return nullptr;
 }
 
-DAVA::Entity* SelectEntityPathWidget::ConvertQMimeDataFromFilePath(SceneEditor2* sceneEditor)
+DAVA::Entity* SelectEntityPathWidget::ConvertQMimeDataFromFilePath(DAVA::SceneEditor2* sceneEditor)
 {
     if (sceneEditor == nullptr || selectedPath.isEmpty() == true)
     {
@@ -103,7 +103,7 @@ DAVA::Entity* SelectEntityPathWidget::ConvertQMimeDataFromFilePath(SceneEditor2*
         return nullptr;
     }
 
-    DAVA::Entity* entity = sceneEditor->structureSystem->Load(filePath);
+    DAVA::Entity* entity = sceneEditor->GetSystem<DAVA::StructureSystem>()->Load(filePath);
 
     // for just created entities no need to increase refCouner
     // it will be released in ~SelectEntityPathWidget()

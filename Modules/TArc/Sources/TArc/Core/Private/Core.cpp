@@ -99,8 +99,11 @@ public:
         contexts.clear();
         SafeDelete(globalContext);
 
-        pluginsManager->UnloadPlugins();
-        pluginsManager.reset();
+        if (pluginsManager != nullptr)
+        {
+            pluginsManager->UnloadPlugins();
+            pluginsManager.reset();
+        }
     }
 
     virtual void OnFrame(float32 delta)

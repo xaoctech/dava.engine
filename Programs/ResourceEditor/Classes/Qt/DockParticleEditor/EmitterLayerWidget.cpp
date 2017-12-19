@@ -1,6 +1,8 @@
 #include "Classes/Qt/DockParticleEditor/EmitterLayerWidget.h"
+#include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 
+#include <REPlatform/Commands/ParticleLayerCommands.h>
 #include <REPlatform/Commands/ParticleEditorCommands.h>
 #include <REPlatform/Commands/ParticleLayerCommands.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
@@ -951,7 +953,7 @@ void EmitterLayerWidget::OnThreePointGradientPropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propGradientMiddlePoint;
     gradientMiddlePointTimeLine->GetValue(0, propGradientMiddlePoint.GetPropsPtr());
 
-    CommandChangeThreePointGradientProperties::ThreePointGradientParams params;
+    DAVA::CommandChangeThreePointGradientProperties::ThreePointGradientParams params;
     params.useThreePointGradient = useThreePointGradientBox->isChecked();
     params.gradientMiddlePointLine = propGradientMiddlePoint.GetPropLine();
     params.gradientColorForBlack = propGradientColorForBlack.GetPropLine();
@@ -960,7 +962,7 @@ void EmitterLayerWidget::OnThreePointGradientPropertiesChanged()
     params.gradientMiddlePoint = static_cast<DAVA::float32>(gradientMiddlePointSpin->value());
 
     DVASSERT(GetActiveScene() != nullptr);
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeThreePointGradientProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeThreePointGradientProperties(layer, std::move(params))));
 
     emit ValueChanged();
 }

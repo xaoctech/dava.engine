@@ -10,6 +10,7 @@
 #include "TArc/Qt/QtSize.h"
 #include "TArc/Qt/QtString.h"
 #include "TArc/DataProcessing/AnyQMetaType.h"
+#include "TArc/Utils/Utils.h"
 
 #include <Engine/PlatformApiQt.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -47,9 +48,9 @@ protected:
     }
 };
 
-class MenuItemWidget : public TArc::Widget
+class MenuItemWidget : public Widget
 {
-    using TBase = TArc::Widget;
+    using TBase = Widget;
 
 public:
     explicit MenuItemWidget(const QString& text_, QWidget* parent = nullptr)
@@ -149,14 +150,13 @@ protected:
 };
 
 ContentFilter::ContentFilter(const Params& params, Reflection model, QWidget* parent)
-    : TBase(params, TArc::ControlDescriptor(params.fields), params.accessor, model, parent)
+    : TBase(params, ControlDescriptor(params.fields), params.accessor, model, parent)
 {
     SetupControl();
 }
 
 void ContentFilter::SetupControl()
 {
-    using namespace DAVA::TArc;
     Reflection thisModel = Reflection::Create(ReflectedObject(this));
     QtVBoxLayout* mainLayout = new QtVBoxLayout(this);
     mainLayout->setMargin(0);
@@ -225,7 +225,7 @@ void ContentFilter::SetupControl()
     setLayout(mainLayout);
 }
 
-void ContentFilter::UpdateControl(const TArc::ControlDescriptor& descriptor)
+void ContentFilter::UpdateControl(const ControlDescriptor& descriptor)
 {
     if (descriptor.IsChanged(Fields::Enabled) == true)
     {
@@ -244,7 +244,6 @@ void ContentFilter::UpdateControl(const TArc::ControlDescriptor& descriptor)
 
 void ContentFilter::RebuildFiltersWidgets()
 {
-    using namespace TArc;
     Vector<std::pair<FilterWidget*, QLayoutItem*>> filterItems;
     for (int i = 0; i < filtersLayout->count(); ++i)
     {
@@ -282,7 +281,7 @@ void ContentFilter::RebuildFiltersWidgets()
         {
             FilterWidget* filterWidget = new FilterWidget(p, processor, filter.ref, this);
             filterWidget->updateRequire.Connect(this, &ContentFilter::OnUpdateFilterWidgets);
-            filterWidget->requestRemoving.Connect(Bind(&ContentFilter::OnRemoveFilterFromChain, this, filter.key, static_cast<TArc::ControlProxy*>(filterWidget)));
+            filterWidget->requestRemoving.Connect(Bind(&ContentFilter::OnRemoveFilterFromChain, this, filter.key, static_cast<ControlProxy*>(filterWidget)));
             filterWidgets.insert(filterWidget);
             filtersLayout->addWidget(filterWidget);
 
@@ -352,7 +351,6 @@ bool ContentFilter::HasFilters() const
 
 void ContentFilter::AddFilterMenuAboutToShow()
 {
-    using namespace TArc;
     Function<void(const std::unique_ptr<AvailableFilterBase>&, QMenu*)> unpackMenu = [&unpackMenu, this](const std::unique_ptr<AvailableFilterBase>& filterBase, QMenu* menu) {
         AvailableFiltersGroup* group = dynamic_cast<AvailableFiltersGroup*>(filterBase.get());
         if (group != nullptr)
@@ -490,7 +488,7 @@ void ContentFilter::OnUpdateFilterWidgets()
     });
 }
 
-void ContentFilter::OnRemoveFilterFromChain(const Any& filterKey, TArc::ControlProxy* filterControl)
+void ContentFilter::OnRemoveFilterFromChain(const Any& filterKey, ControlProxy* filterControl)
 {
     FastName removeMethodName = GetFieldName(Fields::RemoveFilterFromChain);
     DVASSERT(removeMethodName.IsValid() == true);
@@ -608,7 +606,6 @@ void ContentFilter::TearDown()
 
 void ContentFilter::ClearFilterChain()
 {
-    using namespace TArc;
     for (ControlProxy* filterWidget : filterWidgets)
     {
         filterWidget->TearDown();

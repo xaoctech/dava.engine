@@ -593,7 +593,7 @@ void SceneInfo::UpdateInfoByTimer()
         return;
 
     Refresh3DDrawInfo();
-    if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame == true)
+    if (DAVA::Deprecated::GetGlobalContext()->GetData<DAVA::RenderStatsSettings>()->calculatePerFrame == true)
     {
         RefreshLODInfoInFrame();
         RefreshLODInfoForSelection();
@@ -675,7 +675,7 @@ void SceneInfo::OnSelectionChanged(const DAVA::Any& selectionAny)
         const DAVA::SelectableGroup& selection = selectionAny.Get<DAVA::SelectableGroup>();
         ClearSelectionData();
         CollectSelectedRenderObjects(&selection);
-        if (REGlobal::GetGlobalContext()->GetData<RenderStatsSettings>()->calculatePerFrame == true)
+        if (DAVA::Deprecated::GetGlobalContext()->GetData<DAVA::RenderStatsSettings>()->calculatePerFrame == true)
         {
             RefreshLODInfoForSelection();
         }

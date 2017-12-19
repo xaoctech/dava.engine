@@ -5,11 +5,6 @@
 namespace DAVA
 {
 class Entity;
-namespace TArc
-{
-class ContextAccessor;
-class UI;
-} // namespace TArc
 } // namespace DAVA
 
 template <typename T>

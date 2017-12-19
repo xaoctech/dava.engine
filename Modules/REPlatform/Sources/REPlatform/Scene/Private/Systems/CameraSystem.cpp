@@ -95,7 +95,7 @@ void SceneCameraSystem::LoadLocalProperties(PropertiesHolder* holder, ContextAcc
     }
 
     // set active scene camera
-    FastName camName = cameraProps.Get<FastName>("activeCameraName", ResourceEditor::EDITOR_DEBUG_CAMERA);
+    FastName camName = cameraProps.Get<FastName>("activeCameraName", FastName(ResourceEditor::EDITOR_DEBUG_CAMERA));
     auto camEntityIt = std::find_if(std::begin(sceneCameras), std::end(sceneCameras),
                                     [&camName](Entity* cam)
                                     {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes/Selection/Selectable.h"
+#include <REPlatform/DataNodes/Selectable.h>
 
 #include <TArc/Qt/QtString.h>
 
@@ -93,7 +93,7 @@ protected:
 
     // droppedData
     QString selectedPath;
-    Selectable droppedObject;
+    DAVA::Selectable droppedObject;
 
     bool IsMimeDataCanBeDropped(const QMimeData* data) const;
 

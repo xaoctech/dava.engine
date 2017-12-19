@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Classes/Selection/Selectable.h"
+#include <REPlatform/DataNodes/Selectable.h>
 
 #include <TArc/Core/OperationRegistrator.h>
+#include <TArc/Core/OperationInvoker.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Qt/QtString.h>
 
@@ -14,21 +15,18 @@
 #include <Functional/Signal.h>
 #include <Reflection/ReflectedType.h>
 
-class SceneEditor2;
-class SceneTreeModelV2;
 
 namespace DAVA
 {
+class SceneEditor2;
 class ParticleEffectComponent;
 class ParticleEmitter;
-
-namespace TArc
-{
 class ContextAccessor;
 class UI;
 class OperationInvoker;
-} // namespace TArc
 } // namespace DAVA
+
+class SceneTreeModelV2;
 
 class QMenu;
 class QPoint;
@@ -37,18 +35,18 @@ class QAction;
 class BaseContextMenu
 {
 public:
-    BaseContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+    BaseContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
 
-    void Init(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::TArc::OperationInvoker* invoker);
+    void Init(DAVA::ContextAccessor* accessor, DAVA::UI* ui, DAVA::OperationInvoker* invoker);
     void Show(const QPoint& pos);
 
 protected:
     virtual void FillActions(QMenu& menu) = 0;
 
-    void RemoveCommandsHelper(const DAVA::String& text, const DAVA::ReflectedType* type, const DAVA::Function<std::unique_ptr<DAVA::Command>(const Selectable&)>& callback);
-    void ForEachSelectedByType(const DAVA::ReflectedType* type, const DAVA::Function<void(const Selectable&)>& callback);
+    void RemoveCommandsHelper(const DAVA::String& text, const DAVA::ReflectedType* type, const DAVA::Function<std::unique_ptr<DAVA::Command>(const DAVA::Selectable&)>& callback);
+    void ForEachSelectedByType(const DAVA::ReflectedType* type, const DAVA::Function<void(const DAVA::Selectable&)>& callback);
 
-    DAVA::ParticleEffectComponent* GetParticleEffectComponent(const Selectable& object);
+    DAVA::ParticleEffectComponent* GetParticleEffectComponent(const DAVA::Selectable& object);
     void SaveEmitter(DAVA::ParticleEffectComponent* component, DAVA::ParticleEmitter* emitter,
                      bool askFileName, const QString& defaultName,
                      const DAVA::Function<std::unique_ptr<DAVA::Command>(const DAVA::FilePath&)>& commandCreator);
@@ -58,16 +56,16 @@ protected:
     DAVA::FilePath GetDataSourcePath() const;
 
 protected:
-    SceneEditor2* scene = nullptr;
+    DAVA::SceneEditor2* scene = nullptr;
     const SceneTreeModelV2* model = nullptr;
-    DAVA::Vector<Selectable> selectedObjects;
-    Selectable currentObject;
+    DAVA::Vector<DAVA::Selectable> selectedObjects;
+    DAVA::Selectable currentObject;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
-    DAVA::TArc::OperationInvoker* invoker = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
+    DAVA::OperationInvoker* invoker = nullptr;
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 };
 
 class EntityContextMenu : public BaseContextMenu
@@ -75,7 +73,7 @@ class EntityContextMenu : public BaseContextMenu
     using TBase = BaseContextMenu;
 
 public:
-    EntityContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+    EntityContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
 
 protected:
     void FillActions(QMenu& menu) override;
@@ -117,7 +115,7 @@ class ParticleLayerContextMenu : public BaseContextMenu
     using TBase = BaseContextMenu;
 
 public:
-    ParticleLayerContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+    ParticleLayerContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
 
 protected:
     void FillActions(QMenu& menu) override;
@@ -139,7 +137,7 @@ class ParticleSimplifiedForceContextMenu : public BaseContextMenu
     using TBase = BaseContextMenu;
 
 public:
-    ParticleSimplifiedForceContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+    ParticleSimplifiedForceContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
 
 protected:
     void FillActions(QMenu& menu) override;
@@ -154,7 +152,7 @@ class ParticleForceContextMenu : public BaseContextMenu
     using TBase = BaseContextMenu;
 
 public:
-    ParticleForceContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+    ParticleForceContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
 
 protected:
     void FillActions(QMenu& menu) override;
@@ -169,7 +167,7 @@ class ParticleEmitterContextMenu : public BaseContextMenu
     using TBase = BaseContextMenu;
 
 public:
-    ParticleEmitterContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+    ParticleEmitterContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
 
 protected:
     void FillActions(QMenu& menu) override;
@@ -188,4 +186,4 @@ protected:
 DECLARE_OPERATION_ID(SetSceneTreeFilter);
 DECLARE_OPERATION_ID(ReloadTexturesInSelectedOperation);
 
-std::unique_ptr<BaseContextMenu> CreateSceneTreeContextMenu(SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<Selectable>& selectedObjects, const Selectable& currentObject);
+std::unique_ptr<BaseContextMenu> CreateSceneTreeContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);

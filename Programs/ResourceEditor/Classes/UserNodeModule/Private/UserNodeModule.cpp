@@ -1,8 +1,9 @@
 #include "Classes/UserNodeModule/UserNodeModule.h"
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
 #include "Classes/UserNodeModule/Private/UserNodeData.h"
-#include "Classes/SceneTree/CreateEntitySupport.h"
 
+#include <REPlatform/Global/SceneTree/CreateEntitySupport.h>
+#include <REPlatform/Global/StringConstants.h>
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 
@@ -21,22 +22,22 @@
 
 namespace UserNodeModuleDetail
 {
-class UserNodeEntityCreator : public SimpleEntityCreator
+class UserNodeEntityCreator : public DAVA::SimpleEntityCreator
 {
-    using TBase = SimpleEntityCreator;
+    using TBase = DAVA::SimpleEntityCreator;
 
 public:
     static DAVA::RefPtr<DAVA::Entity> CreateEntity()
     {
         DAVA::RefPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         sceneNode->AddComponent(new DAVA::UserComponent());
-        sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
+        sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::USER_NODE_NAME));
 
         return sceneNode;
     }
 
     UserNodeEntityCreator()
-        : TBase(eMenuPointOrder::USER_NODE_ENITY, DAVA::TArc::SharedIcon(":/QtIcons/user_object.png"),
+        : TBase(eMenuPointOrder::USER_NODE_ENITY, DAVA::SharedIcon(":/QtIcons/user_object.png"),
                 QStringLiteral("User Node"), DAVA::MakeFunction(&UserNodeEntityCreator::CreateEntity))
     {
     }

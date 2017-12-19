@@ -75,7 +75,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
 
     const SelectableGroup& entities = GetScene()->GetSystem<SelectionSystem>()->GetSelection();
 
-    Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities);
+    Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities, GetScene());
     if (modifEntities.empty())
         return;
 

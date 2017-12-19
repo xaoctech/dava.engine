@@ -777,6 +777,11 @@ public:
 
     void Redo() override;
 
+    ParticleEffectComponent* GetEffect() const
+    {
+        return selectedEffect;
+    }
+
     ParticleEmitterInstance* GetEmitterInstance() const
     {
         return instance;

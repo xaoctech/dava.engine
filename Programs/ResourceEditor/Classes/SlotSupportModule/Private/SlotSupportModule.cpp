@@ -1,7 +1,6 @@
 #include "Classes/SlotSupportModule/SlotSupportModule.h"
 #include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
 #include "Classes/SlotSupportModule/Private/SlotComponentExtensions.h"
-#include "Classes/SlotSupportModule/Private/EntityForSlotLoader.h"
 
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/DataNodes/SceneData.h>

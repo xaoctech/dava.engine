@@ -6,6 +6,7 @@
 #include <REPlatform/Global/GlobalOperations.h>
 #include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
 #include <REPlatform/Commands/ParticleEditorCommands.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/Deprecated.h>
@@ -325,7 +326,7 @@ void QualitySwitcher::ReloadEntityEmitters(DAVA::SceneEditor2* scene, DAVA::Enti
     DAVA::ParticleEffectComponent* comp = GetEffectComponent(e);
     if (comp)
     {
-        scene->Exec(std::make_unique<CommandReloadEmitters>(comp));
+        scene->Exec(std::make_unique<DAVA::CommandReloadEmitters>(comp));
     }
 
     for (DAVA::int32 i = 0, sz = e->GetChildrenCount(); i < sz; ++i)

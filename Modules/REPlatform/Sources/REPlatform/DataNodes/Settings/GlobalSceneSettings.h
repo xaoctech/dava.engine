@@ -31,6 +31,7 @@ public:
     float32 cameraFOV = 70.0f;
     float32 cameraNear = 1.0f;
     float32 cameraFar = 5000.0f;
+    bool cameraUseDefaultSettings = true;
     float32 heightOnLandscape = 2.0f;
     float32 heightOnLandscapeStep = 0.5f;
     bool selectionSequent = false;

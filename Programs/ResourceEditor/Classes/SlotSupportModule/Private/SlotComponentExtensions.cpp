@@ -511,7 +511,7 @@ private:
         std::shared_ptr<ModifyExtension> extension = GetModifyInterface();
         ModifyExtension::MultiCommandInterface cmdInterface = extension->GetMultiCommandInterface("Load preview item to slot", static_cast<DAVA::uint32>(nodes.size()));
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool) {
-            cmdInterface.Exec(std::make_unique<AttachEntityToSlot>(scene.Get(), component, itemName));
+            cmdInterface.Exec(std::make_unique<DAVA::AttachEntityToSlot>(scene.Get(), component, itemName));
             return true;
         });
 
@@ -555,7 +555,7 @@ private:
         using namespace DAVA;
 
         itemsList.clear();
-        itemsList.emplace(EditorSlotSystem::emptyItemName.c_str(), EditorSlotSystem::emptyItemName);
+        itemsList.emplace(DAVA::EditorSlotSystem::emptyItemName.c_str(), DAVA::EditorSlotSystem::emptyItemName);
         DAVA::FastName item = GetLoadedItemInfo();
         if (configPath.CanGet<DAVA::FilePath>() == true)
         {

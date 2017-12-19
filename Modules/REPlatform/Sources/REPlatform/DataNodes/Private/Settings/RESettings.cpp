@@ -1,6 +1,7 @@
 #include "REPlatform/DataNodes/Settings/RESettings.h"
 
 #include <Reflection/ReflectionRegistrator.h>
+#include <Reflection/ReflectedMeta.h>
 #include <Base/GlobalEnum.h>
 
 ENUM_DECLARE(DAVA::RenderingBackend)

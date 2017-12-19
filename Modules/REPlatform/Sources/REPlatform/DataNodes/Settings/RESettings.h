@@ -7,6 +7,7 @@
 #include <TextureCompression/TextureConverter.h>
 
 #include <Base/BaseTypes.h>
+#include <FileSystem/FilePath.h>
 #include <Math/Color.h>
 #include <Reflection/Reflection.h>
 #include <Scene3D/Components/ActionComponent.h>
@@ -28,6 +29,7 @@ public:
     bool previewEnabled = false;
     TextureConverter::eConvertQuality compressionQuality = TextureConverter::ECQ_DEFAULT;
     bool showErrorDialog = true;
+    uint32 recentScenesCount = 15;
 
     // Material Editor settings
     Color materialEditorSwitchColor0 = Color(0.0f, 1.0f, 0.0f, 1.0f);
