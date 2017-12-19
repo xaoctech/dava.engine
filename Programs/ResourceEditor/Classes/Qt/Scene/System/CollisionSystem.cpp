@@ -437,8 +437,15 @@ void SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3& from, const DAVA:
         }
     }
 
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
     for (const auto& node : sortedHits)
     {
+        if (node.first < debugBoxScale)
+        {
+            continue;
+        }
+
         DAVA::Any objPtr(node.second->userData);
         auto iter = objToPhysx.find(objPtr);
         DVASSERT(iter != objToPhysx.end());

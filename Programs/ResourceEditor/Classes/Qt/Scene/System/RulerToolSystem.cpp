@@ -42,6 +42,7 @@ LandscapeEditorDrawSystem::eErrorType RulerToolSystem::EnableLandscapeEditing()
     }
 
     bool inputLocked = AcquireInputLock(GetScene());
+    Selection::Lock();
     DVASSERT(inputLocked);
 
     DAVA::Texture* rulerToolTexture = drawSystem->GetRulerToolProxy()->GetTexture();
@@ -68,6 +69,7 @@ bool RulerToolSystem::DisableLandscapeEdititing()
     }
 
     ReleaseInputLock(GetScene());
+    Selection::Unlock();
     drawSystem->DisableCustomDraw();
 
     drawSystem->GetLandscapeProxy()->SetToolTexture(nullptr, false);

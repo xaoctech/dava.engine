@@ -50,6 +50,7 @@ LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEdit
 
     bool inputLocked = AcquireInputLock(GetScene());
     DVASSERT(inputLocked == true);
+    Selection::Lock();
 
     landscapeSize = drawSystem->GetHeightmapProxy()->Size();
     copyPasteFrom = DAVA::Vector2(-1.f, -1.f);
@@ -74,6 +75,7 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
     FinishEditing(false);
 
     ReleaseInputLock(GetScene());
+    Selection::Unlock();
 
     drawSystem->DisableCursor();
     drawSystem->DisableCustomDraw();
