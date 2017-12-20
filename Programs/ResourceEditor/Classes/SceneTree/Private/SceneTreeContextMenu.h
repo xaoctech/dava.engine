@@ -15,7 +15,6 @@
 #include <Functional/Signal.h>
 #include <Reflection/ReflectedType.h>
 
-
 namespace DAVA
 {
 class SceneEditor2;
