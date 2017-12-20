@@ -40,11 +40,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
         param("use_incredi_build", "false")
     }
 
-    vcs {
-        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
-
-    }
-
     steps {
         script {
             name = "get stash commit"
