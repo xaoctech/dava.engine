@@ -445,7 +445,8 @@ const Compressor* GetCompressor(Compressor::Type compressorType)
 bool Pack(const Vector<CollectedFile>& collectedFiles,
           const DAVA::Compressor::Type compressionType,
           const FilePath& metaDb,
-          File* outputFile)
+          File* outputFile,
+          bool dummyFileData)
 {
     // validate input params
     if (collectedFiles.empty())
@@ -514,37 +515,48 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
                                         Vector<uint8> origFileBuffer;
                                         Vector<uint8> compressedFileBuffer;
 
-                                        if (!fs->ReadFileContents(collectedFile.absPath, origFileBuffer))
-                                        {
-                                            Logger::Error("Can't read contents of: ", collectedFile.absPath.GetAbsolutePathname().c_str());
-                                            return;
-                                        }
-
                                         bool useCompressedBuffer = (compressionType != Compressor::Type::None);
                                         Compressor::Type useCompression = compressionType;
 
-                                        if (origFileBuffer.empty())
+                                        if (dummyFileData)
                                         {
+                                            origFileBuffer.resize(1);
+                                            origFileBuffer[0] = 0;
+
                                             useCompressedBuffer = false;
                                             useCompression = Compressor::Type::None;
                                         }
-
-                                        if (useCompressedBuffer)
+                                        else
                                         {
-                                            if (!compressor->Compress(origFileBuffer, compressedFileBuffer))
+                                            if (!fs->ReadFileContents(collectedFile.absPath, origFileBuffer))
                                             {
-                                                Logger::Error("Can't compress contents of: %s", collectedFile.absPath.GetAbsolutePathname().c_str());
+                                                Logger::Error("Can't read contents of: ", collectedFile.absPath.GetAbsolutePathname().c_str());
                                                 return;
                                             }
 
-                                            if (compressedFileBuffer.size() < origFileBuffer.size())
-                                            {
-                                                useCompressedBuffer = true;
-                                            }
-                                            else
+                                            if (origFileBuffer.empty())
                                             {
                                                 useCompressedBuffer = false;
                                                 useCompression = Compressor::Type::None;
+                                            }
+
+                                            if (useCompressedBuffer)
+                                            {
+                                                if (!compressor->Compress(origFileBuffer, compressedFileBuffer))
+                                                {
+                                                    Logger::Error("Can't compress contents of: %s", collectedFile.absPath.GetAbsolutePathname().c_str());
+                                                    return;
+                                                }
+
+                                                if (compressedFileBuffer.size() < origFileBuffer.size())
+                                                {
+                                                    useCompressedBuffer = true;
+                                                }
+                                                else
+                                                {
+                                                    useCompressedBuffer = false;
+                                                    useCompression = Compressor::Type::None;
+                                                }
                                             }
                                         }
 
@@ -706,7 +718,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles,
     return true;
 }
 
-bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type compressionType, const FilePath& archivePath, const FilePath& metaDb)
+bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type compressionType, const FilePath& archivePath, const FilePath& metaDb, bool dummyFileData)
 {
     ScopedPtr<File> outputFile(File::Create(archivePath, File::CREATE | File::WRITE));
     if (!outputFile)
@@ -715,7 +727,7 @@ bool Pack(const Vector<CollectedFile>& collectedFiles, DAVA::Compressor::Type co
         return false;
     }
 
-    if (!Pack(collectedFiles, compressionType, metaDb, outputFile))
+    if (!Pack(collectedFiles, compressionType, metaDb, outputFile, dummyFileData))
     {
         outputFile.reset();
         if (!FileSystem::Instance()->DeleteFile(archivePath))
@@ -744,7 +756,7 @@ bool CreateArchive(const Params& params)
         return false;
     }
 
-    if (Pack(collectedFiles, params.compressionType, params.archivePath, params.metaDbPath))
+    if (Pack(collectedFiles, params.compressionType, params.archivePath, params.metaDbPath, params.dummyFileData))
     {
         return true;
     }

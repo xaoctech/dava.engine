@@ -21,9 +21,13 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIAnchorSafeAreaComponent)
     .ConstructorByPointer()
     .DestructorByPointer([](UIAnchorSafeAreaComponent* o) { o->Release(); })
     .Field("leftSafeInset", &UIAnchorSafeAreaComponent::GetLeftInset, &UIAnchorSafeAreaComponent::SetLeftInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("leftInsetCorrection", &UIAnchorSafeAreaComponent::GetLeftInsetCorrection, &UIAnchorSafeAreaComponent::SetLeftInsetCorrection)
     .Field("topSafeInset", &UIAnchorSafeAreaComponent::GetTopInset, &UIAnchorSafeAreaComponent::SetTopInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("topInsetCorrection", &UIAnchorSafeAreaComponent::GetTopInsetCorrection, &UIAnchorSafeAreaComponent::SetTopInsetCorrection)
     .Field("rightSafeInset", &UIAnchorSafeAreaComponent::GetRightInset, &UIAnchorSafeAreaComponent::SetRightInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("rightInsetCorrection", &UIAnchorSafeAreaComponent::GetRightInsetCorrection, &UIAnchorSafeAreaComponent::SetRightInsetCorrection)
     .Field("bottomSafeInset", &UIAnchorSafeAreaComponent::GetBottomInset, &UIAnchorSafeAreaComponent::SetBottomInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
+    .Field("bottomInsetCorrection", &UIAnchorSafeAreaComponent::GetBottomInsetCorrection, &UIAnchorSafeAreaComponent::SetBottomInsetCorrection)
     .End();
 }
 
@@ -35,9 +39,13 @@ UIAnchorSafeAreaComponent::UIAnchorSafeAreaComponent()
 
 UIAnchorSafeAreaComponent::UIAnchorSafeAreaComponent(const UIAnchorSafeAreaComponent& src)
     : leftInset(src.leftInset)
+    , leftInsetCorrection(src.leftInsetCorrection)
     , topInset(src.topInset)
+    , topInsetCorrection(src.topInsetCorrection)
     , rightInset(src.rightInset)
+    , rightInsetCorrection(src.rightInsetCorrection)
     , bottomInset(src.bottomInset)
+    , bottomInsetCorrection(src.bottomInsetCorrection)
 {
 }
 
@@ -91,6 +99,50 @@ UIAnchorSafeAreaComponent::eInsetType UIAnchorSafeAreaComponent::GetBottomInset(
 void UIAnchorSafeAreaComponent::SetBottomInset(eInsetType inset)
 {
     bottomInset = inset;
+    MarkDirty();
+}
+
+float32 UIAnchorSafeAreaComponent::GetLeftInsetCorrection() const
+{
+    return leftInsetCorrection;
+}
+
+void UIAnchorSafeAreaComponent::SetLeftInsetCorrection(float32 correction)
+{
+    leftInsetCorrection = correction;
+    MarkDirty();
+}
+
+float32 UIAnchorSafeAreaComponent::GetTopInsetCorrection() const
+{
+    return topInsetCorrection;
+}
+
+void UIAnchorSafeAreaComponent::SetTopInsetCorrection(float32 correction)
+{
+    topInsetCorrection = correction;
+    MarkDirty();
+}
+
+float32 UIAnchorSafeAreaComponent::GetRightInsetCorrection() const
+{
+    return rightInsetCorrection;
+}
+
+void UIAnchorSafeAreaComponent::SetRightInsetCorrection(float32 correction)
+{
+    rightInsetCorrection = correction;
+    MarkDirty();
+}
+
+float32 UIAnchorSafeAreaComponent::GetBottomInsetCorrection() const
+{
+    return bottomInsetCorrection;
+}
+
+void UIAnchorSafeAreaComponent::SetBottomInsetCorrection(float32 correction)
+{
+    bottomInsetCorrection = correction;
     MarkDirty();
 }
 

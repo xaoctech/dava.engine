@@ -34,8 +34,24 @@ void IssueNavigatorModule::PostInit()
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
-    layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));
-    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), sectionId++, widget));
+    issuesHandlers.emplace_back(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
+    issuesHandlers.emplace_back(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
+}
+
+void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
+{
+    for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
+    {
+        handler->OnContextActivated(current);
+    }
+}
+
+void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+{
+    for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
+    {
+        handler->OnContextDeleted(context);
+    }
 }
 
 void IssueNavigatorModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)
