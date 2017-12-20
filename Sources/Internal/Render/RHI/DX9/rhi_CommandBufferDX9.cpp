@@ -477,9 +477,9 @@ static bool dx9_SyncObject_IsSignaled(Handle obj)
 }
 
 CommandBufferDX9_t::CommandBufferDX9_t()
-    : isFirstInPass(true)
+    : sync(InvalidHandle)
+    , isFirstInPass(true)
     , isLastInPass(true)
-    , sync(InvalidHandle)
 {
 }
 

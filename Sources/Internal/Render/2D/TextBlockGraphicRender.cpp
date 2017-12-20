@@ -30,9 +30,9 @@ uint16* TextBlockGraphicRender::indexBuffer = InitIndexBuffer();
 
 TextBlockGraphicRender::TextBlockGraphicRender(TextBlock* textBlock)
     : TextBlockRender(textBlock)
-    , cachedSpread(0)
-    , charDrawed(0)
     , dfMaterial(SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL))
+    , charDrawed(0)
+    , cachedSpread(0)
 {
     graphicFont = static_cast<GraphicFont*>(textBlock->GetFont());
 

@@ -9,8 +9,8 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include <QPixmap>
+#include <QMutex>
 
-class QMutex;
 class QTimer;
 
 class LogModel : public QAbstractListModel
@@ -58,7 +58,7 @@ private:
     ConvertFunc func;
 
     QVector<LogItem> itemsToAdd;
-    std::unique_ptr<QMutex> mutex = nullptr;
+    QMutex mutex;
     QTimer* syncTimer = nullptr;
     QSize rowSize;
 };

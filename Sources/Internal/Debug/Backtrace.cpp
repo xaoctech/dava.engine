@@ -84,7 +84,7 @@ namespace BacktraiceDetails
 #if defined(__DAVAENGINE_WINDOWS__)
 void InitSymbols()
 {
-    static Atomic<bool> symbolsInited = false;
+    static Atomic<bool> symbolsInited(false);
     if (!symbolsInited)
     {
         // All DbgHelp functions are single threaded
