@@ -24,7 +24,7 @@ bool TextureDescriptorUtils::CreateDescriptor(const DAVA::FilePath& imagePath)
     ImageFormat imageFormat = ImageSystem::GetImageFormatForExtension(imageExtension);
     if ((imageFormat == IMAGE_FORMAT_UNKNOWN) || (false == TextureDescriptor::IsSupportedSourceFormat(imageFormat)))
     {
-        Logger::Error("Cannot create TextureDescriptor from %s", imagePath.GetStringValue().c_str());
+        Logger::Error("Cannot create TextureDescriptor for %s", imagePath.GetStringValue().c_str());
         return false;
     }
 
@@ -59,7 +59,7 @@ bool TextureDescriptorUtils::CreateDescriptorCube(const DAVA::FilePath& textureP
     descriptor->dataSettings.cubefaceFlags = 0x000000FF;
     descriptor->pathname = texturePath;
 
-    ImageInfo zeroMipInfo = ImageSystem::GetImageInfo(imagePathes[0]);
+    ImageInfo zeroFaceInfo = ImageSystem::GetImageInfo(imagePathes[0]);
     for (uint32 face = 0; face < Texture::CUBE_FACE_COUNT; ++face)
     {
         String imageExtension = imagePathes[face].GetExtension();
@@ -70,8 +70,8 @@ bool TextureDescriptorUtils::CreateDescriptorCube(const DAVA::FilePath& textureP
             return false;
         }
 
-        ImageInfo mipInfo = ImageSystem::GetImageInfo(imagePathes[face]);
-        if ((mipInfo.width != zeroMipInfo.width) || (mipInfo.height != zeroMipInfo.height) || (mipInfo.format != zeroMipInfo.format))
+        ImageInfo faceInfo = ImageSystem::GetImageInfo(imagePathes[face]);
+        if ((faceInfo.width != zeroFaceInfo.width) || (faceInfo.height != zeroFaceInfo.height) || (faceInfo.format != zeroFaceInfo.format))
         {
             Logger::Error("Cannot create cube TextureDescriptor because face %u has different settings", face);
             return false;
@@ -103,8 +103,8 @@ bool TextureDescriptorUtils::UpdateDescriptor(const DAVA::FilePath& imagePath)
         return false;
     }
 
-    FilePath texturePath = TextureDescriptor::GetDescriptorPathname(imagePath);
-    std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(texturePath));
+    FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(imagePath);
+    std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(descriptorPath));
     if (descriptor)
     {
         ImageInfo info = ImageSystem::GetImageInfo(imagePath);
@@ -114,7 +114,7 @@ bool TextureDescriptorUtils::UpdateDescriptor(const DAVA::FilePath& imagePath)
             descriptor->dataSettings.sourceFileExtension = imageExtension;
             descriptor->compression[eGPUFamily::GPU_ORIGIN].imageFormat = imageFormat;
             descriptor->compression[eGPUFamily::GPU_ORIGIN].format = info.format;
-            descriptor->Save(texturePath);
+            descriptor->Save(descriptorPath);
             return true;
         }
     }

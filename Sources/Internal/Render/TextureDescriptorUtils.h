@@ -6,7 +6,7 @@ namespace DAVA
 {
 /**
     \ingroup filesystem
-    TextureDescriptorUtils is a helpre class that provide operations for work with TextureDescriptor
+    TextureDescriptorUtils is a helper class that provide operations for work with TextureDescriptor
  */
 
 class FilePath;
