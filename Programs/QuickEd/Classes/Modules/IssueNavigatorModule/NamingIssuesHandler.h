@@ -18,11 +18,12 @@ class UIControl;
 
 class ControlNode;
 class IssueNavigatorWidget;
+class IndexGenerator;
 
 class NamingIssuesHandler : public IssuesHandler, PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui_, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui_, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
     ~NamingIssuesHandler() override = default;
 
     // IssuesHandler
@@ -77,7 +78,7 @@ private:
     DAVA::int32 sectionId = 0;
     IssueNavigatorWidget* navigatorWidget = nullptr;
 
-    DAVA::int32 nextIssueId = 0;
+    IndexGenerator& indexGenerator;
 
     DAVA::UnorderedMap<PackageNode*, PackageIssues> packageIssues;
     PackageNode* currentPackage = nullptr;
