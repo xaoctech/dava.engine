@@ -54,11 +54,12 @@ ControlNode* FindCorrespondingControlNode(PackageNode* packageNode, UIControl* c
 }
 }
 
-LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_)
+LayoutIssuesHandler::LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IndexGenerator& indexGenerator_)
     : sectionId(sectionId_)
     , widget(widget_)
     , accessor(accessor_)
     , ui(ui_)
+    , indexGenerator(indexGenerator_)
     , packageListenerProxy(this, accessor_)
 {
     accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
@@ -93,13 +94,12 @@ void LayoutIssuesHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vec
 
             Issue issue;
             issue.sectionId = sectionId;
-            issue.issueId = nextIssueId;
+            issue.issueId = indexGenerator.NextIssueId();
             issue.message = formula->GetErrorMessage();
             issue.packagePath = data->GetPackagePath().GetFrameworkPath();
             issue.pathToControl = ControlNodeInfo::GetPathToControl(controlNode);
             issue.propertyName = axis == Vector2::AXIS_X ? "SizePolicy/horizontalFormula" : "SizePolicy/verticalFormula";
 
-            nextIssueId++;
             if (widget.isNull() == false)
             {
                 widget->AddIssue(issue);

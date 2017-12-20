@@ -1,8 +1,9 @@
-#include "Modules/IssueNavigatorModule/IssueNavigatorModule.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 
-#include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include "Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
-#include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
+#include "Classes/Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
@@ -34,8 +35,9 @@ void IssueNavigatorModule::PostInit()
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
-    issuesHandlers.emplace_back(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
-    issuesHandlers.emplace_back(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget));
+    issuesHandlers.emplace_back(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
+    issuesHandlers.emplace_back(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
+    issuesHandlers.emplace_back(new EventsIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
 }
 
 void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
