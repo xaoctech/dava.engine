@@ -20,6 +20,7 @@
 #include "TArc/Testing/Private/Selftests/PropertiesViewTests.h"
 #include "TArc/Testing/Private/Selftests/PropertiesViewTimerUpdaterTests.h"
 #include "TArc/Testing/Private/Selftests/QtWrapLayoutTests.h"
+#include "TArc/Testing/Private/Selftests/RadioButtonsGroupTest.h"
 #include "TArc/Testing/Private/Selftests/ReflectedButtonTest.h"
 #include "TArc/Testing/Private/Selftests/ReflectionPathTreeTests.h"
 #include "TArc/Testing/Private/Selftests/ScrollBarTest.h"
