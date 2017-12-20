@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 #include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
