@@ -571,28 +571,36 @@ DAVA::Texture* LandscapeEditorDrawSystem::GetTileMaskTexture()
 
 LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape() const
 {
+    using namespace DAVA;
+
     //landscape initialization should be handled by AddEntity/RemoveEntity methods
     if (!landscapeNode || !baseLandscape || !landscapeProxy)
     {
         return LANDSCAPE_EDITOR_SYSTEM_LANDSCAPE_ENTITY_ABSENT;
     }
 
-    DAVA::Texture* tileMask = landscapeProxy->GetLandscapeTexture(DAVA::Landscape::TEXTURE_TILEMASK);
+    Texture* tileMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILEMASK);
     if (tileMask == nullptr || tileMask->IsPinkPlaceholder())
     {
         return LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSENT;
     }
 
-    DAVA::Texture* texTile = baseLandscape->GetMaterial()->GetEffectiveTexture(DAVA::Landscape::TEXTURE_TILE);
+    Texture* texTile = baseLandscape->GetMaterial()->GetEffectiveTexture(Landscape::TEXTURE_TILE);
     if ((texTile == nullptr || texTile->IsPinkPlaceholder()))
     {
         return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE_ABSENT;
     }
 
-    DAVA::Texture* texColor = baseLandscape->GetMaterial()->GetEffectiveTexture(DAVA::Landscape::TEXTURE_COLOR);
+    Texture* texColor = baseLandscape->GetMaterial()->GetEffectiveTexture(Landscape::TEXTURE_COLOR);
     if ((texColor == nullptr || texColor->IsPinkPlaceholder()))
     {
         return LANDSCAPE_EDITOR_SYSTEM_COLOR_TEXTURE_ABSENT;
+    }
+
+    Heightmap* heightmap = baseLandscape->GetHeightmap();
+    if ((heightmap == nullptr) || (heightmap->Size() == 0))
+    {
+        return LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT;
     }
 
     return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
