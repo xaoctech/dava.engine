@@ -33,6 +33,8 @@ private:
 
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
     void StylePropertyWasChanged(StyleSheetNode* node, AbstractProperty* property) override;
+    void ControlComponentWasAdded(ControlNode* node, ComponentPropertiesSection* section) override;
+    void ControlComponentWasRemoved(ControlNode* node, ComponentPropertiesSection* section) override;
 
     void ControlWillBeAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;
     void ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int index) override;

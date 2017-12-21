@@ -1345,7 +1345,7 @@ void DLCDownloaderImpl::SignalOnFinishedWaitingTasks()
     if (!waitingTaskList.empty())
     {
         LockGuard<Mutex> lock(mutexWaitingList);
-        waitingTaskList.remove_if([this](WaitingDescTask& wt) {
+        waitingTaskList.remove_if([](WaitingDescTask& wt) {
             if (wt.task != nullptr)
             {
                 if (wt.task->status.state == TaskState::Finished)

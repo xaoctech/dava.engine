@@ -71,11 +71,11 @@ public:
 };
 
 ReflectedPropertyModel::ReflectedPropertyModel(WindowKey wndKey_, ContextAccessor* accessor_, OperationInvoker* invoker_, UI* ui_)
-    : wndKey(wndKey_)
+    : expandedItems(FastName("Root"))
+    , wndKey(wndKey_)
     , accessor(accessor_)
     , invoker(invoker_)
     , ui(ui_)
-    , expandedItems(FastName("Root"))
 {
     rootItem.reset(new ReflectedPropertyItem(this, std::make_unique<EmptyComponentValue>()));
 
