@@ -24,7 +24,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_Win10ProjectTemplate : Template(
     vcs {
         root("dava_DavaFrameworkStash")
 
-        checkoutMode = CheckoutMode.ON_AGENT
+        checkoutMode = CheckoutMode.ON_SERVER
         checkoutDir = "%system.teamcity.buildConfName%"
     }
 
