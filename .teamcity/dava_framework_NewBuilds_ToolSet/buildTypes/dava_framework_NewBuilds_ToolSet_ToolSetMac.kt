@@ -48,7 +48,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         script {
             name = "report commit status INPROGRESS"
             id = "RUNNER_626"
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
         }
         script {
@@ -71,7 +71,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             name = "report commit status SUCCESSFUL"
             id = "RUNNER_627"
             executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """
                 echo "##teamcity[setParameter name='env.build_failed' value='false']"
                 python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status SUCCESSFUL --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Good job !"
@@ -81,7 +81,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             name = "report commit status FAILED"
             id = "RUNNER_629"
             executionMode = BuildStep.ExecutionMode.ALWAYS
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """python report_build_status.py --reported_status %env.build_failed% --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status FAILED --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Need to work!""""
         }
         stepsOrder = arrayListOf("RUNNER_625", "RUNNER_626", "RUNNER_1085", "RUNNER_132", "RUNNER_133", "RUNNER_134", "RUNNER_135", "RUNNER_15", "RUNNER_956", "RUNNER_627", "RUNNER_629")
