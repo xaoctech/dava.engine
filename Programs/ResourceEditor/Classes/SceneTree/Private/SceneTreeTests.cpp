@@ -27,7 +27,7 @@
 #include <QTreeView>
 #include <QtTest>
 #include <QVariant>
-
+/*
 DAVA_TARC_TESTCLASS(SceneTreeTests)
 {
     QTreeView* sceneTreeView = nullptr;
@@ -634,3 +634,4 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
     DECLARE_TESTED_MODULE(SceneTreeModule)
     END_TESTED_MODULES()
 };
+ */
