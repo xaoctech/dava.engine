@@ -1524,7 +1524,7 @@ bool QtMainWindow::CanEnableLandscapeEditor() const
     LandscapeEditorDrawSystem* landDrawSystem = scene->GetSystem<LandscapeEditorDrawSystem>();
     if (landDrawSystem == nullptr)
     {
-        Logger::Error("Could not enable editing of landscape due to absent draw system");
+        Logger::Error("Could not enable editing of landscape without landscape draw system");
         return false;
     }
 
