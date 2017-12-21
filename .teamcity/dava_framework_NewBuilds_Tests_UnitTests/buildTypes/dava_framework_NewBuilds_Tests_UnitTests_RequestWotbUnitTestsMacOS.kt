@@ -23,7 +23,6 @@ object dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS : Buil
     }
 
     vcs {
-        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:=>/BuildBTools")
         root("dava_DavaFrameworkStash", "+:=>/dava.framework")
 
         checkoutMode = CheckoutMode.ON_AGENT
