@@ -32,7 +32,6 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
 
     vcs {
         root("dava_DavaFrameworkStash", "+:=>/dava.framework")
-        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
     }

@@ -35,7 +35,6 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
 
     vcs {
         root("dava_DavaFrameworkStash", "+:=>/dava.framework")
-        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
     }

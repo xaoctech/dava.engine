@@ -38,11 +38,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         param("ProjectName", "ToolSet")
     }
 
-    vcs {
-        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
-
-    }
-
     steps {
         script {
             name = "get stash commit"
