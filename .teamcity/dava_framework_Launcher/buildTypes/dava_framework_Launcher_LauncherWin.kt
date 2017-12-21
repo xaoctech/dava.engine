@@ -29,7 +29,7 @@ object dava_framework_Launcher_LauncherWin : BuildType({
     vcs {
         root("dava_DavaFrameworkStash", "+:. => dava.framework")
 
-        checkoutMode = CheckoutMode.ON_SERVER
+        checkoutMode = CheckoutMode.ON_AGENT
     }
 
     steps {

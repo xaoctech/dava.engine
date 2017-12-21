@@ -24,8 +24,6 @@ object dava_framework_NewBuilds_PullRequestTest : BuildType({
     }
 
     vcs {
-        root("dava_framework_UIEditor_BuildmachineWargamingNetTools")
-
         checkoutMode = CheckoutMode.ON_SERVER
     }
 
