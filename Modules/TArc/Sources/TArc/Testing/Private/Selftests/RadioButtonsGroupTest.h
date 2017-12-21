@@ -161,7 +161,7 @@ public:
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "valueMeta";
             params.fields[RadioButtonsGroup::Fields::Enabled] = "enabled";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("MetaEnabled");
             layout->AddControl(widget);
         }
@@ -169,7 +169,7 @@ public:
         {
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "valueMetaReadOnly";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("MetaReadOnly");
             layout->AddControl(widget);
         }
@@ -177,7 +177,7 @@ public:
         {
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "methodMetaOnlyGetter";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("OnlyGetter");
             layout->AddControl(widget);
         }
@@ -185,7 +185,7 @@ public:
         {
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "methodMeta";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("MethodMeta");
             layout->AddControl(widget);
         }
@@ -194,7 +194,7 @@ public:
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "value";
             params.fields[RadioButtonsGroup::Fields::Enumerator] = "enumeratorValueMap";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("EnumeratorMap");
             layout->AddControl(widget);
         }
@@ -203,7 +203,7 @@ public:
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "value";
             params.fields[RadioButtonsGroup::Fields::Enumerator] = "enumeratorMethod";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("EnumeratorMethod");
             layout->AddControl(widget);
         }
@@ -212,7 +212,7 @@ public:
             RadioButtonsGroup::Params params(GetAccessor(), GetUI(), wndKey);
             params.fields[RadioButtonsGroup::Fields::Value] = "valueString";
             params.fields[RadioButtonsGroup::Fields::Enumerator] = "enumeratorMethodSet";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("EnumeratorMethodSet");
             layout->AddControl(widget);
         }
@@ -222,7 +222,7 @@ public:
             params.fields[RadioButtonsGroup::Fields::Value] = "valueString";
             params.fields[RadioButtonsGroup::Fields::Enumerator] = "enumeratorMethodSet";
             params.fields[RadioButtonsGroup::Fields::Orientation] = "orientation";
-            RadioButtonsGroup* widget = new RadioButtonsGroup(params, GetAccessor(), reflectedModel);
+            RadioButtonsGroup* widget = new RadioButtonsGroup(params, reflectedModel);
             widget->SetObjectName("EnumeratorMethodSetVertical");
             layout->AddControl(widget);
         }

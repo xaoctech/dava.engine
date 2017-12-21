@@ -28,7 +28,7 @@ public:
 
     DECLARE_CONTROL_PARAMS(Fields);
     RadioButtonsGroup(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent = nullptr);
-    RadioButtonsGroup(const Params& params, ContextAccessor* accessor, Reflection model, QWidget* parent = nullptr);
+    RadioButtonsGroup(const Params& params, Reflection model, QWidget* parent = nullptr);
 
 private:
     void SetupControl();
