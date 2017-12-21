@@ -1,4 +1,5 @@
 #include "TArc/Controls/Private/BaseSpinBox.h"
+#include "TArc/Controls/Private/ValidationUtils.h"
 
 #include <QtEvents>
 
