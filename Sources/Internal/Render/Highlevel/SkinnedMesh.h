@@ -25,6 +25,8 @@ public:
 
     struct JointTargetsData
     {
+        JointTargetsData() = default;
+
         Vector<Vector4> positions;
         Vector<Vector4> quaternions;
         uint32 jointsDataCount = 0;
