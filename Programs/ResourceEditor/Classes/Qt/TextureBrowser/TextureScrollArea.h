@@ -13,7 +13,7 @@ class TextureScrollArea : public QGraphicsView
     Q_OBJECT
 
 public:
-    enum TextureColorChannels
+    enum TextureColorChannels : DAVA::uint32
     {
         ChannelNo = 0,
 

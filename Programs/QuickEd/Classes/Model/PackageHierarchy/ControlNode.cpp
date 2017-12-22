@@ -1,11 +1,12 @@
-#include "ControlNode.h"
+#include "Classes/Model/PackageHierarchy/ControlNode.h"
 
-#include "UI/UIControl.h"
-#include "Base/ObjectFactory.h"
+#include "Classes/Model/ControlProperties/NameProperty.h"
+#include "Classes/Model/ControlProperties/RootProperty.h"
+#include "Classes/Model/PackageHierarchy/PackageNode.h"
+#include "Classes/Model/PackageHierarchy/PackageVisitor.h"
 
-#include "PackageNode.h"
-#include "PackageVisitor.h"
-#include "Model/ControlProperties/RootProperty.h"
+#include <UI/UIControl.h>
+#include <Base/ObjectFactory.h>
 
 using namespace DAVA;
 
@@ -179,27 +180,10 @@ void ControlNode::Accept(PackageVisitor* visitor)
     visitor->VisitControl(this);
 }
 
-ControlNode* ControlNode::FindByName(const DAVA::String& name) const
-{
-    for (auto it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        if ((*it)->GetName() == name)
-            return *it;
-    }
-    return nullptr;
-}
-
 String ControlNode::GetName() const
 {
-    const FastName& name = control->GetName();
-    if (name.IsValid())
-    {
-        return control->GetName().c_str();
-    }
-    else
-    {
-        return "";
-    }
+    const FastName& name = GetRootProperty()->GetNameProperty()->GetValue().Cast<FastName>();
+    return name.IsValid() ? name.c_str() : "";
 }
 
 UIControl* ControlNode::GetControl() const
@@ -406,24 +390,4 @@ void ControlNode::RemoveControlFromInstances(ControlNode* control)
     auto it = std::find(instances.begin(), instances.end(), control);
     if (it != instances.end())
         instances.erase(it);
-}
-
-DAVA::Vector<ControlNode*>::const_iterator ControlNode::begin() const
-{
-    return nodes.begin();
-}
-
-DAVA::Vector<ControlNode*>::const_iterator ControlNode::end() const
-{
-    return nodes.end();
-}
-
-DAVA::Vector<ControlNode*>::iterator ControlNode::begin()
-{
-    return nodes.begin();
-}
-
-DAVA::Vector<ControlNode*>::iterator ControlNode::end()
-{
-    return nodes.end();
 }

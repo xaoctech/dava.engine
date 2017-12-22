@@ -1010,7 +1010,7 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
         return;
     }
 
-    auto updatePose = [this](Entity* e, PhysicsComponent* component)
+    auto updatePose = [](Entity* e, PhysicsComponent* component)
     {
         if (component != nullptr)
         {
@@ -1268,7 +1268,7 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
             DVASSERT(entity != nullptr);
 
             Matrix4 transform = entity->GetLocalTransform();
-            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getPosition()));
+            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getFootPosition()));
             entity->SetLocalTransform(transform);
         }
     }

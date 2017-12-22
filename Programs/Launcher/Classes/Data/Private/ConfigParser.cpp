@@ -780,17 +780,23 @@ const QStringList& ConfigParser::GetFavorites()
 //all blocks can be modified or empty
 bool LessThan(const AppVersion& leftVer, const AppVersion& rightVer)
 {
-    const QString& left = leftVer.id;
-    const QString& right = rightVer.id;
-    if (left == right)
-    {
-        return leftVer.buildNum < rightVer.buildNum;
-    }
+    //ignore non-toolset builds
     if (leftVer.isToolSet != rightVer.isToolSet)
     {
-        //value with toolset == false must be less
         return leftVer.isToolSet == false;
     }
+
+    const QString& leftBuildNum = leftVer.buildNum;
+    const QString& rightBuildNum = rightVer.buildNum;
+
+    if (leftBuildNum != rightBuildNum)
+    {
+        return leftBuildNum < rightBuildNum;
+    }
+
+    const QString& left = leftVer.id;
+    const QString& right = rightVer.id;
+
     QStringList leftList = left.split('_', QString::SkipEmptyParts);
     QStringList rightList = right.split('_', QString::SkipEmptyParts);
 

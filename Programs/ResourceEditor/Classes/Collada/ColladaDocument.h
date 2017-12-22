@@ -13,7 +13,7 @@ namespace DAVA
 class ColladaDocument
 {
 public:
-    eColladaErrorCodes Open(const char* filename);
+    eColladaErrorCodes Open(const char* filename, bool animationsOnly = false);
     bool ExportAnimations(const char* filename);
     bool ExportNodeAnimations(FCDocument* exportDoc, FCDSceneNode* exportNode);
 
@@ -27,11 +27,11 @@ public:
 
     void GetAnimationTimeInfo(FCDocument* document, float32& timeStart, float32& timeEnd);
 
-    FILE* sceneFP;
-    ColladaScene* colladaScene;
+    FILE* sceneFP = nullptr;
+    ColladaScene* colladaScene = nullptr;
 
 private:
-    FCDocument* document;
+    FCDocument* document = nullptr;
 };
 };
 
