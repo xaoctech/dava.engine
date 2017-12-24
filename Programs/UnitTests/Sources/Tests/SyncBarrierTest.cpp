@@ -1,10 +1,7 @@
 #include "Concurrency/SyncBarrier.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
-#include "Logger/Logger.h"
-#include "Time/SystemTimer.h"
 #include "UnitTests/UnitTests.h"
-#include "Utils/Random.h"
 
 #include <mutex>
 
@@ -17,7 +14,6 @@ DAVA_TESTCLASS (SyncBarrierTest)
     Vector<Thread*> threads;
     std::atomic<int> counter1;
     std::atomic<int> counter2;
-    int64 testStartTime = 0;
     bool testComplete = false;
     std::once_flag onceFlag;
 
@@ -35,15 +31,6 @@ DAVA_TESTCLASS (SyncBarrierTest)
                 t->Release();
             }
         }
-        else
-        {
-            int64 testDuration = SystemTimer::GetMs() - testStartTime;
-            if (testDuration > 10000)
-            {
-                TEST_VERIFY_WITH_MESSAGE(false, "SyncBarrierTest runs too long, maybe it hangs");
-                return true;
-            }
-        }
         return testComplete;
     }
 
@@ -55,7 +42,6 @@ DAVA_TESTCLASS (SyncBarrierTest)
             t->Start();
             threads.push_back(t);
         }
-        testStartTime = SystemTimer::GetMs();
     }
 
     void ThreadFunc(int n)

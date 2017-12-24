@@ -57,6 +57,7 @@ public:
     {
     public:
         BoxBuilder& Create(const FilePath& newPath, const String& newName, const String& newTag);
+        BoxBuilder& SetTextureColor(uint8 newColor);
         BoxBuilder& AddRenderComponent();
         BoxBuilder& AddGeometry();
         BoxBuilder& AddSlotComponent(const String& slotName, const FilePath& configPath);
@@ -70,6 +71,7 @@ public:
 
         ScopedPtr<Entity> box = nullptr;
 
+        uint8 color;
         FilePath path;
         String tag;
         String name;

@@ -146,4 +146,21 @@ void PixelFormatDescriptor::GetFloatFormatInfo(uint32 width, PixelFormat format,
     channelSize = i->second.second;
     pitch = ImageUtils::GetPitchInBytes(width, format);
 }
+
+bool PixelFormatDescriptor::IsDxtFormat(PixelFormat format)
+{
+    return (format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM);
+}
+
+bool PixelFormatDescriptor::IsAtcFormat(PixelFormat format)
+{
+    return (format == FORMAT_ATC_RGB ||
+            format == FORMAT_ATC_RGBA_EXPLICIT_ALPHA ||
+            format == FORMAT_ATC_RGBA_INTERPOLATED_ALPHA);
+}
+
+bool PixelFormatDescriptor::IsPVRFormat(PixelFormat format)
+{
+    return (format == FORMAT_PVR2 || format == FORMAT_PVR4 || format == FORMAT_ETC1);
+}
 }

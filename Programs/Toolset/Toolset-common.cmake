@@ -4,7 +4,6 @@ include ( CMake-common )
 
 set( JOIN_PROJECT_NAME 1 )
 set( DAVA_MEGASOLUTION      1 )
-set( IGNORE_FILE_TREE_CHECK 1 )
 
 if( NOT DEPLOY_DIR )
     set( DEPLOY_DIR_MACOS             ${CMAKE_BINARY_DIR}/app )
@@ -126,6 +125,8 @@ macro ( prepare_tools )
          message("")
 
     endif()
+
+    file_tree_check()
 
 endmacro()
 

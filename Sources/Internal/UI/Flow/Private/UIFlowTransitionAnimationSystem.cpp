@@ -33,7 +33,7 @@ bool UIFlowTransitionAnimationSystem::Render()
 void UIFlowTransitionAnimationSystem::Process(float32 elapsedTime)
 {
     UIFlowTransitionTransaction* transaction = stateSystem->GetTopTransitionTransaction();
-    if (transaction)
+    if (transaction && transaction->IsAnimating())
     {
         UIFlowTransitionEffect* effect = transaction->GetEffect();
         if (effect)

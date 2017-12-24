@@ -272,8 +272,7 @@ eDragState EditorTransformSystem::RequireNewState(DAVA::UIEvent* currentInput, e
     HUDAreaInfo areaInfo = GetSystemsManager()->GetCurrentHUDArea();
     if (areaInfo.area != eArea::NO_AREA
         && currentInput->phase == UIEvent::Phase::DRAG
-        && currentInput->mouseButton == eMouseButtons::LEFT
-        && dragState != eDragState::SelectByRect)
+        && currentInput->mouseButton == eMouseButtons::LEFT)
     {
         //initialize start mouse position for correct rotation
         previousMousePos = currentInput->point;
@@ -976,8 +975,8 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorderAndToMinimum(DAVA::Vect
     using namespace DAVA;
     Vector<MagnetLineInfo> magnets;
 
-    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f;
     Vector2 adjustedDeltaToBorder(deltaSize);
+    bool canAdjustResize = CanMagnet() && activeControlNode->GetControl()->GetAngle() == 0.0f;
     if (canAdjustResize)
     {
         adjustedDeltaToBorder = AdjustResizeToBorder(deltaSize, transformPoint, directions, magnets);
@@ -1013,6 +1012,14 @@ DAVA::Vector2 EditorTransformSystem::AdjustResizeToBorder(DAVA::Vector2 deltaSiz
         Vector2::eAxis axis = static_cast<Vector2::eAxis>(axisInt);
         if (directions[axis] != NO_DIRECTION)
         {
+            bool isSceneMoved = axis == Vector2::AXIS_Y ?
+            (activeArea == TOP_LEFT_AREA || activeArea == TOP_CENTER_AREA || activeArea == TOP_RIGHT_AREA) :
+            (activeArea == BOTTOM_LEFT_AREA || activeArea == CENTER_LEFT_AREA || activeArea == TOP_LEFT_AREA);
+
+            if (IsRootControl(activeControlNode) && isSceneMoved)
+            {
+                continue;
+            }
             Vector<MagnetLine> magnetLines = CreateMagnetLines(box, &parentGeometricData, axis, RESIZE);
             if (magnetLines.empty())
             {

@@ -33,6 +33,7 @@ public:
         StrictCheck
     };
     static bool IsControlNameValid(const FastName& controlName, NameCheckStrictness = RegularCheck);
+    static bool IsEventNameValid(const FastName& eventName, NameCheckStrictness strictness = RegularCheck);
 
 private:
     static const UIControl* FindControlByPathImpl(const String& controlPath, const UIControl* rootControl);

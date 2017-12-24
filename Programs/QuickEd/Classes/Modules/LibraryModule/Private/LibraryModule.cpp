@@ -104,12 +104,8 @@ void LibraryModule::BindFields()
         fieldDescr.fieldName = FastName(ProjectData::projectPathPropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &LibraryModule::OnProjectPathChanged));
     }
-    {
-        FieldDescriptor fieldDescr;
-        fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
-        fieldBinder->BindField(fieldDescr, MakeFunction(this, &LibraryModule::OnPackageChanged));
-    }
+
+    packageListenerProxy.Init(this, GetAccessor());
 }
 
 void LibraryModule::CreateActions()
@@ -142,29 +138,19 @@ void LibraryModule::CreateActions()
     }
 }
 
-void LibraryModule::OnPackageChanged(const DAVA::Any& package)
+void LibraryModule::ActivePackageNodeWasChanged(PackageNode* activePackageNode)
 {
-    LibraryData* data = GetLibraryData();
-    PackageNode* previousPackageNode = data->currentPackageNode;
+    RemovePackagePrototypes();
 
-    if (previousPackageNode != nullptr)
+    LibraryData* libraryData = GetLibraryData();
+    libraryData->currentPackageNode = activePackageNode;
+
+    if (activePackageNode != nullptr)
     {
-        previousPackageNode->RemoveListener(this);
-        RemovePackagePrototypes();
+        AddPackagePrototypes(activePackageNode);
     }
 
-    if (package.CanGet<PackageNode*>())
-    {
-        data->currentPackageNode = package.Get<PackageNode*>();
-        data->currentPackageNode->AddListener(this);
-        AddPackagePrototypes(data->currentPackageNode);
-    }
-    else
-    {
-        data->currentPackageNode = nullptr;
-    }
-
-    data->libraryWidget->SetCurrentPackage(data->currentPackageNode);
+    libraryData->libraryWidget->SetCurrentPackage(activePackageNode);
 }
 
 void LibraryModule::OnProjectPathChanged(const DAVA::Any& projectPath)
@@ -240,6 +226,11 @@ LibraryData* LibraryModule::GetLibraryData()
     return GetAccessor()->GetGlobalContext()->GetData<LibraryData>();
 }
 
+QString LibraryModule::GenerateUniqueName()
+{
+    return QString("object%1").arg(uniqueNumber++);
+}
+
 void LibraryModule::AddProjectControls(const ProjectData* projectData, const DAVA::Vector<DAVA::RefPtr<PackageNode>>& libraryPackages)
 {
     using namespace DAVA::TArc;
@@ -285,7 +276,7 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
         if (pkgFound != libraryPackages.end())
         {
             PackageControlsNode* packageControls = pkgFound->Get()->GetPackageControlsNode();
-            ControlNode* controlNode = packageControls->FindControlNodeByName(pinnedControl.controlName);
+            ControlNode* controlNode = packageControls->FindChildByName(pinnedControl.controlName);
             if (controlNode != nullptr)
             {
                 QString controlIconPath;
@@ -306,6 +297,7 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
                 LibraryData::ActionInfo actionInfo;
                 actionInfo.action = new QtAction(GetAccessor(), QIcon(controlIconPath), QString::fromStdString(pinnedControl.controlName));
                 actionInfo.action->setEnabled(false);
+                actionInfo.action->setObjectName(GenerateUniqueName());
                 InsertionParams insertionParams = { InsertionParams::eInsertionMethod::BeforeItem, menuNameLibrary };
                 actionInfo.placement.AddPlacementPoint(CreateMenuPoint("Controls", insertionParams));
                 actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(LibraryModuleDetails::controlsToolbarName, insertionParams));
@@ -394,6 +386,7 @@ void LibraryModule::AddProjectLibraryControls(const ProjectData* projectData, co
                 LibraryData::ActionInfo actionInfo;
                 actionInfo.action = new QtAction(GetAccessor(), QIcon(iconPath), controlName);
                 actionInfo.action->setEnabled(false);
+                actionInfo.action->setObjectName(GenerateUniqueName());
                 actionInfo.placement.AddPlacementPoint(menuPoint);
                 actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
                 if (section.pinned == true)
@@ -439,6 +432,7 @@ void LibraryModule::AddDefaultControls()
         LibraryData::ActionInfo actionInfo;
         actionInfo.action = new QtAction(GetAccessor(), QIcon(iconPath), controlName);
         actionInfo.action->setEnabled(false);
+        actionInfo.action->setObjectName(GenerateUniqueName());
         actionInfo.placement.AddPlacementPoint(menuPoint);
         actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
         actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
@@ -464,6 +458,7 @@ void LibraryModule::AddControlAction(ControlNode* controlNode, bool isPrototype,
 
     LibraryData::ActionInfo actionInfo;
     actionInfo.action = new DAVA::TArc::QtAction(GetAccessor(), QIcon(iconPath), controlName);
+    actionInfo.action->setObjectName(GenerateUniqueName());
     actionInfo.placement.AddPlacementPoint(menuPoint);
     actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
     connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, controlNode, isPrototype));
@@ -533,7 +528,7 @@ void LibraryModule::ClearActions(LibraryData::ActionsMap& actionsMap)
 {
     for (const std::pair<ControlNode*, LibraryData::ActionInfo>& entry : actionsMap)
     {
-        GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, entry.second.placement, entry.second.action->text());
+        GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, entry.second.placement, entry.second.action->objectName());
     }
     actionsMap.clear();
 }
@@ -546,9 +541,8 @@ void LibraryModule::ControlPropertyWasChanged(ControlNode* node, AbstractPropert
         auto nodeFound = data->prototypesActions.find(node);
         if (nodeFound != data->prototypesActions.end())
         {
-            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::String>());
+            QString newName = QString::fromStdString(property->GetValue().Get<DAVA::FastName>().c_str());
             nodeFound->second.action->setText(newName);
-            nodeFound->second.action->setObjectName(newName);
         }
     }
 }
@@ -584,7 +578,7 @@ void LibraryModule::RemoveControlAction(ControlNode* node, LibraryData::ActionsM
     for (auto iter = rangeFound.first; iter != rangeFound.second; ++iter)
     {
         LibraryData::ActionInfo& actionInfo = iter->second;
-        GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action->text());
+        GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.action->objectName());
     }
     actionsMap.erase(rangeFound.first, rangeFound.second);
 }

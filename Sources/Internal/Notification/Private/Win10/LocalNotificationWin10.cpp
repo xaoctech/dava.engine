@@ -9,13 +9,13 @@
 
 namespace DAVA
 {
-::Windows::Data::Xml::Dom::XmlDocument ^ GenerateToastDeclaration(const WideString& title, const WideString& text, bool useSound, Platform::String ^ notificationId)
+::Windows::Data::Xml::Dom::XmlDocument ^ GenerateToastDeclaration(const String& title, const String& text, bool useSound, Platform::String ^ notificationId)
 {
     using namespace ::Windows::Data::Xml::Dom;
     using namespace ::Windows::UI::Notifications;
 
-    Platform::String ^ toastTitle = ref new Platform::String(title.c_str());
-    Platform::String ^ toastText = ref new Platform::String(text.c_str());
+    Platform::String ^ toastTitle = ref new Platform::String(UTF8Utils::EncodeToWideString(title).c_str());
+    Platform::String ^ toastText = ref new Platform::String(UTF8Utils::EncodeToWideString(text).c_str());
     XmlDocument ^ toastXml = ToastNotificationManager::GetTemplateContent(ToastTemplateType::ToastText02);
 
     Platform::String ^ sttr = toastXml->GetXml();
@@ -63,7 +63,7 @@ LocalNotificationUAP::LocalNotificationUAP(const String& _id)
     }
 }
 
-void LocalNotificationUAP::SetAction(const WideString& action)
+void LocalNotificationUAP::SetAction(const String& action)
 {
 }
 
@@ -83,7 +83,7 @@ void LocalNotificationUAP::Hide()
     notification = nullptr;
 }
 
-void LocalNotificationUAP::ShowText(const WideString& title, const WideString& text, bool useSound)
+void LocalNotificationUAP::ShowText(const String& title, const String& text, bool useSound)
 {
     using ::Windows::Data::Xml::Dom::XmlDocument;
 
@@ -96,8 +96,8 @@ void LocalNotificationUAP::ShowText(const WideString& title, const WideString& t
     CreateOrUpdateNotification(toastDoc);
 }
 
-void LocalNotificationUAP::ShowProgress(const WideString& title,
-                                        const WideString& text,
+void LocalNotificationUAP::ShowProgress(const String& title,
+                                        const String& text,
                                         uint32 total,
                                         uint32 progress,
                                         bool useSound)
@@ -110,14 +110,14 @@ void LocalNotificationUAP::ShowProgress(const WideString& title,
     }
 
     double percentage = (static_cast<double>(progress) / total) * 100.0;
-    WideString titleText = title + Format(L" %.02f%%", percentage);
+    String titleText = title + Format(" %.02f%%", percentage);
     XmlDocument ^ toastDoc = GenerateToastDeclaration(titleText, text, useSound, nativeNotificationId);
 
     CreateOrUpdateNotification(toastDoc, 0, true);
 }
 
-void LocalNotificationUAP::PostDelayedNotification(const WideString& title,
-                                                   const WideString& text,
+void LocalNotificationUAP::PostDelayedNotification(const String& title,
+                                                   const String& text,
                                                    int delaySeconds,
                                                    bool useSound)
 {

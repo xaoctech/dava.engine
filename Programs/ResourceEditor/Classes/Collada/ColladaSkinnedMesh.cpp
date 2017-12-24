@@ -20,7 +20,6 @@ ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
         for (size_t j = 0; j < jointCount; ++j)
         {
             joints[j].joint = &origJoints[j];
-            joints[j].parentJoint = nullptr;
             joints[j].node = nullptr;
             joints[j].index = -1;
             joints[j].parentIndex = -1;
@@ -36,7 +35,8 @@ ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
         colladaBindShapeMatrix = skinController->GetBindShapeTransform();
         bindShapeMatrix = ConvertMatrix(colladaBindShapeMatrix);
 
-        printf("- controller: %s influence: %ld influence-entity: %s\n", colladaController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
+        printf("- controller: %s influence: %u influence-entity: %s\n", colladaController->GetDaeId().c_str(), static_cast<DAVA::uint32>(skinController->GetInfluenceCount()),
+               skinController->GetTarget()->GetDaeId().c_str());
 
         vertexWeights.resize(skinController->GetInfluenceCount());
         int32 maxJoints = 0;
@@ -182,26 +182,25 @@ void ColladaSkinnedMesh::UpdateSkinnedMesh(float32 time)
 void ColladaSkinnedMesh::BuildJoints(ColladaSceneNode* node)
 {
     sceneRootNode = node;
-    LinkJoints(sceneRootNode, nullptr);
+    LinkJoints(sceneRootNode);
 
     BuildJointsHierarhy();
 }
 
-void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
+void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, int32 parentJointIndex)
 {
-    Joint* currentJoint = nullptr;
+    int32 currentJointIndex = -1;
     for (int j = 0; j < (int)joints.size(); ++j)
     {
-        if (node->originalNode->GetSubId() == joints[j].joint->GetId())
+        if (joints[j].joint != nullptr && node->originalNode->GetSubId() == joints[j].joint->GetId())
         {
             Joint& joint = joints[j];
 
             joint.node = node;
-            if (parentJoint != nullptr)
+            if (parentJointIndex != -1)
             {
                 joint.index = j;
-                joint.parentJoint = parentJoint->joint;
-                joint.hierarhyDepth = parentJoint->hierarhyDepth + 1;
+                joint.hierarhyDepth = joints[parentJointIndex].hierarhyDepth + 1;
             }
 
             joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
@@ -209,15 +208,41 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, Joint* parentJoint)
 
             node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
 
-            currentJoint = &joint;
+            currentJointIndex = j;
             break;
         }
+    }
+
+    if (currentJointIndex == -1 && parentJointIndex != -1)
+    {
+        currentJointIndex = int32(joints.size());
+
+        joints.emplace_back();
+        Joint& joint = joints.back();
+
+        joint.node = node;
+        joint.joint = nullptr;
+        joint.index = -1;
+        joint.parentIndex = -1;
+
+        Matrix4 bindPose;
+        joints[parentJointIndex].inverse0.GetInverse(bindPose);
+        bindPose = node->localTransform * bindPose;
+        bindPose.GetInverse(joint.inverse0);
+
+        joint.index = int32(joints.size() - 1);
+        joint.hierarhyDepth = joints[parentJointIndex].hierarhyDepth + 1;
+
+        joint.jointName = UTF8Utils::EncodeToUTF8(node->originalNode->GetName().c_str());
+        joint.jointUID = node->originalNode->GetDaeId();
+
+        node->inverse0 = joint.inverse0; // copy bindpos inverse matrix to node
     }
 
     for (int i = 0; i < (int)node->childs.size(); i++)
     {
         ColladaSceneNode* childNode = node->childs[i];
-        LinkJoints(childNode, currentJoint);
+        LinkJoints(childNode, currentJointIndex);
     }
 }
 
@@ -261,7 +286,7 @@ void ColladaSkinnedMesh::BuildJointsHierarhy()
         Joint& joint = joints[j];
 
         size_t parentIndex = std::distance(joints.begin(), std::find_if(joints.begin(), joints.end(), [&joint](const Joint& item) {
-                                               return (item.joint == joint.parentJoint);
+                                               return (item.node == joint.node->parent);
                                            }));
 
         joint.parentIndex = (parentIndex == joints.size()) ? -1 : int32(parentIndex);

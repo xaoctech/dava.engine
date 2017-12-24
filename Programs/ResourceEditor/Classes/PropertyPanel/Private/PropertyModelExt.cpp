@@ -495,7 +495,7 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::move(editor);
+        return std::unique_ptr<DAVA::TArc::BaseComponentValue>(std::move(editor));
     }
 
     const DAVA::Type* valueType = node->cachedValue.GetType();
@@ -511,7 +511,7 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::move(editor);
+        return std::unique_ptr<DAVA::TArc::BaseComponentValue>(std::move(editor));
     }
 
     return EditorComponentExtension::GetEditor(node);

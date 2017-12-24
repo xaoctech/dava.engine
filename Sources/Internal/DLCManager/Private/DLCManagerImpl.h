@@ -10,6 +10,7 @@
 #include "FileSystem/FilePath.h"
 #include "FileSystem/Private/PackFormatSpec.h"
 #include "FileSystem/Private/PackMetaData.h"
+#include "Functional/Function.h"
 #include "Concurrency/Semaphore.h"
 #include "Concurrency/Thread.h"
 #include "Engine/Engine.h"
@@ -115,45 +116,45 @@ public:
     void CreateDownloader();
     void Initialize(const FilePath& dirToDownloadPacks_,
                     const String& urlToServerSuperpack_,
-                    const Hints& hints_) override;
+                    const Hints& hints_) final;
 
-    void Deinitialize() override;
+    void Deinitialize() final;
 
-    bool IsInitialized() const override;
+    bool IsInitialized() const final;
 
     InitState GetInternalInitState() const;
 
-    InitStatus GetInitStatus() const override;
+    InitStatus GetInitStatus() const final;
 
     const String& GetLastErrorMessage() const;
 
-    bool IsRequestingEnabled() const override;
+    bool IsRequestingEnabled() const final;
 
-    void SetRequestingEnabled(bool value) override;
+    void SetRequestingEnabled(bool value) final;
 
     void Update(float frameDelta, bool inBackground);
 
-    bool IsPackDownloaded(const String& packName) override;
+    bool IsPackDownloaded(const String& packName) const final;
 
-    uint64 GetPackSize(const String& packName) const override;
+    uint64 GetPackSize(const String& packName) const final;
 
-    const IRequest* RequestPack(const String& requestedPackName) override;
+    const IRequest* RequestPack(const String& requestedPackName) final;
 
     PackRequest* FindRequest(const String& requestedPackName) const;
 
-    bool IsPackInQueue(const String& packName) override;
+    bool IsPackInQueue(const String& packName) const final;
 
-    bool IsAnyPackInQueue() const override;
+    bool IsAnyPackInQueue() const final;
 
-    void SetRequestPriority(const IRequest* request) override;
+    void SetRequestPriority(const IRequest* request) final;
 
-    void RemovePack(const String& packName) override;
+    void RemovePack(const String& packName) final;
 
-    Progress GetProgress() const override;
+    Progress GetProgress() const final;
 
-    Progress GetPacksProgress(const Vector<String>& packNames) const override;
+    Progress GetPacksProgress(const Vector<String>& packNames) const final;
 
-    Info GetInfo() const override;
+    Info GetInfo() const final;
 
     const FilePath& GetLocalPacksDirectory() const;
 
@@ -208,7 +209,6 @@ private:
     void DeleteLocalMetaFile() const;
     void ContinueInitialization(float frameDelta);
     bool ReadContentAndExtractFileNames();
-    uint64 CountCompressedFileSize(const uint64& startCounterValue, const Vector<uint32>& fileIndexes) const;
 
     String BuildErrorMessageBadServerCrc(uint32 crc32) const;
     static String BuildErrorMessageFailedRead(const FilePath& path);
@@ -217,6 +217,9 @@ private:
     void SwapRequestAndUpdatePointers(PackRequest* request, PackRequest* newRequest);
     void SwapPointers(PackRequest* userRequestObject, PackRequest* newRequestObject);
     PackRequest* AddDelayedRequest(const String& requestedPackName);
+    void RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) const;
+    void AddRequest(PackRequest* request);
+    PackRequest* PrepareNewRequest(const String& requestedPackName);
     PackRequest* CreateNewRequest(const String& requestedPackName);
     bool IsLocalMetaAndFileTableAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
@@ -224,6 +227,7 @@ private:
     void OnSettingsChanged(EngineSettings::eSetting value);
     bool IsProfilingEnabled() const;
     String DumpToJsonProfilerTrace();
+    static PackRequest* CastToPackRequest(const IRequest* request);
 
     enum class ScanState : uint32
     {
@@ -265,13 +269,13 @@ private:
     std::unique_ptr<RequestManager> requestManager;
     std::unique_ptr<PackMetaData> meta;
 
-    struct PreloadedPack : IRequest
+    struct PreloadedPack final : IRequest
     {
         explicit PreloadedPack(const String& pack)
             : packName(pack)
         {
         }
-        const String& GetRequestedPackName() const override
+        const String& GetRequestedPackName() const final
         {
             return packName;
         }
@@ -279,11 +283,11 @@ private:
         {
             return 0;
         };
-        uint64 GetDownloadedSize() const override
+        uint64 GetDownloadedSize() const final
         {
             return 0;
         }
-        bool IsDownloaded() const override
+        bool IsDownloaded() const final
         {
             return true;
         }
@@ -294,6 +298,7 @@ private:
     Map<String, PreloadedPack> preloadedPacks;
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
+    Set<std::size_t> requestNameHashes; // for check if request with hash
 
     List<InitState> skipedStates; // if we can't download from server but have local meta, we can skip some state and use already downloaded meta
     String initErrorMsg;
@@ -307,7 +312,7 @@ private:
     String uncompressedFileNames;
     UnorderedMap<String, const PackFormat::FileTableEntry*> mapFileData;
     Vector<uint32> startFileNameIndexesInUncompressedNames;
-    DLCDownloader::Task* downloadTask = nullptr;
+    DLCDownloader::ITask* downloadTask = nullptr;
     uint64 fullSizeServerData = 0;
     mutable Progress lastProgress;
 
@@ -319,7 +324,7 @@ private:
     float32 timeWaitingNextInitializationAttempt = 0;
     uint32 retryCount = 0; // count every initialization error during session
 
-    std::unique_ptr<DLCDownloader> downloader;
+    std::shared_ptr<DLCDownloader> downloader;
 
     mutable UnorderedSet<uint32> allPacks; // reuse memory
 
