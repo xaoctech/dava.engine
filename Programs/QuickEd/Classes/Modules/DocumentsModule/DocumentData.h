@@ -33,6 +33,7 @@ public:
     void ExecCommand(Arguments&&... args);
 
     const SelectedNodes& GetSelectedNodes() const;
+    size_t GetSelectionHash() const;
     const SortedControlNodeSet& GetDisplayedRootControls() const;
     const DAVA::Set<ControlNode*>& GetSelectedControls() const;
 
@@ -65,6 +66,7 @@ public:
     static DAVA::FastName redoTextPropertyName;
     static DAVA::FastName currentNodePropertyName;
     static DAVA::FastName selectionPropertyName;
+    static DAVA::FastName selectionHashPropertyName;
     static DAVA::FastName selectedControlsPropertyName;
     static DAVA::FastName displayedRootControlsPropertyName;
     static DAVA::FastName guidesPropertyName;
