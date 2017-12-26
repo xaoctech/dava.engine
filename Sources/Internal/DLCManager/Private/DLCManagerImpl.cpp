@@ -1622,16 +1622,15 @@ void DLCManagerImpl::ResetQueue()
 
     if (IsInitialized() && requestManager)
     {
-        // copy queue values
+        // do NOT use reference
         const Vector<PackRequest*> requests = requestManager->GetRequests();
+
+        requestManager->Clear();
 
         for (PackRequest* r : requests)
         {
-            RemoveRequest(r);
             delete r;
         }
-
-        requestManager->Clear();
     }
 }
 
