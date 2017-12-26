@@ -1,8 +1,9 @@
-#include "Modules/IssueNavigatorModule/IssueNavigatorModule.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 
-#include "Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include "Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
-#include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
+#include "Classes/Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
@@ -34,8 +35,25 @@ void IssueNavigatorModule::PostInit()
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
-    layoutIssuesHandler.reset(new LayoutIssuesHandler(GetAccessor(), sectionId++, widget));
-    nameIssuesHandler.reset(new NamingIssuesHandler(GetAccessor(), sectionId++, widget));
+    issuesHandlers.emplace_back(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
+    issuesHandlers.emplace_back(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
+    issuesHandlers.emplace_back(new EventsIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
+}
+
+void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
+{
+    for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
+    {
+        handler->OnContextActivated(current);
+    }
+}
+
+void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+{
+    for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
+    {
+        handler->OnContextDeleted(context);
+    }
 }
 
 void IssueNavigatorModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)

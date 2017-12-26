@@ -4,10 +4,11 @@
 #include "Classes/EditorPhysics/Private/PhysicsWidget.h"
 
 #include "Classes/Commands2/EntityAddCommand.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/Interfaces/PropertyPanelInterface.h"
+#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/SceneManager/SceneData.h"
+#include "Classes/SceneTree/CreateEntitySupport.h"
 
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -144,83 +145,6 @@ private:
         .End();
     }
 };
-}
-
-void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
-{
-    SceneEditor2* scene = context->GetData<SceneData>()->GetScene().Get();
-    DVASSERT(scene != nullptr);
-
-    std::unique_ptr<EditorPhysicsData> data(new EditorPhysicsData());
-    data->system = new EditorPhysicsSystem(scene);
-    scene->AddSystem(data->system, 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
-
-    context->CreateData(std::move(data));
-}
-
-void EditorPhysicsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
-{
-    SceneEditor2* scene = context->GetData<SceneData>()->GetScene().Get();
-    DVASSERT(scene != nullptr);
-
-    EditorPhysicsData* data = context->GetData<EditorPhysicsData>();
-    DVASSERT(data != nullptr);
-    DVASSERT(data->system != nullptr);
-    scene->RemoveSystem(data->system);
-    DAVA::SafeDelete(data->system);
-    context->DeleteData<EditorPhysicsData>();
-}
-
-void EditorPhysicsModule::PostInit()
-{
-    using namespace DAVA;
-    using namespace DAVA::TArc;
-
-    ContextAccessor* accessor = GetAccessor();
-    binder.reset(new FieldBinder(accessor));
-    {
-        FieldDescriptor descr;
-        descr.type = ReflectedTypeDB::Get<ProjectManagerData>();
-        descr.fieldName = FastName(ProjectManagerData::ProjectPathProperty);
-        binder->BindField(descr, [](const Any& v) {
-            PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-            module->ReleaseMaterials();
-        });
-    }
-
-    EditorPhysicsDetail::EditorPhysicsGlobalData* globalData = new EditorPhysicsDetail::EditorPhysicsGlobalData();
-    globalData->physicsExtension.reset(new EditorPhysicsDetail::PhysicsEditorCreator());
-    accessor->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(globalData));
-
-    QWidget* physicsPanel = new PhysicsWidget(GetAccessor(), GetUI());
-
-    UI* ui = GetUI();
-
-    DockPanelInfo info;
-    info.title = QString("Physics");
-    info.area = Qt::LeftDockWidgetArea;
-
-    PanelKey key("Physics", info);
-    ui->AddView(DAVA::TArc::mainWindowKey, key, physicsPanel);
-
-    QAction* actionAddCar = new QAction("Car", nullptr);
-    connections.AddConnection(actionAddCar, &QAction::triggered, [this]() {
-        CreateCarEntity();
-    });
-    ActionPlacementInfo placementInfoCar(CreateMenuPoint(QList<QString>() << "menuCreateNode"
-                                                                          << "menuAdd",
-                                                         InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "actionAddPath")));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfoCar, actionAddCar);
-
-    QAction* actionAddTank = new QAction("Tank", nullptr);
-    connections.AddConnection(actionAddTank, &QAction::triggered, [this]() {
-        CreateTankEntity();
-    });
-    ActionPlacementInfo placementInfoTank(CreateMenuPoint(QList<QString>() << "menuCreateNode"
-                                                                           << "menuAdd",
-                                                          InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "Car")));
-    ui->AddAction(DAVA::TArc::mainWindowKey, placementInfoTank, actionAddTank);
-}
 
 DAVA::RenderObject* CreateVehicleWheelRenderObject(DAVA::float32 radius, DAVA::float32 width)
 {
@@ -322,109 +246,214 @@ DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, 
     return wheel;
 }
 
-void EditorPhysicsModule::CreateCarEntity()
+class CarEntityCreator : public SimpleEntityCreator
 {
-    using namespace DAVA;
+    using TBase = SimpleEntityCreator;
 
-    SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
-
-    const Vector3 chassisHalfDimensions = Vector3(2.5f, 1.0f, 1.25f);
-    const float32 chassisMass = 1500.0f;
-    const float32 wheelRadius = 0.35f;
-    const float32 wheelWidth = 0.4f;
-    const float32 wheelMass = 20.0f;
-
-    // Root entity
-    Entity* vehicleEntity = new DAVA::Entity();
-    vehicleEntity->SetName("Vehicle (car)");
-    VehicleComponent* vehicleComponent = new VehicleCarComponent();
-    vehicleEntity->AddComponent(vehicleComponent);
-    DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
-    vehicleEntity->AddComponent(dynamicBody);
-
-    // Wheel (front left)
-    Entity* vehicleWheel4Entity = CreateVehicleWheelEntity("Wheel (front left)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 0.0f, PI * 0.333f);
-    vehicleEntity->AddNode(vehicleWheel4Entity);
-
-    // Wheel (front right)
-    Entity* vehicleWheel3Entity = CreateVehicleWheelEntity("Wheel (front right)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 0.0f, PI * 0.333f);
-    vehicleEntity->AddNode(vehicleWheel3Entity);
-
-    // Wheel (rear left)
-    Entity* vehicleWheel2Entity = CreateVehicleWheelEntity("Wheel (rear left)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 4000.0f, 0.0f);
-    vehicleEntity->AddNode(vehicleWheel2Entity);
-
-    // Wheel (rear right)
-    Entity* vehicleWheel1Entity = CreateVehicleWheelEntity("Wheel (rear right)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 4000.0f, 0.0f);
-    vehicleEntity->AddNode(vehicleWheel1Entity);
-
-    // Chassis
-    ScopedPtr<Entity> vehicleChassisEntity(new Entity());
-    vehicleChassisEntity->SetName("Chassis");
-    VehicleChassisComponent* chassisComponent = new VehicleChassisComponent();
-    vehicleChassisEntity->AddComponent(chassisComponent);
-    BoxShapeComponent* chassisShape = new BoxShapeComponent();
-    chassisShape->SetHalfSize(chassisHalfDimensions);
-    chassisShape->SetOverrideMass(true);
-    chassisShape->SetMass(chassisMass);
-    vehicleChassisEntity->AddComponent(chassisShape);
-    vehicleEntity->AddNode(vehicleChassisEntity);
-
-    scene->Exec(std::make_unique<EntityAddCommand>(vehicleEntity, scene));
-}
-
-void EditorPhysicsModule::CreateTankEntity()
-{
-    using namespace DAVA;
-
-    SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
-
-    const Vector3 chassisHalfDimensions = Vector3(2.5f, 1.0f, 1.25f);
-    const float32 chassisMass = 1500.0f;
-    const float32 wheelRadius = 0.35f;
-    const float32 wheelWidth = 0.4f;
-    const float32 wheelMass = 20.0f;
-
-    // Root entity
-    Entity* vehicleEntity = new DAVA::Entity();
-    vehicleEntity->SetName("Vehicle");
-    VehicleComponent* vehicleComponent = new VehicleTankComponent();
-    vehicleEntity->AddComponent(vehicleComponent);
-    DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
-    vehicleEntity->AddComponent(dynamicBody);
-
-    // Wheels
-
-    float mainwheelsz = -1.3f * chassisHalfDimensions.z;
-
-    const uint32 wheelsNumber = 6;
-    const float totalWheelsWidth = wheelWidth * wheelsNumber;
-
-    float xOffset = -chassisHalfDimensions.x + (chassisHalfDimensions.x * 2.0f - wheelRadius * 2.0f);
-    for (int i = 0; i < 6; ++i)
+public:
+    static DAVA::RefPtr<DAVA::Entity> CreateEntity()
     {
-        Entity* left = CreateVehicleWheelEntity("Wheel (left)", wheelRadius, wheelWidth, wheelMass, Vector3(xOffset, chassisHalfDimensions.y * 0.7f, mainwheelsz), 0.0f, 0.0f);
-        vehicleEntity->AddNode(left);
+        const Vector3 chassisHalfDimensions = Vector3(2.5f, 1.0f, 1.25f);
+        const float32 chassisMass = 1500.0f;
+        const float32 wheelRadius = 0.35f;
+        const float32 wheelWidth = 0.4f;
+        const float32 wheelMass = 20.0f;
 
-        Entity* right = CreateVehicleWheelEntity("Wheel (right)", wheelRadius, wheelWidth, wheelMass, Vector3(xOffset, -chassisHalfDimensions.y * 0.7f, mainwheelsz), 0.0f, 0.0f);
-        vehicleEntity->AddNode(right);
+        // Root entity
+        Entity* vehicleEntity = new DAVA::Entity();
+        vehicleEntity->SetName("Vehicle (car)");
+        VehicleComponent* vehicleComponent = new VehicleCarComponent();
+        vehicleEntity->AddComponent(vehicleComponent);
+        DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
+        vehicleEntity->AddComponent(dynamicBody);
 
-        xOffset -= wheelRadius * 2.0f;
+        // Wheel (front left)
+        Entity* vehicleWheel4Entity = CreateVehicleWheelEntity("Wheel (front left)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 0.0f, PI * 0.333f);
+        vehicleEntity->AddNode(vehicleWheel4Entity);
+
+        // Wheel (front right)
+        Entity* vehicleWheel3Entity = CreateVehicleWheelEntity("Wheel (front right)", wheelRadius, wheelWidth, wheelMass, Vector3(chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 0.0f, PI * 0.333f);
+        vehicleEntity->AddNode(vehicleWheel3Entity);
+
+        // Wheel (rear left)
+        Entity* vehicleWheel2Entity = CreateVehicleWheelEntity("Wheel (rear left)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 4000.0f, 0.0f);
+        vehicleEntity->AddNode(vehicleWheel2Entity);
+
+        // Wheel (rear right)
+        Entity* vehicleWheel1Entity = CreateVehicleWheelEntity("Wheel (rear right)", wheelRadius, wheelWidth, wheelMass, Vector3(-chassisHalfDimensions.x * 0.7f, -chassisHalfDimensions.y * 0.7f, -chassisHalfDimensions.z), 4000.0f, 0.0f);
+        vehicleEntity->AddNode(vehicleWheel1Entity);
+
+        // Chassis
+        ScopedPtr<Entity> vehicleChassisEntity(new Entity());
+        vehicleChassisEntity->SetName("Chassis");
+        VehicleChassisComponent* chassisComponent = new VehicleChassisComponent();
+        vehicleChassisEntity->AddComponent(chassisComponent);
+        BoxShapeComponent* chassisShape = new BoxShapeComponent();
+        chassisShape->SetHalfSize(chassisHalfDimensions);
+        chassisShape->SetOverrideMass(true);
+        chassisShape->SetMass(chassisMass);
+        vehicleChassisEntity->AddComponent(chassisShape);
+        vehicleEntity->AddNode(vehicleChassisEntity);
+
+        return DAVA::RefPtr<DAVA::Entity>(vehicleEntity);
     }
 
-    // Chassis
-    Entity* vehicleChassisEntity = new Entity();
-    vehicleChassisEntity->SetName("Chassis");
-    VehicleChassisComponent* chassisComponent = new VehicleChassisComponent();
-    vehicleChassisEntity->AddComponent(chassisComponent);
-    BoxShapeComponent* chassisShape = new BoxShapeComponent();
-    chassisShape->SetHalfSize(chassisHalfDimensions);
-    chassisShape->SetOverrideMass(true);
-    chassisShape->SetMass(chassisMass);
-    vehicleChassisEntity->AddComponent(chassisShape);
-    vehicleEntity->AddNode(vehicleChassisEntity);
+    CarEntityCreator()
+        : TBase(eMenuPointOrder::PHYSICS_ENTITIES, QIcon(), QStringLiteral("Car"),
+                DAVA::MakeFunction(&CarEntityCreator::CreateEntity))
+    {
+    }
+};
 
-    scene->Exec(std::make_unique<EntityAddCommand>(vehicleEntity, scene));
+class TankEntityCreator : public SimpleEntityCreator
+{
+    using TBase = SimpleEntityCreator;
+
+public:
+    static DAVA::RefPtr<DAVA::Entity> CreateEntity()
+    {
+        const Vector3 chassisHalfDimensions = Vector3(2.5f, 1.0f, 1.25f);
+        const float32 chassisMass = 1500.0f;
+        const float32 wheelRadius = 0.35f;
+        const float32 wheelWidth = 0.4f;
+        const float32 wheelMass = 20.0f;
+
+        // Root entity
+        Entity* vehicleEntity = new DAVA::Entity();
+        vehicleEntity->SetName("Vehicle");
+        VehicleComponent* vehicleComponent = new VehicleTankComponent();
+        vehicleEntity->AddComponent(vehicleComponent);
+        DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
+        vehicleEntity->AddComponent(dynamicBody);
+
+        // Wheels
+
+        float mainwheelsz = -1.3f * chassisHalfDimensions.z;
+
+        const uint32 wheelsNumber = 6;
+        const float totalWheelsWidth = wheelWidth * wheelsNumber;
+
+        float xOffset = -chassisHalfDimensions.x + (chassisHalfDimensions.x * 2.0f - wheelRadius * 2.0f);
+        for (int i = 0; i < 6; ++i)
+        {
+            Entity* left = CreateVehicleWheelEntity("Wheel (left)", wheelRadius, wheelWidth, wheelMass, Vector3(xOffset, chassisHalfDimensions.y * 0.7f, mainwheelsz), 0.0f, 0.0f);
+            vehicleEntity->AddNode(left);
+
+            Entity* right = CreateVehicleWheelEntity("Wheel (right)", wheelRadius, wheelWidth, wheelMass, Vector3(xOffset, -chassisHalfDimensions.y * 0.7f, mainwheelsz), 0.0f, 0.0f);
+            vehicleEntity->AddNode(right);
+
+            xOffset -= wheelRadius * 2.0f;
+        }
+
+        // Chassis
+        Entity* vehicleChassisEntity = new Entity();
+        vehicleChassisEntity->SetName("Chassis");
+        VehicleChassisComponent* chassisComponent = new VehicleChassisComponent();
+        vehicleChassisEntity->AddComponent(chassisComponent);
+        BoxShapeComponent* chassisShape = new BoxShapeComponent();
+        chassisShape->SetHalfSize(chassisHalfDimensions);
+        chassisShape->SetOverrideMass(true);
+        chassisShape->SetMass(chassisMass);
+        vehicleChassisEntity->AddComponent(chassisShape);
+        vehicleEntity->AddNode(vehicleChassisEntity);
+
+        return DAVA::RefPtr<DAVA::Entity>(vehicleEntity);
+    }
+
+    TankEntityCreator()
+        : TBase(eMenuPointOrder::PHYSICS_ENTITIES, QIcon(), QStringLiteral("Tank"),
+                DAVA::MakeFunction(&TankEntityCreator::CreateEntity))
+    {
+    }
+};
+
+class PhysicsEntityCreatorsGroup : public EntityCreatorsGroup
+{
+public:
+    PhysicsEntityCreatorsGroup()
+        : EntityCreatorsGroup(QIcon(), QStringLiteral("Physics"))
+    {
+        creatorsGroup.push_back(std::make_unique<CarEntityCreator>());
+        creatorsGroup.push_back(std::make_unique<TankEntityCreator>());
+    }
+
+    eMenuPointOrder GetOrder() const override
+    {
+        return eMenuPointOrder::PHYSICS_ENTITIES;
+    }
+
+private:
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(PhysicsEntityCreatorsGroup, EntityCreatorsGroup)
+    {
+        ReflectionRegistrator<PhysicsEntityCreatorsGroup>::Begin()
+        .ConstructorByPointer()
+        .End();
+    }
+};
+} // namespace EditorPhysicsDetail
+
+EditorPhysicsModule::EditorPhysicsModule()
+{
+    using namespace EditorPhysicsDetail;
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsEntityCreatorsGroup);
+}
+
+void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
+{
+    SceneEditor2* scene = context->GetData<SceneData>()->GetScene().Get();
+    DVASSERT(scene != nullptr);
+
+    std::unique_ptr<EditorPhysicsData> data(new EditorPhysicsData());
+    data->system = new EditorPhysicsSystem(scene);
+    scene->AddSystem(data->system, 0, DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+
+    context->CreateData(std::move(data));
+}
+
+void EditorPhysicsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+{
+    SceneEditor2* scene = context->GetData<SceneData>()->GetScene().Get();
+    DVASSERT(scene != nullptr);
+
+    EditorPhysicsData* data = context->GetData<EditorPhysicsData>();
+    DVASSERT(data != nullptr);
+    DVASSERT(data->system != nullptr);
+    scene->RemoveSystem(data->system);
+    DAVA::SafeDelete(data->system);
+    context->DeleteData<EditorPhysicsData>();
+}
+
+void EditorPhysicsModule::PostInit()
+{
+    using namespace DAVA;
+    using namespace DAVA::TArc;
+
+    ContextAccessor* accessor = GetAccessor();
+    binder.reset(new FieldBinder(accessor));
+    {
+        FieldDescriptor descr;
+        descr.type = ReflectedTypeDB::Get<ProjectManagerData>();
+        descr.fieldName = FastName(ProjectManagerData::ProjectPathProperty);
+        binder->BindField(descr, [](const Any& v) {
+            PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+            module->ReleaseMaterials();
+        });
+    }
+
+    EditorPhysicsDetail::EditorPhysicsGlobalData* globalData = new EditorPhysicsDetail::EditorPhysicsGlobalData();
+    globalData->physicsExtension.reset(new EditorPhysicsDetail::PhysicsEditorCreator());
+    accessor->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(globalData));
+
+    QWidget* physicsPanel = new PhysicsWidget(GetAccessor(), GetUI());
+
+    UI* ui = GetUI();
+
+    DockPanelInfo info;
+    info.title = QString("Physics");
+    info.area = Qt::LeftDockWidgetArea;
+
+    PanelKey key("Physics", info);
+    ui->AddView(DAVA::TArc::mainWindowKey, key, physicsPanel);
 }
 
 void EditorPhysicsModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)

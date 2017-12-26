@@ -5,12 +5,17 @@ set          ( WARNINGS_AS_ERRORS true )
 set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../Sources/CMake/Modules/" ) 
 include      ( CMake-common )
 
-find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
 find_dava_module( NetworkHelpers )
-find_dava_module( ScenePerformanceTests )
 find_dava_module( LoggerService )
 find_dava_module( MemoryProfilerService )
 find_dava_module( DocDirSetup )
+find_dava_module( TestCharacterController )
+
+find_package( DavaFramework REQUIRED COMPONENTS DAVA_DISABLE_AUTOTESTS "Sound" )
+
+find_dava_module( ScenePerformanceTests )
+find_dava_module( Version )
+find_dava_module( Physics )
 
 include_directories   ( "Sources" )
 
@@ -41,4 +46,3 @@ if ( WINDOWS_UAP )
 endif ()
 
 setup_main_executable()
-convert_graphics()

@@ -28,6 +28,8 @@
 #include "Platform/TemplateWin32/UAPNetworkHelper.h"
 #endif
 
+#include <Version/Version.h>
+
 using namespace DAVA;
 
 namespace
@@ -196,7 +198,8 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnWindowCreated(Window* w)
 {
-    w->SetTitleAsync("UnitTests");
+    String title = Version::CreateAppVersion("UnitTests");
+    w->SetTitleAsync(title);
     w->SetVirtualSize(1024.f, 768.f);
 
     VirtualCoordinatesSystem* vcs = w->GetUIControlSystem()->vcs;

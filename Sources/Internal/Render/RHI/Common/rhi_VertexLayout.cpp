@@ -18,8 +18,8 @@ namespace rhi
 //==============================================================================
 
 VertexLayout::VertexLayout()
-    : _elem_count(0)
-    , _stream_count(0)
+    : _stream_count(0)
+    , _elem_count(0)
 {
 }
 

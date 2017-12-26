@@ -118,4 +118,38 @@ DAVA_TESTCLASS (StringUtilsTest)
         str2[0] = 0x00A0; // non-breaking space
         TEST_VERIFY(str1 == RemoveNonPrintable(str2));
     }
+
+    DAVA_TEST (CompareIgnoreCaseTest)
+    {
+        TEST_VERIFY(StringUtils::CompareIgnoreCase(String("abc"), String("ABC")));
+        TEST_VERIFY(StringUtils::CompareIgnoreCase(String(" abc "), String(" ABC ")));
+        TEST_VERIFY(StringUtils::CompareIgnoreCase(String("ABC"), String("abc")));
+        TEST_VERIFY(StringUtils::CompareIgnoreCase(String("ABC"), String("ABC")));
+        TEST_VERIFY(StringUtils::CompareIgnoreCase(String("abc"), String("abc")));
+        TEST_VERIFY(StringUtils::CompareIgnoreCase(String("ABCdef"), String("abcDEF")));
+        TEST_VERIFY(!StringUtils::CompareIgnoreCase(String("ABC"), String("CDE")));
+        TEST_VERIFY(!StringUtils::CompareIgnoreCase(String("abc"), String("abcdef")));
+        TEST_VERIFY(!StringUtils::CompareIgnoreCase(String("abcdef"), String("abc")));
+        TEST_VERIFY(!StringUtils::CompareIgnoreCase(String(" abc "), String("abc")));
+    }
+
+    // Utils::ToUpperCase
+    DAVA_TEST (UpperCaseTest)
+    {
+        TEST_VERIFY(StringUtils::ToUpperCase(String("abc")) == "ABC");
+        TEST_VERIFY(StringUtils::ToUpperCase(String("   abc    ")) == "   ABC    ");
+        TEST_VERIFY(StringUtils::ToUpperCase(String("\t\nabc\n\t")) == "\t\nABC\n\t");
+        TEST_VERIFY(StringUtils::ToUpperCase(String("    ")) == "    ");
+        TEST_VERIFY(StringUtils::ToUpperCase(String("\t \t")) == "\t \t");
+    }
+
+    // Utils::ToLowerCase
+    DAVA_TEST (ToLowerCase)
+    {
+        TEST_VERIFY(StringUtils::ToLowerCase(String("ABC")) == "abc");
+        TEST_VERIFY(StringUtils::ToLowerCase(String("   ABC    ")) == "   abc    ");
+        TEST_VERIFY(StringUtils::ToLowerCase(String("\t\nABC\n\t")) == "\t\nabc\n\t");
+        TEST_VERIFY(StringUtils::ToLowerCase(String("    ")) == "    ");
+        TEST_VERIFY(StringUtils::ToLowerCase(String("\t \t")) == "\t \t");
+    }
 };

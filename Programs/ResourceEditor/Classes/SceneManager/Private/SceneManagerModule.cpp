@@ -186,7 +186,11 @@ void SceneManagerModule::PostInit()
     ProjectManagerData* projectData = accessor->GetGlobalContext()->GetData<ProjectManagerData>();
     DVASSERT(projectData != nullptr);
 
-    connections.AddConnection(projectData->GetSpritesModules(), &SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
+    const SpritesPackerModule* packer = projectData->GetSpritesModules();
+    if (packer != nullptr)
+    {
+        connections.AddConnection(packer, &SpritesPackerModule::SpritesReloaded, DAVA::MakeFunction(this, &SceneManagerModule::RestartParticles), Qt::QueuedConnection);
+    }
 
     DAVA::TArc::UI* ui = GetUI();
 
@@ -717,13 +721,6 @@ void SceneManagerModule::CreateNewScene()
 {
     using namespace DAVA::TArc;
     ContextManager* contextManager = GetContextManager();
-
-    UI* ui = GetUI();
-    WaitDialogParams waitDlgParams;
-    waitDlgParams.message = QStringLiteral("Creating new scene");
-    waitDlgParams.needProgressBar = false;
-
-    std::unique_ptr<WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
 
     DAVA::FilePath scenePath = QString("newscene%1.sc2").arg(++newSceneCounter).toStdString();
     DAVA::RefPtr<SceneEditor2> scene = OpenSceneImpl(scenePath);
@@ -1296,7 +1293,7 @@ void SceneManagerModule::OnDrop(QObject* target, QDropEvent* event)
             DAVA::Landscape* landscape = data->scene->collisionSystem->GetLandscape();
             if (landscape != nullptr && landscape->GetHeightmap() != nullptr && landscape->GetHeightmap()->Size() > 0)
             {
-                data->scene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(), pos);
+                data->scene->collisionSystem->GetLandscape()->PlacePoint(DAVA::Vector3(pos), pos);
             }
         }
 

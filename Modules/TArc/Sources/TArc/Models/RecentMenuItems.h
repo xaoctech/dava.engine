@@ -35,6 +35,7 @@ public:
     {
         Params(const DAVA::TArc::WindowKey& windowKey_, DAVA::TArc::ContextAccessor* accessor_, const DAVA::String& propertiesItemKey);
 
+        DAVA::TArc::WindowKey windowKey;
         DAVA::TArc::ContextAccessor* accessor = nullptr;
         DAVA::TArc::UI* ui = nullptr;
 
@@ -46,7 +47,6 @@ public:
         const DAVA::String propertiesItemKey;
         DAVA::TArc::FieldDescriptor predicateFieldDescriptor;
         DAVA::Function<DAVA::Any(const DAVA::Any&)> enablePredicate;
-        DAVA::TArc::WindowKey windowKey;
     };
 
     RecentMenuItems(Params&& params);

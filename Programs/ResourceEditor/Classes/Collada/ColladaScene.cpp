@@ -25,7 +25,10 @@ void ColladaScene::ExportAnimations(ColladaAnimation* colladaAnimation, FCDScene
         //printf("- founded equal node: %s", currentNode->GetDaeId().c_str());
         SceneNodeAnimation* anim = ColladaSceneNode::ExportNodeAnimation(currentNode, anStart, anEnd, 30.0f);
         if (anim)
+        {
             colladaAnimation->animations[node] = anim;
+            ColladaAnimation::ExportAnimationData(node, &colladaAnimation->animationsData[node]);
+        }
     }
 
     for (int i = 0; i < (int)currentNode->GetChildrenCount(); i++)
@@ -308,7 +311,7 @@ ColladaMeshInstance* ColladaScene::CreateMeshInstance(ColladaMesh* mesh, FCDGeom
             printf(" material: %s", material->material->GetDaeId().c_str());
             if (material->hasDiffuseTexture)
             {
-                wprintf(L" diffuse texture: %S\n", (wchar_t*)(material->diffuseTexture->image->GetFilename().c_str()));
+                wprintf(L" diffuse texture: %ls\n", (wchar_t*)(material->diffuseTexture->image->GetFilename().c_str()));
             }
             printf("\n");
         }

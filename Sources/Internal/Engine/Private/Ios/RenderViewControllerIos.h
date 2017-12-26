@@ -11,6 +11,7 @@
 @interface RenderViewController : UIViewController
 {
     DAVA::Private::WindowNativeBridge* bridge;
+    bool homeIndicatorAutoHidden;
 }
 
 - (id)initWithBridge:(DAVA::Private::WindowNativeBridge*)nativeBridge;

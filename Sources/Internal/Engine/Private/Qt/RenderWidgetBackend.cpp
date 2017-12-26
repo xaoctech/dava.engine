@@ -40,7 +40,7 @@ RenderWidgetBackend::RenderWidgetBackend(IWindowDelegate* windowDelegate_)
 
 void RenderWidgetBackend::SetClientDelegate(IClientDelegate* clientDelegate_)
 {
-    DVASSERT(nullptr == clientDelegate);
+    DVASSERT(clientDelegate == nullptr || clientDelegate_ == nullptr);
     clientDelegate = clientDelegate_;
 }
 

@@ -381,6 +381,11 @@ void PathSystem::Process(DAVA::float32 timeElapsed)
     }
     entitiesForExpand.clear();
 
+    if (isEditingEnabled == false)
+    {
+        return;
+    }
+
     const SelectableGroup& selection = Selection::GetSelection();
     if (currentSelection != selection)
     {

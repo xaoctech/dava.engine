@@ -674,9 +674,8 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 Vector<Entity*> children;
                 entity->GetChildEntitiesWithCondition(children, [component](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == component; });
 
-                for (int i = 0; i < children.size(); ++i)
+                for (Entity* child : children)
                 {
-                    Entity* child = children[i];
                     DVASSERT(child != nullptr);
 
                     Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(child);
@@ -1011,7 +1010,7 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
         return;
     }
 
-    auto updatePose = [this](Entity* e, PhysicsComponent* component)
+    auto updatePose = [](Entity* e, PhysicsComponent* component)
     {
         if (component != nullptr)
         {
@@ -1269,7 +1268,7 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
             DVASSERT(entity != nullptr);
 
             Matrix4 transform = entity->GetLocalTransform();
-            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getPosition()));
+            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getFootPosition()));
             entity->SetLocalTransform(transform);
         }
     }
