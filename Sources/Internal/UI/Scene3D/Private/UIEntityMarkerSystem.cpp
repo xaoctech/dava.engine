@@ -47,12 +47,17 @@ void UIEntityMarkerSystem::UnregisterComponent(UIControl* control, UIComponent* 
 
 void UIEntityMarkerSystem::Process(float32 elapsedTime)
 {
-    bool hasOrdering = false;
     struct SafeFloat
     {
+        SafeFloat() = default;
+        SafeFloat(float32 v)
+            : val(v)
+        {
+        }
         float32 val = 0.f;
     };
     Map<UIControl*, Map<UIControl*, SafeFloat>> orderMap;
+    bool hasOrdering = false;
 
     for (UIEntityMarkerComponent* component : components)
     {
@@ -111,10 +116,10 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
                 switch (component->GetOrderMode())
                 {
                 case UIEntityMarkerComponent::OrderMode::NearFront:
-                    orderMap[control->GetParent()][control] = SafeFloat{ -distance.SquareLength() };
+                    orderMap[control->GetParent()][control] = SafeFloat(-distance.SquareLength());
                     break;
                 case UIEntityMarkerComponent::OrderMode::NearBack:
-                    orderMap[control->GetParent()][control] = SafeFloat{ distance.SquareLength() };
+                    orderMap[control->GetParent()][control] = SafeFloat(distance.SquareLength());
                     break;
                 }
             }
