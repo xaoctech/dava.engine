@@ -55,8 +55,9 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
         return enableCustomDrawError;
     }
 
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked == true);
     Selection::Lock();
-    modifSystem->SetLocked(true);
     landscapeSize = DAVA::Landscape::CUSTOM_COLOR_TEXTURE_SIZE;
 
     DAVA::FilePath filePath = GetCurrentSaveFileName();
@@ -109,8 +110,8 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
     }
     FinishEditing(false);
 
+    ReleaseInputLock(GetScene());
     Selection::Unlock();
-    modifSystem->SetLocked(false);
 
     drawSystem->DisableCursor();
     drawSystem->DisableCustomDraw();

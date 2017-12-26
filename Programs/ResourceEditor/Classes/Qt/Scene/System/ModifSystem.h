@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SystemDelegates.h"
+#include "EditorSceneSystem.h"
 
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Entity.h"
@@ -33,7 +34,7 @@ struct EntityToModify
 DAVA::Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities);
 void ApplyModificationToScene(DAVA::Scene* scene, const DAVA::Vector<EntityToModify>& entities);
 
-class EntityModificationSystem : public DAVA::SceneSystem, public SelectionSystemDelegate
+class EntityModificationSystem : public DAVA::SceneSystem, public EditorSceneSystem, public SelectionSystemDelegate
 {
     friend class SceneEditor2;
 

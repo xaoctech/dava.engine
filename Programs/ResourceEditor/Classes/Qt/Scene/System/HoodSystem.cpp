@@ -286,6 +286,12 @@ void HoodSystem::ResetModifValues()
 
 void HoodSystem::Process(DAVA::float32 timeElapsed)
 {
+    InputLockGuard guard(GetScene(), this);
+    if (guard.IsLockAcquired() == false)
+    {
+        return;
+    }
+
     if (!IsLocked() && !lockedScale)
     {
         // scale hood depending on current camera position
@@ -307,6 +313,12 @@ void HoodSystem::Process(DAVA::float32 timeElapsed)
 
 bool HoodSystem::Input(DAVA::UIEvent* event)
 {
+    InputLockGuard guard(GetScene(), this);
+    if (guard.IsLockAcquired() == false)
+    {
+        return false;
+    }
+
     if (!event->point.IsZero())
     {
         // before checking result mark that there is no hood axis under mouse
@@ -352,6 +364,12 @@ bool HoodSystem::Input(DAVA::UIEvent* event)
 
 void HoodSystem::Draw()
 {
+    InputLockGuard guard(GetScene(), this);
+    if (guard.IsLockAcquired() == false)
+    {
+        return;
+    }
+
     if ((curHood == nullptr) || !IsVisible())
         return;
 
