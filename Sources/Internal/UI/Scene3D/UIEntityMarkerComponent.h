@@ -117,19 +117,9 @@ inline Entity* UIEntityMarkerComponent::GetTargetEntity() const
     return targetEntity.Get();
 }
 
-inline void UIEntityMarkerComponent::SetTargetEntity(Entity* e)
-{
-    targetEntity = e;
-}
-
 inline bool UIEntityMarkerComponent::IsEnabled() const
 {
     return enabled;
-}
-
-inline void UIEntityMarkerComponent::SetEnabled(bool enable)
-{
-    enabled = enable;
 }
 
 inline bool UIEntityMarkerComponent::IsSyncVisibilityEnabled() const
@@ -137,19 +127,9 @@ inline bool UIEntityMarkerComponent::IsSyncVisibilityEnabled() const
     return syncVisibilityEnabled;
 }
 
-inline void UIEntityMarkerComponent::SetSyncVisibilityEnabled(bool absolute)
-{
-    syncVisibilityEnabled = absolute;
-}
-
 inline bool UIEntityMarkerComponent::IsSyncPositionEnabled() const
 {
     return syncPositionEnabled;
-}
-
-inline void UIEntityMarkerComponent::SetSyncPositionEnabled(bool absolute)
-{
-    syncPositionEnabled = absolute;
 }
 
 inline bool UIEntityMarkerComponent::IsSyncScaleEnabled() const
@@ -157,19 +137,9 @@ inline bool UIEntityMarkerComponent::IsSyncScaleEnabled() const
     return syncScaleEnabled;
 }
 
-inline void UIEntityMarkerComponent::SetSyncScaleEnabled(bool absolute)
-{
-    syncScaleEnabled = absolute;
-}
-
 inline const Vector2& UIEntityMarkerComponent::GetScaleFactor() const
 {
     return scaleFactor;
-}
-
-inline void UIEntityMarkerComponent::SetScaleFactor(const Vector2& factor)
-{
-    scaleFactor = factor;
 }
 
 inline const Vector2& UIEntityMarkerComponent::GetMaxScale() const
@@ -177,19 +147,9 @@ inline const Vector2& UIEntityMarkerComponent::GetMaxScale() const
     return maxScale;
 }
 
-inline void UIEntityMarkerComponent::SetMaxScale(const Vector2& s)
-{
-    maxScale = s;
-}
-
 inline const Vector2& UIEntityMarkerComponent::GetMinScale() const
 {
     return minScale;
-}
-
-inline void UIEntityMarkerComponent::SetMinScale(const Vector2& s)
-{
-    minScale = s;
 }
 
 inline bool UIEntityMarkerComponent::IsSyncOrderEnabled() const
@@ -197,19 +157,9 @@ inline bool UIEntityMarkerComponent::IsSyncOrderEnabled() const
     return syncOrderEnabled;
 }
 
-inline void UIEntityMarkerComponent::SetSyncOrderEnabled(bool enable)
-{
-    syncOrderEnabled = enable;
-}
-
 inline UIEntityMarkerComponent::OrderMode UIEntityMarkerComponent::GetOrderMode() const
 {
     return orderMode;
-}
-
-inline void UIEntityMarkerComponent::SetOrderMode(OrderMode mode)
-{
-    orderMode = mode;
 }
 
 inline bool UIEntityMarkerComponent::IsUseCustomStrategy() const
@@ -217,19 +167,9 @@ inline bool UIEntityMarkerComponent::IsUseCustomStrategy() const
     return useCustomStrategy;
 }   
 
-inline void UIEntityMarkerComponent::SetUseCustomStrategy(bool enable)
-{
-    useCustomStrategy = enable;
-}
-
 inline const UIEntityMarkerComponent::CustomStrategy& UIEntityMarkerComponent::GetCustomStrategy() const
 {
     return customStrategy;
-}
-
-void UIEntityMarkerComponent::SetCustomStrategy(const CustomStrategy& fn)
-{
-    customStrategy = fn;
 }
 
 }

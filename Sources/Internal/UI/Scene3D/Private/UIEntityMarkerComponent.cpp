@@ -58,4 +58,64 @@ UIEntityMarkerComponent* UIEntityMarkerComponent::Clone() const
 {
     return new UIEntityMarkerComponent(*this);
 }
+
+void UIEntityMarkerComponent::SetTargetEntity(Entity* e)
+{
+    targetEntity = e;
+}
+
+void UIEntityMarkerComponent::SetEnabled(bool enable)
+{
+    enabled = enable;
+}
+
+void UIEntityMarkerComponent::SetSyncVisibilityEnabled(bool absolute)
+{
+    syncVisibilityEnabled = absolute;
+}
+
+void UIEntityMarkerComponent::SetSyncPositionEnabled(bool absolute)
+{
+    syncPositionEnabled = absolute;
+}
+
+void UIEntityMarkerComponent::SetSyncScaleEnabled(bool absolute)
+{
+    syncScaleEnabled = absolute;
+}
+
+void UIEntityMarkerComponent::SetScaleFactor(const Vector2& factor)
+{
+    scaleFactor = factor;
+}
+
+void UIEntityMarkerComponent::SetMaxScale(const Vector2& s)
+{
+    maxScale = s;
+}
+
+void UIEntityMarkerComponent::SetMinScale(const Vector2& s)
+{
+    minScale = s;
+}
+
+void UIEntityMarkerComponent::SetSyncOrderEnabled(bool enable)
+{
+    syncOrderEnabled = enable;
+}
+
+void UIEntityMarkerComponent::SetOrderMode(OrderMode mode)
+{
+    orderMode = mode;
+}
+
+void UIEntityMarkerComponent::SetUseCustomStrategy(bool enable)
+{
+    useCustomStrategy = enable;
+}
+
+void UIEntityMarkerComponent::SetCustomStrategy(const CustomStrategy& fn)
+{
+    customStrategy = fn;
+}
 }
