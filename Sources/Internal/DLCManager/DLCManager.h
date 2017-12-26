@@ -189,6 +189,9 @@ public:
     /** Remove request with downloaded content with dependent packs */
     virtual void RemovePack(const String& packName) = 0;
 
+    /** Destroy all requests in queue */
+    virtual void ResetQueue();
+
     struct Progress
     {
         uint64 total = 0; //!< in bytes
