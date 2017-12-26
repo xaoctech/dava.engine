@@ -15,7 +15,13 @@
 #include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/Utils/ReflectedPairsVector.h>
 
+#include <Physics/CollisionShapeComponent.h>
+
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Entity.h>
 #include <Entity/Component.h>
 #include <FileSystem/KeyedArchive.h>
@@ -25,8 +31,10 @@
 #include <Engine/PlatformApiQt.h>
 #include <Functional/Function.h>
 #include <Base/Any.h>
+#include <Base/FastName.h>
 #include <Base/StaticSingleton.h>
 #include <Base/TypeInheritance.h>
+#include <Base/BaseTypes.h>
 
 #include <QToolButton>
 #include <QHBoxLayout>
@@ -487,7 +495,7 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::move(editor);
+        return std::unique_ptr<DAVA::TArc::BaseComponentValue>(std::move(editor));
     }
 
     const DAVA::Type* valueType = node->cachedValue.GetType();
@@ -503,7 +511,7 @@ std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(c
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::move(editor);
+        return std::unique_ptr<DAVA::TArc::BaseComponentValue>(std::move(editor));
     }
 
     return EditorComponentExtension::GetEditor(node);

@@ -23,12 +23,12 @@
 
 DeviceListController::DeviceListController(DAVA::TArc::UI* ui, QObject* parent)
     : QObject(parent)
-    , ui(ui)
     , model(NULL)
     , loggerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
-    , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
     , loggerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , profilerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
     , profilerServiceDeleterAsync(DAVA::MakeFunction(this, &DeviceListController::DeleteMemProfiler), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())
+    , ui(ui)
 {
     using namespace DAVA;
     using namespace DAVA::Net;
@@ -262,7 +262,7 @@ void DeviceListController::ConnectDeviceInternal(QModelIndex& index, size_t ifIn
             item->setData(v, ROLE_PEER_SERVICES);
         }
 
-        trackId = NetCore::Instance()->CreateController(config, reinterpret_cast<void*>(index.row()), readTimeout);
+        trackId = NetCore::Instance()->CreateController(config, reinterpret_cast<void*>(static_cast<intptr_t>(index.row())), readTimeout);
         if (trackId != NetCore::INVALID_TRACK_ID)
         {
             // Update item's ROLE_CONNECTION_ID and ROLE_PEER_SERVICES

@@ -85,11 +85,11 @@ static void StopControlTracking(const UIControl* control)
 }
 
 UIControl::UIControl(const Rect& rect)
-    : styleSheetDirty(true)
+    : isInputProcessed(false)
+    , styleSheetDirty(true)
     , styleSheetInitialized(false)
     , layoutDirty(true)
     , layoutPositionDirty(true)
-    , isInputProcessed(false)
     , layoutOrderDirty(true)
     , family(nullptr)
     , parentWithContext(nullptr)

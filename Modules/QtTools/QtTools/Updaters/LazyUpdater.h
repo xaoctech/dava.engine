@@ -14,7 +14,7 @@ public:
 public:
     LazyUpdater(Updater updater, QObject* parent = nullptr);
 
-    void Update();
+    void Update(int msecDelay = 0);
 
 private slots:
 

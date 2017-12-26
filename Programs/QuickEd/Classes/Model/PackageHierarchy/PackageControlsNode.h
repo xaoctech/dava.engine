@@ -18,7 +18,7 @@ class PackageControlsNode : public ControlsContainerNode
 {
 public:
     PackageControlsNode(PackageNode* parent, const DAVA::String& name);
-    virtual ~PackageControlsNode();
+    ~PackageControlsNode() override;
 
     void Add(ControlNode* node) override;
     void InsertAtIndex(int index, ControlNode* node) override;
@@ -38,17 +38,9 @@ public:
 
     void RefreshControlProperties();
 
-    ControlNode* FindControlNodeByName(const DAVA::String& name) const;
     void FindAllNodesByPath(const DAVA::String& path, DAVA::Set<PackageBaseNode*>& foundNodes) const;
 
-    DAVA::Vector<ControlNode*>::const_iterator begin() const override;
-    DAVA::Vector<ControlNode*>::const_iterator end() const override;
-
-    DAVA::Vector<ControlNode*>::iterator begin() override;
-    DAVA::Vector<ControlNode*>::iterator end() override;
-
 private:
-    DAVA::Vector<ControlNode*> nodes;
     DAVA::String name;
 };
 

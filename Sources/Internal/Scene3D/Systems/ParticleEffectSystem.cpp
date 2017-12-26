@@ -122,7 +122,6 @@ ParticleEffectSystem::ParticleEffectSystem(Scene* scene, bool _is2DMode)
     , allowLodDegrade(false)
     , is2DMode(_is2DMode)
 {
-    ParticleForces::Init();
     if (scene) //for 2d particles there would be no scene
     {
         scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
@@ -947,7 +946,7 @@ Particle* ParticleEffectSystem::GenerateNewParticle(ParticleEffectComponent* eff
         info.size = particle->currSize;
         effect->effectData.infoSources.push_back(info);
         particle->positionTarget = static_cast<int32>(effect->effectData.infoSources.size() - 1);
-        ParticleEmitter* innerEmitter = group.layer->innerEmitter;
+        ParticleEmitter* innerEmitter = group.layer->innerEmitter->GetEmitter();
         if (innerEmitter)
             RunEmitter(effect, innerEmitter, Vector3(0, 0, 0), particle->positionTarget);
     }

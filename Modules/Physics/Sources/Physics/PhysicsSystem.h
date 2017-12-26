@@ -6,6 +6,7 @@
 
 #include <physx/PxQueryReport.h>
 #include <physx/PxSimulationEventCallback.h>
+#include <physx/PxForceMode.h>
 
 namespace physx
 {
@@ -17,11 +18,11 @@ class PxControllerManager;
 
 namespace DAVA
 {
-class Vector3;
 class Scene;
 class CollisionSingleComponent;
 class PhysicsModule;
 class PhysicsComponent;
+class DynamicBodyComponent;
 class CollisionShapeComponent;
 class PhysicsGeometryCache;
 class PhysicsVehiclesSubsystem;
@@ -54,6 +55,7 @@ public:
     void ScheduleUpdate(CharacterControllerComponent* component);
 
     bool Raycast(const Vector3& origin, const Vector3& direction, float32 distance, physx::PxRaycastCallback& callback);
+    void AddForce(DynamicBodyComponent* component, const Vector3& force, physx::PxForceMode::Enum mode);
 
     PhysicsVehiclesSubsystem* GetVehiclesSystem();
 
@@ -72,6 +74,7 @@ private:
     void SyncTransformToPhysx();
     void SyncEntityTransformToPhysx(Entity* entity);
     void UpdateComponents();
+    void ApplyForces();
 
     void MoveCharacterControllers(float32 timeElapsed);
 
@@ -120,6 +123,14 @@ private:
     Set<CollisionShapeComponent*> collisionComponentsUpdatePending;
     Set<CharacterControllerComponent*> characterControllerComponentsUpdatePending;
 
+    struct PendingForce
+    {
+        DynamicBodyComponent* component = nullptr;
+        Vector3 force;
+        physx::PxForceMode::Enum mode;
+    };
+
+    Vector<PendingForce> forces;
     SimulationEventCallback simulationEventCallback;
 
     bool drawDebugInfo = false;

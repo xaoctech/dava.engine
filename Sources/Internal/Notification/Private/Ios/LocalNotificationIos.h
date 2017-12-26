@@ -18,11 +18,11 @@ public:
     LocalNotificationIOS(const String& _id);
     ~LocalNotificationIOS() override;
 
-    void SetAction(const WideString& action) override;
+    void SetAction(const String& action) override;
     void Hide() override;
-    void ShowText(const WideString& title, const WideString& text, bool useSound) override;
-    void ShowProgress(const WideString& title, const WideString& text, uint32 total, uint32 progress, bool useSound) override;
-    void PostDelayedNotification(const WideString& title, const WideString& text, int delaySeconds, bool useSound) override;
+    void ShowText(const String& title, const String& text, bool useSound) override;
+    void ShowProgress(const String& title, const String& text, uint32 total, uint32 progress, bool useSound) override;
+    void PostDelayedNotification(const String& title, const String& text, int delaySeconds, bool useSound) override;
     void RemoveAllDelayedNotifications() override;
 
 public:

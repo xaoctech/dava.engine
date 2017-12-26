@@ -293,6 +293,9 @@ macro( setup_main_module )
         get_property( MAIN_MODULES_FIND_FIRST_CALL_LIST GLOBAL PROPERTY MAIN_MODULES_FIND_FIRST_CALL_LIST )
         if( NOT MAIN_MODULES_FIND_FIRST_CALL_LIST )  
             # "root call" 
+            set( MODULE_STACK_DEFINITION )
+        else()
+            set( MODULE_STACK_DEFINITION ${MODULE_STACK_DEFINITION} ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} PARENT_SCOPE)
         endif()
 
         list( APPEND MAIN_MODULES_FIND_FIRST_CALL_LIST "call" )
@@ -326,7 +329,6 @@ macro( setup_main_module )
 
         endif()
 
-        set( DEFINITIONS_BACKUP ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} )
 
         #"FIND LIBRARY"
         foreach( NAME ${FIND_SYSTEM_LIBRARY} ${FIND_SYSTEM_LIBRARY_${DAVA_PLATFORM_CURRENT}} )
@@ -359,17 +361,8 @@ macro( setup_main_module )
             list ( APPEND STATIC_LIBRARIES_SYSTEM_${DAVA_PLATFORM_CURRENT} ${PACKAGE_${NAME}_STATIC_LIBRARIES} )
         endforeach()
 
-
-        load_property( PROPERTY_LIST 
-                DEFINITIONS
-                DEFINITIONS_${DAVA_PLATFORM_CURRENT} )
-
-        set( PACKAGES_DEFINITIONS  ${DEFINITIONS} ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} )
-
-        if( DEFINITIONS_BACKUP )
-            list(REMOVE_ITEM PACKAGES_DEFINITIONS "${DEFINITIONS_BACKUP}" )
-        endif()
-
+        list( APPEND DEFINITIONS ${MODULE_STACK_DEFINITION} )
+        
 #####
         if( CPP_FILES_EXECUTE )
             get_filename_component( CPP_FILES_EXECUTE ${CPP_FILES_EXECUTE} ABSOLUTE )
@@ -389,16 +382,11 @@ macro( setup_main_module )
             set( MODULE_CACHE   ${COVERAGE_STRING}
                                 ${MODULE_COMPONENTS}  )
             
-            if( USE_PARENT_DEFINITIONS  )
-
-                list( APPEND MODULE_CACHE ${DEFINITIONS} 
-                                          ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} 
-                                        )
-            else()
-                list( APPEND MODULE_CACHE ${PACKAGES_DEFINITIONS} 
-                                          ${PACKAGES_DEFINITIONS_${DAVA_PLATFORM_CURRENT}} 
-                                        )
-            endif()
+    
+            list( APPEND MODULE_CACHE ${DEFINITIONS} 
+                                      ${DEFINITIONS_${DAVA_PLATFORM_CURRENT}} 
+                                    )
+ 
 
             if( MODULE_CACHE )
                 list( REMOVE_DUPLICATES MODULE_CACHE )
@@ -564,9 +552,11 @@ macro( setup_main_module )
 
         list( APPEND ALL_SRC  ${PROJECT_SOURCE_FILES} )
         list( APPEND ALL_SRC_HEADER_FILE_ONLY  ${PROJECT_HEADER_FILE_ONLY} )
+        list( APPEND MIX_APP_DATA  ${MIX_APP_DATA_${DAVA_PLATFORM_CURRENT}} )
 
         set_project_files_properties( "${ALL_SRC}" )
         
+
         #"SAVE PROPERTY"
         save_property( PROPERTY_LIST 
                 DYNAMIC_LIBRARIES_${DAVA_PLATFORM_CURRENT}          
@@ -697,6 +687,7 @@ macro( setup_main_module )
                     add_library( ${MODULE_NAME} STATIC  ${ALL_SRC} ${ALL_SRC_HEADER_FILE_ONLY} )
                 endif()
                 append_property( TARGET_MODULES_LIST ${MODULE_NAME} )  
+                append_property( ALL_TARGET_MODULES_LIST ${MODULE_NAME} )  
 
             elseif( ${MODULE_TYPE} STREQUAL "PLUGIN" )
 
@@ -774,16 +765,6 @@ macro( setup_main_module )
 
             endif()
 
-            if( CREATE_NEW_MODULE )
-                file_tree_check( "${CMAKE_CURRENT_LIST_DIR}" )
-
-                if( TARGET_FILE_TREE_FOUND )
-                    add_dependencies(  ${MODULE_NAME} FILE_TREE_${MODULE_NAME} )
-                endif()
-
-            endif()
-
-
             if( DEFINITIONS_PRIVATE )
                 add_definitions( ${DEFINITIONS_PRIVATE} )
             endif()
@@ -823,12 +804,13 @@ macro( setup_main_module )
                     target_link_libraries  ( ${MODULE_NAME} optimized ${FILE} )
                 endforeach ()
 
-                if (QT5_FOUND)
+                list (FIND FIND_PACKAGE QT5 _index)
+                if (NOT ${_index} MATCHES -1 )
                     link_with_qt5(${PROJECT_NAME})
                 endif()
 
                 if( COVERAGE AND MACOS )
-
+              
                     string(REPLACE ";" " " TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
                     string(REPLACE "\"" "" TARGET_FOLDERS_${PROJECT_NAME} "${TARGET_FOLDERS_${PROJECT_NAME}}" )
 

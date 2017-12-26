@@ -8,8 +8,6 @@
 #include "Classes/Application/RESettings.h"
 #include "Classes/Qt/Scene/System/VisibilityCheckSystem/VisibilityCheckSystem.h"
 
-#include <DavaTools/TextureCompression/PVRConverter.h>
-
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/EditorConfig.h"
 
@@ -39,6 +37,7 @@
 #include <TArc/SharedModules/ActionManagementModule/ActionManagementModule.h>
 
 #include <DocDirSetup/DocDirSetup.h>
+#include <Version/Version.h>
 
 #include <Particles/ParticleEmitter.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
@@ -114,7 +113,7 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
     descr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
     descr.fieldName = DAVA::FastName("renderBackend");
 
-    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v) {
+    renderBackEndListener->BindField(descr, [accessor](const DAVA::Any& v) {
         if (v.IsEmpty() == true)
         {
             return;
@@ -140,16 +139,8 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeneralSettings);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CommonInternalSettings);
 
-#if defined(__DAVAENGINE_MACOS__)
-    const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI";
-#elif defined(__DAVAENGINE_WIN32__)
-    const DAVA::String pvrTexToolPath = "~res:/PVRTexToolCLI.exe";
-#endif
-    DAVA::PVRConverter::Instance()->SetPVRTexTool(pvrTexToolPath);
-
     DAVA::ParticleEmitter::FORCE_DEEP_CLONE = true;
     DAVA::QualitySettingsSystem::Instance()->SetKeepUnusedEntities(true);
-    DAVA::QualitySettingsSystem::Instance()->SetMetalPreview(true);
     DAVA::QualitySettingsSystem::Instance()->SetRuntimeQualitySwitching(true);
 
     DAVA::FileSystem* fileSystem = engineContext->fileSystem;
@@ -172,6 +163,7 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 
     engineContext->logger->SetLogFilename("ResourceEditor.txt");
     engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, QString("Qt version: %1").arg(QT_VERSION_STR).toStdString().c_str());
+    engineContext->logger->Log(DAVA::Logger::LEVEL_INFO, DAVA::Version::CreateAppVersion("App Version: Resource Editor").c_str());
     engineContext->uiControlSystem->vcs->EnableReloadResourceOnResize(false);
     engineContext->performanceSettings->SetPsPerformanceMinFPS(5.0f);
     engineContext->performanceSettings->SetPsPerformanceMaxFPS(10.0f);

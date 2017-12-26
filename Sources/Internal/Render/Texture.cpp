@@ -227,16 +227,16 @@ void Texture::AddToMap(Texture* tex)
 }
 
 Texture::Texture()
-    : width(0)
+    : handle(rhi::InvalidHandle)
+    , samplerStateHandle(rhi::InvalidHandle)
+    , singleTextureSet(rhi::InvalidHandle)
+    , width(0)
     , height(0)
     , loadedAsFile(GPU_ORIGIN)
     , state(STATE_INVALID)
     , textureType(rhi::TEXTURE_TYPE_2D)
     , isRenderTarget(false)
     , isPink(false)
-    , handle(rhi::InvalidHandle)
-    , samplerStateHandle(rhi::InvalidHandle)
-    , singleTextureSet(rhi::InvalidHandle)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 

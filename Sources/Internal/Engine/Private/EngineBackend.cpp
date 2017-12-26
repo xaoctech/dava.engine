@@ -40,6 +40,7 @@
 #include "Network/NetCore.h"
 #include "Notification/LocalNotificationController.h"
 #include "DLCManager/Private/DLCManagerImpl.h"
+#include "Particles/ParticleForces.h"
 #include "Platform/DeviceInfo.h"
 #include "Platform/Steam.h"
 #include "PluginManager/PluginManager.h"
@@ -49,6 +50,7 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/ImageSystem.h"
+#include "Render/Image/ImageConverter.h"
 #include "Render/Renderer.h"
 #include "Render/RHI/rhi_ShaderSource.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
@@ -61,6 +63,7 @@
 #include "Entity/ComponentManager.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Utils/Random.h"
+#include "Debug/DebugOverlay.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Private/Android/AssetsManagerAndroid.h"
@@ -835,14 +838,16 @@ void EngineBackend::UninstallEventFilter(void* token)
 
 void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 {
+    // Create subsystems
     context->allocatorFactory = new AllocatorFactory();
     context->random = new Random();
+    ParticleForcesUtils::GenerateNoise();
+    ParticleForcesUtils::GenerateSphereRandomVectors();
     context->performanceSettings = new PerformanceSettings();
     context->versionInfo = new VersionInfo();
     context->renderSystem2D = new RenderSystem2D();
 
     context->uiControlSystem = new UIControlSystem();
-    context->uiControlSystem->Init();
 
     context->animationManager = new AnimationManager();
     context->fontManager = new FontManager();
@@ -910,7 +915,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->actionSystem = new ActionSystem();
         context->uiScreenManager = new UIScreenManager();
         context->localNotificationController = new LocalNotificationController();
-
+        context->debugOverlay = new DebugOverlay();
+        
 #if defined(__DAVAENGINE_STEAM__)
         Steam::Init();
 #endif
@@ -920,9 +926,9 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->logger->EnableConsoleMode();
     }
 
-    context->moduleManager = new ModuleManager(GetEngine());
-    context->moduleManager->InitModules();
+    context->imageConverter = new ImageConverter();
 
+    context->moduleManager = new ModuleManager(GetEngine());
     context->pluginManager = new PluginManager(GetEngine());
     context->analyticsCore = new Analytics::Core;
 
@@ -931,16 +937,48 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 #ifdef __DAVAENGINE_AUTOTESTING__
     context->autotestingSystem = new AutotestingSystem();
 #endif
+
+    // Register user types, components and systems
+    engine->registerUserTypes.Emit();
+
+    // Init subsystems
+    context->moduleManager->InitModules();
+    context->uiControlSystem->Init();
 }
 
 void EngineBackend::DestroySubsystems()
 {
-#ifdef __DAVAENGINE_AUTOTESTING__
-    if (context->autotestingSystem != nullptr)
+    if (context->debugOverlay != nullptr)
     {
-        context->autotestingSystem->Release();
-        context->autotestingSystem = nullptr;
+        delete context->debugOverlay; // Private destructor
+        context->debugOverlay = nullptr;
     }
+
+    // Shutdown subsystems
+    if (context->uiControlSystem != nullptr)
+    {
+        context->uiControlSystem->Shutdown();
+    }
+    if (context->moduleManager != nullptr)
+    {
+        context->moduleManager->ShutdownModules();
+    }
+    if (context->pluginManager != nullptr)
+    {
+        context->pluginManager->UnloadPlugins();
+    }
+    if (context->jobManager != nullptr)
+    {
+        // Wait job completion before releasing singletons
+        // But client should stop its jobs on response to signals Engine::gameLoopStopped or Engine::cleanup
+        context->jobManager->WaitWorkerJobs();
+        context->jobManager->WaitMainJobs();
+    }
+
+// Free subsystems
+
+#ifdef __DAVAENGINE_AUTOTESTING__
+    SafeRelease(context->autotestingSystem);
 #endif
 
     if (!IsConsoleMode())
@@ -953,31 +991,14 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->analyticsCore);
     SafeDelete(context->settings);
 
-    if (context->moduleManager != nullptr)
-    {
-        context->moduleManager->ShutdownModules();
-        delete context->moduleManager;
-        context->moduleManager = nullptr;
-    }
-    if (context->pluginManager != nullptr)
-    {
-        context->pluginManager->UnloadPlugins();
-        delete context->pluginManager;
-        context->pluginManager = nullptr;
-    }
-    if (context->jobManager != nullptr)
-    {
-        // Wait job completion before releasing singletons
-        // But client should stop its jobs on response to signals Engine::gameLoopStopped or Engine::cleanup
-        context->jobManager->WaitWorkerJobs();
-        context->jobManager->WaitMainJobs();
-    }
+    SafeDelete(context->moduleManager);
+    SafeDelete(context->pluginManager);
 
     SafeRelease(context->localNotificationController);
     SafeRelease(context->uiScreenManager);
     if (context->uiControlSystem)
     {
-        delete context->uiControlSystem;
+        delete context->uiControlSystem; // Private destructor
         context->uiControlSystem = nullptr;
     }
     SafeRelease(context->fontManager);
@@ -995,7 +1016,7 @@ void EngineBackend::DestroySubsystems()
 
     if (context->actionSystem != nullptr)
     {
-        delete context->actionSystem;
+        delete context->actionSystem; // Private destructor
         context->actionSystem = nullptr;
     }
 
@@ -1003,7 +1024,7 @@ void EngineBackend::DestroySubsystems()
 
     if (context->inputSystem != nullptr)
     {
-        delete context->inputSystem;
+        delete context->inputSystem; // Private destructor
         context->inputSystem = nullptr;
     }
 
@@ -1016,11 +1037,13 @@ void EngineBackend::DestroySubsystems()
     SafeRelease(context->fileSystem);
     if (context->deviceManager != nullptr)
     {
-        delete context->deviceManager;
+        delete context->deviceManager; // Private destructor
         context->deviceManager = nullptr;
     }
     SafeDelete(context->componentManager);
     SafeDelete(context->logger);
+
+    SafeDelete(context->imageConverter);
 }
 
 void EngineBackend::OnRenderingError(rhi::RenderingError err, void* param)

@@ -39,13 +39,13 @@ UISpineComponent::UISpineComponent(const UISpineComponent& copy)
     : UIComponent(copy)
     , skeletonPath(copy.skeletonPath)
     , atlasPath(copy.atlasPath)
-    , animationState(copy.animationState)
     , animationName(copy.animationName)
     , animationsNames(copy.animationsNames)
-    , animationLooped(copy.animationLooped)
+    , animationState(copy.animationState)
     , skinName(copy.skinName)
     , skinsNames(copy.skinsNames)
     , timeScale(copy.timeScale)
+    , animationLooped(copy.animationLooped)
 {
 }
 

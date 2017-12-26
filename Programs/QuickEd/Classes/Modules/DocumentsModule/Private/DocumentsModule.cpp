@@ -955,6 +955,9 @@ void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& c
 
     QString path = currentData->GetPackageAbsolutePath();
 
+    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
+    systemsManager->Invalidate();
+
     RefPtr<PackageNode> package = CreatePackage(path);
     //if document was created successfully - delete previous data and create new one with new package.
     //this required because current program modules storing selection and another data as pointers to package children
@@ -968,9 +971,6 @@ void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& c
     {
         contextManager->DeleteContext(contextID);
     }
-
-    EditorSystemsManager* systemsManager = GetAccessor()->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
-    systemsManager->Invalidate();
 }
 
 void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids)

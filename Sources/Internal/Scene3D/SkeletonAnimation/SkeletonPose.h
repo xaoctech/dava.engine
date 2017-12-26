@@ -8,64 +8,86 @@ namespace DAVA
 class SkeletonPose
 {
 public:
-    SkeletonPose(uint32 nodeCount = 0);
+    SkeletonPose(uint32 jointCount = 0);
 
-    void SetNodeCount(uint32 count);
-    uint32 GetNodeCount() const;
+    void SetJointCount(uint32 jointCount);
+    uint32 GetJointsCount() const;
 
-    void AddNode(uint32 jointIndex, const JointTransform& transform);
+    void Reset();
 
-    void SetJointIndex(uint32 nodeIndex, uint32 jointIndex);
-    void SetTransform(uint32 nodeIndex, const JointTransform& transform);
+    void SetTransform(uint32 jointIndex, const JointTransform& transform);
 
-    uint32 GetJointIndex(uint32 nodeIndex) const;
-    const JointTransform& GetJointTransform(uint32 nodeIndex) const;
+    void SetPosition(uint32 jointIndex, const Vector3& position);
+    void SetOrientation(uint32 jointIndex, const Quaternion& orientation);
+    void SetScale(uint32 jointIndex, float32 scale);
 
-    void Add(const SkeletonPose& pose);
+    const JointTransform& GetJointTransform(uint32 jointIndex) const;
 
-    static SkeletonPose Blend(const SkeletonPose& p0, const SkeletonPose& p1, float32 ratio);
+    void Add(const SkeletonPose& other);
+    void Diff(const SkeletonPose& other);
+    void Override(const SkeletonPose& other);
+    void Lerp(const SkeletonPose& other, float32 factor);
 
 private:
-    Vector<std::pair<uint32, JointTransform>> nodes; // [jointIndex, jointTransform]
+    Vector<JointTransform> jointTransforms;
 };
 
-inline void SkeletonPose::SetNodeCount(uint32 count)
+inline void SkeletonPose::SetJointCount(uint32 jointCount)
 {
-    nodes.resize(count);
+    jointTransforms.resize(jointCount, JointTransform());
 }
 
-inline uint32 SkeletonPose::GetNodeCount() const
+inline uint32 SkeletonPose::GetJointsCount() const
 {
-    return uint32(nodes.size());
+    return uint32(jointTransforms.size());
 }
 
-inline void SkeletonPose::SetJointIndex(uint32 nodeIndex, uint32 jointIndex)
+inline void SkeletonPose::Reset()
 {
-    DVASSERT(nodeIndex < GetNodeCount());
-    nodes[nodeIndex].first = jointIndex;
+    for (JointTransform& t : jointTransforms)
+        t.Reset();
 }
 
-inline void SkeletonPose::AddNode(uint32 jointIndex, const JointTransform& transform)
+inline void SkeletonPose::SetTransform(uint32 jointIndex, const JointTransform& transform)
 {
-    nodes.emplace_back(std::make_pair(jointIndex, transform));
+    if (GetJointsCount() <= jointIndex)
+        SetJointCount(jointIndex + 1);
+
+    jointTransforms[jointIndex] = transform;
 }
 
-inline void SkeletonPose::SetTransform(uint32 nodeIndex, const JointTransform& transform)
+inline void SkeletonPose::SetPosition(uint32 jointIndex, const Vector3& position)
 {
-    DVASSERT(nodeIndex < GetNodeCount());
-    nodes[nodeIndex].second = transform;
+    if (GetJointsCount() <= jointIndex)
+        SetJointCount(jointIndex + 1);
+
+    jointTransforms[jointIndex].SetPosition(position);
 }
 
-inline uint32 SkeletonPose::GetJointIndex(uint32 nodeIndex) const
+inline void SkeletonPose::SetOrientation(uint32 jointIndex, const Quaternion& orientation)
 {
-    DVASSERT(nodeIndex < GetNodeCount());
-    return nodes[nodeIndex].first;
+    if (GetJointsCount() <= jointIndex)
+        SetJointCount(jointIndex + 1);
+
+    jointTransforms[jointIndex].SetOrientation(orientation);
 }
 
-inline const JointTransform& SkeletonPose::GetJointTransform(uint32 nodeIndex) const
+inline void SkeletonPose::SetScale(uint32 jointIndex, float32 scale)
 {
-    DVASSERT(nodeIndex < GetNodeCount());
-    return nodes[nodeIndex].second;
+    if (GetJointsCount() <= jointIndex)
+        SetJointCount(jointIndex + 1);
+
+    jointTransforms[jointIndex].SetScale(scale);
+}
+
+inline const JointTransform& SkeletonPose::GetJointTransform(uint32 jointIndex) const
+{
+    static JointTransform emptyTransform;
+
+    if (jointIndex < GetJointsCount())
+        return jointTransforms[jointIndex];
+    else
+        return emptyTransform;
 }
 
 } //ns

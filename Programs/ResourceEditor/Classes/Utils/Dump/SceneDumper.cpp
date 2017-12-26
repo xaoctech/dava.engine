@@ -312,8 +312,7 @@ void SceneDumper::DumpEmitter(DAVA::ParticleEmitterInstance* instance, DAVA::Set
 
         if (layer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
         {
-            ScopedPtr<ParticleEmitterInstance> instance(new ParticleEmitterInstance(nullptr, layer->innerEmitter, true));
-            DumpEmitter(instance, links, gfxFolders);
+            DumpEmitter(layer->innerEmitter, links, gfxFolders);
         }
         else
         {
@@ -372,12 +371,8 @@ void SceneDumper::DumpAnimations(DAVA::MotionComponent* motionComponent, DAVA::S
 {
     if (motionComponent != nullptr)
     {
-        const DAVA::MotionComponent::SimpleMotion* motion = motionComponent->GetSimpleMotion();
-        if (motion)
-        {
-            const DAVA::FilePath& animationPath = motion->GetAnimationPath();
-            if (!animationPath.IsEmpty())
-                links.insert(animationPath.GetAbsolutePathname());
-        }
+        DAVA::Vector<DAVA::FilePath> dependencies = motionComponent->GetDependencies();
+        for (const DAVA::FilePath& fp : dependencies)
+            links.insert(fp.GetAbsolutePathname());
     }
 }

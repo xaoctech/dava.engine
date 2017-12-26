@@ -24,16 +24,12 @@ enum eArea
 //as an example dragging control with pressed space bar button will perform drag screen and transform at the same time
 enum class eDragState
 {
-    //invalid state to request new state from baseEditorSystem
     NoDrag,
-    //if cursor is under control and it selectable
-    SelectByRect,
-    //if cursor under selected control, pressed left mouse button and starts dragging
     Transform,
-    //all user input used only to drag canvas inside render widget
+    SelectByRect,
     DragScreen,
-    //if mouse clicked, new control will be added
-    AddingControl
+    AddingControl,
+    DuplicateByAlt
 };
 
 enum class eDisplayState
@@ -51,12 +47,15 @@ enum class eSystems
 {
     //this system creates new controls above
     CREATING_CONTROLS,
+    DUPLICATE_BY_ALT,
     //this system place root controls on the screen
     CONTROLS_VIEW,
     //this system move root control to it position. Controls positions are used by other systems, so this system must be updated before them
     CANVAS,
     //this system must be drawn in background of all other systems
     PIXEL_GRID,
+
+    DISPLAY_FRAME,
     //this system creates HUD around controls and must be updated before HUD users
     HUD,
     //this system draw distance lines between controls

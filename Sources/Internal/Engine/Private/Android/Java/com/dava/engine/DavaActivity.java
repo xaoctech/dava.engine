@@ -20,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -281,7 +282,8 @@ public final class DavaActivity extends Activity
         uiThreadId = android.os.Process.myTid();
         
         Application app = getApplication();
-        externalFilesDir = app.getExternalFilesDir(null).getAbsolutePath() + "/";
+        File externalFiles = app.getExternalFilesDir(null); // Could be null due to unmounted external storage
+        externalFilesDir = externalFiles != null? (externalFiles.getAbsolutePath() + "/") : "";
         internalFilesDir = app.getFilesDir().getAbsolutePath() + "/";
         sourceDir = app.getApplicationInfo().publicSourceDir;
         packageName = app.getApplicationInfo().packageName;

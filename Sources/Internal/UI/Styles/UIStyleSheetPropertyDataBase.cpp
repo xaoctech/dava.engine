@@ -10,6 +10,7 @@
 #include "UI/Layouts/UIIgnoreLayoutComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Layouts/UIAnchorComponent.h"
+#include "UI/Layouts/UIAnchorSafeAreaComponent.h"
 #include "UI/Sound/UISoundComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "Reflection/ReflectedTypeDB.h"
@@ -28,6 +29,7 @@ UIStyleSheetPropertyDataBase::UIStyleSheetPropertyDataBase()
     , ignoreLayoutGroup("ignoreLayout", Type::Instance<UIIgnoreLayoutComponent>(), ReflectedTypeDB::Get<UIIgnoreLayoutComponent>())
     , sizePolicyGroup("sizePolicy", Type::Instance<UISizePolicyComponent>(), ReflectedTypeDB::Get<UISizePolicyComponent>())
     , anchorGroup("anchor", Type::Instance<UIAnchorComponent>(), ReflectedTypeDB::Get<UIAnchorComponent>())
+    , anchorSafeAreaGroup("anchorSafeArea", Type::Instance<UIAnchorSafeAreaComponent>(), ReflectedTypeDB::Get<UIAnchorSafeAreaComponent>())
     , soundGroup("sound", Type::Instance<UISoundComponent>(), ReflectedTypeDB::Get<UISoundComponent>())
     , properties({ { UIStyleSheetPropertyDescriptor(&controlGroup, "angle", 0.0f),
                      UIStyleSheetPropertyDescriptor(&controlGroup, "scale", Vector2(1.0f, 1.0f)),
@@ -57,6 +59,7 @@ UIStyleSheetPropertyDataBase::UIStyleSheetPropertyDataBase()
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "shadowOffset", Vector2(0.0f, 0.0f)),
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "shadowColor", Color::White),
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "align", ALIGN_HCENTER | ALIGN_VCENTER),
+                     UIStyleSheetPropertyDescriptor(&staticTextGroup, "multiline", UITextComponent::MULTILINE_DISABLED),
 
                      UIStyleSheetPropertyDescriptor(&particleEffectGroup, "effectPath", FilePath()),
                      UIStyleSheetPropertyDescriptor(&particleEffectGroup, "autoStart", false),
@@ -108,6 +111,15 @@ UIStyleSheetPropertyDataBase::UIStyleSheetPropertyDataBase()
                      UIStyleSheetPropertyDescriptor(&anchorGroup, "hCenterAnchor", 0.0f),
                      UIStyleSheetPropertyDescriptor(&anchorGroup, "vCenterAnchorEnabled", false),
                      UIStyleSheetPropertyDescriptor(&anchorGroup, "vCenterAnchor", 0.0f),
+
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "leftSafeInset", UIAnchorSafeAreaComponent::eInsetType::NONE),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "leftInsetCorrection", 0.0f),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "topSafeInset", UIAnchorSafeAreaComponent::eInsetType::NONE),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "topInsetCorrection", 0.0f),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "rightSafeInset", UIAnchorSafeAreaComponent::eInsetType::NONE),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "rightInsetCorrection", 0.0f),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "bottomSafeInset", UIAnchorSafeAreaComponent::eInsetType::NONE),
+                     UIStyleSheetPropertyDescriptor(&anchorSafeAreaGroup, "bottomInsetCorrection", 0.0f),
 
                      UIStyleSheetPropertyDescriptor(&soundGroup, "touchDown", FastName()),
                      UIStyleSheetPropertyDescriptor(&soundGroup, "touchUpInside", FastName()),
