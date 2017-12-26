@@ -60,5 +60,4 @@ void ScreenPositionComponent::SetScreenPositionAndDepth(const Vector3& v)
 {
     screenPositionAndDepth = v;
 }
-
 }

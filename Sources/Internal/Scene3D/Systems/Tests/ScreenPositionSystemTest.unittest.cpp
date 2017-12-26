@@ -24,7 +24,7 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
     DECLARE_COVERED_FILES("ScreenPositionComponent.cpp")
     DECLARE_COVERED_FILES("ScreenPositionSystem.cpp")
     END_FILES_COVERED_BY_TESTS();
-    
+
     DAVA::RefPtr<DAVA::Scene> scene;
     DAVA::RefPtr<DAVA::Entity> e1;
     DAVA::RefPtr<DAVA::Entity> e2;
@@ -51,13 +51,13 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
     {
         using namespace DAVA;
         scene = new Scene();
-        
+
         ScreenPositionSystem* sps = scene->GetSystem<ScreenPositionSystem>();
-        if(sps)
+        if (sps)
         {
             sps->SetViewport(Rect(0, 0, 500, 500));
         }
-        
+
         e1 = CreateEntity(ENTITY_ONE, Vector3(0.f, 0.f, 0.f));
         scene->AddNode(e1.Get());
         e2 = CreateEntity(ENTITY_TWO, Vector3(1.f, 1.f, 1.f));
@@ -80,7 +80,7 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
     {
         e1 = nullptr;
         e2 = nullptr;
-        scene = nullptr;        
+        scene = nullptr;
     }
 
     DAVA_TEST (WithoutEntities)
@@ -93,8 +93,9 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
     DAVA_TEST (PositionAndDepthTest)
     {
         using namespace DAVA;
-        
-        const struct {
+
+        const struct
+        {
             RefPtr<Entity> e;
             Vector3 data;
             float32 eps;
@@ -104,8 +105,8 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
         };
 
         scene->Update(0.f);
-        
-        for(const auto& test : testData)
+
+        for (const auto& test : testData)
         {
             ScreenPositionComponent* spc = static_cast<ScreenPositionComponent*>(test.e->GetComponent(Component::SCREEN_POSITION_COMPONENT));
             TEST_VERIFY(spc != nullptr);
@@ -115,26 +116,27 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
             TEST_VERIFY(FLOAT_EQUAL_EPS(posAndDepth.z, test.data.z, test.eps));
         }
     }
-    
+
     DAVA_TEST (CameraParamsTest)
     {
         using namespace DAVA;
-        
-        const struct {
+
+        const struct
+        {
             Vector3 position;
             Vector3 direction;
             Rect viewport;
             float32 eps;
-        } test {
+        } test{
             { 0.f, -2.f, 0.f },
             { 0.f, 1.f, 0.f },
             { 0.f, 0.f, 500.f, 500.f },
             EPSILON
         };
-        
+
         scene->Update(0.f);
-        
-        for(const auto& e : { e1, e2 })
+
+        for (const auto& e : { e1, e2 })
         {
             ScreenPositionComponent* spc = static_cast<ScreenPositionComponent*>(e->GetComponent(Component::SCREEN_POSITION_COMPONENT));
             TEST_VERIFY(spc != nullptr);
@@ -161,10 +163,10 @@ DAVA_TESTCLASS (ScreenPositionSystemTest)
         ScreenPositionSystem* sys = scene->GetSystem<ScreenPositionSystem>();
         sys->SetViewport(Rect());
         TEST_VERIFY(sys->GetViewport() == Rect());
-        
+
         scene->Update(0.f);
-        
-        for(const auto& e : { e1, e2 })
+
+        for (const auto& e : { e1, e2 })
         {
             ScreenPositionComponent* spc = static_cast<ScreenPositionComponent*>(e->GetComponent(Component::SCREEN_POSITION_COMPONENT));
             TEST_VERIFY(spc != nullptr);

@@ -9,7 +9,6 @@
 
 namespace DAVA
 {
-
 /** Component which contains data of Camera and screen position of Entity. */
 class ScreenPositionComponent : public Component
 {
@@ -88,5 +87,4 @@ inline const Vector3& ScreenPositionComponent::GetScreenPositionAndDepth() const
 {
     return screenPositionAndDepth;
 }
-
 }

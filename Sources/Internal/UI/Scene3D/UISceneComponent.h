@@ -4,7 +4,6 @@
 
 namespace DAVA
 {
-
 /** Component for mark UIControl what it has Scene (like UI3DView). */
 class UISceneComponent final : public UIComponent
 {

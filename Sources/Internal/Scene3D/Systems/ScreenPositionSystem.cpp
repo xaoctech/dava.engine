@@ -51,7 +51,7 @@ void ScreenPositionSystem::Process(float32 timeElapsed)
         cameraDirection = camera->GetDirection();
         cameraViewProjMatrix = camera->GetViewProjMatrix();
     }
-    
+
     for (ScreenPositionComponent* component : components)
     {
         Vector3 worldPosition = component->GetEntity()->GetWorldTransform().GetTranslationVector();

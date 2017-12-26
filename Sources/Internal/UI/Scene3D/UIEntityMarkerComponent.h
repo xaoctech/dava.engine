@@ -165,11 +165,10 @@ inline UIEntityMarkerComponent::OrderMode UIEntityMarkerComponent::GetOrderMode(
 inline bool UIEntityMarkerComponent::IsUseCustomStrategy() const
 {
     return useCustomStrategy;
-}   
+}
 
 inline const UIEntityMarkerComponent::CustomStrategy& UIEntityMarkerComponent::GetCustomStrategy() const
 {
     return customStrategy;
 }
-
 }
