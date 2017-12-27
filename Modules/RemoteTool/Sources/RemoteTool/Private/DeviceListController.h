@@ -115,7 +115,6 @@ private:
     DAVA::uint32 closingPreviousDiscoverIterations = 0;
     DAVA::Net::NetCore::DiscoverStartResult previousStartResult = DAVA::Net::NetCore::DISCOVER_STARTED;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
     DAVA::TArc::UI* ui = nullptr;
 
 private:

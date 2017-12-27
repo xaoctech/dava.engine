@@ -1010,7 +1010,7 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
         return;
     }
 
-    auto updatePose = [this](Entity* e, PhysicsComponent* component)
+    auto updatePose = [](Entity* e, PhysicsComponent* component)
     {
         if (component != nullptr)
         {

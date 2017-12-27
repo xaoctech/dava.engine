@@ -1,11 +1,10 @@
 #include "TArc/Testing/TArcUnitTests.h"
 
 #include "TArc/Core/FieldBinder.h"
+#include "TArc/Testing/GMockInclude.h"
 
 #include "Base/BaseTypes.h"
 #include "Reflection/ReflectedType.h"
-
-#include <gmock/gmock.h>
 
 using namespace ::testing;
 

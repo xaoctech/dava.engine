@@ -531,8 +531,8 @@ void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const Uno
         scene->renderSystem->MarkForUpdate(roIter->second);
     }
 
-    const size_t childrenCount = root->GetChildrenCount();
-    for (int i = 0; i < childrenCount; ++i)
+    const int32 childrenCount = root->GetChildrenCount();
+    for (int32 i = 0; i < childrenCount; ++i)
     {
         Entity* child = root->GetChild(i);
         DVASSERT(child != nullptr);

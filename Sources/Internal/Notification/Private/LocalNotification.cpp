@@ -18,10 +18,10 @@ LocalNotification::~LocalNotification()
 void LocalNotification::SetAction(const Message& msg)
 {
     action = msg;
-    impl->SetAction(L"");
+    impl->SetAction("");
 }
 
-void LocalNotification::SetTitle(const WideString& _title)
+void LocalNotification::SetTitle(const String& _title)
 {
     if (_title != title)
     {
@@ -30,7 +30,7 @@ void LocalNotification::SetTitle(const WideString& _title)
     }
 }
 
-void LocalNotification::SetText(const WideString& _text)
+void LocalNotification::SetText(const String& _text)
 {
     if (_text != text)
     {

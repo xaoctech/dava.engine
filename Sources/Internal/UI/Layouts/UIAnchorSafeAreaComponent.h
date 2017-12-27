@@ -48,6 +48,18 @@ public:
     eInsetType GetBottomInset() const;
     void SetBottomInset(eInsetType inset);
 
+    float32 GetLeftInsetCorrection() const;
+    void SetLeftInsetCorrection(float32 correction);
+
+    float32 GetTopInsetCorrection() const;
+    void SetTopInsetCorrection(float32 correction);
+
+    float32 GetRightInsetCorrection() const;
+    void SetRightInsetCorrection(float32 correction);
+
+    float32 GetBottomInsetCorrection() const;
+    void SetBottomInsetCorrection(float32 correction);
+
 private:
     virtual ~UIAnchorSafeAreaComponent();
     void MarkDirty();
@@ -56,5 +68,10 @@ private:
     eInsetType topInset = eInsetType::NONE;
     eInsetType rightInset = eInsetType::NONE;
     eInsetType bottomInset = eInsetType::NONE;
+
+    float32 leftInsetCorrection = 0.0f;
+    float32 topInsetCorrection = 0.0f;
+    float32 rightInsetCorrection = 0.0f;
+    float32 bottomInsetCorrection = 0.0f;
 };
 }

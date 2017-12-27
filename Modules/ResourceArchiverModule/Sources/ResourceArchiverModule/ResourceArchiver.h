@@ -13,6 +13,7 @@ struct Params
     FilePath archivePath;
     FilePath baseDirPath;
     FilePath metaDbPath;
+    bool dummyFileData = false;
 };
 
 bool CreateArchive(const Params& params);
