@@ -25,9 +25,9 @@
 namespace DAVA
 {
 XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*= false*/, bool debugDraw /*= false*/)
-    : link(link_)
-    , isEditorMode(editorMode)
+    : isEditorMode(editorMode)
     , isDebugDraw(debugDraw)
+    , link(link_)
 {
     DVASSERT(link);
     defaultClasses = link->component->GetBaseClasses();

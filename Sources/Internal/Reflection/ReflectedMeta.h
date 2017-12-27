@@ -78,6 +78,8 @@ using DeveloperModeOnly = Meta<Metas::DeveloperModeOnly>;
     Name of property that should be shown for user instead of field name
 */
 using DisplayName = Meta<Metas::DisplayName>;
+/** Hint that property can be edited as slider */
+using Slider = Meta<Metas::Slider>;
 /**
     \ingroup metas
     Add hint that indicates valid range of value

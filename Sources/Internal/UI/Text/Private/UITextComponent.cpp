@@ -59,8 +59,8 @@ UITextComponent::UITextComponent(const UITextComponent& src)
     , perPixelAccuracyType(src.perPixelAccuracyType)
     , useRtlAlign(src.useRtlAlign)
     , forceBiDiSupport(src.forceBiDiSupport)
-    , font(src.font)
     , requestedTextRectSize(src.requestedTextRectSize)
+    , font(src.font)
     , modified(true)
 {
 }

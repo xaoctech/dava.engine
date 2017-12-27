@@ -68,6 +68,7 @@ object dava_framework_Launcher_LauncherWin : BuildType({
     }
 
     failureConditions {
+        executionTimeoutMin = 15
         errorMessage = true
     }
 

@@ -11,17 +11,17 @@
 #include "Input/InputSystem.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-#include "Input/Private/Android/GamepadImplAndroid.h"
+#include "Input/Private/Android/GamepadImpl.Android.h"
 #elif defined(__DAVAENGINE_WIN_UAP__)
-#include "Input/Private/Win10/GamepadImplWin10.h"
+#include "Input/Private/Win10/GamepadImpl.Win10.h"
 #elif defined(__DAVAENGINE_WIN32__)
-#include "Input/Private/Win32/GamepadImplWin32.h"
+#include "Input/Private/Win32/GamepadImpl.Win32.h"
 #elif defined(__DAVAENGINE_MACOS__)
-#include "Input/Private/Mac/GamepadImplMac.h"
+#include "Input/Private/Mac/GamepadImpl.Macos.h"
 #elif defined(__DAVAENGINE_IPHONE__)
-#include "Input/Private/Ios/GamepadImplIos.h"
+#include "Input/Private/Ios/GamepadImpl.Ios.h"
 #elif defined(__DAVAENGINE_LINUX__)
-#include "Input/Private/Linux/GamepadImplLinux.h"
+#include "Input/Private/Linux/GamepadImpl.Linux.h"
 #else
 #error "GamepadDevice: unknown platform"
 #endif

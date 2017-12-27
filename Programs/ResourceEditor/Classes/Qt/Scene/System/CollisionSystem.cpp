@@ -437,8 +437,15 @@ void SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3& from, const DAVA:
         }
     }
 
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
     for (const auto& node : sortedHits)
     {
+        if (node.first < debugBoxScale)
+        {
+            continue;
+        }
+
         DAVA::Any objPtr(node.second->userData);
         auto iter = objToPhysx.find(objPtr);
         DVASSERT(iter != objToPhysx.end());
@@ -579,7 +586,11 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) cons
             auto entity = wrapper.AsEntity();
             for (DAVA::int32 i = 0, e = entity->GetChildrenCount(); i < e; ++i)
             {
-                aabox.AddAABBox(GetBoundingBox(entity->GetChild(i)));
+                DAVA::Entity* childEntity = entity->GetChild(i);
+                DAVA::AABBox3 entityBox = GetBoundingBox(childEntity);
+                DAVA::AABBox3 entityTransformedBox;
+                entityBox.GetTransformedBox(childEntity->GetLocalTransform(), entityTransformedBox);
+                aabox.AddAABBox(entityTransformedBox);
             }
         }
     }
@@ -589,7 +600,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) cons
 
 void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -741,8 +752,10 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
             const DAVA::FastName HEIGHTMAP_SIZE("size");
             const SetFieldValueCommand* cmd = static_cast<const SetFieldValueCommand*>(command);
             const DAVA::Reflection::Field& field = cmd->GetField();
+            DAVA::ReflectedObject obj = field.ref.GetDirectObject();
+            bool isLandscape = obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::Landscape>();
             DAVA::FastName fieldKey = field.key.Cast<DAVA::FastName>(DAVA::FastName(""));
-            if (fieldKey == HEIGHTMAP_PATH || fieldKey == HEIGHTMAP_SIZE)
+            if (isLandscape == true && (fieldKey == HEIGHTMAP_PATH || fieldKey == HEIGHTMAP_SIZE))
             {
                 UpdateCollisionObject(Selectable(curLandscapeEntity), true);
             }
@@ -784,7 +797,7 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
 
 void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint32 event)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -808,7 +821,7 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (entity == GetScene())
@@ -840,7 +853,7 @@ void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 
 void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (curLandscapeEntity == entity)

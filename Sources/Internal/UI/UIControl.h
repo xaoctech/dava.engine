@@ -436,10 +436,11 @@ public:
     */
     template <class T>
     inline void SortChildren(const T& predicate);
+
     /*
-     \brief Sets the conrtol name.
+     \brief Sets the control name.
         Later you can find control by this name.
-     \param[in] _name new control name.
+     \param[in] name_ new control name.
      */
     void SetName(const String& name_);
     void SetName(const FastName& name_);

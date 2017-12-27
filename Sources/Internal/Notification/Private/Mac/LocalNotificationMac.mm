@@ -34,7 +34,7 @@ LocalNotificationMac::~LocalNotificationMac()
     }
 }
 
-void LocalNotificationMac::SetAction(const WideString& _action)
+void LocalNotificationMac::SetAction(const String& _action)
 {
 }
 
@@ -59,7 +59,7 @@ void LocalNotificationMac::Hide()
     }
 }
 
-void LocalNotificationMac::ShowText(const WideString& title, const WideString& text, bool useSound)
+void LocalNotificationMac::ShowText(const String& title, const String& text, bool useSound)
 {
     if (NULL == notification)
     {
@@ -77,25 +77,25 @@ void LocalNotificationMac::ShowText(const WideString& title, const WideString& t
         notification->impl.soundName = NSUserNotificationDefaultSoundName;
     }
 
-    notification->impl.title = NSStringFromWideString(title);
-    notification->impl.informativeText = NSStringFromWideString(text);
+    notification->impl.title = NSStringFromString(title);
+    notification->impl.informativeText = NSStringFromString(text);
 
     [NSUserNotificationCenter.defaultUserNotificationCenter deliverNotification:notification->impl];
 }
 
-void LocalNotificationMac::ShowProgress(const WideString& title, const WideString& text, uint32 total, uint32 progress, bool useSound)
+void LocalNotificationMac::ShowProgress(const String& title, const String& text, uint32 total, uint32 progress, bool useSound)
 {
     double percentage = (static_cast<double>(progress) / total) * 100.0;
-    WideString titleText = title + Format(L" %.02f%%", percentage);
+    String titleText = title + Format(" %.02f%%", percentage);
 
     ShowText(titleText, text, useSound);
 }
 
-void LocalNotificationMac::PostDelayedNotification(const WideString& title, const WideString& text, int delaySeconds, bool useSound)
+void LocalNotificationMac::PostDelayedNotification(const String& title, const String& text, int delaySeconds, bool useSound)
 {
     NSUserNotification* notification = [[[NSUserNotification alloc] init] autorelease];
-    notification.informativeText = NSStringFromWideString(text);
-    notification.title = NSStringFromWideString(title);
+    notification.informativeText = NSStringFromString(text);
+    notification.title = NSStringFromString(title);
     notification.deliveryTimeZone = [NSTimeZone defaultTimeZone];
     notification.deliveryDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
 
