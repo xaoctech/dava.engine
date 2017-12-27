@@ -158,7 +158,7 @@ const SkinnedMesh::JointTargetsData& SkinnedMesh::GetJointTargetsData(RenderBatc
         return jointTargetsData[dataIndex].second;
     }
 
-    static const JointTargetsData emptyJointTargetsData;
+    static const JointTargetsData emptyJointTargetsData = JointTargetsData();
     return emptyJointTargetsData;
 }
 }

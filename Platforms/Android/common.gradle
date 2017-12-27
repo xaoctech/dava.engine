@@ -4,12 +4,12 @@
  */
 if (project.plugins.hasPlugin('com.android.library') || project.plugins.hasPlugin('com.android.application')) {
     android {
-        compileSdkVersion 25
-        buildToolsVersion '25.0.0'
+        compileSdkVersion 26
+        buildToolsVersion '26.0.3'
 
         defaultConfig {
             minSdkVersion 16
-            targetSdkVersion 25
+            targetSdkVersion 26
 
             externalNativeBuild {
                 cmake {
