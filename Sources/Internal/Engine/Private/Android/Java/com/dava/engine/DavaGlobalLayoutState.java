@@ -82,6 +82,14 @@ public class DavaGlobalLayoutState extends DavaActivity.ActivityListenerImpl imp
     }
 
     @Override
+    public void onPause()
+    {
+        // On some devices onPause was called earlier than focus lost that produced some graphical
+        // defects while displaying other overlay windows (Facebook, G+ Login, etc.)
+        releaseOverlayWindow();
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         if (hasWindowFocus)
         {
