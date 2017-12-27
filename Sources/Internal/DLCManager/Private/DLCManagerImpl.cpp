@@ -1629,6 +1629,7 @@ void DLCManagerImpl::ResetQueue()
 
         for (PackRequest* r : requests)
         {
+            RemoveRequest(r);
             delete r;
         }
     }
