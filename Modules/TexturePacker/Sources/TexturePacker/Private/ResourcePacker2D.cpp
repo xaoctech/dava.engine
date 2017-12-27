@@ -20,7 +20,7 @@
 
 namespace DAVA
 {
-const String ResourcePacker2D::VERSION = "0.0.6";
+const String ResourcePacker2D::VERSION = "0.0.7";
 const String ResourcePacker2D::INTERNAL_LIBPSD_VERSION = "0.0.1";
 
 namespace ResourcePacker2DDetails
