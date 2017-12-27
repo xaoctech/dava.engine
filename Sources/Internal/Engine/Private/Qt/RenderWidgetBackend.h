@@ -25,7 +25,7 @@ public:
     virtual void ReleaseContext() = 0;
 
     void SetClientDelegate(IClientDelegate* clientDelegate);
-	void SetFrameBlocked(bool isBlocked);
+    void SetFrameBlocked(bool isBlocked);
 
     Signal<uint32, uint32> resized;
 
@@ -42,7 +42,7 @@ protected:
     IClientDelegate* clientDelegate = nullptr;
 
     bool isClosing = false;
-	bool isFrameBlocked = false;
+    bool isFrameBlocked = false;
 };
 
 template <typename TBase>

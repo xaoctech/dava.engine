@@ -44,7 +44,8 @@ add_tool_single     ( UWPRunner         PLATFORMS WIN
 ############ PACKAGE TOOLS
 
 add_tool_package     ( TestBed          PLATFORMS IGNORE_LINUX  
-                                        CHECK_DEPENDS_FOLDERS )
+                                        CHECK_DEPENDS_FOLDERS
+                                        DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )
 
 add_tool_package     ( SceneViewer      PLATFORMS IGNORE_LINUX  
                                         DEPLOY_DEFINE "-DDAVA_MACOS_DATA_PATH=\"/../Data/\"" )

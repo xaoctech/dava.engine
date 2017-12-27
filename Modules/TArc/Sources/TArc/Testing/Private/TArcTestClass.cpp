@@ -91,10 +91,10 @@ TestClass::~TestClass()
                        {
                            RenderWidget* widget = PlatformApi::Qt::GetRenderWidget();
                            DVASSERT(widget != nullptr);
-						   widget->SetFrameBlocked(true);
+                           widget->SetFrameBlocked(true);
                            widget->setParent(nullptr); // remove it from Qt hierarchy to avoid Widget deletion.
                            widget->show();
-						   widget->SetFrameBlocked(false);
+                           widget->SetFrameBlocked(false);
 
                            c->OnLoopStopped();
                            delete c;

@@ -46,7 +46,7 @@ String disableTheseTestClasses = "ScriptTest;AtomicTest";
 // TODO: linux
 // Linux unittests are running in console mode so disable tests dependent on GUI facilities (windows, input, etc)
 String disableTheseTestClasses =
-"ActionSystemTest "
+"ActionSystemTest;AtomicTest"
 ;
 #endif
 

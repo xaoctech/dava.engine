@@ -47,7 +47,7 @@ void RenderWidgetBackend::SetClientDelegate(IClientDelegate* clientDelegate_)
 
 void RenderWidgetBackend::SetFrameBlocked(bool isBlocked)
 {
-	isFrameBlocked = isBlocked;
+    isFrameBlocked = isBlocked;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,10 +82,10 @@ void RenderWidgetBackendImpl<TBase>::OnCreated()
 template <typename TBase>
 void RenderWidgetBackendImpl<TBase>::OnFrame()
 {
-	if (isFrameBlocked == true)
-	{
-		return;
-	}
+    if (isFrameBlocked == true)
+    {
+        return;
+    }
 
     if (screenParams.screenScale != this->devicePixelRatio())
     {

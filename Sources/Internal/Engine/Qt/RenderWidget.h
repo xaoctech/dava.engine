@@ -26,7 +26,7 @@ class RenderWidget final : public QWidget
     Q_OBJECT
 public:
     void SetClientDelegate(IClientDelegate* delegate);
-	void SetFrameBlocked(bool isBlocked);
+    void SetFrameBlocked(bool isBlocked);
     Signal<uint32, uint32> resized;
 
 private:

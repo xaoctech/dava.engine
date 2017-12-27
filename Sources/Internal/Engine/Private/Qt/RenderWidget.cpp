@@ -66,7 +66,7 @@ void RenderWidget::SetClientDelegate(IClientDelegate* delegate)
 
 void RenderWidget::SetFrameBlocked(bool isBlocked)
 {
-	renderWidgetBackend->SetFrameBlocked(isBlocked);
+    renderWidgetBackend->SetFrameBlocked(isBlocked);
 }
 
 void RenderWidget::actionEvent(QActionEvent* event)
