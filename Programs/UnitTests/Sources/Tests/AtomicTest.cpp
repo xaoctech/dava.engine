@@ -1,6 +1,7 @@
 #include "DAVAEngine.h"
 
 #include "UnitTests/UnitTests.h"
+#include "Platform/DeviceInfo.h"
 
 #include <thread>
 
@@ -97,7 +98,7 @@ DAVA_TESTCLASS (AtomicTest)
     DAVA_TEST (MultiThreadedEnvironmentTest)
     {
         const unsigned threadCount = std::thread::hardware_concurrency();
-        const unsigned cycles = 1000000;
+        const unsigned cycles = DAVA::DeviceInfo::GetPlatform() == DAVA::DeviceInfo::PLATFORM_ANDROID ? 10000 : 1000000;
         const unsigned targetNumber = cycles * threadCount;
         Atomic<unsigned> resultNumber{ 0U };
 
