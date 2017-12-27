@@ -34,7 +34,7 @@ private:
     void SetupControl();
     void UpdateControl(const ControlDescriptor& changedfields) override;
     void CreateItems(const Reflection& fieldValue, const Reflection& fieldEnumerator, Qt::Orientation orientation);
-    void CreateItem(const String& value, const QVariant& data, Qt::Orientation orientation);
+    void CreateItem(const String& value, const QVariant& data, Qt::Orientation orientation, int32 index);
     int SelectCurrentItem(const Reflection& fieldValue, const Reflection& fieldEnumerator);
     void OnButtonToggled(QAbstractButton* button);
 
