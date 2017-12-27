@@ -186,7 +186,7 @@ void REApplication::Cleanup()
 
 bool REApplication::AllowMultipleInstances() const
 {
-    bool isSelfTest = !cmdLine.empty() && cmdLine[1] == "--selftest";
+    bool isSelfTest = (cmdLine.size() > 1) && (cmdLine[1] == "--selftest");
     return isSelfTest || isConsoleMode;
 }
 

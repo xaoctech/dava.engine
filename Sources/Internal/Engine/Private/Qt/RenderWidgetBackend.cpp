@@ -4,6 +4,7 @@
 
 #include "Debug/DVAssert.h"
 #include "Engine/PlatformApiQt.h"
+#include "Logger/Logger.h"
 
 #include <QQuickWidget>
 #include <QWidget>
@@ -44,6 +45,11 @@ void RenderWidgetBackend::SetClientDelegate(IClientDelegate* clientDelegate_)
     clientDelegate = clientDelegate_;
 }
 
+void RenderWidgetBackend::SetFrameBlocked(bool isBlocked)
+{
+	isFrameBlocked = isBlocked;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename TBase>
@@ -76,6 +82,11 @@ void RenderWidgetBackendImpl<TBase>::OnCreated()
 template <typename TBase>
 void RenderWidgetBackendImpl<TBase>::OnFrame()
 {
+	if (isFrameBlocked == true)
+	{
+		return;
+	}
+
     if (screenParams.screenScale != this->devicePixelRatio())
     {
         screenParams.screenScale = this->devicePixelRatio();
