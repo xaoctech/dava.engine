@@ -437,8 +437,15 @@ void SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3& from, const DAVA:
         }
     }
 
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
     for (const auto& node : sortedHits)
     {
+        if (node.first < debugBoxScale)
+        {
+            continue;
+        }
+
         DAVA::Any objPtr(node.second->userData);
         auto iter = objToPhysx.find(objPtr);
         DVASSERT(iter != objToPhysx.end());
@@ -593,7 +600,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) cons
 
 void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -790,7 +797,7 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
 
 void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint32 event)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -814,7 +821,7 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (entity == GetScene())
@@ -846,7 +853,7 @@ void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 
 void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (curLandscapeEntity == entity)

@@ -72,8 +72,8 @@ void StaticTextTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
-    ScopedPtr<FTFont> bigFont(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> bigFont(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
     bigFont->SetSize(24.f);
 
     ScopedPtr<UIStaticText> label(new UIStaticText(Rect(20, 5, 400, 20)));
