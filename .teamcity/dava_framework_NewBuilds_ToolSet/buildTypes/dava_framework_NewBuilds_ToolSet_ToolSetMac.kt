@@ -69,6 +69,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
             scriptContent = """
                 ./ResourceEditor.app/Contents/MacOS/ResourceEditor --selftest
                 ./QuickEd.app/Contents/MacOS/QuickEd --selftest
+                ./ResourceArchiver --selftest
             """.trimIndent()
         }
         script {

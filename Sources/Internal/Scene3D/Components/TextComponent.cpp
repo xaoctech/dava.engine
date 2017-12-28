@@ -11,7 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TextComponent)
     .ConstructorByPointer()
     .Field("text", &TextComponent::GetText, &TextComponent::SetText)[M::DisplayName("Text")]
     .Field("color", &TextComponent::GetColor, &TextComponent::SetColor)[M::DisplayName("Text Color")]
-    .Field("size", &TextComponent::GetSize, &TextComponent::SetSize)[M::DisplayName("Text Size")]
+    .Field("size", &TextComponent::GetSize, &TextComponent::SetSize)[M::DisplayName("Text Size"), M::Range(1.0f, 500.0f, 0.5f), M::Slider()]
     .Field("visible", &TextComponent::IsVisible, &TextComponent::SetVisible)[M::DisplayName("Show Text")]
     .End();
 }

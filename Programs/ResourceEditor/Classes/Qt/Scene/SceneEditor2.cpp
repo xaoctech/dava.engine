@@ -313,6 +313,25 @@ void SceneEditor2::RemoveSystem(DAVA::SceneSystem* sceneSystem)
     Scene::RemoveSystem(sceneSystem);
 }
 
+bool SceneEditor2::AcquireInputLock(EditorSceneSystem* system)
+{
+    if (inputLockedByThis != nullptr && inputLockedByThis != system)
+    {
+        return false;
+    }
+
+    inputLockedByThis = system;
+    return true;
+}
+
+void SceneEditor2::ReleaseInputLock(EditorSceneSystem* system)
+{
+    if (inputLockedByThis == system)
+    {
+        inputLockedByThis = nullptr;
+    }
+}
+
 void SceneEditor2::ExtractEditorEntities()
 {
     DVASSERT(editorEntities.size() == 0);

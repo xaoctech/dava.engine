@@ -37,7 +37,7 @@ private:
     WideString text;
     Color color;
 
-    float32 size = 0;
+    float32 size = 1.0f;
 
     bool isVisible = true;
 

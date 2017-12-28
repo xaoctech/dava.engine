@@ -93,7 +93,7 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Type::Instance<StaticOcclusionComponent>()) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<StaticOcclusionDebugDrawComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {

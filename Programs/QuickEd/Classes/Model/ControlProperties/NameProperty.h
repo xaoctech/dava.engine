@@ -1,7 +1,6 @@
-#ifndef __QUICKED_NAME_PROPERTY_H__
-#define __QUICKED_NAME_PROPERTY_H__
+#pragma once
 
-#include "ValueProperty.h"
+#include "Classes/Model/ControlProperties/ValueProperty.h"
 
 class ControlNode;
 
@@ -9,9 +8,6 @@ class NameProperty : public ValueProperty
 {
 public:
     NameProperty(ControlNode* controlNode, const NameProperty* sourceProperty, eCloneType cloneType);
-
-protected:
-    virtual ~NameProperty();
 
 public:
     void Refresh(DAVA::int32 refreshFlags) override;
@@ -30,7 +26,6 @@ protected:
     void ApplyValue(const DAVA::Any& value) override;
 
 protected:
-    ControlNode* controlNode; // weak
+    ControlNode* controlNode = nullptr;
+    DAVA::Any value;
 };
-
-#endif // __QUICKED_NAME_PROPERTY_H__

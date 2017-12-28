@@ -10,7 +10,7 @@ namespace DAVA
 {
 namespace TArc
 {
-class Widget : private QWidget, public ControlProxy
+class Widget : protected QWidget, public ControlProxy
 {
 public:
     explicit Widget(QWidget* parent = nullptr);

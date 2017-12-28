@@ -251,13 +251,21 @@ void Scene::CreateSystems()
     if (SCENE_SYSTEM_STATIC_OCCLUSION_FLAG & systemsMask)
     {
         staticOcclusionSystem = new StaticOcclusionSystem(this);
-        AddSystem(staticOcclusionSystem, ComponentUtils::MakeMask<StaticOcclusionComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+        AddSystem(staticOcclusionSystem, ComponentUtils::MakeMask<StaticOcclusionDataComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
     if (SCENE_SYSTEM_ANIMATION_FLAG & systemsMask)
     {
         animationSystem = new AnimationSystem(this);
         AddSystem(animationSystem, ComponentUtils::MakeMask<AnimationComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
+    }
+
+    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
+    {
+        motionSingleComponent = new MotionSingleComponent();
+
+        motionSystem = new MotionSystem(this);
+        AddSystem(motionSystem, ComponentUtils::MakeMask<SkeletonComponent>() | ComponentUtils::MakeMask<MotionComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
@@ -276,14 +284,6 @@ void Scene::CreateSystems()
 #if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
     AddSystem(new PhysicsDebugDrawSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS);
 #endif
-
-    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
-    {
-        motionSystem = new MotionSystem(this);
-        AddSystem(motionSystem, ComponentUtils::MakeMask<SkeletonComponent>() | ComponentUtils::MakeMask<MotionComponent>(), SCENE_SYSTEM_REQUIRE_PROCESS);
-
-        motionSingleComponent = new MotionSingleComponent();
-    }
 
     if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
     {

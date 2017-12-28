@@ -254,8 +254,8 @@ VehicleComponent* GetVehicleComponentFromEntity(Entity* entity)
 } // namespace PhysicsVehicleSubsystemDetail
 
 PhysicsVehiclesSubsystem::PhysicsVehiclesSubsystem(Scene* scene, physx::PxScene* pxScene)
-    : pxScene(pxScene)
-    , scene(scene)
+    : scene(scene)
+    , pxScene(pxScene)
 {
     DVASSERT(pxScene != nullptr);
     DVASSERT(scene != nullptr);

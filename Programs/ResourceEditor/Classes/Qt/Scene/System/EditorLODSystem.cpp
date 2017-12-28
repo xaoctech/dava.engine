@@ -705,7 +705,7 @@ void EditorLODSystem::ProcessCommand(const RECommandNotificationObject& commandN
 
     if (commandNotification.MatchCommandID(CMDID_COMPONENT_REMOVE))
     {
-        auto processRemoveCommand = [this, InvalidateAllData](const RemoveComponentCommand* removeCommand)
+        auto processRemoveCommand = [InvalidateAllData](const RemoveComponentCommand* removeCommand)
         {
             if (removeCommand->GetComponent()->GetType()->Is<DAVA::RenderComponent>())
             {

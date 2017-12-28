@@ -1,8 +1,12 @@
 #include "TArc/Controls/LineEdit.h"
 #include "TArc/Controls/Private/TextValidator.h"
+#include "TArc/Utils/Utils.h"
 
 #include <Base/FastName.h>
 #include <Reflection/ReflectedMeta.h>
+
+#include <QBoxLayout>
+#include <QPushButton>
 
 namespace DAVA
 {
@@ -26,6 +30,12 @@ void LineEdit::SetupControl()
     connections.AddConnection(this, &QLineEdit::textChanged, MakeFunction(this, &LineEdit::TextChanged));
     TextValidator* validator = new TextValidator(this, this);
     setValidator(validator);
+
+    QHBoxLayout* l = new QHBoxLayout();
+    l->setContentsMargins(QMargins());
+    l->setSpacing(1);
+    l->addStretch();
+    setLayout(l);
 }
 
 void LineEdit::EditingFinished()
@@ -69,6 +79,12 @@ void LineEdit::UpdateControl(const ControlDescriptor& descriptor)
     if (descriptor.IsChanged(Fields::PlaceHolder))
     {
         setPlaceholderText(QString::fromStdString(GetFieldValue<String>(Fields::PlaceHolder, "")));
+    }
+
+    if (descriptor.IsChanged(Fields::Clearable))
+    {
+        bool needClearButton = GetFieldValue<bool>(Fields::Clearable, false);
+        setClearButtonEnabled(needClearButton);
     }
 }
 
@@ -115,14 +131,21 @@ void LineEdit::TextChanged(const QString& newText)
     RETURN_IF_MODEL_LOST(void());
     if (!isReadOnly())
     {
-        FastName immediateFieldName = GetFieldName(Fields::ImmediateText);
-        if (immediateFieldName.IsValid())
+        if (hasFocus() == true)
         {
-            AnyFn method = model.GetMethod(immediateFieldName.c_str());
-            if (method.IsValid())
+            FastName immediateFieldName = GetFieldName(Fields::ImmediateText);
+            if (immediateFieldName.IsValid())
             {
-                method.Invoke(newText.toStdString());
+                AnyFn method = model.GetMethod(immediateFieldName.c_str());
+                if (method.IsValid())
+                {
+                    method.Invoke(newText.toStdString());
+                }
             }
+        }
+        else
+        {
+            EditingFinished();
         }
     }
 }

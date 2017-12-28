@@ -42,7 +42,13 @@ void ObjectPlacementSystem::PlaceOnLandscape() const
         DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
         return;
     }
-    const SelectableGroup& selection = Selection::GetSelection();
+
+    SelectableGroup selection = Selection::GetSelection();
+
+    selection.RemoveIf([this](const Selectable& obj) {
+        return obj.AsEntity()->GetLocked();
+    });
+
     modificationSystem->PlaceOnLandscape(selection);
 }
 
@@ -69,7 +75,11 @@ void ObjectPlacementSystem::PlaceAndAlign() const
 {
     using namespace DAVA;
 
-    const SelectableGroup& entities = Selection::GetSelection();
+    SelectableGroup entities = Selection::GetSelection();
+
+    entities.RemoveIf([this](const Selectable& obj) {
+        return obj.AsEntity()->GetLocked();
+    });
 
     Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities);
     if (modifEntities.empty())

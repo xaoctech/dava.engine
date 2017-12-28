@@ -1,8 +1,5 @@
 package com.dava.engine.notification;
 
-import com.dava.engine.DavaActivity;
-import com.dava.engine.DavaLog;
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,7 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+
+import com.dava.engine.DavaActivity;
+import com.dava.engine.DavaLog;
 
 public class ScheduledNotificationReceiver extends BroadcastReceiver
 {
@@ -48,7 +49,15 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver
 		}
         tapIntent.putExtra("uid", uid);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, hash, tapIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+
+        NotificationCompat.Builder builder = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new NotificationCompat.Builder(context, DavaNotificationProvider.channelId);
+        }
+        else {
+            builder = new NotificationCompat.Builder(context);
+        }
+
         builder.setContentTitle(intent.getStringExtra("title"))
                .setContentText(intent.getStringExtra("text"))
                .setSmallIcon(intent.getIntExtra("icon", 0))

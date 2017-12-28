@@ -196,7 +196,7 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion()
 
 void StaticOcclusionBuildSystem::FinishBuildOcclusion()
 {
-    Component* prevComponent = occlusionEntities[activeIndex]->GetComponent(Type::Instance<StaticOcclusionComponent>());
+    Component* prevComponent = occlusionEntities[activeIndex]->GetComponent<StaticOcclusionDataComponent>();
 
     // We've detached component so we verify that here we still do not have this component.
     DVASSERT(prevComponent == 0);

@@ -356,9 +356,9 @@ void CommandUpdateParticleSimplifiedForce::Redo()
 //////////////////////////////////////////////////////////////////////////
 CommandUpdateParticleForce::CommandUpdateParticleForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params)
     : CommandAction(CMDID_PARTICLE_FORCE_UPDATE)
+    , newParams(params)
     , layer(layer_)
     , forceId(forceId_)
-    , newParams(params)
 {
     DVASSERT(forceId < static_cast<uint32>(layer->GetParticleForces().size()));
     DVASSERT(layer != nullptr);
