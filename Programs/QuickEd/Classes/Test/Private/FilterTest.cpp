@@ -288,6 +288,7 @@ protected:
                                      << "    name: \"1\"\n",
                                   "1");
 
+        const uint32 packageVersion = UIPackage::CURRENT_VERSION;
         CREATE_FILTER_FILE_INFO(DOCUMENT, PackageVersionFilter,
                                 ss << CreateHeader()
                                    << "Prototypes:\n"
@@ -296,7 +297,7 @@ protected:
                                    << "Controls:\n"
                                    << "-   prototype: \"1\"\n"
                                    << "    name: \"1_1\"\n",
-                                19, PackageVersionFilter::eCmpType::EQ);
+                                packageVersion, PackageVersionFilter::eCmpType::EQ);
 
         CREATE_FILTER_FILE_INFO_1(DOCUMENT, CompositeFilter,
                                   ss << CreateHeader()
