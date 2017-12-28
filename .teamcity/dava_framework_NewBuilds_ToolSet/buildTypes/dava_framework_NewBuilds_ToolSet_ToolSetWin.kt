@@ -53,7 +53,9 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin : BuildType({
 
     vcs {
         root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
+        root("dava_DavaFrameworkStash", "+:=>/dava.framework")
 
+        checkoutMode = CheckoutMode.ON_AGENT
     }
 
     steps {
