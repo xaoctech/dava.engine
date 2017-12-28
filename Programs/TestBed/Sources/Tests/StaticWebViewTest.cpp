@@ -96,7 +96,7 @@ void StaticWebViewTest::LoadResources()
     webView2 = new UIWebView(Rect(410, 50, 400, 300));
     webView2->SetVisibilityFlag(true);
     webView2->GetOrCreateComponent<UIDebugRenderComponent>();
-    webView2->OpenFromBuffer(htmlCuteCats, "~res:/TestData/TransparentWebViewTest/");
+    webView2->OpenFromBuffer(htmlCuteCats, "~res:/TestBed/TestData/TransparentWebViewTest/");
     webView2->GetOrCreateComponent<UIFocusComponent>();
     AddControl(webView2);
 
@@ -109,21 +109,21 @@ void StaticWebViewTest::LoadResources()
     webView3->GetOrCreateComponent<UIFocusComponent>();
     AddControl(webView3);
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(20);
 
     const float32 w = 40;
 
     overlapedImage = new UIControl(Rect(500, 0, 300, 300));
-    FilePath imgPath("~res:/TestData/UI/Rotation.png");
+    FilePath imgPath("~res:/TestBed/TestData/UI/Rotation.png");
     ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile(imgPath));
     UIControlBackground* overlapedImageBg = overlapedImage->GetOrCreateComponent<UIControlBackground>();
     overlapedImageBg->SetSprite(sprite, 0);
     overlapedImage->GetOrCreateComponent<UIDebugRenderComponent>();
     AddControl(overlapedImage);
 
-    FilePath srcDir("~res:/TestData/TransparentWebViewTest/");
+    FilePath srcDir("~res:/TestBed/TestData/TransparentWebViewTest/");
     FilePath cpyDir = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "TransparentWebViewTest/";
     FileSystem::Instance()->DeleteDirectory(cpyDir);
     FileSystem::Instance()->CreateDirectory(cpyDir);

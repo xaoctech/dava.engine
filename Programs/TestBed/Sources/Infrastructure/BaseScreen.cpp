@@ -24,7 +24,7 @@ void BaseScreen::OnBackNavigation(DAVA::Window* window)
 void BaseScreen::LoadResources()
 {
     using namespace DAVA;
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
 
     font->SetSize(30);
 
