@@ -96,8 +96,8 @@ DAVA_TESTCLASS (FormulaExecutorTest)
     // FormulaExecutor::Calculate
     DAVA_TEST (CalculateBools)
     {
-        TEST_VERIFY(Execute("!true") == Any(false));
-        TEST_VERIFY(Execute("!false") == Any(true));
+        TEST_VERIFY(Execute("not true") == Any(false));
+        TEST_VERIFY(Execute("not false") == Any(true));
 
         TEST_VERIFY(Execute("5 > 5") == Any(false));
         TEST_VERIFY(Execute("6 > 5") == Any(true));
@@ -113,9 +113,16 @@ DAVA_TESTCLASS (FormulaExecutorTest)
     // FormulaExecutor::Calculate
     DAVA_TEST (CalculateStrings)
     {
-        TEST_VERIFY(Execute("\"Hello, world\" == str") == Any(true));
-        TEST_VERIFY(Execute("\"Hello,\" + \" world\" == str") == Any(true));
-        TEST_VERIFY(Execute("intToStr(5) == \"*5*\"") == Any(true));
+        TEST_VERIFY(Execute("\"Hello, world\" = str") == Any(true));
+        TEST_VERIFY(Execute("\"Hello,\" + \" world\" = str") == Any(true));
+        TEST_VERIFY(Execute("intToStr(5) = \"*5*\"") == Any(true));
+    }
+
+    // FormulaExecutor::Calculate
+    DAVA_TEST (CalculateWhen)
+    {
+        TEST_VERIFY(Execute("when true -> 0, 1") == Any(0));
+        TEST_VERIFY(Execute("when 5 = 2 -> 0, 1") == Any(1));
     }
 
     // FormulaExecutor::Calculate
@@ -171,11 +178,11 @@ DAVA_TESTCLASS (FormulaExecutorTest)
 
         try
         {
-            Execute("!5");
+            Execute("not 5");
         }
         catch (const FormulaException& error)
         {
-            TEST_VERIFY(error.GetFormattedMessage() == "[1, 1] Invalid argument type 'int32' to unary '!' expression");
+            TEST_VERIFY(error.GetFormattedMessage() == "[1, 1] Invalid argument type 'int32' to unary 'not' expression");
         }
 
         try
@@ -278,7 +285,7 @@ DAVA_TESTCLASS (FormulaExecutorTest)
         dependencies = GetDependencies("map.b + fl", &data);
         TEST_VERIFY(dependencies == Vector<void*>({ &(data.map), &(data.map["b"]), &(data.flVal) }));
 
-        dependencies = GetDependencies("b && (array[1] == 1)", &data);
+        dependencies = GetDependencies("b and (array[1] = 1)", &data);
         TEST_VERIFY(dependencies == Vector<void*>({ &(data.bVal), &(data.array), &(data.array[1]) }));
     }
 
