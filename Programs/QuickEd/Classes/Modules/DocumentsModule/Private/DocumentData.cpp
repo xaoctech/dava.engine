@@ -70,13 +70,14 @@ const SelectedNodes& DocumentData::GetSelectedNodes() const
 size_t DocumentData::GetSelectionHash() const
 {
     DAVA::Vector<size_t> hashData;
-    hashData.reserve(selectedNodes.size() * 3);
+    hashData.reserve(selectedNodes.size() * 4);
     for (PackageBaseNode* node : selectedNodes)
     {
         hashData.push_back(reinterpret_cast<size_t>(node));
         PackageBaseNode* parent = node->GetParent();
         hashData.push_back(reinterpret_cast<size_t>(parent));
         hashData.push_back(parent->GetIndex(node));
+        hashData.push_back(parent->GetCount());
     }
     DAVA::uint8* dataPtr = reinterpret_cast<DAVA::uint8*>(hashData.data());
     DAVA::uint32 bufferSize = static_cast<DAVA::uint32>(hashData.size()) * (sizeof(size_t) / sizeof(DAVA::uint8));

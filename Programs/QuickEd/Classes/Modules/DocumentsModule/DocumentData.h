@@ -33,6 +33,11 @@ public:
     void ExecCommand(Arguments&&... args);
 
     const SelectedNodes& GetSelectedNodes() const;
+
+    //some TArc functional checking selection changes using compare function
+    //but when package structure changes (ex. by shortcut ctrl-up) selection keeps at the same condition
+    //so we need a way to find that package structure was changed with the same selection
+    //SelectionHash is a way to compare selection and selected items parent, index in parent, parent children count etc.
     size_t GetSelectionHash() const;
     const SortedControlNodeSet& GetDisplayedRootControls() const;
     const DAVA::Set<ControlNode*>& GetSelectedControls() const;
