@@ -1,10 +1,24 @@
 #include "Classes/SceneTree/Private/SceneTreeFilterModelV2.h"
 #include "Classes/SceneTree/Private/SceneTreeRoles.h"
+#include "Classes/SceneTree/SceneTreeFiltration.h"
 
+#include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/DataProcessing/AnyQMetaType.h>
+
+#include <Base/BaseTypes.h>
+#include <Base/Type.h>
 #include <Debug/DVAssert.h>
+#include <Reflection/ReflectedType.h>
+#include <Reflection/ReflectedTypeDB.h>
 
 #include <QBrush>
 #include <QColor>
+#include "TArc/Utils/ScopedValueGuard.h"
+
+SceneTreeFilterModelV2::SceneTreeFilterModelV2(DAVA::TArc::ContextAccessor* accessor_)
+    : accessor(accessor_)
+{
+}
 
 const QString& SceneTreeFilterModelV2::GetFilter() const
 {
@@ -18,22 +32,13 @@ void SceneTreeFilterModelV2::SetFilter(const QString& filter_)
         return;
     }
 
-    filter = QString("");
-    filtrationData.clear();
-    FullFetchModel(sourceModel(), QModelIndex());
-
     filter = filter_;
-    if (filter.isEmpty() == false)
-    {
-        PrepareFiltrationData(sourceModel(), QModelIndex());
-    }
-
-    invalidate();
+    Refilter();
 }
 
 QVariant SceneTreeFilterModelV2::data(const QModelIndex& index, int role) const
 {
-    if (index.isValid() == false && role == Qt::BackgroundRole && filter.isEmpty() == false)
+    if (index.isValid() == false && role == Qt::BackgroundRole && (filter.isEmpty() == false || filtersChain.empty() == false))
     {
         QHash<QModelIndex, FilterData>::const_iterator iter = filtrationData.constFind(mapToSource(index));
         DVASSERT(iter != filtrationData.cend());
@@ -48,7 +53,7 @@ QVariant SceneTreeFilterModelV2::data(const QModelIndex& index, int role) const
 
 bool SceneTreeFilterModelV2::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
 {
-    if (filter.isEmpty() == true)
+    if (inForceFetchState == true || (filter.isEmpty() == true && filtersChain.empty() == true))
     {
         return true;
     }
@@ -78,6 +83,30 @@ bool SceneTreeFilterModelV2::PrepareFiltrationData(QAbstractItemModel* model, co
     QString displayName = index.data(Qt::DisplayRole).toString();
     QString filterItemData = index.data(ToItemRoleCast(eSceneTreeRoles::FilterDataRole)).toString();
     data.isMatched = displayName.contains(filter, Qt::CaseInsensitive) || filter == filterItemData;
+
+    if (data.isMatched == true && index.isValid())
+    {
+        for (SceneTreeFilterBase* filterBase : filtersChain)
+        {
+            if (filterBase->IsEnabled())
+            {
+                Selectable internalObject = Selectable(index.data(ToItemRoleCast(eSceneTreeRoles::InternalObjectRole)).value<DAVA::Any>());
+                bool isMatched = filterBase->IsMatched(internalObject, accessor);
+                if (filterBase->IsInverted())
+                {
+                    isMatched = !isMatched;
+                }
+
+                data.isMatched &= isMatched;
+            }
+
+            if (data.isMatched == false)
+            {
+                break;
+            }
+        }
+    }
+
     data.isVisible = isSomeChildIsMatched || data.isMatched;
 
     filtrationData.insert(index, data);
@@ -95,5 +124,67 @@ void SceneTreeFilterModelV2::FullFetchModel(QAbstractItemModel* model, const QMo
     for (int i = 0; i < rowCount; ++i)
     {
         FullFetchModel(model, model->index(i, 0, index));
+    }
+}
+
+const DAVA::Vector<SceneTreeFilterBase*>& SceneTreeFilterModelV2::GetFiltersChain() const
+{
+    return filtersChain;
+}
+
+void SceneTreeFilterModelV2::AddFilterToChain(const DAVA::ReflectedType* filterType, const FilterState& state)
+{
+    for (SceneTreeFilterBase* filterBase : filtersChain)
+    {
+        const DAVA::ReflectedType* filterBaseType = DAVA::ReflectedTypeDB::GetByPointer(filterBase);
+        if (filterBaseType == filterType)
+        {
+            return;
+        }
+    }
+
+    SceneTreeFilterBase* createdFilter = filterType->CreateObject(DAVA::ReflectedType::CreatePolicy::ByPointer).Cast<SceneTreeFilterBase*>();
+    createdFilter->SetEnabled(state.enabled);
+    createdFilter->SetInverted(state.inverted);
+    createdFilter->changed.Connect(this, &SceneTreeFilterModelV2::Refilter);
+    filtersChain.push_back(createdFilter);
+
+    Refilter();
+}
+
+void SceneTreeFilterModelV2::DeleteFilter(DAVA::int32 filterIndex)
+{
+    DVASSERT(filterIndex < static_cast<DAVA::int32>(filtersChain.size()));
+    SceneTreeFilterBase* filterToDestroy = filtersChain[filterIndex];
+    const DAVA::ReflectedType* filterType = DAVA::ReflectedTypeDB::GetByPointer(filterToDestroy);
+    if (filterType->GetDtor() != nullptr)
+    {
+        DAVA::Any valueToDestroy(filterToDestroy);
+        filterType->Destroy(std::move(valueToDestroy));
+    }
+    else
+    {
+        delete filterToDestroy;
+    }
+    filtersChain.erase(filtersChain.begin() + filterIndex);
+    Refilter();
+}
+
+void SceneTreeFilterModelV2::Refilter()
+{
+    bool infoWasEmpty = filtrationData.empty();
+    filtrationData.clear();
+    if (filter.isEmpty() == false || filtersChain.empty() == false)
+    {
+        {
+            DAVA::TArc::ScopedValueGuard<bool> guard(inForceFetchState, true);
+            FullFetchModel(sourceModel(), QModelIndex());
+        }
+        PrepareFiltrationData(sourceModel(), QModelIndex());
+    }
+
+    if (filtrationData.empty() == false || infoWasEmpty == false)
+    {
+        invalidate();
     }
 }

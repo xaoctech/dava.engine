@@ -18,8 +18,8 @@ public:
     void SetAction(const Message& msg);
     inline void RunAction();
 
-    void SetTitle(const WideString& _title);
-    void SetText(const WideString& _text);
+    void SetTitle(const String& _title);
+    void SetText(const String& _text);
     void SetUseSound(const bool value);
 
     void Show();
@@ -41,8 +41,8 @@ protected:
 
     Message action;
 
-    WideString title = L"";
-    WideString text = L"";
+    String title;
+    String text;
     bool useSound = false;
 };
 

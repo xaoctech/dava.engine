@@ -4,14 +4,11 @@ include ( CMake-common )
 
 set( JOIN_PROJECT_NAME 1 )
 set( DAVA_MEGASOLUTION      1 )
-set( IGNORE_FILE_TREE_CHECK 1 )
 
 if( NOT DEPLOY_DIR )
-    set( DEPLOY_DIR_MACOS             ${CMAKE_BINARY_DIR}/app )
-    set( DEPLOY_DIR_WIN               ${CMAKE_BINARY_DIR}/app )
+    set( CURRENT_DEPLOY_DIR     ${CMAKE_BINARY_DIR}/app )
 else()
-    set( DEPLOY_DIR_MACOS             ${DEPLOY_DIR} )
-    set( DEPLOY_DIR_WIN               ${DEPLOY_DIR} )
+    set( CURRENT_DEPLOY_DIR     ${DEPLOY_DIR} )
 endif()
 
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
@@ -88,57 +85,76 @@ macro ( prepare_tools )
 
     __add_tools( SINGLE_TOOLS_LIST )
 
-    set( POSTPONED_MIX_DATA 1 )
-    set( QT_POST_DEPLOY 0 )
 
-    set( DEPLOY_DIR_LIBS_MACOS        ${DEPLOY_DIR_MACOS}/Libs )
-    set( DEPLOY_DIR_DATA_MACOS        ${DEPLOY_DIR_MACOS} )
-    set( DEPLOY_DIR_EXECUTABLE_MACOS  ${DEPLOY_DIR_MACOS} )
-    set( ADDED_LD_RUNPATHES           "@executable_path/../../Libs @executable_path/../../../Libs" )
+    if( NOT MACOS AND NOT WIN32 )
+        set( DEPLOY_DIR         ${CURRENT_DEPLOY_DIR} ) 
+        __add_tools( PACKAGE_TOOLS_LIST )
 
+    else()
 
-    set( DEPLOY_DIR_LIBS_WIN          )
-    set( DEPLOY_DIR_DATA_WIN          )
-    set( DEPLOY_DIR_EXECUTABLE_WIN    )
+        set( POSTPONED_MIX_DATA 1 )
+        set( QT_POST_DEPLOY 0 )
 
-    set( DEPLOY_DIR             ${DEPLOY_DIR_${DAVA_PLATFORM_CURRENT}})
-    set( DEPLOY_DIR_LIBS        ${DEPLOY_DIR_LIBS_${DAVA_PLATFORM_CURRENT}})
-    set( DEPLOY_DIR_DATA        ${DEPLOY_DIR_DATA_${DAVA_PLATFORM_CURRENT}})
-    set( DEPLOY_DIR_EXECUTABLE  ${DEPLOY_DIR_EXECUTABLE_${DAVA_PLATFORM_CURRENT}})
-    set( MIX_APP_DIR            ${CMAKE_BINARY_DIR}/MixResources )
+        set( DEPLOY_DIR_LIBS_MACOS        ${CURRENT_DEPLOY_DIR}/Libs )
+        set( DEPLOY_DIR_DATA_MACOS        ${CURRENT_DEPLOY_DIR} )
+        set( DEPLOY_DIR_EXECUTABLE_MACOS  ${CURRENT_DEPLOY_DIR} )
+        set( ADDED_LD_RUNPATHES           "@executable_path/../../Libs @executable_path/../../../Libs" )
 
-    reset_property ( MIX_APP_DATA )
+        set( DEPLOY_DIR_LIBS_WIN          )
+        set( DEPLOY_DIR_DATA_WIN          )
+        set( DEPLOY_DIR_EXECUTABLE_WIN    )
 
-    __add_tools( PACKAGE_TOOLS_LIST )
+        set( DEPLOY_DIR             ${CURRENT_DEPLOY_DIR})
+        set( DEPLOY_DIR_LIBS        ${DEPLOY_DIR_LIBS_${DAVA_PLATFORM_CURRENT}})
+        set( DEPLOY_DIR_DATA        ${DEPLOY_DIR_DATA_${DAVA_PLATFORM_CURRENT}})
+        set( DEPLOY_DIR_EXECUTABLE  ${DEPLOY_DIR_EXECUTABLE_${DAVA_PLATFORM_CURRENT}})
+        set( MIX_APP_DIR            ${CMAKE_BINARY_DIR}/MixResources )
 
-    processing_mix_data()
-    processing_mix_data_dependencies( "${PACKAGE_TOOLS_LIST}" )
+        reset_property ( MIX_APP_DATA )
+
+        __add_tools( PACKAGE_TOOLS_LIST )
+
+        processing_mix_data()
+        processing_mix_data_dependencies( "${PACKAGE_TOOLS_LIST}" )
+    endif()
+
+######    
 
     generation_ToolList_json( "${GENERATED_PACKAGE_TOOLS_LIST}" ) 
 
     dump_module_log()
 
-    if( NO_GENERATED_TOOLS )
+    if( NO_GENERATED_TOOLS_DEPENDENT_FOLDERS )
          message( STATUS "These applications are not generated because there were no changes in the dependent folders:" )
-         foreach( TARGET_NAME ${NO_GENERATED_TOOLS} )
+         foreach( TARGET_NAME ${NO_GENERATED_TOOLS_DEPENDENT_FOLDERS} )
               message( STATUS "  ${TARGET_NAME}" )
          endforeach()
          message("")
 
     endif()
 
+    if( DEPLOY )
+        configure_file( ${CMAKE_CURRENT_LIST_DIR}/Scripts/start_tests.py
+                        ${CMAKE_BINARY_DIR}/app_other/start_tests.py  )
+    endif()
+
+    file_tree_check()
+
 endmacro()
 
 macro ( add_tool_single TARGET_NAME )
-    cmake_parse_arguments ( ARG "NO_UNITY_BUILD"  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS" "" ${ARGN} )
+    cmake_parse_arguments ( ARG "NO_UNITY_BUILD;CHECK_DEPENDS_FOLDERS;WIN32_SUPPORTED"  "" "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS;PLATFORMS"  ${ARGN} )
 
     list( APPEND SINGLE_TOOLS_LIST ${TARGET_NAME} )
 
-    set( ROOT_DIR_${TARGET_NAME}           ${ARG_ROOT_DIR} )
-    set( CUSTOM_DEPLOY_DIR_${TARGET_NAME}  ${ARG_CUSTOM_DEPLOY_DIR} )
-    set( DEPLOY_DEFINE_${TARGET_NAME}      ${ARG_DEPLOY_DEFINE} )
-    set( NO_UNITY_BUILD_${TARGET_NAME}     ${ARG_NO_UNITY_BUILD} )
-    set( DEPENDS_${TARGET_NAME}            ${ARG_DEPENDS} )
+    set( ROOT_DIR_${TARGET_NAME}                ${ARG_ROOT_DIR} )
+    set( CUSTOM_DEPLOY_DIR_${TARGET_NAME}       ${ARG_CUSTOM_DEPLOY_DIR} )
+    set( DEPLOY_DEFINE_${TARGET_NAME}           ${ARG_DEPLOY_DEFINE} )
+    set( NO_UNITY_BUILD_${TARGET_NAME}          ${ARG_NO_UNITY_BUILD} )
+    set( DEPENDS_${TARGET_NAME}                 ${ARG_DEPENDS} )
+    set( PLATFORMS_${TARGET_NAME}               ${ARG_PLATFORMS} )
+    set( CHECK_DEPENDS_FOLDERS_${TARGET_NAME}   ${ARG_CHECK_DEPENDS_FOLDERS} )
+    set( WIN32_SUPPORTED_${TARGET_NAME}         ${ARG_WIN32_SUPPORTED} )
 
     if( ARG_ROOT_DIR )
         set( DEPEND_DIRS_${TARGET_NAME}  ${DEFAULT_DEPEND_DIRS} ${ARG_ROOT_DIR} )
@@ -149,15 +165,18 @@ macro ( add_tool_single TARGET_NAME )
 endmacro ()
 
 macro ( add_tool_package TARGET_NAME )
-    cmake_parse_arguments ( ARG "NO_UNITY_BUILD"  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS" "" ${ARGN} )
+    cmake_parse_arguments ( ARG "NO_UNITY_BUILD;CHECK_DEPENDS_FOLDERS;WIN32_SUPPORTED" ""  "ROOT_DIR;CUSTOM_DEPLOY_DIR;DEPLOY_DEFINE;DEPENDS;PLATFORMS"  ${ARGN} )
 
     list( APPEND PACKAGE_TOOLS_LIST ${TARGET_NAME} )
 
-    set( ROOT_DIR_${TARGET_NAME}           ${ARG_ROOT_DIR} )
-    set( CUSTOM_DEPLOY_DIR_${TARGET_NAME}  ${ARG_CUSTOM_DEPLOY_DIR} )
-    set( DEPLOY_DEFINE_${TARGET_NAME}      ${ARG_DEPLOY_DEFINE} )
-    set( NO_UNITY_BUILD_${TARGET_NAME}     ${ARG_NO_UNITY_BUILD} )
-    set( DEPENDS_${TARGET_NAME}            ${ARG_DEPENDS} )
+    set( ROOT_DIR_${TARGET_NAME}                ${ARG_ROOT_DIR} )
+    set( CUSTOM_DEPLOY_DIR_${TARGET_NAME}       ${ARG_CUSTOM_DEPLOY_DIR} )
+    set( DEPLOY_DEFINE_${TARGET_NAME}           ${ARG_DEPLOY_DEFINE} )
+    set( NO_UNITY_BUILD_${TARGET_NAME}          ${ARG_NO_UNITY_BUILD} )
+    set( DEPENDS_${TARGET_NAME}                 ${ARG_DEPENDS} )
+    set( PLATFORMS_${TARGET_NAME}               ${ARG_PLATFORMS} )
+    set( CHECK_DEPENDS_FOLDERS_${TARGET_NAME}   ${ARG_CHECK_DEPENDS_FOLDERS} )
+    set( WIN32_SUPPORTED_${TARGET_NAME}         ${ARG_WIN32_SUPPORTED} )
 
     if( ARG_ROOT_DIR )
         set( DEPEND_DIRS_${TARGET_NAME}  ${DEFAULT_DEPEND_DIRS} ${ARG_ROOT_DIR} )
@@ -177,14 +196,44 @@ macro ( __add_tools TOOLS_LIST_NAME )
 
     foreach( TARGET_NAME ${TOOLS_LIST} )
 
-        set( ARG_ROOT_DIR          ${ROOT_DIR_${TARGET_NAME}} )
-        set( ARG_CUSTOM_DEPLOY_DIR ${CUSTOM_DEPLOY_DIR_${TARGET_NAME}} )
-        set( ARG_DEPLOY_DEFINE     ${DEPLOY_DEFINE_${TARGET_NAME}} )
-        set( ARG_NO_UNITY_BUILD    ${NO_UNITY_BUILD_${TARGET_NAME}} )
+        set( ARG_ROOT_DIR               ${ROOT_DIR_${TARGET_NAME}} )
+        set( ARG_CUSTOM_DEPLOY_DIR      ${CUSTOM_DEPLOY_DIR_${TARGET_NAME}} )
+        set( ARG_DEPLOY_DEFINE          ${DEPLOY_DEFINE_${TARGET_NAME}} )
+        set( ARG_NO_UNITY_BUILD         ${NO_UNITY_BUILD_${TARGET_NAME}} )
+        set( ARG_PLATFORMS              ${PLATFORMS_${TARGET_NAME}} )
+        set( ARG_CHECK_DEPENDS_FOLDERS  ${CHECK_DEPENDS_FOLDERS_${TARGET_NAME}} )
+        set( ARG_WIN32_SUPPORTED        ${WIN32_SUPPORTED_${TARGET_NAME}} )
 
-        set( GENERATE true )
+        if( ARG_PLATFORMS )
+            set(  GENERATE false )
+        else()
+            set(  GENERATE true )
+        endif()
 
-        if( CHECK_DEPENDS_FOLDERS AND ( NOT "ALL_BUILD" STREQUAL "${BUILD_TARGETS}" ) ) 
+###
+        foreach( PLATFORM ${ARG_PLATFORMS} )
+            if( PLATFORM MATCHES "^IGNORE_" )
+                set(  GENERATE true )
+                string( REGEX REPLACE "^IGNORE_" "" PLATFORM ${PLATFORM} )
+                if( ${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURRENT}  )
+                    set(  GENERATE false )
+                    break()
+                endif()
+            else()
+                if( ${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURRENT}  )
+                    set(  GENERATE true )
+                    break()
+                endif()
+            endif()
+        endforeach()
+
+###
+        if( WIN32 AND NOT X64_MODE AND NOT ARG_WIN32_SUPPORTED )
+            set(  GENERATE false )  
+        endif()      
+###
+
+        if( GENERATE AND CHECK_DEPENDS_FOLDERS AND ARG_CHECK_DEPENDS_FOLDERS AND ( NOT "ALL_BUILD" STREQUAL "${BUILD_TARGETS}" ) ) 
             list (FIND BUILD_TARGETS   ${TARGET_NAME} _index)
             if ( ${_index} EQUAL -1)
                 set( GENERATE false )
@@ -196,6 +245,11 @@ macro ( __add_tools TOOLS_LIST_NAME )
                     endif()
                 endforeach()
             endif()
+
+            if( NOT GENERATE )
+                list( APPEND NO_GENERATED_TOOLS_DEPENDENT_FOLDERS ${TARGET_NAME} )
+            endif()
+
         endif()
 
         if( GENERATE )
@@ -209,6 +263,8 @@ macro ( __add_tools TOOLS_LIST_NAME )
             set( OLD_DEPLOY_DIR ${DEPLOY_DIR} )
             if( ARG_CUSTOM_DEPLOY_DIR AND WIN32 )
                 set( DEPLOY_DIR ${ARG_CUSTOM_DEPLOY_DIR}/${TARGET_NAME} )
+            elseif( WINDOWS_UAP )
+                set( DEPLOY_DIR ${DEPLOY_DIR}/${TARGET_NAME} )
             endif()  
 
             if( ARG_NO_UNITY_BUILD )
@@ -227,9 +283,7 @@ macro ( __add_tools TOOLS_LIST_NAME )
                 set_property( GLOBAL PROPERTY DEFINITIONS "${DEFINITIONS_OLD}" )
             endif()
 
-            set( DEPLOY_DIR ${OLD_DEPLOY_DIR} )
-        else()
-            list( APPEND NO_GENERATED_TOOLS ${TARGET_NAME} )
+            set( DEPLOY_DIR ${OLD_DEPLOY_DIR} )            
 
         endif()
 

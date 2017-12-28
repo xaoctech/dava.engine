@@ -22,7 +22,7 @@ SkillBtn::SkillBtn(UIControl* parent, Rect rect, Color color, const WideString& 
 
     ResetColorStatus();
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(25);
 
@@ -187,7 +187,7 @@ void SkillSystemTest::LoadResources()
     frostBite = new Skill(6.f);
     lightningStrike = new Skill(7.f);
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(25);
 

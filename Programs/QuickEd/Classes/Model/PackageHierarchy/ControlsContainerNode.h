@@ -1,7 +1,6 @@
-#ifndef __QUICKED_CONTROLS_CONTAINER_NODE_H__
-#define __QUICKED_CONTROLS_CONTAINER_NODE_H__
+#pragma once
 
-#include "PackageBaseNode.h"
+#include "Classes/Model/PackageHierarchy/PackageBaseNode.h"
 
 class ControlNode;
 
@@ -10,19 +9,19 @@ class ControlsContainerNode : public PackageBaseNode
 public:
     ControlsContainerNode(PackageBaseNode* parent);
 
-    virtual DAVA::Vector<ControlNode*>::const_iterator begin() const = 0;
-    virtual DAVA::Vector<ControlNode*>::const_iterator end() const = 0;
+    virtual DAVA::Vector<ControlNode*>::const_iterator begin() const;
+    virtual DAVA::Vector<ControlNode*>::const_iterator end() const;
 
-    virtual DAVA::Vector<ControlNode*>::iterator begin() = 0;
-    virtual DAVA::Vector<ControlNode*>::iterator end() = 0;
+    virtual DAVA::Vector<ControlNode*>::iterator begin();
+    virtual DAVA::Vector<ControlNode*>::iterator end();
 
-protected:
-    virtual ~ControlsContainerNode();
-
-public:
     virtual void Add(ControlNode* node) = 0;
     virtual void InsertAtIndex(int index, ControlNode* node) = 0;
     virtual void Remove(ControlNode* node) = 0;
-};
 
-#endif // __QUICKED_CONTROLS_CONTAINER_NODE_H__
+    ControlNode* FindChildByName(const DAVA::String& name) const;
+
+protected:
+    ~ControlsContainerNode() override = default;
+    DAVA::Vector<ControlNode*> nodes;
+};

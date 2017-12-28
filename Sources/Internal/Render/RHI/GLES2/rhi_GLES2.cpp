@@ -279,6 +279,10 @@ static void gles_check_GL_extensions()
         }
     }
 
+#ifdef __DAVAENGINE_WIN32__
+    MutableDeviceCaps::Get().isInstancingSupported = (glVertexAttribDivisor != nullptr);
+#endif
+    
 #ifdef __DAVAENGINE_ANDROID__
     if (_GLES2_TimeStampQuerySupported)
     {

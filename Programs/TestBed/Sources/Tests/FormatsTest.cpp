@@ -99,7 +99,7 @@ UIListCell* FormatsTest::CellAtIndex(UIList* list, int32 index)
     UIListCell* cell = list->GetReusableCell(cellName); //try to get cell from the reusable cells store
     if (!cell)
     { //if cell of requested type isn't find in the store create new cell
-        ScopedPtr<Font> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+        ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
         DVASSERT(font);
         font->SetSize(16.0f);
 

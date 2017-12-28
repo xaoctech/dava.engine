@@ -106,8 +106,8 @@ void SkinnedMesh::UpdateJointTransforms(const Vector<JointTransform>& finalTrans
             DVASSERT(transformIndex < uint32(finalTransforms.size()));
 
             const JointTransform& finalTransform = finalTransforms[transformIndex];
-            data.positions[j] = Vector4(Vector3(finalTransform.position.data), finalTransform.scale);
-            data.quaternions[j] = Vector4(finalTransform.orientation.data);
+            data.positions[j] = Vector4(Vector3(finalTransform.GetPosition().data), finalTransform.GetScale());
+            data.quaternions[j] = Vector4(finalTransform.GetOrientation().data);
         }
     }
 }
@@ -139,16 +139,17 @@ void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& target
     }
 }
 
-SkinnedMesh::JointTargets SkinnedMesh::GetJointTargets(RenderBatch* batch)
+const SkinnedMesh::JointTargets& SkinnedMesh::GetJointTargets(RenderBatch* batch)
 {
     auto found = jointTargetsDataMap.find(batch);
     if (found != jointTargetsDataMap.end())
         return jointTargetsData[found->second].first;
 
-    return JointTargets();
+    static const JointTargets emptyJointTargets;
+    return emptyJointTargets;
 }
 
-SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
+const SkinnedMesh::JointTargetsData& SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
 {
     auto found = jointTargetsDataMap.find(batch);
     if (found != jointTargetsDataMap.end())
@@ -157,6 +158,7 @@ SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batc
         return jointTargetsData[dataIndex].second;
     }
 
-    return SkinnedMesh::JointTargetsData();
+    static const JointTargetsData emptyJointTargetsData = JointTargetsData();
+    return emptyJointTargetsData;
 }
 }

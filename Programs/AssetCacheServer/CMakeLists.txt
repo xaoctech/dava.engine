@@ -7,7 +7,8 @@ include               ( CMake-common )
 
 find_package          ( QT5 REQUIRED )
 find_dava_module   ( QtHelpers )
-find_dava_module   ( DavaTools )
+find_dava_module   ( AssetCache )
+find_dava_module   ( Version )
 find_dava_module   ( DocDirSetup )
 
 dava_add_definitions  ( -DCONSOLE )

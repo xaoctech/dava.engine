@@ -6,9 +6,8 @@
 #include "ApplicationSettings.h"
 #include "CustomServerWidget.h"
 
-#include <DavaTools/AssetCache/AssetCacheConstants.h>
-#include <DavaTools/Version.h>
-
+#include <AssetCache/AssetCacheConstants.h>
+#include <Version/Version.h>
 
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/FileSystem.h"
@@ -53,7 +52,8 @@ AssetCacheServerWindow::AssetCacheServerWindow(ServerCore& core, QWidget* parent
     // the same for spin boxes
     ui->cacheSizeSpinBox->setFixedSize(ui->cacheSizeSpinBox->sizeHint());
 
-    setWindowTitle(QString("Asset Cache Server | %1").arg(APPLICATION_BUILD_VERSION));
+    DAVA::String title = DAVA::Version::CreateAppVersion("Asset Cache Server");
+    setWindowTitle(QString::fromStdString(title));
 
     connect(ui->cacheFolderLineEdit, &QLineEdit::textChanged, this, &AssetCacheServerWindow::OnFolderTextChanged);
     connect(ui->selectFolderButton, &QPushButton::clicked, this, &AssetCacheServerWindow::OnFolderSelection);

@@ -313,10 +313,13 @@ public:
     void SetFlowRoot(UIControl* root);
     UIControl* GetFlowRoot() const;
 
+    void SetPhysicalSafeAreaInsets(float32 left, float32 top, float32 right, float32 bottom, bool isLeftNotch, bool isRightNotch);
+
 private:
     UIControlSystem();
     ~UIControlSystem();
     void Init();
+    void Shutdown();
 
     void ProcessScreenLogic();
 

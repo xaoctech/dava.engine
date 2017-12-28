@@ -1,22 +1,18 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "FileSystem/ResourceArchive.h"
-#include "FileSystem/FilePath.h"
-
 #include "CommandLineTool.h"
+#include <FileSystem/FilePath.h>
 
-class ArchiveUnpackTool : public CommandLineTool
+class ArchiveUnpackTool final : public CommandLineTool
 {
 public:
     ArchiveUnpackTool();
 
 private:
-    bool ConvertOptionsToParamsInternal() override;
-    int ProcessInternal() override;
-
-    int UnpackFile(const DAVA::ResourceArchive& ra, const DAVA::ResourceArchive::FileInfo& fileInfo);
+    bool ConvertOptionsToParamsInternal() final;
+    int ProcessInternal() final;
 
     DAVA::FilePath dstDir;
     DAVA::FilePath packFilename;
+    bool extractInDvplFormat = false;
 };

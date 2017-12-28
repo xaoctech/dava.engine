@@ -34,6 +34,7 @@ find_dava_module( CEFWebview )
 
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
+find_dava_module( Version )
 
 list( APPEND DAVA_COMPONENTS DAVA_LOCALIZATION_DEBUG )
 
@@ -67,8 +68,8 @@ file ( GLOB_RECURSE XIB_LIST "${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLD
 
 define_source ( SOURCE    "Sources" )
 
-set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
-                                  "Data = ${CMAKE_CURRENT_LIST_DIR}/Data" )
+set( MIX_APP_DATA         "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
+                          "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
 if (MACOS OR WIN32)
     set( APP_DATA  ${APP_DATA} "scripts")

@@ -19,8 +19,7 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 
-#include <DavaTools/Version.h>
-#include <DAVAVersion.h>
+#include <Version/Version.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)
 {
@@ -84,10 +83,8 @@ void LegacySupportModule::InitMainWindow()
 
     MainWindow* mainWindow = new MainWindow(GetAccessor(), GetUI(), GetInvoker());
 
-    const char* editorTitle = "DAVA Framework - QuickEd | %1-%2 [%3 bit]";
-    uint32 bit = static_cast<DAVA::uint32>(sizeof(DAVA::pointer_size) * 8);
-    QString title = QString(editorTitle).arg(DAVAENGINE_VERSION).arg(APPLICATION_BUILD_VERSION).arg(bit);
-    mainWindow->SetEditorTitle(title);
+    String title = Version::CreateAppVersion("QuickEd");
+    mainWindow->SetEditorTitle(QString::fromStdString(title));
 
     GetUI()->InjectWindow(DAVA::TArc::mainWindowKey, mainWindow);
 

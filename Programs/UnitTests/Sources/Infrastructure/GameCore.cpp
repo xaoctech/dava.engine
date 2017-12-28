@@ -28,6 +28,8 @@
 #include "Platform/TemplateWin32/UAPNetworkHelper.h"
 #endif
 
+#include <Version/Version.h>
+
 using namespace DAVA;
 
 namespace
@@ -39,12 +41,12 @@ String runOnlyTheseTestClasses = "";
 // List of names specifying which test classes shouldn't run. This list takes precedence over runOnlyTheseTests.
 // Names should be separated with ' ' or ',' or ';'
 #if !defined(__DAVAENGINE_LINUX__)
-String disableTheseTestClasses = "ScriptTest";
+String disableTheseTestClasses = "ScriptTest;AtomicTest;ReflectionTest;FormulaExecutorTest;UIFlowTest;UIScriptTest";
 #else
 // TODO: linux
 // Linux unittests are running in console mode so disable tests dependent on GUI facilities (windows, input, etc)
 String disableTheseTestClasses =
-"ActionSystemTest "
+"ActionSystemTest;AtomicTest;ReflectionTest;FormulaExecutorTest;UIFlowTest;UIScriptTest"
 ;
 #endif
 
@@ -196,7 +198,8 @@ void GameCore::OnAppStarted()
 
 void GameCore::OnWindowCreated(Window* w)
 {
-    w->SetTitleAsync("UnitTests");
+    String title = Version::CreateAppVersion("UnitTests");
+    w->SetTitleAsync(title);
     w->SetVirtualSize(1024.f, 768.f);
 
     VirtualCoordinatesSystem* vcs = w->GetUIControlSystem()->vcs;

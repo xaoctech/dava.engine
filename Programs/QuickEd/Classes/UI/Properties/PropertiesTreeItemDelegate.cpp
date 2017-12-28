@@ -83,7 +83,11 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
                        << "visibilityMargins.left"
                        << "visibilityMargins.right"
                        << "visibilityMargins.top"
-                       << "visibilityMargins.bottom";
+                       << "visibilityMargins.bottom"
+                       << "safeAreaInsets.left"
+                       << "safeAreaInsets.right"
+                       << "safeAreaInsets.top"
+                       << "safeAreaInsets.bottom";
 
     propertyNameTypeItemDelegates[PropertyPath("*", "sprite")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);
     propertyNameTypeItemDelegates[PropertyPath("*", "mask")] = new ResourceFilePropertyDelegate(gfxExtensions, "/Gfx/", this, true);

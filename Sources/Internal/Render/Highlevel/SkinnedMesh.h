@@ -15,7 +15,7 @@ class PolygonGroup;
 class RenderBatch;
 class ShadowVolume;
 class NMaterial;
-struct JointTransform;
+class JointTransform;
 class SkinnedMesh : public RenderObject
 {
 public:
@@ -25,6 +25,8 @@ public:
 
     struct JointTargetsData
     {
+        JointTargetsData() = default;
+
         Vector<Vector4> positions;
         Vector<Vector4> quaternions;
         uint32 jointsDataCount = 0;
@@ -42,8 +44,9 @@ public:
     void UpdateJointTransforms(const Vector<JointTransform>& finalTransforms);
 
     void SetJointTargets(RenderBatch* batch, const JointTargets& jointTargets);
-    JointTargets GetJointTargets(RenderBatch* batch);
-    JointTargetsData GetJointTargetsData(RenderBatch* batch);
+
+    const JointTargets& GetJointTargets(RenderBatch* batch);
+    const JointTargetsData& GetJointTargetsData(RenderBatch* batch);
 
 protected:
     UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index

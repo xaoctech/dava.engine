@@ -7,15 +7,6 @@ from zip import zipdir
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
  
-def GetDavaVersion( pathToFramework ):
-    os.chdir(pathToFramework)
-    file = open("Sources/Internal/DAVAVersion.h");
-    p = re.compile('DAVAENGINE_VERSION "([\w\.]+)"');
-    davaVersion = p.findall(file.read());
-    file.close();
-    davaVersion = "".join(davaVersion)
-    davaVersion = '[' + davaVersion.replace( '.', '_') + ']'
-    return davaVersion
 
 def GetGitVersion( pathToFramework ):
     os.chdir(pathToFramework)
@@ -34,10 +25,6 @@ def ArchiveName( app_name, dava_path, build_number ):
         archiveName  = [ app_name ]
 
     if dava_path :
-        if app_name :
-            versionDava  = GetDavaVersion( dava_path )
-            archiveName += [ versionDava ]
-
         versionGit   = GetGitVersion( dava_path )
         archiveName += [ versionGit ]
 
@@ -52,6 +39,8 @@ def main():
     parser.add_argument( '--app_name',  required = True )
     parser.add_argument( '--app_path',  required = True )
     parser.add_argument( '--out_path',  required = True )
+    parser.add_argument( '--ignore_file_masks' )
+
     parser.add_argument( '--dava_path' )
     parser.add_argument( '--build_number' )
 
@@ -59,11 +48,12 @@ def main():
 
     archiveName  = [ options.app_name ]
 
-    if options.dava_path :
-        versionDava  = GetDavaVersion( options.dava_path )
-        versionGit   = GetGitVersion ( options.dava_path ) 
+    ignore_file_masks = []
+    if options.ignore_file_masks:
+        ignore_file_masks = options.ignore_file_masks.split(' ')
 
-        archiveName += [ versionDava ]
+    if options.dava_path :
+        versionGit   = GetGitVersion ( options.dava_path ) 
         archiveName += [ versionGit ]
 
     if options.build_number :
@@ -76,7 +66,7 @@ def main():
 
     if os.path.exists( options.app_path ):
         print 'Pack options.app_name -> ', outPath
-        zipdir( options.app_path, outPath, False )
+        zipdir( options.app_path, outPath, False, ignore_file_masks )
     else:
        print 'No packing folder -> ', options.app_path
 
