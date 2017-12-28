@@ -71,7 +71,7 @@ void OverdrawTestingScreen::LoadResources()
 
     if (font == nullptr)
     {
-        font = FTFont::Create("~res:/Fonts/korinna.ttf");
+        font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         DVASSERT(font);
     }
 
