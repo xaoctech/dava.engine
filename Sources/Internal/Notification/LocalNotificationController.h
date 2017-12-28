@@ -23,9 +23,9 @@ class LocalNotificationController : public Singleton<LocalNotificationController
 public:
     LocalNotificationController();
     virtual ~LocalNotificationController();
-    LocalNotificationProgress* const CreateNotificationProgress(const WideString& title = L"", const WideString& text = L"", uint32 max = 0, uint32 current = 0, bool useSound = false);
-    LocalNotificationText* const CreateNotificationText(const WideString& title = L"", const WideString& text = L"", bool useSound = false);
-    void PostDelayedNotification(const WideString& title, const WideString& text, int delaySeconds, bool useSound = false);
+    LocalNotificationProgress* const CreateNotificationProgress(const String& title = "", const String& text = "", uint32 max = 0, uint32 current = 0, bool useSound = false);
+    LocalNotificationText* const CreateNotificationText(const String& title = "", const String& text = "", bool useSound = false);
+    void PostDelayedNotification(const String& title, const String& text, int delaySeconds, bool useSound = false);
     void RemoveAllDelayedNotifications();
     bool Remove(LocalNotification* const notification);
     bool RemoveById(const String& notificationId);

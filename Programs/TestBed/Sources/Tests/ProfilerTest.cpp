@@ -38,7 +38,7 @@ void ProfilerTest::LoadResources()
     customCPUProfiler = new ProfilerCPU();
 
     scene = new Scene();
-    scene->LoadScene("~res:/3d/Maps/test_scene/test_scene.sc2");
+    scene->LoadScene("~res:/TestBed/3d/Maps/test_scene/test_scene.sc2");
 
     ScopedPtr<Camera> camera(new Camera());
 
@@ -60,10 +60,10 @@ void ProfilerTest::LoadResources()
     sceneView->SetScene(scene);
     AddControl(sceneView);
 
-    textFont = FTFont::Create("~res:/Fonts/korinna.ttf");
+    textFont = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     textFont->SetSize(20.f);
 
-    dumpFont = FTFont::Create("~res:/Fonts/DroidSansMono.ttf");
+    dumpFont = FTFont::Create("~res:/TestBed/Fonts/DroidSansMono.ttf");
     dumpFont->SetSize(10.f);
 
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 5.f, 400.f, 35.f), L"Start/Stop Global CPU-Profiler", Message(this, &ProfilerTest::OnGlobalCPUProfiler))));

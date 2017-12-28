@@ -37,7 +37,7 @@ void RichTextTest::LoadResources()
     BaseScreen::LoadResources();
 
     DAVA::DefaultUIPackageBuilder pkgBuilder;
-    DAVA::UIPackageLoader().LoadPackage("~res:/UI/RichTextTest.yaml", &pkgBuilder);
+    DAVA::UIPackageLoader().LoadPackage("~res:/TestBed/UI/RichTextTest.yaml", &pkgBuilder);
     UIControl* dialog = pkgBuilder.GetPackage()->GetControl("Root");
     AddControl(dialog);
     richText = dialog->FindByPath("RichText");

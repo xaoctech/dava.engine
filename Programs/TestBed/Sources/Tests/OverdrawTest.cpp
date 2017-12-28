@@ -71,7 +71,7 @@ void OverdrawTest::LoadResources()
 
     if (font == nullptr)
     {
-        font = FTFont::Create("~res:/Fonts/korinna.ttf");
+        font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         font->SetSize(17.f);
     }
     DAVA::Rect screenRect = GetRect();
@@ -224,7 +224,7 @@ DAVA::UIButton* OverdrawTest::CreateButton(const DAVA::Rect& rect, const WideStr
 {
     if (font == nullptr)
     {
-        font = FTFont::Create("~res:/Fonts/korinna.ttf");
+        font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         font->SetSize(17.f);
     }
 

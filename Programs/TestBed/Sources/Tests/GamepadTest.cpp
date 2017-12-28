@@ -42,13 +42,13 @@ void GamepadTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
 
     InputSystem* inputSystem = app.GetEngine().GetContext()->inputSystem;
     gamepadInputToken = inputSystem->AddHandler(eInputDeviceTypes::CLASS_GAMEPAD, MakeFunction(this, &GamepadTest::OnGamepadEvent));
 
     gamepad = new UIControl(gamepadPos);
-    FilePath pathToBack("~res:/TestData/GamepadTest/gamepad.png");
+    FilePath pathToBack("~res:/TestBed/TestData/GamepadTest/gamepad.png");
     ScopedPtr<Sprite> gamepadSprite(Sprite::CreateFromSourceFile(pathToBack));
     UIControlBackground* bg = gamepad->GetOrCreateComponent<UIControlBackground>();
     bg->SetModification(ESM_VFLIP | ESM_HFLIP);
@@ -58,7 +58,7 @@ void GamepadTest::LoadResources()
     for (auto& buttonOrAxisName : gamepadButtonsNames)
     {
         UIControl* img = new UIControl(gamepadPos);
-        auto path = FilePath("~res:/TestData/GamepadTest/") + buttonOrAxisName + ".png";
+        auto path = FilePath("~res:/TestBed/TestData/GamepadTest/") + buttonOrAxisName + ".png";
         UIControlBackground* bg = img->GetOrCreateComponent<UIControlBackground>();
         bg->SetModification(ESM_VFLIP | ESM_HFLIP);
 

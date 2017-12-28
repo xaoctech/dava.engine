@@ -13,19 +13,19 @@ UIScrollViewTest::UIScrollViewTest(TestBed& app)
 
 void UIScrollViewTest::LoadResources()
 {
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(14);
 
     DefaultUIPackageBuilder builder;
-    UIPackageLoader().LoadPackage("~res:/UI/Test/ScrollScreen.yaml", &builder);
+    UIPackageLoader().LoadPackage("~res:/TestBed/UI/Test/ScrollScreen.yaml", &builder);
     AddControl(builder.GetPackage()->GetControl("ScreenContent"));
     scrollView = DynamicTypeCheck<UIScrollView*>(FindByName("Scrollview"));
 
     UIControl* innerControl = FindByName("UIControl1");
     if (innerControl)
     {
-        innerControl->SetSprite("~res:/Gfx/UI/HorizontalScroll", 0);
+        innerControl->SetSprite("~res:/TestBed/Gfx/UI/HorizontalScroll", 0);
         innerControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     }
 
@@ -33,7 +33,7 @@ void UIScrollViewTest::LoadResources()
     if (control)
     {
         UIScrollBar* horizontalScrollbar = DynamicTypeCheck<UIScrollBar*>(control);
-        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/TestData/UI/HorizontalScroll.png"));
+        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UI/HorizontalScroll.png"));
 
         UIControlBackground* sliderBg = horizontalScrollbar->GetSlider()->GetOrCreateComponent<UIControlBackground>();
         sliderBg->SetSprite(sprite, 0);
@@ -46,7 +46,7 @@ void UIScrollViewTest::LoadResources()
     if (control)
     {
         UIScrollBar* verticalScrollbar = DynamicTypeCheck<UIScrollBar*>(control);
-        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/TestData/UI/VerticalScroll.png"));
+        ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UI/VerticalScroll.png"));
         UIControlBackground* sliderBg = verticalScrollbar->GetSlider()->GetOrCreateComponent<UIControlBackground>();
         sliderBg->SetSprite(sprite, 0);
         sliderBg->SetDrawType(UIControlBackground::DRAW_STRETCH_VERTICAL);

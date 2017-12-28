@@ -6,7 +6,10 @@
 #   include "Concurrency/Atomic.h"
 #   include "Concurrency/Mutex.h"
 #   include "Concurrency/LockGuard.h"
+#pragma warning(push)
+#pragma warning (disable: 4091) // 'typedef ': ignored on left of '' when no variable is declared
 #   include <dbghelp.h>
+#pragma warning(pop)
 #elif defined(__DAVAENGINE_WIN_UAP__)
 #   include "Concurrency/Atomic.h"
 #   include "Concurrency/Mutex.h"
@@ -81,7 +84,7 @@ namespace BacktraiceDetails
 #if defined(__DAVAENGINE_WINDOWS__)
 void InitSymbols()
 {
-    static Atomic<bool> symbolsInited = false;
+    static Atomic<bool> symbolsInited(false);
     if (!symbolsInited)
     {
         // All DbgHelp functions are single threaded

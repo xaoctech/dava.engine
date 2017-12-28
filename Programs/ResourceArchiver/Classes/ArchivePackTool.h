@@ -23,6 +23,7 @@ private:
 
     DAVA::String compressionStr;
     DAVA::Compressor::Type compressionType;
+    bool dummyFileData = false;
     DAVA::String packFileName;
     DAVA::String baseDir;
     DAVA::String metaDbPath;
