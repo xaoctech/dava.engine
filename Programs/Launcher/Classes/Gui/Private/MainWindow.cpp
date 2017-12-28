@@ -445,7 +445,7 @@ void MainWindow::ShowTable(QString branchID)
         if (userType == QA)
         {
             createButton(tr("Copy version"), "copy", std::bind(&MainWindow::CopyVersion, this, index));
-            createButton(tr("Open url"), "url", std::bind(&MainWindow::OpenUrl, this, index))->setEnabled(iter->remote != nullptr);
+            createButton(tr("Copy url"), "url", std::bind(&MainWindow::OpenUrl, this, index))->setEnabled(iter->remote != nullptr);
         }
         ui->tableWidget->setCellWidget(index, COLUMN_BUTTONS, buttonsWidget);
     }
