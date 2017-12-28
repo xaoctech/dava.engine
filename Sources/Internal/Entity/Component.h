@@ -75,8 +75,6 @@ public:
         VEHICLE_WHEEL_COMPONENT,
 #endif
 
-        SCREEN_POSITION_COMPONENT,
-
         NON_EXPORTABLE_COMPONENTS, // everything below NON_EXPORTABLE_COMPONENTS will be serialized but won't be exported
         TEXT_COMPONENT = NON_EXPORTABLE_COMPONENTS,
 

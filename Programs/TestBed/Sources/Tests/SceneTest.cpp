@@ -5,7 +5,6 @@
 #include <Debug/DVAssert.h>
 #include <Render/Highlevel/Camera.h>
 #include <Scene3D/Components/CameraComponent.h>
-#include <Scene3D/Components/ScreenPositionComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/Controller/RotationControllerSystem.h>
@@ -70,7 +69,8 @@ void SceneTest::LoadResources()
     UIControl* markers = dialog->FindByPath("Markers");
     DVASSERT(markers);
     Vector<Entity*> entities;
-    scene->GetChildEntitiesWithComponent(entities, Component::SCREEN_POSITION_COMPONENT);
+    //scene->GetChildEntitiesWithComponent(entities, Component::SCREEN_POSITION_COMPONENT);
+    scene->GetChildNodes(entities);
     for (Entity* e : entities)
     {
         RefPtr<UIControl> marker = pkgBuilder.GetPackage()->GetPrototype(FastName("Marker"))->SafeClone();
@@ -84,12 +84,12 @@ void SceneTest::LoadResources()
         UIEntityMarkerComponent* emc = marker->GetComponent<UIEntityMarkerComponent>();
         DVASSERT(emc);
         emc->SetTargetEntity(e);
-        emc->SetCustomStrategy([](UIControl* ctrl, UIEntityMarkerComponent* emc, ScreenPositionComponent* spc) {
+        emc->SetCustomStrategy([](UIControl* ctrl, UIEntityMarkerComponent* emc) {
             UIControl* distanceCtrl = ctrl->FindByPath("Distance");
             DVASSERT(distanceCtrl);
             UITextComponent* distanceText = distanceCtrl->GetComponent<UITextComponent>();
             DVASSERT(distanceText);
-            float32 distance = (spc->GetCameraPosition() - spc->GetWorldPosition()).Length();
+            float32 distance = (emc->GetTargetEntity()->GetScene()->GetCurrentCamera()->GetPosition() - emc->GetTargetEntity()->GetWorldTransform().GetTranslationVector()).Length();
             distanceText->SetText(Format("%.3f", distance));
         });
 

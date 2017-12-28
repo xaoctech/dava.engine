@@ -6,9 +6,7 @@
 #include "Engine/Engine.h"
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Components/ScreenPositionComponent.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/Systems/ScreenPositionSystem.h"
 #include "UI/Scene3D/UIEntityMarkerComponent.h"
 #include "UI/Scene3D/UIEntityMarkerSystem.h"
 #include "UI/UI3DView.h"
@@ -40,8 +38,6 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
         Matrix4 m;
         m.BuildTranslation(position);
         entity->SetLocalTransform(m);
-
-        entity->AddComponent(new ScreenPositionComponent());
 
         return entity;
     }
@@ -95,7 +91,7 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
 
         c1 = CreateControl(e1.Get());
         c2 = CreateControl(e2.Get());
-        markers = new UIControl();
+        markers = new UIControl(Rect(0, 0, 500, 500));
         markers->AddControl(c1.Get());
         markers->AddControl(c2.Get());
 
@@ -269,10 +265,9 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
         using namespace DAVA;
         ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
             emc->SetUseCustomStrategy(true);
-            emc->SetCustomStrategy([](UIControl* c, UIEntityMarkerComponent* emc, ScreenPositionComponent* spc) {
+            emc->SetCustomStrategy([](UIControl* c, UIEntityMarkerComponent* emc) {
                 TEST_VERIFY(c != nullptr);
                 TEST_VERIFY(emc != nullptr);
-                TEST_VERIFY(spc != nullptr);
             });
         });
         SystemsUpdate(0.f);

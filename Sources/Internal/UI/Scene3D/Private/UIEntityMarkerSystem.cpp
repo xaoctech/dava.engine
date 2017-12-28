@@ -1,7 +1,8 @@
 #include "UI/Scene3D/UIEntityMarkerSystem.h"
 #include "Debug/DVAssert.h"
-#include "Scene3D/Components/ScreenPositionComponent.h"
+#include "Render/Highlevel/Camera.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
 #include "UI/Scene3D/UIEntityMarkerComponent.h"
 #include "UI/UIControl.h"
 
@@ -61,73 +62,83 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
 
     for (UIEntityMarkerComponent* component : components)
     {
-        if (!component->IsEnabled() || component->GetTargetEntity() == nullptr)
+        if(!component->IsEnabled())
+        {
+            continue;
+        }
+        
+        Entity* target = component->GetTargetEntity();
+        UIControl* control = component->GetControl();
+        if (control == nullptr || target == nullptr || target->GetScene() == nullptr)
         {
             continue;
         }
 
-        ScreenPositionComponent* spc = static_cast<ScreenPositionComponent*>(component->GetTargetEntity()->GetComponent(Component::SCREEN_POSITION_COMPONENT));
-        if (spc)
+        UIControl* parent = control->GetParent();
+        Camera* camera = target->GetScene()->GetCurrentCamera();
+        if (parent == nullptr || camera == nullptr)
         {
-            Vector3 positionAndDepth = spc->GetScreenPositionAndDepth();
-            Vector3 distance = spc->GetWorldPosition() - spc->GetCameraPosition();
-            UIControl* control = component->GetControl();
+            continue;
+        }
 
-            if (component->IsSyncVisibilityEnabled())
+        Vector3 worldPosition = component->GetTargetEntity()->GetWorldTransform().GetTranslationVector();
+        Vector3 positionAndDepth = camera->GetOnScreenPositionAndDepth(worldPosition, parent->GetAbsoluteRect());
+        Vector3 distance = worldPosition - camera->GetPosition();
+
+        if (component->IsSyncVisibilityEnabled())
+        {
+            const bool visible = distance.DotProduct(camera->GetDirection()) > 0.f;
+            control->SetVisibilityFlag(visible);
+
+            if (!visible)
             {
-                const bool visible = distance.DotProduct(spc->GetCameraDirection()) > 0.f;
-                control->SetVisibilityFlag(visible);
-
-                if (!visible)
-                {
-                    // Skip next steps for invisible controls
-                    continue;
-                }
+                // Skip next steps for invisible controls
+                continue;
             }
+        }
 
-            if (component->IsSyncPositionEnabled())
+        if (component->IsSyncPositionEnabled())
+        {
+            control->SetPosition(Vector2(positionAndDepth.x, positionAndDepth.y));
+        }
+
+        if (component->IsSyncScaleEnabled())
+        {
+            if (distance.SquareLength() > 0.f)
             {
-                control->SetPosition(Vector2(positionAndDepth.x, positionAndDepth.y));
-            }
+                const Vector2& factor = component->GetScaleFactor();
+                const Vector2& maxScale = component->GetMaxScale();
+                const Vector2& minScale = component->GetMinScale();
+                const float32 distsance = distance.Length();
 
-            if (component->IsSyncScaleEnabled())
+                Vector2 scale(Clamp(factor.x / distsance, minScale.x, maxScale.x),
+                              Clamp(factor.y / distsance, minScale.y, maxScale.y));
+
+                control->SetScale(scale);
+            }
+            else
             {
-                if (distance.SquareLength() > 0.f)
-                {
-                    const Vector2& factor = component->GetScaleFactor();
-                    const Vector2& maxScale = component->GetMaxScale();
-                    const Vector2& minScale = component->GetMinScale();
-                    const float32 distsance = distance.Length();
-
-                    Vector2 scale(Clamp(factor.x / distsance, minScale.x, maxScale.x),
-                                  Clamp(factor.y / distsance, minScale.y, maxScale.y));
-
-                    control->SetScale(scale);
-                }
-                else
-                {
-                    control->SetScale(component->GetMaxScale());
-                }
+                control->SetScale(component->GetMaxScale());
             }
+        }
 
-            if (component->IsSyncOrderEnabled() && control->GetParent())
+        if (component->IsSyncOrderEnabled() && control->GetParent())
+        {
+            hasOrdering = true;
+            switch (component->GetOrderMode())
             {
-                hasOrdering = true;
-                switch (component->GetOrderMode())
-                {
-                case UIEntityMarkerComponent::OrderMode::NearFront:
-                    orderMap[control->GetParent()][control] = SafeFloat(-distance.SquareLength());
-                    break;
-                case UIEntityMarkerComponent::OrderMode::NearBack:
-                    orderMap[control->GetParent()][control] = SafeFloat(distance.SquareLength());
-                    break;
-                }
+            case UIEntityMarkerComponent::OrderMode::NearFront:
+                orderMap[control->GetParent()][control] = SafeFloat(-distance.SquareLength());
+                break;
+            case UIEntityMarkerComponent::OrderMode::NearBack:
+                orderMap[control->GetParent()][control] = SafeFloat(distance.SquareLength());
+                break;
             }
+        }
 
-            if (component->IsUseCustomStrategy() && component->GetCustomStrategy())
-            {
-                component->GetCustomStrategy()(control, component, spc);
-            }
+        if (component->IsUseCustomStrategy() && component->GetCustomStrategy())
+        {
+            component->GetCustomStrategy()(control, component);
         }
     }
 

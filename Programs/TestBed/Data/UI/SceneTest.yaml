@@ -1,5 +1,5 @@
 Header:
-    version: "19"
+    version: "20"
 Prototypes:
 -   class: "UIControl"
     name: "Marker"
@@ -31,7 +31,7 @@ Prototypes:
                 hCenterAnchorEnabled: true
             Background:
                 drawType: "DRAW_FILL"
-                color: [0.666667, 0.000000, 0.000000, 1.000000]
+                color: [0.666667, 0.000000, 0.000000, 0.501961]
             UITextComponent:
                 text: "Marker"
                 fontName: "Korinna_18"
@@ -47,7 +47,7 @@ Prototypes:
                 hCenterAnchorEnabled: true
             Background:
                 drawType: "DRAW_FILL"
-                color: [0.666667, 0.000000, 0.000000, 1.000000]
+                color: [0.666667, 0.000000, 0.000000, 0.501961]
             UITextComponent:
                 text: "0"
                 fontName: "Korinna_18"

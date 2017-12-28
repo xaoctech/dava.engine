@@ -26,7 +26,7 @@ public:
     };
 
     /** Function declaration using for custom strategies. */
-    using CustomStrategy = Function<void(UIControl*, UIEntityMarkerComponent*, ScreenPositionComponent*)>;
+    using CustomStrategy = Function<void(UIControl*, UIEntityMarkerComponent*)>;
 
     UIEntityMarkerComponent();
     UIEntityMarkerComponent(const UIEntityMarkerComponent& src);
