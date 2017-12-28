@@ -31,7 +31,7 @@ void CoreV2Test::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     font->SetSize(12);
 
     float32 h = 60.0f;
