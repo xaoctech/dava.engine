@@ -23,7 +23,7 @@ void UIStylesTest::LoadResources()
     BaseScreen::LoadResources();
 
     DefaultUIPackageBuilder pkgBuilder;
-    UIPackageLoader().LoadPackage("~res:/UI/StylesTest.yaml", &pkgBuilder);
+    UIPackageLoader().LoadPackage("~res:/TestBed/UI/StylesTest.yaml", &pkgBuilder);
     UIControl* main = pkgBuilder.GetPackage()->GetControl("Window");
     auto actions = main->GetOrCreateComponent<UIEventBindingComponent>();
     if (actions)

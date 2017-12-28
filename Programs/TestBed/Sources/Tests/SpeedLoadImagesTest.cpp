@@ -20,7 +20,7 @@ SpeedLoadImagesTest::~SpeedLoadImagesTest()
 void SpeedLoadImagesTest::LoadResources()
 {
     BaseScreen::LoadResources();
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(30);
 
@@ -174,7 +174,7 @@ void SpeedLoadImagesTest::CreatePaths(String extension, const Vector<String>& qu
     {
         for (auto& quality : qualities)
         {
-            FilePath inpath(Format("~res:/TestData/SpeedLoadImagesTest/%s%s_quality%s.%s",
+            FilePath inpath(Format("~res:/TestBed/TestData/SpeedLoadImagesTest/%s%s_quality%s.%s",
                                    extension.c_str(),
                                    fileName.c_str(),
                                    quality.c_str(),

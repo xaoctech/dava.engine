@@ -22,7 +22,7 @@ void UILoggingTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    ScopedPtr<Font> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
     font->SetSize(12);
 
     Rect btnRect(10.0f, 10.0f, 200.0f, 40.0f);
@@ -31,7 +31,7 @@ void UILoggingTest::LoadResources()
     UpdateSwithButton();
 
     RefPtr<KeyedArchive> config(new KeyedArchive);
-    config->LoadFromYamlFile("~res:/AnalyticsConfig.yaml");
+    config->LoadFromYamlFile("~res:/TestBed/AnalyticsConfig.yaml");
     GetCore().SetConfig(config.Get());
 }
 

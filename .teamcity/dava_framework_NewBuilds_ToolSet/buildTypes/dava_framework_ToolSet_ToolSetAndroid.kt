@@ -19,7 +19,6 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
     name = "ToolSet_Android"
 
     artifactRules = """
-        dava.framework/Programs/UnitTests/Platforms/Android/UnitTests/build/outputs/apk/UnitTests-fat-release.apk
         dava.framework/Programs/SceneViewer/Platforms/Android/SceneViewer/build/outputs/apk/SceneViewer-fat-release.apk
         dava.framework/Programs/TestBed/Platforms/Android/TestBed/build/outputs/apk/TestBed-fat-release.apk
     """.trimIndent()
@@ -35,6 +34,7 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
 
     vcs {
         root("dava_DavaFrameworkStash", "+:=>/dava.framework")
+        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
     }

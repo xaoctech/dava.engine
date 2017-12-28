@@ -25,13 +25,10 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
     """.trimIndent()
 
     params {
-        param("add_definitions", "-DWIN32_MODE=1,-DDAVA_MEMORY_PROFILER=0,-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=1,-DCUSTOM_DAVA_CONFIG_PATH_WIN=%DavaConfigWin%,-DIGNORE_FILE_TREE_CHECK=1,-DCHECK_DEPENDENT_FOLDERS=1,-DTEAMCITY_URL=https://teamcity2.wargaming.net,-DSTASH_URL=https://stash.wargaming.net,-DTEAMCITY_LOGIN=%teamcity_restapi_login%,-DTEAMCITY_PASS=%teamcity_restapi_password%,-DSTASH_LOGIN=%stash_restapi_login%,-DSTASH_PASS=%stash_restapi_password%,-DFRAMEWORK_BRANCH=%teamcity.build.branch%")
+        param("add_definitions", "-DDAVA_MEMORY_PROFILER=0,-DQT_VERSION=%QT_VERSION%,-DUNITY_BUILD=%UNITY_BUILD%,-DDEPLOY=1,-DCUSTOM_DAVA_CONFIG_PATH_WIN=%DavaConfigWin%,-DIGNORE_FILE_TREE_CHECK=1,-DCHECK_DEPENDENT_FOLDERS=1,-DTEAMCITY_URL=https://teamcity2.wargaming.net,-DSTASH_URL=https://%stash_hostname%,-DTEAMCITY_LOGIN=%teamcity_restapi_login%,-DTEAMCITY_PASS=%teamcity_restapi_password%,-DSTASH_LOGIN=%stash_restapi_login%,-DSTASH_PASS=%stash_restapi_password%,-DFRAMEWORK_BRANCH=%teamcity.build.branch%")
         param("appID", "%ProjectName%")
         param("baseArchiveNameWin", "%ProjectName%_win_")
-        param("baseURLWin", "http://by1-davatool-01.corp.wargaming.local/dava.framework/win/Tools/%branchID%/")
         param("branchID", "%teamcity.build.branch%")
-        param("buildsPathWin", "//by1-davatool-01/win/Tools/%branchID%")
-        param("configPathWin", "//by1-davatool-01/win/launcher/launcher_config.yaml")
         param("env.build_failed", "true")
         param("env.from_commit", "0")
         text("LAUNCHER_ENABLE", "0", allowEmpty = true)
@@ -54,6 +51,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
 
     vcs {
         root("dava_DavaFrameworkStash", "+:. => dava.framework")
+        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
     }
@@ -103,14 +101,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
                 )
                 
                 %config.cmake_bin% --build . --config RelWithDebinfo
-            """.trimIndent()
-        }
-        script {
-            name = "Copy build result"
-            workingDir = "%pathToProjectApp_other%"
-            scriptContent = """
-                rmdir "%dava_dir%/Programs/UnitTests/Release" /S /Q
-                xcopy "%pathToProjectApp_other%" "%dava_dir%/Programs/UnitTests/Release" /I /S /H /E /R /Y
             """.trimIndent()
         }
         script {
@@ -174,9 +164,6 @@ object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
     }
 
     requirements {
-        doesNotEqual("system.agent.name", "by1-badava-win-16", "RQ_52")
-        exists("MSBuildTools4.0_x86_Path")
-    }
-    
-    disableSettings("RQ_52", "RUNNER_9")
+        exists("env.windows10")
+    }    
 })
