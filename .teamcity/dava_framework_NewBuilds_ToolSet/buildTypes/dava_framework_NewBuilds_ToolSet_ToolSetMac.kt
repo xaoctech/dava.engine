@@ -52,7 +52,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
 
     vcs {
         root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
-
+        root("dava_DavaFrameworkStash", "+:=>/dava.framework")
     }
 
     steps {
