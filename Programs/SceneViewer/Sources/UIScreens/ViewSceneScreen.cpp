@@ -21,6 +21,7 @@
 #include <Physics/HeightFieldShapeComponent.h>
 #include <Physics/PhysicsSystem.h>
 #endif
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
 
 #include <TestCharacterController/TestCharacterControllerModule.h>
 #include <TestCharacterController/TestCharacterControllerSystems.h>
@@ -330,7 +331,7 @@ void ViewSceneScreen::AddCameraControllerSystems()
         scene->AddSystem(rotationControllerSystem, DAVA::ComponentUtils::MakeMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::RotationControllerComponent>(),
                          DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
-        scene->AddSystem(wasdSystem, DAVA::ComponentUtils::MakeMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::WasdControllerComponent>(),
+        scene->AddSystem(wasdSystem, DAVA::ComponentUtils::MakeMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::WASDControllerComponent>(),
                          DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 }

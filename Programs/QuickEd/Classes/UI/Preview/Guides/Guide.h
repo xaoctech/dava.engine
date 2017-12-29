@@ -12,4 +12,6 @@ struct Guide
 
     QWidget* line = nullptr;
     GuideLabel* text = nullptr;
+
+    bool inWork = false;
 };

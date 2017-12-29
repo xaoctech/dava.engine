@@ -68,11 +68,11 @@ OverdrawTestingScreen::OverdrawTestingScreen(TestBed& app_)
 void OverdrawTestingScreen::LoadResources()
 {
     scene = new Scene();
-    scene->LoadScene(FilePath("~res:3d/Maps/overdraw_test/TestingScene.sc2"));
+    scene->LoadScene(FilePath("~res:/TestBed/3d/Maps/overdraw_test/TestingScene.sc2"));
 
     if (font == nullptr)
     {
-        font = FTFont::Create("~res:/Fonts/korinna.ttf");
+        font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         DVASSERT(font);
     }
 

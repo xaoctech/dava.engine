@@ -21,7 +21,7 @@ DeviceInfoTest::DeviceInfoTest(TestBed& app)
 
 void DeviceInfoTest::LoadResources()
 {
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
 
     font->SetSize(20.0f);
