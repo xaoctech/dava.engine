@@ -49,7 +49,7 @@ FastName("t4")
 } };
 
 const uint8 maxTexturesCount = 4;
-const FastName materialPath("~res:/CustomMaterials/OverdrawTester.material");
+const FastName materialPath("~res:/TestBed/CustomMaterials/OverdrawTester.material");
 const FastName sampleCountKeyword("SAMPLE_COUNT");
 const FastName dependentReadKeyword("DEPENDENT_READ_TEST");
 const uint32 accumulatedFramesCount = 20;

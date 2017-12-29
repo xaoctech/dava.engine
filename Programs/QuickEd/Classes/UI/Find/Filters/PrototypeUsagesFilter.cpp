@@ -33,5 +33,14 @@ FindFilter::ePackageStatus PrototypeUsagesFilter::AcceptPackage(const PackageInf
 
 bool PrototypeUsagesFilter::AcceptControl(const ControlInformation* control) const
 {
-    return control->GetPrototype() == prototypeName && control->GetPrototypePackagePath() == packagePath;
+    while (control != nullptr)
+    {
+        if (control->GetPrototypeName() == prototypeName && control->GetPrototypePackagePath() == packagePath)
+        {
+            return true;
+        }
+        control = control->GetPrototype();
+    }
+
+    return false;
 }

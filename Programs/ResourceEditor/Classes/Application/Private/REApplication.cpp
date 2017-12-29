@@ -186,7 +186,8 @@ void REApplication::Cleanup()
 
 bool REApplication::AllowMultipleInstances() const
 {
-    return isConsoleMode;
+    bool isSelfTest = (cmdLine.size() > 1) && (cmdLine[1] == "--selftest");
+    return isSelfTest || isConsoleMode;
 }
 
 QString REApplication::GetInstanceKey() const
