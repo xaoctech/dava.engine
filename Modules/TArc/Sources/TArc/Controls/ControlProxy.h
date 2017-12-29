@@ -254,6 +254,33 @@ protected:
         readOnlyFieldValue == true;
     }
 
+    template <typename Enum>
+    bool IsValueEnabled(const ControlDescriptor& descriptor, Enum valueRole, Enum enabledRole) const
+    {
+        DAVA::Any constValue = descriptor.GetConstValue(valueRole);
+        if (constValue.IsEmpty() == false)
+        {
+            return false;
+        }
+
+        DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(valueRole));
+        DVASSERT(fieldValue.IsValid());
+
+        bool enabledFieldValue = true;
+        FastName enabledFieldName = descriptor.GetName(enabledRole);
+        if (enabledFieldName.IsValid())
+        {
+            DAVA::Reflection fieldEnabled = model.GetField(enabledFieldName);
+            if (fieldEnabled.IsValid())
+            {
+                enabledFieldValue = fieldEnabled.GetValue().Cast<bool>();
+            }
+        }
+
+        bool isDisabled = fieldValue.IsReadonly() || fieldValue.GetMeta<DAVA::M::ReadOnly>() != nullptr || enabledFieldValue == false;
+        return !isDisabled;
+    }
+
     template <typename CastType, typename Enum>
     CastType GetFieldValue(Enum role, const CastType& defaultValue) const
     {
