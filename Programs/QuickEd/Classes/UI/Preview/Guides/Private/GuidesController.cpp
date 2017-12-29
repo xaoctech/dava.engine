@@ -320,7 +320,12 @@ void GuidesController::SyncGuidesWithValues()
     {
         while (guides.empty() == false)
         {
-            RemoveLastGuideWidget();
+            if (RemoveLastGuideWidget() == false)
+            {
+                //whoops, we trying to remove guide while it calling show() inside;
+                //will try to remove it next frame
+                return;
+            }
         }
         return;
     }
@@ -345,7 +350,12 @@ void GuidesController::SyncGuidesWithValues()
 
     while (guides.size() > size)
     {
-        RemoveLastGuideWidget();
+        if (RemoveLastGuideWidget() == false)
+        {
+            //whoops, we trying to remove guide while it calling show() inside;
+            //will try to remove it next frame
+            return;
+        }
     }
     while (guides.size() < size)
     {
@@ -366,6 +376,8 @@ void GuidesController::SyncGuidesWithValues()
     delayedExecutor.DelayedExecute([this]() {
         for (Guide& guide : guides)
         {
+            //be afraid, because this guide.show may produce next frame
+            //and during this frame scene position may change and in this case all guides will be removed
             guide.Show();
             guide.Raise();
         }
@@ -538,12 +550,18 @@ void GuidesController::SetGuideColor(QWidget* guide, const DAVA::Color& color) c
     guide->setStyleSheet(QString("QWidget { background-color: %1; }").arg(colorString));
 }
 
-void GuidesController::RemoveLastGuideWidget()
+bool GuidesController::RemoveLastGuideWidget()
 {
     Guide& guide = guides.last();
+    if (guide.inWork)
+    {
+        return false;
+    }
+
     delete guide.line;
     delete guide.text;
     guides.removeLast();
+    return true;
 }
 
 CentralWidgetData* GuidesController::GetCentralWidgetData() const

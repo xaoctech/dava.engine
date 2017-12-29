@@ -7,6 +7,11 @@ using namespace DAVA;
 ControlNodeInformation::ControlNodeInformation(const ControlNode* controlNode_)
     : controlNode(controlNode_)
 {
+    const ControlNode* prototype = controlNode->GetPrototype();
+    if (prototype != nullptr)
+    {
+        prototypeInformation.reset(new ControlNodeInformation(prototype));
+    }
 }
 
 FastName ControlNodeInformation::GetName() const
@@ -14,7 +19,7 @@ FastName ControlNodeInformation::GetName() const
     return FastName(controlNode->GetName());
 }
 
-FastName ControlNodeInformation::GetPrototype() const
+FastName ControlNodeInformation::GetPrototypeName() const
 {
     const ControlNode* prototype = controlNode->GetPrototype();
 
@@ -40,6 +45,11 @@ String ControlNodeInformation::GetPrototypePackagePath() const
     {
         return String();
     }
+}
+
+const ControlInformation* ControlNodeInformation::GetPrototype() const
+{
+    return prototypeInformation.get();
 }
 
 bool ControlNodeInformation::HasErrors() const
