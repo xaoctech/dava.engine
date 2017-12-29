@@ -188,7 +188,7 @@ TestBed::TestBed(Engine& engine)
 
     DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
 
-    context->settings->Load("~res:/EngineSettings.yaml");
+    context->settings->Load("~res:/TestBed/EngineSettings.yaml");
 
     servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "TestBed"));
     netLogger.reset(new DAVA::Net::NetLogger);
@@ -201,7 +201,7 @@ void TestBed::OnGameLoopStarted()
 {
     Logger::Debug("****** TestBed::OnGameLoopStarted");
 
-    UIYamlLoader::LoadFonts("~res:/UI/Fonts/fonts.yaml");
+    UIYamlLoader::LoadFonts("~res:/TestBed/UI/Fonts/fonts.yaml");
 
     InitNetwork();
     RunOnlyThisTest();
@@ -279,7 +279,7 @@ void TestBed::OnWindowCreated(DAVA::Window* w)
     w->GetUIControlSystem()->GetRenderSystem()->SetClearColor(Color::Black);
 
     LocalizationSystem* ls = LocalizationSystem::Instance();
-    ls->SetDirectory("~res:/Strings/");
+    ls->SetDirectory("~res:/TestBed/Strings/");
     ls->SetCurrentLocale("en");
     ls->Init();
 
