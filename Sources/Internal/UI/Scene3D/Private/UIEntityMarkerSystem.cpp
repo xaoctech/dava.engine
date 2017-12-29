@@ -62,11 +62,11 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
 
     for (UIEntityMarkerComponent* component : components)
     {
-        if(!component->IsEnabled())
+        if (!component->IsEnabled())
         {
             continue;
         }
-        
+
         Entity* target = component->GetTargetEntity();
         UIControl* control = component->GetControl();
         if (control == nullptr || target == nullptr || target->GetScene() == nullptr)
