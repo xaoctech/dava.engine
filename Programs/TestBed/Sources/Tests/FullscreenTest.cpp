@@ -23,7 +23,7 @@ void FullscreenTest::LoadResources()
     UIControlBackground* background = GetOrCreateComponent<UIControlBackground>();
     background->SetColor(Color::White);
 
-    ScopedPtr<Font> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
 
     float y = 35;
 
@@ -101,7 +101,7 @@ void FullscreenTest::LoadResources()
     ui3dview->GetOrCreateComponent<UIDebugRenderComponent>();
 
     ScopedPtr<Scene> scene(new Scene());
-    scene->LoadScene("~res:/3d/Objects/monkey.sc2");
+    scene->LoadScene("~res:/TestBed/3d/Objects/monkey.sc2");
 
     ScopedPtr<Camera> camera(new Camera());
     VirtualCoordinatesSystem* vcs = DAVA::GetEngineContext()->uiControlSystem->vcs;

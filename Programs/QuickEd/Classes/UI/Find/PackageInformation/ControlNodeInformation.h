@@ -10,8 +10,9 @@ public:
     ControlNodeInformation(const ControlNode* controlNode);
 
     DAVA::FastName GetName() const override;
-    DAVA::FastName GetPrototype() const override;
+    DAVA::FastName GetPrototypeName() const override;
     DAVA::String GetPrototypePackagePath() const override;
+    const ControlInformation* GetPrototype() const override;
     bool HasErrors() const override;
 
     bool HasComponent(const DAVA::Type* componentType) const override;
@@ -23,4 +24,5 @@ public:
 
 private:
     const ControlNode* controlNode;
+    std::unique_ptr<ControlNodeInformation> prototypeInformation;
 };

@@ -67,7 +67,7 @@ void TextSystemTest::LoadResources()
     BaseScreen::LoadResources();
 
     DAVA::DefaultUIPackageBuilder pkgBuilder;
-    DAVA::UIPackageLoader().LoadPackage("~res:/UI/Text/TextSystemTest.yaml", &pkgBuilder);
+    DAVA::UIPackageLoader().LoadPackage("~res:/TestBed/UI/Text/TextSystemTest.yaml", &pkgBuilder);
     UIControl* dialog = pkgBuilder.GetPackage()->GetControl("MainFrame");
     AddControl(dialog);
 
