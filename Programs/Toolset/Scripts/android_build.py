@@ -54,10 +54,12 @@ def main():
         local_properties_file.write( 'sdk.dir={}\n'.format( options.sdk_dir) )
         local_properties_file.write( 'ndk.dir={}\n'.format( options.ndk_dir) )
         local_properties_file.close()
+        
+        build(program)
 
 
-    pool = multiprocessing.Pool(processes=2)
-    pool.map(build, ProgramsList )
+    #pool = multiprocessing.Pool(processes=2)
+    #pool.map(build, ProgramsList )
 
 
 
