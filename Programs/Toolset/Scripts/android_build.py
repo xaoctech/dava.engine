@@ -2,6 +2,7 @@ import argparse
 import os
 import subprocess
 import multiprocessing
+import sys
 
 
 DavaRootDir = os.path.realpath(os.path.join( os.path.dirname (__file__), '../../../'))
@@ -21,10 +22,12 @@ def build( program ):
     os.chdir(program_dir)
 
     print "===== Building % s =====" % (program)
+    sys.stdout.flush()
     command = './gradlew {}:assembleFatRelease'.format(program);
     ret = subprocess.call(command)
     if ret != 0:
         print "Command failed: %s" % (command)
+        sys.stdout.flush()
         exit(1)
 
 def main():
