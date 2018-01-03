@@ -338,7 +338,7 @@ bool EntityTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action
 
             SelectableGroup entitiesToMove;
             entitiesToMove.Add(objects);
-            scene->structureSystem->Move(entitiesToMove, newParentEntity, insertBefore);
+            scene->structureSystem->Move(entitiesToMove, newParentEntity, insertBefore, accessor);
         }
     }
 

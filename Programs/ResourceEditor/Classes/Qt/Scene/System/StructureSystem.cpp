@@ -4,6 +4,7 @@
 #include "Scene/SceneEditor2.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/SceneManager/SceneData.h"
 
 #include "Commands2/Base/RECommandNotificationObject.h"
 #include "Commands2/EntityParentChangeCommand.h"
@@ -61,17 +62,21 @@ StructureSystem::~StructureSystem()
 {
 }
 
-void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore)
+void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore, DAVA::TArc::ContextAccessor* accessor)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     const auto& objectsContent = objects.GetContent();
     if ((sceneEditor == nullptr) || objectsContent.empty())
         return;
 
+    GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<GlobalSceneSettings>();
+
     sceneEditor->BeginBatch("Move entities", objects.GetSize());
     for (auto entity : objects.ObjectsOfType<DAVA::Entity>())
     {
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(entity, newParent, newBefore)));
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(entity, newParent,
+                                                                                       settings->saveEntityPositionOnHierarchyChange,
+                                                                                       newBefore)));
     }
     sceneEditor->EndBatch();
     EmitChanged();

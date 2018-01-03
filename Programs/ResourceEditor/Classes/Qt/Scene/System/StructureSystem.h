@@ -27,7 +27,7 @@ public:
 
     void Process(DAVA::float32 timeElapsed) override;
 
-    void Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore);
+    void Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore, DAVA::TArc::ContextAccessor* accessor);
     void MoveEmitter(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& emitters, const DAVA::Vector<DAVA::ParticleEffectComponent*>& oldEffects, DAVA::ParticleEffectComponent* newEffect, int dropAfter);
     void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer*>& layers, const DAVA::Vector<DAVA::ParticleEmitterInstance*>& oldEmitters, DAVA::ParticleEmitterInstance* newEmitter, DAVA::ParticleLayer* newBefore);
     void MoveSimplifiedForce(const DAVA::Vector<DAVA::ParticleForceSimplified*>& forces, const DAVA::Vector<DAVA::ParticleLayer*>& oldLayers, DAVA::ParticleLayer* newLayer);
