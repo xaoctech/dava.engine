@@ -21,6 +21,7 @@ public:
     void VisitChildren(const DAVA::Function<void(const ControlInformation*)>& visitor) const override;
 
     DAVA::Any GetControlPropertyValue(const DAVA::ReflectedStructure::Field& member) const override;
+    DAVA::Any GetComponentPropertyValue(const DAVA::Type* componentType, DAVA::int32 componentIndex, const DAVA::ReflectedStructure::Field& member) const override;
 
 private:
     const ControlNode* controlNode;
