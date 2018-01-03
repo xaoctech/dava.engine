@@ -40,7 +40,7 @@
     <item row="1" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -65,8 +65,8 @@
            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8.25pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="acceptRichText">
            <bool>false</bool>
@@ -122,6 +122,12 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
           <property name="cornerButtonEnabled">
            <bool>false</bool>
           </property>
+          <property name="columnCount">
+           <number>3</number>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
           <attribute name="horizontalHeaderHighlightSections">
            <bool>false</bool>
           </attribute>
@@ -134,26 +140,9 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
           <attribute name="verticalHeaderMinimumSectionSize">
            <number>16</number>
           </attribute>
-          <column>
-           <property name="text">
-            <string>Application</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Installed Version</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Avalible Version</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string/>
-           </property>
-          </column>
+          <column/>
+          <column/>
+          <column/>
          </widget>
         </item>
         <item>
@@ -317,7 +306,7 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
      <x>0</x>
      <y>0</y>
      <width>1106</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuConfiguration">
@@ -332,8 +321,15 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
     </property>
     <addaction name="actionPreferences"/>
    </widget>
+   <widget class="QMenu" name="menuUtilities">
+    <property name="title">
+     <string>Utilities</string>
+    </property>
+    <addaction name="actionRemove_all_local_builds"/>
+   </widget>
    <addaction name="menuLauncher"/>
    <addaction name="menuConfiguration"/>
+   <addaction name="menuUtilities"/>
   </widget>
   <widget class="QToolBar" name="toolBar_actions">
    <property name="windowTitle">
@@ -373,6 +369,16 @@ QLabel {padding-left: 4px;padding-right: 4px;}</string>
    </property>
    <property name="toolTip">
     <string>Launcher preferences</string>
+   </property>
+  </action>
+  <action name="actionRemove_all_local_builds">
+   <property name="text">
+    <string>Remove all builds</string>
+   </property>
+  </action>
+  <action name="actionRemove_all_builds_older_than_one_month">
+   <property name="text">
+    <string>Remove all builds older than one month</string>
    </property>
   </action>
  </widget>
