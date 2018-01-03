@@ -11,7 +11,7 @@ ProgramsList = [ 'UnitTests',
                  'TestBed',
                  'SceneViewer',
                  'UIViewer',
-                 'PerfomanceTests'
+                 'PerformanceTests'
                ]
 
 

@@ -296,7 +296,7 @@ void FileManager::MakeDirectory(const QString& path)
         QDir().mkpath(path);
 }
 
-void FileManager::SetFilesDirectory(const QString& newDirPath)
+void FileManager::SetFilesDirectory(const QString& newDirPath, bool withMoving)
 {
     QString oldFilesDirectory = GetFilesDirectory();
     filesDirectory = QDir::fromNativeSeparators(newDirPath);
@@ -304,18 +304,21 @@ void FileManager::SetFilesDirectory(const QString& newDirPath)
     {
         filesDirectory.append("/");
     }
-    QFileInfo oldFileInfo(oldFilesDirectory + FileManagerDetails::baseAppDir);
-    QFileInfo newFileInfo(GetFilesDirectory() + FileManagerDetails::baseAppDir);
-    //if user choose folder with another baseAppDir - its weirdo case
-    if (oldFileInfo.isDir() && !newFileInfo.exists())
+    if (withMoving)
     {
-        QFile file(oldFileInfo.absoluteFilePath());
-        QString newPath = newFileInfo.absoluteFilePath();
-        //if we can move - do it
-        //otherwise user must take care about files now
-        if (!file.rename(newPath))
+        QFileInfo oldFileInfo(oldFilesDirectory + FileManagerDetails::baseAppDir);
+        QFileInfo newFileInfo(GetFilesDirectory() + FileManagerDetails::baseAppDir);
+        //if user choose folder with another baseAppDir - its weirdo case
+        if (oldFileInfo.isDir() && !newFileInfo.exists())
         {
-            ErrorMessenger::ShowErrorMessage(ErrorMessenger::ERROR_PATH, tr("Can not move folder with artifacts from %1 to %2").arg(oldFileInfo.absoluteFilePath(), newFileInfo.absoluteFilePath()));
+            QFile file(oldFileInfo.absoluteFilePath());
+            QString newPath = newFileInfo.absoluteFilePath();
+            //if we can move - do it
+            //otherwise user must take care about files now
+            if (!file.rename(newPath))
+            {
+                ErrorMessenger::ShowErrorMessage(ErrorMessenger::ERROR_PATH, tr("Can not move folder with artifacts from %1 to %2").arg(oldFileInfo.absoluteFilePath(), newFileInfo.absoluteFilePath()));
+            }
         }
     }
 }
