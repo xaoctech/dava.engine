@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Gui/ButtonsWidget.h"
 #include "Core/Receiver.h"
 
 #include <QMainWindow>
@@ -25,6 +24,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum eUserType
+    {
+        Designer,
+        Programmer,
+        QA
+    };
+
     explicit MainWindow(GuiApplicationManager* appManager, QWidget* parent = 0);
     ~MainWindow();
 
@@ -40,39 +46,44 @@ public:
 
 signals:
     void RefreshClicked();
-    void RunClicked(int row);
-    void DownloadClicked(int row);
-    void RemoveClicked(int row);
 
     void ShowPreferences();
     void CancelClicked();
 
 private slots:
-    void OnRun(int rowNumber);
-    void OnRemove(int rowNumber);
-
     void OnListItemClicked(QModelIndex);
 
     void OnCellDoubleClicked(QModelIndex index);
 
     void OnlinkClicked(QUrl url);
 
+    void OnRemoveAllBuilds();
+
 private:
+    void OnRemove(int index);
+    void OnDownload(int index);
+    void OnShowInFinder(int index);
+    void OnRun(int index);
+    void OnRecent(int index);
+    void CopyVersion(int index);
+    void OpenUrl(int index);
     void RefreshBranchesList();
     void OnConnectedChanged(bool connected);
     void AddText(const QString& text, const QColor& color = Qt::black);
 
     void GetTableApplicationIDs(int rowNumber, QString& appID, QString& installedVersionID, QString& avalibleVersionID);
 
-    QWidget* CreateAppNameTableItem(const QString& stringID, int rowNum);
+    QWidget* CreateAppNameTableItem(const QString& stringID, const Application* localApp, int rowNum);
     QWidget* CreateAppInstalledTableItem(const QString& stringID, int rowNum);
-    QWidget* CreateAppAvalibleTableItem(Application* app, int rowNum);
+    QWidget* CreateAppAvalibleTableItem(Application* app, Application* local, int rowNum);
 
     void OnTaskStarted(const BaseTask* task);
     void OnTaskProgress(const BaseTask* task, quint32 progress);
     void OnTaskFinished(const BaseTask* task);
 
     void OnNewsLoaded(const BaseTask* task);
+
+    void CreateUserTypeLayout();
 
     Ui::MainWindow* ui = nullptr;
 
@@ -86,4 +97,6 @@ private:
     Receiver receiver;
 
     QBuffer newsDataBuffer;
+
+    int userType = Designer;
 };

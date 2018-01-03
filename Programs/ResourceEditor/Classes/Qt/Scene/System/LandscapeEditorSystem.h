@@ -1,12 +1,14 @@
 #pragma once
 
+#include "Classes/Qt/Scene/System/EditorSceneSystem.h"
+#include "Classes/Qt/Scene/System/LandscapeEditorDrawSystem.h"
+
 #include "DAVAEngine.h"
-#include "LandscapeEditorDrawSystem.h"
 
 class SceneCollisionSystem;
 class EntityModificationSystem;
 
-class LandscapeEditorSystem : public DAVA::SceneSystem
+class LandscapeEditorSystem : public DAVA::SceneSystem, public EditorSceneSystem
 {
 public:
     LandscapeEditorSystem(DAVA::Scene* scene, const DAVA::FilePath& cursorPathname);

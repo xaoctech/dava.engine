@@ -9,7 +9,7 @@
 
 #include "Render/UniqueStateSet.h"
 
-class TilemaskEditorSystem : public LandscapeEditorSystem, public EditorSceneSystem
+class TilemaskEditorSystem : public LandscapeEditorSystem
 {
 public:
     enum eTilemaskDrawType

@@ -53,8 +53,8 @@ DAVA::ParticleLayer* CommandChangeLayerMaterialProperties::GetLayer() const
 
 CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, CommandChangeFlowProperties::FlowParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_FLOW_VALUES, "Change Flow Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -100,8 +100,8 @@ void CommandChangeFlowProperties::ApplyParams(FlowParams& params)
 
 CommandChangeNoiseProperties::CommandChangeNoiseProperties(DAVA::ParticleLayer* layer_, NoiseParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_NOISE_VALUES, "Change Noise Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -157,8 +157,8 @@ void CommandChangeNoiseProperties::ApplyParams(NoiseParams& params)
 
 CommandChangeFresnelToAlphaProperties::CommandChangeFresnelToAlphaProperties(DAVA::ParticleLayer* layer_, FresnelToAlphaParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_FRES_TO_ALPHA_VALUES, "Change Fresnel to Alpha Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -196,8 +196,8 @@ void CommandChangeFresnelToAlphaProperties::ApplyParams(FresnelToAlphaParams& pa
 
 CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(DAVA::ParticleLayer* layer_, StripeParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_STRIPE_VALUES, "Change Stripe Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -256,8 +256,8 @@ void CommandChangeParticlesStripeProperties::ApplyParams(StripeParams& params)
 
 CommandChangeAlphaRemapProperties::CommandChangeAlphaRemapProperties(DAVA::ParticleLayer* layer_, AlphaRemapParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_ALPHA_REMAP, "Change Alpha Remap Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -297,8 +297,8 @@ void CommandChangeAlphaRemapProperties::ApplyParams(AlphaRemapParams& params)
 
 CommandChangeThreePointGradientProperties::CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer_, ThreePointGradientParams&& params)
     : RECommand(CMDID_PARTICLE_LAYER_CHANGED_THREE_POINT_GRADIENT, "Change Three Point Gradient Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)

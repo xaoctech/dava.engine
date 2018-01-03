@@ -59,9 +59,9 @@ DumpShaderTextGLES2(const char* code, unsigned code_sz)
 //==============================================================================
 
 ProgGLES2::ProgGLES2(ProgType t)
-    : type(t)
+    : shader(0)
     , prog(0)
-    , shader(0)
+    , type(t)
     , texunitCount(0)
     , texunitInited(false)
 {

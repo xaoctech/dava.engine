@@ -18,11 +18,11 @@ namespace DAVA
 static const uint32 LOADING_THREAD_STACK_SIZE = 1024 * 1024;
 
 UIFlowTransitionTransaction::UIFlowTransitionTransaction(UIFlowStateComponent* activateState, UIFlowStateComponent* deactivateState, bool background, bool onlyLoad)
-    : activateState(activateState)
+    : skipHistory(onlyLoad) // Only-load transactions doesn't append to history
+    , onlyLoad(onlyLoad)
+    , activateState(activateState)
     , deactivateState(deactivateState)
     , isBackgroundLoading(background)
-    , onlyLoad(onlyLoad)
-    , skipHistory(onlyLoad) // Only-load transactions doesn't append to history
 {
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 #include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
@@ -20,11 +21,12 @@ class LayoutFormula;
 }
 
 class IssueNavigatorWidget;
+class IndexGenerator;
 
 class LayoutIssuesHandler : public IssuesHandler, DAVA::UILayoutSystemListener, PackageListener
 {
 public:
-    LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IssueNavigatorWidget* widget);
+    LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
     ~LayoutIssuesHandler() override;
 
 private:
@@ -40,7 +42,7 @@ private:
     DAVA::int32 sectionId = 0;
     QPointer<IssueNavigatorWidget> widget = nullptr;
 
-    DAVA::int32 nextIssueId = 0;
+    IndexGenerator& indexGenerator;
 
     struct LayoutIssue
     {

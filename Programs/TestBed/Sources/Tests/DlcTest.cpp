@@ -60,8 +60,8 @@ void DlcTest::LoadResources()
 
     options->LoadFromYamlFile(optionsPath);
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
-    Font* fontSmall = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
+    Font* fontSmall = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
 
     font->SetSize(24.0f);

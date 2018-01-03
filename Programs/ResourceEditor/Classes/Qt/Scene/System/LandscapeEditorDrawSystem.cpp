@@ -448,7 +448,7 @@ void LandscapeEditorDrawSystem::ClampToHeightmap(DAVA::Rect& rect)
 
 void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (systemIsEnabled == false)
+    if (IsSystemEnabled() == false)
     {
         return;
     }
@@ -464,7 +464,7 @@ void LandscapeEditorDrawSystem::AddEntity(DAVA::Entity* entity)
 
 void LandscapeEditorDrawSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (entity == landscapeNode && systemIsEnabled)
+    if (entity == landscapeNode && IsSystemEnabled())
     {
         SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
 

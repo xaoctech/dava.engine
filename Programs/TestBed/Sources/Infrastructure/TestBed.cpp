@@ -53,6 +53,7 @@
 #include "Tests/InputSystemTest.h"
 #include "Tests/RichTextTest.h"
 #include "Tests/SkillSystemTest.h"
+#include "Tests/DebugOverlayTest.h"
 #include "Tests/UIJoypadSystemTest.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
@@ -186,7 +187,7 @@ TestBed::TestBed(Engine& engine)
 
     DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
 
-    context->settings->Load("~res:/EngineSettings.yaml");
+    context->settings->Load("~res:/TestBed/EngineSettings.yaml");
 
     servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "TestBed"));
     netLogger.reset(new DAVA::Net::NetLogger);
@@ -199,7 +200,7 @@ void TestBed::OnGameLoopStarted()
 {
     Logger::Debug("****** TestBed::OnGameLoopStarted");
 
-    UIYamlLoader::LoadFonts("~res:/UI/Fonts/fonts.yaml");
+    UIYamlLoader::LoadFonts("~res:/TestBed/UI/Fonts/fonts.yaml");
 
     InitNetwork();
     RunOnlyThisTest();
@@ -277,7 +278,7 @@ void TestBed::OnWindowCreated(DAVA::Window* w)
     w->GetUIControlSystem()->GetRenderSystem()->SetClearColor(Color::Black);
 
     LocalizationSystem* ls = LocalizationSystem::Instance();
-    ls->SetDirectory("~res:/Strings/");
+    ls->SetDirectory("~res:/TestBed/Strings/");
     ls->SetCurrentLocale("en");
     ls->Init();
 
@@ -415,6 +416,7 @@ void TestBed::RegisterTests()
     new AnyPerformanceTest(*this);
     new SkillSystemTest(*this);
     new UIJoypadSystemTest(*this);
+    new DebugOverlayTest(*this);
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
