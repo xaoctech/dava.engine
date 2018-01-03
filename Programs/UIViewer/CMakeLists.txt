@@ -11,7 +11,7 @@ find_dava_module( LoggerService )
 find_dava_module( DocDirSetup  )
 find_dava_module( Version )
 find_dava_module( Physics )
-
+find_dava_module( Spine )
 
 include_directories   ( "Sources" )
 

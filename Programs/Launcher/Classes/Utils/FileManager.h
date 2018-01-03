@@ -41,7 +41,7 @@ public:
     static void MakeDirectory(const QString& path);
 
 public slots:
-    void SetFilesDirectory(const QString& newDirPath);
+    void SetFilesDirectory(const QString& newDirPath, bool withMoving);
 
 signals:
     void FilesDirPathChanged(const QString& oldPath, const QString& newPath);
