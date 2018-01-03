@@ -20,6 +20,7 @@ def build( program ):
 
     os.chdir(program_dir)
 
+    print "===== Building % s =====" % (program)
     os.system( './gradlew {}:assembleFatRelease'.format( program ) )
 
 
