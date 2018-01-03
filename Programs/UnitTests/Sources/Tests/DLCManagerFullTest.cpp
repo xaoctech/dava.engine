@@ -253,7 +253,11 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         try
         {
             DLCManager::Hints hints;
-            hints.localPacksDB = "~res:/TestData/DLCManagerFullTest/local_fake_meta.db";
+          
+            hints.localPacksDB = "~doc:/local_fake_meta.db";
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            fs->CopyFile("~res:/TestData/DLCManagerFullTest/local_fake_meta.db",
+                         "~doc:/local_fake_meta.db", true);
             dlcManager.Initialize("~doc:/packs/", "", hints);
         }
         catch (std::exception& ex)
@@ -376,7 +380,11 @@ DAVA_TESTCLASS (DLCManagerFullTest)
             FilePath dbPath("~res:/TestData/DLCManagerFullTest/local_fake_meta.db");
             TEST_VERIFY(fs->IsFile(dbPath) == true);
 
-            hints.localPacksDB = dbPath.GetAbsolutePathname();
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            FilePath docDbPath("~doc:/local_fake_meta.db");
+            fs->CopyFile(dbPath, docDbPath, true);
+
+            hints.localPacksDB = docDbPath.GetStringValue();
 
             dlcManager.Initialize(packDir,
                                   fullUrl,
