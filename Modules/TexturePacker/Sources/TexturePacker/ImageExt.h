@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_PNGIMAGEEXT_H__
-#define __DAVAENGINE_PNGIMAGEEXT_H__
+#pragma once
 
 #include "TexturePacker/Spritesheet.h"
 
@@ -8,20 +7,20 @@
 
 namespace DAVA
 {
-class PngImageExt
+class ImageExt final
 {
 public:
-    PngImageExt();
-    PngImageExt(const PngImageExt& img);
-    ~PngImageExt();
+    ImageExt();
+    ImageExt(const ImageExt& img);
+    ~ImageExt();
 
     bool Create(uint32 width, uint32 height);
 
     bool Read(const FilePath& filename);
     void Write(const FilePath& filename, ImageQuality quality = DEFAULT_IMAGE_QUALITY);
 
-    void DrawImage(const SpriteBoundsRect& drawRect, const Rect2i& imageOffsetRect, PngImageExt* image);
-    void DrawImage(int32 sx, int32 sy, PngImageExt* image, const Rect2i& srcRect);
+    void DrawImage(const SpriteBoundsRect& drawRect, const Rect2i& imageOffsetRect, ImageExt* image);
+    void DrawImage(int32 sx, int32 sy, ImageExt* image, const Rect2i& srcRect);
 
     void DrawRect(const Rect2i& rect, uint32 color);
 
@@ -45,24 +44,21 @@ private:
     ScopedPtr<Image> internalData;
 };
 
-inline uint8* PngImageExt::GetData() const
+inline uint8* ImageExt::GetData() const
 {
     DVASSERT(internalData);
     return internalData->GetData();
 }
 
-inline uint32 PngImageExt::GetWidth() const
+inline uint32 ImageExt::GetWidth() const
 {
     DVASSERT(internalData);
     return internalData->GetWidth();
 }
 
-inline uint32 PngImageExt::GetHeight() const
+inline uint32 ImageExt::GetHeight() const
 {
     DVASSERT(internalData);
     return internalData->GetHeight();
 }
 };
-
-
-#endif // __DAVAENGINE_PNGIMAGEEXT_H__

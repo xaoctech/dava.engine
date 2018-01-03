@@ -440,9 +440,13 @@ SpeedTreeImporter::AtlasData SpeedTreeImporter::PackLeafsTextures(const FastName
     for (const FilePath& texturePath : texturesToPack)
     {
         DAVA::RefPtr<DefinitionFile> defFile(new DefinitionFile());
-        if (defFile->LoadPNG(texturePath, tempProcessDir))
+        if (defFile->LoadImage(texturePath, tempProcessDir) == true)
         {
             definitionFileList.push_back(defFile);
+        }
+        else
+        {
+            DAVA::Logger::Error("Failed to load image %s", texturePath.GetAbsolutePathname().c_str());
         }
     }
 
