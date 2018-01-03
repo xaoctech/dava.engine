@@ -71,12 +71,6 @@ void RunApplicationTask::Run()
     }
 
     QString appName = runPath.right(runPath.size() - runPath.lastIndexOf("/") - 1);
-    if (!ProcessHelper::IsProcessRuning(runPath))
-    {
-        ProcessHelper::RunProcess(runPath);
-    }
-    else
-    {
-        SetError(QObject::tr("Application %1 is already launched").arg(appName));
-    }
+
+    ProcessHelper::RunProcess(runPath);
 }

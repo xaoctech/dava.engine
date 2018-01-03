@@ -28,7 +28,7 @@ Prototypes:
     components:
         Background:
             drawType: "DRAW_STRETCH_BOTH"
-            sprite: "~res:/UI/Images/GoldPin.png"
+            sprite: "~res:/TestBed/UI/Images/GoldPin.png"
             leftRightStretchCap: 5.000000
             topBottomStretchCap: 5.000000
         DebugRender:
@@ -55,7 +55,7 @@ Prototypes:
         RichContent:
             baseClasses: "text"
         RichContentAliases0:
-            aliases: "btn,<object path=\"~res:/UI/RichTextTest.yaml\" prototype=\"Button\" />;"
+            aliases: "btn,<object path=\"~res:/TestBed/UI/RichTextTest.yaml\" prototype=\"Button\" />;"
 -   prototype: "ProtoRich"
     name: "ProtoRich2"
     components:
@@ -76,7 +76,7 @@ Controls:
         name: "Input"
         position: [20.000000, 20.000000]
         size: [315.500000, 350.000000]
-        text: "<h1>Header</h1> Example text with <img class=\"img\" src=\"~res:/UI/Images/GoldPin.png\" /> image and <btn /> object. <ul>List example:<li>Item 1</li><li>Item 2</li></ul> Text after list."
+        text: "<h1>Header</h1> Example text with <img class=\"img\" src=\"~res:/TestBed/UI/Images/GoldPin.png\" /> image and <btn /> object. <ul>List example:<li>Item 1</li><li>Item 2</li></ul> Text after list."
         font: "DejaVuSans_18"
         textalign: ["LEFT", "TOP"]
         isMultiline: true
@@ -102,13 +102,13 @@ Controls:
                 rightAnchorEnabled: true
                 rightAnchor: 20.000000
             RichContent:
-                text: "<h1>Header</h1> Example text with <img class=\"img\" src=\"~res:/UI/Images/GoldPin.png\" /> image and <btn /> object. <ul>List example:<li>Item 1</li><li>Item 2</li></ul> Text after list."
+                text: "<h1>Header</h1> Example text with <img class=\"img\" src=\"~res:/TestBed/UI/Images/GoldPin.png\" /> image and <btn /> object. <ul>List example:<li>Item 1</li><li>Item 2</li></ul> Text after list."
                 baseClasses: "text"
                 classesInheritance: true
             RichContentAliases0:
                 aliases: "h1,<p class=\"Droid\" />;"
             RichContentAliases1:
-                aliases: "btn,<object path=\"~res:/UI/RichTextTest.yaml\" prototype=\"Button\" />;"
+                aliases: "btn,<object path=\"~res:/TestBed/UI/RichTextTest.yaml\" prototype=\"Button\" />;"
             DebugRender:
                 enabled: true
     -   prototype: "ProtoRich2"
@@ -117,6 +117,6 @@ Controls:
         size: [651.000000, 210.000000]
         components:
             RichContent:
-                text: "<h1>Header</h1> Example text with <img class=\"img\" src=\"~res:/UI/Images/GoldPin.png\" /> image and <btn /> object. <ul>List example:<li>Item 1</li><li>Item 2</li></ul> Text after list."
+                text: "<h1>Header</h1> Example text with <img class=\"img\" src=\"~res:/TestBed/UI/Images/GoldPin.png\" /> image and <btn /> object. <ul>List example:<li>Item 1</li><li>Item 2</li></ul> Text after list."
                 classesInheritance: true
             DebugRender: {}

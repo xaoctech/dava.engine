@@ -92,7 +92,7 @@ void ClipTest::MoveLeft(BaseObject* obj, void* data, void* callerData)
 
 void ClipTest::LoadResources()
 {
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(13);
     //start points

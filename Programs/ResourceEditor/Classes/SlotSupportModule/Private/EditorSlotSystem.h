@@ -26,7 +26,6 @@ public:
 
     EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor);
 
-    void RegisterEntity(DAVA::Entity* entity) override;
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
 
@@ -82,5 +81,4 @@ private:
     };
 
     DAVA::UnorderedMap<DAVA::Entity*, DAVA::Vector<AttachedItemInfo>> inClonedState;
-    DAVA::Set<DAVA::Entity*> clonedEntityes;
 };

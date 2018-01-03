@@ -14,5 +14,7 @@
         <file>Icons/copy.png</file>
         <file>Icons/red.png</file>
         <file>Icons/green.png</file>
+		<file>Icons/show_in_finder.png</file>
+		<file>Icons/recent.png</file>
     </qresource>
 </RCC>

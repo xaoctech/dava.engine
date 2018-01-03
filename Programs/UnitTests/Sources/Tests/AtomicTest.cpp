@@ -1,16 +1,16 @@
 #include "DAVAEngine.h"
 
 #include "UnitTests/UnitTests.h"
-#include "Platform/DeviceInfo.h"
+#include "Concurrency/Thread.h"
 
 #include <thread>
-
-using namespace DAVA;
 
 DAVA_TESTCLASS (AtomicTest)
 {
     DAVA_TEST (OperationTest)
     {
+        using namespace DAVA;
+
         const int theGreatestNumber = 42;
         const int theRandomNumber = 7;
 
@@ -97,28 +97,35 @@ DAVA_TESTCLASS (AtomicTest)
 
     DAVA_TEST (MultiThreadedEnvironmentTest)
     {
+        using namespace DAVA;
+
         const unsigned threadCount = std::thread::hardware_concurrency();
-        const unsigned cycles = DAVA::DeviceInfo::GetPlatform() == DAVA::DeviceInfo::PLATFORM_ANDROID ? 10000 : 1000000;
+        const unsigned cycles = 10000;
         const unsigned targetNumber = cycles * threadCount;
-        Atomic<unsigned> resultNumber{ 0U };
+        Atomic<long> resultNumber{ 0U };
 
-        Vector<std::thread> threads(threadCount);
+        Vector<Thread*> threads(threadCount);
         for (auto& x : threads)
         {
-            x = std::thread([&]
-                            {
-                                for (size_t i = 0; i < cycles; ++i)
-                                {
-                                    resultNumber++;
-                                }
-                            });
+            x = Thread::Create([&]
+                               {
+                                   for (size_t i = 0; i < cycles; ++i)
+                                   {
+                                       resultNumber++;
+                                   }
+                               });
+            x->Start();
         }
 
         for (auto& x : threads)
         {
-            x.join();
+            if (x->IsJoinable())
+            {
+                x->Join();
+            }
+            SafeRelease(x);
         }
+
         TEST_VERIFY(resultNumber == targetNumber);
     }
-}
-;
+};

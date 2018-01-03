@@ -55,12 +55,6 @@ EditorSlotSystem::EditorSlotSystem(DAVA::Scene* scene, DAVA::TArc::ContextAccess
 {
 }
 
-void EditorSlotSystem::RegisterEntity(DAVA::Entity* entity)
-{
-    clonedEntityes.erase(entity);
-    SceneSystem::RegisterEntity(entity);
-}
-
 void EditorSlotSystem::AddEntity(DAVA::Entity* entity)
 {
     DVASSERT(entity->GetComponentCount(DAVA::Component::SLOT_COMPONENT) > 0);
@@ -102,7 +96,6 @@ void EditorSlotSystem::PrepareForRemove()
 {
     entities.clear();
     pendingOnInitialize.clear();
-    DVASSERT(clonedEntityes.empty());
     DVASSERT(inClonedState.empty());
 }
 
@@ -267,11 +260,6 @@ void EditorSlotSystem::DidCloned(DAVA::Entity* originalEntity, DAVA::Entity* new
     for (DAVA::Entity* e : children)
     {
         restoreSlots(e);
-    }
-
-    if (GetWaypointComponent(newEntity) != nullptr)
-    {
-        clonedEntityes.insert(newEntity);
     }
 }
 
@@ -577,23 +565,16 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         const EntityAddCommand* cmd = static_cast<const EntityAddCommand*>(command);
         DAVA::Entity* entityForAdd = cmd->GetEntity();
+        DAVA::Vector<DAVA::Entity*> slotEntityes;
+        entityForAdd->GetChildEntitiesWithComponent(slotEntityes, DAVA::Component::SLOT_COMPONENT);
+        slotEntityes.push_back(entityForAdd);
 
-        auto iter = clonedEntityes.find(entityForAdd);
-        if (iter != clonedEntityes.end())
+        for (DAVA::Entity* e : slotEntityes)
         {
-            DAVA::Vector<DAVA::Entity*> slotEntityes;
-            entityForAdd->GetChildEntitiesWithComponent(slotEntityes, DAVA::Component::SLOT_COMPONENT);
-            slotEntityes.push_back(entityForAdd);
-
-            for (DAVA::Entity* e : slotEntityes)
+            for (DAVA::uint32 i = 0; i < e->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
             {
-                for (DAVA::uint32 i = 0; i < e->GetComponentCount(DAVA::Component::SLOT_COMPONENT); ++i)
-                {
-                    loadDefaultItem(static_cast<DAVA::SlotComponent*>(e->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
-                }
+                loadDefaultItem(static_cast<DAVA::SlotComponent*>(e->GetComponent(DAVA::Component::SLOT_COMPONENT, i)));
             }
-
-            clonedEntityes.erase(iter);
         }
     };
 

@@ -1,6 +1,7 @@
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "Model/PackageHierarchy/PackageControlsNode.h"
 
+#include <Base/Hash.h>
 #include <Command/Command.h>
 #include <Command/CommandStack.h>
 
@@ -17,6 +18,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DocumentData)
     .Field(redoTextPropertyName.c_str(), &DocumentData::GetRedoText, nullptr)
     .Field(currentNodePropertyName.c_str(), &DocumentData::GetCurrentNode, nullptr)
     .Field(selectionPropertyName.c_str(), &DocumentData::GetSelectedNodes, &DocumentData::SetSelectedNodes)
+    .Field(selectionHashPropertyName.c_str(), &DocumentData::GetSelectionHash, nullptr)
     .Field(selectedControlsPropertyName.c_str(), &DocumentData::GetSelectedControls, nullptr)
     .Field(displayedRootControlsPropertyName.c_str(), &DocumentData::GetDisplayedRootControls, &DocumentData::SetDisplayedRootControls)
     .Field(guidesPropertyName.c_str(), &DocumentData::GetGuides, nullptr)
@@ -63,6 +65,23 @@ PackageNode* DocumentData::GetPackageNode() const
 const SelectedNodes& DocumentData::GetSelectedNodes() const
 {
     return selectedNodes;
+}
+
+size_t DocumentData::GetSelectionHash() const
+{
+    DAVA::Vector<size_t> hashData;
+    hashData.reserve(selectedNodes.size() * 4);
+    for (PackageBaseNode* node : selectedNodes)
+    {
+        hashData.push_back(reinterpret_cast<size_t>(node));
+        PackageBaseNode* parent = node->GetParent();
+        hashData.push_back(reinterpret_cast<size_t>(parent));
+        hashData.push_back(parent->GetIndex(node));
+        hashData.push_back(parent->GetCount());
+    }
+    DAVA::uint8* dataPtr = reinterpret_cast<DAVA::uint8*>(hashData.data());
+    DAVA::uint32 bufferSize = static_cast<DAVA::uint32>(hashData.size()) * (sizeof(size_t) / sizeof(DAVA::uint8));
+    return DAVA::BufferHash(dataPtr, bufferSize);
 }
 
 const DAVA::Set<ControlNode*>& DocumentData::GetSelectedControls() const
@@ -271,6 +290,7 @@ DAVA::FastName DocumentData::undoTextPropertyName{ "undo text" };
 DAVA::FastName DocumentData::redoTextPropertyName{ "redo text" };
 DAVA::FastName DocumentData::currentNodePropertyName{ "current node" };
 DAVA::FastName DocumentData::selectionPropertyName{ "selection" };
+DAVA::FastName DocumentData::selectionHashPropertyName{ "selectionHash" };
 DAVA::FastName DocumentData::selectedControlsPropertyName{ "selected controls" };
 DAVA::FastName DocumentData::displayedRootControlsPropertyName{ "displayed root controls" };
 DAVA::FastName DocumentData::guidesPropertyName{ "guides" };
