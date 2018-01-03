@@ -1,7 +1,7 @@
 import argparse
 import os
 import subprocess
-import multiprocessing
+import sys
 
 
 DavaRootDir = os.path.realpath(os.path.join( os.path.dirname (__file__), '../../../'))
@@ -20,13 +20,12 @@ def build( program ):
 
     os.chdir(program_dir)
 
-    os.system( 'gradle wrapper' )
-    os.system( './gradlew {}:assembleFatRelease'.format( program ) )
-
+    print "===== Building % s =====" % (program)
+    
+    command = '{}:assembleFatRelease'.format(program);
+    subprocess.check_call([program_dir+'/gradlew', command])
 
 def main():
-    multiprocessing.freeze_support()
-
     parser = argparse.ArgumentParser()
     parser.add_argument( '--sdk_dir' )
     parser.add_argument( '--ndk_dir' )
@@ -48,12 +47,8 @@ def main():
         local_properties_file.write( 'sdk.dir={}\n'.format( options.sdk_dir) )
         local_properties_file.write( 'ndk.dir={}\n'.format( options.ndk_dir) )
         local_properties_file.close()
-
-
-    pool = multiprocessing.Pool(processes=2)
-    pool.map(build, ProgramsList )
-
-
+        
+        build(program)
 
 if __name__ == '__main__':
     main()
