@@ -147,7 +147,6 @@ public:
     const QList<Branch>& GetBranches() const;
     QList<Branch>& GetBranches();
 
-private:
     void InsertApplicationImpl(const QString& branchID, const QString& appID, const AppVersion& version);
 
     bool ExtractLauncherVersionAndURL(const QJsonValue& value);
