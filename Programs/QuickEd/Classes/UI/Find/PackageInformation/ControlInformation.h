@@ -25,4 +25,5 @@ public:
     virtual void VisitChildren(const DAVA::Function<void(const ControlInformation*)>& visitor) const = 0;
 
     virtual DAVA::Any GetControlPropertyValue(const DAVA::ReflectedStructure::Field& member) const = 0;
+    virtual DAVA::Any GetComponentPropertyValue(const DAVA::Type* componentType, DAVA::int32 componentIndex, const DAVA::ReflectedStructure::Field& member) const = 0;
 };

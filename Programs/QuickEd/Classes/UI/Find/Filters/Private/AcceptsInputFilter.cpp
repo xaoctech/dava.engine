@@ -9,7 +9,7 @@ using namespace DAVA;
 
 AcceptsInputFilter::AcceptsInputFilter()
 {
-    static FastName noInput("noInput");
+    FastName noInput("noInput");
 
     for (const auto& field : ReflectedTypeDB::Get<UIControl>()->GetStructure()->fields)
     {
@@ -18,6 +18,7 @@ AcceptsInputFilter::AcceptsInputFilter()
             refMember = field.get();
         }
     }
+    DVASSERT(refMember != nullptr);
 }
 
 FindFilter::ePackageStatus AcceptsInputFilter::AcceptPackage(const PackageInformation* package) const

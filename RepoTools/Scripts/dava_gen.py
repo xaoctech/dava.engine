@@ -132,6 +132,12 @@ def get_toolchain(input_platform, input_project_type):
 
     return toolchain_string, output_project
 
+def safe_call(command):
+    ret = call(command)
+    if ret != 0:
+        print "Error executing command: %s" % (command)
+        exit(1)
+
 def main():
     global g_supported_additional_parameters
     global g_supported_platforms
@@ -149,7 +155,7 @@ def main():
 
     if not setup_framework_env():
         print "Couldn't configure environment. Make sure that you run this script from dava.framework subfolder."
-        exit()
+        exit(1)
 
     destination_platform = ""
 
@@ -161,18 +167,18 @@ def main():
     if options.platform_name not in g_supported_platforms:
         print "Wrong destination OS name " + "'" + options.platform_name + "'"
         parser.print_help()
-        exit();
+        exit(1);
     else:
         destination_platform = options.platform_name.lower()
 
     if False == parse_additional_params(options.additional_params):
         parser.print_help()
-        exit()
+        exit(1)
 
     project_type = get_project_type(destination_platform, g_is_console)
     if project_type == "":
         print "Unknown project type. Seems get_project_type() works wrong."
-        exit()
+        exit(1)
 
 
     toolchain, project_type = get_toolchain(destination_platform, project_type)
@@ -191,7 +197,7 @@ def main():
 
     if False == cmake_program:
         print "cmake command not found."
-        exit()
+        exit(1)
 
     call_string = [cmake_program, '-G', project_type, toolchain, g_cmake_file_path]
 
@@ -205,10 +211,10 @@ def main():
         call_string.append("-DUNITY_BUILD=true")
     print call_string
 
-    call(call_string)
+    safe_call(call_string)
     
     if "android" == destination_platform:
-        call(call_string)    
+        safe_call(call_string)    
 
 if __name__ == '__main__':
     main()
