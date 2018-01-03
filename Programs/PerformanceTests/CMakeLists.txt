@@ -78,7 +78,7 @@ set( LIBRARIES_DEBUG      )
 set( ADDED_BINARY_DIR     )
 
 if( NOT DAVA_MEGASOLUTION )
-
+#[[ do not run automatic resource convertation
     if( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
         set( RES_EDITOR_BINARY   "${RES_EDITOR_PATH}/ResourceEditor.exe")       
     else()            
@@ -126,7 +126,7 @@ if( NOT DAVA_MEGASOLUTION )
 
     execute_process( COMMAND python convert_everything.py --gpu ${GPU_PARAM} WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/DataSource )
     execute_process( COMMAND python create_file_structure.py WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/DataSource )
-
+]]
 endif()
 
 setup_main_executable()
