@@ -248,10 +248,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return (selectedNodes.size() == 1 && (*selectedNodes.begin())->IsInsertingStylesSupported());
                                          });
 
@@ -274,10 +274,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return std::any_of(selectedNodes.begin(), selectedNodes.end(), [](PackageBaseNode* node)
                                                                 {
                                                                     return node->CanCopy() && node->CanRemove();
@@ -301,10 +301,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return std::any_of(selectedNodes.begin(), selectedNodes.end(), [](PackageBaseNode* node)
                                                                 {
                                                                     return node->CanCopy();
@@ -328,10 +328,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              if (selectedNodes.empty() == true)
                                              {
                                                  return false;
@@ -357,10 +357,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              if (selectedNodes.empty())
                                              {
                                                  return false;
@@ -396,10 +396,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return std::any_of(selectedNodes.begin(), selectedNodes.end(), [](PackageBaseNode* node)
                                                                 {
                                                                     return (node->GetControl() != nullptr);
@@ -422,10 +422,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return (selectedNodes.size() == 1 && (*selectedNodes.begin())->IsEditingSupported());
                                          });
 
@@ -451,10 +451,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return std::any_of(selectedNodes.begin(), selectedNodes.end(), [](PackageBaseNode* node)
                                                                 {
                                                                     return node->CanRemove();
@@ -480,10 +480,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return IsMoveUpActionEnabled(selectedNodes);
                                          });
 
@@ -504,10 +504,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return IsMoveDownActionEnabled(selectedNodes);
                                          });
 
@@ -528,10 +528,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return IsMoveLeftActionEnabled(selectedNodes);
                                          });
 
@@ -552,10 +552,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return IsMoveRightActionEnabled(selectedNodes);
                                          });
 
@@ -575,10 +575,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              if (selectedNodes.size() != 1)
                                              {
                                                  return false;
@@ -611,10 +611,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              if (selectedNodes.size() != 1)
                                              {
                                                  return false;
@@ -652,10 +652,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return (selectedNodes.size() == 1);
                                          });
 
@@ -681,10 +681,10 @@ void PackageModule::CreateActions()
 
         FieldDescriptor fieldDescr;
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
-        fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
-        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
+        fieldDescr.fieldName = FastName(DocumentData::selectionHashPropertyName);
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [this](const Any& fieldValue) -> Any
                                          {
-                                             const SelectedNodes& selectedNodes = fieldValue.Cast<SelectedNodes>(SelectedNodes());
+                                             const SelectedNodes& selectedNodes = GetSelection();
                                              return (selectedNodes.size() == 1);
                                          });
 
@@ -1607,6 +1607,20 @@ void PackageModule::SetNewSelection(const SelectedNodes& selection)
     documentDataWrapper.SetFieldValue(DocumentData::selectionPropertyName, selection);
     PackageData* packageData = GetAccessor()->GetGlobalContext()->GetData<PackageData>();
     packageData->packageWidget->OnSelectionChanged(selection);
+}
+
+SelectedNodes PackageModule::GetSelection() const
+{
+    const DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    if (activeContext != nullptr)
+    {
+        DocumentData* documentData = GetAccessor()->GetActiveContext()->GetData<DocumentData>();
+        return documentData->GetSelectedNodes();
+    }
+    else
+    {
+        return SelectedNodes();
+    }
 }
 
 DECL_GUI_MODULE(PackageModule);
