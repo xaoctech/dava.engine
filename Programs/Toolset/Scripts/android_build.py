@@ -11,7 +11,7 @@ ProgramsList = [ 'UnitTests',
                  'TestBed',
                  'SceneViewer',
                  'UIViewer',
-                 'PerfomanceTests'
+                 'PerformanceTests'
                ]
 
 
@@ -21,8 +21,11 @@ def build( program ):
     os.chdir(program_dir)
 
     print "===== Building % s =====" % (program)
-    os.system( './gradlew {}:assembleFatRelease'.format( program ) )
-
+    command = './gradlew {}:assembleFatRelease'.format(program);
+    ret = subprocess.call(command)
+    if ret != 0:
+        print "Command failed: %s" % (command)
+        exit(1)
 
 def main():
     multiprocessing.freeze_support()
