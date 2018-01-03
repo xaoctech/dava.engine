@@ -23,7 +23,7 @@ def build( program ):
 
     print "===== Building % s =====" % (program)
     sys.stdout.flush()
-    command = './gradlew {}:assembleFatRelease'.format(program);
+    command = 'gradlew {}:assembleFatRelease'.format(program);
     ret = subprocess.call(command)
     if ret != 0:
         print "Command failed: %s" % (command)
