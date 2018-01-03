@@ -667,7 +667,7 @@ void DLCManagerImpl::AddRequest(PackRequest* request)
     requests.push_back(request);
     if (!request->IsDownloaded())
     {
-    requestManager->Push(request);
+        requestManager->Push(request);
     }
     requestNameHashes.insert(std::hash<String>{}(request->GetRequestedPackName()));
 }
@@ -1928,13 +1928,13 @@ void DLCManagerImpl::StartScanDownloadedFiles()
 {
     if (!urlToSuperPack.empty())
     {
-    if (ScanState::Wait == scanState)
-    {
-        scanState = ScanState::Starting;
-        scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
-        scanThread->SetName("DLC::ThreadScanFunc");
-        scanThread->Start();
-    }
+        if (ScanState::Wait == scanState)
+        {
+            scanState = ScanState::Starting;
+            scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
+            scanThread->SetName("DLC::ThreadScanFunc");
+            scanThread->Start();
+        }
     }
 }
 
