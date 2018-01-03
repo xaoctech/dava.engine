@@ -1,7 +1,6 @@
 import argparse
 import os
 import subprocess
-import multiprocessing
 import sys
 
 
@@ -22,17 +21,11 @@ def build( program ):
     os.chdir(program_dir)
 
     print "===== Building % s =====" % (program)
-    sys.stdout.flush()
-    command = 'gradlew {}:assembleFatRelease'.format(program);
-    ret = subprocess.call(command)
-    if ret != 0:
-        print "Command failed: %s" % (command)
-        sys.stdout.flush()
-        exit(1)
+    
+    command = '{}:assembleFatRelease'.format(program);
+    subprocess.check_call([program_dir+'/gradlew', command])
 
 def main():
-    multiprocessing.freeze_support()
-
     parser = argparse.ArgumentParser()
     parser.add_argument( '--sdk_dir' )
     parser.add_argument( '--ndk_dir' )
@@ -56,12 +49,6 @@ def main():
         local_properties_file.close()
         
         build(program)
-
-
-    #pool = multiprocessing.Pool(processes=2)
-    #pool.map(build, ProgramsList )
-
-
 
 if __name__ == '__main__':
     main()
