@@ -20,7 +20,6 @@ def build( program ):
 
     os.chdir(program_dir)
 
-    os.system( 'gradle wrapper' )
     os.system( './gradlew {}:assembleFatRelease'.format( program ) )
 
 
