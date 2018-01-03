@@ -30,7 +30,7 @@ add_tool_single     ( UnitTests         NO_UNITY_BUILD
                                         WIN32_SUPPORTED
                                         CHECK_DEPENDS_FOLDERS )
 
-add_tool_single     ( PerfomanceTests   PLATFORMS IGNORE_LINUX 
+add_tool_single     ( PerformanceTests  PLATFORMS IGNORE_LINUX 
                                         CHECK_DEPENDS_FOLDERS )
 
 add_tool_single     ( Launcher          PLATFORMS MACOS WIN        
