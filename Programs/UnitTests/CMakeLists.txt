@@ -11,6 +11,7 @@ include      ( CMake-common )
 # Enable MemoryManagerTest in UnitTests
 # this variable should be defined in all dependant projects (dava framework, etc)
 if( NOT DAVA_MEGASOLUTION AND NOT DISABLE_MEMORY_PROFILER )
+    # WARNING !!! memory profiler crush on win64 build (but UnitTests works on 32bit in all our tests)
     set ( DAVA_MEMORY_PROFILER 1 )
 endif()
 
