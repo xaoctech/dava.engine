@@ -41,12 +41,12 @@ String runOnlyTheseTestClasses = "";
 // List of names specifying which test classes shouldn't run. This list takes precedence over runOnlyTheseTests.
 // Names should be separated with ' ' or ',' or ';'
 #if !defined(__DAVAENGINE_LINUX__)
-String disableTheseTestClasses = "ScriptTest;ReflectionTest;FormulaExecutorTest;UIFlowTest;UIScriptTest";
+String disableTheseTestClasses = "ScriptTest;ReflectionTest;FormulaExecutorTest";
 #else
 // TODO: linux
 // Linux unittests are running in console mode so disable tests dependent on GUI facilities (windows, input, etc)
 String disableTheseTestClasses =
-"ActionSystemTest;AtomicTest;ReflectionTest;FormulaExecutorTest;UIFlowTest;UIScriptTest"
+"ActionSystemTest;ReflectionTest;FormulaExecutorTest"
 ;
 #endif
 
