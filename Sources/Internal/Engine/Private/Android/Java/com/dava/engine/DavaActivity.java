@@ -318,6 +318,12 @@ public final class DavaActivity extends Activity
         // Create primary DavaSurfaceView in advance but add to view hierarchy later when DavaSplashView will do its work
         primarySurfaceView = new DavaSurfaceView(getApplication(), nativePrimaryWindowImpl);
 
+        // Create layout and keyboard state checkers and subscribe they to Activity lifecycle
+        globalLayoutState = new DavaGlobalLayoutState();
+        registerActivityListener(globalLayoutState);
+        keyboardState = new DavaKeyboardState();
+        registerActivityListener(keyboardState);
+
         notifyListeners(ON_ACTIVITY_CREATE, savedInstanceState);
 
         super.onCreate(savedInstanceState);
@@ -354,12 +360,6 @@ public final class DavaActivity extends Activity
 
         gamepadManager = new DavaGamepadManager();
         registerActivityListener(gamepadManager);
-
-        globalLayoutState = new DavaGlobalLayoutState();
-        registerActivityListener(globalLayoutState);
-
-        keyboardState = new DavaKeyboardState();
-        registerActivityListener(keyboardState);
     }
 
     protected void onSplashFinishedCollectingDeviceInfo()
