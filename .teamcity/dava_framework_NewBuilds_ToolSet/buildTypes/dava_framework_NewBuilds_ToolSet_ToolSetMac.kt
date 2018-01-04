@@ -16,7 +16,7 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
     uuid = "a3f20776-ef99-4e39-bd04-4e5fac191e7e"
     extId = "dava_framework_NewBuilds_ToolSet_ToolSetMac"
-    name = "ToolSet_mac"
+    name = "ToolSet_Mac"
 
     artifactRules = """
         %pathToOutPackDir%/*.zip

@@ -1,6 +1,6 @@
 #include "TexturePacker/TexturePacker.h"
 #include "TexturePacker/Spritesheet.h"
-#include "TexturePacker/PngImage.h"
+#include "TexturePacker/ImageExt.h"
 #include "TexturePacker/DefinitionFile.h"
 #include "TextureCompression/TextureConverter.h"
 #include "TexturePacker/FramePathHelper.h"
@@ -216,7 +216,7 @@ void TexturePacker::SaveResultSheets(const FilePath& outputPath, const char* bas
 {
     Logger::FrameworkDebug("* Writing %d final texture(s)", resultSheets.size());
 
-    Vector<PngImageExt> finalImages(resultSheets.size());
+    Vector<ImageExt> finalImages(resultSheets.size());
     for (uint32 i = 0; i < finalImages.size(); ++i)
     {
         finalImages[i].Create(resultSheets[i]->GetRect().dx, resultSheets[i]->GetRect().dy);
@@ -238,7 +238,7 @@ void TexturePacker::SaveResultSheets(const FilePath& outputPath, const char* bas
                 {
                     FilePath withoutExt(defFile->filename);
                     withoutExt.TruncateExtension();
-                    imagePath = FramePathHelper::GetFramePathRelative(withoutExt, frame);
+                    imagePath = FramePathHelper::GetFramePathRelative(withoutExt, frame, defFile->extension);
                     break;
                 }
             }
@@ -247,7 +247,7 @@ void TexturePacker::SaveResultSheets(const FilePath& outputPath, const char* bas
             {
                 Logger::FrameworkDebug("[MultiPack] pack to texture: %d", sheetIndex);
 
-                PngImageExt image;
+                ImageExt image;
                 image.Read(imagePath);
                 DrawToFinalImage(finalImages[sheetIndex], image, *packedInfo, defFile->frameRects[frame]);
             }
@@ -591,7 +591,7 @@ Vector<TexturePacker::ImageExportKeys> TexturePacker::GetExportKeys(const Vector
     return compressionTargets;
 }
 
-void TexturePacker::ExportImage(const PngImageExt& image, const Vector<ImageExportKeys>& keys, const FilePath& pathnameWithoutExtension)
+void TexturePacker::ExportImage(const ImageExt& image, const Vector<ImageExportKeys>& keys, const FilePath& pathnameWithoutExtension)
 {
     std::unique_ptr<TextureDescriptor> descriptor(new TextureDescriptor());
 
@@ -617,7 +617,7 @@ void TexturePacker::ExportImage(const PngImageExt& image, const Vector<ImageExpo
         descriptor->compression[key.forGPU].format = key.pixelFormat;
         descriptor->compression[key.forGPU].imageFormat = key.imageFormat;
 
-        PngImageExt imageForGPU(image);
+        ImageExt imageForGPU(image);
         if (key.imageFormat == ImageFormat::IMAGE_FORMAT_DDS || key.imageFormat == ImageFormat::IMAGE_FORMAT_PVR)
         {
             descriptor->dataSettings.sourceFileFormat = IMAGE_FORMAT_PNG;
@@ -747,7 +747,7 @@ bool TexturePacker::CheckFrameSize(const Size2i& spriteSize, const Size2i& frame
     return isSizeCorrect;
 }
 
-void TexturePacker::DrawToFinalImage(PngImageExt& finalImage, PngImageExt& drawedImage, const SpriteBoundsRect& packedCell, const Rect2i& alphaOffsetRect)
+void TexturePacker::DrawToFinalImage(ImageExt& finalImage, ImageExt& drawedImage, const SpriteBoundsRect& packedCell, const Rect2i& alphaOffsetRect)
 {
     finalImage.DrawImage(packedCell, alphaOffsetRect, &drawedImage);
 
