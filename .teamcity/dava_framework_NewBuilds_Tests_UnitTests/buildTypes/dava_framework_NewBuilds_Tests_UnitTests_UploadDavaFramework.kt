@@ -101,12 +101,6 @@ object dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework : BuildType(
                 onDependencyCancel = FailureAction.ADD_PROBLEM
             }
         }
-        dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS) {
-            snapshot {
-                reuseBuilds = ReuseBuilds.NO
-                onDependencyCancel = FailureAction.ADD_PROBLEM
-            }
-        }
         dependency(dava_framework_NewBuilds_ToolSet.buildTypes.dava_framework_ToolSet_ToolSetAndroid) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
