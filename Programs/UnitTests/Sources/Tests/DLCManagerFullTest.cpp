@@ -253,7 +253,7 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         try
         {
             DLCManager::Hints hints;
-          
+
             hints.localPacksDB = "~doc:/local_fake_meta.db";
             FileSystem* fs = GetEngineContext()->fileSystem;
             fs->CopyFile("~res:/TestData/DLCManagerFullTest/local_fake_meta.db",
