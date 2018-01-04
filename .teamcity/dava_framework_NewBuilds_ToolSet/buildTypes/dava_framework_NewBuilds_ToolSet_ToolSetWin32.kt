@@ -16,7 +16,7 @@ import jetbrains.buildServer.configs.kotlin.v10.triggers.vcs
 object dava_framework_NewBuilds_ToolSet_ToolSetWin32 : BuildType({
     uuid = "53f3d94a-20c6-43a2-b056-baa19e55fd40"
     extId = "dava_framework_NewBuilds_ToolSet_ToolSetWin32"
-    name = "ToolSet_win32"
+    name = "ToolSet_Win32"
 
     artifactRules = """
         %pathToOutPackDir%/*.zip
