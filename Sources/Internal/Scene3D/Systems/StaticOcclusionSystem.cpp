@@ -333,12 +333,12 @@ StaticOcclusionDebugDrawSystem::StaticOcclusionDebugDrawSystem(Scene* scene)
     Color coverColor(0.1f, 0.5f, 0.1f, 0.3f);
 
     gridMaterial = new NMaterial();
-    gridMaterial->SetMaterialName(FastName("DebugQcclusionGridMaterial"));
+    gridMaterial->SetMaterialName(FastName("DebugOcclusionGridMaterial"));
     gridMaterial->SetFXName(NMaterialName::DEBUG_DRAW_ALPHABLEND);
     gridMaterial->AddProperty(FastName("color"), gridColor.color, rhi::ShaderProp::TYPE_FLOAT4);
 
     coverMaterial = new NMaterial();
-    coverMaterial->SetMaterialName(FastName("DebugQcclusionCoverMaterial"));
+    coverMaterial->SetMaterialName(FastName("DebugOcclusionCoverMaterial"));
     coverMaterial->SetFXName(NMaterialName::DEBUG_DRAW_ALPHABLEND);
     coverMaterial->AddProperty(FastName("color"), coverColor.color, rhi::ShaderProp::TYPE_FLOAT4);
 
