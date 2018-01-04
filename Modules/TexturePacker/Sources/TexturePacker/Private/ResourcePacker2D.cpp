@@ -20,7 +20,7 @@
 
 namespace DAVA
 {
-const String ResourcePacker2D::VERSION = "0.0.6";
+const String ResourcePacker2D::VERSION = "0.0.7";
 const String ResourcePacker2D::INTERNAL_LIBPSD_VERSION = "0.0.1";
 
 namespace ResourcePacker2DDetails
@@ -578,13 +578,13 @@ void ResourcePacker2D::PackRecursively(const FilePath& inputDir, const FilePath&
                         shouldAcceptFile = defFile->LoadPSD(path, processDir, maxTextureSize,
                                                             withAlpha, useLayerNames, verbose, file.outBasename);
                     }
-                    else if (CompareCaseInsensitive(file.ext, ".png") == 0)
-                    {
-                        shouldAcceptFile = defFile->LoadPNG(path, processDir, file.outBasename);
-                    }
                     else if (CompareCaseInsensitive(file.ext, ".pngdef") == 0)
                     {
                         shouldAcceptFile = defFile->LoadPNGDef(path, processDir, file.outBasename);
+                    }
+                    else if (TextureDescriptor::IsSupportedTextureExtension(file.ext) == true)
+                    {
+                        shouldAcceptFile = defFile->LoadImage(path, processDir, file.outBasename);
                     }
                     else
                     {
