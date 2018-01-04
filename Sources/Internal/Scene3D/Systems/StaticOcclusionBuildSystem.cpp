@@ -285,7 +285,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
     if (activeIndex == static_cast<uint32>(-1))
         return;
 
-    bool finished = staticOcclusion->ProccessBlock();
+    bool finished = staticOcclusion->ProcessBlock();
     if (finished)
     {
         FinishBuildOcclusion();

@@ -161,7 +161,7 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
                 batch->layerSortingKey = static_cast<uint32>((position - cameraPosition).SquareLength() * 100.0f);
 
-                auto occlusionId = batch->GetRenderObject()->GetStaticOcclusionIndex();
+                auto occlusionId = renderObject->GetStaticOcclusionIndex();
                 bool occlusionIndexIsInvalid = occlusionId == INVALID_STATIC_OCCLUSION_INDEX;
                 bool isAlreadyVisible = occlusionIndexIsInvalid || data.IsObjectVisibleFromBlock(blockIndex, occlusionId);
                 if (!isAlreadyVisible)

@@ -191,7 +191,7 @@ inline StaticOcclusionData& StaticOcclusionDataComponent::GetData()
 
 inline const float32* StaticOcclusionComponent::GetCellHeightOffsets() const
 {
-    return placeOnLandscape ? &cellHeightOffset.front() : NULL;
+    return placeOnLandscape ? &cellHeightOffset.front() : nullptr;
 }
 
 inline void StaticOcclusionComponent::SetOcclusionPixelThreshold(uint32 pixelThreshold)
