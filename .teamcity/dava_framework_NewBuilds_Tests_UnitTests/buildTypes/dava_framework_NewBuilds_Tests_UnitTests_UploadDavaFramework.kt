@@ -83,6 +83,18 @@ object dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework : BuildType(
     }
 
     dependencies {
+        dependency(dava_framework_Launcher.buildTypes.dava_framework_Launcher_LauncherMacOS) {
+            snapshot {
+                reuseBuilds = ReuseBuilds.NO
+                onDependencyCancel = FailureAction.ADD_PROBLEM
+            }
+        }
+        dependency(dava_framework_Launcher.buildTypes.dava_framework_Launcher_LauncherWin) {
+            snapshot {
+                reuseBuilds = ReuseBuilds.NO
+                onDependencyCancel = FailureAction.ADD_PROBLEM
+            }
+        }
         dependency(dava_framework_NewBuilds_Tests_UnitTests.buildTypes.dava_framework_NewBuilds_Tests_UnitTests_FormatTestTmp) {
             snapshot {
                 reuseBuilds = ReuseBuilds.NO
