@@ -794,6 +794,11 @@ public:
 
     DAVA::ParticleEffectComponent* GetComponent() const;
 
+    bool IsClean() const override
+    {
+        return true;
+    }
+
 protected:
     DAVA::ParticleEffectComponent* component;
 };
