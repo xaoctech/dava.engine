@@ -408,7 +408,7 @@ public:
     GLboolean maskG;
     GLboolean maskB;
     GLboolean maskA;
-    
+
     static std::vector<ProgramEntry> _ProgramEntry;
 };
 
@@ -526,13 +526,13 @@ bool PipelineStateGLES2_t::AcquireProgram(const PipelineState::Descriptor& desc,
                 entry.vprog->vdecl.InitVattr(gl_prog);
                 entry.vprog->GetProgParams(gl_prog);
                 entry.fprog->GetProgParams(gl_prog);
-                
+
                 uint32 setupTextureUnintsCommandCount = 2; // space for push + use
                 GLCommand setupTextureUnitsCommands[MAX_VERTEX_TEXTURE_SAMPLER_COUNT + MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT + 4] = {};
-                
+
                 entry.vprog->SetupTextureUnits(0, setupTextureUnitsCommands, setupTextureUnintsCommandCount);
                 entry.fprog->SetupTextureUnits(entry.vprog->SamplerCount(), setupTextureUnitsCommands, setupTextureUnintsCommandCount);
-                
+
                 if (setupTextureUnintsCommandCount > 2)
                 {
                     GLint currentProgram = 0;

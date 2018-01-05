@@ -171,7 +171,7 @@ struct GLCommand
         GET_QUERY_RESULT_NO_WAIT,
 
         SYNC_CPU_GPU,
-        
+
         VALIDATE_PROGRAM,
         GET_CURRENT_PROGRAM_PTR,
         SET_CURRENT_PROGRAM_PTR,

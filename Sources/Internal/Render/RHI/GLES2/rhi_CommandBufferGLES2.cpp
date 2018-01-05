@@ -1444,7 +1444,7 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
     #define EXEC_GL(expr) expr 
 
 #endif
-    
+
     GLCommand* commandData = reinterpret_cast<GLCommand*>(command->cmdData);
     for (GLCommand *cmd = commandData, *cmdEnd = commandData + command->cmdCount; cmd != cmdEnd; ++cmd)
     {
@@ -1639,11 +1639,11 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             cmd->status = err;
         }
         break;
-                
+
         case GLCommand::VALIDATE_PROGRAM:
         {
             GLuint program = static_cast<GLuint>(arg[0]);
-            
+
             GLint validateStatus = 0;
             GLchar validateLog[2048] = {};
             GLsizei validateLogLength = 0;
@@ -1653,7 +1653,7 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             GL_CALL(glGetProgramInfoLog(program, 2048, &validateLogLength, validateLog));
         }
         break;
-              
+
         case GLCommand::GET_CURRENT_PROGRAM_PTR:
         {
             GLint result = 0;
@@ -1661,14 +1661,14 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             *(reinterpret_cast<GLint*>(arg[0])) = result;
         }
         break;
-                
+
         case GLCommand::SET_CURRENT_PROGRAM_PTR:
         {
             GLint program = *(reinterpret_cast<GLint*>(arg[0]));
             GL_CALL(glUseProgram(program));
         }
         break;
-                
+
         case GLCommand::SHADER_SOURCE:
         {
             GL_CALL(glShaderSource(GLuint(arg[0]), GLsizei(arg[1]), reinterpret_cast<const GLchar**>(arg[2]), reinterpret_cast<const GLint*>(arg[3])));

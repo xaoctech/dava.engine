@@ -292,7 +292,7 @@ void ProgGLES2::SetupTextureUnits(uint32 baseUnit, GLCommand* commands, uint32& 
     {
         if (texunitLoc[i] != -1)
         {
-            commands[commandsCount] = { GLCommand::SET_UNIFORM_1I, {texunitLoc[i], baseUnit + i} };
+            commands[commandsCount] = { GLCommand::SET_UNIFORM_1I, { texunitLoc[i], baseUnit + i } };
             ++commandsCount;
         }
     }

@@ -21,7 +21,7 @@ public:
 
     unsigned ConstBufferCount() const;
     Handle InstanceConstBuffer(unsigned bufIndex) const;
-    
+
     void SetupTextureUnits(uint32 baseUnit, GLCommand* commands, uint32& commandsCount) const;
 
     static void InvalidateAllConstBufferInstances();
@@ -113,4 +113,3 @@ private:
 };
 
 } // namespace rhi
-
