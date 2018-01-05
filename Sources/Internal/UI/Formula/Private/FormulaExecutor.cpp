@@ -481,7 +481,7 @@ Any FormulaExecutor::CalculateNumberValues(FormulaBinaryOperatorExpression::Oper
     }
 }
 
-bool FormulaExecutor::CastToInt32(const Any& val, int32* res)
+bool FormulaExecutor::CastToInt32(const Any& val, int32* res) const
 {
     if (val.CanGet<int32>())
     {
