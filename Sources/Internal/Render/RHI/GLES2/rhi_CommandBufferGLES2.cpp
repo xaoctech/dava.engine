@@ -1659,8 +1659,9 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
               
         case GLCommand::PUSH_CURRENT_PROGRAM:
         {
-            currentProgramPushed = true;
+            DVASSERT(currentProgramPushed == false);
             GL_CALL(glGetIntegerv(GL_CURRENT_PROGRAM, &currentlyPushedProgram));
+            currentProgramPushed = true;
         }
         break;
                 
