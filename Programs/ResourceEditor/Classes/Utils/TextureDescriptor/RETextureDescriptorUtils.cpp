@@ -1,4 +1,4 @@
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 
 #include "Logger/Logger.h"
 #include "FileSystem/FileList.h"
@@ -9,7 +9,7 @@
 #include "ImageTools/ImageTools.h"
 #include "Preset.h"
 
-namespace TextureDescriptorUtils
+namespace RETextureDescriptorUtils
 {
 using namespace DAVA;
 
@@ -286,4 +286,4 @@ void SavePreset(const DAVA::Vector<DAVA::FilePath>& descriptors, const DAVA::Vec
     }
 }
 
-} // namespace TextureDescriptorUtils
+} // namespace RETextureDescriptorUtils

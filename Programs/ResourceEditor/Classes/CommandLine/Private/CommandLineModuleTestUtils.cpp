@@ -1,7 +1,7 @@
 #include "CommandLine/Private/CommandLineModuleTestUtils.h"
 #include "Classes/Qt/Scene/System/BeastSystem.h"
 
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 
 #include <Engine/Engine.h>
 #include <FileSystem/FilePath.h>
@@ -100,7 +100,7 @@ bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 he
     FilePath pngPathname = FilePath::CreateWithNewExtension(taggedTexturePath, ".png");
     if (CreateImageFile(pngPathname, width, height, format, color))
     {
-        TextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
+        RETextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
 
         std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(taggedTexturePath));
         if (descriptor)

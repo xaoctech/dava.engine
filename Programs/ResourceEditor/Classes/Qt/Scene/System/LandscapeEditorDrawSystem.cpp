@@ -11,8 +11,6 @@
 #include "Commands2/InspDynamicModifyCommand.h"
 #include "Commands2/Base/RECommandNotificationObject.h"
 
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
-
 #include "Scene/SceneHelper.h"
 
 #include <Scene3D/Systems/RenderUpdateSystem.h>

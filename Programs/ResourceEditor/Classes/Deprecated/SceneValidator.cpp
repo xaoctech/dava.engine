@@ -13,7 +13,7 @@
 #include "Classes/Project/ProjectManagerData.h"
 #include "Base/FastName.h"
 
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 
 #include "TArc/DataProcessing/DataContext.h"
 
