@@ -535,10 +535,11 @@ bool PipelineStateGLES2_t::AcquireProgram(const PipelineState::Descriptor& desc,
                 
                 if (setupTextureUnintsCommandCount > 2)
                 {
-                    setupTextureUnitsCommands[0] = { GLCommand::PUSH_CURRENT_PROGRAM, {} };
-                    setupTextureUnitsCommands[1] = { GLCommand::SET_CURRENT_PROGRAM, {gl_prog} };
-                    setupTextureUnitsCommands[setupTextureUnintsCommandCount++] = { GLCommand::VALIDATE_PROGRAM, {gl_prog} };
-                    setupTextureUnitsCommands[setupTextureUnintsCommandCount++] = { GLCommand::POP_CURRENT_PROGRAM, {} };
+                    GLint currentProgram = 0;
+                    setupTextureUnitsCommands[0] = { GLCommand::GET_CURRENT_PROGRAM_PTR, { uint64(&currentProgram) } };
+                    setupTextureUnitsCommands[1] = { GLCommand::SET_CURRENT_PROGRAM_PTR, { uint64(&gl_prog) } };
+                    setupTextureUnitsCommands[setupTextureUnintsCommandCount++] = { GLCommand::VALIDATE_PROGRAM, { gl_prog } };
+                    setupTextureUnitsCommands[setupTextureUnintsCommandCount++] = { GLCommand::SET_CURRENT_PROGRAM_PTR, { uint64(&currentProgram) } };
                     ExecGL(setupTextureUnitsCommands, setupTextureUnintsCommandCount);
                 }
 

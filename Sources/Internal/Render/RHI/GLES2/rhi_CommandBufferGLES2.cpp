@@ -1445,9 +1445,6 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
 #endif
     
-    GLint currentlyPushedProgram = -1;
-    bool currentProgramPushed = false;
-    
     GLCommand* commandData = reinterpret_cast<GLCommand*>(command->cmdData);
     for (GLCommand *cmd = commandData, *cmdEnd = commandData + command->cmdCount; cmd != cmdEnd; ++cmd)
     {
@@ -1657,26 +1654,17 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
         }
         break;
               
-        case GLCommand::PUSH_CURRENT_PROGRAM:
+        case GLCommand::GET_CURRENT_PROGRAM_PTR:
         {
-            DVASSERT(currentProgramPushed == false);
-            GL_CALL(glGetIntegerv(GL_CURRENT_PROGRAM, &currentlyPushedProgram));
-            currentProgramPushed = true;
+            GLint result = 0;
+            GL_CALL(glGetIntegerv(GL_CURRENT_PROGRAM, &result));
+            *(reinterpret_cast<GLint*>(arg[0])) = result;
         }
         break;
                 
-        case GLCommand::POP_CURRENT_PROGRAM:
+        case GLCommand::SET_CURRENT_PROGRAM_PTR:
         {
-            DVASSERT(currentProgramPushed == true);
-            GL_CALL(glUseProgram(currentlyPushedProgram));
-            currentProgramPushed = false;
-            currentlyPushedProgram = -1;
-        }
-        break;
-
-        case GLCommand::SET_CURRENT_PROGRAM:
-        {
-            GLuint program = static_cast<GLuint>(arg[0]);
+            GLint program = *(reinterpret_cast<GLint*>(arg[0]));
             GL_CALL(glUseProgram(program));
         }
         break;
