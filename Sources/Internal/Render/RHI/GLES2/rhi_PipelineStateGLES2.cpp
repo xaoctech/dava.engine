@@ -326,19 +326,13 @@ VertexDeclGLES2
 bool VertexDeclGLES2::VAttrCacheValid = false;
 VertexDeclGLES2::vattr_t VertexDeclGLES2::vattr[VATTR_COUNT];
 
-class
-PipelineStateGLES2_t
+class PipelineStateGLES2_t
 {
 public:
-    PipelineStateGLES2_t()
-    {
-    }
+    PipelineStateGLES2_t() = default;
 
-    struct
-    VertexProgGLES2
-    : public ProgGLES2
+    struct VertexProgGLES2 : public ProgGLES2
     {
-    public:
         VertexProgGLES2()
             : ProgGLES2(PROG_VERTEX)
         {
@@ -366,8 +360,7 @@ public:
         VertexDeclGLES2 vdecl;
         DAVA::FastName uid;
 
-        struct
-        vdecl_t
+        struct vdecl_t
         {
             VertexDeclGLES2 vdecl;
             uint32 layoutUID;
@@ -376,36 +369,23 @@ public:
         mutable std::vector<vdecl_t> altVdecl;
     };
 
-    struct
-    FragmentProgGLES2
-    : public ProgGLES2
+    struct FragmentProgGLES2 : public ProgGLES2
     {
-    public:
         FragmentProgGLES2()
             : ProgGLES2(PROG_FRAGMENT)
         {
         }
-
         DAVA::FastName uid;
     };
 
-    struct
-    program_t
+    struct program_t
     {
-        const VertexProgGLES2* vprog;
-        const FragmentProgGLES2* fprog;
-        unsigned glProg;
-
-        program_t()
-            : vprog(nullptr)
-            , fprog(nullptr)
-            , glProg(0)
-        {
-        }
+        const VertexProgGLES2* vprog = nullptr;
+        const FragmentProgGLES2* fprog = nullptr;
+        unsigned glProg = 0;
     };
 
-    struct
-    ProgramEntry
+    struct ProgramEntry
     {
         uint32 vprogSrcHash;
         VertexProgGLES2* vprog;
@@ -428,9 +408,7 @@ public:
     GLboolean maskG;
     GLboolean maskB;
     GLboolean maskA;
-
-    bool needPrepareTextureLoc = true;
-
+    
     static std::vector<ProgramEntry> _ProgramEntry;
 };
 
@@ -548,6 +526,21 @@ bool PipelineStateGLES2_t::AcquireProgram(const PipelineState::Descriptor& desc,
                 entry.vprog->vdecl.InitVattr(gl_prog);
                 entry.vprog->GetProgParams(gl_prog);
                 entry.fprog->GetProgParams(gl_prog);
+                
+                uint32 setupTextureUnintsCommandCount = 2; // space for push + use
+                GLCommand setupTextureUnitsCommands[MAX_VERTEX_TEXTURE_SAMPLER_COUNT + MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT + 4] = {};
+                
+                entry.vprog->SetupTextureUnits(0, setupTextureUnitsCommands, setupTextureUnintsCommandCount);
+                entry.fprog->SetupTextureUnits(entry.vprog->SamplerCount(), setupTextureUnitsCommands, setupTextureUnintsCommandCount);
+                
+                if (setupTextureUnintsCommandCount > 2)
+                {
+                    setupTextureUnitsCommands[0] = { GLCommand::PUSH_CURRENT_PROGRAM, {} };
+                    setupTextureUnitsCommands[1] = { GLCommand::SET_CURRENT_PROGRAM, {gl_prog} };
+                    setupTextureUnitsCommands[setupTextureUnintsCommandCount++] = { GLCommand::VALIDATE_PROGRAM, {gl_prog} };
+                    setupTextureUnitsCommands[setupTextureUnintsCommandCount++] = { GLCommand::POP_CURRENT_PROGRAM, {} };
+                    ExecGL(setupTextureUnitsCommands, setupTextureUnintsCommandCount);
+                }
 
                 entry.vprog->uid = desc.vprogUid;
                 entry.vprogSrcHash = vprogSrcHash;
@@ -556,14 +549,6 @@ bool PipelineStateGLES2_t::AcquireProgram(const PipelineState::Descriptor& desc,
                 entry.glProg = gl_prog;
 
                 success = true;
-            }
-            else
-            {
-                char info[1024];
-
-                GL_CALL(glGetProgramInfoLog(gl_prog, countof(info), 0, info));
-                Logger::Error("prog-link failed:\n");
-                Logger::Error(info);
             }
         }
 
@@ -709,13 +694,6 @@ void SetToRHI(Handle ps)
         GL_CALL(glUseProgram(ps2->prog.glProg));
         cachedProgram = ps2->prog.glProg;
         VertexDeclGLES2::InvalidateVAttrCache();
-
-        if (ps2->needPrepareTextureLoc)
-        {
-            ps2->needPrepareTextureLoc = false;
-            ps2->prog.vprog->ProgGLES2::SetupTextureUnits();
-            ps2->prog.fprog->ProgGLES2::SetupTextureUnits(ps2->prog.vprog->SamplerCount());
-        }
     }
 
     if (ps2->blendEnabled)

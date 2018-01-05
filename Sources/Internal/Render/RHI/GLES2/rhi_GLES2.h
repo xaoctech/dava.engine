@@ -170,7 +170,12 @@ struct GLCommand
 
         GET_QUERY_RESULT_NO_WAIT,
 
-        SYNC_CPU_GPU
+        SYNC_CPU_GPU,
+        
+        VALIDATE_PROGRAM,
+        PUSH_CURRENT_PROGRAM,
+        SET_CURRENT_PROGRAM,
+        POP_CURRENT_PROGRAM,
     };
 
     Func func;
