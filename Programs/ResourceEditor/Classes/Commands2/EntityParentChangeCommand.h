@@ -18,11 +18,10 @@ public:
     void Redo() override;
     DAVA::Entity* GetEntity() const;
 
-    DAVA::Entity* entity;
-    DAVA::Entity* oldParent;
-    DAVA::Entity* oldBefore;
-    DAVA::Entity* newParent;
-    DAVA::Entity* newBefore;
+    DAVA::Entity* entity = nullptr;
+    DAVA::Entity* oldParent = nullptr;
+    DAVA::Entity* oldBefore = nullptr;
+    DAVA::Entity* newParent = nullptr;
+    DAVA::Entity* newBefore = nullptr;
     bool saveEntityPosition;
-    static void ConvertLocalTransform(DAVA::Entity* entity, DAVA::Entity* parent);
 };
