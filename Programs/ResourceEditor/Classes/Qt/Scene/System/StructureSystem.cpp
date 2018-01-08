@@ -62,20 +62,18 @@ StructureSystem::~StructureSystem()
 {
 }
 
-void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore, DAVA::TArc::ContextAccessor* accessor)
+void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore, bool saveEntityPositionOnHierarchyChange)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     const auto& objectsContent = objects.GetContent();
     if ((sceneEditor == nullptr) || objectsContent.empty())
         return;
 
-    GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<GlobalSceneSettings>();
-
     sceneEditor->BeginBatch("Move entities", objects.GetSize());
     for (auto entity : objects.ObjectsOfType<DAVA::Entity>())
     {
         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(entity, newParent,
-                                                                                       settings->saveEntityPositionOnHierarchyChange,
+                                                                                       saveEntityPositionOnHierarchyChange,
                                                                                        newBefore)));
     }
     sceneEditor->EndBatch();
