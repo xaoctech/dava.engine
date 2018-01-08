@@ -154,11 +154,11 @@ String FormulaFormatter::BinaryOpToString(FormulaBinaryOperatorExpression::Opera
     case FormulaBinaryOperatorExpression::OP_MOD:
         return "%";
     case FormulaBinaryOperatorExpression::OP_AND:
-        return "&&";
+        return "and";
     case FormulaBinaryOperatorExpression::OP_OR:
-        return "||";
+        return "or";
     case FormulaBinaryOperatorExpression::OP_EQ:
-        return "==";
+        return "=";
     case FormulaBinaryOperatorExpression::OP_NOT_EQ:
         return "!=";
     case FormulaBinaryOperatorExpression::OP_LE:
@@ -210,7 +210,7 @@ void FormulaFormatter::Visit(FormulaNegExpression* exp)
 
 void FormulaFormatter::Visit(FormulaNotExpression* exp)
 {
-    stream << "!";
+    stream << "not ";
 
     bool squares = dynamic_cast<FormulaBinaryOperatorExpression*>(exp->GetExp()) != nullptr;
     if (squares)
@@ -224,6 +224,19 @@ void FormulaFormatter::Visit(FormulaNotExpression* exp)
     {
         stream << ")";
     }
+}
+
+void FormulaFormatter::Visit(FormulaWhenExpression* exp)
+{
+    stream << "when ";
+    for (const auto& branch : exp->GetBranches())
+    {
+        branch.first->Accept(this);
+        stream << " -> ";
+        branch.second->Accept(this);
+        stream << ", ";
+    }
+    exp->GetElseBranch()->Accept(this);
 }
 
 void FormulaFormatter::Visit(FormulaBinaryOperatorExpression* exp)
