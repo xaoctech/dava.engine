@@ -1,5 +1,6 @@
 #pragma once
 #include "Commands2/Base/RECommand.h"
+#include "Math/Matrix4.h"
 
 namespace DAVA
 {
@@ -24,4 +25,7 @@ public:
     DAVA::Entity* newParent = nullptr;
     DAVA::Entity* newBefore = nullptr;
     bool saveEntityPosition;
+
+    DAVA::Matrix4 oldTransform;
+    DAVA::Matrix4 newTransform;
 };
