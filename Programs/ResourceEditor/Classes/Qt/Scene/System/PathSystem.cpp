@@ -269,14 +269,14 @@ void PathSystem::DrawInEditableMode()
         {
             DAVA::Entity* waypoint = path->GetChild(c);
 
-            const DAVA::uint32 edgesCount = waypoint->GetComponentCount(DAVA::Component::EDGE_COMPONENT);
+            const DAVA::uint32 edgesCount = waypoint->GetComponentCount<DAVA::EdgeComponent>();
             if (edgesCount)
             {
                 DAVA::Vector3 startPosition = GetTransformComponent(waypoint)->GetWorldTransform().GetTranslationVector();
                 startPosition.z += WAYPOINTS_DRAW_LIFTING;
                 for (DAVA::uint32 e = 0; e < edgesCount; ++e)
                 {
-                    DAVA::EdgeComponent* edge = static_cast<DAVA::EdgeComponent*>(waypoint->GetComponent(DAVA::Component::EDGE_COMPONENT, e));
+                    DAVA::EdgeComponent* edge = waypoint->GetComponent<DAVA::EdgeComponent>(e);
                     DAVA::Entity* nextEntity = edge->GetNextEntity();
                     if (nextEntity && nextEntity->GetParent())
                     {
@@ -540,9 +540,9 @@ void PathSystem::ExpandPathEntity(DAVA::Entity* pathEntity)
             entityCache[key.waypoint] = value.entity;
         }
 
-        for (uint32 edgeIndex = 0; edgeIndex < child->GetComponentCount(Component::EDGE_COMPONENT); ++edgeIndex)
+        for (uint32 edgeIndex = 0; edgeIndex < child->GetComponentCount<EdgeComponent>(); ++edgeIndex)
         {
-            EdgeComponent* component = static_cast<EdgeComponent*>(child->GetComponent(Component::EDGE_COMPONENT, edgeIndex));
+            EdgeComponent* component = child->GetComponent<EdgeComponent>(edgeIndex);
 
             EdgeKey key;
             key.path = component->GetPath();
@@ -631,15 +631,15 @@ void PathSystem::CollapsePathEntity(DAVA::Entity* pathEntity, DAVA::FastName pat
     SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
 
     Vector<Entity*> edgeChildren;
-    pathEntity->GetChildEntitiesWithComponent(edgeChildren, Component::EDGE_COMPONENT);
+    pathEntity->GetChildEntitiesWithComponent(edgeChildren, Type::Instance<EdgeComponent>());
     for (Entity* edgeEntity : edgeChildren)
     {
-        uint32 count = edgeEntity->GetComponentCount(Component::EDGE_COMPONENT);
+        uint32 count = edgeEntity->GetComponentCount<EdgeComponent>();
         Vector<EdgeComponent*> edgeComponents;
         edgeComponents.reserve(count);
         for (uint32 i = 0; i < count; ++i)
         {
-            EdgeComponent* edgeComponent = static_cast<EdgeComponent*>(edgeEntity->GetComponent(Component::EDGE_COMPONENT, i));
+            EdgeComponent* edgeComponent = edgeEntity->GetComponent<EdgeComponent>(i);
             edgeComponents.push_back(edgeComponent);
             DVASSERT(edgeComponent->GetEdge() != nullptr);
             bool added = edgeComponentCache.emplace(edgeComponent->GetEdge(), edgeComponent).second;
@@ -653,7 +653,7 @@ void PathSystem::CollapsePathEntity(DAVA::Entity* pathEntity, DAVA::FastName pat
     }
 
     Vector<Entity*> children;
-    pathEntity->GetChildEntitiesWithComponent(children, Component::WAYPOINT_COMPONENT);
+    pathEntity->GetChildEntitiesWithComponent(children, Type::Instance<WaypointComponent>());
     for (Entity* wpEntity : children)
     {
         WaypointComponent* wpComponent = GetWaypointComponent(wpEntity);

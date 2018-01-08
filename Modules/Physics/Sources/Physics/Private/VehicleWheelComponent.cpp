@@ -67,11 +67,6 @@ void VehicleWheelComponent::Deserialize(KeyedArchive* archive, SerializationCont
     maxSteerAngle = archive->GetFloat("vehicleWheel.maxSteerAngle", 0.0f);
 }
 
-uint32 VehicleWheelComponent::GetType() const
-{
-    return Component::VEHICLE_WHEEL_COMPONENT;
-}
-
 Component* VehicleWheelComponent::Clone(Entity* toEntity)
 {
     VehicleWheelComponent* result = new VehicleWheelComponent();

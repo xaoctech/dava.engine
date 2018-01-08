@@ -29,8 +29,14 @@
 #include <Math/Matrix4.h>
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Components/ComponentHelpers.h>
-#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Components/WindComponent.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+
 #include <Scene3D/Scene.h>
 
 #include <physx/PxScene.h>
@@ -968,14 +974,14 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         // build simple collision box for all other entities, that has more than two components
         if ((result.isValid == false) && (entity != nullptr))
         {
-            if ((entity->GetComponent(DAVA::Component::SOUND_COMPONENT) != nullptr) ||
-                (entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) != nullptr) ||
-                (entity->GetComponent(DAVA::Component::TEXT_COMPONENT) != nullptr) ||
-                (entity->GetComponent(DAVA::Component::WIND_COMPONENT) != nullptr))
+            if ((entity->GetComponent<DAVA::SoundComponent>() != nullptr) ||
+                (entity->GetComponent<DAVA::LightComponent>() != nullptr) ||
+                (entity->GetComponent<DAVA::TextComponent>() != nullptr) ||
+                (entity->GetComponent<DAVA::WindComponent>() != nullptr))
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), userData);
             }
-            else if (entity->GetComponent(DAVA::Component::USER_COMPONENT) != nullptr)
+            else if (entity->GetComponent<DAVA::UserComponent>() != nullptr)
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxUserScale), userData);
             }

@@ -7,6 +7,7 @@
 
 #include <Math/Vector.h>
 #include <Base/BaseTypes.h>
+#include <Base/Type.h>
 
 #include <physx/PxFiltering.h>
 
@@ -61,12 +62,12 @@ public:
     Vector<FastName> GetMaterialNames() const;
     void ReleaseMaterials();
 
-    physx::PxAllocatorCallback* GetAllocator() const;
+    const Vector<const Type*>& GetBodyComponentTypes() const;
+    const Vector<const Type*>& GetShapeComponentTypes() const;
+    const Vector<const Type*>& GetVehicleComponentTypes() const;
+    const Vector<const Type*>& GetCharacterControllerComponentTypes() const;
 
-    const Vector<uint32>& GetBodyComponentTypes() const;
-    const Vector<uint32>& GetShapeComponentTypes() const;
-    const Vector<uint32>& GetVehicleComponentTypes() const;
-    const Vector<uint32>& GetCharacterControllerComponentTypes() const;
+    physx::PxAllocatorCallback* GetAllocator() const;
 
 private:
     void LazyLoadMaterials() const;
@@ -87,10 +88,10 @@ private:
     class PhysicsErrotCallback;
     PhysicsErrotCallback* errorCallback = nullptr;
 
-    Vector<uint32> bodyComponents;
-    Vector<uint32> shapeComponents;
-    Vector<uint32> vehicleComponents;
-    Vector<uint32> characterControllerComponents;
+    Vector<const Type*> bodyComponents;
+    Vector<const Type*> shapeComponents;
+    Vector<const Type*> vehicleComponents;
+    Vector<const Type*> characterControllerComponents;
 
     DAVA_VIRTUAL_REFLECTION(PhysicsModule, IModule);
 };

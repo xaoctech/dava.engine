@@ -32,14 +32,14 @@ void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint32>& outJointInde
     ScopedPtr<RenderObject> skinnedRo(MeshUtils::CreateHardSkinnedMesh(sourceTank, tankJoints));
     skinnedRo->AddFlag(RenderObject::VISIBLE_REFLECTION | RenderObject::VISIBLE_REFRACTION);
 
-    RenderComponent* renderComponent = static_cast<RenderComponent*>(skinnedTank->GetOrCreateComponent(Component::RENDER_COMPONENT));
+    RenderComponent* renderComponent = skinnedTank->GetOrCreateComponent<RenderComponent>();
     renderComponent->SetRenderObject(skinnedRo);
 
     uint32 jointsCount = static_cast<uint32>(tankJoints.size());
 
     for (Entity* wheel : wheels)
     {
-        RenderComponent* renderComponent = static_cast<RenderComponent*>(wheel->GetComponent(Component::RENDER_COMPONENT));
+        RenderComponent* renderComponent = wheel->GetComponent<RenderComponent>();
         const Vector3& centerPos = renderComponent->GetRenderObject()->GetBoundingBox().GetCenter();
 
         for (uint32 i = 0; i < jointsCount; i++)
@@ -55,14 +55,14 @@ void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint32>& outJointInde
     skinnedTank->AddComponent(conquerorSkeleton);
 
     Vector<Entity*> sourceTankChildren;
-    sourceTank->GetChildEntitiesWithComponent(sourceTankChildren, Component::RENDER_COMPONENT);
+    sourceTank->GetChildEntitiesWithComponent(sourceTankChildren, Type::Instance<RenderComponent>());
 
     for (auto* child : sourceTankChildren)
     {
-        child->RemoveComponent(Component::RENDER_COMPONENT);
+        child->RemoveComponent(Type::Instance<RenderComponent>());
     }
 
-    LodComponent* toLod = static_cast<LodComponent*>(skinnedTank->GetOrCreateComponent(Component::LOD_COMPONENT));
+    LodComponent* toLod = skinnedTank->GetOrCreateComponent<LodComponent>();
     toLod->EnableRecursiveUpdate();
 
     sourceTank->AddNode(skinnedTank);
@@ -73,7 +73,7 @@ void TankUtils::Animate(Entity* tank, const Vector<uint32>& jointIndexes, float3
     Entity* skinnedTank = tank->FindByName(TankUtils::TankNode::SKINNED_TANK);
     Entity* turret = tank->FindByName(TankUtils::TankNode::TURRET);
 
-    SkeletonComponent* skeleton = static_cast<SkeletonComponent*>(skinnedTank->GetComponent(Component::SKELETON_COMPONENT));
+    SkeletonComponent* skeleton = skinnedTank->GetComponent<SkeletonComponent>();
 
     const Quaternion& wheelsRotation = Quaternion::MakeRotation(Vector3::UnitX, angle);
     const Quaternion& turrentRotation = Quaternion::MakeRotation(Vector3::UnitZ, angle);

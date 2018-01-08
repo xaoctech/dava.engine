@@ -295,7 +295,7 @@ void ParticleEffectSystem::AddToActive(ParticleEffectComponent* effect)
         Scene* scene = GetScene();
         if (scene)
         {
-            Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+            Matrix4* worldTransformPointer = effect->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransformPtr();
             effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
             Vector3 pos = worldTransformPointer->GetTranslationVector();
             effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
@@ -322,7 +322,7 @@ void ParticleEffectSystem::RemoveFromActive(ParticleEffectComponent* effect)
 
 void ParticleEffectSystem::AddEntity(Entity* entity)
 {
-    ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effect = entity->GetComponent<ParticleEffectComponent>();
     PrebuildMaterials(effect);
 }
 
@@ -334,7 +334,7 @@ void ParticleEffectSystem::AddComponent(Entity* entity, Component* component)
 
 void ParticleEffectSystem::RemoveEntity(Entity* entity)
 {
-    ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effect = entity->GetComponent<ParticleEffectComponent>();
     if (effect && effect->state != ParticleEffectComponent::STATE_STOPPED)
         RemoveFromActive(effect);
 }
@@ -364,7 +364,8 @@ void ParticleEffectSystem::PrepareForRemove()
 
 void ParticleEffectSystem::ImmediateEvent(Component* component, uint32 event)
 {
-    DVASSERT(component->GetType() == Component::PARTICLE_EFFECT_COMPONENT);
+    DVASSERT(component->GetType()->Is<ParticleEffectComponent>());
+
     ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(component);
     if (event == EventSystem::START_PARTICLE_EFFECT)
     {

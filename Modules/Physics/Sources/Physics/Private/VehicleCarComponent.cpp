@@ -30,11 +30,6 @@ void VehicleCarComponent::ResetInputData()
     analogBrake = 0.0f;
 }
 
-uint32 VehicleCarComponent::GetType() const
-{
-    return Component::VEHICLE_CAR_COMPONENT;
-}
-
 Component* VehicleCarComponent::Clone(Entity* toEntity)
 {
     VehicleComponent* result = new VehicleCarComponent();

@@ -5,6 +5,7 @@
 #include "Physics/PhysicsComponent.h"
 #include "Physics/BoxShapeComponent.h"
 #include "Physics/ConvexHullShapeComponent.h"
+#include "Physics/DynamicBodyComponent.h"
 #include "Physics/VehicleCarComponent.h"
 #include "Physics/VehicleTankComponent.h"
 #include "Physics/VehicleChassisComponent.h"
@@ -242,10 +243,10 @@ VehicleComponent* GetVehicleComponentFromEntity(Entity* entity)
 {
     DVASSERT(entity != nullptr);
 
-    VehicleComponent* vehicle = static_cast<VehicleComponent*>(entity->GetComponent(Component::VEHICLE_CAR_COMPONENT));
+    VehicleComponent* vehicle = static_cast<VehicleComponent*>(entity->GetComponent<VehicleCarComponent>());
     if (vehicle == nullptr)
     {
-        vehicle = static_cast<VehicleComponent*>(entity->GetComponent(Component::VEHICLE_TANK_COMPONENT));
+        vehicle = static_cast<VehicleComponent*>(entity->GetComponent<VehicleTankComponent>());
     }
 
     return vehicle;
@@ -315,8 +316,8 @@ void PhysicsVehiclesSubsystem::RegisterComponent(Entity* entity, Component* comp
     DVASSERT(entity != nullptr);
     DVASSERT(component != nullptr);
 
-    const uint32 type = component->GetType();
-    if (type == Component::VEHICLE_CAR_COMPONENT || type == Component::VEHICLE_TANK_COMPONENT)
+    const Type* type = component->GetType();
+    if (type->Is<VehicleCarComponent>() || type->Is<VehicleTankComponent>())
     {
         DVASSERT(std::find(vehicleComponents.begin(), vehicleComponents.end(), component) == vehicleComponents.end());
         vehicleComponents.push_back(static_cast<VehicleComponent*>(component));
@@ -328,13 +329,13 @@ void PhysicsVehiclesSubsystem::UnregisterComponent(Entity* entity, Component* co
     DVASSERT(entity != nullptr);
     DVASSERT(component != nullptr);
 
-    const uint32 type = component->GetType();
-    if (type == Component::VEHICLE_CAR_COMPONENT || type == Component::VEHICLE_TANK_COMPONENT)
+    const Type* type = component->GetType();
+    if (type->Is<VehicleCarComponent>() || type->Is<VehicleTankComponent>())
     {
         DVASSERT(std::find(vehicleComponents.begin(), vehicleComponents.end(), component) != vehicleComponents.end());
         vehicleComponents.erase(std::remove(vehicleComponents.begin(), vehicleComponents.end(), component), vehicleComponents.end());
     }
-    else if (type == Component::DYNAMIC_BODY_COMPONENT)
+    else if (type->Is<DynamicBodyComponent>())
     {
         // If dynamic body is being removed and it was a vehicle, we need to delete physx vehicle object
 
@@ -365,13 +366,13 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
 
         if (vehicleComponent->vehicle == nullptr)
         {
-            if (vehicleComponent->GetType() == Component::VEHICLE_CAR_COMPONENT)
+            if (vehicleComponent->GetType()->Is<VehicleCarComponent>())
             {
                 TryRecreateCarVehicle(static_cast<VehicleCarComponent*>(vehicleComponent));
             }
             else
             {
-                DVASSERT(vehicleComponent->GetType() == Component::VEHICLE_TANK_COMPONENT);
+                DVASSERT(vehicleComponent->GetType()->Is<VehicleTankComponent>());
                 TryRecreateTankVehicle(static_cast<VehicleTankComponent*>(vehicleComponent));
             }
         }
@@ -407,7 +408,7 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
             continue;
         }
 
-        if (vehicleComponent->GetType() == Component::VEHICLE_CAR_COMPONENT)
+        if (vehicleComponent->GetType()->Is<VehicleCarComponent>())
         {
             VehicleCarComponent* car = static_cast<VehicleCarComponent*>(vehicleComponent);
             PxVehicleDriveNW* physxCar = static_cast<PxVehicleDriveNW*>(car->vehicle);
@@ -473,7 +474,7 @@ void PhysicsVehiclesSubsystem::Simulate(float32 timeElapsed)
 
             car->ResetInputData();
         }
-        else if (vehicleComponent->GetType() == Component::VEHICLE_TANK_COMPONENT)
+        else if (vehicleComponent->GetType()->Is<VehicleTankComponent>())
         {
             VehicleTankComponent* tank = static_cast<VehicleTankComponent*>(vehicleComponent);
             PxVehicleDriveTank* physxTank = static_cast<physx::PxVehicleDriveTank*>(vehicleComponent->vehicle);
@@ -591,13 +592,13 @@ void PhysicsVehiclesSubsystem::OnSimulationEnabled(bool enabled)
     {
         for (VehicleComponent* vehicleComponent : vehicleComponents)
         {
-            if (vehicleComponent->GetType() == Component::VEHICLE_CAR_COMPONENT)
+            if (vehicleComponent->GetType()->Is<VehicleCarComponent>())
             {
                 TryRecreateCarVehicle(static_cast<VehicleCarComponent*>(vehicleComponent));
             }
             else
             {
-                DVASSERT(vehicleComponent->GetType() == Component::VEHICLE_TANK_COMPONENT);
+                DVASSERT(vehicleComponent->GetType()->Is<VehicleTankComponent>());
                 TryRecreateTankVehicle(static_cast<VehicleTankComponent*>(vehicleComponent));
             }
         }
@@ -641,7 +642,7 @@ VehicleChassisComponent* PhysicsVehiclesSubsystem::GetChassis(VehicleComponent* 
         Entity* child = entity->GetChild(i);
         DVASSERT(child != nullptr);
 
-        VehicleChassisComponent* chassis = static_cast<VehicleChassisComponent*>(child->GetComponent(Component::VEHICLE_CHASSIS_COMPONENT));
+        VehicleChassisComponent* chassis = child->GetComponent<VehicleChassisComponent>();
         if (chassis != nullptr)
         {
             return chassis;
@@ -666,7 +667,7 @@ Vector<VehicleWheelComponent*> PhysicsVehiclesSubsystem::GetWheels(VehicleCompon
         Entity* child = entity->GetChild(i);
         DVASSERT(child != nullptr);
 
-        VehicleWheelComponent* wheel = static_cast<VehicleWheelComponent*>(child->GetComponent(Component::VEHICLE_WHEEL_COMPONENT));
+        VehicleWheelComponent* wheel = child->GetComponent<VehicleWheelComponent>();
         if (wheel != nullptr)
         {
             wheels.push_back(wheel);
@@ -680,23 +681,17 @@ Vector3 PhysicsVehiclesSubsystem::CalculateMomentOfInertiaForShape(CollisionShap
 {
     Vector3 momentOfInertia;
 
-    switch (shape->GetType())
-    {
-    case Component::BOX_SHAPE_COMPONENT:
+    if (shape->GetType()->Is<BoxShapeComponent>())
     {
         BoxShapeComponent* box = static_cast<BoxShapeComponent*>(shape);
         Vector3 boxFullSize(box->GetHalfSize() * 2.0f);
         momentOfInertia.x = (boxFullSize.z * boxFullSize.z + boxFullSize.x * boxFullSize.x) * box->GetMass() / 12.0f;
         momentOfInertia.y = (boxFullSize.y * boxFullSize.y + boxFullSize.x * boxFullSize.x) * box->GetMass() / 12.0f;
         momentOfInertia.z = (boxFullSize.y * boxFullSize.y + boxFullSize.z * boxFullSize.z) * box->GetMass() / 12.0f;
-        break;
     }
-
-    default:
+    else
     {
         DVASSERT(false);
-        break;
-    }
     }
 
     return momentOfInertia;
@@ -726,7 +721,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         return false;
     }
 
-    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent(Component::DYNAMIC_BODY_COMPONENT));
+    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent<DynamicBodyComponent>());
     if (vehiclePhysicsComponent == nullptr)
     {
         return vehiclePhysicsComponent;
@@ -849,7 +844,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         CollisionShapeComponent* collisionShape = CollisionShapeComponent::GetComponent(shape);
         DVASSERT(collisionShape != nullptr);
 
-        if (collisionShape->GetEntity()->GetComponent(Component::VEHICLE_WHEEL_COMPONENT))
+        if (collisionShape->GetEntity()->GetComponent<VehicleWheelComponent>())
         {
             wheelShapeMapping[wheelShapeMappingCurrentIndex] = i;
             ++wheelShapeMappingCurrentIndex;
@@ -942,7 +937,7 @@ void PhysicsVehiclesSubsystem::TryRecreateCarVehicle(VehicleCarComponent* vehicl
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     PxVehicleDriveNW* vehDrive4W = PxVehicleDriveNW::allocate(wheelsCount);
 
-    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent(Component::DYNAMIC_BODY_COMPONENT));
+    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent<DynamicBodyComponent>());
     DVASSERT(vehiclePhysicsComponent != nullptr);
     PxActor* vehicleActor = vehiclePhysicsComponent->GetPxActor();
     DVASSERT(vehicleActor != nullptr);
@@ -993,7 +988,7 @@ void PhysicsVehiclesSubsystem::TryRecreateTankVehicle(VehicleTankComponent* vehi
     engineData.mDampingRateFullThrottle = 1.0f;
     driveSimData.setEngineData(engineData);
 
-    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent(Component::DYNAMIC_BODY_COMPONENT));
+    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent<DynamicBodyComponent>());
     DVASSERT(vehiclePhysicsComponent != nullptr);
     PxActor* vehicleActor = vehiclePhysicsComponent->GetPxActor();
     DVASSERT(vehicleActor != nullptr);

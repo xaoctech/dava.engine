@@ -101,7 +101,7 @@ void TransformSystem::TransformAllChildEntities(Entity* entity)
     {
         Entity* entity = stack[--stackPosition];
 
-        TransformComponent* transform = static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
+        TransformComponent* transform = entity->GetComponent<TransformComponent>();
         if (transform->parentMatrix)
         {
             AnimationComponent* animComp = GetAnimationComponent(entity);
@@ -135,7 +135,7 @@ void TransformSystem::HierahicFindUpdatableTransform(Entity* entity, bool forced
     {
         forcedUpdate = true;
         multipliedNodes++;
-        TransformComponent* transform = static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT));
+        TransformComponent* transform = entity->GetComponent<TransformComponent>();
         if (transform->parentMatrix)
         {
             transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
