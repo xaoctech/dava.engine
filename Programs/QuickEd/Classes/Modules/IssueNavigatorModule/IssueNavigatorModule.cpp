@@ -2,7 +2,6 @@
 
 #include "Modules/IssueNavigatorModule/IssueData.h"
 #include "Modules/IssueNavigatorModule/LayoutIssueHandler.h"
-#include "Modules/IssueNavigatorModule/DataBindingIssueHandler.h"
 #include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
 #include "Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
@@ -53,7 +52,6 @@ void IssueNavigatorModule::PostInit()
 
     DAVA::int32 sectionId = 0;
     handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
-    handlers.push_back(std::make_unique<DataBindingIssueHandler>(GetAccessor(), sectionId++, indexGenerator));
     handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
     handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
 }
