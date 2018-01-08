@@ -225,6 +225,11 @@ FormulaToken FormulaTokenizer::ReadToken()
 
     case '-':
         ReadChar();
+        if (ch == '>')
+        {
+            ReadChar();
+            return FormulaToken(FormulaToken::ARROW, line, column);
+        }
         return FormulaToken(FormulaToken::MINUS, line, column);
 
     case '*':
@@ -241,12 +246,7 @@ FormulaToken FormulaTokenizer::ReadToken()
 
     case '=':
         ReadChar();
-        if (ch == '=')
-        {
-            ReadChar();
-            return FormulaToken(FormulaToken::EQ, line, column);
-        }
-        return FormulaToken(FormulaToken::ASSIGN_SIGN, line, column);
+        return FormulaToken(FormulaToken::EQ, line, column);
 
     case '!':
         ReadChar();
@@ -255,25 +255,7 @@ FormulaToken FormulaTokenizer::ReadToken()
             ReadChar();
             return FormulaToken(FormulaToken::NOT_EQ, line, column);
         }
-        return FormulaToken(FormulaToken::NOT, line, column);
-
-    case '&':
-        ReadChar();
-        if (ch == '&')
-        {
-            ReadChar();
-            return FormulaToken(FormulaToken::AND, line, column);
-        }
-        DAVA_THROW(FormulaException, "Can't resolve symbol '&'", line, column);
-
-    case '|':
-        ReadChar();
-        if (ch == '|')
-        {
-            ReadChar();
-            return FormulaToken(FormulaToken::OR, line, column);
-        }
-        DAVA_THROW(FormulaException, "Can't resolve symbol '|'", line, column);
+        DAVA_THROW(FormulaException, "Can't resolve symbol '!'", line, column);
 
     case '(':
         ReadChar();
@@ -340,6 +322,22 @@ FormulaToken FormulaTokenizer::ReadToken()
         else if (id == "false")
         {
             return FormulaToken(FormulaToken::BOOLEAN, false, line, column);
+        }
+        else if (id == "when")
+        {
+            return FormulaToken(FormulaToken::WHEN, line, column);
+        }
+        else if (id == "and")
+        {
+            return FormulaToken(FormulaToken::AND, line, column);
+        }
+        else if (id == "not")
+        {
+            return FormulaToken(FormulaToken::NOT, line, column);
+        }
+        else if (id == "or")
+        {
+            return FormulaToken(FormulaToken::OR, line, column);
         }
 
         return FormulaToken(FormulaToken::IDENTIFIER, p, len, line, column);

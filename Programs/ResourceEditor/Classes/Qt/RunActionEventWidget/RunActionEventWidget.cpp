@@ -88,7 +88,7 @@ void RunActionEventWidget::OnInvoke()
     const SelectableGroup& selection = Selection::GetSelection();
     for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
     {
-        DAVA::ActionComponent* component = static_cast<DAVA::ActionComponent*>(entity->GetComponent(DAVA::Component::ACTION_COMPONENT));
+        DAVA::ActionComponent* component = entity->GetComponent<DAVA::ActionComponent>();
         if (component == nullptr)
             continue;
 
@@ -146,7 +146,7 @@ void RunActionEventWidget::OnSelectionChanged(const DAVA::Any& selectionAny)
     QSet<QString> nameSet;
     for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
     {
-        DAVA::ActionComponent* component = static_cast<DAVA::ActionComponent*>(entity->GetComponent(DAVA::Component::ACTION_COMPONENT));
+        DAVA::ActionComponent* component = entity->GetComponent<DAVA::ActionComponent>();
         if (component == nullptr)
             continue;
 

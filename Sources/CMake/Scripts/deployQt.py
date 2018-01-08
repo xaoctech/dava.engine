@@ -33,16 +33,16 @@ os.chdir(options.deployRoot)
 if options.platform == "MAC":
     execDir            = os.path.join( options.deployRoot, '{0}.app/Contents/MacOS'.format( options.toolName ) )
     pathFileExecute    = os.path.join( execDir, options.toolName  )
-    pathFileExecuteTmp = os.path.join(execDir, 'Root_{0}'.format( options.toolName ) )  
+    pathFileExecuteTmp = os.path.join(execDir, 'Root_{0}'.format( options.toolName ) )
     os.rename(pathFileExecute, pathFileExecuteTmp )
     for rootdir, dirs, files in os.walk( execDir ):
-        for file in files: 
-            pathFileProcessed =  os.path.join(rootdir,  file  )              
-            os.rename( pathFileProcessed, pathFileExecute ) 
+        for file in files:
+            pathFileProcessed =  os.path.join(rootdir,  file  )
+            os.rename( pathFileProcessed, pathFileExecute )
             print 'Qt deploy - ', file
             sys.stdout.flush()
-            procces = Popen(deployUtilName + " " + options.deployArgs, shell=True, stdout=PIPE)
-            for line in procces.stdout:
+            process = Popen(deployUtilName + " " + options.deployArgs, shell=True, stdout=PIPE)
+            for line in process.stdout:
                 print line
             os.rename( pathFileExecute, pathFileProcessed )
     os.rename( pathFileExecuteTmp, pathFileExecute )
@@ -51,15 +51,14 @@ else:
         targetsList = [ options.toolName ]
     else:
         targetsList = options.targetsList.split(';')
-       
+
     for target in targetsList:
         print 'Qt deploy - ', target
         sys.stdout.flush()
         pathFileExecute = os.path.join( options.deployRoot, '{0}.exe'.format( target ) )
         pathFileExecute = os.path.realpath( pathFileExecute )
         deployArgs = options.deployArgs + ' {0}'.format( pathFileExecute )
-        procces = Popen(deployUtilName + " " + deployArgs, shell=True, stdout=PIPE)
+        process = Popen(deployUtilName + " " + deployArgs, shell=True, stdout=PIPE)
         print deployArgs
 
 os.chdir(prevCurrentDir)
-

@@ -16,7 +16,7 @@ void AnyPerformanceTest::LoadResources()
 
     BaseScreen::LoadResources();
 
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
     font->SetSize(14);
 
     float y = 10;

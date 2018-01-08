@@ -322,8 +322,8 @@ void SlotSystem::ExternalEntityLoader::AddEntity(Entity* parent, Entity* child)
 
 SlotSystem::SlotSystem(Scene* scene)
     : SceneSystem(scene)
-    , sharedCache(new ItemsCache())
     , externalEntityLoader(new AsyncSlotExternalLoader())
+    , sharedCache(new ItemsCache())
 {
 }
 
@@ -392,25 +392,25 @@ void SlotSystem::UnregisterEntity(Entity* entity)
 
 void SlotSystem::AddEntity(Entity* entity)
 {
-    uint32 count = entity->GetComponentCount(Component::SLOT_COMPONENT);
+    uint32 count = entity->GetComponentCount<SlotComponent>();
     for (uint32 i = 0; i < count; ++i)
     {
-        AddComponent(entity, entity->GetComponent(Component::SLOT_COMPONENT, i));
+        AddComponent(entity, entity->GetComponent<SlotComponent>(i));
     }
 }
 
 void SlotSystem::RemoveEntity(Entity* entity)
 {
-    uint32 count = entity->GetComponentCount(Component::SLOT_COMPONENT);
+    uint32 count = entity->GetComponentCount<SlotComponent>();
     for (uint32 i = 0; i < count; ++i)
     {
-        RemoveComponent(entity, entity->GetComponent(Component::SLOT_COMPONENT, i));
+        RemoveComponent(entity, entity->GetComponent<SlotComponent>(i));
     }
 }
 
 void SlotSystem::AddComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
+    DVASSERT(component->GetType()->Is<SlotComponent>());
     SlotNode node;
     node.component = static_cast<SlotComponent*>(component);
     SetState(node, eSlotState::NOT_LOADED);
@@ -419,7 +419,7 @@ void SlotSystem::AddComponent(Entity* entity, Component* component)
 
 void SlotSystem::RemoveComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
+    DVASSERT(component->GetType()->Is<SlotComponent>());
     UnloadItem(static_cast<SlotComponent*>(component));
     uint32 index = GetComponentIndex(static_cast<SlotComponent*>(component));
     RemoveExchangingWithLast(nodes, index);
@@ -454,10 +454,10 @@ void SlotSystem::Process(float32 timeElapsed)
 
 void SlotSystem::AttachItemToSlot(Entity* rootEntity, FastName slotName, FastName itemName)
 {
-    uint32 slotsCount = rootEntity->GetComponentCount(Component::SLOT_COMPONENT);
+    uint32 slotsCount = rootEntity->GetComponentCount<SlotComponent>();
     for (uint32 i = 0; i < slotsCount; ++i)
     {
-        SlotComponent* slotComponent = static_cast<SlotComponent*>(rootEntity->GetComponent(Component::SLOT_COMPONENT, i));
+        SlotComponent* slotComponent = rootEntity->GetComponent<SlotComponent>(i);
         if (slotComponent->GetSlotName() == slotName)
         {
             AttachItemToSlot(slotComponent, itemName);

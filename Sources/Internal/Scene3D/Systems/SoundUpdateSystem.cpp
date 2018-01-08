@@ -64,13 +64,14 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_SOUND_UPDATE_SYSTEM);
 
     TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
+
     for (auto& pair : tsc->worldTransformChanged.map)
     {
-        if (pair.first->GetComponentsCount(Component::SOUND_COMPONENT) > 0)
+        if (pair.first->GetComponentsCount(Type::Instance<SoundComponent>()) > 0)
         {
             for (Entity* entity : pair.second)
             {
-                SoundComponent* sc = static_cast<SoundComponent*>(entity->GetComponent(Component::SOUND_COMPONENT));
+                SoundComponent* sc = entity->GetComponent<SoundComponent>();
                 const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldTransform();
                 Vector3 translation = worldTransform.GetTranslationVector();
 

@@ -22,8 +22,6 @@
 #include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
 
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
-
 #include <QtTools/FileDialogs/FileDialog.h>
 #include <QtTools/Updaters/LazyUpdater.h>
 

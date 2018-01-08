@@ -1,7 +1,7 @@
 #include "Classes/PropertyPanel/FilePathExtensions.h"
 #include "Classes/Project/ProjectManagerData.h"
 #include "Classes/SceneManager/SceneData.h"
-#include "Classes/Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Classes/Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Application/RESettings.h"
 
@@ -255,7 +255,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
         {
             result.state = M::ValidationResult::eState::Invalid;
             const EngineContext* ctx = GetEngineContext();
-            if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+            if (ctx->fileSystem->Exists(texturePath) && RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
             {
                 FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
 

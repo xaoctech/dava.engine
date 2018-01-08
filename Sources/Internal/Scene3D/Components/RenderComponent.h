@@ -16,8 +16,6 @@ protected:
 public:
     RenderComponent(RenderObject* _object = nullptr);
 
-    IMPLEMENT_COMPONENT_TYPE(RENDER_COMPONENT);
-
     void SetRenderObject(RenderObject* object);
     RenderObject* GetRenderObject();
 

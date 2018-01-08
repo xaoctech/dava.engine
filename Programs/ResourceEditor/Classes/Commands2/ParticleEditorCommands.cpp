@@ -356,9 +356,9 @@ void CommandUpdateParticleSimplifiedForce::Redo()
 //////////////////////////////////////////////////////////////////////////
 CommandUpdateParticleForce::CommandUpdateParticleForce(DAVA::ParticleLayer* layer_, DAVA::uint32 forceId_, ForceParams&& params)
     : CommandAction(CMDID_PARTICLE_FORCE_UPDATE)
+    , newParams(params)
     , layer(layer_)
     , forceId(forceId_)
-    , newParams(params)
 {
     DVASSERT(forceId < static_cast<uint32>(layer->GetParticleForces().size()));
     DVASSERT(layer != nullptr);
@@ -481,7 +481,7 @@ void CommandStartStopParticleEffect::Redo()
     if (effectEntity == nullptr)
         return;
 
-    ParticleEffectComponent* effectComponent = CastIfEqual<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effectComponent = effectEntity->GetComponent<ParticleEffectComponent>();
     DVASSERT(effectComponent);
 
     if (this->isStart)
@@ -512,7 +512,7 @@ void CommandRestartParticleEffect::Redo()
         return;
     }
 
-    ParticleEffectComponent* effectComponent = CastIfEqual<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effectComponent = effectEntity->GetComponent<ParticleEffectComponent>();
     DVASSERT(effectComponent);
     effectComponent->Restart();
 }

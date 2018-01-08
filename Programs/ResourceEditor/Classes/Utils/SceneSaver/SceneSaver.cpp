@@ -284,9 +284,9 @@ void SceneSaver::CopyReferencedObject(DAVA::Entity* node)
 
 void SceneSaver::CopyAnimationClips(DAVA::Entity* node)
 {
-    for (DAVA::uint32 i = 0; i < node->GetComponentCount(DAVA::Component::MOTION_COMPONENT); ++i)
+    for (DAVA::uint32 i = 0; i < node->GetComponentCount<DAVA::MotionComponent>(); ++i)
     {
-        DAVA::MotionComponent* component = static_cast<DAVA::MotionComponent*>(node->GetComponent(DAVA::Component::MOTION_COMPONENT, i));
+        DAVA::MotionComponent* component = node->GetComponent<DAVA::MotionComponent>(i);
         DAVA::Vector<DAVA::FilePath> dependencies = component->GetDependencies();
         for (const DAVA::FilePath& fp : dependencies)
             sceneUtils.AddFile(fp);
@@ -318,7 +318,7 @@ void SceneSaver::CopySlots(DAVA::Entity* node, DAVA::Set<DAVA::FilePath>& extern
     };
 
     FileSystem* fs = GetEngineContext()->fileSystem;
-    for (uint32 i = 0; i < node->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+    for (uint32 i = 0; i < node->GetComponentCount<SlotComponent>(); ++i)
     {
         Scene* scene = node->GetScene();
         if (scene == nullptr)
@@ -327,7 +327,7 @@ void SceneSaver::CopySlots(DAVA::Entity* node, DAVA::Set<DAVA::FilePath>& extern
             DVASSERT(scene != nullptr);
         }
 
-        SlotComponent* component = static_cast<SlotComponent*>(node->GetComponent(Component::SLOT_COMPONENT, i));
+        SlotComponent* component = node->GetComponent<SlotComponent>(i);
         FilePath originalConfigPath = component->GetConfigFilePath();
 
         for (const DAVA::String& tag : tags)

@@ -164,8 +164,8 @@ Color GetColor(physx::PxShape* shape)
 
 bool IsCollisionComponent(Component* component)
 {
-    uint32 componentType = component->GetType();
-    for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
+    const Type* componentType = component->GetType();
+    for (const Type* type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
     {
         if (type == componentType)
         {
@@ -526,7 +526,7 @@ void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const Uno
     auto roIter = entityToRoMap.find(root);
     if (roIter != entityToRoMap.end() && roIter->second != nullptr)
     {
-        Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(root->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+        Matrix4* worldTransformPointer = root->GetComponent<TransformComponent>()->GetWorldTransformPtr();
         roIter->second->SetWorldTransformPtr(worldTransformPointer);
         scene->renderSystem->MarkForUpdate(roIter->second);
     }
@@ -560,7 +560,7 @@ void PhysicsDebugDrawSystem::RegisterEntity(Entity* entity)
 {
     using namespace PhysicsDebugDrawSystemDetail;
 
-    for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
+    for (const Type* type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
     {
         for (uint32 i = 0; i < entity->GetComponentCount(type); ++i)
         {
@@ -573,7 +573,7 @@ void PhysicsDebugDrawSystem::UnregisterEntity(Entity* entity)
 {
     using namespace PhysicsDebugDrawSystemDetail;
 
-    for (uint32 type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
+    for (const Type* type : GetEngineContext()->moduleManager->GetModule<PhysicsModule>()->GetShapeComponentTypes())
     {
         for (uint32 i = 0; i < entity->GetComponentCount(type); ++i)
         {
@@ -651,7 +651,7 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
             if (ro != nullptr)
             {
                 Entity* entity = (*iter)->GetEntity();
-                Matrix4* worldTransformPointer = (static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+                Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
                 ro->SetWorldTransformPtr(worldTransformPointer);
                 GetScene()->GetRenderSystem()->RenderPermanent(ro);
             }

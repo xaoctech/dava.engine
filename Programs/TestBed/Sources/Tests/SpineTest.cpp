@@ -36,8 +36,8 @@ void SpineTest::LoadResources()
     UISpineComponent* sc = ctrl->GetOrCreateComponent<UISpineComponent>();
     if (sc)
     {
-        sc->SetSkeletonPath("~res:/UI/Spine/SpineTest.json");
-        sc->SetAtlasPath("~res:/UI/Spine/SpineTest.atlas");
+        sc->SetSkeletonPath("~res:/TestBed/UI/Spine/SpineTest.json");
+        sc->SetAtlasPath("~res:/TestBed/UI/Spine/SpineTest.atlas");
         sc->SetAnimationName("position");
         sc->SetSkinName("gold");
         sc->SetAnimationState(UISpineComponent::PLAYED);

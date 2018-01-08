@@ -197,6 +197,8 @@ D3DFORMAT DX9_TextureFormat(TextureFormat format)
         return D3DFMT_A16B16G16R16F;
     case TEXTURE_FORMAT_RGBA32F:
         return D3DFMT_A32B32G32R32F;
+    default:
+        break;
     }
 
     return D3DFMT_UNKNOWN;

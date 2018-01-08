@@ -35,7 +35,8 @@ ColladaSkinnedMesh::ColladaSkinnedMesh(FCDController* colladaController)
         colladaBindShapeMatrix = skinController->GetBindShapeTransform();
         bindShapeMatrix = ConvertMatrix(colladaBindShapeMatrix);
 
-        printf("- controller: %s influence: %zd influence-entity: %s\n", colladaController->GetDaeId().c_str(), skinController->GetInfluenceCount(), skinController->GetTarget()->GetDaeId().c_str());
+        printf("- controller: %s influence: %u influence-entity: %s\n", colladaController->GetDaeId().c_str(), static_cast<DAVA::uint32>(skinController->GetInfluenceCount()),
+               skinController->GetTarget()->GetDaeId().c_str());
 
         vertexWeights.resize(skinController->GetInfluenceCount());
         int32 maxJoints = 0;

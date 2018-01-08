@@ -113,7 +113,7 @@ void REApplication::CreateModules(DAVA::TArc::Core* tarcCore) const
     descr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
     descr.fieldName = DAVA::FastName("renderBackend");
 
-    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v) {
+    renderBackEndListener->BindField(descr, [accessor](const DAVA::Any& v) {
         if (v.IsEmpty() == true)
         {
             return;
@@ -186,7 +186,8 @@ void REApplication::Cleanup()
 
 bool REApplication::AllowMultipleInstances() const
 {
-    return isConsoleMode;
+    bool isSelfTest = (cmdLine.size() > 1) && (cmdLine[1] == "--selftest");
+    return isSelfTest || isConsoleMode;
 }
 
 QString REApplication::GetInstanceKey() const

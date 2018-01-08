@@ -14,8 +14,6 @@ class Entity;
 class EdgeComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(EDGE_COMPONENT);
-
     EdgeComponent();
     EdgeComponent(const EdgeComponent&);
     ~EdgeComponent();

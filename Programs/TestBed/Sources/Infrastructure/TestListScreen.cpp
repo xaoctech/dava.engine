@@ -78,7 +78,7 @@ UIListCell* TestListScreen::CellAtIndex(UIList* list, int32 index)
         buttonText->SetName(buttonName);
         c->AddControl(buttonText);
 
-        Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+        Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         DVASSERT(font);
 
         font->SetSize(static_cast<float32>(20));
