@@ -7,7 +7,8 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(EdgeComponent)
 {
-    ReflectionRegistrator<EdgeComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::CantBeDeletedManualyComponent()]
+    ReflectionRegistrator<EdgeComponent>::Begin()
+    [M::CantBeCreatedManualyComponent(), M::CantBeDeletedManualyComponent(), M::NonExportableComponent(), M::NonSerializableComponent()]
     .ConstructorByPointer()
     .Field("properties", &EdgeComponent::GetProperties, &EdgeComponent::SetProperties)[M::DisplayName("Edge properties")]
     .Field("nextEntityName", &EdgeComponent::GetNextEntityName, &EdgeComponent::SetNextEntityName)[M::ReadOnly(), M::DisplayName("Next Entity Name")]

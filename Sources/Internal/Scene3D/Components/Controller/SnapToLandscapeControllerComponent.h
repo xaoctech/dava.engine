@@ -9,8 +9,6 @@ namespace DAVA
 class SnapToLandscapeControllerComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT);
-
     SnapToLandscapeControllerComponent();
 
     Component* Clone(Entity* toEntity) override;

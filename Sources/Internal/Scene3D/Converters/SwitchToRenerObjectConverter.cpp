@@ -1,10 +1,11 @@
 #include "SwitchToRenerObjectConverter.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Entity.h"
-#include "Scene3D/Lod/LodComponent.h"
 #include "Render/Highlevel/Mesh.h"
+#include "Scene3D/Lod/LodComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 
 namespace DAVA
 {
@@ -109,7 +110,7 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity* entity)
                 }
             }
 
-            renderPairs[0].first->RemoveComponent(Component::RENDER_COMPONENT);
+            renderPairs[0].first->RemoveComponent(DAVA::Type::Instance<DAVA::RenderComponent>());
 
             LodComponent* lc = GetLodComponent(sourceEntity);
             if ((nullptr != lc) && (nullptr == GetLodComponent(entity)))
@@ -118,7 +119,7 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity* entity)
                 entity->AddComponent(newLod);
             }
 
-            renderPairs[0].first->RemoveComponent(Component::LOD_COMPONENT);
+            renderPairs[0].first->RemoveComponent(DAVA::Type::Instance<DAVA::LodComponent>());
 
             if (sourceEntity->GetChildrenCount() == 0)
             {

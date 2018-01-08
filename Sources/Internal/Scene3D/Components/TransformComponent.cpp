@@ -59,7 +59,7 @@ void TransformComponent::SetParent(Entity* node)
 
     if (node)
     {
-        parentMatrix = (static_cast<TransformComponent*>(node->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+        parentMatrix = node->GetComponent<TransformComponent>()->GetWorldTransformPtr();
     }
     else
     {

@@ -4,6 +4,11 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineSettings.h>
+
+#include <Entity/ComponentManager.h>
+
+#include <Reflection/ReflectionRegistrator.h>
+
 #include <Render/RHI/rhi_Public.h>
 #include <Render/RHI/dbg_Draw.h>
 
@@ -47,6 +52,7 @@
 #include "Tests/DeviceManagerTest.h"
 #include "Tests/SoundTest.h"
 #include "Tests/AnyPerformanceTest.h"
+#include "Tests/OverdrawTest/OverdrawTesterComponent.h"
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
 #include "Tests/UIStylesTest.h"
@@ -156,6 +162,9 @@ TestBed::TestBed(Engine& engine)
     nativeDelegate.reset(new NativeDelegateWin10());
     PlatformApi::Win10::RegisterXamlApplicationListener(nativeDelegate.get());
 #endif
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(OverdrawPerformanceTester::OverdrawTesterComponent);
+    GetEngineContext()->componentManager->RegisterComponent<OverdrawPerformanceTester::OverdrawTesterComponent>();
 
     engine.gameLoopStarted.Connect(this, &TestBed::OnGameLoopStarted);
     engine.gameLoopStopped.Connect(this, &TestBed::OnGameLoopStopped);

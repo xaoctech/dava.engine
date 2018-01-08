@@ -68,8 +68,6 @@ public:
     };
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(PATH_COMPONENT);
-
     PathComponent();
     virtual ~PathComponent();
 

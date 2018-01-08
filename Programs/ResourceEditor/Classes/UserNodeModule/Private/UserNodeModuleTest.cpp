@@ -8,6 +8,7 @@
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
 
 DAVA_TARC_TESTCLASS(UserModuleTest)
 {
@@ -22,7 +23,7 @@ DAVA_TARC_TESTCLASS(UserModuleTest)
         if (result == SceneFileV2::ERROR_NO_ERROR)
         {
             Vector<Entity*> entities;
-            scene->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
+            scene->GetChildEntitiesWithComponent(entities, DAVA::Type::Instance<DAVA::RenderComponent>());
             if (entities.size() == 1)
             {
                 TEST_VERIFY(GetRenderObject(entities[0]) != nullptr);

@@ -7,7 +7,6 @@ namespace DAVA
 class DynamicBodyComponent : public PhysicsComponent
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(DYNAMIC_BODY_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;

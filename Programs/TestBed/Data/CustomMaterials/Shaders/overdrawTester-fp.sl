@@ -1,5 +1,8 @@
 #include "blending.slh"
 
+#ensuredefined DEPENDENT_READ_TEST 0
+#ensuredefined SAMPLE_COUNT 0
+
 fragment_in
 {
     float2 texcoord0 : TEXCOORD0;

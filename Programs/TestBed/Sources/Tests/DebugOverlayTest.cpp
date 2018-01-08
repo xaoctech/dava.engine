@@ -40,7 +40,7 @@ void DebugOverlayTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(14);
 

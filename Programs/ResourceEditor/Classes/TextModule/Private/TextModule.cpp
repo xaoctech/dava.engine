@@ -14,6 +14,7 @@
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <Entity/ComponentUtils.h>
 #include <Engine/PlatformApiQt.h>
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -111,7 +112,7 @@ void TextModule::OnContextCreated(DAVA::TArc::DataContext* context)
     std::unique_ptr<TextModuleData> moduleData = std::make_unique<TextModuleData>();
     moduleData->editorTextSystem.reset(new EditorTextSystem(scene));
     moduleData->editorTextSystem->EnableSystem();
-    scene->AddSystem(moduleData->editorTextSystem.get(), MAKE_COMPONENT_MASK(DAVA::Component::TEXT_COMPONENT));
+    scene->AddSystem(moduleData->editorTextSystem.get(), DAVA::ComponentUtils::MakeMask<DAVA::TextComponent>());
 
     context->CreateData(std::move(moduleData));
 }

@@ -150,7 +150,7 @@ void SceneValidator::ValidateNodeCustomProperties(DAVA::Entity* sceneNode)
 
 void SceneValidator::ValidateRenderComponent(DAVA::Entity* ownerNode)
 {
-    DAVA::RenderComponent* rc = static_cast<DAVA::RenderComponent*>(ownerNode->GetComponent(DAVA::Component::RENDER_COMPONENT));
+    DAVA::RenderComponent* rc = ownerNode->GetComponent<DAVA::RenderComponent>();
     if (nullptr == rc)
     {
         return;
@@ -745,7 +745,7 @@ void SceneValidator::ExtractEmptyRenderObjects(DAVA::Entity* entity)
     auto renderObject = GetRenderObject(entity);
     if ((nullptr != renderObject) && (0 == renderObject->GetRenderBatchCount()) && DAVA::RenderObject::TYPE_MESH == renderObject->GetType())
     {
-        entity->RemoveComponent(DAVA::Component::RENDER_COMPONENT);
+        entity->RemoveComponent<DAVA::RenderComponent>();
         PushLogMessage(entity, "Entity %s has empty render object", entity->GetName().c_str());
     }
 

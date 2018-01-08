@@ -193,7 +193,7 @@ DAVA::UnorderedSet<DAVA::RenderObject*> ParticleDebugDrawModule::ProcessSelectio
     DAVA::UnorderedSet<DAVA::RenderObject*> particleObjects;
     for (auto entity : group.ObjectsOfType<DAVA::Entity>())
     {
-        DAVA::ParticleEffectComponent* particleComponent = static_cast<DAVA::ParticleEffectComponent*>(entity->GetComponent(DAVA::Component::PARTICLE_EFFECT_COMPONENT));
+        DAVA::ParticleEffectComponent* particleComponent = entity->GetComponent<DAVA::ParticleEffectComponent>();
         if (particleComponent != nullptr)
             particleObjects.insert(particleComponent->GetRenderObject());
     }

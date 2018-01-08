@@ -99,8 +99,6 @@ public:
     static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, const FastName& targetName, float32 delay);
     static ActionComponent::Action MakeAction(ActionComponent::Action::eType type, const FastName& targetName, float32 delay, int32 switchIndex);
 
-    IMPLEMENT_COMPONENT_TYPE(ACTION_COMPONENT);
-
     struct ActionContainer : public InspBase
     {
         Action action;

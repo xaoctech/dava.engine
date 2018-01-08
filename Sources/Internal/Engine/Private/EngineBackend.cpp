@@ -238,6 +238,8 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     // Other subsystems are always created
     CreateSubsystems(modules);
 
+    context->componentManager->PreregisterAllDerivedSceneComponentsRecursively();
+
     isInitialized = true;
 
     // TODO: find a better way

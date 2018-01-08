@@ -78,7 +78,7 @@ void VisibilityCheckSystem::Recalculate()
 
 void VisibilityCheckSystem::RegisterEntity(DAVA::Entity* entity)
 {
-    auto visibilityComponent = entity->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT);
+    auto visibilityComponent = entity->GetComponent<DAVA::VisibilityCheckComponent>();
     auto renderComponent = DAVA::GetRenderComponent(entity);
     if ((renderComponent != nullptr) || (visibilityComponent != nullptr))
     {
@@ -88,7 +88,7 @@ void VisibilityCheckSystem::RegisterEntity(DAVA::Entity* entity)
 
 void VisibilityCheckSystem::UnregisterEntity(DAVA::Entity* entity)
 {
-    auto visibilityComponent = entity->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT);
+    auto visibilityComponent = entity->GetComponent<DAVA::VisibilityCheckComponent>();
     auto renderComponent = DAVA::GetRenderComponent(entity);
     if ((renderComponent != nullptr) || (visibilityComponent != nullptr))
     {
@@ -98,10 +98,10 @@ void VisibilityCheckSystem::UnregisterEntity(DAVA::Entity* entity)
 
 void VisibilityCheckSystem::AddEntity(DAVA::Entity* entity)
 {
-    auto requiredComponent = entity->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT);
+    auto requiredComponent = entity->GetComponent<DAVA::VisibilityCheckComponent>();
     if (requiredComponent != nullptr)
     {
-        (static_cast<DAVA::VisibilityCheckComponent*>(requiredComponent))->Invalidate();
+        requiredComponent->Invalidate();
         entitiesWithVisibilityComponent.insert({ entity, DAVA::Vector<DAVA::Vector3>() });
         shouldPrerender = true;
         forceRebuildPoints = true;
@@ -164,7 +164,7 @@ void VisibilityCheckSystem::Process(DAVA::float32 timeElapsed)
 
     for (auto& mapItem : entitiesWithVisibilityComponent)
     {
-        auto visibilityComponent = static_cast<DAVA::VisibilityCheckComponent*>(mapItem.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+        auto visibilityComponent = mapItem.first->GetComponent<DAVA::VisibilityCheckComponent>();
         if (!visibilityComponent->IsValid() || forceRebuildPoints)
         {
             if (visibilityComponent->ShouldRebuildPoints() || forceRebuildPoints)
@@ -198,8 +198,7 @@ void VisibilityCheckSystem::Draw()
     DAVA::RenderHelper* dbg = rs->GetDebugDrawer();
     for (const auto& mapItem : entitiesWithVisibilityComponent)
     {
-        DAVA::VisibilityCheckComponent* visibilityComponent =
-        static_cast<DAVA::VisibilityCheckComponent*>(mapItem.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+        DAVA::VisibilityCheckComponent* visibilityComponent = mapItem.first->GetComponent<DAVA::VisibilityCheckComponent>();
 
         enableDebug |= visibilityComponent->GetDebugDrawEnabled();
 
@@ -292,7 +291,7 @@ void VisibilityCheckSystem::UpdatePointSet()
     for (const auto& mapItem : entitiesWithVisibilityComponent)
     {
         auto entity = mapItem.first;
-        auto visibilityComponent = static_cast<DAVA::VisibilityCheckComponent*>(entity->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+        auto visibilityComponent = entity->GetComponent<DAVA::VisibilityCheckComponent>();
         if (visibilityComponent->IsEnabled())
         {
             auto worldTransform = entity->GetWorldTransform();
@@ -449,7 +448,7 @@ bool TryToGenerateAroundPoint(const DAVA::Vector3& src, DAVA::float32 distanceBe
 
 void VisibilityCheckSystem::BuildPointSetForEntity(EntityMap::value_type& item)
 {
-    auto component = static_cast<DAVA::VisibilityCheckComponent*>(item.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+    auto component = item.first->GetComponent<DAVA::VisibilityCheckComponent>();
 
     DAVA::float32 radius = component->GetRadius();
     DAVA::float32 radiusSquared = radius * radius;
@@ -498,7 +497,7 @@ void VisibilityCheckSystem::BuildIndexSet()
     size_t totalPoints = 0;
     for (const auto& item : entitiesWithVisibilityComponent)
     {
-        auto visibilityComponent = static_cast<DAVA::VisibilityCheckComponent*>(item.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+        auto visibilityComponent = item.first->GetComponent<DAVA::VisibilityCheckComponent>();
         if (visibilityComponent->IsEnabled())
         {
             totalPoints += item.second.size();
@@ -520,7 +519,7 @@ void VisibilityCheckSystem::BuildIndexSet()
 
 DAVA::Color VisibilityCheckSystem::GetNormalizedColorForEntity(const EntityMap::value_type& item) const
 {
-    auto component = static_cast<DAVA::VisibilityCheckComponent*>(item.first->GetComponent(DAVA::Component::VISIBILITY_CHECK_COMPONENT));
+    auto component = item.first->GetComponent<DAVA::VisibilityCheckComponent>();
     DAVA::Color normalizedColor = component->GetColor();
     if (component->ShouldNormalizeColor())
     {

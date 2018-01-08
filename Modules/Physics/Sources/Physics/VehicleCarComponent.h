@@ -19,7 +19,6 @@ public:
 private:
     void ResetInputData();
 
-    virtual uint32 GetType() const override;
     virtual Component* Clone(Entity* toEntity) override;
 
     DAVA_VIRTUAL_REFLECTION(VehicleCarComponent, VehicleComponent);
