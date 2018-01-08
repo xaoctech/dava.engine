@@ -8,7 +8,6 @@
 #include "Classes/Model/PackageHierarchy/PackageNode.h"
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueHelper.h"
-#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 
 #include <Base/Type.h>
 #include <Functional/Function.h>
@@ -20,10 +19,8 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IndexGenerator& indexGenerator_)
-    : sectionId(sectionId_)
-    , navigatorWidget(widget_)
-    , accessor(accessor_)
+EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IndexGenerator& indexGenerator_)
+    : IssueHandler(accessor_, sectionId_)
     , ui(ui_)
     , indexGenerator(indexGenerator_)
     , packageListenerProxy(this, accessor_)
@@ -90,41 +87,41 @@ void EventsIssuesHandler::CreateIssue(ControlNode* node, const DAVA::Type* compo
     eventIssue.wasFixed = false;
     issues.push_back(eventIssue);
 
-    Issue issue;
+    IssueData::Issue issue;
     issue.sectionId = sectionId;
-    issue.issueId = issueId;
+    issue.id = issueId;
     issue.message = CreateIncorrectSymbolsMessage(eventIssue);
     issue.packagePath = GetPackage()->GetPath().GetFrameworkPath();
     issue.pathToControl = GetPathToControl(node);
     issue.propertyName = propertyName;
 
-    node->AddIssue(issue.issueId);
-    navigatorWidget->AddIssue(issue);
+    node->AddIssue(issue.id);
+    AddIssue(issue);
 }
 
 void EventsIssuesHandler::UpdateNodeIssue(EventIssue& eventIssue)
 {
     ControlNode* node = eventIssue.node;
     DAVA::int32 issueId = eventIssue.issueId;
-    navigatorWidget->ChangeMessage(sectionId, issueId, CreateIncorrectSymbolsMessage(eventIssue));
-    navigatorWidget->ChangePathToControl(sectionId, issueId, GetPathToControl(node));
+    ChangeMessage(issueId, CreateIncorrectSymbolsMessage(eventIssue));
+    ChangePathToControl(issueId, GetPathToControl(node));
 }
 
 void EventsIssuesHandler::RemoveIssuesIf(MatchFunction matchPred)
 {
-    auto RemoveIssue = [&](EventIssue& issue)
+    auto RemoveIssueFn = [&](EventIssue& issue)
     {
         if (matchPred(issue))
         {
             DAVA::int32 issueId = issue.issueId;
-            navigatorWidget->RemoveIssue(sectionId, issueId);
+            RemoveIssue(issueId);
             issue.node->RemoveIssue(issueId);
             return true;
         }
         return false;
     };
 
-    auto it = std::remove_if(issues.begin(), issues.end(), RemoveIssue);
+    auto it = std::remove_if(issues.begin(), issues.end(), RemoveIssueFn);
     issues.erase(it, issues.end());
 }
 

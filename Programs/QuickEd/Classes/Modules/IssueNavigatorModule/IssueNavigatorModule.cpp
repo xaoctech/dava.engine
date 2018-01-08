@@ -1,21 +1,35 @@
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 
-#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
-#include "Classes/Modules/IssueNavigatorModule/LayoutIssuesHandler.h"
-#include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
-#include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
+#include "Modules/IssueNavigatorModule/IssueData.h"
+#include "Modules/IssueNavigatorModule/LayoutIssueHandler.h"
+#include "Modules/IssueNavigatorModule/DataBindingIssueHandler.h"
+#include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/ModuleCollection.h>
-#include <TArc/Controls/ListView.h>
-#include <TArc/Controls/QtBoxLayouts.h>
+#include <TArc/Controls/TableView.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(IssueNavigatorModule)
 {
     DAVA::ReflectionRegistrator<IssueNavigatorModule>::Begin()
     .ConstructorByPointer()
+    .Field("header", &IssueNavigatorModule::headerDescription)
+    .Field("issues", &IssueNavigatorModule::GetValues, nullptr)
+    .Field("current", &IssueNavigatorModule::GetCurrentValue, &IssueNavigatorModule::SetCurrentValue)
+    .Method("OnIssueActivated", &IssueNavigatorModule::OnIssueAvitvated)
+    .End();
+}
+
+DAVA_REFLECTION_IMPL(IssueNavigatorModule::HeaderDescription)
+{
+    DAVA::ReflectionRegistrator<IssueNavigatorModule::HeaderDescription>::Begin()
+    .Field("message", &IssueNavigatorModule::HeaderDescription::message)[DAVA::M::DisplayName("Message")]
+    .Field("pathToControl", &IssueNavigatorModule::HeaderDescription::pathToControl)[DAVA::M::DisplayName("Path To Control")]
+    .Field("packagePath", &IssueNavigatorModule::HeaderDescription::packagePath)[DAVA::M::DisplayName("Package Path")]
+    .Field("propertyName", &IssueNavigatorModule::HeaderDescription::propertyName)[DAVA::M::DisplayName("Property Name")]
     .End();
 }
 
@@ -28,21 +42,79 @@ void IssueNavigatorModule::PostInit()
     panelInfo.area = Qt::BottomDockWidgetArea;
     PanelKey key(title, panelInfo);
 
-    widget = new IssueNavigatorWidget(GetAccessor());
-    connections.AddConnection(widget, &IssueNavigatorWidget::JumpToControl, MakeFunction(this, &IssueNavigatorModule::JumpToControl));
-    connections.AddConnection(widget, &IssueNavigatorWidget::JumpToPackage, MakeFunction(this, &IssueNavigatorModule::JumpToPackage));
+    TableView::Params params(GetAccessor(), GetUI(), DAVA::TArc::mainWindowKey);
+    params.fields[TableView::Fields::Header] = "header";
+    params.fields[TableView::Fields::Values] = "issues";
+    params.fields[TableView::Fields::CurrentValue] = "current";
+    params.fields[TableView::Fields::ItemActivated] = "OnIssueActivated";
 
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
+    TableView* tableView = new TableView(params, GetAccessor(), DAVA::Reflection::Create(DAVA::ReflectedObject(this)));
+    GetUI()->AddView(DAVA::TArc::mainWindowKey, key, tableView->ToWidgetCast());
 
     DAVA::int32 sectionId = 0;
-    issuesHandlers.emplace_back(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
-    issuesHandlers.emplace_back(new NamingIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
-    issuesHandlers.emplace_back(new EventsIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
+    handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
+    handlers.push_back(std::make_unique<DataBindingIssueHandler>(GetAccessor(), sectionId++, indexGenerator));
+    handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
+    handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
+}
+
+void IssueNavigatorModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+{
+    if (key == DAVA::TArc::mainWindowKey)
+    {
+        handlers.clear();
+    }
+}
+
+void IssueNavigatorModule::OnContextCreated(DAVA::TArc::DataContext* context)
+{
+    context->CreateData(std::make_unique<IssueData>());
+}
+
+void IssueNavigatorModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne)
+{
+    if (current != nullptr)
+    {
+        IssueData* issueData = current->GetData<IssueData>();
+        issueData->RemoveAllIssues();
+    }
+}
+
+void IssueNavigatorModule::OnIssueAvitvated(size_t index)
+{
+    const DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    if (context)
+    {
+        DVASSERT(index != static_cast<size_t>(-1));
+
+        IssueData* issueData = context->GetData<IssueData>();
+        if (issueData)
+        {
+            const IssueData::Issue& issue = issueData->GetIssues()[index];
+            const QString& path = QString::fromStdString(DAVA::FilePath(issue.packagePath).GetAbsolutePathname());
+            const QString& name = QString::fromStdString(issue.pathToControl);
+            InvokeOperation(QEGlobal::SelectControl.ID, path, name);
+        }
+    }
+}
+
+const DAVA::Vector<IssueData::Issue>& IssueNavigatorModule::GetValues() const
+{
+    const DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    if (context)
+    {
+        IssueData* issueData = context->GetData<IssueData>();
+        DVASSERT(issueData);
+        return issueData->GetIssues();
+    }
+
+    static DAVA::Vector<IssueData::Issue> empty;
+    return empty;
 }
 
 void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
 {
-    for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
+    for (const std::unique_ptr<IssueHandler>& handler : handlers)
     {
         handler->OnContextActivated(current);
     }
@@ -50,23 +122,27 @@ void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current,
 
 void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 {
-    for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
+    for (const std::unique_ptr<IssueHandler>& handler : handlers)
     {
         handler->OnContextDeleted(context);
     }
 }
 
-void IssueNavigatorModule::JumpToControl(const DAVA::FilePath& packagePath, const DAVA::String& controlName)
+DAVA::Any IssueNavigatorModule::GetCurrentValue() const
 {
-    const QString& path = QString::fromStdString(packagePath.GetAbsolutePathname());
-    const QString& name = QString::fromStdString(controlName);
-    InvokeOperation(QEGlobal::SelectControl.ID, path, name);
+    return current;
 }
 
-void IssueNavigatorModule::JumpToPackage(const DAVA::FilePath& packagePath)
+void IssueNavigatorModule::SetCurrentValue(const DAVA::Any& currentValue)
 {
-    const QString& path = QString::fromStdString(packagePath.GetAbsolutePathname());
-    InvokeOperation(QEGlobal::OpenDocumentByPath.ID, path);
+    if (currentValue.IsEmpty())
+    {
+        current = static_cast<size_t>(0);
+    }
+    else
+    {
+        current = currentValue.Cast<size_t>();
+    }
 }
 
 DECL_GUI_MODULE(IssueNavigatorModule);

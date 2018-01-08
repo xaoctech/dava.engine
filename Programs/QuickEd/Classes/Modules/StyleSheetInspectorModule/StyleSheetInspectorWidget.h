@@ -24,7 +24,6 @@ public:
     ~StyleSheetInspectorWidget() override;
 
 private:
-    void AddListener();
     void InitFieldBinder();
 
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;
