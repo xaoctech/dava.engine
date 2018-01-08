@@ -8,6 +8,7 @@
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Scene.h"
 #include "UI/Scene3D/UIEntityMarkerComponent.h"
+#include "UI/Scene3D/UIEntityMarkersContainerComponent.h"
 #include "UI/Scene3D/UIEntityMarkerSystem.h"
 #include "UI/UI3DView.h"
 #include "UI/UIControl.h"
@@ -28,6 +29,7 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
     DAVA::RefPtr<DAVA::UIControl> c1;
     DAVA::RefPtr<DAVA::UIControl> c2;
     DAVA::RefPtr<DAVA::UIControl> markers;
+    DAVA::RefPtr<DAVA::UIEntityMarkersContainerComponent> emcc;
 
     DAVA::RefPtr<DAVA::Entity> CreateEntity(const DAVA::FastName& name, const DAVA::Vector3& position)
     {
@@ -52,28 +54,18 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
         return control;
     }
 
-    void ModifyComponentForEach(const DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>& ctrls, const DAVA::Function<void(DAVA::UIEntityMarkerComponent * emc)>& fn)
-    {
-        using namespace DAVA;
-        for (auto& ctrl : ctrls)
-        {
-            UIEntityMarkerComponent* emc = ctrl->GetOrCreateComponent<UIEntityMarkerComponent>();
-            fn(emc);
-        }
-    }
-
     void SetUp(const DAVA::String& testName) override
     {
         using namespace DAVA;
 
-        scene = new Scene();
+        scene.Set(new Scene());
 
         RefPtr<Entity> e1 = CreateEntity(FastName("ENTITY_ONE"), Vector3(-1.f, -1.f, -1.f));
         scene->AddNode(e1.Get());
         RefPtr<Entity> e2 = CreateEntity(FastName("ENTITY_TWO"), Vector3(1.f, 1.f, 1.f));
         scene->AddNode(e2.Get());
 
-        camera = new Camera();
+        camera.Set(new Camera());
         camera->SetupPerspective(70.f, 1.0, 0.5f, 2500.f);
         camera->SetLeft(Vector3(1, 0, 0));
         camera->SetUp(Vector3(0, 0, 1.f));
@@ -86,12 +78,13 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
         scene->AddCamera(camera.Get());
         scene->SetCurrentCamera(camera.Get());
 
-        ui3dView = new UI3DView(Rect(0, 0, 500, 500));
+        ui3dView.Set(new UI3DView(Rect(0, 0, 500, 500)));
         ui3dView->SetScene(scene.Get());
 
         c1 = CreateControl(e1.Get());
         c2 = CreateControl(e2.Get());
-        markers = new UIControl(Rect(0, 0, 500, 500));
+        markers.Set(new UIControl(Rect(0, 0, 500, 500)));
+        emcc = markers->GetOrCreateComponent<UIEntityMarkersContainerComponent>();
         markers->AddControl(c1.Get());
         markers->AddControl(c2.Get());
 
@@ -99,6 +92,8 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
         screen->AddControl(ui3dView.Get());
         screen->AddControl(markers.Get());
         DAVA::GetEngineContext()->uiControlSystem->SetScreen(screen.Get());
+
+        SystemsUpdate(0.f);
     }
 
     void TearDown(const DAVA::String& testName) override
@@ -146,14 +141,11 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
             { c2, { 369.f, 131.f }, 0.1f }
         };
 
-        ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
-            emc->SetSyncPositionEnabled(true);
-        });
+        emcc->SetSyncPositionEnabled(true);
         SystemsUpdate(0.f);
 
         for (const auto& test : testData)
         {
-            TEST_VERIFY(test.c->GetComponent<UIEntityMarkerComponent>()->IsSyncPositionEnabled());
             Vector2 pos = test.c->GetPosition();
             TEST_VERIFY(FLOAT_EQUAL_EPS(pos.x, test.data.x, test.eps));
             TEST_VERIFY(FLOAT_EQUAL_EPS(pos.y, test.data.y, test.eps));
@@ -179,9 +171,7 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
             { { 0.f, 10.f, 0.f }, { { c1, { .1f, .1f }, .01f }, { c2, { .1f, .1f }, .01f } } }
         };
 
-        ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
-            emc->SetSyncScaleEnabled(true);
-        });
+        emcc->SetSyncScaleEnabled(true);
         for (const auto& test : testData)
         {
             camera->SetPosition(test.camPos);
@@ -189,7 +179,6 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
 
             for (const auto& d : test.data)
             {
-                TEST_VERIFY(d.c->GetComponent<UIEntityMarkerComponent>()->IsSyncScaleEnabled());
                 Vector2 scale = d.c->GetScale();
                 TEST_VERIFY(FLOAT_EQUAL_EPS(scale.x, d.value.x, d.eps));
                 TEST_VERIFY(FLOAT_EQUAL_EPS(scale.y, d.value.y, d.eps));
@@ -210,10 +199,8 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
             { { 0.f, 2.f, 0.f }, { c1, c2 } }
         };
 
-        ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
-            emc->SetSyncOrderEnabled(true);
-            emc->SetOrderMode(UIEntityMarkerComponent::OrderMode::NearFront);
-        });
+        emcc->SetSyncOrderEnabled(true);
+        emcc->SetOrderMode(UIEntityMarkersContainerComponent::OrderMode::NearFront);
         for (const auto& test : testData)
         {
             camera->SetPosition(test.camPos);
@@ -221,9 +208,7 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
             TEST_VERIFY(std::equal(test.order.begin(), test.order.end(), markers->GetChildren().begin()));
         }
 
-        ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
-            emc->SetOrderMode(UIEntityMarkerComponent::OrderMode::NearBack);
-        });
+        emcc->SetOrderMode(UIEntityMarkersContainerComponent::OrderMode::NearBack);
         for (const auto& test : testData)
         {
             camera->SetPosition(test.camPos);
@@ -246,9 +231,7 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
             { { 0.f, .5f, 0.f }, { { c1, true }, { c2, false } } }
         };
 
-        ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
-            emc->SetSyncVisibilityEnabled(true);
-        });
+        emcc->SetSyncVisibilityEnabled(true);
         for (const auto& test : testData)
         {
             camera->SetPosition(test.camPos);
@@ -263,13 +246,26 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
     DAVA_TEST (CustomStrategyTest)
     {
         using namespace DAVA;
-        ModifyComponentForEach({ c1, c2 }, [](UIEntityMarkerComponent* emc) {
-            emc->SetUseCustomStrategy(true);
-            emc->SetCustomStrategy([](UIControl* c, UIEntityMarkerComponent* emc) {
-                TEST_VERIFY(c != nullptr);
-                TEST_VERIFY(emc != nullptr);
-            });
+        emcc->SetUseCustomStrategy(true);
+        emcc->SetCustomStrategy([](UIControl* c, UIEntityMarkersContainerComponent* container, UIEntityMarkerComponent* marker) {
+            TEST_VERIFY(c != nullptr);
+            TEST_VERIFY(container != nullptr);
+            TEST_VERIFY(marker != nullptr);
         });
         SystemsUpdate(0.f);
+    }
+
+    DAVA_TEST (AddRemoveComponents)
+    {
+        using namespace DAVA;
+        markers->RemoveComponent<UIEntityMarkersContainerComponent>();
+        TEST_VERIFY(markers->GetComponent<UIEntityMarkersContainerComponent>() == nullptr);
+        markers->GetOrCreateComponent<UIEntityMarkersContainerComponent>();
+        TEST_VERIFY(markers->GetComponent<UIEntityMarkersContainerComponent>() != nullptr);
+
+        c1->RemoveComponent<UIEntityMarkerComponent>();
+        TEST_VERIFY(c1->GetComponent<UIEntityMarkerComponent>() == nullptr);
+        c1->GetOrCreateComponent<UIEntityMarkerComponent>();
+        TEST_VERIFY(c1->GetComponent<UIEntityMarkerComponent>() != nullptr);
     }
 };

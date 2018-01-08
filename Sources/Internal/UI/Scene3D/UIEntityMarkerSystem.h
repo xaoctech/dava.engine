@@ -9,6 +9,7 @@ namespace DAVA
 class UIComponent;
 class UIControl;
 class UIEntityMarkerComponent;
+class UIEntityMarkersContainerComponent;
 
 /** System for synchronization params between UIControl and Entity. */
 class UIEntityMarkerSystem : public UISystem
@@ -26,6 +27,13 @@ protected:
     void Process(float32 elapsedTime) override;
 
 private:
-    Vector<UIEntityMarkerComponent*> components;
+    struct Link
+    {
+        UIEntityMarkersContainerComponent* container = nullptr;
+        Vector<UIEntityMarkerComponent*> children;
+        UnorderedMap<UIControl*, float32> orderMap;
+    };
+
+    Vector<Link> links;
 };
 }

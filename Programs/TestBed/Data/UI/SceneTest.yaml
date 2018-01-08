@@ -4,25 +4,17 @@ Prototypes:
 -   class: "UIControl"
     name: "Marker"
     position: [0.000000, 0.000000]
-    size: [58.000000, 75.000000]
+    size: [6.000000, 75.000000]
     pivot: [0.500000, 1.000000]
     noInput: true
     components:
         SizePolicy:
             horizontalPolicy: "PercentOfMaxChild"
-        UIEntityMarkerComponent:
-            syncVisibilityEnabled: true
-            syncPositionEnabled: true
-            syncScaleEnabled: true
-            scaleFactor: [15.000000, 15.000000]
-            maxScale: [1.500000, 1.500000]
-            minScale: [0.750000, 0.750000]
-            syncOrderEnabled: true
-            useCustomStrategy: true
+        UIEntityMarkerComponent: {}
     children:
     -   class: "UIControl"
         name: "Title"
-        size: [58.000000, 32.000000]
+        size: [0.000000, 32.000000]
         noInput: true
         components:
             SizePolicy:
@@ -37,8 +29,8 @@ Prototypes:
                 fontName: "Korinna_18"
     -   class: "UIControl"
         name: "Distance"
-        position: [23.000000, 32.000000]
-        size: [12.000000, 32.000000]
+        position: [3.000000, 32.000000]
+        size: [0.000000, 32.000000]
         noInput: true
         components:
             SizePolicy:
@@ -53,7 +45,7 @@ Prototypes:
                 fontName: "Korinna_18"
     -   class: "UIControl"
         name: "Point"
-        position: [29.000000, 75.000000]
+        position: [3.000000, 75.000000]
         size: [6.000000, 6.000000]
         pivot: [0.500000, 0.500000]
         noInput: true
@@ -91,3 +83,12 @@ Controls:
             SizePolicy:
                 horizontalPolicy: "PercentOfParent"
                 verticalPolicy: "PercentOfParent"
+            UIEntityMarkersContainerComponent:
+                syncVisibilityEnabled: true
+                syncPositionEnabled: true
+                syncScaleEnabled: true
+                scaleFactor: [15.000000, 15.000000]
+                maxScale: [1.700000, 1.700000]
+                minScale: [0.600000, 0.600000]
+                syncOrderEnabled: true
+                useCustomStrategy: true

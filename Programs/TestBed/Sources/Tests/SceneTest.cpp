@@ -3,6 +3,7 @@
 
 #include <Base/ScopedPtr.h>
 #include <Debug/DVAssert.h>
+#include <Entity/ComponentUtils.h>
 #include <Render/Highlevel/Camera.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Entity.h>
@@ -12,6 +13,7 @@
 #include <UI/Layouts/UISizePolicyComponent.h>
 #include <UI/Render/UIDebugRenderComponent.h>
 #include <UI/Scene3D/UIEntityMarkerComponent.h>
+#include <UI/Scene3D/UIEntityMarkersContainerComponent.h>
 #include <UI/Scene3D/UIEntityMarkerSystem.h>
 #include <UI/Text/UITextComponent.h>
 #include <UI/UI3DView.h>
@@ -31,26 +33,26 @@ void SceneTest::LoadResources()
 
     // Load UI
     DAVA::DefaultUIPackageBuilder pkgBuilder;
-    DAVA::UIPackageLoader().LoadPackage("~res:/UI/SceneTest.yaml", &pkgBuilder);
+    DAVA::UIPackageLoader().LoadPackage("~res:/TestBed/UI/SceneTest.yaml", &pkgBuilder);
     UIControl* dialog = pkgBuilder.GetPackage()->GetControl("Main");
     AddControl(dialog);
     BringChildBack(dialog);
 
     // Load scene
     ScopedPtr<Scene> scene(new Scene());
-    scene->LoadScene("~res:/3d/simple_scene.sc2");
+    scene->LoadScene("~res:/TestBed/3d/simple_scene.sc2");
 
     scene->AddSystem(new RotationControllerSystem(scene),
-                     MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::ROTATION_CONTROLLER_COMPONENT),
+                     ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<RotationControllerComponent>(),
                      Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
     scene->AddSystem(new WASDControllerSystem(scene),
-                     MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::WASD_CONTROLLER_COMPONENT),
+                     ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<WASDControllerComponent>(),
                      Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
     Entity* cameraNode = scene->FindByName("Camera");
     if (cameraNode)
     {
-        CameraComponent* cc = static_cast<CameraComponent*>(cameraNode->GetComponent(Component::CAMERA_COMPONENT));
+        CameraComponent* cc = static_cast<CameraComponent*>(cameraNode->GetComponent<CameraComponent>());
         if (cc)
         {
             Camera* camera = cc->GetCamera();
@@ -68,12 +70,26 @@ void SceneTest::LoadResources()
 
     UIControl* markers = dialog->FindByPath("Markers");
     DVASSERT(markers);
+    UIEntityMarkersContainerComponent* emcc = markers->GetComponent<UIEntityMarkersContainerComponent>();
+    DVASSERT(emcc);
+    emcc->SetCustomStrategy([](UIControl* ctrl, UIEntityMarkersContainerComponent* container, UIEntityMarkerComponent* marker) {
+        UIControl* distanceCtrl = ctrl->FindByPath("Distance");
+        DVASSERT(distanceCtrl);
+        UITextComponent* distanceText = distanceCtrl->GetComponent<UITextComponent>();
+        DVASSERT(distanceText);
+        Vector3 camPos = marker->GetTargetEntity()->GetScene()->GetCurrentCamera()->GetPosition();
+        Vector3 entPos = marker->GetTargetEntity()->GetWorldTransform().GetTranslationVector();
+        float32 distance = (camPos - entPos).Length();
+        distanceText->SetText(Format("%.3f", distance));
+    });
+
     Vector<Entity*> entities;
-    //scene->GetChildEntitiesWithComponent(entities, Component::SCREEN_POSITION_COMPONENT);
     scene->GetChildNodes(entities);
+    UIControl* markerProto = pkgBuilder.GetPackage()->GetPrototype(FastName("Marker"));
+    DVASSERT(markerProto);
     for (Entity* e : entities)
     {
-        RefPtr<UIControl> marker = pkgBuilder.GetPackage()->GetPrototype(FastName("Marker"))->SafeClone();
+        RefPtr<UIControl> marker = markerProto->SafeClone();
         DVASSERT(marker.Valid());
         UIControl* titleCtrl = marker->FindByPath("Title");
         DVASSERT(titleCtrl);
@@ -84,14 +100,6 @@ void SceneTest::LoadResources()
         UIEntityMarkerComponent* emc = marker->GetComponent<UIEntityMarkerComponent>();
         DVASSERT(emc);
         emc->SetTargetEntity(e);
-        emc->SetCustomStrategy([](UIControl* ctrl, UIEntityMarkerComponent* emc) {
-            UIControl* distanceCtrl = ctrl->FindByPath("Distance");
-            DVASSERT(distanceCtrl);
-            UITextComponent* distanceText = distanceCtrl->GetComponent<UITextComponent>();
-            DVASSERT(distanceText);
-            float32 distance = (emc->GetTargetEntity()->GetScene()->GetCurrentCamera()->GetPosition() - emc->GetTargetEntity()->GetWorldTransform().GetTranslationVector()).Length();
-            distanceText->SetText(Format("%.3f", distance));
-        });
 
         markers->AddControl(marker.Get());
     }
