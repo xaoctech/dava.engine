@@ -54,6 +54,7 @@ void IssueData::ChangeMessage(DAVA::int32 sectionId, DAVA::int32 id, const DAVA:
         if (issue.sectionId == sectionId && issue.id == id)
         {
             issue.message = message;
+            break;
         }
     }
 }
@@ -65,6 +66,7 @@ void IssueData::ChangePathToControl(DAVA::int32 sectionId, DAVA::int32 id, const
         if (issue.sectionId == sectionId && issue.id == id)
         {
             issue.pathToControl = pathToControl;
+            break;
         }
     }
 }
