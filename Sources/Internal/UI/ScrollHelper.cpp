@@ -50,6 +50,7 @@ void ScrollHelper::SetPosition(float32 pos)
     position = pos;
     position = Min(position, 0.f);
     position = Max(position, -elementSize);
+    scrollToPos = position;
     scrollToTopSpeed = 0.f;
 }
 
