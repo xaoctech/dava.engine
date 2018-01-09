@@ -34,6 +34,11 @@ object dava_framework_Launcher_LauncherWin : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "generate project"
             workingDir = "%pathToProjectBuild%"
             scriptContent = """
