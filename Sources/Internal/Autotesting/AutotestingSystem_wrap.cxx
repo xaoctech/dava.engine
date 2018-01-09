@@ -5731,7 +5731,7 @@ static int _wrap_AutotestingSystemLua_GetMsSinceEpoch(lua_State* L)
 {
     int SWIG_arg = 0;
     DAVA::AutotestingSystemLua* arg1 = (DAVA::AutotestingSystemLua*)0;
-    DAVA::float32 result;
+    DAVA::int32 result;
 
     SWIG_check_num_args("DAVA::AutotestingSystemLua::GetMsSinceEpoch", 1, 1)
         if (!SWIG_isptrtype(L, 1)) SWIG_fail_arg("DAVA::AutotestingSystemLua::GetMsSinceEpoch", 1, "DAVA::AutotestingSystemLua *");
@@ -5741,7 +5741,7 @@ static int _wrap_AutotestingSystemLua_GetMsSinceEpoch(lua_State* L)
         SWIG_fail_ptr("AutotestingSystemLua_GetMsSinceEpoch", 1, SWIGTYPE_p_DAVA__AutotestingSystemLua);
     }
 
-    result = (DAVA::float32)(arg1)->GetMsSinceEpoch();
+    result = (DAVA::int32)(arg1)->GetMsSinceEpoch();
     lua_pushnumber(L, (lua_Number)result);
     SWIG_arg++;
     return SWIG_arg;
