@@ -99,7 +99,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         script {
             name = "UnitTest"
             workingDir = "%pathToProjectApp_other%"
-            scriptContent = "python start_tests.py"
+            scriptContent = "python start_tests.py --coverage_artifacts=true"
         }
         script {
             name = "report commit status SUCCESSFUL"
