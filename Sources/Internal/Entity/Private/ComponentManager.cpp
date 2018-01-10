@@ -5,6 +5,8 @@
 #include "Utils/CRC32.h"
 #include "Reflection/ReflectedTypeDB.h"
 
+#include <numeric>
+
 namespace DAVA
 {
 ComponentManager::ComponentManager()
@@ -93,7 +95,7 @@ void ComponentManager::PreregisterAllDerivedSceneComponentsRecursively()
 
     for (const TypeInheritance::Info& info : derivedTypes)
     {
-        CollectSceneComponentRecursively(info.type, componentsToRegister);
+        CollectSceneComponentsRecursively(info.type, componentsToRegister);
     }
 
     const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
@@ -131,41 +133,37 @@ uint32 ComponentManager::GetCRC32HashOfPreregisteredSceneComponents()
 
 uint32 ComponentManager::GetCRC32HashOfRegisteredSceneComponents()
 {
-    Vector<const String*> componentsPermanentNames;
-    componentsPermanentNames.reserve(registeredSceneComponents.size());
+    UpdateSortedVectors();
 
-    for (const Type* type : registeredSceneComponents)
-    {
-        const ReflectedType* refType = ReflectedTypeDB::GetLocalDB()->GetByType(type);
-
-        DVASSERT(refType != nullptr);
-
-        const String& permanentName = refType->GetPermanentName();
-
-        if (!permanentName.empty())
-        {
-            componentsPermanentNames.push_back(&permanentName);
-        }
-        else
-        {
-            DVASSERT(false, "Permanent name is not registered for component class. Hash will be incorrect.");
-        }
-    }
-
-    DVASSERT(!componentsPermanentNames.empty(), "CRC32 will be 0.");
-
-    std::sort(componentsPermanentNames.begin(), componentsPermanentNames.end(), [](const String* s1, const String* s2) {
-        return *s1 < *s2;
-    });
+    const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
 
     CRC32 crc;
 
-    for (const String* s : componentsPermanentNames)
+    for (uint32 x : sceneComponentsSortedByPermanentName)
     {
-        crc.AddData(s->data(), s->size());
+        const Type* type = registeredSceneComponents[x];
+        const String& permanentName = db->GetByType(type)->GetPermanentName();
+        crc.AddData(permanentName.data(), permanentName.size());
     }
 
     return crc.Done();
+}
+
+uint32 ComponentManager::GetSortedComponentIndex(const Type* type)
+{
+    UpdateSortedVectors();
+
+    uint32 runtimeIndex = GetRuntimeComponentIndex(type);
+
+    if (IsRegisteredSceneComponent(type) && runtimeIndex < sceneComponentsSortedByPermanentName.size())
+    {
+        return sceneComponentsSortedByPermanentName[runtimeIndex];
+    }
+    else
+    {
+        DVASSERT(false);
+        return 0;
+    }
 }
 
 const Type* ComponentManager::GetSceneComponentType(uint32 runtimeIndex) const
@@ -180,7 +178,7 @@ const Type* ComponentManager::GetSceneComponentType(uint32 runtimeIndex) const
     return ret;
 }
 
-void ComponentManager::CollectSceneComponentRecursively(const Type* type, Vector<const Type*>& components)
+void ComponentManager::CollectSceneComponentsRecursively(const Type* type, Vector<const Type*>& components)
 {
     components.push_back(type);
 
@@ -190,8 +188,35 @@ void ComponentManager::CollectSceneComponentRecursively(const Type* type, Vector
     {
         for (const TypeInheritance::Info& info : inheritance->GetDerivedTypes())
         {
-            CollectSceneComponentRecursively(info.type, components);
+            CollectSceneComponentsRecursively(info.type, components);
         }
+    }
+}
+
+void ComponentManager::UpdateSortedVectors()
+{
+    const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
+
+    size_t size = registeredSceneComponents.size();
+
+    if (sceneComponentsSortedByPermanentName.size() != size)
+    {
+        sceneComponentsSortedByPermanentName.resize(size);
+        std::iota(sceneComponentsSortedByPermanentName.begin(), sceneComponentsSortedByPermanentName.end(), 0);
+
+        std::sort(sceneComponentsSortedByPermanentName.begin(), sceneComponentsSortedByPermanentName.end(), [this, db](uint32 l, uint32 r) {
+            const ReflectedType* lRefType = db->GetByType(registeredSceneComponents[l]);
+            const ReflectedType* rRefType = db->GetByType(registeredSceneComponents[r]);
+
+            DVASSERT(lRefType != nullptr && rRefType != nullptr);
+
+            const String& lName = lRefType->GetPermanentName();
+            const String& rName = rRefType->GetPermanentName();
+
+            DVASSERT(!lName.empty() && !rName.empty());
+
+            return lName < rName;
+        });
     }
 }
 }
