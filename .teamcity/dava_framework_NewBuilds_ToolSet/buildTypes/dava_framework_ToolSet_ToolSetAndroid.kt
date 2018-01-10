@@ -130,9 +130,5 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
 
     requirements {
         exists("env.UNIT_TEST")
-        doesNotEqual("system.agent.name", "by2-badava-mac-08")
-        doesNotEqual("system.agent.name", "by2-badava-mac-11", "RQ_87")
     }
-    
-    disableSettings("RQ_87")
 })
