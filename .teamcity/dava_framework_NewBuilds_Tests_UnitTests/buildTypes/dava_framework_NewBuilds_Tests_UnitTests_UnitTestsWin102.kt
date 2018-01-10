@@ -44,6 +44,10 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin102 : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "get stash commit"
             scriptContent = "python Teamcity/get_pull_requests_commit.py --branch %teamcity.build.branch%"
         }
