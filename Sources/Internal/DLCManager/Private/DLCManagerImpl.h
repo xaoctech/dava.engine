@@ -147,6 +147,8 @@ public:
 
     void RemovePack(const String& packName) final;
 
+    void ResetQueue() final;
+
     Progress GetProgress() const final;
 
     Progress GetPacksProgress(const Vector<String>& packNames) const final;
@@ -227,6 +229,7 @@ private:
     PackRequest* AddDelayedRequest(const String& requestedPackName);
     void RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) const;
     void AddRequest(PackRequest* request);
+    void RemoveRemoteRequest(PackRequest* request);
     PackRequest* PrepareNewRemoteRequest(const String& requestedPackName);
     PackRequest* CreateNewRemoteRequest(const String& requestedPackName);
     bool IsLocalMetaAndFileTableAlreadyExist() const;
