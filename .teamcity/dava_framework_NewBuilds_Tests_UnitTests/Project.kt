@@ -12,7 +12,12 @@ object Project : Project({
     parentId = "dava_framework_NewBuilds_Tests"
     name = "UnitTests"
 
+    buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin102)
+    buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsLinux)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_FormatTestTmp)
+    buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsAndroid)
+    buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2)
+    buildType(dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin32)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_RequestWotbUnitTestsMacOS)
     buildType(dava_framework_NewBuilds_Tests_UnitTests_UploadDavaFramework)
 
