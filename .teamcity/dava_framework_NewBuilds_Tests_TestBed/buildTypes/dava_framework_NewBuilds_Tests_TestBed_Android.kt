@@ -42,6 +42,11 @@ object dava_framework_NewBuilds_Tests_TestBed_Android : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "clear"
             workingDir = "dava.framework/RepoTools/Scripts"
             scriptContent = "python delete_folder.py %pathToProject%"

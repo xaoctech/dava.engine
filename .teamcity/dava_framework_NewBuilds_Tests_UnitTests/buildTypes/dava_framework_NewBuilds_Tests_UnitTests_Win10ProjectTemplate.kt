@@ -30,6 +30,11 @@ object dava_framework_NewBuilds_Tests_UnitTests_Win10ProjectTemplate : Template(
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "clear"
             id = "RUNNER_1187"
             workingDir = "RepoTools/Scripts"
