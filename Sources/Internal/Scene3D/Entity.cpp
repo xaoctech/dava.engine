@@ -68,7 +68,7 @@ Entity::~Entity()
 
 bool ComponentLessPredicate(Component* left, Component* right)
 {
-    return left->GetType() < right->GetType();
+    return ComponentUtils::GetSortedIndex(left) < ComponentUtils::GetSortedIndex(right);
 }
 
 void Entity::AddComponent(Component* component)
