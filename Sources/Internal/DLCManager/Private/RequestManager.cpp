@@ -309,10 +309,10 @@ void RequestManager::Remove(PackRequest* request)
 {
     DVASSERT(request != nullptr);
 
-    auto it = find(begin(requests), end(requests), request);
+    const auto it = find(begin(requests), end(requests), request);
     if (it != end(requests))
     {
-        auto nameIt = requestNames.find((*it)->GetRequestedPackName());
+        const auto nameIt = requestNames.find((*it)->GetRequestedPackName());
 
         requestNames.erase(nameIt);
         requests.erase(it);
@@ -334,6 +334,21 @@ void RequestManager::SwapPointers(PackRequest* newPointer, PackRequest* oldInval
 
     auto nameIt = requestNames.find(newPointer->GetRequestedPackName());
     DVASSERT(nameIt != end(requestNames));
+}
+
+const Vector<PackRequest*>& RequestManager::GetRequests() const
+{
+    return requests;
+}
+
+void RequestManager::Clear()
+{
+    requests.clear();
+    requestNames.clear();
+    // use List to preserve the order of incoming events
+    requestStartedWhileInactive.clear();
+    requestUpdatedWhileInactive.clear();
+    isQueueChanged = false;
 }
 
 } // end namespace DAVA

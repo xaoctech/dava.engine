@@ -108,6 +108,19 @@ struct FSMTest02
                 TEST_VERIFY(r1 != nullptr);
                 TEST_VERIFY(r0 != nullptr);
                 dlcManager.requestUpdated.Connect(this, &FSMTest02::OnRequestUpdateCheckOrder);
+
+                // check reset queue after initialize finished
+                dlcManager.ResetQueue();
+
+                // do request again
+                r3 = dlcManager.RequestPack("3");
+                r2 = dlcManager.RequestPack("2");
+                r1 = dlcManager.RequestPack("1");
+                r0 = dlcManager.RequestPack("0");
+                TEST_VERIFY(r3 != nullptr);
+                TEST_VERIFY(r2 != nullptr);
+                TEST_VERIFY(r1 != nullptr);
+                TEST_VERIFY(r0 != nullptr);
                 return false;
             }
         }
@@ -402,6 +415,20 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
             const String pack2("fake_pack_01");
             const DLCManager::IRequest* request2 = dlcManager.RequestPack(pack2);
+            TEST_VERIFY(request2 != nullptr);
+            TEST_VERIFY(request2->GetRequestedPackName() == pack2);
+            TEST_VERIFY(request2->IsDownloaded());
+
+            // check reset queue before initialize finished
+            dlcManager.ResetQueue();
+
+            // check after reset queue
+            request1 = dlcManager.RequestPack(pack1);
+            TEST_VERIFY(request1 != nullptr);
+            TEST_VERIFY(request1->GetRequestedPackName() == pack1);
+            TEST_VERIFY(request1->IsDownloaded());
+
+            request2 = dlcManager.RequestPack(pack2);
             TEST_VERIFY(request2 != nullptr);
             TEST_VERIFY(request2->GetRequestedPackName() == pack2);
             TEST_VERIFY(request2->IsDownloaded());

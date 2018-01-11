@@ -37,7 +37,6 @@ using DAVA::Logger;
     #define RELEASE_CONTEXT()
 #endif
 
-#define RHI_GL_ATTEMPT_TO_FORCE_PROGRAM_COMPILATION 1
 namespace rhi
 {
 struct RenderPassGLES2_t
@@ -1445,6 +1444,7 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
     #define EXEC_GL(expr) expr 
 
 #endif
+
     GLCommand* commandData = reinterpret_cast<GLCommand*>(command->cmdData);
     for (GLCommand *cmd = commandData, *cmdEnd = commandData + command->cmdCount; cmd != cmdEnd; ++cmd)
     {
@@ -1628,24 +1628,44 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             GLuint program = static_cast<GLuint>(arg[0]);
             GL_CALL(glLinkProgram(program));
             GL_CALL(glGetProgramiv(program, GL_LINK_STATUS, &linkStatus));
-            if (linkStatus)
+            if (linkStatus == GL_FALSE)
             {
-            #if (RHI_GL_ATTEMPT_TO_FORCE_PROGRAM_COMPILATION)
-                // Force OpenGL to compile program immediately
-                GLint currentProgram = 0;
-                GL_CALL(glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram));
-                GLint validateStatus = 0;
-                GLchar validateLog[2048] = {};
-                GLsizei validateLogLength = 0;
-                GL_CALL(glUseProgram(program));
-                GL_CALL(glValidateProgram(program));
-                GL_CALL(glGetProgramiv(program, GL_VALIDATE_STATUS, &validateStatus));
-                GL_CALL(glGetProgramInfoLog(program, 2048, &validateLogLength, validateLog));
-                GL_CALL(glUseProgram(currentProgram));
-            #endif
+                char info[2048] = {};
+                GLsizei linkLogLength = 0;
+                GL_CALL(glGetProgramInfoLog(program, sizeof(info), &linkLogLength, info));
+                Logger::Error("Failed to link program:\n%s", info);
             }
             cmd->retval = linkStatus;
             cmd->status = err;
+        }
+        break;
+
+        case GLCommand::VALIDATE_PROGRAM:
+        {
+            GLuint program = static_cast<GLuint>(arg[0]);
+
+            GLint validateStatus = 0;
+            GLchar validateLog[2048] = {};
+            GLsizei validateLogLength = 0;
+            GL_CALL(glUseProgram(program));
+            GL_CALL(glValidateProgram(program));
+            GL_CALL(glGetProgramiv(program, GL_VALIDATE_STATUS, &validateStatus));
+            GL_CALL(glGetProgramInfoLog(program, 2048, &validateLogLength, validateLog));
+        }
+        break;
+
+        case GLCommand::GET_CURRENT_PROGRAM_PTR:
+        {
+            GLint result = 0;
+            GL_CALL(glGetIntegerv(GL_CURRENT_PROGRAM, &result));
+            *(reinterpret_cast<GLint*>(arg[0])) = result;
+        }
+        break;
+
+        case GLCommand::SET_CURRENT_PROGRAM_PTR:
+        {
+            GLint program = *(reinterpret_cast<GLint*>(arg[0]));
+            GL_CALL(glUseProgram(program));
         }
         break;
 

@@ -56,6 +56,11 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "get stash commit"
             workingDir = "dava.framework"
             scriptContent = "python %system.teamcity.build.checkoutDir%/Teamcity/get_pull_requests_commit.py --branch %teamcity.build.branch%"
@@ -99,7 +104,7 @@ object dava_framework_NewBuilds_ToolSet_ToolSetMac : BuildType({
         script {
             name = "UnitTest"
             workingDir = "%pathToProjectApp_other%"
-            scriptContent = "python start_tests.py"
+            scriptContent = "python start_tests.py --coverage_artifacts=true"
         }
         script {
             name = "report commit status SUCCESSFUL"

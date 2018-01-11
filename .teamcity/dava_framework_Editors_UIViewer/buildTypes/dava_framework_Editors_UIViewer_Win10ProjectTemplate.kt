@@ -33,6 +33,11 @@ object dava_framework_Editors_UIViewer_Win10ProjectTemplate : Template({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "Generating project"
             id = "RUNNER_1032"
             workingDir = "%pathToProject%"

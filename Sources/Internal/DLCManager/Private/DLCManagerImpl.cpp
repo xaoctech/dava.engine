@@ -672,6 +672,13 @@ void DLCManagerImpl::AddRequest(PackRequest* request)
     requestNameHashes.insert(std::hash<String>{}(request->GetRequestedPackName()));
 }
 
+void DLCManagerImpl::RemoveRemoteRequest(PackRequest* request)
+{
+    const auto it = find(begin(requests), end(requests), request);
+    requests.erase(it);
+    requestManager->Remove(request);
+    requestNameHashes.erase(std::hash<String>{}(request->GetRequestedPackName()));
+}
 PackRequest* DLCManagerImpl::PrepareNewRemoteRequest(const String& requestedPackName)
 {
     Vector<uint32> packIndexes = metaRemote->GetFileIndexes(requestedPackName);
@@ -1621,6 +1628,29 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
                 log << "can't delete files: " << errMsg << std::endl;
                 Logger::Error("can't delete files: %s", errMsg.c_str());
             }
+        }
+    }
+}
+
+void DLCManager::ResetQueue()
+{
+}
+
+void DLCManagerImpl::ResetQueue()
+{
+    DVASSERT(Thread::IsMainThread());
+
+    if (IsInitialized() && requestManager)
+    {
+        // do NOT use reference
+        const Vector<PackRequest*> requests = requestManager->GetRequests();
+
+        requestManager->Clear();
+
+        for (PackRequest* r : requests)
+        {
+            RemoveRemoteRequest(r);
+            delete r;
         }
     }
 }

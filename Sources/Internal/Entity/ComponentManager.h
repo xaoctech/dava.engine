@@ -71,6 +71,9 @@ public:
     /** Return runtime index for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
     uint32 GetRuntimeComponentIndex(const Type* type) const;
 
+    /** Return sorted index for specified 'type', based on permanent name. */
+    uint32 GetSortedComponentIndex(const Type* type);
+
     /** 
         Return Type of Scene Component for specified component 'runtimeIndex'.
         Return nullptr if component with 'runtimeIndex' was not registered in ComponentManager.
@@ -87,7 +90,8 @@ private:
     ComponentManager();
 
     void PreregisterAllDerivedSceneComponentsRecursively();
-    void CollectSceneComponentRecursively(const Type* type, Vector<const Type*>& components);
+    void CollectSceneComponentsRecursively(const Type* type, Vector<const Type*>& components);
+    void UpdateSortedVectors();
 
     void* Uint32ToVoidPtr(uint32 value) const;
     uint32 VoidPtrToUint32(void* ptr) const;
@@ -98,6 +102,9 @@ private:
     uint32 runtimeSceneComponentsCount = 0;
     Vector<const Type*> registeredSceneComponents;
     Vector<const Type*> sceneRuntimeIndexToType;
+
+    // TODO: Think of a better way for getting sorted index. There are too many containers.
+    Vector<uint32> sceneComponentsSortedByPermanentName;
 
     int32 runtimeTypeIndex = -1;
     int32 componentTypeIndex = -1;

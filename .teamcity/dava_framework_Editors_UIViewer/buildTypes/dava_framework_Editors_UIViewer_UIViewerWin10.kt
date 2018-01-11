@@ -27,6 +27,11 @@ object dava_framework_Editors_UIViewer_UIViewerWin10 : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = ""
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "create version.h"
             id = "RUNNER_420"
             workingDir = "RepoTools/Scripts"
