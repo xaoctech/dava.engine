@@ -109,6 +109,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GlobalSceneSettings)
     .Field("openLastScene", &GlobalSceneSettings::openLastScene)[DAVA::M::DisplayName("Open last opened scene on launch")]
     .Field("dragAndDropWithShift", &GlobalSceneSettings::dragAndDropWithShift)[DAVA::M::DisplayName("Drag'n'Drop with shift")]
     .Field("saveEmitters", &GlobalSceneSettings::saveEmitters)[DAVA::M::DisplayName("Save Emitters")]
+    .Field("saveEntityPositionOnHierarchyChange", &GlobalSceneSettings::saveEntityPositionOnHierarchyChange)[DAVA::M::DisplayName("Save entity position on hierarchy change")]
     .Field("saveStaticOcclusion", &GlobalSceneSettings::saveStaticOcclusion)[DAVA::M::DisplayName("Save static occlusion")]
     .Field("defaultCustomColorIndex", &GlobalSceneSettings::defaultCustomColorIndex)[DAVA::M::DisplayName("Default custom color index")]
     .Field("selectionDrawMode", &GlobalSceneSettings::selectionDrawMode)[DAVA::M::DisplayName("Selection draw mode"), DAVA::M::FlagsT<SelectionSystemDrawMode>()]

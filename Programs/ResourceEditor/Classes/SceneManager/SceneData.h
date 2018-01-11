@@ -101,6 +101,7 @@ public:
     bool dragAndDropWithShift = false;
     bool autoSelectNewEntity = true;
     bool saveEmitters = false;
+    bool saveEntityPositionOnHierarchyChange = true;
     bool saveStaticOcclusion = true;
     DAVA::uint32 defaultCustomColorIndex = 0;
     bool openLastScene = false;
