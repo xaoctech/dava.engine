@@ -24,17 +24,17 @@ void TransformSystem::Process(float32 timeElapsed)
     for (Entity* e : tsc->localTransformChanged)
     {
         EntityNeedUpdate(e);
-        HierahicAddToUpdate(e);
+        HierarchicAddToUpdate(e);
     }
     for (Entity* e : tsc->transformParentChanged)
     {
         EntityNeedUpdate(e);
-        HierahicAddToUpdate(e);
+        HierarchicAddToUpdate(e);
     }
     for (Entity* e : tsc->animationTransformChanged)
     {
         EntityNeedUpdate(e);
-        HierahicAddToUpdate(e);
+        HierarchicAddToUpdate(e);
     }
 
     passedNodes = 0;
@@ -46,11 +46,6 @@ void TransformSystem::Process(float32 timeElapsed)
         FindNodeThatRequireUpdate(updatableEntities[i]);
     }
     updatableEntities.clear();
-
-    if (passedNodes)
-    {
-        //		Logger::Info("TransformSystem %d passed %d multiplied", passedNodes, multipliedNodes);
-    }
 }
 
 void TransformSystem::FindNodeThatRequireUpdate(Entity* entity)
@@ -107,9 +102,13 @@ void TransformSystem::TransformAllChildEntities(Entity* entity)
             AnimationComponent* animComp = GetAnimationComponent(entity);
             localMultiplied++;
             if (animComp)
+            {
                 transform->worldMatrix = animComp->animationTransform * transform->localMatrix * *(transform->parentMatrix);
+            }
             else
+            {
                 transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
+            }
             TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
             tsc->worldTransformChanged.Push(entity);
         }
@@ -127,42 +126,12 @@ void TransformSystem::TransformAllChildEntities(Entity* entity)
     multipliedNodes += localMultiplied;
 }
 
-void TransformSystem::HierahicFindUpdatableTransform(Entity* entity, bool forcedUpdate)
-{
-    passedNodes++;
-
-    if (forcedUpdate || entity->GetFlags() & Entity::TRANSFORM_NEED_UPDATE)
-    {
-        forcedUpdate = true;
-        multipliedNodes++;
-        TransformComponent* transform = entity->GetComponent<TransformComponent>();
-        if (transform->parentMatrix)
-        {
-            transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
-            TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
-            tsc->worldTransformChanged.Push(entity);
-        }
-    }
-
-    uint32 size = entity->GetChildrenCount();
-    for (uint32 i = 0; i < size; ++i)
-    {
-        if (forcedUpdate || entity->GetChild(i)->GetFlags() & Entity::TRANSFORM_DIRTY)
-        {
-            HierahicFindUpdatableTransform(entity->GetChild(i), forcedUpdate);
-        }
-    }
-
-    entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE);
-    entity->RemoveFlag(Entity::TRANSFORM_DIRTY);
-}
-
 void TransformSystem::EntityNeedUpdate(Entity* entity)
 {
     entity->AddFlag(Entity::TRANSFORM_NEED_UPDATE);
 }
 
-void TransformSystem::HierahicAddToUpdate(Entity* entity)
+void TransformSystem::HierarchicAddToUpdate(Entity* entity)
 {
     if (!(entity->GetFlags() & Entity::TRANSFORM_DIRTY))
     {
@@ -170,7 +139,7 @@ void TransformSystem::HierahicAddToUpdate(Entity* entity)
         Entity* parent = entity->GetParent();
         if (parent && parent->GetParent())
         {
-            HierahicAddToUpdate(entity->GetParent());
+            HierarchicAddToUpdate(entity->GetParent());
         }
         else
         { //topmost parent
@@ -183,7 +152,7 @@ void TransformSystem::HierahicAddToUpdate(Entity* entity)
 void TransformSystem::AddEntity(Entity* entity)
 {
     EntityNeedUpdate(entity);
-    HierahicAddToUpdate(entity);
+    HierarchicAddToUpdate(entity);
 }
 
 void TransformSystem::RemoveEntity(Entity* entity)
