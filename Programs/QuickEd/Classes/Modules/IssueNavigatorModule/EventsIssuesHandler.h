@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Utils/PackageListenerProxy.h"
-#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueHandler.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
