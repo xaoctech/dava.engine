@@ -147,7 +147,6 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
             continue;
         }
 
-        bool hasOrdering = false;
         for (UIEntityMarkerComponent* marker : l.children)
         {
             UIControl* markerControl = marker->GetControl();
@@ -207,7 +206,6 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
 
             if (container->IsSyncOrderEnabled())
             {
-                hasOrdering = true;
                 switch (container->GetOrderMode())
                 {
                 case UIEntityMarkersContainerComponent::OrderMode::NearFront:
@@ -225,7 +223,7 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
             }
         }
 
-        if (hasOrdering)
+        if (container->IsSyncOrderEnabled() && !orderMap.empty())
         {
             containerControl->SortChildren([&orderMap](UIControl* a, UIControl* b) {
                 auto itA = orderMap.find(a);
