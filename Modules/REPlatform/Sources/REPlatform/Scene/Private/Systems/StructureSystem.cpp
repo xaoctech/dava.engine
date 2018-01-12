@@ -19,6 +19,7 @@
 #include <TArc/Core/Deprecated.h>
 
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>

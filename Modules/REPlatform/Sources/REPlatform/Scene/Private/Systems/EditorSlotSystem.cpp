@@ -43,9 +43,9 @@ void DetachSlotForRemovingEntity(Entity* entity, SceneEditor2* scene, REDependen
         DetachSlotForRemovingEntity(entity->GetChild(i), scene, holder);
     }
 
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+    for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
     {
-        SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+        SlotComponent* component = entity->GetComponent<SlotComponent>(i);
         holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, FastName()));
     }
 }
@@ -59,23 +59,23 @@ EditorSlotSystem::EditorSlotSystem(Scene* scene, ContextAccessor* accessor_)
 
 void EditorSlotSystem::AddEntity(Entity* entity)
 {
-    DVASSERT(entity->GetComponentCount(Component::SLOT_COMPONENT) > 0);
+    DVASSERT(entity->GetComponentCount<SlotComponent>() > 0);
     entities.push_back(entity);
     pendingOnInitialize.insert(entity);
 }
 
 void EditorSlotSystem::RemoveEntity(Entity* entity)
 {
-    DVASSERT(entity->GetComponentCount(Component::SLOT_COMPONENT) > 0);
+    DVASSERT(entity->GetComponentCount<SlotComponent>() > 0);
     FindAndRemoveExchangingWithLast(entities, entity);
     pendingOnInitialize.erase(entity);
 }
 
 void EditorSlotSystem::AddComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
+    DVASSERT(component->GetType()->Is<SlotComponent>());
     pendingOnInitialize.insert(entity);
-    if (entity->GetComponentCount(Component::SLOT_COMPONENT) == 1)
+    if (entity->GetComponentCount<SlotComponent>() == 1)
     {
 #if defined(__DAVAENGINE_DEBUG__)
         DVASSERT(std::find(entities.begin(), entities.end(), entity) == entities.end());
@@ -86,8 +86,8 @@ void EditorSlotSystem::AddComponent(Entity* entity, Component* component)
 
 void EditorSlotSystem::RemoveComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Component::SLOT_COMPONENT);
-    if (entity->GetComponentCount(Component::SLOT_COMPONENT) == 1)
+    DVASSERT(component->GetType()->Is<SlotComponent>());
+    if (entity->GetComponentCount<SlotComponent>() == 1)
     {
         FindAndRemoveExchangingWithLast(entities, entity);
         pendingOnInitialize.erase(entity);
@@ -98,7 +98,6 @@ void EditorSlotSystem::PrepareForRemove()
 {
     entities.clear();
     pendingOnInitialize.clear();
-    DVASSERT(clonedEntityes.empty());
     DVASSERT(inClonedState.empty());
 }
 
@@ -110,9 +109,9 @@ void EditorSlotSystem::Process(float32 timeElapsed)
     {
         Set<FastName> names;
         Set<SlotComponent*> uninitializedSlots;
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
         {
-            SlotComponent* slotComponent = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* slotComponent = entity->GetComponent<SlotComponent>(i);
             FastName slotName = slotComponent->GetSlotName();
             if (slotName.IsValid())
             {
@@ -145,10 +144,10 @@ void EditorSlotSystem::Process(float32 timeElapsed)
     {
         for (Entity* entity : pendingOnInitialize)
         {
-            uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
+            uint32 slotCount = entity->GetComponentCount<SlotComponent>();
             for (uint32 slotIndex = 0; slotIndex < slotCount; ++slotIndex)
             {
-                SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, slotIndex));
+                SlotComponent* component = entity->GetComponent<SlotComponent>(slotIndex);
                 Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
                 if (loadedEntity == nullptr)
                 {
@@ -190,9 +189,9 @@ void EditorSlotSystem::Process(float32 timeElapsed)
 
     for (Entity* entity : entities)
     {
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
         {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
             Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
             if (loadedEntity != nullptr)
             {
@@ -213,14 +212,14 @@ void EditorSlotSystem::WillClone(Entity* originalEntity)
 {
     auto extractSlots = [this](Entity* entity)
     {
-        uint32 slotCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
+        uint32 slotCount = entity->GetComponentCount<DAVA::SlotComponent>();
         if (slotCount > 0)
         {
             Scene* scene = GetScene();
             for (uint32 i = 0; i < slotCount; ++i)
             {
                 AttachedItemInfo info;
-                info.component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+                info.component = entity->GetComponent<DAVA::SlotComponent>(i);
                 DVASSERT(info.component->GetEntity() != nullptr);
                 info.entity = RefPtr<Entity>::ConstructWithRetain(scene->slotSystem->LookUpLoadedEntity(info.component));
                 info.itemName = info.component->GetLoadedItemName();
@@ -233,7 +232,7 @@ void EditorSlotSystem::WillClone(Entity* originalEntity)
 
     extractSlots(originalEntity);
     Vector<Entity*> children;
-    originalEntity->GetChildEntitiesWithComponent(children, Component::SLOT_COMPONENT);
+    originalEntity->GetChildEntitiesWithComponent(children, Type::Instance<SlotComponent>());
     for (Entity* e : children)
     {
         extractSlots(e);
@@ -260,13 +259,11 @@ void EditorSlotSystem::DidCloned(Entity* originalEntity, Entity* newEntity)
 
     restoreSlots(originalEntity);
     Vector<Entity*> children;
-    originalEntity->GetChildEntitiesWithComponent(children, Component::SLOT_COMPONENT);
+    originalEntity->GetChildEntitiesWithComponent(children, Type::Instance<SlotComponent>());
     for (Entity* e : children)
     {
         restoreSlots(e);
     }
-
-    clonedEntityes.insert(newEntity);
 }
 
 RefPtr<KeyedArchive> EditorSlotSystem::SaveSlotsPreset(Entity* entity)
@@ -295,7 +292,7 @@ RefPtr<KeyedArchive> EditorSlotSystem::SaveSlotsPreset(Entity* entity)
         }
     }
 
-    uint32 slotsCount = entity->GetComponentCount(Component::SLOT_COMPONENT);
+    uint32 slotsCount = entity->GetComponentCount<SlotComponent>();
     if (slotsCount != 0)
     {
         FilePath scenePath = static_cast<SceneEditor2*>(GetScene())->GetScenePath();
@@ -314,7 +311,7 @@ RefPtr<KeyedArchive> EditorSlotSystem::SaveSlotsPreset(Entity* entity)
         result->SetUInt32("slotsCount", slotsCount);
         for (uint32 slotIndex = 0; slotIndex < slotsCount; ++slotIndex)
         {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, slotIndex));
+            SlotComponent* component = entity->GetComponent<SlotComponent>(slotIndex);
             RefPtr<KeyedArchive> arch(new KeyedArchive());
             component->Serialize(arch.Get(), &serializeCtx);
             DVASSERT(component->GetSlotName().IsValid());
@@ -387,9 +384,9 @@ FastName EditorSlotSystem::GenerateUniqueSlotName(SlotComponent* component, Enti
         }
         else
         {
-            for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+            for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
             {
-                SlotComponent* comp = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+                SlotComponent* comp = entity->GetComponent<SlotComponent>(i);
                 if (comp == component)
                 {
                     continue;
@@ -485,9 +482,9 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
         {
             Entity* entityWithNewName = object.GetPtr<Entity>();
             Set<FastName> reservedNames;
-            for (uint32 i = 0; i < entityWithNewName->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+            for (uint32 i = 0; i < entityWithNewName->GetComponentCount<SlotComponent>(); ++i)
             {
-                SlotComponent* component = static_cast<SlotComponent*>(entityWithNewName->GetComponent(Component::SLOT_COMPONENT, i));
+                SlotComponent* component = entityWithNewName->GetComponent<SlotComponent>(i);
                 Reflection componentRef = Reflection::Create(ReflectedObject(component));
                 Reflection::Field f;
                 f.key = SlotComponent::SlotNameFieldName;
@@ -506,7 +503,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     auto removeSlotVisitor = [&](const RemoveComponentCommand* cmd)
     {
         Component* component = const_cast<Component*>(cmd->GetComponent());
-        if (component->GetType() == Component::SLOT_COMPONENT)
+        if (component->GetType()->Is<SlotComponent>())
         {
             SlotComponent* slotComponent = static_cast<SlotComponent*>(component);
             holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, slotComponent, nullptr, FastName()));
@@ -540,7 +537,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     auto addSlotVisitor = [&](const AddComponentCommand* cmd)
     {
         Component* component = cmd->GetComponent();
-        if (component->GetType() == Component::SLOT_COMPONENT)
+        if (component->GetType()->Is<SlotComponent>())
         {
             SlotSystemSettings* settings = accessor->GetGlobalContext()->GetData<SlotSystemSettings>();
             SlotComponent* slotComponent = static_cast<SlotComponent*>(component);
@@ -548,7 +545,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
             {
                 slotComponent->SetConfigFilePath(settings->lastConfigPath);
             }
-            loadDefaultItem(static_cast<SlotComponent*>(component));
+            loadDefaultItem(slotComponent);
 
             if (autoGenerateName == true)
             {
@@ -569,22 +566,16 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         Entity* entityForAdd = cmd->GetEntity();
 
-        auto iter = clonedEntityes.find(entityForAdd);
-        if (iter != clonedEntityes.end())
+        Vector<Entity*> slotEntityes;
+        entityForAdd->GetChildEntitiesWithComponent(slotEntityes, Type::Instance<SlotComponent>());
+        slotEntityes.push_back(entityForAdd);
+
+        for (Entity* e : slotEntityes)
         {
-            Vector<Entity*> slotEntityes;
-            entityForAdd->GetChildEntitiesWithComponent(slotEntityes, Component::SLOT_COMPONENT);
-            slotEntityes.push_back(entityForAdd);
-
-            for (Entity* e : slotEntityes)
+            for (uint32 i = 0; i < e->GetComponentCount<SlotComponent>(); ++i)
             {
-                for (uint32 i = 0; i < e->GetComponentCount(Component::SLOT_COMPONENT); ++i)
-                {
-                    loadDefaultItem(static_cast<SlotComponent*>(e->GetComponent(Component::SLOT_COMPONENT, i)));
-                }
+                loadDefaultItem(e->GetComponent<SlotComponent>(i));
             }
-
-            clonedEntityes.erase(iter);
         }
     };
 
@@ -667,9 +658,9 @@ void EditorSlotSystem::Draw()
     RenderHelper* rh = scene->GetRenderSystem()->GetDebugDrawer();
     for (Entity* entity : entities)
     {
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
         {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* component = entity->GetComponent<SlotComponent>(i);
             FastName templateName = component->GetTemplateName();
             const SlotTemplatesData::Template* t = data->GetTemplate(templateName);
             if (t != nullptr)
@@ -721,9 +712,9 @@ std::unique_ptr<Command> EditorSlotSystem::PrepareForSave(bool /*saveForGame*/)
     {
         for (Entity* entity : entityNode.second)
         {
-            for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+            for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
             {
-                SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+                SlotComponent* component = entity->GetComponent<SlotComponent>(i);
                 batchCommand->Add(std::make_unique<AttachEntityToSlot>(sceneEditor, component, nullptr, FastName()));
             }
         }
@@ -768,9 +759,9 @@ void EditorSlotSystem::LoadSlotsPresetImpl(Entity* entity, RefPtr<KeyedArchive> 
     if (slotsCount > 0)
     {
         UnorderedMap<FastName, Deque<SlotComponent*>> existsComponents;
-        for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+        for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
         {
-            SlotComponent* component = static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i));
+            SlotComponent* component = entity->GetComponent<SlotComponent>(i);
             existsComponents[component->GetSlotName()].push_back(component);
         }
 

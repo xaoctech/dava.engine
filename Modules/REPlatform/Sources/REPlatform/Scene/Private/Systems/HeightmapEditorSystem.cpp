@@ -49,9 +49,11 @@ LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEdit
         return enableCustomDrawError;
     }
 
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked == true);
+
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
-    scene->GetSystem<EntityModificationSystem>()->SetLocked(true);
 
     landscapeSize = drawSystem->GetHeightmapProxy()->Size();
     copyPasteFrom = Vector2(-1.f, -1.f);
@@ -75,6 +77,7 @@ bool HeightmapEditorSystem::DisableLandscapeEdititing()
 
     FinishEditing(false);
 
+    ReleaseInputLock(GetScene());
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(false);
     scene->GetSystem<EntityModificationSystem>()->SetLocked(false);

@@ -13,6 +13,8 @@
 #include <FileSystem/FileList.h>
 #include <Render/GPUFamilyDescriptor.h>
 #include <Render/TextureDescriptor.h>
+#include <Entity/ComponentManager.h>
+#include <Engine/Engine.h>
 
 #include <functional>
 
@@ -33,10 +35,24 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         ScopedPtr<Scene> scene(new Scene());
         TEST_VERIFY(scene->LoadScene(scenePathname) == DAVA::SceneFileV2::eError::ERROR_NO_ERROR);
 
-        for (uint32 ct = Component::NON_EXPORTABLE_COMPONENTS; ct < Component::FIRST_USER_DEFINED_COMPONENT; ++ct)
+        ComponentManager* cm = GetEngineContext()->componentManager;
+        const Vector<const Type*> componentTypes = cm->GetRegisteredSceneComponents();
+
+        for (const Type* type : componentTypes)
         { //test that RE specific components were removed
+            const ReflectedType* refType = ReflectedTypeDB::GetByType(type);
+
+            DVASSERT(refType != nullptr);
+
+            ReflectedMeta* meta = refType->GetStructure()->meta.get();
+
+            if (meta == nullptr || meta->GetMeta<M::NonExportableComponent>() == nullptr)
+            {
+                continue;
+            }
+
             Vector<Entity*> entities;
-            scene->GetChildEntitiesWithComponent(entities, static_cast<Component::eType>(ct));
+            scene->GetChildEntitiesWithComponent(entities, type);
             TEST_VERIFY(entities.empty() == true);
         }
     }

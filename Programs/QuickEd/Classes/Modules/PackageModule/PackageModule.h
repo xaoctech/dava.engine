@@ -81,6 +81,8 @@ class PackageModule : public DAVA::ClientModule, Interfaces::PackageActionsInter
 
     void SetNewSelection(const SelectedNodes& selection);
 
+    SelectedNodes GetSelection() const;
+
     DAVA::QtConnections connections;
     DAVA::DataWrapper documentDataWrapper;
 

@@ -286,11 +286,11 @@ void SceneSaver::CopyReferencedObject(Entity* node)
 
 void SceneSaver::CopyAnimationClips(Entity* node)
 {
-    for (uint32 i = 0; i < node->GetComponentCount(Component::MOTION_COMPONENT); ++i)
+    for (uint32 i = 0; i < node->GetComponentCount<MotionComponent>(); ++i)
     {
-        MotionComponent* component = static_cast<MotionComponent*>(node->GetComponent(Component::MOTION_COMPONENT, i));
-        Vector<DAVA::FilePath> dependencies = component->GetDependencies();
-        for (const DAVA::FilePath& fp : dependencies)
+        MotionComponent* component = node->GetComponent<MotionComponent>(i);
+        Vector<FilePath> dependencies = component->GetDependencies();
+        for (const FilePath& fp : dependencies)
         {
             sceneUtils.AddFile(fp);
         }
@@ -322,7 +322,7 @@ void SceneSaver::CopySlots(Entity* node, Set<FilePath>& externalScenes)
     };
 
     FileSystem* fs = GetEngineContext()->fileSystem;
-    for (uint32 i = 0; i < node->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+    for (uint32 i = 0; i < node->GetComponentCount<SlotComponent>(); ++i)
     {
         Scene* scene = node->GetScene();
         if (scene == nullptr)
@@ -331,7 +331,7 @@ void SceneSaver::CopySlots(Entity* node, Set<FilePath>& externalScenes)
             DVASSERT(scene != nullptr);
         }
 
-        SlotComponent* component = static_cast<SlotComponent*>(node->GetComponent(Component::SLOT_COMPONENT, i));
+        SlotComponent* component = node->GetComponent<SlotComponent>(i);
         FilePath originalConfigPath = component->GetConfigFilePath();
 
         for (const String& tag : tags)

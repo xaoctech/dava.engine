@@ -6,10 +6,11 @@
 #include <Base/ScopedPtr.h>
 #include <Debug/DVAssert.h>
 #include <Entity/Component.h>
+#include <Entity/ComponentUtils.h>
 #include <Render/Highlevel/Camera.h>
 #include <Render/Highlevel/Light.h>
-#include <Scene3D/Components/LightComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/LightComponent.h>
 #include <Scene3D/Entity.h>
 
 namespace DAVA
@@ -26,7 +27,7 @@ EditorLightSystem::EditorLightSystem(Scene* scene)
     cameraLight->SetName(FastName(ResourceEditor::EDITOR_CAMERA_LIGHT));
     cameraLight->AddComponent(new LightComponent(light));
 
-    SetRequiredComponents(MAKE_COMPONENT_MASK(Component::LIGHT_COMPONENT));
+    SetRequiredComponents(ComponentUtils::MakeMask<LightComponent>());
 
     if (isEnabled)
     {

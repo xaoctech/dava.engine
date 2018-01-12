@@ -13,6 +13,7 @@
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 
+#include <Entity/ComponentUtils.h>
 #include <FileSystem/FilePath.h>
 #include <Functional/Function.h>
 #include <Logger/Logger.h>
@@ -113,7 +114,7 @@ void UserNodeModule::OnContextCreated(DAVA::DataContext* context)
     std::unique_ptr<UserNodeData> userData = std::make_unique<UserNodeData>();
     userData->system.reset(new UserNodeSystem(scene, GetBotSpawnPath()));
     userData->system->DisableSystem();
-    scene->AddSystem(userData->system.get(), MAKE_COMPONENT_MASK(DAVA::Component::USER_COMPONENT), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(userData->system.get(), DAVA::ComponentUtils::MakeMask<DAVA::UserComponent>(), DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(userData));
 }

@@ -74,25 +74,25 @@ private:
 };
 } // namespace DAVA
 
-#define CREATE_PLUGINS_ARRAY_FUNCTION_NAME CreatePluginsArray
-#define DELETE_PLUGINS_ARRAY_FUNCTION_NAME DeletePluginArray
+#define CREATE_PLUGIN_ARRAY_FUNCTION_NAME CreatePluginArray
+#define DELETE_PLUGIN_ARRAY_FUNCTION_NAME DeletePluginArray
 #define DESTROY_PLUGIN_FUNCTION_NAME DestroyPlugin
 
-using TCreatePluginsArrayFn = DAVA::TArcPlugin** (*)(const DAVA::EngineContext* context);
-using TDestroyPluginsArrayFn = void (*)(DAVA::TArcPlugin** pluginsArray);
+using TCreatePluginArrayFn = DAVA::TArcPlugin** (*)(const DAVA::EngineContext* context);
+using TDestroyPluginArrayFn = void (*)(DAVA::TArcPlugin** pluginArray);
 using TDestroyPluginFn = void (*)(DAVA::TArcPlugin* plugin);
 
-#define START_PLUGINS_DECLARATION()\
+#define START_PLUGIN_DECLARATION()\
 extern "C" { \
     PLUGIN_FUNCTION_EXPORT void DESTROY_PLUGIN_FUNCTION_NAME(DAVA::TArcPlugin* plugin) \
     { \
         delete plugin; \
     } \
-    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGINS_ARRAY_FUNCTION_NAME(DAVA::TArcPlugin** pluginsArray) \
+    PLUGIN_FUNCTION_EXPORT void DELETE_PLUGIN_ARRAY_FUNCTION_NAME(DAVA::TArcPlugin** pluginArray) \
     { \
-        delete[] pluginsArray; \
+        delete[] pluginArray; \
     } \
-    PLUGIN_FUNCTION_EXPORT DAVA::TArcPlugin** CREATE_PLUGINS_ARRAY_FUNCTION_NAME(const DAVA::EngineContext* context) \
+    PLUGIN_FUNCTION_EXPORT DAVA::TArcPlugin** CREATE_PLUGIN_ARRAY_FUNCTION_NAME(const DAVA::EngineContext* context) \
     { \
         DAVA::Private::SetEngineContext(const_cast<DAVA::EngineContext*>(context)); \
         DAVA::TypeDB::GetLocalDB()->SetMasterDB(context->typeDB); \
@@ -118,7 +118,7 @@ extern "C" { \
         plugins[counter++] = new DAVA::TypedTArcPlugin<moduleType>(context, descr); \
     }
 
-#define END_PLUGINS_DECLARATION()\
+#define END_PLUGIN_DECLARATION()\
         return plugins; \
     } \
 } \

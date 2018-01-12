@@ -55,9 +55,10 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
         return enableCustomDrawError;
     }
 
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked == true);
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
-    scene->GetSystem<EntityModificationSystem>()->SetLocked(true);
     landscapeSize = Landscape::CUSTOM_COLOR_TEXTURE_SIZE;
 
     FilePath filePath = GetCurrentSaveFileName();
@@ -110,9 +111,9 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
     }
     FinishEditing(false);
 
+    ReleaseInputLock(GetScene());
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(false);
-    scene->GetSystem<EntityModificationSystem>()->SetLocked(false);
 
     drawSystem->DisableCursor();
     drawSystem->DisableCustomDraw();

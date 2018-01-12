@@ -21,8 +21,10 @@
 #include <Entity/SceneSystem.h>
 #include <FileSystem/FileSystem.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Lod/LodSystem.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Scene.h>
 #include <Utils/StringFormat.h>
 #include <Utils/Utils.h>
@@ -112,7 +114,7 @@ bool LODComponentHolder::DeleteLOD(int32 layer)
     scene->BeginBatch(Format("Delete lod layer %", layer), static_cast<uint32>(lodComponents.size()));
     for (LodComponent* lc : lodComponents)
     {
-        if ((GetLodLayersCount(lc) > 0) && (HasComponent(lc->GetEntity(), Component::PARTICLE_EFFECT_COMPONENT) == false))
+        if ((GetLodLayersCount(lc) > 0) && (HasComponent(lc->GetEntity(), Type::Instance<ParticleEffectComponent>()) == false))
         {
             scene->Exec(std::unique_ptr<Command>(new DeleteLODCommand(lc, layer, -1)));
             wasLayerRemoved = true;
@@ -131,7 +133,7 @@ bool LODComponentHolder::CopyLod(int32 from, int32 to)
     for (LodComponent* lc : lodComponents)
     {
         Entity* entity = lc->GetEntity();
-        if (HasComponent(entity, Component::PARTICLE_EFFECT_COMPONENT))
+        if (HasComponent(entity, Type::Instance<ParticleEffectComponent>()))
         {
             continue;
         }
@@ -283,7 +285,7 @@ void EditorLODSystem::RemoveEntity(Entity* entity)
 
 void EditorLODSystem::AddComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Component::LOD_COMPONENT);
+    DVASSERT(component->GetType()->Is<LodComponent>());
 
     LodComponent* lodComponent = static_cast<LodComponent*>(component);
     lodData[eEditorMode::MODE_ALL_SCENE].lodComponents.push_back(lodComponent);
@@ -294,7 +296,7 @@ void EditorLODSystem::AddComponent(Entity* entity, Component* component)
 
 void EditorLODSystem::RemoveComponent(Entity* entity, Component* component)
 {
-    DVASSERT(component->GetType() == Component::LOD_COMPONENT);
+    DVASSERT(component->GetType()->Is<LodComponent>());
 
     LodComponent* removedComponent = static_cast<LodComponent*>(component);
     for (uint32 m = 0; m < eEditorMode::MODE_COUNT; ++m)
@@ -422,7 +424,7 @@ bool EditorLODSystem::CanDeleteLOD() const
         for (auto& lc : activeLodData->lodComponents)
         {
             Entity* entity = lc->GetEntity();
-            if (HasComponent(entity, Component::PARTICLE_EFFECT_COMPONENT))
+            if (HasComponent(entity, DAVA::Type::Instance<DAVA::ParticleEffectComponent>()))
             {
                 canDeleteLod = false;
                 break;
@@ -466,12 +468,12 @@ bool EditorLODSystem::CanCreateLOD() const
         if (canCreateLod)
         {
             Entity* entity = activeLodData->lodComponents[0]->GetEntity();
-            if (HasComponent(entity, Component::PARTICLE_EFFECT_COMPONENT))
+            if (HasComponent(entity, Type::Instance<ParticleEffectComponent>()))
             {
                 return false;
             }
 
-            return HasComponent(entity, Component::RENDER_COMPONENT);
+            return HasComponent(entity, Type::Instance<RenderComponent>());
         }
     }
 
@@ -594,10 +596,10 @@ void EditorLODSystem::SelectionChanged(const SelectableGroup& selection)
     {
         if (recursive)
         {
-            entity->GetChildEntitiesWithComponent(lodEntities, Component::LOD_COMPONENT);
+            entity->GetChildEntitiesWithComponent(lodEntities, Type::Instance<LodComponent>());
         }
 
-        if (entity->GetComponentCount(Component::LOD_COMPONENT) > 0)
+        if (entity->GetComponentCount<LodComponent>() > 0)
         {
             lodEntities.push_back(entity);
         }
@@ -608,10 +610,10 @@ void EditorLODSystem::SelectionChanged(const SelectableGroup& selection)
 
     for (auto& entity : lodEntities)
     {
-        uint32 count = entity->GetComponentCount(Component::LOD_COMPONENT);
+        uint32 count = entity->GetComponentCount<LodComponent>();
         for (uint32 i = 0; i < count; ++i)
         {
-            lodData[eEditorMode::MODE_SELECTION].lodComponents.push_back(static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT, i)));
+            lodData[eEditorMode::MODE_SELECTION].lodComponents.push_back(entity->GetComponent<LodComponent>(i));
         }
     }
 
@@ -708,7 +710,7 @@ void EditorLODSystem::ProcessCommand(const RECommandNotificationObject& commandN
     }
 
     commandNotification.ForEach<RemoveComponentCommand>([&](const RemoveComponentCommand* cmd) {
-        if (cmd->GetComponent()->GetType() == Component::RENDER_COMPONENT)
+        if (cmd->GetComponent()->GetType()->Is<RenderComponent>())
         {
             InvalidateAllData();
         }

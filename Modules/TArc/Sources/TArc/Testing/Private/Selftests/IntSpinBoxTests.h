@@ -411,7 +411,7 @@ DAVA_TARC_TESTCLASS(IntSpinBoxTests)
         TEST_VERIFY(valueSpin->maximum() == 30);
         TEST_VERIFY(valueSpin->singleStep() == 2);
 
-        TEST_VERIFY(valueSpin->value() == metaRangeSpin->value());
+        TEST_VERIFY(metaRangeSpin->value() == 16);
         TEST_VERIFY(metaRangeSpin->minimum() == 10);
         TEST_VERIFY(metaRangeSpin->maximum() == 100);
         TEST_VERIFY(metaRangeSpin->singleStep() == 4);

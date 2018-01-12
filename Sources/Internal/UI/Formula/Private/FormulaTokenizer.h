@@ -34,7 +34,8 @@ public:
         GT,
         EQ,
         NOT_EQ,
-        ASSIGN_SIGN, // =
+        WHEN,
+        ARROW,
         OPEN_BRACKET, // (
         CLOSE_BRACKET, // )
         OPEN_CURLY_BRACKET, // {

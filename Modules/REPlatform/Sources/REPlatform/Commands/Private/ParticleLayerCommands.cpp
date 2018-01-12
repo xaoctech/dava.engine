@@ -58,8 +58,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeLayerMaterialProperties)
 
 CommandChangeFlowProperties::CommandChangeFlowProperties(ParticleLayer* layer_, CommandChangeFlowProperties::FlowParams&& params)
     : RECommand("Change Flow Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -111,8 +111,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeFlowProperties)
 
 CommandChangeNoiseProperties::CommandChangeNoiseProperties(ParticleLayer* layer_, NoiseParams&& params)
     : RECommand("Change Noise Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -174,8 +174,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeNoiseProperties)
 
 CommandChangeFresnelToAlphaProperties::CommandChangeFresnelToAlphaProperties(ParticleLayer* layer_, FresnelToAlphaParams&& params)
     : RECommand("Change Fresnel to Alpha Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -219,8 +219,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeFresnelToAlphaProperties)
 
 CommandChangeParticlesStripeProperties::CommandChangeParticlesStripeProperties(ParticleLayer* layer_, StripeParams&& params)
     : RECommand("Change Stripe Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -285,8 +285,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeParticlesStripeProperties)
 
 CommandChangeAlphaRemapProperties::CommandChangeAlphaRemapProperties(ParticleLayer* layer_, AlphaRemapParams&& params)
     : RECommand("Change Alpha Remap Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)
@@ -332,8 +332,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandChangeAlphaRemapProperties)
 
 CommandChangeThreePointGradientProperties::CommandChangeThreePointGradientProperties(DAVA::ParticleLayer* layer_, ThreePointGradientParams&& params)
     : RECommand("Change Three Point Gradient Properties")
-    , layer(layer_)
     , newParams(params)
+    , layer(layer_)
 {
     DVASSERT(layer != nullptr);
     if (layer != nullptr)

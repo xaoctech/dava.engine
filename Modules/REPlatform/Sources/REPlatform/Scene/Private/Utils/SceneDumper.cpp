@@ -92,9 +92,9 @@ void SceneDumper::DumpLinksRecursive(Entity* entity, Set<FilePath>& links, Set<F
     //Animations
     DumpAnimations(GetMotionComponent(entity), links);
 
-    for (uint32 i = 0; i < entity->GetComponentCount(Component::SLOT_COMPONENT); ++i)
+    for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
     {
-        DumpSlot(static_cast<SlotComponent*>(entity->GetComponent(Component::SLOT_COMPONENT, i)), links, redumpScenes);
+        DumpSlot(entity->GetComponent<SlotComponent>(i), links, redumpScenes);
     }
 }
 

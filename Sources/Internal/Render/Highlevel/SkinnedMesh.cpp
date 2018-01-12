@@ -139,16 +139,17 @@ void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& target
     }
 }
 
-SkinnedMesh::JointTargets SkinnedMesh::GetJointTargets(RenderBatch* batch)
+const SkinnedMesh::JointTargets& SkinnedMesh::GetJointTargets(RenderBatch* batch)
 {
     auto found = jointTargetsDataMap.find(batch);
     if (found != jointTargetsDataMap.end())
         return jointTargetsData[found->second].first;
 
-    return JointTargets();
+    static const JointTargets emptyJointTargets;
+    return emptyJointTargets;
 }
 
-SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
+const SkinnedMesh::JointTargetsData& SkinnedMesh::GetJointTargetsData(RenderBatch* batch)
 {
     auto found = jointTargetsDataMap.find(batch);
     if (found != jointTargetsDataMap.end())
@@ -157,6 +158,7 @@ SkinnedMesh::JointTargetsData SkinnedMesh::GetJointTargetsData(RenderBatch* batc
         return jointTargetsData[dataIndex].second;
     }
 
-    return SkinnedMesh::JointTargetsData();
+    static const JointTargetsData emptyJointTargetsData = JointTargetsData();
+    return emptyJointTargetsData;
 }
 }

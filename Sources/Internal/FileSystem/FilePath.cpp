@@ -7,6 +7,7 @@
 #include "Utils/StringFormat.h"
 #include "Utils/UTF8Utils.h"
 #include "Logger/Logger.h"
+#include "Engine/Engine.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 #include <pwd.h>
@@ -211,8 +212,15 @@ FilePath FilePath::FilepathInDocuments(const String& relativePathname)
 bool FilePath::StartsWith(const FilePath& basePath) const
 {
     DVASSERT(!basePath.IsEmpty());
-    String baseStr = basePath.GetAbsolutePathname();
-    return (GetAbsolutePathname().compare(0, baseStr.size(), baseStr) == 0);
+    // if both path starts with ~res:/ we can just compare text without conversion to absolute path
+    if (absolutePathname.compare(0, 6, "~res:/") == 0 && basePath.absolutePathname.compare(0, 6, "~res:/") == 0)
+    {
+        return absolutePathname.compare(0, basePath.absolutePathname.size(), basePath.absolutePathname) == 0;
+    }
+
+    const String baseStr = basePath.GetAbsolutePathname();
+    const String thisStr = GetAbsolutePathname();
+    return thisStr.compare(0, baseStr.size(), baseStr) == 0;
 }
 
 bool FilePath::ContainPath(const FilePath& basePath, const FilePath& partPath)
@@ -565,7 +573,9 @@ FilePath FilePath::GetDirectory() const
 
 String FilePath::GetRelativePathname() const
 {
-    return GetRelativePathname(FileSystem::Instance()->GetCurrentWorkingDirectory());
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    const FilePath cwd = fs->GetCurrentWorkingDirectory();
+    return GetRelativePathname(cwd);
 }
 
 String FilePath::GetRelativePathname(const FilePath& forDirectory) const

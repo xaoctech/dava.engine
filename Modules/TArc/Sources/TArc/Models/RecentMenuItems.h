@@ -31,6 +31,7 @@ public:
     {
         Params(const WindowKey& windowKey_, ContextAccessor* accessor_, const String& propertiesItemKey);
 
+        WindowKey windowKey;
         ContextAccessor* accessor = nullptr;
         UI* ui = nullptr;
 
@@ -42,7 +43,6 @@ public:
         const String propertiesItemKey;
         FieldDescriptor predicateFieldDescriptor;
         Function<Any(const Any&)> enablePredicate;
-        WindowKey windowKey;
     };
 
     RecentMenuItems(Params&& params);

@@ -112,7 +112,7 @@ void REApplication::CreateModules(DAVA::Core* tarcCore) const
     descr.type = DAVA::ReflectedTypeDB::Get<DAVA::GeneralSettings>();
     descr.fieldName = DAVA::FastName("renderBackend");
 
-    renderBackEndListener->BindField(descr, [this, accessor](const DAVA::Any& v) {
+    renderBackEndListener->BindField(descr, [accessor](const DAVA::Any& v) {
         if (v.IsEmpty() == true)
         {
             return;
@@ -172,7 +172,7 @@ void REApplication::Init(const DAVA::EngineContext* engineContext)
 
 void REApplication::Init(DAVA::Core* tarcCore)
 {
-    tarcCore->InitPluginsManager("ResourceEditor", DAVA::GetEngineContext()->fileSystem->GetPluginDirectory().GetAbsolutePathname());
+    tarcCore->InitPluginManager("ResourceEditor", DAVA::GetEngineContext()->fileSystem->GetPluginDirectory().GetAbsolutePathname());
     BaseApplication::Init(tarcCore);
 }
 
@@ -185,7 +185,8 @@ void REApplication::Cleanup()
 
 bool REApplication::AllowMultipleInstances() const
 {
-    return isConsoleMode;
+    bool isSelfTest = (cmdLine.size() > 1) && (cmdLine[1] == "--selftest");
+    return isSelfTest || isConsoleMode;
 }
 
 QString REApplication::GetInstanceKey() const

@@ -546,7 +546,7 @@ void CommandStartStopParticleEffect::Redo()
     if (effectEntity == nullptr)
         return;
 
-    ParticleEffectComponent* effectComponent = CastIfEqual<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effectComponent = effectEntity->GetComponent<ParticleEffectComponent>();
     DVASSERT(effectComponent);
 
     if (this->isStart)
@@ -583,7 +583,7 @@ void CommandRestartParticleEffect::Redo()
         return;
     }
 
-    ParticleEffectComponent* effectComponent = CastIfEqual<ParticleEffectComponent*>(effectEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    ParticleEffectComponent* effectComponent = effectEntity->GetComponent<ParticleEffectComponent>();
     DVASSERT(effectComponent);
     effectComponent->Restart();
 }

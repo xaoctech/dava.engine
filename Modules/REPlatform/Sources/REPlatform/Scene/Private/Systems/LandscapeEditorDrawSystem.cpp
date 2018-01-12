@@ -5,7 +5,7 @@
 #include "REPlatform/Scene/Private/Systems/LandscapeEditorDrawSystem/NotPassableTerrainProxy.h"
 #include "REPlatform/Scene/Private/Systems/LandscapeEditorDrawSystem/RulerToolProxy.h"
 #include "REPlatform/Scene/SceneEditor2.h"
-#include "REPlatform/Scene/Utils/TextureDescriptorUtils.h"
+#include "REPlatform/Scene/Utils/RETextureDescriptorUtils.h"
 
 #include "REPlatform/Commands/InspDynamicModifyCommand.h"
 #include "REPlatform/Commands/RECommandNotificationObject.h"
@@ -450,7 +450,7 @@ void LandscapeEditorDrawSystem::ClampToHeightmap(Rect& rect)
 
 void LandscapeEditorDrawSystem::AddEntity(Entity* entity)
 {
-    if (systemIsEnabled == false)
+    if (IsSystemEnabled() == false)
     {
         return;
     }
@@ -466,7 +466,7 @@ void LandscapeEditorDrawSystem::AddEntity(Entity* entity)
 
 void LandscapeEditorDrawSystem::RemoveEntity(Entity* entity)
 {
-    if (entity == landscapeNode && systemIsEnabled)
+    if (entity == landscapeNode && IsSystemEnabled())
     {
         SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
 

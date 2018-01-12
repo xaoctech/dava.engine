@@ -15,6 +15,8 @@
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Utils.h>
@@ -30,7 +32,7 @@ DAVA::RenderObject* CreateRenderObject(const DAVA::FilePath& scenePath)
     if (result == SceneFileV2::ERROR_NO_ERROR)
     {
         Vector<Entity*> entities;
-        scene->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
+        scene->GetChildEntitiesWithComponent(entities, DAVA::Type::Instance<DAVA::RenderComponent>());
         if (entities.size() == 1)
         {
             RenderObject* ro = GetRenderObject(entities[0]);
@@ -223,7 +225,7 @@ const DAVA::Color& UserNodeSystem::GetSpawnColor(DAVA::Entity* entity) const
 DAVA::Matrix4* UserNodeSystem::GetWorldTransformPtr(DAVA::Entity* entity) const
 {
     using namespace DAVA;
-    return (static_cast<TransformComponent*>(entity->GetComponent(Component::TRANSFORM_COMPONENT)))->GetWorldTransformPtr();
+    return entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
 }
 
 void UserNodeSystem::RemoveOldSpawns()
@@ -295,12 +297,13 @@ void UserNodeSystem::UpdateTransformedEntities()
     using namespace DAVA;
 
     TransformSingleComponent* trSingle = GetScene()->transformSingleComponent;
+
     if (trSingle != nullptr)
     {
         RenderSystem* renderSystem = GetScene()->GetRenderSystem();
         for (auto& pair : trSingle->worldTransformChanged.map)
         {
-            if (pair.first->GetComponentsCount(Component::USER_COMPONENT) > 0)
+            if (pair.first->GetComponentsCount(Type::Instance<UserComponent>()) > 0)
             {
                 for (Entity* entity : pair.second)
                 {

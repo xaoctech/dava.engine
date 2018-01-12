@@ -22,7 +22,7 @@ void UIJoypadSystemTest::LoadResources()
     BaseScreen::LoadResources();
 
     DefaultUIPackageBuilder pkgBuilder;
-    UIPackageLoader().LoadPackage("~res:/UI/JoypadTest.yaml", &pkgBuilder);
+    UIPackageLoader().LoadPackage("~res:/TestBed/UI/JoypadTest.yaml", &pkgBuilder);
     UIControl* base = pkgBuilder.GetPackage()->GetControl("GlobalBase");
 
     UIControl* stuff = base->FindByName("StuffBase");
@@ -33,11 +33,11 @@ void UIJoypadSystemTest::LoadResources()
     FastName touchUpIn("TouchUpIn");
     FastName touchUpOut("TouchUpOut");
 
-    areaSprites.first = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_active.png", true);
-    areaSprites.second = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/area_inactive.png", true);
-    armSprites.first = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_active.png", true);
-    armSprites.second = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arm_inactive.png", true);
-    arrowSprite = Sprite::CreateFromSourceFile("~res:/TestData/UIJoypadSystemTest/arrow.png", true);
+    areaSprites.first = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/area_active.png", true);
+    areaSprites.second = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/area_inactive.png", true);
+    armSprites.first = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/arm_active.png", true);
+    armSprites.second = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/arm_inactive.png", true);
+    arrowSprite = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/arrow.png", true);
 
     for (UIControl* c : stuff->GetChildren())
     {

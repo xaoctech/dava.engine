@@ -1587,7 +1587,7 @@ void QtMainWindow::UpdateLandscapeRenderMode()
             DVASSERT(anyToolEnabled == false);
         }
 
-        DAVA::Landscape::RenderMode newRenderMode = enableInstancing ?
+        DAVA::Landscape::RenderMode newRenderMode = (enableInstancing && rhi::DeviceCaps().isInstancingSupported) ?
         DAVA::Landscape::RenderMode::RENDERMODE_INSTANCING_MORPHING :
         DAVA::Landscape::RenderMode::RENDERMODE_NO_INSTANCING;
 

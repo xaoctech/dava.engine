@@ -11,11 +11,8 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 struct PackageContext;

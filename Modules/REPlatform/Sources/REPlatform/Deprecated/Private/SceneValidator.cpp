@@ -136,7 +136,7 @@ void SceneValidator::ValidateNodeCustomProperties(Entity* sceneNode)
 
 void SceneValidator::ValidateRenderComponent(Entity* ownerNode)
 {
-    RenderComponent* rc = static_cast<RenderComponent*>(ownerNode->GetComponent(Component::RENDER_COMPONENT));
+    RenderComponent* rc = ownerNode->GetComponent<RenderComponent>();
     if (nullptr == rc)
     {
         return;
@@ -731,7 +731,7 @@ void SceneValidator::ExtractEmptyRenderObjects(Entity* entity)
     auto renderObject = GetRenderObject(entity);
     if ((nullptr != renderObject) && (0 == renderObject->GetRenderBatchCount()) && RenderObject::TYPE_MESH == renderObject->GetType())
     {
-        entity->RemoveComponent(Component::RENDER_COMPONENT);
+        entity->RemoveComponent<RenderComponent>();
         PushLogMessage(entity, "Entity %s has empty render object", entity->GetName().c_str());
     }
 

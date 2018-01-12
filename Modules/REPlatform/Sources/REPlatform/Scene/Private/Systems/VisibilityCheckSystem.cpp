@@ -82,7 +82,7 @@ void VisibilityCheckSystem::Recalculate()
 
 void VisibilityCheckSystem::RegisterEntity(Entity* entity)
 {
-    auto visibilityComponent = entity->GetComponent(Component::VISIBILITY_CHECK_COMPONENT);
+    auto visibilityComponent = entity->GetComponent<VisibilityCheckComponent>();
     auto renderComponent = GetRenderComponent(entity);
     if ((renderComponent != nullptr) || (visibilityComponent != nullptr))
     {
@@ -92,7 +92,7 @@ void VisibilityCheckSystem::RegisterEntity(Entity* entity)
 
 void VisibilityCheckSystem::UnregisterEntity(Entity* entity)
 {
-    auto visibilityComponent = entity->GetComponent(Component::VISIBILITY_CHECK_COMPONENT);
+    auto visibilityComponent = entity->GetComponent<VisibilityCheckComponent>();
     auto renderComponent = GetRenderComponent(entity);
     if ((renderComponent != nullptr) || (visibilityComponent != nullptr))
     {
@@ -102,10 +102,10 @@ void VisibilityCheckSystem::UnregisterEntity(Entity* entity)
 
 void VisibilityCheckSystem::AddEntity(Entity* entity)
 {
-    auto requiredComponent = entity->GetComponent(Component::VISIBILITY_CHECK_COMPONENT);
+    auto requiredComponent = entity->GetComponent<VisibilityCheckComponent>();
     if (requiredComponent != nullptr)
     {
-        (static_cast<VisibilityCheckComponent*>(requiredComponent))->Invalidate();
+        requiredComponent->Invalidate();
         entitiesWithVisibilityComponent.insert({ entity, Vector<Vector3>() });
         shouldPrerender = true;
         forceRebuildPoints = true;
@@ -168,7 +168,7 @@ void VisibilityCheckSystem::Process(float32 timeElapsed)
 
     for (auto& mapItem : entitiesWithVisibilityComponent)
     {
-        auto visibilityComponent = static_cast<VisibilityCheckComponent*>(mapItem.first->GetComponent(Component::VISIBILITY_CHECK_COMPONENT));
+        auto visibilityComponent = mapItem.first->GetComponent<VisibilityCheckComponent>();
         if (!visibilityComponent->IsValid() || forceRebuildPoints)
         {
             if (visibilityComponent->ShouldRebuildPoints() || forceRebuildPoints)
@@ -202,8 +202,7 @@ void VisibilityCheckSystem::Draw()
     RenderHelper* dbg = rs->GetDebugDrawer();
     for (const auto& mapItem : entitiesWithVisibilityComponent)
     {
-        VisibilityCheckComponent* visibilityComponent =
-        static_cast<VisibilityCheckComponent*>(mapItem.first->GetComponent(Component::VISIBILITY_CHECK_COMPONENT));
+        VisibilityCheckComponent* visibilityComponent = mapItem.first->GetComponent<VisibilityCheckComponent>();
 
         enableDebug |= visibilityComponent->GetDebugDrawEnabled();
 
@@ -296,7 +295,7 @@ void VisibilityCheckSystem::UpdatePointSet()
     for (const auto& mapItem : entitiesWithVisibilityComponent)
     {
         auto entity = mapItem.first;
-        auto visibilityComponent = static_cast<VisibilityCheckComponent*>(entity->GetComponent(Component::VISIBILITY_CHECK_COMPONENT));
+        auto visibilityComponent = entity->GetComponent<VisibilityCheckComponent>();
         if (visibilityComponent->IsEnabled())
         {
             auto worldTransform = entity->GetWorldTransform();
@@ -453,7 +452,7 @@ bool TryToGenerateAroundPoint(const Vector3& src, float32 distanceBetweenPoints,
 
 void VisibilityCheckSystem::BuildPointSetForEntity(EntityMap::value_type& item)
 {
-    auto component = static_cast<VisibilityCheckComponent*>(item.first->GetComponent(Component::VISIBILITY_CHECK_COMPONENT));
+    auto component = item.first->GetComponent<VisibilityCheckComponent>();
 
     float32 radius = component->GetRadius();
     float32 radiusSquared = radius * radius;
@@ -502,7 +501,7 @@ void VisibilityCheckSystem::BuildIndexSet()
     size_t totalPoints = 0;
     for (const auto& item : entitiesWithVisibilityComponent)
     {
-        auto visibilityComponent = static_cast<VisibilityCheckComponent*>(item.first->GetComponent(Component::VISIBILITY_CHECK_COMPONENT));
+        auto visibilityComponent = item.first->GetComponent<VisibilityCheckComponent>();
         if (visibilityComponent->IsEnabled())
         {
             totalPoints += item.second.size();
@@ -524,7 +523,7 @@ void VisibilityCheckSystem::BuildIndexSet()
 
 Color VisibilityCheckSystem::GetNormalizedColorForEntity(const EntityMap::value_type& item) const
 {
-    auto component = static_cast<VisibilityCheckComponent*>(item.first->GetComponent(Component::VISIBILITY_CHECK_COMPONENT));
+    auto component = item.first->GetComponent<VisibilityCheckComponent>();
     Color normalizedColor = component->GetColor();
     if (component->ShouldNormalizeColor())
     {

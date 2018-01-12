@@ -1,7 +1,7 @@
 #include "ColladaTexture.h"
 
 #include <REPlatform/Scene/Utils/Utils.h>
-#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+#include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
 #include <Logger/Logger.h>
 #include <Render/Image/Image.h>
@@ -19,7 +19,7 @@ ColladaTexture::ColladaTexture(FCDImage* _image)
     image = _image;
 
     const FilePath texturePath(texturePathName);
-    bool pathApplied = (FileSystem::Instance()->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath));
+    bool pathApplied = (FileSystem::Instance()->Exists(texturePath) && RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath));
 
     if (!pathApplied)
     {

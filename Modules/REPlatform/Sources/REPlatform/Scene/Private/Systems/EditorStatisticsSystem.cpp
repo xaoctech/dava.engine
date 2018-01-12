@@ -100,12 +100,12 @@ void EnumerateTriangles(TrianglesData& triangles)
 
 void EnumerateRenderObjectsRecursive(Entity* entity, Vector<RenderObject*>& renderObjects, bool recursive)
 {
-    if (HasComponent(entity, Component::RENDER_COMPONENT))
+    if (HasComponent(entity, Type::Instance<RenderComponent>()))
     {
-        uint32 componentsCount = entity->GetComponentCount(Component::RENDER_COMPONENT);
+        uint32 componentsCount = entity->GetComponentCount<RenderComponent>();
         for (uint32 c = 0; c < componentsCount; ++c)
         {
-            RenderComponent* rc = static_cast<RenderComponent*>(entity->GetComponent(Component::RENDER_COMPONENT, c));
+            RenderComponent* rc = entity->GetComponent<RenderComponent>(c);
             RenderObject* ro = rc->GetRenderObject();
             if (ro != nullptr)
             {
@@ -174,7 +174,7 @@ EditorStatisticsSystem::EditorStatisticsSystem(Scene* scene)
 
 void EditorStatisticsSystem::RegisterEntity(Entity* entity)
 {
-    if (HasComponent(entity, Component::RENDER_COMPONENT) || HasComponent(entity, Component::LOD_COMPONENT))
+    if (HasComponent(entity, Type::Instance<RenderComponent>()) || HasComponent(entity, Type::Instance<LodComponent>()))
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }
@@ -182,7 +182,7 @@ void EditorStatisticsSystem::RegisterEntity(Entity* entity)
 
 void EditorStatisticsSystem::UnregisterEntity(Entity* entity)
 {
-    if (HasComponent(entity, Component::RENDER_COMPONENT) || HasComponent(entity, Component::LOD_COMPONENT))
+    if (HasComponent(entity, Type::Instance<RenderComponent>()) || HasComponent(entity, Type::Instance<LodComponent>()))
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }
@@ -190,8 +190,8 @@ void EditorStatisticsSystem::UnregisterEntity(Entity* entity)
 
 void EditorStatisticsSystem::RegisterComponent(Entity* entity, Component* component)
 {
-    uint32 type = component->GetType();
-    if (type == Component::RENDER_COMPONENT || type == Component::LOD_COMPONENT)
+    const Type* type = component->GetType();
+    if (type->Is<RenderComponent>() || type->Is<LodComponent>())
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }
@@ -199,8 +199,8 @@ void EditorStatisticsSystem::RegisterComponent(Entity* entity, Component* compon
 
 void EditorStatisticsSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    uint32 type = component->GetType();
-    if (type == Component::RENDER_COMPONENT || type == Component::LOD_COMPONENT)
+    const Type* type = component->GetType();
+    if (type->Is<RenderComponent>() || type->Is<LodComponent>())
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }

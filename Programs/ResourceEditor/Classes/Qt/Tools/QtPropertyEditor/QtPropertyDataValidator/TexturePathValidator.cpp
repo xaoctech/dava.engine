@@ -2,7 +2,7 @@
 
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
-#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+#include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
 #include <TArc/Core/Deprecated.h>
 
@@ -32,7 +32,7 @@ void TexturePathValidator::FixupInternal(QVariant& v) const
     if (v.type() == QVariant::String)
     {
         DAVA::FilePath texturePath = DAVA::FilePath(v.toString().toStdString());
-        if (DAVA::FileSystem::Instance()->Exists(texturePath) && DAVA::TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+        if (DAVA::FileSystem::Instance()->Exists(texturePath) && DAVA::RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
         {
             DAVA::FilePath descriptorPath = DAVA::TextureDescriptor::GetDescriptorPathname(texturePath);
 

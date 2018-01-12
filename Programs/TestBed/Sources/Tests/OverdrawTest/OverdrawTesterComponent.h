@@ -18,12 +18,6 @@ class OverdrawTesterRenderObject;
 class OverdrawTesterComponent : public DAVA::Component
 {
 public:
-    enum eType
-    {
-        OVERDRAW_TESTER_COMPONENT = DAVA::Component::eType::FIRST_USER_DEFINED_COMPONENT + 1
-    };
-    IMPLEMENT_COMPONENT_TYPE(OVERDRAW_TESTER_COMPONENT);
-
     OverdrawTesterComponent(DAVA::uint16 textureResolution_, DAVA::uint8 overdrawScreenCount);
     ~OverdrawTesterComponent();
 
@@ -39,6 +33,8 @@ private:
     DAVA::uint16 textureResolution = 2048;
 
     static const DAVA::uint8 addOverdrawPercent;
+
+    DAVA_VIRTUAL_REFLECTION(CameraComponent, DAVA::Component);
 };
 
 OverdrawTesterRenderObject* OverdrawTesterComponent::GetRenderObject() const

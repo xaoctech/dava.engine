@@ -1,6 +1,6 @@
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+#include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 #include <REPlatform/Scene/Systems/BeastSystem.h>
 
 #include <Engine/Engine.h>
@@ -100,7 +100,7 @@ bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 he
     FilePath pngPathname = FilePath::CreateWithNewExtension(taggedTexturePath, ".png");
     if (CreateImageFile(pngPathname, width, height, format, color))
     {
-        TextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
+        RETextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
 
         std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(taggedTexturePath));
         if (descriptor)
@@ -474,7 +474,7 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddGeometry()
         ScopedPtr<RenderBatch> batch(new RenderBatch());
         batch->SetMaterial(m);
         batch->SetPolygonGroup(g);
-        RenderComponent* rc = static_cast<RenderComponent*>(box->GetComponent(Component::RENDER_COMPONENT));
+        RenderComponent* rc = box->GetComponent<RenderComponent>();
         DVASSERT(rc != nullptr);
         Mesh* ro = static_cast<Mesh*>(rc->GetRenderObject());
         ro->AddRenderBatch(batch, lod, sw);

@@ -40,9 +40,11 @@ LandscapeEditorDrawSystem::eErrorType RulerToolSystem::EnableLandscapeEditing()
         return enableCustomDrawError;
     }
 
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked);
+
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
-    scene->GetSystem<EntityModificationSystem>()->SetLocked(true);
 
     Texture* rulerToolTexture = drawSystem->GetRulerToolProxy()->GetTexture();
     drawSystem->GetLandscapeProxy()->SetToolTexture(rulerToolTexture, false);
@@ -67,10 +69,10 @@ bool RulerToolSystem::DisableLandscapeEdititing()
         return true;
     }
 
+    ReleaseInputLock(GetScene());
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(false);
     scene->GetSystem<EntityModificationSystem>()->SetLocked(false);
-
     drawSystem->DisableCustomDraw();
     drawSystem->GetLandscapeProxy()->SetToolTexture(nullptr, false);
 

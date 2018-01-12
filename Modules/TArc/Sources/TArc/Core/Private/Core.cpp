@@ -8,7 +8,7 @@
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
 #include "TArc/PluginsManager/TArcPlugin.h"
-#include "TArc/PluginsManager/TArcPluginsManager.h"
+#include "TArc/PluginsManager/TArcPluginManager.h"
 #include "TArc/Qt/QtIcon.h"
 #include "TArc/Utils/AssertGuard.h"
 #include "TArc/Utils/QtDelayedExecutor.h"
@@ -212,7 +212,7 @@ public:
         return nullptr;
     }
 
-    void InitPluginsManager(const String& applicationName, const String& pluginsFolder)
+    void InitPluginManager(const String& applicationName, const String& pluginsFolder)
     {
         pluginsManager.reset(new TArcPluginManager(applicationName, pluginsFolder));
         Vector<String> errors;
@@ -1009,8 +1009,8 @@ void Core::PostInit()
     impl->PostInit();
 }
 
-void Core::InitPluginsManager(const String& applicationName, const String& pluginsFolder)
+void Core::InitPluginManager(const String& applicationName, const String& pluginsFolder)
 {
-    impl->InitPluginsManager(applicationName, pluginsFolder);
+    impl->InitPluginManager(applicationName, pluginsFolder);
 }
 } // namespace DAVA

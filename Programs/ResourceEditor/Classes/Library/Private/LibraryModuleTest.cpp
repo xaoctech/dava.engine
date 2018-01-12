@@ -91,16 +91,16 @@ DAVA_TARC_TESTCLASS(LibraryModuleTests)
         TEST_VERIFY(scene->LoadScene(scenePathname) == SceneFileV2::eError::ERROR_NO_ERROR);
 
         Vector<Entity*> lodEntities;
-        scene->GetChildEntitiesWithComponent(lodEntities, Component::LOD_COMPONENT);
+        scene->GetChildEntitiesWithComponent(lodEntities, Type::Instance<LodComponent>());
         TEST_VERIFY(lodEntities.empty() == false);
 
         for (Entity* e : lodEntities)
         {
-            uint32 count = e->GetComponentCount(Component::LOD_COMPONENT);
+            uint32 count = e->GetComponentCount<LodComponent>();
             TEST_VERIFY(count > 0);
             for (uint32 ic = 0; ic < count; ++ic)
             {
-                LodComponent* lod = static_cast<LodComponent*>(e->GetComponent(Component::LOD_COMPONENT, ic));
+                LodComponent* lod = e->GetComponent<LodComponent>(ic);
                 for (int32 layer = 0; layer < LodComponent::MAX_LOD_LAYERS; ++layer)
                 {
                     lod->SetLodLayerDistance(layer, 10.f + 10.f * layer);
@@ -115,14 +115,14 @@ DAVA_TARC_TESTCLASS(LibraryModuleTests)
         }
 
         Vector<Entity*> renderEntities;
-        scene->GetChildEntitiesWithComponent(renderEntities, Component::RENDER_COMPONENT);
+        scene->GetChildEntitiesWithComponent(renderEntities, DAVA::Type::Instance<DAVA::RenderComponent>());
         for (Entity* e : renderEntities)
         {
-            uint32 count = e->GetComponentCount(Component::RENDER_COMPONENT);
+            uint32 count = e->GetComponentCount<RenderComponent>();
             TEST_VERIFY(count > 0);
             for (uint32 ic = 0; ic < count; ++ic)
             {
-                RenderComponent* rc = static_cast<RenderComponent*>(e->GetComponent(Component::RENDER_COMPONENT, ic));
+                RenderComponent* rc = e->GetComponent<RenderComponent>(ic);
                 RenderObject* ro = rc->GetRenderObject();
                 TEST_VERIFY(ro->GetRenderBatchCount() > 0);
                 for (uint32 ib = 0; ib < ro->GetRenderBatchCount(); ++ib)
@@ -148,23 +148,23 @@ DAVA_TARC_TESTCLASS(LibraryModuleTests)
         TEST_VERIFY(scene->LoadScene(scenePathname) == SceneFileV2::eError::ERROR_NO_ERROR);
 
         Vector<Entity*> lodEntities;
-        scene->GetChildEntitiesWithComponent(lodEntities, Component::LOD_COMPONENT);
+        scene->GetChildEntitiesWithComponent(lodEntities, Type::Instance<LodComponent>());
         TEST_VERIFY(lodEntities.empty() == false);
 
         for (Entity* e : lodEntities)
         {
-            uint32 count = e->GetComponentCount(Component::LOD_COMPONENT);
+            uint32 count = e->GetComponentCount<LodComponent>();
             TEST_VERIFY(count > 0);
             for (uint32 ic = 0; ic < count; ++ic)
             {
-                LodComponent* lod = static_cast<LodComponent*>(e->GetComponent(Component::LOD_COMPONENT, ic));
+                LodComponent* lod = e->GetComponent<LodComponent>(ic);
                 for (int32 layer = 0; layer < LodComponent::MAX_LOD_LAYERS; ++layer)
                 {
                     TEST_VERIFY(lod->GetLodLayerDistance(layer) - (10.f + 10.f * layer) < DAVA::EPSILON);
                 }
             }
 
-            CustomPropertiesComponent* cp = static_cast<CustomPropertiesComponent*>(e->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT, 0));
+            CustomPropertiesComponent* cp = e->GetComponent<CustomPropertiesComponent>();
             TEST_VERIFY(cp != nullptr);
             if (cp != nullptr)
             {
@@ -174,14 +174,14 @@ DAVA_TARC_TESTCLASS(LibraryModuleTests)
         }
 
         Vector<Entity*> renderEntities;
-        scene->GetChildEntitiesWithComponent(renderEntities, Component::RENDER_COMPONENT);
+        scene->GetChildEntitiesWithComponent(renderEntities, DAVA::Type::Instance<DAVA::RenderComponent>());
         for (Entity* e : renderEntities)
         {
-            uint32 count = e->GetComponentCount(Component::RENDER_COMPONENT);
+            uint32 count = e->GetComponentCount<RenderComponent>();
             TEST_VERIFY(count > 0);
             for (uint32 ic = 0; ic < count; ++ic)
             {
-                RenderComponent* rc = static_cast<RenderComponent*>(e->GetComponent(Component::RENDER_COMPONENT, ic));
+                RenderComponent* rc = e->GetComponent<RenderComponent>(ic);
                 RenderObject* ro = rc->GetRenderObject();
                 TEST_VERIFY(ro->GetRenderBatchCount() > 0);
                 for (uint32 ib = 0; ib < ro->GetRenderBatchCount(); ++ib)

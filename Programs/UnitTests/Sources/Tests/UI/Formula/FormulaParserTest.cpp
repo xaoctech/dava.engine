@@ -34,8 +34,22 @@ DAVA_TESTCLASS (FormulaParserTest)
 
         void Visit(FormulaNotExpression* exp) override
         {
-            res.push_back("!");
+            res.push_back("not");
             exp->GetExp()->Accept(this);
+        }
+
+        void Visit(FormulaWhenExpression* exp) override
+        {
+            res.push_back("when");
+            for (auto& it : exp->GetBranches())
+            {
+                res.push_back("cond");
+                it.first->Accept(this);
+                res.push_back("exp");
+                it.second->Accept(this);
+            }
+            res.push_back("else");
+            exp->GetElseBranch()->Accept(this);
         }
 
         void Visit(FormulaBinaryOperatorExpression* exp) override
@@ -146,9 +160,9 @@ DAVA_TESTCLASS (FormulaParserTest)
         TEST_VERIFY(Parse("5 * (1 + 2)") == Vector<String>({ "*", "5", "+", "1", "2" }));
         TEST_VERIFY(Parse("1 / 2") == Vector<String>({ "/", "1", "2" }));
         TEST_VERIFY(Parse("1 % 2") == Vector<String>({ "%", "1", "2" }));
-        TEST_VERIFY(Parse("true && false") == Vector<String>({ "&&", "true", "false" }));
-        TEST_VERIFY(Parse("true || false") == Vector<String>({ "||", "true", "false" }));
-        TEST_VERIFY(Parse("true == false") == Vector<String>({ "==", "true", "false" }));
+        TEST_VERIFY(Parse("true and false") == Vector<String>({ "and", "true", "false" }));
+        TEST_VERIFY(Parse("true or false") == Vector<String>({ "or", "true", "false" }));
+        TEST_VERIFY(Parse("true = false") == Vector<String>({ "=", "true", "false" }));
         TEST_VERIFY(Parse("true != false") == Vector<String>({ "!=", "true", "false" }));
         TEST_VERIFY(Parse("a <= b") == Vector<String>({ "<=", "field_a", "field_b" }));
         TEST_VERIFY(Parse("a < b") == Vector<String>({ "<", "field_a", "field_b" }));
@@ -160,7 +174,13 @@ DAVA_TESTCLASS (FormulaParserTest)
     DAVA_TEST (ParseUnaryOperations)
     {
         TEST_VERIFY(Parse("-a") == Vector<String>({ "-", "field_a" }));
-        TEST_VERIFY(Parse("!b") == Vector<String>({ "!", "field_b" }));
+        TEST_VERIFY(Parse("not b") == Vector<String>({ "not", "field_b" }));
+    }
+
+    // FormulaParser::ParseExpression
+    DAVA_TEST (ParseWhenOperations)
+    {
+        TEST_VERIFY(Parse("when true -> 1, 0") == Vector<String>({ "when", "cond", "true", "exp", "1", "else", "0" }));
     }
 
     // FormulaParser::ParseExpression
@@ -172,9 +192,9 @@ DAVA_TESTCLASS (FormulaParserTest)
         TEST_VERIFY(Parse("1 * 2 / 3") == Vector<String>({ "/", "*", "1", "2", "3" }));
         TEST_VERIFY(Parse("1 + 2 / 3") == Vector<String>({ "+", "1", "/", "2", "3" }));
         TEST_VERIFY(Parse("1 + 2 < 3 - 4") == Vector<String>({ "<", "+", "1", "2", "-", "3", "4" }));
-        TEST_VERIFY(Parse("1 < 2 == 3 - 4") == Vector<String>({ "==", "<", "1", "2", "-", "3", "4" }));
-        TEST_VERIFY(Parse("1 < 2 && 3 == 4") == Vector<String>({ "&&", "<", "1", "2", "==", "3", "4" }));
-        TEST_VERIFY(Parse("true || false && true") == Vector<String>({ "||", "true", "&&", "false", "true" }));
+        TEST_VERIFY(Parse("1 < 2 = 3 - 4") == Vector<String>({ "=", "<", "1", "2", "-", "3", "4" }));
+        TEST_VERIFY(Parse("1 < 2 and 3 = 4") == Vector<String>({ "and", "<", "1", "2", "=", "3", "4" }));
+        TEST_VERIFY(Parse("true or false and true") == Vector<String>({ "or", "true", "and", "false", "true" }));
     }
 
     // FormulaParser::ParseExpression

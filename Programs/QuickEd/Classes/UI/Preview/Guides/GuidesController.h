@@ -109,7 +109,7 @@ private:
     Guide CreateGuide(const DAVA::Color& color) const;
     void SetGuideColor(QWidget* guide, const DAVA::Color& color) const;
 
-    void RemoveLastGuideWidget();
+    bool RemoveLastGuideWidget();
 
     void ResizeGuide(Guide& guide) const;
     void MoveGuide(DAVA::float32 value, Guide& guide) const;

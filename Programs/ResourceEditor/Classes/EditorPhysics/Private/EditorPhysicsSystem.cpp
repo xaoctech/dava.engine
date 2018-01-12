@@ -3,6 +3,7 @@
 #include <Physics/PhysicsModule.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/DynamicBodyComponent.h>
+#include <Physics/StaticBodyComponent.h>
 #include <Physics/SphereShapeComponent.h>
 
 #include <Engine/Engine.h>
@@ -23,8 +24,8 @@ void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
 {
     using namespace DAVA;
 
-    if (entity->GetComponentCount(Component::DYNAMIC_BODY_COMPONENT) > 0 ||
-        entity->GetComponentCount(Component::STATIC_BODY_COMPONENT) > 0)
+    if (entity->GetComponentCount<DynamicBodyComponent>() > 0 ||
+        entity->GetComponentCount<StaticBodyComponent>() > 0)
     {
         EntityInfo& info = transformMap[entity];
         info.originalTransform = entity->GetWorldTransform();
@@ -34,10 +35,10 @@ void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
     else
     {
         const PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
-        const Vector<uint32>& shapeComponents = module->GetShapeComponentTypes();
+        const Vector<const Type*>& shapeComponents = module->GetShapeComponentTypes();
 
         Vector<CollisionShapeComponent*> shapes;
-        for (uint32 shapeType : shapeComponents)
+        for (const Type* shapeType : shapeComponents)
         {
             const size_t shapesCount = entity->GetComponentCount(shapeType);
             if (shapesCount > 0)
@@ -64,9 +65,8 @@ void EditorPhysicsSystem::UnregisterEntity(DAVA::Entity* entity)
 
 void EditorPhysicsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DAVA::uint32 componentType = component->GetType();
-    if (componentType == DAVA::Component::STATIC_BODY_COMPONENT ||
-        componentType == DAVA::Component::DYNAMIC_BODY_COMPONENT)
+    const DAVA::Type* componentType = component->GetType();
+    if (componentType->Is<DAVA::StaticBodyComponent>() || componentType->Is<DAVA::DynamicBodyComponent>())
     {
         RegisterEntity(entity);
     }
@@ -74,12 +74,11 @@ void EditorPhysicsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Componen
 
 void EditorPhysicsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DAVA::uint32 componentType = component->GetType();
-    if (componentType == DAVA::Component::STATIC_BODY_COMPONENT ||
-        componentType == DAVA::Component::DYNAMIC_BODY_COMPONENT)
+    const DAVA::Type* componentType = component->GetType();
+    if (componentType->Is<DAVA::StaticBodyComponent>() || componentType->Is<DAVA::DynamicBodyComponent>())
     {
-        DAVA::uint32 actorCount = entity->GetComponentCount(DAVA::Component::STATIC_BODY_COMPONENT);
-        actorCount += entity->GetComponentCount(DAVA::Component::DYNAMIC_BODY_COMPONENT);
+        DAVA::uint32 actorCount = entity->GetComponentCount<DAVA::StaticBodyComponent>();
+        actorCount += entity->GetComponentCount<DAVA::DynamicBodyComponent>();
         if (actorCount == 1)
         {
             UnregisterEntity(entity);
@@ -181,7 +180,7 @@ void EditorPhysicsSystem::RestoreTransform()
 
         node.first->SetLocked(node.second.isLocked);
 
-        DAVA::PhysicsComponent* component = static_cast<DAVA::PhysicsComponent*>(node.first->GetComponent(DAVA::Component::DYNAMIC_BODY_COMPONENT, 0));
+        DAVA::PhysicsComponent* component = static_cast<DAVA::PhysicsComponent*>(node.first->GetComponent<DAVA::DynamicBodyComponent>());
         if (component != nullptr)
         {
             physx::PxRigidDynamic* actor = component->GetPxActor()->is<physx::PxRigidDynamic>();

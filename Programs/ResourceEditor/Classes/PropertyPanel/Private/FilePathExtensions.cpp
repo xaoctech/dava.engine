@@ -4,7 +4,7 @@
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
-#include <REPlatform/Scene/Utils/TextureDescriptorUtils.h>
+#include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Core/Deprecated.h>
@@ -260,7 +260,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
         {
             result.state = M::ValidationResult::eState::Invalid;
             const EngineContext* ctx = GetEngineContext();
-            if (ctx->fileSystem->Exists(texturePath) && TextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
+            if (ctx->fileSystem->Exists(texturePath) && RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
             {
                 FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
 

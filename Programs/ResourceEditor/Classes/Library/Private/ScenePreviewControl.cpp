@@ -7,6 +7,7 @@
 
 #include <TArc/Core/Deprecated.h>
 
+#include <Entity/ComponentUtils.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/Controller/RotationControllerComponent.h>
 #include <Scene3D/Systems/Controller/WASDControllerSystem.h>
@@ -38,7 +39,7 @@ void ScenePreviewControl::RecreateScene()
 
     rotationSystem = new DAVA::RotationControllerSystem(editorScene);
     rotationSystem->SetRotationSpeeed(0.10f);
-    editorScene->AddSystem(rotationSystem, (MAKE_COMPONENT_MASK(DAVA::Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(DAVA::Component::ROTATION_CONTROLLER_COMPONENT)),
+    editorScene->AddSystem(rotationSystem, DAVA::ComponentUtils::MakeMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::RotationControllerComponent>(),
                            DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 }
 

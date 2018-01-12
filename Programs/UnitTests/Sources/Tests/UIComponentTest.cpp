@@ -13,25 +13,25 @@ class TestUIComponent : public UIComponent
 DAVA_TESTCLASS (UIComponentTest)
 {
     ComponentManager* globalCM;
-    ComponentManager* localCM;
+    //ComponentManager* localCM;
 
     UIComponentTest()
     {
         globalCM = GetEngineContext()->componentManager;
-        localCM = new ComponentManager();
+        //localCM = new ComponentManager();
     }
 
     ~UIComponentTest()
     {
-        SafeDelete(localCM);
+        //SafeDelete(localCM);
     }
 
     DAVA_TEST (ComponentManagerTest)
     {
         TEST_VERIFY(globalCM);
-        TEST_VERIFY(globalCM->GetComponentsCount() != 0);
+        TEST_VERIFY(globalCM->GetUIComponentsCount() != 0);
 
-        localCM->RegisterComponent<TestUIComponent>();
-        TEST_VERIFY(localCM->GetComponentsCount() == 1);
+        //localCM->RegisterComponent<TestUIComponent>();
+        //TEST_VERIFY(localCM->GetComponentsCount() == 1);
     }
 };

@@ -6,7 +6,6 @@
 #include "REPlatform/Scene/SceneTypes.h"
 
 #include <Entity/SceneSystem.h>
-#include <Entity/SceneSystem.h>
 #include <Functional/Signal.h>
 #include <Math/Matrix4.h>
 #include <Render/Highlevel/RenderObject.h>

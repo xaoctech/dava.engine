@@ -110,6 +110,8 @@ LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditi
         return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSENT;
     }
 
+    bool inputLocked = AcquireInputLock(GetScene());
+    DVASSERT(inputLocked);
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
     scene->GetSystem<EntityModificationSystem>()->SetLocked(true);
@@ -148,6 +150,7 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
     FinishEditing();
     needCreateUndo = false;
 
+    ReleaseInputLock(GetScene());
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(false);
     scene->GetSystem<EntityModificationSystem>()->SetLocked(false);

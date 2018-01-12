@@ -674,7 +674,7 @@ bool SceneCameraSystem::SnapEditorCameraToLandscape(bool snap)
         {
             float32 height = Deprecated::GetDataNode<GlobalSceneSettings>()->heightOnLandscape;
 
-            snapComponent = static_cast<SnapToLandscapeControllerComponent*>(Component::CreateByType(Component::SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT));
+            snapComponent = new SnapToLandscapeControllerComponent();
             snapComponent->SetHeightOnLandscape(height);
 
             scene->Exec(std::make_unique<AddComponentCommand>(entity, snapComponent));

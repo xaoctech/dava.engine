@@ -36,16 +36,31 @@
 #include <QtTools/ConsoleWidget/PointerSerializer.h>
 
 // framework
+#include <Base/BaseTypes.h>
 #include <Command/Command.h>
 #include <Debug/DVAssert.h>
 #include <Engine/Engine.h>
+#include <Entity/ComponentUtils.h>
+#include <FileSystem/FileSystem.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderBatchArray.h>
 #include <Render/Highlevel/RenderPass.h>
-#include <Scene3D/Entity.h>
-#include <Scene3D/SceneFileV2.h>
-#include <FileSystem/FileSystem.h>
+#include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/Controller/RotationControllerComponent.h>
+#include <Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h>
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
+#include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/VisibilityCheckComponent.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Components/Waypoint/WaypointComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Lod/LodComponent.h>
+#include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 #include <Scene3D/Systems/StaticOcclusionSystem.h>
@@ -90,14 +105,20 @@ void CollectEmittersForSave(ParticleEmitter* topLevelEmitter, List<EmitterDescri
     emitters.emplace_back(topLevelEmitter, nullptr, topLevelEmitter->configPath, entityName);
 }
 
-uint64 CombineComponentMask(const Vector<int32>& args)
+ComponentMask CombineComponentMask(const Vector<const Type*>& args)
 {
-    uint64 result = 0;
-    for (int32 v : args)
+    ComponentMask result = 0;
+    for (const Type* v : args)
     {
-        result |= MAKE_COMPONENT_MASK(v);
+        result |= ComponentUtils::MakeMask(v);
     }
     return result;
+}
+
+template <typename T>
+const Type* InstT()
+{
+    return Type::Instance<T>();
 }
 }
 
@@ -113,10 +134,10 @@ SceneEditor2::SceneEditor2()
     using namespace SceneEditorDetail;
 
     AddSystem(new SceneGridSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
-    AddSystem(new SceneCameraSystem(this), CombineComponentMask({ Component::CAMERA_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, transformSystem);
-    AddSystem(new RotationControllerSystem(this), CombineComponentMask({ Component::CAMERA_COMPONENT, Component::ROTATION_CONTROLLER_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
-    AddSystem(new SnapToLandscapeControllerSystem(this), CombineComponentMask({ Component::CAMERA_COMPONENT, Component::SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS);
-    AddSystem(new WASDControllerSystem(this), CombineComponentMask({ Component::CAMERA_COMPONENT, Component::WASD_CONTROLLER_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(new SceneCameraSystem(this), CombineComponentMask({ InstT<CameraComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, transformSystem);
+    AddSystem(new RotationControllerSystem(this), CombineComponentMask({ InstT<CameraComponent>(), InstT<RotationControllerComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
+    AddSystem(new SnapToLandscapeControllerSystem(this), CombineComponentMask({ InstT<CameraComponent>(), InstT<SnapToLandscapeControllerComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(new WASDControllerSystem(this), CombineComponentMask({ InstT<CameraComponent>(), InstT<WASDControllerComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS);
     AddSystem(new SceneCollisionSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, renderUpdateSystem);
     AddSystem(new HoodSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, renderUpdateSystem);
     AddSystem(new EntityModificationSystem(this), 0, SCENE_SYSTEM_REQUIRE_INPUT, renderUpdateSystem);
@@ -126,18 +147,18 @@ SceneEditor2::SceneEditor2()
     AddSystem(new CustomColorsSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, renderUpdateSystem);
     AddSystem(new RulerToolSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT, renderUpdateSystem);
     AddSystem(new StructureSystem(this), 0, SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
-    AddSystem(new EditorParticlesSystem(this), CombineComponentMask({ Component::PARTICLE_EFFECT_COMPONENT }), 0, renderUpdateSystem);
+    AddSystem(new EditorParticlesSystem(this), CombineComponentMask({ InstT<ParticleEffectComponent>() }), 0, renderUpdateSystem);
     AddSystem(new TextDrawSystem(this), 0, 0, renderUpdateSystem);
-    AddSystem(new EditorLightSystem(this), CombineComponentMask({ Component::LIGHT_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
+    AddSystem(new EditorLightSystem(this), CombineComponentMask({ InstT<LightComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS, transformSystem);
     AddSystem(new BeastSystem(this), 0);
-    AddSystem(new StaticOcclusionBuildSystem(this), CombineComponentMask({ Component::STATIC_OCCLUSION_COMPONENT, Component::TRANSFORM_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
-    AddSystem(new EditorMaterialSystem(this), CombineComponentMask({ Component::RENDER_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
-    AddSystem(new WayEditSystem(this), CombineComponentMask({ Component::WAYPOINT_COMPONENT, Component::TRANSFORM_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
-    AddSystem(new PathSystem(this), CombineComponentMask({ Component::PATH_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS);
-    AddSystem(new EditorLODSystem(this), CombineComponentMask({ Component::LOD_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS);
-    AddSystem(new EditorStatisticsSystem(this), CombineComponentMask({ Component::RENDER_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS);
-    AddSystem(new VisibilityCheckSystem(this), CombineComponentMask({ Component::VISIBILITY_CHECK_COMPONENT }), SCENE_SYSTEM_REQUIRE_PROCESS);
-    AddSystem(new EditorVegetationSystem(this), CombineComponentMask({ Component::RENDER_COMPONENT }), 0);
+    AddSystem(new StaticOcclusionBuildSystem(this), CombineComponentMask({ InstT<StaticOcclusionComponent>(), InstT<TransformComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(new EditorMaterialSystem(this), CombineComponentMask({ InstT<RenderComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS, renderUpdateSystem);
+    AddSystem(new WayEditSystem(this), CombineComponentMask({ InstT<WaypointComponent>(), InstT<TransformComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS | SCENE_SYSTEM_REQUIRE_INPUT);
+    AddSystem(new PathSystem(this), CombineComponentMask({ InstT<PathComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(new EditorLODSystem(this), CombineComponentMask({ InstT<LodComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(new EditorStatisticsSystem(this), CombineComponentMask({ InstT<RenderComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(new VisibilityCheckSystem(this), CombineComponentMask({ InstT<VisibilityCheckComponent>() }), SCENE_SYSTEM_REQUIRE_PROCESS);
+    AddSystem(new EditorVegetationSystem(this), CombineComponentMask({ InstT<RenderComponent>() }), 0);
 
     WayEditSystem* wayEditSystem = GetSystem<WayEditSystem>();
     PathSystem* pathSystem = GetSystem<PathSystem>();
@@ -252,7 +273,7 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
     return err;
 }
 
-void SceneEditor2::AddSystem(SceneSystem* sceneSystem, uint64 componentFlags, uint32 processFlags, SceneSystem* insertBeforeSceneForProcess, SceneSystem* insertBeforeSceneForInput, SceneSystem* insertBeforeSceneForFixedProcess)
+void SceneEditor2::AddSystem(SceneSystem* sceneSystem, const ComponentMask& componentFlags, uint32 processFlags, SceneSystem* insertBeforeSceneForProcess, SceneSystem* insertBeforeSceneForInput, SceneSystem* insertBeforeSceneForFixedProcess)
 {
     Scene::AddSystem(sceneSystem, componentFlags, processFlags, insertBeforeSceneForProcess, insertBeforeSceneForInput);
     EditorSceneSystem* editorSystem = dynamic_cast<EditorSceneSystem*>(sceneSystem);
@@ -279,6 +300,25 @@ void SceneEditor2::RemoveSystem(SceneSystem* sceneSystem)
     }
 
     Scene::RemoveSystem(sceneSystem);
+}
+
+bool SceneEditor2::AcquireInputLock(EditorSceneSystem* system)
+{
+    if (inputLockedByThis != nullptr && inputLockedByThis != system)
+    {
+        return false;
+    }
+
+    inputLockedByThis = system;
+    return true;
+}
+
+void SceneEditor2::ReleaseInputLock(EditorSceneSystem* system)
+{
+    if (inputLockedByThis == system)
+    {
+        inputLockedByThis = nullptr;
+    }
 }
 
 void SceneEditor2::ExtractEditorEntities()
@@ -350,7 +390,7 @@ bool SceneEditor2::Export(const SceneExporter::Params& exportingParams)
 void SceneEditor2::SaveEmitters(const Function<FilePath(const String&, const String&)>& getEmitterPathFn)
 {
     List<Entity*> effectEntities;
-    GetChildEntitiesWithComponent(effectEntities, Component::PARTICLE_EFFECT_COMPONENT);
+    GetChildEntitiesWithComponent(effectEntities, Type::Instance<ParticleEffectComponent>());
     if (effectEntities.empty())
     {
         return;

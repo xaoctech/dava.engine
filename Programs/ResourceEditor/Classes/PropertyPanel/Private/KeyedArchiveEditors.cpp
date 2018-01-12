@@ -36,9 +36,9 @@ class AddKeyedArchiveItemWidget : public QWidget
 public:
     AddKeyedArchiveItemWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui, const DAVA::WindowKey& wndKey,
                               DAVA::Vector<DAVA::RefPtr<DAVA::KeyedArchive>>&& archives_, DAVA::int32 lastAddedType)
-        : accessor(accessor_)
+        : type(lastAddedType)
+        , accessor(accessor_)
         , archives(std::move(archives_))
-        , type(lastAddedType)
     {
         using namespace DAVA;
         using namespace DAVA;

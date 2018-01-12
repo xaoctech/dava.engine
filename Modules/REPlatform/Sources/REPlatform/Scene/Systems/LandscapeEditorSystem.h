@@ -1,6 +1,7 @@
 #pragma once
 
 #include "REPlatform/Scene/Systems/LandscapeEditorDrawSystem.h"
+#include "REPlatform/Scene/Systems/EditorSceneSystem.h"
 
 #include <Entity/SceneSystem.h>
 
@@ -10,7 +11,7 @@ class SceneCollisionSystem;
 class LandscapeEditorDrawSystem;
 class EntityModificationSystem;
 
-class LandscapeEditorSystem : public SceneSystem
+class LandscapeEditorSystem : public SceneSystem, public EditorSceneSystem
 {
 public:
     LandscapeEditorSystem(Scene* scene, const FilePath& cursorPathname);

@@ -4,6 +4,7 @@
 #include <REPlatform/Scene/SceneHelper.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 
+#include <Base/Vector.h>
 #include <FileSystem/FilePath.h>
 #include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
@@ -12,10 +13,12 @@
 #include <Render/Material/NMaterialNames.h>
 #include <Render/RenderBase.h>
 #include <Render/Texture.h>
-#include <Render/Texture.h>
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Utils/StringFormat.h>
@@ -191,8 +194,8 @@ void CompareEffects(const Entity* entity1, const Entity* entity2, ValidationProg
 
     Vector<const Entity*> childEffects1;
     Vector<const Entity*> childEffects2;
-    entity1->GetChildEntitiesWithComponent(childEffects1, Component::PARTICLE_EFFECT_COMPONENT, false);
-    entity2->GetChildEntitiesWithComponent(childEffects2, Component::PARTICLE_EFFECT_COMPONENT, false);
+    entity1->GetChildEntitiesWithComponent(childEffects1, Type::Instance<ParticleEffectComponent>(), false);
+    entity2->GetChildEntitiesWithComponent(childEffects2, Type::Instance<ParticleEffectComponent>(), false);
 
     bool vectorsAreDifferent = childEffects1.size() != childEffects2.size();
     if (!vectorsAreDifferent)
@@ -416,7 +419,7 @@ void SceneValidation::ValidateCollisionProperties(DAVA::Scene* scene, Validation
     int32 collisionTypeSpeedTreeId = SceneValidationDetails::GetCollisionTypeID("SpeedTree");
 
     Vector<Entity*> container;
-    scene->GetChildEntitiesWithComponent(container, Component::CUSTOM_PROPERTIES_COMPONENT);
+    scene->GetChildEntitiesWithComponent(container, Type::Instance<CustomPropertiesComponent>());
 
     for (const Entity* entity : container)
     {

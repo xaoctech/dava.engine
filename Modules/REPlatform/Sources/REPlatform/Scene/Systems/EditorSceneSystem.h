@@ -6,6 +6,7 @@ namespace DAVA
 {
 class RECommandNotificationObject;
 class REDependentCommandsHolder;
+class Scene;
 class PropertiesHolder;
 class ContextAccessor;
 
@@ -16,15 +17,9 @@ class EditorSceneSystem
 public:
     virtual ~EditorSceneSystem() = default;
 
-    virtual void EnableSystem()
-    {
-        systemIsEnabled = true;
-    }
-
-    virtual void DisableSystem()
-    {
-        systemIsEnabled = false;
-    }
+    virtual void EnableSystem();
+    virtual void DisableSystem();
+    bool IsSystemEnabled() const;
 
     virtual void LoadLocalProperties(DAVA::PropertiesHolder* holder, DAVA::ContextAccessor* accessor)
     {
@@ -32,11 +27,6 @@ public:
 
     virtual void SaveLocalProperties(DAVA::PropertiesHolder* holder)
     {
-    }
-
-    bool IsSystemEnabled() const
-    {
-        return systemIsEnabled;
     }
 
 protected:
@@ -55,6 +45,36 @@ protected:
         return nullptr;
     }
 
+    class InputLockGuard
+    {
+    public:
+        InputLockGuard(DAVA::Scene* scene_, EditorSceneSystem* system_)
+            : scene(scene_)
+            , system(system_)
+        {
+            lockAcquired = system->AcquireInputLock(scene);
+        }
+
+        ~InputLockGuard()
+        {
+            system->ReleaseInputLock(scene);
+        }
+
+        bool IsLockAcquired() const
+        {
+            return lockAcquired;
+        }
+
+    private:
+        DAVA::Scene* scene;
+        EditorSceneSystem* system;
+        bool lockAcquired = false;
+    };
+
+    bool AcquireInputLock(DAVA::Scene* scene);
+    void ReleaseInputLock(DAVA::Scene* scene);
+
+private:
     bool systemIsEnabled = false;
 };
 } // namespace DAVA

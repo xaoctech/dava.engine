@@ -39,6 +39,11 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "get stash commit"
             workingDir = "dava.framework"
             scriptContent = "python %system.teamcity.build.checkoutDir%/Teamcity/get_pull_requests_commit.py --branch %teamcity.build.branch%"
@@ -69,7 +74,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
                 then
                 git clean -d -x -f
                 python RepoTools/Scripts/delete_folder.py %pathToProject%
-                
+
                 fi
             """.trimIndent()
         }
@@ -124,10 +129,10 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
             scriptContent = """
                 if [ "false" == "%env.build_required%" ]
                 then
-                
+
                 if [ -f "run_build.py" ]
                 then
-                
+
                 python run_build.py --teamcity_url https://teamcity2.wargaming.net \
                 --login "%teamcity_restapi_login%" \
                 --password "%teamcity_restapi_password%" \
@@ -136,10 +141,10 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
                 --queue_at_top true \
                 --configuration_name dava_framework_TeamcityTools_ChangeBuildDescription \
                 --properties param.commit:%build.vcs.number.dava_DavaFrameworkStash%,param.configuration_id:%system.teamcity.buildType.id%,param.root_build_id:%teamcity.build.id%
-                
+
                 fi
-                
-                
+
+
                 fi
             """.trimIndent()
         }
@@ -196,6 +201,6 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
         exists("env.UNIT_TEST")
         doesNotEqual("system.agent.name", "by2-badava-mac-07", "RQ_54")
     }
-    
+
     disableSettings("RQ_54")
 })

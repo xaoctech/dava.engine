@@ -182,7 +182,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TerrainConverterConsoleModule)
     .End();
 }
 
-START_PLUGINS_DECLARATION();
+START_PLUGIN_DECLARATION();
 DECLARE_PLUGIN(TerrainConverterGUIModule, DAVA::TArcPlugin::PluginDescriptor("ResourceEditor", "TerrainConverter", "Terrain Converter for Blitz", "Terrain Converter for Blitz", 0, 1));
 DECLARE_PLUGIN(TerrainConverterConsoleModule, DAVA::TArcPlugin::PluginDescriptor("ResourceEditor", "TerrainConverterCmd", "Terrain Converter for Blitz", "Terrain Converter for Blitz", 0, 1));
-END_PLUGINS_DECLARATION();
+END_PLUGIN_DECLARATION();

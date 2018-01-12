@@ -25,6 +25,6 @@ const DAVA::Type* MovableInEditorComponent::GetType() const
 
 DAVA::int32 MovableInEditorComponent::GetRuntimeType() const
 {
-    static DAVA::int32 runtimeType = DAVA::GetEngineContext()->componentManager->GetRuntimeType(GetType());
+    static DAVA::int32 runtimeType = DAVA::GetEngineContext()->componentManager->GetRuntimeComponentIndex(GetType());
     return runtimeType;
 }

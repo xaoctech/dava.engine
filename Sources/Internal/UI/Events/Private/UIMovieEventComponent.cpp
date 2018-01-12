@@ -10,8 +10,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieEventComponent)
     ReflectionRegistrator<UIMovieEventComponent>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieEventComponent* o) { o->Release(); })
-    .Field("startEvent", &UIMovieEventComponent::GetStartEvent, &UIMovieEventComponent::SetStartEvent)
-    .Field("stopEvent", &UIMovieEventComponent::GetStopEvent, &UIMovieEventComponent::SetStopEvent)
+    .Field("onStart", &UIMovieEventComponent::GetStartEvent, &UIMovieEventComponent::SetStartEvent)
+    .Field("onStop", &UIMovieEventComponent::GetStopEvent, &UIMovieEventComponent::SetStopEvent)
     .End();
 }
 

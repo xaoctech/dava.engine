@@ -10,7 +10,9 @@
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 
+#include <Entity/ComponentUtils.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
 
 void ObjectPlacementModule::OnContextCreated(DAVA::DataContext* context)
 {
@@ -21,7 +23,7 @@ void ObjectPlacementModule::OnContextCreated(DAVA::DataContext* context)
 
     objectPlacementData->objectPlacementSystem.reset(new ObjectPlacementSystem(scene));
     scene->AddSystem(objectPlacementData->objectPlacementSystem.get(),
-                     MAKE_COMPONENT_MASK(DAVA::Component::RENDER_COMPONENT),
+                     DAVA::ComponentUtils::MakeMask<DAVA::RenderComponent>(),
                      DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     context->CreateData(std::move(objectPlacementData));

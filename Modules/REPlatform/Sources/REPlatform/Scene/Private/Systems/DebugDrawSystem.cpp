@@ -14,6 +14,11 @@
 
 #include <TArc/Core/Deprecated.h>
 
+#include <Base/Type.h>
+#include <Engine/Engine.h>
+#include <Entity/ComponentManager.h>
+#include <Functional/Function.h>
+#include <Render/Highlevel/GeometryOctTree.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
 
@@ -26,10 +31,10 @@ const float32 DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT = 0.001f;
 DebugDrawSystem::DebugDrawSystem(Scene* scene)
     : SceneSystem(scene)
 {
-    drawComponentFunctionsMap[Component::SOUND_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawSoundNode);
-    drawComponentFunctionsMap[Component::WIND_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
-    drawComponentFunctionsMap[Component::GEO_DECAL_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
-    drawComponentFunctionsMap[Component::LIGHT_COMPONENT] = Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
+    drawComponentFunctionsMap[Type::Instance<SoundComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawSoundNode);
+    drawComponentFunctionsMap[Type::Instance<WindComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
+    drawComponentFunctionsMap[Type::Instance<GeoDecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
+    drawComponentFunctionsMap[Type::Instance<LightComponent>()] = DAVA::Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
 }
 
 DebugDrawSystem::~DebugDrawSystem()
@@ -65,7 +70,10 @@ void DebugDrawSystem::AddEntity(Entity* entity)
 {
     entities.push_back(entity);
 
-    for (uint32 type = 0; type < Component::COMPONENT_COUNT; ++type)
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    const Vector<const Type*> componentsTypes = cm->GetRegisteredSceneComponents();
+
+    for (const Type* type : componentsTypes)
     {
         for (uint32 index = 0, count = entity->GetComponentCount(type); index < count; ++index)
         {
@@ -87,7 +95,7 @@ void DebugDrawSystem::RemoveEntity(Entity* entity)
 
 void DebugDrawSystem::RegisterComponent(Entity* entity, Component* component)
 {
-    Component::eType type = static_cast<Component::eType>(component->GetType());
+    const Type* type = component->GetType();
 
     auto it = drawComponentFunctionsMap.find(type);
 
@@ -106,7 +114,7 @@ void DebugDrawSystem::RegisterComponent(Entity* entity, Component* component)
 
 void DebugDrawSystem::UnregisterComponent(Entity* entity, Component* component)
 {
-    Component::eType type = static_cast<Component::eType>(component->GetType());
+    const Type* type = component->GetType();
 
     auto it = entitiesComponentMap.find(type);
 
@@ -122,7 +130,7 @@ void DebugDrawSystem::PrepareForRemove()
     entitiesComponentMap.clear();
 }
 
-void DebugDrawSystem::DrawComponent(Component::eType type, const Function<void(Entity*)>& func)
+void DebugDrawSystem::DrawComponent(const Type* type, const Function<void(Entity*)>& func)
 {
     auto it = entitiesComponentMap.find(type);
 
@@ -534,13 +542,11 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods(Entity* entity)
 void DebugDrawSystem::DrawDecals(Entity* entity)
 {
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    uint32 componentsCount = entity->GetComponentCount(Component::eType::GEO_DECAL_COMPONENT);
+    uint32 componentsCount = entity->GetComponentCount<GeoDecalComponent>();
     for (uint32 i = 0; i < componentsCount; ++i)
     {
-        Component* component = entity->GetComponent(Component::eType::GEO_DECAL_COMPONENT, i);
-        DVASSERT(component != nullptr);
-
-        GeoDecalComponent* decal = static_cast<GeoDecalComponent*>(component);
+        GeoDecalComponent* decal = entity->GetComponent<GeoDecalComponent>(i);
+        DVASSERT(decal != nullptr);
         Matrix4 transform = entity->GetWorldTransform();
 
         RenderHelper::eDrawType dt = RenderHelper::eDrawType::DRAW_WIRE_DEPTH;

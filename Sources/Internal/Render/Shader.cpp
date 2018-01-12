@@ -135,9 +135,9 @@ rhi::HConstBuffer ShaderDescriptor::GetDynamicBuffer(ConstBufferDescriptor::Type
 }
 
 ShaderDescriptor::ShaderDescriptor(rhi::HPipelineState _pipelineState, FastName _vProgUid, FastName _fProgUid)
-    : piplineState(_pipelineState)
-    , vProgUid(_vProgUid)
+    : vProgUid(_vProgUid)
     , fProgUid(_fProgUid)
+    , piplineState(_pipelineState)
 {
 }
 ShaderDescriptor::~ShaderDescriptor()

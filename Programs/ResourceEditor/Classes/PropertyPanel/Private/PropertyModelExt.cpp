@@ -23,6 +23,7 @@
 #include <Base/StaticSingleton.h>
 #include <Base/TypeInheritance.h>
 #include <Engine/PlatformApiQt.h>
+#include <Entity/ComponentManager.h>
 #include <Entity/Component.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Functional/Function.h>
@@ -433,7 +434,9 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::PropertyNode
 
         {
             Entity* entity = parent->field.ref.GetValueObject().GetPtr<Entity>();
-            for (uint32 type = Component::TRANSFORM_COMPONENT; type < Component::COMPONENT_COUNT; ++type)
+            ComponentManager* cm = GetEngineContext()->componentManager;
+
+            for (const Type* type : cm->GetRegisteredSceneComponents())
             {
                 uint32 countOftype = entity->GetComponentCount(type);
                 for (uint32 componentIndex = 0; componentIndex < countOftype; ++componentIndex)
@@ -445,7 +448,7 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::PropertyNode
                     DAVA::Reflection::Field f(permanentName, Reflection(ref), nullptr);
                     if (CanBeExposed(f))
                     {
-                        std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), static_cast<size_t>(type), PropertyNode::RealProperty);
+                        std::shared_ptr<PropertyNode> node = allocator->CreatePropertyNode(parent, std::move(f), cm->GetRuntimeComponentIndex(type), PropertyNode::RealProperty);
                         node->idPostfix = FastName(Format("%u", componentIndex));
                         children.push_back(node);
                     }
@@ -487,7 +490,7 @@ std::unique_ptr<DAVA::BaseComponentValue> EntityEditorCreator::GetEditor(const s
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::move(editor);
+        return std::unique_ptr<DAVA::BaseComponentValue>(std::move(editor));
     }
 
     const DAVA::Type* valueType = node->cachedValue.GetType();
@@ -503,7 +506,7 @@ std::unique_ptr<DAVA::BaseComponentValue> EntityEditorCreator::GetEditor(const s
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::move(editor);
+        return std::unique_ptr<DAVA::BaseComponentValue>(std::move(editor));
     }
 
     return EditorComponentExtension::GetEditor(node);

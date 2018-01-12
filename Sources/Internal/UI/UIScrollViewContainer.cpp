@@ -124,13 +124,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent* currentTouch)
         return UIControl::SystemInput(currentTouch);
     }
 
-    if (currentTouch->touchLocker != this)
-    {
-        AddState(STATE_DISABLED); //this funny code is written to fix bugs with calling Input() twice.
-    }
     bool systemInput = UIControl::SystemInput(currentTouch);
-    RemoveState(STATE_DISABLED); //All this control must be reengeneried
-
     if (currentTouch->GetInputHandledType() == UIEvent::INPUT_HANDLED_HARD)
     {
         // Can't scroll - some child control already processed this input.

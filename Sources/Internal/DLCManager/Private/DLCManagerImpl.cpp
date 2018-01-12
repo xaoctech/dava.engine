@@ -10,20 +10,16 @@
 #include "Base/Exception.h"
 #include "Time/SystemTimer.h"
 #include "Engine/Engine.h"
-#include "Debug/Backtrace.h"
 #include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
-#include "Debug/Private/ImGui.h"
 
 #include <iomanip>
 
 namespace DAVA
 {
-static const String timeoutString("dlcmanager_timeout");
-
 DLCManager::~DLCManager() = default;
 DLCManager::IRequest::~IRequest() = default;
 
@@ -79,8 +75,8 @@ DLCDownloader& DLCManagerImpl::GetDownloader() const
     return *downloader;
 }
 
-static const std::array<int32, 6> errorForExternalHandle = { ENAMETOOLONG,
-                                                             ENOSPC, ENODEV, EROFS, ENFILE, EMFILE };
+static const std::array<int32, 6> errorForExternalHandle = { { ENAMETOOLONG, ENOSPC, ENODEV,
+                                                               EROFS, ENFILE, EMFILE } };
 
 bool DLCManagerImpl::CountError(int32 errCode)
 {
@@ -241,13 +237,19 @@ void DLCManagerImpl::ClearResouces()
     if (scanThread)
     {
         scanThread->Cancel();
-        metaDataLoadedSem.Post();
+        metaRemoteDataLoadedSem.Post();
         if (scanThread->IsJoinable())
         {
             scanThread->Join();
         }
         scanThread->Release();
         scanThread = nullptr;
+        scanState = ScanState::Wait;
+        // reset semaphore in default state.
+        // We can't know exactly if metaRemoteDataLoadedSem.Wait() was called in scanThread or not
+        // ManualResetEvent but it seem redundant in this case
+        metaRemoteDataLoadedSem.~Semaphore();
+        new (&metaRemoteDataLoadedSem) Semaphore();
     }
 
     for (auto request : requests)
@@ -264,7 +266,8 @@ void DLCManagerImpl::ClearResouces()
 
     initState = InitState::Starting;
     delayedRequests.clear();
-    meta.reset();
+    metaRemote.reset();
+    metaLocal.reset();
     requestManager.reset();
 
     buffer.clear();
@@ -314,26 +317,7 @@ void DLCManagerImpl::TestWriteAccessToPackDirectory(const FilePath& dirToDownloa
     fs->DeleteFile(tmpFile);
 }
 
-void DLCManagerImpl::FillPreloadedPacks()
-{
-    preloadedPacks.clear();
-    if (!hints.preloadedPacks.empty())
-    {
-        DVASSERT(hints.preloadedPacks.find(' ') == String::npos); // No spaces
-
-        StringStream ss(hints.preloadedPacks);
-        for (String packName; getline(ss, packName);)
-        {
-            if (packName.empty())
-            {
-                continue; // skip empty lines if any
-            }
-            preloadedPacks.emplace(packName, PreloadedPack(packName));
-        }
-    }
-}
-
-void DLCManagerImpl::TestPackDirectoryExist()
+void DLCManagerImpl::TestPackDirectoryExist() const
 {
     FileSystem* fs = GetEngineContext()->fileSystem;
     if (FileSystem::DIRECTORY_CANT_CREATE == fs->CreateDirectory(dirToDownloadedPacks, true))
@@ -374,6 +358,7 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
             << "    (\n"
             << "        logFilePath(this file): " << hints_.logFilePath << '\n'
             << "        preloadedPacks: " << preloaded << '\n'
+            << "        localPacksDB: " << hints_.localPacksDB << '\n'
             << "        retryConnectMilliseconds: " << hints_.retryConnectMilliseconds << '\n'
             << "        maxFilesToDownload: " << hints_.maxFilesToDownload << '\n'
             << "        timeoutForDownload: " << hints_.timeoutForDownload << '\n'
@@ -411,6 +396,34 @@ void DLCManagerImpl::CreateDownloader()
     }
 }
 
+void DLCManagerImpl::CreateLocalPacks(const String& localPacksDB)
+{
+    if (!localPacksDB.empty())
+    {
+        try
+        {
+            metaLocal = std::make_unique<PackMetaData>(localPacksDB);
+        }
+        catch (std::exception& ex)
+        {
+            std::stringstream ss;
+            ss << "can't load locat meta data from: " << localPacksDB << "\nerror: " << ex.what();
+            log << ss.str() << std::endl;
+            Logger::Error("%s", ss.str().c_str());
+
+            DAVA_THROW(Exception, "can't load local meta");
+        }
+        // add all local packs
+        const size_t packsCount = metaLocal->GetPacksCount();
+        for (size_t i = 0; i < packsCount; ++i)
+        {
+            const auto& packInfo = metaLocal->GetPackInfo(static_cast<uint32>(i));
+            PackRequest* request = new PackRequest(packInfo.packName);
+            AddRequest(request);
+        }
+    }
+}
+
 void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
                                 const String& urlToServerSuperpack_,
                                 const Hints& hints_)
@@ -419,7 +432,7 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     profiler.Start();
 
-    bool isFirstTimeCall = (log.is_open() == false);
+    const bool isFirstTimeCall = (log.is_open() == false);
 
     DumpInitialParams(dirToDownloadPacks_, urlToServerSuperpack_, hints_);
 
@@ -436,7 +449,6 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
         TestPackDirectoryExist();
         TestWriteAccessToPackDirectory(dirToDownloadPacks_);
-        FillPreloadedPacks();
     }
 
     CreateDownloader();
@@ -456,8 +468,13 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 
     if (isFirstTimeCall)
     {
+        CreateLocalPacks(hints_.localPacksDB);
         SetRequestingEnabled(true);
         startInitializationTime = SystemTimer::GetMs();
+        if (urlToSuperPack.empty())
+        {
+            initState = InitState::Ready;
+        }
     }
 }
 
@@ -648,38 +665,48 @@ void DLCManagerImpl::RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) co
 void DLCManagerImpl::AddRequest(PackRequest* request)
 {
     requests.push_back(request);
-    requestManager->Push(request);
+    if (!request->IsDownloaded())
+    {
+        requestManager->Push(request);
+    }
     requestNameHashes.insert(std::hash<String>{}(request->GetRequestedPackName()));
 }
 
-PackRequest* DLCManagerImpl::PrepareNewRequest(const String& requestedPackName)
+void DLCManagerImpl::RemoveRemoteRequest(PackRequest* request)
 {
-    Vector<uint32> packIndexes = meta->GetFileIndexes(requestedPackName);
+    const auto it = find(begin(requests), end(requests), request);
+    requests.erase(it);
+    requestManager->Remove(request);
+    requestNameHashes.erase(std::hash<String>{}(request->GetRequestedPackName()));
+}
+PackRequest* DLCManagerImpl::PrepareNewRemoteRequest(const String& requestedPackName)
+{
+    Vector<uint32> packIndexes = metaRemote->GetFileIndexes(requestedPackName);
 
     RemoveDownloadedFileIndexes(packIndexes);
 
     return new PackRequest(*this, requestedPackName, std::move(packIndexes));
 }
 
-PackRequest* DLCManagerImpl::CreateNewRequest(const String& requestedPackName)
+PackRequest* DLCManagerImpl::CreateNewRemoteRequest(const String& requestedPackName)
 {
     DVASSERT(nullptr == FindRequest(requestedPackName));
 
     log << " requested: " << requestedPackName << std::endl;
 
-    PackRequest* request = PrepareNewRequest(requestedPackName);
+    PackRequest* request = PrepareNewRemoteRequest(requestedPackName);
 
     // we have to do it recursively becouse order of dependency metter
-    const Vector<uint32>& depsList = meta->GetPackDependencyIndexes(requestedPackName);
+    const Vector<uint32>& depsList = metaRemote->GetPackDependencyIndexes(requestedPackName);
 
     for (const uint32 dependencyIndex : depsList)
     {
-        const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(dependencyIndex);
+        const PackMetaData::PackInfo& packInfo = metaRemote->GetPackInfo(dependencyIndex);
         const String& depPackName = packInfo.packName;
 
         if (nullptr == FindRequest(depPackName))
         {
-            CreateNewRequest(depPackName);
+            CreateNewRemoteRequest(depPackName);
         }
     }
 
@@ -1281,9 +1308,9 @@ void DLCManagerImpl::LoadPacksDataFromMeta()
             DAVA_THROW(Exception, "can't read localCacheMeta hash not match");
         }
 
-        meta.reset(new PackMetaData(buffer.data(), buffer.size()));
+        metaRemote.reset(new PackMetaData(buffer.data(), buffer.size(), uncompressedFileNames));
 
-        const size_t numFiles = meta->GetFileCount();
+        const size_t numFiles = metaRemote->GetFileCount();
         scanFileReady.resize(numFiles);
 
         // now user can do requests for local packs
@@ -1299,7 +1326,7 @@ void DLCManagerImpl::LoadPacksDataFromMeta()
         return;
     }
 
-    metaDataLoadedSem.Post();
+    metaRemoteDataLoadedSem.Post();
 
     initState = InitState::WaitScanThreadToFinish;
     log << "initState: " << ToString(initState) << std::endl;
@@ -1359,7 +1386,7 @@ void DLCManagerImpl::StartDelayedRequests()
 
         if (r == nullptr)
         {
-            PackRequest* newRequest = CreateNewRequest(requestedPackName);
+            PackRequest* newRequest = CreateNewRemoteRequest(requestedPackName);
             DVASSERT(newRequest != request);
             DVASSERT(newRequest != nullptr);
 
@@ -1377,9 +1404,9 @@ void DLCManagerImpl::StartDelayedRequests()
     initState = InitState::Ready;
     log << "initState: " << ToString(initState) << std::endl;
 
-    size_t numDownloaded = count(begin(scanFileReady), end(scanFileReady), true);
+    const size_t numDownloaded = count(begin(scanFileReady), end(scanFileReady), true);
 
-    initializeFinished.Emit(numDownloaded, meta->GetFileCount());
+    initializeFinished.Emit(numDownloaded, metaRemote->GetFileCount());
 
     for (PackRequest* request : tmpRequests)
     {
@@ -1399,7 +1426,9 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
 
-    if (end(preloadedPacks) != preloadedPacks.find(packName))
+    // packs form local meta data should be already created
+    PackRequest* request = FindRequest(packName);
+    if (request != nullptr && request->IsDownloaded())
     {
         return true;
     }
@@ -1412,8 +1441,8 @@ bool DLCManagerImpl::IsPackDownloaded(const String& packName) const
     }
 
     // check every file in requested pack and all it's dependencies
-    const uint32 packIndex = meta->GetPackIndex(packName);
-    const Vector<uint32>& deps = meta->GetDependencies(packIndex);
+    const uint32 packIndex = metaRemote->GetPackIndex(packName);
+    const Vector<uint32>& deps = metaRemote->GetDependencies(packIndex);
 
     const auto& allFiles = usedPackFile.filesTable.data.files;
     const size_t size = allFiles.size();
@@ -1464,8 +1493,8 @@ uint64 DLCManagerImpl::GetPackSize(const String& packName) const
     uint64 totalSize = 0;
     if (IsInitialized())
     {
-        const uint32 packIndex = meta->GetPackIndex(packName);
-        const PackMetaData::Dependencies& dependencies = meta->GetDependencies(packIndex);
+        const uint32 packIndex = metaRemote->GetPackIndex(packName);
+        const PackMetaData::Dependencies& dependencies = metaRemote->GetDependencies(packIndex);
 
         const auto& allFiles = usedPackFile.filesTable.data.files;
         for (const auto& fileInfo : allFiles)
@@ -1483,26 +1512,19 @@ const DLCManager::IRequest* DLCManagerImpl::RequestPack(const String& packName)
 {
     DVASSERT(Thread::IsMainThread());
 
-    log << "requested: " << packName << std::endl;
-
-    const auto itPreloaded = preloadedPacks.find(packName);
-    if (end(preloadedPacks) != itPreloaded)
+    const PackRequest* request = FindRequest(packName);
+    if (request != nullptr)
     {
-        const PreloadedPack& request = itPreloaded->second;
-        return &request;
+        return request;
     }
 
     if (!IsInitialized())
     {
-        PackRequest* request = AddDelayedRequest(packName);
+        request = AddDelayedRequest(packName);
         return request;
     }
 
-    const PackRequest* request = FindRequest(packName);
-    if (request == nullptr)
-    {
-        request = CreateNewRequest(packName);
-    }
+    request = CreateNewRemoteRequest(packName);
     return request;
 }
 
@@ -1542,6 +1564,12 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
         return;
     }
 
+    if (HasLocalMeta() && GetLocalMeta().HasPack(requestedPackName))
+    {
+        Logger::Error("local pack: %s can't be removed", requestedPackName.c_str());
+        return;
+    }
+
     const IRequest* request = RequestPack(requestedPackName);
     if (request != nullptr)
     {
@@ -1551,7 +1579,7 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
 
         for (uint32 dependent : directDependencies)
         {
-            const String& depPackName = meta->GetPackInfo(dependent).packName;
+            const String& depPackName = metaRemote->GetPackInfo(dependent).packName;
             PackRequest* depRequest = FindRequest(depPackName);
             if (nullptr != depRequest)
             {
@@ -1571,12 +1599,12 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
 
         delete request;
 
-        if (meta)
+        if (metaRemote)
         {
             StringStream undeletedFiles;
             FileSystem* fs = GetEngineContext()->fileSystem;
             // remove all files for pack
-            Vector<uint32> fileIndexes = meta->GetFileIndexes(requestedPackName);
+            Vector<uint32> fileIndexes = metaRemote->GetFileIndexes(requestedPackName);
             for (uint32 index : fileIndexes)
             {
                 if (IsFileReady(index))
@@ -1600,6 +1628,29 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
                 log << "can't delete files: " << errMsg << std::endl;
                 Logger::Error("can't delete files: %s", errMsg.c_str());
             }
+        }
+    }
+}
+
+void DLCManager::ResetQueue()
+{
+}
+
+void DLCManagerImpl::ResetQueue()
+{
+    DVASSERT(Thread::IsMainThread());
+
+    if (IsInitialized() && requestManager)
+    {
+        // do NOT use reference
+        const Vector<PackRequest*> requests = requestManager->GetRequests();
+
+        requestManager->Clear();
+
+        for (PackRequest* r : requests)
+        {
+            RemoveRemoteRequest(r);
+            delete r;
         }
     }
 }
@@ -1641,7 +1692,7 @@ DLCManager::Progress DLCManagerImpl::GetProgress() const
             }
             else
             {
-                const PackMetaData::PackInfo& packInfo = meta->GetPackInfo(fileData.metaIndex);
+                const PackMetaData::PackInfo& packInfo = metaRemote->GetPackInfo(fileData.metaIndex);
                 if (requestManager->IsInQueue(packInfo.packName))
                 {
                     lastProgress.inQueue += fileData.compressedSize;
@@ -1675,14 +1726,14 @@ DLCManager::Progress DLCManagerImpl::GetPacksProgress(const Vector<String>& pack
 
     allPacks.clear();
 
-    const size_t packsCount = meta->GetPacksCount();
+    const size_t packsCount = metaRemote->GetPacksCount();
 
     allPacks.reserve(packsCount);
 
     for (const String& packName : packNames)
     {
-        uint32 packIndex = meta->GetPackIndex(packName);
-        const Vector<uint32>& childrenPacks = meta->GetDependencies(packIndex);
+        uint32 packIndex = metaRemote->GetPackIndex(packName);
+        const Vector<uint32>& childrenPacks = metaRemote->GetDependencies(packIndex);
         for (const uint32 childPackIndex : childrenPacks)
         {
             allPacks.insert(childPackIndex);
@@ -1723,7 +1774,7 @@ DLCManager::Info DLCManagerImpl::GetInfo() const
     {
         info.infoCrc32 = initFooterOnServer.infoCrc32;
         info.metaCrc32 = initFooterOnServer.metaDataCrc32;
-        info.totalFiles = static_cast<uint32>(meta->GetFileCount());
+        info.totalFiles = static_cast<uint32>(metaRemote->GetFileCount());
     }
     return info;
 }
@@ -1806,6 +1857,44 @@ bool DLCManagerImpl::IsAnyPackInQueue() const
     return false;
 }
 
+bool DLCManager::IsKnownFile(const FilePath&) const
+{
+    return false;
+}
+
+bool DLCManagerImpl::IsKnownFile(const FilePath& path) const
+{
+    String rel;
+    if (path.StartsWith("~res:/"))
+    {
+        rel = path.GetRelativePathname("~res:/");
+    }
+    else
+    {
+        rel = path.GetRelativePathname();
+    }
+
+    if (HasLocalMeta())
+    {
+        const auto& meta = GetLocalMeta();
+        const auto& tree = meta.GetFileNamesTree();
+        if (tree.Find(rel))
+        {
+            return true;
+        }
+    }
+    if (HasRemoteMeta())
+    {
+        const auto& meta = GetRemoteMeta();
+        const auto& remoteFilesTree = meta.GetFileNamesTree();
+        if (remoteFilesTree.Find(rel))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool DLCManagerImpl::IsPackInQueue(const String& packName) const
 {
     DVASSERT(Thread::IsMainThread());
@@ -1831,18 +1920,21 @@ const String& DLCManagerImpl::GetSuperPackUrl() const
 
 String DLCManagerImpl::GetRelativeFilePath(uint32 fileIndex)
 {
-    uint32 startOfFilePath = startFileNameIndexesInUncompressedNames.at(fileIndex);
+    const uint32 startOfFilePath = startFileNameIndexesInUncompressedNames.at(fileIndex);
     return &uncompressedFileNames.at(startOfFilePath);
 }
 
 void DLCManagerImpl::StartScanDownloadedFiles()
 {
-    if (ScanState::Wait == scanState)
+    if (!urlToSuperPack.empty())
     {
-        scanState = ScanState::Starting;
-        scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
-        scanThread->SetName("DLC::ThreadScanFunc");
-        scanThread->Start();
+        if (ScanState::Wait == scanState)
+        {
+            scanState = ScanState::Starting;
+            scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
+            scanThread->SetName("DLC::ThreadScanFunc");
+            scanThread->Start();
+        }
     }
 }
 
@@ -1926,11 +2018,11 @@ void DLCManagerImpl::ThreadScanFunc()
 {
     Thread* thisThread = Thread::Current();
     // scan files in download dir
-    int64 startTime = SystemTimer::GetMs();
+    const int64 startTime = SystemTimer::GetMs();
 
     ScanFiles(dirToDownloadedPacks, localFiles);
 
-    int64 finishScan = SystemTimer::GetMs() - startTime;
+    const int64 finishScan = SystemTimer::GetMs() - startTime;
 
     Logger::Info("finish scan files for: %fsec total files: %ld", finishScan / 1000.f, localFiles.size());
 
@@ -1939,10 +2031,14 @@ void DLCManagerImpl::ThreadScanFunc()
         return;
     }
 
-    metaDataLoadedSem.Wait();
+    metaRemoteDataLoadedSem.Wait();
 
-    if (thisThread->IsCancelling() || meta == nullptr)
+    if (thisThread->IsCancelling() || metaRemote == nullptr)
     {
+        if (metaRemote == nullptr)
+        {
+            Logger::Error("remote meta not loaded");
+        }
         return;
     }
 

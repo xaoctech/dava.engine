@@ -73,6 +73,5 @@ private:
     };
 
     UnorderedMap<Entity*, Vector<AttachedItemInfo>> inClonedState;
-    Set<Entity*> clonedEntityes;
 };
 } // namespace DAVA

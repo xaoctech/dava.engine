@@ -7,9 +7,12 @@
 #include <REPlatform/Scene/Systems/ModifSystem.h>
 #include <REPlatform/Scene/Systems/SelectionSystem.h>
 
+#include <Base/Vector.h>
 #include <Logger/Logger.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Entity.h>
 #include <Scene3D/Systems/LandscapeSystem.h>
 
 ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
@@ -117,7 +120,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
             addRo(item.AsEntity());
 
             Vector<Entity*> children;
-            item.AsEntity()->GetChildEntitiesWithComponent(children, Component::RENDER_COMPONENT);
+            item.AsEntity()->GetChildEntitiesWithComponent(children, DAVA::Type::Instance<DAVA::RenderComponent>());
             for (Entity* entity : children)
             {
                 addRo(entity);

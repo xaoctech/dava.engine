@@ -116,7 +116,7 @@ void EditorParticlesSystem::Draw()
 
     for (auto entity : entities)
     {
-        auto effect = static_cast<ParticleEffectComponent*>(entity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+        auto effect = entity->GetComponent<ParticleEffectComponent>();
         if (effect != nullptr)
         {
             for (uint32 i = 0, e = effect->GetEmittersCount(); i < e; ++i)

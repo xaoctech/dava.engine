@@ -1,6 +1,8 @@
 #include "REPlatform/DataNodes/SelectionData.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
 
+#include <Debug/DVAssert.h>
+
 namespace DAVA
 {
 const char* SelectionData::selectionPropertyName = "selection";
@@ -36,13 +38,13 @@ void SelectionData::ResetSelectionComponentMask()
     selectionSystem->ResetSelectionComponentMask();
 }
 
-void SelectionData::SetSelectionComponentMask(DAVA::uint64 mask)
+void SelectionData::SetSelectionComponentMask(const DAVA::ComponentMask& mask)
 {
     DVASSERT(selectionSystem);
     selectionSystem->SetSelectionComponentMask(mask);
 }
 
-DAVA::uint64 SelectionData::GetSelectionComponentMask() const
+const DAVA::ComponentMask& SelectionData::GetSelectionComponentMask() const
 {
     DVASSERT(selectionSystem);
     return selectionSystem->GetSelectionComponentMask();

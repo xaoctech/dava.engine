@@ -44,12 +44,15 @@ public:
     //to manage editor systems adding/deleting
     //to manage editor systems adding/deleting
     void AddSystem(SceneSystem* sceneSystem,
-                   uint64 componentFlags,
+                   const DAVA::ComponentMask& componentFlags,
                    uint32 processFlags = 0,
                    SceneSystem* insertBeforeSceneForProcess = nullptr,
                    SceneSystem* insertBeforeSceneForInput = nullptr,
                    SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
     void RemoveSystem(SceneSystem* sceneSystem) override;
+
+    bool AcquireInputLock(EditorSceneSystem* system);
+    void ReleaseInputLock(EditorSceneSystem* system);
 
     // save/load
     SceneFileV2::eError LoadScene(const FilePath& path) override;
@@ -138,6 +141,7 @@ protected:
     Vector<EditorSceneSystem*> editorSystems;
     Vector<EditorSceneSystem*> landscapeEditorSystems;
     Vector<Entity*> editorEntities;
+    EditorSceneSystem* inputLockedByThis = nullptr;
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder);
     void EditorCommandProcess(const RECommandNotificationObject& commandNotification);

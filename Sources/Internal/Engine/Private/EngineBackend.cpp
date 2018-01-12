@@ -63,6 +63,7 @@
 #include "Entity/ComponentManager.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Utils/Random.h"
+#include "Debug/DebugOverlay.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 #include "Engine/Private/Android/AssetsManagerAndroid.h"
@@ -236,6 +237,8 @@ void EngineBackend::Init(eEngineRunMode engineRunMode, const Vector<String>& mod
     //  - PackManager
     // Other subsystems are always created
     CreateSubsystems(modules);
+
+    context->componentManager->PreregisterAllDerivedSceneComponentsRecursively();
 
     isInitialized = true;
 
@@ -914,7 +917,8 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
         context->actionSystem = new ActionSystem();
         context->uiScreenManager = new UIScreenManager();
         context->localNotificationController = new LocalNotificationController();
-
+        context->debugOverlay = new DebugOverlay();
+        
 #if defined(__DAVAENGINE_STEAM__)
         Steam::Init();
 #endif
@@ -946,6 +950,12 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 
 void EngineBackend::DestroySubsystems()
 {
+    if (context->debugOverlay != nullptr)
+    {
+        delete context->debugOverlay; // Private destructor
+        context->debugOverlay = nullptr;
+    }
+
     // Shutdown subsystems
     if (context->uiControlSystem != nullptr)
     {

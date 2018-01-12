@@ -247,6 +247,18 @@ using CantBeCreatedManualyComponent = Meta<Metas::CantBeCreatedManualyComponent>
 */
 using CantBeDeletedManualyComponent = Meta<Metas::CantBeDeletedManualyComponent>;
 
+/** 
+    \ingroup metas
+    Says that type derived from Component and marked by this Meta can't be exported 
+*/
+using NonExportableComponent = Meta<Metas::NonExportableComponent>;
+
+/**
+    \ingroup metas
+    Says that type derived from Component and marked by this Meta can't be serialized
+*/
+using NonSerializableComponent = Meta<Metas::NonSerializableComponent>;
+
 using Tooltip = Meta<Metas::Tooltip>;
 using IntColor = Meta<Metas::IntColor>;
 

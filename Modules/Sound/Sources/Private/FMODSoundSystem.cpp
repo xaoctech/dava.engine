@@ -70,8 +70,8 @@ Function<void(jobject)> fmodActivityListenerUnregisterMethod = nullptr;
 #endif
 
 FMODSoundSystem::FMODSoundSystem(Engine* e)
-    : engine(e)
-    , SoundSystem(e)
+    : SoundSystem(e)
+    , engine(e)
 {
     engine->update.Connect(this, &FMODSoundSystem::OnUpdate);
     engine->suspended.Connect(this, &FMODSoundSystem::OnSuspend);

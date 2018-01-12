@@ -14,6 +14,7 @@
 #include <Render/Material/NMaterial.h>
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 
 DAVA_TARC_TESTCLASS(SceneValidationToolTest)
 {

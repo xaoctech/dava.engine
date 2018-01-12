@@ -5,10 +5,7 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class FieldBinder;
-}
 }
 
 class DisplayFrameModule : public BaseEditorModule

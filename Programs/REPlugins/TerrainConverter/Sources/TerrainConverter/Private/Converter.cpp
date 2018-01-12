@@ -382,7 +382,7 @@ void Converter::CheckUserNodes(Entity* curr, const Vector<String>& tags)
         return;
     }
     bool processed = false;
-    UserComponent* userComp = (UserComponent*)curr->GetComponent(Component::USER_COMPONENT);
+    UserComponent* userComp = curr->GetComponent<DAVA::UserComponent>();
     if (userComp)
     {
         AddPointToChunk(curr);
@@ -940,7 +940,7 @@ void Converter::DoConvertHM()
     if (land)
     {
         landscapeObject =
-        (Landscape*)((RenderComponent*)land->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
+        (Landscape*)(land->GetComponent<DAVA::RenderComponent>()->GetRenderObject());
         heightMap = landscapeObject->GetHeightmap();
 
         terrain = new Terrain(landscapeObject);

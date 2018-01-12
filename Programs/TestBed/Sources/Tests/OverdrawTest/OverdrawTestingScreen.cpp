@@ -10,6 +10,7 @@
 #include "Base/String.h"
 #include "Base/TemplateHelpers.h"
 #include "Engine/Engine.h"
+#include "Entity/ComponentUtils.h"
 #include "Render/2D/FTFont.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Highlevel/Camera.h"
@@ -67,11 +68,11 @@ OverdrawTestingScreen::OverdrawTestingScreen(TestBed& app_)
 void OverdrawTestingScreen::LoadResources()
 {
     scene = new Scene();
-    scene->LoadScene(FilePath("~res:3d/Maps/overdraw_test/TestingScene.sc2"));
+    scene->LoadScene(FilePath("~res:/TestBed/3d/Maps/overdraw_test/TestingScene.sc2"));
 
     if (font == nullptr)
     {
-        font = FTFont::Create("~res:/Fonts/korinna.ttf");
+        font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         DVASSERT(font);
     }
 
@@ -82,10 +83,10 @@ void OverdrawTestingScreen::LoadResources()
                                                 AddButtons();
                                             });
 
-    scene->AddSystem(testerSystem, MAKE_COMPONENT_MASK(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(testerSystem, DAVA::ComponentUtils::MakeMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     chartPainterSystem = new ChartPainterSystem(scene, OverdrawTestConfig::chartHeight);
-    scene->AddSystem(chartPainterSystem, MAKE_COMPONENT_MASK(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+    scene->AddSystem(chartPainterSystem, DAVA::ComponentUtils::MakeMask<OverdrawTesterComponent>(), Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
 
     ScopedPtr<Camera> camera(new Camera());
 

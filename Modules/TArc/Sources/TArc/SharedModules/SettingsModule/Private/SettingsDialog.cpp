@@ -80,7 +80,7 @@ public:
             componentValue->SetStyle(style);
         }
 
-        return std::move(componentValue);
+        return std::unique_ptr<BaseComponentValue>(std::move(componentValue));
     }
 };
 

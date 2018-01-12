@@ -18,7 +18,6 @@ private:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    virtual uint32 GetType() const override;
     virtual Component* Clone(Entity* toEntity) override;
 
     DAVA_VIRTUAL_REFLECTION(VehicleChassisComponent, Component);

@@ -10,8 +10,8 @@ class UniversalDataListener : public DataListener
 public:
     UniversalDataListener(const Reflection& model_, ContextAccessor* accessor_)
         : type(nullptr)
-        , accessor(accessor_)
         , model(model_)
+        , accessor(accessor_)
     {
         const Type* t = model.GetValueType();
         if (t->IsPointer())

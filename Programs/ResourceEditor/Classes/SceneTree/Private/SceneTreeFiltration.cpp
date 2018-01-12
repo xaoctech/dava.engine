@@ -15,7 +15,22 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Entity.h>
+#include <Scene3D/Components/ActionComponent.h>
+#include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
+#include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/SwitchComponent.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Components/QualitySettingsComponent.h>
+#include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Components/VisibilityCheckComponent.h>
+#include <Scene3D/Components/WaveComponent.h>
+#include <Scene3D/Components/WindComponent.h>
+#include <Scene3D/Components/Waypoint/PathComponent.h>
+#include <Scene3D/Lod/LodComponent.h>
 
 namespace DAVA
 {
@@ -60,7 +75,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SceneTreeFilterBase)
     .End();
 }
 
-template <Component::eType ComponentType>
+template <typename ComponentType>
 class ComponentFilter : public SceneTreeFilterBase
 {
 public:
@@ -91,7 +106,7 @@ public:
         }
 
         Entity* entity = object.Cast<Entity>();
-        return HasComponent(entity, ComponentType);
+        return HasComponent(entity, Type::Instance<ComponentType>());
     }
 
 private:
@@ -100,7 +115,7 @@ private:
     DAVA_VIRTUAL_REFLECTION(ComponentFilter, SceneTreeFilterBase);
 };
 
-using LightComponentFilter = ComponentFilter<Component::LIGHT_COMPONENT>;
+using LightComponentFilter = ComponentFilter<LightComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(LightComponentFilter)
 {
     ReflectionRegistrator<LightComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Light")]
@@ -109,7 +124,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(LightComponentFilter)
     .End();
 }
 
-using CameraComponentFilter = ComponentFilter<Component::CAMERA_COMPONENT>;
+using CameraComponentFilter = ComponentFilter<CameraComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(CameraComponentFilter)
 {
     ReflectionRegistrator<CameraComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Camera")]
@@ -118,7 +133,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(CameraComponentFilter)
     .End();
 }
 
-using UserNodeComponentFilter = ComponentFilter<Component::USER_COMPONENT>;
+using UserNodeComponentFilter = ComponentFilter<UserComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(UserNodeComponentFilter)
 {
     ReflectionRegistrator<UserNodeComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("User Node")]
@@ -127,7 +142,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(UserNodeComponentFilter)
     .End();
 }
 
-using SwitchNodeComponentFilter = ComponentFilter<Component::SWITCH_COMPONENT>;
+using SwitchNodeComponentFilter = ComponentFilter<SwitchComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SwitchNodeComponentFilter)
 {
     ReflectionRegistrator<SwitchNodeComponentFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Switch")]
@@ -136,7 +151,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SwitchNodeComponentFilter)
     .End();
 }
 
-using ParticleEffectFilter = ComponentFilter<Component::PARTICLE_EFFECT_COMPONENT>;
+using ParticleEffectFilter = ComponentFilter<ParticleEffectComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ParticleEffectFilter)
 {
     ReflectionRegistrator<ParticleEffectFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Particle Effect Node")]
@@ -145,7 +160,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ParticleEffectFilter)
     .End();
 }
 
-using WindFilter = ComponentFilter<Component::WIND_COMPONENT>;
+using WindFilter = ComponentFilter<WindComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(WindFilter)
 {
     ReflectionRegistrator<WindFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Wind")]
@@ -154,7 +169,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(WindFilter)
     .End();
 }
 
-using PathFilter = ComponentFilter<Component::PATH_COMPONENT>;
+using PathFilter = ComponentFilter<PathComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(PathFilter)
 {
     ReflectionRegistrator<PathFilter>::Begin()[M::Group("Object Type"), M::DisplayName("Path")]
@@ -331,7 +346,7 @@ public:
     }
 };
 
-using ActionFilter = ComponentFilter<Component::ACTION_COMPONENT>;
+using ActionFilter = ComponentFilter<ActionComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ActionFilter)
 {
     ReflectionRegistrator<ActionFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Action")]
@@ -340,7 +355,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(ActionFilter)
     .End();
 }
 
-using QualitySettingsFilter = ComponentFilter<Component::QUALITY_SETTINGS_COMPONENT>;
+using QualitySettingsFilter = ComponentFilter<QualitySettingsComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(QualitySettingsFilter)
 {
     ReflectionRegistrator<QualitySettingsFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Quality Settings")]
@@ -349,7 +364,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(QualitySettingsFilter)
     .End();
 }
 
-using StaticOcclusionFilter = ComponentFilter<Component::STATIC_OCCLUSION_COMPONENT>;
+using StaticOcclusionFilter = ComponentFilter<StaticOcclusionComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(StaticOcclusionFilter)
 {
     ReflectionRegistrator<StaticOcclusionFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Static Occlusion")]
@@ -358,7 +373,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(StaticOcclusionFilter)
     .End();
 }
 
-using SoundFilter = ComponentFilter<Component::SOUND_COMPONENT>;
+using SoundFilter = ComponentFilter<SoundComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SoundFilter)
 {
     ReflectionRegistrator<SoundFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Sound")]
@@ -367,7 +382,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SoundFilter)
     .End();
 }
 
-using WaveFilter = ComponentFilter<Component::WAVE_COMPONENT>;
+using WaveFilter = ComponentFilter<WaveComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(WaveFilter)
 {
     ReflectionRegistrator<WaveFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Wave")]
@@ -376,7 +391,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(WaveFilter)
     .End();
 }
 
-using SkeletonFilter = ComponentFilter<Component::SKELETON_COMPONENT>;
+using SkeletonFilter = ComponentFilter<SkeletonComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SkeletonFilter)
 {
     ReflectionRegistrator<SkeletonFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Skeleton")]
@@ -385,7 +400,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(SkeletonFilter)
     .End();
 }
 
-using VisibilityFilter = ComponentFilter<Component::VISIBILITY_CHECK_COMPONENT>;
+using VisibilityFilter = ComponentFilter<VisibilityCheckComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(VisibilityFilter)
 {
     ReflectionRegistrator<VisibilityFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Visibility")]
@@ -394,7 +409,7 @@ DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(VisibilityFilter)
     .End();
 }
 
-using LodFilter = ComponentFilter<Component::LOD_COMPONENT>;
+using LodFilter = ComponentFilter<LodComponent>;
 DAVA_VIRTUAL_TEMPLATE_SPECIALIZATION_REFLECTION_IMPL(LodFilter)
 {
     ReflectionRegistrator<LodFilter>::Begin()[M::Group("Component Filter"), M::DisplayName("Lod")]

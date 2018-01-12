@@ -31,8 +31,8 @@ public:
 
     //Support old selectionSystem interface
     void ResetSelectionComponentMask();
-    void SetSelectionComponentMask(uint64 mask);
-    uint64 GetSelectionComponentMask() const;
+    void SetSelectionComponentMask(const ComponentMask& mask);
+    const ComponentMask& GetSelectionComponentMask() const;
 
     void SetSelectionAllowed(bool allowed);
     bool IsSelectionAllowed() const;

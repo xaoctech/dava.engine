@@ -98,7 +98,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             if (ro->GetType() != RenderObject::TYPE_MESH)
                 continue;
 
-            SlotComponent* comp = static_cast<DAVA::SlotComponent*>(child->GetComponent(DAVA::Component::SLOT_COMPONENT));
+            SlotComponent* comp = child->GetComponent<SlotComponent>();
             if (comp == nullptr)
                 continue;
 

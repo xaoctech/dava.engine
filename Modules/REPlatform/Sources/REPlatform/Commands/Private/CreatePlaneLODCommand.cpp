@@ -1,6 +1,6 @@
 #include "REPlatform/Commands/CreatePlaneLODCommand.h"
 #include "REPlatform/Scene/SceneHelper.h"
-#include "REPlatform/Scene/Utils/TextureDescriptorUtils.h"
+#include "REPlatform/Scene/Utils/RETextureDescriptorUtils.h"
 
 #include <Debug/DVAssert.h>
 #include <FileSystem/FileSystem.h>
@@ -68,7 +68,7 @@ void CreatePlaneLODCommand::CreateTextureFiles()
     FilePath folder = request->texturePath.GetDirectory();
     FileSystem::Instance()->CreateDirectory(folder, true);
     ImageSystem::Save(request->texturePath, request->planeImage);
-    TextureDescriptorUtils::CreateOrUpdateDescriptor(request->texturePath);
+    RETextureDescriptorUtils::CreateOrUpdateDescriptor(request->texturePath);
 }
 
 void CreatePlaneLODCommand::DeleteTextureFiles()

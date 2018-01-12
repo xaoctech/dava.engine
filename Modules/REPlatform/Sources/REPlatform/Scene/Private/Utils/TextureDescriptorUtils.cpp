@@ -1,4 +1,4 @@
-#include "REPlatform/Scene/Utils/TextureDescriptorUtils.h"
+#include "REPlatform/Scene/Utils/RETextureDescriptorUtils.h"
 #include "REPlatform/Scene/Utils/ImageTools.h"
 #include "REPlatform/Scene/Utils/Preset.h"
 
@@ -10,7 +10,7 @@
 
 namespace DAVA
 {
-namespace TextureDescriptorUtils
+namespace RETextureDescriptorUtils
 {
 namespace Internal
 {
@@ -284,5 +284,5 @@ void SavePreset(const DAVA::Vector<DAVA::FilePath>& descriptors, const DAVA::Vec
         }
     }
 }
-} // namespace TextureDescriptorUtils
+} // namespace RETextureDescriptorUtils
 } // namespace DAVA

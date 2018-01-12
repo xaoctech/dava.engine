@@ -910,7 +910,7 @@ bool SceneFileV2::LoadHierarchy(Scene* scene, Entity* parent, File* file, int32 
             node->RemoveAllChildren();
         }
 
-        ParticleEffectComponent* effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+        ParticleEffectComponent* effect = node->GetComponent<ParticleEffectComponent>();
         if (effect && (effect->loadedVersion == 0))
             effect->CollapseOldEffect(&serializationContext);
 
@@ -1013,8 +1013,8 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity* currentNode)
 
         uint32 componentCount = currentNode->GetComponentCount();
 
-        Component* tr = currentNode->GetComponent(Component::TRANSFORM_COMPONENT);
-        Component* cp = currentNode->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
+        Component* tr = currentNode->GetComponent(Type::Instance<TransformComponent>());
+        Component* cp = currentNode->GetComponent(Type::Instance<CustomPropertiesComponent>());
         if (((componentCount == 2) && (!cp || !tr)) ||
             (componentCount > 2))
         {
@@ -1066,12 +1066,12 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
     if (currentNode->GetChildrenCount() == 1)
     {
         uint32 allowed_comp_count = 0;
-        if (nullptr != currentNode->GetComponent(Component::TRANSFORM_COMPONENT))
+        if (nullptr != currentNode->GetComponent<TransformComponent>())
         {
             allowed_comp_count++;
         }
 
-        if (nullptr != currentNode->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT))
+        if (nullptr != currentNode->GetComponent<CustomPropertiesComponent>())
         {
             allowed_comp_count++;
         }
@@ -1101,7 +1101,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
                 parent->InsertBeforeNode(childNode, currentNode);
 
                 //MEGA kostyl
-                if (!childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT)) //do not rename effects
+                if (!childNode->GetComponent<ParticleEffectComponent>()) //do not rename effects
                 {
                     childNode->SetName(currentName);
                 }

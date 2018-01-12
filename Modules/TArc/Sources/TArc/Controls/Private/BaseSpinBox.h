@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TArc/Controls/ControlProxy.h"
-#include "TArc/Controls/Private/ValidationUtils.h"
 #include "TArc/Controls/CommonStrings.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/Qt/QtString.h"

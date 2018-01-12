@@ -95,7 +95,7 @@ void StaticOcclusion::AdvanceToNextBlock()
     }
 }
 
-bool StaticOcclusion::ProccessBlock()
+bool StaticOcclusion::ProcessBlock()
 {
     if (!ProcessRecorderQueries())
     {

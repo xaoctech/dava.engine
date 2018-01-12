@@ -242,6 +242,21 @@ void WindowNativeBridge::PostSafeAreaInsetsChanged()
 
         ::UIScreen* screen = [ ::UIScreen mainScreen];
         CGFloat scale = [screen scale];
+
+        // Next condition and magic constants are redundant for iOS 11 (and XCode 9)
+        if (FLOAT_EQUAL(safeAreaInsets.left, 0.0f) &&
+            FLOAT_EQUAL(safeAreaInsets.right, 0.0f) &&
+            FLOAT_EQUAL(safeAreaInsets.top, 0.0f) &&
+            FLOAT_EQUAL(safeAreaInsets.bottom, 0.0f) &&
+            [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone &&
+            FLOAT_EQUAL([screen nativeBounds].size.height, 2436.0f))
+        {
+            safeAreaInsets.left = 44.0f;
+            safeAreaInsets.right = 44.0f;
+            safeAreaInsets.top = 0.0f;
+            safeAreaInsets.bottom = 21.0f;
+        }
+
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         bool isLeftNotch = safeAreaInsets.left > 0.0f && orientation == UIInterfaceOrientationLandscapeRight;
         bool isRightNotch = safeAreaInsets.right > 0.0f && orientation == UIInterfaceOrientationLandscapeLeft;

@@ -69,7 +69,7 @@ public:
         }
     }
 
-    void InitPluginsManager(const String& applicationName, const String& pluginsFolder);
+    void InitPluginManager(const String& applicationName, const String& pluginsFolder);
 
     DAVA_DEPRECATED(const EngineContext* GetEngineContext());
     DAVA_DEPRECATED(CoreInterface* GetCoreInterface());
