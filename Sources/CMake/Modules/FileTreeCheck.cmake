@@ -15,9 +15,15 @@ macro ( file_tree_check )
         get_property( ALL_TARGET_PROJECTS_LIST GLOBAL PROPERTY ALL_TARGET_PROJECTS_LIST )
         get_property( ALL_TARGET_MODULES_LIST GLOBAL PROPERTY ALL_TARGET_MODULES_LIST )
 
+        set( PROJECTS_FOLDERS )
+        foreach( FOLDER ${ALL_PROJECTS_FOLDERS} )
+            if( NOT ${FOLDER} MATCHES ${CMAKE_BINARY_DIR} )
+                list( APPEND PROJECTS_FOLDERS ${FOLDER} )
+            endif()
+        endforeach()
 
-        string(REPLACE ";" " " folders "${ALL_PROJECTS_FOLDERS}" )
-        string(REPLACE "\"" "" folders "${ALL_PROJECTS_FOLDERS}" )
+        string(REPLACE ";" " " folders "${PROJECTS_FOLDERS}" )
+        string(REPLACE "\"" "" folders "${PROJECTS_FOLDERS}" )
 
         EXECUTE_PROCESS(
             COMMAND ${PYTHON_EXECUTABLE} "${DAVA_SCRIPTS_FILES_PATH}/file_tree_hash.py" ${folders}

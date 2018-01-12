@@ -3,6 +3,7 @@
 #include "REPlatform/Commands/RECommand.h"
 
 #include <Reflection/Reflection.h>
+#include <Math/Matrix4.h>
 
 namespace DAVA
 {
@@ -10,7 +11,7 @@ class Entity;
 class EntityParentChangeCommand : public RECommand
 {
 public:
-    EntityParentChangeCommand(Entity* entity, Entity* newParent, Entity* newBefore = NULL);
+    EntityParentChangeCommand(Entity* entity, Entity* newParent, bool saveEntityPosition, Entity* newBefore = nullptr);
     ~EntityParentChangeCommand();
 
     void Undo() override;
@@ -22,6 +23,10 @@ public:
     Entity* oldBefore;
     Entity* newParent;
     Entity* newBefore;
+    bool saveEntityPosition;
+
+    Matrix4 oldTransform;
+    Matrix4 newTransform;
 
 private:
     DAVA_VIRTUAL_REFLECTION(EntityParentChangeCommand, RECommand);

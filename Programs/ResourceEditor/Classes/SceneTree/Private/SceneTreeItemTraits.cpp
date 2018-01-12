@@ -6,6 +6,7 @@
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/DataNodes/Selectable.h>
 #include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
 #include <REPlatform/Global/REMeta.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/Scene/Systems/EditorParticlesSystem.h>
@@ -339,7 +340,10 @@ bool EntityTraits::Drop(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction 
 
             DAVA::SelectableGroup entitiesToMove;
             entitiesToMove.Add(objects);
-            scene->GetSystem<DAVA::StructureSystem>()->Move(entitiesToMove, newParentEntity, insertBefore);
+
+            DAVA::GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::GlobalSceneSettings>();
+            scene->GetSystem<DAVA::StructureSystem>()->Move(entitiesToMove, newParentEntity, insertBefore,
+                                                            settings->saveEntityPositionOnHierarchyChange);
         }
     }
 

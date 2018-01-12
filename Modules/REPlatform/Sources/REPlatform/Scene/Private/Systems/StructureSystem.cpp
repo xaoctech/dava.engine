@@ -70,7 +70,7 @@ StructureSystem::~StructureSystem()
 {
 }
 
-void StructureSystem::Move(const SelectableGroup& objects, Entity* newParent, Entity* newBefore)
+void StructureSystem::Move(const SelectableGroup& objects, Entity* newParent, Entity* newBefore, bool saveEntityPositionOnHierarchyChange)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     const auto& objectsContent = objects.GetContent();
@@ -80,7 +80,9 @@ void StructureSystem::Move(const SelectableGroup& objects, Entity* newParent, En
     sceneEditor->BeginBatch("Move entities", objects.GetSize());
     for (auto entity : objects.ObjectsOfType<Entity>())
     {
-        sceneEditor->Exec(std::unique_ptr<Command>(new EntityParentChangeCommand(entity, newParent, newBefore)));
+        sceneEditor->Exec(std::unique_ptr<Command>(new EntityParentChangeCommand(entity, newParent,
+                                                                                 saveEntityPositionOnHierarchyChange,
+                                                                                 newBefore)));
     }
     sceneEditor->EndBatch();
     EmitChanged();

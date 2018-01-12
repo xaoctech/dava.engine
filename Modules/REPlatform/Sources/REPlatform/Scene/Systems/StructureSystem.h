@@ -29,7 +29,7 @@ public:
 
     void Process(float32 timeElapsed) override;
 
-    void Move(const SelectableGroup& objects, Entity* newParent, Entity* newBefore);
+    void Move(const SelectableGroup& objects, Entity* newParent, Entity* newBefore, bool saveEntityPositionOnHierarchyChange);
     void MoveEmitter(const Vector<ParticleEmitterInstance*>& emitters, const Vector<ParticleEffectComponent*>& oldEffects, ParticleEffectComponent* newEffect, int dropAfter);
     void MoveLayer(const Vector<ParticleLayer*>& layers, const Vector<ParticleEmitterInstance*>& oldEmitters, ParticleEmitterInstance* newEmitter, ParticleLayer* newBefore);
     void MoveSimplifiedForce(const Vector<ParticleForceSimplified*>& forces, const Vector<ParticleLayer*>& oldLayers, ParticleLayer* newLayer);
