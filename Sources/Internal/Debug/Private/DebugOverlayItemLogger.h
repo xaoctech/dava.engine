@@ -20,5 +20,6 @@ public:
 
 private:
     std::unique_ptr<DebugOverlayItemLoggerDetail::LoggerOutputContainer> loggerOutput;
+    bool collectingLogs;
 };
 }
