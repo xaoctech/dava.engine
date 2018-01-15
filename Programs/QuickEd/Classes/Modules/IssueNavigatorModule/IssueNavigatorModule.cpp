@@ -1,6 +1,7 @@
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 
 #include "Classes/Modules/IssueNavigatorModule/IssueData.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorData.h"
 #include "Classes/Modules/IssueNavigatorModule/LayoutIssueHandler.h"
 #include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
 #include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
@@ -39,8 +40,8 @@ void IssueNavigatorModule::PostInit()
     DockPanelInfo panelInfo;
     panelInfo.title = title;
     panelInfo.area = Qt::BottomDockWidgetArea;
-    PanelKey key(title, panelInfo);
 
+    PanelKey key(title, panelInfo);
     TableView::Params params(GetAccessor(), GetUI(), DAVA::TArc::mainWindowKey);
     params.fields[TableView::Fields::Header] = "header";
     params.fields[TableView::Fields::Values] = "issues";
@@ -50,10 +51,13 @@ void IssueNavigatorModule::PostInit()
     TableView* tableView = new TableView(params, GetAccessor(), DAVA::Reflection::Create(DAVA::ReflectedObject(this)));
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, tableView->ToWidgetCast());
 
+    std::unique_ptr<IssueNavigatorData> data = std::make_unique<IssueNavigatorData>();
     DAVA::int32 sectionId = 0;
     handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
     handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
     handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
+
+    GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
 void IssueNavigatorModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
