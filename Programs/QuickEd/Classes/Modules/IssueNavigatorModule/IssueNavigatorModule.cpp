@@ -1,9 +1,9 @@
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
 
-#include "Modules/IssueNavigatorModule/IssueData.h"
-#include "Modules/IssueNavigatorModule/LayoutIssueHandler.h"
-#include "Modules/IssueNavigatorModule/NamingIssuesHandler.h"
-#include "Modules/IssueNavigatorModule/EventsIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueData.h"
+#include "Classes/Modules/IssueNavigatorModule/LayoutIssueHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
