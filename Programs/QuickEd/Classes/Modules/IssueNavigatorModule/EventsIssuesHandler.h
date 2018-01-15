@@ -25,7 +25,7 @@ class IntrospectionProperty;
 class EventsIssuesHandler : public IssueHandler, PackageListener
 {
 public:
-    EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IndexGenerator& indexGenerator);
+    EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~EventsIssuesHandler() override = default;
 
     // PackageListener
@@ -67,10 +67,9 @@ private:
 
     void SearchIssuesInPackage(PackageNode* package);
 
-    DAVA::TArc::UI* ui = nullptr;
     PackageListenerProxy packageListenerProxy;
 
-    IndexGenerator& indexGenerator;
+    IndexGenerator* indexGenerator = nullptr;
     DAVA::Vector<EventIssue> issues;
 
     DAVA::UnorderedMap<const DAVA::Type*, DAVA::Set<DAVA::FastName>> componentsAndProperties;

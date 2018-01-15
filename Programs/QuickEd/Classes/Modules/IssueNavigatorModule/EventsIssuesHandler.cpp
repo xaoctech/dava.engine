@@ -19,9 +19,8 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IndexGenerator& indexGenerator_)
+EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IndexGenerator* indexGenerator_)
     : IssueHandler(accessor_, sectionId_)
-    , ui(ui_)
     , indexGenerator(indexGenerator_)
     , packageListenerProxy(this, accessor_)
 {
@@ -77,7 +76,7 @@ DAVA::String EventsIssuesHandler::GetPathToControl(const ControlNode* node) cons
 
 void EventsIssuesHandler::CreateIssue(ControlNode* node, const DAVA::Type* componentType, const DAVA::String& propertyName)
 {
-    DAVA::int32 issueId = indexGenerator.NextIssueId();
+    DAVA::int32 issueId = indexGenerator->NextIssueId();
 
     EventIssue eventIssue;
     eventIssue.node = node;

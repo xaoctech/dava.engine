@@ -51,9 +51,9 @@ void IssueNavigatorModule::PostInit()
     GetUI()->AddView(DAVA::TArc::mainWindowKey, key, tableView->ToWidgetCast());
 
     DAVA::int32 sectionId = 0;
-    handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
-    handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
-    handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, indexGenerator));
+    handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
+    handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
+    handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
 }
 
 void IssueNavigatorModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
@@ -78,12 +78,12 @@ void IssueNavigatorModule::OnContextWillBeChanged(DAVA::TArc::DataContext* curre
     }
 }
 
-void IssueNavigatorModule::OnIssueAvitvated(size_t index)
+void IssueNavigatorModule::OnIssueAvitvated(DAVA::int32 index)
 {
     const DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
     if (context)
     {
-        DVASSERT(index != static_cast<size_t>(-1));
+        DVASSERT(index != -1);
 
         IssueData* issueData = context->GetData<IssueData>();
         if (issueData)
@@ -135,11 +135,11 @@ void IssueNavigatorModule::SetCurrentValue(const DAVA::Any& currentValue)
 {
     if (currentValue.IsEmpty())
     {
-        current = static_cast<size_t>(0);
+        current = 0;
     }
     else
     {
-        current = currentValue.Cast<size_t>();
+        current = currentValue.Cast<DAVA::int32>();
     }
 }
 

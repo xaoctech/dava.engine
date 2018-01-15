@@ -227,9 +227,9 @@ void TableView::OnDoubleClick(const QModelIndex& index)
             DVASSERT(index.row() < static_cast<int>(m->values.size()));
             Any rowKey = m->values[index.row()].first;
 
-            if (argsType.size() == 1 && argsType[0] == rowKey.GetType())
+            if (argsType.size() == 1)
             {
-                method.Invoke(rowKey);
+                method.InvokeWithCast(rowKey);
             }
             else
             {

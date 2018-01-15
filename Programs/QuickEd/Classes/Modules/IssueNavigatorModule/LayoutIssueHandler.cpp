@@ -16,7 +16,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-LayoutIssueHandler::LayoutIssueHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IndexGenerator& indexGenerator_)
+LayoutIssueHandler::LayoutIssueHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IndexGenerator* indexGenerator_)
     : IssueHandler(accessor_, sectionId_)
     , indexGenerator(indexGenerator_)
     , ui(ui_)
@@ -44,7 +44,7 @@ void LayoutIssueHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vect
         }
         else
         {
-            DAVA::int32 nextIssueId = indexGenerator.NextIssueId();
+            DAVA::int32 nextIssueId = indexGenerator->NextIssueId();
             AddIssue(nextIssueId,
                      formula->GetErrorMessage(),
                      documentData->GetPackagePath().GetFrameworkPath(),

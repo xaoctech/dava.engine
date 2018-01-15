@@ -22,7 +22,7 @@ class IndexGenerator;
 class NamingIssuesHandler : public IssueHandler, PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui_, DAVA::int32 sectionId, IndexGenerator& indexGenerator);
+    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui_, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~NamingIssuesHandler() override = default;
 
     // IssuesHandler
@@ -74,7 +74,7 @@ private:
     DuplicationsIssuesMap::iterator FindInDuplicationsIssues(ControlNode* node);
 
 private:
-    IndexGenerator& indexGenerator;
+    IndexGenerator* indexGenerator = nullptr;
 
     DAVA::UnorderedMap<PackageNode*, PackageIssues> packageIssues;
     PackageNode* currentPackage = nullptr;
