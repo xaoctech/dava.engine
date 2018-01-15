@@ -1,7 +1,6 @@
-#ifndef __ENTITY_PARENT_CHANGE_COMMAND_H__
-#define __ENTITY_PARENT_CHANGE_COMMAND_H__
-
+#pragma once
 #include "Commands2/Base/RECommand.h"
+#include "Math/Matrix4.h"
 
 namespace DAVA
 {
@@ -11,18 +10,22 @@ class Entity;
 class EntityParentChangeCommand : public RECommand
 {
 public:
-    EntityParentChangeCommand(DAVA::Entity* entity, DAVA::Entity* newParent, DAVA::Entity* newBefore = NULL);
+    EntityParentChangeCommand(DAVA::Entity* entity, DAVA::Entity* newParent,
+                              bool saveEntityPosition,
+                              DAVA::Entity* newBefore = nullptr);
     ~EntityParentChangeCommand();
 
     void Undo() override;
     void Redo() override;
     DAVA::Entity* GetEntity() const;
 
-    DAVA::Entity* entity;
-    DAVA::Entity* oldParent;
-    DAVA::Entity* oldBefore;
-    DAVA::Entity* newParent;
-    DAVA::Entity* newBefore;
-};
+    DAVA::Entity* entity = nullptr;
+    DAVA::Entity* oldParent = nullptr;
+    DAVA::Entity* oldBefore = nullptr;
+    DAVA::Entity* newParent = nullptr;
+    DAVA::Entity* newBefore = nullptr;
+    bool saveEntityPosition;
 
-#endif // __ENTITY_PARENT_CHANGE_COMMAND_H__
+    DAVA::Matrix4 oldTransform;
+    DAVA::Matrix4 newTransform;
+};

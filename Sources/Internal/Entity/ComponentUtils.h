@@ -30,6 +30,12 @@ public:
     static uint32 GetRuntimeIndex(const Component* component);
 
     /**
+        Return sorted runtime component index, based on permanent name.
+        Behavior is undefined if `component` type is not registered in ComponentManager.
+    */
+    static uint32 GetSortedIndex(const Component* component);
+
+    /**
         Return ComponentMask with flag corresponding to `componentType` set to true.
         Behavior is undefined if `componentType` is not registered in ComponentManager.
     */

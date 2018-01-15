@@ -32,6 +32,11 @@ object dava_framework_NewBuilds_Tests_TestBed_MacOS : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "generate project"
             workingDir = "%pathToProjectBuild%"
             scriptContent = "python %dava_gen% %platform% %pathToProject% --add_definitions=%add_definitions%"
