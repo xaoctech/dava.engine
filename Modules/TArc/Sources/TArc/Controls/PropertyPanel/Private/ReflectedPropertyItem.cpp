@@ -115,7 +115,7 @@ int32 ReflectedPropertyItem::LookupChildPosition(const std::shared_ptr<PropertyN
     DVASSERT(nodeParent != nullptr);
     while (true)
     {
-        if (positionCandidate >= children.size())
+        if (positionCandidate >= static_cast<int32>(children.size()))
         {
             break;
         }
