@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Debug/DebugOverlayItem.h"
+#include "Concurrency/Atomic.h"
 
 namespace DAVA
 {
@@ -20,5 +21,8 @@ public:
 
 private:
     std::unique_ptr<DebugOverlayItemLoggerDetail::LoggerOutputContainer> loggerOutput;
+    Atomic<bool> collectingLogs{ false };
+
+    friend class DebugOverlayItemLoggerDetail::LoggerOutputContainer;
 };
 }
