@@ -668,7 +668,8 @@ macro( setup_main_module )
                 
                 generated_unity_sources( ALL_SRC  IGNORE_LIST ${UNITY_IGNORE_LIST}
                                                   IGNORE_LIST_${DAVA_PLATFORM_CURRENT} ${UNITY_IGNORE_LIST_${DAVA_PLATFORM_CURRENT}}
-                                                  CUSTOM_PACK_1 ${CUSTOM_PACK_1} ${CUSTOM_PACK_1_${DAVA_PLATFORM_CURRENT}}) 
+                                                  CUSTOM_PACK_1 ${CUSTOM_PACK_1} ${CUSTOM_PACK_1_${DAVA_PLATFORM_CURRENT}}
+                                                  UNITYIGNORE_FILES ${PROJECT_UNITYIGNORE_FILES} ) 
             endif()
 
             if( ${MODULE_TYPE} STREQUAL "STATIC" )

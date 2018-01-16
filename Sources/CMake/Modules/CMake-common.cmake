@@ -233,6 +233,7 @@ endmacro()
 #   PROJECT_SOURCE_FILES_CPP
 #   PROJECT_FOLDERS
 #   PROJECT_HEADER_FILE_ONLY
+#   PROJECT_UNITYIGNORE_FILES
 macro (define_source)
     cmake_parse_arguments ( ARG ""  "RECURSIVE_CALL" "SOURCE;SOURCE_RECURSE;GROUP_SOURCE;GROUP_STRINGS;IGNORE_ITEMS" ${ARGN} )
     list( APPEND ARG_IGNORE_ITEMS ".unittest.cpp" )
@@ -240,11 +241,15 @@ macro (define_source)
     list( APPEND DEFINE_SOURCE_LIST "define_source" )
     set_property(GLOBAL PROPERTY DEFINE_SOURCE_LIST ${DEFINE_SOURCE_LIST} )
 
+    set( FILE_EXTENSIONS_CPP .c .cc .cpp )
+    set( FILE_EXTENSIONS_HPP .h .hpp )
+    set( FILE_EXTENSIONS_UNITYIGNORE unityignore )
     if( NOT ARG_RECURSIVE_CALL )
         set( PROJECT_SOURCE_FILES )
         set( PROJECT_SOURCE_FILES_CPP )
         set( PROJECT_SOURCE_FILES_HPP )
         set( PROJECT_HEADER_FILE_ONLY )
+        set( PROJECT_UNITYIGNORE_FILES )
 
         if( NOT ARG_SOURCE AND NOT ARG_SOURCE_RECURSE )
             set( ARG_SOURCE ${CMAKE_CURRENT_LIST_DIR} )
@@ -274,8 +279,6 @@ macro (define_source)
         list( APPEND ARG_SOURCE ${LIST_SOURCE_RECURSE} )
     endforeach ()
 
-    set( FILE_EXTENSIONS_CPP .c .cc .cpp )
-    set( FILE_EXTENSIONS_HPP .h .hpp )
     if( APPLE )
         list( APPEND FILE_EXTENSIONS_CPP .m .mm )
     endif()
@@ -419,13 +422,24 @@ macro (define_source)
                 source_group( "${ITEM_ARG_GROUP_SOURCE}" FILES ${${ITEM_ARG_GROUP_SOURCE}} )
             endif()
         endforeach () 
+        
         set_property(GLOBAL PROPERTY PROJECT_FOLDERS  ) 
-    endif()
 
-    if( TARGET_FOLDERS_${PROJECT_NAME} )
-        list( REMOVE_DUPLICATES TARGET_FOLDERS_${PROJECT_NAME} )
-    endif()
+        if( TARGET_FOLDERS_${PROJECT_NAME} )
+            list( REMOVE_DUPLICATES TARGET_FOLDERS_${PROJECT_NAME} )
+        endif()
 
+        foreach( FOLDER ${TARGET_FOLDERS_${PROJECT_NAME}} ${CMAKE_CURRENT_LIST_DIR} )
+            file( GLOB_RECURSE LIST_SOURCE ${FOLDER}/*${FILE_EXTENSIONS_UNITYIGNORE} )
+            list( APPEND PROJECT_UNITYIGNORE_FILES ${LIST_SOURCE} )
+        endforeach()
+
+        if( PROJECT_UNITYIGNORE_FILES )
+            list( REMOVE_DUPLICATES PROJECT_UNITYIGNORE_FILES )
+        endif()
+
+    endif()
+        
 endmacro ()
 
 # Macro for defining source files with optional arguments as follows:

@@ -19,7 +19,7 @@ macro( generated_unity_sources SOURCE_FILES )
 
         #"ARG"
         set( CUSTOM_PACK_MAX_NUMBER 20 )        
-        set( ARG_PARAM "IGNORE_LIST;IGNORE_LIST_WIN32;IGNORE_LIST_APPLE;IGNORE_LIST_IOS;IGNORE_LIST_MACOS;IGNORE_LIST_ANDROID"  )
+        set( ARG_PARAM "IGNORE_LIST;IGNORE_LIST_WIN32;IGNORE_LIST_APPLE;IGNORE_LIST_IOS;IGNORE_LIST_MACOS;IGNORE_LIST_ANDROID;UNITYIGNORE_FILES"  )
         foreach( index RANGE 1 ${CUSTOM_PACK_MAX_NUMBER} )
             set( ARG_PARAM "${ARG_PARAM};CUSTOM_PACK_${index}")
         endforeach()
@@ -39,6 +39,39 @@ macro( generated_unity_sources SOURCE_FILES )
                 list(APPEND CUSTOM_PACKS CUSTOM_PACK_${index} )
             endif()
         endforeach()
+
+        #"ARG_UNITYIGNORE_FILES"
+        if(EXISTS ${GLOBAL_UNITYIGNORE_FILES})
+            list( APPEND ARG_UNITYIGNORE_FILES ${GLOBAL_UNITYIGNORE_FILES} )
+        endif()
+
+        foreach( IGNORE_FILE  ${ARG_UNITYIGNORE_FILES} )
+            message( "LOAD UNITY IGNORE FILE  - ${IGNORE_FILE}")
+
+            file( STRINGS ${IGNORE_FILE} IGNORE_LIST )
+
+            foreach( ITEM ${IGNORE_LIST})
+                string( STRIP "${ITEM}" ITEM)
+                string( REGEX REPLACE "^;+" "" ITEM "${ITEM}" )
+                string( REGEX REPLACE ";+$" "" ITEM "${ITEM}" )
+
+                STRING ( SUBSTRING "${ITEM}" 0 1 FIRST_SYMBOL )
+
+                if( NOT (FIRST_SYMBOL MATCHES "#") )
+                    string( REGEX REPLACE "[ ]+" ";" ITEM ${ITEM} )
+
+                    list( APPEND ARG_IGNORE_LIST ${ITEM} )
+                    message("IGNORE MASK - ${ITEM}")
+                else()
+                    message("COMMENT - ${ITEM}")
+                endif()
+            endforeach()
+            message("-")
+        endforeach()
+
+        if( ARG_IGNORE_LIST )
+            list( REMOVE_DUPLICATES ARG_IGNORE_LIST )            
+        endif()
 
         #"BASE VALUES"
         set( IGNORE_LIST_SIZE 0   )
