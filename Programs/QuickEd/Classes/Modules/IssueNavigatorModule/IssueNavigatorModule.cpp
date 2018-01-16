@@ -53,9 +53,9 @@ void IssueNavigatorModule::PostInit()
 
     std::unique_ptr<IssueNavigatorData> data = std::make_unique<IssueNavigatorData>();
     DAVA::int32 sectionId = 0;
-    data->handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, &data->indexGenerator));
-    data->handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &data->indexGenerator));
-    data->handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
 
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }

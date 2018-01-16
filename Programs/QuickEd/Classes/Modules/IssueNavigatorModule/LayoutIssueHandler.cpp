@@ -16,10 +16,9 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-LayoutIssueHandler::LayoutIssueHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IndexGenerator* indexGenerator_)
+LayoutIssueHandler::LayoutIssueHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IndexGenerator* indexGenerator_)
     : IssueHandler(accessor_, sectionId_)
     , indexGenerator(indexGenerator_)
-    , ui(ui_)
     , packageListenerProxy(this, accessor_)
 {
     DAVA::GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);

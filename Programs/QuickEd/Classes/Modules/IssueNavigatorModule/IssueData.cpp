@@ -96,7 +96,7 @@ const DAVA::Vector<IssueData::Issue>& IssueData::GetIssues() const
 
 bool IssueData::Issue::operator==(const Issue& other) const
 {
-    return sectionId == other.sectionId && id == other.id && message == other.message;
+    return sectionId == other.sectionId && id == other.id && message == other.message && pathToControl == other.pathToControl;
 }
 
 bool IssueData::Issue::operator!=(const Issue& other) const
