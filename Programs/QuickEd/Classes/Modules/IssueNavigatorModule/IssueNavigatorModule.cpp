@@ -53,9 +53,9 @@ void IssueNavigatorModule::PostInit()
 
     std::unique_ptr<IssueNavigatorData> data = std::make_unique<IssueNavigatorData>();
     DAVA::int32 sectionId = 0;
-    handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
-    handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
-    handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &indexGenerator));
+    data->handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), GetUI(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), GetUI(), sectionId++, &data->indexGenerator));
 
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
@@ -64,7 +64,7 @@ void IssueNavigatorModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
 {
     if (key == DAVA::TArc::mainWindowKey)
     {
-        handlers.clear();
+        GetAccessor()->GetGlobalContext()->DeleteData<IssueNavigatorData>();
     }
 }
 
@@ -114,19 +114,17 @@ const DAVA::Vector<IssueData::Issue>& IssueNavigatorModule::GetValues() const
     return empty;
 }
 
-void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
-{
-    for (const std::unique_ptr<IssueHandler>& handler : handlers)
-    {
-        handler->OnContextActivated(current);
-    }
-}
-
 void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 {
-    for (const std::unique_ptr<IssueHandler>& handler : handlers)
+    const DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    if (globalContext)
     {
-        handler->OnContextDeleted(context);
+        IssueNavigatorData* data = globalContext->GetData<IssueNavigatorData>();
+        DVASSERT(data);
+        for (const std::unique_ptr<IssueHandler>& handler : data->handlers)
+        {
+            handler->OnContextDeleted(context);
+        }
     }
 }
 

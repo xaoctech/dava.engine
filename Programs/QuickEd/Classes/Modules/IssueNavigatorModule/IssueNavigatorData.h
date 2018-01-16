@@ -14,7 +14,6 @@ private:
     friend class IssueNavigatorModule;
 
     DAVA::Vector<std::unique_ptr<IssueHandler>> handlers;
-    DAVA::int32 current = 0;
     IndexGenerator indexGenerator;
 
     DAVA_VIRTUAL_REFLECTION(IssueNavigatorData, DAVA::TArc::DataNode);

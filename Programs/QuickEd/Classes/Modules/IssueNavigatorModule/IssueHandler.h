@@ -21,7 +21,6 @@ public:
     IssueHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId);
     virtual ~IssueHandler();
 
-    virtual void OnContextActivated(DAVA::TArc::DataContext* current){};
     virtual void OnContextDeleted(DAVA::TArc::DataContext* current){};
 
 protected:
