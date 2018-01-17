@@ -297,8 +297,11 @@ void BaseComponentValue::AddPropertyNode(const std::shared_ptr<PropertyNode>& no
 #if defined(__DAVAENGINE_DEBUG__)
     else
     {
-        DVASSERT(itemID == resolvedId);
-        DVASSERT(nodes.front()->cachedValue.GetType() == node->cachedValue.GetType());
+        if (node->propertyType != PropertyNode::SelfRoot)
+        {
+            DVASSERT(itemID == resolvedId);
+            DVASSERT(nodes.front()->cachedValue.GetType() == node->cachedValue.GetType());
+        }
     }
 #endif
 
