@@ -6,6 +6,7 @@
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Systems/Private/AsyncSlotExternalLoader.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/XMLError.h"
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/XMLParserDelegate.h"
 #include "FileSystem/YamlNode.h"
@@ -216,11 +217,17 @@ void SlotSystem::ItemsCache::LoadXmlConfig(const FilePath& configPath)
 {
     Set<Item, ItemLess>& items = cachedItems[configPath.GetAbsolutePathname()];
     ItemsCache::XmlConfigParser parser(&items);
-    XMLParser::ParseFile(configPath, &parser);
-
-    if (items.empty() == true)
+    XMLError lastError;
+    if (XMLParser::ParseFile(configPath, &parser, &lastError))
     {
-        Logger::Error("XML parsing error. No one item was found. File format probably incorrect %s", configPath.GetAbsolutePathname().c_str());
+        if (items.empty() == true)
+        {
+            Logger::Error("XML parsing error. No one item was found. File format probably incorrect %s", configPath.GetAbsolutePathname().c_str());
+        }
+    }
+    else
+    {
+        Logger::Error("XML parsing error in file `%s`: %s (%d:%d)", configPath.GetAbsolutePathname().c_str(), lastError.message.c_str(), lastError.line, lastError.position);
     }
 }
 

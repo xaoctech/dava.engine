@@ -1,4 +1,5 @@
 #include "UI/RichContent/UIRichAliasMap.h"
+#include "FileSystem/XMLError.h"
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/XMLParserDelegate.h"
 #include "Logger/Logger.h"
@@ -67,13 +68,18 @@ void UIRichAliasMap::PutAliasFromXml(const String& alias, const String& xmlSrc)
 {
     RefPtr<XMLParser> p(new XMLParser());
     AliasXmlDelegate delegate(alias);
-    if (p->ParseBytes(reinterpret_cast<const uint8*>(xmlSrc.c_str()), static_cast<int32>(xmlSrc.length()), &delegate))
+    XMLError lastError;
+    if (p->ParseBytes(reinterpret_cast<const uint8*>(xmlSrc.c_str()), static_cast<int32>(xmlSrc.length()), &delegate, &lastError))
     {
         const Alias& alias = delegate.GetAlias();
         if (!alias.alias.empty() && !alias.tag.empty())
         {
             PutAlias(alias);
         }
+    }
+    else
+    {
+        Logger::Warning("Syntax error in rich content alias: %s (%d:%d)", lastError.message.c_str(), lastError.line, lastError.position);
     }
 }
 

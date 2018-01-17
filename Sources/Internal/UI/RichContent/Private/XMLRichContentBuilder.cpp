@@ -41,12 +41,17 @@ bool XMLRichContentBuilder::Build(const String& text)
     controls.clear();
     direction = bidiHelper.GetDirectionUTF8String(text); // Detect text direction
     RefPtr<XMLParser> parser(new XMLParser());
-    return parser->ParseBytes(reinterpret_cast<const unsigned char*>(text.c_str()), static_cast<int32>(text.length()), this);
+    return parser->ParseBytes(reinterpret_cast<const unsigned char*>(text.c_str()), static_cast<int32>(text.length()), this, &lastError);
 }
 
 const Vector<RefPtr<UIControl>>& XMLRichContentBuilder::GetControls() const
 {
     return controls;
+}
+
+const XMLError& XMLRichContentBuilder::GetLastError() const
+{
+    return lastError;
 }
 
 void XMLRichContentBuilder::PutClass(const String& clazz)
