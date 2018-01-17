@@ -52,14 +52,17 @@ macro( generated_unity_sources SOURCE_FILES )
 
             foreach( ITEM ${IGNORE_LIST})
                 string( STRIP "${ITEM}" ITEM)
-                string( REGEX REPLACE "^;+" "" ITEM "${ITEM}" )
-                string( REGEX REPLACE ";+$" "" ITEM "${ITEM}" )
 
+                if( NOT ITEM )
+                    continue()
+                endif()
+
+                string( REGEX REPLACE "^;+" "" ITEM "${ITEM}" )
+                string( REGEX REPLACE ";+$" "" ITEM "${ITEM}" )                
                 STRING ( SUBSTRING "${ITEM}" 0 1 FIRST_SYMBOL )
 
                 if( NOT (FIRST_SYMBOL MATCHES "#") )
-                    string( REGEX REPLACE "[ ]+" ";" ITEM ${ITEM} )
-
+                    string( REGEX REPLACE "[ ]+" ";" ITEM "${ITEM}" )
                     list( APPEND ARG_IGNORE_LIST ${ITEM} )
                     message("IGNORE MASK - ${ITEM}")
                 else()
@@ -70,7 +73,7 @@ macro( generated_unity_sources SOURCE_FILES )
         endforeach()
 
         if( ARG_IGNORE_LIST )
-            list( REMOVE_DUPLICATES ARG_IGNORE_LIST )            
+            list( REMOVE_DUPLICATES ARG_IGNORE_LIST ) 
         endif()
 
         #"BASE VALUES"
