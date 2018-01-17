@@ -24,6 +24,7 @@ public:
     /** Return generated controls. */
     const Vector<RefPtr<UIControl>>& GetControls() const;
 
+    /** Return last parsing error information. */
     const XMLError& GetLastError() const;
 
     // XMLParserDelegate interface implementation
