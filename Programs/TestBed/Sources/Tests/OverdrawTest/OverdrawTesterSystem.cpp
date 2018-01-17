@@ -49,7 +49,7 @@ FastName("t4")
 } };
 
 const uint8 maxTexturesCount = 4;
-const FastName materialPath("~res:/CustomMaterials/OverdrawTester.material");
+const FastName materialPath("~res:/TestBed/CustomMaterials/OverdrawTester.material");
 const FastName sampleCountKeyword("SAMPLE_COUNT");
 const FastName dependentReadKeyword("DEPENDENT_READ_TEST");
 const uint32 accumulatedFramesCount = 20;
@@ -93,7 +93,7 @@ OverdrawTesterSystem::~OverdrawTesterSystem()
 
 void OverdrawTesterSystem::AddEntity(DAVA::Entity* entity)
 {
-    OverdrawTesterComponent* comp = static_cast<OverdrawTesterComponent*>(entity->GetComponent(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT));
+    OverdrawTesterComponent* comp = entity->GetComponent<OverdrawTesterComponent>();
     if (comp != nullptr)
     {
         maxStepsCount = comp->GetStepsCount();
@@ -108,7 +108,7 @@ void OverdrawTesterSystem::AddEntity(DAVA::Entity* entity)
 
 void OverdrawTesterSystem::RemoveEntity(Entity* entity)
 {
-    OverdrawTesterComponent* comp = static_cast<OverdrawTesterComponent*>(entity->GetComponent(OverdrawTesterComponent::OVERDRAW_TESTER_COMPONENT));
+    OverdrawTesterComponent* comp = entity->GetComponent<OverdrawTesterComponent>();
     if (comp != nullptr)
     {
         GetScene()->GetRenderSystem()->RemoveFromRender(comp->GetRenderObject());

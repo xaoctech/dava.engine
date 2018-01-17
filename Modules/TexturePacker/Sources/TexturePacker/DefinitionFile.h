@@ -1,10 +1,9 @@
-#ifndef __DAVAENGINE_DEFINITION_FILE_H__
-#define __DAVAENGINE_DEFINITION_FILE_H__
+#pragma once
 
-#include "Base/RefPtr.h"
-#include "Base/BaseTypes.h"
-#include "FileSystem/FilePath.h"
-#include "Math/Math2D.h"
+#include <Base/RefPtr.h>
+#include <Base/BaseTypes.h>
+#include <FileSystem/FilePath.h>
+#include <Math/Math2D.h>
 
 namespace DAVA
 {
@@ -24,7 +23,7 @@ public:
     bool LoadPNGDef(const FilePath& filename, const FilePath& pathToProcess, String outputBasename = String());
 
     void ClearPackedFrames();
-    bool LoadPNG(const FilePath& fullname, const FilePath& processDirectoryPath, String outputBasename = String());
+    bool LoadImage(const FilePath& fullname, const FilePath& processDirectoryPath, String outputBasename = String());
     bool LoadPSD(const FilePath& fullname, const FilePath& processDirectoryPath,
                  DAVA::uint32 maxTextureSize, bool retainEmptyPixesl, bool useLayerNames,
                  bool verboseOutput, String outputBasename = String());
@@ -35,6 +34,7 @@ public:
 
 public:
     FilePath filename;
+    String extension = ".png"; // default extension
     Vector<String> frameNames;
     Vector<Rect2i> frameRects;
     uint32 frameCount = 0;
@@ -42,6 +42,3 @@ public:
     uint32 spriteHeight = 0;
 };
 };
-
-
-#endif // __DAVAENGINE_DEFINITION_FILE_H__

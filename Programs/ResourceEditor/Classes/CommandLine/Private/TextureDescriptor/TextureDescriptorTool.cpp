@@ -1,6 +1,6 @@
 #include "CommandLine/TextureDescriptorTool.h"
 #include "CommandLine/Private/OptionName.h"
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
+#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
 #include "Utils/StringFormat.h"
 
 #include "TArc/Utils/ModuleCollection.h"
@@ -208,11 +208,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            TextureDescriptorUtils::ResaveDescriptor(filePathname);
+            RETextureDescriptorUtils::ResaveDescriptor(filePathname);
         }
         else
         {
-            TextureDescriptorUtils::ResaveDescriptorsForFolder(folderPathname);
+            RETextureDescriptorUtils::ResaveDescriptorsForFolder(folderPathname);
         }
 
         break;
@@ -221,11 +221,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            TextureDescriptorUtils::CreateOrUpdateDescriptor(filePathname, presetPath);
+            RETextureDescriptorUtils::CreateOrUpdateDescriptor(filePathname, presetPath);
         }
         else
         {
-            TextureDescriptorUtils::CreateDescriptorsForFolder(folderPathname, presetPath);
+            RETextureDescriptorUtils::CreateDescriptorsForFolder(folderPathname, presetPath);
         }
         break;
     }
@@ -233,11 +233,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            TextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
+            RETextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
         }
         else
         {
-            TextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
+            RETextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
         }
         break;
     }
@@ -245,11 +245,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            TextureDescriptorUtils::SetPreset(filePathname, presetPath, convertEnabled, quality);
+            RETextureDescriptorUtils::SetPreset(filePathname, presetPath, convertEnabled, quality);
         }
         else
         {
-            TextureDescriptorUtils::SetPresetForFolder(folderPathname, presetPath, convertEnabled, quality);
+            RETextureDescriptorUtils::SetPresetForFolder(folderPathname, presetPath, convertEnabled, quality);
         }
         break;
     }
@@ -257,11 +257,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (!filesList.IsEmpty())
         {
-            TextureDescriptorUtils::SavePreset(TextureDescriptorToolDetail::LoadPathesFromFile(filesList), TextureDescriptorToolDetail::LoadPathesFromFile(presetsList));
+            RETextureDescriptorUtils::SavePreset(TextureDescriptorToolDetail::LoadPathesFromFile(filesList), TextureDescriptorToolDetail::LoadPathesFromFile(presetsList));
         }
         else
         {
-            TextureDescriptorUtils::SavePreset({ filePathname }, { presetPath });
+            RETextureDescriptorUtils::SavePreset({ filePathname }, { presetPath });
         }
         break;
     }

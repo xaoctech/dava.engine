@@ -13,8 +13,6 @@ class Entity;
 class TransformComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(TRANSFORM_COMPONENT)
-
     inline Matrix4* GetWorldTransformPtr();
     inline const Matrix4& GetWorldTransform();
     inline const Matrix4& GetLocalTransform();

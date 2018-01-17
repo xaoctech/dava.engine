@@ -19,8 +19,9 @@ void ProgramOptions::Option::SetValue(const VariantType& value)
     }
 }
 
-ProgramOptions::ProgramOptions(const String& _commandName)
-    : commandName(_commandName)
+ProgramOptions::ProgramOptions(const String& commandName_, bool parseByName_)
+    : commandName(commandName_)
+    , parseByName(parseByName_)
 {
 }
 
@@ -55,11 +56,11 @@ bool ProgramOptions::Parse(const Vector<String>& argv)
 
     // if first argument equal command name we should skip it else we should stop parsing
     size_type argIndex = 1; //skip executable pathname in params
-    if (argIndex < argc && commandName == String(argv[argIndex]))
+    if (argIndex < argc && (parseByName == true && commandName == String(argv[argIndex])))
     {
         argIndex++;
     }
-    else
+    else if (parseByName == true)
     {
         return false;
     }

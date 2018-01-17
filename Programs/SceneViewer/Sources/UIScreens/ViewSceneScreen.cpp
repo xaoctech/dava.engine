@@ -4,6 +4,7 @@
 
 #include <DocDirSetup/DocDirSetup.h>
 
+#include <Entity/ComponentUtils.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <ModuleManager/ModuleManager.h>
@@ -20,6 +21,7 @@
 #include <Physics/HeightFieldShapeComponent.h>
 #include <Physics/PhysicsSystem.h>
 #endif
+#include <Scene3D/Components/Controller/WASDControllerComponent.h>
 
 #include <TestCharacterController/TestCharacterControllerModule.h>
 #include <TestCharacterController/TestCharacterControllerSystems.h>
@@ -176,7 +178,7 @@ void ViewSceneScreen::AddTanksAtScene()
     using namespace DAVA;
 
     List<Entity*> spawnPoints;
-    scene->GetChildEntitiesWithComponent(spawnPoints, Component::CUSTOM_PROPERTIES_COMPONENT, false);
+    scene->GetChildEntitiesWithComponent(spawnPoints, Type::Instance<CustomPropertiesComponent>(), false);
 
     for (List<Entity*>::iterator it = spawnPoints.begin(); it != spawnPoints.end();)
     {
@@ -326,10 +328,10 @@ void ViewSceneScreen::AddCameraControllerSystems()
 {
     if (scene)
     {
-        scene->AddSystem(rotationControllerSystem, MAKE_COMPONENT_MASK(DAVA::Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(DAVA::Component::ROTATION_CONTROLLER_COMPONENT),
+        scene->AddSystem(rotationControllerSystem, DAVA::ComponentUtils::MakeMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::RotationControllerComponent>(),
                          DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS | DAVA::Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
-        scene->AddSystem(wasdSystem, MAKE_COMPONENT_MASK(DAVA::Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(DAVA::Component::WASD_CONTROLLER_COMPONENT),
+        scene->AddSystem(wasdSystem, DAVA::ComponentUtils::MakeMask<DAVA::CameraComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::WASDControllerComponent>(),
                          DAVA::Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
     }
 }

@@ -8,6 +8,7 @@
 #include <Render/3D/PolygonGroup.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
@@ -175,8 +176,8 @@ void SwitchEntityCreator::CreateSingleObjectData(DAVA::Entity* switchEntity)
             switchEntity->AddComponent(lc->Clone(switchEntity));
         }
 
-        renderPairs[i][0].first->RemoveComponent(DAVA::Component::RENDER_COMPONENT);
-        renderPairs[i][0].first->RemoveComponent(DAVA::Component::LOD_COMPONENT);
+        renderPairs[i][0].first->RemoveComponent(DAVA::Type::Instance<DAVA::RenderComponent>());
+        renderPairs[i][0].first->RemoveComponent(DAVA::Type::Instance<DAVA::LodComponent>());
 
         DAVA::uint32 childrenCount = sourceEntity->GetChildrenCount();
         while (childrenCount)

@@ -779,7 +779,7 @@ void QualitySettingsSystem::UpdateEntityAfterLoad(Entity* entity)
         return;
 
     Vector<Entity*> entitiesWithQualityComponent;
-    entity->GetChildEntitiesWithComponent(entitiesWithQualityComponent, Component::QUALITY_SETTINGS_COMPONENT);
+    entity->GetChildEntitiesWithComponent(entitiesWithQualityComponent, Type::Instance<QualitySettingsComponent>());
 
     for (size_t i = 0, sz = entitiesWithQualityComponent.size(); i < sz; ++i)
     {

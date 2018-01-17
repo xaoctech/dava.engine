@@ -44,11 +44,6 @@ void VehicleTankComponent::ResetInputData()
     analogRightBrake = 0.0f;
 }
 
-uint32 VehicleTankComponent::GetType() const
-{
-    return Component::VEHICLE_TANK_COMPONENT;
-}
-
 Component* VehicleTankComponent::Clone(Entity* toEntity)
 {
     VehicleTankComponent* result = new VehicleTankComponent();

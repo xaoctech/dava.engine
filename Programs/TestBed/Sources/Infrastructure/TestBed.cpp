@@ -4,6 +4,11 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineSettings.h>
+
+#include <Entity/ComponentManager.h>
+
+#include <Reflection/ReflectionRegistrator.h>
+
 #include <Render/RHI/rhi_Public.h>
 #include <Render/RHI/dbg_Draw.h>
 
@@ -47,6 +52,7 @@
 #include "Tests/DeviceManagerTest.h"
 #include "Tests/SoundTest.h"
 #include "Tests/AnyPerformanceTest.h"
+#include "Tests/OverdrawTest/OverdrawTesterComponent.h"
 #include "Tests/OverdrawTest.h"
 #include "Tests/WindowTest.h"
 #include "Tests/UIStylesTest.h"
@@ -157,6 +163,9 @@ TestBed::TestBed(Engine& engine)
     PlatformApi::Win10::RegisterXamlApplicationListener(nativeDelegate.get());
 #endif
 
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(OverdrawPerformanceTester::OverdrawTesterComponent);
+    GetEngineContext()->componentManager->RegisterComponent<OverdrawPerformanceTester::OverdrawTesterComponent>();
+
     engine.gameLoopStarted.Connect(this, &TestBed::OnGameLoopStarted);
     engine.gameLoopStopped.Connect(this, &TestBed::OnGameLoopStopped);
     engine.cleanup.Connect(this, &TestBed::OnEngineCleanup);
@@ -187,7 +196,7 @@ TestBed::TestBed(Engine& engine)
 
     DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
 
-    context->settings->Load("~res:/EngineSettings.yaml");
+    context->settings->Load("~res:/TestBed/EngineSettings.yaml");
 
     servicesProvider.reset(new DAVA::Net::ServicesProvider(engine, "TestBed"));
     netLogger.reset(new DAVA::Net::NetLogger);
@@ -200,7 +209,7 @@ void TestBed::OnGameLoopStarted()
 {
     Logger::Debug("****** TestBed::OnGameLoopStarted");
 
-    UIYamlLoader::LoadFonts("~res:/UI/Fonts/fonts.yaml");
+    UIYamlLoader::LoadFonts("~res:/TestBed/UI/Fonts/fonts.yaml");
 
     InitNetwork();
     RunOnlyThisTest();
@@ -278,7 +287,7 @@ void TestBed::OnWindowCreated(DAVA::Window* w)
     w->GetUIControlSystem()->GetRenderSystem()->SetClearColor(Color::Black);
 
     LocalizationSystem* ls = LocalizationSystem::Instance();
-    ls->SetDirectory("~res:/Strings/");
+    ls->SetDirectory("~res:/TestBed/Strings/");
     ls->SetCurrentLocale("en");
     ls->Init();
 

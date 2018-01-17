@@ -141,7 +141,7 @@ void InputSystemTest::UnloadResources()
 
 void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 {
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
 
     const float32 keyboardButtonWidth = 20.0f;
     const float32 keyboardButtonHeight = 20.0f;
@@ -344,7 +344,7 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 
 void InputSystemTest::CreateMouseUI()
 {
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
     font->SetSize(10);
 
     const float32 x = 530;
@@ -416,7 +416,7 @@ void InputSystemTest::CreateMouseUI()
 
 void InputSystemTest::CreateTouchUI()
 {
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
     font->SetSize(12);
 
     float32 x = 20.0f;
@@ -461,7 +461,7 @@ void InputSystemTest::CreateTouchUI()
 
 void InputSystemTest::CreateActionsUI()
 {
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
     font->SetSize(9.0f);
 
     float32 y = 370.0f;
@@ -632,7 +632,7 @@ void InputSystemTest::CreateActionsUI()
 
 void InputSystemTest::CreateInputListenerUI()
 {
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/DejaVuSans.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
     font->SetSize(11.0f);
 
     const float32 x = 530.0f;

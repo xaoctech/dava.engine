@@ -12,9 +12,61 @@
 
 namespace DAVA
 {
-PackMetaData::PackMetaData(const void* ptr, std::size_t size)
+Vector<String> FileNamesTree::GetPathElements(const String& relativeFilePath)
+{
+    // TODO better in future use string_view
+    Vector<String> tokens;
+    const size_t countNames = 1 + std::count_if(begin(relativeFilePath), end(relativeFilePath), [](char value) { return value == '/'; });
+    tokens.reserve(countNames);
+    Split(relativeFilePath, "/", tokens);
+    return tokens;
+}
+
+void FileNamesTree::Add(const String& relativeFilePath)
+{
+    Vector<String> tokens = GetPathElements(relativeFilePath);
+    Node* currentNode = &treeRoot;
+    for (String& element : tokens)
+    {
+        Node& node = currentNode->children[element];
+        currentNode = &node;
+    }
+}
+
+bool FileNamesTree::Find(const String& relativeFilePath) const
+{
+    Vector<String> tokens = GetPathElements(relativeFilePath);
+    const Node* currentNode = &treeRoot;
+    for (String& element : tokens)
+    {
+        const auto it = currentNode->children.find(element);
+        if (it != end(currentNode->children))
+        {
+            currentNode = &it->second;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+PackMetaData::PackMetaData(const void* ptr, std::size_t size, const String& fileNames)
 {
     Deserialize(ptr, size);
+
+    const size_t sizeOfNames = fileNames.size();
+    size_t index = 0;
+
+    while (index < fileNames.size())
+    {
+        // TODO in future do it with std::string_view
+        const char* filePath = &fileNames[index];
+        namesTree.Add(filePath);
+        // start of next substring after null character
+        index = fileNames.find('\0', index + 1) + 1;
+    }
 }
 
 Vector<uint32> PackMetaData::ConvertStringWithNumbersToVector(const String& dependencies) const
@@ -71,8 +123,9 @@ PackMetaData::PackMetaData(const FilePath& metaDb)
     packIndexes.reserve(numIndexes);
 
     db << "SELECT path, pack_index FROM files"
-    >> [&](std::string name, int packIndex)
+    >> [&](std::string path, int packIndex)
     {
+        namesTree.Add(path);
         packIndexes.push_back(packIndex);
     };
 
@@ -220,6 +273,11 @@ const PackMetaData::PackInfo& PackMetaData::GetPackInfo(const String& packName) 
     Logger::Error("error: can't find packName: %s", packName.c_str());
     DVASSERT(false, "debug packName value");
     DAVA_THROW(Exception, "no such packName: " + packName);
+}
+
+const FileNamesTree& PackMetaData::GetFileNamesTree() const
+{
+    return namesTree;
 }
 
 Vector<uint8> PackMetaData::Serialize() const
@@ -516,6 +574,11 @@ bool PackMetaData::HasDependency(uint32 packWithDependency, uint32 dependency) c
     // now we know list of dependencies is sorted and all elements are unique,
     // so we can use binary_search
     return binary_search(begin(dep), end(dep), dependency);
+}
+
+bool PackMetaData::HasPack(const String& packName) const
+{
+    return mapPackNameToPackIndex.find(packName) != end(mapPackNameToPackIndex);
 }
 
 } // end namespace DAVA

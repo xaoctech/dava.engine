@@ -10,9 +10,6 @@ namespace DAVA
 class VisibilityCheckComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(VISIBILITY_CHECK_COMPONENT);
-
-public:
     VisibilityCheckComponent();
     Component* Clone(Entity* toEntity) override;
 

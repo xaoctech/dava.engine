@@ -29,10 +29,15 @@ object dava_framework_Launcher_LauncherWin : BuildType({
     vcs {
         root("dava_DavaFrameworkStash", "+:. => dava.framework")
 
-        checkoutMode = CheckoutMode.ON_AGENT
+        checkoutMode = CheckoutMode.ON_SERVER
     }
 
     steps {
+        script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
         script {
             name = "generate project"
             workingDir = "%pathToProjectBuild%"

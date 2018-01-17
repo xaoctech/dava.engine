@@ -29,8 +29,14 @@
 #include <Math/Matrix4.h>
 #include <ModuleManager/ModuleManager.h>
 #include <Scene3D/Components/ComponentHelpers.h>
-#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Components/WindComponent.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+
 #include <Scene3D/Scene.h>
 
 #include <physx/PxScene.h>
@@ -437,8 +443,15 @@ void SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3& from, const DAVA:
         }
     }
 
+    GlobalSceneSettings* settings = REGlobal::GetGlobalContext()->GetData<GlobalSceneSettings>();
+    DAVA::float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
     for (const auto& node : sortedHits)
     {
+        if (node.first < debugBoxScale)
+        {
+            continue;
+        }
+
         DAVA::Any objPtr(node.second->userData);
         auto iter = objToPhysx.find(objPtr);
         DVASSERT(iter != objToPhysx.end());
@@ -593,7 +606,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(const DAVA::Any& object) cons
 
 void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -790,7 +803,7 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
 
 void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint32 event)
 {
-    if (!systemIsEnabled)
+    if (!IsSystemEnabled())
     {
         return;
     }
@@ -814,7 +827,7 @@ void SceneCollisionSystem::ImmediateEvent(DAVA::Component* component, DAVA::uint
 
 void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (entity == GetScene())
@@ -846,7 +859,7 @@ void SceneCollisionSystem::AddEntity(DAVA::Entity* entity)
 
 void SceneCollisionSystem::RemoveEntity(DAVA::Entity* entity)
 {
-    if (!systemIsEnabled || entity == nullptr)
+    if (!IsSystemEnabled() || entity == nullptr)
         return;
 
     if (curLandscapeEntity == entity)
@@ -961,14 +974,14 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         // build simple collision box for all other entities, that has more than two components
         if ((result.isValid == false) && (entity != nullptr))
         {
-            if ((entity->GetComponent(DAVA::Component::SOUND_COMPONENT) != nullptr) ||
-                (entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) != nullptr) ||
-                (entity->GetComponent(DAVA::Component::TEXT_COMPONENT) != nullptr) ||
-                (entity->GetComponent(DAVA::Component::WIND_COMPONENT) != nullptr))
+            if ((entity->GetComponent<DAVA::SoundComponent>() != nullptr) ||
+                (entity->GetComponent<DAVA::LightComponent>() != nullptr) ||
+                (entity->GetComponent<DAVA::TextComponent>() != nullptr) ||
+                (entity->GetComponent<DAVA::WindComponent>() != nullptr))
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), userData);
             }
-            else if (entity->GetComponent(DAVA::Component::USER_COMPONENT) != nullptr)
+            else if (entity->GetComponent<DAVA::UserComponent>() != nullptr)
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxUserScale), userData);
             }

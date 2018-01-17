@@ -46,6 +46,11 @@ object dava_framework_Editors_UIViewer_UIViewerAndroidCrystaXNdk : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "create version.h"
             workingDir = "dava.framework/RepoTools/Scripts"
             scriptContent = "python create_version_h.py --dava_path %system.teamcity.build.checkoutDir%/dava.framework --build_number %build.number% --branch_info %teamcity.build.branch%"

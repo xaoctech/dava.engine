@@ -11,7 +11,6 @@
 #include <Time/SystemTimer.h>
 
 #include "UnitTests/UnitTests.h"
-#include <Platform/DeviceInfo.h>
 
 #if !defined(__DAVAENGINE_WIN_UAP__) && !defined(__DAVAENGINE_IOS__)
 
@@ -78,7 +77,7 @@ struct FSMTest02
         using namespace DAVA;
         DLCManager& dlcManager = *GetEngineContext()->dlcManager;
 
-        DAVA::float32 dt = DAVA::SystemTimer::GetRealFrameDelta();
+        const float32 dt = SystemTimer::GetRealFrameDelta();
         time += dt;
 
         switch (state)
@@ -87,6 +86,11 @@ struct FSMTest02
         {
             if (dlcManager.IsInitialized())
             {
+                TEST_VERIFY(dlcManager.IsKnownFile("3d/Maps/test/images/SycamoreLeaves5.png"));
+                TEST_VERIFY(dlcManager.IsKnownFile(FilePath("~res:/3d/Maps/test/images/SycamoreLeaves5.png")));
+                TEST_VERIFY(dlcManager.IsKnownFile(FilePath("~res:/3d/Maps/test/images/SycamoreLeaves5.png").GetAbsolutePathname()));
+                TEST_VERIFY(dlcManager.IsKnownFile(FilePath(FilePath("~res:/3d/Maps/test/images/SycamoreLeaves5.png").GetAbsolutePathname())));
+
                 uint64 sizeOfPack = dlcManager.GetPackSize("8");
 
                 // size from superpack_for_unittests.dvpk without any meta
@@ -104,6 +108,19 @@ struct FSMTest02
                 TEST_VERIFY(r1 != nullptr);
                 TEST_VERIFY(r0 != nullptr);
                 dlcManager.requestUpdated.Connect(this, &FSMTest02::OnRequestUpdateCheckOrder);
+
+                // check reset queue after initialize finished
+                dlcManager.ResetQueue();
+
+                // do request again
+                r3 = dlcManager.RequestPack("3");
+                r2 = dlcManager.RequestPack("2");
+                r1 = dlcManager.RequestPack("1");
+                r0 = dlcManager.RequestPack("0");
+                TEST_VERIFY(r3 != nullptr);
+                TEST_VERIFY(r2 != nullptr);
+                TEST_VERIFY(r1 != nullptr);
+                TEST_VERIFY(r0 != nullptr);
                 return false;
             }
         }
@@ -241,6 +258,55 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         }
     }
 
+    DAVA_TEST (TestInitOnlyLocalMeta)
+    {
+        using namespace DAVA;
+
+        DLCManager& dlcManager = *GetEngineContext()->dlcManager;
+        try
+        {
+            DLCManager::Hints hints;
+
+            hints.localPacksDB = "~doc:/local_fake_meta.db";
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            fs->CopyFile("~res:/TestData/DLCManagerFullTest/local_fake_meta.db",
+                         "~doc:/local_fake_meta.db", true);
+            dlcManager.Initialize("~doc:/packs/", "", hints);
+        }
+        catch (std::exception& ex)
+        {
+            Logger::Error("can't initialize DLCManager without remote url, exception: %s", ex.what());
+            TEST_VERIFY(false && "failed init dlc_manager without url");
+        }
+
+        TEST_VERIFY(dlcManager.IsKnownFile("some/not/existing/path"));
+        TEST_VERIFY(dlcManager.IsKnownFile(FilePath("some/not/existing/path")));
+        TEST_VERIFY(dlcManager.IsKnownFile(FilePath("~res:/some/not/existing/path")));
+
+        dlcManager.Deinitialize();
+    }
+
+    DAVA_TEST (TestInitOnlyRemoteMeta)
+    {
+        using namespace DAVA;
+
+        DLCManager& dlcManager = *GetEngineContext()->dlcManager;
+        try
+        {
+            const DLCManager::Hints hints;
+            char fullUrl[1024] = { 0 };
+            sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
+            dlcManager.Initialize("~doc:/packs/", fullUrl, hints);
+        }
+        catch (std::exception& ex)
+        {
+            Logger::Error("can't initialize DLCManager without remote url, exception: %s", ex.what());
+            TEST_VERIFY(false && "failed init dlc_manager without url");
+        }
+
+        dlcManager.Deinitialize();
+    }
+
     DAVA_TEST (TestInitializeBadFolder01)
     {
         using namespace DAVA;
@@ -292,8 +358,8 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
         FileSystem* fs = FileSystem::Instance();
 
-        FilePath destPath = documentRootDir + "superpack_for_unittests.dvpk";
-        FilePath srcPath = "~res:/superpack_for_unittests.dvpk";
+        const FilePath destPath = documentRootDir + "superpack_for_unittests.dvpk";
+        const FilePath srcPath = "~res:/TestData/DLCManagerFullTest/superpack_for_unittests.dvpk";
         if (!fs->IsFile(srcPath))
         {
             Logger::Error("no super pack file!");
@@ -316,7 +382,7 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         auto hints = DLCManager::Hints();
         hints.retryConnectMilliseconds = 3000;
 
-        FilePath packDir("~doc:/UnitTests/DLCManagerTest/packs/");
+        const FilePath packDir("~doc:/UnitTests/DLCManagerTest/packs/");
         FileSystem::Instance()->DeleteDirectory(packDir, true);
 
         try
@@ -324,13 +390,14 @@ DAVA_TESTCLASS (DLCManagerFullTest)
             char fullUrl[1024] = { 0 };
             sprintf(fullUrl, "http://127.0.0.1:%s/superpack_for_unittests.dvpk", localPort);
 
-            const String pack1("fakePack1");
-            const String pack2("secondFakePack2");
+            FilePath dbPath("~res:/TestData/DLCManagerFullTest/local_fake_meta.db");
+            TEST_VERIFY(fs->IsFile(dbPath) == true);
 
-            std::stringstream ss;
-            ss << pack1 << '\n' << pack2;
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            FilePath docDbPath("~doc:/local_fake_meta.db");
+            fs->CopyFile(dbPath, docDbPath, true);
 
-            hints.preloadedPacks = ss.str();
+            hints.localPacksDB = docDbPath.GetStringValue();
 
             dlcManager.Initialize(packDir,
                                   fullUrl,
@@ -340,15 +407,28 @@ DAVA_TESTCLASS (DLCManagerFullTest)
 
             TEST_VERIFY(true == dlcManager.IsRequestingEnabled());
 
-            TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack1));
-            TEST_VERIFY(true == dlcManager.IsPackDownloaded(pack2));
-
+            const String pack1("fake_pack_00");
             const DLCManager::IRequest* request1 = dlcManager.RequestPack(pack1);
             TEST_VERIFY(request1 != nullptr);
             TEST_VERIFY(request1->GetRequestedPackName() == pack1);
             TEST_VERIFY(request1->IsDownloaded());
 
+            const String pack2("fake_pack_01");
             const DLCManager::IRequest* request2 = dlcManager.RequestPack(pack2);
+            TEST_VERIFY(request2 != nullptr);
+            TEST_VERIFY(request2->GetRequestedPackName() == pack2);
+            TEST_VERIFY(request2->IsDownloaded());
+
+            // check reset queue before initialize finished
+            dlcManager.ResetQueue();
+
+            // check after reset queue
+            request1 = dlcManager.RequestPack(pack1);
+            TEST_VERIFY(request1 != nullptr);
+            TEST_VERIFY(request1->GetRequestedPackName() == pack1);
+            TEST_VERIFY(request1->IsDownloaded());
+
+            request2 = dlcManager.RequestPack(pack2);
             TEST_VERIFY(request2 != nullptr);
             TEST_VERIFY(request2->GetRequestedPackName() == pack2);
             TEST_VERIFY(request2->IsDownloaded());

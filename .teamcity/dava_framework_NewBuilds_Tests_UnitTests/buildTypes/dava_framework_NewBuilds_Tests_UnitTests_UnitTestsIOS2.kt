@@ -32,11 +32,17 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
 
     vcs {
         root("dava_DavaFrameworkStash", "+:=>/dava.framework")
+        root("dava_framework_UIEditor_BuildmachineWargamingNetTools", "+:Teamcity => Teamcity")
 
         checkoutMode = CheckoutMode.ON_AGENT
     }
 
     steps {
+        script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
         script {
             name = "get stash commit"
             workingDir = "dava.framework"
@@ -44,12 +50,12 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
         }
         script {
             name = "report commit status INPROGRESS"
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status INPROGRESS --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% In progress ...""""
         }
         script {
             name = "Install pip modules"
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """
                 pip install --upgrade pip
                 pip install -r requirements.txt
@@ -57,7 +63,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
         }
         script {
             name = "Run build depends of folders"
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """python run_build_depends_of_folders.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --framework_branch %teamcity.build.branch% --check_folders "%check_folders%" --root_configuration_id %teamcity.build.id%"""
         }
         script {
@@ -68,7 +74,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
                 then
                 git clean -d -x -f
                 python RepoTools/Scripts/delete_folder.py %pathToProject%
-                
+
                 fi
             """.trimIndent()
         }
@@ -119,14 +125,14 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
         script {
             name = "CHANGE_SUCCESSFUL_BUILD_DESCRIPTION"
             enabled = false
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """
                 if [ "false" == "%env.build_required%" ]
                 then
-                
+
                 if [ -f "run_build.py" ]
                 then
-                
+
                 python run_build.py --teamcity_url https://teamcity2.wargaming.net \
                 --login "%teamcity_restapi_login%" \
                 --password "%teamcity_restapi_password%" \
@@ -135,17 +141,17 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
                 --queue_at_top true \
                 --configuration_name dava_framework_TeamcityTools_ChangeBuildDescription \
                 --properties param.commit:%build.vcs.number.dava_DavaFrameworkStash%,param.configuration_id:%system.teamcity.buildType.id%,param.root_build_id:%teamcity.build.id%
-                
+
                 fi
-                
-                
+
+
                 fi
             """.trimIndent()
         }
         script {
             name = "report commit status SUCCESSFUL"
             executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """
                 echo "##teamcity[setParameter name='env.build_failed' value='false']"
                 python report_build_status.py --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status SUCCESSFUL --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Good job !"
@@ -154,7 +160,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
         script {
             name = "report commit status FAILED"
             executionMode = BuildStep.ExecutionMode.ALWAYS
-            workingDir = "dava.framework/RepoTools/Teamcity"
+            workingDir = "Teamcity"
             scriptContent = """python report_build_status.py --reported_status %env.build_failed% --teamcity_url https://teamcity2.wargaming.net --stash_url https://%stash_hostname% --stash_login %stash_restapi_login%  --stash_password %stash_restapi_password% --teamcity_login %teamcity_restapi_login% --teamcity_password %teamcity_restapi_password% --status FAILED --root_build_id %teamcity.build.id% --configuration_name %system.teamcity.buildType.id% --commit %env.from_commit% --abbreviated_build_name true --description "%teamcity.build.branch% Need to work!""""
         }
     }
@@ -195,6 +201,6 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsIOS2 : BuildType({
         exists("env.UNIT_TEST")
         doesNotEqual("system.agent.name", "by2-badava-mac-07", "RQ_54")
     }
-    
+
     disableSettings("RQ_54")
 })

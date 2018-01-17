@@ -15,10 +15,10 @@ void SoundTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    eventGroup1 = SoundSystem::Instance()->CreateSoundEventFromFile("~res:/Sounds/map.ogg", FastName("group-1"), SoundEvent::SOUND_EVENT_CREATE_LOOP);
-    eventGroup2 = SoundSystem::Instance()->CreateSoundEventFromFile("~res:/Sounds/map.ogg", FastName("group-2"));
+    eventGroup1 = SoundSystem::Instance()->CreateSoundEventFromFile("~res:/TestBed/Sounds/map.ogg", FastName("group-1"), SoundEvent::SOUND_EVENT_CREATE_LOOP);
+    eventGroup2 = SoundSystem::Instance()->CreateSoundEventFromFile("~res:/TestBed/Sounds/map.ogg", FastName("group-2"));
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(14);
 

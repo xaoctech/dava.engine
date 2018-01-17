@@ -355,7 +355,7 @@ void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
                 regularTreeItem = rootItem->CreateChild(std::move(componentValue), position, 0);
             }
             nodeToItem.emplace(regularTreeRootNode, regularTreeItem);
-            regularTreeItem->AddPropertyNode(regularTreeRootNode);
+            regularTreeItem->AddPropertyNode(regularTreeRootNode, FastName("Regular Tree"));
         }
         objects.clear();
     }
@@ -381,7 +381,7 @@ void ReflectedPropertyModel::OnChildAdded(const std::shared_ptr<PropertyNode>& p
         std::unique_ptr<BaseComponentValue> valueComponent = GetExtensionChain<EditorComponentExtension>()->GetEditor(node);
         valueComponent->Init(this);
 
-        int32 childPosition = parentItem->LookupChildPosition(node->sortKey);
+        int32 childPosition = parentItem->LookupChildPosition(node);
         InsertGuard guard(this, parentItem, childPosition, childPosition);
         childItem = parentItem->CreateChild(std::move(valueComponent), childPosition, node->sortKey);
         childItem->AddPropertyNode(node);

@@ -3,11 +3,12 @@
 #include "TArc/Testing/ConsoleModuleTestExecution.h"
 #include "TArc/Testing/TArcUnitTests.h"
 
-#include "Base/BaseTypes.h"
-#include "Entity/Component.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/SceneFileV2.h"
+#include <Base/BaseTypes.h>
+#include <Entity/Component.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/SceneFileV2.h>
 
 namespace SOTestDetail
 {
@@ -34,7 +35,7 @@ DAVA_TARC_TESTCLASS(StaticOcclusionToolTest)
         for (uint32 e = 0; e < entityCount; ++e)
         {
             Entity* child = scene->GetChild(e);
-            if (HasComponent(child, Component::STATIC_OCCLUSION_DATA_COMPONENT))
+            if (HasComponent(child, Type::Instance<StaticOcclusionDataComponent>()))
             {
                 ++staticOcclusionDataComponentsCount;
             }

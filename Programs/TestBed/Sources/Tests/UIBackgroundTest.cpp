@@ -15,11 +15,11 @@ void UIBackgroundTest::LoadResources()
     BaseScreen::LoadResources();
     //TODO: Initialize resources here
 
-    Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
+    Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
     font->SetSize(14);
 
-    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/TestData/UI/box.png"));
+    ScopedPtr<Sprite> sprite(Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UI/box.png"));
 
     text_orig = new UIStaticText(Rect(0, 0, 100, 100));
     text_orig->SetText(L"orig");

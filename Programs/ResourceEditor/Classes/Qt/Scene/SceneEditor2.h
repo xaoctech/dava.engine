@@ -101,7 +101,7 @@ public:
 
     //to manage editor systems adding/deleting
     void AddSystem(DAVA::SceneSystem* sceneSystem,
-                   DAVA::uint64 componentFlags,
+                   const DAVA::ComponentMask& componentMask,
                    DAVA::uint32 processFlags = 0,
                    DAVA::SceneSystem* insertBeforeSceneForProcess = nullptr,
                    DAVA::SceneSystem* insertBeforeSceneForInput = nullptr,
@@ -111,6 +111,9 @@ public:
 
     template <typename T>
     T* LookupEditorSystem();
+
+    bool AcquireInputLock(EditorSceneSystem* system);
+    void ReleaseInputLock(EditorSceneSystem* system);
 
     // save/load
     DAVA::SceneFileV2::eError LoadScene(const DAVA::FilePath& path) override;
@@ -194,6 +197,7 @@ protected:
 
     DAVA::Vector<EditorSceneSystem*> editorSystems;
     DAVA::Vector<EditorSceneSystem*> landscapeEditorSystems;
+    EditorSceneSystem* inputLockedByThis = nullptr;
     DAVA::Vector<DAVA::Entity*> editorEntities;
 
     void AccumulateDependentCommands(REDependentCommandsHolder& holder);

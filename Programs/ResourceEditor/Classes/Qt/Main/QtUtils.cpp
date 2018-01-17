@@ -10,7 +10,6 @@
 #include "mainwindow.h"
 
 #include "CommandLine/CommandLineParser.h"
-#include "Utils/TextureDescriptor/TextureDescriptorUtils.h"
 
 #include "QtTools/FileDialogs/FileDialog.h"
 #include "QtTools/ConsoleWidget/PointerSerializer.h"

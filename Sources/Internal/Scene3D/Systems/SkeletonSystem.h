@@ -2,7 +2,7 @@
 #define __DAVAENGINE_SKELETON_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Scene3D/Systems/BaseProcessSystem.h"
+#include "Entity/SceneSystem.h"
 
 namespace DAVA
 {

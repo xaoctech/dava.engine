@@ -7,6 +7,7 @@
 
 #include "Scene/SceneHelper.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include "Base/BaseTypes.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"

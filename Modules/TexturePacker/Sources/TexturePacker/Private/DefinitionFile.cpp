@@ -1,9 +1,13 @@
 #include "TexturePacker/DefinitionFile.h"
-#include "TexturePacker/PngImage.h"
+#include "TexturePacker/ImageExt.h"
 #include "TexturePacker/FramePathHelper.h"
 
+#include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
+#include <FileSystem/File.h>
 #include <Logger/Logger.h>
+#include <Render/TextureDescriptor.h>
+#include <Render/Image/Image.h>
 #include <Render/Image/LibPSDHelper.h>
 #include <Utils/StringFormat.h>
 
@@ -16,28 +20,29 @@ namespace DAVA
 {
 namespace DefinitionFileLocal
 {
-bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bit_depth);
+bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bitDepth);
 }
 
-bool DefinitionFile::LoadPNG(const FilePath& filename_, const FilePath& processDir, String outputBasename)
+bool DefinitionFile::LoadImage(const FilePath& sourceFile, const FilePath& processDir, String outputBasename)
 {
     DVASSERT(processDir.IsDirectoryPathname());
 
+    extension = sourceFile.GetExtension();
+    DVASSERT(TextureDescriptor::IsSupportedTextureExtension(extension) == true);
+
     if (outputBasename.empty())
     {
-        outputBasename = filename_.GetBasename();
+        outputBasename = sourceFile.GetBasename();
     }
 
     filename = processDir + outputBasename + ".txt";
     frameCount = 1;
 
-    PngImageExt image;
-    FilePath corespondingPngImage = FilePath::CreateWithNewExtension(filename_, ".png");
-    bool read = image.Read(corespondingPngImage);
-    if (read)
+    ImageInfo info = ImageSystem::GetImageInfo(sourceFile);
+    if (info.format != PixelFormat::FORMAT_INVALID)
     {
-        spriteWidth = image.GetWidth();
-        spriteHeight = image.GetHeight();
+        spriteWidth = info.width;
+        spriteHeight = info.height;
 
         frameNames.resize(frameCount);
         frameRects.resize(frameCount);
@@ -46,11 +51,15 @@ bool DefinitionFile::LoadPNG(const FilePath& filename_, const FilePath& processD
         frameRects[0].dx = spriteWidth;
         frameRects[0].dy = spriteHeight;
 
-        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, 0);
-        FileSystem::Instance()->CopyFile(filename_, fileWrite);
-    }
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, 0, extension);
+        GetEngineContext()->fileSystem->CopyFile(sourceFile, fileWrite);
 
-    return read;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& processDir, String outputBasename)
@@ -71,7 +80,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
 
     String originalBasename = _filename.GetBasename();
 
-    PngImageExt image;
+    ImageExt image;
     FilePath corespondingPngImage = FilePath::CreateWithNewExtension(_filename, ".png");
     image.Read(corespondingPngImage);
     spriteWidth = image.GetWidth() / frameCount;
@@ -83,7 +92,7 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
     frameNames.resize(frameCount);
     for (uint32 k = 0; k < frameCount; ++k)
     {
-        PngImageExt frameX;
+        ImageExt frameX;
         frameX.Create(spriteWidth, spriteHeight);
         frameX.DrawImage(0, 0, &image, Rect2i(k * spriteWidth, 0, spriteWidth, spriteHeight));
 
@@ -91,11 +100,11 @@ bool DefinitionFile::LoadPNGDef(const FilePath& _filename, const FilePath& proce
         frameX.FindNonOpaqueRect(reducedRect);
         Logger::FrameworkDebug("%s - reduced_rect(%d %d %d %d)", originalBasename.c_str(), reducedRect.x, reducedRect.y, reducedRect.dx, reducedRect.dy);
 
-        PngImageExt frameX2;
+        ImageExt frameX2;
         frameX2.Create(reducedRect.dx, reducedRect.dy);
         frameX2.DrawImage(0, 0, &frameX, reducedRect);
 
-        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, k);
+        FilePath fileWrite = FramePathHelper::GetFramePathAbsolute(processDir, outputBasename, k, extension);
         frameX2.Write(fileWrite);
 
         frameRects[k].x = reducedRect.x;
@@ -154,7 +163,7 @@ int DefinitionFile::GetFrameHeight(uint32 frame) const
 bool DefinitionFile::LoadPSD(const FilePath& psdPath, const FilePath& processDirectoryPath, uint32 maxTextureSize,
                              bool retainEmptyPixesl, bool useLayerNames, bool verboseOutput, String outputBasename)
 {
-    if (FileSystem::Instance()->CreateDirectory(processDirectoryPath) == FileSystem::DIRECTORY_CANT_CREATE)
+    if (GetEngineContext()->fileSystem->CreateDirectory(processDirectoryPath) == FileSystem::DIRECTORY_CANT_CREATE)
     {
         Logger::Error("============================ ERROR ============================");
         Logger::Error("| Can't create output directory: ");
@@ -366,7 +375,7 @@ bool DefinitionFile::LoadPSD(const FilePath& psdPath, const FilePath& processDir
 
 namespace DefinitionFileLocal
 {
-bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bit_depth)
+bool WritePNGImage(int width, int height, char* imageData, const char* outName, int channels, int bitDepth)
 {
     FILE* fp = fopen(outName, "wb");
     if (fp == nullptr)
@@ -377,19 +386,19 @@ bool WritePNGImage(int width, int height, char* imageData, const char* outName, 
         fclose(fp);
     };
 
-    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp pngPtr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
-    if (png_ptr == nullptr)
+    if (pngPtr == nullptr)
         return false;
 
-    png_infop info_ptr = png_create_info_struct(png_ptr);
-    if (info_ptr == nullptr)
+    png_infop infoPtr = png_create_info_struct(pngPtr);
+    if (infoPtr == nullptr)
     {
-        png_destroy_write_struct(&png_ptr, &info_ptr);
+        png_destroy_write_struct(&pngPtr, &infoPtr);
         return false;
     }
 
-    png_init_io(png_ptr, fp);
+    png_init_io(pngPtr, fp);
 
     png_byte colorType = 0;
     switch (channels)
@@ -418,23 +427,25 @@ bool WritePNGImage(int width, int height, char* imageData, const char* outName, 
 
     default:
     {
-        printf("Invalid image configuration: %d channels, %d bit depth", channels, bit_depth);
-        png_destroy_info_struct(png_ptr, &info_ptr);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
+        printf("Invalid image configuration: %d channels, %d bit depth", channels, bitDepth);
+        png_destroy_info_struct(pngPtr, &infoPtr);
+        png_destroy_write_struct(&pngPtr, &infoPtr);
         return false;
     }
     }
 
-    int rowSize = width * channels * bit_depth / 8;
+    int rowSize = width * channels * bitDepth / 8;
 
-    png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth, colorType,
+    png_set_IHDR(pngPtr, infoPtr, width, height, bitDepth, colorType,
                  PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-    png_write_info(png_ptr, info_ptr);
+    png_write_info(pngPtr, infoPtr);
     for (int y = 0; y < height; ++y)
-        png_write_row(png_ptr, reinterpret_cast<png_bytep>(&imageData[y * rowSize]));
-    png_write_end(png_ptr, info_ptr);
-    png_destroy_info_struct(png_ptr, &info_ptr);
-    png_destroy_write_struct(&png_ptr, &info_ptr);
+    {
+        png_write_row(pngPtr, reinterpret_cast<png_bytep>(&imageData[y * rowSize]));
+    }
+    png_write_end(pngPtr, infoPtr);
+    png_destroy_info_struct(pngPtr, &infoPtr);
+    png_destroy_write_struct(&pngPtr, &infoPtr);
     return true;
 }
 }

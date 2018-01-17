@@ -31,6 +31,11 @@ object dava_framework_EditorsTmp_TmpResourcePacker_AutotestsMac : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = ""
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "adreno"
             workingDir = "Programs/ResPackerTest"
             scriptContent = "python test.py adreno %mail_list% %link% %framework_name% %build.vcs.number.dava_DavaFrameworkStash%%"

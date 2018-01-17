@@ -26,7 +26,7 @@ void TeamcityOutput::Output(Logger::eLogLevel ll, const char8* text)
     switch (ll)
     {
     case Logger::LEVEL_ERROR:
-        status = "ERROR";
+        status = "WARNING";
         break;
     case Logger::LEVEL_WARNING:
         status = "WARNING";

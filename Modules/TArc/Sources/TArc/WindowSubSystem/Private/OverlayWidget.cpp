@@ -11,7 +11,7 @@ namespace TArc
 {
 OverlayWidget::OverlayWidget(const OverCentralPanelInfo& info, QWidget* content_, QWidget* parent)
     : QFrame(parent)
-    , geometryProccessor(info.geometryProcessor)
+    , geometryProcessor(info.geometryProcessor)
     , content(content_)
 {
     setWindowFlags(static_cast<Qt::WindowFlags>(Qt::FramelessWindowHint | Qt::Tool));
@@ -80,7 +80,7 @@ bool OverlayWidget::eventFilter(QObject* obj, QEvent* e)
 void OverlayWidget::UpdateGeometry()
 {
     QWidget* parentW = parentWidget();
-    QRect r = geometryProccessor->GetWidgetGeometry(parentWidget(), content);
+    QRect r = geometryProcessor->GetWidgetGeometry(parentWidget(), content);
 
     QPoint pivot = parentW->mapToGlobal(r.topLeft());
     move(pivot);

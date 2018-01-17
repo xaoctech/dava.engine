@@ -108,6 +108,46 @@ int32 ReflectedPropertyItem::LookupChildPosition(int32 sortKey)
     return childPosition;
 }
 
+int32 ReflectedPropertyItem::LookupChildPosition(const std::shared_ptr<PropertyNode>& node)
+{
+    int32 positionCandidate = LookupChildPosition(node->sortKey);
+    std::shared_ptr<PropertyNode> nodeParent = node->parent.lock();
+    DVASSERT(nodeParent != nullptr);
+    while (true)
+    {
+        if (positionCandidate >= static_cast<int32>(children.size()))
+        {
+            break;
+        }
+
+        ReflectedPropertyItem* candidate = children[positionCandidate].get();
+        std::shared_ptr<PropertyNode> candidateParent = candidate->GetPropertyNode(0)->parent.lock();
+        DVASSERT(candidateParent != nullptr);
+
+        if (nodeParent->cachedValue.GetType() == candidateParent->cachedValue.GetType())
+        {
+            break;
+        }
+
+        int32 nextPosition = std::min(positionCandidate + 1, static_cast<int32>(children.size() - 1));
+        ReflectedPropertyItem* next = children[nextPosition].get();
+        if (candidate == next)
+        {
+            ++positionCandidate;
+            break;
+        }
+
+        std::shared_ptr<PropertyNode> nextParent = next->GetPropertyNode(0)->parent.lock();
+        DVASSERT(nextParent != nullptr);
+        if (candidateParent->cachedValue.GetType() == nextParent->cachedValue.GetType())
+        {
+            positionCandidate++;
+        }
+    }
+
+    return positionCandidate;
+}
+
 int32 ReflectedPropertyItem::GetChildCount() const
 {
     return static_cast<int32>(children.size());
