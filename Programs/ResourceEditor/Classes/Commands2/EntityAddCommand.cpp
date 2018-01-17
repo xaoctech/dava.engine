@@ -6,12 +6,15 @@
 
 #include "Utils/StringFormat.h"
 
-EntityAddCommand::EntityAddCommand(DAVA::Entity* _entityToAdd, DAVA::Entity* toParent)
-    : RECommand(CMDID_ENTITY_ADD, DAVA::Format("Add Entity %s", _entityToAdd->GetName().c_str()))
-    , entityToAdd(_entityToAdd)
-    , parentToAdd(toParent)
+EntityAddCommand::EntityAddCommand(DAVA::Entity* entityToAdd, DAVA::Entity* parentToAdd, DAVA::Entity* insertBefore)
+    : RECommand(CMDID_ENTITY_ADD, DAVA::Format("Add Entity %s", entityToAdd->GetName().c_str()))
+    , entityToAdd(entityToAdd)
+    , parentToAdd(parentToAdd)
+    , insertBefore(insertBefore)
 {
     SafeRetain(entityToAdd);
+    DVASSERT(parentToAdd != nullptr);
+    DVASSERT(entityToAdd != nullptr);
 }
 
 EntityAddCommand::~EntityAddCommand()
@@ -21,24 +24,25 @@ EntityAddCommand::~EntityAddCommand()
 
 void EntityAddCommand::Undo()
 {
-    if (NULL != parentToAdd && NULL != entityToAdd)
-    {
-        parentToAdd->RemoveNode(entityToAdd);
-    }
+    parentToAdd->RemoveNode(entityToAdd);
 }
 
 void EntityAddCommand::Redo()
 {
-    if (parentToAdd)
+    if (insertBefore != nullptr)
+    {
+        parentToAdd->InsertBeforeNode(entityToAdd, insertBefore);
+    }
+    else
     {
         parentToAdd->AddNode(entityToAdd);
+    }
 
-        //Workaround for correctly adding of switch
-        DAVA::SwitchComponent* sw = GetSwitchComponent(entityToAdd);
-        if (sw)
-        {
-            sw->SetSwitchIndex(sw->GetSwitchIndex());
-        }
+    //Workaround for correctly adding of switch
+    DAVA::SwitchComponent* sw = GetSwitchComponent(entityToAdd);
+    if (sw != nullptr)
+    {
+        sw->SetSwitchIndex(sw->GetSwitchIndex());
     }
 }
 
