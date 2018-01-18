@@ -1,5 +1,4 @@
-#ifndef __ENTITY_ADD_COMMAND_H__
-#define __ENTITY_ADD_COMMAND_H__
+#pragma once
 
 #include "Commands2/Base/RECommand.h"
 
@@ -11,7 +10,8 @@ class Entity;
 class EntityAddCommand : public RECommand
 {
 public:
-    EntityAddCommand(DAVA::Entity* entityToAdd, DAVA::Entity* toParent);
+    EntityAddCommand(DAVA::Entity* entityToAdd, DAVA::Entity* parentToAdd,
+                     DAVA::Entity* insertBefore = nullptr);
     ~EntityAddCommand();
 
     void Undo() override;
@@ -19,8 +19,7 @@ public:
 
     DAVA::Entity* GetEntity() const;
 
-    DAVA::Entity* entityToAdd;
-    DAVA::Entity* parentToAdd;
+    DAVA::Entity* entityToAdd = nullptr;
+    DAVA::Entity* parentToAdd = nullptr;
+    DAVA::Entity* insertBefore = nullptr;
 };
-
-#endif // __ENTITY_ADD_COMMAND_H__
