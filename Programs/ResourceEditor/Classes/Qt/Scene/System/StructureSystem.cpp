@@ -328,7 +328,7 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const DAVA::FileP
                             CopyLightmapSettings(origEntity, newEntityInstance);
                         }
 
-                        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(newEntityInstance, origEntity->GetParent(), before)));
+                        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(newEntityInstance, origEntity->GetParent(), before)));
                         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityRemoveCommand(origEntity)));
                     }
                 }
