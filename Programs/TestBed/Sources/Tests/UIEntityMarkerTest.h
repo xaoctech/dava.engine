@@ -3,10 +3,10 @@
 #include "Infrastructure/BaseScreen.h"
 
 class TestBed;
-class SceneTest : public BaseScreen
+class UIEntityMarkerTest : public BaseScreen
 {
 public:
-    SceneTest(TestBed& app);
+    UIEntityMarkerTest(TestBed& app);
 
 protected:
     void LoadResources() override;
