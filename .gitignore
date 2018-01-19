@@ -36,6 +36,8 @@ _build*
 *.sdf
 *.opensdf
 *.ipch
+*.unityignore
+unityignore
 !*.cpp
 !*.h
 ddd

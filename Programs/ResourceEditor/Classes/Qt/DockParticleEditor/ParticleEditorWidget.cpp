@@ -233,7 +233,7 @@ void ParticleEditorWidget::ProcessSelection(SceneEditor2* scene, const Selectabl
     if (obj.CanBeCastedTo<DAVA::Entity>())
     {
         DAVA::Entity* entity = obj.AsEntity();
-        DAVA::ParticleEffectComponent* effect = static_cast<DAVA::ParticleEffectComponent*>(entity->GetComponent(DAVA::Component::PARTICLE_EFFECT_COMPONENT));
+        DAVA::ParticleEffectComponent* effect = entity->GetComponent<DAVA::ParticleEffectComponent>();
         if (effect != nullptr)
         {
             shouldReset = false;

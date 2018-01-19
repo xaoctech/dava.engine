@@ -45,6 +45,11 @@ object dava_framework_NewBuilds_Tests_PerfomanceTestsFoobar_PerformanceTestsIOS 
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "ResourceEditor generate project"
             workingDir = "%ResourceEditor_pathToProjectBuild%"
             scriptContent = """

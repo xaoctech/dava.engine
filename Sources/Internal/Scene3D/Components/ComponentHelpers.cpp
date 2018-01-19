@@ -32,7 +32,7 @@
 
 namespace DAVA
 {
-bool HasComponent(const Entity* fromEntity, const Component::eType componentType)
+bool HasComponent(const Entity* fromEntity, const Type* componentType)
 {
     if (fromEntity != nullptr)
     {
@@ -45,7 +45,7 @@ bool HasComponent(const Entity* fromEntity, const Component::eType componentType
 RenderComponent* GetRenderComponent(const Entity* fromEntity)
 {
     if (fromEntity)
-        return static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
+        return fromEntity->GetComponent<RenderComponent>();
     else
         return nullptr;
 }
@@ -53,7 +53,7 @@ RenderComponent* GetRenderComponent(const Entity* fromEntity)
 TransformComponent* GetTransformComponent(const Entity* fromEntity)
 {
     if (fromEntity)
-        return static_cast<TransformComponent*>(fromEntity->GetComponent(Component::TRANSFORM_COMPONENT));
+        return fromEntity->GetComponent<TransformComponent>();
     else
         return nullptr;
 }
@@ -61,7 +61,7 @@ TransformComponent* GetTransformComponent(const Entity* fromEntity)
 SkeletonComponent* GetSkeletonComponent(const Entity* fromEntity)
 {
     if (fromEntity)
-        return static_cast<SkeletonComponent*>(fromEntity->GetComponent(Component::SKELETON_COMPONENT));
+        return fromEntity->GetComponent<SkeletonComponent>();
     else
         return nullptr;
 }
@@ -69,7 +69,7 @@ SkeletonComponent* GetSkeletonComponent(const Entity* fromEntity)
 MotionComponent* GetMotionComponent(const Entity* fromEntity)
 {
     if (fromEntity)
-        return static_cast<MotionComponent*>(fromEntity->GetComponent(Component::MOTION_COMPONENT));
+        return fromEntity->GetComponent<MotionComponent>();
     else
         return nullptr;
 }
@@ -105,7 +105,7 @@ ParticleEffectComponent* GetEffectComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<ParticleEffectComponent*>(fromEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+        return fromEntity->GetComponent<ParticleEffectComponent>();
     }
 
     return nullptr;
@@ -115,7 +115,7 @@ AnimationComponent* GetAnimationComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<AnimationComponent*>(fromEntity->GetComponent(Component::ANIMATION_COMPONENT));
+        return fromEntity->GetComponent<AnimationComponent>();
     }
     return nullptr;
 }
@@ -124,7 +124,7 @@ LightComponent* GetLightComponent(const Entity* fromEntity)
 {
     if (nullptr != fromEntity)
     {
-        return static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
+        return fromEntity->GetComponent<LightComponent>();
     }
 
     return nullptr;
@@ -175,7 +175,7 @@ Camera* GetCamera(const Entity* fromEntity)
 {
     if (nullptr != fromEntity)
     {
-        CameraComponent* component = static_cast<CameraComponent*>(fromEntity->GetComponent(Component::CAMERA_COMPONENT));
+        CameraComponent* component = fromEntity->GetComponent<CameraComponent>();
         if (component)
         {
             return component->GetCamera();
@@ -189,7 +189,7 @@ LodComponent* GetLodComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<LodComponent*>(fromEntity->GetComponent(Component::LOD_COMPONENT));
+        return fromEntity->GetComponent<LodComponent>();
     }
 
     return nullptr;
@@ -199,7 +199,7 @@ SwitchComponent* GetSwitchComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<SwitchComponent*>(fromEntity->GetComponent(Component::SWITCH_COMPONENT));
+        return fromEntity->GetComponent<SwitchComponent>();
     }
 
     return nullptr;
@@ -209,7 +209,7 @@ ParticleEffectComponent* GetParticleEffectComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<ParticleEffectComponent*>(fromEntity->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+        return fromEntity->GetComponent<ParticleEffectComponent>();
     }
 
     return nullptr;
@@ -219,7 +219,7 @@ SoundComponent* GetSoundComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<SoundComponent*>(fromEntity->GetComponent(Component::SOUND_COMPONENT));
+        return fromEntity->GetComponent<SoundComponent>();
     }
 
     return nullptr;
@@ -259,7 +259,7 @@ uint32 GetLodLayersCount(LodComponent* fromComponent)
 
 void RecursiveProcessMeshNode(Entity* curr, void* userData, void (*process)(Entity*, void*))
 {
-    RenderComponent* comp = static_cast<RenderComponent*>(curr->GetComponent(Component::RENDER_COMPONENT));
+    RenderComponent* comp = curr->GetComponent<RenderComponent>();
     if (comp)
     {
         RenderObject* renderObject = comp->GetRenderObject();
@@ -279,7 +279,7 @@ SpeedTreeComponent* GetSpeedTreeComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<SpeedTreeComponent*>(fromEntity->GetComponent(Component::SPEEDTREE_COMPONENT));
+        return fromEntity->GetComponent<SpeedTreeComponent>();
     }
 
     return nullptr;
@@ -289,7 +289,7 @@ WindComponent* GetWindComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<WindComponent*>(fromEntity->GetComponent(Component::WIND_COMPONENT));
+        return fromEntity->GetComponent<WindComponent>();
     }
 
     return nullptr;
@@ -299,7 +299,7 @@ WaveComponent* GetWaveComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<WaveComponent*>(fromEntity->GetComponent(Component::WAVE_COMPONENT));
+        return fromEntity->GetComponent<WaveComponent>();
     }
 
     return nullptr;
@@ -361,7 +361,7 @@ QualitySettingsComponent* GetQualitySettingsComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return (static_cast<QualitySettingsComponent*>(fromEntity->GetComponent(Component::QUALITY_SETTINGS_COMPONENT)));
+        return fromEntity->GetComponent<QualitySettingsComponent>();
     }
 
     return nullptr;
@@ -371,7 +371,7 @@ CustomPropertiesComponent* GetCustomProperties(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return (static_cast<CustomPropertiesComponent*>(fromEntity->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT)));
+        return fromEntity->GetComponent<CustomPropertiesComponent>();
     }
 
     return nullptr;
@@ -381,7 +381,7 @@ CustomPropertiesComponent* GetOrCreateCustomProperties(Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return (static_cast<CustomPropertiesComponent*>(fromEntity->GetOrCreateComponent(Component::CUSTOM_PROPERTIES_COMPONENT)));
+        return fromEntity->GetOrCreateComponent<CustomPropertiesComponent>();
     }
 
     return nullptr;
@@ -410,7 +410,7 @@ PathComponent* GetPathComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<PathComponent*>(fromEntity->GetComponent(Component::PATH_COMPONENT));
+        return fromEntity->GetComponent<PathComponent>();
     }
 
     return nullptr;
@@ -420,7 +420,7 @@ WaypointComponent* GetWaypointComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return static_cast<WaypointComponent*>(fromEntity->GetComponent(Component::WAYPOINT_COMPONENT));
+        return fromEntity->GetComponent<WaypointComponent>();
     }
 
     return NULL;
@@ -430,7 +430,7 @@ SnapToLandscapeControllerComponent* GetSnapToLandscapeControllerComponent(const 
 {
     if (fromEntity)
     {
-        return (static_cast<SnapToLandscapeControllerComponent*>(fromEntity->GetComponent(Component::SNAP_TO_LANDSCAPE_CONTROLLER_COMPONENT)));
+        return fromEntity->GetComponent<SnapToLandscapeControllerComponent>();
     }
 
     return nullptr;
@@ -440,7 +440,7 @@ StaticOcclusionComponent* GetStaticOcclusionComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return (static_cast<StaticOcclusionComponent*>(fromEntity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT)));
+        return fromEntity->GetComponent<StaticOcclusionComponent>();
     }
 
     return nullptr;
@@ -450,7 +450,7 @@ StaticOcclusionDebugDrawComponent* GetStaticOcclusionDebugDrawComponent(const En
 {
     if (fromEntity)
     {
-        return (static_cast<StaticOcclusionDebugDrawComponent*>(fromEntity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT)));
+        return fromEntity->GetComponent<StaticOcclusionDebugDrawComponent>();
     }
 
     return nullptr;
@@ -460,7 +460,7 @@ GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity)
 {
     if (fromEntity)
     {
-        return (static_cast<GeoDecalComponent*>(fromEntity->GetComponent(Component::GEO_DECAL_COMPONENT)));
+        return fromEntity->GetComponent<GeoDecalComponent>();
     }
 
     return nullptr;

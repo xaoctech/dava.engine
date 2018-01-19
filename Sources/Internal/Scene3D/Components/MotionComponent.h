@@ -17,8 +17,6 @@ class YamlNode;
 class MotionComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(MOTION_COMPONENT);
-
     MotionComponent() = default;
     ~MotionComponent();
 

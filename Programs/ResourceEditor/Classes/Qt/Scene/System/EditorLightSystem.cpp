@@ -5,6 +5,8 @@
 #include "StringConstants.h"
 #include "Constants.h"
 
+#include <Entity/ComponentUtils.h>
+
 using namespace DAVA;
 
 EditorLightSystem::EditorLightSystem(DAVA::Scene* scene)
@@ -19,7 +21,7 @@ EditorLightSystem::EditorLightSystem(DAVA::Scene* scene)
     cameraLight->SetName(ResourceEditor::EDITOR_CAMERA_LIGHT);
     cameraLight->AddComponent(new LightComponent(light));
 
-    SetRequiredComponents(MAKE_COMPONENT_MASK(Component::LIGHT_COMPONENT));
+    SetRequiredComponents(ComponentUtils::MakeMask<LightComponent>());
 
     if (isEnabled)
     {

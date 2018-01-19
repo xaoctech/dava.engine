@@ -19,7 +19,6 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
     name = "ToolSet_Android"
 
     artifactRules = """
-        dava.framework/Programs/UnitTests/Platforms/Android/UnitTests/build/outputs/apk/UnitTests-fat-release.apk
         dava.framework/Programs/SceneViewer/Platforms/Android/SceneViewer/build/outputs/apk/SceneViewer-fat-release.apk
         dava.framework/Programs/TestBed/Platforms/Android/TestBed/build/outputs/apk/TestBed-fat-release.apk
     """.trimIndent()
@@ -41,6 +40,11 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
     }
 
     steps {
+        script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
         script {
             name = "get stash commit"
             workingDir = "dava.framework"
@@ -126,9 +130,5 @@ object dava_framework_ToolSet_ToolSetAndroid : BuildType({
 
     requirements {
         exists("env.UNIT_TEST")
-        doesNotEqual("system.agent.name", "by2-badava-mac-08")
-        doesNotEqual("system.agent.name", "by2-badava-mac-11", "RQ_87")
     }
-    
-    disableSettings("RQ_87")
 })

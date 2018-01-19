@@ -4,6 +4,7 @@
 #include "Scene/SceneEditor2.h"
 #include "Classes/Application/REGlobal.h"
 #include "Classes/Project/ProjectManagerData.h"
+#include "Classes/SceneManager/SceneData.h"
 
 #include "Commands2/Base/RECommandNotificationObject.h"
 #include "Commands2/EntityParentChangeCommand.h"
@@ -61,7 +62,7 @@ StructureSystem::~StructureSystem()
 {
 }
 
-void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore)
+void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newParent, DAVA::Entity* newBefore, bool saveEntityPositionOnHierarchyChange)
 {
     SceneEditor2* sceneEditor = (SceneEditor2*)GetScene();
     const auto& objectsContent = objects.GetContent();
@@ -71,7 +72,9 @@ void StructureSystem::Move(const SelectableGroup& objects, DAVA::Entity* newPare
     sceneEditor->BeginBatch("Move entities", objects.GetSize());
     for (auto entity : objects.ObjectsOfType<DAVA::Entity>())
     {
-        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(entity, newParent, newBefore)));
+        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(entity, newParent,
+                                                                                       saveEntityPositionOnHierarchyChange,
+                                                                                       newBefore)));
     }
     sceneEditor->EndBatch();
     EmitChanged();
@@ -325,7 +328,7 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const DAVA::FileP
                             CopyLightmapSettings(origEntity, newEntityInstance);
                         }
 
-                        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityParentChangeCommand(newEntityInstance, origEntity->GetParent(), before)));
+                        sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityAddCommand(newEntityInstance, origEntity->GetParent(), before)));
                         sceneEditor->Exec(std::unique_ptr<DAVA::Command>(new EntityRemoveCommand(origEntity)));
                     }
                 }

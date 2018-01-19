@@ -779,7 +779,7 @@ Vector<UIPackageLoader::ComponentNode> UIPackageLoader::ExtractComponentNodes(co
             uint32 componentIndex = atoi(fullName.substr(lastChar + 1).c_str());
 
             const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(componentName);
-            if (reflectedType && cm->IsUIComponent(reflectedType->GetType()))
+            if (reflectedType && cm->IsRegisteredUIComponent(reflectedType->GetType()))
             {
                 ComponentNode n;
                 n.node = componentsNode->Get(i);

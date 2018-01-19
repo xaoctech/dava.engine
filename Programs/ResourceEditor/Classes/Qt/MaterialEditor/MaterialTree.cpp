@@ -227,7 +227,7 @@ void MaterialTree::OnCommandExecuted(SceneEditor2* scene, const RECommandNotific
                 {
                     const RemoveComponentCommand* removeCommand = static_cast<const RemoveComponentCommand*>(command);
                     DVASSERT(removeCommand->GetComponent() != nullptr);
-                    if (removeCommand->GetComponent()->GetType() == DAVA::Component::RENDER_COMPONENT)
+                    if (removeCommand->GetComponent()->GetType() == DAVA::Type::Instance<DAVA::RenderComponent>())
                     {
                         Update();
                     }

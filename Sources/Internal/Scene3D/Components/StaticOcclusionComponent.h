@@ -19,8 +19,6 @@ protected:
     ~StaticOcclusionDataComponent();
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(STATIC_OCCLUSION_DATA_COMPONENT);
-
     StaticOcclusionDataComponent();
 
     Component* Clone(Entity* toEntity) override;
@@ -44,8 +42,6 @@ protected:
     ~StaticOcclusionComponent(){};
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(STATIC_OCCLUSION_COMPONENT);
-
     StaticOcclusionComponent();
 
     Component* Clone(Entity* toEntity) override;
@@ -92,8 +88,6 @@ class StaticOcclusionDebugDrawComponent : public Component
     friend class StaticOcclusionDebugDrawSystem;
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);
-
     StaticOcclusionDebugDrawComponent(RenderObject* object = NULL);
 
     Component* Clone(Entity* toEntity) override;
@@ -191,7 +185,7 @@ inline StaticOcclusionData& StaticOcclusionDataComponent::GetData()
 
 inline const float32* StaticOcclusionComponent::GetCellHeightOffsets() const
 {
-    return placeOnLandscape ? &cellHeightOffset.front() : NULL;
+    return placeOnLandscape ? &cellHeightOffset.front() : nullptr;
 }
 
 inline void StaticOcclusionComponent::SetOcclusionPixelThreshold(uint32 pixelThreshold)

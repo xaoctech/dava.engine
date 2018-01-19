@@ -38,6 +38,11 @@ object dava_framework_NewBuilds_Tests_TestBed_Ios : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "generate project"
             workingDir = "%pathToProject%"
             scriptContent = """

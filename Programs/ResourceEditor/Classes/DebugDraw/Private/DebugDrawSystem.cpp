@@ -17,6 +17,10 @@
 #include <Scene3D/Components/GeoDecalComponent.h>
 #include <Render/Highlevel/GeometryOctTree.h>
 
+#include <Entity/ComponentManager.h>
+#include <Engine/Engine.h>
+#include <Base/Type.h>
+
 #define DAVA_ALLOW_OCTREE_DEBUG 0
 
 const DAVA::float32 DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT = 0.001f;
@@ -30,10 +34,10 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene* scene)
 
     DVASSERT(NULL != collSystem);
 
-    drawComponentFunctionsMap[DAVA::Component::SOUND_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawSoundNode);
-    drawComponentFunctionsMap[DAVA::Component::WIND_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
-    drawComponentFunctionsMap[DAVA::Component::GEO_DECAL_COMPONENT] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
-    drawComponentFunctionsMap[DAVA::Component::LIGHT_COMPONENT] = DAVA::Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
+    drawComponentFunctionsMap[DAVA::Type::Instance<DAVA::SoundComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawSoundNode);
+    drawComponentFunctionsMap[DAVA::Type::Instance<DAVA::WindComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
+    drawComponentFunctionsMap[DAVA::Type::Instance<DAVA::GeoDecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
+    drawComponentFunctionsMap[DAVA::Type::Instance<DAVA::LightComponent>()] = DAVA::Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
 }
 
 DebugDrawSystem::~DebugDrawSystem()
@@ -69,7 +73,10 @@ void DebugDrawSystem::AddEntity(DAVA::Entity* entity)
 {
     entities.push_back(entity);
 
-    for (DAVA::uint32 type = 0; type < DAVA::Component::COMPONENT_COUNT; ++type)
+    DAVA::ComponentManager* cm = DAVA::GetEngineContext()->componentManager;
+    const DAVA::Vector<const DAVA::Type*> componentsTypes = cm->GetRegisteredSceneComponents();
+
+    for (const DAVA::Type* type : componentsTypes)
     {
         for (DAVA::uint32 index = 0, count = entity->GetComponentCount(type); index < count; ++index)
         {
@@ -91,7 +98,7 @@ void DebugDrawSystem::RemoveEntity(DAVA::Entity* entity)
 
 void DebugDrawSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DAVA::Component::eType type = static_cast<DAVA::Component::eType>(component->GetType());
+    const DAVA::Type* type = component->GetType();
 
     auto it = drawComponentFunctionsMap.find(type);
 
@@ -110,11 +117,11 @@ void DebugDrawSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* c
 
 void DebugDrawSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DAVA::Component::eType type = static_cast<DAVA::Component::eType>(component->GetType());
+    const DAVA::Type* type = component->GetType();
 
     auto it = entitiesComponentMap.find(type);
 
-    if (it != entitiesComponentMap.end() && entity->GetComponentCount(component->GetType()) == 1)
+    if (it != entitiesComponentMap.end() && entity->GetComponentCount(type) == 1)
     {
         DAVA::FindAndRemoveExchangingWithLast(it->second, entity);
     }
@@ -126,7 +133,7 @@ void DebugDrawSystem::PrepareForRemove()
     entitiesComponentMap.clear();
 }
 
-void DebugDrawSystem::DrawComponent(DAVA::Component::eType type, const DAVA::Function<void(DAVA::Entity*)>& func)
+void DebugDrawSystem::DrawComponent(const DAVA::Type* type, const DAVA::Function<void(DAVA::Entity*)>& func)
 {
     auto it = entitiesComponentMap.find(type);
 
@@ -541,13 +548,13 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods(DAVA::Entity* entity)
 void DebugDrawSystem::DrawDecals(DAVA::Entity* entity)
 {
     DAVA::RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    DAVA::uint32 componentsCount = entity->GetComponentCount(DAVA::Component::eType::GEO_DECAL_COMPONENT);
+    DAVA::uint32 componentsCount = entity->GetComponentCount<DAVA::GeoDecalComponent>();
     for (DAVA::uint32 i = 0; i < componentsCount; ++i)
     {
-        DAVA::Component* component = entity->GetComponent(DAVA::Component::eType::GEO_DECAL_COMPONENT, i);
-        DVASSERT(component != nullptr);
+        DAVA::GeoDecalComponent* decal = entity->GetComponent<DAVA::GeoDecalComponent>(i);
 
-        DAVA::GeoDecalComponent* decal = static_cast<DAVA::GeoDecalComponent*>(component);
+        DVASSERT(decal != nullptr);
+
         DAVA::Matrix4 transform = entity->GetWorldTransform();
 
         DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;

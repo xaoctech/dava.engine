@@ -109,11 +109,6 @@ public:
 
     explicit DLCManagerImpl(Engine* engine_);
     ~DLCManagerImpl();
-    void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
-    void FillPreloadedPacks();
-    void TestPackDirectoryExist();
-    void DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
-    void CreateDownloader();
     void Initialize(const FilePath& dirToDownloadPacks_,
                     const String& urlToServerSuperpack_,
                     const Hints& hints_) final;
@@ -146,9 +141,13 @@ public:
 
     bool IsAnyPackInQueue() const final;
 
+    bool IsKnownFile(const FilePath& relativeFileName) const final;
+
     void SetRequestPriority(const IRequest* request) final;
 
     void RemovePack(const String& packName) final;
+
+    void ResetQueue() final;
 
     Progress GetProgress() const final;
 
@@ -166,7 +165,13 @@ public:
 
     const Hints& GetHints() const;
 
-    const PackMetaData& GetMeta() const;
+    const PackMetaData& GetRemoteMeta() const;
+
+    const PackMetaData& GetLocalMeta() const;
+
+    bool HasLocalMeta() const;
+
+    bool HasRemoteMeta() const;
 
     const PackFormat::PackFile& GetPack() const;
 
@@ -209,6 +214,11 @@ private:
     void DeleteLocalMetaFile() const;
     void ContinueInitialization(float frameDelta);
     bool ReadContentAndExtractFileNames();
+    void TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_);
+    void TestPackDirectoryExist() const;
+    void DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints);
+    void CreateDownloader();
+    void CreateLocalPacks(const String& localPacksDB);
 
     String BuildErrorMessageBadServerCrc(uint32 crc32) const;
     static String BuildErrorMessageFailedRead(const FilePath& path);
@@ -219,8 +229,9 @@ private:
     PackRequest* AddDelayedRequest(const String& requestedPackName);
     void RemoveDownloadedFileIndexes(Vector<uint32>& packIndexes) const;
     void AddRequest(PackRequest* request);
-    PackRequest* PrepareNewRequest(const String& requestedPackName);
-    PackRequest* CreateNewRequest(const String& requestedPackName);
+    void RemoveRemoteRequest(PackRequest* request);
+    PackRequest* PrepareNewRemoteRequest(const String& requestedPackName);
+    PackRequest* CreateNewRemoteRequest(const String& requestedPackName);
     bool IsLocalMetaAndFileTableAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
@@ -250,7 +261,7 @@ private:
     Vector<bool> scanFileReady;
     Thread* scanThread = nullptr;
     ScanState scanState{ ScanState::Wait };
-    Semaphore metaDataLoadedSem;
+    Semaphore metaRemoteDataLoadedSem;
 
     void StartScanDownloadedFiles();
     void ThreadScanFunc();
@@ -267,35 +278,9 @@ private:
     String urlToSuperPack;
     bool isProcessingEnabled = false;
     std::unique_ptr<RequestManager> requestManager;
-    std::unique_ptr<PackMetaData> meta;
+    std::unique_ptr<PackMetaData> metaRemote;
+    std::unique_ptr<PackMetaData> metaLocal;
 
-    struct PreloadedPack final : IRequest
-    {
-        explicit PreloadedPack(const String& pack)
-            : packName(pack)
-        {
-        }
-        const String& GetRequestedPackName() const final
-        {
-            return packName;
-        }
-        uint64 GetSize() const override
-        {
-            return 0;
-        };
-        uint64 GetDownloadedSize() const final
-        {
-            return 0;
-        }
-        bool IsDownloaded() const final
-        {
-            return true;
-        }
-
-        String packName;
-    };
-
-    Map<String, PreloadedPack> preloadedPacks;
     Vector<PackRequest*> requests; // not forget to delete in destructor
     Vector<PackRequest*> delayedRequests; // move to requests after initialization finished
     Set<std::size_t> requestNameHashes; // for check if request with hash
@@ -346,9 +331,26 @@ inline const DLCManagerImpl::Hints& DLCManagerImpl::GetHints() const
     return hints;
 }
 
-inline const PackMetaData& DLCManagerImpl::GetMeta() const
+inline const PackMetaData& DLCManagerImpl::GetRemoteMeta() const
 {
-    return *meta;
+    DVASSERT(metaRemote.get() != nullptr);
+    return *metaRemote;
+}
+
+inline const PackMetaData& DLCManagerImpl::GetLocalMeta() const
+{
+    DVASSERT(metaLocal.get() != nullptr);
+    return *metaLocal;
+}
+
+inline bool DLCManagerImpl::HasLocalMeta() const
+{
+    return metaLocal.get() != nullptr;
+}
+
+inline bool DLCManagerImpl::HasRemoteMeta() const
+{
+    return metaRemote.get() != nullptr;
 }
 
 inline const PackFormat::PackFile& DLCManagerImpl::GetPack() const

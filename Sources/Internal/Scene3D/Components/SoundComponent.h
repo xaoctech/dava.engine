@@ -62,8 +62,6 @@ public:
     void SetLocalDirection(const DAVA::Vector3& direction);
     inline const Vector3& GetLocalDirection(uint32 eventIndex) const;
 
-    IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
-
 protected:
     Vector<SoundComponentElement> events;
 

@@ -9,7 +9,6 @@ namespace DAVA
 class PlaneShapeComponent : public CollisionShapeComponent
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(PLANE_SHAPE_COMPONENT);
     Component* Clone(Entity* toEntity) override;
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;

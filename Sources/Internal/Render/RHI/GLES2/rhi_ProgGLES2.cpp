@@ -286,13 +286,14 @@ ProgGLES2::InstanceConstBuffer(unsigned bufIndex) const
 
 //------------------------------------------------------------------------------
 
-void ProgGLES2::SetupTextureUnits(unsigned baseUnit) const
+void ProgGLES2::SetupTextureUnits(uint32 baseUnit, GLCommand* commands, uint32& commandsCount) const
 {
     for (unsigned i = 0; i != countof(texunitLoc); ++i)
     {
         if (texunitLoc[i] != -1)
         {
-            GL_CALL(glUniform1i(texunitLoc[i], baseUnit + i));
+            commands[commandsCount] = { GLCommand::SET_UNIFORM_1I, { texunitLoc[i], baseUnit + i } };
+            ++commandsCount;
         }
     }
 }

@@ -26,7 +26,7 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin102 : BuildType({
         param("env.build_required", "true")
         param("env.from_commit", "0")
         checkbox("packProject", "no",
-                  checked = "yes", unchecked = "no")
+                checked = "yes", unchecked = "no")
         param("pathToBin", """%system.teamcity.build.checkoutDir%\Tools\Bin""")
         param("pathToCmakeList", """Programs\%projectName%""")
         param("pathToProject", """%pathToCmakeList%\Release""")
@@ -43,6 +43,10 @@ object dava_framework_NewBuilds_Tests_UnitTests_UnitTestsWin102 : BuildType({
     }
 
     steps {
+        script {
+            name = "git lfs pull"
+            scriptContent = "git lfs pull"
+        }
         script {
             name = "get stash commit"
             scriptContent = "python Teamcity/get_pull_requests_commit.py --branch %teamcity.build.branch%"

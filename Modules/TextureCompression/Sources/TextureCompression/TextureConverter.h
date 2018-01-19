@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Base/BaseTypes.h>
+#include <FileSystem/FilePath.h>
 #include <Render/RenderBase.h>
 
 namespace DAVA
 {
-class FilePath;
 class TextureDescriptor;
 
 class TextureConverter final
@@ -23,7 +23,7 @@ public:
         ECQ_DEFAULT = ECQ_VERY_HIGH
     };
 
-    static FilePath ConvertTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, bool updateAfterConversion, eConvertQuality quality);
+    static FilePath ConvertTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, bool updateAfterConversion, eConvertQuality quality, const FilePath& outFolder = FilePath());
     static FilePath GetOutputPath(const TextureDescriptor& descriptor, eGPUFamily gpuFamily);
 };
 }

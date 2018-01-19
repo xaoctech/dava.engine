@@ -3,6 +3,7 @@
 
 #include <Engine/Engine.h>
 #include <Engine/Window.h>
+#include <Entity/ComponentUtils.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Input/InputSystem.h>
 #include <UI/Render/UIDebugRenderComponent.h>
@@ -23,7 +24,7 @@ void FullscreenTest::LoadResources()
     UIControlBackground* background = GetOrCreateComponent<UIControlBackground>();
     background->SetColor(Color::White);
 
-    ScopedPtr<Font> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
 
     float y = 35;
 
@@ -101,7 +102,7 @@ void FullscreenTest::LoadResources()
     ui3dview->GetOrCreateComponent<UIDebugRenderComponent>();
 
     ScopedPtr<Scene> scene(new Scene());
-    scene->LoadScene("~res:/3d/Objects/monkey.sc2");
+    scene->LoadScene("~res:/TestBed/3d/Objects/monkey.sc2");
 
     ScopedPtr<Camera> camera(new Camera());
     VirtualCoordinatesSystem* vcs = DAVA::GetEngineContext()->uiControlSystem->vcs;
@@ -119,7 +120,7 @@ void FullscreenTest::LoadResources()
 
     rotationControllerSystem = new RotationControllerSystem(scene);
     scene->AddSystem(rotationControllerSystem,
-                     MAKE_COMPONENT_MASK(Component::CAMERA_COMPONENT) | MAKE_COMPONENT_MASK(Component::ROTATION_CONTROLLER_COMPONENT),
+                     ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<RotationControllerComponent>(),
                      Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
 
     scene->AddCamera(camera);

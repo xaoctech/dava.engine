@@ -20,8 +20,6 @@ public:
     };
 
 public:
-    IMPLEMENT_COMPONENT_TYPE(GEO_DECAL_COMPONENT);
-
     GeoDecalComponent();
     GeoDecalComponent(uint32 flags);
 

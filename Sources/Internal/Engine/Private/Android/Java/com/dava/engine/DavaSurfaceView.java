@@ -219,6 +219,10 @@ final class DavaSurfaceView extends SurfaceView
         if (gls != null && !gls.hasGlobalLayoutListener(this))
         {
             gls.addGlobalLayoutListener(this);
+
+            // Reinitialize overlay window if surface changed after initializing.
+            // This is workaround for "transparent" keyboard defect.
+            gls.reinitOverlayWindow();
         }
     }
     

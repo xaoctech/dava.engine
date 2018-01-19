@@ -94,12 +94,12 @@ void EnumerateTriangles(TrianglesData& triangles)
 
 void EnumerateRenderObjectsRecursive(DAVA::Entity* entity, DAVA::Vector<DAVA::RenderObject*>& renderObjects, bool recursive)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT))
+    if (HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>()))
     {
-        DAVA::uint32 componentsCount = entity->GetComponentCount(DAVA::Component::RENDER_COMPONENT);
+        DAVA::uint32 componentsCount = entity->GetComponentCount<DAVA::RenderComponent>();
         for (DAVA::uint32 c = 0; c < componentsCount; ++c)
         {
-            DAVA::RenderComponent* rc = static_cast<DAVA::RenderComponent*>(entity->GetComponent(DAVA::Component::RENDER_COMPONENT, c));
+            DAVA::RenderComponent* rc = entity->GetComponent<DAVA::RenderComponent>(c);
             DAVA::RenderObject* ro = rc->GetRenderObject();
             if (ro != nullptr)
             {
@@ -170,7 +170,7 @@ EditorStatisticsSystem::EditorStatisticsSystem(DAVA::Scene* scene)
 
 void EditorStatisticsSystem::RegisterEntity(DAVA::Entity* entity)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT) || HasComponent(entity, DAVA::Component::LOD_COMPONENT))
+    if (HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>()) || HasComponent(entity, DAVA::Type::Instance<DAVA::LodComponent>()))
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }
@@ -178,7 +178,7 @@ void EditorStatisticsSystem::RegisterEntity(DAVA::Entity* entity)
 
 void EditorStatisticsSystem::UnregisterEntity(DAVA::Entity* entity)
 {
-    if (HasComponent(entity, DAVA::Component::RENDER_COMPONENT) || HasComponent(entity, DAVA::Component::LOD_COMPONENT))
+    if (HasComponent(entity, DAVA::Type::Instance<DAVA::RenderComponent>()) || HasComponent(entity, DAVA::Type::Instance<DAVA::LodComponent>()))
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }
@@ -186,8 +186,8 @@ void EditorStatisticsSystem::UnregisterEntity(DAVA::Entity* entity)
 
 void EditorStatisticsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DAVA::uint32 type = component->GetType();
-    if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
+    const DAVA::Type* type = component->GetType();
+    if (type->Is<DAVA::RenderComponent>() || type->Is<DAVA::LodComponent>())
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }
@@ -195,8 +195,8 @@ void EditorStatisticsSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Compo
 
 void EditorStatisticsSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    DAVA::uint32 type = component->GetType();
-    if (type == DAVA::Component::RENDER_COMPONENT || type == DAVA::Component::LOD_COMPONENT)
+    const DAVA::Type* type = component->GetType();
+    if (type->Is<DAVA::RenderComponent>() || type->Is<DAVA::LodComponent>())
     {
         EmitInvalidateUI(FLAG_TRIANGLES);
     }

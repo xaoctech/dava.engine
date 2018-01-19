@@ -15,6 +15,9 @@
 #include <Debug/DVAssert.h>
 #include <Logger/Logger.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/UserComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 
@@ -59,7 +62,7 @@ QIcon EntityTraits::GetIcon(const Selectable& object) const
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
 
-    if (nullptr != entity->GetComponent(DAVA::Component::STATIC_OCCLUSION_COMPONENT))
+    if (nullptr != entity->GetComponent<DAVA::StaticOcclusionComponent>())
     {
         return SharedIcon(":/QtIcons/so.png");
     }
@@ -91,7 +94,7 @@ QIcon EntityTraits::GetIcon(const Selectable& object) const
     {
         return SharedIcon(":/QtIcons/render_object.png");
     }
-    else if (nullptr != entity->GetComponent(DAVA::Component::USER_COMPONENT))
+    else if (nullptr != entity->GetComponent<DAVA::UserComponent>())
     {
         return SharedIcon(":/QtIcons/user_object.png");
     }
@@ -111,7 +114,7 @@ QIcon EntityTraits::GetIcon(const Selectable& object) const
     {
         return SharedIcon(":/QtIcons/path.png");
     }
-    else if (0 != entity->GetComponentCount(DAVA::Component::TEXT_COMPONENT))
+    else if (0 != entity->GetComponentCount<DAVA::TextComponent>())
     {
         return SharedIcon(":/QtIcons/text_component.png");
     }
@@ -335,7 +338,9 @@ bool EntityTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action
 
             SelectableGroup entitiesToMove;
             entitiesToMove.Add(objects);
-            scene->structureSystem->Move(entitiesToMove, newParentEntity, insertBefore);
+            GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<GlobalSceneSettings>();
+            scene->structureSystem->Move(entitiesToMove, newParentEntity, insertBefore,
+                                         settings->saveEntityPositionOnHierarchyChange);
         }
     }
 

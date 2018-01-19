@@ -17,20 +17,20 @@ public:
     PVRConverter();
     virtual ~PVRConverter();
 
-    FilePath ConvertToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC = true);
-    FilePath ConvertNormalMapToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality);
+    FilePath ConvertToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC, const FilePath& outFolder);
+    FilePath ConvertNormalMapToPvr(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const FilePath& outFolder);
 
     void SetPVRTexTool(const FilePath& textToolPathname);
 
-    FilePath GetConvertedTexturePath(const TextureDescriptor& descriptor, eGPUFamily gpuFamily);
+    FilePath GetConvertedTexturePath(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, const FilePath& outFolder);
 
 protected:
-    FilePath ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo);
-    FilePath ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo);
+    FilePath ConvertFloatTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo, const FilePath& outFolder);
+    FilePath ConvertFloatCubeTexture(const TextureDescriptor& descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const ImageInfo& sourceInfo, const FilePath& outFolder);
     FilePath PrepareCubeMapForPvrConvert(const TextureDescriptor& descriptor);
     void CleanupCubemapAfterConversion(const TextureDescriptor& descriptor);
 
-    void GetToolCommandLine(const TextureDescriptor& descriptor, const FilePath& fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args);
+    void GetToolCommandLine(const TextureDescriptor& descriptor, const FilePath& fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, const FilePath& outFolder, Vector<String>& args);
 
     String GenerateInputName(const TextureDescriptor& descriptor, const FilePath& fileToConvert);
 

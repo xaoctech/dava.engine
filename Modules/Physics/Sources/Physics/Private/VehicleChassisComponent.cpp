@@ -27,11 +27,6 @@ void VehicleChassisComponent::Deserialize(KeyedArchive* archive, SerializationCo
     centerOfMassOffset = archive->GetVector3("vehicleChassis.centerOfMassOffset", Vector3::Zero);
 }
 
-uint32 VehicleChassisComponent::GetType() const
-{
-    return Component::VEHICLE_CHASSIS_COMPONENT;
-}
-
 Component* VehicleChassisComponent::Clone(Entity* toEntity)
 {
     VehicleChassisComponent* result = new VehicleChassisComponent();

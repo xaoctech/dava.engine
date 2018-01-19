@@ -29,8 +29,6 @@ public:
 class UpdatableComponent : public Component
 {
 public:
-    IMPLEMENT_COMPONENT_TYPE(UPDATABLE_COMPONENT);
-
     enum eUpdateType
     {
         UPDATE_PRE_TRANSFORM,
