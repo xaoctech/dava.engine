@@ -5,6 +5,7 @@
 #include "Classes/Model/ControlProperties/AbstractProperty.h"
 #include "Classes/Modules/DocumentsModule/DocumentData.h"
 #include "Classes/Modules/IssueNavigatorModule/ControlNodeInfo.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueHelper.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 
 #include <TArc/Core/ContextAccessor.h>

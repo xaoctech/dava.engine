@@ -42,6 +42,7 @@ private:
     ReflectedPropertyItem* CreateChild(std::unique_ptr<BaseComponentValue>&& value, int32 childPosition, int32 sortKey);
 
     int32 LookupChildPosition(int32 sortKey);
+    int32 LookupChildPosition(const std::shared_ptr<PropertyNode>& node);
 
     int32 GetChildCount() const;
     ReflectedPropertyItem* GetChild(int32 index) const;

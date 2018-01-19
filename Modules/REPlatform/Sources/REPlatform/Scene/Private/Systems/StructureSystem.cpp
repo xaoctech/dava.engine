@@ -336,7 +336,7 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const FilePath& n
                             CopyLightmapSettings(origEntity, newEntityInstance);
                         }
 
-                        sceneEditor->Exec(std::unique_ptr<Command>(new EntityParentChangeCommand(newEntityInstance, origEntity->GetParent(), before)));
+                        sceneEditor->Exec(std::unique_ptr<Command>(new EntityAddCommand(newEntityInstance, origEntity->GetParent(), before)));
                         sceneEditor->Exec(std::unique_ptr<Command>(new EntityRemoveCommand(origEntity)));
                     }
                 }
