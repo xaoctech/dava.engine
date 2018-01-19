@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ColorCell;
 class MouseHelper;
 class CustomPalette : public QWidget
@@ -40,5 +38,4 @@ private:
     QList<QPointer<ColorCell>> controls;
     QSize cellSize;
 };
-}
 }

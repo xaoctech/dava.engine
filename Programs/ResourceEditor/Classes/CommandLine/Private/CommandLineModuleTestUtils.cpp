@@ -1,7 +1,7 @@
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "Classes/Qt/Scene/System/BeastSystem.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
-#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
+#include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
+#include <REPlatform/Scene/Systems/BeastSystem.h>
 
 #include <Engine/Engine.h>
 #include <FileSystem/FilePath.h>

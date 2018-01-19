@@ -16,7 +16,7 @@ public:
     ~RulerToolPanel();
 
 private slots:
-    void UpdateLengths(SceneEditor2* scene, double length, double previewLength);
+    void UpdateLengths(DAVA::SceneEditor2* scene, double length, double previewLength);
 
 protected:
     virtual bool GetEditorEnabled();

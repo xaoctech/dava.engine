@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandLine/CommandLineModule.h"
-#include "Utils/SceneExporter/SceneExporter.h"
+#include <REPlatform/Global/CommandLineModule.h>
+#include <REPlatform/Scene/Utils/SceneExporter.h>
 
 #include <AssetCache/AssetCacheClient.h>
 
 #include <Reflection/ReflectionRegistrator.h>
 
-class SceneExporterTool : public CommandLineModule
+class SceneExporterTool : public DAVA::CommandLineModule
 {
 public:
     SceneExporterTool(const DAVA::Vector<DAVA::String>& commandLine);
@@ -27,8 +27,8 @@ private:
         ACTION_EXPORT_FILELIST
     };
 
-    SceneExporter::ExportedObjectCollection exportedObjects;
-    SceneExporter::Params exportingParams;
+    DAVA::SceneExporter::ExportedObjectCollection exportedObjects;
+    DAVA::SceneExporter::Params exportingParams;
 
     DAVA::AssetCacheClient::ConnectionParams connectionsParams;
     bool useAssetCache = false;
@@ -39,11 +39,11 @@ private:
     DAVA::FilePath fileListPath;
 
     eAction commandAction = ACTION_NONE;
-    SceneExporter::eExportedObjectType commandObject = SceneExporter::OBJECT_NONE;
+    DAVA::SceneExporter::eExportedObjectType commandObject = DAVA::SceneExporter::OBJECT_NONE;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneExporterTool, CommandLineModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneExporterTool, DAVA::CommandLineModule)
     {
-        DAVA::ReflectionRegistrator<SceneExporterTool>::Begin()
+        DAVA::ReflectionRegistrator<SceneExporterTool>::Begin()[DAVA::M::CommandName("-sceneexporter")]
         .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
         .End();
     }

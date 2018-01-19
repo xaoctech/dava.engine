@@ -48,9 +48,9 @@ protected:
     }
 };
 
-class MenuItemWidget : public TArc::Widget
+class MenuItemWidget : public Widget
 {
-    using TBase = TArc::Widget;
+    using TBase = Widget;
 
 public:
     explicit MenuItemWidget(const QString& text_, QWidget* parent = nullptr)
@@ -150,14 +150,13 @@ protected:
 };
 
 ContentFilter::ContentFilter(const Params& params, Reflection model, QWidget* parent)
-    : TBase(params, TArc::ControlDescriptor(params.fields), params.accessor, model, parent)
+    : TBase(params, ControlDescriptor(params.fields), params.accessor, model, parent)
 {
     SetupControl();
 }
 
 void ContentFilter::SetupControl()
 {
-    using namespace DAVA::TArc;
     Reflection thisModel = Reflection::Create(ReflectedObject(this));
     QtVBoxLayout* mainLayout = new QtVBoxLayout(this);
     mainLayout->setMargin(0);
@@ -178,7 +177,7 @@ void ContentFilter::SetupControl()
 
         QToolButton* toolButton = new QToolButton(this);
         toolButton->setFixedSize(24, 24);
-        toolButton->setIcon(DAVA::TArc::SharedIcon(":/TArc/Resources/filter.png"));
+        toolButton->setIcon(DAVA::SharedIcon(":/TArc/Resources/filter.png"));
         toolButton->setPopupMode(QToolButton::InstantPopup);
         toolButton->setAutoRaise(false);
         toolButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -211,7 +210,7 @@ void ContentFilter::SetupControl()
         ReflectedButton::Params params(controlParams.accessor, controlParams.ui, controlParams.wndKey);
         params.fields[ReflectedButton::Fields::AutoRaise].BindConstValue(false);
         params.fields[ReflectedButton::Fields::Enabled] = "isSaveButtonEnabled";
-        params.fields[ReflectedButton::Fields::Icon].BindConstValue(DAVA::TArc::SharedIcon(":/TArc/Resources/save.png"));
+        params.fields[ReflectedButton::Fields::Icon].BindConstValue(DAVA::SharedIcon(":/TArc/Resources/save.png"));
         params.fields[ReflectedButton::Fields::Tooltip].BindConstValue(QStringLiteral("Save current filters chain"));
         params.fields[ReflectedButton::Fields::Clicked] = "saveFiltesChain";
         params.fields[ReflectedButton::Fields::Visible] = "hasFilters";
@@ -226,7 +225,7 @@ void ContentFilter::SetupControl()
     setLayout(mainLayout);
 }
 
-void ContentFilter::UpdateControl(const TArc::ControlDescriptor& descriptor)
+void ContentFilter::UpdateControl(const ControlDescriptor& descriptor)
 {
     if (descriptor.IsChanged(Fields::Enabled) == true)
     {
@@ -245,7 +244,6 @@ void ContentFilter::UpdateControl(const TArc::ControlDescriptor& descriptor)
 
 void ContentFilter::RebuildFiltersWidgets()
 {
-    using namespace TArc;
     Vector<std::pair<FilterWidget*, QLayoutItem*>> filterItems;
     for (int i = 0; i < filtersLayout->count(); ++i)
     {
@@ -283,7 +281,7 @@ void ContentFilter::RebuildFiltersWidgets()
         {
             FilterWidget* filterWidget = new FilterWidget(p, processor, filter.ref, this);
             filterWidget->updateRequire.Connect(this, &ContentFilter::OnUpdateFilterWidgets);
-            filterWidget->requestRemoving.Connect(Bind(&ContentFilter::OnRemoveFilterFromChain, this, filter.key, static_cast<TArc::ControlProxy*>(filterWidget)));
+            filterWidget->requestRemoving.Connect(Bind(&ContentFilter::OnRemoveFilterFromChain, this, filter.key, static_cast<ControlProxy*>(filterWidget)));
             filterWidgets.insert(filterWidget);
             filtersLayout->addWidget(filterWidget);
 
@@ -353,7 +351,6 @@ bool ContentFilter::HasFilters() const
 
 void ContentFilter::AddFilterMenuAboutToShow()
 {
-    using namespace TArc;
     Function<void(const std::unique_ptr<AvailableFilterBase>&, QMenu*)> unpackMenu = [&unpackMenu, this](const std::unique_ptr<AvailableFilterBase>& filterBase, QMenu* menu) {
         AvailableFiltersGroup* group = dynamic_cast<AvailableFiltersGroup*>(filterBase.get());
         if (group != nullptr)
@@ -390,7 +387,7 @@ void ContentFilter::AddFilterMenuAboutToShow()
                     p.fields[ReflectedButton::Fields::AutoRaise].BindConstValue(false);
                     p.fields[ReflectedButton::Fields::Clicked] = "renameAvailableFilter";
                     p.fields[ReflectedButton::Fields::BindedArgument].BindConstValue(filter->key);
-                    p.fields[ReflectedButton::Fields::Icon].BindConstValue(DAVA::TArc::SharedIcon(":/TArc/ContentFilter/Private/Resources/rename.png"));
+                    p.fields[ReflectedButton::Fields::Icon].BindConstValue(DAVA::SharedIcon(":/TArc/ContentFilter/Private/Resources/rename.png"));
                     p.fields[ReflectedButton::Fields::IconSize].BindConstValue(QSize(16, 16));
                     ReflectedButton* button = new ReflectedButton(p, p.accessor, thisModel, containerWidget->ToWidgetCast());
                     QWidget* buttonWidget = button->ToWidgetCast();
@@ -403,7 +400,7 @@ void ContentFilter::AddFilterMenuAboutToShow()
                     p.fields[DelayedToolButton::Fields::AutoRaise].BindConstValue(false);
                     p.fields[DelayedToolButton::Fields::Clicked] = "removeAvailableFilter";
                     p.fields[DelayedToolButton::Fields::BindedArgument].BindConstValue(filter->key);
-                    p.fields[DelayedToolButton::Fields::Icon].BindConstValue(DAVA::TArc::SharedIcon(":/TArc/ContentFilter/Private/Resources/delete.png"));
+                    p.fields[DelayedToolButton::Fields::Icon].BindConstValue(DAVA::SharedIcon(":/TArc/ContentFilter/Private/Resources/delete.png"));
                     p.fields[DelayedToolButton::Fields::IconSize].BindConstValue(QSize(16, 16));
                     p.fields[DelayedToolButton::Fields::DelayMs].BindConstValue(500);
                     p.fields[DelayedToolButton::Fields::ProgressBarColor].BindConstValue(QColor(Qt::red));
@@ -491,7 +488,7 @@ void ContentFilter::OnUpdateFilterWidgets()
     });
 }
 
-void ContentFilter::OnRemoveFilterFromChain(const Any& filterKey, TArc::ControlProxy* filterControl)
+void ContentFilter::OnRemoveFilterFromChain(const Any& filterKey, ControlProxy* filterControl)
 {
     FastName removeMethodName = GetFieldName(Fields::RemoveFilterFromChain);
     DVASSERT(removeMethodName.IsValid() == true);
@@ -609,7 +606,6 @@ void ContentFilter::TearDown()
 
 void ContentFilter::ClearFilterChain()
 {
-    using namespace TArc;
     for (ControlProxy* filterWidget : filterWidgets)
     {
         filterWidget->TearDown();

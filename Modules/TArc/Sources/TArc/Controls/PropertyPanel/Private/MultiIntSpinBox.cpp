@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace MultiIntSpinBoxDetails
 {
 template <typename TEnum>
@@ -126,6 +124,4 @@ bool MultiIntSpinBox::FieldDescriptor::operator==(const FieldDescriptor& other) 
     rangeRole == other.rangeRole &&
     showSpinArrowsRole == other.showSpinArrowsRole;
 }
-
-} // namespace TArc
 } // namespace DAVA

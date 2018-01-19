@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ScrollBar : public ControlProxyImpl<QScrollBar>
 {
 public:
@@ -37,6 +35,4 @@ private:
 
     QtConnections connections;
 };
-
-} // namespace TArc
 } // namespace DAVA

@@ -5,13 +5,13 @@
 
 #include <Reflection/Reflection.h>
 
-class SetSizeByImageModule : public DAVA::TArc::ClientModule
+class SetSizeByImageModule : public DAVA::ClientModule
 {
     // ClientModule
     void PostInit() override;
 
     void OnSetSizeFromImage();
 
-    DAVA::TArc::QtConnections connections;
-    DAVA_VIRTUAL_REFLECTION(SetSizeByImageModule, DAVA::TArc::ClientModule);
+    DAVA::QtConnections connections;
+    DAVA_VIRTUAL_REFLECTION(SetSizeByImageModule, DAVA::ClientModule);
 };

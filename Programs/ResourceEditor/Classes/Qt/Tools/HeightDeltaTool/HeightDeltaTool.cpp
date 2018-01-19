@@ -1,14 +1,14 @@
 #include "Classes/Qt/Tools/HeightDeltaTool/HeightDeltaTool.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Tools/HeightDeltaTool/PaintHeightDelta.h"
 #include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
 
 #include "ui_HeightDeltaTool.h"
 
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/DataNodes/SceneData.h>
+
 #include <QtTools/FileDialogs/FileDialog.h>
+#include <TArc/Core/Deprecated.h>
 
 #include <Render/Image/ImageSystem.h>
 #include <Render/Image/ImageFormatInterface.h>
@@ -19,9 +19,9 @@
 
 namespace HeightDeltaToolDetails
 {
-SceneEditor2* GetActiveScene()
+DAVA::SceneEditor2* GetActiveScene()
 {
-    SceneData* data = REGlobal::GetActiveDataNode<SceneData>();
+    DAVA::SceneData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SceneData>();
     if (data != nullptr)
     {
         return data->GetScene().Get();
@@ -60,7 +60,7 @@ void HeightDeltaTool::OnRun()
 {
     DVASSERT(!outputFilePath.isEmpty());
 
-    SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
+    DAVA::SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
     DVASSERT(scene);
     DAVA::Landscape* landscapeRO = FindLandscape(scene);
     DVASSERT(landscapeRO);
@@ -74,7 +74,7 @@ void HeightDeltaTool::OnRun()
 
     const double threshold = GetThresholdInMeters(unitSize);
 
-    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    DAVA::GeneralSettings* settings = DAVA::Deprecated::GetDataNode<DAVA::GeneralSettings>();
 
     DAVA::Vector<DAVA::Color> colors;
     colors.resize(2);
@@ -92,7 +92,7 @@ void HeightDeltaTool::OnValueChanged(double /*v*/)
 {
     ui->run->setEnabled(false);
 
-    SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
+    DAVA::SceneEditor2* scene = HeightDeltaToolDetails::GetActiveScene();
     DVASSERT(scene != nullptr);
     DAVA::Landscape* landscape = FindLandscape(scene);
     if (landscape == nullptr)

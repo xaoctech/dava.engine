@@ -1,10 +1,11 @@
-#ifndef __RESOURCEEDITORQT__LANDSCAPEEDITORBASEPANEL__
-#define __RESOURCEEDITORQT__LANDSCAPEEDITORBASEPANEL__
+#pragma once
 
 #include <QWidget>
-#include "DAVAEngine.h"
 
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 
 class LandscapeEditorBasePanel : public QWidget
 {
@@ -14,17 +15,17 @@ public:
     explicit LandscapeEditorBasePanel(QWidget* parent = 0);
     virtual ~LandscapeEditorBasePanel();
 
-    void InitPanel(SceneEditor2* scene);
+    void InitPanel(DAVA::SceneEditor2* scene);
     void DeinitPanel();
 
 protected slots:
-    virtual void EditorToggled(SceneEditor2* scene);
+    virtual void EditorToggled(DAVA::SceneEditor2* scene);
 
 protected:
     virtual void OnEditorEnabled();
     virtual void OnEditorDisabled();
 
-    SceneEditor2* GetActiveScene();
+    DAVA::SceneEditor2* GetActiveScene();
     virtual bool GetEditorEnabled() = 0;
 
     virtual void SetWidgetsState(bool enabled) = 0;
@@ -40,7 +41,5 @@ protected:
     virtual void DisconnectFromShortcuts();
 
 private:
-    SceneEditor2* activeScene;
+    DAVA::SceneEditor2* activeScene;
 };
-
-#endif /* defined(__RESOURCEEDITORQT__LANDSCAPEEDITORBASEPANEL__) */

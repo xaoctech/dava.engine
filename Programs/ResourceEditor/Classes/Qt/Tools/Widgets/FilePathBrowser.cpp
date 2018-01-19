@@ -164,7 +164,7 @@ void FilePathBrowser::InitButtons()
 
     QAction* browse = new QAction(this);
     browse->setToolTip("Browse...");
-    browse->setIcon(DAVA::TArc::SharedIcon(":/QtIcons/openscene.png"));
+    browse->setIcon(DAVA::SharedIcon(":/QtIcons/openscene.png"));
     connect(browse, SIGNAL(triggered()), SLOT(OnBrowse()));
     addAction(browse);
 }

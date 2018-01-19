@@ -1,13 +1,14 @@
-#include "CommandLine/TextureDescriptorTool.h"
-#include "CommandLine/Private/OptionName.h"
-#include "Utils/TextureDescriptor/RETextureDescriptorUtils.h"
-#include "Utils/StringFormat.h"
+#include "Classes/CommandLine/TextureDescriptorTool.h"
+#include "Classes/CommandLine/Private/OptionName.h"
 
-#include "TArc/Utils/ModuleCollection.h"
+#include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
-#include "Render/PixelFormatDescriptor.h"
-#include "Render/GPUFamilyDescriptor.h"
-#include "FileSystem/File.h"
+#include <TArc/Utils/ModuleCollection.h>
+
+#include <FileSystem/File.h>
+#include <Render/GPUFamilyDescriptor.h>
+#include <Render/PixelFormatDescriptor.h>
+#include <Utils/StringFormat.h>
 
 namespace TextureDescriptorToolDetail
 {
@@ -200,7 +201,7 @@ bool TextureDescriptorTool::ValidateCommandLine()
     return true;
 }
 
-DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
+DAVA::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
 {
     switch (commandAction)
     {
@@ -208,11 +209,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            RETextureDescriptorUtils::ResaveDescriptor(filePathname);
+            DAVA::RETextureDescriptorUtils::ResaveDescriptor(filePathname);
         }
         else
         {
-            RETextureDescriptorUtils::ResaveDescriptorsForFolder(folderPathname);
+            DAVA::RETextureDescriptorUtils::ResaveDescriptorsForFolder(folderPathname);
         }
 
         break;
@@ -221,11 +222,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            RETextureDescriptorUtils::CreateOrUpdateDescriptor(filePathname, presetPath);
+            DAVA::RETextureDescriptorUtils::CreateOrUpdateDescriptor(filePathname, presetPath);
         }
         else
         {
-            RETextureDescriptorUtils::CreateDescriptorsForFolder(folderPathname, presetPath);
+            DAVA::RETextureDescriptorUtils::CreateDescriptorsForFolder(folderPathname, presetPath);
         }
         break;
     }
@@ -233,11 +234,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            RETextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
+            DAVA::RETextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
         }
         else
         {
-            RETextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
+            DAVA::RETextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
         }
         break;
     }
@@ -245,11 +246,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (folderPathname.IsEmpty())
         {
-            RETextureDescriptorUtils::SetPreset(filePathname, presetPath, convertEnabled, quality);
+            DAVA::RETextureDescriptorUtils::SetPreset(filePathname, presetPath, convertEnabled, quality);
         }
         else
         {
-            RETextureDescriptorUtils::SetPresetForFolder(folderPathname, presetPath, convertEnabled, quality);
+            DAVA::RETextureDescriptorUtils::SetPresetForFolder(folderPathname, presetPath, convertEnabled, quality);
         }
         break;
     }
@@ -257,11 +258,11 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     {
         if (!filesList.IsEmpty())
         {
-            RETextureDescriptorUtils::SavePreset(TextureDescriptorToolDetail::LoadPathesFromFile(filesList), TextureDescriptorToolDetail::LoadPathesFromFile(presetsList));
+            DAVA::RETextureDescriptorUtils::SavePreset(TextureDescriptorToolDetail::LoadPathesFromFile(filesList), TextureDescriptorToolDetail::LoadPathesFromFile(presetsList));
         }
         else
         {
-            RETextureDescriptorUtils::SavePreset({ filePathname }, { presetPath });
+            DAVA::RETextureDescriptorUtils::SavePreset({ filePathname }, { presetPath });
         }
         break;
     }
@@ -272,7 +273,7 @@ DAVA::TArc::ConsoleModule::eFrameResult TextureDescriptorTool::OnFrameInternal()
     }
     }
 
-    return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
+    return DAVA::ConsoleModule::eFrameResult::FINISHED;
 }
 
 void TextureDescriptorTool::ShowHelpInternal()
@@ -297,4 +298,4 @@ void TextureDescriptorTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-texdescriptor -savepreset -file /Users/SmokeTest/DataSource/3d/Maps/images/texture.tex");
 }
 
-DECL_CONSOLE_MODULE(TextureDescriptorTool, "-texdescriptor");
+DECL_TARC_MODULE(TextureDescriptorTool);

@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace DropperShadeDetail
 {
 const int cCursorRadius = 151; // Should be odd
@@ -181,6 +179,5 @@ void DropperShade::keyPressEvent(QKeyEvent* e)
     }
 
     QWidget::keyPressEvent(e);
-}
 }
 }

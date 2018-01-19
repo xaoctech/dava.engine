@@ -21,9 +21,9 @@
 namespace ScrollBarTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
+using namespace DAVA;
 
-WindowKey wndKey = FastName("ScrollBarWindow");
+WindowKey wndKey = WindowKey("ScrollBarWindow");
 
 class ScrollBarData : public ReflectionBase
 {

@@ -6,10 +6,7 @@
 namespace DAVA
 {
 class UIEvent;
-namespace TArc
-{
 class ContextAccessor;
-}
 }
 
 namespace Painting
@@ -22,7 +19,7 @@ using CanvasControls = DAVA::Vector<DAVA::RefPtr<DAVA::UIControl>>;
 class BaseEditorSystem
 {
 public:
-    BaseEditorSystem(DAVA::TArc::ContextAccessor* accessor);
+    BaseEditorSystem(DAVA::ContextAccessor* accessor);
 
     virtual ~BaseEditorSystem() = default;
 
@@ -34,7 +31,7 @@ protected:
     EditorSystemsManager* GetSystemsManager();
     Painting::Painter* GetPainter() const;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 
 private:
     //this class is designed to be used only by EditorSystemsManager

@@ -15,10 +15,10 @@
 #include <QFile>
 #include <QMenu>
 
-ENUM_DECLARE(DAVA::TArc::ThemesSettings::eTheme)
+ENUM_DECLARE(DAVA::ThemesSettings::eTheme)
 {
-    ENUM_ADD_DESCR(DAVA::TArc::ThemesSettings::Light, "Classic");
-    ENUM_ADD_DESCR(DAVA::TArc::ThemesSettings::Dark, "Dark");
+    ENUM_ADD_DESCR(DAVA::ThemesSettings::Light, "Classic");
+    ENUM_ADD_DESCR(DAVA::ThemesSettings::Dark, "Dark");
 };
 
 namespace ThemesDetail
@@ -31,8 +31,6 @@ int fontSize = 13;
 }
 
 namespace DAVA
-{
-namespace TArc
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(ThemesSettings)
 {
@@ -47,10 +45,10 @@ void ThemesSettings::SetTheme(ThemesSettings::eTheme theme_, QApplication* app)
     theme = theme_;
     switch (theme)
     {
-    case DAVA::TArc::ThemesSettings::Light:
+    case ThemesSettings::Light:
         ApplyLightTheme(app);
         break;
-    case DAVA::TArc::ThemesSettings::Dark:
+    case ThemesSettings::Dark:
         ApplyDarkTheme(app);
         break;
     default:
@@ -235,7 +233,7 @@ void ThemesModule::PostInit()
         QActionGroup* styleGroup = new QActionGroup(menu);
 
         ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, menu);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, menu);
 
         {
             ActionPlacementInfo placementInfo(CreateMenuPoint(QList<QString>() << "Tools"
@@ -252,18 +250,17 @@ void ThemesModule::PostInit()
                 descr.fieldName = FastName("currentTheme");
                 styleGroup->addAction(action);
 
-                action->SetStateUpdationFunction(QtAction::Checked, descr, [value](const DAVA::Any& v) -> DAVA::Any
-                                                 {
-                                                     if (v.CanCast<ThemesSettings::eTheme>() == false)
-                                                     {
-                                                         return false;
-                                                     }
+                action->SetStateUpdationFunction(QtAction::Checked, descr, [value](const Any& v) -> Any {
+                    if (v.CanCast<ThemesSettings::eTheme>() == false)
+                    {
+                        return false;
+                    }
 
-                                                     return v.Cast<ThemesSettings::eTheme>() == static_cast<ThemesSettings::eTheme>(value);
-                                                 });
+                    return v.Cast<ThemesSettings::eTheme>() == static_cast<ThemesSettings::eTheme>(value);
+                });
 
-                connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&ThemesModule::SetTheme, this, static_cast<ThemesSettings::eTheme>(value)));
-                ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+                connections.AddConnection(action, &QAction::triggered, Bind(&ThemesModule::SetTheme, this, static_cast<ThemesSettings::eTheme>(value)));
+                ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
             }
         }
     });
@@ -281,5 +278,4 @@ void ThemesModule::SetTheme(ThemesSettings::eTheme theme)
 {
     GetAccessor()->GetGlobalContext()->GetData<ThemesSettings>()->SetTheme(theme, PlatformApi::Qt::GetApplication());
 }
-} // namespace TArc
 } // namespace DAVA

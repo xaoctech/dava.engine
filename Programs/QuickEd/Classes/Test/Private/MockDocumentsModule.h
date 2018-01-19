@@ -5,30 +5,30 @@
 
 namespace TestHelpers
 {
-class MockDocumentsModule : public DAVA::TArc::ControllerModule
+class MockDocumentsModule : public DAVA::ControllerModule
 {
     void PostInit() override;
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
     void OnRenderSystemInitialized(DAVA::Window* w) override;
-    bool CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText) override;
-    bool SaveOnWindowClose(const DAVA::TArc::WindowKey& key) override;
-    void RestoreOnWindowClose(const DAVA::TArc::WindowKey& key) override;
+    bool CanWindowBeClosedSilently(const DAVA::WindowKey& key, DAVA::String& requestWindowText) override;
+    bool SaveOnWindowClose(const DAVA::WindowKey& key) override;
+    void RestoreOnWindowClose(const DAVA::WindowKey& key) override;
 
     void CloseAllDocuments();
     void CreateDummyContext();
 
-    DAVA_VIRTUAL_REFLECTION(MockDocumentsModule, DAVA::TArc::ControllerModule);
+    DAVA_VIRTUAL_REFLECTION(MockDocumentsModule, DAVA::ControllerModule);
 };
 
 DECLARE_OPERATION_ID(CreateDummyContextOperation);
 
-class MockData : public DAVA::TArc::DataNode
+class MockData : public DAVA::TArcDataNode
 {
 public:
     bool canClose = true;
 
-    DAVA_VIRTUAL_REFLECTION(MockData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(MockData, DAVA::TArcDataNode);
 };
 } //namespace TestHelpers

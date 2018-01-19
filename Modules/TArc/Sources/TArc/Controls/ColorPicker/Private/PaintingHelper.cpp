@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 QImage PaintingHelper::DrawHSVImage(QSize const& size)
 {
     QImage img(size.width(), size.height(), QImage::Format_RGB32);
@@ -200,6 +198,5 @@ QColor PaintingHelper::MaxColorComponent(QColor const& color, char component)
     }
 
     return QColor(r, g, b, 255);
-}
 }
 }

@@ -5,13 +5,13 @@
 
 #include <cmath>
 
-RulerController::RulerController(DAVA::TArc::ContextAccessor* accessor_, QObject* parent)
+RulerController::RulerController(DAVA::ContextAccessor* accessor_, QObject* parent)
     : QObject(parent)
     , screenScale(0.0f)
     , canvasDataAdapter(accessor_)
     , accessor(accessor_)
 {
-    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::TArc::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
+    canvasDataAdapterWrapper = accessor->CreateWrapper([this](const DAVA::DataContext*) { return DAVA::Reflection::Create(&canvasDataAdapter); });
     canvasDataAdapterWrapper.SetListener(this);
 
     OnScaleChanged(1.0f);
@@ -109,7 +109,7 @@ void RulerController::OnScaleChanged(const DAVA::Any& scaleValue)
     RecalculateRulerSettings();
 }
 
-void RulerController::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void RulerController::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     bool startValueChanged = std::find(fields.begin(), fields.end(), CanvasDataAdapter::startValuePropertyName) != fields.end();
     if (startValueChanged)

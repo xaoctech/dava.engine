@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class PaintingHelper
 {
 public:
@@ -26,5 +24,4 @@ public:
     static QColor MinColorComponent(const QColor& color, char component);
     static QColor MaxColorComponent(const QColor& color, char component);
 };
-}
 }

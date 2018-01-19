@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T>
 class TestModuleHolder
 {
@@ -22,5 +20,4 @@ public:
 template <typename T>
 T* TestModuleHolder<T>::moduleInstance = nullptr;
 
-} // namespace TArc
 } // namespace DAVA

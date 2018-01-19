@@ -10,12 +10,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
-
 class UIControl;
 class LayoutFormula;
 }
@@ -26,7 +22,7 @@ class IndexGenerator;
 class LayoutIssuesHandler : public IssuesHandler, DAVA::UILayoutSystemListener, PackageListener
 {
 public:
-    LayoutIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
+    LayoutIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::UI* ui, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
     ~LayoutIssuesHandler() override;
 
 private:
@@ -52,7 +48,7 @@ private:
 
     DAVA::Array<DAVA::UnorderedMap<DAVA::UIControl*, LayoutIssue>, DAVA::Vector2::AXIS_COUNT> createdIssues;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
     PackageListenerProxy packageListenerProxy;
 };

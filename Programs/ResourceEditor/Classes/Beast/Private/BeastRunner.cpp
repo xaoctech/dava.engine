@@ -3,7 +3,7 @@
 #include "Classes/Beast/Private/BeastRunner.h"
 #include "Classes/Beast/Private/LightmapsPacker.h"
 
-#include "Utils/SceneUtils/SceneUtils.h"
+#include <REPlatform/Scene/Utils/Utils.h>
 
 #include <Beast/SceneParser.h>
 
@@ -12,7 +12,7 @@
 #include <FileSystem/FileSystem.h>
 
 //Beast
-BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, Beast::eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle_)
+BeastRunner::BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath_, const DAVA::FilePath& outputPath_, Beast::eBeastMode mode, std::unique_ptr<DAVA::WaitHandle> waitHandle_)
     : beastManager(new Beast::BeastManager())
     , waitHandle(std::move(waitHandle_))
     , workingScene(scene)

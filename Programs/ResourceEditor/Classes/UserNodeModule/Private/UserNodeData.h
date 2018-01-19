@@ -2,7 +2,7 @@
 
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
 
-#include "TArc/DataProcessing/DataNode.h"
+#include "TArc/DataProcessing/TArcDataNode.h"
 #include <memory>
 
 namespace DAVA
@@ -10,7 +10,7 @@ namespace DAVA
 class Entity;
 }
 
-class UserNodeData : public DAVA::TArc::DataNode
+class UserNodeData : public DAVA::TArcDataNode
 {
 private:
     friend class UserNodeModule;
@@ -22,7 +22,7 @@ private:
 
     std::unique_ptr<UserNodeSystem> system;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(UserNodeData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(UserNodeData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<UserNodeData>::Begin()
         .Field(drawingEnabledPropertyName, &UserNodeData::IsDrawingEnabled, &UserNodeData::SetDrawingEnabled)

@@ -1,24 +1,26 @@
-#include "Classes/Application/REGlobal.h"
 #include "Classes/Application/ReflectionExtensions.h"
 
 #include "Classes/Project/ProjectManagerModule.h"
-#include "Classes/Project/ProjectResources.h"
-#include "Classes/Project/ProjectManagerData.h"
-
 #include "Classes/SceneManager/SceneManagerModule.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
+#include "Classes/Selection/SelectionModule.h"
 
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 #include "Classes/MockModules/MockProjectManagerModule.h"
 
-#include <TArc/Testing/TArcUnitTests.h>
-#include <TArc/Testing/MockDefine.h>
-#include <TArc/Testing/MockListener.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/ProjectResources.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+
+#include <TArc/Core/ContextAccessor.h>
+#include <TArc/DataProcessing/DataContext.h>
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/DataProcessing/DataWrapper.h>
-#include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Testing/MockDefine.h>
+#include <TArc/Testing/MockListener.h>
+#include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Utils/QtDelayedExecutor.h>
 #include <TArc/Testing/GMockInclude.h>
 
@@ -81,7 +83,7 @@ DAVA_TARC_TESTCLASS(SceneManagerModuleTests)
         }
     }
 
-    class BaseTestListener : public DAVA::TArc::DataListener
+    class BaseTestListener : public DAVA::DataListener
     {
     public:
         bool testSucceed = false;
@@ -97,8 +99,8 @@ private:
     class NewSceneListener : public BaseTestListener
     {
     public:
-        DAVA::TArc::ContextAccessor* accessor = nullptr;
-        void OnDataChanged(const DAVA::TArc::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
+        DAVA::ContextAccessor* accessor = nullptr;
+        void OnDataChanged(const DAVA::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
         {
             TEST_VERIFY(fields.empty());
             if (w.HasData())
@@ -131,13 +133,13 @@ private:
         NewSceneListener listener;
         listener.accessor = GetAccessor();
 
-        DAVA::TArc::DataWrapper wrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<SceneData>());
+        DAVA::DataWrapper wrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<DAVA::SceneData>());
         wrapper.SetListener(&listener);
 
         TEST_VERIFY(wrapper.HasData() == false);
         if (wrapper.HasData() == false)
         {
-            InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+            InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
         }
 
         TEST_VERIFY(listener.testSucceed);
@@ -145,13 +147,13 @@ private:
 
     DAVA_TEST (GenerateSceneDataAndSaveScene)
     {
-        SceneData* data = GetAccessor()->GetActiveContext()->GetData<SceneData>();
+        DAVA::SceneData* data = GetAccessor()->GetActiveContext()->GetData<DAVA::SceneData>();
         TEST_VERIFY(data != nullptr);
         if (data != nullptr)
         {
             using namespace DAVA;
 
-            SceneData::TSceneType scene = data->GetScene();
+            DAVA::SceneData::TSceneType scene = data->GetScene();
             TEST_VERIFY(scene);
 
             ScopedPtr<Entity> entity(new Entity());
@@ -177,9 +179,9 @@ private:
     class OpenSavedSceneListener : public BaseTestListener
     {
     public:
-        DAVA::TArc::ContextAccessor* accessor = nullptr;
+        DAVA::ContextAccessor* accessor = nullptr;
         DAVA::Vector<const DAVA::ReflectedType*> componentTypes;
-        void OnDataChanged(const DAVA::TArc::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
+        void OnDataChanged(const DAVA::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
         {
             TEST_VERIFY(fields.empty());
             if (w.HasData())
@@ -226,7 +228,6 @@ private:
     DAVA_TEST (OpenSavedScene)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
 
         OpenSavedSceneListener listener;
         listener.accessor = GetAccessor();
@@ -238,16 +239,16 @@ private:
         TEST_VERIFY(wrapper.HasData() == false);
         if (wrapper.HasData() == false)
         {
-            InvokeOperation(REGlobal::OpenSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
+            InvokeOperation(DAVA::OpenSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
 
             TEST_VERIFY(wrapper.HasData() == true);
 
             { //add scene
-                InvokeOperation(REGlobal::AddSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
+                InvokeOperation(DAVA::AddSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
 
-                SceneData* data = GetAccessor()->GetActiveContext()->GetData<SceneData>();
+                DAVA::SceneData* data = GetAccessor()->GetActiveContext()->GetData<DAVA::SceneData>();
                 TEST_VERIFY(data != nullptr);
-                SceneData::TSceneType scene = data->GetScene();
+                DAVA::SceneData::TSceneType scene = data->GetScene();
                 TEST_VERIFY(scene);
                 scene->Update(0.16f);
 
@@ -263,7 +264,7 @@ private:
             }
 
             {
-                InvokeOperation(REGlobal::SaveCurrentScene.ID);
+                InvokeOperation(DAVA::SaveCurrentScene.ID);
             }
         }
         TEST_VERIFY(listener.testSucceed);
@@ -274,7 +275,6 @@ private:
     DAVA_TEST (OpenSavedModifiedScene)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
 
         OpenSavedSceneListener listener;
         listener.accessor = GetAccessor();
@@ -286,7 +286,7 @@ private:
         TEST_VERIFY(wrapper.HasData() == false);
         if (wrapper.HasData() == false)
         {
-            InvokeOperation(REGlobal::OpenSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
+            InvokeOperation(DAVA::OpenSceneOperation.ID, FilePath(Mock::ProjectManagerModule::testScenePath));
 
             TEST_VERIFY(wrapper.HasData() == true);
 
@@ -319,7 +319,6 @@ private:
     DAVA_TEST (OpenResentScene)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
         using namespace ::testing;
 
         OpenSavedSceneListener listener;
@@ -332,16 +331,16 @@ private:
         TEST_VERIFY(openSceneWrapper.HasData() == false);
         if (openSceneWrapper.HasData() == false)
         {
-            GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->openLastScene = true;
-            InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+            GetAccessor()->GetGlobalContext()->GetData<DAVA::GlobalSceneSettings>()->openLastScene = true;
+            InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
         }
 
         TEST_VERIFY(listener.testSucceed);
         CloseActiveScene();
     }
 
-    DAVA::TArc::QtDelayedExecutor recentSceneDelayedExecutor;
-    DAVA::TArc::DataWrapper openResentSceneWrapper;
+    DAVA::QtDelayedExecutor recentSceneDelayedExecutor;
+    DAVA::DataWrapper openResentSceneWrapper;
     std::unique_ptr<OpenSavedSceneListener> recentSceneListener;
 
     void OpenResentSceneFromMenuDelayed()
@@ -366,7 +365,6 @@ private:
     DAVA_TEST (OpenResentSceneFromMenu)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
 
         recentSceneListener.reset(new OpenSavedSceneListener());
         recentSceneListener->accessor = GetAccessor();
@@ -378,7 +376,7 @@ private:
         TEST_VERIFY(openResentSceneWrapper.HasData() == false);
         if (openResentSceneWrapper.HasData() == false)
         {
-            QWidget* wnd = GetWindow(DAVA::TArc::mainWindowKey);
+            QWidget* wnd = GetWindow(DAVA::mainWindowKey);
             QMainWindow* mainWnd = qobject_cast<QMainWindow*>(wnd);
             TEST_VERIFY(wnd != nullptr);
 
@@ -409,7 +407,7 @@ private:
     class CloseSceneListener : public BaseTestListener
     {
     public:
-        void OnDataChanged(const DAVA::TArc::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
+        void OnDataChanged(const DAVA::DataWrapper& w, const DAVA::Vector<DAVA::Any>& fields) override
         {
             TEST_VERIFY(fields.empty());
             TEST_VERIFY(w.HasData() == false);
@@ -421,13 +419,13 @@ private:
     void CloseActiveScene()
     {
         CloseSceneListener listener;
-        DAVA::TArc::DataWrapper wrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<SceneData>());
+        DAVA::DataWrapper wrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<DAVA::SceneData>());
         wrapper.SetListener(&listener);
 
         TEST_VERIFY(wrapper.HasData());
         if (wrapper.HasData())
         {
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         }
 
         TEST_VERIFY(listener.testSucceed);
@@ -437,5 +435,6 @@ private:
     DECLARE_TESTED_MODULE(ReflectionExtensionsModule)
     DECLARE_TESTED_MODULE(Mock::ProjectManagerModule)
     DECLARE_TESTED_MODULE(SceneManagerModule)
+    DECLARE_TESTED_MODULE(SelectionModule)
     END_TESTED_MODULES()
 };

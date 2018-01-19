@@ -47,6 +47,11 @@ public:
     uint32 Size() const;
 
     /**
+    \returns Returns command at index \c index.
+    */
+    const Command* GetCommand(uint32 index) const;
+
+    /**
      \brief Works the same as Command::IsClean
      \returns true if empty or contain only clean commands
      */
@@ -55,6 +60,8 @@ public:
 protected:
     using CommandsContainer = Vector<std::unique_ptr<Command>>;
     CommandsContainer commandList;
+
+    DAVA_VIRTUAL_REFLECTION(CommandBatch, Command);
 };
 
 inline bool CommandBatch::IsEmpty() const

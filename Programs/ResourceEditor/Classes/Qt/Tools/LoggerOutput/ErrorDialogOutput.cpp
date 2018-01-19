@@ -1,7 +1,8 @@
 #include "Classes/Qt/Tools/LoggerOutput/ErrorDialogOutput.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Application/REGlobal.h"
 
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/AssertGuard.h>
 #include <TArc/WindowSubSystem/UI.h>
 
@@ -27,13 +28,13 @@ class ErrorDialogOutput::IgnoreHelper
 public:
     bool ShouldIgnoreMessage(DAVA::Logger::eLogLevel ll, const DAVA::String& textMessage)
     {
-        GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+        DAVA::GeneralSettings* settings = DAVA::Deprecated::GetDataNode<DAVA::GeneralSettings>();
         if ((ll < DAVA::Logger::LEVEL_ERROR) || settings->showErrorDialog == false)
         {
             return true;
         }
 
-        if (DAVA::TArc::IsInsideAssertHandler())
+        if (DAVA::IsInsideAssertHandler())
         {
             return true;
         }
@@ -71,7 +72,7 @@ private:
     bool callstackPrinting = false;
 };
 
-ErrorDialogOutput::ErrorDialogOutput(DAVA::TArc::UI* ui)
+ErrorDialogOutput::ErrorDialogOutput(DAVA::UI* ui)
     : ignoreHelper(new IgnoreHelper())
     , isJobStarted(false)
     , enabled(true)

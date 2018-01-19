@@ -43,4 +43,4 @@ void PixelGridModule::DestroySystems(Interfaces::EditorSystemsManagerInterface* 
     systemsManager->UnregisterEditorSystem(pixelGrid);
 }
 
-DECL_GUI_MODULE(PixelGridModule);
+DECL_TARC_MODULE(PixelGridModule);

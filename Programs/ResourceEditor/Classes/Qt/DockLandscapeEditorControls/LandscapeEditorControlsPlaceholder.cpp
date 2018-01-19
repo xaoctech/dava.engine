@@ -1,11 +1,11 @@
-#include "LandscapeEditorControlsPlaceholder.h"
-#include "../Scene/SceneSignals.h"
-#include "../Scene/SceneEditor2.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorControlsPlaceholder.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/CustomColorsPanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/RulerToolPanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/TilemaskEditorPanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/HeightmapEditorPanel.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
 
-#include "LandscapeEditorPanels/CustomColorsPanel.h"
-#include "LandscapeEditorPanels/RulerToolPanel.h"
-#include "LandscapeEditorPanels/TilemaskEditorPanel.h"
-#include "LandscapeEditorPanels/HeightmapEditorPanel.h"
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <QVBoxLayout>
 
@@ -50,21 +50,20 @@ void LandscapeEditorControlsPlaceholder::InitUI()
 
 void LandscapeEditorControlsPlaceholder::ConnectToSignals()
 {
-    connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2*)), this, SLOT(SceneActivated(SceneEditor2*)));
-    connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2*)), this, SLOT(SceneDeactivated(SceneEditor2*)));
+    connect(SceneSignals::Instance(), SIGNAL(Activated(DAVA::SceneEditor2*)), this, SLOT(SceneActivated(DAVA::SceneEditor2*)));
+    connect(SceneSignals::Instance(), SIGNAL(Deactivated(DAVA::SceneEditor2*)), this, SLOT(SceneDeactivated(DAVA::SceneEditor2*)));
 
-    connect(SceneSignals::Instance(), SIGNAL(LandscapeEditorToggled(SceneEditor2*)),
-            this, SLOT(EditorToggled(SceneEditor2*)));
+    connect(SceneSignals::Instance(), &SceneSignals::LandscapeEditorToggled, this, &LandscapeEditorControlsPlaceholder::EditorToggled);
 }
 
-void LandscapeEditorControlsPlaceholder::SceneActivated(SceneEditor2* scene)
+void LandscapeEditorControlsPlaceholder::SceneActivated(DAVA::SceneEditor2* scene)
 {
     activeScene = scene;
 
     UpdatePanels();
 }
 
-void LandscapeEditorControlsPlaceholder::SceneDeactivated(SceneEditor2* scene)
+void LandscapeEditorControlsPlaceholder::SceneDeactivated(DAVA::SceneEditor2* scene)
 {
     RemovePanel();
 
@@ -102,7 +101,7 @@ void LandscapeEditorControlsPlaceholder::RemovePanel()
     currentPanel = NULL;
 }
 
-void LandscapeEditorControlsPlaceholder::EditorToggled(SceneEditor2* scene)
+void LandscapeEditorControlsPlaceholder::EditorToggled(DAVA::SceneEditor2* scene)
 {
     if (scene != activeScene)
     {
@@ -117,19 +116,19 @@ void LandscapeEditorControlsPlaceholder::UpdatePanels()
     RemovePanel();
 
     DAVA::int32 tools = activeScene->GetEnabledTools();
-    if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
+    if (tools & DAVA::SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
     {
         SetPanel(customColorsPanel);
     }
-    else if (tools & SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
+    else if (tools & DAVA::SceneEditor2::LANDSCAPE_TOOL_HEIGHTMAP_EDITOR)
     {
         SetPanel(heightmapEditorPanel);
     }
-    else if (tools & SceneEditor2::LANDSCAPE_TOOL_RULER)
+    else if (tools & DAVA::SceneEditor2::LANDSCAPE_TOOL_RULER)
     {
         SetPanel(rulerToolPanel);
     }
-    else if (tools & SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
+    else if (tools & DAVA::SceneEditor2::LANDSCAPE_TOOL_TILEMAP_EDITOR)
     {
         SetPanel(tilemaskEditorPanel);
     }

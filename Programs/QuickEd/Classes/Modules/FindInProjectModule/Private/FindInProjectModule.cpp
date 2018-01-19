@@ -19,13 +19,13 @@
 
 namespace FindInProjectDetail
 {
-class FindInProjectData : public DAVA::TArc::DataNode
+class FindInProjectData : public DAVA::TArcDataNode
 {
 public:
     std::unique_ptr<FindInDocumentController> widgetController;
 
 private:
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(FindInProjectData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(FindInProjectData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<FindInProjectData>::Begin()
         .End();
@@ -43,7 +43,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(FindInProjectModule)
 void FindInProjectModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
@@ -71,8 +70,8 @@ void FindInProjectModule::PostInit()
 
         connections.AddConnection(findInProjectAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindInProject));
 
-        TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findInProjectAction);
+        ActionPlacementInfo placementInfo(CreateMenuPoint("Find", InsertionParams(InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, findInProjectAction);
     }
 
     {
@@ -87,8 +86,8 @@ void FindInProjectModule::PostInit()
 
         connections.AddConnection(findErrorsAndWarningAction, &QAction::triggered, MakeFunction(this, &FindInProjectModule::OnFindErrorsAndWarnings));
 
-        TArc::ActionPlacementInfo placementInfo(TArc::CreateMenuPoint("Find", TArc::InsertionParams(TArc::InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, findErrorsAndWarningAction);
+        ActionPlacementInfo placementInfo(CreateMenuPoint("Find", InsertionParams(InsertionParams::eInsertionMethod::BeforeItem, selectCurrentDocumentActionName)));
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, findErrorsAndWarningAction);
     }
 
     FindInProjectDetail::FindInProjectData* data = new FindInProjectDetail::FindInProjectData();
@@ -103,7 +102,7 @@ void FindInProjectModule::PostInit()
                                   InvokeOperation(QEGlobal::SelectControl.ID, path, name);
                               });
 
-    GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(data));
+    GetAccessor()->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArcDataNode>(data));
 }
 
 void FindInProjectModule::OnFindInProject()
@@ -125,4 +124,4 @@ void FindInProjectModule::OnFindErrorsAndWarnings()
     InvokeOperation(QEGlobal::FindInProject.ID, std::static_pointer_cast<FindFilter>(filter));
 }
 
-DECL_GUI_MODULE(FindInProjectModule);
+DECL_TARC_MODULE(FindInProjectModule);

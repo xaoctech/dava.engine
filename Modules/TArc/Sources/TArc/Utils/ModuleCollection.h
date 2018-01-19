@@ -1,27 +1,27 @@
 #pragma once
 
+#include "TArc/Core/ClientModule.h"
+
 #include <Base/BaseTypes.h>
-#include "Base/StaticSingleton.h"
-#include "Reflection/ReflectedTypeDB.h"
-#include "Functional/Function.h"
+#include <Base/StaticSingleton.h>
+#include <Reflection/ReflectedTypeDB.h>
+#include <Functional/Function.h>
 
 namespace DAVA
-{
-namespace TArc
 {
 class ModuleCollection : public StaticSingleton<ModuleCollection>
 {
 public:
-    using TypeCreateFn = DAVA::Function<const ReflectedType*()>;
+    using TypeCreateFn = Function<const ReflectedType*()>;
     void AddGuiModule(const TypeCreateFn& type);
-    void AddConsoleModule(const TypeCreateFn& type, const String& command);
+    void AddConsoleModule(const TypeCreateFn& type);
 
     Vector<const ReflectedType*> GetGuiModules() const;
-    Vector<std::pair<const ReflectedType*, String>> GetConsoleModules() const;
+    Vector<const ReflectedType*> GetConsoleModules() const;
 
 private:
     Vector<TypeCreateFn> guiModules;
-    Vector<std::pair<TypeCreateFn, String>> consoleModules;
+    Vector<TypeCreateFn> consoleModules;
 };
 
 template <typename T>
@@ -29,12 +29,17 @@ struct ModuleInitializer
 {
     ModuleInitializer()
     {
+        auto tp = std::integral_constant<bool, std::is_base_of<ClientModule, T>::value>();
+        AddModuleIntoCollection(tp);
+    }
+    void AddModuleIntoCollection(std::true_type)
+    {
         ModuleCollection::Instance()->AddGuiModule(ModuleCollection::TypeCreateFn(&ModuleInitializer<T>::GetType));
     }
 
-    ModuleInitializer(const String& command)
+    void AddModuleIntoCollection(std::false_type)
     {
-        ModuleCollection::Instance()->AddConsoleModule(ModuleCollection::TypeCreateFn(&ModuleInitializer<T>::GetType), command);
+        ModuleCollection::Instance()->AddConsoleModule(ModuleCollection::TypeCreateFn(&ModuleInitializer<T>::GetType));
     }
 
     static const ReflectedType* GetType()
@@ -42,8 +47,6 @@ struct ModuleInitializer
         return ReflectedTypeDB::Get<T>();
     }
 };
-} // namespace TArc
 } // namespace DAVA
 
-#define DECL_GUI_MODULE(className) ::DAVA::TArc::ModuleInitializer<className> initializer_##className
-#define DECL_CONSOLE_MODULE(className, command) ::DAVA::TArc::ModuleInitializer<className> initializer_##className(command)
+#define DECL_TARC_MODULE(className) ::DAVA::ModuleInitializer<className> initializer_##className

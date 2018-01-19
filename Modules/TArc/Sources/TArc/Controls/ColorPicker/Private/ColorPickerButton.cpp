@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorPickerButton::ColorPickerButton(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QToolButton>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -145,6 +143,4 @@ void ColorPickerButton::ButtonReleased()
         OnColorChanging(cp.GetDavaColor(), Fields::Color);
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

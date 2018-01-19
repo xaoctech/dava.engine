@@ -9,6 +9,8 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Render/Texture.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -251,6 +253,7 @@ void VegetationGeometry::GenerateClusterPositionData(const Vector<VegetationLaye
     layerRanges.resize(layerCount);
 
     uint32 currentIndex = 0;
+    Random* random = GetEngineContext()->random;
     for (size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
         const VegetationLayerParams& layerParamsData = layerClusterCount[layerIndex];
@@ -267,10 +270,9 @@ void VegetationGeometry::GenerateClusterPositionData(const Vector<VegetationLaye
         {
             densityId[i] = (i % maxDensityLevels);
         }
-        std::random_shuffle(densityId.begin(), densityId.end(), [](Vector<uint32>::difference_type diff)
-                            {
-                                return (Random::Instance()->Rand() % diff);
-                            });
+        std::random_shuffle(densityId.begin(), densityId.end(), [random](Vector<uint32>::difference_type diff) {
+            return (random->Rand() % diff);
+        });
 
         layerRanges[layerIndex].index = currentIndex;
         layerRanges[layerIndex].size = totalClusterCount;
@@ -284,8 +286,8 @@ void VegetationGeometry::GenerateClusterPositionData(const Vector<VegetationLaye
             uint32 matrixCellX = cellX / layerMaxClusters;
             uint32 matrixCellY = cellY / layerMaxClusters;
 
-            float32 randomX = unitSize.x * float32(Random::Instance()->RandFloat());
-            float32 randomY = unitSize.y * float32(Random::Instance()->RandFloat());
+            float32 randomX = unitSize.x * float32(random->RandFloat());
+            float32 randomY = unitSize.y * float32(random->RandFloat());
 
             clusters.push_back(ClusterPositionData());
             ClusterPositionData& cluster = clusters[clusters.size() - 1];
@@ -293,8 +295,8 @@ void VegetationGeometry::GenerateClusterPositionData(const Vector<VegetationLaye
             cluster.pos = Vector3((matrixCellX * unitSize.x) + randomX,
                                   (matrixCellY * unitSize.y) + randomY,
                                   0.0f);
-            cluster.rotation = layerParamsData.instanceRotationVariation * (float32(Random::Instance()->RandFloat()) - 0.5f);
-            cluster.scale = 1.0f - layerParamsData.instanceScaleVariation * float32(Random::Instance()->RandFloat());
+            cluster.rotation = layerParamsData.instanceRotationVariation * (float32(random->RandFloat()) - 0.5f);
+            cluster.scale = 1.0f - layerParamsData.instanceScaleVariation * float32(random->RandFloat());
             cluster.densityId = densityId[clusterIndex];
             cluster.layerId = static_cast<uint32>(layerIndex);
 

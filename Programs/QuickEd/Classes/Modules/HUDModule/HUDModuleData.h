@@ -2,11 +2,11 @@
 
 #include "Model/PackageHierarchy/ControlNode.h"
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 class HUDSystem;
 
-class HUDModuleData : public DAVA::TArc::DataNode
+class HUDModuleData : public DAVA::TArcDataNode
 {
 public:
     ~HUDModuleData() override;
@@ -20,5 +20,5 @@ private:
     std::unique_ptr<HUDSystem> hudSystem;
     ControlNode* highlightedNode = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(HUDModuleData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(HUDModuleData, DAVA::TArcDataNode);
 };

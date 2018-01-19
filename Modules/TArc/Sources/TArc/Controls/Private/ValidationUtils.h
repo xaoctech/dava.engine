@@ -5,8 +5,5 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 QValidator::State ConvertValidationState(M::ValidationResult::eState state);
-} // namespace TArc
 } // namespace DAVA

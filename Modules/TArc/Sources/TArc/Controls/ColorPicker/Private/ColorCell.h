@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MouseHelper;
 class ColorCell : public QWidget
 {
@@ -42,5 +40,4 @@ private:
     QBrush bgBrush;
     QPointer<MouseHelper> mouse;
 };
-}
 }

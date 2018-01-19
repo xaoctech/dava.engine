@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "CommandLine/CommandLineModule.h"
-#include "Utils/Dump/SceneDumper.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include <REPlatform/Global/CommandLineModule.h>
+#include <REPlatform/Scene/Utils/SceneDumper.h>
 
-class DumpTool : public CommandLineModule
+#include <Base/BaseTypes.h>
+#include <Reflection/ReflectionRegistrator.h>
+
+class DumpTool : public DAVA::CommandLineModule
 {
 public:
     DumpTool(const DAVA::Vector<DAVA::String>& commandLine);
@@ -29,11 +30,11 @@ private:
 
     DAVA::Vector<DAVA::eGPUFamily> compressedGPUs;
     DAVA::Vector<DAVA::String> tags;
-    SceneDumper::eMode mode = SceneDumper::eMode::REQUIRED;
+    DAVA::SceneDumper::eMode mode = DAVA::SceneDumper::eMode::REQUIRED;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DumpTool, CommandLineModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DumpTool, DAVA::CommandLineModule)
     {
-        DAVA::ReflectionRegistrator<DumpTool>::Begin()
+        DAVA::ReflectionRegistrator<DumpTool>::Begin()[DAVA::M::CommandName("-dump")]
         .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
         .End();
     }

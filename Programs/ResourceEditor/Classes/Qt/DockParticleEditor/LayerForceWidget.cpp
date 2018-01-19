@@ -4,7 +4,9 @@
 #include "Classes/Qt/DockParticleEditor/TimeLineWidget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
 #include "Classes/Qt/Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
-#include "Classes/Commands2/ParticleEditorCommands.h"
+
+#include <REPlatform/Commands/ParticleEditorCommands.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <Base/Array.h>
 #include <Base/Map.h>
@@ -436,7 +438,7 @@ void LayerForceWidget::BuildPlaneCollisionSection()
     mainLayout->addWidget(killParticlesAfterCollision);
 }
 
-void LayerForceWidget::Init(SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
+void LayerForceWidget::Init(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer_, DAVA::uint32 forceIndex_, bool updateMinimized)
 {
     using namespace DAVA;
     using namespace LayerDragForceWidgetDetail;

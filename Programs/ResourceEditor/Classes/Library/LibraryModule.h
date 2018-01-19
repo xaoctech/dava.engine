@@ -10,14 +10,12 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
 }
 
 class LibraryWidget;
-class LibraryModule : public DAVA::TArc::ClientModule
+class REFileOperationsManager;
+class LibraryModule : public DAVA::ClientModule
 {
 public:
     ~LibraryModule() override;
@@ -44,9 +42,10 @@ private:
     void OnDragStarted();
 
     DAVA::RefPtr<ScenePreviewDialog> previewDialog;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::QtDelayedExecutor executor;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    std::shared_ptr<REFileOperationsManager> fileOperationsManager;
+    DAVA::QtConnections connections;
+    DAVA::QtDelayedExecutor executor;
 
-    DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::ClientModule);
 };

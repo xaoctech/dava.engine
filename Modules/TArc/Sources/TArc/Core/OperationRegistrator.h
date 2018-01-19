@@ -5,23 +5,20 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class OperationID
 {
 public:
     OperationID();
 
-    const DAVA::uint32 ID;
+    const uint32 ID;
 
 private:
-    static DAVA::uint32 nextOperationID;
+    static uint32 nextOperationID;
 };
-} // namespace TArc
 } // namespace DAVA
 
 #define DECLARE_OPERATION_ID(name) \
-    extern DAVA::TArc::OperationID name
+    extern DAVA::OperationID name
 
 #define IMPL_OPERATION_ID(name) \
-    DAVA::TArc::OperationID name
+    DAVA::OperationID name

@@ -6,7 +6,11 @@
 
 #include "Render/UniqueStateSet.h"
 
+namespace DAVA
+{
 class RECommandNotificationObject;
+} // namespace DAVA
+
 class QComboBox;
 class QRadioButton;
 class SliderWidget;
@@ -52,7 +56,7 @@ private slots:
     void PrevTool();
     void NextTool();
 
-    void OnCommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
+    void OnCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
 
 protected:
     virtual bool GetEditorEnabled();

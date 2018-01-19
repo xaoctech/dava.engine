@@ -9,10 +9,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-} // namespace TArc
 } // namespace DAVA
 
 class QItemSelection;
@@ -22,7 +19,7 @@ class QDragMoveEvent;
 class QDragLeaveEvent;
 class QDragEnterEvent;
 
-class SceneTreeView : public DAVA::TArc::ControlProxyImpl<QTreeView>
+class SceneTreeView : public DAVA::ControlProxyImpl<QTreeView>
 {
 public:
     enum class Fields
@@ -38,13 +35,13 @@ public:
 
     DECLARE_CONTROL_PARAMS(Fields);
 
-    SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
+    SceneTreeView(const Params& params, DAVA::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent = nullptr);
 
     void AddAction(QAction* action);
     static void EraseEmptyIndexes(DAVA::Set<QPersistentModelIndex>& indexes);
 
 protected:
-    void UpdateControl(const DAVA::TArc::ControlDescriptor& descriptor) override;
+    void UpdateControl(const DAVA::ControlDescriptor& descriptor) override;
 
     void OnItemExpanded(const QModelIndex& index);
     void OnItemCollapsed(const QModelIndex& index);
@@ -59,8 +56,8 @@ protected:
     void dropEvent(QDropEvent* e) override;
 
 private:
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::QtDelayedExecutor executor;
+    DAVA::QtConnections connections;
+    DAVA::QtDelayedExecutor executor;
     DAVA::Set<QPersistentModelIndex> expandedIndexList;
     QItemSelectionModel* defaultSelectionModel = nullptr;
     bool inExpandingSync = false;

@@ -1,16 +1,16 @@
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
 
-#include "Classes/Commands2/SetFieldValueCommand.h"
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
-#include "Classes/Commands2/ParticleEditorCommands.h"
-#include "Classes/Commands2/ParticleEmitterMoveCommands.h"
-#include "Classes/Commands2/ParticleForceMoveCommand.h"
-#include "Classes/Commands2/ParticleLayerMoveCommand.h"
-#include "Classes/Commands2/RECommandIDs.h"
+#include <REPlatform/Commands/SetFieldValueCommand.h>
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/Commands/ParticleEditorCommands.h>
+#include <REPlatform/Commands/ParticleEmitterMoveCommands.h>
+#include <REPlatform/Commands/ParticleForceMoveCommand.h>
+#include <REPlatform/Commands/ParticleLayerMoveCommand.h>
 
-#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
-
-#include <Command/CommandBatch.h>
+#include <REPlatform/Scene/Systems/EditorParticlesSystem.h>
+#include "Particles/ParticleLayer.h"
+#include "Particles/ParticleEmitterInstance.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 
 namespace SceneTreeSystemDetail
 {
@@ -53,7 +53,7 @@ DAVA::uint32 CalcEntityDepth(DAVA::Entity* e)
 
 DAVA::int32 CalcParticleElementsDepth(DAVA::ParticleEffectComponent* component, DAVA::BaseObject* wantedObject)
 {
-    const DAVA::ReflectedType* objType = DAVA::TArc::GetValueReflectedType(DAVA::Any(wantedObject));
+    const DAVA::ReflectedType* objType = DAVA::GetValueReflectedType(DAVA::Any(wantedObject));
     bool isForce = objType == DAVA::ReflectedTypeDB::Get<DAVA::ParticleForce>();
     bool isSimplifiedForce = objType == DAVA::ReflectedTypeDB::Get<DAVA::ParticleForceSimplified>();
     bool isLayer = objType == DAVA::ReflectedTypeDB::Get<DAVA::ParticleLayer>();
@@ -171,7 +171,7 @@ void SceneTreeSystem::RegisterEntity(DAVA::Entity* entity)
     DAVA::Entity* parentEntity = entity->GetParent();
     if (parentEntity != nullptr)
     {
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(parentEntity)].push_back(Selectable(DAVA::Any(parentEntity)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(parentEntity)].push_back(DAVA::Selectable(DAVA::Any(parentEntity)));
     }
 }
 
@@ -186,7 +186,7 @@ void SceneTreeSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* c
     {
         return;
     }
-    syncSnapshot.changedObjects.emplace(Selectable(DAVA::Any(entity)));
+    syncSnapshot.changedObjects.emplace(DAVA::Selectable(DAVA::Any(entity)));
 }
 
 void SceneTreeSystem::UnregisterEntity(DAVA::Entity* entity)
@@ -202,7 +202,7 @@ void SceneTreeSystem::UnregisterEntity(DAVA::Entity* entity)
         return;
     }
 
-    Selectable obj = Selectable(DAVA::Any(entity));
+    DAVA::Selectable obj = DAVA::Selectable(DAVA::Any(entity));
 
     syncSnapshot.changedObjects.erase(obj);
     syncSnapshot.removedObjects[CalcEntityDepth(entity)].push_back(obj);
@@ -219,7 +219,7 @@ void SceneTreeSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component*
     {
         return;
     }
-    syncSnapshot.changedObjects.emplace(Selectable(DAVA::Any(entity)));
+    syncSnapshot.changedObjects.emplace(DAVA::Selectable(DAVA::Any(entity)));
 }
 
 void SceneTreeSystem::PrepareForRemove()
@@ -236,7 +236,7 @@ void SceneTreeSystem::Process(DAVA::float32 timeElapsed)
     }
 }
 
-void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
+void SceneTreeSystem::ProcessCommand(const DAVA::RECommandNotificationObject& commandNotification)
 {
     using namespace SceneTreeSystemDetail;
     if (IsSystemEnabled() == false)
@@ -244,105 +244,105 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
         return;
     }
 
-    commandNotification.ForEachWithCast<SetFieldValueCommand>(CMDID_REFLECTED_FIELD_MODIFY, [&](const SetFieldValueCommand* command) {
+    commandNotification.ForEach<DAVA::SetFieldValueCommand>([&](const DAVA::SetFieldValueCommand* command) {
         const DAVA::Reflection::Field& f = command->GetField();
         if (f.key.CanCast<DAVA::FastName>() && f.key.Cast<DAVA::FastName>() == DAVA::Entity::EntityNameFieldName)
         {
             DAVA::ReflectedObject obj = f.ref.GetDirectObject();
             if (obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::Entity>())
             {
-                syncSnapshot.changedObjects.insert(Selectable(obj.GetPtr<DAVA::Entity>()));
+                syncSnapshot.changedObjects.insert(DAVA::Selectable(obj.GetPtr<DAVA::Entity>()));
             }
         }
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticleEmitter>(CMDID_PARTICLE_EMITTER_ADD, [&](const CommandAddParticleEmitter* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitter>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleEmitter>([&](const DAVA::CommandAddParticleEmitter* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleEmitter>::value, "You should support undo for this command here");
         DAVA::Entity* entity = command->GetEntity();
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(entity)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(entity)));
     });
 
-    commandNotification.ForEachWithCast<CommandRemoveParticleEmitter>(CMDID_PARTICLE_EFFECT_EMITTER_REMOVE, [&](const CommandRemoveParticleEmitter* command) {
+    commandNotification.ForEach<DAVA::CommandRemoveParticleEmitter>([&](const DAVA::CommandRemoveParticleEmitter* command) {
         DAVA::ParticleEffectComponent* component = command->GetEffect();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleEmitterInstance* emitterInstance = command->GetEmitterInstance();
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitterInstance) + 1].push_back(Selectable(DAVA::Any(emitterInstance)));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitterInstance) + 1].push_back(DAVA::Selectable(DAVA::Any(emitterInstance)));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(entity)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(entity)));
         }
     });
 
-    commandNotification.ForEachWithCast<CommandUpdateEmitter>(CMDID_PARTICLE_EMITTER_UPDATE, [&](const CommandUpdateEmitter* command) {
-        static_assert(std::is_base_of<CommandAction, CommandUpdateEmitter>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandUpdateEmitter>([&](const DAVA::CommandUpdateEmitter* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandUpdateEmitter>::value, "You should support undo for this command here");
         DAVA::ParticleEmitterInstance* emitterInstance = command->GetEmitterInstance();
-        syncSnapshot.changedObjects.insert(Selectable(DAVA::Any(emitterInstance)));
+        syncSnapshot.changedObjects.insert(DAVA::Selectable(DAVA::Any(emitterInstance)));
     });
 
-    commandNotification.ForEachWithCast<ParticleEmitterMoveCommand>(CMDID_PARTICLE_EMITTER_MOVE, [&](const ParticleEmitterMoveCommand* command) {
+    commandNotification.ForEach<DAVA::ParticleEmitterMoveCommand>([&](const DAVA::ParticleEmitterMoveCommand* command) {
         DAVA::Entity* oldEntity = command->GetOldComponent()->GetEntity();
         DAVA::Entity* newEntity = command->GetNewComponent()->GetEntity();
         DAVA::ParticleEmitterInstance* instance = command->GetEmitterInstance();
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(newEntity)].push_back(Selectable(DAVA::Any(newEntity)));
-            syncSnapshot.removedObjects[CalcEntityDepth(oldEntity) + 1].push_back(Selectable(DAVA::Any(instance)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(newEntity)].push_back(DAVA::Selectable(DAVA::Any(newEntity)));
+            syncSnapshot.removedObjects[CalcEntityDepth(oldEntity) + 1].push_back(DAVA::Selectable(DAVA::Any(instance)));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldEntity)].push_back(Selectable(DAVA::Any(oldEntity)));
-            syncSnapshot.removedObjects[CalcEntityDepth(newEntity) + 1].push_back(Selectable(DAVA::Any(instance)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldEntity)].push_back(DAVA::Selectable(DAVA::Any(oldEntity)));
+            syncSnapshot.removedObjects[CalcEntityDepth(newEntity) + 1].push_back(DAVA::Selectable(DAVA::Any(instance)));
         }
     });
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    commandNotification.ForEachWithCast<CommandAddParticleEmitterLayer>(CMDID_PARTICLE_EMITTER_LAYER_ADD, [&](const CommandAddParticleEmitterLayer* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitterLayer>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleEmitterLayer>([&](const DAVA::CommandAddParticleEmitterLayer* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleEmitterLayer>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleEmitterInstance* instance = command->GetParentEmitter();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(Selectable(DAVA::Any(instance)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(DAVA::Selectable(DAVA::Any(instance)));
     });
 
-    commandNotification.ForEachWithCast<CommandCloneParticleEmitterLayer>(CMDID_PARTICLE_EMITTER_LAYER_CLONE, [&](const CommandCloneParticleEmitterLayer* command) {
-        static_assert(std::is_base_of<CommandAction, CommandCloneParticleEmitterLayer>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandCloneParticleEmitterLayer>([&](const DAVA::CommandCloneParticleEmitterLayer* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandCloneParticleEmitterLayer>::value, "You should support undo for this command here");
         DAVA::ParticleEmitterInstance* instance = command->GetEmitterInstance();
-        DAVA::ParticleEffectComponent* component = GetScene()->GetSystem<EditorParticlesSystem>()->GetEmitterOwner(instance);
+        DAVA::ParticleEffectComponent* component = GetScene()->GetSystem<DAVA::EditorParticlesSystem>()->GetEmitterOwner(instance);
         DAVA::Entity* entity = component->GetEntity();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(Selectable(DAVA::Any(instance)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(DAVA::Selectable(DAVA::Any(instance)));
     });
 
-    commandNotification.ForEachWithCast<ParticleLayerMoveCommand>(CMDID_PARTICLE_LAYER_MOVE, [&](const ParticleLayerMoveCommand* command) {
+    commandNotification.ForEach<DAVA::ParticleLayerMoveCommand>([&](const DAVA::ParticleLayerMoveCommand* command) {
         DAVA::ParticleLayer* layer = command->GetLayer();
-        EditorParticlesSystem* system = GetScene()->GetSystem<EditorParticlesSystem>();
+        DAVA::EditorParticlesSystem* system = GetScene()->GetSystem<DAVA::EditorParticlesSystem>();
         DAVA::ParticleEmitterInstance* oldEmitter = command->GetOldEmitter();
         DAVA::ParticleEmitterInstance* newEmitter = command->GetNewEmitter();
         DAVA::ParticleEffectComponent* oldComponent = system->GetEmitterOwner(oldEmitter);
         DAVA::ParticleEffectComponent* newComponent = system->GetEmitterOwner(newEmitter);
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.removedObjects[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, oldEmitter) + 2].push_back(Selectable(DAVA::Any(layer)));
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, newEmitter) + 1].push_back(Selectable(DAVA::Any(newEmitter)));
+            syncSnapshot.removedObjects[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, oldEmitter) + 2].push_back(DAVA::Selectable(DAVA::Any(layer)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, newEmitter) + 1].push_back(DAVA::Selectable(DAVA::Any(newEmitter)));
         }
         else
         {
-            syncSnapshot.removedObjects[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, newEmitter) + 2].push_back(Selectable(DAVA::Any(layer)));
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, oldEmitter) + 1].push_back(Selectable(DAVA::Any(oldEmitter)));
+            syncSnapshot.removedObjects[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, newEmitter) + 2].push_back(DAVA::Selectable(DAVA::Any(layer)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, oldEmitter) + 1].push_back(DAVA::Selectable(DAVA::Any(oldEmitter)));
         }
     });
 
-    commandNotification.ForEachWithCast<CommandUpdateParticleLayer>(CMDID_PARTICLE_LAYER_UPDATE, [&](const CommandUpdateParticleLayer* command) {
-        static_assert(std::is_base_of<CommandAction, CommandUpdateParticleLayer>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandUpdateParticleLayer>([&](const DAVA::CommandUpdateParticleLayer* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandUpdateParticleLayer>::value, "You should support undo for this command here");
 
-        EditorParticlesSystem* system = GetScene()->GetSystem<EditorParticlesSystem>();
+        DAVA::EditorParticlesSystem* system = GetScene()->GetSystem<DAVA::EditorParticlesSystem>();
 
         DAVA::ParticleLayer* layer = command->GetLayer();
         DAVA::ParticleEffectComponent* component = system->GetEmitterOwner(system->GetRootEmitterLayerOwner(layer));
@@ -351,217 +351,217 @@ void SceneTreeSystem::ProcessCommand(const RECommandNotificationObject& commandN
 
         DAVA::int32 layerDepth = CalcEntityDepth(component->GetEntity()) + CalcParticleElementsDepth(component, layer) + 1;
 
-        syncSnapshot.changedObjects.insert(Selectable(DAVA::Any(layer)));
+        syncSnapshot.changedObjects.insert(DAVA::Selectable(DAVA::Any(layer)));
         if (deletedEmitter != nullptr)
         {
-            syncSnapshot.removedObjects[layerDepth + 1].push_back(Selectable(DAVA::Any(deletedEmitter)));
+            syncSnapshot.removedObjects[layerDepth + 1].push_back(DAVA::Selectable(DAVA::Any(deletedEmitter)));
         }
 
         if (createdEmitter != nullptr)
         {
-            syncSnapshot.objectsToRefetch[layerDepth].push_back(Selectable(DAVA::Any(layer)));
+            syncSnapshot.objectsToRefetch[layerDepth].push_back(DAVA::Selectable(DAVA::Any(layer)));
         }
     });
 
-    commandNotification.ForEachWithCast<CommandUpdateParticleLayerEnabled>(CMDID_PARTICLE_LAYER_UPDATE_ENABLED, [&](const CommandUpdateParticleLayerEnabled* command) {
-        static_assert(std::is_base_of<CommandAction, CommandUpdateParticleLayerEnabled>::value, "You should support undo for this command here");
-        syncSnapshot.changedObjects.insert(Selectable(DAVA::Any(command->GetLayer())));
+    commandNotification.ForEach<DAVA::CommandUpdateParticleLayerEnabled>([&](const DAVA::CommandUpdateParticleLayerEnabled* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandUpdateParticleLayerEnabled>::value, "You should support undo for this command here");
+        syncSnapshot.changedObjects.insert(DAVA::Selectable(DAVA::Any(command->GetLayer())));
     });
 
-    commandNotification.ForEachWithCast<CommandRemoveParticleEmitterLayer>(CMDID_PARTICLE_EMITTER_LAYER_REMOVE, [&](const CommandRemoveParticleEmitterLayer* command) {
+    commandNotification.ForEach<DAVA::CommandRemoveParticleEmitterLayer>([&](const DAVA::CommandRemoveParticleEmitterLayer* command) {
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleEmitterInstance* emitterInstance = command->GetEmitterInstance();
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitterInstance) + 2].push_back(Selectable(DAVA::Any(command->GetLayer())));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitterInstance) + 2].push_back(DAVA::Selectable(DAVA::Any(command->GetLayer())));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitterInstance) + 1].push_back(Selectable(DAVA::Any(emitterInstance)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitterInstance) + 1].push_back(DAVA::Selectable(DAVA::Any(emitterInstance)));
         }
     });
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    commandNotification.ForEachWithCast<CommandAddParticleEmitterSimplifiedForce>(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_ADD, [&](const CommandAddParticleEmitterSimplifiedForce* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleEmitterSimplifiedForce>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleEmitterSimplifiedForce>([&](const DAVA::CommandAddParticleEmitterSimplifiedForce* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleEmitterSimplifiedForce>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandRemoveParticleEmitterSimplifiedForce>(CMDID_PARTICLE_EMITTER_SIMPLIFIED_FORCE_REMOVE, [&](const CommandRemoveParticleEmitterSimplifiedForce* command) {
+    commandNotification.ForEach<DAVA::CommandRemoveParticleEmitterSimplifiedForce>([&](const DAVA::CommandRemoveParticleEmitterSimplifiedForce* command) {
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(Selectable(DAVA::Any(command->GetForce())));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->GetForce())));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(Selectable(DAVA::Any(command->GetForce())));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->GetForce())));
         }
     });
 
-    commandNotification.ForEachWithCast<ParticleSimplifiedForceMoveCommand>(CMDID_PARTICLE_SIMPLIFIED_FORCE_MOVE, [&](const ParticleSimplifiedForceMoveCommand* command) {
-        EditorParticlesSystem* system = GetScene()->GetSystem<EditorParticlesSystem>();
+    commandNotification.ForEach<DAVA::ParticleSimplifiedForceMoveCommand>([&](const DAVA::ParticleSimplifiedForceMoveCommand* command) {
+        DAVA::EditorParticlesSystem* system = GetScene()->GetSystem<DAVA::EditorParticlesSystem>();
         DAVA::ParticleEffectComponent* oldComponent = system->GetRootEmitterLayerOwner(command->oldLayer)->GetOwner();
         DAVA::ParticleEffectComponent* newComponent = system->GetRootEmitterLayerOwner(command->newLayer)->GetOwner();
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 1].push_back(Selectable(DAVA::Any(command->newLayer)));
-            syncSnapshot.removedObjects[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 2].push_back(Selectable(DAVA::Any(command->force)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 1].push_back(DAVA::Selectable(DAVA::Any(command->newLayer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->force)));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 1].push_back(Selectable(DAVA::Any(command->oldLayer)));
-            syncSnapshot.removedObjects[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 2].push_back(Selectable(DAVA::Any(command->force)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 1].push_back(DAVA::Selectable(DAVA::Any(command->oldLayer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->force)));
         }
     });
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    commandNotification.ForEachWithCast<ParticleForceMoveCommand>(CMDID_PARTICLE_FORCE_MOVE, [&](const ParticleForceMoveCommand* command) {
-        EditorParticlesSystem* system = GetScene()->GetSystem<EditorParticlesSystem>();
+    commandNotification.ForEach<DAVA::ParticleForceMoveCommand>([&](const DAVA::ParticleForceMoveCommand* command) {
+        DAVA::EditorParticlesSystem* system = GetScene()->GetSystem<DAVA::EditorParticlesSystem>();
         DAVA::ParticleEffectComponent* oldComponent = system->GetRootEmitterLayerOwner(command->oldLayer)->GetOwner();
         DAVA::ParticleEffectComponent* newComponent = system->GetRootEmitterLayerOwner(command->newLayer)->GetOwner();
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 1].push_back(Selectable(DAVA::Any(command->newLayer)));
-            syncSnapshot.removedObjects[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 2].push_back(Selectable(DAVA::Any(command->force)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 1].push_back(DAVA::Selectable(DAVA::Any(command->newLayer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->force)));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 1].push_back(Selectable(DAVA::Any(command->oldLayer)));
-            syncSnapshot.removedObjects[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 2].push_back(Selectable(DAVA::Any(command->force)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(oldComponent->GetEntity()) + CalcParticleElementsDepth(oldComponent, command->oldLayer) + 1].push_back(DAVA::Selectable(DAVA::Any(command->oldLayer)));
+            syncSnapshot.removedObjects[CalcEntityDepth(newComponent->GetEntity()) + CalcParticleElementsDepth(newComponent, command->newLayer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->force)));
         }
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticleDrag>(CMDID_PARTICLE_EMITTER_DRAG_ADD, [&](const CommandAddParticleDrag* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleDrag>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleDrag>([&](const DAVA::CommandAddParticleDrag* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleDrag>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticleVortex>(CMDID_PARTICLE_EMITTER_VORTEX_ADD, [&](const CommandAddParticleVortex* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleVortex>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleVortex>([&](const DAVA::CommandAddParticleVortex* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleVortex>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticleGravity>(CMDID_PARTICLE_EMITTER_GRAVITY_ADD, [&](const CommandAddParticleGravity* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleGravity>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleGravity>([&](const DAVA::CommandAddParticleGravity* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleGravity>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticleWind>(CMDID_PARTICLE_EMITTER_WIND_ADD, [&](const CommandAddParticleWind* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticleWind>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticleWind>([&](const DAVA::CommandAddParticleWind* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticleWind>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticlePointGravity>(CMDID_PARTICLE_EMITTER_POINT_GRAVITY_ADD, [&](const CommandAddParticlePointGravity* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticlePointGravity>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticlePointGravity>([&](const DAVA::CommandAddParticlePointGravity* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticlePointGravity>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandAddParticlePlaneCollision>(CMDID_PARTICLE_EMITTER_PLANE_COLLISION_ADD, [&](const CommandAddParticlePlaneCollision* command) {
-        static_assert(std::is_base_of<CommandAction, CommandAddParticlePlaneCollision>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandAddParticlePlaneCollision>([&](const DAVA::CommandAddParticlePlaneCollision* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandAddParticlePlaneCollision>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandCloneParticleForce>(CMDID_PARTICLE_EMITTER_FORCE_CLONE, [&](const CommandCloneParticleForce* command) {
-        static_assert(std::is_base_of<CommandAction, CommandCloneParticleForce>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandCloneParticleForce>([&](const DAVA::CommandCloneParticleForce* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandCloneParticleForce>::value, "You should support undo for this command here");
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
     });
 
-    commandNotification.ForEachWithCast<CommandUpdateParticleForce>(CMDID_PARTICLE_FORCE_UPDATE, [&](const CommandUpdateParticleForce* command) {
-        static_assert(std::is_base_of<CommandAction, CommandUpdateParticleForce>::value, "You should support undo for this command here");
+    commandNotification.ForEach<DAVA::CommandUpdateParticleForce>([&](const DAVA::CommandUpdateParticleForce* command) {
+        static_assert(std::is_base_of<DAVA::CommandAction, DAVA::CommandUpdateParticleForce>::value, "You should support undo for this command here");
         DAVA::ParticleLayer* layer = command->GetLayer();
         DAVA::ParticleForce* force = layer->GetParticleForces()[command->GetForceIndex()];
 
-        syncSnapshot.changedObjects.insert(Selectable(DAVA::Any(force)));
+        syncSnapshot.changedObjects.insert(DAVA::Selectable(DAVA::Any(force)));
     });
 
-    commandNotification.ForEachWithCast<CommandRemoveParticleForce>(CMDID_PARTICLE_EMITTER_FORCE_REMOVE, [&](const CommandRemoveParticleForce* command) {
+    commandNotification.ForEach<DAVA::CommandRemoveParticleForce>([&](const DAVA::CommandRemoveParticleForce* command) {
         DAVA::ParticleEffectComponent* component = command->GetEffectComponent();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleLayer* layer = command->GetLayer();
 
-        if (commandNotification.redo == true)
+        if (commandNotification.IsRedo() == true)
         {
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(Selectable(DAVA::Any(command->GetForce())));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 2].push_back(DAVA::Selectable(DAVA::Any(command->GetForce())));
         }
         else
         {
-            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(Selectable(DAVA::Any(layer)));
+            syncSnapshot.objectsToRefetch[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, layer) + 1].push_back(DAVA::Selectable(DAVA::Any(layer)));
         }
     });
 
-    commandNotification.ForEachWithCast<CommandLoadParticleEmitterFromYaml>(CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML, [&](const CommandLoadParticleEmitterFromYaml* command) {
+    commandNotification.ForEach<DAVA::CommandLoadParticleEmitterFromYaml>([&](const DAVA::CommandLoadParticleEmitterFromYaml* command) {
         DAVA::ParticleEffectComponent* component = command->GetEffect();
         DAVA::Entity* entity = component->GetEntity();
         DAVA::ParticleEmitterInstance* emitter = command->GetEmitterInstance();
 
-        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(Selectable(DAVA::Any(emitter)));
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
+        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(DAVA::Selectable(DAVA::Any(emitter)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(component)));
     });
 
-    commandNotification.ForEachWithCast<CommandLoadInnerParticleEmitterFromYaml>(CMDID_PARTICLE_INNER_EMITTER_LOAD_FROM_YAML, [&](const CommandLoadInnerParticleEmitterFromYaml* command) {
+    commandNotification.ForEach<DAVA::CommandLoadInnerParticleEmitterFromYaml>([&](const DAVA::CommandLoadInnerParticleEmitterFromYaml* command) {
         DAVA::ParticleEmitterInstance* emitter = command->GetEmitterInstance();
-        DAVA::ParticleEffectComponent* component = GetScene()->GetSystem<EditorParticlesSystem>()->GetEmitterOwner(emitter);
+        DAVA::ParticleEffectComponent* component = GetScene()->GetSystem<DAVA::EditorParticlesSystem>()->GetEmitterOwner(emitter);
         DAVA::Entity* entity = component->GetEntity();
 
-        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(Selectable(DAVA::Any(emitter)));
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
+        syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(DAVA::Selectable(DAVA::Any(emitter)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(component)));
     });
 
-    commandNotification.ForEachWithCast<CommandReloadEmitters>(CMDID_PARTICLE_RELOAD_EMITTERS, [&](const CommandReloadEmitters* command) {
+    commandNotification.ForEach<DAVA::CommandReloadEmitters>([&](const DAVA::CommandReloadEmitters* command) {
         DAVA::ParticleEffectComponent* component = command->GetComponent();
         DAVA::Entity* entity = component->GetEntity();
 
         for (DAVA::uint32 i = 0; i < component->GetEmittersCount(); ++i)
         {
             DAVA::ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(Selectable(DAVA::Any(instance)));
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(DAVA::Selectable(DAVA::Any(instance)));
         }
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(Selectable(DAVA::Any(component)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(component)));
     });
 }
 

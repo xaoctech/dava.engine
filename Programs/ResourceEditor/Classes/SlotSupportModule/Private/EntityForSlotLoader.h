@@ -12,7 +12,7 @@ class FilePath;
 class EntityForSlotLoader : public DAVA::SlotSystem::ExternalEntityLoader
 {
 public:
-    EntityForSlotLoader(DAVA::TArc::ContextAccessor* accessor);
+    EntityForSlotLoader(DAVA::ContextAccessor* accessor);
 
     void Load(DAVA::RefPtr<DAVA::Entity> rootEntity, const DAVA::FilePath& path, const DAVA::Function<void(DAVA::String&&)>& finishCallback) override;
     void AddEntity(DAVA::Entity* parent, DAVA::Entity* child) override;
@@ -22,7 +22,7 @@ protected:
     void Reset() override;
 
 private:
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
     struct CallbackInfo
     {
         DAVA::Function<void(DAVA::String&&)> callback;

@@ -2,10 +2,10 @@
 
 #if defined(__DAVAENGINE_BEAST__)
 
-#include "FileSystem/FilePath.h"
-#include "CommandLine/CommandLineModule.h"
+#include <REPlatform/Global/CommandLineModule.h>
 
-#include "Reflection/ReflectionRegistrator.h"
+#include <FileSystem/FilePath.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
@@ -13,7 +13,7 @@ class Scene;
 }
 
 class BeastRunner;
-class BeastCommandLineTool : public CommandLineModule
+class BeastCommandLineTool : public DAVA::CommandLineModule
 {
 public:
     BeastCommandLineTool(const DAVA::Vector<DAVA::String>& commandLine);
@@ -30,9 +30,9 @@ private:
     BeastRunner* beastRunner = false;
     DAVA::Scene* scene = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(BeastCommandLineTool, CommandLineModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(BeastCommandLineTool, DAVA::CommandLineModule)
     {
-        DAVA::ReflectionRegistrator<BeastCommandLineTool>::Begin()
+        DAVA::ReflectionRegistrator<BeastCommandLineTool>::Begin()[DAVA::M::CommandName("-beast")]
         .ConstructorByPointer<DAVA::Vector<DAVA::String>>()
         .End();
     }
