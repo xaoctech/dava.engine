@@ -146,11 +146,11 @@ void LibraryModule::OnFBXConvertionRequested(const DAVA::FilePath& fbxPathname)
     HidePreview();
 
     executor.DelayedExecute([this, fbxPathname]() {
-        DAVA::TArc::UI* ui = GetUI();
-        DAVA::TArc::WaitDialogParams waitDlgParams;
+        DAVA::UI* ui = GetUI();
+        DAVA::WaitDialogParams waitDlgParams;
         waitDlgParams.message = QString("FBX to SC2 conversion\n%1").arg(fbxPathname.GetAbsolutePathname().c_str());
         waitDlgParams.needProgressBar = false;
-        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
         DAVA::FBXImporter::ConvertToSC2(fbxPathname, DAVA::FilePath::CreateWithNewExtension(fbxPathname, ".sc2"));
     });
@@ -161,11 +161,11 @@ void LibraryModule::OnFBXAnimationConvertionRequested(const DAVA::FilePath& fbxP
     HidePreview();
 
     executor.DelayedExecute([this, fbxPathname]() {
-        DAVA::TArc::UI* ui = GetUI();
-        DAVA::TArc::WaitDialogParams waitDlgParams;
+        DAVA::UI* ui = GetUI();
+        DAVA::WaitDialogParams waitDlgParams;
         waitDlgParams.message = QString("Import animations from FBX\n%1").arg(fbxPathname.GetAbsolutePathname().c_str());
         waitDlgParams.needProgressBar = false;
-        std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
         DAVA::FBXImporter::ConvertAnimations(fbxPathname);
     });
