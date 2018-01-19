@@ -32,12 +32,12 @@ namespace ResourceSelectorModuleDetails
 {
 const QList<QString> menuResources = QList<QString>{ "View", "Resources" };
 
-class ResourceSelectorData : public DAVA::TArc::SettingsNode
+class ResourceSelectorData : public DAVA::SettingsNode
 {
 public:
     DAVA::int32 preferredMode = 0;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ResourceSelectorData, DAVA::TArc::SettingsNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ResourceSelectorData, DAVA::SettingsNode)
     {
         DAVA::ReflectionRegistrator<ResourceSelectorData>::Begin()[DAVA::M::HiddenField()]
         .ConstructorByPointer()
@@ -86,7 +86,7 @@ ResourceSelectorModule::ResourceSelectorModule()
 void ResourceSelectorModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace ResourceSelectorModuleDetails;
 
     //create data wrapper
@@ -118,10 +118,10 @@ void ResourceSelectorModule::PostInit()
     RegisterOperation(QEGlobal::ReloadSprites.ID, this, &ResourceSelectorModule::ReloadSpritesImpl);
 }
 
-void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void ResourceSelectorModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace ResourceSelectorModuleDetails;
 
     DVASSERT(wrapper == projectDataWrapper);
@@ -136,7 +136,7 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
         for (const QString& actionName : gfxActionPlacementName)
         {
             ActionPlacementInfo placementInfo(CreateMenuPoint(QStringList() << menuResources));
-            ui->RemoveAction(DAVA::TArc::mainWindowKey, placementInfo, actionName);
+            ui->RemoveAction(DAVA::mainWindowKey, placementInfo, actionName);
         }
         gfxActionPlacementName.clear();
         settingsAreFiltered = false;
@@ -151,7 +151,7 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
                 QtAction* action = new QtAction(GetAccessor(), "Resources");
                 ActionPlacementInfo placementInfo;
                 placementInfo.AddPlacementPoint(CreateMenuPoint("View", { InsertionParams::eInsertionMethod::BeforeItem, "Toolbars" }));
-                GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+                GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
             }
 
             int32 count = static_cast<int32>(gfxDirectories.size());
@@ -185,7 +185,6 @@ void ResourceSelectorModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrappe
 
 void ResourceSelectorModule::OnGfxSelected(DAVA::int32 gfxMode)
 {
-    using namespace DAVA::TArc;
     using namespace ResourceSelectorModuleDetails;
 
     ResourceSelectorData* selectorData = GetAccessor()->GetGlobalContext()->GetData<ResourceSelectorData>();
@@ -200,7 +199,7 @@ void ResourceSelectorModule::OnGfxSelected(DAVA::int32 gfxMode)
 void ResourceSelectorModule::RegisterGfxFolders()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace ResourceSelectorModuleDetails;
 
     ContextAccessor* accessor = GetAccessor();
@@ -243,7 +242,7 @@ void ResourceSelectorModule::RegisterGfxFolders()
 void ResourceSelectorModule::CreateAction(const QString& actionName, const QString& prevActionName, DAVA::int32 gfxMode)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace ResourceSelectorModuleDetails;
 
     FieldDescriptor fieldDescr;
@@ -261,7 +260,7 @@ void ResourceSelectorModule::CreateAction(const QString& actionName, const QStri
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateMenuPoint(menuResources, { InsertionParams::eInsertionMethod::AfterItem, prevActionName }));
 
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 
     gfxActionPlacementName.emplace_back(actionName);
 }
@@ -269,7 +268,7 @@ void ResourceSelectorModule::CreateAction(const QString& actionName, const QStri
 void ResourceSelectorModule::OnGraphicsSettingsChanged()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace ResourceSelectorModuleDetails;
 
     DataContext* globalContext = GetAccessor()->GetGlobalContext();
@@ -310,10 +309,10 @@ void ResourceSelectorModule::OnWindowResized(DAVA::Size2f windowSize)
 
 void ResourceSelectorModule::ReloadSpritesImpl()
 {
-    DAVA::TArc::WaitDialogParams waitDlgParams;
+    DAVA::WaitDialogParams waitDlgParams;
     waitDlgParams.message = "Sprite Reloading";
     waitDlgParams.needProgressBar = false;
-    std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::TArc::mainWindowKey, waitDlgParams);
+    std::unique_ptr<DAVA::WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
     DAVA::Sprite::ReloadSprites();
     RefreshUIControls(DAVA::Any());
@@ -322,7 +321,6 @@ void ResourceSelectorModule::ReloadSpritesImpl()
 void ResourceSelectorModule::RefreshUIControls(const DAVA::Any& value)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = GetAccessor()->GetActiveContext();
     if (activeContext == nullptr)
@@ -359,4 +357,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ResourceSelectorModule)
     .End();
 }
 
-DECL_GUI_MODULE(ResourceSelectorModule);
+DECL_TARC_MODULE(ResourceSelectorModule);

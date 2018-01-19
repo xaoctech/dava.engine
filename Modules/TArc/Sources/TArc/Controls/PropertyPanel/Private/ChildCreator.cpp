@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ChildCreatorDetail
 {
 enum EqualResult
@@ -166,6 +164,4 @@ void ChildCreator::UnregisterExtension(const std::shared_ptr<ChildCreatorExtensi
     extension->SetAllocator(nullptr);
     extensions = std::static_pointer_cast<ChildCreatorExtension>(ChildCreatorExtension::RemoveExtension(extensions, extension));
 }
-
-} // namespace TArc
 } // namespace DAVA

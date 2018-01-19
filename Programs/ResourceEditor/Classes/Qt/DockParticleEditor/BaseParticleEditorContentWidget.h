@@ -1,10 +1,14 @@
-#ifndef __RESOURCEEDITORQT__BASEPARTICLEEDITORCONTENTWIDGET__
-#define __RESOURCEEDITORQT__BASEPARTICLEEDITORCONTENTWIDGET__
+#pragma once
 
-#include "DAVAEngine.h"
+#include <REPlatform/Scene/SceneEditor2.h>
+
+#include <Base/RefPtr.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Particles/ParticleEmitterInstance.h>
+#include <Scene3D/Components/ParticleEffectComponent.h>
+
 #include <QChar>
 #include <QWidget>
-#include "Scene/SceneEditor2.h"
 
 class BaseParticleEditorContentWidget : public QWidget
 {
@@ -23,13 +27,16 @@ public:
         DAVA::RefPtr<DAVA::ParticleEmitterInstance> instance;
     };
 
-    Objects GetCurrentObjectsForScene(SceneEditor2* scene) const;
+    Objects GetCurrentObjectsForScene(DAVA::SceneEditor2* scene) const;
 
-    SceneEditor2* GetActiveScene() const;
-    DAVA::ParticleEffectComponent* GetEffect(SceneEditor2* scene);
-    DAVA::ParticleEmitterInstance* GetEmitterInstance(SceneEditor2* scene);
-    void SetObjectsForScene(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect,
+    DAVA::SceneEditor2* GetActiveScene() const;
+    DAVA::ParticleEffectComponent* GetEffect(DAVA::SceneEditor2* scene);
+    DAVA::ParticleEmitterInstance* GetEmitterInstance(DAVA::SceneEditor2* scene);
+    void SetObjectsForScene(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect,
                             DAVA::ParticleEmitterInstance* instance);
+
+    void OnSceneActivated(DAVA::SceneEditor2* editor);
+    void OnSceneClosed(DAVA::SceneEditor2* editor);
 
 protected:
     // "Degree mark" character needed for some widgets.
@@ -39,13 +46,8 @@ protected:
     int ConvertFromPlaybackSpeedToSliderValue(DAVA::float32 playbackSpeed);
     float ConvertFromSliderValueToPlaybackSpeed(int sliderValue);
 
-    void OnSceneActivated(SceneEditor2*);
-    void OnSceneClosed(SceneEditor2*);
-
 private:
     Objects emptyObjects;
-    SceneEditor2* activeScene = nullptr;
-    DAVA::Map<SceneEditor2*, Objects> objectsForScene;
+    DAVA::SceneEditor2* activeScene = nullptr;
+    DAVA::Map<DAVA::SceneEditor2*, Objects> objectsForScene;
 };
-
-#endif /* defined(__RESOURCEEDITORQT__BASEPARTICLEEDITORCONTENTWIDGET__) */

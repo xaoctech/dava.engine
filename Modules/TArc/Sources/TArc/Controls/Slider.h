@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class Slider : public ControlProxyImpl<QSlider>
 {
     using TBase = ControlProxyImpl<QSlider>;
@@ -58,5 +56,4 @@ private:
 
     QtConnections connections;
 };
-} // namespace TArc
 } // namespace DAVA

@@ -10,8 +10,6 @@
 class QCloseEvent;
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
 class SettingsDialog final : public QDialog
@@ -38,5 +36,4 @@ private:
 
     DAVA_REFLECTION(SettingsDialog);
 };
-} // namespace TArc
 } // namespace DAVA

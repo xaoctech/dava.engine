@@ -7,17 +7,17 @@
 class LogWidget;
 class LoggerOutputObject;
 
-class LogWidgetModule : public DAVA::TArc::ClientModule
+class LogWidgetModule : public DAVA::ClientModule
 {
     void PostInit() override;
-    void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnWindowClosed(const DAVA::WindowKey& key) override;
 
     void OnLogOutput(DAVA::Logger::eLogLevel ll, const QByteArray& output);
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
     LoggerOutputObject* loggerOutput = nullptr; //will be deleted by logger. Isn't it fun?
     LogWidget* logWidget = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(LogWidgetModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(LogWidgetModule, DAVA::ClientModule);
 };

@@ -6,8 +6,6 @@
 class QWidget;
 namespace DAVA
 {
-namespace TArc
-{
 class QtWrapLayoutPrivate;
 class QtWrapLayout : public QLayout
 {
@@ -43,5 +41,4 @@ public:
 private:
     QtWrapLayoutPrivate* GetNonConstPrivate() const;
 };
-} // namespace TArc
 } // namespace DAVA

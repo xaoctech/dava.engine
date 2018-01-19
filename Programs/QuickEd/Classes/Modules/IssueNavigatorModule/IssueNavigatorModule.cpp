@@ -21,7 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(IssueNavigatorModule)
 
 void IssueNavigatorModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     const char* title = "Issue Navigator";
     DockPanelInfo panelInfo;
     panelInfo.title = title;
@@ -32,7 +32,7 @@ void IssueNavigatorModule::PostInit()
     connections.AddConnection(widget, &IssueNavigatorWidget::JumpToControl, MakeFunction(this, &IssueNavigatorModule::JumpToControl));
     connections.AddConnection(widget, &IssueNavigatorWidget::JumpToPackage, MakeFunction(this, &IssueNavigatorModule::JumpToPackage));
 
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, key, widget);
+    GetUI()->AddView(DAVA::mainWindowKey, key, widget);
 
     DAVA::int32 sectionId = 0;
     issuesHandlers.emplace_back(new LayoutIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
@@ -40,7 +40,7 @@ void IssueNavigatorModule::PostInit()
     issuesHandlers.emplace_back(new EventsIssuesHandler(GetAccessor(), GetUI(), sectionId++, widget, indexGenerator));
 }
 
-void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* oldOne)
+void IssueNavigatorModule::OnContextWasChanged(DAVA::DataContext* current, DAVA::DataContext* oldOne)
 {
     for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
     {
@@ -48,7 +48,7 @@ void IssueNavigatorModule::OnContextWasChanged(DAVA::TArc::DataContext* current,
     }
 }
 
-void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void IssueNavigatorModule::OnContextDeleted(DAVA::DataContext* context)
 {
     for (const std::unique_ptr<IssuesHandler>& handler : issuesHandlers)
     {
@@ -69,4 +69,4 @@ void IssueNavigatorModule::JumpToPackage(const DAVA::FilePath& packagePath)
     InvokeOperation(QEGlobal::OpenDocumentByPath.ID, path);
 }
 
-DECL_GUI_MODULE(IssueNavigatorModule);
+DECL_TARC_MODULE(IssueNavigatorModule);

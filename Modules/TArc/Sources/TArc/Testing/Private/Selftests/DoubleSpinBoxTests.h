@@ -22,9 +22,9 @@
 namespace DoubleSpinBoxTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
+using namespace DAVA;
 
-WindowKey wndKey = FastName("DoubleSpinBoxWindow");
+WindowKey wndKey("DoubleSpinBoxWindow");
 
 class DoubleSpinBoxData : public ReflectionBase
 {
@@ -198,7 +198,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
     QString GetTextValue(DAVA::float64 v, QDoubleSpinBox * box)
     {
         QString textValue;
-        DAVA::TArc::FloatToString(v, box->decimals(), textValue);
+        DAVA::FloatToString(v, box->decimals(), textValue);
 
         return textValue;
     }
@@ -399,7 +399,7 @@ DAVA_TARC_TESTCLASS(DoubleSpinBoxTests)
 
     DAVA_TEST (NoValueTest)
     {
-        NoValueTest("SpinBox_noValue", "SpinBox_value", QString(DAVA::TArc::MultipleValuesString));
+        NoValueTest("SpinBox_noValue", "SpinBox_value", QString(DAVA::MultipleValuesString));
     }
 
     DAVA_TEST (NoValueHintTest)

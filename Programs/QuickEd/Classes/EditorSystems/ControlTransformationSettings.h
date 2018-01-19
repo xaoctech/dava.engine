@@ -5,7 +5,7 @@
 #include <Math/Vector.h>
 #include <Base/BaseTypes.h>
 
-class ControlTransformationSettings : public DAVA::TArc::SettingsNode
+class ControlTransformationSettings : public DAVA::SettingsNode
 {
 public:
     DAVA::Vector2 moveMagnetRange = DAVA::Vector2(7.0f, 7.0f);
@@ -22,5 +22,5 @@ public:
     bool showRotate = false;
     DAVA::Vector2 minimumSelectionRectSize = DAVA::Vector2(5.0f, 5.0f);
 
-    DAVA_VIRTUAL_REFLECTION(ControlTransformationSettings, DAVA::TArc::SettingsNode);
+    DAVA_VIRTUAL_REFLECTION(ControlTransformationSettings, DAVA::SettingsNode);
 };

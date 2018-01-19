@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ShortcursModelDetails
 {
 bool IsContextCoflicted(Qt::ShortcutContext left, Qt::ShortcutContext right)
@@ -11,6 +9,7 @@ bool IsContextCoflicted(Qt::ShortcutContext left, Qt::ShortcutContext right)
     return left == Qt::WindowShortcut || left == Qt::ApplicationShortcut || right == Qt::WindowShortcut || right == Qt::ApplicationShortcut;
 }
 } // namespace ShortcursModelDetails
+
 void ShortcutsModel::SetData(const Vector<KeyBindableAction>& actionsData)
 {
     using namespace ShortcursModelDetails;
@@ -272,6 +271,4 @@ QVariant ShortcutsModel::headerData(int section, Qt::Orientation orientation, in
 
     return QVariant();
 }
-
-} // namespace TArc
 } // namespace DAVA

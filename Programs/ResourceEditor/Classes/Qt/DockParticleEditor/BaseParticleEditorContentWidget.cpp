@@ -1,5 +1,5 @@
-#include "BaseParticleEditorContentWidget.h"
-#include "Scene/SceneSignals.h"
+#include "Classes/Qt/DockParticleEditor/BaseParticleEditorContentWidget.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
 
 const QChar BaseParticleEditorContentWidget::DEGREE_MARK_CHARACTER = QChar(0x00B0);
 #define PARTICLE_EMITTER_MIN_PLAYBACK_SPEED 0.25f
@@ -13,12 +13,12 @@ BaseParticleEditorContentWidget::BaseParticleEditorContentWidget(QWidget* parent
     connect(dispatcher, &SceneSignals::Activated, this, &BaseParticleEditorContentWidget::OnSceneActivated);
 }
 
-void BaseParticleEditorContentWidget::OnSceneActivated(SceneEditor2* editor)
+void BaseParticleEditorContentWidget::OnSceneActivated(DAVA::SceneEditor2* editor)
 {
     activeScene = editor;
 }
 
-void BaseParticleEditorContentWidget::OnSceneClosed(SceneEditor2* editor)
+void BaseParticleEditorContentWidget::OnSceneClosed(DAVA::SceneEditor2* editor)
 {
     if (editor == activeScene)
         activeScene = nullptr;
@@ -49,29 +49,29 @@ float BaseParticleEditorContentWidget::ConvertFromSliderValueToPlaybackSpeed(int
     return PARTICLE_EMITTER_MIN_PLAYBACK_SPEED * scaleFactor;
 }
 
-BaseParticleEditorContentWidget::Objects BaseParticleEditorContentWidget::GetCurrentObjectsForScene(SceneEditor2* scene) const
+BaseParticleEditorContentWidget::Objects BaseParticleEditorContentWidget::GetCurrentObjectsForScene(DAVA::SceneEditor2* scene) const
 {
     auto i = objectsForScene.find(scene);
     return (i == objectsForScene.end()) ? emptyObjects : i->second;
 }
 
-void BaseParticleEditorContentWidget::SetObjectsForScene(SceneEditor2* s, DAVA::ParticleEffectComponent* e, DAVA::ParticleEmitterInstance* i)
+void BaseParticleEditorContentWidget::SetObjectsForScene(DAVA::SceneEditor2* s, DAVA::ParticleEffectComponent* e, DAVA::ParticleEmitterInstance* i)
 {
     objectsForScene[s].effect = e;
     objectsForScene[s].instance = i;
 }
 
-SceneEditor2* BaseParticleEditorContentWidget::GetActiveScene() const
+DAVA::SceneEditor2* BaseParticleEditorContentWidget::GetActiveScene() const
 {
     return activeScene;
 }
 
-DAVA::ParticleEffectComponent* BaseParticleEditorContentWidget::GetEffect(SceneEditor2* scene)
+DAVA::ParticleEffectComponent* BaseParticleEditorContentWidget::GetEffect(DAVA::SceneEditor2* scene)
 {
     return objectsForScene[scene].effect;
 }
 
-DAVA::ParticleEmitterInstance* BaseParticleEditorContentWidget::GetEmitterInstance(SceneEditor2* scene)
+DAVA::ParticleEmitterInstance* BaseParticleEditorContentWidget::GetEmitterInstance(DAVA::SceneEditor2* scene)
 {
     return objectsForScene[scene].instance.Get();
 }

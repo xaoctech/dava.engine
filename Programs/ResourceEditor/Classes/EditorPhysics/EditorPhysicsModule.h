@@ -6,14 +6,14 @@
 
 #include <Reflection/Reflection.h>
 
-class EditorPhysicsModule : public DAVA::TArc::ClientModule
+class EditorPhysicsModule : public DAVA::ClientModule
 {
 public:
     EditorPhysicsModule();
 
 protected:
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
 
     void PostInit() override;
 
@@ -21,7 +21,7 @@ protected:
     void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
 private:
-    DAVA::TArc::QtConnections connections;
-    std::unique_ptr<DAVA::TArc::FieldBinder> binder;
-    DAVA_VIRTUAL_REFLECTION(EditorPhysicsModule, DAVA::TArc::ClientModule);
+    DAVA::QtConnections connections;
+    std::unique_ptr<DAVA::FieldBinder> binder;
+    DAVA_VIRTUAL_REFLECTION(EditorPhysicsModule, DAVA::ClientModule);
 };

@@ -20,7 +20,7 @@ class UIControl;
 class StyleSheetInspectorWidget : public QListWidget, public PackageListener
 {
 public:
-    StyleSheetInspectorWidget(DAVA::TArc::ContextAccessor* accessor);
+    StyleSheetInspectorWidget(DAVA::ContextAccessor* accessor);
     ~StyleSheetInspectorWidget() override;
 
 private:
@@ -35,9 +35,9 @@ private:
 
     void Update();
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
     DAVA::RefPtr<DAVA::UIControl> currentControl;
     ContinuousUpdater updater;
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
     PackageListenerProxy packageListenerProxy;
 };

@@ -69,14 +69,14 @@ DAVA_REFLECTION_IMPL(RootNode)
     .End();
 }
 
-TArc::WindowKey wnd = TArc::WindowKey(FastName("PropertiesViewTests"));
+WindowKey wnd = WindowKey("PropertiesViewTests");
 
-class SelectionData : public DAVA::TArc::DataNode
+class SelectionData : public DAVA::TArcDataNode
 {
 public:
     Vector<Reflection> selection;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SelectionData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SelectionData, DAVA::TArcDataNode)
     {
         ReflectionRegistrator<SelectionData>::Begin()
         .Field("objects", &SelectionData::selection)
@@ -84,11 +84,11 @@ public:
     }
 };
 
-class TestModule : public DAVA::TArc::ClientModule
+class TestModule : public DAVA::ClientModule
 {
     void PostInit() override
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         DataContext* ctx = GetAccessor()->GetGlobalContext();
         ctx->CreateData(std::make_unique<PropertiesViewTestsDetail::SelectionData>());
@@ -107,7 +107,7 @@ class TestModule : public DAVA::TArc::ClientModule
         GetUI()->AddView(PropertiesViewTestsDetail::wnd, key, view);
     }
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestModule, DAVA::ClientModule)
     {
         ReflectionRegistrator<TestModule>::Begin()
         .ConstructorByPointer()
@@ -121,7 +121,6 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
     void WriteInitialSettings() override
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
         ReflectionPathTree tree(FastName("Root"));
         tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child1"), FastName("value") });
         tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child2") });
@@ -139,7 +138,7 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
 
     DAVA_TEST (ReadExpandedList)
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ::testing;
 
         DataContext* ctx = GetGlobalContext();
@@ -173,12 +172,13 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(Return())
         .WillOnce(Invoke(verifyTestFn));
     }
 
     DAVA_TEST (SetOtherObjectTest)
     {
-        using namespace DAVA::TArc;
+        using namespace DAVA;
         using namespace ::testing;
 
         DataContext* ctx = GetGlobalContext();

@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T>
 void ReduceZerosImpl(T& value)
 {
@@ -55,6 +53,4 @@ void FloatToString(float64 value, int32 precision, QString& result)
     result = QString::number(value, 'f', precision);
     ReduceZeros(result);
 }
-
-} // namespace TArc
 } // namespace DAVA

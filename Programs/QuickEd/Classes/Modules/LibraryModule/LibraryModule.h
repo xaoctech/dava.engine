@@ -10,14 +10,11 @@ class ProjectData;
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
 class QtAction;
 }
-}
 
-class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
+class LibraryModule : public DAVA::ClientModule, PackageListener
 {
     // ClientModule
     void PostInit() override;
@@ -64,12 +61,12 @@ class LibraryModule : public DAVA::TArc::ClientModule, PackageListener
 
     QString GenerateUniqueName();
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::QtConnections connections;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::QtConnections connections;
 
     PackageListenerProxy packageListenerProxy;
 
     DAVA::uint64 uniqueNumber = 0;
 
-    DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(LibraryModule, DAVA::ClientModule);
 };

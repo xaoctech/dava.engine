@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T>
 DataEditor<T>::DataEditor(DataWrapper& holder_, Reflection reflection_)
     : reflection(reflection_)
@@ -126,5 +124,4 @@ DataReader<T> DataWrapper::CreateReader() const
 
     DAVA_THROW(Exception, Format("Somebody tried to create reader for data that doesn't exist. T = %s", Type::Instance<T>()->GetName()));
 }
-} // namespace TArc
 } // namespace DAVA

@@ -9,10 +9,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-}
 }
 
 class ScaleComboBoxAdapter
@@ -22,7 +19,7 @@ public:
     static DAVA::FastName enumeratorPropertyName;
     static DAVA::FastName enabledPropertyName;
 
-    ScaleComboBoxAdapter(DAVA::TArc::ContextAccessor* accessor);
+    ScaleComboBoxAdapter(DAVA::ContextAccessor* accessor);
 
 private:
     DAVA::Any GetScale() const;
@@ -33,7 +30,7 @@ private:
     bool IsEnabled() const;
 
     CanvasDataAdapter canvasDataAdapter;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 
     DAVA_REFLECTION(CanvasData);
 };

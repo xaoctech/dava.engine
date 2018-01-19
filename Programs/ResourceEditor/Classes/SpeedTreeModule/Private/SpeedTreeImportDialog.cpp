@@ -1,26 +1,23 @@
 #if defined(__DAVAENGINE_SPEEDTREE__)
 
 #include "Classes/SpeedTreeModule/Private/SpeedTreeImportDialog.h"
-#include "SpeedTree/SpeedTreeImporter.h"
-
-#include "Classes/Qt/GlobalOperations.h"
-
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
-
 #include "ui_treeimportdialog.h"
 
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Global/GlobalOperations.h>
 
-#include <TArc/DataProcessing/DataContext.h>
+#include <SpeedTree/SpeedTreeImporter.h>
+
 #include <QtTools/FileDialogs/FileDialog.h>
+#include <TArc/Core/Deprecated.h>
+#include <TArc/DataProcessing/DataContext.h>
 
 #include <QMessageBox>
 #include <QWidget>
 
-SpeedTreeImportDialog::SpeedTreeImportDialog(const std::shared_ptr<GlobalOperations>& globlaOperations_, QWidget* parent /*= 0*/)
+SpeedTreeImportDialog::SpeedTreeImportDialog(QWidget* parent /*= 0*/)
     : QDialog(parent)
     , ui(new Ui::QtTreeImportDialog)
-    , globalOperations(globlaOperations_)
 {
     ui->setupUi(this);
 
@@ -71,7 +68,11 @@ void SpeedTreeImportDialog::OnOk()
 
     //import all trees
     {
-        WaitDialogGuard guard(globalOperations, "Importing tree", "Please wait...", 0, 0);
+        DAVA::WaitDialogParams params;
+        params.cancelable = false;
+        params.message = "Importing tree. Please wait...";
+        params.needProgressBar = false;
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = DAVA::Deprecated::GetUI()->ShowWaitDialog(DAVA::mainWindowKey, params);
         for (size_t i = 0; i < xmlFiles.size(); ++i)
         {
             SpeedTreeImporter::ImportSpeedTreeFromXML(xmlFiles[i], outFiles[i], texturesDirPath);
@@ -91,7 +92,7 @@ void SpeedTreeImportDialog::OnOk()
     {
         for (size_t i = 0; i < outFiles.size(); ++i)
         {
-            globalOperations->CallAction(GlobalOperations::OpenScene, outFiles[i].GetAbsolutePathname());
+            DAVA::Deprecated::GetInvoker()->Invoke(DAVA::OpenSceneOperation.ID, outFiles[i].GetAbsolutePathname());
         }
     }
 }
@@ -102,7 +103,7 @@ void SpeedTreeImportDialog::OnXMLSelect()
     if (xmlFiles.size())
         dialogPath = QString(xmlFiles[0].GetDirectory().GetAbsolutePathname().c_str());
 
-    QStringList selectedFiles = FileDialog::getOpenFileNames(globalOperations->GetGlobalParentWidget(), "Import SpeedTree", dialogPath, "SpeedTree RAW File (*.xml)");
+    QStringList selectedFiles = FileDialog::getOpenFileNames(DAVA::Deprecated::GetUI()->GetWindow(DAVA::mainWindowKey), "Import SpeedTree", dialogPath, "SpeedTree RAW File (*.xml)");
     if (!selectedFiles.size())
         return;
 
@@ -112,7 +113,7 @@ void SpeedTreeImportDialog::OnXMLSelect()
 
     if (sc2FolderPath.IsEmpty())
     {
-        SetSC2FolderValue(REGlobal::GetDataNode<ProjectManagerData>()->GetDataSource3DPath().GetAbsolutePathname().c_str());
+        SetSC2FolderValue(DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>()->GetDataSource3DPath().GetAbsolutePathname().c_str());
     }
 
     ui->xmlListWidget->clear();
@@ -121,11 +122,15 @@ void SpeedTreeImportDialog::OnXMLSelect()
 
 void SpeedTreeImportDialog::OnSc2Select()
 {
-    QString dialogPath = REGlobal::GetDataNode<ProjectManagerData>()->GetProjectPath().GetAbsolutePathname().c_str();
+    QString dialogPath = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>()->GetProjectPath().GetAbsolutePathname().c_str();
     if (!sc2FolderPath.IsEmpty())
         dialogPath = QString(sc2FolderPath.GetAbsolutePathname().c_str());
 
-    QString selectedPath = FileDialog::getExistingDirectory(globalOperations->GetGlobalParentWidget(), "Select .sc2 file", dialogPath);
+    DAVA::DirectoryDialogParams params;
+    params.dir = dialogPath;
+    params.title = "Select .sc2 file";
+
+    QString selectedPath = DAVA::Deprecated::GetUI()->GetExistingDirectory(DAVA::mainWindowKey, params);
     if (selectedPath.isEmpty())
         return;
 

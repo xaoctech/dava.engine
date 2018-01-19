@@ -9,7 +9,7 @@
 
 class ControlNode;
 
-class GroupingControlsModule : public DAVA::TArc::ClientModule
+class GroupingControlsModule : public DAVA::ClientModule
 {
 public:
     GroupingControlsModule();
@@ -24,9 +24,9 @@ private:
     DAVA::Result CanGroupSelection(const SelectedNodes& selectedNodes) const;
     DAVA::Result CanUngroupSelection(const SelectedNodes& selectedNodes) const;
 
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::DataWrapper documentDataWrapper;
+    DAVA::QtConnections connections;
+    DAVA::DataWrapper documentDataWrapper;
     DAVA::RefPtr<ControlNode> sampleGroupNode;
 
-    DAVA_VIRTUAL_REFLECTION(GroupingControlsModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(GroupingControlsModule, DAVA::ClientModule);
 };

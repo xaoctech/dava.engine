@@ -4,7 +4,7 @@
 
 #include <TArc/Utils/QtConnections.h>
 
-class HelpModule : public DAVA::TArc::ClientModule
+class HelpModule : public DAVA::ClientModule
 {
     void PostInit() override;
 
@@ -12,7 +12,7 @@ class HelpModule : public DAVA::TArc::ClientModule
     void CreateActions();
     void OnShowHelp();
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(HelpModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(HelpModule, DAVA::ClientModule);
 };

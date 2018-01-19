@@ -12,8 +12,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorCell::ColorCell(QWidget* parent)
     : QWidget(parent)
     , color(Qt::transparent)
@@ -110,6 +108,5 @@ void ColorCell::dropEvent(QDropEvent* e)
         SetColor(c);
         e->acceptProposedAction();
     }
-}
 }
 }

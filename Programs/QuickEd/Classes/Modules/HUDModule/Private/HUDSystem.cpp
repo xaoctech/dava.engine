@@ -29,7 +29,7 @@ namespace
 const Array<eArea, 2> AreasToHide = { { eArea::PIVOT_POINT_AREA, eArea::ROTATE_AREA } };
 }
 
-std::unique_ptr<ControlContainer> CreateControlContainer(eArea area, DAVA::TArc::ContextAccessor* accessor)
+std::unique_ptr<ControlContainer> CreateControlContainer(eArea area, DAVA::ContextAccessor* accessor)
 {
     switch (area)
     {
@@ -125,7 +125,7 @@ class HUDControl : public UIControl
     }
 };
 
-HUDSystem::HUDSystem(DAVA::TArc::ContextAccessor* accessor)
+HUDSystem::HUDSystem(DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , hudMap(CompareByLCA)
 {
@@ -143,7 +143,6 @@ eSystems HUDSystem::GetOrder() const
 void HUDSystem::OnUpdate()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext == nullptr)
@@ -251,8 +250,6 @@ void HUDSystem::SetHighlight(ControlNode* node)
 
 void HUDSystem::HighlightNode(ControlNode* node)
 {
-    using namespace DAVA::TArc;
-
     if (hoveredNodeControl != nullptr && node != nullptr && hoveredNodeControl->IsDrawableControl(node->GetControl()))
     {
         return;
@@ -409,7 +406,6 @@ void HUDSystem::SetNewArea(const HUDAreaInfo& areaInfo)
 void HUDSystem::UpdateHUDArea()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     bool findPivot = hudMap.size() == 1 && IsKeyPressed(eModifierKeys::CONTROL) && IsKeyPressed(eModifierKeys::ALT);
     eSearchOrder searchOrder = findPivot ? SEARCH_BACKWARD : SEARCH_FORWARD;
@@ -479,8 +475,6 @@ void HUDSystem::DeleteCanvasControls(const CanvasControls& canvasControls)
 
 bool HUDSystem::CanProcessInput(DAVA::UIEvent* currentInput, eInputSource /*inputSource*/) const
 {
-    using namespace DAVA::TArc;
-
     if (hudControl->IsVisible() == false)
     {
         return false;
@@ -551,7 +545,6 @@ void HUDSystem::ClearMagnetLines()
 void HUDSystem::SyncHudWithSelection()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
@@ -576,7 +569,7 @@ ControlTransformationSettings* HUDSystem::GetSettings()
     return accessor->GetGlobalContext()->GetData<ControlTransformationSettings>();
 }
 
-DAVA::TArc::ContextAccessor* HUDSystem::GetAccessor()
+DAVA::ContextAccessor* HUDSystem::GetAccessor()
 {
     return accessor;
 }

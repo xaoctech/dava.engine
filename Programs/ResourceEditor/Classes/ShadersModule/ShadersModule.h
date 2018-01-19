@@ -9,7 +9,7 @@
 
 #include <memory>
 
-class ShadersModule : public DAVA::TArc::ClientModule
+class ShadersModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override;
@@ -18,8 +18,8 @@ private:
     void ReloadShaders();
     void OnProjectChanged(const DAVA::Any& projectFieldValue);
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::QtConnections connections;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::QtConnections connections;
 
-    DAVA_VIRTUAL_REFLECTION(ShadersModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ShadersModule, DAVA::ClientModule);
 };

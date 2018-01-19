@@ -10,7 +10,7 @@
 #include <Base/FastName.h>
 
 class QWidget;
-class QualityGroupComponentValue : public DAVA::TArc::BaseComponentValue
+class QualityGroupComponentValue : public DAVA::BaseComponentValue
 {
 public:
     QualityGroupComponentValue();
@@ -20,7 +20,7 @@ public:
 protected:
     DAVA::Any GetMultipleValue() const override;
     bool IsValidValueToSet(const DAVA::Any& newValue, const DAVA::Any& currentValue) const override;
-    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override;
+    DAVA::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor) override;
     bool IsSpannedControl() const override;
 
 private:
@@ -54,5 +54,5 @@ private:
     mutable bool isDifferentGroups = false;
     mutable bool isDifferentQualities = false;
 
-    DAVA_VIRTUAL_REFLECTION(QualityGroupComponentValue, DAVA::TArc::BaseComponentValue);
+    DAVA_VIRTUAL_REFLECTION(QualityGroupComponentValue, DAVA::BaseComponentValue);
 };

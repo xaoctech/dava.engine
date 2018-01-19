@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DescriptorNode::DescriptorNode()
     : fieldName("")
 {
@@ -37,5 +35,4 @@ const DAVA::Any& DescriptorNode::GetValue() const
     return value;
 }
 
-} // namespace TArc
 } // namespace DAVA

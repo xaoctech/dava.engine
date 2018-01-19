@@ -1,51 +1,44 @@
 #include "Classes/PropertyPanel/PropertyModelExt.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Commands2/SetFieldValueCommand.h"
-#include "Classes/Commands2/KeyedArchiveCommand.h"
-#include "Classes/Commands2/AddComponentCommand.h"
 #include "Classes/PropertyPanel/PropertyPanelCommon.h"
 #include "Classes/Qt/DockParticleEditor/TimeLineWidget.h"
 
-#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
-#include <TArc/Controls/PropertyPanel/PropertyModelExtensions.h>
+#include <REPlatform/Commands/AddComponentCommand.h>
+#include <REPlatform/Commands/KeyedArchiveCommand.h>
+#include <REPlatform/Commands/SetFieldValueCommand.h>
+#include <REPlatform/DataNodes/SceneData.h>
+
 #include <TArc/Controls/ComboBox.h>
-#include <TArc/Controls/Widget.h>
 #include <TArc/Controls/CommonStrings.h>
-#include <TArc/DataProcessing/DataWrappersProcessor.h>
-#include <TArc/Utils/ReflectionHelpers.h>
+#include <TArc/Controls/PropertyPanel/PropertyModelExtensions.h>
+#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
+#include <TArc/Controls/Widget.h>
 #include <TArc/Utils/QtConnections.h>
+#include <TArc/Utils/ReflectionHelpers.h>
 #include <TArc/Utils/Utils.h>
 #include <TArc/Utils/ReflectedPairsVector.h>
 
-#include <Physics/CollisionShapeComponent.h>
 
-#include <Engine/Engine.h>
-#include <Engine/EngineContext.h>
-#include <ModuleManager/ModuleManager.h>
-#include <Scene3D/Entity.h>
-#include <Entity/Component.h>
-#include <Entity/ComponentManager.h>
-#include <FileSystem/KeyedArchive.h>
-#include <Reflection/Reflection.h>
-#include <Reflection/ReflectedTypeDB.h>
-#include <Reflection/ReflectedMeta.h>
-#include <Engine/PlatformApiQt.h>
-#include <Functional/Function.h>
 #include <Base/Any.h>
 #include <Base/FastName.h>
 #include <Base/StaticSingleton.h>
 #include <Base/TypeInheritance.h>
-#include <Base/BaseTypes.h>
+#include <Engine/PlatformApiQt.h>
+#include <Entity/ComponentManager.h>
+#include <Entity/Component.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Functional/Function.h>
+#include <Reflection/ReflectedMeta.h>
+#include <Reflection/ReflectedTypeDB.h>
+#include <Reflection/Reflection.h>
+#include <Scene3D/Entity.h>
 
-#include <QToolButton>
 #include <QHBoxLayout>
 #include <QPalette>
-#include <QPointer>
+#include <QToolButton>
 
 namespace PropertyModelExtDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
 struct ComponentCreator : public StaticSingleton<ComponentCreator>
 {
@@ -207,13 +200,13 @@ private:
             Any newComponent = componentType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
             Component* component = newComponent.Cast<Component*>();
 
-            cmdInterface.Exec(std::make_unique<AddComponentCommand>(entity, component));
+            cmdInterface.Exec(std::make_unique<DAVA::AddComponentCommand>(entity, component));
         }
 
         componentCreator->componentType = nullptr;
     }
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ComponentCreatorComponentValue, DAVA::TArc::BaseComponentValue)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ComponentCreatorComponentValue, DAVA::BaseComponentValue)
     {
         DAVA::ReflectionRegistrator<ComponentCreatorComponentValue>::Begin()
         .Field("currentType", &ComponentCreatorComponentValue::GetType, &ComponentCreatorComponentValue::SetType)
@@ -225,7 +218,7 @@ private:
     QtConnections connections;
 };
 
-class ParticlePropertyLineComponentValue : public DAVA::TArc::BaseComponentValue
+class ParticlePropertyLineComponentValue : public DAVA::BaseComponentValue
 {
 protected:
     DAVA::Any GetMultipleValue() const override
@@ -237,10 +230,10 @@ protected:
         DVASSERT(currentValue.IsEmpty() == false);
         return true;
     }
-    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    DAVA::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor) override
     {
         using namespace DAVA;
-        DAVA::TArc::Widget* widget = new DAVA::TArc::Widget(parent);
+        Widget* widget = new Widget(parent);
         QHBoxLayout* layout = new QHBoxLayout();
         widget->SetLayout(layout);
         timeLineWidget = new TimeLineWidget(widget->ToWidgetCast());
@@ -251,8 +244,8 @@ protected:
         layout->addWidget(timeLineWidget);
         UpdateValue();
         wrapper.SetListener(nullptr);
-        wrapper = GetDataProcessor()->CreateWrapper([this](const DAVA::TArc::DataContext*) {
-            return DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        wrapper = GetDataProcessor()->CreateWrapper([this](const DataContext*) {
+            return Reflection::Create(ReflectedObject(this));
         },
                                                     nullptr);
         wrapper.SetListener(&dummyListener);
@@ -322,7 +315,7 @@ private:
         }
     }
 
-    class DummnyListener : public DAVA::TArc::DataListener
+    class DummnyListener : public DAVA::DataListener
     {
     public:
         void OnDataChanged(const DataWrapper& wrapper, const Vector<Any>& fields) override
@@ -333,11 +326,11 @@ private:
     bool widgetInited = false;
     RefPtr<PropertyLine<float32>> prevValues;
     QPointer<TimeLineWidget> timeLineWidget;
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::DataWrapper wrapper;
+    DAVA::QtConnections connections;
+    DAVA::DataWrapper wrapper;
     DummnyListener dummyListener;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticlePropertyLineComponentValue, DAVA::TArc::BaseComponentValue)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ParticlePropertyLineComponentValue, DAVA::BaseComponentValue)
     {
         DAVA::ReflectionRegistrator<ParticlePropertyLineComponentValue>::Begin()
         .Field("updateValue", &ParticlePropertyLineComponentValue::UpdateValueHack, nullptr)
@@ -359,19 +352,19 @@ struct AnyCompare<PropertyModelExtDetails::TypeInitializer::TypePair>
 };
 } // namespace DAVA
 
-REModifyPropertyExtension::REModifyPropertyExtension(DAVA::TArc::ContextAccessor* accessor_)
+REModifyPropertyExtension::REModifyPropertyExtension(DAVA::ContextAccessor* accessor_)
     : accessor(accessor_)
 {
 }
 
 void REModifyPropertyExtension::ProduceCommand(const DAVA::Reflection::Field& field, const DAVA::Any& newValue)
 {
-    GetScene()->Exec(std::make_unique<SetFieldValueCommand>(field, newValue));
+    GetScene()->Exec(std::make_unique<DAVA::SetFieldValueCommand>(field, newValue));
 }
 
-void REModifyPropertyExtension::ProduceCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& node, const DAVA::Any& newValue)
+void REModifyPropertyExtension::ProduceCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const DAVA::Any& newValue)
 {
-    std::shared_ptr<DAVA::TArc::PropertyNode> parent = node->parent.lock();
+    std::shared_ptr<DAVA::PropertyNode> parent = node->parent.lock();
     DVASSERT(parent != nullptr);
 
     if (parent->cachedValue.CanCast<DAVA::KeyedArchive*>())
@@ -387,7 +380,7 @@ void REModifyPropertyExtension::ProduceCommand(const std::shared_ptr<DAVA::TArc:
 
             DAVA::VariantType value = DAVA::PrepareValueForKeyedArchive(newValue, currentValue->GetType());
             DVASSERT(value.GetType() != DAVA::VariantType::TYPE_NONE);
-            GetScene()->Exec(std::make_unique<KeyeadArchiveSetValueCommand>(archive, node->field.key.Cast<DAVA::String>(), value));
+            GetScene()->Exec(std::make_unique<DAVA::KeyeadArchiveSetValueCommand>(archive, node->field.key.Cast<DAVA::String>(), value));
         }
     }
     else
@@ -411,9 +404,9 @@ void REModifyPropertyExtension::BeginBatch(const DAVA::String& text, DAVA::uint3
     GetScene()->BeginBatch(text, commandCount);
 }
 
-SceneEditor2* REModifyPropertyExtension::GetScene() const
+DAVA::SceneEditor2* REModifyPropertyExtension::GetScene() const
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DataContext* ctx = accessor->GetActiveContext();
     DVASSERT(ctx != nullptr);
 
@@ -423,10 +416,9 @@ SceneEditor2* REModifyPropertyExtension::GetScene() const
     return data->GetScene().Get();
 }
 
-void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const
+void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::PropertyNode>>& children) const
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     if (parent->propertyType == PropertyPanel::AddComponentProperty)
     {
@@ -466,20 +458,20 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::Proper
             Reflection::Field addComponentField;
             addComponentField.key = "Add Component";
             addComponentField.ref = parent->field.ref;
-            std::shared_ptr<PropertyNode> addComponentNode = allocator->CreatePropertyNode(parent, std::move(addComponentField), DAVA::TArc::PropertyNode::InvalidSortKey - 1, PropertyPanel::AddComponentProperty);
+            std::shared_ptr<PropertyNode> addComponentNode = allocator->CreatePropertyNode(parent, std::move(addComponentField), DAVA::PropertyNode::InvalidSortKey - 1, PropertyPanel::AddComponentProperty);
             children.push_back(addComponentNode);
         }
     }
     else if (parent->propertyType == PropertyNode::GroupProperty &&
              parent->cachedValue.GetType() == DAVA::Type::Instance<DAVA::Entity*>())
     {
-        DAVA::TArc::ForEachField(parent->field.ref, [&](Reflection::Field&& field)
-                                 {
-                                     if (field.ref.GetValueType() != DAVA::Type::Instance<DAVA::Vector<DAVA::Component*>>() && CanBeExposed(field))
-                                     {
-                                         children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<int32>(children.size()), PropertyNode::RealProperty));
-                                     }
-                                 });
+        DAVA::ForEachField(parent->field.ref, [&](Reflection::Field&& field)
+                           {
+                               if (field.ref.GetValueType() != DAVA::Type::Instance<DAVA::Vector<DAVA::Component*>>() && CanBeExposed(field))
+                               {
+                                   children.push_back(allocator->CreatePropertyNode(parent, std::move(field), static_cast<int32>(children.size()), PropertyNode::RealProperty));
+                               }
+                           });
     }
     else
     {
@@ -487,47 +479,47 @@ void EntityChildCreator::ExposeChildren(const std::shared_ptr<DAVA::TArc::Proper
     }
 }
 
-std::unique_ptr<DAVA::TArc::BaseComponentValue> EntityEditorCreator::GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const
+std::unique_ptr<DAVA::BaseComponentValue> EntityEditorCreator::GetEditor(const std::shared_ptr<const DAVA::PropertyNode>& node) const
 {
     if (node->propertyType == PropertyPanel::AddComponentProperty)
     {
-        std::unique_ptr<DAVA::TArc::BaseComponentValue> editor = std::make_unique<PropertyModelExtDetails::ComponentCreatorComponentValue>();
-        DAVA::TArc::BaseComponentValue::Style style;
+        std::unique_ptr<DAVA::BaseComponentValue> editor = std::make_unique<PropertyModelExtDetails::ComponentCreatorComponentValue>();
+        DAVA::BaseComponentValue::Style style;
         style.fontBold = true;
         style.fontItalic = true;
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::unique_ptr<DAVA::TArc::BaseComponentValue>(std::move(editor));
+        return std::unique_ptr<DAVA::BaseComponentValue>(std::move(editor));
     }
 
     const DAVA::Type* valueType = node->cachedValue.GetType();
     static const DAVA::Type* componentType = DAVA::Type::Instance<DAVA::Component*>();
     static const DAVA::Type* entityType = DAVA::Type::Instance<DAVA::Entity*>();
 
-    if ((node->propertyType == DAVA::TArc::PropertyNode::GroupProperty && valueType == entityType)
+    if ((node->propertyType == DAVA::PropertyNode::GroupProperty && valueType == entityType)
         || (DAVA::TypeInheritance::CanCast(node->cachedValue.GetType(), DAVA::Type::Instance<DAVA::Component*>()) == true))
     {
-        std::unique_ptr<DAVA::TArc::BaseComponentValue> editor = EditorComponentExtension::GetEditor(node);
-        DAVA::TArc::BaseComponentValue::Style style;
+        std::unique_ptr<DAVA::BaseComponentValue> editor = EditorComponentExtension::GetEditor(node);
+        DAVA::BaseComponentValue::Style style;
         style.fontBold = true;
         style.fontColor = QPalette::ButtonText;
         style.bgColor = QPalette::AlternateBase;
         editor->SetStyle(style);
-        return std::unique_ptr<DAVA::TArc::BaseComponentValue>(std::move(editor));
+        return std::unique_ptr<DAVA::BaseComponentValue>(std::move(editor));
     }
 
     return EditorComponentExtension::GetEditor(node);
 }
 
-std::unique_ptr<DAVA::TArc::BaseComponentValue> ParticleForceCreator::GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const
+std::unique_ptr<DAVA::BaseComponentValue> ParticleForceCreator::GetEditor(const std::shared_ptr<const DAVA::PropertyNode>& node) const
 {
     using namespace DAVA;
     using namespace PropertyModelExtDetails;
     const DAVA::Type* valueType = node->cachedValue.GetType();
     const Type* propertyLineType = Type::Instance<RefPtr<PropertyLine<float32>>>();
 
-    if (node->propertyType == DAVA::TArc::PropertyNode::RealProperty && valueType == propertyLineType)
+    if (node->propertyType == DAVA::PropertyNode::RealProperty && valueType == propertyLineType)
     {
         return std::make_unique<ParticlePropertyLineComponentValue>();
     }

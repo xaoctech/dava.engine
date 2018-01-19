@@ -3,7 +3,8 @@
 
 #include "LandscapeEditorBasePanel.h"
 #include "DAVAEngine.h"
-#include "Qt/Scene/System/HeightmapEditorSystem.h"
+
+#include <REPlatform/Scene/Systems/HeightmapEditorSystem.h>
 
 class QComboBox;
 class QRadioButton;
@@ -30,7 +31,7 @@ public:
     ~HeightmapEditorPanel();
 
 private slots:
-    void SetDropperHeight(SceneEditor2* scene, double height);
+    void SetDropperHeight(DAVA::SceneEditor2* scene, double height);
     void HeightUpdatedManually();
 
     void SetBrushSize(int brushSize);
@@ -95,8 +96,8 @@ private:
     QDoubleSpinBox* editHeight;
 
     void InitBrushImages();
-    void UpdateRadioState(HeightmapEditorSystem::eHeightmapDrawType type);
-    void SetDrawingType(HeightmapEditorSystem::eHeightmapDrawType type);
+    void UpdateRadioState(DAVA::HeightmapEditorSystem::eHeightmapDrawType type);
+    void SetDrawingType(DAVA::HeightmapEditorSystem::eHeightmapDrawType type);
 
     DAVA::float32 GetBrushScaleCoef();
     DAVA::int32 BrushSizeUIToSystem(DAVA::int32 uiValue);

@@ -3,12 +3,12 @@
 #include "Classes/EditorPhysics/Private/EditorPhysicsData.h"
 #include "Classes/EditorPhysics/Private/PhysicsWidget.h"
 
-#include "Classes/Commands2/EntityAddCommand.h"
-#include "Classes/Interfaces/PropertyPanelInterface.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/SceneTree/CreateEntitySupport.h"
+#include <REPlatform/Commands/EntityAddCommand.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Global/PropertyPanelInterface.h>
+#include <REPlatform/Global/SceneTree/CreateEntitySupport.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -37,11 +37,13 @@
 
 #include <QAction>
 #include <QList>
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace EditorPhysicsDetail
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
+
 class PhysicsMaterialComponentValue : public BaseComponentValue
 {
 public:
@@ -114,13 +116,13 @@ private:
 class PhysicsEditorCreator : public EditorComponentExtension
 {
 public:
-    std::unique_ptr<DAVA::TArc::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const override
+    std::unique_ptr<DAVA::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::PropertyNode>& node) const override
     {
-        std::shared_ptr<DAVA::TArc::PropertyNode> parentNode = node->parent.lock();
+        std::shared_ptr<DAVA::PropertyNode> parentNode = node->parent.lock();
         if (parentNode != nullptr)
         {
             const DAVA::Type* valueType = node->cachedValue.GetType();
-            if (node->propertyType == DAVA::TArc::PropertyNode::RealProperty &&
+            if (node->propertyType == DAVA::PropertyNode::RealProperty &&
                 valueType == DAVA::Type::Instance<DAVA::FastName>() &&
                 parentNode->cachedValue.CanCast<DAVA::CollisionShapeComponent*>() &&
                 node->field.key.Cast<DAVA::String>() == "material")
@@ -133,13 +135,13 @@ public:
     }
 };
 
-class EditorPhysicsGlobalData : public DAVA::TArc::DataNode
+class EditorPhysicsGlobalData : public DAVA::TArcDataNode
 {
 public:
-    std::shared_ptr<DAVA::TArc::EditorComponentExtension> physicsExtension;
+    std::shared_ptr<DAVA::EditorComponentExtension> physicsExtension;
 
 private:
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EditorPhysicsGlobalData, DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EditorPhysicsGlobalData, DAVA::TArcDataNode)
     {
         ReflectionRegistrator<EditorPhysicsGlobalData>::Begin()
         .End();
@@ -367,7 +369,7 @@ public:
     }
 };
 
-class PhysicsEntityCreatorsGroup : public EntityCreatorsGroup
+class PhysicsEntityCreatorsGroup : public DAVA::EntityCreatorsGroup
 {
 public:
     PhysicsEntityCreatorsGroup()
@@ -398,9 +400,9 @@ EditorPhysicsModule::EditorPhysicsModule()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsEntityCreatorsGroup);
 }
 
-void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void EditorPhysicsModule::OnContextCreated(DAVA::DataContext* context)
 {
-    SceneEditor2* scene = context->GetData<SceneData>()->GetScene().Get();
+    DAVA::SceneEditor2* scene = context->GetData<DAVA::SceneData>()->GetScene().Get();
     DVASSERT(scene != nullptr);
 
     std::unique_ptr<EditorPhysicsData> data(new EditorPhysicsData());
@@ -410,9 +412,9 @@ void EditorPhysicsModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(data));
 }
 
-void EditorPhysicsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void EditorPhysicsModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    SceneEditor2* scene = context->GetData<SceneData>()->GetScene().Get();
+    DAVA::SceneEditor2* scene = context->GetData<DAVA::SceneData>()->GetScene().Get();
     DVASSERT(scene != nullptr);
 
     EditorPhysicsData* data = context->GetData<EditorPhysicsData>();
@@ -426,7 +428,6 @@ void EditorPhysicsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 void EditorPhysicsModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     binder.reset(new FieldBinder(accessor));
@@ -435,14 +436,14 @@ void EditorPhysicsModule::PostInit()
         descr.type = ReflectedTypeDB::Get<ProjectManagerData>();
         descr.fieldName = FastName(ProjectManagerData::ProjectPathProperty);
         binder->BindField(descr, [](const Any& v) {
-            PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
+            PhysicsModule* module = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::PhysicsModule>();
             module->ReleaseMaterials();
         });
     }
 
     EditorPhysicsDetail::EditorPhysicsGlobalData* globalData = new EditorPhysicsDetail::EditorPhysicsGlobalData();
     globalData->physicsExtension.reset(new EditorPhysicsDetail::PhysicsEditorCreator());
-    accessor->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArc::DataNode>(globalData));
+    accessor->GetGlobalContext()->CreateData(std::unique_ptr<DAVA::TArcDataNode>(globalData));
 
     QWidget* physicsPanel = new PhysicsWidget(GetAccessor(), GetUI());
 
@@ -453,14 +454,14 @@ void EditorPhysicsModule::PostInit()
     info.area = Qt::LeftDockWidgetArea;
 
     PanelKey key("Physics", info);
-    ui->AddView(DAVA::TArc::mainWindowKey, key, physicsPanel);
+    ui->AddView(DAVA::mainWindowKey, key, physicsPanel);
 }
 
 void EditorPhysicsModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::PropertyPanelInterface>())
+    if (interfaceType == DAVA::Type::Instance<DAVA::PropertyPanelInterface>())
     {
-        Interfaces::PropertyPanelInterface* propertyPanel = QueryInterface<Interfaces::PropertyPanelInterface>();
+        DAVA::PropertyPanelInterface* propertyPanel = QueryInterface<DAVA::PropertyPanelInterface>();
         EditorPhysicsDetail::EditorPhysicsGlobalData* data = GetAccessor()->GetGlobalContext()->GetData<EditorPhysicsDetail::EditorPhysicsGlobalData>();
         propertyPanel->RegisterExtension(data->physicsExtension);
     }
@@ -468,9 +469,9 @@ void EditorPhysicsModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
 
 void EditorPhysicsModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
 {
-    if (interfaceType == DAVA::Type::Instance<Interfaces::PropertyPanelInterface>())
+    if (interfaceType == DAVA::Type::Instance<DAVA::PropertyPanelInterface>())
     {
-        Interfaces::PropertyPanelInterface* propertyPanel = QueryInterface<Interfaces::PropertyPanelInterface>();
+        DAVA::PropertyPanelInterface* propertyPanel = QueryInterface<DAVA::PropertyPanelInterface>();
         EditorPhysicsDetail::EditorPhysicsGlobalData* data = GetAccessor()->GetGlobalContext()->GetData<EditorPhysicsDetail::EditorPhysicsGlobalData>();
         propertyPanel->UnregisterExtension(data->physicsExtension);
     }
@@ -483,4 +484,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EditorPhysicsModule)
     .End();
 }
 
-DECL_GUI_MODULE(EditorPhysicsModule);
+DECL_TARC_MODULE(EditorPhysicsModule);

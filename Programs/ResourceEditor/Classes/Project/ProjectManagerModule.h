@@ -1,14 +1,18 @@
 #pragma once
 
-#include "Project/ProjectResources.h"
+#include <REPlatform/DataNodes/ProjectResources.h>
 
 #include <TArc/Models/RecentMenuItems.h>
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Utils/QtDelayedExecutor.h>
 
+namespace DAVA
+{
 class ProjectManagerData;
-class ProjectManagerModule : public DAVA::TArc::ClientModule
+} // namespace DAVA
+
+class ProjectManagerModule : public DAVA::ClientModule
 {
 public:
     ProjectManagerModule();
@@ -34,15 +38,15 @@ private:
     void SetFilenamesTag(const DAVA::String& tag);
 
 private:
-    ProjectManagerData* GetData();
+    DAVA::ProjectManagerData* GetData();
 
 private:
-    std::unique_ptr<RecentMenuItems> recentProjects;
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
-    std::unique_ptr<ProjectResources> projectResources;
+    std::unique_ptr<DAVA::RecentMenuItems> recentProjects;
+    DAVA::QtConnections connections;
+    DAVA::QtDelayedExecutor delayedExecutor;
+    std::unique_ptr<DAVA::ProjectResources> projectResources;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<ProjectManagerModule>::Begin()
         .ConstructorByPointer()

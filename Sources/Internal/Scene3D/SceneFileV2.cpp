@@ -42,6 +42,8 @@
 #include "Job/JobManager.h"
 
 #include <functional>
+#include "Engine/EngineContext.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -101,7 +103,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath& filename, DAVA::Scene
     header.signature[2] = 'V';
     header.signature[3] = '2';
 
-    header.version = VersionInfo::Instance()->GetCurrentVersion().version;
+    header.version = GetEngineContext()->versionInfo->GetCurrentVersion().version;
     header.nodeCount = scene->GetChildrenCount();
 
     if (scene->GetGlobalMaterial())
@@ -122,7 +124,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath& filename, DAVA::Scene
     // save version tags
     {
         KeyedArchive* tagsArchive = new KeyedArchive();
-        const VersionInfo::TagsMap& tags = VersionInfo::Instance()->GetCurrentVersion().tags;
+        const VersionInfo::TagsMap& tags = GetEngineContext()->versionInfo->GetCurrentVersion().tags;
         for (VersionInfo::TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++)
         {
             tagsArchive->SetUInt32(it->first, it->second);
@@ -382,18 +384,18 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath& filename, Scene* scen
         }
     }
 
-    VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(scene->version);
+    VersionInfo::eStatus status = GetEngineContext()->versionInfo->TestVersion(scene->version);
     switch (status)
     {
     case VersionInfo::COMPATIBLE:
     {
-        const String tags = VersionInfo::Instance()->UnsupportedTagsMessage(scene->version);
+        const String tags = GetEngineContext()->versionInfo->UnsupportedTagsMessage(scene->version);
         Logger::Warning("SceneFileV2::LoadScene scene was saved with older version of framework. Saving scene will broke compatibility. Missed tags: %s", tags.c_str());
     }
     break;
     case VersionInfo::INVALID:
     {
-        const String tags = VersionInfo::Instance()->NoncompatibleTagsMessage(scene->version);
+        const String tags = GetEngineContext()->versionInfo->NoncompatibleTagsMessage(scene->version);
         Logger::Error("SceneFileV2::LoadScene scene(%d) is incompatible with current version(%d). Wrong tags: %s", header.version, SCENE_FILE_CURRENT_VERSION, tags.c_str());
         SetError(ERROR_VERSION_TAGS_INVALID);
         return GetError();
@@ -591,18 +593,18 @@ SceneArchive* SceneFileV2::LoadSceneArchive(const FilePath& filename)
         }
     }
 
-    VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(version);
+    VersionInfo::eStatus status = GetEngineContext()->versionInfo->TestVersion(version);
     switch (status)
     {
     case VersionInfo::COMPATIBLE:
     {
-        const String tags = VersionInfo::Instance()->UnsupportedTagsMessage(version);
+        const String tags = GetEngineContext()->versionInfo->UnsupportedTagsMessage(version);
         Logger::Warning("SceneFileV2::LoadScene scene was saved with older version of framework. Saving scene will broke compatibility. Missed tags: %s", tags.c_str());
     }
     break;
     case VersionInfo::INVALID:
     {
-        const String tags = VersionInfo::Instance()->NoncompatibleTagsMessage(version);
+        const String tags = GetEngineContext()->versionInfo->NoncompatibleTagsMessage(version);
         Logger::Error("SceneFileV2::LoadScene scene is incompatible with current version. Wrong tags: %s", tags.c_str());
         return res;
     }

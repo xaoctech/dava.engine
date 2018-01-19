@@ -10,7 +10,7 @@
 class FindResultsWidget;
 class FindFilter;
 
-class FindResultsModule : public DAVA::TArc::ClientModule, public DAVA::TArc::DataListener
+class FindResultsModule : public DAVA::ClientModule, public DAVA::DataListener
 {
     void PostInit() override;
 
@@ -22,12 +22,12 @@ class FindResultsModule : public DAVA::TArc::ClientModule, public DAVA::TArc::Da
     void FindInProject(std::shared_ptr<FindFilter> filter);
     void FindInDocument(std::shared_ptr<FindFilter> filter);
 
-    void OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
+    void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
 
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 
     FindResultsWidget* findResultsWidget = nullptr;
-    DAVA::TArc::DataWrapper projectDataWrapper;
+    DAVA::DataWrapper projectDataWrapper;
 
-    DAVA_VIRTUAL_REFLECTION(FindResultsModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(FindResultsModule, DAVA::ClientModule);
 };

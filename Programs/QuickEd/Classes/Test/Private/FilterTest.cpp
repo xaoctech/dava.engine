@@ -99,12 +99,11 @@ DAVA_TARC_TESTCLASS(FilterTest)
 
 namespace FilterTestDetails
 {
-class LocalMockModule : public TArc::ClientModule
+class LocalMockModule : public ClientModule
 {
 protected:
     void PostInit() override
     {
-        using namespace TArc;
         projectPath = TestHelpers::GetTestPath() + "FilterTest";
         TestHelpers::CreateProjectFolder(projectPath);
         String projectPathStr = projectPath.GetAbsolutePathname();
@@ -343,7 +342,7 @@ protected:
                                   prototypesTestPath.GetFrameworkPath(), FastName("1"));
     }
 
-    DAVA_VIRTUAL_REFLECTION(LocalMockModule, TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(LocalMockModule, ClientModule);
 };
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LocalMockModule)

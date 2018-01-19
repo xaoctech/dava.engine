@@ -1,35 +1,40 @@
 #include "Classes/Qt/TextureBrowser/TextureBrowser.h"
-#include "Classes/Qt/TextureBrowser/TextureListModel.h"
-#include "Classes/Qt/TextureBrowser/TextureListDelegate.h"
-#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
-#include "Classes/Qt/TextureBrowser/TextureCache.h"
-#include "Classes/Qt/Main/QtUtils.h"
-
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Selection/SelectionData.h"
-#include "Classes/SceneManager/SceneData.h"
-
-#include "Classes/Qt/Scene/SceneHelper.h"
 #include "Classes/Qt/CubemapEditor/CubemapUtils.h"
-#include "Classes/Commands2/Base/RECommandNotificationObject.h"
-#include "Classes/Constants.h"
+#include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+#include "Classes/Qt/TextureBrowser/TextureListDelegate.h"
+#include "Classes/Qt/TextureBrowser/TextureListModel.h"
+#include "Classes/Qt/Scene/SceneSignals.h"
+
+#include "REPlatform/Commands/EntityRemoveCommand.h"
+#include "REPlatform/Global/GlobalOperations.h"
+#include <REPlatform/Commands/EntityAddCommand.h>
+#include <REPlatform/Commands/InspMemberModifyCommand.h>
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <REPlatform/Global/Constants.h>
+#include <REPlatform/Scene/SceneHelper.h>
+#include <REPlatform/Scene/Utils/Utils.h>
+
 #include "ui_texturebrowser.h"
 
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Core/FieldBinder.h>
 
 #include <Render/PixelFormatDescriptor.h>
 #include <Render/Image/LibPVRHelper.h>
 #include <Render/Image/LibDdsHelper.h>
 
-#include <QComboBox>
 #include <QAbstractItemModel>
-#include <QStatusBar>
-#include <QToolButton>
+#include <QComboBox>
 #include <QFileInfo>
 #include <QList>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QStatusBar>
+#include <QToolButton>
 
 QColor TextureBrowser::gpuColor_PVR_ISO = QColor(0, 200, 0, 255);
 QColor TextureBrowser::gpuColor_PVR_Android = QColor(0, 0, 200, 255);
@@ -48,7 +53,7 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     , curDescriptor(NULL)
 {
     ui->setupUi(this);
-    setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
+    setWindowFlags(DAVA::WINDOWFLAG_ON_TOP_OF_APPLICATION);
 
     textureListModel = new TextureListModel();
     textureListImagesDelegate = new TextureListDelegate();
@@ -66,11 +71,11 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     QObject::connect(sceneSignals, &SceneSignals::Deactivated, this, &TextureBrowser::sceneDeactivated);
     QObject::connect(sceneSignals, &SceneSignals::CommandExecuted, this, &TextureBrowser::OnCommandExecuted);
 
-    selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    selectionFieldBinder.reset(new DAVA::FieldBinder(DAVA::Deprecated::GetAccessor()));
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
-        fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::SelectionData>();
+        fieldDescr.fieldName = DAVA::FastName(DAVA::SelectionData::selectionPropertyName);
         selectionFieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &TextureBrowser::OnSelectionChanged));
     }
 
@@ -281,7 +286,7 @@ void TextureBrowser::setTextureView(DAVA::eGPUFamily view, eTextureConvertMode c
 
 eTextureConvertMode TextureBrowser::getConvertMode(eTextureConvertMode convertMode /*= CONVERT_NOT_EXISTENT*/) const
 {
-    bool autoConvertationEnabled = REGlobal::GetGlobalContext()->GetData<GeneralSettings>()->autoConversion;
+    bool autoConvertationEnabled = DAVA::Deprecated::GetDataNode<DAVA::GeneralSettings>()->autoConversion;
     return (autoConvertationEnabled) ? convertMode : CONVERT_NOT_REQUESTED;
 }
 
@@ -370,8 +375,8 @@ void TextureBrowser::updateInfoOriginal(const QList<QImage>& images)
         int filesize = TextureCache::Instance()->getOriginalFileSize(curDescriptor);
 
         sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr.c_str(), images[0].width(), images[0].height(),
-                SizeInBytesToString(datasize).c_str(),
-                SizeInBytesToString(filesize).c_str());
+                DAVA::SizeInBytesToString(datasize).c_str(),
+                DAVA::SizeInBytesToString(filesize).c_str());
 
         ui->labelOriginalFormat->setText(tmp);
     }
@@ -404,8 +409,8 @@ void TextureBrowser::updateInfoConverted()
         ui->convertToolButton->setEnabled(isFormatValid);
 
         sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, imgSize.width(), imgSize.height(),
-                SizeInBytesToString(datasize).c_str(),
-                SizeInBytesToString(filesize).c_str());
+                DAVA::SizeInBytesToString(datasize).c_str(),
+                DAVA::SizeInBytesToString(filesize).c_str());
 
         ui->labelConvertedFormat->setText(tmp);
         ui->textureAreaConverted->warningShow(!isUpToDate);
@@ -475,7 +480,7 @@ void TextureBrowser::setupTextureToolbar()
     toolbarZoomSlider = new QSlider();
     toolbarZoomSliderValue = new QLabel();
     toolbarZoomSlider->setOrientation(Qt::Horizontal);
-    toolbarZoomSlider->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+    toolbarZoomSlider->setMaximumWidth(DAVA::ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
     toolbarZoomSlider->setTracking(true);
     toolbarZoomSlider->setRange(-90, 90);
     toolbarZoomSlider->setTickPosition(QSlider::TicksBelow);
@@ -528,9 +533,6 @@ void TextureBrowser::setupTextureListToolbar()
 
     ui->textureListToolbar->insertWidget(ui->actionConvertForAllGPU, spacerWidget);
     ui->textureListToolbar->insertSeparator(ui->actionConvertForAllGPU);
-
-    // TODO: mainwindow
-    //QtMainWindow::Instance()->ShowActionWithText(ui->textureListToolbar, ui->actionConvertAll, true);
 
     ui->textureListSortToolbar->addWidget(texturesSortComboLabel);
     ui->textureListSortToolbar->addWidget(texturesSortCombo);
@@ -634,7 +636,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
 {
     if (NULL != descriptor && NULL != texture)
     {
-        DAVA::eGPUFamily curEditorImageGPUForTextures = REGlobal::GetGlobalContext()->GetData<CommonInternalSettings>()->textureViewGPU;
+        DAVA::eGPUFamily curEditorImageGPUForTextures = DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->textureViewGPU;
 
         // reload only when editor view format is the same as given texture format
         // or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
@@ -649,7 +651,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
 void TextureBrowser::UpdateSceneMaterialsWithTexture(DAVA::Texture* texture)
 {
     DAVA::Set<DAVA::NMaterial*> materials;
-    SceneHelper::EnumerateMaterials(curScene, materials);
+    DAVA::SceneHelper::EnumerateMaterials(curScene, materials);
     for (auto mat : materials)
     {
         if (mat->ContainsTexture(texture))
@@ -950,7 +952,7 @@ void TextureBrowser::ConvertModifiedTextures(bool)
 
 void TextureBrowser::ConvertTaggedTextures()
 {
-    REGlobal::GetInvoker()->Invoke(REGlobal::ConvertTaggedTextures.ID);
+    DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ConvertTaggedTextures.ID);
 }
 
 void TextureBrowser::ConvertMultipleTextures(eTextureConvertMode convertMode)
@@ -1030,7 +1032,7 @@ void TextureBrowser::convertStatusQueue(int curJob, int jobCount)
     }
 }
 
-void TextureBrowser::setScene(SceneEditor2* scene)
+void TextureBrowser::setScene(DAVA::SceneEditor2* scene)
 {
     if (scene != curScene)
     {
@@ -1061,7 +1063,7 @@ void TextureBrowser::setScene(SceneEditor2* scene)
     }
 }
 
-void TextureBrowser::sceneActivated(SceneEditor2* scene)
+void TextureBrowser::sceneActivated(DAVA::SceneEditor2* scene)
 {
     if (isVisible())
     {
@@ -1077,7 +1079,7 @@ void TextureBrowser::sceneActivated(SceneEditor2* scene)
     }
 }
 
-void TextureBrowser::sceneDeactivated(SceneEditor2* scene)
+void TextureBrowser::sceneDeactivated(DAVA::SceneEditor2* scene)
 {
     if (curScene == scene)
     {
@@ -1087,26 +1089,25 @@ void TextureBrowser::sceneDeactivated(SceneEditor2* scene)
 
 void TextureBrowser::OnSelectionChanged(const DAVA::Any& selectionAny)
 {
-    if (selectionAny.CanGet<SelectableGroup>())
+    if (selectionAny.CanGet<DAVA::SelectableGroup>())
     {
-        const SelectableGroup& selection = selectionAny.Get<SelectableGroup>();
+        const DAVA::SelectableGroup& selection = selectionAny.Get<DAVA::SelectableGroup>();
         textureListModel->setHighlight(selection);
     }
     else
     {
-        textureListModel->setHighlight(SelectableGroup());
+        textureListModel->setHighlight(DAVA::SelectableGroup());
     }
 }
 
-void TextureBrowser::OnCommandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
+void TextureBrowser::OnCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification)
 {
     if (curScene != scene)
     {
         return;
     }
 
-    static const DAVA::Vector<DAVA::uint32> commandIds = { CMDID_ENTITY_ADD, CMDID_ENTITY_REMOVE, CMDID_INSP_DYNAMIC_MODIFY };
-    if (commandNotification.MatchCommandIDs(commandIds))
+    if (commandNotification.MatchCommandTypes<DAVA::EntityAddCommand, DAVA::EntityRemoveCommand, DAVA::InspMemberModifyCommand>())
     {
         Update();
     }
@@ -1131,7 +1132,7 @@ void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor
         DAVA::Vector<DAVA::Texture*> reloadTextures;
         reloadTextures.push_back(texture);
 
-        REGlobal::GetInvoker()->Invoke(REGlobal::ReloadTextures.ID, reloadTextures);
+        DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
         setTexture(texture, descriptor);
     }
 }

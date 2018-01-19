@@ -31,7 +31,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LegacySupportModule)
 void LegacySupportModule::PostInit()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     ConvertSettingsIfNeeded(accessor->GetPropertiesHolder(), accessor);
@@ -42,9 +41,9 @@ void LegacySupportModule::PostInit()
     InitMainWindow();
 }
 
-void LegacySupportModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void LegacySupportModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalData = accessor->GetGlobalContext();
     projectDataWrapper.SetListener(nullptr);
@@ -54,13 +53,13 @@ void LegacySupportModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
     project = nullptr;
 }
 
-void LegacySupportModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void LegacySupportModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     using namespace DAVA;
-    using namespace TArc;
+
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
-    QWidget* window = GetUI()->GetWindow(DAVA::TArc::mainWindowKey);
+    QWidget* window = GetUI()->GetWindow(DAVA::mainWindowKey);
     MainWindow* mainWindow = qobject_cast<MainWindow*>(window);
     DVASSERT(mainWindow != nullptr);
     MainWindow::ProjectView* projectView = mainWindow->GetProjectView();
@@ -79,17 +78,16 @@ void LegacySupportModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, 
 void LegacySupportModule::InitMainWindow()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     MainWindow* mainWindow = new MainWindow(GetAccessor(), GetUI(), GetInvoker());
 
     String title = Version::CreateAppVersion("QuickEd");
     mainWindow->SetEditorTitle(QString::fromStdString(title));
 
-    GetUI()->InjectWindow(DAVA::TArc::mainWindowKey, mainWindow);
+    GetUI()->InjectWindow(DAVA::mainWindowKey, mainWindow);
 
     QString toolbarName = "Main Toolbar";
     ActionPlacementInfo toolbarTogglePlacement(CreateMenuPoint(QList<QString>() << "View"
                                                                                 << "Toolbars"));
-    GetUI()->DeclareToolbar(DAVA::TArc::mainWindowKey, toolbarTogglePlacement, toolbarName);
+    GetUI()->DeclareToolbar(DAVA::mainWindowKey, toolbarTogglePlacement, toolbarName);
 }

@@ -50,7 +50,7 @@ PropertiesModel::~PropertiesModel()
     propertiesUpdater.Abort();
 }
 
-void PropertiesModel::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+void PropertiesModel::SetAccessor(DAVA::ContextAccessor* accessor_)
 {
     accessor = accessor_;
     BindFields();
@@ -179,7 +179,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
     case Qt::BackgroundRole:
         if (property->GetType() == AbstractProperty::TYPE_HEADER)
         {
-            return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetViewLineAlternateColor();
+            return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetViewLineAlternateColor();
         }
         break;
 
@@ -202,7 +202,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
     {
         if (property->IsOverriddenLocally() || property->IsReadOnly())
         {
-            return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetChangedPropertyColor();
+            return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetChangedPropertyColor();
         }
         if (controlNode)
         {
@@ -212,13 +212,13 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
                 bool setByStyle = controlNode->GetControl()->GetStyledPropertySet().test(propertyIndex);
                 if (setByStyle)
                 {
-                    return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetStyleSheetNodeColor();
+                    return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetStyleSheetNodeColor();
                 }
             }
         }
         if (flags & AbstractProperty::EF_INHERITED)
         {
-            return accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetPrototypeColor();
+            return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetPrototypeColor();
         }
     }
     }
@@ -412,7 +412,7 @@ void PropertiesModel::OnStylePropertyChanged(DAVA::UIControl* control, DAVA::UIC
 
 void PropertiesModel::ChangeProperty(AbstractProperty* property, const Any& value)
 {
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     DVASSERT(documentData != nullptr);
@@ -443,7 +443,7 @@ void PropertiesModel::ChangeProperty(AbstractProperty* property, const Any& valu
 
 void PropertiesModel::ResetProperty(AbstractProperty* property)
 {
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
     DVASSERT(activeContext != nullptr);
     DocumentData* documentData = activeContext->GetData<DocumentData>();
     DVASSERT(documentData != nullptr);
@@ -557,13 +557,13 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
 
     if (val.CanGet<String>())
     {
-        return DAVA::TArc::UnescapeString(StringToQString(val.Get<String>()));
+        return DAVA::UnescapeString(StringToQString(val.Get<String>()));
     }
 
     if (val.CanGet<WideString>())
     {
         DVASSERT(false);
-        return DAVA::TArc::UnescapeString(WideStringToQString(val.Get<WideString>()));
+        return DAVA::UnescapeString(WideStringToQString(val.Get<WideString>()));
     }
 
     if (val.CanGet<FastName>())
@@ -587,7 +587,7 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
 
     if (val.CanGet<Color>())
     {
-        return QColorToHex(DAVA::TArc::ColorToQColor(val.Get<Color>()));
+        return QColorToHex(DAVA::ColorToQColor(val.Get<Color>()));
     }
 
     if (val.CanGet<Vector4>())
@@ -675,7 +675,6 @@ void PropertiesModel::OnPackageChanged(const DAVA::Any& /*package*/)
 void PropertiesModel::BindFields()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     fieldBinder.reset(new FieldBinder(accessor));
     {

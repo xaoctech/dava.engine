@@ -2,7 +2,7 @@
 
 #include <TArc/DataProcessing/SettingsNode.h>
 
-class PreferencesData : public DAVA::TArc::SettingsNode
+class PreferencesData : public DAVA::SettingsNode
 {
 public:
     bool IsGuidesEnabled() const;
@@ -13,5 +13,5 @@ private:
     void SetGuidesEnabled(bool value);
     bool guidesEnabled = true;
 
-    DAVA_VIRTUAL_REFLECTION(PreferencesData, DAVA::TArc::SettingsNode);
+    DAVA_VIRTUAL_REFLECTION(PreferencesData, DAVA::SettingsNode);
 };

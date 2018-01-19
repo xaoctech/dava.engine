@@ -13,8 +13,6 @@ class QKeySequenceEdit;
 
 namespace DAVA
 {
-namespace TArc
-{
 class UIManager;
 class ContextAccessor;
 class ShortcutsModel;
@@ -66,5 +64,4 @@ private:
 
     DAVA_REFLECTION(ActionManagementDialog);
 };
-} // namespace TArc
 } // namespace DAVA

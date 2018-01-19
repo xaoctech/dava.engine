@@ -10,7 +10,7 @@
 
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockListener.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 #include <gmock/gmock.h>
 
@@ -28,7 +28,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
     DAVA_TEST (OpenEmptyLastProject)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace ::testing;
 
         TestHelpers::ClearTestFolder();
@@ -43,7 +43,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
     DAVA_TEST (CreateNewProject)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace ::testing;
         using namespace TestHelpers;
 
@@ -67,7 +67,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
     DAVA_TEST (CloseProject)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace ::testing;
         using namespace TestHelpers;
 
@@ -87,14 +87,14 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
     DAVA_TEST (OpenLastProject)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace ::testing;
 
         wrapper = GetAccessor()->CreateWrapper(DAVA::ReflectedTypeDB::Get<ProjectData>());
         wrapper.SetListener(&listener);
 
         EXPECT_CALL(listener, OnDataChanged(wrapper, _))
-        .WillOnce(Invoke([this](const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+        .WillOnce(Invoke([this](const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
                          {
                              TEST_VERIFY(wrapper.HasData() == true);
                              ProjectData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectData>();
@@ -109,7 +109,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
     DAVA_TEST (FailCloseProject)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace ::testing;
         using namespace TestHelpers;
 
@@ -140,7 +140,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
         EXPECT_CALL(*GetMockInvoker(), Invoke(QEGlobal::CloseAllDocuments.ID));
 
         EXPECT_CALL(listener, OnDataChanged(wrapper, _))
-        .WillOnce(Invoke([this](const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+        .WillOnce(Invoke([this](const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
                          {
                              TEST_VERIFY(wrapper.HasData() == false);
                              ProjectData* data = GetAccessor()->GetGlobalContext()->GetData<ProjectData>();
@@ -148,12 +148,12 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
                              TEST_VERIFY(GetAccessor()->GetContextCount() == 0);
                          }));
 
-        QWidget* widget = GetWindow(DAVA::TArc::mainWindowKey);
+        QWidget* widget = GetWindow(DAVA::mainWindowKey);
         widget->close();
     }
 
     const QString closeProjectActionName = "Close project";
 
-    DAVA::TArc::DataWrapper wrapper;
-    DAVA::TArc::MockListener listener;
+    DAVA::DataWrapper wrapper;
+    DAVA::MockListener listener;
 };

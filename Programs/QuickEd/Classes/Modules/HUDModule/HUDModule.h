@@ -22,8 +22,8 @@ private:
     void OnSelectionByRectFinished();
     void OnSelectedRectChanged(const DAVA::Rect& rect);
 
-    DAVA::TArc::DataWrapper documentDataWrapper;
+    DAVA::DataWrapper documentDataWrapper;
     DAVA::Set<PackageBaseNode*> selectionByRectCache;
 
-    DAVA_VIRTUAL_REFLECTION(HUDModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(HUDModule, DAVA::ClientModule);
 };

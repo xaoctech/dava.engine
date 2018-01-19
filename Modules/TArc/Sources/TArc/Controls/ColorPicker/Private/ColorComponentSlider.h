@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ValueSlider;
 class GradientSlider;
 class ColorComponentSlider : public QWidget
@@ -33,5 +31,4 @@ private:
     QPointer<ValueSlider> value;
     QPointer<GradientSlider> gradient;
 };
-}
 }

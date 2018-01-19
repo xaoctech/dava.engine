@@ -1,13 +1,17 @@
 #pragma once
 
-#include <QWidget>
-#include <QMimeData>
-#include <qlineedit.h>
-#include <qtoolbutton.h>
 #include "SelectPathWidgetBase.h"
 
+#include <QWidget>
+#include <QMimeData>
+#include <QLineEdit>
+#include <QToolButton>
+
 #include "DAVAEngine.h"
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 
 class SelectEntityPathWidget : public SelectPathWidgetBase
 {
@@ -18,13 +22,13 @@ public:
 
     ~SelectEntityPathWidget();
 
-    DAVA::Entity* GetOutputEntity(SceneEditor2*);
+    DAVA::Entity* GetOutputEntity(DAVA::SceneEditor2*);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event);
 
-    DAVA::Entity* ConvertQMimeDataFromFilePath(SceneEditor2* sceneEditor = NULL);
-    DAVA::Entity* ConvertFromMimeData(SceneEditor2* sceneEditor);
+    DAVA::Entity* ConvertQMimeDataFromFilePath(DAVA::SceneEditor2* sceneEditor = NULL);
+    DAVA::Entity* ConvertFromMimeData(DAVA::SceneEditor2* sceneEditor);
 
     void SetEntities(DAVA::Entity* entity, bool perfromRetain);
 

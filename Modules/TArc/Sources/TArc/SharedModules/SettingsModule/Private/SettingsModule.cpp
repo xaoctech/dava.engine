@@ -16,16 +16,14 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace SettingsModuleDetails
 {
-class SettingsContainerNode : public DataNode
+class SettingsContainerNode : public TArcDataNode
 {
 public:
     Reflection settingsContainer;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SettingsContainerNode, DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SettingsContainerNode, TArcDataNode)
     {
         ReflectionRegistrator<SettingsContainerNode>::Begin()
         .Field("container", &SettingsContainerNode::settingsContainer)
@@ -43,7 +41,7 @@ void SettingsModule::PostInit()
 
     SettingsModuleDetails::SettingsContainerNode* node = new SettingsModuleDetails::SettingsContainerNode();
     node->settingsContainer = Reflection::Create(ReflectedObject(manager->settings.get()));
-    accessor->GetGlobalContext()->CreateData(std::unique_ptr<DataNode>(node));
+    accessor->GetGlobalContext()->CreateData(std::unique_ptr<TArcDataNode>(node));
 
     executor.DelayedExecute([this]() {
         UI* ui = GetUI();
@@ -51,7 +49,7 @@ void SettingsModule::PostInit()
         {
             QtAction* settingsAction = new QtAction(GetAccessor(), QIcon(":/TArc/Resources/settings.png"), "Settings");
             settingsAction->setMenuRole(QAction::PreferencesRole);
-            ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, settingsAction);
+            ui->AddAction(DAVA::mainWindowKey, placementInfo, settingsAction);
             connections.AddConnection(settingsAction, &QAction::triggered, DAVA::MakeFunction(this, &SettingsModule::ShowSettings));
         }
     });
@@ -69,7 +67,7 @@ void SettingsModule::ShowSettings()
         manager->ResetToDefault();
     });
 
-    GetUI()->ShowModalDialog(DAVA::TArc::mainWindowKey, &settingsDialog);
+    GetUI()->ShowModalDialog(DAVA::mainWindowKey, &settingsDialog);
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SettingsModule)
@@ -88,6 +86,4 @@ void InitColorPickerOptions(bool initForHiddenUsage)
         EmplaceTypeMeta<ColorPickerSettings>(M::HiddenField());
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

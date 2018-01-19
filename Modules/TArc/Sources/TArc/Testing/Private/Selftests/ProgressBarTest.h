@@ -20,9 +20,8 @@
 namespace ProgressBarTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
-WindowKey wndKey = FastName("ProgressBarTestWindow");
+WindowKey wndKey = WindowKey("ProgressBarTestWindow");
 
 class ProgressBarTestData : public ReflectionBase
 {

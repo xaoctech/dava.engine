@@ -21,14 +21,12 @@
 #define DECLARE_CONTROL_PARAMS(Fields) \
     struct Params : BaseParams\
     { \
-        Params(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, const DAVA::TArc::WindowKey& wndKey) \
+        Params(DAVA::ContextAccessor* accessor, DAVA::UI* ui, const DAVA::WindowKey& wndKey) \
             : BaseParams(accessor, ui, wndKey){} \
-        DAVA::TArc::ControlDescriptorBuilder<Fields> fields; \
+        DAVA::ControlDescriptorBuilder<Fields> fields; \
     };
 
 namespace DAVA
-{
-namespace TArc
 {
 class ControlProxy
 {
@@ -55,7 +53,7 @@ public:
 
         ContextAccessor* accessor = nullptr;
         UI* ui = nullptr;
-        WindowKey wndKey = WindowKey(FastName(""));
+        WindowKey wndKey = WindowKey("");
     };
     ControlProxyImpl(const BaseParams& params, const ControlDescriptor& descriptor_, DataWrappersProcessor* wrappersProcessor, Reflection model_, QWidget* parent)
         : TBase(parent)
@@ -101,8 +99,7 @@ public:
 
     void ForceUpdate() override
     {
-        wrapper.Sync(false);
-        OnDataChanged(wrapper, Vector<Any>());
+        wrapper.Sync(true);
     }
 
     void TearDown() override
@@ -229,20 +226,20 @@ protected:
     template <typename Enum>
     bool IsValueReadOnly(const ControlDescriptor& descriptor, Enum valueRole, Enum readOnlyRole) const
     {
-        DAVA::Any constValue = descriptor.GetConstValue(valueRole);
+        Any constValue = descriptor.GetConstValue(valueRole);
         if (constValue.IsEmpty() == false)
         {
             return true;
         }
 
-        DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(valueRole));
+        Reflection fieldValue = model.GetField(descriptor.GetName(valueRole));
         DVASSERT(fieldValue.IsValid());
 
         bool readOnlyFieldValue = false;
         FastName readOnlyFieldName = descriptor.GetName(readOnlyRole);
         if (readOnlyFieldName.IsValid())
         {
-            DAVA::Reflection fieldReadOnly = model.GetField(readOnlyFieldName);
+            Reflection fieldReadOnly = model.GetField(readOnlyFieldName);
             if (fieldReadOnly.IsValid())
             {
                 readOnlyFieldValue = fieldReadOnly.GetValue().Cast<bool>();
@@ -250,7 +247,7 @@ protected:
         }
 
         return fieldValue.IsReadonly() == true ||
-        fieldValue.GetMeta<DAVA::M::ReadOnly>() != nullptr ||
+        fieldValue.GetMeta<M::ReadOnly>() != nullptr ||
         readOnlyFieldValue == true;
     }
 
@@ -293,7 +290,7 @@ protected:
         const FastName& fieldName = GetFieldName(role);
         if (fieldName.IsValid() == true)
         {
-            DAVA::Reflection field = model.GetField(fieldName);
+            Reflection field = model.GetField(fieldName);
             if (field.IsValid())
             {
                 return field.GetValue().Cast<CastType>(defaultValue);
@@ -319,6 +316,4 @@ protected:
 private:
     ControlDescriptor descriptor;
 };
-
-} // namespace TArc
 } // namespace DAVA

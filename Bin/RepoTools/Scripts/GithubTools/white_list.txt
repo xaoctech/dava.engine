@@ -65,6 +65,7 @@
 /Modules/TArc
 /Modules/Tools
 /Programs
+!/Programs/REPlugins/TerrainConverter
 !/Programs/NetworkTestGame/Data
 !/Programs/NetworkTestGame/DataSource
 /RepoTools

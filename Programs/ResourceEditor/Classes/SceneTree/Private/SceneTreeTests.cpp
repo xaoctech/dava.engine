@@ -1,15 +1,16 @@
 #include "Classes/Application/ReflectionExtensions.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
-#include "Classes/SceneManager/SceneData.h"
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
 #include "Classes/SceneTree/SceneTreeModule.h"
-#include "Classes/Selection/Selectable.h"
 #include "Classes/Selection/SelectionModule.h"
-#include "Classes/Selection/SelectionData.h"
 
 #include "Classes/MockModules/MockProjectManagerModule.h"
+
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/Selectable.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/DataProcessing/AnyQMetaType.h>
 #include <TArc/SharedModules/SettingsModule/SettingsModule.h>
@@ -37,7 +38,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
     {
         QVariant sceneVariant = sceneTreeView->model()->data(index, Qt::UserRole);
         TEST_VERIFY(sceneVariant.canConvert<DAVA::Any>());
-        Selectable sceneObj(sceneVariant.value<DAVA::Any>());
+        DAVA::Selectable sceneObj(sceneVariant.value<DAVA::Any>());
         TEST_VERIFY(sceneObj.ContainsObject() == true);
 
         T* result = nullptr;
@@ -51,7 +52,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     void ForceSyncSceneTree()
     {
-        ForceSyncSceneTree(GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get());
+        ForceSyncSceneTree(GetAccessor()->GetActiveContext()->GetData<DAVA::SceneData>()->GetScene().Get());
     }
 
     static void ForceSyncSceneTree(DAVA::Scene * scene)
@@ -68,10 +69,10 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
         sceneTreeView->expandAll();
 
-        SceneEditor2* scene = ExtractObject<SceneEditor2>(rootIndex);
+        DAVA::SceneEditor2* scene = ExtractObject<DAVA::SceneEditor2>(rootIndex);
         TEST_VERIFY(scene != nullptr);
 
-        SceneEditor2* activeScene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
+        DAVA::SceneEditor2* activeScene = GetAccessor()->GetActiveContext()->GetData<DAVA::SceneData>()->GetScene().Get();
         TEST_VERIFY(scene == activeScene);
 
         DAVA::Function<QModelIndex(DAVA::Entity*, QModelIndex index)> checkEntityWithChildren = [&](DAVA::Entity* e, QModelIndex index) {
@@ -100,7 +101,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
     DAVA_TEST (SceneTreeCreationTest)
     {
         DAVA::Logger::Info("SceneTreeCreationTest start");
-        sceneTreeView = LookupSingleWidget<QTreeView>(DAVA::TArc::mainWindowKey, QStringLiteral("SceneTreeView"));
+        sceneTreeView = LookupSingleWidget<QTreeView>(DAVA::mainWindowKey, QStringLiteral("SceneTreeView"));
         TEST_VERIFY(sceneTreeView != nullptr);
         TEST_VERIFY(sceneTreeView->model() == nullptr);
         TEST_VERIFY(sceneTreeView->rootIndex().isValid() == false);
@@ -113,21 +114,20 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
         DAVA::Logger::Info("LightAndCameraTest start");
         TEST_VERIFY(sceneTreeView != nullptr);
 
-        using namespace DAVA::TArc;
         using namespace ::testing;
 
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
         ForceSyncSceneTree();
 
         auto finalStep = [this]() {
             DAVA::Logger::Info("LightAndCameraTest final step start");
             MatchEntitiesWithScene();
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
             DAVA::Logger::Info("LightAndCameraTest final step end");
         };
 
@@ -143,17 +143,16 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
         DAVA::Logger::Info("SwitchScenesTest start");
         TEST_VERIFY(sceneTreeView != nullptr);
 
-        using namespace DAVA::TArc;
         using namespace ::testing;
 
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
 
-        SceneData* sceneData = ctx->GetData<SceneData>();
+        DAVA::SceneData* sceneData = ctx->GetData<DAVA::SceneData>();
 
         DAVA::ScopedPtr<DAVA::Entity> newNode(new DAVA::Entity());
         newNode->SetName("dummyEntity");
@@ -163,7 +162,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
         auto step1 = [this]() {
             MatchEntitiesWithScene();
-            InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+            InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
             ForceSyncSceneTree();
         };
 
@@ -174,7 +173,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
         auto finalStep = [this]() {
             MatchEntitiesWithScene();
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
@@ -190,18 +189,17 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
     {
         TEST_VERIFY(sceneTreeView != nullptr);
 
-        using namespace DAVA::TArc;
         using namespace ::testing;
 
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
 
-        SceneData* sceneData = ctx->GetData<SceneData>();
-        SceneEditor2* scene = sceneData->GetScene().Get();
+        DAVA::SceneData* sceneData = ctx->GetData<DAVA::SceneData>();
+        DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
         DAVA::ScopedPtr<DAVA::Entity> newNode(new DAVA::Entity());
         newNode->SetName("dummyEntity");
@@ -239,7 +237,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
         auto finalStep = [=]() {
             entityForDelete->Release();
             MatchEntitiesWithScene();
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
@@ -251,17 +249,15 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     DAVA_TEST (ExcludeFromSelectionOnCollapseTest)
     {
-        using namespace DAVA::TArc;
-
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
 
-        SceneData* sceneData = ctx->GetData<SceneData>();
-        SceneEditor2* scene = sceneData->GetScene().Get();
+        DAVA::SceneData* sceneData = ctx->GetData<DAVA::SceneData>();
+        DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
         DAVA::ScopedPtr<DAVA::Entity> dummyNode(new DAVA::Entity());
         dummyNode->SetName("dummyEntity");
@@ -306,9 +302,9 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
             QRect embeddetItemRect = sceneTreeView->visualRect(embeddedIndex);
             QTest::mouseClick(sceneTreeView->viewport(), Qt::LeftButton, Qt::ControlModifier, embeddetItemRect.center());
 
-            SelectionData* selectionData = GetAccessor()->GetActiveContext()->GetData<SelectionData>();
+            DAVA::SelectionData* selectionData = GetAccessor()->GetActiveContext()->GetData<DAVA::SelectionData>();
             {
-                SelectableGroup currentSelection = selectionData->GetSelection();
+                DAVA::SelectableGroup currentSelection = selectionData->GetSelection();
                 TEST_VERIFY(currentSelection.GetSize() == 2);
                 TEST_VERIFY(currentSelection.ContainsObject(DAVA::Any(rawDummyPointer)) == true);
                 TEST_VERIFY(currentSelection.ContainsObject(DAVA::Any(rawEmbeddedPointer)) == true);
@@ -317,13 +313,13 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
             QTest::mouseClick(sceneTreeView->viewport(), Qt::LeftButton, Qt::KeyboardModifiers(), clickToExpandPoint);
 
             {
-                SelectableGroup currentSelection = selectionData->GetSelection();
+                DAVA::SelectableGroup currentSelection = selectionData->GetSelection();
                 TEST_VERIFY(currentSelection.GetSize() == 1);
                 TEST_VERIFY(currentSelection.ContainsObject(DAVA::Any(rawDummyPointer)) == true);
                 TEST_VERIFY(currentSelection.ContainsObject(DAVA::Any(rawEmbeddedPointer)) == false);
             }
 
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
@@ -334,17 +330,15 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     DAVA_TEST (FiltrationTest)
     {
-        using namespace DAVA::TArc;
-
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
 
-        SceneData* sceneData = ctx->GetData<SceneData>();
-        SceneEditor2* scene = sceneData->GetScene().Get();
+        DAVA::SceneData* sceneData = ctx->GetData<DAVA::SceneData>();
+        DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
         DAVA::ScopedPtr<DAVA::Entity> dummyNode(new DAVA::Entity());
         dummyNode->SetName("dummyRoot");
@@ -375,7 +369,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
             MatchEntitiesWithScene();
 
-            QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::TArc::mainWindowKey, "SceneTreeFilterTextEdit");
+            QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::mainWindowKey, "SceneTreeFilterTextEdit");
             QTest::keyClicks(lineEdit, "Entity");
             QTest::keyClick(lineEdit, Qt::Key_Enter);
         };
@@ -400,13 +394,13 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
             TEST_VERIFY(visibleEntities.count(rawFilterMatchedPointer) == 1);
             TEST_VERIFY(visibleEntities.count(rawDummyPointer) == 1);
 
-            QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::TArc::mainWindowKey, "SceneTreeFilterTextEdit");
+            QLineEdit* lineEdit = LookupSingleWidget<QLineEdit>(DAVA::mainWindowKey, "SceneTreeFilterTextEdit");
             lineEdit->clear();
         };
 
         auto step3 = [this]() {
             MatchEntitiesWithScene();
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
@@ -421,7 +415,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     QToolButton* LookupActionButton(const QString& buttonTooltip)
     {
-        QToolBar* sceneTreeToolBar = LookupSingleWidget<QToolBar>(DAVA::TArc::mainWindowKey, "SceneTreeToolBar");
+        QToolBar* sceneTreeToolBar = LookupSingleWidget<QToolBar>(DAVA::mainWindowKey, "SceneTreeToolBar");
         QList<QToolButton*> buttons = sceneTreeToolBar->findChildren<QToolButton*>();
 
         QToolButton* resultButton = nullptr;
@@ -457,17 +451,15 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     DAVA_TEST (InverseExpandingOfSelectedTest)
     {
-        using namespace DAVA::TArc;
-
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
 
-        SceneData* sceneData = ctx->GetData<SceneData>();
-        SceneEditor2* scene = sceneData->GetScene().Get();
+        DAVA::SceneData* sceneData = ctx->GetData<DAVA::SceneData>();
+        DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
         auto creator = [scene](DAVA::int32 index) {
             DAVA::ScopedPtr<DAVA::Entity> child(new DAVA::Entity());
@@ -551,7 +543,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
         };
 
         auto step5 = [this]() {
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())
@@ -572,17 +564,15 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
 
     DAVA_TEST (RemoveSelectedEntityTest)
     {
-        using namespace DAVA::TArc;
-
-        ContextAccessor* accessor = GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
-        InvokeOperation(REGlobal::CreateFirstSceneOperation.ID);
+        InvokeOperation(DAVA::CreateFirstSceneOperation.ID);
 
-        DataContext* ctx = accessor->GetActiveContext();
+        DAVA::DataContext* ctx = accessor->GetActiveContext();
         TEST_VERIFY(ctx != nullptr);
 
-        SceneData* sceneData = ctx->GetData<SceneData>();
-        SceneEditor2* scene = sceneData->GetScene().Get();
+        DAVA::SceneData* sceneData = ctx->GetData<DAVA::SceneData>();
+        DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
         DAVA::ScopedPtr<DAVA::Entity> child(new DAVA::Entity());
         child->SetName("EntityForRemove");
@@ -613,7 +603,7 @@ DAVA_TARC_TESTCLASS(SceneTreeTests)
             }
 
             MatchEntitiesWithScene();
-            InvokeOperation(REGlobal::CloseAllScenesOperation.ID, false);
+            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
         EXPECT_CALL(*this, AfterWrappersSync())

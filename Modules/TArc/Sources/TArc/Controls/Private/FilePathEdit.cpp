@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 FilePathEdit::FilePathEdit(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QWidget>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -57,7 +55,7 @@ void FilePathEdit::EditingFinished()
         const FastName& fieldName = GetFieldName(Fields::Value);
         if (fieldName.IsValid() == true)
         {
-            DAVA::Reflection field = model.GetField(fieldName);
+            Reflection field = model.GetField(fieldName);
             if (field.IsValid())
             {
                 currenRawValue = field.GetValue();
@@ -145,7 +143,7 @@ void FilePathEdit::UpdateControl(const ControlDescriptor& descriptor)
 
         if (textChanged)
         {
-            DAVA::Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Value));
+            Reflection fieldValue = model.GetField(descriptor.GetName(Fields::Value));
             DVASSERT(fieldValue.IsValid());
             Any value = fieldValue.GetValue();
             UpdateControlValue(value);
@@ -243,7 +241,7 @@ void FilePathEdit::ShowHint(const QString& message)
     controlParams.ui->ShowNotification(controlParams.wndKey, notif);
 }
 
-void FilePathEdit::UpdateControlValue(const DAVA::Any& value)
+void FilePathEdit::UpdateControlValue(const Any& value)
 {
     if (value.CanGet<FilePath>())
     {
@@ -254,6 +252,4 @@ void FilePathEdit::UpdateControlValue(const DAVA::Any& value)
         edit->setText(QString::fromStdString(value.Cast<String>()));
     }
 }
-
-} // namespace TArc
 } // namespace DAVA
