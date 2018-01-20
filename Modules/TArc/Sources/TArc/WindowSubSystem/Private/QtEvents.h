@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class QtOverlayWidgetVisibilityChange : public QEvent
 {
 public:
@@ -28,5 +26,4 @@ inline bool QtOverlayWidgetVisibilityChange::IsVisible() const
 {
     return isVisible;
 }
-} // namespace TArc
 } // namespace DAVA

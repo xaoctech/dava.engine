@@ -7,7 +7,7 @@
 class MouseEditingSystem : public BaseEditorSystem
 {
 public:
-    MouseEditingSystem(DAVA::TArc::ContextAccessor* accessor);
+    MouseEditingSystem(DAVA::ContextAccessor* accessor);
     DAVA::Signal<> duplicateRequest;
 
 private:

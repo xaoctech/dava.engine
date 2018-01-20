@@ -3,7 +3,7 @@
 #include "Modules/ProjectModule/ProjectData.h"
 #include "UI/mainwindow.h"
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Core/OperationInvoker.h>
 
@@ -23,11 +23,8 @@ namespace DAVA
 {
 class AssetCacheClient;
 class YamlNode;
-namespace TArc
-{
 class ContextAccessor;
 class OperationInvoker;
-}
 }
 
 DAVA_DEPRECATED(class Project)
@@ -38,7 +35,7 @@ public:
     static const QString& Get3dFileExtension();
     static const QString& GetUiFileExtension();
 
-    Project(MainWindow::ProjectView * view, DAVA::TArc::ContextAccessor * accessor);
+    Project(MainWindow::ProjectView * view, DAVA::ContextAccessor * accessor);
     ~Project();
 
     QString GetProjectPath() const;
@@ -72,6 +69,6 @@ private:
     std::unique_ptr<EditorFontSystem> editorFontSystem;
     std::unique_ptr<EditorLocalizationSystem> editorLocalizationSystem;
 
-    DAVA::TArc::QtConnections connections;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::QtConnections connections;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

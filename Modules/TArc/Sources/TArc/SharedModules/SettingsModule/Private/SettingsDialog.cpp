@@ -19,8 +19,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace SettingsDialogDetails
 {
 const String settingsDialogPropertiesNode = "SettingsDialog";
@@ -147,7 +145,7 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     QVBoxLayout* dlgLayout = new QVBoxLayout();
     dlgLayout->setMargin(5);
 
-    PropertiesView::Params propertiesViewParams(DAVA::TArc::mainWindowKey);
+    PropertiesView::Params propertiesViewParams(DAVA::mainWindowKey);
     propertiesViewParams.accessor = params.accessor;
     propertiesViewParams.isInDevMode = false;
     propertiesViewParams.showToolBar = false;
@@ -166,7 +164,7 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     dlgLayout->addLayout(buttonsLayout);
     Reflection refModel = Reflection::Create(ReflectedObject(this));
     {
-        ReflectedPushButton::Params buttonParams(params.accessor, params.ui, DAVA::TArc::mainWindowKey);
+        ReflectedPushButton::Params buttonParams(params.accessor, params.ui, DAVA::mainWindowKey);
         buttonParams.fields[ReflectedPushButton::Fields::Text] = "resetToDefaultText";
         buttonParams.fields[ReflectedPushButton::Fields::Clicked] = "resetToDefault";
         ReflectedPushButton* button = new ReflectedPushButton(buttonParams, params.accessor, refModel, this);
@@ -176,7 +174,7 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     buttonsLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     {
-        ReflectedPushButton::Params buttonParams(params.accessor, params.ui, DAVA::TArc::mainWindowKey);
+        ReflectedPushButton::Params buttonParams(params.accessor, params.ui, DAVA::mainWindowKey);
         buttonParams.fields[ReflectedPushButton::Fields::Text] = "acceptButtonText";
         buttonParams.fields[ReflectedPushButton::Fields::Clicked] = "accept";
         ReflectedPushButton* button = new ReflectedPushButton(buttonParams, params.accessor, refModel, this);
@@ -195,7 +193,7 @@ void SettingsDialog::OnResetPressed()
     dlgParams.buttons = ModalMessageParams::Buttons(ModalMessageParams::Yes | ModalMessageParams::No);
     dlgParams.defaultButton = ModalMessageParams::No;
 
-    if (params.ui->ShowModalMessage(DAVA::TArc::mainWindowKey, dlgParams) == ModalMessageParams::Yes)
+    if (params.ui->ShowModalMessage(DAVA::mainWindowKey, dlgParams) == ModalMessageParams::Yes)
     {
         resetSettings.Emit();
     }
@@ -210,6 +208,4 @@ DAVA_REFLECTION_IMPL(SettingsDialog)
     .Field("acceptButtonText", [](SettingsDialog*) { return "Ok"; }, nullptr)
     .End();
 }
-
-} // namespace TArc
 } // namespace DAVA

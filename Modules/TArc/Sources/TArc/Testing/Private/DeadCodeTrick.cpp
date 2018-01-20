@@ -29,11 +29,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 bool AvoidTestsStriping()
 {
     return true;
 }
-} // namespace TArc
 } // namespace DAVA

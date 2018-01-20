@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ActionManagementModule : public ClientModule
 {
 protected:
@@ -21,5 +19,4 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(ActionManagementModule, ClientModule);
 };
-} // namespace TArc
 } // namespace DAVA

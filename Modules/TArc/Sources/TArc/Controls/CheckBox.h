@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class CheckBox final : public ControlProxyImpl<QCheckBox>
 {
 public:
@@ -44,5 +42,4 @@ private:
     eContainedDataType dataType = eContainedDataType::TYPE_NONE;
     QtConnections connections;
 };
-} // namespace TArc
 } // namespace DAVA

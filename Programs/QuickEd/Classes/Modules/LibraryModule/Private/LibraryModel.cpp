@@ -30,7 +30,7 @@
 
 using namespace DAVA;
 
-LibraryModel::LibraryModel(DAVA::TArc::UI* ui_, DAVA::TArc::ContextAccessor* accessor_, QObject* parent)
+LibraryModel::LibraryModel(DAVA::UI* ui_, DAVA::ContextAccessor* accessor_, QObject* parent)
     : QStandardItemModel(parent)
     , defaultControlsRootItem(nullptr)
     , controlsRootItem(nullptr)
@@ -170,7 +170,7 @@ QVariant LibraryModel::data(const QModelIndex& index, int role) const
         QStandardItem* item = itemFromIndex(index);
         if (item->parent() == nullptr)
         {
-            DAVA::TArc::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
+            DAVA::ThemesSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>();
             return settings->GetViewLineAlternateColor();
         }
     }

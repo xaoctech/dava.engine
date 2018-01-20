@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T, typename TEditor, typename TComponent>
 class kDComponentValue : public BaseComponentValue
 {
@@ -55,6 +53,4 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(kDComponentValue, BaseComponentValue);
 };
-
-} // namespace TArc
 } // namespace DAVA

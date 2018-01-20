@@ -11,22 +11,25 @@
 
 #include <QPersistentModelIndex>
 
-class SceneTreeModelV2;
-class SceneTreeFilterBase;
+namespace DAVA
+{
 class BaseEntityCreator;
+class SceneTreeFilterBase;
 class EntityCreator;
+} // namespace DAVA
 
+class SceneTreeModelV2;
 class QItemSelectionModel;
 class QMenu;
 class QModelIndex;
 
-class SceneTreeModule : public DAVA::TArc::ClientModule
+class SceneTreeModule : public DAVA::ClientModule
 {
 private:
     ~SceneTreeModule() override;
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
-    void OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
+    void OnContextWillBeChanged(DAVA::DataContext* current, DAVA::DataContext* newOne) override;
 
     void PostInit() override;
 
@@ -38,8 +41,8 @@ private:
     void OnSceneTreeSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected, QItemSelectionModel* selectionModel);
     void OnSyncRequested();
 
-    void BuildCreateMenu(BaseEntityCreator* baseCreator, QMenu* menu);
-    void OnAddEntityClicked(EntityCreator* creator);
+    void BuildCreateMenu(DAVA::BaseEntityCreator* baseCreator, QMenu* menu);
+    void OnAddEntityClicked(DAVA::EntityCreator* creator);
     void CollapseAll();
     void ExpandAll();
     void OnInverseCollapsing();
@@ -53,7 +56,7 @@ private:
     void ReloadTexturesInSelected();
 
     // Filtration
-    const DAVA::Vector<SceneTreeFilterBase*>& GetFiltersChain() const;
+    const DAVA::Vector<DAVA::SceneTreeFilterBase*>& GetFiltersChain() const;
     void AddFilterToChain(const DAVA::Any& filterTypeKey);
     void RemoveFilterFromChain(const DAVA::Any& filterIndex);
 
@@ -61,10 +64,10 @@ private:
     void SaveCurrentChainAsFilterType(QString filterName) const;
 
 private:
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::QtDelayedExecutor executor;
-    DAVA::TArc::QtConnections connections;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::QtDelayedExecutor executor;
+    DAVA::QtConnections connections;
     bool inSelectionSync = false;
 
-    DAVA_VIRTUAL_REFLECTION(SceneTreeModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(SceneTreeModule, DAVA::ClientModule);
 };

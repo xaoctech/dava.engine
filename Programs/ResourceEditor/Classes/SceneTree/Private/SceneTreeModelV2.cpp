@@ -2,22 +2,22 @@
 #include "Classes/SceneTree/Private/SceneTreeSystem.h"
 #include "Classes/SceneTree/Private/SceneTreeRoles.h"
 
-#include "Classes/DragNDropSupport/ReflectedMimeData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
+#include <REPlatform/DataNodes/ReflectedMimeData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/DataProcessing/AnyQMetaType.h>
 
 #include <Debug/DVAssert.h>
 #include <Utils/Utils.h>
 
-SceneTreeModelV2::SceneTreeModelV2(DAVA::Scene* scene, DAVA::TArc::ContextAccessor* accessor)
+SceneTreeModelV2::SceneTreeModelV2(DAVA::Scene* scene, DAVA::ContextAccessor* accessor)
     : QAbstractItemModel(nullptr)
     , objectsPool(10000, 5)
     , traits(accessor)
 {
     DVASSERT(scene != nullptr);
     rootItem = objectsPool.RequestObject();
-    rootItem->object = Selectable(DAVA::Any(scene));
+    rootItem->object = DAVA::Selectable(DAVA::Any(scene));
     mapping.emplace(rootItem->object, rootItem);
 }
 
@@ -29,7 +29,7 @@ SceneTreeModelV2::~SceneTreeModelV2()
 bool SceneTreeModelV2::canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
                                        const QModelIndex& parent) const
 {
-    const ReflectedMimeData* mimeData = dynamic_cast<const ReflectedMimeData*>(data);
+    const DAVA::ReflectedMimeData* mimeData = dynamic_cast<const DAVA::ReflectedMimeData*>(data);
     if (mimeData == nullptr)
     {
         return false;
@@ -41,13 +41,13 @@ bool SceneTreeModelV2::canDropMimeData(const QMimeData* data, Qt::DropAction act
 bool SceneTreeModelV2::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column,
                                     const QModelIndex& parent)
 {
-    const ReflectedMimeData* mimeData = dynamic_cast<const ReflectedMimeData*>(data);
+    const DAVA::ReflectedMimeData* mimeData = dynamic_cast<const DAVA::ReflectedMimeData*>(data);
     if (mimeData == nullptr)
     {
         return false;
     }
 
-    return traits.Drop(mimeData, action, MapItem(parent)->object, row, static_cast<SceneEditor2*>(GetScene()));
+    return traits.Drop(mimeData, action, MapItem(parent)->object, row, static_cast<DAVA::SceneEditor2*>(GetScene()));
 }
 
 QMimeData* SceneTreeModelV2::mimeData(const QModelIndexList& indexes) const
@@ -57,7 +57,7 @@ QMimeData* SceneTreeModelV2::mimeData(const QModelIndexList& indexes) const
         return nullptr;
     }
 
-    DAVA::Vector<Selectable> objects;
+    DAVA::Vector<DAVA::Selectable> objects;
     objects.reserve(indexes.size());
 
     foreach (const QModelIndex& index, indexes)
@@ -66,7 +66,7 @@ QMimeData* SceneTreeModelV2::mimeData(const QModelIndexList& indexes) const
     }
 
     const DAVA::ReflectedType* frontType = objects.front().GetObjectType();
-    for (const Selectable& obj : objects)
+    for (const DAVA::Selectable& obj : objects)
     {
         if (frontType != obj.GetObjectType())
         {
@@ -74,7 +74,7 @@ QMimeData* SceneTreeModelV2::mimeData(const QModelIndexList& indexes) const
         }
     }
 
-    return new ReflectedMimeData(std::move(objects));
+    return new DAVA::ReflectedMimeData(std::move(objects));
 }
 
 int SceneTreeModelV2::rowCount(const QModelIndex& parent) const
@@ -159,7 +159,7 @@ QVariant SceneTreeModelV2::data(const QModelIndex& index, int role) const
 bool SceneTreeModelV2::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     SceneTreeItemV2* item = MapItem(index);
-    return traits.SetValue(item->object, value, role, static_cast<SceneEditor2*>(GetScene()));
+    return traits.SetValue(item->object, value, role, static_cast<DAVA::SceneEditor2*>(GetScene()));
 }
 
 Qt::ItemFlags SceneTreeModelV2::flags(const QModelIndex& index) const
@@ -190,7 +190,7 @@ bool SceneTreeModelV2::canFetchMore(const QModelIndex& parent) const
         return false;
     }
 
-    auto isFetched = [this](const Selectable& object) -> bool {
+    auto isFetched = [this](const DAVA::Selectable& object) -> bool {
         return fetchedObjects.count(object);
     };
 
@@ -205,7 +205,7 @@ void SceneTreeModelV2::fetchMore(const QModelIndex& parent)
     std::sort(item->unfetchedChildren.begin(), item->unfetchedChildren.end());
 
     DAVA::int32 childCount = traits.GetChildrenCount(item->object);
-    traits.FetchMore(item->object, item->unfetchedChildren, [&](DAVA::int32 index, const Selectable& object) {
+    traits.FetchMore(item->object, item->unfetchedChildren, [&](DAVA::int32 index, const DAVA::Selectable& object) {
         beginInsertRows(parent, index, index);
 
         std::shared_ptr<SceneTreeItemV2> childItem = objectsPool.RequestObject();
@@ -251,7 +251,7 @@ Qt::DropActions SceneTreeModelV2::supportedDragActions() const
     return Qt::MoveAction | Qt::LinkAction;
 }
 
-QModelIndex SceneTreeModelV2::GetIndexByObject(const Selectable& object) const
+QModelIndex SceneTreeModelV2::GetIndexByObject(const DAVA::Selectable& object) const
 {
     auto iter = mapping.find(object);
     if (iter == mapping.end())
@@ -263,7 +263,7 @@ QModelIndex SceneTreeModelV2::GetIndexByObject(const Selectable& object) const
     return MapItem(item);
 }
 
-Selectable SceneTreeModelV2::GetObjectByIndex(const QModelIndex& index) const
+DAVA::Selectable SceneTreeModelV2::GetObjectByIndex(const QModelIndex& index) const
 {
     DVASSERT(index.isValid() == false || index.model() == this);
     SceneTreeItemV2* item = MapItem(index);
@@ -291,7 +291,7 @@ void SceneTreeModelV2::SyncChanges()
         SceneTreeTraitsManager::FetchBlocker guard(&traits);
         for (const auto& node : snapShot.removedObjects)
         {
-            for (Selectable object : node.second)
+            for (DAVA::Selectable object : node.second)
             {
                 auto iter = mapping.find(object);
                 if (iter == mapping.end())
@@ -321,7 +321,7 @@ void SceneTreeModelV2::SyncChanges()
 
     for (const auto& node : snapShot.objectsToRefetch)
     {
-        for (Selectable object : node.second)
+        for (DAVA::Selectable object : node.second)
         {
             auto iter = mapping.find(object);
             if (iter == mapping.end())
@@ -338,7 +338,7 @@ void SceneTreeModelV2::SyncChanges()
         }
     }
 
-    for (const Selectable& object : snapShot.changedObjects)
+    for (const DAVA::Selectable& object : snapShot.changedObjects)
     {
         auto iter = mapping.find(object);
         if (iter == mapping.end())

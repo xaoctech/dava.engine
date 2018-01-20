@@ -15,7 +15,7 @@ DAVA_TARC_TESTCLASS(ReflectionPathTreeTests)
     DAVA_TEST (CreationTest)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         ReflectionPathTree tree(FastName("Root"));
         TEST_VERIFY(tree.HasChildInCurrentRoot(FastName("Child1")) == false);
@@ -47,7 +47,7 @@ DAVA_TARC_TESTCLASS(ReflectionPathTreeTests)
     DAVA_TEST (RemoveTest)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         ReflectionPathTree tree(FastName("Root"));
         tree.AddLeaf(List<FastName>{ FastName("Child1"),
@@ -120,7 +120,7 @@ DAVA_TARC_TESTCLASS(ReflectionPathTreeTests)
     DAVA_TEST (SerializationTest)
     {
         using namespace DAVA;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         ReflectionPathTree tree(FastName("Root"));
         tree.AddLeaf(List<FastName>{ FastName("Child1"),

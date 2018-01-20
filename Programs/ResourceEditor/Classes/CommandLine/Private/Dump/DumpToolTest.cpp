@@ -1,21 +1,21 @@
 #include "Classes/CommandLine/DumpTool.h"
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "Classes/Utils/FileSystemUtils/FileSystemTagGuard.h"
 
-#include <TArc/Testing/TArcUnitTests.h>
+#include <REPlatform/Scene/Utils/SceneDumper.h>
+
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
 
 #include <Base/ScopedPtr.h>
-#include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
-#include <Render/TextureDescriptor.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
-#include <Scene3D/Entity.h>
-#include <Scene3D/Scene.h>
+#include <Render/TextureDescriptor.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
 
 #include <memory>
 
@@ -145,7 +145,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         }
     }
 
-    void TestLinks(SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
+    void TestLinks(DAVA::SceneDumper::eMode mode, const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs)
     {
         using namespace DAVA;
 
@@ -255,7 +255,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         };
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         TestLinks(SceneDumper::eMode::EXTENDED, { GPU_POWERVR_IOS, GPU_POWERVR_ANDROID, GPU_TEGRA, GPU_MALI, GPU_ADRENO, GPU_DX11 });
 
@@ -288,7 +288,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         };
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         TestLinks(SceneDumper::eMode::REQUIRED, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_TEGRA });
 
@@ -322,7 +322,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestTags({ CommandLineModuleTestUtils::SceneBuilder::tagChina });
 
@@ -352,7 +352,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestTags({ CommandLineModuleTestUtils::SceneBuilder::tagChina,
                        CommandLineModuleTestUtils::SceneBuilder::tagJapan });

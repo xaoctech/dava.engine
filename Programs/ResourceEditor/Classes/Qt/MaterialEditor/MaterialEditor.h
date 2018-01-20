@@ -16,15 +16,13 @@ class MaterialEditor;
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
+class RECommandNotificationObject;
+class SceneEditor2;
 }
 
 class QtPropertyDataInspDynamic;
 
-class RECommandNotificationObject;
 class LazyUpdater;
 class MaterialEditor : public QDialog, public DAVA::Singleton<MaterialEditor>
 {
@@ -43,9 +41,9 @@ public:
     void RefreshMaterialProperties();
 
 public slots:
-    void sceneActivated(SceneEditor2* scene);
-    void sceneDeactivated(SceneEditor2* scene);
-    void commandExecuted(SceneEditor2* scene, const RECommandNotificationObject& commandNotification);
+    void sceneActivated(DAVA::SceneEditor2* scene);
+    void sceneDeactivated(DAVA::SceneEditor2* scene);
+    void commandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
     void materialSelected(const QItemSelection& selected, const QItemSelection& deselected);
 
     void OnQualityChanged();
@@ -96,7 +94,7 @@ private:
     void initTemplates();
     void setTemplatePlaceholder(const QString& text);
 
-    void UpdateContent(SceneEditor2* scene);
+    void UpdateContent(DAVA::SceneEditor2* scene);
 
     QtPropertyData* AddSection(const DAVA::FastName& sectionName);
 
@@ -109,7 +107,7 @@ private:
     class PropertiesBuilder;
 
     Ui::MaterialEditor* ui = nullptr;
-    SceneEditor2* activeScene = nullptr;
+    DAVA::SceneEditor2* activeScene = nullptr;
 
     QtPosSaver posSaver;
     QList<DAVA::NMaterial*> curMaterials;
@@ -125,5 +123,5 @@ private:
     class ConfigNameValidator;
     ConfigNameValidator* validator;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
 };

@@ -332,5 +332,7 @@ private:
     FileSystemDelegate* fsDelegate = nullptr;
 
     friend class File;
+    friend class FilePath;
+    Vector<FilePath> resourceFolders;
 };
 }

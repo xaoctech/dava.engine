@@ -10,12 +10,9 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class OperationInvoker;
 class ContextAccessor;
 class UI;
-}
 
 namespace Metas
 {
@@ -34,9 +31,9 @@ class CommandProducer
 public:
     struct Params
     {
-        TArc::OperationInvoker* invoker = nullptr;
-        TArc::ContextAccessor* accessor = nullptr;
-        TArc::UI* ui = nullptr;
+        OperationInvoker* invoker = nullptr;
+        ContextAccessor* accessor = nullptr;
+        UI* ui = nullptr;
     };
 
     struct Info
@@ -47,12 +44,12 @@ public:
     };
 
     virtual ~CommandProducer() = default;
-    virtual bool IsApplyable(const std::shared_ptr<DAVA::TArc::PropertyNode>& field) const = 0;
+    virtual bool IsApplyable(const std::shared_ptr<PropertyNode>& field) const = 0;
     virtual Info GetInfo() const = 0;
     virtual bool OnlyForSingleSelection() const;
-    virtual void CreateCache(DAVA::TArc::ContextAccessor* accessor);
+    virtual void CreateCache(ContextAccessor* accessor);
     virtual void ClearCache();
-    virtual std::unique_ptr<Command> CreateCommand(const std::shared_ptr<DAVA::TArc::PropertyNode>& field, const Params& params) const = 0;
+    virtual std::unique_ptr<Command> CreateCommand(const std::shared_ptr<PropertyNode>& field, const Params& params) const = 0;
 };
 
 class CommandProducerHolder

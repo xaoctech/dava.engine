@@ -7,14 +7,14 @@
 
 void Guide::Show()
 {
-    DAVA::TArc::ScopedValueGuard<bool> guard(inWork, true);
+    DAVA::ScopedValueGuard<bool> guard(inWork, true);
     line->show();
     text->show();
 }
 
 void Guide::Raise()
 {
-    DAVA::TArc::ScopedValueGuard<bool> guard(inWork, true);
+    DAVA::ScopedValueGuard<bool> guard(inWork, true);
     line->raise();
     text->raise();
 }

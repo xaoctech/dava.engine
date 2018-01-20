@@ -1,4 +1,4 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <RemoteTool/RemoteToolModule.h>
 
-DECL_GUI_MODULE(RemoteToolModule);
+DECL_TARC_MODULE(RemoteToolModule);

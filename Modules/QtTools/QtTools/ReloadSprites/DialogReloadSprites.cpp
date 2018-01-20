@@ -12,7 +12,7 @@
 #include "ui_DialogReloadSprites.h"
 #include <QTimer>
 
-DialogReloadSprites::DialogReloadSprites(DAVA::TArc::ContextAccessor* accessor_, SpritesPacker* packer, QWidget* parent)
+DialogReloadSprites::DialogReloadSprites(DAVA::ContextAccessor* accessor_, SpritesPacker* packer, QWidget* parent)
     : QDialog(parent)
     , ui(new Ui::DialogReloadSprites)
     , spritesPacker(packer)
@@ -20,7 +20,7 @@ DialogReloadSprites::DialogReloadSprites(DAVA::TArc::ContextAccessor* accessor_,
 {
     ui->setupUi(this);
 
-    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
+    DAVA::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
     DAVA::eGPUFamily currentGpu = item.Get("currentGpu", DAVA::GPU_ORIGIN);
     DAVA::TextureConverter::eConvertQuality quality = item.Get("quality", DAVA::TextureConverter::ECQ_DEFAULT);
     bool forceRepack = item.Get("forcreRepack", false);
@@ -88,7 +88,7 @@ DialogReloadSprites::~DialogReloadSprites()
         BlockingStop();
     }
 
-    DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
+    DAVA::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
     item.Set("currentGpu", static_cast<DAVA::eGPUFamily>(ui->comboBox_targetGPU->currentData().value<int>()));
     item.Set("quality", static_cast<DAVA::TextureConverter::eConvertQuality>(ui->comboBox_quality->currentData().value<int>()));
     item.Set("forcreRepack", ui->checkBox_repack->isChecked());

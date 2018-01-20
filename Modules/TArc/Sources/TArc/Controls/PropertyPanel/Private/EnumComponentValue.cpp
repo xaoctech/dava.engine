@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 void EnumComponentValue::SetValueAny(const Any& newValue)
 {
     SetValue(newValue);
@@ -57,5 +55,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EnumComponentValue)
     .Field("value", &EnumComponentValue::GetValueAny, &EnumComponentValue::SetValueAny)[M::ProxyMetaRequire()]
     .End();
 }
-} //TArc
 } //DAVA

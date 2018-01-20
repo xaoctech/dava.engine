@@ -11,8 +11,6 @@ class QKeyEvent;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ShortcutChecker
 {
 public:
@@ -26,10 +24,9 @@ private:
 
 private:
     QObject* shortcutsContainer;
-    DAVA::UnorderedMap<int, int> keyTranslateTable;
+    UnorderedMap<int, int> keyTranslateTable;
 
     QKeySequence lastInputSequence;
-    DAVA::uint64 lastShortcutTimestamp = 0;
+    uint64 lastShortcutTimestamp = 0;
 };
-} // namespace TArc
 } // namespace DAVA

@@ -1,8 +1,7 @@
-#include "TextureBrowser/TextureCache.h"
-#include "TextureBrowser/TextureConvertor.h"
-#include "Main/mainwindow.h"
+#include "Classes/Qt/TextureBrowser/TextureCache.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 
-#include "ImageTools/ImageTools.h"
+#include <REPlatform/Scene/Utils/ImageTools.h>
 
 #include <QPainter>
 #include <QFileInfo>
@@ -133,7 +132,7 @@ void TextureCache::tryToPreloadConverted(const DAVA::TextureDescriptor* descript
             return;
         }
 
-        convertedImageInfo.dataSize = ImageTools::GetTexturePhysicalSize(descriptor, gpu);
+        convertedImageInfo.dataSize = DAVA::ImageTools::GetTexturePhysicalSize(descriptor, gpu);
         convertedImageInfo.fileSize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
         convertedImageInfo.imageSize.setWidth(convertedImages[0]->GetWidth());
         convertedImageInfo.imageSize.setHeight(convertedImages[0]->GetHeight());
@@ -142,7 +141,7 @@ void TextureCache::tryToPreloadConverted(const DAVA::TextureDescriptor* descript
         {
             if (image->mipmapLevel == 0)
             {
-                QImage img = ImageTools::FromDavaImage(image);
+                QImage img = DAVA::ImageTools::FromDavaImage(image);
                 convertedImageInfo.images.push_back(img);
             }
 

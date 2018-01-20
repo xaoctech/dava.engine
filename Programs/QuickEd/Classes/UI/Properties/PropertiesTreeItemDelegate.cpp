@@ -287,17 +287,17 @@ void PropertiesTreeItemDelegate::SetProject(const Project* project)
     context.project = project;
 }
 
-void PropertiesTreeItemDelegate::SetInvoker(DAVA::TArc::OperationInvoker* invoker_)
+void PropertiesTreeItemDelegate::SetInvoker(DAVA::OperationInvoker* invoker_)
 {
     context.invoker = invoker_;
 }
 
-DAVA::TArc::OperationInvoker* PropertiesTreeItemDelegate::GetInvoker()
+DAVA::OperationInvoker* PropertiesTreeItemDelegate::GetInvoker()
 {
     return context.invoker;
 }
 
-void PropertiesTreeItemDelegate::SetAccessor(DAVA::TArc::ContextAccessor* accessor_)
+void PropertiesTreeItemDelegate::SetAccessor(DAVA::ContextAccessor* accessor_)
 {
     context.accessor = accessor_;
 }

@@ -31,7 +31,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DisplaySafeAreaPreferences)
     .End();
 }
 
-DisplaySafeArea::DisplaySafeArea(DAVA::TArc::ContextAccessor* accessor)
+DisplaySafeArea::DisplaySafeArea(DAVA::ContextAccessor* accessor)
     : BaseEditorSystem(accessor)
     , canvasDataAdapter(accessor)
 {
@@ -48,7 +48,7 @@ void DisplaySafeArea::OnUpdate()
 {
     using namespace std;
     using namespace DAVA;
-    using namespace DAVA::TArc;
+
     using namespace Painting;
 
     if (accessor->GetActiveContext() == nullptr)

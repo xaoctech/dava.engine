@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename TBase, typename TEditableType>
 class BaseSpinBox : public ControlProxyImpl<TBase>
 {
@@ -73,6 +71,4 @@ private:
     void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
 };
-
-} // namespace TArc
 } // namespace DAVA

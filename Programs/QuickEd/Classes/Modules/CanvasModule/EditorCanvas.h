@@ -14,7 +14,7 @@ class UIControl;
 class EditorCanvas final : public BaseEditorSystem
 {
 public:
-    EditorCanvas(DAVA::TArc::ContextAccessor* accessor);
+    EditorCanvas(DAVA::ContextAccessor* accessor);
 
 private:
     bool CanProcessInput(DAVA::UIEvent* currentInput, eInputSource inputSource) const override;
@@ -30,7 +30,7 @@ private:
     void MoveSceneByUpdate();
 
     CanvasDataAdapter canvasDataAdapter;
-    DAVA::TArc::DataWrapper canvasDataAdapterWrapper;
+    DAVA::DataWrapper canvasDataAdapterWrapper;
     bool isMouseMidButtonPressed = false;
     bool isSpacePressed = false;
 };

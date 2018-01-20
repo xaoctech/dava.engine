@@ -1,8 +1,8 @@
-#include "stdafx.h"
-#include "ColladaDocument.h"
-#include "ColladaPolygonGroup.h"
-#include "CommandLine/CommandLineParser.h"
-#include "Collada/ColladaToSc2Importer/ColladaImporter.h"
+#include "Classes/Collada/ColladaDocument.h"
+#include "Classes/Collada/ColladaPolygonGroup.h"
+#include "Classes/Collada/ColladaToSc2Importer/ColladaImporter.h"
+
+#include <CommandLine/CommandLineParser.h>
 
 ///*
 // INCLUDE DevIL

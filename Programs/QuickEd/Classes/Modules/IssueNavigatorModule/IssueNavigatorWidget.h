@@ -9,11 +9,8 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder;
-}
 }
 
 namespace Ui
@@ -36,7 +33,7 @@ class IssueNavigatorWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit IssueNavigatorWidget(DAVA::TArc::ContextAccessor* accessor, QWidget* parent = nullptr);
+    explicit IssueNavigatorWidget(DAVA::ContextAccessor* accessor, QWidget* parent = nullptr);
     ~IssueNavigatorWidget() override;
 
     void AddIssue(const Issue& issue);

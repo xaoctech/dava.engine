@@ -4,9 +4,9 @@
 
 #include "Base/Singleton.h"
 
-class CMMockModule : public DAVA::TArc::MockClientModule, public DAVA::Singleton<CMMockModule>
+class CMMockModule : public DAVA::MockClientModule, public DAVA::Singleton<CMMockModule>
 {
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(CMMockModule, DAVA::TArc::MockClientModule, DAVA::Singleton<CMMockModule>)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(CMMockModule, DAVA::MockClientModule, DAVA::Singleton<CMMockModule>)
     {
         DAVA::ReflectionRegistrator<CMMockModule>::Begin()
         .ConstructorByPointer()
@@ -17,7 +17,7 @@ class CMMockModule : public DAVA::TArc::MockClientModule, public DAVA::Singleton
 DAVA_TARC_TESTCLASS(ClientModuleTest)
 {
     BEGIN_TESTED_MODULES()
-    DECLARE_TESTED_MODULE(DAVA::TArc::MockControllerModule)
+    DECLARE_TESTED_MODULE(DAVA::MockControllerModule)
     DECLARE_TESTED_MODULE(CMMockModule)
     END_TESTED_MODULES()
 
@@ -29,7 +29,7 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
     DAVA_TEST (CreateContextTest)
     {
         using namespace ::testing;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         auto fn = [this](DataContext* ctx)
         {
@@ -39,14 +39,14 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
         EXPECT_CALL(*CMMockModule::Instance(), OnContextCreated(_))
         .WillOnce(Invoke(fn));
 
-        DataContext::ContextID id = GetContextManager()->CreateContext(DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>>());
+        DataContext::ContextID id = GetContextManager()->CreateContext(DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>>());
         TEST_VERIFY(id == undeletedContext);
     }
 
     DAVA_TEST (ActivateContext)
     {
         using namespace ::testing;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         DataContext::ContextID becomeUnactiveContext = DataContext::Empty;
         DataContext::ContextID becomeActiveContext = DataContext::Empty;
@@ -127,7 +127,7 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
             mng->ActivateContext(id);
         };
 
-        DataContext::ContextID id = mng->CreateContext(DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>>());
+        DataContext::ContextID id = mng->CreateContext(DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>>());
         TEST_VERIFY(id == newContext);
 
         TEST_VERIFY(accessor->GetActiveContext() == nullptr);
@@ -168,7 +168,7 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
     DAVA_TEST (DeleteContextTest)
     {
         using namespace ::testing;
-        using namespace DAVA::TArc;
+        using namespace DAVA;
 
         auto verifyFn = [this](DataContext* ctx)
         {
@@ -212,8 +212,8 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
 
     DAVA_TEST (GetConstAccessorTest)
     {
-        const DAVA::TArc::ContextAccessor* constAccessor = static_cast<const DAVA::TArc::TestClass*>(this)->GetAccessor();
-        DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+        const DAVA::ContextAccessor* constAccessor = static_cast<const DAVA::TArcTestClass*>(this)->GetAccessor();
+        DAVA::ContextAccessor* accessor = GetAccessor();
         TEST_VERIFY(constAccessor != nullptr);
         TEST_VERIFY(constAccessor == accessor);
     }
@@ -228,5 +228,5 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
         TEST_VERIFY(GetAccessor()->GetActiveContext() == nullptr);
     }
 
-    DAVA::TArc::DataContext::ContextID undeletedContext = DAVA::TArc::DataContext::Empty;
+    DAVA::DataContext::ContextID undeletedContext = DAVA::DataContext::Empty;
 };

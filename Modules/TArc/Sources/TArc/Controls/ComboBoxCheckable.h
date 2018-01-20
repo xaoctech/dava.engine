@@ -14,8 +14,6 @@ class QEvent;
 
 namespace DAVA
 {
-namespace TArc
-{
 QString CreateTextComboCheckable(const Any& value, const EnumMap* enumMap);
 
 class ComboBoxCheckable final : public ControlProxyImpl<QComboBox>
@@ -49,5 +47,4 @@ private:
     int cachedValue = 0;
     QString text;
 };
-} // namespace TArc
 } // namespace DAVA

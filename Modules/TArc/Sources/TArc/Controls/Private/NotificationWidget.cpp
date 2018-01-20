@@ -48,8 +48,6 @@ QString ColorToHTML(const QColor& color)
 }
 } //namespace NotificationWidgetDetails
 
-namespace TArc
-{
 NotificationWidget::NotificationWidget(const NotificationParams& params, QWidget* parent)
     : QWidget(parent)
 {
@@ -199,5 +197,4 @@ void NotificationWidget::paintEvent(QPaintEvent* /*event*/)
     QPoint bottom(x, roundedRect.bottom() - roundedRectPen.width());
     painter.drawLine(top, bottom);
 }
-} //namespace TArc
 } //namespace DAVA

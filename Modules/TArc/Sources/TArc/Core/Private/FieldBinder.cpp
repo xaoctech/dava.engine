@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class UniversalDataListener : public DataListener
 {
 public:
@@ -82,7 +80,7 @@ public:
                 ctx = accessor->GetGlobalContext();
             }
             DVASSERT(ctx);
-            DataNode* dataNode = ctx->GetData(type);
+            TArcDataNode* dataNode = ctx->GetData(type);
             DVASSERT(dataNode);
             reflection = Reflection::Create(dataNode);
         }
@@ -230,6 +228,4 @@ Any FieldBinder::GetValue(const FieldDescriptor& fieldDescr) const
     }
     return Any();
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TArc/DataProcessing/DataNode.h"
+#include "TArc/DataProcessing/TArcDataNode.h"
 #include "FileSystem/FilePath.h"
 
-class LibraryData : public DAVA::TArc::DataNode
+class LibraryData : public DAVA::TArcDataNode
 {
 public:
     static const char* selectedPathProperty;
@@ -15,7 +15,7 @@ private:
 
     DAVA::FilePath selectedPath;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(LibraryData, DAVA::TArc::DataNode)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(LibraryData, DAVA::TArcDataNode)
     {
         DAVA::ReflectionRegistrator<LibraryData>::Begin()
         .Field(selectedPathProperty, &LibraryData::GetSelectedPath, nullptr)

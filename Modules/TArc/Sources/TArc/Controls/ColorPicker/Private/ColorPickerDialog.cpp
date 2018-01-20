@@ -21,8 +21,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorPickerDialog::ColorPickerDialog(ContextAccessor* accessor, QWidget* parent)
     : AbstractColorPicker(parent)
     , ui(new Ui::ColorPickerDialog())
@@ -320,7 +318,7 @@ void ColorPickerDialog::LoadSettings()
     }
     else
     { // load default colors
-        const DAVA::int32 n = Qt::darkYellow - Qt::black + 1;
+        const int32 n = Qt::darkYellow - Qt::black + 1;
         CustomPalette::Colors colors(n);
         for (int i = 0; i < n; i++)
         {
@@ -350,6 +348,5 @@ void ColorPickerDialog::SaveSettings()
     settings->customPalette = paletteData;
     settings->dialogGeometry = geometry();
     settings->maxMultiplier = rgbam->GetMaxMultiplierValue();
-}
 }
 }

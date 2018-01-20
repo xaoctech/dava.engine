@@ -1,18 +1,20 @@
-#include "CommandLine/SceneValidationTool.h"
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
-#include "TArc/Testing/TArcUnitTests.h"
+#include "Classes/CommandLine/SceneValidationTool.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+
+#include <REPlatform/Scene/SceneHelper.h>
+
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
 
 #include <TextureCompression/TextureConverter.h>
 
-#include "Scene/SceneHelper.h"
-#include "Scene3D/Components/ComponentHelpers.h"
+#include <Base/BaseTypes.h>
+#include <FileSystem/FilePath.h>
+#include <FileSystem/FileSystem.h>
+#include <Render/Material/NMaterial.h>
+#include <Render/TextureDescriptor.h>
+#include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
-#include "Base/BaseTypes.h"
-#include "FileSystem/FilePath.h"
-#include "FileSystem/FileSystem.h"
-#include "Render/TextureDescriptor.h"
-#include "Render/Material/NMaterial.h"
 
 DAVA_TARC_TESTCLASS(SceneValidationToolTest)
 {
@@ -24,14 +26,12 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
     {
         guard = CommandLineModuleTestUtils::CreateTextureGuard({ DAVA::eGPUFamily::GPU_ORIGIN });
         CommandLineModuleTestUtils::CreateProjectInfrastructure(projectStr);
-        DAVA::TArc::TestClass::SetUp(testName);
     }
 
     void TearDown(const DAVA::String& testName) override
     {
         guard.reset();
         CommandLineModuleTestUtils::ClearTestFolder(projectStr);
-        DAVA::TArc::TestClass::TearDown(testName);
     }
 
     DAVA_TEST (CorrectMatricesTest)
@@ -46,7 +46,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "matrices" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() == 0);
     }
@@ -67,7 +67,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "matrices" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() != 0);
     }
@@ -85,7 +85,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "sameNames" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() == 0);
     }
@@ -110,7 +110,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "sameNames" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() != 0);
     }
@@ -132,7 +132,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "collisionTypes" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() == 0);
     }
@@ -154,7 +154,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "collisionTypes" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() != 0);
     }
@@ -195,7 +195,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "texturesRelevance" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() == 0);
     }
@@ -213,7 +213,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "texturesRelevance" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() != 0);
     }
@@ -238,7 +238,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "materialGroups" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() == 0);
     }
@@ -262,7 +262,7 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "materialGroups" };
 
         SceneValidationTool tool(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(&tool, GetAccessor());
 
         TEST_VERIFY(tool.GetExitCode() != 0);
     }

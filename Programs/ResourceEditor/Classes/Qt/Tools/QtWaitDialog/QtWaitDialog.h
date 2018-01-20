@@ -48,7 +48,7 @@ private:
 
     void Setup(const QString& title, const QString& message, bool hasWaitbar, bool hasCancel);
     Ui::QtWaitDialog* ui;
-    DAVA::TArc::QtDelayedExecutor executor;
+    DAVA::QtDelayedExecutor executor;
 
     bool wasCanceled = false;
     bool isRunnedFromExec = false;

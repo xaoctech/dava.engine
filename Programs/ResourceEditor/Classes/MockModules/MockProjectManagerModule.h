@@ -4,10 +4,14 @@
 
 #include <Reflection/Reflection.h>
 
+namespace DAVA
+{
 class ProjectResources;
+} // namespace DAVA
+
 namespace Mock
 {
-class ProjectManagerModule : public DAVA::TArc::ClientModule
+class ProjectManagerModule : public DAVA::ClientModule
 {
 public:
     static const DAVA::String testFolder;
@@ -19,8 +23,8 @@ public:
 protected:
     void PostInit() override;
 
-    std::unique_ptr<ProjectResources> projectResources;
+    std::unique_ptr<DAVA::ProjectResources> projectResources;
 
-    DAVA_VIRTUAL_REFLECTION(ProjectManagerDummyModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ProjectManagerDummyModule, DAVA::ClientModule);
 };
 } // namespace Mock

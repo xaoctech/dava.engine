@@ -1,11 +1,13 @@
 #include "QtPropertyDataKeyedArchiveMember.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Deprecated/EditorConfig.h"
-#include "Main/QtUtils.h"
 
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
+
+#include <REPlatform/Commands/KeyedArchiveCommand.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/Core/Deprecated.h>
+
+#include <FileSystem/KeyedArchive.h>
 
 QtPropertyKeyedArchiveMember::QtPropertyKeyedArchiveMember(const DAVA::FastName& name, DAVA::KeyedArchive* archive_, const DAVA::String& key_)
     : QtPropertyDataDavaVariant(name, DAVA::VariantType())
@@ -34,10 +36,10 @@ void QtPropertyKeyedArchiveMember::CheckAndFillPresetValues()
 {
     const int valueType = archive->GetVariant(key)->GetType();
 
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data);
 
-    const EditorConfig* editorConfig = data->GetEditorConfig();
+    const DAVA::EditorConfig* editorConfig = data->GetEditorConfig();
     const int presetValueType = editorConfig->GetPropertyValueType(key);
     if (presetValueType != DAVA::VariantType::TYPE_NONE)
     {
@@ -56,7 +58,7 @@ void QtPropertyKeyedArchiveMember::CheckAndFillPresetValues()
                 const DAVA::Vector<DAVA::Color>& allowedColors = editorConfig->GetColorPropertyValues(key);
                 for (size_t i = 0; i < allowedColors.size(); ++i)
                 {
-                    AddAllowedValue(DAVA::VariantType((int)i), DAVA::TArc::ColorToQColor(allowedColors[i]));
+                    AddAllowedValue(DAVA::VariantType((int)i), DAVA::ColorToQColor(allowedColors[i]));
                 }
             }
         }
@@ -72,7 +74,7 @@ void QtPropertyKeyedArchiveMember::SetValueInternal(const QVariant& value)
     if (NULL != archive && archive->IsKeyExists(key))
     {
         DAVA::SafeDelete(lastCommand);
-        lastCommand = new KeyeadArchiveSetValueCommand(archive, key, newValue);
+        lastCommand = new DAVA::KeyeadArchiveSetValueCommand(archive, key, newValue);
 
         archive->SetVariant(key, newValue);
     }
@@ -122,7 +124,7 @@ std::unique_ptr<DAVA::Command> QtPropertyKeyedArchiveMember::CreateLastCommand()
 {
     if (nullptr != lastCommand)
     {
-        return std::unique_ptr<DAVA::Command>(new KeyeadArchiveSetValueCommand(*lastCommand));
+        return std::unique_ptr<DAVA::Command>(new DAVA::KeyeadArchiveSetValueCommand(*lastCommand));
     }
 
     return std::unique_ptr<DAVA::Command>();

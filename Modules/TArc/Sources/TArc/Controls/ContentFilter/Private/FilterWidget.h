@@ -3,6 +3,7 @@
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/Qt/QtIcon.h"
+#include "TArc/Utils/QtConnections.h"
 
 #include <Functional/Signal.h>
 #include <Reflection/Reflection.h>
@@ -14,9 +15,9 @@
 class QPaintEvent;
 namespace DAVA
 {
-class FilterWidget : public DAVA::TArc::ControlProxyImpl<QWidget>
+class FilterWidget : public DAVA::ControlProxyImpl<QWidget>
 {
-    using TBase = DAVA::TArc::ControlProxyImpl<QWidget>;
+    using TBase = DAVA::ControlProxyImpl<QWidget>;
 
 public:
     enum Fields
@@ -28,7 +29,7 @@ public:
     };
 
     DECLARE_CONTROL_PARAMS(Fields);
-    FilterWidget(const Params& params, TArc::DataWrappersProcessor& processor, Reflection model, QWidget* parent = nullptr);
+    FilterWidget(const Params& params, DataWrappersProcessor& processor, Reflection model, QWidget* parent = nullptr);
 
     Signal<> requestRemoving;
     Signal<> updateRequire;
@@ -40,7 +41,7 @@ protected:
     void contextMenuEvent(QContextMenuEvent* e) override;
 
     void SetupControl();
-    void UpdateControl(const TArc::ControlDescriptor& descriptor) override;
+    void UpdateControl(const ControlDescriptor& descriptor) override;
 
     QIcon GetEnableButtonIcon() const;
     QIcon GetInverseButtonIcon() const;
@@ -52,12 +53,11 @@ protected:
     void UpdateTitlePalette(bool isEnabled);
 
 private:
-    DAVA::TArc::QtConnections connections;
+    QtConnections connections;
     QPointer<QPushButton> titleButton = nullptr;
     QBrush disabledBrush;
     QBrush enabledBrush;
 
     DAVA_REFLECTION(FilterWidget);
 };
-
 } // namespace DAVA

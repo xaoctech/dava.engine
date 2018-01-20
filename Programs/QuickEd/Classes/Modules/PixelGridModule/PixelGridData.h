@@ -1,10 +1,10 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 class PixelGrid;
 
-class PixelGridData : public DAVA::TArc::DataNode
+class PixelGridData : public DAVA::TArcDataNode
 {
 public:
     ~PixelGridData() override;
@@ -13,5 +13,5 @@ private:
     friend class PixelGridModule;
     std::unique_ptr<PixelGrid> pixelGrid;
 
-    DAVA_VIRTUAL_REFLECTION(PixelGridData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(PixelGridData, DAVA::TArcDataNode);
 };

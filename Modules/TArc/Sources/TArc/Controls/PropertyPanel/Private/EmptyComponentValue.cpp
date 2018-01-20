@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 Any EmptyComponentValue::GetMultipleValue() const
 {
     return Any();
@@ -31,6 +29,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(EmptyComponentValue)
     ReflectionRegistrator<EmptyComponentValue>::Begin()
     .End();
 }
-
-} // namespace TArc
 } // namespace DAVA

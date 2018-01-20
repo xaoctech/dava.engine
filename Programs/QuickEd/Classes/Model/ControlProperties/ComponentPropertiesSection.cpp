@@ -68,7 +68,7 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
 bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
 {
     const ReflectedType* rtype = ReflectedTypeDB::GetByType(type);
-    return TArc::GetReflectedTypeMeta<DAVA::M::HiddenField>(rtype) != nullptr;
+    return GetReflectedTypeMeta<DAVA::M::HiddenField>(rtype) != nullptr;
 }
 
 UIComponent* ComponentPropertiesSection::GetComponent() const

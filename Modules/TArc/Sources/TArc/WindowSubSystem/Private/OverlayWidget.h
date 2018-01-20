@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class OverlayWidget : public QFrame
 {
 public:
@@ -27,5 +25,4 @@ private:
     QWidget* content = nullptr;
     bool isContentVisible = false;
 };
-} // namespace TArc
 } // namespace DAVA

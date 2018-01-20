@@ -1,13 +1,12 @@
-#include "Tools/QtPosSaver/QtPosSaver.h"
+#include "Classes/Qt/Tools/QtPosSaver/QtPosSaver.h"
+
+#include <QtTools/WidgetHelpers/WidgetStateHelper.h>
 
 #include <QDebug>
 #include <QWidget>
 #include <QSplitter>
 #include <QMainWindow>
 #include <QEvent>
-
-
-#include "QtTools/WidgetHelpers/WidgetStateHelper.h"
 
 bool QtPosSaver::settingsArchiveIsLoaded = false;
 DAVA::RefPtr<DAVA::KeyedArchive> QtPosSaver::settingsArchive(nullptr);

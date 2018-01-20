@@ -7,9 +7,11 @@
 #include <QMenu>
 #include <QAction>
 
+namespace DAVA
+{
 namespace RecentMenuItemsDetails
 {
-const DAVA::String recentItemsKey = "recent items";
+const String recentItemsKey = "recent items";
 }
 
 RecentMenuItems::RecentMenuItems(Params&& params_)
@@ -18,7 +20,7 @@ RecentMenuItems::RecentMenuItems(Params&& params_)
     InitMenuItems();
 }
 
-void RecentMenuItems::Add(const DAVA::String& recent)
+void RecentMenuItems::Add(const String& recent)
 {
     RemoveMenuItems();
     AddInternal(recent);
@@ -27,21 +29,19 @@ void RecentMenuItems::Add(const DAVA::String& recent)
 
 void RecentMenuItems::RemoveMenuItems()
 {
-    using namespace DAVA;
-
-    TArc::PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
+    PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
     Vector<String> actions = item.Get<Vector<String>>(RecentMenuItemsDetails::recentItemsKey);
 
-    for (const DAVA::String& action : actions)
+    for (const String& action : actions)
     {
-        DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(params.menuSubPath));
+        ActionPlacementInfo placement(CreateMenuPoint(params.menuSubPath));
         params.ui->RemoveAction(params.windowKey, placement, QString::fromStdString(action));
     }
 }
 
 void RecentMenuItems::InitMenuItems()
 {
-    DAVA::Vector<DAVA::String> pathList = Get();
+    Vector<String> pathList = Get();
 
     if (params.recentMenuName.isEmpty() == false)
     { // create menu for recent items
@@ -50,7 +50,7 @@ void RecentMenuItems::InitMenuItems()
         params.ui->AddAction(params.windowKey, params.recentMenuPlacementInfo, recentMenu);
     }
 
-    for (const DAVA::String& path : pathList)
+    for (const String& path : pathList)
     {
         if (path.empty())
         {
@@ -58,24 +58,23 @@ void RecentMenuItems::InitMenuItems()
         }
 
         QString pathQt = QString::fromStdString(path);
-        DAVA::TArc::QtAction* action = new DAVA::TArc::QtAction(params.accessor, pathQt);
+        QtAction* action = new QtAction(params.accessor, pathQt);
         if (params.enablePredicate)
         {
-            action->SetStateUpdationFunction(DAVA::TArc::QtAction::Enabled, params.predicateFieldDescriptor, params.enablePredicate);
+            action->SetStateUpdationFunction(QtAction::Enabled, params.predicateFieldDescriptor, params.enablePredicate);
         }
 
-        connections.AddConnection(action, &QAction::triggered, [path, this]()
-                                  {
-                                      actionTriggered.Emit(path);
-                                  },
+        connections.AddConnection(action, &QAction::triggered, [path, this]() {
+            actionTriggered.Emit(path);
+        },
                                   Qt::QueuedConnection);
 
-        DAVA::TArc::ActionPlacementInfo placement(DAVA::TArc::CreateMenuPoint(params.menuSubPath));
+        ActionPlacementInfo placement(CreateMenuPoint(params.menuSubPath));
         params.ui->AddAction(params.windowKey, placement, action);
     }
 }
 
-void RecentMenuItems::AddInternal(const DAVA::String& recent)
+void RecentMenuItems::AddInternal(const String& recent)
 {
     using namespace DAVA;
     Vector<String> vectorToSave = Get();
@@ -91,14 +90,14 @@ void RecentMenuItems::AddInternal(const DAVA::String& recent)
     uint32 size = Min((uint32)vectorToSave.size(), recentFilesMaxCount);
 
     vectorToSave.resize(size);
-    TArc::PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
+    PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
     item.Set(RecentMenuItemsDetails::recentItemsKey, vectorToSave);
 }
 
-DAVA::Vector<DAVA::String> RecentMenuItems::Get() const
+Vector<String> RecentMenuItems::Get() const
 {
     using namespace DAVA;
-    TArc::PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
+    PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
     Vector<String> retVector = item.Get<Vector<String>>(RecentMenuItemsDetails::recentItemsKey);
     uint32 recentFilesMaxCount = params.getMaximumCount();
     uint32 size = Min(static_cast<uint32>(retVector.size()), recentFilesMaxCount);
@@ -108,22 +107,21 @@ DAVA::Vector<DAVA::String> RecentMenuItems::Get() const
 
 void RecentMenuItems::Truncate()
 {
-    using namespace DAVA;
-
     RemoveMenuItems();
 
     {
         Vector<String> truncatedRecentItems = Get();
-        TArc::PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
+        PropertiesItem item = params.accessor->CreatePropertiesNode(params.propertiesItemKey);
         item.Set(RecentMenuItemsDetails::recentItemsKey, truncatedRecentItems);
     }
 
     InitMenuItems();
 }
 
-RecentMenuItems::Params::Params(const DAVA::TArc::WindowKey& windowKey_, DAVA::TArc::ContextAccessor* accessor_, const DAVA::String& propertiesItemKey_)
+RecentMenuItems::Params::Params(const WindowKey& windowKey_, ContextAccessor* accessor_, const String& propertiesItemKey_)
     : windowKey(windowKey_)
     , accessor(accessor_)
     , propertiesItemKey(propertiesItemKey_)
 {
 }
+} // namespace DAVA

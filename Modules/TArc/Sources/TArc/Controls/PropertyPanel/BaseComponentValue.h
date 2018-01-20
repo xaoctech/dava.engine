@@ -23,8 +23,6 @@ class QEvent;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ReflectedPropertyModel;
 class DataContext;
 class DataWrappersProcessor;
@@ -117,9 +115,8 @@ private:
     QtConnections connections;
     class ButtonModel;
     Widget* buttonsLayout = nullptr;
-    DAVA::Vector<std::unique_ptr<ButtonModel>> buttonModels;
+    Vector<std::unique_ptr<ButtonModel>> buttonModels;
 
     DAVA_VIRTUAL_REFLECTION(BaseComponentValue);
 };
-}
 }

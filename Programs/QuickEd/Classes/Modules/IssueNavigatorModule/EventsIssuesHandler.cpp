@@ -20,7 +20,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IndexGenerator& indexGenerator_)
+EventsIssuesHandler::EventsIssuesHandler(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, DAVA::int32 sectionId_, IssueNavigatorWidget* widget_, IndexGenerator& indexGenerator_)
     : sectionId(sectionId_)
     , navigatorWidget(widget_)
     , accessor(accessor_)

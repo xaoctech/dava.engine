@@ -1,22 +1,22 @@
-#include "EmitterLayerWidget.h"
-#include "Commands2/ParticleEditorCommands.h"
-#include "Commands2/ParticleLayerCommands.h"
-
-#include "TextureBrowser/TextureConvertor.h"
-#include "ImageTools/ImageTools.h"
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
+#include "Classes/Qt/DockParticleEditor/EmitterLayerWidget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
-#include "Base/Result.h"
-#include "Render/2D/Sprite.h"
+#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
+
+#include <REPlatform/Commands/ParticleLayerCommands.h>
+#include <REPlatform/Commands/ParticleEditorCommands.h>
+#include <REPlatform/Commands/ParticleLayerCommands.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/Utils/ImageTools.h>
 
 #include <TArc/DataProcessing/DataContext.h>
-#include <QtTools/FileDialogs/FileDialog.h>
+#include <TArc/Core/Deprecated.h>
 
-#include <QHBoxLayout>
-#include <QGraphicsWidget>
+#include <Base/Result.h>
+#include <Render/2D/Sprite.h>
+
 #include <QFile>
-#include <QMessageBox>
+#include <QGraphicsWidget>
+#include <QHBoxLayout>
 
 namespace EmitterLayerWidgetDetails
 {
@@ -536,7 +536,7 @@ void EmitterLayerWidget::InitWidget(QWidget* widget)
             SLOT(OnValueChanged()));
 }
 
-void EmitterLayerWidget::Init(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitterInstance* instance_,
+void EmitterLayerWidget::Init(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect_, DAVA::ParticleEmitterInstance* instance_,
                               DAVA::ParticleLayer* layer_, bool updateMinimized)
 {
     if ((instance_ == nullptr) || (layer_ == nullptr))
@@ -659,8 +659,8 @@ void EmitterLayerWidget::OnValueChanged()
     DAVA::ParticleLayer::eDegradeStrategy degradeStrategy = DAVA::ParticleLayer::eDegradeStrategy(degradeStrategyComboBox->currentIndex());
     bool superemitterStatusChanged = (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES) != (propLayerType == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
 
-    SceneEditor2* activeScene = GetActiveScene();
-    std::unique_ptr<CommandUpdateParticleLayer> updateLayerCmd(new CommandUpdateParticleLayer(GetEmitterInstance(activeScene), layer));
+    DAVA::SceneEditor2* activeScene = GetActiveScene();
+    std::unique_ptr<DAVA::CommandUpdateParticleLayer> updateLayerCmd(new DAVA::CommandUpdateParticleLayer(GetEmitterInstance(activeScene), layer));
     updateLayerCmd->Init(layerNameLineEdit->text().toStdString(),
                          propLayerType,
                          degradeStrategy,
@@ -713,11 +713,11 @@ void EmitterLayerWidget::OnValueChanged()
 
     if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
     {
-        DAVA::TArc::NotificationParams params;
+        DAVA::NotificationParams params;
         params.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
         params.message.type = DAVA::Result::RESULT_WARNING;
         params.title = "Particle system warning.";
-        REGlobal::ShowNotification(params);
+        DAVA::Deprecated::ShowNotification(params);
     }
 
     if (superemitterStatusChanged)
@@ -734,20 +734,20 @@ void EmitterLayerWidget::OnFresnelToAlphaChanged()
         return;
 
     DVASSERT(GetActiveScene() != nullptr);
-    CommandChangeFresnelToAlphaProperties::FresnelToAlphaParams params;
+    DAVA::CommandChangeFresnelToAlphaProperties::FresnelToAlphaParams params;
     params.useFresnelToAlpha = fresnelToAlphaCheckbox->isChecked();
     params.fresnelToAlphaPower = static_cast<DAVA::float32>(fresnelPowerSpinBox->value());
     params.fresnelToAlphaBias = static_cast<DAVA::float32>(fresnelBiasSpinBox->value());
 
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFresnelToAlphaProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeFresnelToAlphaProperties(layer, std::move(params))));
 
     if (layer->particleOrientation & DAVA::ParticleLayer::PARTICLE_ORIENTATION_CAMERA_FACING && layer->useFresnelToAlpha)
     {
-        DAVA::TArc::NotificationParams notificationParams;
+        DAVA::NotificationParams notificationParams;
         notificationParams.message.message = "The check boxes Fresnel to alpha and Camera facing are both set.";
         notificationParams.message.type = DAVA::Result::RESULT_WARNING;
         notificationParams.title = "Particle system warning.";
-        REGlobal::ShowNotification(notificationParams);
+        DAVA::Deprecated::ShowNotification(notificationParams);
     }
 
     emit ValueChanged();
@@ -765,7 +765,7 @@ void EmitterLayerWidget::OnLayerMaterialValueChanged()
     const DAVA::FilePath spritePath(path.toStdString());
 
     DVASSERT(GetActiveScene() != nullptr);
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeLayerMaterialProperties(layer, spritePath, blending, fogCheckBox->isChecked(), frameBlendingCheckBox->isChecked())));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeLayerMaterialProperties(layer, spritePath, blending, fogCheckBox->isChecked(), frameBlendingCheckBox->isChecked())));
 
     UpdateLayerSprite();
 
@@ -794,7 +794,7 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     const DAVA::FilePath spritePath(path.toStdString());
 
     DVASSERT(GetActiveScene() != nullptr);
-    CommandChangeFlowProperties::FlowParams params;
+    DAVA::CommandChangeFlowProperties::FlowParams params;
     params.spritePath = spritePath;
     params.enableFlow = enableFlowCheckBox->isChecked();
     params.enabelFlowAnimation = enableFlowAnimationCheckBox->isChecked();
@@ -802,7 +802,7 @@ void EmitterLayerWidget::OnFlowPropertiesChanged()
     params.flowSpeedVariation = propFlowSpeedVariation.GetPropLine();
     params.flowOffset = propFlowOffset.GetPropLine();
     params.flowOffsetVariation = propFlowOffsetVariation.GetPropLine();
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeFlowProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeFlowProperties(layer, std::move(params))));
 
     UpdateFlowmapSprite();
 
@@ -830,7 +830,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     DAVA::PropLineWrapper<DAVA::Color> propStripeColorOverLife;
     stripeColorOverLifeGradient->GetValues(propStripeColorOverLife.GetPropsPtr());
 
-    CommandChangeParticlesStripeProperties::StripeParams params;
+    DAVA::CommandChangeParticlesStripeProperties::StripeParams params;
     params.stripeLifetime = static_cast<DAVA::float32>(stripeLifetimeSpin->value());
     params.stripeVertexSpawnStep = static_cast<DAVA::float32>(stripeVertexSpawnStepSpin->value());
     params.stripeStartSize = static_cast<DAVA::float32>(stripeStartSizeSpin->value());
@@ -844,7 +844,7 @@ void EmitterLayerWidget::OnStripePropertiesChanged()
     params.stripeNoiseUScrollSpeedOverLife = propstripeNoiseUScrollSpeedOverLife.GetPropLine();
     params.stripeNoiseVScrollSpeedOverLife = propstripeNoiseVScrollSpeedOverLife.GetPropLine();
     params.stripeColorOverLife = propStripeColorOverLife.GetPropLine();
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeParticlesStripeProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeParticlesStripeProperties(layer, std::move(params))));
 
     emit ValueChanged();
 }
@@ -888,7 +888,7 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
     const DAVA::FilePath noisePath(path.toStdString());
 
-    CommandChangeNoiseProperties::NoiseParams params;
+    DAVA::CommandChangeNoiseProperties::NoiseParams params;
     params.noisePath = noisePath;
     params.enableNoise = enableNoiseCheckBox->isChecked();
 
@@ -907,7 +907,7 @@ void EmitterLayerWidget::OnNoisePropertiesChanged()
     params.noiseVScrollSpeedOverLife = propNoiseVScrollSpeedOverLife.GetPropLine();
 
     DVASSERT(GetActiveScene() != nullptr);
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeNoiseProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeNoiseProperties(layer, std::move(params))));
 
     UpdateNoiseSprite();
 
@@ -925,14 +925,14 @@ void EmitterLayerWidget::OnAlphaRemapPropertiesChanged()
     path = EmitterLayerWidgetDetails::ConvertPSDPathToSprite(path);
     const DAVA::FilePath alphaPath(path.toStdString());
 
-    CommandChangeAlphaRemapProperties::AlphaRemapParams params;
+    DAVA::CommandChangeAlphaRemapProperties::AlphaRemapParams params;
     params.alphaRemapOverLife = propAlphaRemapOverLife.GetPropLine();
     params.enableAlphaRemap = enableAlphaRemapCheckBox->isChecked();
     params.alphaRemapLoopCount = static_cast<DAVA::float32>(alphaRemapLoopCountSpin->value());
     params.alphaRemapPath = alphaPath;
 
     DVASSERT(GetActiveScene() != nullptr);
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeAlphaRemapProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeAlphaRemapProperties(layer, std::move(params))));
 
     UpdateAlphaRemapSprite();
 
@@ -953,7 +953,7 @@ void EmitterLayerWidget::OnThreePointGradientPropertiesChanged()
     DAVA::PropLineWrapper<DAVA::float32> propGradientMiddlePoint;
     gradientMiddlePointTimeLine->GetValue(0, propGradientMiddlePoint.GetPropsPtr());
 
-    CommandChangeThreePointGradientProperties::ThreePointGradientParams params;
+    DAVA::CommandChangeThreePointGradientProperties::ThreePointGradientParams params;
     params.useThreePointGradient = useThreePointGradientBox->isChecked();
     params.gradientMiddlePointLine = propGradientMiddlePoint.GetPropLine();
     params.gradientColorForBlack = propGradientColorForBlack.GetPropLine();
@@ -962,7 +962,7 @@ void EmitterLayerWidget::OnThreePointGradientPropertiesChanged()
     params.gradientMiddlePoint = static_cast<DAVA::float32>(gradientMiddlePointSpin->value());
 
     DVASSERT(GetActiveScene() != nullptr);
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandChangeThreePointGradientProperties(layer, std::move(params))));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandChangeThreePointGradientProperties(layer, std::move(params))));
 
     emit ValueChanged();
 }
@@ -979,7 +979,7 @@ void EmitterLayerWidget::OnLodsChanged()
         lods[i] = layerLodsCheckBox[i]->isChecked();
     }
 
-    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new CommandUpdateParticleLayerLods(layer, lods)));
+    GetActiveScene()->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandUpdateParticleLayerLods(layer, lods)));
     GetActiveScene()->MarkAsChanged();
     emit ValueChanged();
 }
@@ -989,7 +989,7 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
     if (spriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().first))
     {
         DAVA::ScopedPtr<DAVA::Image> image(spriteUpdateTexturesStack.top().second->CreateImageFromMemory());
-        spriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+        spriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!spriteUpdateTexturesStack.empty())
         {
@@ -1002,7 +1002,7 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
     if (flowSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(flowSpriteUpdateTexturesStack.top().first))
     {
         DAVA::ScopedPtr<DAVA::Image> image(flowSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
-        flowSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+        flowSpriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!flowSpriteUpdateTexturesStack.empty())
         {
@@ -1015,7 +1015,7 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
     if (noiseSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(noiseSpriteUpdateTexturesStack.top().first))
     {
         DAVA::ScopedPtr<DAVA::Image> image(noiseSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
-        noiseSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+        noiseSpriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!noiseSpriteUpdateTexturesStack.empty())
         {
@@ -1028,7 +1028,7 @@ void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
     if (alphaRemapSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(alphaRemapSpriteUpdateTexturesStack.top().first))
     {
         DAVA::ScopedPtr<DAVA::Image> image(alphaRemapSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
-        alphaRemapSpriteLabel->setPixmap(QPixmap::fromImage(ImageTools::FromDavaImage(image)));
+        alphaRemapSpriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!alphaRemapSpriteUpdateTexturesStack.empty())
         {
@@ -1784,7 +1784,7 @@ void EmitterLayerWidget::OnChangeSpriteButton(const DAVA::FilePath& initialFileP
     QString startPath;
     if (initialFilePath.IsEmpty())
     {
-        ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+        DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
         DVASSERT(data != nullptr);
         startPath = QString::fromStdString(data->GetParticlesGfxPath().GetAbsolutePathname());
     }
@@ -1794,7 +1794,12 @@ void EmitterLayerWidget::OnChangeSpriteButton(const DAVA::FilePath& initialFileP
         startPath = EmitterLayerWidgetDetails::ConvertSpritePathToPSD(startPath);
     }
 
-    QString selectedPath = FileDialog::getOpenFileName(nullptr, caption, startPath, QString("Sprite File (*.psd)"));
+    DAVA::FileDialogParams params;
+    params.dir = startPath;
+    params.filters = QString("Sprite File (*.psd)");
+    params.title = caption;
+
+    QString selectedPath = DAVA::Deprecated::GetUI()->GetOpenFileName(DAVA::mainWindowKey, params);
     std::string s = selectedPath.toStdString();
     if (selectedPath.isEmpty())
     {
@@ -1825,7 +1830,10 @@ void EmitterLayerWidget::OnChangeFolderButton(const DAVA::FilePath& initialFileP
 
     QString spriteName = QString::fromStdString(initialFilePath.GetBasename());
 
-    QString selectedPath = FileDialog::getExistingDirectory(nullptr, QString("Select particle sprites directory"), startPath);
+    DAVA::DirectoryDialogParams params;
+    params.dir = startPath;
+    params.title = QString("Select particle sprites directory");
+    QString selectedPath = DAVA::Deprecated::GetUI()->GetExistingDirectory(DAVA::mainWindowKey, params);
     if (selectedPath.isEmpty())
     {
         return;
@@ -1840,7 +1848,7 @@ void EmitterLayerWidget::OnChangeFolderButton(const DAVA::FilePath& initialFileP
 
 void EmitterLayerWidget::CheckPath(const QString& text)
 {
-    ProjectManagerData* data = REGlobal::GetDataNode<ProjectManagerData>();
+    DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
     DVASSERT(data != nullptr);
     const DAVA::FilePath& particlesGfxPath = data->GetParticlesGfxPath();
     const DAVA::FilePath spritePath = text.toStdString();
@@ -1848,10 +1856,14 @@ void EmitterLayerWidget::CheckPath(const QString& text)
 
     if (relativePathForParticlesPath.find("../") != DAVA::String::npos)
     {
-        QString message = QString("You've opened particle sprite from incorrect path (%1).\n Correct one is %2.").arg(QString::fromStdString(spritePath.GetDirectory().GetAbsolutePathname())).arg(QString::fromStdString(particlesGfxPath.GetAbsolutePathname()));
+        DAVA::ModalMessageParams params;
+        params.title = "Warning";
+        params.message = QString("You've opened particle sprite from incorrect path (%1).\n Correct one is %2.").arg(QString::fromStdString(spritePath.GetDirectory().GetAbsolutePathname())).arg(QString::fromStdString(particlesGfxPath.GetAbsolutePathname()));
+        params.icon = DAVA::ModalMessageParams::Warning;
+        params.buttons = DAVA::ModalMessageParams::Yes;
+        params.defaultButton = DAVA::ModalMessageParams::Yes;
 
-        QMessageBox msgBox(QMessageBox::Warning, "Warning", message);
-        msgBox.exec();
+        DAVA::Deprecated::GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
     }
 }
 

@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class SettingsManager;
 class SettingsModule : public ClientModule
 {
@@ -24,5 +22,4 @@ private:
 };
 
 void InitColorPickerOptions(bool initForHiddenUsage);
-} // namespace TArc
 } // namespace DAVA

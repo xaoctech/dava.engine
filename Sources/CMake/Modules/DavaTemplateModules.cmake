@@ -135,11 +135,10 @@ set(  GLOBAL_PROPERTY_VALUES ${MAIN_MODULE_VALUES}  TARGET_MODULES_LIST
                                                     QT_LINKAGE_LIST 
                                                     QT_LINKAGE_LIST_VALUE 
                                                     DEPENDENT_LIST
-                                                    GROUP_SOURCE 
-                                                    PLUGIN_LIST )
+                                                    GROUP_SOURCE )
 #
 macro( reset_MAIN_MODULE_VALUES )
-    foreach( VALUE ${GLOBAL_PROPERTY_VALUES} GLOBAL_DEFINITIONS )
+    foreach( VALUE ${GLOBAL_PROPERTY_VALUES} GLOBAL_DEFINITIONS PLUGIN_LIST )
         set( ${VALUE} )
         set_property( GLOBAL PROPERTY ${VALUE} ${${VALUE}} )
     endforeach()
@@ -259,6 +258,7 @@ macro( setup_main_module )
     endif()
 
 ###
+
     if( PLATFORMS_IGNORE AND INIT )
         foreach( PLATFORM ${PLATFORMS_IGNORE} )
             if(${PLATFORM} STREQUAL ${DAVA_PLATFORM_CURRENT} )
@@ -668,7 +668,8 @@ macro( setup_main_module )
                 
                 generated_unity_sources( ALL_SRC  IGNORE_LIST ${UNITY_IGNORE_LIST}
                                                   IGNORE_LIST_${DAVA_PLATFORM_CURRENT} ${UNITY_IGNORE_LIST_${DAVA_PLATFORM_CURRENT}}
-                                                  CUSTOM_PACK_1 ${CUSTOM_PACK_1} ${CUSTOM_PACK_1_${DAVA_PLATFORM_CURRENT}}) 
+                                                  CUSTOM_PACK_1 ${CUSTOM_PACK_1} ${CUSTOM_PACK_1_${DAVA_PLATFORM_CURRENT}}
+                                                  UNITYIGNORE_FILES ${PROJECT_UNITYIGNORE_FILES} ) 
             endif()
 
             if( ${MODULE_TYPE} STREQUAL "STATIC" )

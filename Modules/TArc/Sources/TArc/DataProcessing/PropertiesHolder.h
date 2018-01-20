@@ -14,9 +14,6 @@ namespace DAVA
 class FilePath;
 class Type;
 class FileSystem;
-
-namespace TArc
-{
 class PropertiesItem;
 
 class PropertiesHolder
@@ -27,7 +24,7 @@ public:
 
     PropertiesItem CreateSubHolder(const String& name) const;
     static std::unique_ptr<PropertiesHolder> CopyWithNewPath(PropertiesHolder& holder,
-                                                             DAVA::FileSystem* fs,
+                                                             FileSystem* fs,
                                                              const String& projectName,
                                                              const FilePath& directory);
     void SaveToFile();
@@ -71,6 +68,4 @@ T PropertiesItem::Get(const String& key, const T& defaultValue) const
     Any loadedValue = Get(key, defaultValue, Type::Instance<T>());
     return loadedValue.Cast<T>(defaultValue);
 }
-
-} // namespace TArc
 } // namespace DAVA

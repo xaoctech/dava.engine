@@ -15,10 +15,7 @@ namespace DAVA
 {
 class Scene;
 
-namespace TArc
-{
 class WaitHandle;
-}
 }
 
 namespace Beast
@@ -29,7 +26,7 @@ class BeastManager;
 class BeastRunner final
 {
 public:
-    BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, Beast::eBeastMode mode, std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle);
+    BeastRunner(DAVA::Scene* scene, const DAVA::FilePath& scenePath, const DAVA::FilePath& outputPath, Beast::eBeastMode mode, std::unique_ptr<DAVA::WaitHandle> waitHandle);
 
     void RunUIMode();
 
@@ -44,7 +41,7 @@ private:
 private:
     std::unique_ptr<Beast::BeastManager> beastManager;
 
-    std::unique_ptr<DAVA::TArc::WaitHandle> waitHandle;
+    std::unique_ptr<DAVA::WaitHandle> waitHandle;
 
     DAVA::Scene* workingScene = nullptr;
     const DAVA::FilePath scenePath;

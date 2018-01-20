@@ -1,14 +1,11 @@
 #include "Classes/Qt/MaterialEditor/MaterialItem.h"
 #include "Classes/Qt/MaterialEditor/MaterialModel.h"
-#include "Classes/Qt/Main/QtUtils.h"
 #include "Classes/Qt/TextureBrowser/TextureCache.h"
-#include "Classes/Application/REGlobal.h"
 
-#include "Classes/Application/REGlobal.h"
-
-#include <TArc/Utils/Utils.h>
-#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Core/Deprecated.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/SharedModules/ThemesModule/ThemesModule.h>
+#include <TArc/Utils/Utils.h>
 
 #include <QSet>
 #include <QPainter>
@@ -71,7 +68,7 @@ QVariant MaterialItem::data(int role) const
         ret = QStandardItem::data(role);
         if (GetFlag(MaterialItem::IS_PART_OF_SELECTION))
         {
-            QColor color = REGlobal::GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>()->GetHighligtedItemTextColor();
+            QColor color = DAVA::Deprecated::GetDataNode<DAVA::ThemesSettings>()->GetHighligtedItemTextColor();
             ret = QVariant::fromValue(color);
         }
     }

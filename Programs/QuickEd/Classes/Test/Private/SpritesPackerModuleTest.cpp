@@ -32,7 +32,7 @@ DAVA_TARC_TESTCLASS(SpritesPackerModuleTest)
     DAVA_TEST (ReloadSpritesTest)
     {
         using namespace DAVA;
-        using namespace TArc;
+
         using namespace TestHelpers;
 
         CreateProject();

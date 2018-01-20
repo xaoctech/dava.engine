@@ -4,7 +4,7 @@
 
 namespace TestHelpers
 {
-class ProjectSettingsGuard : public DAVA::TArc::ClientModule
+class ProjectSettingsGuard : public DAVA::ClientModule
 {
 public:
     ~ProjectSettingsGuard();
@@ -23,6 +23,6 @@ protected:
     DAVA::Vector<DAVA::String> projectsHistory;
     DAVA::String lastProject;
 
-    DAVA_VIRTUAL_REFLECTION(ProjectSettingsGuard, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ProjectSettingsGuard, DAVA::ClientModule);
 };
 } //namespace TestHelpers

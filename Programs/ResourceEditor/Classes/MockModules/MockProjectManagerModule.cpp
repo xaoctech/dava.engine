@@ -1,7 +1,7 @@
 #include "Classes/MockModules/MockProjectManagerModule.h"
-#include "Classes/Project/ProjectResources.h"
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/DataNodes/ProjectResources.h>
 #include <Reflection/ReflectionRegistrator.h>
 
 namespace Mock
@@ -18,7 +18,6 @@ ProjectManagerModule::~ProjectManagerModule()
 void ProjectManagerModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     // prepare test environment
     {
@@ -26,7 +25,7 @@ void ProjectManagerModule::PostInit()
         CommandLineModuleTestUtils::CreateProjectInfrastructure(testProjectPath);
     }
 
-    projectResources.reset(new ProjectResources(GetAccessor()));
+    projectResources.reset(new DAVA::ProjectResources(GetAccessor()));
     projectResources->LoadProject(testProjectPath);
 }
 

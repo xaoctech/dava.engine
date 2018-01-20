@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 SceneTabbar::SceneTabbar(ContextAccessor* accessor_, Reflection model_, QWidget* parent /* = nullptr */)
     : QTabBar(parent)
     , accessor(accessor_)
@@ -40,7 +38,7 @@ SceneTabbar::SceneTabbar(ContextAccessor* accessor_, Reflection model_, QWidget*
     MakeActionKeyBindable(closeTab, info);
 
     addAction(closeTab);
-    QObject::connect(closeTab, &QAction::triggered, DAVA::MakeFunction(this, &SceneTabbar::OnCloseCurrentTab));
+    QObject::connect(closeTab, &QAction::triggered, MakeFunction(this, &SceneTabbar::OnCloseCurrentTab));
 }
 
 void SceneTabbar::OnDataChanged(const DataWrapper& wrapper, const Vector<Any>& fields)
@@ -293,6 +291,4 @@ int SceneTabbar::GetTabIndexByID(uint64 id) const
     DVASSERT(false);
     return -1;
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -4,7 +4,7 @@
 
 class FileSystemWidget;
 
-class FileSystemModule : public DAVA::TArc::ClientModule
+class FileSystemModule : public DAVA::ClientModule
 {
     void PostInit() override;
     void InitUI();
@@ -15,5 +15,5 @@ class FileSystemModule : public DAVA::TArc::ClientModule
 
     FileSystemWidget* widget = nullptr;
 
-    DAVA_VIRTUAL_REFLECTION(FileSystemModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(FileSystemModule, DAVA::ClientModule);
 };

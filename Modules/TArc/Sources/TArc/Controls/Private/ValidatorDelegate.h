@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ValidatorDelegate
 {
 public:
@@ -15,6 +13,4 @@ public:
     virtual M::ValidationResult Validate(const Any& value) const = 0;
     virtual void ShowHint(const QString& message) = 0;
 };
-
-} // namespace TArc
 } // namespace DAVA

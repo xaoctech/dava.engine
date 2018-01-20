@@ -2,7 +2,6 @@
 
 #if defined(__DAVAENGINE_BEAST__)
 
-
 #include "ui_BeastDialog.h"
 
 #include <Beast/BeastConstants.h>
@@ -11,7 +10,10 @@
 #include <QScopedPointer>
 #include <QPointer>
 
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 class QEventLoop;
 
 class BeastDialog : public QWidget
@@ -22,7 +24,7 @@ public:
     BeastDialog(QWidget* parent = 0);
     ~BeastDialog();
 
-    void SetScene(SceneEditor2* scene);
+    void SetScene(DAVA::SceneEditor2* scene);
     bool Exec(QWidget* parent = 0);
     QString GetPath() const;
     Beast::eBeastMode GetMode() const;
@@ -43,7 +45,7 @@ private:
 
     QScopedPointer<Ui::BeastDialog> ui;
     QPointer<QEventLoop> loop;
-    SceneEditor2* scene;
+    DAVA::SceneEditor2* scene;
     bool result;
 
     Beast::eBeastMode beastMode = Beast::eBeastMode::MODE_LIGHTMAPS;

@@ -33,7 +33,7 @@ struct ValueNode : DAVA::ReflectionBase
     }
 };
 
-class DummyComponentValue : public DAVA::TArc::BaseComponentValue
+class DummyComponentValue : public DAVA::BaseComponentValue
 {
 public:
     int GetIntValue() const
@@ -45,7 +45,7 @@ public:
     {
     }
 
-    void Add(const std::shared_ptr<DAVA::TArc::PropertyNode>& node)
+    void Add(const std::shared_ptr<DAVA::PropertyNode>& node)
     {
         AddPropertyNode(node, DAVA::FastName());
     }
@@ -62,15 +62,15 @@ protected:
         return true;
     }
 
-    DAVA::TArc::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::TArc::DataWrappersProcessor* wrappersProcessor) override
+    DAVA::ControlProxy* CreateEditorWidget(QWidget* parent, const DAVA::Reflection& model, DAVA::DataWrappersProcessor* wrappersProcessor) override
     {
-        DAVA::TArc::EmptyWidget::Params params(GetAccessor(), GetUI(), GetWindowKey());
-        return new DAVA::TArc::EmptyWidget(params, wrappersProcessor, model, parent);
+        DAVA::EmptyWidget::Params params(GetAccessor(), GetUI(), GetWindowKey());
+        return new DAVA::EmptyWidget(params, wrappersProcessor, model, parent);
     }
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DummyComponentValue, DAVA::TArc::BaseComponentValue)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DummyComponentValue, DAVA::BaseComponentValue)
     {
-        DAVA::ReflectionRegistrator<DummyComponentValue>::Begin(DAVA::TArc::CreateComponentStructureWrapper<DummyComponentValue>())
+        DAVA::ReflectionRegistrator<DummyComponentValue>::Begin(DAVA::CreateComponentStructureWrapper<DummyComponentValue>())
         .Field("value", &DummyComponentValue::GetIntValue, &DummyComponentValue::SetIntValue)[DAVA::M::ProxyMetaRequire()]
         .Field("notProxyField", &DummyComponentValue::y)[DAVA::M::ReadOnly()]
         .End();
@@ -117,10 +117,10 @@ DAVA_TARC_TESTCLASS(ComponentStructureWrapperTest)
 
         ValueNode node;
         DAVA::Reflection r = DAVA::Reflection::Create(&node);
-        std::shared_ptr<DAVA::TArc::PropertyNode> propNode(new DAVA::TArc::PropertyNode());
+        std::shared_ptr<DAVA::PropertyNode> propNode(new DAVA::PropertyNode());
         propNode->field.ref = r.GetField("x");
         propNode->field.key = DAVA::Any("x");
-        propNode->propertyType = DAVA::TArc::PropertyNode::RealProperty;
+        propNode->propertyType = DAVA::PropertyNode::RealProperty;
         propNode->cachedValue = propNode->field.ref.GetValue();
 
         std::unique_ptr<DummyComponentValue> value(new DummyComponentValue());

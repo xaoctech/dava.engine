@@ -3,16 +3,21 @@
 #include "Scene3D/Entity.h"
 #include <QDialog>
 
+namespace DAVA
+{
+class SceneEditor2;
+} // namespace DAVA
+
 class GlobalOperations;
 class QualitySwitcher : public QDialog
 {
     Q_OBJECT
 
 public:
-    static void ShowDialog(std::shared_ptr<GlobalOperations> globalOperations);
+    static void ShowDialog();
 
 protected:
-    QualitySwitcher(const std::shared_ptr<GlobalOperations>& globalOperations);
+    QualitySwitcher();
     ~QualitySwitcher();
 
     void ApplyTx();
@@ -20,7 +25,7 @@ protected:
 
     void UpdateEntitiesToQuality(DAVA::Entity* e);
     void UpdateParticlesToQuality();
-    void ReloadEntityEmitters(SceneEditor2* scene, DAVA::Entity* e);
+    void ReloadEntityEmitters(DAVA::SceneEditor2* scene, DAVA::Entity* e);
     void SetSettingsDirty(bool dirty);
     void ApplySettings();
 
@@ -35,6 +40,5 @@ protected slots:
 
 private:
     bool settingsDirty = false;
-    std::shared_ptr<GlobalOperations> globalOperations;
     static QualitySwitcher* switcherDialog;
 };

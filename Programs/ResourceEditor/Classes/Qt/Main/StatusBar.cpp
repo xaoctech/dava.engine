@@ -1,15 +1,13 @@
-#include "StatusBar.h"
+#include "Classes/Qt/Main/StatusBar.h"
 
-#include "Time/SystemTimer.h"
+#include <REPlatform/Scene/SceneEditor2.h>
 
-#include "Main/mainwindow.h"
-#include "Scene/SceneEditor2.h"
-#include "Commands2/Base/RECommand.h"
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Scene/Systems/CameraSystem.h>
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Selection/Selection.h"
-#include "Classes/Selection/SelectionData.h"
+#include <Time/SystemTimer.h>
+#include <TArc/Core/Deprecated.h>
 
 #include <QLabel>
 #include <QLayout>
@@ -43,7 +41,7 @@ StatusBar::StatusBar(QWidget* parent)
     layout()->setSpacing(1);
     setStyleSheet("QStatusBar::item {border: none;}");
 
-    selectionWrapper = REGlobal::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<SelectionData>());
+    selectionWrapper = DAVA::Deprecated::CreateDataWrapper(DAVA::ReflectedTypeDB::Get<DAVA::SelectionData>());
     selectionWrapper.SetListener(this);
 }
 
@@ -65,10 +63,11 @@ void StatusBar::UpdateDistanceToCamera()
         return;
     }
 
-    const SelectableGroup& selection = Selection::GetSelection();
-    if (selection.IsEmpty() == false)
+    DAVA::SelectionData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SelectionData>();
+
+    if (data != nullptr && data->GetSelection().IsEmpty() == false)
     {
-        DAVA::float32 distanceToCamera = activeScene->cameraSystem->GetDistanceToCamera();
+        DAVA::float32 distanceToCamera = activeScene->GetSystem<DAVA::SceneCameraSystem>()->GetDistanceToCamera();
         SetDistanceToCamera(distanceToCamera);
     }
     else
@@ -77,7 +76,7 @@ void StatusBar::UpdateDistanceToCamera()
     }
 }
 
-void StatusBar::SceneActivated(SceneEditor2* scene)
+void StatusBar::SceneActivated(DAVA::SceneEditor2* scene)
 {
     DVASSERT(scene != nullptr);
     activeScene = scene;
@@ -85,13 +84,13 @@ void StatusBar::SceneActivated(SceneEditor2* scene)
     UpdateDistanceToCamera();
 }
 
-void StatusBar::SceneDeactivated(SceneEditor2* scene)
+void StatusBar::SceneDeactivated(DAVA::SceneEditor2* scene)
 {
     DVASSERT(scene != nullptr);
     activeScene = nullptr;
 }
 
-void StatusBar::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void StatusBar::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     DVASSERT(selectionWrapper == wrapper);
 
@@ -112,7 +111,7 @@ void StatusBar::OnSceneGeometryChaged(DAVA::uint32 width, DAVA::uint32 height)
 
 void StatusBar::UpdateSelectionBoxSize()
 {
-    SelectionData* selectionData = REGlobal::GetActiveDataNode<SelectionData>();
+    DAVA::SelectionData* selectionData = DAVA::Deprecated::GetActiveDataNode<DAVA::SelectionData>();
     if (selectionData == nullptr)
     {
         selectionBoxSize->setText(QString());
@@ -120,7 +119,7 @@ void StatusBar::UpdateSelectionBoxSize()
         return;
     }
 
-    const SelectableGroup& selection = selectionData->GetSelection();
+    const DAVA::SelectableGroup& selection = selectionData->GetSelection();
     if (selection.IsEmpty())
     {
         selectionBoxSize->setText(QString());

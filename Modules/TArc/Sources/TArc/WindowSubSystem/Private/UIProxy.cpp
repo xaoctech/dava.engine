@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class UIProxy::Guard
 {
 public:
@@ -138,6 +136,4 @@ UI* UIProxy::GetGlobalUI()
 {
     return globalUI;
 }
-
-} // namespace TArc
 } // namespace DAVA

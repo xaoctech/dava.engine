@@ -1,20 +1,20 @@
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
 #include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "Classes/StringConstants.h"
+
+#include <REPlatform/Global/StringConstants.h>
 
 #include <TArc/Testing/TArcUnitTests.h>
 
 #include <Base/BaseTypes.h>
 #include <Base/ScopedPtr.h>
 #include <Engine/Engine.h>
-#include <FileSystem/KeyedArchive.h>
 #include <FileSystem/FileSystem.h>
-
-#include <Scene3D/Scene.h>
-#include <Scene3D/Entity.h>
-#include <Scene3D/Components/CustomPropertiesComponent.h>
+#include <FileSystem/KeyedArchive.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
 
 namespace AddSwitchTestDetails
 {
@@ -134,8 +134,7 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                     TEST_VERIFY(sw->GetSwitchIndex() == index);
                 }
             };
-
-            testSwitch(ResourceEditor::SWITCH_NODE_NAME, 1);
+            testSwitch(DAVA::FastName(ResourceEditor::SWITCH_NODE_NAME), 1);
             testSwitch(FastName("switchWithoutChildren"), 0);
         }
 

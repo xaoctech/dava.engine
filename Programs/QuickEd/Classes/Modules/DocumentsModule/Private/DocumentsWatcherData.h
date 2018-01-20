@@ -1,12 +1,12 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <TArc/DataProcessing/DataContext.h>
 
 class QFileSystemWatcher;
 class QString;
 
-class DocumentsWatcherData : public DAVA::TArc::DataNode
+class DocumentsWatcherData : public DAVA::TArcDataNode
 {
 public:
     DocumentsWatcherData();
@@ -19,7 +19,7 @@ private:
     void Unwatch(const QString& path);
 
     //store changed ids to iterate them when application will be active
-    DAVA::Set<DAVA::TArc::DataContext::ContextID> changedDocuments;
+    DAVA::Set<DAVA::DataContext::ContextID> changedDocuments;
     std::unique_ptr<QFileSystemWatcher> watcher;
-    DAVA_VIRTUAL_REFLECTION(DocumentsWatcherData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(DocumentsWatcherData, DAVA::TArcDataNode);
 };
