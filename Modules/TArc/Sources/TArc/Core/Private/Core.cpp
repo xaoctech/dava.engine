@@ -220,7 +220,7 @@ public:
 
         for (String errorMsg : errors)
         {
-            DAVA::Logger::Error(errorMsg.c_str());
+            DAVA::Logger::Warning(errorMsg.c_str());
         }
     }
 
