@@ -12,8 +12,11 @@
 #include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Material/NMaterial.h"
+#include "Render/Material/NMaterialNames.h"
 
 #define FBX_IMPORT_CREATE_MATERIAL_INSTANCES 1
+#define FBX_IMPORT_AUTO_SHADOW_VOLUME_CONVERT 1
+#define FBX_IMPORT_AUTO_BUILD_TANGENT_SPACE 1
 
 namespace DAVA
 {
@@ -54,7 +57,24 @@ struct FBXVertex
     Set<FBXImporterDetails::VertexInfluence, JointWeightComparator> joints;
 };
 
+#if FBX_IMPORT_CREATE_MATERIAL_INSTANCES
+NMaterial* CreateMaterialInstance(NMaterial* parent)
+{
+    DVASSERT(parent != nullptr);
+
+    NMaterial* materialInstance = new NMaterial();
+    materialInstance->SetMaterialName(FastName(Format("Instance-%d", parent->GetRetainCount() - 1).c_str()));
+    materialInstance->SetParent(parent);
+
+    return materialInstance;
+}
+#endif
+
 Map<const FbxMesh*, GeometrySet> meshCache; //in ProcessedMesh::GeometrySet materials isn't retained. It's owned by materialCache
+
+#if FBX_IMPORT_AUTO_SHADOW_VOLUME_CONVERT
+NMaterial* shadowVolumeMaterial = nullptr;
+#endif
 
 FbxSurfaceMaterial* GetPolygonMaterial(FbxMesh* fbxMesh, int32 polygonIndex);
 
@@ -167,8 +187,9 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
         for (auto& gIt : materialGeometry)
         {
             FbxSurfaceMaterial* fbxMaterial = gIt.first;
-            const VerticesMap& vertices = gIt.second;
+            NMaterial* material = ImportMaterial(fbxMaterial, maxControlPointInfluence);
 
+            const VerticesMap& vertices = gIt.second;
             int32 vxCount = int32(vertices.first.size());
             int32 indCount = int32(vertices.second * 3);
 
@@ -230,7 +251,33 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 
             polygonGroup->ApplyMatrix(meshTransform);
 
-            geometrySet.emplace_back(polygonGroup, ImportMaterial(fbxMaterial, maxControlPointInfluence));
+#if FBX_IMPORT_AUTO_BUILD_TANGENT_SPACE
+            bool completedTBN = hasNormal && hasTangent && hasBinormal;
+            if (hasNormal && !completedTBN)
+            {
+                MeshUtils::RebuildMeshTangentSpace(polygonGroup);
+            }
+#endif
+
+#if FBX_IMPORT_AUTO_SHADOW_VOLUME_CONVERT
+            if (strstr(fbxNode->GetName(), "_shadow"))
+            {
+                PolygonGroup* shadowPolygonGroup = MeshUtils::CreateShadowPolygonGroup(polygonGroup);
+                SafeRelease(polygonGroup);
+                polygonGroup = shadowPolygonGroup;
+
+                if (shadowVolumeMaterial == nullptr)
+                {
+                    shadowVolumeMaterial = new NMaterial();
+                    shadowVolumeMaterial->SetMaterialName(FastName("Shadow_Material"));
+                    shadowVolumeMaterial->SetFXName(NMaterialName::SHADOW_VOLUME);
+                }
+
+                //Material is owned by materialCache. We don't need to release it
+                material = shadowVolumeMaterial;
+            }
+#endif
+            geometrySet.emplace_back(polygonGroup, material);
         }
 
         found = meshCache.emplace(fbxMesh, std::move(geometrySet)).first;
@@ -253,9 +300,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             NMaterial* material = geometry.second;
 
 #if FBX_IMPORT_CREATE_MATERIAL_INSTANCES
-            ScopedPtr<NMaterial> materialInstance(new NMaterial());
-            materialInstance->SetParent(material);
-            materialInstance->SetMaterialName(FastName(Format("Instance%u", mesh->GetRenderBatchCount()).c_str()));
+            ScopedPtr<NMaterial> materialInstance(CreateMaterialInstance(material));
             material = materialInstance.get();
 #endif
 
@@ -290,10 +335,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             NMaterial* material = geometry.second;
 
 #if FBX_IMPORT_CREATE_MATERIAL_INSTANCES
-            ScopedPtr<NMaterial> materialInstance(new NMaterial());
-            materialInstance->SetParent(material);
-            materialInstance->SetMaterialName(FastName(Format("Instance%u", mesh->GetRenderBatchCount()).c_str()));
-
+            ScopedPtr<NMaterial> materialInstance(CreateMaterialInstance(material));
             material = materialInstance.get();
 #endif
 
@@ -313,6 +355,10 @@ void ClearMeshCache()
         //in geometry cache material isn't retained
     }
     FBXMeshImportDetails::meshCache.clear();
+    
+#if FBX_IMPORT_AUTO_SHADOW_VOLUME_CONVERT
+    SafeRelease(FBXMeshImportDetails::shadowVolumeMaterial);
+#endif
 }
 
 }; //ns FBXImporterDetails
