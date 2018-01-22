@@ -35,7 +35,7 @@ DAVA_REFLECTION_IMPL(IssueNavigatorModule::HeaderDescription)
 
 void IssueNavigatorModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     const char* title = "Issue Navigator";
     DockPanelInfo panelInfo;
     panelInfo.title = title;
@@ -49,7 +49,7 @@ void IssueNavigatorModule::PostInit()
     params.fields[TableView::Fields::ItemActivated] = "OnIssueActivated";
 
     TableView* tableView = new TableView(params, GetAccessor(), DAVA::Reflection::Create(DAVA::ReflectedObject(this)));
-    GetUI()->AddView(DAVA::TArc::mainWindowKey, key, tableView->ToWidgetCast());
+    GetUI()->AddView(DAVA::mainWindowKey, key, tableView->ToWidgetCast());
 
     std::unique_ptr<IssueNavigatorData> data = std::make_unique<IssueNavigatorData>();
     DAVA::int32 sectionId = 0;
@@ -68,12 +68,12 @@ void IssueNavigatorModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
     }
 }
 
-void IssueNavigatorModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void IssueNavigatorModule::OnContextCreated(DAVA::DataContext* context)
 {
     context->CreateData(std::make_unique<IssueData>());
 }
 
-void IssueNavigatorModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne)
+void IssueNavigatorModule::OnContextWillBeChanged(DAVA::DataContext* current, DAVA::DataContext* newOne)
 {
     if (current != nullptr)
     {
@@ -84,7 +84,7 @@ void IssueNavigatorModule::OnContextWillBeChanged(DAVA::TArc::DataContext* curre
 
 void IssueNavigatorModule::OnIssueAvitvated(DAVA::int32 index)
 {
-    const DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    const DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     if (context)
     {
         DVASSERT(index != -1);
@@ -102,7 +102,7 @@ void IssueNavigatorModule::OnIssueAvitvated(DAVA::int32 index)
 
 const DAVA::Vector<IssueData::Issue>& IssueNavigatorModule::GetValues() const
 {
-    const DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    const DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     if (context)
     {
         IssueData* issueData = context->GetData<IssueData>();
@@ -114,9 +114,9 @@ const DAVA::Vector<IssueData::Issue>& IssueNavigatorModule::GetValues() const
     return empty;
 }
 
-void IssueNavigatorModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void IssueNavigatorModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    const DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    const DAVA::DataContext* globalContext = GetAccessor()->GetGlobalContext();
     if (globalContext)
     {
         IssueNavigatorData* data = globalContext->GetData<IssueNavigatorData>();
@@ -145,4 +145,4 @@ void IssueNavigatorModule::SetCurrentValue(const DAVA::Any& currentValue)
     }
 }
 
-DECL_GUI_MODULE(IssueNavigatorModule);
+DECL_TARC_MODULE(IssueNavigatorModule);

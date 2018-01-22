@@ -7,9 +7,9 @@
 
 #include <QString>
 
-class RenderOptionsModule : public DAVA::TArc::ClientModule
+class RenderOptionsModule : public DAVA::ClientModule
 {
-    DAVA_VIRTUAL_REFLECTION(RenderOptionsModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(RenderOptionsModule, DAVA::ClientModule);
 
 public:
     /** Menu item name in Tools menu. */
@@ -20,5 +20,5 @@ protected:
 
 private:
     void ShowRenderOptionsDialog();
-    DAVA::TArc::QtConnections connections;
+    DAVA::QtConnections connections;
 };

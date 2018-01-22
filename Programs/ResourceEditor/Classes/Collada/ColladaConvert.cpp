@@ -1,6 +1,6 @@
 #include "ColladaConvert.h"
 #include "ColladaDocument.h"
-#include "Collada/ColladaToSc2Importer/ColladaImporter.h"
+#include "Classes/Collada/ColladaToSc2Importer/ColladaImporter.h"
 #include "Classes/Collada/ImportParams.h"
 
 eColladaErrorCodes ConvertDaeToSc2(const DAVA::FilePath& pathToFile, std::unique_ptr<DAEConverter::ImportParams>&& importParams)

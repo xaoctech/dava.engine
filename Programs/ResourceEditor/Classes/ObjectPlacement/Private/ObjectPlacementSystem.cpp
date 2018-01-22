@@ -1,19 +1,28 @@
 #include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/System/ModifSystem.h"
-#include "Classes/Selection/Selection.h"
 
+#include <REPlatform/DataNodes/Selectable.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/ModifSystem.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
+
+#include <Base/Vector.h>
+#include <Logger/Logger.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Entity.h>
 #include <Scene3D/Systems/LandscapeSystem.h>
 
 ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene)
 {
-    SceneEditor2* editorScene = static_cast<SceneEditor2*>(scene);
-    modificationSystem = editorScene->modifSystem;
+    modificationSystem = scene->GetSystem<DAVA::EntityModificationSystem>();
     DVASSERT(modificationSystem != nullptr);
-    renderSystem = editorScene->renderSystem;
+    renderSystem = scene->GetRenderSystem();
     DVASSERT(renderSystem != nullptr);
-    landscapeSystem = editorScene->landscapeSystem;
+    landscapeSystem = scene->GetSystem<DAVA::LandscapeSystem>();
     DVASSERT(landscapeSystem != nullptr);
 }
 
@@ -27,7 +36,7 @@ void ObjectPlacementSystem::SetSnapToLandscape(bool newSnapToLandscape)
     const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
     if (landscapes.empty())
     {
-        DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
+        DAVA::Logger::Error(DAVA::ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
         return;
     }
     snapToLandscape = newSnapToLandscape;
@@ -39,13 +48,12 @@ void ObjectPlacementSystem::PlaceOnLandscape() const
     const DAVA::Vector<DAVA::Entity*>& landscapes = landscapeSystem->GetLandscapeEntities();
     if (landscapes.empty())
     {
-        DAVA::Logger::Error(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
+        DAVA::Logger::Error(DAVA::ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE.c_str());
         return;
     }
+    DAVA::SelectableGroup selection = GetScene()->GetSystem<DAVA::SelectionSystem>()->GetSelection();
 
-    SelectableGroup selection = Selection::GetSelection();
-
-    selection.RemoveIf([this](const Selectable& obj) {
+    selection.RemoveIf([](const DAVA::Selectable& obj) {
         return obj.AsEntity()->GetLocked();
     });
 
@@ -75,13 +83,13 @@ void ObjectPlacementSystem::PlaceAndAlign() const
 {
     using namespace DAVA;
 
-    SelectableGroup entities = Selection::GetSelection();
+    SelectableGroup entities = GetScene()->GetSystem<SelectionSystem>()->GetSelection();
 
-    entities.RemoveIf([this](const Selectable& obj) {
+    entities.RemoveIf([](const Selectable& obj) {
         return obj.AsEntity()->GetLocked();
     });
 
-    Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities);
+    Vector<EntityToModify> modifEntities = CreateEntityToModifyVector(entities, GetScene());
     if (modifEntities.empty())
         return;
 

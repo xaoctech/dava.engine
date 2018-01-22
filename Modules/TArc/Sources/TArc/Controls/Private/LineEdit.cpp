@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 LineEdit::LineEdit(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QLineEdit>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -122,7 +120,7 @@ void LineEdit::ShowHint(const QString& message)
     NotificationParams notifParams;
     notifParams.title = "Invalid value";
     notifParams.message.message = message.toStdString();
-    notifParams.message.type = ::DAVA::Result::RESULT_ERROR;
+    notifParams.message.type = Result::RESULT_ERROR;
     controlParams.ui->ShowNotification(controlParams.wndKey, notifParams);
 }
 
@@ -149,6 +147,4 @@ void LineEdit::TextChanged(const QString& newText)
         }
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

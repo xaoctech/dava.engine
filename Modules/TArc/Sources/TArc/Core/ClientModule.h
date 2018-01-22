@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DataContext;
 class ContextAccessor;
 class WindowKey;
@@ -110,6 +108,4 @@ inline TInterface* ClientModule::QueryInterface() const
     Any result = coreInterface->QueryInterface(Type::Instance<TInterface>());
     return result.Get<TInterface*>();
 }
-
-} // namespace TArc
 } // namespace DAVA

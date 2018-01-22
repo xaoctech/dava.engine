@@ -22,18 +22,18 @@ RemoteToolModule::~RemoteToolModule()
 
 void RemoteToolModule::PostInit()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     // create menu bar action "Remote", insert before "Help"
     QMenu* menuRemote = new QMenu(QStringLiteral("Remote"), nullptr);
-    ActionPlacementInfo menuRemotePlacement(CreateMenuPoint("", { DAVA::TArc::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
+    ActionPlacementInfo menuRemotePlacement(CreateMenuPoint("", { DAVA::InsertionParams::eInsertionMethod::BeforeItem, MenuItems::menuHelp }));
     GetUI()->AddAction(mainWindowKey, menuRemotePlacement, menuRemote->menuAction());
 
     QtAction* toolAction = new QtAction(GetAccessor(), QString("Remote Inspect"));
 
     // create "Remote Inspect" action inside of "Remote"
     ActionPlacementInfo toolPlacement(CreateMenuPoint("Remote"));
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, toolPlacement, toolAction);
+    GetUI()->AddAction(DAVA::mainWindowKey, toolPlacement, toolAction);
 
     connections.AddConnection(toolAction, &QAction::triggered, DAVA::MakeFunction(this, &RemoteToolModule::Show));
 }
@@ -50,9 +50,9 @@ void RemoteToolModule::Show()
     deviceListController->ShowView();
 }
 
-void RemoteToolModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void RemoteToolModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
-    if (key == DAVA::TArc::mainWindowKey && deviceListWidget != nullptr)
+    if (key == DAVA::mainWindowKey && deviceListWidget != nullptr)
     {
         delete deviceListWidget;
     }

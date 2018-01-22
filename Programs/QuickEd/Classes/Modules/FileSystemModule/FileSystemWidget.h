@@ -13,11 +13,8 @@ class QItemSelection;
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder;
-}
 }
 
 class FileSystemWidget : public QWidget
@@ -25,7 +22,7 @@ class FileSystemWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit FileSystemWidget(DAVA::TArc::ContextAccessor* accessor, QWidget* parent = nullptr);
+    explicit FileSystemWidget(DAVA::ContextAccessor* accessor, QWidget* parent = nullptr);
     ~FileSystemWidget();
 
     void SelectFile(const QString& filePath);
@@ -78,7 +75,7 @@ private:
 
     QTreeView* treeView = nullptr;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
+    DAVA::ContextAccessor* accessor = nullptr;
     QString fileToSelect;
 };

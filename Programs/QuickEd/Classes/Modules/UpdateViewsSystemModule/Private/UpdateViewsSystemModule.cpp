@@ -17,9 +17,9 @@ void UpdateViewsSystemModule::PostInit()
     uiControlSystem->AddSystem(std::make_unique<UpdateViewsSystem>(), uiControlSystem->GetRenderSystem());
 }
 
-void UpdateViewsSystemModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void UpdateViewsSystemModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
-    DVASSERT(key == DAVA::TArc::mainWindowKey);
+    DVASSERT(key == DAVA::mainWindowKey);
     DAVA::UIControlSystem* uiControlSystem = GetAccessor()->GetEngineContext()->uiControlSystem;
     uiControlSystem->RemoveSystem(uiControlSystem->GetSystem<UpdateViewsSystem>());
 }

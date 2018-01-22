@@ -10,10 +10,7 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ColorPickerDialog;
-}
 }
 
 class QtPropertyDataDavaVariant
@@ -67,7 +64,7 @@ protected slots:
     void MultilineEditClicked();
     void ColorOWPressed();
     void FilePathOWPressed();
-    void OnColorChanging(DAVA::TArc::ColorPickerDialog* colorPicker);
+    void OnColorChanging(DAVA::ColorPickerDialog* colorPicker);
 
 protected:
     struct AllowedValue
@@ -127,7 +124,7 @@ protected:
     QString defaultOpenDialogPath;
     bool isSettingMeFromChilds;
 
-    mutable DAVA::TArc::QtConnections connections;
+    mutable DAVA::QtConnections connections;
 };
 
 class QtPropertyDataDavaVariantSubValue

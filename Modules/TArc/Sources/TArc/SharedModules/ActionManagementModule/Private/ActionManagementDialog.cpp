@@ -31,8 +31,6 @@ ENUM_DECLARE(Qt::ShortcutContext)
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ActionManagementDialogDetail
 {
 bool HasModif(int key)
@@ -206,9 +204,9 @@ void ActionManagementDialog::OnShortcutTextChanged(const QKeySequence& seq)
 {
     using namespace ActionManagementDialogDetail;
     QKeySequence inputSequence = seq;
-    DAVA::Array<int, 4> correctedKeys;
+    Array<int, 4> correctedKeys;
     correctedKeys.fill(0);
-    DAVA::Vector<QChar> incorrectKeys;
+    Vector<QChar> incorrectKeys;
     bool withoutModifFound = false;
     for (int i = 0; i < inputSequence.count(); ++i)
     {
@@ -242,9 +240,9 @@ void ActionManagementDialog::OnShortcutTextChanged(const QKeySequence& seq)
     {
         NotificationParams params;
         params.title = "Incorrect shortcut";
-        params.message.type = DAVA::Result::RESULT_ERROR;
+        params.message.type = Result::RESULT_ERROR;
         params.message.message = Format("You should use modification key (Ctrl, Alt, Shift or combination)\nfor all keys in shortcut except F1-F12");
-        ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+        ui->ShowNotification(DAVA::mainWindowKey, params);
     }
     else if (inputSequence != seq)
     {
@@ -255,9 +253,9 @@ void ActionManagementDialog::OnShortcutTextChanged(const QKeySequence& seq)
         }
         NotificationParams params;
         params.title = "Incorrect shortcut";
-        params.message.type = DAVA::Result::RESULT_ERROR;
+        params.message.type = Result::RESULT_ERROR;
         params.message.message = Format("Incorrect keys was pressed: %s", incorrectKeysStr.toStdString().c_str());
-        ui->ShowNotification(DAVA::TArc::mainWindowKey, params);
+        ui->ShowNotification(DAVA::mainWindowKey, params);
     }
 }
 
@@ -280,7 +278,7 @@ void ActionManagementDialog::AddKeyBindingsScheme()
     dlg.setObjectName("newSchemeNameDlg");
     dlg.setInputMode(QInputDialog::TextInput);
     QObject::connect(&dlg, &QInputDialog::textValueChanged, [&dlg](const QString& text) {
-        const DAVA::Array<QChar, 15> forbiddenSymbols = {
+        const Array<QChar, 15> forbiddenSymbols = {
             '/', '\\', '.', ':', ';', '*', '?', '\"', '<', '>', '|', '{', '}', '[', ']'
         };
 
@@ -547,6 +545,4 @@ DAVA_REFLECTION_IMPL(ActionManagementDialog)
     .Method("assignShortcut", &ActionManagementDialog::AssignShortcut)
     .End();
 }
-
-} // namespace TArc
 } // namespace DAVA

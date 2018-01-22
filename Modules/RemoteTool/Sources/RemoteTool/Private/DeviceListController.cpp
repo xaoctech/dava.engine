@@ -21,7 +21,7 @@
 #include <QMessageBox>
 #include <QTimer>
 
-DeviceListController::DeviceListController(DAVA::TArc::UI* ui, QObject* parent)
+DeviceListController::DeviceListController(DAVA::UI* ui, QObject* parent)
     : QObject(parent)
     , model(NULL)
     , loggerServiceCreatorAsync(DAVA::MakeFunction(this, &DeviceListController::CreateLogger), DAVA::Net::NetCore::Instance()->GetNetEventsDispatcher())

@@ -47,14 +47,13 @@ struct UIViewerDialog::RunData : public DAVA::ReflectionBase
     }
 };
 
-UIViewerDialog::UIViewerDialog(DAVA::TArc::ContextAccessor* accessor_, DAVA::TArc::UI* ui, QWidget* parent)
+UIViewerDialog::UIViewerDialog(DAVA::ContextAccessor* accessor_, DAVA::UI* ui, QWidget* parent)
     : QDialog(parent)
     , accessor(accessor_)
     , runData(new RunData())
 
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ProjectData* projectData = accessor->GetGlobalContext()->GetData<ProjectData>();
     DVASSERT(nullptr != projectData);
@@ -80,7 +79,7 @@ UIViewerDialog::UIViewerDialog(DAVA::TArc::ContextAccessor* accessor_, DAVA::TAr
         QtHBoxLayout* lineLayout = new QtHBoxLayout();
         lineLayout->addWidget(new QLabel("Select Device: ", this));
 
-        ComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ComboBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ComboBox::Fields::Value] = "selectedDeviceIndex";
         params.fields[ComboBox::Fields::Enumerator] = "devicesEnumerator";
         lineLayout->AddControl(new ComboBox(params, accessor, reflectedModel));
@@ -91,7 +90,7 @@ UIViewerDialog::UIViewerDialog(DAVA::TArc::ContextAccessor* accessor_, DAVA::TAr
         QtHBoxLayout* lineLayout = new QtHBoxLayout();
         lineLayout->addWidget(new QLabel("Select Blank: ", this));
 
-        ComboBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        ComboBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[ComboBox::Fields::Value] = "selectedBlankIndex";
         params.fields[ComboBox::Fields::Enumerator] = "blanksEnumerator";
         lineLayout->AddControl(new ComboBox(params, accessor, reflectedModel));
@@ -102,7 +101,7 @@ UIViewerDialog::UIViewerDialog(DAVA::TArc::ContextAccessor* accessor_, DAVA::TAr
         QtHBoxLayout* lineLayout = new QtHBoxLayout();
         lineLayout->addWidget(new QLabel("Load as UI flow: ", this));
 
-        CheckBox::Params params(accessor, ui, DAVA::TArc::mainWindowKey);
+        CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
         params.fields[CheckBox::Fields::Checked] = "flowFlag";
         lineLayout->AddControl(new CheckBox(params, accessor, reflectedModel));
         boxLayout->addLayout(lineLayout);
@@ -118,7 +117,7 @@ UIViewerDialog::UIViewerDialog(DAVA::TArc::ContextAccessor* accessor_, DAVA::TAr
 
     setLayout(boxLayout);
 
-    DAVA::TArc::PropertiesItem propsItem = accessor->CreatePropertiesNode(UIViewerDialogDetails::PROPERTIES_KEY);
+    DAVA::PropertiesItem propsItem = accessor->CreatePropertiesNode(UIViewerDialogDetails::PROPERTIES_KEY);
     {
         QRect loadedGeometry = propsItem.Get<QRect>(UIViewerDialogDetails::GEOMETRY_KEY);
         if (loadedGeometry.isValid())
@@ -133,7 +132,7 @@ UIViewerDialog::~UIViewerDialog()
 {
     DVASSERT(accessor != nullptr);
 
-    DAVA::TArc::PropertiesItem propsItem = accessor->CreatePropertiesNode(UIViewerDialogDetails::PROPERTIES_KEY);
+    DAVA::PropertiesItem propsItem = accessor->CreatePropertiesNode(UIViewerDialogDetails::PROPERTIES_KEY);
     {
         propsItem.Set(UIViewerDialogDetails::GEOMETRY_KEY, DAVA::Any(geometry()));
     }

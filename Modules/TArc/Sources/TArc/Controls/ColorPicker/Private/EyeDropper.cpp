@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 EyeDropper::EyeDropper(QWidget* parent)
     : QObject(parent)
     , parentWidget(parent)
@@ -76,6 +74,5 @@ void EyeDropper::InitShades()
             }
         }
     }
-}
 }
 }

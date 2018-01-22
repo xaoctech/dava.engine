@@ -19,7 +19,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 
-EventsIssuesHandler::EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_, IndexGenerator* indexGenerator_)
+EventsIssuesHandler::EventsIssuesHandler(DAVA::ContextAccessor* accessor_, DAVA::int32 sectionId_, IndexGenerator* indexGenerator_)
     : IssueHandler(accessor_, sectionId_)
     , indexGenerator(indexGenerator_)
     , packageListenerProxy(this, accessor_)

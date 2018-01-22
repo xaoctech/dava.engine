@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class EmptyWidget : public ControlProxyImpl<QWidget>
 {
     using TBase = ControlProxyImpl<QWidget>;
@@ -29,5 +27,4 @@ protected:
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mouseMoveEvent(QMouseEvent* e) override;
 };
-} // namespace TArc
 } // namespace DAVA

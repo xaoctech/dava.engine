@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class PaletteHSV : public AbstractSlider
 {
     Q_OBJECT
@@ -32,5 +30,4 @@ private:
     QSize cursorSize;
     mutable QPixmap bgCache;
 };
-}
 }

@@ -4,10 +4,10 @@
 #include "DAVAEngine.h"
 #include "Base/EnumMap.h"
 
-#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Tools/QtPropertyEditor/QtPropertyData.h"
-#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
-#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyEditor.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Classes/Qt/Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 
 class LazyUpdater;
 class TextureProperties : public QtPropertyEditor

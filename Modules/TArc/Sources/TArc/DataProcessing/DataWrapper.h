@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename T>
 class DataEditor;
 template <typename T>
@@ -125,7 +123,6 @@ public:
 private:
     DataWrapper holder;
 };
-} // namespace TArc
 } // namespace DAVA
 
 #include "TArc/DataProcessing/Private/DataWrapper_impl.h"

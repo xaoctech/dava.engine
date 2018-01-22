@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class EnumComponentValue : public BaseComponentValue
 {
 public:
@@ -24,5 +22,4 @@ private:
 private:
     DAVA_VIRTUAL_REFLECTION(EnumComponentValue, BaseComponentValue);
 };
-}
 }

@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DoubleSpinBox : public BaseSpinBox<QDoubleSpinBox, double>
 {
 public:
@@ -46,6 +44,4 @@ private:
     QValidator::State TypeSpecificValidate(const QString& input) const override;
     mutable bool sizeHintCalculation = false;
 };
-
-} // namespace TArc
 } // namespace DAVA

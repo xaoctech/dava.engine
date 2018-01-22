@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 const int32 TimerUpdater::DisableFastUpdate = -1;
 
 TimerUpdater::TimerUpdater(int32 fullUpdateMS, int32 fastUpdateMS)
@@ -61,5 +59,4 @@ TimerUpdater::TimerUpdater(int32 fullUpdateMS, int32 fastUpdateMS)
 }
 
 TimerUpdater::~TimerUpdater() = default;
-} // namespace TArc
 } // namespace DAVA

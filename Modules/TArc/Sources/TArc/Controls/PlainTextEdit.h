@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class PlainTextEdit final : public ControlProxyImpl<QPlainTextEdit>
 {
 public:
@@ -40,5 +38,4 @@ private:
 private:
     int maxLength = 10;
 };
-} // namespace TArc
 } // namespace DAVA

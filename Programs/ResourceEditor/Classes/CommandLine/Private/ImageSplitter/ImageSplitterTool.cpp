@@ -1,9 +1,10 @@
-#include "CommandLine/ImageSplitterTool.h"
-#include "ImageTools/ImageTools.h"
-#include "CommandLine/Private/OptionName.h"
-#include "Logger/Logger.h"
+#include "Classes/CommandLine/ImageSplitterTool.h"
+#include "Classes/CommandLine/Private/OptionName.h"
 
-#include "TArc/Utils/ModuleCollection.h"
+#include <REPlatform/Scene/Utils/ImageTools.h>
+
+#include <TArc/Utils/ModuleCollection.h>
+#include <Logger/Logger.h>
 
 ImageSplitterTool::ImageSplitterTool(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-imagesplitter")
@@ -53,18 +54,18 @@ bool ImageSplitterTool::PostInitInternal()
     return true;
 }
 
-DAVA::TArc::ConsoleModule::eFrameResult ImageSplitterTool::OnFrameInternal()
+DAVA::ConsoleModule::eFrameResult ImageSplitterTool::OnFrameInternal()
 {
     if (commandAction == ACTION_SPLIT)
     {
-        ImageTools::SplitImage(filename);
+        DAVA::ImageTools::SplitImage(filename);
     }
     else if (commandAction == ACTION_MERGE)
     {
-        ImageTools::MergeImages(foldername);
+        DAVA::ImageTools::MergeImages(foldername);
     }
 
-    return DAVA::TArc::ConsoleModule::eFrameResult::FINISHED;
+    return DAVA::ConsoleModule::eFrameResult::FINISHED;
 }
 
 void ImageSplitterTool::ShowHelpInternal()
@@ -76,4 +77,4 @@ void ImageSplitterTool::ShowHelpInternal()
     DAVA::Logger::Info("\t-imagesplitter -merge -folder /Users/SmokeTest/images/");
 }
 
-DECL_CONSOLE_MODULE(ImageSplitterTool, "-imagesplitter");
+DECL_TARC_MODULE(ImageSplitterTool);

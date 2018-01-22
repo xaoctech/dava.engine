@@ -5,7 +5,7 @@
 
 class EditorSystemsManager;
 
-class CreatingControlsModule : public DAVA::TArc::ClientModule
+class CreatingControlsModule : public DAVA::ClientModule
 {
 public:
     CreatingControlsModule() = default;
@@ -21,7 +21,7 @@ private:
     void OnCreateByClick(DAVA::String controlYaml);
 
 private:
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtDelayedExecutor delayedExecutor;
 
-    DAVA_VIRTUAL_REFLECTION(CreatingControlsModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(CreatingControlsModule, DAVA::ClientModule);
 };

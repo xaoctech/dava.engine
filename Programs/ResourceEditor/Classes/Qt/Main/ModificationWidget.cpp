@@ -1,19 +1,23 @@
-#include "ModificationWidget.h"
-#include "Commands2/TransformCommand.h"
-#include "Commands2/Base/RECommandNotificationObject.h"
-#include "Math/MathHelpers.h"
+#include "Classes/Qt/Main/ModificationWidget.h"
 
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Project/ProjectManagerData.h"
-#include "Classes/Selection/SelectionData.h"
+#include <REPlatform/Commands/TransformCommand.h>
+#include <REPlatform/Commands/RECommandNotificationObject.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/Scene/Systems/ModifSystem.h>
 
-#include "TArc/Core/FieldBinder.h"
+#include <TArc/Core/Deprecated.h>
+#include <TArc/Core/FieldBinder.h>
 
+#include <Base/Any.h>
+#include <Math/MathHelpers.h>
+
+#include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLineEdit>
-#include <QStylePainter>
-#include <QHBoxLayout>
 #include <QStyleOptionSpinBox>
+#include <QStylePainter>
+#include "../Scene/SceneSignals.h"
 
 ModificationWidget::ModificationWidget(QWidget* parent)
     : QWidget(parent)
@@ -57,11 +61,11 @@ ModificationWidget::ModificationWidget(QWidget* parent)
     connect(SceneSignals::Instance(), &SceneSignals::Deactivated, this, &ModificationWidget::OnSceneDeactivated);
     connect(SceneSignals::Instance(), &SceneSignals::CommandExecuted, this, &ModificationWidget::OnSceneCommand);
 
-    selectionFieldBinder.reset(new DAVA::TArc::FieldBinder(REGlobal::GetAccessor()));
+    selectionFieldBinder.reset(new DAVA::FieldBinder(DAVA::Deprecated::GetAccessor()));
     {
-        DAVA::TArc::FieldDescriptor fieldDescr;
-        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SelectionData>();
-        fieldDescr.fieldName = DAVA::FastName(SelectionData::selectionPropertyName);
+        DAVA::FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<DAVA::SelectionData>();
+        fieldDescr.fieldName = DAVA::FastName(DAVA::SelectionData::selectionPropertyName);
         selectionFieldBinder->BindField(fieldDescr, [this](const DAVA::Any&) { ReloadValues(); });
     }
 }
@@ -74,7 +78,7 @@ void ModificationWidget::SetPivotMode(PivotMode mode)
     ReloadValues();
 }
 
-void ModificationWidget::SetTransformType(Selectable::TransformType mode)
+void ModificationWidget::SetTransformType(DAVA::Selectable::TransformType mode)
 {
     modifMode = mode;
     ReloadValues();
@@ -82,6 +86,8 @@ void ModificationWidget::SetTransformType(Selectable::TransformType mode)
 
 void ModificationWidget::ReloadValues()
 {
+    using namespace DAVA;
+
     xAxisModify->clear();
     yAxisModify->clear();
     zAxisModify->clear();
@@ -111,7 +117,7 @@ void ModificationWidget::ReloadValues()
         return;
     }
 
-    const SelectableGroup& modificationGroup = curScene->modifSystem->GetTransformableSelection();
+    const SelectableGroup& modificationGroup = curScene->GetSystem<DAVA::EntityModificationSystem>()->GetTransformableSelection();
     bool canModify = (modifMode != Selectable::TransformType::Disabled) && !modificationGroup.IsEmpty();
     if (canModify)
     {
@@ -214,32 +220,34 @@ void ModificationWidget::ReloadValues()
     setEnabled(canModify);
 }
 
-void ModificationWidget::ApplyValues(ST_Axis axis)
+void ModificationWidget::ApplyValues(DAVA::ST_Axis axis)
 {
+    using namespace DAVA;
     if (curScene == nullptr)
         return;
 
-    DAVA::Vector3 values(xAxisModify->value(), yAxisModify->value(), zAxisModify->value());
-    SelectableGroup selection = curScene->modifSystem->GetTransformableSelection();
+    Vector3 values(xAxisModify->value(), yAxisModify->value(), zAxisModify->value());
+    EntityModificationSystem* system = curScene->GetSystem<EntityModificationSystem>();
+    SelectableGroup selection = system->GetTransformableSelection();
     selection.RemoveObjectsWithDependantTransform();
 
     switch (modifMode)
     {
     case Selectable::TransformType::Translation:
     {
-        curScene->modifSystem->ApplyMoveValues(axis, selection, values, pivotMode == PivotMode::PivotAbsolute);
+        system->ApplyMoveValues(axis, selection, values, pivotMode == PivotMode::PivotAbsolute);
         break;
     }
 
     case Selectable::TransformType::Rotation:
     {
-        curScene->modifSystem->ApplyRotateValues(axis, selection, values, pivotMode == PivotMode::PivotAbsolute);
+        system->ApplyRotateValues(axis, selection, values, pivotMode == PivotMode::PivotAbsolute);
         break;
     }
 
     case Selectable::TransformType::Scale:
     {
-        curScene->modifSystem->ApplyScaleValues(axis, selection, values, pivotMode == PivotMode::PivotAbsolute);
+        system->ApplyScaleValues(axis, selection, values, pivotMode == PivotMode::PivotAbsolute);
         break;
     }
     default:
@@ -249,7 +257,7 @@ void ModificationWidget::ApplyValues(ST_Axis axis)
     ReloadValues();
 }
 
-void ModificationWidget::OnSceneCommand(SceneEditor2* scene, const RECommandNotificationObject& commandNotification)
+void ModificationWidget::OnSceneCommand(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification)
 {
     if (curScene == scene)
     {
@@ -259,26 +267,26 @@ void ModificationWidget::OnSceneCommand(SceneEditor2* scene, const RECommandNoti
 
 void ModificationWidget::OnXChanged()
 {
-    ApplyValues(ST_AXIS_X);
+    ApplyValues(DAVA::ST_AXIS_X);
 }
 
 void ModificationWidget::OnYChanged()
 {
-    ApplyValues(ST_AXIS_Y);
+    ApplyValues(DAVA::ST_AXIS_Y);
 }
 
 void ModificationWidget::OnZChanged()
 {
-    ApplyValues(ST_AXIS_Z);
+    ApplyValues(DAVA::ST_AXIS_Z);
 }
 
-void ModificationWidget::OnSceneActivated(SceneEditor2* scene)
+void ModificationWidget::OnSceneActivated(DAVA::SceneEditor2* scene)
 {
     curScene = scene;
     ReloadValues();
 }
 
-void ModificationWidget::OnSceneDeactivated(SceneEditor2* scene)
+void ModificationWidget::OnSceneDeactivated(DAVA::SceneEditor2* scene)
 {
     curScene = NULL;
     ReloadValues();

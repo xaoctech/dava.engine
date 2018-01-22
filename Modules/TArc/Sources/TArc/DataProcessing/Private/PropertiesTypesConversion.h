@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <>
 bool PropertiesItem::Impl::FromValue(const QJsonValue& value, const bool& defaultValue)
 {
@@ -402,6 +400,4 @@ QJsonValue PropertiesItem::Impl::ToValue(const FastName& value)
 #endif //__DAVAENGINE_DEBUG__
     return QString(value.c_str());
 }
-
-} // namespace TArc
 } // namespace DAVA

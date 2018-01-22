@@ -1,19 +1,18 @@
 #pragma once
 
-#include "Base/Result.h"
 #include "ValidationProgress.h"
+#include <Base/Result.h>
 
 namespace DAVA
 {
 class Scene;
-}
-
 class ProjectManagerData;
+}
 
 class SceneValidation
 {
 public:
-    SceneValidation(ProjectManagerData* data);
+    SceneValidation(DAVA::ProjectManagerData* data);
     /**
     For all parent models (i.e. models at which `scene` entities are referenced with "referenceToOwner" property)
     function checks whether local & world matrices are identity.
@@ -55,5 +54,5 @@ public:
     void ValidateMaterialsGroups(DAVA::Scene* scene, ValidationProgress& progress);
 
 private:
-    ProjectManagerData* projectManagerData = nullptr;
+    DAVA::ProjectManagerData* projectManagerData = nullptr;
 };

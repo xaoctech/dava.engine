@@ -18,8 +18,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace TextComponentValueDetail
 {
 class MultilineEditDialog : public QDialog
@@ -81,7 +79,7 @@ Any DefaultFieldAccessor::CreateNewValue(const String& newFieldValue, const Any&
     return Parse(newFieldValue, result);
 }
 
-DAVA::Any DefaultFieldAccessor::Parse(const String& strValue, M::ValidationResult& result) const
+Any DefaultFieldAccessor::Parse(const String& strValue, M::ValidationResult& result) const
 {
     result.state = M::ValidationResult::eState::Valid;
     return strValue;
@@ -182,7 +180,7 @@ bool TextComponentValue::IsReadOnly() const
     return v;
 }
 
-const DAVA::M::Validator* TextComponentValue::GetValidator() const
+const M::Validator* TextComponentValue::GetValidator() const
 {
     return this;
 }
@@ -214,7 +212,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TextComponentValue)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DAVA::TArc::ControlProxy* MultiLineTextComponentValue::CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor)
+ControlProxy* MultiLineTextComponentValue::CreateEditorWidget(QWidget* parent, const Reflection& model, DataWrappersProcessor* wrappersProcessor)
 {
     Widget* w = new Widget(parent);
     QHBoxLayout* layout = new QHBoxLayout();
@@ -247,6 +245,5 @@ void MultiLineTextComponentValue::OpenMultiLineEdit()
     {
         SetText(dlg.GetText());
     }
-}
 }
 }

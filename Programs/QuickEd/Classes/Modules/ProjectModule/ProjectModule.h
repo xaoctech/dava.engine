@@ -12,7 +12,7 @@ class ResultList;
 }
 class ProjectData;
 
-class ProjectModule : public DAVA::TArc::ClientModule
+class ProjectModule : public DAVA::ClientModule
 {
 public:
     ProjectModule();
@@ -20,7 +20,7 @@ public:
 
 private:
     void PostInit() override;
-    void OnWindowClosed(const DAVA::TArc::WindowKey& key) override;
+    void OnWindowClosed(const DAVA::WindowKey& key) override;
 
     void CreateActions();
 
@@ -36,11 +36,11 @@ private:
     void RegisterFolders();
     void UnregisterFolders();
 
-    DAVA::TArc::QtConnections connections;
-    std::unique_ptr<RecentMenuItems> recentProjects;
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtConnections connections;
+    std::unique_ptr<DAVA::RecentMenuItems> recentProjects;
+    DAVA::QtDelayedExecutor delayedExecutor;
 
-    DAVA_VIRTUAL_REFLECTION(ProjectModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ProjectModule, DAVA::ClientModule);
 };
 
 namespace ProjectModuleTesting

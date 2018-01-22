@@ -2,8 +2,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ProgressBar::ProgressBar(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QProgressBar>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -44,10 +42,10 @@ void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
 
     if (changedFields.IsChanged(Fields::Value))
     {
-        DAVA::Reflection field = model.GetField(changedFields.GetName(Fields::Value));
+        Reflection field = model.GetField(changedFields.GetName(Fields::Value));
         DVASSERT(field.IsValid());
 
-        DAVA::Any value = field.GetValue();
+        Any value = field.GetValue();
         if (value.CanCast<int>())
         {
             int v = value.Cast<int>();
@@ -61,10 +59,10 @@ void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
 
     if (changedFields.IsChanged(Fields::Format))
     {
-        DAVA::Reflection field = model.GetField(changedFields.GetName(Fields::Format));
+        Reflection field = model.GetField(changedFields.GetName(Fields::Format));
         DVASSERT(field.IsValid());
 
-        DAVA::Any value = field.GetValue();
+        Any value = field.GetValue();
         if (value.CanCast<String>())
         {
             String v = value.Cast<String>();
@@ -72,5 +70,4 @@ void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
         }
     }
 }
-} //namespace TArc
 } //namespace DAVA

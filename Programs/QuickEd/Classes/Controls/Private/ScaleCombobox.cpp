@@ -12,8 +12,8 @@
 #include <QSignalBlocker>
 #include <QVariant>
 
-ScaleComboBox::ScaleComboBox(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
-    : ControlProxyImpl<QComboBox>(params, DAVA::TArc::ControlDescriptor(params.fields), accessor, model, parent)
+ScaleComboBox::ScaleComboBox(const Params& params, DAVA::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
+    : ControlProxyImpl<QComboBox>(params, DAVA::ControlDescriptor(params.fields), accessor, model, parent)
 {
     SetupControl();
 }
@@ -33,10 +33,9 @@ void ScaleComboBox::SetupControl()
     setEnabled(count() > 0);
 }
 
-void ScaleComboBox::UpdateControl(const DAVA::TArc::ControlDescriptor& changedFields)
+void ScaleComboBox::UpdateControl(const DAVA::ControlDescriptor& changedFields)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DVASSERT(updateControlProceed == false);
     ScopedValueGuard<bool> guard(updateControlProceed, true);

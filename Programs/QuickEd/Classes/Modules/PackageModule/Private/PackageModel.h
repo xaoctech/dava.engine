@@ -8,11 +8,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 class AbstractProperty;
@@ -38,8 +35,8 @@ public:
         PackageCheckStateRole = Qt::UserRole + 1
     };
 
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
-    void SetUI(DAVA::TArc::UI* ui);
+    void SetAccessor(DAVA::ContextAccessor* accessor);
+    void SetUI(DAVA::UI* ui);
 
     void Reset(PackageNode* package);
 
@@ -91,6 +88,6 @@ private: // PackageListener
     int GetRowIndex(int row, const QModelIndex& parent) const;
 
     DAVA::RefPtr<PackageNode> package;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::UI* ui = nullptr;
 };

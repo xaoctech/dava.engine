@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 MouseHelper::MouseHelper(QWidget* _w)
     : QObject(_w)
     , w(_w)
@@ -109,6 +107,5 @@ void MouseHelper::mouseReleaseEvent(QMouseEvent* event)
 void MouseHelper::mouseWheelEvent(QWheelEvent* event)
 {
     emit mouseWheel(event->delta());
-}
 }
 }

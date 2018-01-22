@@ -8,6 +8,8 @@
 #include "FileSystem/YamlNode.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Logger/Logger.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -35,7 +37,7 @@ QualitySettingsSystem::QualitySettingsSystem()
 
 void QualitySettingsSystem::Load(const FilePath& path)
 {
-    if (FileSystem::Instance()->Exists(path))
+    if (GetEngineContext()->fileSystem->Exists(path))
     {
         ScopedPtr<YamlParser> parser(YamlParser::Create(path));
         YamlNode* rootNode = parser->GetRootNode();

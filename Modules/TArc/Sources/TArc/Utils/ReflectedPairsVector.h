@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 template <typename First, typename Second>
 class ReflectedPairsVector;
 
@@ -143,12 +141,11 @@ public:
         .End();
     }
 };
-} // namespace TArc
 
 template <typename First, typename Second>
-struct AnyCompare<TArc::ReflectedPairsVector<First, Second>>
+struct AnyCompare<ReflectedPairsVector<First, Second>>
 {
-    using AnyT = TArc::ReflectedPairsVector<First, Second>;
+    using AnyT = ReflectedPairsVector<First, Second>;
     static bool IsEqual(const Any& v1, const Any& v2)
     {
         return v1.Get<AnyT>().values == v2.Get<AnyT>().values;

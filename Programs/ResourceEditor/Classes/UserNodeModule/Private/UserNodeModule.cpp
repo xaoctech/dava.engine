@@ -2,9 +2,10 @@
 #include "Classes/UserNodeModule/Private/UserNodeSystem.h"
 #include "Classes/UserNodeModule/Private/UserNodeData.h"
 
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/SceneTree/CreateEntitySupport.h"
+#include <REPlatform/Global/SceneTree/CreateEntitySupport.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Utils/Utils.h>
@@ -22,22 +23,22 @@
 
 namespace UserNodeModuleDetail
 {
-class UserNodeEntityCreator : public SimpleEntityCreator
+class UserNodeEntityCreator : public DAVA::SimpleEntityCreator
 {
-    using TBase = SimpleEntityCreator;
+    using TBase = DAVA::SimpleEntityCreator;
 
 public:
     static DAVA::RefPtr<DAVA::Entity> CreateEntity()
     {
         DAVA::RefPtr<DAVA::Entity> sceneNode(new DAVA::Entity());
         sceneNode->AddComponent(new DAVA::UserComponent());
-        sceneNode->SetName(ResourceEditor::USER_NODE_NAME);
+        sceneNode->SetName(DAVA::FastName(DAVA::ResourceEditor::USER_NODE_NAME));
 
         return sceneNode;
     }
 
     UserNodeEntityCreator()
-        : TBase(eMenuPointOrder::USER_NODE_ENITY, DAVA::TArc::SharedIcon(":/QtIcons/user_object.png"),
+        : TBase(eMenuPointOrder::USER_NODE_ENITY, DAVA::SharedIcon(":/QtIcons/user_object.png"),
                 QStringLiteral("User Node"), DAVA::MakeFunction(&UserNodeEntityCreator::CreateEntity))
     {
     }
@@ -64,7 +65,6 @@ UserNodeModule::UserNodeModule()
 void UserNodeModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     QtAction* action = new QtAction(GetAccessor(), QIcon(":/QtIcons/user_object.png"), QString("Custom UserNode Drawing Enabled"));
     { // checked-unchecked and text
@@ -95,7 +95,7 @@ void UserNodeModule::PostInit()
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateStatusbarPoint(true, 0, { InsertionParams::eInsertionMethod::AfterItem, "actionShowStaticOcclusion" }));
 
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 
     { //handle visibility of HUD
         FieldDescriptor fieldDescriptor(ReflectedTypeDB::Get<SceneData>(), FastName(SceneData::sceneHUDVisiblePropertyName));
@@ -104,8 +104,9 @@ void UserNodeModule::PostInit()
     }
 }
 
-void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void UserNodeModule::OnContextCreated(DAVA::DataContext* context)
 {
+    using namespace DAVA;
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
@@ -118,9 +119,9 @@ void UserNodeModule::OnContextCreated(DAVA::TArc::DataContext* context)
     context->CreateData(std::move(userData));
 }
 
-void UserNodeModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void UserNodeModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
@@ -131,7 +132,7 @@ void UserNodeModule::OnContextDeleted(DAVA::TArc::DataContext* context)
 
 void UserNodeModule::ChangeDrawingState()
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     UserNodeData* moduleData = context->GetData<UserNodeData>();
 
     bool enabled = moduleData->IsDrawingEnabled();
@@ -140,7 +141,7 @@ void UserNodeModule::ChangeDrawingState()
 
 void UserNodeModule::OnHUDVisibilityChanged(const DAVA::Any& hudVisibilityValue)
 {
-    DAVA::TArc::DataContext* context = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* context = GetAccessor()->GetActiveContext();
     if (context != nullptr)
     {
         UserNodeData* userData = context->GetData<UserNodeData>();
@@ -158,4 +159,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UserNodeModule)
     .End();
 }
 
-DECL_GUI_MODULE(UserNodeModule);
+DECL_TARC_MODULE(UserNodeModule);

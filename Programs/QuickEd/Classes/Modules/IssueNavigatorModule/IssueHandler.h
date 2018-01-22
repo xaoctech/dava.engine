@@ -6,22 +6,18 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class DataContext;
-}
-
 class UIControl;
 }
 
 class IssueHandler
 {
 public:
-    IssueHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId);
+    IssueHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId);
     virtual ~IssueHandler();
 
-    virtual void OnContextDeleted(DAVA::TArc::DataContext* current){};
+    virtual void OnContextDeleted(DAVA::DataContext* current){};
 
 protected:
     IssueData* GetIssueData();
@@ -35,5 +31,5 @@ protected:
     void RemoveIssue(DAVA::int32 id);
 
     DAVA::int32 sectionId = 0;
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
+    DAVA::ContextAccessor* accessor = nullptr;
 };

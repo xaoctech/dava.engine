@@ -35,12 +35,11 @@ using namespace DAVA;
 
 EditorSystemsManager::StopPredicate EditorSystemsManager::defaultStopPredicate = [](const ControlNode*) { return false; };
 
-EditorSystemsManager::EditorSystemsManager(DAVA::TArc::ContextAccessor* accessor_)
+EditorSystemsManager::EditorSystemsManager(DAVA::ContextAccessor* accessor_)
     : rootControl(new UIControl())
     , accessor(accessor_)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     rootControl->SetName(FastName("root_control"));
 
@@ -90,7 +89,6 @@ void EditorSystemsManager::InitSystems()
 void EditorSystemsManager::InitFieldBinder()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     fieldBinder.reset(new FieldBinder(accessor));
     {
@@ -162,7 +160,7 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
         return nullptr;
     }
 
-    if (!DAVA::TArc::IsKeyPressed(eModifierKeys::CONTROL))
+    if (!DAVA::IsKeyPressed(eModifierKeys::CONTROL))
     {
         return selectionSystemPtr->GetCommonNodeUnderPoint(point, canGoDeeper);
     }
@@ -171,8 +169,6 @@ ControlNode* EditorSystemsManager::GetControlNodeAtPoint(const DAVA::Vector2& po
 
 uint32 EditorSystemsManager::GetIndexOfNearestRootControl(const DAVA::Vector2& point) const
 {
-    using namespace DAVA::TArc;
-
     SortedControlNodeSet displayedRootControls = GetDisplayedRootControls();
     if (displayedRootControls.empty())
     {
@@ -255,8 +251,6 @@ void EditorSystemsManager::OnRootContolsChanged(const DAVA::Any& rootControlsVal
 
 void EditorSystemsManager::UpdateDisplayState()
 {
-    using namespace DAVA::TArc;
-
     SortedControlNodeSet rootControls;
 
     DataContext* activeContext = accessor->GetActiveContext();
@@ -339,8 +333,6 @@ void EditorSystemsManager::InitDAVAScreen()
 
 void EditorSystemsManager::OnDragStateChanged(eDragState currentState, eDragState previousState)
 {
-    using namespace DAVA::TArc;
-
     if (currentState == eDragState::Transform || previousState == eDragState::Transform)
     {
         DataContext* activeContext = accessor->GetActiveContext();
@@ -394,7 +386,6 @@ void EditorSystemsManager::SetDragState(eDragState newDragState)
 
 const SortedControlNodeSet& EditorSystemsManager::GetDisplayedRootControls() const
 {
-    using namespace DAVA::TArc;
     DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext == nullptr)
     {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
 class DisplaySafeArea;
 
-class DisplayFrameData : public DAVA::TArc::DataNode
+class DisplayFrameData : public DAVA::TArcDataNode
 {
 public:
     ~DisplayFrameData() override;
@@ -13,5 +13,5 @@ private:
     friend class DisplayFrameModule;
     std::unique_ptr<DisplaySafeArea> safeArea;
 
-    DAVA_VIRTUAL_REFLECTION(DisplayFrameData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(DisplayFrameData, DAVA::TArcDataNode);
 };

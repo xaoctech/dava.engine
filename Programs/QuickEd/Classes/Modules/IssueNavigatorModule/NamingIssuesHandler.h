@@ -8,11 +8,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 class UIControl;
 }
 
@@ -22,11 +19,11 @@ class IndexGenerator;
 class NamingIssuesHandler : public IssueHandler, PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
+    NamingIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~NamingIssuesHandler() override = default;
 
     // IssuesHandler
-    void OnContextDeleted(DAVA::TArc::DataContext* current) override;
+    void OnContextDeleted(DAVA::DataContext* current) override;
 
     // PackageListener
     void ActivePackageNodeWasChanged(PackageNode* node) override;
@@ -44,7 +41,7 @@ private:
 
     struct PackageIssues
     {
-        DAVA::TArc::DataContext* context = nullptr;
+        DAVA::DataContext* context = nullptr;
         DAVA::UnorderedMap<ControlNode*, IssueData::Issue> symbolsIssues;
         DuplicationsIssuesMap duplicationIssues;
     };

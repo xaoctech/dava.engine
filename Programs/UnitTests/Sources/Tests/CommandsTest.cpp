@@ -3,6 +3,7 @@
 #include <Command/Command.h>
 #include <Command/CommandBatch.h>
 #include <Command/CommandStack.h>
+#include <Reflection/ReflectedTypeDB.h>
 #include <Debug/DVAssert.h>
 
 class TestCommand : public DAVA::Command
@@ -81,6 +82,7 @@ DAVA_TESTCLASS (CommandsTest)
 
     DAVA_TEST (SimpleTest)
     {
+        DAVA::ReflectedTypeDB::Get<DAVA::Command>();
         std::unique_ptr<DAVA::Command> command(new TestCommand("TestCommand"));
         TEST_VERIFY(command->GetDescription() == "TestCommand");
         TEST_VERIFY(command->IsClean() == false);

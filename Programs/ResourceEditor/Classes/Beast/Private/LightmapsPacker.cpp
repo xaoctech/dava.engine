@@ -2,7 +2,13 @@
 
 #include "Classes/Beast/Private/LightmapsPacker.h"
 
-#include "Classes/Qt/Main/QtUtils.h"
+#include <REPlatform/Scene/Utils/Utils.h>
+
+#include <FileSystem/File.h>
+#include <FileSystem/FileList.h>
+#include <Render/Image/Image.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/TextureDescriptor.h>
 
 void LightmapsPacker::ParseSpriteDescriptors()
 {

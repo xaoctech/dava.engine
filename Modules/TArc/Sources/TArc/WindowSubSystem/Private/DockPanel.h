@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DockPanel final : public QDockWidget
 {
 public:
@@ -36,5 +34,4 @@ private:
     FieldBinder binder;
     bool isActive = false;
 };
-} // namespace TArc
 } // namespace DAVA

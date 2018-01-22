@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Classes/Selection/Selectable.h"
+#include <REPlatform/DataNodes/Selectable.h>
 
 #include <TArc/Qt/QtString.h>
 
@@ -11,7 +11,10 @@
 #include <QLineEdit>
 #include <QToolButton>
 
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 
 class SelectPathWidgetBase : public QLineEdit
 {
@@ -90,7 +93,7 @@ protected:
 
     // droppedData
     QString selectedPath;
-    Selectable droppedObject;
+    DAVA::Selectable droppedObject;
 
     bool IsMimeDataCanBeDropped(const QMimeData* data) const;
 

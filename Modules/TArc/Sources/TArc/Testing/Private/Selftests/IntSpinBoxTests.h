@@ -21,9 +21,9 @@
 namespace IntSpinBoxTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
+using namespace DAVA;
 
-WindowKey wndKey = FastName("IntSpinBoxWindow");
+WindowKey wndKey("IntSpinBoxWindow");
 
 class IntSpinBoxData : public ReflectionBase
 {
@@ -392,7 +392,7 @@ DAVA_TARC_TESTCLASS(IntSpinBoxTests)
 
     DAVA_TEST (NoValueTest)
     {
-        NoValueTest("SpinBox_noValue", "SpinBox_value", QString(DAVA::TArc::MultipleValuesString));
+        NoValueTest("SpinBox_noValue", "SpinBox_value", QString(DAVA::MultipleValuesString));
     }
 
     DAVA_TEST (NoValueHintTest)

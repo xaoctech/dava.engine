@@ -1,8 +1,8 @@
 #include "Classes/SceneTree/Private/SceneTreeView.h"
 #include "Classes/SceneTree/Private/SceneTreeItemDelegateV2.h"
 
-#include "Classes/Application/RESettings.h"
-#include "Classes/SceneManager/SceneData.h"
+#include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
+#include <REPlatform/DataNodes/SceneData.h>
 
 #include <TArc/Utils/ScopedValueGuard.h>
 #include <TArc/Core/ContextAccessor.h>
@@ -33,8 +33,8 @@ void SceneTreeView::EraseEmptyIndexes(DAVA::Set<QPersistentModelIndex>& indexes)
     }
 }
 
-SceneTreeView::SceneTreeView(const Params& params, DAVA::TArc::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
-    : ControlProxyImpl<QTreeView>(params, DAVA::TArc::ControlDescriptor(params.fields), accessor, model, parent)
+SceneTreeView::SceneTreeView(const Params& params, DAVA::ContextAccessor* accessor, DAVA::Reflection model, QWidget* parent)
+    : ControlProxyImpl<QTreeView>(params, DAVA::ControlDescriptor(params.fields), accessor, model, parent)
     , defaultSelectionModel(new QItemSelectionModel(nullptr, this))
 {
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -60,7 +60,7 @@ void SceneTreeView::AddAction(QAction* action)
     addAction(action);
 }
 
-void SceneTreeView::UpdateControl(const DAVA::TArc::ControlDescriptor& descriptor)
+void SceneTreeView::UpdateControl(const DAVA::ControlDescriptor& descriptor)
 {
     if (descriptor.IsChanged(Fields::DataModel) == true)
     {
@@ -69,7 +69,7 @@ void SceneTreeView::UpdateControl(const DAVA::TArc::ControlDescriptor& descripto
 
     if (descriptor.IsChanged(Fields::ExpandedIndexList) == true)
     {
-        DAVA::TArc::ScopedValueGuard<bool> guard(inExpandingSync, true);
+        DAVA::ScopedValueGuard<bool> guard(inExpandingSync, true);
         expandedIndexList = GetFieldValue(Fields::ExpandedIndexList, DAVA::Set<QPersistentModelIndex>());
         if (expandedIndexList.size() == 1 && (*expandedIndexList.begin() == QModelIndex()))
         {
@@ -181,7 +181,7 @@ void SceneTreeView::dragLeaveEvent(QDragLeaveEvent* e)
 
 void SceneTreeView::dragMoveEvent(QDragMoveEvent* e)
 {
-    GlobalSceneSettings* settings = controlParams.accessor->GetGlobalContext()->GetData<GlobalSceneSettings>();
+    DAVA::GlobalSceneSettings* settings = controlParams.accessor->GetGlobalContext()->GetData<DAVA::GlobalSceneSettings>();
     if (settings->dragAndDropWithShift == true && ((e->keyboardModifiers() & Qt::SHIFT) != Qt::SHIFT))
     {
         e->setDropAction(Qt::IgnoreAction);

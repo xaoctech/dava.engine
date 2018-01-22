@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MultiIntSpinBox : public ControlProxyImpl<QWidget>
 {
     using TBase = ControlProxyImpl<QWidget>;
@@ -45,5 +43,4 @@ private:
 
     Vector<ControlProxy*> subControls;
 };
-} // namespace TArc
 } // namespace DAVA

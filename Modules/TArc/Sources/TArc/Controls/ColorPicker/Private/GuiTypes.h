@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 enum EDGE
 {
     LEFT_EDGE = (1 << 0),
@@ -17,5 +15,4 @@ enum EDGE
 Q_DECLARE_FLAGS(EDGES, EDGE)
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(EDGES)
-}
 }

@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MockControllerModule : public ControllerModule
 {
 public:
@@ -26,5 +24,4 @@ public:
         .End();
     }
 };
-} // namespace TArc
 } // namespace DAVA

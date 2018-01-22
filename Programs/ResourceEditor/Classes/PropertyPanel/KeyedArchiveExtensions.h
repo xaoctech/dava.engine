@@ -6,22 +6,22 @@
 
 #include <Reflection/ReflectedMeta.h>
 
-class KeyedArchiveChildCreator : public DAVA::TArc::ChildCreatorExtension
+class KeyedArchiveChildCreator : public DAVA::ChildCreatorExtension
 {
 public:
     KeyedArchiveChildCreator();
-    void ExposeChildren(const std::shared_ptr<DAVA::TArc::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::TArc::PropertyNode>>& children) const override;
+    void ExposeChildren(const std::shared_ptr<DAVA::PropertyNode>& parent, DAVA::Vector<std::shared_ptr<DAVA::PropertyNode>>& children) const override;
 
 private:
     std::unique_ptr<DAVA::ReflectedMeta> elementsMeta;
 };
 
-class KeyedArchiveEditorCreator : public DAVA::TArc::EditorComponentExtension
+class KeyedArchiveEditorCreator : public DAVA::EditorComponentExtension
 {
 public:
-    KeyedArchiveEditorCreator(DAVA::TArc::ContextAccessor* accessor);
-    std::unique_ptr<DAVA::TArc::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::TArc::PropertyNode>& node) const override;
+    KeyedArchiveEditorCreator(DAVA::ContextAccessor* accessor);
+    std::unique_ptr<DAVA::BaseComponentValue> GetEditor(const std::shared_ptr<const DAVA::PropertyNode>& node) const override;
 
 private:
-    DAVA::TArc::ContextAccessor* accessor;
+    DAVA::ContextAccessor* accessor;
 };

@@ -48,7 +48,7 @@ void CanvasModule::PostInit()
 
 void CanvasModule::CreateData()
 {
-    DAVA::TArc::ContextAccessor* accessor = GetAccessor();
+    DAVA::ContextAccessor* accessor = GetAccessor();
 
     std::unique_ptr<CanvasModuleData> data = std::make_unique<CanvasModuleData>();
     data->editorCanvas = std::make_unique<EditorCanvas>(accessor);
@@ -65,7 +65,6 @@ void CanvasModule::CreateData()
 void CanvasModule::InitFieldBinder()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     Function<void(const Any&)> tryCentralize = [this](const Any&) {
         CanvasModuleData* canvasModuleData = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
@@ -83,24 +82,23 @@ void CanvasModule::InitFieldBinder()
 
 void CanvasModule::CreateMenuSeparator()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     QAction* separator = new QAction(nullptr);
     separator->setObjectName("bgrMenuSeparator");
     separator->setSeparator(true);
     ActionPlacementInfo placementInfo;
     placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
-    GetUI()->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+    GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, separator);
 }
 
 void CanvasModule::RecreateBgrColorActions()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     CanvasModuleData* data = GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>();
     std::for_each(data->bgrColorActions.begin(), data->bgrColorActions.end(), [this](const CanvasModuleData::ActionInfo& actionInfo)
                   {
-                      GetUI()->RemoveAction(DAVA::TArc::mainWindowKey, actionInfo.placement, actionInfo.name);
+                      GetUI()->RemoveAction(DAVA::mainWindowKey, actionInfo.placement, actionInfo.name);
                   });
 
     QString menuBgrColor = "Background Color";
@@ -152,7 +150,7 @@ void CanvasModule::RecreateBgrColorActions()
                                       settings->backgroundColorIndex = currentIndex;
                                   });
 
-        GetUI()->AddAction(DAVA::TArc::mainWindowKey, placement, action);
+        GetUI()->AddAction(DAVA::mainWindowKey, placement, action);
         CanvasModuleData::ActionInfo& actionInfo = data->bgrColorActions[currentIndex];
         actionInfo.name = action->text();
         actionInfo.placement = placement;
@@ -183,20 +181,20 @@ void CanvasModule::DestroySystems(Interfaces::EditorSystemsManagerInterface* sys
     systemsManager->UnregisterEditorSystem(controlsView);
 }
 
-void CanvasModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void CanvasModule::OnContextCreated(DAVA::DataContext* context)
 {
     std::unique_ptr<CanvasData> canvasData = std::make_unique<CanvasData>();
     context->CreateData(std::move(canvasData));
 }
 
-void CanvasModule::OnDataChanged(const DAVA::TArc::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
+void CanvasModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields)
 {
     RecreateBgrColorActions();
 }
 
 void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControlPos)
 {
-    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* activeContext = GetAccessor()->GetActiveContext();
     if (activeContext == nullptr)
     {
         return;
@@ -208,7 +206,7 @@ void CanvasModule::OnRootControlPositionChanged(const DAVA::Vector2& rootControl
 
 void CanvasModule::OnRootControlSizeChanged(const DAVA::Vector2& rootControlSize)
 {
-    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* activeContext = GetAccessor()->GetActiveContext();
     if (activeContext == nullptr)
     {
         return;
@@ -220,7 +218,7 @@ void CanvasModule::OnRootControlSizeChanged(const DAVA::Vector2& rootControlSize
 
 void CanvasModule::OnWorkAreaSizeChanged(const DAVA::Vector2& workAreaSize)
 {
-    DAVA::TArc::DataContext* activeContext = GetAccessor()->GetActiveContext();
+    DAVA::DataContext* activeContext = GetAccessor()->GetActiveContext();
     if (activeContext == nullptr)
     {
         return;
@@ -231,4 +229,4 @@ void CanvasModule::OnWorkAreaSizeChanged(const DAVA::Vector2& workAreaSize)
     GetAccessor()->GetGlobalContext()->GetData<CanvasModuleData>()->canvasDataAdapter->TryCentralizeScene();
 }
 
-DECL_GUI_MODULE(CanvasModule);
+DECL_TARC_MODULE(CanvasModule);

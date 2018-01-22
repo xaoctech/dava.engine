@@ -22,7 +22,7 @@ public:
     void reject() override;
 
 protected:
-    void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, SceneEditor2* editor);
+    void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, DAVA::SceneEditor2* editor);
     void FillPropertyEditorWithContent() override;
 
 private:

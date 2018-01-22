@@ -9,11 +9,8 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 class UIControl;
 class Type;
 }
@@ -25,7 +22,7 @@ class IntrospectionProperty;
 class EventsIssuesHandler : public IssueHandler, PackageListener
 {
 public:
-    EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
+    EventsIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~EventsIssuesHandler() override = default;
 
     // PackageListener

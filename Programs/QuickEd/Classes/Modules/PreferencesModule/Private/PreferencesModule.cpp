@@ -19,4 +19,4 @@ void PreferencesModule::PostInit()
 {
 }
 
-DECL_GUI_MODULE(PreferencesModule);
+DECL_TARC_MODULE(PreferencesModule);
