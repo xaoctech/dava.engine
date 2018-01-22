@@ -252,8 +252,9 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
             polygonGroup->ApplyMatrix(meshTransform);
 
 #if FBX_IMPORT_AUTO_BUILD_TANGENT_SPACE
+            bool hasUV = uvCount != 0;
             bool completedTBN = hasNormal && hasTangent && hasBinormal;
-            if (hasNormal && !completedTBN)
+            if (hasNormal && hasUV && !completedTBN)
             {
                 MeshUtils::RebuildMeshTangentSpace(polygonGroup);
             }
