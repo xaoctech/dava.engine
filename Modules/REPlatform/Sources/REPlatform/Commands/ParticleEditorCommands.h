@@ -862,6 +862,11 @@ public:
     void Redo() override;
     void Undo() override;
 
+    bool IsClean() const override
+    {
+        return true;
+    }
+
     ParticleEffectComponent* GetComponent() const;
 
 protected:
@@ -879,8 +884,10 @@ protected:
         void Release();
     };
 
-    ComponentData curentData;
-    ComponentData nextdData;
+    void ReplaceComponentEmitters(const ComponentData& next);
+
+    ComponentData redoData;
+    ComponentData undoData;
 
     DAVA::ParticleEffectComponent* component;
 

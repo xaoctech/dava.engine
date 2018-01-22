@@ -1047,43 +1047,50 @@ CommandReloadEmitters::CommandReloadEmitters(ParticleEffectComponent* component_
     : RECommand()
     , component(component_)
 {
-    curentData.Initialize(component);
+    redoData.Initialize(component);
 }
 
 CommandReloadEmitters::~CommandReloadEmitters()
 {
-    curentData.Release();
-    nextdData.Release();
+    redoData.Release();
+    undoData.Release();
 }
 
 void CommandReloadEmitters::Redo()
 {
-    if (nextdData.initialized)
+    if (undoData.initialized)
     {
-        for (DAVA::ParticleEmitterInstance* instance : curentData.particleEmittesrInstance)
-        {
-            component->RemoveEmitterInstance(instance);
-        }
-        for (DAVA::ParticleEmitterInstance* instance : nextdData.particleEmittesrInstance)
-        {
-            component->AddEmitterInstance(instance);
-        }
+        ReplaceComponentEmitters(undoData);
     }
     else
     {
         component->ReloadEmitters();
-        nextdData.Initialize(component);
+        undoData.Initialize(component);
     }
 }
 
 void CommandReloadEmitters::Undo()
 {
-    for (DAVA::ParticleEmitterInstance* instance : nextdData.particleEmittesrInstance)
+    ReplaceComponentEmitters(redoData);
+}
+
+void CommandReloadEmitters::ReplaceComponentEmitters(const ComponentData& next)
+{
+    int32 emitterCount = component->GetEmittersCount();
+    DAVA::Vector<DAVA::ParticleEmitterInstance*> particleEmittesrInstance;
+
+    for (int32 i = 0; i < emitterCount; i++)
+    {
+        ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
+        particleEmittesrInstance.push_back(instance);
+    }
+
+    for (DAVA::ParticleEmitterInstance* instance : particleEmittesrInstance)
     {
         component->RemoveEmitterInstance(instance);
     }
 
-    for (DAVA::ParticleEmitterInstance* instance : curentData.particleEmittesrInstance)
+    for (DAVA::ParticleEmitterInstance* instance : next.particleEmittesrInstance)
     {
         component->AddEmitterInstance(instance);
     }
