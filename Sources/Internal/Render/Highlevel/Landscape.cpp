@@ -316,16 +316,25 @@ bool Landscape::BuildHeightmap()
     return retValue;
 }
 
+int32 Landscape::GetHeightmapSize() const
+{
+    if (heightmap != nullptr)
+    {
+        return heightmap->Size();
+    }
+    return 0;
+}
+
 void Landscape::AllocateGeometryData()
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    if (!heightmap || !heightmap->Size())
+    uint32 heightmapSize = GetHeightmapSize();
+    if (heightmapSize == 0)
     {
         return;
     }
 
-    uint32 heightmapSize = heightmap->Size();
     uint32 minSubdivLevelSize = (renderMode == RENDERMODE_NO_INSTANCING) ? heightmapSize / RENDER_PARCEL_SIZE_QUADS : 0;
     uint32 minSubdivLevel = uint32(HighestBitIndex(minSubdivLevelSize));
 
@@ -401,8 +410,8 @@ Vector<Image*> Landscape::CreateHeightTextureData(Heightmap* heightmap, RenderMo
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    const uint32 hmSize = heightmap->Size();
-    DVASSERT(IsPowerOf2(heightmap->Size()));
+    const uint32 hmSize = GetHeightmapSize();
+    DVASSERT(IsPowerOf2(hmSize));
     DVASSERT(renderMode != RENDERMODE_NO_INSTANCING);
 
     Vector<Image*> dataOut;
@@ -529,8 +538,8 @@ Vector<Image*> Landscape::CreateTangentBasisTextureData()
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    const uint32 hmSize = heightmap->Size();
-    DVASSERT(IsPowerOf2(heightmap->Size()));
+    const uint32 hmSize = GetHeightmapSize();
+    DVASSERT(IsPowerOf2(hmSize));
 
     Vector<Image*> dataOut;
     {
@@ -615,7 +624,7 @@ bool Landscape::GetHeightAtPoint(const Vector3& point, float32& value) const
         return false;
     }
 
-    int32 hmSize = heightmap->Size();
+    int32 hmSize = GetHeightmapSize();
     if (hmSize == 0)
     {
         Logger::Error("[Landscape::GetHeightAtPoint] Trying to get height at point using empty heightmap data!");
@@ -1257,7 +1266,7 @@ void Landscape::PrepareToRender(Camera* camera)
 
     RenderObject::PrepareToRender(camera);
 
-    if (!heightmap || !heightmap->Size())
+    if (GetHeightmapSize() == 0)
     {
         return;
     }
@@ -1288,13 +1297,14 @@ void Landscape::PrepareToRender(Camera* camera)
 bool Landscape::GetLevel0Geometry(Vector<LandscapeVertex>& vertices, Vector<int32>& indices) const
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
-    if (heightmap->Data() == nullptr)
+    uint32 hmSize = GetHeightmapSize();
+    if (hmSize == 0)
     {
         return false;
     }
 
-    uint32 gridWidth = heightmap->Size() + 1;
-    uint32 gridHeight = heightmap->Size() + 1;
+    uint32 gridWidth = hmSize + 1;
+    uint32 gridHeight = hmSize + 1;
     vertices.resize(gridWidth * gridHeight);
     for (uint32 y = 0, index = 0; y < gridHeight; ++y)
     {

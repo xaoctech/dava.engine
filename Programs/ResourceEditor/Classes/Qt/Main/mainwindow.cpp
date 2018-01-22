@@ -1417,20 +1417,36 @@ void QtMainWindow::SynchronizeStateWithUI()
 
 bool QtMainWindow::CanEnableLandscapeEditor() const
 {
-    DAVA::RefPtr<DAVA::SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
+    using namespace DAVA;
+
+    RefPtr<SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (scene.Get() == nullptr)
         return false;
 
     if (scene->GetSystem<DAVA::PathSystem>()->IsPathEditEnabled())
     {
-        DAVA::Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
+        Logger::Error("WayEditor should be disabled prior to enabling landscape tools");
         return false;
     }
 
-    DAVA::FileSystem* fs = DAVA::GetEngineContext()->fileSystem;
+    FileSystem* fs = GetEngineContext()->fileSystem;
     if (fs->GetFilenamesTag().empty() == false)
     {
-        DAVA::Logger::Error("Could not enable editing of landscape due to enabled tags at file system");
+        Logger::Error("Could not enable editing of landscape due to enabled tags at file system");
+        return false;
+    }
+
+    LandscapeEditorDrawSystem* landDrawSystem = scene->GetSystem<LandscapeEditorDrawSystem>();
+    if (landDrawSystem == nullptr)
+    {
+        Logger::Error("Could not enable editing of landscape without landscape draw system");
+        return false;
+    }
+
+    LandscapeEditorDrawSystem::eErrorType verificationResult = landDrawSystem->VerifyLandscape();
+    if (verificationResult != LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
+    {
+        Logger::Error(LandscapeEditorDrawSystem::GetDescriptionByError(verificationResult).c_str());
         return false;
     }
 

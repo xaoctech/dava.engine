@@ -571,6 +571,8 @@ Texture* LandscapeEditorDrawSystem::GetTileMaskTexture()
 
 LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape() const
 {
+    using namespace DAVA;
+
     //landscape initialization should be handled by AddEntity/RemoveEntity methods
     if (!landscapeNode || !baseLandscape || !landscapeProxy)
     {
@@ -593,6 +595,12 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape
     if ((texColor == nullptr || texColor->IsPinkPlaceholder()))
     {
         return LANDSCAPE_EDITOR_SYSTEM_COLOR_TEXTURE_ABSENT;
+    }
+
+    Heightmap* heightmap = baseLandscape->GetHeightmap();
+    if ((heightmap == nullptr) || (heightmap->Size() == 0))
+    {
+        return LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT;
     }
 
     return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
