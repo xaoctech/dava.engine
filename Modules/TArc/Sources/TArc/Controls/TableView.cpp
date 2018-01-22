@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace TableViewDetails
 {
 class TableModel : public QAbstractTableModel
@@ -239,5 +237,4 @@ void TableView::OnDoubleClick(const QModelIndex& index)
     }
 }
 
-} // namespace TArc
 } // namespace DAVA

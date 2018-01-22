@@ -22,9 +22,8 @@
 namespace TableViewTestDetails
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
-WindowKey wndKey = FastName("TableViewWindow");
+WindowKey wndKey("TableViewWindow");
 
 class RowData : public ReflectionBase
 {

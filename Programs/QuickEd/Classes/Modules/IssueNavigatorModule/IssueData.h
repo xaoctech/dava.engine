@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Reflection/Reflection.h>
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 
-class IssueData : public DAVA::TArc::DataNode
+class IssueData : public DAVA::TArcDataNode
 {
 public:
     struct Issue
@@ -37,5 +37,5 @@ public:
 private:
     DAVA::Vector<Issue> issues;
 
-    DAVA_VIRTUAL_REFLECTION(IssueData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(IssueData, DAVA::TArcDataNode);
 };

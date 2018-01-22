@@ -10,7 +10,7 @@
 
 #include <UI/UIControl.h>
 
-IssueHandler::IssueHandler(DAVA::TArc::ContextAccessor* accessor_, DAVA::int32 sectionId_)
+IssueHandler::IssueHandler(DAVA::ContextAccessor* accessor_, DAVA::int32 sectionId_)
     : sectionId(sectionId_)
     , accessor(accessor_)
 {

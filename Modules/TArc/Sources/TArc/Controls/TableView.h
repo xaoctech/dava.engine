@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class TableView : public ControlProxyImpl<QTableView>
 {
     using TBase = ControlProxyImpl<QTableView>;
@@ -41,5 +39,4 @@ private:
     bool updateGuard = false;
     Vector<Any> header;
 };
-} // namespace TArc
 } // namespace DAVA

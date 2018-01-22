@@ -42,7 +42,7 @@ void IssueNavigatorModule::PostInit()
     panelInfo.area = Qt::BottomDockWidgetArea;
 
     PanelKey key(title, panelInfo);
-    TableView::Params params(GetAccessor(), GetUI(), DAVA::TArc::mainWindowKey);
+    TableView::Params params(GetAccessor(), GetUI(), DAVA::mainWindowKey);
     params.fields[TableView::Fields::Header] = "header";
     params.fields[TableView::Fields::Values] = "issues";
     params.fields[TableView::Fields::CurrentValue] = "current";
@@ -60,9 +60,9 @@ void IssueNavigatorModule::PostInit()
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }
 
-void IssueNavigatorModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void IssueNavigatorModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
-    if (key == DAVA::TArc::mainWindowKey)
+    if (key == DAVA::mainWindowKey)
     {
         GetAccessor()->GetGlobalContext()->DeleteData<IssueNavigatorData>();
     }
