@@ -29,7 +29,7 @@ const DAVA::uint32 CURRENT_VERSION = INIT_SETTINGS_VERSION;
 class OldSettingsConverter
 {
 public:
-    OldSettingsConverter(DAVA::TArc::ContextAccessor* accessor)
+    OldSettingsConverter(DAVA::ContextAccessor* accessor)
         : archive(new DAVA::KeyedArchive())
     {
         DAVA::FileSystem* fs = accessor->GetEngineContext()->fileSystem;
@@ -57,7 +57,7 @@ public:
         }
     }
 
-    void Do(const DAVA::TArc::PropertiesHolder& rootNode, DAVA::TArc::ContextAccessor* accessor)
+    void Do(const DAVA::PropertiesHolder& rootNode, DAVA::ContextAccessor* accessor)
     {
         if (unpackedArchive.empty() == true)
         {
@@ -82,7 +82,7 @@ public:
         PreferencesData* preferencesData = accessor->GetGlobalContext()->GetData<PreferencesData>();
         DVASSERT(preferencesData);
 
-        DAVA::TArc::ThemesSettings* themeSettings = accessor->GetGlobalContext()->GetData<DAVA::TArc::ThemesSettings>();
+        DAVA::ThemesSettings* themeSettings = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>();
         DVASSERT(themeSettings);
 
         {
@@ -178,7 +178,7 @@ public:
             DAVA::KeyedArchive* archive = GetArchive({ "preferences", "DialogReloadSprites" });
             if (archive != nullptr)
             {
-                DAVA::TArc::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
+                DAVA::PropertiesItem item = accessor->CreatePropertiesNode("DialogReloadSprites");
                 item.Set("currentGpu", archive->GetVariant("currentGPU")->AsUInt8());
                 item.Set("quality", archive->GetUInt32("quality"));
                 item.Set("forcreRepack", archive->GetBool("forceRepackEnabled"));
@@ -194,7 +194,7 @@ public:
             DAVA::KeyedArchive* archive = GetArchive({ "unnamed preferences" });
             if (archive != nullptr)
             {
-                themeSettings->SetTheme(static_cast<DAVA::TArc::ThemesSettings::eTheme>(archive->GetInt64("ThemeName")), DAVA::PlatformApi::Qt::GetApplication());
+                themeSettings->SetTheme(static_cast<DAVA::ThemesSettings::eTheme>(archive->GetInt64("ThemeName")), DAVA::PlatformApi::Qt::GetApplication());
             }
         }
     }
@@ -214,19 +214,19 @@ private:
     DAVA::Map<DAVA::Vector<DAVA::String>, DAVA::KeyedArchive*> unpackedArchive;
 };
 
-void ConvertToInitVersion(const DAVA::TArc::PropertiesHolder& rootNode, DAVA::TArc::ContextAccessor* accessor)
+void ConvertToInitVersion(const DAVA::PropertiesHolder& rootNode, DAVA::ContextAccessor* accessor)
 {
     OldSettingsConverter converter(accessor);
     converter.Do(rootNode, accessor);
 }
 } // namespace SettingsConverterDetail
 
-void ConvertSettingsIfNeeded(const DAVA::TArc::PropertiesHolder& rootNode, DAVA::TArc::ContextAccessor* accessor)
+void ConvertSettingsIfNeeded(const DAVA::PropertiesHolder& rootNode, DAVA::ContextAccessor* accessor)
 {
     using namespace SettingsConverterDetail;
     DAVA::uint32 settingsVersion = 0;
     {
-        DAVA::TArc::PropertiesItem verionsInfo = rootNode.CreateSubHolder("VersionsInfo");
+        DAVA::PropertiesItem verionsInfo = rootNode.CreateSubHolder("VersionsInfo");
         settingsVersion = verionsInfo.Get<DAVA::uint32>("SettingsVersion", 0);
     }
     if (settingsVersion == 0)

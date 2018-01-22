@@ -1,18 +1,16 @@
 #pragma once
 
+#include "Classes/Qt/DockParticleEditor/ParticleEffectPropertiesWidget.h"
+#include "Classes/Qt/DockParticleEditor/ParticleEmitterPropertiesWidget.h"
+
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+
 #include <QScrollArea>
-
-#include "ParticleEffectPropertiesWidget.h"
-#include "ParticleEmitterPropertiesWidget.h"
-
-#include "Scene/SceneEditor2.h"
 
 namespace DAVA
 {
-namespace TArc
-{
 class FieldBinder;
-}
 }
 
 class EmitterLayerWidget;
@@ -33,16 +31,16 @@ protected slots:
     void OnValueChanged();
 
     // Notifications about changes in the Particles items.
-    void OnParticleLayerValueChanged(SceneEditor2* scene, DAVA::ParticleLayer* layer);
-    void OnParticleEmitterLoaded(SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter);
-    void OnParticleEmitterSaved(SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter);
+    void OnParticleLayerValueChanged(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer);
+    void OnParticleEmitterLoaded(DAVA::SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter);
+    void OnParticleEmitterSaved(DAVA::SceneEditor2* scene, DAVA::ParticleEmitterInstance* emitter);
 
 signals:
     void ChangeVisible(bool bVisible);
 
 private:
     void OnSelectionChanged(const DAVA::Any& selection);
-    void ProcessSelection(SceneEditor2* scene, const SelectableGroup& selection);
+    void ProcessSelection(DAVA::SceneEditor2* scene, const DAVA::SelectableGroup& selection);
 
     enum ParticleEditorWidgetMode
     {
@@ -57,7 +55,7 @@ private:
     void UpdateParticleEditorWidgets();
 
     // Handle the "Emitter Selected" notification for different cases.
-    void HandleEmitterSelected(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, bool forceUpdate);
+    void HandleEmitterSelected(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, bool forceUpdate);
 
     // Update the visible timelines for the particular Particle Emitter elements.
     void UpdateVisibleTimelinesForParticleEmitter();
@@ -73,11 +71,11 @@ private:
     void DeleteInnerWidgets();
 
     // Switch editor to the particular mode.
-    void SwitchEditorToEffectMode(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
-    void SwitchEditorToEmitterMode(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter);
-    void SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
-    void SwitchEditorToForceSimplifiedMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
-    void SwitchEditorToForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+    void SwitchEditorToEffectMode(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect);
+    void SwitchEditorToEmitterMode(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter);
+    void SwitchEditorToLayerMode(DAVA::SceneEditor2* scene, DAVA::ParticleEffectComponent* effect, DAVA::ParticleEmitterInstance* emitter, DAVA::ParticleLayer* layer);
+    void SwitchEditorToForceSimplifiedMode(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
+    void SwitchEditorToForceMode(DAVA::SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
     // Reset the editor mode, hide/disconnect appropriate widgets.
     void ResetEditorMode();
@@ -93,5 +91,5 @@ private:
     LayerForceSimplifiedWidget* layerForceSimplifiedWidget;
     LayerForceWidget* layerForceWidget;
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> selectionFieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
 };

@@ -11,13 +11,13 @@ namespace DAVA
 class UIScriptSystem;
 }
 
-class ScriptControlModule : public DAVA::TArc::ClientModule
+class ScriptControlModule : public DAVA::ClientModule
 {
-    DAVA_VIRTUAL_REFLECTION(ScriptControlModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(ScriptControlModule, DAVA::ClientModule);
 
 protected:
-    void OnContextCreated(DAVA::TArc::DataContext* context) override;
-    void OnContextDeleted(DAVA::TArc::DataContext* context) override;
+    void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
     void PostInit() override;
 
 private:

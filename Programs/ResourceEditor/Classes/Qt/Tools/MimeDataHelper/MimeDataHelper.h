@@ -4,7 +4,10 @@
 #include "DAVAEngine.h"
 #include <QMimeData>
 
+namespace DAVA
+{
 class SceneEditor2;
+} // namespace DAVA
 
 namespace DAVA
 {

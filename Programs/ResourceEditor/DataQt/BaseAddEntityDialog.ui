@@ -148,7 +148,7 @@
   <customwidget>
    <class>QtPropertyEditor</class>
    <extends>QTreeView</extends>
-   <header>Tools/QtPropertyEditor/QtPropertyEditor.h</header>
+   <header>Classes/Qt/Tools/QtPropertyEditor/QtPropertyEditor.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

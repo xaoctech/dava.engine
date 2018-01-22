@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class Label final : public ControlProxyImpl<QLabel>
 {
 public:
@@ -27,5 +25,4 @@ public:
 private:
     void UpdateControl(const ControlDescriptor& changedFields) override;
 };
-} // namespace TArc
 } // namespace DAVA

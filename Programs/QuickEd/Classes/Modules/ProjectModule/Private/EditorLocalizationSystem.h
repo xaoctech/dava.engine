@@ -8,10 +8,7 @@
 class QDir;
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
-}
 }
 
 class EditorLocalizationSystem : public QObject
@@ -20,7 +17,7 @@ class EditorLocalizationSystem : public QObject
     Q_PROPERTY(QString currentLocale READ GetCurrentLocale WRITE SetCurrentLocale NOTIFY CurrentLocaleChanged)
 
 public:
-    explicit EditorLocalizationSystem(DAVA::TArc::ContextAccessor* accessor, QObject* parent = nullptr);
+    explicit EditorLocalizationSystem(DAVA::ContextAccessor* accessor, QObject* parent = nullptr);
 
     QStringList GetAvailableLocales() const;
     QString GetCurrentLocale() const;
@@ -36,7 +33,7 @@ private:
     QStringList availableLocales;
     QString currentLocale;
 
-    DAVA::TArc::ContextAccessor* accessor;
+    DAVA::ContextAccessor* accessor;
 };
 
 

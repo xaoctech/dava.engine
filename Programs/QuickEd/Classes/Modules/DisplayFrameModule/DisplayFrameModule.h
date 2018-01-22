@@ -5,10 +5,7 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class FieldBinder;
-}
 }
 
 class DisplayFrameModule : public BaseEditorModule
@@ -23,9 +20,9 @@ private:
 
     void OnSafeAreaChanged(const DAVA::Any& values);
 
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 
-    DAVA_VIRTUAL_REFLECTION(DisplayFrameModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(DisplayFrameModule, DAVA::ClientModule);
 
     DAVA::Token virtualSizeChangedToken;
 };

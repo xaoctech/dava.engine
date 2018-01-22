@@ -43,6 +43,11 @@ object dava_framework_Editors_UIViewer_UIViewerIOS : BuildType({
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "generate project"
             workingDir = "%pathToProject%"
             scriptContent = """

@@ -16,8 +16,6 @@ namespace DAVA
 {
 class Engine;
 
-namespace TArc
-{
 // back compatibility
 class CoreInterface;
 
@@ -71,6 +69,8 @@ public:
         }
     }
 
+    void InitPluginManager(const String& applicationName, const String& pluginsFolder);
+
     DAVA_DEPRECATED(const EngineContext* GetEngineContext());
     DAVA_DEPRECATED(CoreInterface* GetCoreInterface());
     DAVA_DEPRECATED(const CoreInterface* GetCoreInterface() const);
@@ -89,14 +89,14 @@ private:
     void AddModule(ClientModule* module);
     void AddModule(ControllerModule* module);
 
-    friend class TestClass;
+    friend class TArcTestClass;
     void OnLoopStarted();
     void OnLoopStopped();
     void OnFrame(float32 delta);
-    void OnWindowCreated(DAVA::Window* w);
+    void OnWindowCreated(Window* w);
     bool HasControllerModule() const;
     void SetInvokeListener(OperationInvoker* proxyInvoker);
-    DAVA::Signal<> syncSignal;
+    Signal<> syncSignal;
 
 private:
     class Impl;
@@ -105,6 +105,4 @@ private:
 
     std::unique_ptr<Impl> impl;
 };
-
-} // namespace TArc
 } // namespace DAVA

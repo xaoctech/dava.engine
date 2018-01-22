@@ -16,8 +16,6 @@ void InitTArcResources()
 
 namespace DAVA
 {
-namespace TArc
-{
 int BaseApplication::Run()
 {
     InitTArcResources();
@@ -51,7 +49,7 @@ int BaseApplication::RunImpl()
 
         SetupToolsAssertHandlers(eApplicationMode::TEST_MODE);
         e.Init(eEngineRunMode::GUI_EMBEDDED, initInfo.modules, initInfo.options.Get());
-        RegisterAnyCasts();
+        RegisterTArcAnyCasts();
         RegisterEditorAnyCasts();
         RegisterReflectionExtensions();
 
@@ -66,7 +64,7 @@ int BaseApplication::RunImpl()
     {
         SetupToolsAssertHandlers(initInfo.runMode == eEngineRunMode::CONSOLE_MODE ? eApplicationMode::CONSOLE_MODE : eApplicationMode::GUI_MODE);
         e.Init(initInfo.runMode, initInfo.modules, initInfo.options.Get());
-        RegisterAnyCasts();
+        RegisterTArcAnyCasts();
         RegisterEditorAnyCasts();
         RegisterReflectionExtensions();
 
@@ -114,6 +112,4 @@ bool BaseApplication::IsTestEnvironment() const
 {
     return isTestEnv;
 }
-
-} // namespace TArc
 } // namespace DAVA

@@ -3,7 +3,7 @@
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtDelayedExecutor.h>
 
-class LaunchModule : public DAVA::TArc::ClientModule
+class LaunchModule : public DAVA::ClientModule
 {
 public:
     ~LaunchModule();
@@ -14,9 +14,9 @@ protected:
 
 private:
     class FirstSceneCreator;
-    DAVA::TArc::QtDelayedExecutor delayedExecutor;
+    DAVA::QtDelayedExecutor delayedExecutor;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(LaunchModule, DAVA::TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(LaunchModule, DAVA::ClientModule)
     {
         DAVA::ReflectionRegistrator<LaunchModule>::Begin()
         .ConstructorByPointer()

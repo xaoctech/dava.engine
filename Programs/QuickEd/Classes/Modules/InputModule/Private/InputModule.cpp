@@ -46,4 +46,4 @@ void InputModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
     }
 }
 
-DECL_GUI_MODULE(InputModule);
+DECL_TARC_MODULE(InputModule);

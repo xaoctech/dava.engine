@@ -1,16 +1,20 @@
 #include "Classes/SceneTree/Private/SceneTreeItemTraits.h"
 #include "Classes/SceneTree/Private/SceneTreeRoles.h"
-#include "Classes/Application/REMeta.h"
-#include "Classes/Commands2/ParticleEditorCommands.h"
-#include "Classes/DragNDropSupport/ReflectedMimeData.h"
-#include "Classes/Qt/Scene/SceneEditor2.h"
-#include "Classes/Qt/Scene/System/EditorParticlesSystem.h"
-#include "Classes/Qt/Scene/System/StructureSystem.h"
-#include "Classes/SceneManager/SceneData.h"
-#include "Classes/Selection/SelectableGroup.h"
+
+#include <REPlatform/Commands/ParticleEditorCommands.h>
+#include <REPlatform/DataNodes/ReflectedMimeData.h>
+#include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/DataNodes/Selectable.h>
+#include <REPlatform/DataNodes/SelectableGroup.h>
+#include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
+#include <REPlatform/Global/REMeta.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/EditorParticlesSystem.h>
+#include <REPlatform/Scene/Systems/StructureSystem.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/Utils/ReflectionHelpers.h>
 
 #include <Debug/DVAssert.h>
 #include <Logger/Logger.h>
@@ -24,105 +28,103 @@
 #include <QBrush>
 #include <QColor>
 
-BaseSceneTreeTraits::BaseSceneTreeTraits(DAVA::TArc::ContextAccessor* accessor_)
+BaseSceneTreeTraits::BaseSceneTreeTraits(DAVA::ContextAccessor* accessor_)
     : accessor(accessor_)
 {
 }
 
-QString BaseSceneTreeTraits::GetTooltip(const Selectable& object) const
+QString BaseSceneTreeTraits::GetTooltip(const DAVA::Selectable& object) const
 {
     return GetName(object);
 }
 
-Qt::ItemFlags BaseSceneTreeTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags BaseSceneTreeTraits::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
 }
 
-QVariant BaseSceneTreeTraits::GetValue(const Selectable& object, int itemRole) const
+QVariant BaseSceneTreeTraits::GetValue(const DAVA::Selectable& object, int itemRole) const
 {
     return QVariant();
 }
 
-bool BaseSceneTreeTraits::SetValue(const Selectable& object, const QVariant& value, int itemRole,
-                                   SceneEditor2* scene) const
+bool BaseSceneTreeTraits::SetValue(const DAVA::Selectable& object, const QVariant& value, int itemRole,
+                                   DAVA::SceneEditor2* scene) const
 {
     return false;
 }
 
-EntityTraits::EntityTraits(DAVA::TArc::ContextAccessor* accessor)
+EntityTraits::EntityTraits(DAVA::ContextAccessor* accessor)
     : BaseSceneTreeTraits(accessor)
 {
 }
 
-QIcon EntityTraits::GetIcon(const Selectable& object) const
+QIcon EntityTraits::GetIcon(const DAVA::Selectable& object) const
 {
-    using namespace DAVA::TArc;
-
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
 
     if (nullptr != entity->GetComponent<DAVA::StaticOcclusionComponent>())
     {
-        return SharedIcon(":/QtIcons/so.png");
+        return DAVA::SharedIcon(":/QtIcons/so.png");
     }
     if (nullptr != DAVA::GetEffectComponent(entity))
     {
-        return SharedIcon(":/QtIcons/effect.png");
+        return DAVA::SharedIcon(":/QtIcons/effect.png");
     }
     else if (nullptr != DAVA::GetLandscape(entity))
     {
-        return SharedIcon(":/QtIcons/heightmapeditor.png");
+        return DAVA::SharedIcon(":/QtIcons/heightmapeditor.png");
     }
     else if (nullptr != GetLodComponent(entity))
     {
-        return SharedIcon(":/QtIcons/lod_object.png");
+        return DAVA::SharedIcon(":/QtIcons/lod_object.png");
     }
     else if (nullptr != GetSwitchComponent(entity))
     {
-        return SharedIcon(":/QtIcons/switch.png");
+        return DAVA::SharedIcon(":/QtIcons/switch.png");
     }
     else if (nullptr != DAVA::GetVegetation(entity))
     {
-        return SharedIcon(":/QtIcons/grass.png");
+        return DAVA::SharedIcon(":/QtIcons/grass.png");
     }
     else if (nullptr != DAVA::GetSkeletonComponent(entity))
     {
-        return SharedIcon(":/QtIcons/skinned_object.png");
+        return DAVA::SharedIcon(":/QtIcons/skinned_object.png");
     }
     else if (nullptr != DAVA::GetRenderObject(entity))
     {
-        return SharedIcon(":/QtIcons/render_object.png");
+        return DAVA::SharedIcon(":/QtIcons/render_object.png");
     }
     else if (nullptr != entity->GetComponent<DAVA::UserComponent>())
     {
-        return SharedIcon(":/QtIcons/user_object.png");
+        return DAVA::SharedIcon(":/QtIcons/user_object.png");
     }
     else if (nullptr != DAVA::GetCamera(entity))
     {
-        return SharedIcon(":/QtIcons/camera.png");
+        return DAVA::SharedIcon(":/QtIcons/camera.png");
     }
     else if (nullptr != DAVA::GetLight(entity))
     {
-        return SharedIcon(":/QtIcons/light.png");
+        return DAVA::SharedIcon(":/QtIcons/light.png");
     }
     else if (nullptr != DAVA::GetWindComponent(entity))
     {
-        return SharedIcon(":/QtIcons/wind.png");
+        return DAVA::SharedIcon(":/QtIcons/wind.png");
     }
     else if (nullptr != DAVA::GetPathComponent(entity))
     {
-        return SharedIcon(":/QtIcons/path.png");
+        return DAVA::SharedIcon(":/QtIcons/path.png");
     }
     else if (0 != entity->GetComponentCount<DAVA::TextComponent>())
     {
-        return SharedIcon(":/QtIcons/text_component.png");
+        return DAVA::SharedIcon(":/QtIcons/text_component.png");
     }
 
-    return DAVA::TArc::SharedIcon(":/QtIcons/node.png");
+    return DAVA::SharedIcon(":/QtIcons/node.png");
 }
 
-QString EntityTraits::GetName(const Selectable& object) const
+QString EntityTraits::GetName(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
@@ -131,7 +133,7 @@ QString EntityTraits::GetName(const Selectable& object) const
     return QString(name.c_str());
 }
 
-DAVA::int32 EntityTraits::GetChildrenCount(const Selectable& object) const
+DAVA::int32 EntityTraits::GetChildrenCount(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
@@ -146,8 +148,8 @@ DAVA::int32 EntityTraits::GetChildrenCount(const Selectable& object) const
     return entityChildrenCount + particleEffectsCount;
 }
 
-void EntityTraits::BuildUnfetchedList(const Selectable& object,
-                                      const DAVA::Function<bool(const Selectable&)>& isFetchedFn,
+void EntityTraits::BuildUnfetchedList(const DAVA::Selectable& object,
+                                      const DAVA::Function<bool(const DAVA::Selectable&)>& isFetchedFn,
                                       DAVA::Vector<DAVA::int32>& unfetchedIndexes) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
@@ -157,7 +159,7 @@ void EntityTraits::BuildUnfetchedList(const Selectable& object,
     for (DAVA::int32 childIndex = 0; childIndex < childCount; ++childIndex)
     {
         DAVA::Entity* childEntity = entity->GetChild(childIndex);
-        if (isFetchedFn(Selectable(DAVA::Any(childEntity))) == false)
+        if (isFetchedFn(DAVA::Selectable(DAVA::Any(childEntity))) == false)
         {
             unfetchedIndexes.push_back(childIndex);
         }
@@ -169,7 +171,7 @@ void EntityTraits::BuildUnfetchedList(const Selectable& object,
         for (DAVA::uint32 emitterIndex = 0; emitterIndex < effectComponent->GetEmittersCount(); ++emitterIndex)
         {
             DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(emitterIndex);
-            if (isFetchedFn(Selectable(DAVA::Any(emitterInstance))) == false)
+            if (isFetchedFn(DAVA::Selectable(DAVA::Any(emitterInstance))) == false)
             {
                 unfetchedIndexes.push_back(childCount + emitterIndex);
             }
@@ -177,8 +179,8 @@ void EntityTraits::BuildUnfetchedList(const Selectable& object,
     }
 }
 
-void EntityTraits::FetchMore(const Selectable& object, const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
-                             const DAVA::Function<void(DAVA::int32, const Selectable&)>& fetchCallback) const
+void EntityTraits::FetchMore(const DAVA::Selectable& object, const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
+                             const DAVA::Function<void(DAVA::int32, const DAVA::Selectable&)>& fetchCallback) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
@@ -191,7 +193,7 @@ void EntityTraits::FetchMore(const Selectable& object, const DAVA::Vector<DAVA::
         if (index < entity->GetChildrenCount())
         {
             DAVA::Entity* child = entity->GetChild(index);
-            fetchCallback(index, Selectable(DAVA::Any(child)));
+            fetchCallback(index, DAVA::Selectable(DAVA::Any(child)));
         }
         else
         {
@@ -201,12 +203,12 @@ void EntityTraits::FetchMore(const Selectable& object, const DAVA::Vector<DAVA::
             DAVA::uint32 unsignedEmitterIndex = static_cast<DAVA::uint32>(emitterIndex);
             DVASSERT(unsignedEmitterIndex < effectComponent->GetEmittersCount());
             DAVA::ParticleEmitterInstance* emitterInstance = effectComponent->GetEmitterInstance(unsignedEmitterIndex);
-            fetchCallback(index, Selectable(DAVA::Any(emitterInstance)));
+            fetchCallback(index, DAVA::Selectable(DAVA::Any(emitterInstance)));
         }
     }
 }
 
-Qt::ItemFlags EntityTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags EntityTraits::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
@@ -222,7 +224,7 @@ Qt::ItemFlags EntityTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags
     return defaultFlags;
 }
 
-QVariant EntityTraits::GetValue(const Selectable& object, int itemRole) const
+QVariant EntityTraits::GetValue(const DAVA::Selectable& object, int itemRole) const
 {
     if (itemRole == ToItemRoleCast(eSceneTreeRoles::RightAlignedDecorationRole))
     {
@@ -232,19 +234,19 @@ QVariant EntityTraits::GetValue(const Selectable& object, int itemRole) const
 
         if (entity->GetLocked())
         {
-            result.push_back(DAVA::TArc::SharedIcon(":/QtIcons/locked.png"));
+            result.push_back(DAVA::SharedIcon(":/QtIcons/locked.png"));
         }
 
         DAVA::Camera* camera = DAVA::GetCamera(entity);
         if (camera != nullptr)
         {
-            DAVA::TArc::DataContext* ctx = accessor->GetActiveContext();
+            DAVA::DataContext* ctx = accessor->GetActiveContext();
             if (ctx != nullptr)
             {
-                DAVA::Scene* scene = ctx->GetData<SceneData>()->GetScene().Get();
+                DAVA::Scene* scene = ctx->GetData<DAVA::SceneData>()->GetScene().Get();
                 if (scene->GetCurrentCamera() == camera)
                 {
-                    result.push_back(DAVA::TArc::SharedIcon(":/QtIcons/eye.png"));
+                    result.push_back(DAVA::SharedIcon(":/QtIcons/eye.png"));
                 }
             }
         }
@@ -272,8 +274,8 @@ QVariant EntityTraits::GetValue(const Selectable& object, int itemRole) const
     return QVariant();
 }
 
-bool EntityTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                const Selectable& parent, DAVA::int32 positionInParent) const
+bool EntityTraits::CanBeDropped(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                                const DAVA::Selectable& parent, DAVA::int32 positionInParent) const
 {
     if (action != Qt::MoveAction)
     {
@@ -306,8 +308,8 @@ bool EntityTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropActio
     return false;
 }
 
-bool EntityTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                        const Selectable& parent, DAVA::int32 positionInParent, SceneEditor2* scene) const
+bool EntityTraits::Drop(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                        const DAVA::Selectable& parent, DAVA::int32 positionInParent, DAVA::SceneEditor2* scene) const
 {
     if (action != Qt::MoveAction)
     {
@@ -330,15 +332,18 @@ bool EntityTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action
                 insertBefore = newParentEntity->GetChild(positionInParent);
             }
 
-            DAVA::Vector<Selectable> objects;
+            DAVA::Vector<DAVA::Selectable> objects;
             objects.reserve(entities.size());
             std::transform(entities.begin(), entities.end(), std::back_inserter(objects), [](const DAVA::Entity* e) {
-                return Selectable(DAVA::Any(e));
+                return DAVA::Selectable(DAVA::Any(e));
             });
 
-            SelectableGroup entitiesToMove;
+            DAVA::SelectableGroup entitiesToMove;
             entitiesToMove.Add(objects);
-            scene->structureSystem->Move(entitiesToMove, newParentEntity, insertBefore);
+
+            DAVA::GlobalSceneSettings* settings = accessor->GetGlobalContext()->GetData<DAVA::GlobalSceneSettings>();
+            scene->GetSystem<DAVA::StructureSystem>()->Move(entitiesToMove, newParentEntity, insertBefore,
+                                                            settings->saveEntityPositionOnHierarchyChange);
         }
     }
 
@@ -364,7 +369,7 @@ bool EntityTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action
                                return component;
                            });
 
-            scene->structureSystem->MoveEmitter(emitters, oldComponents, targetEffectComponent, dropEmittersAfter);
+            scene->GetSystem<DAVA::StructureSystem>()->MoveEmitter(emitters, oldComponents, targetEffectComponent, dropEmittersAfter);
         }
     }
 
@@ -405,7 +410,7 @@ bool EntityTraits::IsDragNDropAllow(DAVA::Entity* entity, bool isRoot) const
         for (const DAVA::Reflection::Field& f : component)
         {
             DAVA::Any value = f.ref.GetValue();
-            if (DAVA::TArc::GetTypeMeta<REMeta::DisableEntityReparent>(value) != nullptr)
+            if (DAVA::GetTypeMeta<DAVA::M::DisableEntityReparent>(value) != nullptr)
             {
                 return true;
             }
@@ -450,24 +455,24 @@ bool EntityTraits::IsEditorLocalEntity(DAVA::Entity* entity) const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-ParticleEmitterInstanceTraits::ParticleEmitterInstanceTraits(DAVA::TArc::ContextAccessor* accessor)
+ParticleEmitterInstanceTraits::ParticleEmitterInstanceTraits(DAVA::ContextAccessor* accessor)
     : BaseSceneTreeTraits(accessor)
 {
 }
 
-QIcon ParticleEmitterInstanceTraits::GetIcon(const Selectable& object) const
+QIcon ParticleEmitterInstanceTraits::GetIcon(const DAVA::Selectable& object) const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/emitter_particle.png");
+    return DAVA::SharedIcon(":/QtIcons/emitter_particle.png");
 }
 
-QString ParticleEmitterInstanceTraits::GetName(const Selectable& object) const
+QString ParticleEmitterInstanceTraits::GetName(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleEmitterInstance>());
     DAVA::ParticleEmitterInstance* emitter = object.Cast<DAVA::ParticleEmitterInstance>();
     return QString(emitter->GetEmitter()->name.c_str());
 }
 
-DAVA::int32 ParticleEmitterInstanceTraits::GetChildrenCount(const Selectable& object) const
+DAVA::int32 ParticleEmitterInstanceTraits::GetChildrenCount(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleEmitterInstance>());
     DAVA::ParticleEmitterInstance* emitter = object.Cast<DAVA::ParticleEmitterInstance>();
@@ -475,8 +480,8 @@ DAVA::int32 ParticleEmitterInstanceTraits::GetChildrenCount(const Selectable& ob
     return static_cast<DAVA::int32>(emitter->GetEmitter()->layers.size());
 }
 
-void ParticleEmitterInstanceTraits::BuildUnfetchedList(const Selectable& object,
-                                                       const DAVA::Function<bool(const Selectable&)>& isFetchedFn,
+void ParticleEmitterInstanceTraits::BuildUnfetchedList(const DAVA::Selectable& object,
+                                                       const DAVA::Function<bool(const DAVA::Selectable&)>& isFetchedFn,
                                                        DAVA::Vector<DAVA::int32>& unfetchedIndexes) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleEmitterInstance>());
@@ -486,17 +491,17 @@ void ParticleEmitterInstanceTraits::BuildUnfetchedList(const Selectable& object,
     for (size_t i = 0; i < layers.size(); ++i)
     {
         DAVA::ParticleLayer* layer = layers[i];
-        if (isFetchedFn(Selectable(DAVA::Any(layer))) == false)
+        if (isFetchedFn(DAVA::Selectable(DAVA::Any(layer))) == false)
         {
             unfetchedIndexes.push_back(static_cast<DAVA::int32>(i));
         }
     }
 }
 
-void ParticleEmitterInstanceTraits::FetchMore(const Selectable& object,
+void ParticleEmitterInstanceTraits::FetchMore(const DAVA::Selectable& object,
                                               const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
                                               const DAVA::Function<void(DAVA::int32,
-                                                                        const Selectable&)>& fetchCallback) const
+                                                                        const DAVA::Selectable&)>& fetchCallback) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleEmitterInstance>());
     DAVA::ParticleEmitterInstance* emitter = object.Cast<DAVA::ParticleEmitterInstance>();
@@ -505,11 +510,11 @@ void ParticleEmitterInstanceTraits::FetchMore(const Selectable& object,
     for (DAVA::int32 index : unfetchedIndexes)
     {
         DAVA::ParticleLayer* layer = layers[index];
-        fetchCallback(index, Selectable(DAVA::Any(layer)));
+        fetchCallback(index, DAVA::Selectable(DAVA::Any(layer)));
     }
 }
 
-Qt::ItemFlags ParticleEmitterInstanceTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags ParticleEmitterInstanceTraits::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleEmitterInstance>());
     DAVA::ParticleEmitterInstance* emitter = object.Cast<DAVA::ParticleEmitterInstance>();
@@ -523,7 +528,7 @@ Qt::ItemFlags ParticleEmitterInstanceTraits::GetItemFlags(const Selectable& obje
     return flags;
 }
 
-QVariant ParticleEmitterInstanceTraits::GetValue(const Selectable& object, int itemRole) const
+QVariant ParticleEmitterInstanceTraits::GetValue(const DAVA::Selectable& object, int itemRole) const
 {
     if (itemRole == Qt::BackgroundRole)
     {
@@ -538,14 +543,14 @@ QVariant ParticleEmitterInstanceTraits::GetValue(const Selectable& object, int i
     return QVariant();
 }
 
-bool ParticleEmitterInstanceTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                                 const Selectable& parent, DAVA::int32 positionInParent) const
+bool ParticleEmitterInstanceTraits::CanBeDropped(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                                                 const DAVA::Selectable& parent, DAVA::int32 positionInParent) const
 {
     return mimeData->HasObjects<DAVA::ParticleLayer>();
 }
 
-bool ParticleEmitterInstanceTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                         const Selectable& parent, DAVA::int32 positionInParent, SceneEditor2* scene) const
+bool ParticleEmitterInstanceTraits::Drop(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                                         const DAVA::Selectable& parent, DAVA::int32 positionInParent, DAVA::SceneEditor2* scene) const
 {
     DVASSERT(parent.CanBeCastedTo<DAVA::ParticleEmitterInstance>());
     DAVA::ParticleEmitterInstance* targetEmitter = parent.Cast<DAVA::ParticleEmitterInstance>();
@@ -554,7 +559,7 @@ bool ParticleEmitterInstanceTraits::Drop(const ReflectedMimeData* mimeData, Qt::
     DAVA::Vector<DAVA::ParticleEmitterInstance*> emitters;
     emitters.reserve(layers.size());
 
-    EditorParticlesSystem* system = scene->GetSystem<EditorParticlesSystem>();
+    DAVA::EditorParticlesSystem* system = scene->GetSystem<DAVA::EditorParticlesSystem>();
     for (DAVA::ParticleLayer* layer : layers)
     {
         emitters.push_back(system->GetDirectEmitterLayerOwner(layer));
@@ -566,31 +571,31 @@ bool ParticleEmitterInstanceTraits::Drop(const ReflectedMimeData* mimeData, Qt::
         beforeLayer = targetEmitter->GetEmitter()->layers[positionInParent];
     }
 
-    scene->structureSystem->MoveLayer(layers, emitters, targetEmitter, beforeLayer);
+    scene->GetSystem<DAVA::StructureSystem>()->MoveLayer(layers, emitters, targetEmitter, beforeLayer);
 
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-ParticleLayerTraits::ParticleLayerTraits(DAVA::TArc::ContextAccessor* accessor)
+ParticleLayerTraits::ParticleLayerTraits(DAVA::ContextAccessor* accessor)
     : BaseSceneTreeTraits(accessor)
 {
 }
 
-QIcon ParticleLayerTraits::GetIcon(const Selectable& object) const
+QIcon ParticleLayerTraits::GetIcon(const DAVA::Selectable& object) const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/layer_particle.png");
+    return DAVA::SharedIcon(":/QtIcons/layer_particle.png");
 }
 
-QString ParticleLayerTraits::GetName(const Selectable& object) const
+QString ParticleLayerTraits::GetName(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleLayer>());
     DAVA::ParticleLayer* layer = object.Cast<DAVA::ParticleLayer>();
     return QString(layer->layerName.c_str());
 }
 
-DAVA::int32 ParticleLayerTraits::GetChildrenCount(const Selectable& object) const
+DAVA::int32 ParticleLayerTraits::GetChildrenCount(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleLayer>());
     DAVA::ParticleLayer* layer = object.Cast<DAVA::ParticleLayer>();
@@ -606,8 +611,8 @@ DAVA::int32 ParticleLayerTraits::GetChildrenCount(const Selectable& object) cons
     return forcesCount;
 }
 
-void ParticleLayerTraits::BuildUnfetchedList(const Selectable& object,
-                                             const DAVA::Function<bool(const Selectable&)>& isFetchedFn,
+void ParticleLayerTraits::BuildUnfetchedList(const DAVA::Selectable& object,
+                                             const DAVA::Function<bool(const DAVA::Selectable&)>& isFetchedFn,
                                              DAVA::Vector<DAVA::int32>& unfetchedIndexes) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleLayer>());
@@ -617,7 +622,7 @@ void ParticleLayerTraits::BuildUnfetchedList(const Selectable& object,
         const DAVA::Vector<DAVA::ParticleForceSimplified*>& forces = layer->GetSimplifiedParticleForces();
         for (DAVA::ParticleForceSimplified* force : forces)
         {
-            if (isFetchedFn(Selectable(DAVA::Any(force))) == false)
+            if (isFetchedFn(DAVA::Selectable(DAVA::Any(force))) == false)
             {
                 unfetchedIndexes.push_back(fullCounter);
             }
@@ -629,7 +634,7 @@ void ParticleLayerTraits::BuildUnfetchedList(const Selectable& object,
         const DAVA::Vector<DAVA::ParticleForce*>& forces = layer->GetParticleForces();
         for (DAVA::ParticleForce* force : forces)
         {
-            if (isFetchedFn(Selectable(DAVA::Any(force))) == false)
+            if (isFetchedFn(DAVA::Selectable(DAVA::Any(force))) == false)
             {
                 unfetchedIndexes.push_back(fullCounter);
             }
@@ -640,15 +645,15 @@ void ParticleLayerTraits::BuildUnfetchedList(const Selectable& object,
     if (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
     {
         DVASSERT(layer->innerEmitter != nullptr);
-        if (isFetchedFn(Selectable(DAVA::Any(layer->innerEmitter))) == false)
+        if (isFetchedFn(DAVA::Selectable(DAVA::Any(layer->innerEmitter))) == false)
         {
             unfetchedIndexes.push_back(fullCounter);
         }
     }
 }
 
-void ParticleLayerTraits::FetchMore(const Selectable& object, const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
-                                    const DAVA::Function<void(DAVA::int32, const Selectable&)>& fetchCallback) const
+void ParticleLayerTraits::FetchMore(const DAVA::Selectable& object, const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
+                                    const DAVA::Function<void(DAVA::int32, const DAVA::Selectable&)>& fetchCallback) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleLayer>());
     DAVA::ParticleLayer* layer = object.Cast<DAVA::ParticleLayer>();
@@ -661,7 +666,7 @@ void ParticleLayerTraits::FetchMore(const Selectable& object, const DAVA::Vector
         if (index < simplifiedCount)
         {
             DAVA::ParticleForceSimplified* force = simplifiedForces[index];
-            fetchCallback(index, Selectable(DAVA::Any(force)));
+            fetchCallback(index, DAVA::Selectable(DAVA::Any(force)));
         }
         else
         {
@@ -669,26 +674,26 @@ void ParticleLayerTraits::FetchMore(const Selectable& object, const DAVA::Vector
             if (index < forcesCount)
             {
                 DAVA::ParticleForce* force = forces[index];
-                fetchCallback(index, Selectable(DAVA::Any(force)));
+                fetchCallback(index, DAVA::Selectable(DAVA::Any(force)));
             }
             else
             {
                 DVASSERT(index == forcesCount);
                 DVASSERT(layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES);
                 DVASSERT(layer->innerEmitter != nullptr);
-                fetchCallback(forcesCount, Selectable(DAVA::Any(layer->innerEmitter)));
+                fetchCallback(forcesCount, DAVA::Selectable(DAVA::Any(layer->innerEmitter)));
             }
         }
     }
 }
 
-Qt::ItemFlags ParticleLayerTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags ParticleLayerTraits::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleLayer>());
     return BaseSceneTreeTraits::GetItemFlags(object, defaultFlags) | Qt::ItemIsUserCheckable;
 }
 
-QVariant ParticleLayerTraits::GetValue(const Selectable& object, int itemRole) const
+QVariant ParticleLayerTraits::GetValue(const DAVA::Selectable& object, int itemRole) const
 {
     if (itemRole == Qt::CheckStateRole)
     {
@@ -705,8 +710,8 @@ QVariant ParticleLayerTraits::GetValue(const Selectable& object, int itemRole) c
     return QVariant();
 }
 
-bool ParticleLayerTraits::SetValue(const Selectable& object, const QVariant& value, int itemRole,
-                                   SceneEditor2* scene) const
+bool ParticleLayerTraits::SetValue(const DAVA::Selectable& object, const QVariant& value, int itemRole,
+                                   DAVA::SceneEditor2* scene) const
 {
     if (itemRole == Qt::CheckStateRole)
     {
@@ -715,21 +720,21 @@ bool ParticleLayerTraits::SetValue(const Selectable& object, const QVariant& val
         Qt::CheckState state = value.value<Qt::CheckState>();
         DVASSERT(state != Qt::PartiallyChecked);
         bool isChecked = state == Qt::Checked ? true : false;
-        scene->Exec(std::unique_ptr<DAVA::Command>(new CommandUpdateParticleLayerEnabled(layer, value.toBool())));
+        scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::CommandUpdateParticleLayerEnabled(layer, value.toBool())));
         return true;
     }
 
     return false;
 }
 
-bool ParticleLayerTraits::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                       const Selectable& parent, DAVA::int32 positionInParent) const
+bool ParticleLayerTraits::CanBeDropped(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                                       const DAVA::Selectable& parent, DAVA::int32 positionInParent) const
 {
     return mimeData->HasObjects<DAVA::ParticleForce>() || mimeData->HasObjects<DAVA::ParticleForceSimplified>();
 }
 
-bool ParticleLayerTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                               const Selectable& parent, DAVA::int32 positionInParent, SceneEditor2* scene) const
+bool ParticleLayerTraits::Drop(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                               const DAVA::Selectable& parent, DAVA::int32 positionInParent, DAVA::SceneEditor2* scene) const
 {
     DVASSERT(parent.CanBeCastedTo<DAVA::ParticleLayer>());
     DAVA::ParticleLayer* targetLayer = parent.Cast<DAVA::ParticleLayer>();
@@ -741,13 +746,13 @@ bool ParticleLayerTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction
         DAVA::Vector<DAVA::ParticleLayer*> layers;
         layers.reserve(forces.size());
 
-        EditorParticlesSystem* system = scene->GetSystem<EditorParticlesSystem>();
+        DAVA::EditorParticlesSystem* system = scene->GetSystem<DAVA::EditorParticlesSystem>();
         for (DAVA::ParticleForce* force : forces)
         {
             layers.push_back(system->GetForceOwner(force));
         }
 
-        scene->structureSystem->MoveParticleForce(forces, layers, targetLayer);
+        scene->GetSystem<DAVA::StructureSystem>()->MoveParticleForce(forces, layers, targetLayer);
     }
     else if (mimeData->HasObjects<DAVA::ParticleForceSimplified>())
     {
@@ -756,13 +761,13 @@ bool ParticleLayerTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction
         DAVA::Vector<DAVA::ParticleLayer*> layers;
         layers.reserve(forces.size());
 
-        EditorParticlesSystem* system = scene->GetSystem<EditorParticlesSystem>();
+        DAVA::EditorParticlesSystem* system = scene->GetSystem<DAVA::EditorParticlesSystem>();
         for (DAVA::ParticleForceSimplified* force : forces)
         {
             layers.push_back(system->GetForceOwner(force));
         }
 
-        scene->structureSystem->MoveSimplifiedForce(forces, layers, targetLayer);
+        scene->GetSystem<DAVA::StructureSystem>()->MoveSimplifiedForce(forces, layers, targetLayer);
     }
 
     return true;
@@ -770,134 +775,134 @@ bool ParticleLayerTraits::Drop(const ReflectedMimeData* mimeData, Qt::DropAction
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-ParticleSimplifiedForceTraits::ParticleSimplifiedForceTraits(DAVA::TArc::ContextAccessor* accessor)
+ParticleSimplifiedForceTraits::ParticleSimplifiedForceTraits(DAVA::ContextAccessor* accessor)
     : BaseSceneTreeTraits(accessor)
 {
 }
 
-QIcon ParticleSimplifiedForceTraits::GetIcon(const Selectable& object) const
+QIcon ParticleSimplifiedForceTraits::GetIcon(const DAVA::Selectable& object) const
 {
-    return DAVA::TArc::SharedIcon(":/QtIcons/force.png");
+    return DAVA::SharedIcon(":/QtIcons/force.png");
 }
 
-QString ParticleSimplifiedForceTraits::GetName(const Selectable& object) const
+QString ParticleSimplifiedForceTraits::GetName(const DAVA::Selectable& object) const
 {
     return QStringLiteral("force");
 }
 
-DAVA::int32 ParticleSimplifiedForceTraits::GetChildrenCount(const Selectable& object) const
+DAVA::int32 ParticleSimplifiedForceTraits::GetChildrenCount(const DAVA::Selectable& object) const
 {
     return 0;
 }
 
-Qt::ItemFlags ParticleSimplifiedForceTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags ParticleSimplifiedForceTraits::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     return BaseSceneTreeTraits::GetItemFlags(object, defaultFlags) ^ Qt::ItemIsDropEnabled;
 }
 
-void ParticleSimplifiedForceTraits::BuildUnfetchedList(const Selectable&, const DAVA::Function<bool(const Selectable&)>&,
+void ParticleSimplifiedForceTraits::BuildUnfetchedList(const DAVA::Selectable&, const DAVA::Function<bool(const DAVA::Selectable&)>&,
                                                        DAVA::Vector<DAVA::int32>&) const
 {
 }
 
-void ParticleSimplifiedForceTraits::FetchMore(const Selectable&, const DAVA::Vector<DAVA::int32>&,
-                                              const DAVA::Function<void(DAVA::int32, const Selectable&)>&) const
+void ParticleSimplifiedForceTraits::FetchMore(const DAVA::Selectable&, const DAVA::Vector<DAVA::int32>&,
+                                              const DAVA::Function<void(DAVA::int32, const DAVA::Selectable&)>&) const
 {
 }
 
-bool ParticleSimplifiedForceTraits::CanBeDropped(const ReflectedMimeData*, Qt::DropAction, const Selectable&, DAVA::int32) const
+bool ParticleSimplifiedForceTraits::CanBeDropped(const DAVA::ReflectedMimeData*, Qt::DropAction, const DAVA::Selectable&, DAVA::int32) const
 {
     return false;
 }
 
-bool ParticleSimplifiedForceTraits::Drop(const ReflectedMimeData*, Qt::DropAction, const Selectable&, DAVA::int32, SceneEditor2*) const
+bool ParticleSimplifiedForceTraits::Drop(const DAVA::ReflectedMimeData*, Qt::DropAction, const DAVA::Selectable&, DAVA::int32, DAVA::SceneEditor2*) const
 {
     return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-ParticleForceTraits::ParticleForceTraits(DAVA::TArc::ContextAccessor* accessor)
+ParticleForceTraits::ParticleForceTraits(DAVA::ContextAccessor* accessor)
     : BaseSceneTreeTraits(accessor)
 {
 }
 
-QIcon ParticleForceTraits::GetIcon(const Selectable& object) const
+QIcon ParticleForceTraits::GetIcon(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleForce>());
     DAVA::ParticleForce* force = object.Cast<DAVA::ParticleForce>();
 
     if (force->type == DAVA::ParticleForce::eType::DRAG_FORCE)
     {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/turtle.png") : DAVA::TArc::SharedIcon(":/QtIcons/turtle_bnw.png");
+        return force->isActive ? DAVA::SharedIcon(":/QtIcons/turtle.png") : DAVA::SharedIcon(":/QtIcons/turtle_bnw.png");
     }
     else if (force->type == DAVA::ParticleForce::eType::VORTEX)
     {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico.png") : DAVA::TArc::SharedIcon(":/QtIcons/vortex_ico_red.png");
+        return force->isActive ? DAVA::SharedIcon(":/QtIcons/vortex_ico.png") : DAVA::SharedIcon(":/QtIcons/vortex_ico_red.png");
     }
     else if (force->type == DAVA::ParticleForce::eType::GRAVITY)
     {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/gravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/gravity_red.png");
+        return force->isActive ? DAVA::SharedIcon(":/QtIcons/gravity.png") : DAVA::SharedIcon(":/QtIcons/gravity_red.png");
     }
     else if (force->type == DAVA::ParticleForce::eType::WIND)
     {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/wind_p.png") : DAVA::TArc::SharedIcon(":/QtIcons/wind_p_red.png");
+        return force->isActive ? DAVA::SharedIcon(":/QtIcons/wind_p.png") : DAVA::SharedIcon(":/QtIcons/wind_p_red.png");
     }
     else if (force->type == DAVA::ParticleForce::eType::POINT_GRAVITY)
     {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/pointGravity.png") : DAVA::TArc::SharedIcon(":/QtIcons/pointGravity_red.png");
+        return force->isActive ? DAVA::SharedIcon(":/QtIcons/pointGravity.png") : DAVA::SharedIcon(":/QtIcons/pointGravity_red.png");
     }
     else if (force->type == DAVA::ParticleForce::eType::PLANE_COLLISION)
     {
-        return force->isActive ? DAVA::TArc::SharedIcon(":/QtIcons/plane_coll.png") : DAVA::TArc::SharedIcon(":/QtIcons/plane_coll_red.png");
+        return force->isActive ? DAVA::SharedIcon(":/QtIcons/plane_coll.png") : DAVA::SharedIcon(":/QtIcons/plane_coll_red.png");
     }
 
-    return DAVA::TArc::SharedIcon(":/QtIcons/turtle.png");
+    return DAVA::SharedIcon(":/QtIcons/turtle.png");
 }
 
-QString ParticleForceTraits::GetName(const Selectable& object) const
+QString ParticleForceTraits::GetName(const DAVA::Selectable& object) const
 {
     DVASSERT(object.CanBeCastedTo<DAVA::ParticleForce>());
     return object.Cast<DAVA::ParticleForce>()->forceName.c_str();
 }
 
-DAVA::int32 ParticleForceTraits::GetChildrenCount(const Selectable& object) const
+DAVA::int32 ParticleForceTraits::GetChildrenCount(const DAVA::Selectable& object) const
 {
     return 0;
 }
 
-Qt::ItemFlags ParticleForceTraits::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags ParticleForceTraits::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     return BaseSceneTreeTraits::GetItemFlags(object, defaultFlags) ^ Qt::ItemIsDropEnabled;
 }
 
-void ParticleForceTraits::BuildUnfetchedList(const Selectable&, const DAVA::Function<bool(const Selectable&)>&,
+void ParticleForceTraits::BuildUnfetchedList(const DAVA::Selectable&, const DAVA::Function<bool(const DAVA::Selectable&)>&,
                                              DAVA::Vector<DAVA::int32>&) const
 {
 }
 
-void ParticleForceTraits::FetchMore(const Selectable&, const DAVA::Vector<DAVA::int32>&,
-                                    const DAVA::Function<void(DAVA::int32, const Selectable&)>&) const
+void ParticleForceTraits::FetchMore(const DAVA::Selectable&, const DAVA::Vector<DAVA::int32>&,
+                                    const DAVA::Function<void(DAVA::int32, const DAVA::Selectable&)>&) const
 {
 }
 
-bool ParticleForceTraits::CanBeDropped(const ReflectedMimeData*, Qt::DropAction, const Selectable&, DAVA::int32) const
+bool ParticleForceTraits::CanBeDropped(const DAVA::ReflectedMimeData*, Qt::DropAction, const DAVA::Selectable&, DAVA::int32) const
 {
     return false;
 }
 
-bool ParticleForceTraits::Drop(const ReflectedMimeData*, Qt::DropAction, const Selectable&, DAVA::int32, SceneEditor2*) const
+bool ParticleForceTraits::Drop(const DAVA::ReflectedMimeData*, Qt::DropAction, const DAVA::Selectable&, DAVA::int32, DAVA::SceneEditor2*) const
 {
     return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-SceneTreeTraitsManager::SceneTreeTraitsManager(DAVA::TArc::ContextAccessor* accessor)
+SceneTreeTraitsManager::SceneTreeTraitsManager(DAVA::ContextAccessor* accessor)
     : BaseSceneTreeTraits(accessor)
 {
     AddTraitsNode<DAVA::Entity, EntityTraits>(accessor);
-    AddTraitsNode<SceneEditor2, EntityTraits>(accessor);
+    AddTraitsNode<DAVA::SceneEditor2, EntityTraits>(accessor);
     AddTraitsNode<DAVA::ParticleEmitterInstance, ParticleEmitterInstanceTraits>(accessor);
     AddTraitsNode<DAVA::ParticleLayer, ParticleLayerTraits>(accessor);
     AddTraitsNode<DAVA::ParticleForceSimplified, ParticleSimplifiedForceTraits>(accessor);
@@ -907,7 +912,7 @@ SceneTreeTraitsManager::SceneTreeTraitsManager(DAVA::TArc::ContextAccessor* acce
     });
 }
 
-QIcon SceneTreeTraitsManager::GetIcon(const Selectable& object) const
+QIcon SceneTreeTraitsManager::GetIcon(const DAVA::Selectable& object) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -918,7 +923,7 @@ QIcon SceneTreeTraitsManager::GetIcon(const Selectable& object) const
     return traits->GetIcon(object);
 }
 
-QString SceneTreeTraitsManager::GetName(const Selectable& object) const
+QString SceneTreeTraitsManager::GetName(const DAVA::Selectable& object) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -929,7 +934,7 @@ QString SceneTreeTraitsManager::GetName(const Selectable& object) const
     return traits->GetName(object);
 }
 
-QString SceneTreeTraitsManager::GetTooltip(const Selectable& object) const
+QString SceneTreeTraitsManager::GetTooltip(const DAVA::Selectable& object) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -940,7 +945,7 @@ QString SceneTreeTraitsManager::GetTooltip(const Selectable& object) const
     return traits->GetTooltip(object);
 }
 
-DAVA::int32 SceneTreeTraitsManager::GetChildrenCount(const Selectable& object) const
+DAVA::int32 SceneTreeTraitsManager::GetChildrenCount(const DAVA::Selectable& object) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -951,8 +956,8 @@ DAVA::int32 SceneTreeTraitsManager::GetChildrenCount(const Selectable& object) c
     return traits->GetChildrenCount(object);
 }
 
-void SceneTreeTraitsManager::BuildUnfetchedList(const Selectable& object,
-                                                const DAVA::Function<bool(const Selectable&)>& isFetchedFn,
+void SceneTreeTraitsManager::BuildUnfetchedList(const DAVA::Selectable& object,
+                                                const DAVA::Function<bool(const DAVA::Selectable&)>& isFetchedFn,
                                                 DAVA::Vector<DAVA::int32>& unfetchedIndexes) const
 {
     if (fetchBlocked == true)
@@ -969,8 +974,8 @@ void SceneTreeTraitsManager::BuildUnfetchedList(const Selectable& object,
     return traits->BuildUnfetchedList(object, isFetchedFn, unfetchedIndexes);
 }
 
-void SceneTreeTraitsManager::FetchMore(const Selectable& object, const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
-                                       const DAVA::Function<void(DAVA::int32, const Selectable&)>& fetchCallback) const
+void SceneTreeTraitsManager::FetchMore(const DAVA::Selectable& object, const DAVA::Vector<DAVA::int32>& unfetchedIndexes,
+                                       const DAVA::Function<void(DAVA::int32, const DAVA::Selectable&)>& fetchCallback) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -981,7 +986,7 @@ void SceneTreeTraitsManager::FetchMore(const Selectable& object, const DAVA::Vec
     return traits->FetchMore(object, unfetchedIndexes, fetchCallback);
 }
 
-Qt::ItemFlags SceneTreeTraitsManager::GetItemFlags(const Selectable& object, Qt::ItemFlags defaultFlags) const
+Qt::ItemFlags SceneTreeTraitsManager::GetItemFlags(const DAVA::Selectable& object, Qt::ItemFlags defaultFlags) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -992,7 +997,7 @@ Qt::ItemFlags SceneTreeTraitsManager::GetItemFlags(const Selectable& object, Qt:
     return traits->GetItemFlags(object, defaultFlags);
 }
 
-QVariant SceneTreeTraitsManager::GetValue(const Selectable& object, int itemRole) const
+QVariant SceneTreeTraitsManager::GetValue(const DAVA::Selectable& object, int itemRole) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -1003,8 +1008,8 @@ QVariant SceneTreeTraitsManager::GetValue(const Selectable& object, int itemRole
     return traits->GetValue(object, itemRole);
 }
 
-bool SceneTreeTraitsManager::SetValue(const Selectable& object, const QVariant& value, int itemRole,
-                                      SceneEditor2* scene) const
+bool SceneTreeTraitsManager::SetValue(const DAVA::Selectable& object, const QVariant& value, int itemRole,
+                                      DAVA::SceneEditor2* scene) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(object);
     if (traits == nullptr)
@@ -1016,7 +1021,7 @@ bool SceneTreeTraitsManager::SetValue(const Selectable& object, const QVariant& 
 }
 
 template <typename TObject, typename TTraits>
-void SceneTreeTraitsManager::AddTraitsNode(DAVA::TArc::ContextAccessor* accessor)
+void SceneTreeTraitsManager::AddTraitsNode(DAVA::ContextAccessor* accessor)
 {
     TraitsNode node;
     node.type = DAVA::ReflectedTypeDB::Get<TObject>();
@@ -1024,7 +1029,7 @@ void SceneTreeTraitsManager::AddTraitsNode(DAVA::TArc::ContextAccessor* accessor
     traits.push_back(node);
 }
 
-const BaseSceneTreeTraits* SceneTreeTraitsManager::GetTraits(const Selectable& object) const
+const BaseSceneTreeTraits* SceneTreeTraitsManager::GetTraits(const DAVA::Selectable& object) const
 {
     const DAVA::ReflectedType* objType = object.GetObjectType();
     auto predicate = [](const TraitsNode& node, const DAVA::ReflectedType* type) {
@@ -1043,8 +1048,8 @@ const BaseSceneTreeTraits* SceneTreeTraitsManager::GetTraits(const Selectable& o
     return reinterpret_cast<const BaseSceneTreeTraits*>(iter->traits.GetData());
 }
 
-bool SceneTreeTraitsManager::CanBeDropped(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                          const Selectable& parent, DAVA::int32 positionInParent) const
+bool SceneTreeTraitsManager::CanBeDropped(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                                          const DAVA::Selectable& parent, DAVA::int32 positionInParent) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(parent);
     if (traits == nullptr)
@@ -1055,8 +1060,8 @@ bool SceneTreeTraitsManager::CanBeDropped(const ReflectedMimeData* mimeData, Qt:
     return traits->CanBeDropped(mimeData, action, parent, positionInParent);
 }
 
-bool SceneTreeTraitsManager::Drop(const ReflectedMimeData* mimeData, Qt::DropAction action,
-                                  const Selectable& parent, DAVA::int32 positionInParent, SceneEditor2* scene) const
+bool SceneTreeTraitsManager::Drop(const DAVA::ReflectedMimeData* mimeData, Qt::DropAction action,
+                                  const DAVA::Selectable& parent, DAVA::int32 positionInParent, DAVA::SceneEditor2* scene) const
 {
     const BaseSceneTreeTraits* traits = GetTraits(parent);
     if (traits == nullptr)

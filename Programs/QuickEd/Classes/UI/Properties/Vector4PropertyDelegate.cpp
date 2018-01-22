@@ -54,7 +54,7 @@ bool Vector4PropertyDelegate::setModelData(QWidget* rawEditor, QAbstractItemMode
 
     QLineEdit* editor = rawEditor->findChild<QLineEdit*>("lineEdit");
 
-    Vector4 vector = DAVA::TArc::StringToVector<Vector4>(editor->text());
+    Vector4 vector = DAVA::StringToVector<Vector4>(editor->text());
 
     QVariant variant;
     variant.setValue<DAVA::Any>(Any(vector));

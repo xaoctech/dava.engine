@@ -1,9 +1,7 @@
-#include "GradientPickerWidget.h"
-
-#include "Classes/Application/REGlobal.h"
-#include "Classes/Qt/Main/QtUtils.h"
+#include "Classes/Qt/DockParticleEditor/GradientPickerWidget.h"
 
 #include <TArc/Controls/ColorPicker/ColorPickerDialog.h>
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/Utils.h>
 
 #include <QPainter>
@@ -35,7 +33,7 @@ GradientPickerWidget::GradientPickerWidget(QWidget* parent)
     setMaximumHeight(WIDGET_MAX_HEIGHT);
     setMouseTracking(true);
 
-    backgroundBrush.setColor(DAVA::TArc::ColorToQColor(BACKGROUND_COLOR));
+    backgroundBrush.setColor(DAVA::ColorToQColor(BACKGROUND_COLOR));
     backgroundBrush.setStyle(Qt::SolidPattern);
 
     tiledPixmap = QPixmap(TILED_RECT_SIZE, TILED_RECT_SIZE);
@@ -102,7 +100,7 @@ bool GradientPickerWidget::GetValues(DAVA::Vector<DAVA::PropValue<DAVA::Color>>*
 
 void GradientPickerWidget::paintEvent(QPaintEvent*)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     QPainter painter(this);
 
@@ -221,7 +219,7 @@ void GradientPickerWidget::mouseDoubleClickEvent(QMouseEvent* event)
     if (pointId != -1 && event->button() == Qt::LeftButton)
     {
         const DAVA::Color oldColor = points[pointId].second;
-        DAVA::TArc::ColorPickerDialog cp(REGlobal::GetAccessor(), this);
+        DAVA::ColorPickerDialog cp(DAVA::Deprecated::GetAccessor(), this);
         cp.setWindowTitle("Marker color");
         cp.SetDavaColor(oldColor);
         const bool result = cp.Exec();

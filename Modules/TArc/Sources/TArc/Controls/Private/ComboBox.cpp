@@ -11,8 +11,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ComboBox::ComboBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QComboBox>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -184,6 +182,4 @@ void ComboBox::CurrentIndexChanged(int newCurrentItem)
         removeItem(index);
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

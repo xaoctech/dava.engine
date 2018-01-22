@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 CheckBox::CheckBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : ControlProxyImpl<QCheckBox>(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -26,21 +24,21 @@ void CheckBox::SetupControl()
 
 void CheckBox::UpdateControl(const ControlDescriptor& changedFields)
 {
-    DAVA::Reflection fieldValue = model.GetField(changedFields.GetName(Fields::Checked));
+    Reflection fieldValue = model.GetField(changedFields.GetName(Fields::Checked));
     DVASSERT(fieldValue.IsValid());
 
     bool readOnly = IsValueReadOnly(changedFields, Fields::Checked, Fields::IsReadOnly);
     bool enabled = GetFieldValue(Fields::IsEnabled, true);
     setEnabled(!readOnly && enabled);
 
-    const DAVA::M::ValueDescription* valueDescriptor = fieldValue.GetMeta<DAVA::M::ValueDescription>();
+    const M::ValueDescription* valueDescriptor = fieldValue.GetMeta<M::ValueDescription>();
     if (valueDescriptor != nullptr)
     {
         setText(QString::fromStdString(valueDescriptor->GetDescription(fieldValue.GetValue())));
     }
     else if (changedFields.IsChanged(Fields::TextHint) == true)
     {
-        DAVA::Reflection hintField = model.GetField(changedFields.GetName(Fields::TextHint));
+        Reflection hintField = model.GetField(changedFields.GetName(Fields::TextHint));
         DVASSERT(hintField.IsValid());
 
         setText(QString::fromStdString(hintField.GetValue().Cast<String>()));
@@ -104,14 +102,12 @@ void CheckBox::StateChanged(int newState)
             DVASSERT(false);
         }
 
-        DAVA::Reflection fieldValue = model.GetField(GetFieldName(Fields::Checked));
-        const DAVA::M::ValueDescription* valueDescriptor = fieldValue.GetMeta<DAVA::M::ValueDescription>();
+        Reflection fieldValue = model.GetField(GetFieldName(Fields::Checked));
+        const M::ValueDescription* valueDescriptor = fieldValue.GetMeta<M::ValueDescription>();
         if (valueDescriptor != nullptr)
         {
             setText(QString::fromStdString(valueDescriptor->GetDescription(fieldValue.GetValue())));
         }
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

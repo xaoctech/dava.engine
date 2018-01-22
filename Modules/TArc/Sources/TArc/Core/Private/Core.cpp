@@ -1,47 +1,45 @@
 #include "TArc/Core/Core.h"
-#include "TArc/Core/ControllerModule.h"
 #include "TArc/Core/ClientModule.h"
 #include "TArc/Core/ConsoleModule.h"
+#include "TArc/Core/ControllerModule.h"
+#include "TArc/Core/Deprecated.h"
 #include "TArc/Core/Private/MacOSUtils.h"
 
+#include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
+#include "TArc/PluginsManager/TArcPlugin.h"
+#include "TArc/PluginsManager/TArcPluginManager.h"
+#include "TArc/Qt/QtIcon.h"
+#include "TArc/Utils/AssertGuard.h"
+#include "TArc/Utils/QtDelayedExecutor.h"
+#include "TArc/Utils/QtMessageHandler.h"
+#include "TArc/Utils/RhiEmptyFrame.h"
+#include "TArc/Utils/ModuleCollection.h"
 #include "TArc/WindowSubSystem/Private/UIManager.h"
 #include "TArc/WindowSubSystem/Private/UIProxy.h"
-#include "TArc/Utils/AssertGuard.h"
-#include "TArc/Utils/RhiEmptyFrame.h"
-#include "TArc/Utils/QtMessageHandler.h"
-#include "TArc/DataProcessing/DataWrappersProcessor.h"
-#include "TArc/Utils/QtDelayedExecutor.h"
-#include "TArc/Qt/QtIcon.h"
-
 
 #include <QtHelpers/CrashDumpHandler.h>
 
-#include "Engine/Engine.h"
-#include "Engine/PlatformApiQt.h"
-#include "Engine/Window.h"
-#include "Engine/EngineContext.h"
-
-#include "Functional/Function.h"
-#include "FileSystem/FileSystem.h"
-#include "FileSystem/KeyedArchive.h"
-
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
-#include "Render/RenderHelper.h"
-#include "UI/UIControlSystem.h"
-
-#include "Render/Renderer.h"
-#include "Debug/DVAssert.h"
-#include "Utils/Utils.h"
+#include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Engine/PlatformApiQt.h>
+#include <Engine/Window.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Functional/Function.h>
+#include <Render/2D/Systems/VirtualCoordinatesSystem.h>
+#include <Render/Renderer.h>
+#include <Render/RenderHelper.h>
+#include <UI/UIControlSystem.h>
+#include <Utils/Utils.h>
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
-#include <QCloseEvent>
 
 namespace DAVA
-{
-namespace TArc
 {
 class Core::Impl : public CoreInterface
 {
@@ -80,7 +78,7 @@ public:
         return engine.IsConsoleMode();
     }
 
-    void PostInit()
+    virtual void PostInit()
     {
         FileSystem* fileSystem = GetEngineContext()->fileSystem;
         DVASSERT(fileSystem != nullptr);
@@ -100,9 +98,15 @@ public:
         }
         contexts.clear();
         SafeDelete(globalContext);
+
+        if (pluginsManager != nullptr)
+        {
+            pluginsManager->UnloadPlugins();
+            pluginsManager.reset();
+        }
     }
 
-    virtual void OnFrame(DAVA::float32 delta)
+    virtual void OnFrame(float32 delta)
     {
         if (isInFrame)
         {
@@ -125,7 +129,7 @@ public:
         }
     }
 
-    virtual void OnWindowCreated(DAVA::Window* w)
+    virtual void OnWindowCreated(Window* w)
     {
     }
 
@@ -208,6 +212,42 @@ public:
         return nullptr;
     }
 
+    void InitPluginManager(const String& applicationName, const String& pluginsFolder)
+    {
+        pluginsManager.reset(new TArcPluginManager(applicationName, pluginsFolder));
+        Vector<String> errors;
+        pluginsManager->LoadPlugins(errors);
+
+        for (String errorMsg : errors)
+        {
+            DAVA::Logger::Warning(errorMsg.c_str());
+        }
+    }
+
+    template <typename T>
+    void LoadPluginModules()
+    {
+        if (pluginsManager == nullptr)
+        {
+            return;
+        }
+
+        Vector<TArcPlugin*> plugins = pluginsManager->GetPluginsWithBaseType(Type::Instance<T>());
+        ModuleCollection* moduleCollection = ModuleCollection::Instance();
+        for (TArcPlugin* plugin : plugins)
+        {
+            const ReflectedType* pluginType = plugin->GetModuleType();
+            if (Type::Instance<T>() == Type::Instance<ConsoleModule>())
+            {
+                moduleCollection->AddConsoleModule([pluginType]() { return pluginType; });
+            }
+            else
+            {
+                moduleCollection->AddGuiModule([pluginType]() { return pluginType; });
+            }
+        }
+    }
+
 protected:
     virtual void BeforeContextSwitch(DataContext* currentContext, DataContext* newOne)
     {
@@ -251,6 +291,7 @@ protected:
 protected:
     Engine& engine;
     Core* core;
+    std::unique_ptr<TArcPluginManager> pluginsManager;
 
     DataContext* globalContext = nullptr;
     Vector<DataContext*> contexts;
@@ -306,7 +347,7 @@ public:
         rendererParams.acquireContextFunc = []() {};
         rendererParams.releaseContextFunc = []() {};
 
-        const DAVA::KeyedArchive* options = engine.GetOptions();
+        const KeyedArchive* options = engine.GetOptions();
 
         rendererParams.maxIndexBufferCount = options->GetInt32("max_index_buffer_count");
         rendererParams.maxVertexBufferCount = options->GetInt32("max_vertex_buffer_count");
@@ -354,7 +395,7 @@ public:
         }
     }
 
-    void OnFrame(DAVA::float32 delta) override
+    void OnFrame(float32 delta) override
     {
         context->makeCurrent(surface);
         Impl::OnFrame(delta);
@@ -398,6 +439,12 @@ public:
         Impl::OnLoopStopped();
     }
 
+    void PostInit() override
+    {
+        Impl::PostInit();
+        LoadPluginModules<ConsoleModule>();
+    }
+
     void AddModule(ConsoleModule* module) override
     {
         modules.push_back(std::unique_ptr<ConsoleModule>(module));
@@ -407,7 +454,7 @@ private:
     void RegisterOperation(uint32 operationID, AnyFn&& fn) override
     {
     }
-    DataContext::ContextID CreateContext(Vector<std::unique_ptr<DataNode>>&& initialData) override
+    DataContext::ContextID CreateContext(Vector<std::unique_ptr<TArcDataNode>>&& initialData) override
     {
         DVASSERT(false);
         return DataContext::ContextID();
@@ -455,7 +502,7 @@ private:
     }
 
 private:
-    DAVA::Deque<std::unique_ptr<ConsoleModule>> modules;
+    Deque<std::unique_ptr<ConsoleModule>> modules;
     QGuiApplication* application = nullptr;
     QOffscreenSurface* surface = nullptr;
     QOpenGLContext* context = nullptr;
@@ -502,6 +549,7 @@ public:
         PlatformApi::Qt::GetApplication()->setWindowIcon(QIcon(":/icons/appIcon.ico"));
         uiManager.reset(new UIManager(this, this, propertiesHolder->CreateSubHolder("UIManager")));
         DVASSERT(controllerModule != nullptr, "Controller Module hasn't been registered");
+
         for (std::unique_ptr<ClientModule>& module : modules)
         {
             module->Init(this, std::make_unique<UIProxy>(module.get(), uiManager.get()));
@@ -526,7 +574,7 @@ public:
 #endif
     }
 
-    void OnFrame(DAVA::float32 delta) override
+    void OnFrame(float32 delta) override
     {
         Impl::OnFrame(delta);
     }
@@ -562,6 +610,12 @@ public:
         Impl::OnLoopStopped();
     }
 
+    void PostInit() override
+    {
+        Impl::PostInit();
+        LoadPluginModules<ClientModule>();
+    }
+
     void OnWindowCreated(Window* w) override
     {
         Impl::OnWindowCreated(w);
@@ -579,12 +633,12 @@ public:
         globalOperations.emplace(operationID, fn);
     }
 
-    DataContext::ContextID CreateContext(Vector<std::unique_ptr<DataNode>>&& initialData) override
+    DataContext::ContextID CreateContext(Vector<std::unique_ptr<TArcDataNode>>&& initialData) override
     {
         contexts.push_back(new DataContext(globalContext));
         DataContext* context = contexts.back();
 
-        for (std::unique_ptr<DataNode>& data : initialData)
+        for (std::unique_ptr<TArcDataNode>& data : initialData)
         {
             context->CreateData(std::move(data));
         }
@@ -712,7 +766,7 @@ public:
         {
             fn.Invoke(args...);
         }
-        catch (const DAVA::Exception& e)
+        catch (const Exception& e)
         {
             Logger::Error("Operation (%d) call failed: %s", operationId, e.what());
         }
@@ -844,10 +898,12 @@ private:
 Core::Core(Engine& engine)
     : Core(engine, true)
 {
+    Deprecated::InitTArcCore(this);
 }
 
 Core::Core(Engine& engine, bool connectSignals)
 {
+    Deprecated::InitTArcCore(this);
     if (engine.IsConsoleMode())
     {
         impl.reset(new ConsoleImpl(engine, this));
@@ -866,7 +922,10 @@ Core::Core(Engine& engine, bool connectSignals)
     }
 }
 
-Core::~Core() = default;
+Core::~Core()
+{
+    Deprecated::InitTArcCore(nullptr);
+}
 
 const EngineContext* Core::GetEngineContext()
 {
@@ -926,7 +985,7 @@ void Core::OnFrame(float32 delta)
     impl->OnFrame(delta);
 }
 
-void Core::OnWindowCreated(DAVA::Window* w)
+void Core::OnWindowCreated(Window* w)
 {
     DVASSERT(impl);
     impl->OnWindowCreated(w);
@@ -950,5 +1009,8 @@ void Core::PostInit()
     impl->PostInit();
 }
 
-} // namespace TArc
+void Core::InitPluginManager(const String& applicationName, const String& pluginsFolder)
+{
+    impl->InitPluginManager(applicationName, pluginsFolder);
+}
 } // namespace DAVA

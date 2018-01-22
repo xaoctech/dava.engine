@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 struct PropertyNode;
 
 struct FavoriteItemValue
@@ -41,7 +39,7 @@ public:
 
     void ClearFavorites();
 
-    Signal<const std::shared_ptr<PropertyNode>& /*parent*/, const std::shared_ptr<PropertyNode>&, const DAVA::String& /*mergeId*/, int32 /*sortKey*/, bool /*root*/> favoritedCreated;
+    Signal<const std::shared_ptr<PropertyNode>& /*parent*/, const std::shared_ptr<PropertyNode>&, const String& /*mergeId*/, int32 /*sortKey*/, bool /*root*/> favoritedCreated;
     Signal<const std::shared_ptr<PropertyNode>&, bool /*unfavorited*/> favoriteDeleted;
 
 private:
@@ -53,7 +51,7 @@ private:
     void RemoveItemRecursive(const std::shared_ptr<PropertyNode>& parent);
     void BuildPathToNode(std::shared_ptr<PropertyNode> node, Vector<FastName>& path);
 
-    DAVA::String BuildRootID(const std::shared_ptr<PropertyNode>& node) const;
+    String BuildRootID(const std::shared_ptr<PropertyNode>& node) const;
 
 private:
     std::shared_ptr<PropertyNode> selfRoot;
@@ -67,6 +65,4 @@ private:
     Vector<Vector<FastName>> favoritedPathes;
     FavoriteItemValue favoriteRootItem;
 };
-
-} // namespace TArc
 } // namespace DAVA

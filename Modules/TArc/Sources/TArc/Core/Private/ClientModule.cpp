@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ContextAccessor* ClientModule::GetAccessor()
 {
     DVASSERT(coreInterface != nullptr);
@@ -38,5 +36,4 @@ void ClientModule::Init(CoreInterface* coreInterface_, std::unique_ptr<UI>&& ui_
     coreInterface = coreInterface_;
     ui = std::move(ui_);
 }
-} // namespace TArc
 } // namespace DAVA

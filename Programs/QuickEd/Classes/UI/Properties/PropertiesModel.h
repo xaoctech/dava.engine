@@ -14,11 +14,8 @@
 namespace DAVA
 {
 class Any;
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder;
-}
 }
 
 class AbstractProperty;
@@ -40,7 +37,7 @@ public:
     PropertiesModel(QObject* parent = nullptr);
     ~PropertiesModel() override;
 
-    void SetAccessor(DAVA::TArc::ContextAccessor* accessor);
+    void SetAccessor(DAVA::ContextAccessor* accessor);
 
     void Reset(PackageBaseNode* node_);
 
@@ -104,6 +101,6 @@ protected:
     DAVA::Set<DAVA::RefPtr<AbstractProperty>> changedProperties;
     ContinuousUpdater propertiesUpdater;
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    std::unique_ptr<DAVA::TArc::FieldBinder> fieldBinder;
+    DAVA::ContextAccessor* accessor = nullptr;
+    std::unique_ptr<DAVA::FieldBinder> fieldBinder;
 };

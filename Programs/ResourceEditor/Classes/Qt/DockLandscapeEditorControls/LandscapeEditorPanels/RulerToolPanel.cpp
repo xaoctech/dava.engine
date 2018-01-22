@@ -1,13 +1,17 @@
-#include "RulerToolPanel.h"
-#include "../../Scene/SceneEditor2.h"
-#include "../../Scene/SceneSignals.h"
-#include "../../Tools/SliderWidget/SliderWidget.h"
-#include "../LandscapeEditorShortcutManager.h"
-#include "Constants.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorPanels/RulerToolPanel.h"
+#include "Classes/Qt/DockLandscapeEditorControls/LandscapeEditorShortcutManager.h"
 
-#include <QLayout>
+#include "Classes/Qt/Scene/SceneSignals.h"
+#include "Classes/Qt/Tools/SliderWidget/SliderWidget.h"
+
+#include <REPlatform/Global/Constants.h>
+#include <REPlatform/Global/StringConstants.h>
+#include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Systems/RulerToolSystem.h>
+
 #include <QFormLayout>
 #include <QLabel>
+#include <QLayout>
 
 RulerToolPanel::RulerToolPanel(QWidget* parent)
     : LandscapeEditorBasePanel(parent)
@@ -24,13 +28,13 @@ RulerToolPanel::~RulerToolPanel()
 
 bool RulerToolPanel::GetEditorEnabled()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
     if (!sceneEditor)
     {
         return false;
     }
 
-    return sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
+    return sceneEditor->GetSystem<DAVA::RulerToolSystem>()->IsLandscapeEditingEnabled();
 }
 
 void RulerToolPanel::SetWidgetsState(bool enabled)
@@ -73,17 +77,16 @@ void RulerToolPanel::InitUI()
 
     labelLength->setNum(0);
     labelPreview->setNum(0);
-    labelLengthDesc->setText(ResourceEditor::RULER_TOOL_LENGTH_CAPTION.c_str());
-    labelPreviewDesc->setText(ResourceEditor::RULER_TOOL_PREVIEW_LENGTH_CAPTION.c_str());
+    labelLengthDesc->setText(DAVA::ResourceEditor::RULER_TOOL_LENGTH_CAPTION.c_str());
+    labelPreviewDesc->setText(DAVA::ResourceEditor::RULER_TOOL_PREVIEW_LENGTH_CAPTION.c_str());
 }
 
 void RulerToolPanel::ConnectToSignals()
 {
-    connect(SceneSignals::Instance(), SIGNAL(LandscapeEditorToggled(SceneEditor2*)),
-            this, SLOT(EditorToggled(SceneEditor2*)));
+    connect(SceneSignals::Instance(), &SceneSignals::LandscapeEditorToggled, this, &RulerToolPanel::EditorToggled);
 
-    connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(SceneEditor2*, double, double)),
-            this, SLOT(UpdateLengths(SceneEditor2*, double, double)));
+    connect(SceneSignals::Instance(), SIGNAL(RulerToolLengthChanged(DAVA::SceneEditor2*, double, double)),
+            this, SLOT(UpdateLengths(DAVA::SceneEditor2*, double, double)));
 }
 
 void RulerToolPanel::StoreState()
@@ -92,22 +95,21 @@ void RulerToolPanel::StoreState()
 
 void RulerToolPanel::RestoreState()
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::RulerToolSystem* system = sceneEditor->GetSystem<DAVA::RulerToolSystem>();
 
-    bool enabled = sceneEditor->rulerToolSystem->IsLandscapeEditingEnabled();
+    bool enabled = system->IsLandscapeEditingEnabled();
 
     SetWidgetsState(enabled);
 
     BlockAllSignals(true);
-    UpdateLengths(sceneEditor,
-                  sceneEditor->rulerToolSystem->GetLength(),
-                  sceneEditor->rulerToolSystem->GetPreviewLength());
+    UpdateLengths(sceneEditor, system->GetLength(), system->GetPreviewLength());
     BlockAllSignals(!enabled);
 }
 
-void RulerToolPanel::UpdateLengths(SceneEditor2* scene, double length, double previewLength)
+void RulerToolPanel::UpdateLengths(DAVA::SceneEditor2* scene, double length, double previewLength)
 {
-    SceneEditor2* sceneEditor = GetActiveScene();
+    DAVA::SceneEditor2* sceneEditor = GetActiveScene();
     if (scene != sceneEditor)
     {
         return;

@@ -7,8 +7,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 namespace ListViewDetails
 {
 class ListModel : public QAbstractListModel
@@ -142,6 +140,4 @@ void ListView::OnSelectionChanged(const QItemSelection& newSelection, const QIte
         wrapper.SetFieldValue(GetFieldName(Fields::CurrentValue), Any());
     }
 }
-
-} // namespace TArc
 } // namespace DAVA

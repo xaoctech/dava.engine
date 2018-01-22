@@ -1,11 +1,11 @@
 #pragma once
 
-#include <TArc/DataProcessing/DataNode.h>
+#include <TArc/DataProcessing/TArcDataNode.h>
 #include <QStringList>
 
 class FileSystemCache;
 
-class FileSystemCacheData : public DAVA::TArc::DataNode
+class FileSystemCacheData : public DAVA::TArcDataNode
 {
 public:
     FileSystemCacheData(const QStringList& extensions);
@@ -19,5 +19,5 @@ private:
     FileSystemCache* GetFileSystemCache();
     std::unique_ptr<FileSystemCache> fileSystemCache;
 
-    DAVA_VIRTUAL_REFLECTION(FileSystemCacheData, DAVA::TArc::DataNode);
+    DAVA_VIRTUAL_REFLECTION(FileSystemCacheData, DAVA::TArcDataNode);
 };

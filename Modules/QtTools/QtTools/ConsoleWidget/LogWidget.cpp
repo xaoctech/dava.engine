@@ -20,10 +20,10 @@ LogWidget::LogWidget(QWidget* parent)
     , ui(new Ui::LogWidget)
 {
     ui->setupUi(this);
-    ui->toolButton_clearFilter->setIcon(DAVA::TArc::SharedIcon(":/QtTools/Icons/reset.png"));
+    ui->toolButton_clearFilter->setIcon(DAVA::SharedIcon(":/QtTools/Icons/reset.png"));
     ui->toolButton_clearFilter->setToolTip(tr("Clear filter string"));
 
-    ui->toolButton_clearConsole->setIcon(DAVA::TArc::SharedIcon(":/QtTools/Icons/clear.png"));
+    ui->toolButton_clearConsole->setIcon(DAVA::SharedIcon(":/QtTools/Icons/clear.png"));
     ui->toolButton_clearConsole->setToolTip(tr("Clear console window"));
 
     logModel = new LogModel(this);

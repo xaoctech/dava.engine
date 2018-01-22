@@ -5,8 +5,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 DockPanel::DockPanel(const Params& params_, const QString& title, QWidget* parent)
     : QDockWidget(title, parent)
     , params(params_)
@@ -83,6 +81,4 @@ void DockPanel::SetValue(DockPanelInfo::Fields field, const Any& v)
 
     binder.SetValue(descr, v);
 }
-
-} // namespace TArc
 } // namespace DAVA

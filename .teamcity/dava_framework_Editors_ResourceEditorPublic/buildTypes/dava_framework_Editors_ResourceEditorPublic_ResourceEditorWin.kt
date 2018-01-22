@@ -26,6 +26,11 @@ object dava_framework_Editors_ResourceEditorPublic_ResourceEditorWin : BuildType
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "SelfTest"
             id = "RUNNER_955"
             enabled = false

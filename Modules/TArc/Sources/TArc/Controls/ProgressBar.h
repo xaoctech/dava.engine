@@ -9,8 +9,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ProgressBar : public ControlProxyImpl<QProgressBar>
 {
 public:
@@ -29,6 +27,4 @@ public:
 protected:
     void UpdateControl(const ControlDescriptor& changedFields) override;
 };
-
-} // namespace TArc
 } // namespace DAVA

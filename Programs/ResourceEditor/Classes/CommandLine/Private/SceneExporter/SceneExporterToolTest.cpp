@@ -182,7 +182,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestExportedScene(dataPath + sceneRelativePathname);
             TestExportedTextures(dataPath, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
@@ -208,7 +208,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestExportedScene(dataPath + sceneRelativePathname);
             TestExportedTextures(dataPath, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
@@ -252,7 +252,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(dataPath + textureRelativePathname));
             TestExportedTextures(dataPath, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
@@ -278,7 +278,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TestExportedTextures(dataPath, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_ADRENO }, true);
 
@@ -335,7 +335,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         };
 
         std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-        DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
         TEST_VERIFY(fs->Exists(dataPath + sceneRelativePathname));
         TEST_VERIFY(fs->Exists(dataPath + textureRelativePathname));
@@ -374,7 +374,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(SETestDetail::dataiOSStr + sceneRelativePathname));
             TestExportedTextures(SETestDetail::dataiOSStr, { eGPUFamily::GPU_POWERVR_IOS }, false);
@@ -445,7 +445,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(dataPath + chinaSlotDirPath) == true);
             TEST_VERIFY(fs->Exists(dataPath + defaultSlotDirPath) == false);
@@ -479,7 +479,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             };
 
             std::unique_ptr<CommandLineModule> tool = std::make_unique<SceneExporterTool>(cmdLine);
-            DAVA::TArc::ConsoleModuleTestExecution::ExecuteModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
             TEST_VERIFY(fs->Exists(dataPath + chinaSlotDirPath) == false);
             TEST_VERIFY(fs->Exists(dataPath + defaultSlotDirPath) == true);

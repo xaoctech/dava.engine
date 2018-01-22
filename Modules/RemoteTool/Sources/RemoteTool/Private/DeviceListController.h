@@ -21,11 +21,8 @@ class MemProfController;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 }
 
 // Struct that holds network services for remote device
@@ -55,7 +52,7 @@ class DeviceListController : public QObject
     };
 
 public:
-    explicit DeviceListController(DAVA::TArc::UI* ui, QObject* parent = NULL);
+    explicit DeviceListController(DAVA::UI* ui, QObject* parent = NULL);
     ~DeviceListController();
 
     void SetView(DeviceListWidget* view);
@@ -115,7 +112,7 @@ private:
     DAVA::uint32 closingPreviousDiscoverIterations = 0;
     DAVA::Net::NetCore::DiscoverStartResult previousStartResult = DAVA::Net::NetCore::DISCOVER_STARTED;
 
-    DAVA::TArc::UI* ui = nullptr;
+    DAVA::UI* ui = nullptr;
 
 private:
     static QStandardItem* CreateDeviceItem(const DAVA::Net::Endpoint& endp, const DAVA::Net::PeerDescription& peerDescr);

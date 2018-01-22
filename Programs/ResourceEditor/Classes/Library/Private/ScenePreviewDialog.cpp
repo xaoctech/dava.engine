@@ -1,8 +1,9 @@
 #include "Classes/Library/Private/ScenePreviewDialog.h"
 #include "Classes/Library/Private/ControlsFactory.h"
 #include "Classes/Library/Private/ScenePreviewControl.h"
-#include "Classes/Application/RESettings.h"
-#include "Classes/Application/REGlobal.h"
+
+#include <REPlatform/DataNodes/Settings/RESettings.h>
+#include <TArc/Core/Deprecated.h>
 
 ScenePreviewDialog::ScenePreviewDialog()
     : ExtendedDialog()
@@ -44,7 +45,7 @@ ScenePreviewDialog::~ScenePreviewDialog()
 
 void ScenePreviewDialog::Show(const DAVA::FilePath& scenePathname)
 {
-    GeneralSettings* settings = REGlobal::GetGlobalContext()->GetData<GeneralSettings>();
+    DAVA::GeneralSettings* settings = DAVA::Deprecated::GetGlobalContext()->GetData<DAVA::GeneralSettings>();
     if (settings->previewEnabled == false)
         return;
 

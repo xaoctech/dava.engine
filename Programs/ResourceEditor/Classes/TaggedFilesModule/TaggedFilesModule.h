@@ -7,7 +7,7 @@
 #include <Base/Any.h>
 #include <Reflection/Reflection.h>
 
-class TaggedFilesModule : public DAVA::TArc::ClientModule
+class TaggedFilesModule : public DAVA::ClientModule
 {
 protected:
     void PostInit() override;
@@ -15,6 +15,6 @@ protected:
 private:
     void OnConvertTaggedTextures();
 
-    DAVA::TArc::QtConnections connections;
-    DAVA_VIRTUAL_REFLECTION(TaggedFilesModule, DAVA::TArc::ClientModule);
+    DAVA::QtConnections connections;
+    DAVA_VIRTUAL_REFLECTION(TaggedFilesModule, DAVA::ClientModule);
 };

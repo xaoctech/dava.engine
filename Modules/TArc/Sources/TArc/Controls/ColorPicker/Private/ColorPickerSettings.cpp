@@ -9,11 +9,9 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorPickerSettings::ColorPickerSettings()
 {
-    const DAVA::int32 nColors = Qt::darkYellow - Qt::black + 1;
+    const int32 nColors = Qt::darkYellow - Qt::black + 1;
     Vector<QColor> colors;
     for (int i = 0; i < nColors; i++)
     {
@@ -44,5 +42,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ColorPickerSettings)
     .Field("dialogGeometry", &ColorPickerSettings::dialogGeometry)[M::HiddenField()]
     .End();
 }
-} // namespace TArc
 } // namespace DAVA

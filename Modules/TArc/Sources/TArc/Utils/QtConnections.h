@@ -10,8 +10,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class QtConnections final : public QObject
 {
 public:
@@ -25,7 +23,7 @@ public:
     }
 
     template <typename Func1>
-    void AddConnection(const typename QtPrivate::FunctionPointer<Func1>::Object* sender, Func1 signal, const DAVA::Function<void()>& fn, Qt::ConnectionType connectionType = Qt::AutoConnection)
+    void AddConnection(const typename QtPrivate::FunctionPointer<Func1>::Object* sender, Func1 signal, const Function<void()>& fn, Qt::ConnectionType connectionType = Qt::AutoConnection)
     {
         AddConnection(sender, signal, [fn]() { fn(); }, connectionType);
     }
@@ -36,5 +34,4 @@ public:
         QObject::disconnect(sender, signal, this, nullptr);
     }
 };
-} // namespace TArc
 } // namespace DAVA

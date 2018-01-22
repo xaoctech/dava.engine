@@ -14,9 +14,8 @@
 namespace DragNDropHelper
 {
 using namespace DAVA;
-using namespace DAVA::TArc;
 
-bool IsFileFromProject(DAVA::TArc::ContextAccessor* accessor, const QString& path)
+bool IsFileFromProject(DAVA::ContextAccessor* accessor, const QString& path)
 {
     QFileInfo fileInfo(path);
     if (fileInfo.isFile())

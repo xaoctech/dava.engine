@@ -19,8 +19,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 const char* expandedItemsKey = "expandedItems";
 
 class ReflectedPropertyModel::InsertGuard final
@@ -101,7 +99,7 @@ ReflectedPropertyModel::ReflectedPropertyModel(WindowKey wndKey_, ContextAccesso
 
 ReflectedPropertyModel::~ReflectedPropertyModel()
 {
-    SetObjects(Vector<DAVA::Reflection>());
+    SetObjects(Vector<Reflection>());
     rootItem.reset();
 }
 
@@ -355,7 +353,7 @@ void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
                 regularTreeItem = rootItem->CreateChild(std::move(componentValue), position, 0);
             }
             nodeToItem.emplace(regularTreeRootNode, regularTreeItem);
-            regularTreeItem->AddPropertyNode(regularTreeRootNode);
+            regularTreeItem->AddPropertyNode(regularTreeRootNode, FastName("Regular Tree"));
         }
         objects.clear();
     }
@@ -381,7 +379,7 @@ void ReflectedPropertyModel::OnChildAdded(const std::shared_ptr<PropertyNode>& p
         std::unique_ptr<BaseComponentValue> valueComponent = GetExtensionChain<EditorComponentExtension>()->GetEditor(node);
         valueComponent->Init(this);
 
-        int32 childPosition = parentItem->LookupChildPosition(node->sortKey);
+        int32 childPosition = parentItem->LookupChildPosition(node);
         InsertGuard guard(this, parentItem, childPosition, childPosition);
         childItem = parentItem->CreateChild(std::move(valueComponent), childPosition, node->sortKey);
         childItem->AddPropertyNode(node);
@@ -426,7 +424,7 @@ void ReflectedPropertyModel::OnDataChange(const std::shared_ptr<PropertyNode>& n
 
 void ReflectedPropertyModel::EmitDataChangedSignals()
 {
-    DAVA::Set<QModelIndex> indexesSet;
+    Set<QModelIndex> indexesSet;
     for (const std::shared_ptr<PropertyNode>& node : dataChangedNodes)
     {
         {
@@ -460,7 +458,7 @@ void ReflectedPropertyModel::EmitDataChangedSignals()
     }
 }
 
-void ReflectedPropertyModel::OnFavoritedAdded(const std::shared_ptr<PropertyNode>& parent, const std::shared_ptr<PropertyNode>& node, const DAVA::String& id, int32 sortKey, bool isRoot)
+void ReflectedPropertyModel::OnFavoritedAdded(const std::shared_ptr<PropertyNode>& parent, const std::shared_ptr<PropertyNode>& node, const String& id, int32 sortKey, bool isRoot)
 {
     auto itemIter = nodeToItem.find(node);
     if (itemIter != nodeToItem.end() && isRoot == true)
@@ -594,7 +592,7 @@ void ReflectedPropertyModel::UnregisterExtension(const std::shared_ptr<Extension
     iter->second = ExtensionChain::RemoveExtension(iter->second, extension);
 }
 
-DAVA::TArc::BaseComponentValue* ReflectedPropertyModel::GetComponentValue(const QModelIndex& index) const
+BaseComponentValue* ReflectedPropertyModel::GetComponentValue(const QModelIndex& index) const
 {
     ReflectedPropertyItem* item = MapItem(index);
     DVASSERT(item != nullptr);
@@ -870,7 +868,7 @@ void ReflectedPropertyModel::GetExpandedListImpl(QModelIndexList& list, Reflecte
     }
 }
 
-ReflectedPropertyItem* ReflectedPropertyModel::LookUpItem(const std::shared_ptr<PropertyNode>& node, const DAVA::String& lookupID, const Vector<std::unique_ptr<ReflectedPropertyItem>>& items)
+ReflectedPropertyItem* ReflectedPropertyModel::LookUpItem(const std::shared_ptr<PropertyNode>& node, const String& lookupID, const Vector<std::unique_ptr<ReflectedPropertyItem>>& items)
 {
     DVASSERT(node->field.ref.IsValid());
 
@@ -889,6 +887,4 @@ ReflectedPropertyItem* ReflectedPropertyModel::LookUpItem(const std::shared_ptr<
 
     return result;
 }
-
-} // namespace TArc
 } // namespace DAVA

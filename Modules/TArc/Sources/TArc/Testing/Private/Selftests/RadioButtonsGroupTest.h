@@ -22,9 +22,9 @@ namespace DAVA
 {
 namespace RadioButtonsGroupTestDetails
 {
-DAVA::TArc::WindowKey wndKey = FastName("RadioButtonsGroupWnd");
+WindowKey wndKey = WindowKey("RadioButtonsGroupWnd");
 
-class RadioButtonsGroupTestModule : public TArc::ClientModule
+class RadioButtonsGroupTestModule : public ClientModule
 {
 public:
     enum eTest
@@ -150,8 +150,6 @@ public:
 
     void PostInit() override
     {
-        using namespace TArc;
-
         Reflection reflectedModel = Reflection::Create(&model);
 
         QWidget* w = new QWidget();
@@ -227,13 +225,13 @@ public:
             layout->AddControl(widget);
         }
 
-        TArc::PanelKey panelKey("RadioButtonsTest", TArc::CentralPanelInfo());
+        PanelKey panelKey("RadioButtonsTest", CentralPanelInfo());
         GetUI()->AddView(wndKey, panelKey, w);
     }
 
     static RadioButtonsGroupTestModule* instance;
 
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(RadioButtonsGroupTestModule, TArc::ClientModule)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(RadioButtonsGroupTestModule, ClientModule)
     {
         ReflectionRegistrator<RadioButtonsGroupTestModule>::Begin()
         .ConstructorByPointer()
@@ -297,7 +295,7 @@ DAVA_TARC_TESTCLASS(RadioButtonsGroupTest)
     DECLARE_TESTED_MODULE(RadioButtonsGroupTestDetails::RadioButtonsGroupTestModule);
     END_TESTED_MODULES()
 
-    TArc::QtConnections connections;
+    QtConnections connections;
 };
 } //namespace DAVA
 

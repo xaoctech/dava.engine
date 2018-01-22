@@ -21,21 +21,19 @@ class QMainWindow;
 
 namespace DAVA
 {
-namespace TArc
-{
 class ClientModule;
 class QtReflectionBridge;
 class WindowKey
 {
 public:
-    WindowKey(const FastName& appID);
-    const FastName& GetAppID() const;
+    WindowKey(const String& appID);
+    const String& GetAppID() const;
 
     bool operator==(const WindowKey& other) const;
     bool operator!=(const WindowKey& other) const;
 
 private:
-    FastName appID;
+    String appID;
 };
 
 /** Token of TArc application's main window */
@@ -221,9 +219,9 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(ModalMessageParams::Buttons);
 
 struct NotificationParams
 {
-    DAVA::Result message;
-    DAVA::String title;
-    DAVA::Function<void()> callback;
+    Result message;
+    String title;
+    Function<void()> callback;
 };
 
 class ControlProxy;
@@ -266,17 +264,16 @@ protected:
     friend class UIProxy;
     virtual void SetCurrentModule(ClientModule* module) = 0;
 };
-} // namespace TArc
 } // namespace DAVA
 
 namespace std
 {
 template <>
-struct hash<DAVA::TArc::WindowKey>
+struct hash<DAVA::WindowKey>
 {
-    std::size_t operator()(const DAVA::TArc::WindowKey& k) const
+    std::size_t operator()(const DAVA::WindowKey& k) const
     {
-        std::hash<DAVA::FastName> hasher;
+        std::hash<DAVA::String> hasher;
         return hasher(k.GetAppID());
     }
 };

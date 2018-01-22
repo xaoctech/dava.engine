@@ -14,14 +14,12 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 // Truncate the file extension.
 QString TruncateFileExtension(const QString& fileName, const QString& extension)
 {
     // Just wrap around the particular DAVA engine functions.
 
-    DAVA::String truncatedName = fileName.toStdString();
+    String truncatedName = fileName.toStdString();
 
     size_t truncatedStringLen = truncatedName.length() - extension.length();
     bool endsWithExtension = false;
@@ -38,10 +36,10 @@ QString TruncateFileExtension(const QString& fileName, const QString& extension)
     return QString::fromStdString(truncatedName);
 }
 
-bool FindAndReplace(DAVA::String& str, const DAVA::String& from, const DAVA::String& to)
+bool FindAndReplace(String& str, const String& from, const String& to)
 {
     size_t startPos = str.find(from);
-    if (startPos == DAVA::String::npos)
+    if (startPos == String::npos)
         return false;
     str.replace(startPos, from.length(), to);
     return true;
@@ -64,22 +62,22 @@ QPixmap CreateIconFromColor(const QColor& color)
     return pix;
 }
 
-DAVA::Color QColorToColor(const QColor& qtColor)
+Color QColorToColor(const QColor& qtColor)
 {
-    return DAVA::Color(qtColor.redF(), qtColor.greenF(), qtColor.blueF(), qtColor.alphaF());
+    return Color(qtColor.redF(), qtColor.greenF(), qtColor.blueF(), qtColor.alphaF());
 }
 
-QColor ColorToQColor(const DAVA::Color& davaColor)
+QColor ColorToQColor(const Color& davaColor)
 {
-    DAVA::float32 maxC = std::max({ 1.0f, davaColor.r, davaColor.g, davaColor.b });
+    float32 maxC = std::max({ 1.0f, davaColor.r, davaColor.g, davaColor.b });
 
-    return QColor::fromRgbF(davaColor.r / maxC, davaColor.g / maxC, davaColor.b / maxC, DAVA::Clamp(davaColor.a, 0.0f, 1.0f));
+    return QColor::fromRgbF(davaColor.r / maxC, davaColor.g / maxC, davaColor.b / maxC, Clamp(davaColor.a, 0.0f, 1.0f));
 }
 
 namespace StringPropertyDelegateDetails
 {
 //we need to store sequence in order
-DAVA::Vector<std::pair<QChar, QString>> escapeSequences = {
+Vector<std::pair<QChar, QString>> escapeSequences = {
     { '\\', QStringLiteral("\\\\") },
     { '\n', QStringLiteral("\\n") },
     { '\r', QStringLiteral("\\r") },
@@ -109,16 +107,16 @@ QString UnescapeString(const QString& str)
     return stringToReplace;
 }
 
-DAVA::Vector<DAVA::float32> ParseFloatList(const DAVA::String& str)
+Vector<float32> ParseFloatList(const String& str)
 {
     return ParseFloatList(QString::fromStdString(str));
 }
 
-DAVA::Vector<DAVA::float32> ParseFloatList(const QString& str)
+Vector<float32> ParseFloatList(const QString& str)
 {
     QRegularExpression expr("[+-]?[\\d*]*[.]?[\\d*]+");
     QRegularExpressionMatchIterator iter = expr.globalMatch(str);
-    DAVA::Vector<DAVA::float32> result;
+    Vector<float32> result;
     result.reserve(8);
     while (iter.hasNext())
     {
@@ -127,7 +125,7 @@ DAVA::Vector<DAVA::float32> ParseFloatList(const QString& str)
         {
             QString matchedStr = match.captured(0);
             bool ok;
-            DAVA::float32 value = matchedStr.toFloat(&ok);
+            float32 value = matchedStr.toFloat(&ok);
             if (ok == true)
             {
                 result.push_back(matchedStr.toFloat(&ok));
@@ -168,15 +166,15 @@ bool IsKeyPressed(eModifierKeys modifier)
 
 namespace UtilsDetail
 {
-DAVA::UnorderedMap<DAVA::String, QIcon> sharedMap;
+UnorderedMap<String, QIcon> sharedMap;
 struct CleanUpRegistrator
 {
     CleanUpRegistrator()
     {
-        qAddPostRoutine([]()
+        /*qAddPostRoutine([]()
                         {
                             sharedMap.clear();
-                        });
+                        });*/
     }
 } cleanUpRegistrator;
 }
@@ -185,12 +183,11 @@ const QIcon& SharedIcon(const char* path)
 {
     using namespace UtilsDetail;
 
-    DAVA::String stringPath(path);
+    String stringPath(path);
     auto iconIter = sharedMap.find(stringPath);
     if (iconIter != sharedMap.end())
         return iconIter->second;
 
     return sharedMap.emplace(std::move(stringPath), QIcon(path)).first->second;
 }
-} // namespace TArc
 } // namespace DAVA

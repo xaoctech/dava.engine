@@ -13,8 +13,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ColorPickerButton : public ControlProxyImpl<QToolButton>
 {
 public:
@@ -48,5 +46,4 @@ private:
     bool readOnly = false;
     QtConnections connections;
 };
-} // namespace TArc
 } // namespace DAVA

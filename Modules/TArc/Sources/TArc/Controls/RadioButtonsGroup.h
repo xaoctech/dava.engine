@@ -12,8 +12,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class RadioButtonsGroup final : public ControlProxyImpl<QWidget>
 {
 public:
@@ -42,5 +40,4 @@ private:
     QtConnections connections;
     QButtonGroup buttonGroup;
 };
-} // namespace TArc
 } // namespace DAVA

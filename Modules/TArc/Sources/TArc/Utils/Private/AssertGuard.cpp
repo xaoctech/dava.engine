@@ -18,8 +18,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class EventFilter final : public QObject
 {
 public:
@@ -73,7 +71,7 @@ public:
     Assert::FailBehaviour HandleAssert(const Assert::AssertInfo& assertInfo)
     {
         LockGuard<Mutex> mutexGuard(mutex);
-        DAVA::TArc::ScopedValueGuard<bool> valueGuard(isInAssert, true);
+        ScopedValueGuard<bool> valueGuard(isInAssert, true);
 
 #if defined(__DAVAENGINE_MACOS__)
         MacOSRunLoopGuard macOSGuard;
@@ -129,6 +127,4 @@ bool IsInsideAssertHandler()
 {
     return AssertGuard::Instance()->IsInsideAssert();
 }
-
-} // namespace TArc
 } // namespace DAVA

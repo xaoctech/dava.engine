@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class MatrixComponentValue : public BaseComponentValue
 {
 public:
@@ -20,5 +18,4 @@ protected:
 
     DAVA_VIRTUAL_REFLECTION(MatrixComponentValue, BaseComponentValue);
 };
-} // namespace TArc
 } // namespace DAVA

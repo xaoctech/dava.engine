@@ -26,10 +26,9 @@ private:
     Vector<Entity*> updatableEntities;
 
     void EntityNeedUpdate(Entity* entity);
-    void HierahicAddToUpdate(Entity* entity);
+    void HierarchicAddToUpdate(Entity* entity);
     void FindNodeThatRequireUpdate(Entity* entity);
     void TransformAllChildEntities(Entity* entity);
-    void HierahicFindUpdatableTransform(Entity* entity, bool forcedUpdate = false);
 
     int32 passedNodes;
     int32 multipliedNodes;

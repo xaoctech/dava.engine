@@ -1,5 +1,6 @@
-#include "CubemapEditor/ClickableQLabel.h"
-#include "Debug/DVAssert.h"
+#include "Classes/Qt/CubemapEditor/ClickableQLabel.h"
+
+#include <Debug/DVAssert.h>
 
 #include <QMouseEvent>
 #include <QPainter>

@@ -17,7 +17,7 @@ DAVA_REFLECTION_IMPL(ScaleComboBoxAdapter)
     .End();
 }
 
-ScaleComboBoxAdapter::ScaleComboBoxAdapter(DAVA::TArc::ContextAccessor* accessor_)
+ScaleComboBoxAdapter::ScaleComboBoxAdapter(DAVA::ContextAccessor* accessor_)
     : accessor(accessor_)
     , canvasDataAdapter(accessor_)
 {
@@ -42,7 +42,7 @@ void ScaleComboBoxAdapter::SetScale(const DAVA::Any& scale)
 
 const DAVA::Vector<DAVA::float32>& ScaleComboBoxAdapter::GetScales() const
 {
-    DAVA::TArc::DataContext* activeContext = accessor->GetActiveContext();
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
     if (activeContext == nullptr)
     {
         static DAVA::Vector<DAVA::float32> emptyData;

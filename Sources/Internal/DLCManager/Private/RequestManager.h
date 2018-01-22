@@ -30,8 +30,9 @@ public:
     void Pop();
     void SetPriorityToRequest(PackRequest* request);
     void Remove(PackRequest* request);
-
     void SwapPointers(PackRequest* newPointer, PackRequest* oldInvalidPointer);
+    const Vector<PackRequest*>& GetRequests() const;
+    void Clear();
 
 private:
     void FireStartLoadingSignal(PackRequest& request, bool inBackground);

@@ -19,7 +19,7 @@ bool CommandProducer::OnlyForSingleSelection() const
     return false;
 }
 
-void CommandProducer::CreateCache(TArc::ContextAccessor* accessor)
+void CommandProducer::CreateCache(ContextAccessor* accessor)
 {
 }
 

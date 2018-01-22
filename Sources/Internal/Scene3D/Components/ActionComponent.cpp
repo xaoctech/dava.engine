@@ -14,6 +14,8 @@
 #include "Reflection/ReflectedMeta.h"
 
 #include "Utils/Random.h"
+#include "Engine/EngineContext.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -65,7 +67,7 @@ bool ActionComponent::Action::operator==(const Action& other) const
 
 void ActionComponent::Action::actualizeDelay()
 {
-    actualDelay = static_cast<float32>(delay + Random::Instance()->RandFloat(delayVariation));
+    actualDelay = static_cast<float32>(delay + GetEngineContext()->random->RandFloat(delayVariation));
 }
 
 const FastName ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME("*** Self ***");

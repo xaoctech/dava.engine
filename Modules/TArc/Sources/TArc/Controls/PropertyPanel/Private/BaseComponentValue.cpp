@@ -23,8 +23,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class BaseComponentValue::ButtonModel
 {
 public:
@@ -246,7 +244,7 @@ void BaseComponentValue::SetStyle(const Style& style_)
     style = style_;
 }
 
-DAVA::Any BaseComponentValue::GetValue() const
+Any BaseComponentValue::GetValue() const
 {
     Any value = nodes.front()->cachedValue;
     for (const std::shared_ptr<const PropertyNode>& node : nodes)
@@ -297,8 +295,11 @@ void BaseComponentValue::AddPropertyNode(const std::shared_ptr<PropertyNode>& no
 #if defined(__DAVAENGINE_DEBUG__)
     else
     {
-        DVASSERT(itemID == resolvedId);
-        DVASSERT(nodes.front()->cachedValue.GetType() == node->cachedValue.GetType());
+        if (node->propertyType != PropertyNode::SelfRoot)
+        {
+            DVASSERT(itemID == resolvedId);
+            DVASSERT(nodes.front()->cachedValue.GetType() == node->cachedValue.GetType());
+        }
     }
 #endif
 
@@ -337,7 +338,7 @@ const WindowKey& BaseComponentValue::GetWindowKey() const
     return model->wndKey;
 }
 
-DAVA::TArc::DataWrappersProcessor* BaseComponentValue::GetDataProcessor() const
+DataWrappersProcessor* BaseComponentValue::GetDataProcessor() const
 {
     return model->GetWrappersProcessor(nodes.front());
 }
@@ -455,6 +456,5 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BaseComponentValue)
     ReflectionRegistrator<BaseComponentValue>::Begin()
     .Field(readOnlyFieldName, &BaseComponentValue::IsReadOnly, nullptr)
     .End();
-}
 }
 }

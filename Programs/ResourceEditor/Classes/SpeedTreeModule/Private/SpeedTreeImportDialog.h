@@ -18,7 +18,7 @@ class SpeedTreeImportDialog : public QDialog
     Q_OBJECT
 
 public:
-    SpeedTreeImportDialog(const std::shared_ptr<GlobalOperations>& globalOperations, QWidget* parent = 0);
+    SpeedTreeImportDialog(QWidget* parent = 0);
     ~SpeedTreeImportDialog();
 
 public slots:

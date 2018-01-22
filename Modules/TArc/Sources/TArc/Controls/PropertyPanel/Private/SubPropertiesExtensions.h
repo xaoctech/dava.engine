@@ -4,8 +4,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class SubPropertyValueChildCreator : public ChildCreatorExtension
 {
 public:
@@ -25,5 +23,4 @@ class SubPropertyEditorCreator : public EditorComponentExtension
 public:
     std::unique_ptr<BaseComponentValue> GetEditor(const std::shared_ptr<const PropertyNode>& node) const override;
 };
-} // namespace TArc
 } // namespace DAVA

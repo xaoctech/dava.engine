@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Classes/Qt/Scene/System/EditorSceneSystem.h"
-#include "Classes/Selection/Selectable.h"
+#include <REPlatform/DataNodes/Selectable.h>
+#include <REPlatform/Scene/Systems/EditorSceneSystem.h>
+#include <REPlatform/Commands/RECommandNotificationObject.h>
 
 #include <Base/BaseTypes.h>
 #include <Command/Command.h>
@@ -12,7 +13,7 @@
 
 class RECommandNotificationObject;
 
-class SceneTreeSystem : public DAVA::SceneSystem, public EditorSceneSystem
+class SceneTreeSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
 public:
     SceneTreeSystem(DAVA::Scene* scene);
@@ -25,14 +26,14 @@ public:
     void PrepareForRemove() override;
 
     void Process(DAVA::float32 timeElapsed) override;
-    void ProcessCommand(const RECommandNotificationObject& commandNotification) override;
+    void ProcessCommand(const DAVA::RECommandNotificationObject& commandNotification) override;
 
     struct SyncSnapshot
     {
-        DAVA::Map<DAVA::uint32, DAVA::Vector<Selectable>> objectsToRefetch;
-        DAVA::Map<DAVA::uint32, DAVA::Vector<Selectable>, std::greater<DAVA::uint32>> removedObjects;
+        DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::Selectable>> objectsToRefetch;
+        DAVA::Map<DAVA::uint32, DAVA::Vector<DAVA::Selectable>, std::greater<DAVA::uint32>> removedObjects;
 
-        DAVA::UnorderedSet<Selectable> changedObjects;
+        DAVA::UnorderedSet<DAVA::Selectable> changedObjects;
 
         bool IsEmpty() const;
     };

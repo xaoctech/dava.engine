@@ -10,5 +10,5 @@ class MouseEditingModule : public BaseEditorModule
 
     void OnDuplicateRequested();
 
-    DAVA_VIRTUAL_REFLECTION(MouseEditingModule, DAVA::TArc::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(MouseEditingModule, DAVA::ClientModule);
 };

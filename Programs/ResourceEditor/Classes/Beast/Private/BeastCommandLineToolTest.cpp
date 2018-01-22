@@ -2,7 +2,8 @@
 
 #if defined(__DAVAENGINE_BEAST__)
 
-#include "CommandLine/Private/CommandLineModuleTestUtils.h"
+#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+#include <REPlatform/Global/CommandLineModule.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
 #include <TArc/Testing/TArcUnitTests.h>
@@ -80,7 +81,7 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
     }
 
     DAVA::Vector<DAVA::eGPUFamily> gpuLoadingOrder;
-    std::unique_ptr<CommandLineModule> tool;
+    std::unique_ptr<DAVA::CommandLineModule> tool;
     bool testCompleted = false;
 
     DAVA_TEST (BeastTest)
@@ -104,14 +105,14 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
         };
 
         tool.reset(new BeastCommandLineTool(cmdLine));
-        DAVA::TArc::ConsoleModuleTestExecution::InitModule(tool.get());
+        DAVA::ConsoleModuleTestExecution::InitModule(tool.get());
     }
 
     void Update(DAVA::float32 timeElapsed, const DAVA::String& testName) override
     {
         if (tool)
         {
-            testCompleted = DAVA::TArc::ConsoleModuleTestExecution::ProcessModule(tool.get());
+            testCompleted = DAVA::ConsoleModuleTestExecution::ProcessModule(tool.get());
         }
     }
 
@@ -119,7 +120,7 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
     {
         if (testCompleted && tool)
         {
-            DAVA::TArc::ConsoleModuleTestExecution::FinalizeModule(tool.get());
+            DAVA::ConsoleModuleTestExecution::FinalizeModule(tool.get());
 
             TestScene();
             CommandLineModuleTestUtils::ClearTestFolder(BCLTestDetail::projectStr);

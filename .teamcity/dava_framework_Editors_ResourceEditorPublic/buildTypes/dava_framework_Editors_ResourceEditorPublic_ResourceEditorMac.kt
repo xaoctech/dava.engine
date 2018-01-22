@@ -20,6 +20,11 @@ object dava_framework_Editors_ResourceEditorPublic_ResourceEditorMac : BuildType
 
     steps {
         script {
+            name = "git lfs pull"
+            workingDir = "dava.framework"
+            scriptContent = "git lfs pull"
+        }
+        script {
             name = "SelfTest"
             id = "RUNNER_954"
             enabled = false

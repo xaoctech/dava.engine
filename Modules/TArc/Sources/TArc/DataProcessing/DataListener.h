@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class DataListener
 {
 public:
@@ -38,5 +36,4 @@ private:
 
     Set<DataWrapperNode, DataWrapperLess> wrappers;
 };
-} // namespace TArc
 } // namespace DAVA

@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 IntSpinBox::IntSpinBox(const Params& params, DataWrappersProcessor* wrappersProcessor, Reflection model, QWidget* parent)
     : TBase(params, ControlDescriptor(params.fields), wrappersProcessor, model, parent)
 {
@@ -54,6 +52,4 @@ QValidator::State IntSpinBox::TypeSpecificValidate(const QString& input) const
 
     return QValidator::Acceptable;
 }
-
-} // namespace TArc
 } // namespace DAVA

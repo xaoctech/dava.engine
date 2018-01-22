@@ -8,8 +8,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 ColorPickerRGBAM::ColorPickerRGBAM(QWidget* parent)
     : AbstractColorPicker(parent)
 {
@@ -134,6 +132,5 @@ QLayout* ColorPickerRGBAM::CreateSlider(const QString& text, ColorComponentSlide
     l->addWidget(w);
 
     return l;
-}
 }
 }

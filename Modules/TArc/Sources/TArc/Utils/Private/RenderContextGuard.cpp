@@ -6,28 +6,25 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 RenderContextGuard::RenderContextGuard()
 {
-    DAVA::Engine* engine = DAVA::Engine::Instance();
+    Engine* engine = Engine::Instance();
     DVASSERT(engine != nullptr);
     if (!engine->IsConsoleMode())
     {
-        DAVA::Window* window = engine->PrimaryWindow();
-        DAVA::PlatformApi::Qt::AcquireWindowContext(window);
+        Window* window = engine->PrimaryWindow();
+        PlatformApi::Qt::AcquireWindowContext(window);
     }
 }
 
 RenderContextGuard::~RenderContextGuard()
 {
-    DAVA::Engine* engine = DAVA::Engine::Instance();
+    Engine* engine = Engine::Instance();
     DVASSERT(engine != nullptr);
     if (!engine->IsConsoleMode())
     {
-        DAVA::Window* window = engine->PrimaryWindow();
-        DAVA::PlatformApi::Qt::ReleaseWindowContext(window);
+        Window* window = engine->PrimaryWindow();
+        PlatformApi::Qt::ReleaseWindowContext(window);
     }
 }
-} // namespace TArc
 } // namespace DAVA

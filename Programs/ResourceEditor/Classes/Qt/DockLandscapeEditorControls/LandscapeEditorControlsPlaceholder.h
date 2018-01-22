@@ -23,17 +23,15 @@ public:
     void RemovePanel();
 
 public slots:
-
+    void SceneActivated(DAVA::SceneEditor2* scene);
+    void SceneDeactivated(DAVA::SceneEditor2* scene);
     void OnOpenGLInitialized();
 
 private slots:
-    void SceneActivated(SceneEditor2* scene);
-    void SceneDeactivated(SceneEditor2* scene);
-
-    void EditorToggled(SceneEditor2* scene);
+    void EditorToggled(DAVA::SceneEditor2* scene);
 
 private:
-    SceneEditor2* activeScene;
+    DAVA::SceneEditor2* activeScene;
     LandscapeEditorBasePanel* currentPanel;
 
     CustomColorsPanel* customColorsPanel;

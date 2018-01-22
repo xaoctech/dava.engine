@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Utils/PackageListenerProxy.h"
-#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorModule.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueHandler.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
@@ -9,24 +9,20 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 class ContextAccessor;
 class UI;
-}
 class UIControl;
 class Type;
 }
 
 class ControlNode;
-class IssueNavigatorWidget;
 class IndexGenerator;
 class IntrospectionProperty;
 
-class EventsIssuesHandler : public IssuesHandler, PackageListener
+class EventsIssuesHandler : public IssueHandler, PackageListener
 {
 public:
-    EventsIssuesHandler(DAVA::TArc::ContextAccessor* accessor, DAVA::TArc::UI* ui, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
+    EventsIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~EventsIssuesHandler() override = default;
 
     // PackageListener
@@ -68,14 +64,9 @@ private:
 
     void SearchIssuesInPackage(PackageNode* package);
 
-    DAVA::TArc::ContextAccessor* accessor = nullptr;
-    DAVA::TArc::UI* ui = nullptr;
     PackageListenerProxy packageListenerProxy;
 
-    DAVA::int32 sectionId = 0;
-    IssueNavigatorWidget* navigatorWidget = nullptr;
-
-    IndexGenerator& indexGenerator;
+    IndexGenerator* indexGenerator = nullptr;
     DAVA::Vector<EventIssue> issues;
 
     DAVA::UnorderedMap<const DAVA::Type*, DAVA::Set<DAVA::FastName>> componentsAndProperties;

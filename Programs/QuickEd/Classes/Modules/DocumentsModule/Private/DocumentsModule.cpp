@@ -87,11 +87,11 @@ void DocumentsModule::OnRenderSystemInitialized(DAVA::Window* window)
     windows.front()->draw.Connect(systemsData->painter.get(), static_cast<void (Painting::Painter::*)(DAVA::Window*)>(&Painting::Painter::OnFrame));
 }
 
-bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key, DAVA::String& requestWindowText)
+bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::WindowKey& key, DAVA::String& requestWindowText)
 {
     using namespace DAVA;
-    using namespace TArc;
-    DVASSERT(DAVA::TArc::mainWindowKey == key);
+
+    DVASSERT(DAVA::mainWindowKey == key);
     QString windowText = QObject::tr("Save changes to the following items?\n");
     QStringList unsavedDocuments;
     ContextAccessor* accessor = GetAccessor();
@@ -115,12 +115,12 @@ bool DocumentsModule::CanWindowBeClosedSilently(const DAVA::TArc::WindowKey& key
     return HasUnsavedDocuments() == false;
 }
 
-bool DocumentsModule::SaveOnWindowClose(const DAVA::TArc::WindowKey& key)
+bool DocumentsModule::SaveOnWindowClose(const DAVA::WindowKey& key)
 {
     return SaveAllDocuments();
 }
 
-void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
+void DocumentsModule::RestoreOnWindowClose(const DAVA::WindowKey& key)
 {
     DiscardUnsavedChanges();
 }
@@ -128,7 +128,6 @@ void DocumentsModule::RestoreOnWindowClose(const DAVA::TArc::WindowKey& key)
 void DocumentsModule::PostInit()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     packageListenerProxy.Init(this, GetAccessor());
 
@@ -146,10 +145,9 @@ void DocumentsModule::PostInit()
     RegisterInterface(static_cast<Interfaces::EditorSystemsManagerInterface*>(systemsManager));
 }
 
-void DocumentsModule::OnWindowClosed(const DAVA::TArc::WindowKey& key)
+void DocumentsModule::OnWindowClosed(const DAVA::WindowKey& key)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     DeleteAllDocuments();
 
@@ -176,9 +174,9 @@ void DocumentsModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceT
     }
 }
 
-void DocumentsModule::OnContextCreated(DAVA::TArc::DataContext* context)
+void DocumentsModule::OnContextCreated(DAVA::DataContext* context)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DocumentData* data = context->GetData<DocumentData>();
     DVASSERT(nullptr != data);
     QString path = data->GetPackageAbsolutePath();
@@ -187,9 +185,9 @@ void DocumentsModule::OnContextCreated(DAVA::TArc::DataContext* context)
     watcherData->Watch(path);
 }
 
-void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
+void DocumentsModule::OnContextDeleted(DAVA::DataContext* context)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DocumentData* data = context->GetData<DocumentData>();
     QString path = data->GetPackageAbsolutePath();
     DataContext* globalContext = GetAccessor()->GetGlobalContext();
@@ -197,10 +195,9 @@ void DocumentsModule::OnContextDeleted(DAVA::TArc::DataContext* context)
     watcherData->Unwatch(path);
 }
 
-void DocumentsModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, DAVA::TArc::DataContext* newOne)
+void DocumentsModule::OnContextWillBeChanged(DAVA::DataContext* current, DAVA::DataContext* newOne)
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     EditorSystemsManager* systemsManager = accessor->GetGlobalContext()->GetData<EditorSystemsData>()->systemsManager.get();
@@ -210,7 +207,6 @@ void DocumentsModule::OnContextWillBeChanged(DAVA::TArc::DataContext* current, D
 void DocumentsModule::InitCentralWidget()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     UI* ui = GetUI();
     ContextAccessor* accessor = GetAccessor();
@@ -225,17 +221,16 @@ void DocumentsModule::InitCentralWidget()
     connections.AddConnection(previewWidget.data(), &PreviewWidget::OpenPackageFiles, MakeFunction(this, &DocumentsModule::OpenPackageFiles));
 
     PanelKey panelKey(QStringLiteral("CentralWidget"), CentralPanelInfo());
-    ui->AddView(DAVA::TArc::mainWindowKey, panelKey, previewWidget.data());
+    ui->AddView(DAVA::mainWindowKey, panelKey, previewWidget.data());
 
     //legacy part. Remove it when package will be refactored
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::TArc::mainWindowKey));
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(ui->GetWindow(DAVA::mainWindowKey));
     connections.AddConnection(mainWindow, &MainWindow::EmulationModeChanged, MakeFunction(this, &DocumentsModule::OnEmulationModeChanged));
 }
 
 void DocumentsModule::InitGlobalData()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
@@ -257,7 +252,6 @@ void DocumentsModule::InitGlobalData()
 void DocumentsModule::CreateDocumentsActions()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     const QString toolBarName("Main Toolbar");
 
@@ -288,7 +282,7 @@ void DocumentsModule::CreateDocumentsActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //action save all documents
@@ -302,7 +296,7 @@ void DocumentsModule::CreateDocumentsActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, saveDocumentActionName }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // action reload document
@@ -324,7 +318,7 @@ void DocumentsModule::CreateDocumentsActions()
         connections.AddConnection(action, &QAction::triggered, Bind(&DocumentsModule::ReloadCurrentDocument, this));
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, { InsertionParams::eInsertionMethod::AfterItem, saveAllDocumentsActionName }));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // Separator
@@ -334,14 +328,13 @@ void DocumentsModule::CreateDocumentsActions()
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, separator);
     }
 }
 
 void DocumentsModule::CreateEditActions()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     const QString undoActionName("Undo");
     const QString redoActionName("Redo");
@@ -388,7 +381,7 @@ void DocumentsModule::CreateEditActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::BeforeItem }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //Redo
@@ -417,7 +410,7 @@ void DocumentsModule::CreateEditActions()
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuEdit, { InsertionParams::eInsertionMethod::AfterItem, undoActionName }));
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     // Separator
@@ -426,14 +419,13 @@ void DocumentsModule::CreateEditActions()
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateToolbarPoint(toolBarName));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, separator);
     }
 }
 
 void DocumentsModule::OnUndo()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* context = accessor->GetActiveContext();
@@ -446,7 +438,6 @@ void DocumentsModule::OnUndo()
 void DocumentsModule::OnRedo()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* context = accessor->GetActiveContext();
@@ -459,7 +450,6 @@ void DocumentsModule::OnRedo()
 void DocumentsModule::CreateViewActions()
 {
     using namespace DAVA;
-    using namespace TArc;
 
     const QString zoomInActionName("Zoom In");
     const QString zoomOutActionName("Zoom Out");
@@ -476,7 +466,7 @@ void DocumentsModule::CreateViewActions()
         separator->setSeparator(true);
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, "Dock" }));
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, separator);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, separator);
     }
 
     //Zoom in
@@ -498,7 +488,7 @@ void DocumentsModule::CreateViewActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomSeparator }));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //Zoom out
@@ -519,7 +509,7 @@ void DocumentsModule::CreateViewActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomInActionName }));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 
     //Actual zoom
@@ -540,14 +530,13 @@ void DocumentsModule::CreateViewActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuView, { InsertionParams::eInsertionMethod::AfterItem, zoomOutActionName }));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 }
 
 void DocumentsModule::CreateFindActions()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     ContextAccessor* accessor = GetAccessor();
     UI* ui = GetUI();
@@ -566,7 +555,7 @@ void DocumentsModule::CreateFindActions()
         ActionPlacementInfo placementInfo;
         placementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFind, { InsertionParams::eInsertionMethod::AfterItem }));
 
-        ui->AddAction(DAVA::TArc::mainWindowKey, placementInfo, action);
+        ui->AddAction(DAVA::mainWindowKey, placementInfo, action);
     }
 }
 
@@ -600,18 +589,18 @@ void DocumentsModule::OpenPackageFiles(const QStringList& links)
 
     if (wrongExtensionResults.HasWarnings())
     {
-        DAVA::TArc::NotificationParams notificationParams;
+        DAVA::NotificationParams notificationParams;
         notificationParams.title = "can not drop";
         notificationParams.message = Result(Result::RESULT_WARNING, Format("next files have unsupported extension:\n%s", wrongExtensionResults.GetResultMessages().c_str()));
-        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        GetUI()->ShowNotification(DAVA::mainWindowKey, notificationParams);
     }
 
     if (wrongSourceResults.HasWarnings())
     {
-        DAVA::TArc::NotificationParams notificationParams;
+        DAVA::NotificationParams notificationParams;
         notificationParams.title = "can not drop";
         notificationParams.message = Result(Result::RESULT_WARNING, Format("next files are not from project:\n%s", wrongSourceResults.GetResultMessages().c_str()));
-        GetUI()->ShowNotification(DAVA::TArc::mainWindowKey, notificationParams);
+        GetUI()->ShowNotification(DAVA::mainWindowKey, notificationParams);
     }
 }
 
@@ -622,14 +611,13 @@ void DocumentsModule::RegisterOperations()
     RegisterOperation(QEGlobal::SelectControl.ID, this, &DocumentsModule::SelectControl);
 }
 
-DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& path)
+DAVA::DataContext::ContextID DocumentsModule::OpenDocument(const QString& path)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext::ContextID id = DataContext::Empty;
-    accessor->ForEachContext([&id, path](const DAVA::TArc::DataContext& context) {
+    accessor->ForEachContext([&id, path](const DAVA::DataContext& context) {
         DocumentData* data = context.GetData<DocumentData>();
         if (data->GetPackageAbsolutePath() == path)
         {
@@ -645,7 +633,7 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
         RefPtr<PackageNode> package = CreatePackage(path);
         if (package != nullptr)
         {
-            DAVA::Vector<std::unique_ptr<DAVA::TArc::DataNode>> initialData;
+            DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>> initialData;
             initialData.emplace_back(new DocumentData(package));
             id = contextManager->CreateContext(std::move(initialData));
         }
@@ -660,7 +648,6 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::OpenDocument(const QString& 
 DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     QString canonicalFilePath = QFileInfo(path).canonicalFilePath();
     FilePath davaPath(canonicalFilePath.toStdString());
@@ -687,7 +674,7 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
             message.append("Would you like to load this document?");
             params.message = message;
             params.buttons = ModalMessageParams::Yes | ModalMessageParams::Cancel;
-            canLoadPackage = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params) == ModalMessageParams::Yes;
+            canLoadPackage = GetUI()->ShowModalMessage(DAVA::mainWindowKey, params) == ModalMessageParams::Yes;
         }
 
         if (canLoadPackage)
@@ -706,7 +693,7 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
             params.title = QObject::tr("Can not create document");
             params.message = QObject::tr("Can not create document by path:\n%1").arg(path);
             params.buttons = ModalMessageParams::Ok;
-            GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+            GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
         });
     }
     return RefPtr<PackageNode>();
@@ -715,7 +702,7 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
 void DocumentsModule::SelectControl(const QString& documentPath, const QString& controlPath)
 {
     using namespace DAVA;
-    using namespace TArc;
+
     DataContext::ContextID id = OpenDocument(documentPath);
     if (id == DataContext::Empty)
     {
@@ -745,7 +732,6 @@ void DocumentsModule::OnEmulationModeChanged(bool mode)
 void DocumentsModule::ChangeControlText(ControlNode* node)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* globalContext = accessor->GetGlobalContext();
@@ -802,7 +788,6 @@ void DocumentsModule::ChangeControlText(ControlNode* node)
 void DocumentsModule::CloseDocument(DAVA::uint64 id)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextAccessor* accessor = GetAccessor();
     ContextManager* contextManager = GetContextManager();
@@ -827,7 +812,7 @@ void DocumentsModule::CloseDocument(DAVA::uint64 id)
                          .arg(status);
         params.defaultButton = ModalMessageParams::Save;
         params.buttons = ModalMessageParams::Save | ModalMessageParams::Discard | ModalMessageParams::Cancel;
-        ModalMessageParams::Button ret = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+        ModalMessageParams::Button ret = GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
 
         if (ret == ModalMessageParams::Save)
         {
@@ -846,7 +831,7 @@ void DocumentsModule::CloseDocument(DAVA::uint64 id)
 
 void DocumentsModule::CloseAllDocuments()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     bool hasUnsaved = HasUnsavedDocuments();
 
     if (hasUnsaved)
@@ -857,7 +842,7 @@ void DocumentsModule::CloseAllDocuments()
                                      "Do you want to save your changes?");
         params.buttons = ModalMessageParams::SaveAll | ModalMessageParams::NoToAll | ModalMessageParams::Cancel;
         params.icon = ModalMessageParams::Question;
-        ModalMessageParams::Button button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+        ModalMessageParams::Button button = GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
         if (button == ModalMessageParams::SaveAll)
         {
             hasUnsaved = (SaveAllDocuments() == false);
@@ -881,7 +866,7 @@ void DocumentsModule::CloseAllDocuments()
 
 void DocumentsModule::DeleteAllDocuments()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     ContextManager* contextManager = GetContextManager();
     DAVA::Vector<DataContext::ContextID> contexts;
@@ -895,9 +880,9 @@ void DocumentsModule::DeleteAllDocuments()
     }
 }
 
-void DocumentsModule::CloseDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids)
+void DocumentsModule::CloseDocuments(const DAVA::Set<DAVA::DataContext::ContextID>& ids)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     ContextManager* contextManager = GetContextManager();
     for (const DataContext::ContextID& id : ids)
@@ -915,7 +900,7 @@ void DocumentsModule::CloseDocuments(const DAVA::Set<DAVA::TArc::DataContext::Co
                          .arg(data->GetPackageAbsolutePath());
         params.buttons = ModalMessageParams::Yes | ModalMessageParams::No;
         params.defaultButton = ModalMessageParams::No;
-        button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+        button = GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
         if (button == ModalMessageParams::Yes)
         {
             contextManager->DeleteContext(id);
@@ -925,7 +910,7 @@ void DocumentsModule::CloseDocuments(const DAVA::Set<DAVA::TArc::DataContext::Co
 
 void DocumentsModule::ReloadCurrentDocument()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     DataContext* active = accessor->GetActiveContext();
     DVASSERT(active != nullptr);
@@ -935,10 +920,9 @@ void DocumentsModule::ReloadCurrentDocument()
     }
 }
 
-void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& contextID)
+void DocumentsModule::ReloadDocument(const DAVA::DataContext::ContextID& contextID)
 {
     using namespace DAVA;
-    using namespace TArc;
 
     ContextManager* contextManager = GetContextManager();
     contextManager->ActivateContext(contextID);
@@ -973,9 +957,9 @@ void DocumentsModule::ReloadDocument(const DAVA::TArc::DataContext::ContextID& c
     }
 }
 
-void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::ContextID>& ids)
+void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::DataContext::ContextID>& ids)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
 
     bool yesToAll = false;
@@ -1023,7 +1007,7 @@ void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::C
                     params.buttons = ModalMessageParams::Yes | ModalMessageParams::YesToAll | ModalMessageParams::No | ModalMessageParams::NoToAll;
                 }
 
-                button = GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+                button = GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
                 yesToAll = (button == ModalMessageParams::YesToAll);
                 noToAll = (button == ModalMessageParams::NoToAll);
             }
@@ -1042,17 +1026,17 @@ void DocumentsModule::ReloadDocuments(const DAVA::Set<DAVA::TArc::DataContext::C
 bool DocumentsModule::HasUnsavedDocuments() const
 {
     bool hasUnsaved = false;
-    const DAVA::TArc::ContextAccessor* accessor = GetAccessor();
-    accessor->ForEachContext([&hasUnsaved](const DAVA::TArc::DataContext& context) {
+    const DAVA::ContextAccessor* accessor = GetAccessor();
+    accessor->ForEachContext([&hasUnsaved](const DAVA::DataContext& context) {
         DocumentData* data = context.GetData<DocumentData>();
         hasUnsaved |= (data->CanSave());
     });
     return hasUnsaved;
 }
 
-bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& contextID)
+bool DocumentsModule::SaveDocument(const DAVA::DataContext::ContextID& contextID)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     DataContext* context = accessor->GetContext(contextID);
     DVASSERT(nullptr != context);
@@ -1073,7 +1057,7 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
 
         params.buttons = ModalMessageParams::Ok;
         params.icon = ModalMessageParams::Warning;
-        GetUI()->ShowModalMessage(DAVA::TArc::mainWindowKey, params);
+        GetUI()->ShowModalMessage(DAVA::mainWindowKey, params);
         return false;
     }
 
@@ -1087,7 +1071,7 @@ bool DocumentsModule::SaveDocument(const DAVA::TArc::DataContext::ContextID& con
 bool DocumentsModule::SaveAllDocuments()
 {
     bool savedOk = true;
-    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
+    GetAccessor()->ForEachContext([&](DAVA::DataContext& context)
                                   {
                                       savedOk = SaveDocument(context.GetID()) && savedOk;
                                   });
@@ -1096,7 +1080,7 @@ bool DocumentsModule::SaveAllDocuments()
 
 bool DocumentsModule::SaveCurrentDocument()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
 
@@ -1105,7 +1089,7 @@ bool DocumentsModule::SaveCurrentDocument()
 
 void DocumentsModule::DiscardUnsavedChanges()
 {
-    GetAccessor()->ForEachContext([&](DAVA::TArc::DataContext& context)
+    GetAccessor()->ForEachContext([&](DAVA::DataContext& context)
                                   {
                                       DocumentData* data = context.GetData<DocumentData>();
                                       data->commandStack->SetClean();
@@ -1114,7 +1098,7 @@ void DocumentsModule::DiscardUnsavedChanges()
 
 void DocumentsModule::OnFileChanged(const QString& path)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DataContext::ContextID id = GetContextByPath(path);
 
     ContextAccessor* accessor = GetAccessor();
@@ -1139,14 +1123,14 @@ void DocumentsModule::OnApplicationStateChanged(Qt::ApplicationState state)
 
 void DocumentsModule::ApplyFileChanges()
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     ContextAccessor* accessor = GetAccessor();
 
     DocumentsWatcherData* watcherData = accessor->GetGlobalContext()->GetData<DocumentsWatcherData>();
     DVASSERT(watcherData != nullptr);
 
-    DAVA::Set<DAVA::TArc::DataContext::ContextID> changed;
-    DAVA::Set<DAVA::TArc::DataContext::ContextID> removed;
+    DAVA::Set<DAVA::DataContext::ContextID> changed;
+    DAVA::Set<DAVA::DataContext::ContextID> removed;
     for (DataContext::ContextID id : watcherData->changedDocuments)
     {
         DataContext* context = accessor->GetContext(id);
@@ -1175,9 +1159,9 @@ void DocumentsModule::ApplyFileChanges()
     }
 }
 
-DAVA::TArc::DataContext::ContextID DocumentsModule::GetContextByPath(const QString& path) const
+DAVA::DataContext::ContextID DocumentsModule::GetContextByPath(const QString& path) const
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
     DataContext::ContextID ret = DataContext::Empty;
     GetAccessor()->ForEachContext([path, &ret](const DataContext& context) {
         DocumentData* data = context.GetData<DocumentData>();
@@ -1193,7 +1177,7 @@ DAVA::TArc::DataContext::ContextID DocumentsModule::GetContextByPath(const QStri
 
 void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsContainerNode* /*from*/)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
@@ -1212,7 +1196,7 @@ void DocumentsModule::ControlWillBeRemoved(ControlNode* nodeToRemove, ControlsCo
 
 void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* destination, int)
 {
-    using namespace DAVA::TArc;
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* activeContext = accessor->GetActiveContext();
@@ -1239,7 +1223,6 @@ void DocumentsModule::ControlWasAdded(ControlNode* node, ControlsContainerNode* 
 void DocumentsModule::OnSelectInFileSystem()
 {
     using namespace DAVA;
-    using namespace DAVA::TArc;
 
     DataContext* context = GetAccessor()->GetActiveContext();
     DVASSERT(context != nullptr);
@@ -1250,7 +1233,7 @@ void DocumentsModule::OnSelectInFileSystem()
 
 void DocumentsModule::OnDroppingFile(bool droppingFile)
 {
-    DAVA::TArc::DataContext* globalContext = GetAccessor()->GetGlobalContext();
+    DAVA::DataContext* globalContext = GetAccessor()->GetGlobalContext();
     EditorSystemsData* systemsData = globalContext->GetData<EditorSystemsData>();
     systemsData->highlightDisabled = droppingFile;
 }

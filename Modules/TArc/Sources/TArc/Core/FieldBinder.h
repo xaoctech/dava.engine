@@ -10,8 +10,6 @@
 namespace DAVA
 {
 class ReflectedType;
-namespace TArc
-{
 class ContextAccessor;
 class FieldBinder final
 {
@@ -28,5 +26,4 @@ private:
     class Impl;
     std::unique_ptr<Impl> impl;
 };
-} // namespace TArc
 } // namespace DAVA

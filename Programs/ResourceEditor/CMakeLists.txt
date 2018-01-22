@@ -5,8 +5,14 @@ set                   ( CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebinfo"
 project               ( ResourceEditor )
 
 get_filename_component( FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}/../../" ABSOLUTE)
+get_filename_component( RE_PATH "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
+set (ADD_TERRAIN_PLUGIN false)
+if (ADD_TERRAIN_PLUGIN)
+set                   ( WARNINGS_AS_ERRORS false )
+else()
 set                   ( WARNINGS_AS_ERRORS true )
+endif()
 set                   ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${FRAMEWORK_PATH}/Sources/CMake/Modules/" )
 set                   ( TOOL_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}")
 
@@ -15,11 +21,9 @@ include ( CMake-common )
 find_package( GMock REQUIRED )
 find_package( QT5 REQUIRED )
 
+find_dava_module( REPlatform )
 find_dava_module( Spine )
-find_dava_module( QtHelpers )
 find_dava_module( DocDirSetup )
-find_dava_module( QtTools )
-find_dava_module( TArc )
 find_dava_module( RemoteTool )
 find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
@@ -27,6 +31,7 @@ find_dava_module( AssetCache )
 find_dava_module( TexturePacker )
 find_dava_module( TextureCompression )
 find_dava_module( Version )
+
 
 if (NOT PUBLIC_BUILD)
     find_dava_module( SpeedTree )
@@ -39,24 +44,19 @@ list( APPEND DAVA_COMPONENTS DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME )
 list( APPEND DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
 list( APPEND DAVA_COMPONENTS DAVA_USE_RENDERSTATS )
 
-find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
+find_package(DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS})
 
-include_directories   ( ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories   ( ${CMAKE_CURRENT_BINARY_DIR}/DavaTools/QtTools )
+if (WIN32 AND ADD_TERRAIN_PLUGIN)
+  add_plugin(TerrainConverter "${FRAMEWORK_PATH}/Programs/REPlugins/TerrainConverter")
+endif()
 
-include_directories   ( ${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/FCollada )
-include_directories   ( ${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/External/Cg/include )
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-include_directories   ( ${DAVA_THIRD_PARTY_ROOT_PATH} )
-include_directories   ( ${DAVA_THIRD_PARTY_ROOT_PATH}/bullet  )
+include_directories (${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/FCollada)
+include_directories (${DAVA_ROOT_DIR}/Programs/ColladaConverter/Collada15/External/Cg/include)
 
-include_directories   (.)
-include_directories   ( "../TextureTools" )
-include_directories   ( "Classes" )
-include_directories   ( "Classes/Qt" )
-include_directories   ( "Classes/Qt/CubemapEditor" )
-include_directories   ( "Classes/Qt/TextureBrowser" )
-include_directories   ( "Classes/Collada" )
+include_directories (${DAVA_THIRD_PARTY_ROOT_PATH})
+include_directories (${DAVA_THIRD_PARTY_ROOT_PATH}/bullet)
 
 dava_add_definitions       (
 -D__DAVAENGINE_RENDERSTATS__

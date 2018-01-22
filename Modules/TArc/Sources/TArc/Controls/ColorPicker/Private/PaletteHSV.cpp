@@ -6,8 +6,6 @@
 
 namespace DAVA
 {
-namespace TArc
-{
 PaletteHSV::PaletteHSV(QWidget* parent)
     : AbstractSlider(parent)
     , cursorSize(8, 8)
@@ -88,5 +86,4 @@ void PaletteHSV::DrawCursor(QPainter* p) const
     p->drawRect(rc);
 }
 
-} //TArc
-} //DAVA
+} //namespace DAVA
