@@ -6,5 +6,5 @@ class StyleSheetInspectorModule : public DAVA::ClientModule
 {
     void PostInit() override;
 
-    DAVA_VIRTUAL_REFLECTION(SpritesPackerModule, DAVA::ClientModule);
+    DAVA_VIRTUAL_REFLECTION(StyleSheetInspectorModule, DAVA::ClientModule);
 };

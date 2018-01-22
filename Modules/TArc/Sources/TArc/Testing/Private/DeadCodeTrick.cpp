@@ -26,6 +26,7 @@
 #include "TArc/Testing/Private/Selftests/ReflectionPathTreeTests.h"
 #include "TArc/Testing/Private/Selftests/ScrollBarTest.h"
 #include "TArc/Testing/Private/Selftests/SliderTests.h"
+#include "TArc/Testing/Private/Selftests/TableViewTest.h"
 
 namespace DAVA
 {

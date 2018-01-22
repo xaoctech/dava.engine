@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Classes/Modules/IssueNavigatorModule/IssueNavigatorWidget.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/IssueData.h"
 #include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
@@ -14,13 +14,12 @@ class UIControl;
 }
 
 class ControlNode;
-class IssueNavigatorWidget;
 class IndexGenerator;
 
-class NamingIssuesHandler : public IssuesHandler, PackageListener
+class NamingIssuesHandler : public IssueHandler, PackageListener
 {
 public:
-    NamingIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::UI* ui_, DAVA::int32 sectionId, IssueNavigatorWidget* widget, IndexGenerator& indexGenerator);
+    NamingIssuesHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~NamingIssuesHandler() override = default;
 
     // IssuesHandler
@@ -35,7 +34,7 @@ public:
 private:
     struct DuplicationsIssue
     {
-        Issue issue;
+        IssueData::Issue issue;
         DAVA::UnorderedSet<ControlNode*> controls;
     };
     using DuplicationsIssuesMap = DAVA::UnorderedMap<DAVA::FastName, DuplicationsIssue>;
@@ -43,7 +42,7 @@ private:
     struct PackageIssues
     {
         DAVA::DataContext* context = nullptr;
-        DAVA::UnorderedMap<ControlNode*, Issue> symbolsIssues;
+        DAVA::UnorderedMap<ControlNode*, IssueData::Issue> symbolsIssues;
         DuplicationsIssuesMap duplicationIssues;
     };
 
@@ -54,7 +53,7 @@ private:
     void CreateSymbolsIssue(ControlNode* node);
     void CreateDuplicationsIssue(ControlNode* node);
     void AddToDuplicationsIssue(DuplicationsIssue& issue, ControlNode* node);
-    void UpdateSymbolsIssue(std::pair<ControlNode* const, Issue>& symbolsIssue);
+    void UpdateSymbolsIssue(std::pair<ControlNode* const, IssueData::Issue>& symbolsIssue);
     void UpdateDuplicationsIssue(DuplicationsIssue& issue);
 
     void RemoveSymbolsIssuesRecursively(ControlNode* node);
@@ -72,17 +71,12 @@ private:
     DuplicationsIssuesMap::iterator FindInDuplicationsIssues(ControlNode* node);
 
 private:
-    DAVA::int32 sectionId = 0;
-    IssueNavigatorWidget* navigatorWidget = nullptr;
-
-    IndexGenerator& indexGenerator;
+    IndexGenerator* indexGenerator = nullptr;
 
     DAVA::UnorderedMap<PackageNode*, PackageIssues> packageIssues;
     PackageNode* currentPackage = nullptr;
-    DAVA::UnorderedMap<ControlNode*, Issue>* symbolsIssues = nullptr;
+    DAVA::UnorderedMap<ControlNode*, IssueData::Issue>* symbolsIssues = nullptr;
     DuplicationsIssuesMap* duplicationIssues = nullptr;
 
-    DAVA::ContextAccessor* accessor = nullptr;
-    DAVA::UI* ui = nullptr;
     PackageListenerProxy packageListenerProxy;
 };
