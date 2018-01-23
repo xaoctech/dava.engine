@@ -1047,34 +1047,63 @@ CommandReloadEmitters::CommandReloadEmitters(ParticleEffectComponent* component_
     : RECommand()
     , component(component_)
 {
-    redoData.Initialize(component);
+    int32 emitterCount = component->GetEmittersCount();
+
+    for (int32 i = 0; i < emitterCount; i++)
+    {
+        ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
+        instance->Retain();
+        redoParticleEmitterInstance.push_back(instance);
+    }
 }
 
 CommandReloadEmitters::~CommandReloadEmitters()
 {
-    redoData.Release();
-    undoData.Release();
+    auto fRelease = [](auto& array)
+    {
+        for (DAVA::BaseObject* obj : array)
+        {
+            obj->Release();
+        }
+        array.clear();
+    };
+
+    fRelease(redoParticleEmitterInstance);
+    fRelease(undoParticleEmitterInstance);
 }
 
 void CommandReloadEmitters::Redo()
 {
-    if (undoData.initialized)
+    if (undoDataInitialized)
     {
-        ReplaceComponentEmitters(undoData);
+        ReplaceComponentEmitters(undoParticleEmitterInstance);
     }
     else
     {
+        int32 emitterCount = component->GetEmittersCount();
+
+        for (int32 i = 0; i < emitterCount; i++)
+        {
+            ParticleEmitterInstance* redoInstance = component->GetEmitterInstance(i);
+            ParticleEmitterInstance* undoInstance = redoInstance->Clone();
+
+            undoParticleEmitterInstance.push_back(undoInstance);
+        }
+
+        ReplaceComponentEmitters(undoParticleEmitterInstance);
+
         component->ReloadEmitters();
-        undoData.Initialize(component);
+
+        undoDataInitialized = true;
     }
 }
 
 void CommandReloadEmitters::Undo()
 {
-    ReplaceComponentEmitters(redoData);
+    ReplaceComponentEmitters(redoParticleEmitterInstance);
 }
 
-void CommandReloadEmitters::ReplaceComponentEmitters(const ComponentData& next)
+void CommandReloadEmitters::ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticlesEmitterInstance)
 {
     int32 emitterCount = component->GetEmittersCount();
     DAVA::Vector<DAVA::ParticleEmitterInstance*> particleEmittesrInstance;
@@ -1090,94 +1119,10 @@ void CommandReloadEmitters::ReplaceComponentEmitters(const ComponentData& next)
         component->RemoveEmitterInstance(instance);
     }
 
-    for (DAVA::ParticleEmitterInstance* instance : next.particleEmittesrInstance)
+    for (DAVA::ParticleEmitterInstance* instance : nextParticlesEmitterInstance)
     {
         component->AddEmitterInstance(instance);
     }
-}
-
-void CommandReloadEmitters::ComponentData::Initialize(const ParticleEffectComponent* component)
-{
-    Release();
-    int32 emitterCount = component->GetEmittersCount();
-
-    for (int32 i = 0; i < emitterCount; i++)
-    {
-        ParticleEmitter* emitter = component->GetEmitter(i);
-        ParticleEmitterInstance* emitterInstance = component->GetEmitterInstance(i);
-
-        particleEmittesrInstance.push_back(emitterInstance);
-
-        const Vector<ParticleLayer*>& particleLayers = emitter->layers;
-
-        for (DAVA::ParticleLayer* particleLayer : particleLayers)
-        {
-            PrepareParticleLayer(particleLayer);
-        }
-    }
-
-    auto fRetain = [](auto& array)
-    {
-        for (DAVA::BaseObject* obj : array)
-        {
-            obj->Retain();
-        }
-    };
-
-    fRetain(particleLayers);
-    fRetain(particleForces);
-    fRetain(particleForcesSimplified);
-    fRetain(particleEmittesrInstance);
-
-    initialized = true;
-}
-
-void CommandReloadEmitters::ComponentData::PrepareParticleLayer(DAVA::ParticleLayer* particleLayer)
-{
-    particleLayers.push_back(particleLayer);
-
-    if (particleLayer->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
-    {
-        DVASSERT(particleLayer->innerEmitter == nullptr);
-
-        particleEmittesrInstance.push_back(particleLayer->innerEmitter);
-
-        for (DAVA::ParticleLayer* layer : particleLayer->innerEmitter->GetEmitter()->layers)
-        {
-            PrepareParticleLayer(layer);
-        }
-    }
-    else
-    {
-        for (DAVA::ParticleForceSimplified* particleForceSimplified : particleLayer->GetSimplifiedParticleForces())
-        {
-            particleForcesSimplified.push_back(particleForceSimplified);
-        }
-
-        for (DAVA::ParticleForce* particleForce : particleLayer->GetParticleForces())
-        {
-            particleForces.push_back(particleForce);
-        }
-    }
-}
-
-void CommandReloadEmitters::ComponentData::Release()
-{
-    auto fRelease = [](auto& array)
-    {
-        for (DAVA::BaseObject* obj : array)
-        {
-            obj->Release();
-        }
-        array.clear();
-    };
-
-    fRelease(particleLayers);
-    fRelease(particleForces);
-    fRelease(particleForcesSimplified);
-    fRelease(particleEmittesrInstance);
-
-    initialized = false;
 }
 
 ParticleEffectComponent* CommandReloadEmitters::GetComponent() const

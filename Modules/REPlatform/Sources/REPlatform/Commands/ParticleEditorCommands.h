@@ -870,24 +870,12 @@ public:
     ParticleEffectComponent* GetComponent() const;
 
 protected:
-    struct ComponentData
-    {
-        bool initialized = false;
-        DAVA::Vector<DAVA::ParticleLayer*> particleLayers;
-        DAVA::Vector<DAVA::ParticleForce*> particleForces;
-        DAVA::Vector<DAVA::ParticleForceSimplified*> particleForcesSimplified;
-        DAVA::Vector<DAVA::ParticleEmitterInstance*> particleEmittesrInstance;
+    void ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticlesEmitterInstance);
 
-        void Initialize(const ParticleEffectComponent* component);
-        void PrepareParticleLayer(DAVA::ParticleLayer* particleLayer);
+    DAVA::Vector<DAVA::ParticleEmitterInstance*> redoParticleEmitterInstance;
+    DAVA::Vector<DAVA::ParticleEmitterInstance*> undoParticleEmitterInstance;
 
-        void Release();
-    };
-
-    void ReplaceComponentEmitters(const ComponentData& next);
-
-    ComponentData redoData;
-    ComponentData undoData;
+    bool undoDataInitialized = false;
 
     DAVA::ParticleEffectComponent* component;
 
