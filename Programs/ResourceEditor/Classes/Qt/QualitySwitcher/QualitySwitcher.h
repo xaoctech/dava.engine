@@ -8,7 +8,6 @@ namespace DAVA
 class SceneEditor2;
 } // namespace DAVA
 
-class GlobalOperations;
 class QualitySwitcher : public QDialog
 {
     Q_OBJECT
