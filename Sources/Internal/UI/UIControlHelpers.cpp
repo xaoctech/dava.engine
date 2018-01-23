@@ -84,23 +84,26 @@ UIComponent* UIControlHelpers::GetOrCreateComponentByName(UIControl* control, co
     return nullptr;
 }
 
-String UIControlHelpers::GetControlPath(const UIControl* control, const UIControl* rootControl /*= NULL*/)
+String UIControlHelpers::GetControlPath(const UIControl* control, const Function<bool(const UIControl*)>& haveToStopCriterion)
 {
     using namespace UIControlHelpersDetails;
-    if (!control)
-        return "";
+
+    DVASSERT(control != nullptr);
 
     String controlPath = "";
-    UIControl* controlIter = control->GetParent();
-    do
+    const UIControl* controlIter = control;
+    while (!haveToStopCriterion(controlIter))
     {
-        if (!controlIter)
-            return "";
-
-        controlPath = String(controlIter->GetName().c_str()) + PATH_SEPARATOR + controlPath;
-
+        if (controlPath.empty())
+        {
+            controlPath = String(controlIter->GetName().c_str());
+        }
+        else
+        {
+            controlPath = String(controlIter->GetName().c_str()) + PATH_SEPARATOR + controlPath;
+        }
         controlIter = controlIter->GetParent();
-    } while (controlIter != rootControl);
+    }
 
     return controlPath;
 }
@@ -316,6 +319,11 @@ bool UIControlHelpers::IsControlNameValid(const FastName& controlName, NameCheck
 {
     using namespace UIControlHelpersDetails;
     return !IsReservedName(controlName) && ContainsOnlyAllowedSymbols(controlName.c_str(), strictness);
+}
+
+bool UIControlHelpers::IsControlNull(const UIControl* control)
+{
+    return control == nullptr;
 }
 
 bool UIControlHelpers::IsEventNameValid(const FastName& eventName, NameCheckStrictness strictness)
