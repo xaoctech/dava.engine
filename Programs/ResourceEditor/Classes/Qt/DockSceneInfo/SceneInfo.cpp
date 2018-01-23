@@ -650,6 +650,7 @@ void SceneInfo::SceneDeactivated(DAVA::SceneEditor2* scene)
     {
         activeScene = NULL;
         landscape = NULL;
+        ClearData();
         RefreshAllData();
     }
 }
