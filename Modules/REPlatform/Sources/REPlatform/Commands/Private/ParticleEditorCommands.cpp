@@ -1053,7 +1053,7 @@ CommandReloadEmitters::CommandReloadEmitters(ParticleEffectComponent* component_
     {
         ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
         instance->Retain();
-        redoParticleEmitterInstance.push_back(instance);
+        undoParticleEmitterInstance.push_back(instance);
     }
 }
 
@@ -1068,15 +1068,15 @@ CommandReloadEmitters::~CommandReloadEmitters()
         array.clear();
     };
 
-    fRelease(redoParticleEmitterInstance);
     fRelease(undoParticleEmitterInstance);
+    fRelease(redoParticleEmitterInstance);
 }
 
 void CommandReloadEmitters::Redo()
 {
     if (undoDataInitialized)
     {
-        ReplaceComponentEmitters(undoParticleEmitterInstance);
+        ReplaceComponentEmitters(redoParticleEmitterInstance);
     }
     else
     {
@@ -1084,13 +1084,13 @@ void CommandReloadEmitters::Redo()
 
         for (int32 i = 0; i < emitterCount; i++)
         {
-            ParticleEmitterInstance* redoInstance = component->GetEmitterInstance(i);
-            ParticleEmitterInstance* undoInstance = redoInstance->Clone();
+            ParticleEmitterInstance* undoInstance = component->GetEmitterInstance(i);
+            ParticleEmitterInstance* redoInstance = undoInstance->Clone();
 
-            undoParticleEmitterInstance.push_back(undoInstance);
+            redoParticleEmitterInstance.push_back(redoInstance);
         }
 
-        ReplaceComponentEmitters(undoParticleEmitterInstance);
+        ReplaceComponentEmitters(redoParticleEmitterInstance);
 
         component->ReloadEmitters();
 
@@ -1100,26 +1100,20 @@ void CommandReloadEmitters::Redo()
 
 void CommandReloadEmitters::Undo()
 {
-    ReplaceComponentEmitters(redoParticleEmitterInstance);
+    ReplaceComponentEmitters(undoParticleEmitterInstance);
 }
 
-void CommandReloadEmitters::ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticlesEmitterInstance)
+void CommandReloadEmitters::ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticleEmitterInstances)
 {
     int32 emitterCount = component->GetEmittersCount();
-    DAVA::Vector<DAVA::ParticleEmitterInstance*> particleEmittesrInstance;
 
     for (int32 i = 0; i < emitterCount; i++)
     {
-        ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
-        particleEmittesrInstance.push_back(instance);
-    }
-
-    for (DAVA::ParticleEmitterInstance* instance : particleEmittesrInstance)
-    {
+        ParticleEmitterInstance* instance = component->GetEmitterInstance(0);
         component->RemoveEmitterInstance(instance);
     }
 
-    for (DAVA::ParticleEmitterInstance* instance : nextParticlesEmitterInstance)
+    for (DAVA::ParticleEmitterInstance* instance : nextParticleEmitterInstances)
     {
         component->AddEmitterInstance(instance);
     }

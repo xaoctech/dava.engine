@@ -870,7 +870,7 @@ public:
     ParticleEffectComponent* GetComponent() const;
 
 protected:
-    void ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticlesEmitterInstance);
+    void ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticleEmitterInstances);
 
     DAVA::Vector<DAVA::ParticleEmitterInstance*> redoParticleEmitterInstance;
     DAVA::Vector<DAVA::ParticleEmitterInstance*> undoParticleEmitterInstance;
