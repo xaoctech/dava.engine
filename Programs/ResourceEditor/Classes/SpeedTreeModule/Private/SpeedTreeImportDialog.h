@@ -12,7 +12,6 @@ namespace Ui
 class QtTreeImportDialog;
 }
 
-class GlobalOperations;
 class SpeedTreeImportDialog : public QDialog
 {
     Q_OBJECT
@@ -38,7 +37,6 @@ private:
 
     DAVA::Vector<DAVA::FilePath> xmlFiles;
     DAVA::FilePath sc2FolderPath;
-    std::shared_ptr<GlobalOperations> globalOperations;
 };
 
 #endif // #if defined(__DAVAENGINE_SPEEDTREE__)

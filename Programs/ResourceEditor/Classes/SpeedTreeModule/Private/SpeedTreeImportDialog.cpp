@@ -92,7 +92,7 @@ void SpeedTreeImportDialog::OnOk()
     {
         for (size_t i = 0; i < outFiles.size(); ++i)
         {
-            DAVA::Deprecated::GetInvoker()->Invoke(DAVA::OpenSceneOperation.ID, outFiles[i].GetAbsolutePathname());
+            DAVA::Deprecated::GetInvoker()->Invoke(DAVA::OpenSceneOperation.ID, DAVA::FilePath(outFiles[i].GetAbsolutePathname()));
         }
     }
 }
