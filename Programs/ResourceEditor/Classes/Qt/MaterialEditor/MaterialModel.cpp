@@ -157,6 +157,42 @@ DAVA::NMaterial* MaterialModel::GetGlobalMaterial() const
 
 void MaterialModel::SetSelection(const DAVA::SelectableGroup* group)
 {
+    DAVA::UnorderedSet<DAVA::Entity*> selection;
+    if (group != nullptr)
+    {
+        for (DAVA::Entity* entity : group->ObjectsOfType<DAVA::Entity>())
+        {
+            selection.insert(entity);
+        }
+    }
+
+    auto updateSelection = [&](MaterialItem* item) {
+        if (selection.empty() == true)
+        {
+            item->SetFlag(MaterialItem::IS_PART_OF_SELECTION, false);
+            return false;
+        }
+
+        DAVA::NMaterial* material = item->GetMaterial();
+        DAVA::Entity* entity = curScene->GetSystem<DAVA::EditorMaterialSystem>()->GetEntity(material);
+
+        bool shouldSelect = false;
+        while (entity != nullptr)
+        {
+            if (selection.count(entity) > 0)
+            {
+                shouldSelect = true;
+                break;
+            }
+
+            entity = entity->GetParent();
+        }
+
+        item->SetFlag(MaterialItem::IS_PART_OF_SELECTION, shouldSelect);
+
+        return shouldSelect;
+    };
+
     QStandardItem* root = invisibleRootItem();
     for (int i = 0; i < root->rowCount(); ++i)
     {
@@ -166,7 +202,7 @@ void MaterialModel::SetSelection(const DAVA::SelectableGroup* group)
         for (int j = 0; j < topItem->rowCount(); ++j)
         {
             MaterialItem* childItem = static_cast<MaterialItem*>(topItem->child(j));
-            shouldSelectTop |= SetItemSelection(childItem, group);
+            shouldSelectTop |= updateSelection(childItem);
         }
 
         if (shouldSelectTop)
@@ -177,26 +213,9 @@ void MaterialModel::SetSelection(const DAVA::SelectableGroup* group)
         {
             // attempt to select top item
             // if it was not selected before via its' children
-            SetItemSelection(topItem, group);
+            updateSelection(topItem);
         }
     }
-}
-
-bool MaterialModel::SetItemSelection(MaterialItem* item, const DAVA::SelectableGroup* group)
-{
-    if (group == nullptr)
-    {
-        item->SetFlag(MaterialItem::IS_PART_OF_SELECTION, false);
-        return false;
-    }
-
-    DAVA::NMaterial* material = item->GetMaterial();
-    DAVA::Entity* entity = curScene->GetSystem<DAVA::EditorMaterialSystem>()->GetEntity(material);
-    entity = DAVA::GetSelectableEntity(entity);
-    bool shouldSelect = group->ContainsObject(entity);
-    item->SetFlag(MaterialItem::IS_PART_OF_SELECTION, shouldSelect);
-
-    return shouldSelect;
 }
 
 void MaterialModel::Sync()
