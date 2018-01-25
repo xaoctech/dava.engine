@@ -65,15 +65,19 @@ void UIRichAliasMap::PutAlias(const String& alias, const String& tag)
 
 void UIRichAliasMap::PutAliasFromXml(const String& alias, const String& xmlSrc)
 {
-    RefPtr<XMLParser> p(new XMLParser());
     AliasXmlDelegate delegate(alias);
-    if (p->ParseBytes(reinterpret_cast<const uint8*>(xmlSrc.c_str()), static_cast<int32>(xmlSrc.length()), &delegate))
+    XMLParserStatus status = XMLParser::ParseBytesEx(reinterpret_cast<const uint8*>(xmlSrc.c_str()), static_cast<int32>(xmlSrc.length()), &delegate);
+    if (status.Success())
     {
         const Alias& alias = delegate.GetAlias();
         if (!alias.alias.empty() && !alias.tag.empty())
         {
             PutAlias(alias);
         }
+    }
+    else
+    {
+        Logger::Error("Syntax error in rich content alias: %s (%d:%d)", status.errorMessage.c_str(), status.errorLine, status.errorPosition);
     }
 }
 

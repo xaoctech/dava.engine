@@ -144,7 +144,8 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                 }
                 else
                 {
-                    Logger::Warning("Syntax error in rich content text!");
+                    const XMLParserStatus& st = builder.GetParserStatus();
+                    Logger::Error("Syntax error in rich content text: %s (%d:%d)", st.errorMessage.c_str(), st.errorLine, st.errorPosition);
                 }
             }
         }

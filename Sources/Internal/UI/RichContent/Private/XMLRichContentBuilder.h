@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Vector.h"
 #include "Base/RefPtr.h"
+#include "FileSystem/XMLParserStatus.h"
 #include "FileSystem/XMLParserDelegate.h"
 #include "Utils/BiDiHelper.h"
 
@@ -22,6 +23,9 @@ public:
 
     /** Return generated controls. */
     const Vector<RefPtr<UIControl>>& GetControls() const;
+
+    /** Return last parsing error information. */
+    const XMLParserStatus& GetParserStatus() const;
 
     // XMLParserDelegate interface implementation
     void OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes) override;
@@ -63,5 +67,6 @@ private:
     Vector<RefPtr<UIControl>> controls;
     BiDiHelper bidiHelper;
     RichLink* link = nullptr;
+    XMLParserStatus parserStatus;
 };
 }
