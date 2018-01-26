@@ -6,7 +6,7 @@
 #include <UI/UIControl.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
-#include <UI/Render/UISceneComponent.h>
+#include <UI/Scene3D/UISceneComponent.h>
 #include <UI/RichContent/UIRichContentObjectComponent.h>
 #include <UI/Scroll/UIScrollComponent.h>
 #include <Utils/StringFormat.h>
@@ -47,7 +47,7 @@ ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_
     Vector<Reflection::Field> fields = componentRef.GetFields();
     for (const Reflection::Field& field : fields)
     {
-        if (!field.ref.IsReadonly() && nullptr == field.ref.GetMeta<DAVA::M::ReadOnly>())
+        if (!field.ref.IsReadonly() && nullptr == field.ref.GetMeta<DAVA::M::ReadOnly>() && nullptr == field.ref.GetMeta<DAVA::M::HiddenField>())
         {
             String name = field.key.Get<FastName>().c_str();
             const IntrospectionProperty* sourceProp = sourceSection == nullptr ? nullptr : sourceSection->FindChildPropertyByName(name);

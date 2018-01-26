@@ -1,9 +1,8 @@
-#include "UISceneComponent.h"
+#include "UI/Scene3D/UISceneComponent.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
-
-#include "UI/UIControl.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/UIControl.h"
 
 namespace DAVA
 {
