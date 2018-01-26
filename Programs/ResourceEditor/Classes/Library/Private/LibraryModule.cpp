@@ -5,6 +5,8 @@
 #include "Classes/Library/Private/LibraryWidget.h"
 #include "Classes/Library/Private/DAEConverter.h"
 
+#include <FBX/FBXImporter.h>
+
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
 
@@ -33,8 +35,13 @@ void LibraryModule::PostInit()
     LibraryWidget* libraryWidget = new LibraryWidget(GetAccessor(), fileOperationsManager, nullptr);
     connections.AddConnection(libraryWidget, &LibraryWidget::AddSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnAddSceneRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::EditSceneRequested, DAVA::MakeFunction(this, &LibraryModule::OnEditSceneRequested));
+
     connections.AddConnection(libraryWidget, &LibraryWidget::DAEConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEConvertionRequested));
     connections.AddConnection(libraryWidget, &LibraryWidget::DAEAnimationConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnDAEAnimationConvertionRequested));
+
+    connections.AddConnection(libraryWidget, &LibraryWidget::FBXConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnFBXConvertionRequested));
+    connections.AddConnection(libraryWidget, &LibraryWidget::FBXAnimationConvertionRequested, DAVA::MakeFunction(this, &LibraryModule::OnFBXAnimationConvertionRequested));
+
     connections.AddConnection(libraryWidget, &LibraryWidget::DoubleClicked, DAVA::MakeFunction(this, &LibraryModule::OnDoubleClicked));
     connections.AddConnection(libraryWidget, &LibraryWidget::DragStarted, DAVA::MakeFunction(this, &LibraryModule::OnDragStarted));
 
@@ -126,11 +133,41 @@ void LibraryModule::OnDAEAnimationConvertionRequested(const DAVA::FilePath& daeP
     executor.DelayedExecute([this, daePathname]() {
         DAVA::UI* ui = GetUI();
         DAVA::WaitDialogParams waitDlgParams;
-        waitDlgParams.message = QString("DAE animations conversion\n%1").arg(daePathname.GetAbsolutePathname().c_str());
+        waitDlgParams.message = QString("Import animations from DAE\n%1").arg(daePathname.GetAbsolutePathname().c_str());
         waitDlgParams.needProgressBar = false;
         std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
         DAEConverter::ConvertAnimations(daePathname);
+    });
+}
+
+void LibraryModule::OnFBXConvertionRequested(const DAVA::FilePath& fbxPathname)
+{
+    HidePreview();
+
+    executor.DelayedExecute([this, fbxPathname]() {
+        DAVA::UI* ui = GetUI();
+        DAVA::WaitDialogParams waitDlgParams;
+        waitDlgParams.message = QString("FBX to SC2 conversion\n%1").arg(fbxPathname.GetAbsolutePathname().c_str());
+        waitDlgParams.needProgressBar = false;
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
+
+        DAVA::FBXImporter::ConvertToSC2(fbxPathname, DAVA::FilePath::CreateWithNewExtension(fbxPathname, ".sc2"));
+    });
+}
+
+void LibraryModule::OnFBXAnimationConvertionRequested(const DAVA::FilePath& fbxPathname)
+{
+    HidePreview();
+
+    executor.DelayedExecute([this, fbxPathname]() {
+        DAVA::UI* ui = GetUI();
+        DAVA::WaitDialogParams waitDlgParams;
+        waitDlgParams.message = QString("Import animations from FBX\n%1").arg(fbxPathname.GetAbsolutePathname().c_str());
+        waitDlgParams.needProgressBar = false;
+        std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
+
+        DAVA::FBXImporter::ConvertAnimations(fbxPathname);
     });
 }
 

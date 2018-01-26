@@ -35,10 +35,16 @@ void RetainRenderEntitiesRecursive(Entity* node, Vector<Entity*>& entities)
 bool CombineLods(Scene* scene)
 {
     bool result = true;
-    for (auto child : scene->children)
-    {
-        result = result && CombineEntityLods(child);
-    }
+    Vector<Entity*> childrenCopy = scene->children;
+
+    for (auto child : childrenCopy)
+        child->Retain();
+
+    for (auto child : childrenCopy)
+        result &= CombineEntityLods(child);
+
+    for (auto child : childrenCopy)
+        child->Release();
 
     return result;
 }

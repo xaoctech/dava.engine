@@ -139,6 +139,9 @@ void LibraryWidget::SetupFileTypes()
 
     LibraryWidgetDetail::FileType allFiles("All files");
     allFiles.filter << "*.dae";
+    allFiles.filter << "*.fbx";
+    allFiles.filter << "*.3ds";
+    allFiles.filter << "*.obj";
     allFiles.filter << "*.sc2";
     allFiles.filter << sourceImagesList;
 
@@ -147,12 +150,18 @@ void LibraryWidget::SetupFileTypes()
     LibraryWidgetDetail::fileTypeValues.push_back(allFiles);
     QStringList models;
     models << "*.dae"
+           << "*.fbx"
+           << "*.3ds"
+           << "*.obj"
            << "*.sc2";
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Models", models));
 
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Source Textures", sourceImagesList));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Compressed Textures", compressedImagesList));
 
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("FBX", "*.fbx"));
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("3DS", "*.3ds"));
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("OBJ", "*.obj"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("DAE", "*.dae"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("SC2", "*.sc2"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("TEX", QString("*") + DAVA::TextureDescriptor::GetDescriptorExtension().c_str()));
@@ -333,6 +342,17 @@ void LibraryWidget::ShowContextMenu(const QPoint& point)
         QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsDae()));
         actionConvertAnimations->setData(fileInfoAsVariant);
     }
+    else if (pathname.IsEqualToExtension(".fbx") || pathname.IsEqualToExtension(".3ds") || pathname.IsEqualToExtension(".obj"))
+    {
+        QAction* actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertFBX()));
+        actionConvert->setData(fileInfoAsVariant);
+
+        if (pathname.IsEqualToExtension(".fbx"))
+        {
+            QAction* actionConvertAnimations = contextMenu.addAction("Convert Animations", this, SLOT(OnConvertAnimationsFBX()));
+            actionConvertAnimations->setData(fileInfoAsVariant);
+        }
+    }
 
     std::shared_ptr<REFileOperationsManager> manager = fileOperationsManager.lock();
     if (manager != nullptr)
@@ -408,6 +428,22 @@ void LibraryWidget::OnConvertAnimationsDae()
     const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
 
     emit DAEAnimationConvertionRequested(fileInfo.absoluteFilePath().toStdString());
+}
+
+void LibraryWidget::OnConvertFBX()
+{
+    QVariant indexAsVariant = ((QAction*)sender())->data();
+    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
+
+    emit FBXConvertionRequested(fileInfo.absoluteFilePath().toStdString());
+}
+
+void LibraryWidget::OnConvertAnimationsFBX()
+{
+    QVariant indexAsVariant = ((QAction*)sender())->data();
+    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
+
+    emit FBXAnimationConvertionRequested(fileInfo.absoluteFilePath().toStdString());
 }
 
 void LibraryWidget::OnRevealAtFolder()

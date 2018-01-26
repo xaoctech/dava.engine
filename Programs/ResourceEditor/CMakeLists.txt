@@ -31,6 +31,7 @@ find_dava_module( AssetCache )
 find_dava_module( TexturePacker )
 find_dava_module( TextureCompression )
 find_dava_module( Version )
+find_dava_module( FBX )
 
 
 if (NOT PUBLIC_BUILD)

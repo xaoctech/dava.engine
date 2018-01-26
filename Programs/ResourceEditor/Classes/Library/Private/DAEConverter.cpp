@@ -66,7 +66,7 @@ bool ConvertAnimations(const DAVA::FilePath& daePath)
     }
     else
     {
-        DAVA::Logger::Error("[DAE to animations] Wrong pathname: %s.", daePath.GetStringValue().c_str());
+        DAVA::Logger::Error("[DAE to animations] Wrong pathname: %s", daePath.GetStringValue().c_str());
     }
 
     return false;
