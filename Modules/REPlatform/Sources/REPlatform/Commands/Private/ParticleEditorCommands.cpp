@@ -1044,14 +1044,79 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandCloneParticleForce)
 }
 
 CommandReloadEmitters::CommandReloadEmitters(ParticleEffectComponent* component_)
-    : CommandAction()
+    : RECommand()
     , component(component_)
 {
+    int32 emitterCount = component->GetEmittersCount();
+
+    for (int32 i = 0; i < emitterCount; i++)
+    {
+        ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
+        instance->Retain();
+        undoParticleEmitterInstance.push_back(instance);
+    }
+}
+
+CommandReloadEmitters::~CommandReloadEmitters()
+{
+    auto fRelease = [](auto& array)
+    {
+        for (DAVA::BaseObject* obj : array)
+        {
+            obj->Release();
+        }
+        array.clear();
+    };
+
+    fRelease(undoParticleEmitterInstance);
+    fRelease(redoParticleEmitterInstance);
 }
 
 void CommandReloadEmitters::Redo()
 {
-    component->ReloadEmitters();
+    if (undoDataInitialized)
+    {
+        ReplaceComponentEmitters(redoParticleEmitterInstance);
+    }
+    else
+    {
+        int32 emitterCount = component->GetEmittersCount();
+
+        for (int32 i = 0; i < emitterCount; i++)
+        {
+            ParticleEmitterInstance* undoInstance = component->GetEmitterInstance(i);
+            ParticleEmitterInstance* redoInstance = undoInstance->Clone();
+
+            redoParticleEmitterInstance.push_back(redoInstance);
+        }
+
+        ReplaceComponentEmitters(redoParticleEmitterInstance);
+
+        component->ReloadEmitters();
+
+        undoDataInitialized = true;
+    }
+}
+
+void CommandReloadEmitters::Undo()
+{
+    ReplaceComponentEmitters(undoParticleEmitterInstance);
+}
+
+void CommandReloadEmitters::ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticleEmitterInstances)
+{
+    int32 emitterCount = component->GetEmittersCount();
+
+    for (int32 i = 0; i < emitterCount; i++)
+    {
+        ParticleEmitterInstance* instance = component->GetEmitterInstance(0);
+        component->RemoveEmitterInstance(instance);
+    }
+
+    for (DAVA::ParticleEmitterInstance* instance : nextParticleEmitterInstances)
+    {
+        component->AddEmitterInstance(instance);
+    }
 }
 
 ParticleEffectComponent* CommandReloadEmitters::GetComponent() const
@@ -1064,4 +1129,5 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CommandReloadEmitters)
     ReflectionRegistrator<CommandReloadEmitters>::Begin()
     .End();
 }
+
 } // namespace DAVA

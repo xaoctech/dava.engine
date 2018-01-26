@@ -853,17 +853,32 @@ protected:
     DAVA_VIRTUAL_REFLECTION(CommandSaveInnerParticleEmitterToYaml, CommandAction);
 };
 
-class CommandReloadEmitters : public CommandAction
+class CommandReloadEmitters : public RECommand
 {
 public:
     CommandReloadEmitters(ParticleEffectComponent* component_);
+    ~CommandReloadEmitters();
+
     void Redo() override;
+    void Undo() override;
+
+    bool IsClean() const override
+    {
+        return true;
+    }
 
     ParticleEffectComponent* GetComponent() const;
 
 protected:
-    ParticleEffectComponent* component;
+    void ReplaceComponentEmitters(const DAVA::Vector<DAVA::ParticleEmitterInstance*>& nextParticleEmitterInstances);
 
-    DAVA_VIRTUAL_REFLECTION(CommandReloadEmitters, CommandAction);
+    DAVA::Vector<DAVA::ParticleEmitterInstance*> redoParticleEmitterInstance;
+    DAVA::Vector<DAVA::ParticleEmitterInstance*> undoParticleEmitterInstance;
+
+    bool undoDataInitialized = false;
+
+    DAVA::ParticleEffectComponent* component;
+
+    DAVA_VIRTUAL_REFLECTION(CommandReloadEmitters, RECommand);
 };
 } // namespace DAVA
