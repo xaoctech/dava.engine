@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -e
+
+pod=${1}
+cmd=${2:-start}
+dir=${3:-dev}
+secret=${4:-secret.tfvars}
+clients_num=${5:-32}
+
+SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+hosts=(`aws/aws-ips ${dir} ${secret}`)
+
+if [ "${cmd}" == "start" ]; then
+    for host in ${hosts[@]}; do
+        ssh ${SSH_OPTS} ec2-user@${host} "python analyzer_agent.py start"
+    done
+    exit 0
+fi
+
+if [ "${cmd}" == "stop" ]; then
+    echo "To print server logs use the following command:"
+    echo "    $ kubectl logs ${pod} -c <container>"
+    if [ "${dir}" == "cluster" ]; then
+        echo "Saving client logs..."
+        host_id=0
+        for host in ${hosts[@]}; do
+            ssh ${SSH_OPTS} ec2-user@${host} "./put-s3 host${host_id}_logs.tar.gz"
+            host_id=$((host_id + 1))
+        done
+    fi
+
+    server_state=$(kubectl describe pod ${pod} | grep '^    State' | awk '{print $2}')
+    if [ "${server_state}" == "Terminated" ]; then
+        (>&2 echo "[${pod}]: Server crashed")
+        (>&2 echo "[${pod}]: To attach to debug container use the command:")
+        (>&2 echo "[${pod}]:    $ kubectl exec -it ${pod} -c debug /bin/bash")
+        exit 1
+    fi
+
+    for host in ${hosts[@]}; do
+        count=`ssh ${SSH_OPTS} ec2-user@${host} "ps auxc | grep Client | wc -l" 2>/dev/null`
+        if [ "${count}" -ne "${clients_num}" ]; then
+            (>&2 echo "[${host}]: Some clients crashed. Alive: ${count}/${clients_num}")
+            exit 1
+        fi
+        ssh ${SSH_OPTS} ec2-user@${host} << 'ENDSSH'
+grep -hs --exclude=analyzer_agent.py "Timestamps\|FPS\|\[send\]\|\[recv\]\|generalstat\|componentstat\|typestat" * | python analyzer_agent.py stop > analyzer_result.json
+ENDSSH
+        scp ${SSH_OPTS} ec2-user@${host}:analyzer_result.json .
+        cat analyzer_result.json | python analyzer.py ${ANALYZER_OPTS}
+    done
+    exit 0
+fi
+
+echo "Usage: $> ./analyzer start|stop [CLUSTER_DIR] [SECRET] [CLIENTS_NUM]"
+exit 1

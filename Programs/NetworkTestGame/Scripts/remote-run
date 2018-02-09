@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+
+bot_kind=random
+
+while getopts ":b:" opt; do
+  case $opt in
+    b)
+      bot_kind=$OPTARG
+      shift 2
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+port=${1}
+dir=${2:-dev}
+secret=${3:-secret.tfvars}
+
+CLIENTS_NUM=32
+SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+SERVER=34.241.135.221
+
+hosts=(`aws/aws-ips ${dir} ${secret}`)
+
+client_id=1
+for host in ${hosts[@]}; do
+
+    ssh ${SSH_OPTS} ec2-user@${host} \
+        "LD_LIBRARY_PATH=~/_game/app BOT_APP=~/_game/app/Client bash ~/run_bots.sh ${CLIENTS_NUM} ${SERVER} ${port} ${client_id} ${bot_kind} </dev/null 1>clients-out.log 2>clients-err.log &"
+    client_id=$((client_id + 1))
+done
+echo "CLIENTS: ${hosts[@]}"

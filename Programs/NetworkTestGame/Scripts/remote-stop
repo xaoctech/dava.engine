@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+dir=${1:-dev}
+secret=${2:-secret.tfvars}
+
+SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+hosts=(`aws/aws-ips ${dir} ${secret}`)
+
+for host in ${hosts[@]}; do 
+    ssh ${SSH_OPTS} ec2-user@${host} "pkill Client"
+done

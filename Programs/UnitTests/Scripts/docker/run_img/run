@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+cd /tmp/dava.framework/Programs/UnitTests/Scripts
+python start_unit_tests.py --teamcity

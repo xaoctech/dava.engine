@@ -1,0 +1,194 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: nightly-build-shooter-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nightly-build-shooter
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: nightly-build-shooter
+    spec:
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+      containers:
+      - name: nightly-build-shooter
+        image: docker-registry.k8s/nightly-build:BUILD_NUMBER
+        resources:
+          limits:
+            cpu: "1.3"
+          requests:
+            cpu: "1.1"
+        volumeMounts:
+        - name: shared-data
+          mountPath: /debug
+        ports:
+        - containerPort: 9000
+        args: ["--game", "shooter", "--compare_inputs", "--health-check-host", "localhost", "--health-check-port", "5050"]
+      - name: healthz
+        image: docker-registry.k8s/healthz:4
+        env:
+          - name: VERSION
+            value: "BUILD_NUMBER"
+        resources:
+          limits:
+            cpu: "0.2"
+          requests:
+            cpu: "0.1"
+        volumeMounts:
+        - name: shared-data
+          mountPath: /debug
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: nightly-build-cars-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nightly-build-cars
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: nightly-build-cars
+    spec:
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+      containers:
+      - name: nightly-build-cars
+        image: docker-registry.k8s/nightly-build:BUILD_NUMBER
+        volumeMounts:
+        - name: shared-data
+          mountPath: /debug
+        ports:
+        - containerPort: 9000
+        args: ["--game", "cars", "--compare_inputs", "--health-check-host", "localhost", "--health-check-port", "5050"]
+      - name: healthz
+        image: docker-registry.k8s/healthz:4
+        volumeMounts:
+        - name: shared-data
+          mountPath: /debug
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: nightly-build-tanks-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nightly-build-tanks
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: nightly-build-tanks
+    spec:
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+      containers:
+      - name: nightly-build-tanks
+        image: docker-registry.k8s/nightly-build:BUILD_NUMBER
+        volumeMounts:
+        - name: shared-data
+          mountPath: /debug
+        ports:
+        - containerPort: 9000
+        args: ["--game", "default", "--compare_inputs", "--health-check-host", "localhost", "--health-check-port", "5050"]
+      - name: healthz
+        image: docker-registry.k8s/healthz:4
+        volumeMounts:
+        - name: shared-data
+          mountPath: /debug
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nightly-build-shooter-service
+spec:
+  selector:
+    app: nightly-build-shooter
+  type: NodePort
+  ports:
+  - name: service
+    protocol: UDP
+    port: 9000
+    nodePort: 31000
+  - name: healthz
+    protocol: TCP
+    port: 8080
+    nodePort: 31010
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nightly-build-cars-service
+spec:
+  selector:
+    app: nightly-build-cars
+  type: NodePort
+  ports:
+  - name: service
+    protocol: UDP
+    port: 9000
+    nodePort: 31001
+  - name: healthz
+    protocol: TCP
+    port: 8080
+    nodePort: 31011
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nightly-build-tanks-service
+spec:
+  selector:
+    app: nightly-build-tanks
+  type: NodePort
+  ports:
+  - name: service
+    protocol: UDP
+    port: 9000
+    nodePort: 31002
+  - name: healthz
+    protocol: TCP
+    port: 8080
+    nodePort: 31012

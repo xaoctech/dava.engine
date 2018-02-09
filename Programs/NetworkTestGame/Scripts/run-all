@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+name=${1:-dev}
+tag=${2:-""}
+
+if [ "${tag}" == "" ]; then
+    tag=$(curl -ks https://docker-registry.k8s/v2/${name}/tags/list | python generate_tag.py)
+fi
+echo "Image: ${name}:${tag}"
+python docker_build.py --image ${name}:${tag} --with-push --gen-k8s ${name}.yml
+kubectl apply -f ${name}.yml
+port=$(kubectl get svc | grep ${name} | sed 's/.*:\([0-9]*\)\/UDP.*/\1/')
+echo "Service was started using the port:" ${port}
+./aws/aws-up dev
+./deploy-all
+./remote-run ${port} dev
+./analyzer ${name} start dev
+./wait-for ${name}
+./analyzer ${name} stop dev
+./remote-stop dev

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="DAVA::FastName">
+    <DisplayString>{{str={view.str, s}}}</DisplayString>
+  </Type>
+  <Type Name="DAVA::Type">
+    <DisplayString>{{name={name, na}, flags={*flags._Array, h}}}</DisplayString>
+    <Expand>
+      <Item Name="[Name]">name, na</Item>
+      <Item Name="[Flags]">*flags._Array, h</Item>
+    </Expand>
+  </Type>
+  <Type Name="DAVA::AutoStorage&lt;*&gt;">
+    <DisplayString>{type}</DisplayString>
+    <Expand>
+      <Item Name="[Data]" Condition="type==1">storage._Elems</Item>
+      <Item Name="[Data]" Condition="type==2">*((AutoStorage&lt;$T1&gt;::SharedT*) storage._Elems)->_Rep</Item>
+    </Expand>
+  </Type>
+  <Type Name="DAVA::Any">
+    <Expand>
+      <Item Name="Type">type->name</Item>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;bool&gt;::t">
+        <DisplayString>{*((bool*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;int&gt;::t">
+        <DisplayString>{*((int*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;unsigned int&gt;::t">
+        <DisplayString>{*((unsigned int*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;float&gt;::t">
+        <DisplayString>{*((float*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;double&gt;::t">
+        <DisplayString>{*((double*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;short&gt;::t">
+        <DisplayString>{*((short*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;unsigned short&gt;::t">
+        <DisplayString>{*((unsigned short*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;__int64&gt;::t">
+        <DisplayString>{*((__int64*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;unsigned __int64&gt;::t">
+        <DisplayString>{*((unsigned __int64*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;std::basic_string&lt;char,std::char_traits&lt;char>,std::allocator&lt;char&gt; &gt; &gt;::t">
+        <DisplayString>{*((std::basic_string&lt;char,std::char_traits&lt;char>,std::allocator&lt;char&gt; &gt; *) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::FilePath&gt;::t">
+        <DisplayString>{*((DAVA::FilePath*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::FastName&gt;::t">
+        <DisplayString>{*((DAVA::FastName*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::Color&gt;::t">
+        <DisplayString>{*((DAVA::Color*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::Vector4&gt;::t">
+        <DisplayString>{*((DAVA::Vector4*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::Vector3&gt;::t">
+        <DisplayString>{*((DAVA::Vector3*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::Matrix4&gt;::t">
+        <DisplayString>{*((DAVA::Matrix4*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::Matrix3&gt;::t">
+        <DisplayString>{*((DAVA::Matrix3*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+      <Synthetic Name="Evaluated" Condition="type == DAVA::TypeDetail::TypeHolder&lt;DAVA::Quaternion&gt;::t">
+        <DisplayString>{*((DAVA::Quaternion*) anyStorage.GetData())}</DisplayString>
+      </Synthetic>
+    </Expand>
+  </Type>
+  <Type Name="DAVA::FixedVector&lt;*&gt;">
+    <Intrinsic Name="size" Expression="elemLast - elemBegin" />
+    <Intrinsic Name="max_size" Expression="elemEnd - elemBegin" />
+    <DisplayString>{{ size={size()}, max_size={max_size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">size()</Item>
+      <Item Name="[max_size]" ExcludeView="simple">max_size()</Item>
+      <ArrayItems>
+        <Size>size()</Size>
+        <ValuePointer>elemBegin</ValuePointer>
+        </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

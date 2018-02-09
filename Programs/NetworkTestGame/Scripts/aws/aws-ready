@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=${1:-dev}
+SECRET=${2:-secret.tfvars}
+ATTEMPTS=12
+SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+attempt=1
+hosts=(`aws/aws-ips ${DIR} ${SECRET}`)
+while [ "$attempt" -le "$ATTEMPTS" ]; do
+    echo "ATTEMPT: $attempt"
+    check=0
+    for host in ${hosts[@]}; do
+        ssh $SSH_OPTS ec2-user@${host} "echo [${host}]: OK" 2>/dev/null || check=$((check+1))
+    done
+    if [ "$check" -eq 0 ]; then
+        exit 0
+    fi
+    attempt=$((attempt + 1))
+    sleep 10
+done
+exit 1

@@ -1,0 +1,22 @@
+Header:
+    version: 2
+ProjectProperties:
+    ResourceDirectory: "./DataSource/"
+    PluginsDirectory: "./QuickEdPlugins/"
+    AdditionalResourceDirectory: "./Data/"
+    IntermediateResourceDirectory: "./Data/"
+    UiDirectory: "./UI/"
+    FontsDirectory: "./Fonts/"
+    FontsConfigsDirectory: "./Fonts/Configs/"
+    TextsDirectory: "./Strings/"
+    DefaultLanguage: "en"
+    GfxDirectories:
+    -   directory: "./Gfx/"
+        scale: 1.000000
+    Blanks:
+    -   {name: "Root", pathToYaml: "~res:/UI/Root.yaml", control: "Root", path: ""}
+    Devices:
+    -   {name: "Default", screenSize: [1024, 768], virtualScreenSize: [1024, 768]}
+    Library:
+        Controls: []
+        Sections: []
