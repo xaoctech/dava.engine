@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+mkdir -p /tmp/dava.framework/Programs/NetworkTestGame/_docker
+
+export CC=clang
+export CXX=clang++
+cd /tmp/dava.framework/Programs/NetworkTestGame/_docker
+
+if [ "${WITH_BREAKPAD}" == "yes" ]; then
+    cmake3 -DCMAKE_BUILD_TYPE=Release -DDEPLOY=1 -DUNITY_BUILD=1 -DWITH_BREAKPAD=1 .. && make -j 4
+
+    # prepare breakpad-recognized symbols
+    chmod +x /tmp/dava.framework/Modules/CrashHandler/Bin/Linux/dump_syms # maybe should it be before a start?
+    /tmp/dava.framework/Modules/CrashHandler/Bin/Linux/dump_syms app/Server > Server.sym
+    tar -kzcf Server.tar.gz Server.sym
+
+    # upload prepared symbols
+    # use trial backtrace.io account
+    SYMVER=${VERSION:-nover}
+    TOKEN=421ebfe5870a48074fee7f3cba43383e002ed45becc0d5990ecc8a72ce5a473d
+    curl --data-binary @Server.tar.gz 'https://kkdaemon.sp.backtrace.io:6098/post?format=symbols&token='"$TOKEN"'&tag='"$SYMVER"
+
+    # Strip debug info from ./Server and place them into Server.debug
+    objcopy --only-keep-debug app/Server app/Server.debug && strip --strip-debug --strip-unneeded app/Server
+else
+    cmake3 -DCMAKE_BUILD_TYPE=Release -DDEPLOY=1 -DUNITY_BUILD=1  .. && make -j 4
+fi

@@ -1,0 +1,13 @@
+--- /Users/d_aleksandrov/Downloads/enet-1.3.13/CMakeLists.txt	2015-04-30 16:42:08.000000000 +0300
++++ ./enet_source/CMakeLists.txt	2017-06-05 17:11:21.000000000 +0300
+@@ -16,7 +16,9 @@
+ set(CMAKE_EXTRA_INCLUDE_FILES "sys/types.h" "sys/socket.h")
+ check_type_size("socklen_t" HAS_SOCKLEN_T BUILTIN_TYPES_ONLY)
+ unset(CMAKE_EXTRA_INCLUDE_FILES)
+- 
++if(WIN10)
++    add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS=1)
++endif()
+ if(HAS_FCNTL)
+     add_definitions(-DHAS_FCNTL=1)
+ endif()

@@ -1,0 +1,23 @@
+RenderTechnique:
+    MaterialType: Decal
+    Layers: ["OpaqueRenderLayer"]        
+    RenderPassDeferred:
+        Name: "gBufferPass"
+        Layer: "DeferredDecals"
+        Shader: "~res:/Materials2/Shaders/deferred-decal"        
+        UniqueDefines: ["DEFERRED_DECAL"]
+        UniquePins:
+            - ["DECAL_TYPE", 2]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"            
+    RenderPassDeferredFetch:
+        Name: "gBufferFetchPass"
+        Layer: "DeferredDecals"
+        Shader: "~res:/Materials2/Shaders/deferred-decal"        
+        UniqueDefines: ["DEFERRED_DECAL", "USE_FRAMEBUFFER_FETCH"]
+        UniquePins:
+            - ["DECAL_TYPE", 2]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"

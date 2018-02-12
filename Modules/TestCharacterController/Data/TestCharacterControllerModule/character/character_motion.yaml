@@ -1,0 +1,84 @@
+motion-layers:
+ -      
+  layer-id: "move-layer"
+  blend-mode: Override #Can be Override, Add, Diff, LERP
+  root-transform:
+    root-node: "node-Root"
+    extract-position-x: true
+    extract-position-y: true
+    extract-position-z: false
+    reset-position-x: true
+    reset-position-y: true
+    reset-position-z: false
+  motions:
+   -
+    motion-id: "stand"
+    blend-tree:
+      clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Idle.anim"
+   -
+    motion-id: "move"
+    blend-tree:
+      operation:
+        type: LERP1D
+        parameter: "direction-y"
+      nodes:
+       -
+        param-value: -1.0
+        operation:
+          type: LERP1D
+          parameter: "direction-x"
+        nodes:
+         -
+          param-value: -1.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_BL.anim"
+         -
+          param-value: 0.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_B.anim"
+         -
+          param-value: 1.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_BR.anim"
+       -
+        param-value: 0.0
+        operation:
+          type: LERP1D
+          parameter: "direction-x"
+        nodes:
+         -
+          param-value: -1.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_L.anim"
+         -
+          param-value: 0.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_F.anim"
+         -
+          param-value: 1.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_R.anim"
+       -
+        param-value: 1.0
+        operation:
+          type: LERP1D
+          parameter: "direction-x"
+        nodes:
+         -
+          param-value: -1.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_FL.anim"
+         -
+          param-value: 0.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_F.anim"
+         -
+          param-value: 1.0
+          clip: "~res:/TestCharacterControllerModule/character/caliber_animations/AC_AR-AK74M_Run_AC_AR_AK74M_Run_FR.anim"
+  transitions:
+   -
+    src-motion: "stand"
+    dst-motion: "move"
+    type: cross-fade
+    func: LINEAR
+    duration: 0.3
+    trigger: "move"
+   -
+    src-motion: "move"
+    dst-motion: "stand"
+    type: cross-fade
+    func: LINEAR
+    duration: 0.3
+    trigger: "stop"

@@ -1,0 +1,71 @@
+apply plugin: 'com.android.application'
+apply from: '../../../../../../Platforms/Android/common.gradle'
+
+def getVersionCodeArg = { ->
+    def code = project.hasProperty('versionCode') ? versionCode.toInteger() : 1
+    println "VersionCode is set to $code"
+    return code
+}
+
+def getVersionNameArg = { ->
+    def name = project.hasProperty('versionName') ? versionName : "1.0"
+    println "VersionName is set to $name"
+    return name
+}
+
+android {
+    signingConfigs {
+        DavaTest {
+            keyAlias 'test'
+            keyPassword 'qazwsx'
+            storeFile file('../../../../../../Platforms/Android/DavaTest.keystore')
+            storePassword 'qazwsx'
+        }
+    }
+
+    defaultConfig {
+        applicationId 'com.dava.nettestgame'
+        externalNativeBuild.cmake.arguments '-DUNITY_BUILD=True'
+        versionCode getVersionCodeArg()
+        versionName getVersionNameArg()
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "../../../CMakeLists.txt"
+        }
+    }
+    sourceSets {
+        main {
+            java.srcDirs = ['src']
+            assets.srcDirs = ['assets']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+    buildTypes {
+        release {
+            // debuggable true
+            // jniDebuggable true
+            signingConfig signingConfigs.DavaTest
+        }
+    }
+
+    /* custom product flavors */
+    productFlavors {
+        arm {
+            dimension "abi"
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+            externalNativeBuild {
+                cmake {
+                    abiFilters "armeabi-v7a"
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compile project(':DavaEngine')
+}

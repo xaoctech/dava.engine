@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+pod=${1}
+container=${2:-debug}
+ref_logfile=${3:-./game_stats/logs/game-stats-ref.log}
+
+logfile=./game_stats/logs/game-stats.log
+
+kubectl cp ${pod}:debug/game-stats.log -c ${container} ${logfile}
+python ./game_stats/compare.py ${ref_logfile} ${logfile}
+
+exit 0

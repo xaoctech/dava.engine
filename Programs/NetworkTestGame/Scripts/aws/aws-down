@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=${1:-dev}
+SECRET=${2:-secret.tfvars}
+
+. aws/aws-export-keys ${DIR} ${SECRET}
+cd terraform/${DIR}
+terraform destroy -force -var-file=${SECRET}
+cd -

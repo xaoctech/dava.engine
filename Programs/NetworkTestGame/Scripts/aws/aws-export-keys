@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=${1:-dev}
+SECRET=${2:-secret.tfvars}
+
+cd terraform/${DIR}
+AWS_ACCESS_KEY_ID=`cat ${SECRET} | grep access_key | awk -F'"' '{print $2}'`
+AWS_SECRET_ACCESS_KEY=`cat ${SECRET} | grep secret_key | awk -F'"' '{print $2}'`
+export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+cd - 1>/dev/null 2>&1

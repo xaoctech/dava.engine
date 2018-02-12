@@ -1,0 +1,30 @@
+RenderTechnique:
+    Layers: ["AfterTransclucentRenderLayer"]
+    RenderPass:
+        Name: "ForwardPass"
+        Shader: "~res:/Materials2/Shaders/background"
+        UniqueDefines: ["DIRECTIONAL_LIGHT"]
+        RenderState:            
+            blendDest: "BLEND_ONE"
+            blendSrc: "BLEND_ONE"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_BLEND | STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"            
+    RenderPassLDR:
+        Name: "LDRForwardPass"
+        Shader: "~res:/Materials2/ShadersLDR/background"
+        UniqueDefines: ["DIRECTIONAL_LIGHT"]
+        RenderState:            
+            blendDest: "BLEND_ONE"
+            blendSrc: "BLEND_ONE"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_BLEND | STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"            
+    RenderPassWithCombine:
+        Name: "ForwardPassWithCombine"
+        Shader: "~res:/Materials2/Shaders/background"
+        UniqueDefines: ["DIRECTIONAL_LIGHT", "FOWARD_WITH_COMBINE"]
+        RenderState:
+            blendDest: "BLEND_ONE"
+            blendSrc: "BLEND_ONE"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_BLEND | STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"
+

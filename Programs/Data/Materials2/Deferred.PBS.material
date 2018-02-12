@@ -1,0 +1,16 @@
+RenderTechnique:
+    Layers: ["OpaqueRenderLayer"]
+    RenderPassDeferred:
+        Name: "gBufferPass"
+        Shader: "~res:/Materials2/Shaders/deferred-pbs"        
+        RenderState:            
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPassDeferredFetch:
+        Name: "gBufferFetchPass"
+        Shader: "~res:/Materials2/Shaders/deferred-pbs"        
+        RenderState:            
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"

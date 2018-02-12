@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+ARCH_NAME=${1:-logs.tar.gz}
+BUCKET=${2:-ci.autobot.terraform@eu-central-1}
+CLIENT_BIN=${3:-_game/Client/Client}
+
+. aws_env.sh
+
+core_files=($(ls core* 2>/dev/null ||:))
+if [ "${#core_files[@]}" -gt 0 ]; then
+    sudo yum install gdb -y
+    for core_file in ${core_files}; do
+      gdb ${CLIENT_BIN} ${core_file} -ex bt -ex quit > "${core_file}.backtrace" 2>&1
+    done
+fi
+
+for log in $(ls *.log *.json *.backtrace 2>/dev/null); do
+    cp ${log} ${log}.dump
+done
+files=$(ls *.dump)
+tar -zcf ${ARCH_NAME} ${files[@]} 
+. put-s3-impl ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} ${BUCKET} ${ARCH_NAME} ${ARCH_NAME}

@@ -1,0 +1,9 @@
+RenderTechnique:
+    Layers: ["OpaqueRenderLayer"]
+    RenderPass:
+        Name: "gBufferPass"
+        Shader: "~res:/Materials2/Shaders/gbuffer-copy"
+        UniqueDefines: []
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
