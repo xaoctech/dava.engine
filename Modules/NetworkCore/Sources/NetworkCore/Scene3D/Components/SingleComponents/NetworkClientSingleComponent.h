@@ -17,6 +17,8 @@ public:
     void SetClient(IClient* client);
     IClient* GetClient() const;
 
+    void Clear() override;
+
 private:
     IClient* client;
 };

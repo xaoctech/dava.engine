@@ -780,7 +780,7 @@ const FilePath& VariantType::AsFilePath() const
 bool VariantType::Write(File* fp) const
 {
     DVASSERT(type != TYPE_NONE);
-    int32 written = fp->Write(&type, 1);
+    uint32 written = fp->Write(&type, 1);
     if (written != 1)
     {
         return false;
@@ -937,6 +937,7 @@ bool VariantType::Write(File* fp) const
         written = fp->Write(&len, 4);
         if (written != 4)
         {
+            SafeRelease(pF);
             return false;
         }
 

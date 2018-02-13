@@ -63,25 +63,38 @@ int32 Scene::GetCameraCount()
 template <class... Args>
 EntityGroup* Scene::AquireEntityGroup()
 {
-    return entitiesManager->AquireEntityGroup<Args...>(this);
+    return entitiesManager->AquireEntityGroup<AllOfEntityMatcher, Args...>(this);
 }
 
-template <class... Args>
-EntityGroup* Scene::GetEntityGroup()
+template <class Matcher, class... Args>
+EntityGroup* Scene::AquireEntityGroupWithMatcher()
 {
-    return entitiesManager->GetEntityGroup<Args...>();
+    return entitiesManager->AquireEntityGroup<Matcher, Args...>(this);
 }
 
 template <class T, class... Args>
 ComponentGroup<T>* Scene::AquireComponentGroup()
 {
-    return entitiesManager->AquireComponentGroup<T, Args...>(this);
+    return entitiesManager->AquireComponentGroup<AllOfEntityMatcher, T, Args...>(this);
 }
 
-template <class T, class... Args>
-ComponentGroup<T>* Scene::GetComponentGroup()
+template <class Matcher, class T, class... Args>
+ComponentGroup<T>* Scene::AquireComponentGroupWithMatcher()
 {
-    return entitiesManager->GetComponentGroup<T, Args...>();
+    return entitiesManager->AquireComponentGroup<Matcher, T, Args...>(this);
+}
+
+
+template <class T>
+T* Scene::AquireSingleComponentForWrite()
+{
+    return AquireSingleComponentForWrite(Type::Instance<T>());
+}
+
+template <class T>
+const T* Scene::AquireSingleComponentForRead()
+{
+    return AquireSingleComponentForRead(Type::Instance<T>());
 }
 
 }

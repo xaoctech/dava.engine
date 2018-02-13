@@ -42,6 +42,8 @@ struct SnapshotComponentKey
     bool operator<(const SnapshotComponentKey& key) const;
     bool operator==(const SnapshotComponentKey& key) const;
     bool operator!=(const SnapshotComponentKey& key) const;
+
+    friend std::ostream& operator<<(std::ostream& stream, const SnapshotComponentKey& key);
 };
 } // namespace DAVA
 

@@ -9,4 +9,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaSingleComponent)
     .ConstructorByPointer()
     .End();
 }
+
+void NetworkDeltaSingleComponent::Clear()
+{
+    deltas.clear();
+}
 }

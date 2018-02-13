@@ -23,8 +23,6 @@ inline physx::PxScene* PhysicsSystemPrivate::GetPxScene(PhysicsSystem* system)
 
 inline bool PhysicsSystemPrivate::HasPendingComponents(PhysicsSystem* system)
 {
-    bool hasPendingShape = false;
-    system->ExecuteForEachPendingShape([&hasPendingShape](CollisionShapeComponent* s) { hasPendingShape = true; }); // TODO: change this when component group will support matchers
-    return hasPendingShape;
+    return (false == system->shapesPendingAdd->components.empty());
 }
 } // namespace DAVA

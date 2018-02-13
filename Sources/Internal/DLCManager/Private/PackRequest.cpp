@@ -548,6 +548,15 @@ uint64 PackRequest::DVPLWriter::Save(const void* ptr, uint64 size)
 
     if (!fout)
     {
+        Logger::Error("failed to write dvpl");
+        return 0;
+    }
+
+    fout.flush();
+
+    if (!fout)
+    {
+        Logger::Error("failed to write(flush) dvpl");
         return 0;
     }
 
@@ -600,23 +609,24 @@ bool PackRequest::DVPLWriter::Close()
         {
             // all nice, now write footer to file, then rename it
             // write 20 bytes LitePack footer
-            PackFormat::LitePack::Footer footer;
-            footer.type = compressionType;
-            footer.crc32Compressed = crc32Compressed;
-            footer.sizeUncompressed = sizeUncompressed;
-            footer.sizeCompressed = sizeCompressed;
-            footer.packMarkerLite = PackFormat::FILE_MARKER_LITE;
+            PackFormat::LitePack::Footer footer = { sizeUncompressed,
+                                                    sizeCompressed,
+                                                    crc32Compressed,
+                                                    compressionType,
+                                                    PackFormat::FILE_MARKER_LITE };
 
-            const char* ptr = reinterpret_cast<const char*>(&footer);
+            const auto ptr = reinterpret_cast<const char*>(&footer);
             fout.write(ptr, sizeof(footer));
             if (!fout)
             {
+                Logger::Error("failed to write footer to dvpl");
                 return false;
             }
             fout.close();
 
             if (!fout)
             {
+                Logger::Error("failed to close dvpl");
                 return false;
             }
             DVASSERT(localPath.GetExtension() == extPart);
@@ -628,6 +638,7 @@ bool PackRequest::DVPLWriter::Close()
 
             if (!fs->MoveFile(localPath, newPath, true))
             {
+                Logger::Error("failed to move file: %s to %s", localPath.GetStringValue().c_str(), newPath.GetStringValue().c_str());
                 return false;
             }
         }

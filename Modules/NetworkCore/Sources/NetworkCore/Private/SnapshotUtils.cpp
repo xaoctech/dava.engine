@@ -91,7 +91,7 @@ bool SnapshotUtils::ApplySnapshot(Snapshot* snapshot, NetworkID entityId, Entity
         SnapshotComponentKey componentKey = c.first;
         SnapshotComponent* sc = &c.second;
 
-        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "| Component " << componentKey.id << "-" << componentKey.index << ":\n");
+        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "| Component " << componentKey << ":\n");
 
         Component* dstComponent = nullptr;
         const Type* dstComponentType = ComponentUtils::GetType(componentKey.id);
@@ -112,7 +112,7 @@ bool SnapshotUtils::ApplySnapshot(Snapshot* snapshot, NetworkID entityId, Entity
         bool allowApply = true;
         if (nullptr != pred)
         {
-            allowApply = pred(dstComponent);
+            allowApply = pred(componentKey, dstComponent);
         }
 
         // now apply component snapshot

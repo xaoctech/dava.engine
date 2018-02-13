@@ -23,8 +23,13 @@ include_directories   ( "Sources" "${CMAKE_CURRENT_LIST_DIR}/../Shared/Sources")
 
 define_source                  ( SOURCE "Sources" "${CMAKE_CURRENT_LIST_DIR}/../Shared/Sources")
 
-set( MIX_APP_DATA                 "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
-                                  "Data = ${CMAKE_CURRENT_LIST_DIR}/../Data" )
+set( MIX_APP_DATA "Data = ${DAVA_ROOT_DIR}/Programs/Data")
+
+if( ANDROID )
+	list( APPEND MIX_APP_DATA "Data = ${CMAKE_CURRENT_LIST_DIR}/../DataAndroid" )
+else()
+	list( APPEND MIX_APP_DATA "Data = ${CMAKE_CURRENT_LIST_DIR}/../Data" )
+endif()
 
 set( MACOS_PLIST                ${CMAKE_CURRENT_LIST_DIR}/Platforms/Mac/Info.plist )
 set( IOS_PLISTT                 ${CMAKE_CURRENT_LIST_DIR}/Platforms/Ios/Info.plist )

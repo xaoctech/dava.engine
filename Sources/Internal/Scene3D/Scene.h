@@ -204,15 +204,19 @@ public:
     DiffMonitoringSystem* diffMonitoringSystem = nullptr;
     PhysicsSystem* physicsSystem = nullptr;
 
+    template <class T>
+    const T* AquireSingleComponentForRead();
+    const SingletonComponent* AquireSingleComponentForRead(const Type* type);
+    template <class T>
+    T* AquireSingleComponentForWrite();
+    SingletonComponent* AquireSingleComponentForWrite(const Type* type);
+
     /** Get singleton component. Never return nullptr. */
     template <class T>
     T* GetSingletonComponent();
 
     /** Get singleton component. Never return nullptr. */
     SingletonComponent* GetSingletonComponent(const Type* type);
-
-    Vector<std::pair<SingletonComponent*, const Type*>> singletonComponents;
-    Map<SingletonComponent*, size_t> singletonComponentsMap;
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -289,13 +293,13 @@ public:
 
     template <class... Args>
     EntityGroup* AquireEntityGroup();
-    template <class... Args>
-    EntityGroup* GetEntityGroup();
+    template <class Matcher, class... Args>
+    EntityGroup* AquireEntityGroupWithMatcher();
 
     template <class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup();
-    template <class T, class... Args>
-    ComponentGroup<T>* GetComponentGroup();
+    template <class Matcher, class T, class... Args>
+    ComponentGroup<T>* AquireComponentGroupWithMatcher();
 
 public: // deprecated methods
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
@@ -341,7 +345,6 @@ private:
     template <typename T>
     void AddSingletonComponent(T* component);
     void AddSingletonComponent(SingletonComponent* component, const Type* type);
-    void RemoveSingletonComponent(SingletonComponent* component);
 
     UnorderedSet<FastName> tags;
 
@@ -357,6 +360,11 @@ private:
     Vector<Function<void(float32)>> systemProcesses;
 
     EntitiesManager* entitiesManager = nullptr;
+
+    UnorderedMap<const Type*, SingletonComponent*> singletonComponents;
+
+    friend class SnapshotSystemBase;
+    friend class NetworkDeltaReplicationSystemServer;
 };
 }
 

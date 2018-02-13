@@ -2,6 +2,7 @@
 
 #include "Base/HashVector.h"
 #include "Functional/Signal.h"
+#include "Scene3D/EntityMatcher.h"
 
 namespace DAVA
 {

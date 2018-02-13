@@ -14,5 +14,8 @@ public:
 
 protected:
     DAVA_VIRTUAL_REFLECTION(SingletonComponent, Component);
+
+private:
+    virtual void Clear() = 0;
 };
 }

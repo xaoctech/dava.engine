@@ -59,7 +59,7 @@ public:
     UnorderedSet<AnimationInfo, AnimationInfoHash> animationEnd;
     UnorderedSet<AnimationInfo, AnimationInfoHash> animationMarkerReached;
 
-    void Clear();
+    void Clear() override;
     void EntityRemoved(const Entity* entity);
 };
 }

@@ -67,5 +67,7 @@ private:
 
     UnorderedMap<FastName, uint32> lastClientFrameIds;
     UnorderedMap<FastName, int32> clientServerDiff;
+
+    void Clear() override;
 };
 }

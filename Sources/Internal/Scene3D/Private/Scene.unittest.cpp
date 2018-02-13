@@ -33,6 +33,8 @@ class MyComponent : public SingletonComponent
         .ConstructorByPointer()
         .End();
     }
+
+    void Clear() override{};
 };
 
 DAVA_TESTCLASS (SceneTest)

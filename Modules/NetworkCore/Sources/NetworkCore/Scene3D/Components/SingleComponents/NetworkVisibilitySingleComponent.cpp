@@ -84,7 +84,7 @@ NetworkVisibilitySingleComponent::GetRemovedEntities(NetworkPlayerID observerPla
     return GetByObserverPlayerID<UnorderedSet<const Entity*>>(observerPlayerID, playerToRemovedEntities, emptyEntities);
 }
 
-void NetworkVisibilitySingleComponent::ClearCache()
+void NetworkVisibilitySingleComponent::Clear()
 {
     for (auto& addedEntities : playerToAddedEntities)
     {

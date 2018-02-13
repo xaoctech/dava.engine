@@ -15,7 +15,7 @@ class GameCollisionSingleComponent : public DAVA::SingletonComponent
 public:
     void SetCollision(DAVA::Entity* entity1, DAVA::Entity* entity2);
     const DAVA::UnorderedSet<DAVA::Entity*>& GetCollisions(DAVA::Entity* entity) const;
-    void Clear();
+    void Clear() override;
 
 private:
     DAVA::UnorderedMap<DAVA::Entity*, DAVA::UnorderedSet<DAVA::Entity*>> collisions;

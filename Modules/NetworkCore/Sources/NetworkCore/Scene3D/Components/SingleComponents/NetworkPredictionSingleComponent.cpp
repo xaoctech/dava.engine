@@ -9,4 +9,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictionSingleComponent)
     .ConstructorByPointer()
     .End();
 }
+
+void NetworkPredictionSingleComponent::Clear()
+{
+    mispredictedEntities.clear();
+}
 }

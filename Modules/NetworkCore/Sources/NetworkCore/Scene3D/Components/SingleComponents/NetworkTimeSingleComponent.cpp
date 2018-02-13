@@ -115,4 +115,8 @@ void NetworkTimeSingleComponent::SetFrequencyHz(float32 freqHz)
     FrameDurationMs = 1000 / FrequencyHz;
     FrameDurationUs = 1000000 / FrequencyHz;
 }
+
+void NetworkTimeSingleComponent::Clear()
+{
+}
 }

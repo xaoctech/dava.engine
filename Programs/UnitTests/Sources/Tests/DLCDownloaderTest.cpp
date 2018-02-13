@@ -221,17 +221,16 @@ DAVA_TESTCLASS (DLCDownloaderTest)
         FileSystem* fs = FileSystem::Instance();
         std::unique_ptr<DLCDownloader> downloader(DLCDownloader::Create());
         String url = URL;
+
         FilePath path("~doc:/big_tmp_file_from_server.remove.me");
-        fs->DeleteFile(path);
+        const bool file_removed = fs->DeleteFile(path);
+
         String p = path.GetAbsolutePathname();
         int64 start = 0;
         DLCDownloader::ITask* task = nullptr;
         int64 finish = 0;
         float64 seconds = 0.0;
         float64 sizeInGb = FULL_SIZE_ON_SERVER / (1024.0 * 1024.0 * 1024.0);
-
-        FilePath pathOld("~doc:/big_tmp_file_from_server.old.remove.me");
-        fs->DeleteFile(pathOld);
 
         //// ----next-------------------------------------------------------
         {
@@ -240,6 +239,7 @@ DAVA_TESTCLASS (DLCDownloaderTest)
             task = downloader->StartTask(url, p);
 
             downloader->WaitTask(task);
+            downloader->RemoveTask(task);
         }
 
         finish = SystemTimer::GetMs();
@@ -248,13 +248,12 @@ DAVA_TESTCLASS (DLCDownloaderTest)
 
         Logger::Info("new downloader %f Gb download from in house server for: %f", sizeInGb, seconds);
 
-        downloader->RemoveTask(task);
-
         const uint32 crc32 = 0x89D4BC4E; // old crc32 for full build 0xDE5C2B62;
 
         uint32 crcFromFile = CRC32::ForFile(p);
 
         TEST_VERIFY(crcFromFile == crc32);
+
         ////-----resume-downloading------------------------------------------------
         File* file = File::Create(p, File::OPEN | File::READ | File::WRITE);
         if (file)

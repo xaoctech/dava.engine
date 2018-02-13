@@ -188,14 +188,18 @@ bool KeyedArchive::Save(File* archive) const
             return false;
         }
     }
-    return true;
+
+    return archive->Flush();
 }
 
 uint32 KeyedArchive::Save(uint8* data, uint32 size) const
 {
     ScopedPtr<DynamicMemoryFile> buffer(DynamicMemoryFile::Create(File::CREATE | File::WRITE));
 
-    Save(buffer);
+    if (!Save(buffer))
+    {
+        Logger::Error("failed to write KeyedArchive to memory_file");
+    }
 
     auto archieveSize = buffer->GetSize();
     if ((nullptr != data) && (size >= archieveSize))
@@ -350,7 +354,10 @@ void KeyedArchive::SetByteArrayFromArchive(const String& key, KeyedArchive* arch
 {
     //DVWARNING(false, "Method is depriceted! Use SetArchive()");
     DynamicMemoryFile* file = DynamicMemoryFile::Create(File::CREATE | File::WRITE);
-    archive->Save(file);
+    if (!archive->Save(file))
+    {
+        Logger::Error("failed to write KeyedArchive to memory_file");
+    }
     SetByteArray(key, file->GetData(), static_cast<uint32>(file->GetSize()));
     SafeRelease(file);
 }

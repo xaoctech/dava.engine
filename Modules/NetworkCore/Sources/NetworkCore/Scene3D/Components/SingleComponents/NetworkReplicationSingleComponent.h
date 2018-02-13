@@ -24,5 +24,7 @@ public:
 
     using FullyReceivedFrames = Set<uint32>;
     FullyReceivedFrames fullyReceivedFrames;
+
+    void Clear() override;
 };
 }

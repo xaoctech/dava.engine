@@ -38,10 +38,8 @@ void CheckBox::UpdateControl(const ControlDescriptor& changedFields)
     }
     else if (changedFields.IsChanged(Fields::TextHint) == true)
     {
-        Reflection hintField = model.GetField(changedFields.GetName(Fields::TextHint));
-        DVASSERT(hintField.IsValid());
-
-        setText(QString::fromStdString(hintField.GetValue().Cast<String>()));
+        String hint = GetFieldValue(Fields::TextHint, String(""));
+        setText(QString::fromStdString(hint));
     }
 
     if (changedFields.IsChanged(Fields::Checked) == true)

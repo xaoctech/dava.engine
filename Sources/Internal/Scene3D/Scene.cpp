@@ -473,9 +473,8 @@ Scene::~Scene()
 
     for (auto& pair : singletonComponents)
     {
-        SafeDelete(pair.first);
+        SafeDelete(pair.second);
     }
-
     singletonComponents.clear();
 
     systemsToProcess.clear();
@@ -943,9 +942,10 @@ void Scene::CreateSystemsByTags()
 
 void Scene::AddSingletonComponent(SingletonComponent* component, const Type* type)
 {
-    DVASSERT(std::find_if(singletonComponents.begin(), singletonComponents.end(), [type](const auto& x) { return x.second == type; }) == singletonComponents.end());
+    DVASSERT(component != nullptr);
+    DVASSERT(singletonComponents.find(type) == singletonComponents.end());
 
-    singletonComponents.emplace_back(component, type);
+    singletonComponents[type] = component;
 
     uint32 systemsCount = static_cast<uint32>(systemsVector.size());
     for (uint32 k = 0; k < systemsCount; ++k)
@@ -954,47 +954,32 @@ void Scene::AddSingletonComponent(SingletonComponent* component, const Type* typ
     }
 }
 
-void Scene::RemoveSingletonComponent(SingletonComponent* component)
+const SingletonComponent* Scene::AquireSingleComponentForRead(const Type* type)
 {
-    for (size_t i = 0; i < singletonComponents.size(); ++i)
-    {
-        if (singletonComponents[i].first == component)
-        {
-            uint32 systemsCount = static_cast<uint32>(systemsVector.size());
-            for (uint32 k = 0; k < systemsCount; ++k)
-            {
-                systemsVector[k]->UnregisterSingleComponent(component);
-            }
-
-            RemoveExchangingWithLast(singletonComponents, i);
-            delete component;
-
-            break;
-        }
-    }
+    return AquireSingleComponentForWrite(type);
 }
 
-SingletonComponent* Scene::GetSingletonComponent(const Type* type)
+SingletonComponent* Scene::AquireSingleComponentForWrite(const Type* type)
 {
     SingletonComponent* result = nullptr;
-    for (auto& pair : singletonComponents)
-    {
-        if (pair.second == type)
-        {
-            result = pair.first;
-            break;
-        }
-    }
 
-    if (result == nullptr)
+    auto it = singletonComponents.find(type);
+    if (it != singletonComponents.end())
     {
-        Logger::Debug("Scene debug: singleton component '%s' does not exists. Creating one.", type->GetName());
+        result = it->second;
+    }
+    else
+    {
         result = static_cast<SingletonComponent*>(ComponentUtils::CreateByType(type));
-        DVASSERT(result != nullptr);
         AddSingletonComponent(result, type);
     }
 
     return result;
+}
+
+SingletonComponent* Scene::GetSingletonComponent(const Type* type)
+{
+    return AquireSingleComponentForWrite(type);
 }
 
 Scene* Scene::GetScene()

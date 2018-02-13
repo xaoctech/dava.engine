@@ -33,5 +33,7 @@ public:
 
     using Deltas = Vector<Delta>;
     Deltas deltas;
+
+    void Clear() override;
 };
 }

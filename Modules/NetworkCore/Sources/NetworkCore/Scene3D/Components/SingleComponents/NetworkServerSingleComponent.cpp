@@ -40,4 +40,8 @@ IServer* NetworkServerSingleComponent::GetServer() const
 {
     return server;
 }
+
+void NetworkServerSingleComponent::Clear()
+{
+}
 }

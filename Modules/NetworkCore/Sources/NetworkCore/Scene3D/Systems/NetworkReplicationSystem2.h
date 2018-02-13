@@ -3,7 +3,7 @@
 #include "NetworkCore/Snapshot.h"
 #include "NetworkCore/SnapshotUtils.h"
 
-#include <Base/Set.h>
+#include <Base/Map.h>
 #include <Base/Vector.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Scene.h>
@@ -38,12 +38,12 @@ private:
 
     struct PendingComponentParams
     {
-        Entity* entity;
-        uint32 componentIndex;
+        // should be sorted by SnapshotComponentKey
+        Map<SnapshotComponentKey, Component*> components;
     };
 
     Vector<PendingEntityParams> pendingAddEntityOrdered;
-    UnorderedMap<Component*, PendingComponentParams> pendingAddComponent;
+    UnorderedMap<Entity*, PendingComponentParams> pendingAddComponent;
 
     SnapshotSingleComponent* snapshotSingleComponent;
     NetworkEntitiesSingleComponent* networkEntities;
@@ -55,8 +55,8 @@ private:
     void RemovePendingEntity(Entity* entity);
     Entity* GetPendingEntityParent(Entity* entity);
 
-    void AddPendingComponent(Component* component, Entity* entity, uint32 componentIndex);
-    void RemovePendingComponent(const Type* componentType);
+    void AddPendingComponent(Entity* entity, Component* component, SnapshotComponentKey key);
+    void RemovePendingComponent(Entity* entity, SnapshotComponentKey key);
     void RemovePendingComponents(Entity* entity);
 };
 } // namespace DAVA

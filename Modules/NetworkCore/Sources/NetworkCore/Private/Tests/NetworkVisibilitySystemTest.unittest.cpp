@@ -82,7 +82,7 @@ DAVA_TESTCLASS (NetworkVisibilitySystemTest)
             TEST_VERIFY(visibleEntityIds.size() == 1);
             TEST_VERIFY(visibleEntityIds[0] == NetworkID(otherPlayerID));
         }
-        visibilitySingleComponent->ClearCache();
+        visibilitySingleComponent->Clear();
 
         /*
          *  Case2: Player1 and Player2 see nothing.
@@ -115,7 +115,7 @@ DAVA_TESTCLASS (NetworkVisibilitySystemTest)
             TEST_VERIFY(addedEntities.find(otherPlayer) == addedEntities.end());
             TEST_VERIFY(0 == entities[playerID]->GetComponent<NetworkPlayerComponent>()->visibleEntityIds.size());
         }
-        visibilitySingleComponent->ClearCache();
+        visibilitySingleComponent->Clear();
 
         /*
          *  Case3: Player1 looks Player2, but Player2 does not look Player1.
@@ -153,7 +153,7 @@ DAVA_TESTCLASS (NetworkVisibilitySystemTest)
         TEST_VERIFY(addedEntities2.find(entities[1]) == addedEntities2.end());
         TEST_VERIFY(0 == player2->GetComponent<NetworkPlayerComponent>()->visibleEntityIds.size());
 
-        visibilitySingleComponent->ClearCache();
+        visibilitySingleComponent->Clear();
     }
 };
 

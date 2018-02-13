@@ -19,5 +19,7 @@ class NetworkPredictionSingleComponent : public SingletonComponent
 public:
     using EntityToMisprediction = UnorderedMap<Entity*, EntityMisprediction>;
     EntityToMisprediction mispredictedEntities;
+
+    void Clear() override;
 };
 }

@@ -30,3 +30,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BattleOptionsSingleComponent)
     .Field("CompareInputs", &BattleOptionsSingleComponent::compareInputs)[M::Replicable()]
     .End();
 }
+
+void BattleOptionsSingleComponent::Clear()
+{
+    //should bever be cleared during game
+}

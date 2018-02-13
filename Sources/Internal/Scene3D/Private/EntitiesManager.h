@@ -5,6 +5,7 @@
 #include "Scene3D/ComponentGroup.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/EntityGroup.h"
+#include "Scene3D/EntityMatcher.h"
 
 namespace DAVA
 {
@@ -19,24 +20,40 @@ public:
     void RegisterComponent(Entity* entity, Component* component);
     void UnregisterComponent(Entity* entity, Component* component);
 
-    UnorderedMap<ComponentMask, EntityGroup> entityGroups;
+    ///entity group
+    struct EntityGroupKey
+    {
+        ComponentMask mask;
+        MatcherFunction matcher;
+        bool operator==(const EntityGroupKey& other) const;
+    };
+    struct EntityGroupKeyHasher
+    {
+        std::size_t operator()(const EntityGroupKey& k) const;
+    };
+    UnorderedMap<EntityGroupKey, EntityGroup, EntityGroupKeyHasher> entityGroups;
     void UpdateEntityGroups();
+    ///
+
+    ///component group
+    struct ComponentGroupKey
+    {
+        const Type* componentType;
+        ComponentMask mask;
+        MatcherFunction matcher;
+        bool operator==(const ComponentGroupKey& other) const;
+    };
+    struct ComponentGroupKeyHasher
+    {
+        std::size_t operator()(const ComponentGroupKey& k) const;
+    };
+    UnorderedMap<ComponentGroupKey, ComponentGroupBase*, ComponentGroupKeyHasher> componentGroups;
+    ///
+
     void CacheEntityAdded(EntityGroup* group, Entity* entity);
     Vector<EntityGroup*> entityGroupsWithAdded;
     void CacheEntityRemoved(EntityGroup* group, Entity* entity);
     Vector<EntityGroup*> entityGroupsWithRemoved;
-
-    struct ComponentMaskStruct
-    {
-        const Type* componentType;
-        ComponentMask mask;
-        bool operator==(const ComponentMaskStruct& other) const;
-    };
-    struct ComponentMaskStructHasher
-    {
-        std::size_t operator()(const ComponentMaskStruct& k) const;
-    };
-    UnorderedMap<ComponentMaskStruct, ComponentGroupBase*, ComponentMaskStructHasher> componentGroups;
 
     void CacheComponentAdded(ComponentGroupBase* group, Component* component);
     Vector<ComponentGroupBase*> componentGroupsWithAdded;
@@ -46,49 +63,14 @@ public:
 
     void UpdateCaches();
 
-    template <class... Args>
+    template <class Matcher, class... Args>
     EntityGroup* AquireEntityGroup(Entity* entity);
-    template <class... Args>
-    EntityGroup* GetEntityGroup();
 
-    template <class T, class... Args>
+    template <class Matcher, class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup(Entity* entity);
-    template <class T, class... Args>
-    ComponentGroup<T>* GetComponentGroup();
 };
 
-template <class T, class... Args>
-ComponentGroup<T>* EntitiesManager::GetComponentGroup()
-{
-    const Type* componentType = Type::Instance<T>();
-    ComponentMask mask = 0;
-    std::initializer_list<const Type*> list = { Type::Instance<Args>()... };
-    if (list.size() == 0)
-    {
-        mask = ComponentUtils::MakeMask<T>();
-    }
-    else
-    {
-        for (const Type* t : list)
-        {
-            mask |= ComponentUtils::MakeMask(t);
-        }
-    }
-
-    ComponentMaskStruct key{ componentType, mask };
-    auto it = componentGroups.find(key);
-    if (it == componentGroups.end())
-    {
-        DAVA_THROW(Exception, "ComponentGroup not created, call AquireComponentGroup first");
-    }
-    else
-    {
-        ComponentGroupBase* base = it->second;
-        return DynamicTypeCheck<ComponentGroup<T>*>(base);
-    }
-}
-
-template <class T, class... Args>
+template <class Matcher, class T, class... Args>
 ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 {
     const Type* componentType = Type::Instance<T>();
@@ -107,7 +89,7 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
     }
 
     ComponentGroupBase* base = nullptr;
-    ComponentMaskStruct key{ componentType, mask };
+    ComponentGroupKey key{ componentType, mask, &Matcher::Match };
     auto it = componentGroups.find(key);
     if (it == componentGroups.end())
     {
@@ -122,7 +104,7 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 
     Function<void(Entity*)> recursiveRegister = [&](Entity* e)
     {
-        bool needAdd = (mask & e->GetAvailableComponentMask()) == mask;
+        bool needAdd = AllOfEntityMatcher::Match(mask, e->GetAvailableComponentMask());
         if (needAdd)
         {
             uint32 size = e->GetComponentCount(componentType);
@@ -145,28 +127,7 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
     return static_cast<ComponentGroup<T>*>(base);
 }
 
-template <class... Args>
-EntityGroup* EntitiesManager::GetEntityGroup()
-{
-    auto list = { ComponentUtils::MakeMask<Args>()... };
-    ComponentMask mask = 0;
-    for (ComponentMask m : list)
-    {
-        mask |= m;
-    }
-
-    auto it = entityGroups.find(mask);
-    if (it == entityGroups.end())
-    {
-        DAVA_THROW(Exception, "EntityGroup not created, call AquireEntityGroup first");
-    }
-    else
-    {
-        return &it->second;
-    }
-}
-
-template <class... Args>
+template <class Matcher, class... Args>
 EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
 {
     auto list = { ComponentUtils::MakeMask<Args>()... };
@@ -176,17 +137,19 @@ EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
         mask |= m;
     }
 
+    EntityGroupKey key{ mask, &Matcher::Match };
+
     EntityGroup* eg = nullptr;
-    auto it = entityGroups.find(mask);
+    auto it = entityGroups.find(key);
     if (it == entityGroups.end())
     {
-        auto result = entityGroups.emplace(mask, EntityGroup());
+        auto result = entityGroups.emplace(key, EntityGroup());
         DVASSERT(result.second == true);
         eg = &result.first->second;
 
         Function<void(Entity*)> recursiveRegister = [&](Entity* e)
         {
-            bool needAdd = (mask & e->GetAvailableComponentMask()) == mask;
+            bool needAdd = AllOfEntityMatcher::Match(mask, e->GetAvailableComponentMask());
             if (needAdd)
             {
                 eg->entities.Add(e);

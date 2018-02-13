@@ -14,6 +14,7 @@ class HelloWorldComponent : public DAVA::SingletonComponent
 public:
     DAVA_VIRTUAL_REFLECTION(HelloWorldComponent, DAVA::SingletonComponent);
     DAVA::String helloMsg;
+    void Clear() override{};
 };
 
 class Game01HelloWorld : public DAVA::INetworkInputSimulationSystem

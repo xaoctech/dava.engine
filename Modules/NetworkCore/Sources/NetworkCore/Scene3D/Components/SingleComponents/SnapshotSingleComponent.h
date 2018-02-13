@@ -64,5 +64,7 @@ public:
 
 private:
     std::unique_ptr<SnapshotSingleComponentDetails::ServerDiffCache> serverDiffCache;
+
+    void Clear() override;
 };
 } // namespace DAVA

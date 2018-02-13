@@ -211,4 +211,8 @@ const Vector<NetworkPlayerID>& NetworkGameModeSingleComponent::GetPlayerIds() co
 {
     return playerIds;
 }
+
+void NetworkGameModeSingleComponent::Clear()
+{
+}
 }

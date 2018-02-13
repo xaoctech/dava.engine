@@ -397,6 +397,7 @@ uint32 File::Write(const void* pointerToData, uint32 dataSize)
         return 0;
     }
 #endif
+// TODO better write same code on all platforms, fwrite can return buffered num bytes, we have to fflush(file) == 0 to guarantee lSize is correct if (fflush(file) != 0) - write failed
 #if defined(__DAVAENGINE_ANDROID__)
     uint32 posBeforeWrite = GetPos();
 #endif
@@ -424,7 +425,20 @@ uint32 File::Read(void* pointerToData, uint32 dataSize)
 #endif
     //! Do not change order (1, dataSize), cause fread return count of size(2nd param) items
     //! May be performance issues
-    return static_cast<uint32>(fread(pointerToData, 1, static_cast<size_t>(dataSize), file));
+    const size_t result = fread(pointerToData, 1, static_cast<size_t>(dataSize), file);
+    if (result != dataSize)
+    {
+        if (ferror(file))
+        {
+            Logger::Error("file read i/o error: %zu(expected: %u) bytes from file: %s errno: %s",
+                          result, dataSize, filename.GetStringValue().c_str(), std::strerror(errno));
+        }
+        else
+        {
+            // just EOF do nothing
+        }
+    }
+    return static_cast<uint32>(result);
 }
 
 uint32 File::ReadString(char8* destinationBuffer, uint32 destinationBufferSize)

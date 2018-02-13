@@ -16,6 +16,6 @@ public:
     Vector<SceneSystem*> addedSystems;
     Vector<SceneSystem*> removedSystems;
 
-    void Clear();
+    void Clear() override;
 };
 }

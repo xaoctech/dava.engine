@@ -108,8 +108,6 @@ private:
 
     void ExecuteForEachBody(Function<void(PhysicsComponent*)> func);
     void ExecuteForEachPendingBody(Function<void(PhysicsComponent*)> func);
-    void ExecuteForEachShape(Function<void(CollisionShapeComponent*)> func);
-    void ExecuteForEachPendingShape(Function<void(CollisionShapeComponent*)> func);
     void ExecuteForEachCCT(Function<void(CharacterControllerComponent*)> func);
     void ExecuteForEachPendingCCT(Function<void(CharacterControllerComponent*)> func);
 
@@ -165,13 +163,7 @@ private:
     // Component groups for different type of physics components
     ComponentGroup<StaticBodyComponent>* staticBodies;
     ComponentGroup<DynamicBodyComponent>* dynamicBodies;
-    ComponentGroup<BoxShapeComponent>* boxShapes;
-    ComponentGroup<SphereShapeComponent>* sphereShapes;
-    ComponentGroup<CapsuleShapeComponent>* capsuleShapes;
-    ComponentGroup<PlaneShapeComponent>* planeShapes;
-    ComponentGroup<MeshShapeComponent>* meshShapes;
-    ComponentGroup<ConvexHullShapeComponent>* convexHullShapes;
-    ComponentGroup<HeightFieldShapeComponent>* heightFieldShapes;
+    ComponentGroup<CollisionShapeComponent>* shapes;
     ComponentGroup<BoxCharacterControllerComponent>* boxCCTs;
     ComponentGroup<CapsuleCharacterControllerComponent>* capsuleCCTs;
 
@@ -183,13 +175,7 @@ private:
     // New components which haven't been handled yet
     std::unique_ptr<ComponentGroupOnAdd<StaticBodyComponent>> staticBodiesPendingAdd;
     std::unique_ptr<ComponentGroupOnAdd<DynamicBodyComponent>> dynamicBodiesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<BoxShapeComponent>> boxShapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<SphereShapeComponent>> sphereShapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<CapsuleShapeComponent>> capsuleShapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<PlaneShapeComponent>> planeShapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<MeshShapeComponent>> meshShapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<ConvexHullShapeComponent>> convexHullShapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<HeightFieldShapeComponent>> heightFieldShapesPendingAdd;
+    std::unique_ptr<ComponentGroupOnAdd<CollisionShapeComponent>> shapesPendingAdd;
     std::unique_ptr<ComponentGroupOnAdd<BoxCharacterControllerComponent>> boxCCTsPendingAdd;
     std::unique_ptr<ComponentGroupOnAdd<CapsuleCharacterControllerComponent>> capsuleCCTsPendingAdd;
 

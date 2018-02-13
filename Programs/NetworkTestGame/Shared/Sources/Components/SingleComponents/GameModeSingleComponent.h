@@ -18,6 +18,8 @@ public:
     DAVA::Entity* GetPlayer() const;
     void SetPlayer(DAVA::Entity* entity);
 
+    void Clear() override;
+
 private:
     bool isMapLoaded = false;
 

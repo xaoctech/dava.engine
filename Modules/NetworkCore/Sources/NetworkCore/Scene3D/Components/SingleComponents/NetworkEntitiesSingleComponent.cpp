@@ -53,6 +53,10 @@ Entity* NetworkEntitiesSingleComponent::FindByID(NetworkID networkID) const
     return nullptr;
 }
 
+void NetworkEntitiesSingleComponent::Clear()
+{
+}
+
 NetworkID NetworkEntitiesSingleComponent::GetNextUniqueEntityID()
 {
 #ifdef USE_SNAPSHOT_SYSTEM

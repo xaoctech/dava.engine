@@ -8,6 +8,7 @@
 #include <TArc/DataProcessing/SettingsNode.h>
 
 #include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <QDialog>
 #include <QPointer>
@@ -31,7 +32,7 @@ class LazyUpdater;
 class MaterialEditorSettings : public DAVA::SettingsNode
 {
 public:
-    DAVA::FilePath hiddenFieldsConfig = DAVA::FilePath("~res:/Materials/hiddenMaterialProperties.yaml");
+    DAVA::FilePath hiddenFieldsConfig;
 
     DAVA_VIRTUAL_REFLECTION(MaterialEditorSettings, DAVA::SettingsNode);
 };
@@ -137,4 +138,15 @@ private:
 
     std::unique_ptr<DAVA::FieldBinder> selectionFieldBinder;
     DAVA::RefPtr<DAVA::KeyedArchive> hiddenFieldsConfig;
+
+    bool IsHiddenFilterApplyed() const;
+    void SetHiddenFilterApplyed(bool isApply);
+    bool applyHiddenPropsFilter = true;
+
+    DAVA_REFLECTION(MaterialEditor)
+    {
+        DAVA::ReflectionRegistrator<MaterialEditor>::Begin()
+        .Field("applyPropsFilter", &MaterialEditor::IsHiddenFilterApplyed, &MaterialEditor::SetHiddenFilterApplyed)
+        .End();
+    }
 };

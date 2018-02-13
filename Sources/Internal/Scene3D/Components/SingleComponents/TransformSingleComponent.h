@@ -17,7 +17,7 @@ public:
     SortedEntityContainer worldTransformChanged; //sorted by EntityFamily in TransformSystem
     Vector<Entity*> animationTransformChanged;
 
-    void Clear();
+    void Clear() override;
     void EraseEntity(const Entity* entity);
 };
 }

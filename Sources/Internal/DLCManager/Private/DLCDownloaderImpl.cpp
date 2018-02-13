@@ -728,7 +728,10 @@ void DLCDownloaderImpl::Task::OnSubTaskDone()
                         if (writen != b.size)
                         {
                             int32 errVal = errno;
-                            writer->Close();
+                            if (!writer->Close())
+                            {
+                                Logger::Error("failed to close IWriter");
+                            }
                             OnErrorCurlErrno(errVal, *this, __LINE__);
                         }
                         status.sizeDownloaded += writen;
@@ -1476,7 +1479,10 @@ void DLCDownloaderImpl::Task::OnErrorCurlMulti(int32 multiCode, Task& task, int3
     {
         if (!writer->IsClosed())
         {
-            writer->Close();
+            if (!writer->Close())
+            {
+                Logger::Error("failed to close IWriter");
+            }
         }
     }
     if (task.status.error.fileLine == 0)
@@ -1494,14 +1500,7 @@ void DLCDownloaderImpl::Task::OnErrorCurlEasy(int32 easyCode, Task& task, int32 
         task.status.error.curlErr = easyCode;
         task.status.error.errStr = curl_easy_strerror(static_cast<CURLcode>(easyCode)); // static string literal from curl
     }
-    IWriter* writer = task.writer.get();
-    if (nullptr != writer)
-    {
-        if (!writer->IsClosed())
-        {
-            writer->Close();
-        }
-    }
+
     if (task.status.error.fileLine == 0)
     {
         task.status.error.fileLine = line;
@@ -1519,14 +1518,7 @@ void DLCDownloaderImpl::Task::OnErrorCurlErrno(int32 errnoVal, Task& task, int32
         // and we have fileErrno saved, so I am satisfied
         task.status.error.errStr = strerror(errnoVal);
     }
-    IWriter* writer = task.writer.get();
-    if (nullptr != writer)
-    {
-        if (!writer->IsClosed())
-        {
-            writer->Close();
-        }
-    }
+
     if (task.status.error.fileLine == 0)
     {
         task.status.error.fileLine = line;
@@ -1542,14 +1534,7 @@ void DLCDownloaderImpl::Task::OnErrorHttpCode(long httpCode, Task& task, int32 l
     // if other thread call strerror and change internal buffer - it will not crush still,
     // and we have fileErrno saved, so I am satisfied
     task.status.error.errStr = "bad http result code";
-    IWriter* writer = task.writer.get();
-    if (nullptr != writer)
-    {
-        if (!writer->IsClosed())
-        {
-            writer->Close();
-        }
-    }
+
     if (task.status.error.fileLine == 0)
     {
         task.status.error.fileLine = line;

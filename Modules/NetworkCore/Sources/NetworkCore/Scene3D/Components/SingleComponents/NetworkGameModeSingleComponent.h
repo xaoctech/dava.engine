@@ -71,7 +71,7 @@ private:
     UnorderedSet<FastName> validTokens;
     // connected tokens to the server
     UnorderedSet<FastName> presentTokens;
-    // server accepted these tikens
+    // server accepted these tokens
     UnorderedSet<FastName> readyTokens;
 
     // new connected tokens
@@ -88,5 +88,7 @@ private:
 
     bool isLoaded = false;
     NetworkPlayerID networkPlayerID = 0;
+
+    void Clear() override;
 };
 }

@@ -40,4 +40,9 @@ IClient* NetworkClientSingleComponent::GetClient() const
 {
     return client;
 }
+
+void NetworkClientSingleComponent::Clear()
+{
+}
+
 } // namespace DAVA

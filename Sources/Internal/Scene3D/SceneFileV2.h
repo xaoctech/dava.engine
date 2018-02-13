@@ -137,7 +137,7 @@ public:
     //DataNode * GetNodeByPointer(uint64 pointer);
 
     void SetError(eError error);
-    eError GetError();
+    eError GetError() const;
 
     void OptimizeScene(Entity* rootNode);
     bool RemoveEmptySceneNodes(Entity* rootNode);
@@ -190,8 +190,8 @@ private:
 
     void ApplyFogQuality(DAVA::NMaterial* material);
 
-    void WriteDescriptor(File* file, const Descriptor& descriptor) const;
-    bool ReadDescriptor(File* file, /*out*/ Descriptor& descriptor);
+    static bool WriteDescriptor(File* file, const Descriptor& descriptor);
+    static bool ReadDescriptor(File* file, /*out*/ Descriptor& descriptor);
 
     bool isDebugLogEnabled;
     bool isSaveForGame;

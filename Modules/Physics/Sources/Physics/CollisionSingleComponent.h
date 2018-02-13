@@ -62,5 +62,7 @@ public:
 
     Vector<CollisionInfo> GetCollisionsWithEntity(Entity* entity) const;
     void GetCollisionEntities(Entity* entity, UnorderedSet<Entity*>& result) const;
+
+    void Clear() override;
 };
 }

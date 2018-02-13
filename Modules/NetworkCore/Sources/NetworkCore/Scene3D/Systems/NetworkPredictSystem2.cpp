@@ -75,7 +75,7 @@ void NetworkPredictSystem2::ProcessFixed(float32 timeElapsed)
         return;
     }
 
-    predictionComponent->mispredictedEntities.clear();
+    predictionComponent->Clear();
     const NetworkReplicationSingleComponent::FullyReceivedFrames& fullyReceivedFrames = replicationComponent->fullyReceivedFrames;
     if (predictedEntities.size() > 0)
     {

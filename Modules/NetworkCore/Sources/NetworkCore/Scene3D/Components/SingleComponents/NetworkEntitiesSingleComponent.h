@@ -22,6 +22,8 @@ public:
 
     Entity* FindByID(NetworkID networkID) const;
 
+    void Clear() override;
+
 private:
     UnorderedMap<NetworkID, Entity*> networkEntities;
     NetworkID nextUniqueEntityID;

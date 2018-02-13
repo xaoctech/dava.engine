@@ -29,6 +29,7 @@
 #include <Logger/Logger.h>
 #include <ModuleManager/ModuleManager.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Render/Highlevel/Landscape.h>
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Highlevel/RenderSystem.h>
@@ -469,25 +470,15 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     // Component groups for all physics components
     staticBodies = scene->AquireComponentGroup<StaticBodyComponent, StaticBodyComponent>();
     dynamicBodies = scene->AquireComponentGroup<DynamicBodyComponent, DynamicBodyComponent>();
-    boxShapes = scene->AquireComponentGroup<BoxShapeComponent, BoxShapeComponent>();
-    sphereShapes = scene->AquireComponentGroup<SphereShapeComponent, SphereShapeComponent>();
-    capsuleShapes = scene->AquireComponentGroup<CapsuleShapeComponent, CapsuleShapeComponent>();
-    planeShapes = scene->AquireComponentGroup<PlaneShapeComponent, PlaneShapeComponent>();
-    meshShapes = scene->AquireComponentGroup<MeshShapeComponent, MeshShapeComponent>();
-    convexHullShapes = scene->AquireComponentGroup<ConvexHullShapeComponent, ConvexHullShapeComponent>();
-    heightFieldShapes = scene->AquireComponentGroup<HeightFieldShapeComponent, HeightFieldShapeComponent>();
+    shapes = scene->AquireComponentGroupWithMatcher<AnyOfEntityMatcher,
+                                                    CollisionShapeComponent,
+                                                    BoxShapeComponent, SphereShapeComponent, CapsuleShapeComponent, PlaneShapeComponent, MeshShapeComponent, ConvexHullShapeComponent, HeightFieldShapeComponent>();
     boxCCTs = scene->AquireComponentGroup<BoxCharacterControllerComponent, BoxCharacterControllerComponent>();
     capsuleCCTs = scene->AquireComponentGroup<CapsuleCharacterControllerComponent, CapsuleCharacterControllerComponent>();
 
     staticBodies->onComponentRemoved->Connect(this, [this](StaticBodyComponent* body) { DeinitBodyComponent(body); });
     dynamicBodies->onComponentRemoved->Connect(this, [this](DynamicBodyComponent* body) { DeinitBodyComponent(body); });
-    boxShapes->onComponentRemoved->Connect(this, [this](BoxShapeComponent* shape) { DeinitShapeComponent(shape); });
-    sphereShapes->onComponentRemoved->Connect(this, [this](SphereShapeComponent* shape) { DeinitShapeComponent(shape); });
-    capsuleShapes->onComponentRemoved->Connect(this, [this](CapsuleShapeComponent* shape) { DeinitShapeComponent(shape); });
-    planeShapes->onComponentRemoved->Connect(this, [this](PlaneShapeComponent* shape) { DeinitShapeComponent(shape); });
-    meshShapes->onComponentRemoved->Connect(this, [this](MeshShapeComponent* shape) { DeinitShapeComponent(shape); });
-    convexHullShapes->onComponentRemoved->Connect(this, [this](ConvexHullShapeComponent* shape) { DeinitShapeComponent(shape); });
-    heightFieldShapes->onComponentRemoved->Connect(this, [this](HeightFieldShapeComponent* shape) { DeinitShapeComponent(shape); });
+    shapes->onComponentRemoved->Connect(this, [this](CollisionShapeComponent* shape) { DeinitShapeComponent(shape); });
     boxCCTs->onComponentRemoved->Connect(this, [this](BoxCharacterControllerComponent* cct) { DeinitCCTComponent(cct); });
     capsuleCCTs->onComponentRemoved->Connect(this, [this](CapsuleCharacterControllerComponent* cct) { DeinitCCTComponent(cct); });
 
@@ -506,13 +497,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     // Component groups for newly created shapes
     staticBodiesPendingAdd.reset(new ComponentGroupOnAdd<StaticBodyComponent>(staticBodies));
     dynamicBodiesPendingAdd.reset(new ComponentGroupOnAdd<DynamicBodyComponent>(dynamicBodies));
-    boxShapesPendingAdd.reset(new ComponentGroupOnAdd<BoxShapeComponent>(boxShapes));
-    sphereShapesPendingAdd.reset(new ComponentGroupOnAdd<SphereShapeComponent>(sphereShapes));
-    capsuleShapesPendingAdd.reset(new ComponentGroupOnAdd<CapsuleShapeComponent>(capsuleShapes));
-    planeShapesPendingAdd.reset(new ComponentGroupOnAdd<PlaneShapeComponent>(planeShapes));
-    meshShapesPendingAdd.reset(new ComponentGroupOnAdd<MeshShapeComponent>(meshShapes));
-    convexHullShapesPendingAdd.reset(new ComponentGroupOnAdd<ConvexHullShapeComponent>(convexHullShapes));
-    heightFieldShapesPendingAdd.reset(new ComponentGroupOnAdd<HeightFieldShapeComponent>(heightFieldShapes));
+    shapesPendingAdd.reset(new ComponentGroupOnAdd<CollisionShapeComponent>(shapes));
     boxCCTsPendingAdd.reset(new ComponentGroupOnAdd<BoxCharacterControllerComponent>(GetScene()->AquireComponentGroup<BoxCharacterControllerComponent, BoxCharacterControllerComponent>()));
     capsuleCCTsPendingAdd.reset(new ComponentGroupOnAdd<CapsuleCharacterControllerComponent>(GetScene()->AquireComponentGroup<CapsuleCharacterControllerComponent, CapsuleCharacterControllerComponent>()));
 
@@ -541,13 +526,7 @@ PhysicsSystem::~PhysicsSystem()
 
     staticBodies->onComponentRemoved->Disconnect(this);
     dynamicBodies->onComponentRemoved->Disconnect(this);
-    boxShapes->onComponentRemoved->Disconnect(this);
-    sphereShapes->onComponentRemoved->Disconnect(this);
-    capsuleShapes->onComponentRemoved->Disconnect(this);
-    planeShapes->onComponentRemoved->Disconnect(this);
-    meshShapes->onComponentRemoved->Disconnect(this);
-    convexHullShapes->onComponentRemoved->Disconnect(this);
-    heightFieldShapes->onComponentRemoved->Disconnect(this);
+    shapes->onComponentRemoved->Disconnect(this);
     boxCCTs->onComponentRemoved->Disconnect(this);
     capsuleCCTs->onComponentRemoved->Disconnect(this);
 
@@ -575,7 +554,11 @@ void PhysicsSystem::PrepareForRemove()
     readyRenderedEntities.clear();
     physicsEntities.clear();
 
-    ExecuteForEachShape(MakeFunction(this, &PhysicsSystem::DeinitShapeComponent));
+    for (CollisionShapeComponent* component : shapes->components)
+    {
+        DeinitShapeComponent(component);
+    }
+
     ExecuteForEachBody(MakeFunction(this, &PhysicsSystem::DeinitBodyComponent));
     ExecuteForEachCCT(MakeFunction(this, &PhysicsSystem::DeinitCCTComponent));
 }
@@ -586,9 +569,7 @@ void PhysicsSystem::ProcessFixed(float32 timeElapsed)
 
     CollisionSingleComponent* csc = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
 
-    csc->collisions.clear();
-    csc->activeTriggers.clear();
-
+    csc->Clear();
     InitNewObjects();
     UpdateComponents();
 
@@ -785,7 +766,11 @@ void PhysicsSystem::DrawDebugInfo()
 void PhysicsSystem::InitNewObjects()
 {
     ExecuteForEachPendingBody([this](PhysicsComponent* body) { InitBodyComponent(body); });
-    ExecuteForEachPendingShape([this](CollisionShapeComponent* shape) { InitShapeComponent(shape); });
+    for (CollisionShapeComponent* component : shapesPendingAdd->components)
+    {
+        InitShapeComponent(component);
+    }
+    shapesPendingAdd->components.clear();
     ExecuteForEachPendingCCT([this](CharacterControllerComponent* cct) { InitCCTComponent(cct); });
 
     for (Entity* e : readyRenderedEntities)
@@ -1595,90 +1580,6 @@ void PhysicsSystem::ExecuteForEachPendingBody(Function<void(PhysicsComponent*)> 
 
     staticBodiesPendingAdd->components.clear();
     dynamicBodiesPendingAdd->components.clear();
-}
-
-void PhysicsSystem::ExecuteForEachShape(Function<void(CollisionShapeComponent*)> func)
-{
-    for (BoxShapeComponent* component : boxShapes->components)
-    {
-        func(component);
-    }
-
-    for (SphereShapeComponent* component : sphereShapes->components)
-    {
-        func(component);
-    }
-
-    for (CapsuleShapeComponent* component : capsuleShapes->components)
-    {
-        func(component);
-    }
-
-    for (PlaneShapeComponent* component : planeShapes->components)
-    {
-        func(component);
-    }
-
-    for (MeshShapeComponent* component : meshShapes->components)
-    {
-        func(component);
-    }
-
-    for (ConvexHullShapeComponent* component : convexHullShapes->components)
-    {
-        func(component);
-    }
-
-    for (HeightFieldShapeComponent* component : heightFieldShapes->components)
-    {
-        func(component);
-    }
-}
-
-void PhysicsSystem::ExecuteForEachPendingShape(Function<void(CollisionShapeComponent*)> func)
-{
-    for (BoxShapeComponent* component : boxShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    for (SphereShapeComponent* component : sphereShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    for (CapsuleShapeComponent* component : capsuleShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    for (PlaneShapeComponent* component : planeShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    for (MeshShapeComponent* component : meshShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    for (ConvexHullShapeComponent* component : convexHullShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    for (HeightFieldShapeComponent* component : heightFieldShapesPendingAdd->components)
-    {
-        func(component);
-    }
-
-    boxShapesPendingAdd->components.clear();
-    sphereShapesPendingAdd->components.clear();
-    capsuleShapesPendingAdd->components.clear();
-    planeShapesPendingAdd->components.clear();
-    meshShapesPendingAdd->components.clear();
-    convexHullShapesPendingAdd->components.clear();
-    heightFieldShapesPendingAdd->components.clear();
 }
 
 void PhysicsSystem::ExecuteForEachCCT(Function<void(CharacterControllerComponent*)> func)

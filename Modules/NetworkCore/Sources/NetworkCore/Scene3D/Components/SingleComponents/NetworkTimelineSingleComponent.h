@@ -22,14 +22,12 @@ public:
     void SetStepsCount(int32 value);
     int32 GetStepsCount() const;
 
-    virtual ~NetworkTimelineSingleComponent()
-    {
-    }
-
 private:
     bool clientJustPaused = false;
     bool serverJustPaused = false;
     bool stepOver = false;
     int32 stepsCount = 0;
+
+    void Clear() override;
 };
 }

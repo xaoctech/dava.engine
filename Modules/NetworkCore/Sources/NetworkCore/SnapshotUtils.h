@@ -46,8 +46,7 @@ struct SnapshotApplyParam
     struct ComponentParam
     {
         NetworkID entityId;
-        uint32 componentId;
-        uint32 componentIndex;
+        SnapshotComponentKey componentKey;
         Component* outComponent;
     };
 
@@ -71,7 +70,7 @@ struct ReflectedComponentField
 };
 
 using SnapshotApplyCallback = Function<void(SnapshotApplyParam& param)>;
-using SnapshotApplyPredicate = Function<bool(Component*)>;
+using SnapshotApplyPredicate = Function<bool(SnapshotComponentKey, Component*)>;
 
 struct SnapshotUtils
 {

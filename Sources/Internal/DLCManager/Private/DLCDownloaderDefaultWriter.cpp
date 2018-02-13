@@ -54,8 +54,9 @@ bool DLCDownloaderDefaultWriter::Truncate()
 
 bool DLCDownloaderDefaultWriter::Close()
 {
-    f = nullptr;
-    return true;
+    const bool result = f->Flush();
+    f.Set(nullptr);
+    return result;
 }
 
 bool DLCDownloaderDefaultWriter::IsClosed() const

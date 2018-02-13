@@ -378,8 +378,6 @@ void FilePath::Initialize(const String& _pathname)
     }
     else
     {
-        Logger::FrameworkDebug("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
-
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;
 #else //#if defined(__DAVAENGINE_ANDROID__)

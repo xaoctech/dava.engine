@@ -112,6 +112,8 @@ setup_main_executable()
 convert_graphics()
  
 if (IOS)
+    set_xcode_property( ${PROJECT_NAME} ONLY_ACTIVE_ARCH YES )
+
     # Termporal workaround for unit tests with memory profiling enabled
     # Reason: on iOS on some circumstances memory deallocating operation bypasses memory manager
     set_xcode_property( ${PROJECT_NAME} STRIP_INSTALLED_PRODUCT NO )

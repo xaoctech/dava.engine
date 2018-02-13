@@ -61,5 +61,7 @@ private:
     UnorderedMap<uint64, std::unique_ptr<NetStatTimestamps>> timestamps;
 
     bool IsExecTime(uint32 frameId) const;
+
+    void Clear() override;
 };
 }

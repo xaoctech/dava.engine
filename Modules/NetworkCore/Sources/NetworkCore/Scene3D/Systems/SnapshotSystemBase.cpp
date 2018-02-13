@@ -104,7 +104,7 @@ SnapshotSystemBase::SnapshotSystemBase(Scene* scene)
 
     for (auto& sc : scene->singletonComponents)
     {
-        RegisterSingleComponent(sc.first);
+        RegisterSingleComponent(sc.second);
     }
 
     // used for NetworkID generation, that should be right in snapshot
@@ -142,7 +142,7 @@ void SnapshotSystemBase::UpdateSnapshot(NetworkID entityId)
                     LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log()
                                                 << timeSingleComponent->GetFrameId() << " | SnapChange "
                                                 << wp.entityId << "."
-                                                << wp.componentId << "."
+                                                << wp.componentKey << ", "
                                                 << wp.refField->key << " = "
                                                 << wp.cacheValue << "\n");
                 }

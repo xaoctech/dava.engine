@@ -35,6 +35,8 @@ class BattleOptionsSingleComponent : public DAVA::SingletonComponent
     DAVA_VIRTUAL_REFLECTION(BattleOptionsSingleComponent, DAVA::SingletonComponent);
 
 public:
+    void Clear() override;
+
     BattleOptions options;
     BattleControls controls;
 

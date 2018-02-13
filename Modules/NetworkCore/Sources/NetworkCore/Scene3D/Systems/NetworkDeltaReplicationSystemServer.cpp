@@ -82,7 +82,7 @@ void NetworkDeltaReplicationSystemServer::ProcessFixed(float32 timeElapsed)
                         ProcessAckPackets(responder, responderData);
                         ProcessResponder(responder, responderData);
                     });
-    netVisSingleComp->ClearCache();
+    netVisSingleComp->Clear();
 }
 
 size_t
@@ -440,7 +440,7 @@ void NetworkDeltaReplicationSystemServer::CheckTrafficLimit(NetworkID netEntityI
             {
                 for (auto& singleComp : GetScene()->singletonComponents)
                 {
-                    size += DumpComponent(ReflectedObject(singleComp.first), stream);
+                    size += DumpComponent(ReflectedObject(singleComp.second), stream);
                 }
                 Logger::Warning("Huge size:%d scene\n%s", size, stream.str().c_str());
             }

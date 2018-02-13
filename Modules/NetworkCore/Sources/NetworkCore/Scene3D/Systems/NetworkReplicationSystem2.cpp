@@ -25,15 +25,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationSystem2)
     .End();
 }
 
-/*
-DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationData)
-{
-    ReflectionRegistrator<NetworkReplicationData>::Begin()
-    .ConstructorByPointer()
-    .End();
-}
-*/
-
 NetworkReplicationSystem2::NetworkReplicationSystem2(Scene* scene)
     : SceneSystem(scene, 0)
 {
@@ -122,20 +113,25 @@ void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
             auto end = pendingAddComponent.end();
             for (; it != end; ++it)
             {
-                Component* component = it->first;
-                Entity* entity = it->second.entity;
-                uint32 componentIndex = it->second.componentIndex;
+                Entity* entity = it->first;
 
-                NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
-                DVASSERT(entityId != NetworkID::INVALID);
-                DVASSERT(entityId != NetworkID::SCENE_ID);
+                auto it2 = it->second.components.begin();
+                auto end2 = it->second.components.end();
+                for (; it2 != end2; ++it2)
+                {
+                    SnapshotComponentKey componentKey = it2->first;
+                    Component* component = it2->second;
 
-                uint32 frameId = networkReplicationSingleComponent->replicationInfo.at(entityId).frameIdLastChange;
-                Snapshot* snapshot = snapshotSingleComponent->GetServerSnapshot(frameId);
-                SnapshotComponentKey componentKey(ComponentUtils::GetRuntimeIndex(component), componentIndex);
-                SnapshotUtils::ApplySnapshot(snapshot, entityId, componentKey, component);
+                    NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
+                    DVASSERT(entityId != NetworkID::INVALID);
+                    DVASSERT(entityId != NetworkID::SCENE_ID);
 
-                entity->AddComponent(component);
+                    uint32 frameId = networkReplicationSingleComponent->replicationInfo.at(entityId).frameIdLastChange;
+                    Snapshot* snapshot = snapshotSingleComponent->GetServerSnapshot(frameId);
+                    SnapshotUtils::ApplySnapshot(snapshot, entityId, componentKey, component);
+
+                    entity->AddComponent(component);
+                }
             }
 
             LOG_SNAPSHOT_SYSTEM(SnapshotUtils::Log() << "##< AddingPendingComponents Done" << std::endl);
@@ -309,7 +305,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
         {
             Component* component = nullptr;
 
-            const Type* componentType = GetEngineContext()->componentManager->GetSceneComponentType(param.componentParam.componentId);
+            const Type* componentType = GetEngineContext()->componentManager->GetSceneComponentType(param.componentParam.componentKey.id);
             DVASSERT(nullptr != componentType);
 
             // singleton components
@@ -330,7 +326,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
 
                     // Delay component addition. It will be added later,
                     // when their fields are applied from snapshot.
-                    AddPendingComponent(component, entity, param.componentParam.componentIndex);
+                    AddPendingComponent(entity, component, param.componentParam.componentKey);
                 }
             }
 
@@ -341,7 +337,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
             // update info about entity, making it changed
             UpdateReplicationInfo(entityId, frameId, true);
 
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << param.componentParam.componentId
+            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << param.componentParam.componentKey
                                                              << " [" << componentType->GetName() << "] will be added to entity " << entityId << "\n");
         }
     }
@@ -352,20 +348,15 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
         Entity* entity = networkEntities->FindByID(entityId);
         if (nullptr != entity)
         {
-            const Type* componentType = GetEngineContext()->componentManager->GetSceneComponentType(param.componentParam.componentId);
+            const Type* componentType = GetEngineContext()->componentManager->GetSceneComponentType(param.componentParam.componentKey.id);
             DVASSERT(nullptr != componentType);
 
             // singleton components
             Scene* scene = GetScene();
             if (entity == scene)
             {
+                DVASSERT(false, "Single components haven't be removed");
                 Component* component = scene->GetSingletonComponent(componentType);
-                /*
-                if (nullptr != component)
-                {
-                    scene->RemoveSingletonComponent(static_cast<SingletonComponent*>(component));
-                }
-                */
             }
             // regular component
             else
@@ -377,10 +368,10 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
                 }
             }
 
-            RemovePendingComponent(componentType);
+            RemovePendingComponent(entity, param.componentParam.componentKey);
             UpdateReplicationInfo(entityId, frameId, false);
 
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << param.componentParam.componentId
+            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << param.componentParam.componentKey
                                                              << " [" << componentType->GetName() << "] removed from entity " << entityId << "\n");
         }
     }
@@ -395,9 +386,9 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
             UpdateReplicationInfo(entityId, frameId, true);
         }
 
-        const Type* componentType = GetEngineContext()->componentManager->GetSceneComponentType(param.componentParam.componentId);
+        const Type* componentType = GetEngineContext()->componentManager->GetSceneComponentType(param.componentParam.componentKey.id);
 
-        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << param.componentParam.componentId
+        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << param.componentParam.componentKey
                                                          << " [" << componentType->GetName() << "] updated for entity " << entityId << "\n");
     }
     break;
@@ -411,26 +402,37 @@ void NetworkReplicationSystem2::ApplySnapshotWithoutPrediction(Entity* entity, S
     NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
     uint32 frameId = snapshot->frameId;
 
-    const UnorderedMap<Component*, PendingComponentParams>& componentsToSkip = pendingAddComponent;
+    const Map<SnapshotComponentKey, Component*>* alreadyAppliedByAddStep = nullptr;
 
-    LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "###> ApplyEntity " << entityId << " | serverFrame " << frameId << "\n");
-
-    auto pred = [componentsToSkip, npc, frameId](Component* component) -> bool
+    // remember link to components that were already added
+    // into specified entity on current process loop
+    auto it = pendingAddComponent.find(entity);
+    if (it != pendingAddComponent.end())
     {
-        if (componentsToSkip.find(component) != componentsToSkip.end())
+        alreadyAppliedByAddStep = &it->second.components;
+    }
+
+    // define predicate to skip some components,
+    // when snapshot will be applied below
+    auto pred = [npc, frameId, alreadyAppliedByAddStep](SnapshotComponentKey componentKey, Component* component) -> bool
+    {
+        if (nullptr != alreadyAppliedByAddStep && alreadyAppliedByAddStep->find(componentKey) != alreadyAppliedByAddStep->end())
         {
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << ComponentUtils::GetRuntimeIndex(component) << ", skip as already applied by add step\n");
+            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << componentKey << ", skip as already applied by add step\n");
             return false;
         }
         else if (nullptr != npc && npc->IsPredictedComponent(component))
         {
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << ComponentUtils::GetRuntimeIndex(component) << ", skip as predicted\n");
+            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << componentKey << ", skip as predicted\n");
             return false;
         }
 
         return true;
     };
 
+    LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "###> ApplyEntity " << entityId << " | serverFrame " << frameId << "\n");
+
+    // apply snapshot with defined predicate
     SnapshotUtils::ApplySnapshot(snapshot, entityId, entity, pred);
 
     LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "###< ApplyEntity Done" << std::endl);
@@ -493,42 +495,31 @@ Entity* NetworkReplicationSystem2::GetPendingEntityParent(Entity* entity)
     return nullptr;
 }
 
-void NetworkReplicationSystem2::AddPendingComponent(Component* component, Entity* entity, uint32 componentIndex)
+void NetworkReplicationSystem2::AddPendingComponent(Entity* entity, Component* component, SnapshotComponentKey key)
 {
-    DVASSERT(pendingAddComponent.find(component) == pendingAddComponent.end());
-    pendingAddComponent[component].entity = entity;
-    pendingAddComponent[component].componentIndex = componentIndex;
+    DVASSERT(pendingAddComponent[entity].components.find(key) == pendingAddComponent[entity].components.end());
+    pendingAddComponent[entity].components[key] = component;
 }
 
-void NetworkReplicationSystem2::RemovePendingComponent(const Type* componentType)
+void NetworkReplicationSystem2::RemovePendingComponent(Entity* entity, SnapshotComponentKey key)
 {
-    auto end = pendingAddComponent.end();
-    for (auto it = pendingAddComponent.begin(); it != end;)
+    auto it1 = pendingAddComponent.find(entity);
+    if (it1 != pendingAddComponent.end())
     {
-        if (it->first->GetType() == componentType)
+        auto it2 = it1->second.components.find(key);
+        if (it2 != it1->second.components.end())
         {
-            it = pendingAddComponent.erase(it);
-        }
-        else
-        {
-            it++;
+            it1->second.components.erase(it2);
         }
     }
 }
 
 void NetworkReplicationSystem2::RemovePendingComponents(Entity* entity)
 {
-    auto end = pendingAddComponent.end();
-    for (auto it = pendingAddComponent.begin(); it != end;)
+    auto it = pendingAddComponent.find(entity);
+    if (it != pendingAddComponent.end())
     {
-        if (it->second.entity == entity)
-        {
-            it = pendingAddComponent.erase(it);
-        }
-        else
-        {
-            it++;
-        }
+        pendingAddComponent.erase(it);
     }
 }
 

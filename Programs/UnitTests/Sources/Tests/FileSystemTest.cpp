@@ -26,8 +26,11 @@ DAVA_TESTCLASS (FileSystemTest)
 
     void SetUp(const String&)override
     {
-        FileSystem::eCreateDirectoryResult res = GetEngineContext()->fileSystem->CreateDirectory(tempDir);
-        TEST_VERIFY(res == FileSystem::eCreateDirectoryResult::DIRECTORY_CREATED)
+        // delete if we stop during debuging (or previous run failed during test - no space on device for example)
+        GetEngineContext()->fileSystem->DeleteDirectory(tempDir);
+
+        const FileSystem::eCreateDirectoryResult res = GetEngineContext()->fileSystem->CreateDirectory(tempDir);
+        TEST_VERIFY(res == FileSystem::eCreateDirectoryResult::DIRECTORY_CREATED);
     }
 
     void TearDown(const String&)override
@@ -263,10 +266,13 @@ DAVA_TESTCLASS (FileSystemTest)
         char8* buf1 = new char8[static_cast<size_t>(size)];
         char8* buf2 = new char8[static_cast<size_t>(size)];
 
+        uint32 res1 = 0;
+        uint32 res2 = 0;
+
         do
         {
-            uint32 res1 = f1->ReadLine(buf1, static_cast<uint32>(size));
-            uint32 res2 = f2->ReadLine(buf2, static_cast<uint32>(size));
+            res1 = f1->ReadLine(buf1, static_cast<uint32>(size));
+            res2 = f2->ReadLine(buf2, static_cast<uint32>(size));
             TEST_VERIFY(res1 == res2);
             TEST_VERIFY(!Memcmp(buf1, buf2, res1));
 
@@ -293,8 +299,8 @@ DAVA_TESTCLASS (FileSystemTest)
         TEST_VERIFY(f1->IsEof() == false);
         TEST_VERIFY(f2->IsEof() == false);
 
-        TEST_VERIFY(pos1 == seekPos);
-        TEST_VERIFY(pos2 == seekPos);
+        TEST_VERIFY(pos1 == static_cast<uint64>(seekPos));
+        TEST_VERIFY(pos2 == static_cast<uint64>(seekPos));
 
         seekPos = (seekPos + 20); // seek to -20 pos
         f1->Seek(-seekPos, File::SEEK_FROM_CURRENT);

@@ -133,7 +133,7 @@ void NetworkDeltaReplicationSystemClient::ProcessFixed(float32 timeElapsed)
 {
     ProcessAppliedPackets();
 
-    deltaSingleComponent->deltas.clear();
+    deltaSingleComponent->Clear();
     elasticBuffer.Reset();
 }
 

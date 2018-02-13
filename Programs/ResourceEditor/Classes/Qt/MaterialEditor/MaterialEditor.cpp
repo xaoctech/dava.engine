@@ -25,9 +25,10 @@
 #include <QtTools/FileDialogs/FileDialog.h>
 #include <QtTools/Updaters/LazyUpdater.h>
 
-#include "TArc/Core/Deprecated.h"
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/Controls/CheckBox.h>
 
 #include <Base/Introspection.h>
 #include <Functional/Function.h>
@@ -143,16 +144,16 @@ struct InvalidTexturesCollector
     }
 };
 
-void LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const DAVA::FilePath& path)
+bool LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const DAVA::FilePath& path)
 {
     DAVA::ScopedPtr<DAVA::YamlParser> parser(DAVA::YamlParser::Create(path));
     if (parser.get() == nullptr)
     {
-        return;
+        return false;
     }
 
     DAVA::Vector<std::pair<DAVA::String, DAVA::YamlNode::eType>> fields = {
-        std::make_pair(DAVA::String("TemplateName"), DAVA::YamlNode::TYPE_STRING),
+        std::make_pair(DAVA::String("TemplateName"), DAVA::YamlNode::TYPE_ARRAY),
         std::make_pair(DAVA::String("Flags"), DAVA::YamlNode::TYPE_ARRAY),
         std::make_pair(DAVA::String("Illumination"), DAVA::YamlNode::TYPE_ARRAY),
         std::make_pair(DAVA::String("Properties"), DAVA::YamlNode::TYPE_ARRAY),
@@ -187,7 +188,6 @@ void LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const 
             groupNodes.push_back(fieldNode);
         }
 
-        DAVA::String templateName = groupNodes[0]->AsString();
         DAVA::RefPtr<DAVA::KeyedArchive> templateNameArchive(new DAVA::KeyedArchive());
 
         for (size_t i = 1; i < groupNodes.size(); ++i)
@@ -211,14 +211,25 @@ void LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const 
             templateNameArchive->SetArchive(fields[i].first, groupArchive.Get());
         }
 
-        rootArchive->SetArchive(templateName, templateNameArchive.Get());
+        const DAVA::Vector<DAVA::YamlNode*>& templates = groupNodes[0]->AsVector();
+        for (const DAVA::YamlNode* t : templates)
+        {
+            if (t->GetType() != DAVA::YamlNode::TYPE_STRING)
+            {
+                DAVA::Logger::Warning("Material Editor config parse. Element of Template name should be a string");
+            }
+            else
+            {
+                rootArchive->SetArchive(t->AsString(), templateNameArchive.Get());
+            }
+        }
     };
 
     DAVA::YamlNode* rootNode = parser->GetRootNode();
     if (rootNode->GetType() != DAVA::YamlNode::TYPE_ARRAY)
     {
         DAVA::Logger::Warning("Material editor config loading failed. Root item is not ARRAY");
-        return;
+        return false;
     }
 
     const DAVA::Vector<DAVA::YamlNode*>& nodes = rootNode->AsVector();
@@ -226,6 +237,8 @@ void LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const 
     {
         parseFn(node);
     }
+
+    return true;
 }
 }
 
@@ -233,7 +246,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MaterialEditorSettings)
 {
     DAVA::ReflectionRegistrator<MaterialEditorSettings>::Begin()[DAVA::M::DisplayName("Material Editor")]
     .ConstructorByPointer()
-    .Field("Hidden fields config", &MaterialEditorSettings::hiddenFieldsConfig)[DAVA::M::File("*.yaml")]
+    .Field("hiddenFieldsConfig", &MaterialEditorSettings::hiddenFieldsConfig)[DAVA::M::File("*.yaml"), DAVA::M::DisplayName("Hidden fields config")]
     .End();
 }
 
@@ -275,7 +288,12 @@ public:
             DAVA::KeyedArchive* hiddenProps = nullptr;
             DAVA::KeyedArchive* hiddenTextures = nullptr;
 
-            auto iter = templMap.find(material->GetEffectiveFXName().c_str());
+            DAVA::FastName fxName = material->GetEffectiveFXName();
+            auto iter = templMap.end();
+            if (fxName.IsValid() == true && editor->applyHiddenPropsFilter)
+            {
+                iter = templMap.find(fxName.c_str());
+            }
 
             if (editor->hiddenFieldsConfig.Get() != nullptr && iter != templMap.end())
             {
@@ -696,6 +714,15 @@ MaterialEditor::MaterialEditor(QWidget* parent /* = 0 */)
         selectionFieldBinder->BindField(fieldDescr, [this](const DAVA::Any&) { autoExpand(); });
     }
 
+    {
+        DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
+        DAVA::CheckBox::Params p(DAVA::Deprecated::GetAccessor(), DAVA::Deprecated::GetUI(), DAVA::mainWindowKey);
+        p.fields[DAVA::CheckBox::Fields::Checked] = "applyPropsFilter";
+        p.fields[DAVA::CheckBox::Fields::TextHint].BindConstValue("Apply properties filter");
+        DAVA::CheckBox* w = new DAVA::CheckBox(p, p.accessor, model, ui->toolbar);
+        ui->toolbar->addWidget(w->ToWidgetCast());
+    }
+
     // material tree
     QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(materialSelected(const QItemSelection&, const QItemSelection&)));
     QObject::connect(ui->materialTree, SIGNAL(Updated()), this, SLOT(autoExpand()));
@@ -732,6 +759,12 @@ MaterialEditor::MaterialEditor(QWidget* parent /* = 0 */)
     if (loadState.GetType() == DAVA::VariantType::TYPE_UINT32)
         lastCheckState = loadState.AsUInt32();
 
+    DAVA::VariantType applyPropsFilterV = posSaver.LoadValue("applyPropsFilter");
+    if (applyPropsFilterV.GetType() == DAVA::VariantType::TYPE_BOOLEAN)
+    {
+        applyHiddenPropsFilter = applyPropsFilterV.AsBool();
+    }
+
     expandMap[MaterialFilteringModel::SHOW_ALL] = false;
     expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
     expandMap[MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS] = true;
@@ -739,18 +772,24 @@ MaterialEditor::MaterialEditor(QWidget* parent /* = 0 */)
     initActions();
 
     DAVA::FieldDescriptor descr;
-    descr.fieldName = DAVA::FastName("Hidden fields config");
+    descr.fieldName = DAVA::FastName("hiddenFieldsConfig");
     descr.type = DAVA::ReflectedTypeDB::Get<MaterialEditorSettings>();
     selectionFieldBinder->BindField(descr, [this](const DAVA::Any& v) {
         hiddenFieldsConfig.Set(new DAVA::KeyedArchive());
+        bool loaded = false;
         if (v.CanGet<DAVA::FilePath>() == true)
         {
             DAVA::FileSystem* fileSystem = DAVA::GetEngineContext()->fileSystem;
             DAVA::FilePath path = v.Get<DAVA::FilePath>();
             if (path.IsEmpty() == false && fileSystem->Exists(path))
             {
-                MaterialEditorDetail::LoadHiddenFieldsConfig(hiddenFieldsConfig, path);
+                loaded = MaterialEditorDetail::LoadHiddenFieldsConfig(hiddenFieldsConfig, path);
             }
+        }
+
+        if (loaded == false)
+        {
+            MaterialEditorDetail::LoadHiddenFieldsConfig(hiddenFieldsConfig, DAVA::FilePath("~res:/Materials/hiddenMaterialProperties.yaml"));
         }
     });
 }
@@ -765,6 +804,7 @@ MaterialEditor::~MaterialEditor()
     posSaver.SaveValue("splitPosPreview", v2);
     posSaver.SaveValue("lastSavePath", DAVA::VariantType(lastSavePath));
     posSaver.SaveValue("lastLoadPresetState", DAVA::VariantType(lastCheckState));
+    posSaver.SaveValue("applyPropsFilter", DAVA::VariantType(applyHiddenPropsFilter));
 }
 
 QtPropertyData* MaterialEditor::AddSection(const DAVA::FastName& sectionName)
@@ -1675,5 +1715,19 @@ void MaterialEditor::UpdateContent(DAVA::SceneEditor2* scene)
         SetCurMaterial(QList<DAVA::NMaterial*>());
         ui->materialTree->SetScene(scene);
         autoExpand();
+    }
+}
+
+bool MaterialEditor::IsHiddenFilterApplyed() const
+{
+    return applyHiddenPropsFilter;
+}
+
+void MaterialEditor::SetHiddenFilterApplyed(bool isApply)
+{
+    if (applyHiddenPropsFilter != isApply)
+    {
+        applyHiddenPropsFilter = isApply;
+        RefreshMaterialProperties();
     }
 }

@@ -204,4 +204,10 @@ bool SnapshotComponentKey::operator!=(const SnapshotComponentKey& key) const
     return !operator==(key);
 }
 
+std::ostream& operator<<(std::ostream& stream, const SnapshotComponentKey& key)
+{
+    stream << key.id << ":" << key.index;
+    return stream;
+}
+
 } // namespace DAVA

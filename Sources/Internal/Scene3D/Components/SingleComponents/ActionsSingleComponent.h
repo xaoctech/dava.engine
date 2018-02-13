@@ -74,7 +74,7 @@ public:
     int32 GetDigitalActionNumericId(const FastName& actionId) const;
     const FastName& GetDigitalActionId(int32 actionNumericId) const;
 
-    void Clear();
+    void Clear() override;
 
     void SetLocalPlayerId(int32 playerId);
     int32 GetLocalPlayerId() const;

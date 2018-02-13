@@ -23,7 +23,7 @@ public:
     const UnorderedSet<const Entity*>& GetAddedEntities(NetworkPlayerID observerPlayerID) const;
     const UnorderedSet<const Entity*>& GetRemovedEntities(NetworkPlayerID observerPlayerID) const;
 
-    void ClearCache();
+    void Clear() override;
 
     UnorderedMap<NetworkPlayerID, UnorderedSet<const Entity*>> playerToAddedEntities;
     UnorderedMap<NetworkPlayerID, UnorderedSet<const Entity*>> playerToRemovedEntities;

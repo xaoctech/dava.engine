@@ -70,6 +70,12 @@ struct NetworkID
         return tmp;
     }
 
+    friend std::ostream& operator<<(std::ostream& stream, const NetworkID& id)
+    {
+        stream << static_cast<uint32>(id);
+        return stream;
+    }
+
 private:
     uint32 value;
 };

@@ -167,8 +167,7 @@ void EntitySnapshotReader::ReadComponents(NetworkID entityId, SnapshotEntity* en
 
             param.cmd = SnapshotApplyCommand::COMPONENT_CHANGED;
             param.componentParam.entityId = entityId;
-            param.componentParam.componentId = componentKey.id;
-            param.componentParam.componentIndex = componentKey.index;
+            param.componentParam.componentKey = componentKey;
             callback(param);
 
             Vector<SnapshotField>& fields = foundAt->second.fields;
@@ -180,8 +179,7 @@ void EntitySnapshotReader::ReadComponents(NetworkID entityId, SnapshotEntity* en
 
             param.cmd = SnapshotApplyCommand::COMPONENT_ADDED;
             param.componentParam.entityId = entityId;
-            param.componentParam.componentId = componentKey.id;
-            param.componentParam.componentIndex = componentKey.index;
+            param.componentParam.componentKey = componentKey;
             callback(param);
             DVASSERT(param.componentParam.outComponent != nullptr);
 
@@ -194,8 +192,7 @@ void EntitySnapshotReader::ReadComponents(NetworkID entityId, SnapshotEntity* en
         {
             param.cmd = SnapshotApplyCommand::COMPONENT_REMOVED;
             param.componentParam.entityId = entityId;
-            param.componentParam.componentId = componentKey.id;
-            param.componentParam.componentIndex = componentKey.index;
+            param.componentParam.componentKey = componentKey;
             callback(param);
 
             DVASSERT(entity->components.find(componentKey) != entity->components.end());

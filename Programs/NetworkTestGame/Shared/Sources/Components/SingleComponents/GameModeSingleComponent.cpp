@@ -30,3 +30,7 @@ void GameModeSingleComponent::SetPlayer(DAVA::Entity* entity)
 {
     player = entity;
 }
+
+void GameModeSingleComponent::Clear()
+{
+}

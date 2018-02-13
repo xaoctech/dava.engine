@@ -51,6 +51,12 @@ void CollisionSingleComponent::GetCollisionEntities(Entity* entity, UnorderedSet
     }
 }
 
+void CollisionSingleComponent::Clear()
+{
+    collisions.clear();
+    activeTriggers.clear();
+}
+
 void CollisionSingleComponent::GetEntitesByTrigger(Entity* trigger, UnorderedSet<Entity*>& result) const
 {
     for (const TriggerInfo& ti : activeTriggers)
