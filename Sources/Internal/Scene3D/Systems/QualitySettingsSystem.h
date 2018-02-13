@@ -266,7 +266,7 @@ inline typename QualityGroupValueClass<group>::ValueClass QualitySettingsSystem:
 {
     const FastName& currentValue = GetCurrentQualityForGroup(group);
     Any value = qualityGroups[group].values.at(currentValue);
-    DVASSERT(value.CanGet<QualityGroupValueClass<group>::ValueClass>());
-    return value.Get<QualityGroupValueClass<group>::ValueClass>();
+    DVASSERT(value.CanGet<typename QualityGroupValueClass<group>::ValueClass>());
+    return value.Get<typename QualityGroupValueClass<group>::ValueClass>();
 }
 }
