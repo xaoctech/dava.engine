@@ -591,6 +591,12 @@ const CompressorInterface* CompressionUtils::GetTypeCompressor(const Type* type)
         const CompressorInterface* compressorInterface = static_cast<CompressorInterface*>(elemType->GetUserData(GetTypeCompressorIndex()));
         return compressorInterface;
     }
+    else if (type->IsEnum())
+    {
+        const Type* intType = Type::Instance<int32>();
+        const CompressorInterface* compressorInterface = static_cast<CompressorInterface*>(intType->GetUserData(GetTypeCompressorIndex()));
+        return compressorInterface;
+    }
 
     const CompressorInterface* compressorInterface = static_cast<CompressorInterface*>(type->GetUserData(GetTypeCompressorIndex()));
     return compressorInterface;

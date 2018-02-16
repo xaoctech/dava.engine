@@ -1,7 +1,7 @@
 #include "Classes/CommandLine/SceneExporterTool.h"
-#include "Classes/CommandLine/Private/OptionName.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/Scene/Utils/SceneExporter.h>
 
@@ -423,7 +423,7 @@ DAVA::ConsoleModule::eFrameResult SceneExporterTool::OnFrameInternal()
 
 void SceneExporterTool::BeforeDestroyedInternal()
 {
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void SceneExporterTool::ShowHelpInternal()

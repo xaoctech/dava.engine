@@ -16,7 +16,6 @@
 
 #include "NetworkCore/NetworkTypes.h"
 #include "NetworkCore/Compression/Compression.h"
-#include "NetworkCore/Compression/CompressorRegistrar.h"
 
 using namespace DAVA;
 
@@ -66,9 +65,6 @@ DAVA_TESTCLASS (CompressionTest)
             Class1 = 1,
             Class2
         };
-
-        RegisterEnumCompressor<SimpleEnum>();
-        RegisterEnumCompressor<ClassEnum>();
 
         // clang-format off
         TestItem items[] = {

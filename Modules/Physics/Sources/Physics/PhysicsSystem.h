@@ -53,7 +53,8 @@ public:
 
     void UnregisterEntity(Entity* entity) override;
 
-    void ProcessFixed(float32 timeElapsed) override;
+    void ProcessFixedFetch(float32 timeElapsed);
+    void ProcessFixedSimulate(float32 timeElapsed);
     void PrepareForRemove() override;
 
     void SetSimulationEnabled(bool isEnabled);

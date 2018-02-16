@@ -23,6 +23,9 @@ set( DEFAULT_DEPEND_DIRS "Sources/Internal;Modules;Sources/CMake" )
 
 macro ( prepare_tools )
 
+    # HACK we have to add target before for dava_pre_build_step() works
+    add_custom_target ( DATA_COPY_${PROJECT_NAME} )
+
     if( CHECK_DEPENDENT_FOLDERS ) 
 
         find_package( PythonInterp   )
@@ -113,7 +116,6 @@ macro ( prepare_tools )
         reset_property ( MIX_APP_DATA )
 
         __add_tools( PACKAGE_TOOLS_LIST )
-
         processing_mix_data()
         processing_mix_data_dependencies( "${PACKAGE_TOOLS_LIST}" )
     endif()

@@ -105,22 +105,6 @@ void CollectEmittersForSave(ParticleEmitter* topLevelEmitter, List<EmitterDescri
 
     emitters.emplace_back(topLevelEmitter, nullptr, topLevelEmitter->configPath, entityName);
 }
-
-ComponentMask CombineComponentMask(const Vector<const Type*>& args)
-{
-    ComponentMask result = 0;
-    for (const Type* v : args)
-    {
-        result |= ComponentUtils::MakeMask(v);
-    }
-    return result;
-}
-
-template <typename T>
-const Type* InstT()
-{
-    return Type::Instance<T>();
-}
 }
 
 SceneEditor2::SceneEditor2()

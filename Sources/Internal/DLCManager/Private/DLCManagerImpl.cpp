@@ -324,7 +324,7 @@ DLCManagerImpl::~DLCManagerImpl()
 
 void DLCManagerImpl::TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_)
 {
-    FilePath tmpFile = dirToDownloadPacks_ + "tmp.file";
+    const FilePath tmpFile = dirToDownloadPacks_ + "tmp.file";
     {
         ScopedPtr<File> f(File::Create(tmpFile, File::WRITE | File::CREATE));
         if (!f)
@@ -467,8 +467,11 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         urlToSuperPack = urlToServerSuperpack_;
         hints = hints_;
 
-        TestPackDirectoryExist();
-        TestWriteAccessToPackDirectory(dirToDownloadPacks_);
+        if (!(dirToDownloadedPacks.IsEmpty() && urlToSuperPack.empty()))
+        {
+            TestPackDirectoryExist();
+            TestWriteAccessToPackDirectory(dirToDownloadPacks_);
+        }
     }
 
     CreateDownloader();

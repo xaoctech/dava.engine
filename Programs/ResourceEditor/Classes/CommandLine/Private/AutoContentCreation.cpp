@@ -1,7 +1,7 @@
 #include "Classes/CommandLine/AutoContentCreation.h"
-#include "Classes/CommandLine/Private/OptionName.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 #include <REPlatform/Scene/Utils/SceneSaver.h>
 
 #include <TArc/Utils/ModuleCollection.h>
@@ -30,6 +30,8 @@ DuplicateObjectTool::DuplicateObjectTool(const DAVA::Vector<DAVA::String>& comma
 
 bool DuplicateObjectTool::PostInitInternal()
 {
+    using namespace DAVA;
+
     filePath = options.GetOption(OptionName::File).AsString();
     if (filePath.IsEmpty())
     {
@@ -91,7 +93,7 @@ DAVA::ConsoleModule::eFrameResult DuplicateObjectTool::OnFrameInternal()
 
 void DuplicateObjectTool::BeforeDestroyedInternal()
 {
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void DuplicateObjectTool::ShowHelpInternal()
@@ -114,6 +116,8 @@ RandomPlaceHingedEquipment::RandomPlaceHingedEquipment(const DAVA::Vector<DAVA::
 
 bool RandomPlaceHingedEquipment::PostInitInternal()
 {
+    using namespace DAVA;
+
     const DAVA::EngineContext* engineCtx = DAVA::GetEngineContext();
 
     projectRootFolder = options.GetOption(OptionName::InDir).AsString();
@@ -293,7 +297,7 @@ DAVA::ConsoleModule::eFrameResult RandomPlaceHingedEquipment::OnFrameInternal()
 
 void RandomPlaceHingedEquipment::BeforeDestroyedInternal()
 {
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void RandomPlaceHingedEquipment::ShowHelpInternal()

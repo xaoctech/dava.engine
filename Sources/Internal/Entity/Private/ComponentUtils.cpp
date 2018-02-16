@@ -8,89 +8,54 @@
 
 namespace DAVA
 {
-Component* ComponentUtils::CreateByType(const Type* componentType)
-{
-    DVASSERT(componentType != nullptr);
+ComponentManager* ComponentUtils::componentManager = nullptr;
 
-    if (TypeInheritance::CanDownCast(componentType, Type::Instance<Component>()))
+Component* ComponentUtils::Create(const Type* type)
+{
+    DVASSERT(type != nullptr);
+
+    if (TypeInheritance::CanDownCast(type, Type::Instance<Component>()))
     {
-        const ReflectedType* reflType = ReflectedTypeDB::GetByType(componentType);
+        const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);
         Any obj = reflType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
         return static_cast<Component*>(obj.Get<void*>());
     }
 
-    DVASSERT(false, "'componentType' is not derived from Component or not registered in the reflection db.");
+    DVASSERT(false, "'type' is not derived from Component or not registered in the reflection db.");
 
     return nullptr;
 }
 
-Component* ComponentUtils::CreateByRuntimeIndex(uint32 runtimeIndex)
+Component* ComponentUtils::Create(uint32 runtimeId)
 {
-    ComponentManager* cm = GetEngineContext()->componentManager;
+    const Type* type = componentManager->GetSceneComponentType(runtimeId);
 
-    const Type* type = cm->GetSceneComponentType(runtimeIndex);
-
-    if (type != nullptr)
-    {
-        return CreateByType(type);
-    }
-
-    return nullptr;
+    return Create(type);
 }
 
-const Type* ComponentUtils::GetType(uint32 runtimeIndex)
+uint32 ComponentUtils::GetRuntimeId(const Type* type)
 {
-    ComponentManager* cm = GetEngineContext()->componentManager;
-    return cm->GetSceneComponentType(runtimeIndex);
+    DVASSERT(type != nullptr);
+
+    uint32 runtimeId = componentManager->GetRuntimeComponentId(type);
+
+    return runtimeId;
 }
 
-uint32 ComponentUtils::GetRuntimeIndex(const Component* component)
+const Type* ComponentUtils::GetType(uint32 runtimeId)
 {
-    ComponentManager* cm = GetEngineContext()->componentManager;
+    const Type* type = componentManager->GetSceneComponentType(runtimeId);
 
-    uint32 runtimeIndex = cm->GetRuntimeComponentIndex(component->GetType());
-
-    return runtimeIndex;
+    return type;
 }
 
-uint32 ComponentUtils::GetSortedIndex(const Component* component)
+uint32 ComponentUtils::GetSortedId(const Type* type)
 {
-    ComponentManager* cm = GetEngineContext()->componentManager;
+    DVASSERT(type != nullptr);
 
-    uint32 sortedIndex = cm->GetSortedComponentIndex(component->GetType());
+    uint32 sortedId = componentManager->GetSortedComponentId(type);
 
-    return sortedIndex;
-}
-
-uint32 ComponentUtils::GetRuntimeIndex(const Type* componentType)
-{
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    uint32 runtimeIndex = cm->GetRuntimeComponentIndex(componentType);
-
-    return runtimeIndex;
-}
-
-ComponentMask ComponentUtils::MakeMask(const Type* componentType)
-{
-    DVASSERT(componentType != nullptr);
-
-    ComponentManager* cm = GetEngineContext()->componentManager;
-
-    uint32 runtimeIndex = cm->GetRuntimeComponentIndex(componentType);
-
-    ComponentMask mask;
-
-    if (runtimeIndex < mask.size())
-    {
-        mask.set(runtimeIndex);
-    }
-    else
-    {
-        DVASSERT(runtimeIndex < mask.size());
-    }
-
-    return mask;
+    return sortedId;
 }
 
 } // namespace DAVA

@@ -2,6 +2,7 @@
 
 #include "NetworkCore/Compression/Compression.h"
 #include "NetworkCore/Compression/ArrayCompressor.h"
+#include "NetworkCore/Compression/IntegralCompressor.h"
 
 #include <Base/Any.h>
 #include <Base/Type.h>
@@ -61,7 +62,14 @@ bool AnyCompressor<T, TCompressor>::IsEqual(const Any& any1, const Any& any2, fl
     DVASSERT(any1.GetType() == any2.GetType());
 
     const Type* type = any1.GetType();
-    if (!type->IsArray())
+    if (type->IsEnum())
+    {
+        DVASSERT(type->GetSize() <= 4, "Enum is greater than 4 bytes");
+        int32 v1 = *static_cast<const int32*>(any1.GetData());
+        int32 v2 = *static_cast<const int32*>(any2.GetData());
+        return IntegralCompressor<int32>::IsEqual(v1, v2, 0.f);
+    }
+    else if (!type->IsArray())
     {
         const T& value1 = any1.Get<T>();
         const T& value2 = any2.Get<T>();
@@ -85,7 +93,14 @@ bool AnyCompressor<T, TCompressor>::CompressDelta(const Any& any1, const Any& an
     DVASSERT(any1.GetType() == any2.GetType());
 
     const Type* type = any1.GetType();
-    if (!type->IsArray())
+    if (type->IsEnum())
+    {
+        DVASSERT(type->GetSize() <= 4, "Enum is greater than 4 bytes");
+        int32 v1 = *static_cast<const int32*>(any1.GetData());
+        int32 v2 = *static_cast<const int32*>(any2.GetData());
+        return IntegralCompressor<int32>::CompressDelta(v1, v2, scheme, 0.f, writer);
+    }
+    else if (!type->IsArray())
     {
         const T& value1 = any1.Get<T>();
         const T& value2 = any2.Get<T>();
@@ -107,7 +122,13 @@ template <typename T, typename TCompressor>
 void AnyCompressor<T, TCompressor>::CompressFull(const Any& any, CompressionScheme scheme, float32 deltaPrecision, BitWriter& writer) const
 {
     const Type* type = any.GetType();
-    if (!type->IsArray())
+    if (type->IsEnum())
+    {
+        DVASSERT(type->GetSize() <= 4, "Enum is greater than 4 bytes");
+        int32 v = *static_cast<const int32*>(any.GetData());
+        IntegralCompressor<int32>::CompressFull(v, scheme, 0.f, writer);
+    }
+    else if (!type->IsArray())
     {
         const T& value = any.Get<T>();
         TCompressor::CompressFull(value, scheme, deltaPrecision, writer);
@@ -126,7 +147,15 @@ void AnyCompressor<T, TCompressor>::DecompressDelta(const Any& anyBase, Any& any
     DVASSERT(anyBase.GetType() == anyTarget.GetType());
 
     const Type* type = anyBase.GetType();
-    if (!type->IsArray())
+    if (type->IsEnum())
+    {
+        DVASSERT(type->GetSize() <= 4, "Enum is greater than 4 bytes");
+        int32 base = *static_cast<const int32*>(anyBase.GetData());
+        int32 target = 0;
+        IntegralCompressor<int32>::DecompressDelta(base, &target, scheme, reader);
+        anyTarget.SetTrivially(&target, type);
+    }
+    else if (!type->IsArray())
     {
         const T& base = anyBase.Get<T>();
         T target = base;
@@ -154,7 +183,14 @@ template <typename T, typename TCompressor>
 void AnyCompressor<T, TCompressor>::DecompressFull(Any& anyTarget, CompressionScheme scheme, BitReader& reader) const
 {
     const Type* type = anyTarget.GetType();
-    if (!type->IsArray())
+    if (type->IsEnum())
+    {
+        DVASSERT(type->GetSize() <= 4, "Enum is greater than 4 bytes");
+        int32 buf = 0;
+        IntegralCompressor<int32>::DecompressFull(&buf, scheme, reader);
+        anyTarget.SetTrivially(&buf, type);
+    }
+    else if (!type->IsArray())
     {
         T target = anyTarget.Get<T>();
         TCompressor::DecompressFull(&target, scheme, reader);

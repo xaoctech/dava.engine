@@ -87,7 +87,8 @@
 #include <Platform/TemplateWin32/UAPNetworkHelper.h>
 #endif
 
-void CheckDeviceInfoValid();
+static void CheckDeviceInfoValid();
+static const DAVA::DLCManager::IRequest* RequestAllFilesPack(DAVA::Engine& e);
 
 int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
 {
@@ -196,6 +197,13 @@ TestBed::TestBed(Engine& engine)
     FileSystem* fileSystem = context->fileSystem;
 
     DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "TestBed");
+
+    const DLCManager::IRequest* const pack = RequestAllFilesPack(engine);
+    if (!pack->IsDownloaded())
+    {
+        Logger::Error("can't load pack with all files");
+        DAVA_THROW(Exception, "can't load pack with all files");
+    }
 
     context->settings->Load("~res:/TestBed/EngineSettings.yaml");
 
@@ -604,4 +612,13 @@ void CheckDeviceInfoValid()
     Logger::Info("cpu_count: %d", cpuCount);
     DVASSERT(cpuCount > 0);
     Logger::Info("device info end============================================");
+}
+
+static const DAVA::DLCManager::IRequest* RequestAllFilesPack(DAVA::Engine& e)
+{
+    DLCManager* dlcManager = e.GetContext()->dlcManager;
+    DLCManager::Hints hints;
+    hints.localPacksDB = "~res:/TestBed/local_meta.db";
+    dlcManager->Initialize("", "", hints);
+    return dlcManager->RequestPack("all");
 }

@@ -44,7 +44,6 @@ void RegisterStandardTypeCompressors()
     RegisterTypeCompressor<FastName, FastNameCompressor>();
     RegisterTypeCompressor<String, StringCompressor>();
 
-    RegisterEnumCompressor<EntityType>();
     RegisterTypeCompressor<NetworkID, NetworkIDCompressor>();
     RegisterTypeCompressor<ComponentMask, BitsetCompressor<ComponentMask>>();
 }

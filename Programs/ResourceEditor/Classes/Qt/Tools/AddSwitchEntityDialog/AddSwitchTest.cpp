@@ -1,6 +1,6 @@
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/Global/StringConstants.h>
 
 #include <TArc/Testing/TArcUnitTests.h>

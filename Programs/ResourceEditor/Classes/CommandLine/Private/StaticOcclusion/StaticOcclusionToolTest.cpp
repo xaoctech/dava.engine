@@ -1,7 +1,9 @@
 #include "Classes/CommandLine/StaticOcclusionTool.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
-#include "TArc/Testing/TArcUnitTests.h"
+
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
+
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
 
 #include <Base/BaseTypes.h>
 #include <Entity/Component.h>

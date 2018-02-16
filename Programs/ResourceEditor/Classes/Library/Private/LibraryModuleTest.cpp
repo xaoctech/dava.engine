@@ -1,7 +1,7 @@
 #include "Classes/Library/LibraryModule.h"
 #include "Classes/Library/Private/DAEConverter.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/DataNodes/ProjectResources.h>
 
 #include <TArc/Testing/TArcUnitTests.h>
@@ -48,7 +48,6 @@ protected:
     void PostInit() override
     {
         using namespace DAVA;
-        using namespace DAVA;
 
         // prepare test environment
         {
@@ -65,7 +64,7 @@ protected:
 
     ~ProjectManagerDummyModule() override
     {
-        CommandLineModuleTestUtils::ClearTestFolder(testFolder);
+        DAVA::CommandLineModuleTestUtils::ClearTestFolder(testFolder);
     }
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(ProjectManagerDummyModule, DAVA::ClientModule)

@@ -1,6 +1,6 @@
 #include "Classes/CommandLine/TextureDescriptorTool.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>

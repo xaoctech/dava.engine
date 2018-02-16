@@ -1,6 +1,6 @@
 #include "Classes/CommandLine/TextureDescriptorTool.h"
-#include "Classes/CommandLine/Private/OptionName.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
 #include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
 #include <TArc/Utils/ModuleCollection.h>

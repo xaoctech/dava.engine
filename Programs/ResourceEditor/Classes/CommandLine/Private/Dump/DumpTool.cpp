@@ -1,7 +1,7 @@
 #include "Classes/CommandLine/DumpTool.h"
-#include "Classes/CommandLine/Private/OptionName.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/Scene/Utils/SceneDumper.h>
 
@@ -85,7 +85,7 @@ bool DumpTool::SetResourceDir(const DAVA::FilePath& path)
 
 bool DumpTool::CreateQualityYaml(const DAVA::FilePath& path)
 {
-    bool qualityInitialized = SceneConsoleHelper::InitializeQualitySystem(options, path);
+    bool qualityInitialized = DAVA::SceneConsoleHelper::InitializeQualitySystem(options, path);
     if (qualityInitialized == false)
     {
         DAVA::Logger::Error("Cannot create path to quality.yaml from %s", path.GetDirectory().GetAbsolutePathname().c_str());
@@ -95,6 +95,8 @@ bool DumpTool::CreateQualityYaml(const DAVA::FilePath& path)
 
 bool DumpTool::PostInitInternal()
 {
+    using namespace DAVA;
+
     resourceDir = options.GetOption(OptionName::ResourceDir).AsString();
     DAVA::String modeString = options.GetOption(OptionName::Mode).AsString();
 
@@ -260,7 +262,7 @@ DAVA::ConsoleModule::eFrameResult DumpTool::OnFrameInternal()
 
 void DumpTool::BeforeDestroyedInternal()
 {
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void DumpTool::ShowHelpInternal()

@@ -60,7 +60,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsSystem)
 {
     ReflectionRegistrator<PhysicsSystem>::Begin()[M::Tags("base", "physics")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PhysicsSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_PHYSICS, SP::Type::FIXED, 1.0f)]
+    .Method("ProcessFixedFetch", &PhysicsSystem::ProcessFixedFetch)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 4.01f)]
+    .Method("ProcessFixedSimulate", &PhysicsSystem::ProcessFixedSimulate)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 12.0f)]
     .End();
 }
 
@@ -563,13 +564,21 @@ void PhysicsSystem::PrepareForRemove()
     ExecuteForEachCCT(MakeFunction(this, &PhysicsSystem::DeinitCCTComponent));
 }
 
-void PhysicsSystem::ProcessFixed(float32 timeElapsed)
+void PhysicsSystem::ProcessFixedFetch(float32 timeElapsed)
 {
-    DAVA_PROFILER_CPU_SCOPE("PhysicsSystem::ProcessFixed");
+    DAVA_PROFILER_CPU_SCOPE("PhysicsSystem::ProcessFixedFetch");
 
     CollisionSingleComponent* csc = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
-
     csc->Clear();
+    SyncTransformToPhysx();
+    MoveCharacterControllers(timeElapsed);
+    FetchResults(true);
+}
+
+void PhysicsSystem::ProcessFixedSimulate(float32 timeElapsed)
+{
+    DAVA_PROFILER_CPU_SCOPE("PhysicsSystem::ProcessFixedSimulate");
+
     InitNewObjects();
     UpdateComponents();
 
@@ -580,7 +589,6 @@ void PhysicsSystem::ProcessFixed(float32 timeElapsed)
         DrawDebugInfo();
 
         ApplyForces();
-        MoveCharacterControllers(timeElapsed);
 
         for (auto cctInfo : teleportedCcts)
         {
@@ -598,8 +606,6 @@ void PhysicsSystem::ProcessFixed(float32 timeElapsed)
         teleportedCcts.clear();
 
         isSimulationRunning = true;
-
-        FetchResults(true);
     }
     else
     {
@@ -644,78 +650,81 @@ bool PhysicsSystem::IsDebugDrawEnabled() const
 
 bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
 {
-    DVASSERT(isSimulationRunning);
-    bool isFetched = physicsScene->fetchResults(waitForFetchFinish);
-    if (isFetched == true)
+    bool isFetched = false;
+    if (isSimulationRunning)
     {
-        isSimulationRunning = false;
-        physx::PxU32 actorsCount = 0;
-        physx::PxActor** actors = physicsScene->getActiveActors(actorsCount);
-
-        // Reset active flag, will be set according to active actors below
-        for (DynamicBodyComponent* body : dynamicBodies->components)
+        isFetched = physicsScene->fetchResults(waitForFetchFinish);
+        if (isFetched == true)
         {
-            body->isActive = false;
-        }
+            isSimulationRunning = false;
+            physx::PxU32 actorsCount = 0;
+            physx::PxActor** actors = physicsScene->getActiveActors(actorsCount);
 
-        for (physx::PxU32 i = 0; i < actorsCount; ++i)
-        {
-            physx::PxActor* actor = actors[i];
-            Component* baseComponent = reinterpret_cast<Component*>(actor->userData);
-
-            // When character controller is created, actor is created by physx implicitly
-            // In this case there is no PhysicsComponent attached to this entity, only CharacterControllerComponent. We ignore those
-            if (baseComponent->GetType()->Is<DynamicBodyComponent>() || baseComponent->GetType()->Is<StaticBodyComponent>())
+            // Reset active flag, will be set according to active actors below
+            for (DynamicBodyComponent* body : dynamicBodies->components)
             {
-                PhysicsComponent* physicsComponent = PhysicsComponent::GetComponent(actor);
-                DVASSERT(physicsComponent != nullptr);
+                body->isActive = false;
+            }
 
-                if (physicsComponent->GetType()->Is<DynamicBodyComponent>())
+            for (physx::PxU32 i = 0; i < actorsCount; ++i)
+            {
+                physx::PxActor* actor = actors[i];
+                Component* baseComponent = reinterpret_cast<Component*>(actor->userData);
+
+                // When character controller is created, actor is created by physx implicitly
+                // In this case there is no PhysicsComponent attached to this entity, only CharacterControllerComponent. We ignore those
+                if (baseComponent->GetType()->Is<DynamicBodyComponent>() || baseComponent->GetType()->Is<StaticBodyComponent>())
                 {
-                    static_cast<DynamicBodyComponent*>(physicsComponent)->isActive = true;
-                }
+                    PhysicsComponent* physicsComponent = PhysicsComponent::GetComponent(actor);
+                    DVASSERT(physicsComponent != nullptr);
 
-                Entity* entity = physicsComponent->GetEntity();
-
-                physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
-                DVASSERT(rigidActor != nullptr);
-
-                // Update entity's transform and its shapes down the hierarchy recursively
-                TransformComponent* transform = entity->GetComponent<TransformComponent>();
-                transform->SetLocalTransform(PhysicsMath::PxVec3ToVector3(rigidActor->getGlobalPose().p), PhysicsMath::PxQuatToQuaternion(rigidActor->getGlobalPose().q), physicsComponent->currentScale);
-
-                Vector<Entity*> children;
-                entity->GetChildEntitiesWithCondition(children, [physicsComponent](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == physicsComponent; });
-
-                for (Entity* child : children)
-                {
-                    DVASSERT(child != nullptr);
-
-                    Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(child);
-                    if (shapes.size() > 0)
+                    if (physicsComponent->GetType()->Is<DynamicBodyComponent>())
                     {
-                        // Update entity using just first shape for now
-                        CollisionShapeComponent* shape = shapes[0];
-                        if (shape->GetPxShape() != nullptr)
+                        static_cast<DynamicBodyComponent*>(physicsComponent)->isActive = true;
+                    }
+
+                    Entity* entity = physicsComponent->GetEntity();
+
+                    physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+                    DVASSERT(rigidActor != nullptr);
+
+                    // Update entity's transform and its shapes down the hierarchy recursively
+                    TransformComponent* transform = entity->GetComponent<TransformComponent>();
+                    transform->SetLocalTransform(PhysicsMath::PxVec3ToVector3(rigidActor->getGlobalPose().p), PhysicsMath::PxQuatToQuaternion(rigidActor->getGlobalPose().q), physicsComponent->currentScale);
+
+                    Vector<Entity*> children;
+                    entity->GetChildEntitiesWithCondition(children, [physicsComponent](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == physicsComponent; });
+
+                    for (Entity* child : children)
+                    {
+                        DVASSERT(child != nullptr);
+
+                        Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(child);
+                        if (shapes.size() > 0)
                         {
-                            const physx::PxTransform& shapeLocalPos = shape->GetPxShape()->getLocalPose();
-                            TransformComponent* childTransform = child->GetComponent<TransformComponent>();
-                            childTransform->SetLocalTransform(PhysicsMath::PxVec3ToVector3(shapeLocalPos.p), PhysicsMath::PxQuatToQuaternion(shapeLocalPos.q), shape->scale);
+                            // Update entity using just first shape for now
+                            CollisionShapeComponent* shape = shapes[0];
+                            if (shape->GetPxShape() != nullptr)
+                            {
+                                const physx::PxTransform& shapeLocalPos = shape->GetPxShape()->getLocalPose();
+                                TransformComponent* childTransform = child->GetComponent<TransformComponent>();
+                                childTransform->SetLocalTransform(PhysicsMath::PxVec3ToVector3(shapeLocalPos.p), PhysicsMath::PxQuatToQuaternion(shapeLocalPos.q), shape->scale);
+                            }
                         }
                     }
-                }
 
-                if (physicsComponent->GetType()->Is<DynamicBodyComponent>())
-                {
-                    DynamicBodyComponent* dynamicBodyComponent = static_cast<DynamicBodyComponent*>(physicsComponent);
-
-                    physx::PxRigidDynamic* dynamicActor = rigidActor->is<physx::PxRigidDynamic>();
-
-                    if (dynamicBodyComponent->GetIsKinematic() == false)
+                    if (physicsComponent->GetType()->Is<DynamicBodyComponent>())
                     {
-                        // Do not use SetLinearVelocity/SetAngularVelocity since it will trigger ScheduleUpdate which we do not need
-                        dynamicBodyComponent->linearVelocity = PhysicsMath::PxVec3ToVector3(dynamicActor->getLinearVelocity());
-                        dynamicBodyComponent->angularVelocity = PhysicsMath::PxVec3ToVector3(dynamicActor->getAngularVelocity());
+                        DynamicBodyComponent* dynamicBodyComponent = static_cast<DynamicBodyComponent*>(physicsComponent);
+
+                        physx::PxRigidDynamic* dynamicActor = rigidActor->is<physx::PxRigidDynamic>();
+
+                        if (dynamicBodyComponent->GetIsKinematic() == false)
+                        {
+                            // Do not use SetLinearVelocity/SetAngularVelocity since it will trigger ScheduleUpdate which we do not need
+                            dynamicBodyComponent->linearVelocity = PhysicsMath::PxVec3ToVector3(dynamicActor->getLinearVelocity());
+                            dynamicBodyComponent->angularVelocity = PhysicsMath::PxVec3ToVector3(dynamicActor->getAngularVelocity());
+                        }
                     }
                 }
             }

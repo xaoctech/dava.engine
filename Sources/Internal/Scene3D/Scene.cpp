@@ -970,7 +970,7 @@ SingletonComponent* Scene::AquireSingleComponentForWrite(const Type* type)
     }
     else
     {
-        result = static_cast<SingletonComponent*>(ComponentUtils::CreateByType(type));
+        result = static_cast<SingletonComponent*>(ComponentUtils::Create(type));
         AddSingletonComponent(result, type);
     }
 

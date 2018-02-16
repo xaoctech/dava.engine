@@ -156,7 +156,7 @@ DAVA_TESTCLASS (SnapshotTest)
 
     bool TestEntity(Entity * entity)
     {
-        static uint32 cid = GetEngineContext()->componentManager->GetRuntimeComponentIndex(Type::Instance<SnapshotTestDetails::TestComponent>());
+        static uint32 cid = GetEngineContext()->componentManager->GetRuntimeComponentId(Type::Instance<SnapshotTestDetails::TestComponent>());
 
         NetworkID networkID = NetworkCoreUtils::GetEntityId(entity);
 
@@ -355,7 +355,7 @@ DAVA_TESTCLASS (SnapshotTest)
         SnapshotTestDetails::TestComponent* c1 = e1->GetComponent<SnapshotTestDetails::TestComponent>();
 
         NetworkID networkID = NetworkCoreUtils::GetEntityId(e1);
-        uint32 componentId = ComponentUtils::GetRuntimeIndex(c1);
+        uint32 componentId = ComponentUtils::GetRuntimeId(c1->GetType());
 
         // component values change
         {

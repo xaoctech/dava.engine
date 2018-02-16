@@ -35,7 +35,7 @@ NetworkDebugPredictDrawSystem::NetworkDebugPredictDrawSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent>()
                   | ComponentUtils::MakeMask<NetworkDebugDrawComponent>()
                   | ComponentUtils::MakeMask<NetworkReplicationComponent>())
-    , netTransCompId(ComponentUtils::GetRuntimeIndex<NetworkTransformComponent>())
+    , netTransCompId(ComponentUtils::GetRuntimeId<NetworkTransformComponent>())
 {
     tmpNetTransComp.reset(new NetworkTransformComponent);
 }

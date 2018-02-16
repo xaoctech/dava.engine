@@ -1,8 +1,8 @@
 #include "Classes/CommandLine/SceneValidationTool.h"
-#include "Classes/CommandLine/Private/OptionName.h"
 #include "Classes/Qt/Scene/Validation/SceneValidation.h"
 #include "Classes/Qt/Scene/Validation/ValidationProgressConsumer.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
 #include <REPlatform/DataNodes/ProjectResources.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 
@@ -47,6 +47,8 @@ Vector<FilePath> ReadScenesListFile(const FilePath& listFilePath)
 SceneValidationTool::SceneValidationTool(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-scenevalidation")
 {
+    using namespace DAVA;
+
     options.AddOption(OptionName::Scene, DAVA::VariantType(DAVA::String("")), "Path to validated scene");
     options.AddOption(OptionName::ProcessFileList, DAVA::VariantType(DAVA::String("")), "Path to file with the list of validated scenes");
     options.AddOption(OptionName::Validate, DAVA::VariantType(DAVA::String("all")), "Validation options: all, matrices, sameNames, collisionTypes, texturesRelevance, materialGroups", true);
@@ -63,6 +65,8 @@ void SceneValidationTool::EnableAllValidations()
 
 bool SceneValidationTool::PostInitInternal()
 {
+    using namespace DAVA;
+
     scenePath = options.GetOption(OptionName::Scene).AsString();
     scenesListPath = options.GetOption(OptionName::ProcessFileList).AsString();
 

@@ -269,7 +269,7 @@ void SnapshotSystemBase::Watch(Entity* entity, Component* component)
 
     if (NeedToBeTracked(component))
     {
-        uint32 componentId = ComponentUtils::GetRuntimeIndex(component);
+        uint32 componentId = ComponentUtils::GetRuntimeId(component->GetType());
         uint32 componentIndex = GetComponentIndex(entity, component);
         SnapshotComponentKey componentKey(componentId, componentIndex);
 
@@ -337,7 +337,7 @@ void SnapshotSystemBase::Unwatch(Entity* entity, Component* component)
 {
     DVASSERT(component->GetEntity() == entity);
 
-    uint32 componentId = ComponentUtils::GetRuntimeIndex(component);
+    uint32 componentId = ComponentUtils::GetRuntimeId(component->GetType());
     uint32 componentIndex = GetComponentIndex(entity, component);
 
     SnapshotComponentKey componentKey(componentId, componentIndex);

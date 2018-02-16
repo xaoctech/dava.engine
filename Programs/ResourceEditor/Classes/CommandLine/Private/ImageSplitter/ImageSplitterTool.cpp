@@ -1,6 +1,6 @@
 #include "Classes/CommandLine/ImageSplitterTool.h"
-#include "Classes/CommandLine/Private/OptionName.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
 #include <REPlatform/Scene/Utils/ImageTools.h>
 
 #include <TArc/Utils/ModuleCollection.h>
@@ -9,6 +9,8 @@
 ImageSplitterTool::ImageSplitterTool(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-imagesplitter")
 {
+    using namespace DAVA;
+
     options.AddOption(OptionName::Split, DAVA::VariantType(false), "Action is splitting image file on channels");
     options.AddOption(OptionName::Merge, DAVA::VariantType(false), "Action is merging channels into one file");
     options.AddOption(OptionName::File, DAVA::VariantType(DAVA::String("")), "Full pathname of the image file");
@@ -17,6 +19,8 @@ ImageSplitterTool::ImageSplitterTool(const DAVA::Vector<DAVA::String>& commandLi
 
 bool ImageSplitterTool::PostInitInternal()
 {
+    using namespace DAVA;
+
     filename = options.GetOption(OptionName::File).AsString();
     foldername = options.GetOption(OptionName::Folder).AsString();
     if (options.GetOption(OptionName::Split).AsBool())

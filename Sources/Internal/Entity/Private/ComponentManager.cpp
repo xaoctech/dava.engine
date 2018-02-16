@@ -1,22 +1,23 @@
 #include "Entity/ComponentManager.h"
+
 #include "Entity/Component.h"
+#include "Entity/ComponentUtils.h"
 #include "Entity/SingletonComponent.h"
-
-#include "Scene3D/Entity.h"
-#include "UI/Components/UIComponent.h"
-#include "Utils/CRC32.h"
 #include "Reflection/ReflectedTypeDB.h"
-
-#include <numeric>
+#include "Scene3D/Entity.h"
+#include "Utils/CRC32.h"
+#include "UI/Components/UIComponent.h"
 
 namespace DAVA
 {
 ComponentManager::ComponentManager()
 {
-    DVASSERT(runtimeTypeIndex == -1 && componentTypeIndex == -1);
+    ComponentUtils::componentManager = this;
 
-    runtimeTypeIndex = Type::AllocUserData();
-    componentTypeIndex = Type::AllocUserData();
+    DVASSERT(runtimeIdUserDataIndex == -1 && componentTypeUserDataIndex == -1);
+
+    runtimeIdUserDataIndex = Type::AllocUserData();
+    componentTypeUserDataIndex = Type::AllocUserData();
 }
 
 void ComponentManager::RegisterComponent(const Type* type)
@@ -40,16 +41,16 @@ void ComponentManager::RegisterComponent(const Type* type)
 
         ++runtimeSceneComponentsCount;
 
-        type->SetUserData(runtimeTypeIndex, Uint32ToVoidPtr(runtimeSceneComponentsCount));
-        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT));
-
-        sceneRuntimeIndexToType.push_back(type);
-
-        DVASSERT(sceneRuntimeIndexToType.size() == runtimeSceneComponentsCount);
+        type->SetUserData(runtimeIdUserDataIndex, Uint32ToVoidPtr(runtimeSceneComponentsCount));
+        type->SetUserData(componentTypeUserDataIndex, Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT));
 
         DVASSERT(static_cast<size_t>(runtimeSceneComponentsCount) < ComponentMask().size());
 
         registeredSceneComponents.push_back(type);
+
+        DVASSERT(registeredSceneComponents.size() == runtimeSceneComponentsCount);
+
+        UpdateSceneComponentsSortedVector(type);
     }
     else if (TypeInheritance::CanDownCast(type, uiComponentType))
     {
@@ -65,8 +66,8 @@ void ComponentManager::RegisterComponent(const Type* type)
 
         ++runtimeUIComponentsCount;
 
-        type->SetUserData(runtimeTypeIndex, Uint32ToVoidPtr(runtimeUIComponentsCount));
-        type->SetUserData(componentTypeIndex, Uint32ToVoidPtr(ComponentType::UI_COMPONENT));
+        type->SetUserData(runtimeIdUserDataIndex, Uint32ToVoidPtr(runtimeUIComponentsCount));
+        type->SetUserData(componentTypeUserDataIndex, Uint32ToVoidPtr(ComponentType::UI_COMPONENT));
 
         registeredUIComponents.push_back(type);
     }
@@ -80,7 +81,7 @@ void ComponentManager::PreregisterAllDerivedSceneComponentsRecursively()
 {
     DVASSERT(!componentsWerePreregistered);
     DVASSERT(runtimeSceneComponentsCount == 0);
-    DVASSERT(registeredSceneComponents.empty() && sceneRuntimeIndexToType.empty());
+    DVASSERT(registeredSceneComponents.empty());
 
     const TypeInheritance* inheritance = Type::Instance<Component>()->GetInheritance();
 
@@ -103,12 +104,17 @@ void ComponentManager::PreregisterAllDerivedSceneComponentsRecursively()
     const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
 
     std::sort(componentsToRegister.begin(), componentsToRegister.end(), [db](const Type* l, const Type* r) {
-        const String& permanentNameL = db->GetByType(l)->GetPermanentName();
-        const String& permanentNameR = db->GetByType(r)->GetPermanentName();
+        const ReflectedType* lReflType = db->GetByType(l);
+        const ReflectedType* rReflType = db->GetByType(r);
 
-        DVASSERT(!permanentNameL.empty() && !permanentNameR.empty());
+        DVASSERT(lReflType != nullptr && rReflType != nullptr);
 
-        return permanentNameL < permanentNameR;
+        const String& lName = lReflType->GetPermanentName();
+        const String& rName = rReflType->GetPermanentName();
+
+        DVASSERT(!lName.empty() && !rName.empty(), "Component permanent name is empty, order will be incorrect.");
+
+        return lName < rName;
     });
 
     CRC32 crc;
@@ -116,7 +122,6 @@ void ComponentManager::PreregisterAllDerivedSceneComponentsRecursively()
     for (const Type* type : componentsToRegister)
     {
         RegisterComponent(type);
-
         const String& permanentName = db->GetByType(type)->GetPermanentName();
         crc.AddData(permanentName.data(), permanentName.size() * sizeof(String::value_type));
     }
@@ -135,49 +140,41 @@ uint32 ComponentManager::GetCRC32HashOfPreregisteredSceneComponents()
 
 uint32 ComponentManager::GetCRC32HashOfRegisteredSceneComponents()
 {
-    UpdateSortedVectors();
-
     const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
 
     CRC32 crc;
 
-    for (uint32 x : sceneComponentsSortedByPermanentName)
+    for (const auto& x : sceneComponentsSortedByPermanentName)
     {
-        const Type* type = registeredSceneComponents[x];
+        const Type* type = registeredSceneComponents[x.first];
         const String& permanentName = db->GetByType(type)->GetPermanentName();
-        crc.AddData(permanentName.data(), permanentName.size());
+        crc.AddData(permanentName.data(), permanentName.size() * sizeof(String::value_type));
     }
 
     return crc.Done();
 }
 
-uint32 ComponentManager::GetSortedComponentIndex(const Type* type)
+uint32 ComponentManager::GetSortedComponentId(const Type* type)
 {
-    UpdateSortedVectors();
+    DVASSERT(IsRegisteredSceneComponent(type));
 
-    uint32 runtimeIndex = GetRuntimeComponentIndex(type);
+    uint32 runtimeId = GetRuntimeComponentId(type);
 
-    if (IsRegisteredSceneComponent(type) && runtimeIndex < sceneComponentsSortedByPermanentName.size())
-    {
-        return sceneComponentsSortedByPermanentName[runtimeIndex];
-    }
-    else
-    {
-        DVASSERT(false);
-        return 0;
-    }
+    DVASSERT(runtimeId < sceneComponentsSortedByPermanentName.size());
+
+    return sceneComponentsSortedByPermanentName[runtimeId].second;
 }
 
-const Type* ComponentManager::GetSceneComponentType(uint32 runtimeIndex) const
+const Type* ComponentManager::GetSceneComponentType(uint32 runtimeId) const
 {
-    const Type* ret = nullptr;
+    const Type* type = nullptr;
 
-    if (runtimeIndex < sceneRuntimeIndexToType.size())
+    if (runtimeId < registeredSceneComponents.size())
     {
-        ret = sceneRuntimeIndexToType[runtimeIndex];
+        type = registeredSceneComponents[runtimeId];
     }
 
-    return ret;
+    return type;
 }
 
 void ComponentManager::CollectSceneComponentsRecursively(const Type* type, Vector<const Type*>& components)
@@ -195,30 +192,35 @@ void ComponentManager::CollectSceneComponentsRecursively(const Type* type, Vecto
     }
 }
 
-void ComponentManager::UpdateSortedVectors()
+void ComponentManager::UpdateSceneComponentsSortedVector(const Type* type)
 {
     const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
 
-    size_t size = registeredSceneComponents.size();
+    uint32 x = GetRuntimeComponentId(type);
 
-    if (sceneComponentsSortedByPermanentName.size() != size)
+    auto p = std::make_pair(x, x);
+
+    // Keep sorted order
+    auto position = std::lower_bound(sceneComponentsSortedByPermanentName.begin(), sceneComponentsSortedByPermanentName.end(), p, [this, db](const auto& l, const auto& r) {
+        const ReflectedType* lReflType = db->GetByType(registeredSceneComponents[l.first]);
+        const ReflectedType* rReflType = db->GetByType(registeredSceneComponents[r.first]);
+
+        DVASSERT(lReflType != nullptr && rReflType != nullptr);
+
+        const String& lName = lReflType->GetPermanentName();
+        const String& rName = rReflType->GetPermanentName();
+
+        DVASSERT(!lName.empty() && !rName.empty(), "Component permanent name is empty, order will be incorrect.");
+
+        return lName < rName;
+    });
+
+    sceneComponentsSortedByPermanentName.insert(position, p);
+
+    // Remap runtime ids to sorted ids
+    for (size_t i = 0; i < sceneComponentsSortedByPermanentName.size(); ++i)
     {
-        sceneComponentsSortedByPermanentName.resize(size);
-        std::iota(sceneComponentsSortedByPermanentName.begin(), sceneComponentsSortedByPermanentName.end(), 0);
-
-        std::sort(sceneComponentsSortedByPermanentName.begin(), sceneComponentsSortedByPermanentName.end(), [this, db](uint32 l, uint32 r) {
-            const ReflectedType* lRefType = db->GetByType(registeredSceneComponents[l]);
-            const ReflectedType* rRefType = db->GetByType(registeredSceneComponents[r]);
-
-            DVASSERT(lRefType != nullptr && rRefType != nullptr);
-
-            const String& lName = lRefType->GetPermanentName();
-            const String& rName = rRefType->GetPermanentName();
-
-            DVASSERT(!lName.empty() && !rName.empty());
-
-            return lName < rName;
-        });
+        sceneComponentsSortedByPermanentName[sceneComponentsSortedByPermanentName[i].first].second = static_cast<uint32>(i);
     }
 }
 }

@@ -4,9 +4,9 @@
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Selection/SelectionModule.h"
 
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 #include "Classes/MockModules/MockProjectManagerModule.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/DataNodes/ProjectResources.h>
 #include <REPlatform/DataNodes/SceneData.h>

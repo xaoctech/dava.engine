@@ -26,10 +26,4 @@ void RegisterTypeCompressor()
     RegisterTypeCompressor(vectorType, &vectorCompressor);
 }
 
-template <typename E>
-void RegisterEnumCompressor()
-{
-    RegisterTypeCompressor<E, IntegralCompressor<E>>();
-}
-
 } // namespace DAVA

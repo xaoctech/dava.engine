@@ -1,5 +1,6 @@
 #include "Classes/CommandLine/SceneSaverTool.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
+
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
 #include <TArc/Testing/TArcUnitTests.h>

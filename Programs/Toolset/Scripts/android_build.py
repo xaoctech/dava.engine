@@ -23,7 +23,10 @@ def build( program ):
     print "===== Building % s =====" % (program)
     
     command = '{}:assembleFatRelease'.format(program);
-    subprocess.check_call([program_dir+'/gradlew', command])
+    bat_file = ''  # empty on UNIX platforms
+    if os.name == 'nt':  # windows
+        bat_file = '.bat'
+    subprocess.check_call([program_dir+'/gradlew'+bat_file, command])
 
 def main():
     parser = argparse.ArgumentParser()
@@ -38,15 +41,23 @@ def main():
     assert exists_sdk_dir == True
     assert exists_ndk_dir == True
 
+    sdk_dir = options.sdk_dir
+    ndk_dir = options.ndk_dir
+
+    if os.name == 'nt':  # windows
+        sdk_dir = sdk_dir.replace('\\', '/')
+        ndk_dir = ndk_dir.replace('\\', '/')
+
+    local_properties_str = 'sdk.dir={}\nndk.dir={}\n'.format(sdk_dir, ndk_dir)
+
     for program in ProgramsList:
         program_dir = os.path.join( DavaProgramsDir, program, 'Platforms', 'Android') 
 
         os.chdir(program_dir)
 
-        local_properties_file = open( 'local.properties', 'w' )
-        local_properties_file.write( 'sdk.dir={}\n'.format( options.sdk_dir) )
-        local_properties_file.write( 'ndk.dir={}\n'.format( options.ndk_dir) )
-        local_properties_file.close()
+
+        with open( 'local.properties', 'w' ) as local_properties_file:
+            local_properties_file.write(local_properties_str)
         
         build(program)
 

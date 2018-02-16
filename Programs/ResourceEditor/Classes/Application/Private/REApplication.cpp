@@ -3,7 +3,6 @@
 #include "Classes/Application/ReflectionExtensions.h"
 #include "Classes/Application/REModule.h"
 
-#include "Classes/Beast/BeastCommandLineTool.h"
 #include "Classes/Project/ProjectManagerModule.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/CommandLine/ConsoleHelpTool.h"

@@ -17,6 +17,8 @@ public:
     ~RECommandStack() override;
 
     void Exec(std::unique_ptr<Command>&& command) override;
+    bool IsClean() const override;
+    void SetClean() override;
 
     void Clear();
     void SetChanged();
@@ -33,6 +35,8 @@ private:
 
     void OnCommandExecuted(const Command* cmd, bool redo);
     void ExecInternal(std::unique_ptr<Command>&& command, bool isSingleCommand) override;
+
+    bool forceChanged = false;
 };
 
 template <typename... Args>

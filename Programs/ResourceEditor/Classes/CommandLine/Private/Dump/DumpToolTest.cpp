@@ -1,7 +1,7 @@
 #include "Classes/CommandLine/DumpTool.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 #include <REPlatform/Scene/Utils/SceneDumper.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
@@ -147,7 +147,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         }
     }
 
-    void TestLinks(CommandLineModuleTestUtils::SceneDumper::eMode mode,
+    void TestLinks(DAVA::SceneDumper::eMode mode,
                    const DAVA::Vector<DAVA::eGPUFamily>& compressedGPUs,
                    const DAVA::String& scenePathnameStr,
                    const DAVA::FilePath& outDir = "")
@@ -211,7 +211,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
                 return str.find(ownerName) != String::npos;
             });
 
-            TEST_VERIFY((it == dumpedLinks.end()) == (mode == CommandLineModuleTestUtils::SceneDumper::eMode::REQUIRED));
+            TEST_VERIFY((it == dumpedLinks.end()) == (mode == SceneDumper::eMode::REQUIRED));
 
             RenderObject* ro = GetRenderObject(child);
             if (ro == nullptr)
@@ -228,7 +228,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
             {
                 VegetationRenderObject* vegetation = static_cast<VegetationRenderObject*>(ro);
 
-                const size_t expectedCount = (mode == CommandLineModuleTestUtils::SceneDumper::eMode::REQUIRED) ? 0 : 1;
+                const size_t expectedCount = (mode == SceneDumper::eMode::REQUIRED) ? 0 : 1;
                 TEST_VERIFY(dumpedLinks.count(vegetation->GetCustomGeometryPath().GetAbsolutePathname()) == expectedCount);
                 TEST_VERIFY(dumpedLinks.count(vegetation->GetLightmapPath().GetAbsolutePathname()) == 1);
             }
@@ -273,7 +273,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
         DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        TestLinks(CommandLineModuleTestUtils::SceneDumper::eMode::EXTENDED, { GPU_POWERVR_IOS, GPU_POWERVR_ANDROID, GPU_TEGRA, GPU_MALI, GPU_ADRENO, GPU_DX11 },
+        TestLinks(SceneDumper::eMode::EXTENDED, { GPU_POWERVR_IOS, GPU_POWERVR_ANDROID, GPU_TEGRA, GPU_MALI, GPU_ADRENO, GPU_DX11 },
                   DTestDetail::scenePathnameStr);
 
         CommandLineModuleTestUtils::ClearTestFolder(DTestDetail::projectStr);
@@ -307,7 +307,7 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
         DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        TestLinks(CommandLineModuleTestUtils::SceneDumper::eMode::REQUIRED, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_TEGRA },
+        TestLinks(SceneDumper::eMode::REQUIRED, { eGPUFamily::GPU_MALI, eGPUFamily::GPU_TEGRA },
                   DTestDetail::scenePathnameStr);
 
         CommandLineModuleTestUtils::ClearTestFolder(DTestDetail::projectStr);
@@ -422,9 +422,9 @@ DAVA_TARC_TESTCLASS(DumpToolTest)
         std::unique_ptr<CommandLineModule> tool = std::make_unique<DumpTool>(cmdLine);
         DAVA::ConsoleModuleTestExecution::ExecuteModule(tool.get());
 
-        TestLinks(CommandLineModuleTestUtils::SceneDumper::eMode::EXTENDED, { eGPUFamily::GPU_ORIGIN },
+        TestLinks(SceneDumper::eMode::EXTENDED, { eGPUFamily::GPU_ORIGIN },
                   DTestDetail::scenePathnameStr, outDir);
-        TestLinks(CommandLineModuleTestUtils::SceneDumper::eMode::EXTENDED, { eGPUFamily::GPU_ORIGIN },
+        TestLinks(SceneDumper::eMode::EXTENDED, { eGPUFamily::GPU_ORIGIN },
                   DTestDetail::anotherScenePathnameStr, outDir);
 
         CommandLineModuleTestUtils::ClearTestFolder(DTestDetail::projectStr);

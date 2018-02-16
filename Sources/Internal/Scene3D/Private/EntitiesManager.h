@@ -104,15 +104,20 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 
     Function<void(Entity*)> recursiveRegister = [&](Entity* e)
     {
-        bool needAdd = AllOfEntityMatcher::Match(mask, e->GetAvailableComponentMask());
+        bool needAdd = Matcher::Match(mask, e->GetAvailableComponentMask());
         if (needAdd)
         {
-            uint32 size = e->GetComponentCount(componentType);
-            for (uint32 i = 0; i < size; ++i)
+            uint32 count = e->GetComponentCount();
+            for (uint32 i = 0; i < count; ++i)
             {
-                Component* c = e->GetComponent(componentType, i);
-                ComponentGroup<T>* group = static_cast<ComponentGroup<T>*>(base);
-                group->components.Add(static_cast<T*>(c));
+                Component* c = e->GetComponentByIndex(i);
+                ComponentMask componentToCheckType = ComponentUtils::MakeMask(c->GetType());
+                bool needAddComponent = Matcher::Match(componentToCheckType, mask);
+                if (needAddComponent)
+                {
+                    ComponentGroup<T>* group = static_cast<ComponentGroup<T>*>(base);
+                    group->components.Add(static_cast<T*>(c));
+                }
             }
         }
 
@@ -149,7 +154,7 @@ EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
 
         Function<void(Entity*)> recursiveRegister = [&](Entity* e)
         {
-            bool needAdd = AllOfEntityMatcher::Match(mask, e->GetAvailableComponentMask());
+            bool needAdd = Matcher::Match(mask, e->GetAvailableComponentMask());
             if (needAdd)
             {
                 eg->entities.Add(e);

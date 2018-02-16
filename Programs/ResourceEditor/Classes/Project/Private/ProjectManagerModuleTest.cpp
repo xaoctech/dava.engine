@@ -1,7 +1,7 @@
 #include "Classes/Project/ProjectManagerModule.h"
 #include "Classes/Application/LaunchModule.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Global/GlobalOperations.h>

@@ -1,7 +1,7 @@
 #include "Classes/CommandLine/StaticOcclusionTool.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
-#include "Classes/CommandLine/Private/OptionName.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 #include <REPlatform/Scene/Utils/Utils.h>
 
 #include <TArc/Utils/ModuleCollection.h>
@@ -131,7 +131,7 @@ void StaticOcclusionTool::BeforeDestroyedInternal()
         scene.reset();
     }
 
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void StaticOcclusionTool::ShowHelpInternal()

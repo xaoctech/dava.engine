@@ -1,6 +1,6 @@
 #include "Classes/CommandLine/SceneValidationTool.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/Scene/SceneHelper.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
@@ -20,18 +20,18 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
 {
     DAVA::String projectStr = "~doc:/Test/SceneValidationTool/";
     DAVA::String scenePathnameStr = projectStr + "DataSource/3d/Scene/testScene.sc2";
-    std::unique_ptr<CommandLineModuleTestUtils::TextureLoadingGuard> guard;
+    std::unique_ptr<DAVA::CommandLineModuleTestUtils::TextureLoadingGuard> guard;
 
     void SetUp(const DAVA::String& testName) override
     {
-        guard = CommandLineModuleTestUtils::CreateTextureGuard({ DAVA::eGPUFamily::GPU_ORIGIN });
-        CommandLineModuleTestUtils::CreateProjectInfrastructure(projectStr);
+        guard = DAVA::CommandLineModuleTestUtils::CreateTextureGuard({ DAVA::eGPUFamily::GPU_ORIGIN });
+        DAVA::CommandLineModuleTestUtils::CreateProjectInfrastructure(projectStr);
     }
 
     void TearDown(const DAVA::String& testName) override
     {
         guard.reset();
-        CommandLineModuleTestUtils::ClearTestFolder(projectStr);
+        DAVA::CommandLineModuleTestUtils::ClearTestFolder(projectStr);
     }
 
     DAVA_TEST (CorrectMatricesTest)
@@ -39,8 +39,8 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         using namespace DAVA;
 
         {
-            CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
-            builder.AddBox(CommandLineModuleTestUtils::SceneBuilder::WITH_REF_TO_OWNER);
+            DAVA::CommandLineModuleTestUtils::SceneBuilder builder(scenePathnameStr, projectStr);
+            builder.AddBox(DAVA::CommandLineModuleTestUtils::SceneBuilder::WITH_REF_TO_OWNER);
         }
 
         Vector<String> cmdLine = { "ResourceEditor", "-scenevalidation", "-scene", scenePathnameStr, "-validate", "matrices" };

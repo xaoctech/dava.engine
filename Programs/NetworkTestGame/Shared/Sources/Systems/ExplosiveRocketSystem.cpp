@@ -196,6 +196,8 @@ void ExplosiveRocketSystem::ProcessFixed(float32 timeElapsed)
     {
         GetScene()->RemoveNode(destroyedBullet);
     }
+
+    destroyedEntities.clear();
 }
 
 Entity* ExplosiveRocketSystem::GetRocketModel() const

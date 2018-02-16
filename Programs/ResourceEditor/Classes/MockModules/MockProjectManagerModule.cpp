@@ -1,7 +1,8 @@
 #include "Classes/MockModules/MockProjectManagerModule.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
 
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/DataNodes/ProjectResources.h>
+
 #include <Reflection/ReflectionRegistrator.h>
 
 namespace Mock
@@ -12,7 +13,7 @@ const DAVA::String ProjectManagerModule::testScenePath = DAVA::String("~doc:/Tes
 
 ProjectManagerModule::~ProjectManagerModule()
 {
-    CommandLineModuleTestUtils::ClearTestFolder(testFolder);
+    DAVA::CommandLineModuleTestUtils::ClearTestFolder(testFolder);
 }
 
 void ProjectManagerModule::PostInit()

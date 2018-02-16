@@ -89,7 +89,7 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
         NetworkReplicationComponent* replicationComponent = e->GetComponent<NetworkReplicationComponent>();
         DVASSERT(replicationComponent != nullptr);
 
-        SnapshotComponentKey componentKey(ComponentUtils::GetRuntimeIndex<NetworkTransformComponent>(), 0);
+        SnapshotComponentKey componentKey(ComponentUtils::GetRuntimeId<NetworkTransformComponent>(), 0);
         bool applyResult = SnapshotUtils::ApplySnapshot(snapshot, replicationComponent->GetNetworkID(), componentKey, networkTransformComponent);
         if (!applyResult)
         {

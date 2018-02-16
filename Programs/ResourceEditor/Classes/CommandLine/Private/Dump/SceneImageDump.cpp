@@ -1,7 +1,8 @@
 #include "Classes/CommandLine/SceneImageDump.h"
-#include "Classes/CommandLine/Private/OptionName.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 #include "Classes/Qt/Scene/SceneImageGraber.h"
+
+#include <REPlatform/CommandLine/OptionName.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 
 #include <TArc/Utils/ModuleCollection.h>
 
@@ -33,6 +34,8 @@ SceneImageDump::SceneImageDump(const DAVA::Vector<DAVA::String>& commandLine)
 
 bool SceneImageDump::PostInitInternal()
 {
+    using namespace DAVA;
+
     sceneFilePath = options.GetOption(OptionName::ProcessFile).AsString();
     if (sceneFilePath.IsEmpty() || !sceneFilePath.Exists())
     {
@@ -145,7 +148,7 @@ DAVA::Camera* SceneImageDump::FindCamera(DAVA::Entity* rootNode) const
 
 void SceneImageDump::BeforeDestroyedInternal()
 {
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void SceneImageDump::ShowHelpInternal()

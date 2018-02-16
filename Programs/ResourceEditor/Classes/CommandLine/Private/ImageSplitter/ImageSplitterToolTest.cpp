@@ -1,12 +1,14 @@
 #include "Classes/CommandLine/ImageSplitterTool.h"
-#include "Classes/CommandLine/Private/CommandLineModuleTestUtils.h"
-#include "TArc/Testing/ConsoleModuleTestExecution.h"
-#include "TArc/Testing/TArcUnitTests.h"
 
-#include "FileSystem/FileSystem.h"
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageSystem.h"
-#include "Utils/Random.h"
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
+
+#include <TArc/Testing/ConsoleModuleTestExecution.h>
+#include <TArc/Testing/TArcUnitTests.h>
+
+#include <FileSystem/FileSystem.h>
+#include <Render/Image/Image.h>
+#include <Render/Image/ImageSystem.h>
+#include <Utils/Random.h>
 
 #include <memory>
 

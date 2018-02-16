@@ -1,6 +1,8 @@
+#include "Engine/Engine.h"
 #include "FileSystem/Private/PackMetaData.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/DynamicMemoryFile.h"
+#include "FileSystem/FileSystem.h"
 #include "Compression/LZ4Compressor.h"
 #include "Base/Exception.h"
 #include "Debug/DVAssert.h"
@@ -103,8 +105,35 @@ Vector<uint32> PackMetaData::ConvertStringWithNumbersToVector(const String& depe
 
 PackMetaData::PackMetaData(const FilePath& metaDb)
 {
+    // if metaDB path inside Android assets folder -> copy it to real file system
+    // sqlite can't read files from APK
+    FileSystem* fs = GetEngineContext()->fileSystem;
+    String pathToMetaDb;
+    if (fs->ExistsInAndroidAssets(metaDb))
+    {
+        FilePath userDoc = fs->GetUserDocumentsPath() + "tmp_extracted_pack_local_meta.db";
+        if (fs->CopyFile(metaDb, userDoc, true))
+        {
+            pathToMetaDb = userDoc.GetAbsolutePathname();
+        }
+        else
+        {
+            DAVA_THROW(Exception, "can't extract sqlite db from android assets: " + metaDb.GetStringValue());
+        }
+    }
+    else
+    {
+        if (fs->IsFile(metaDb))
+        {
+            pathToMetaDb = metaDb.GetAbsolutePathname();
+        }
+        else
+        {
+            DAVA_THROW(Exception, "No local meta file: %s" + pathToMetaDb);
+        }
+    }
     // extract tables from sqlite DB
-    sqlite::database db(metaDb.GetAbsolutePathname());
+    sqlite::database db(pathToMetaDb);
 
     size_t numIndexes = 0;
 

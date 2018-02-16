@@ -25,6 +25,6 @@ const DAVA::Type* CounterpoiseComponent::GetType() const
 
 DAVA::int32 CounterpoiseComponent::GetRuntimeType() const
 {
-    static DAVA::int32 runtimeType = DAVA::GetEngineContext()->componentManager->GetRuntimeComponentIndex(GetType());
+    static DAVA::int32 runtimeType = DAVA::GetEngineContext()->componentManager->GetRuntimeComponentId(GetType());
     return runtimeType;
 }

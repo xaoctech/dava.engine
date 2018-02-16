@@ -1,7 +1,7 @@
 #include "Classes/CommandLine/SceneSaverTool.h"
-#include "Classes/CommandLine/Private/OptionName.h"
-#include "Classes/CommandLine/Private/SceneConsoleHelper.h"
 
+#include <REPlatform/CommandLine/OptionName.h>
+#include <REPlatform/CommandLine/SceneConsoleHelper.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/Scene/Utils/SceneSaver.h>
 
@@ -150,7 +150,7 @@ DAVA::ConsoleModule::eFrameResult SceneSaverTool::OnFrameInternal()
 
 void SceneSaverTool::BeforeDestroyedInternal()
 {
-    SceneConsoleHelper::FlushRHI();
+    DAVA::SceneConsoleHelper::FlushRHI();
 }
 
 void SceneSaverTool::ShowHelpInternal()

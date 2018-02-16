@@ -18,10 +18,10 @@ EntityFamily::EntityFamily(const Vector<Component*>& components)
     int32 size = static_cast<int32>(components.size());
     for (int32 i = size - 1; i >= 0; --i)
     {
-        uint32 runtimeIndex = cm->GetRuntimeComponentIndex(components[i]->GetType());
-        componentsIndices[runtimeIndex] = i;
-        componentsCount[runtimeIndex]++;
-        componentsMask.set(runtimeIndex);
+        uint32 runtimeId = cm->GetRuntimeComponentId(components[i]->GetType());
+        componentsIndices[runtimeId] = i;
+        componentsCount[runtimeId]++;
+        componentsMask.set(runtimeId);
     }
 }
 
@@ -50,18 +50,18 @@ uint32 EntityFamily::GetComponentIndex(const Type* type, uint32 index) const
 
     ComponentManager* cm = GetEngineContext()->componentManager;
 
-    uint32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+    uint32 runtimeId = cm->GetRuntimeComponentId(type);
 
-    return componentsIndices[runtimeIndex] + index;
+    return componentsIndices[runtimeId] + index;
 }
 
 uint32 EntityFamily::GetComponentsCount(const Type* type) const
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
 
-    uint32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+    uint32 runtimeId = cm->GetRuntimeComponentId(type);
 
-    return componentsCount[runtimeIndex];
+    return componentsCount[runtimeId];
 }
 
 const ComponentMask& EntityFamily::GetComponentsMask() const

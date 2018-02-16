@@ -4,16 +4,21 @@
 #include "REPlatform/Commands/EntityAddCommand.h"
 #include "REPlatform/Commands/EntityLockCommand.h"
 #include "REPlatform/Commands/TransformCommand.h"
+#include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
 #include "REPlatform/Scene/SceneEditor2.h"
 #include "REPlatform/Scene/SceneHelper.h"
 #include "REPlatform/Scene/Systems/CameraSystem.h"
 #include "REPlatform/Scene/Systems/EditorParticlesSystem.h"
 #include "REPlatform/Scene/Systems/HoodSystem.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
+#include "REPlatform/Scene/Systems/CollisionSystem.h"
 
 #include <TArc/Utils/Utils.h>
+#include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Core/Deprecated.h>
 
 #include <Particles/ParticleForce.h>
+#include <Render/Highlevel/Landscape.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Systems/StaticOcclusionSystem.h>

@@ -115,7 +115,9 @@ macro( processing_mix_data )
         get_filename_component( MIX_APP_DIR ${MIX_APP_DIR} ABSOLUTE )
 
         if( NOT ARG_NOT_DATA_COPY )
-            add_custom_target ( DATA_COPY_${PROJECT_NAME} )
+            if (NOT TARGET DATA_COPY_${PROJECT_NAME})
+                add_custom_target ( DATA_COPY_${PROJECT_NAME} )
+            endif()
         endif()
 
         foreach( ITEM ${MIX_APP_DATA} )
@@ -920,6 +922,41 @@ macro( convert_graphics )
     endif()
 
 endmacro()
+
+function( dava_pre_build_step )
+    cmake_parse_arguments (ARG "" "NAME;COMMAND;ARGS;WORKING_DIRECTORY" "" ${ARGN})
+    
+    if (NOT ARG_NAME)
+        message ( FATAL_ERROR "Please set NAME argument")
+    endif()
+    
+    if (NOT ARG_COMMAND)
+        message ( FATAL_ERROR "Please set COMMAND argument")
+    endif()
+    
+    if (NOT ARG_WORKING_DIRECTORY)
+        message ( FATAL_ERROR "Please set WORKING_DIRECTORY argument")
+    endif()
+    
+    set(BUILD_STEP_NAME ${PROJECT_NAME}_${ARG_NAME})
+    
+    # we have to split ARG_COMMAND and ARG_ARGS for cmake to work on all platforms
+    add_custom_target(${BUILD_STEP_NAME} COMMAND ${ARG_COMMAND} ${ARG_ARGS}
+                      WORKING_DIRECTORY "${ARG_WORKING_DIRECTORY}"
+                      VERBATIM)
+    
+    if (TARGET DATA_COPY_${PROJECT_NAME}  )
+        # we want to do any pre build scrip call before copying resources
+        # to be able to modify any resource as we like
+        add_dependencies(DATA_COPY_${PROJECT_NAME} ${BUILD_STEP_NAME})
+    elseif(TARGET DATA_COPY_ToolSet)
+        # HACK for ToolSet project because no ToolSet target.
+        add_dependencies(DATA_COPY_ToolSet ${BUILD_STEP_NAME})
+    else()
+        message(FATAL_ERROR "Need to add dependency to some target")
+    endif()
+    
+endfunction()
 
 function (ASSERT VAR_NAME MESSAGE)
     if (NOT ${VAR_NAME})

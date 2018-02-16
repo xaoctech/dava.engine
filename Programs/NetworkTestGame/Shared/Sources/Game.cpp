@@ -1,7 +1,6 @@
 #include "Game.h"
 
 #include <Reflection/ReflectionRegistrator.h>
-#include <NetworkCore/Compression/CompressorRegistrar.h>
 
 #include "Components/ShootCooldownComponent.h"
 #include "Components/ShootComponent.h"
@@ -172,10 +171,6 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BotSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BotTaskSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterBehaviorSystem);
-
-    RegisterEnumCompressor<GameMode::Id>();
-    RegisterEnumCompressor<ExplosiveRocketComponent::Stage>();
-    RegisterEnumCompressor<ShooterRocketComponent::Stage>();
 }
 
 GameMode::Id GameMode::IdByName(DAVA::String name)

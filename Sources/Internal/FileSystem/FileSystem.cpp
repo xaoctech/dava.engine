@@ -325,7 +325,7 @@ bool FileSystem::DeleteDirectory(const FilePath& path, bool isRecursive)
                 return false;
         }
     }
-    
+
 #ifdef __DAVAENGINE_WINDOWS__
     WideString sysPath = UTF8Utils::EncodeToWideString(path.GetAbsolutePathname());
     int32 chmodres = _wchmod(sysPath.c_str(), _S_IWRITE); // change read-only file mode
@@ -537,7 +537,7 @@ bool FileSystem::IsDirectory(const FilePath& pathToCheck) const
     { // hooked check: can we continue work with directory?
         return false;
     }
-    
+
 #if defined(__DAVAENGINE_WIN32__)
     WideString path = UTF8Utils::EncodeToWideString(pathToCheckStr);
     DWORD stats = GetFileAttributesW(path.c_str());
@@ -778,7 +778,7 @@ const FilePath FileSystem::GetPublicDocumentsPath()
 #elif defined(__DAVAENGINE_WIN_UAP__)
 
     //take the first removable storage as public documents folder
-    auto storageList = DeviceInfo::GetStoragesList();
+    List<DeviceInfo::StorageInfo> storageList = DeviceInfo::GetStoragesList();
     for (const auto& x : storageList)
     {
         if (x.type == DeviceInfo::STORAGE_TYPE_PRIMARY_EXTERNAL ||
@@ -787,7 +787,8 @@ const FilePath FileSystem::GetPublicDocumentsPath()
             return x.path;
         }
     }
-    return FilePath();
+    // FIXME on desktop only one internal path available better then nothing
+    return GetUserDocumentsPath();
 
 #endif
 }
@@ -1129,6 +1130,22 @@ bool FileSystem::Exists(const FilePath& filePath) const
     }
 
     return IsFile(filePath);
+}
+
+bool FileSystem::ExistsInAndroidAssets(const FilePath& path) const
+{
+#if defined(__DAVAENGINE_ANDROID__)
+    {
+        // We do not use Mutex here because call const methods and only search for file, no extracting from minizip
+        AssetsManagerAndroid* assetsManager = AssetsManagerAndroid::Instance();
+        DVASSERT(assetsManager, "Need to create AssetsManagerAndroid before checking files in android APK");
+
+        String relativePath = path.GetAbsolutePathname();
+        return assetsManager->HasFile(relativePath);
+    }
+#else
+    return false;
+#endif // __DAVAENGINE_ANDROID__
 }
 
 bool FileSystem::RecursiveCopy(const DAVA::FilePath& src, const DAVA::FilePath& dst)

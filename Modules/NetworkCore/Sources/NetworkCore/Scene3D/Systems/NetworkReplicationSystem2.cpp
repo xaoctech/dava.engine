@@ -322,7 +322,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
                 component = entity->GetComponent(componentType);
                 if (nullptr == component)
                 {
-                    component = ComponentUtils::CreateByType(componentType);
+                    component = ComponentUtils::Create(componentType);
 
                     // Delay component addition. It will be added later,
                     // when their fields are applied from snapshot.

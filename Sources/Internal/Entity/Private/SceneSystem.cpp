@@ -36,10 +36,11 @@ void SceneSystem::UnregisterEntity(Entity* entity)
 bool SceneSystem::IsEntityComponentFitsToSystem(Entity* entity, Component* component)
 {
     const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
+    const ComponentMask& componentsRequiredBySystem = this->GetRequiredComponents();
     ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
 
-    bool isAllRequiredComponentsAvailable = (entityComponentMask & requiredComponents) == requiredComponents;
-    bool isComponentMarkedForCheckAvailable = (requiredComponents & componentToCheckType) == componentToCheckType;
+    bool isAllRequiredComponentsAvailable = (entityComponentMask & componentsRequiredBySystem) == componentsRequiredBySystem;
+    bool isComponentMarkedForCheckAvailable = (componentsRequiredBySystem & componentToCheckType) == componentToCheckType;
 
     return (isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable);
 }
