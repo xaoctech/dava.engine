@@ -31,13 +31,13 @@ void ScaleHood::CreateHoodCollisionObjects()
     axisZLine = CreateLine(Vector3(0, 0, 0), axisZ * baseSize);
     axisZLine->axis = ST_AXIS_Z;
 
-    axisXYLine = CreateLine(axisX * c, axisY * baseSize);
+    axisXYLine = CreateLine(axisX * c, axisY * c);
     axisXYLine->axis = ST_AXIS_XY;
 
-    axisXZLine = CreateLine(axisX * baseSize, axisZ * baseSize);
+    axisXZLine = CreateLine(axisX * c, axisZ * c);
     axisXZLine->axis = ST_AXIS_XZ;
 
-    axisYZLine = CreateLine(axisY * baseSize, axisZ * baseSize);
+    axisYZLine = CreateLine(axisY * c, axisZ * c);
     axisYZLine->axis = ST_AXIS_YZ;
 }
 

@@ -168,7 +168,7 @@ void CommandStack::UpdateCleanState()
 {
     if (commandBatch != nullptr)
     {
-        SetCleanState(commandBatch->IsClean());
+        SetCleanState(commandBatch->IsClean() && isClean);
         return;
     }
     if (cleanIndex == currentIndex)
@@ -192,7 +192,7 @@ void CommandStack::UpdateCleanState()
         const std::unique_ptr<Command>& command = commands[index + 1];
         containsModifiedCommands |= (command->IsClean() == false);
     }
-    SetCleanState(!containsModifiedCommands);
+    SetCleanState(!containsModifiedCommands && isClean);
 }
 
 void CommandStack::SetCurrentIndex(int32 currentIndex_)

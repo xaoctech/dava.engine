@@ -60,14 +60,15 @@ HoodCollObject* HoodObject::CreateLine(const Vector3& from, const Vector3& to)
     ret->baseOffset = Vector3(length / 2, 0, 0);
     ret->baseRotate.Identity();
 
+    static const Vector3 globalAxisX(1.f, 0.f, 0.f);
     direction.Normalize();
-    rotateNormal = axisX.CrossProduct(direction);
+    rotateNormal = globalAxisX.CrossProduct(direction);
 
     // do we need rotation
     if (!rotateNormal.IsZero())
     {
         rotateNormal.Normalize();
-        rotateAngle = acosf(axisX.DotProduct(direction));
+        rotateAngle = acosf(globalAxisX.DotProduct(direction));
 
         ret->baseRotate.BuildRotation(rotateNormal, -rotateAngle);
     }

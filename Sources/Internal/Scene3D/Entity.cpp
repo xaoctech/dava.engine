@@ -68,7 +68,7 @@ Entity::~Entity()
 
 bool ComponentLessPredicate(Component* left, Component* right)
 {
-    return ComponentUtils::GetSortedIndex(left) < ComponentUtils::GetSortedIndex(right);
+    return ComponentUtils::GetSortedId(left->GetType()) < ComponentUtils::GetSortedId(right->GetType());
 }
 
 void Entity::AddComponent(Component* component)
@@ -114,7 +114,7 @@ Component* Entity::GetOrCreateComponent(const Type* type, uint32 index)
     Component* ret = GetComponent(type, index);
     if (ret == nullptr)
     {
-        ret = ComponentUtils::CreateByType(type);
+        ret = ComponentUtils::Create(type);
         AddComponent(ret);
     }
 

@@ -32,8 +32,7 @@ bool SceneSystem::IsEntityComponentFitsToSystem(Entity* entity, Component* compo
 {
     const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
     const ComponentMask& componentsRequiredBySystem = this->GetRequiredComponents();
-    ComponentMask componentToCheckType;
-    componentToCheckType.set(ComponentUtils::GetRuntimeIndex(component));
+    ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
 
     bool isAllRequiredComponentsAvailable = (entityComponentMask & componentsRequiredBySystem) == componentsRequiredBySystem;
     bool isComponentMarkedForCheckAvailable = (componentsRequiredBySystem & componentToCheckType) == componentToCheckType;

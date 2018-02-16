@@ -12,6 +12,7 @@
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
 #include "Entity/ComponentUtils.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 using namespace DAVA;
 
@@ -85,9 +86,9 @@ void SingleComponentSystem::AddEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        uint32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+        uint32 runtimeId = cm->GetRuntimeComponentId(type);
 
-        if (GetRequiredComponents().test(runtimeIndex))
+        if (GetRequiredComponents().test(runtimeId))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
             for (uint32 c = 0; c < componentsCount; ++c)
@@ -105,9 +106,9 @@ void SingleComponentSystem::RemoveEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        int32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+        uint32 runtimeId = cm->GetRuntimeComponentId(type);
 
-        if (GetRequiredComponents().test(runtimeIndex))
+        if (GetRequiredComponents().test(runtimeId))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
 
@@ -161,9 +162,9 @@ void MultiComponentSystem::AddEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        uint32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+        uint32 runtimeId = cm->GetRuntimeComponentId(type);
 
-        if (GetRequiredComponents().test(runtimeIndex))
+        if (GetRequiredComponents().test(runtimeId))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
             for (uint32 c = 0; c < componentsCount; ++c)
@@ -181,9 +182,9 @@ void MultiComponentSystem::RemoveEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        int32 runtimeIndex = cm->GetRuntimeComponentIndex(type);
+        uint32 runtimeId = cm->GetRuntimeComponentId(type);
 
-        if (GetRequiredComponents().test(runtimeIndex))
+        if (GetRequiredComponents().test(runtimeId))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
 
@@ -233,11 +234,64 @@ template <typename T>
 uint32 Index(T* t)
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
-    return cm->GetRuntimeComponentIndex(Type::Instance<T>());
+    return cm->GetRuntimeComponentId(Type::Instance<T>());
 }
+
+#define FAKE_COMPONENT(X) \
+struct X : public Component { DAVA_VIRTUAL_REFLECTION(X, Component); Component* Clone(Entity* toEntity) override { return nullptr; } }; \
+DAVA_VIRTUAL_REFLECTION_IMPL(X) { ReflectionRegistrator<X>::Begin().ConstructorByPointer().End(); } \
+
+#define FAKE_COMPONENT_REG(X, NAME) \
+DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(X, NAME); \
+GetEngineContext()->componentManager->RegisterComponent<X>()
+
+FAKE_COMPONENT(Component1);
+FAKE_COMPONENT(Component2);
+FAKE_COMPONENT(Component3);
+FAKE_COMPONENT(Component4);
+FAKE_COMPONENT(Component5);
+FAKE_COMPONENT(Component6);
+FAKE_COMPONENT(Component7);
+FAKE_COMPONENT(Component8);
+FAKE_COMPONENT(Component9);
+FAKE_COMPONENT(Component10);
 
 DAVA_TESTCLASS (ComponentsTest)
 {
+    DAVA_TEST (SortedComponentIdTest)
+    {
+        FAKE_COMPONENT_REG(Component1, "a");
+        FAKE_COMPONENT_REG(Component2, "c");
+        FAKE_COMPONENT_REG(Component3, "b");
+        FAKE_COMPONENT_REG(Component4, "z");
+        FAKE_COMPONENT_REG(Component5, "f");
+        FAKE_COMPONENT_REG(Component6, "e");
+        FAKE_COMPONENT_REG(Component7, ".");
+        FAKE_COMPONENT_REG(Component8, ",");
+        FAKE_COMPONENT_REG(Component9, "`");
+        FAKE_COMPONENT_REG(Component10, "'");
+
+        ComponentManager* cm = GetEngineContext()->componentManager;
+
+        Vector<const Type*> components = cm->GetRegisteredSceneComponents();
+
+        std::sort(components.begin(), components.end(), [](const Type* l, const Type* r) {
+            const ReflectedType* lRefType = ReflectedTypeDB::GetByType(l);
+            const ReflectedType* rRefType = ReflectedTypeDB::GetByType(r);
+
+            const String& lName = lRefType->GetPermanentName();
+            const String& rName = rRefType->GetPermanentName();
+
+            return lName < rName;
+        });
+
+        for (size_t i = 0; i < components.size(); ++i)
+        {
+            uint32 sortedId = cm->GetSortedComponentId(components[i]);
+            TEST_VERIFY(sortedId == i);
+        }
+    }
+
     DAVA_TEST (EntityComponentsGettersTest)
     {
         Entity* entity = new Entity();
@@ -315,6 +369,27 @@ DAVA_TESTCLASS (ComponentsTest)
         mask |= ComponentUtils::MakeMask<SwitchComponent>();
         mask |= ComponentUtils::MakeMask<TextComponent>();
 
+        ComponentMask multiMask = ComponentUtils::MakeMask<TransformComponent, LightComponent, ActionComponent, AnimationComponent, CameraComponent,
+                                                           CustomPropertiesComponent, ParticleEffectComponent, SwitchComponent, TextComponent>();
+
+        TEST_VERIFY(multiMask == mask);
+
+        multiMask = ComponentUtils::MakeMask(Type::Instance<TransformComponent>(), Type::Instance<LightComponent>(), Type::Instance<ActionComponent>(),
+                                             Type::Instance<AnimationComponent>(), Type::Instance<CameraComponent>(), Type::Instance<CustomPropertiesComponent>(),
+                                             Type::Instance<ParticleEffectComponent>(), Type::Instance<SwitchComponent>(), Type::Instance<TextComponent>());
+
+        TEST_VERIFY(multiMask == mask);
+
+        multiMask = ComponentUtils::MakeMask(Type::Instance<TransformComponent>(), Type::Instance<LightComponent>(), Type::Instance<ActionComponent>(),
+                                             Type::Instance<AnimationComponent>(), Type::Instance<CameraComponent>(), Type::Instance<CustomPropertiesComponent>(),
+                                             Type::Instance<ParticleEffectComponent>(), Type::Instance<SwitchComponent>());
+
+        TEST_VERIFY(multiMask != mask);
+
+        multiMask |= ComponentUtils::MakeMask<TextComponent>();
+
+        TEST_VERIFY(multiMask == mask);
+
         TEST_VERIFY((entity->GetAvailableComponentMask() & mask) == mask);
         TEST_VERIFY(entity->GetAvailableComponentMask() == mask);
 
@@ -324,7 +399,7 @@ DAVA_TESTCLASS (ComponentsTest)
         {
             Component* c = entity->GetComponent(type);
             bool flagShouldBeSet = c != nullptr;
-            TEST_VERIFY(mask.test(cm->GetRuntimeComponentIndex(type)) == flagShouldBeSet);
+            TEST_VERIFY(mask.test(cm->GetRuntimeComponentId(type)) == flagShouldBeSet);
         }
 
         entity->RemoveComponent<TransformComponent>();

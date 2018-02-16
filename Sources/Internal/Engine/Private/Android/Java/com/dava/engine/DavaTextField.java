@@ -540,7 +540,14 @@ final class DavaTextField implements TextWatcher,
 
         if (!multiline && !nativeTextField.hasFocus())
         {
-            renderToTexture();
+            // We need make deferred rendering because updating layout of native field
+            // will been applied on handler's next tick.
+            DavaActivity.commandHandler().post(new Runnable() {
+                @Override public void run()
+                {
+                    renderToTexture();
+                }
+            });
         }
     }
 
@@ -1051,11 +1058,11 @@ final class DavaTextField implements TextWatcher,
     {
         nativeTextField.setDrawingCacheEnabled(true);
         nativeTextField.buildDrawingCache();
+
         Bitmap bitmap = nativeTextField.getDrawingCache();
-        if (bitmap == null)
-        {
-            int specWidth = View.MeasureSpec.makeMeasureSpec((int)width, View.MeasureSpec.EXACTLY);
-            int specHeight = View.MeasureSpec.makeMeasureSpec((int)height, View.MeasureSpec.EXACTLY);
+        if (bitmap == null) {
+            int specWidth = View.MeasureSpec.makeMeasureSpec((int) width, View.MeasureSpec.EXACTLY);
+            int specHeight = View.MeasureSpec.makeMeasureSpec((int) height, View.MeasureSpec.EXACTLY);
             nativeTextField.measure(specWidth, specHeight);
             int measuredWidth = nativeTextField.getMeasuredWidth();
             int measuredHeight = nativeTextField.getMeasuredHeight();
@@ -1070,6 +1077,8 @@ final class DavaTextField implements TextWatcher,
         int h = bitmap.getHeight();
         int[] pixels = new int[w * h];
         bitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        nativeTextField.destroyDrawingCache();
         nativeTextField.setDrawingCacheEnabled(false);
 
         nativeOnTextureReady(textfieldBackendPointer, pixels, w, h);

@@ -228,10 +228,9 @@ void HoodSystem::SetTransformType(Selectable::TransformType mode)
 
             if (curHood)
             {
-                AddCollObjects(curHood->collObjects);
-
                 curHood->UpdatePos(curPos + modifOffset);
                 curHood->UpdateScale(curScale);
+                AddCollObjects(curHood->collObjects);
             }
 
             collWorld->updateAabbs();
@@ -430,9 +429,9 @@ void HoodSystem::SetAxes(const DAVA::Vector3& x, const DAVA::Vector3& y, const D
 
         if (curHood != nullptr)
         {
-            AddCollObjects(curHood->collObjects);
             curHood->UpdatePos(curPos);
             curHood->UpdateScale(curScale);
+            AddCollObjects(curHood->collObjects);
         }
 
         collWorld->updateAabbs();

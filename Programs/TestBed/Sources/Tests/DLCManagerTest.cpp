@@ -64,12 +64,12 @@ void DLCManagerTest::LoadResources()
 
     const Color greyColor = Color(0.4f, 0.4f, 0.4f, 1.f);
 
-    ScopedPtr<FTFont> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
+    ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
     font->SetSize(20);
 
     editPackName = new UITextField(Rect(5, 10, 500, 40));
     editPackName->SetFont(font);
-    editPackName->SetUtf8Text("all_level_packs");
+    editPackName->SetUtf8Text("test_pack");
     editPackName->SetFontSize(14);
     editPackName->GetOrCreateComponent<UIDebugRenderComponent>();
     editPackName->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));

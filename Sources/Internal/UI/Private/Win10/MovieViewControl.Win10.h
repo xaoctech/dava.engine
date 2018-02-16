@@ -28,8 +28,8 @@ class MovieViewControl : public IMovieViewControl,
         Rect rect;
         Rect rectInWindowSpace;
         bool visible = false;
-        bool playing = false;
         bool canPlay = false;
+        eMoviePlayingState playingState = eMoviePlayingState::stateStopped;
         int32 action = ACTION_STOP;
         ::Windows::Storage::Streams::IRandomAccessStream ^ stream = nullptr;
         ::Windows::UI::Xaml::Media::Stretch scaling = ::Windows::UI::Xaml::Media::Stretch::None;
@@ -61,7 +61,7 @@ public:
     void Pause() override;
     void Resume() override;
 
-    bool IsPlaying() const override;
+    eMoviePlayingState GetState() const override;
 
     void Update() override;
 
@@ -77,7 +77,7 @@ private:
     void SetNativePositionAndSize(const Rect& rect);
 
     Rect VirtualToWindow(const Rect& srcRect) const;
-    void TellPlayingStatus(bool playing);
+    void TellPlayingState(eMoviePlayingState state);
 
 private: // MediaElement event handlers
     void OnMediaOpened();
@@ -98,9 +98,9 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-inline bool MovieViewControl::IsPlaying() const
+inline eMoviePlayingState MovieViewControl::GetState() const
 {
-    return properties.playing;
+    return properties.playingState;
 }
 
 } // namespace DAVA

@@ -46,7 +46,7 @@ public:
     void Pause() override;
     void Resume() override;
 
-    bool IsPlaying() const override;
+    eMoviePlayingState GetState() const override;
 
     void Update() override;
 
@@ -60,7 +60,7 @@ private:
     Function<void(jobject, jboolean)> setVisible;
     Function<void(jobject, jstring, jint)> openMovie;
     Function<void(jobject, jint)> doAction;
-    Function<jboolean(jobject)> isPlaying;
+    Function<jint(jobject)> getState;
     Function<void(jobject)> update;
 };
 
