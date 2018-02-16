@@ -71,6 +71,7 @@ const FastName NMaterialName::WATER_ALL_QUALITIES = FastName("~res:/Materials/Wa
 const FastName NMaterialName::GBUFFER_RESOLVE = FastName("~res:/Materials2/GbufferResolve.material");
 const FastName NMaterialName::RESCALE_QUAD = FastName("~res:/Materials2/rescale.material");
 const FastName NMaterialName::TEXTURE_BLIT = FastName("~res:/Materials2/TextureBlit.material");
+const FastName NMaterialName::VT_COMBINE_BLEND = FastName("~res:/Materials2/vt-decal.combine.blend.material");
 const FastName NMaterialName::CUBE_FACE_BLIT = FastName("~res:/Materials2/CubeMapFaceBlit.material");
 const FastName NMaterialName::GBUFFER_COPY = FastName("~res:/Materials2/GbufferCopy.material");
 

@@ -8,7 +8,7 @@ namespace DAVA
 class Entity;
 class VTSingleComponent : public SingletonComponent
 {
-    DAVA_VIRTUAL_REFLECTION(TransformSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(VTSingleComponent, SingletonComponent);
 
 public:
     Vector<Entity*> vtDecalChanged;

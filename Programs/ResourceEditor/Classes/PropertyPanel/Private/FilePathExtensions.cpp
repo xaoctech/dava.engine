@@ -397,9 +397,7 @@ DAVA::M::Validator CreateHeightMapValidator()
 
 DAVA::M::Validator CreateTextureValidator(bool bindToScenePath)
 {
-    return DAVA::M::Validator(bindToScenePath == true ? PathValidatorsDetail::ValidateTextureWithScene
-                                                        :
-                                                        PathValidatorsDetail::ValidateTextureWithOutScene);
+    return DAVA::M::Validator(bindToScenePath ? PathValidatorsDetail::ValidateTextureWithScene : PathValidatorsDetail::ValidateTextureWithOutScene);
 }
 
 DAVA::M::Validator CreateImageValidator()

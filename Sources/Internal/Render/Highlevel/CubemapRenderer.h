@@ -18,14 +18,7 @@ public:
     CubemapRenderer();
     ~CubemapRenderer();
 
-    void RenderCubemap(RenderSystem* renderSystem,
-                       RenderPass* renderPass,
-                       const Vector3& point,
-                       rhi::HTexture cubemapTarget,
-                       rhi::HTexture depthStencilTarget,
-                       uint32 width,
-                       uint32 height,
-                       uint32 drawLayersMask);
+    void RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point, Texture* target, uint32 drawLayersMask);
 
     void ConvoluteDiffuseCubemap(Texture* inputTexture,
                                  rhi::HTexture cubemapOutput,

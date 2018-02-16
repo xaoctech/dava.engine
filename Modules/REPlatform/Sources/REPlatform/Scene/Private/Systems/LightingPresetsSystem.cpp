@@ -118,7 +118,7 @@ void LightingPresetsSystem::AddEntity(Entity* entity)
     if (post != nullptr)
         PosteffectComponentAdded(entity, post);
     ReflectionComponent* refl = entity->GetComponent<ReflectionComponent>();
-    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::eType::TYPE_GLOBAL)
+    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL)
         ReflectionComponentAdded(entity, refl);
 }
 
@@ -131,7 +131,7 @@ void LightingPresetsSystem::RemoveEntity(Entity* entity)
     if (post != nullptr)
         PosteffectComponentRemoved(entity, post);
     ReflectionComponent* refl = entity->GetComponent<ReflectionComponent>();
-    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::eType::TYPE_GLOBAL)
+    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL)
         ReflectionComponentRemoved(entity, refl);
 }
 
@@ -144,7 +144,7 @@ void LightingPresetsSystem::AddComponent(Entity* entity, Component* component)
     if (post != nullptr)
         PosteffectComponentAdded(entity, post);
     ReflectionComponent* refl = dynamic_cast<ReflectionComponent*>(component);
-    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::eType::TYPE_GLOBAL)
+    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL)
         ReflectionComponentAdded(entity, refl);
 }
 
@@ -157,7 +157,7 @@ void LightingPresetsSystem::RemoveComponent(Entity* entity, Component* component
     if (post != nullptr)
         PosteffectComponentRemoved(entity, post);
     ReflectionComponent* refl = dynamic_cast<ReflectionComponent*>(component);
-    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::eType::TYPE_GLOBAL)
+    if (refl != nullptr && refl->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL)
         ReflectionComponentRemoved(entity, refl);
 }
 

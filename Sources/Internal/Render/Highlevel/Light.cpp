@@ -21,19 +21,12 @@ namespace DAVA
 DAVA_VIRTUAL_REFLECTION_IMPL(Light)
 {
     ReflectionRegistrator<Light>::Begin()
-    .Field("position", &Light::position)[M::ReadOnly(), M::DisplayName("Position")]
-    .Field("direction", &Light::direction)[M::ReadOnly(), M::DisplayName("Direction")]
-    .Field("type", &Light::type)[M::DisplayName("Type"), M::EnumT<Light::eType>()]
-    .Field("isDynamic", &Light::GetIsDynamic, &Light::SetIsDynamic)[M::DisplayName("Is dynamic")]
-    .Field("position", &Light::position)[M::ReadOnly(), M::DisplayName("Position")]
-    .Field("ambientColor", &Light::baseColor)[M::DisplayName("Color")]
-    .Field("flags", &Light::flags)[M::DisplayName("Flags"), M::FlagsT<Light::eFlags>()]
     .End();
 }
 
 Light::Light()
 {
-    bbox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 1.0f); //GFX_COMPLETE - temporary
+    bbox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), 1.0f); // GFX_COMPLETE - temporary
     RenderObject::type = TYPE_LIGHT;
 }
 

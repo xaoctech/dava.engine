@@ -70,30 +70,27 @@ void VTDecalSystem::AddEntity(Entity* entity)
     VTDecalComponent* component = entity->GetComponent<VTDecalComponent>();
     if (component)
     {
-        DecalRenderObject* ro = new DecalRenderObject();
-        ro->SetDomain(DecalRenderObject::DOMAIN_VT);
-        component->renderObject = ro;
-
+        ScopedPtr<DecalRenderObject> renderObject(new DecalRenderObject());
+        renderObject->SetDomain(DecalRenderObject::DOMAIN_VT);
         const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
-        component->renderObject->SetWorldTransformPtr(worldTransformPointer);
-        component->renderObject->SetMaterial(component->material.Get());
-        component->renderObject->SetDecalSize(component->decalSize);
-        component->renderObject->SetSortingOffset(component->sortingOffset);
-        GetScene()->GetRenderSystem()->RenderPermanent(component->renderObject);
-
-        decalObjects.push_back(ro);
+        renderObject->SetWorldTransformPtr(worldTransformPointer);
+        renderObject->SetMaterial(component->GetMaterial());
+        renderObject->SetDecalSize(component->GetLocalSize());
+        renderObject->SetSortingOffset(component->GetSortingOffset());
+        component->SetRenderObject(renderObject);
+        GetScene()->GetRenderSystem()->RenderPermanent(renderObject);
+        decalObjects.push_back(renderObject);
     }
 }
 void VTDecalSystem::RemoveEntity(Entity* entity)
 {
     VTDecalComponent* component = entity->GetComponent<VTDecalComponent>();
-    if (component && component->renderObject)
+    if (component && component->GetRenderObject())
     {
-        DecalRenderObject* decalObject = component->renderObject;
+        DecalRenderObject* decalObject = component->GetRenderObject();
 
         GetScene()->GetRenderSystem()->RemoveFromRender(decalObject);
         FindAndRemoveExchangingWithLast(decalObjects, decalObject);
-        SafeRelease(decalObject);
     }
 }
 
@@ -102,7 +99,6 @@ void VTDecalSystem::PrepareForRemove()
     for (DecalRenderObject* object : decalObjects)
     {
         GetScene()->GetRenderSystem()->RemoveFromRender(object);
-        SafeRelease(object);
     }
     decalObjects.clear();
 }

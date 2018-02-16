@@ -20,9 +20,21 @@ public:
     void Process(float32 timeElapsed) override;
     void ImmediateEvent(Component* component, uint32 event) override;
 
+    const Vector<ReflectionComponent*>& GetAllComponents() const;
+
+private:
+    void UpdateReflections(ReflectionComponent* component);
+    void MakeUniqueGlobalProbe(ReflectionComponent* component);
+    void UpdateAndRegisterProbe(ReflectionComponent* component, ReflectionProbe::ProbeType targetType);
+
 private:
     Vector<ReflectionComponent*> allComponents;
     RenderSystem* renderSystem = nullptr;
     float timeToUpdate = 0.0f;
 };
+
+inline const Vector<ReflectionComponent*>& ReflectionSystem::GetAllComponents() const
+{
+    return allComponents;
+}
 };

@@ -28,7 +28,6 @@
 void BeastModule::PostInit()
 {
     using namespace DAVA;
-    using namespace DAVA;
 
     QtAction* action = new QtAction(GetAccessor(), QString("Run Beast"));
     { // enabled/disabled state

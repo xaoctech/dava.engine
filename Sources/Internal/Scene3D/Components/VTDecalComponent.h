@@ -18,6 +18,7 @@ class VTDecalComponent : public Component
 
 public:
     VTDecalComponent();
+    ~VTDecalComponent();
 
     Component* Clone(Entity* toEntity) override;
     void GetDataNodes(Set<DataNode*>& dataNodes) override; //GFX_COMPLETE - once materials will be moved to MaterialLibrary no need to export data nodes here
@@ -42,6 +43,7 @@ public:
     void SetSplineTiling(float32 tiling);
     float32 GetSplineTiling() const;
 
+    void SetRenderObject(DecalRenderObject* renderObject);
     DecalRenderObject* GetRenderObject() const;
 
 private:

@@ -113,7 +113,6 @@ DynamicBindings::DynamicBindings()
 
     globalLuminanceScale = GetGlobalLuminanceScale();
     SetDynamicParam(PARAM_FOG_VALUES, defaultFogValues.data, UPDATE_SEMANTIC_ALWAYS);
-    SetDynamicParam(PARAM_DIFFUSE_SPHERICAL_HARMONICS, sphericalHarmonics, UPDATE_SEMANTIC_ALWAYS);
     SetDynamicParam(PARAM_GLOBAL_LUMINANCE_SCALE, &globalLuminanceScale, reinterpret_cast<DAVA::pointer_size>(&globalLuminanceScale));
 }
 

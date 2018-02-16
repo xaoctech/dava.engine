@@ -99,19 +99,12 @@ void CubemapRenderer::InvalidateMaterials()
     cubemapFunctionsMaterial->InvalidateRenderVariants();
 }
 
-void CubemapRenderer::RenderCubemap(RenderSystem* renderSystem,
-                                    RenderPass* renderPass,
-                                    const Vector3& point,
-                                    rhi::HTexture cubemapTarget,
-                                    rhi::HTexture depthStencilTarget,
-                                    uint32 width,
-                                    uint32 height,
-                                    uint32 drawLayersMask)
+void CubemapRenderer::RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point, Texture* target, uint32 drawLayersMask)
 {
-    renderTargetConfig.colorBuffer[0].texture = cubemapTarget;
-    renderTargetConfig.depthStencilBuffer.texture = depthStencilTarget;
-    renderTargetConfig.viewport.width = width;
-    renderTargetConfig.viewport.height = height;
+    renderTargetConfig.colorBuffer[0].texture = target->handle;
+    renderTargetConfig.depthStencilBuffer.texture = target->handleDepthStencil;
+    renderTargetConfig.viewport.width = target->GetWidth();
+    renderTargetConfig.viewport.height = target->GetHeight();
 
     cubemapCamera->SetPosition(point);
 
@@ -252,9 +245,7 @@ void CubemapRenderer::ConvoluteSpecularCubemap(Texture* inputTexture, Texture* o
     }
 }
 
-void CubemapRenderer::EdgeFilterCubemap(Texture* inputTexture,
-                                        Texture* outputTexture,
-                                        uint32 outputMipLevels)
+void CubemapRenderer::EdgeFilterCubemap(Texture* inputTexture, Texture* outputTexture, uint32 outputMipLevels)
 {
     if (cubemapFunctionsMaterial->HasLocalTexture(SRC_SAMPLER_NAME))
         cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);

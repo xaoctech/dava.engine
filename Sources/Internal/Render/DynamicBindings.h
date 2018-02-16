@@ -88,7 +88,7 @@ public:
 
         PARAM_FOG_VALUES /* distance scale, turbidity, anisotropy, unused */,
 
-        PARAM_DIFFUSE_SPHERICAL_HARMONICS,
+        PARAM_GLOBAL_DIFFUSE_SPHERICAL_HARMONICS,
 
         PARAM_GLOBAL_LUMINANCE_SCALE,
 
@@ -165,7 +165,6 @@ private:
     float32 projectionFlipped;
     float32 globalLuminanceScale = 1.0f;
     Vector4 defaultFogValues = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-    Vector4 sphericalHarmonics[9];
 
     void ComputeWorldViewMatrixIfRequired();
     void ComputeWorldScaleIfRequired();

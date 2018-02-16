@@ -16,20 +16,27 @@ class NMaterial;
 class ReflectionProbe : public RenderObject
 {
 public:
-    enum eType
+    enum class ProbeType : uint32
     {
-        TYPE_NONE = 0,
-        TYPE_GLOBAL = 1,
-        TYPE_STATIC_CUBEMAP = 2,
+        LOCAL,
+        LOCAL_STATIC,
+        GLOBAL,
+        GLOBAL_STATIC,
     };
 
     static const uint32 INVALID_QUALITY_LEVEL = 0xFFFFFFFF;
 
-    ReflectionProbe();
-    virtual ~ReflectionProbe();
+    ReflectionProbe() = default;
+    ~ReflectionProbe();
 
-    void SetReflectionType(eType type_);
-    eType GetReflectionType() const;
+    void SetReflectionType(ProbeType type_);
+    ProbeType GetReflectionType() const;
+
+    bool IsLocalProbe() const;
+    bool IsGlobalProbe() const;
+    bool IsDynamicProbe() const;
+    bool IsStaticProbe() const;
+
     void SetPosition(const Vector3& position_);
     const Vector3& GetPosition() const;
 
@@ -50,23 +57,28 @@ public:
     void SetActiveQualityLevel(uint32 activeQualityLevel_);
     uint32 GetActiveQualityLevel() const;
 
+    Vector4* GetSphericalHarmonicsArray();
+    const Vector4* GetSphericalHarmonicsArray() const;
+    void SetSphericalHarmonics(const Vector4 sh[9]);
+
+    bool ContainsUnprocessedSphericalHarmonics() const;
+    void MarkSphericalHarmonicsAsProcessed();
+
     const Vector3& GetCapturePositionInWorldSpace() const;
     const Matrix4& GetCaptureWorldToLocalMatrix() const;
 
 protected:
-    eType reflectionType = TYPE_STATIC_CUBEMAP;
+    ProbeType probeType = ProbeType::GLOBAL;
     Vector3 position;
     Vector3 capturePosition;
     Vector3 captureSize;
-
     Vector3 capturePositionInWorldSpace;
     Matrix4 captureWorldToLocalMatrix;
-
     Texture* currentTexture = nullptr;
-    //uint32 textureCacheIndex = -1;
-
     uint32 nextQualityLevel = INVALID_QUALITY_LEVEL;
     uint32 activeQualityLevel = INVALID_QUALITY_LEVEL;
+    Vector4 diffuseSphericalHarmonics[9];
+    bool containsUnprocessedSphericalHarmonics = false;
 };
 
 inline void ReflectionProbe::SetPosition(const Vector3& position_)
@@ -74,9 +86,14 @@ inline void ReflectionProbe::SetPosition(const Vector3& position_)
     position = position_;
 }
 
-inline ReflectionProbe::eType ReflectionProbe::GetReflectionType() const
+inline ReflectionProbe::ProbeType ReflectionProbe::GetReflectionType() const
 {
-    return reflectionType;
+    return probeType;
+}
+
+inline void ReflectionProbe::SetReflectionType(ProbeType t)
+{
+    probeType = t;
 }
 
 inline const Vector3& ReflectionProbe::GetPosition() const
@@ -106,7 +123,11 @@ inline const Vector3& ReflectionProbe::GetCaptureSize() const
 
 inline void ReflectionProbe::SetCurrentTexture(Texture* texture_)
 {
-    currentTexture = texture_;
+    if (texture_ != currentTexture)
+    {
+        SafeRelease(currentTexture);
+        currentTexture = SafeRetain(texture_);
+    }
 }
 
 inline Texture* ReflectionProbe::GetCurrentTexture() const
@@ -142,6 +163,46 @@ inline const Vector3& ReflectionProbe::GetCapturePositionInWorldSpace() const
 inline const Matrix4& ReflectionProbe::GetCaptureWorldToLocalMatrix() const
 {
     return captureWorldToLocalMatrix;
+}
+
+inline Vector4* ReflectionProbe::GetSphericalHarmonicsArray()
+{
+    return diffuseSphericalHarmonics;
+}
+
+inline const Vector4* ReflectionProbe::GetSphericalHarmonicsArray() const
+{
+    return diffuseSphericalHarmonics;
+}
+
+inline bool ReflectionProbe::ContainsUnprocessedSphericalHarmonics() const
+{
+    return containsUnprocessedSphericalHarmonics;
+}
+
+inline void ReflectionProbe::MarkSphericalHarmonicsAsProcessed()
+{
+    containsUnprocessedSphericalHarmonics = false;
+}
+
+inline bool ReflectionProbe::IsLocalProbe() const
+{
+    return (probeType == ProbeType::LOCAL) || (probeType == ProbeType::LOCAL_STATIC);
+}
+
+inline bool ReflectionProbe::IsGlobalProbe() const
+{
+    return (probeType == ProbeType::GLOBAL) || (probeType == ProbeType::GLOBAL_STATIC);
+}
+
+inline bool ReflectionProbe::IsDynamicProbe() const
+{
+    return (probeType == ProbeType::LOCAL) || (probeType == ProbeType::GLOBAL);
+}
+
+inline bool ReflectionProbe::IsStaticProbe() const
+{
+    return (probeType == ProbeType::LOCAL_STATIC) || (probeType == ProbeType::GLOBAL_STATIC);
 }
 
 } // ns

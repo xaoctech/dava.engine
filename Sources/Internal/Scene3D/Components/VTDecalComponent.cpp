@@ -29,6 +29,20 @@ VTDecalComponent::VTDecalComponent()
 {
 }
 
+void VTDecalComponent::SetRenderObject(DecalRenderObject* ro)
+{
+    if (renderObject != ro)
+    {
+        SafeRelease(renderObject);
+        renderObject = SafeRetain(ro);
+    }
+}
+
+VTDecalComponent::~VTDecalComponent()
+{
+    SafeRelease(renderObject);
+}
+
 Component* VTDecalComponent::Clone(Entity* toEntity)
 {
     VTDecalComponent* newComponent = new VTDecalComponent();

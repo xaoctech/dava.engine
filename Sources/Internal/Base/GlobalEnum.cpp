@@ -411,11 +411,12 @@ ENUM_DECLARE(DAVA::BillboardRenderObject::BillboardType)
     ENUM_ADD_DESCR(DAVA::BillboardRenderObject::BILLBOARD_CYLINDRICAL, "Cylindrical");
 }
 
-ENUM_DECLARE(DAVA::ReflectionProbe::eType)
+ENUM_DECLARE(DAVA::ReflectionProbe::ProbeType)
 {
-    ENUM_ADD_DESCR(DAVA::ReflectionProbe::TYPE_NONE, "None");
-    ENUM_ADD_DESCR(DAVA::ReflectionProbe::TYPE_GLOBAL, "Global");
-    ENUM_ADD_DESCR(DAVA::ReflectionProbe::TYPE_STATIC_CUBEMAP, "Static Cubemap");
+    ENUM_ADD_DESCR(DAVA::ReflectionProbe::ProbeType::LOCAL, "Local");
+    ENUM_ADD_DESCR(DAVA::ReflectionProbe::ProbeType::GLOBAL, "Global");
+    ENUM_ADD_DESCR(DAVA::ReflectionProbe::ProbeType::LOCAL_STATIC, "Local Prerendered");
+    ENUM_ADD_DESCR(DAVA::ReflectionProbe::ProbeType::GLOBAL_STATIC, "Global Prerendered");
 }
 
 ENUM_DECLARE(DAVA::NMaterial::eType)

@@ -23,7 +23,7 @@ namespace RendererDetails
 bool initialized = false;
 rhi::Api api;
 int32 desiredFPS = 60;
-RenderFlow currentRenderFlow = RenderFlow::HDRDeferred;
+RenderFlow currentRenderFlow = RenderFlow::HDRForward;
 
 RenderOptions renderOptions;
 DynamicBindings dynamicBindings;

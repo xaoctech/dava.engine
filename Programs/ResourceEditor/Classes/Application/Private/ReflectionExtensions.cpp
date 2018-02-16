@@ -67,6 +67,7 @@ void RegisterFilePathExtensions(DAVA::ContextAccessor* accessor)
     EmplaceFieldMeta<PostEffectComponent>(DAVA::FastName("colorGradingTable"), CreateTextureValidator(false));
     EmplaceFieldMeta<PostEffectComponent>(DAVA::FastName("heatmapTable"), CreateTextureValidator(false));
     EmplaceFieldMeta<PostEffectComponent>(DAVA::FastName("lightMeterTable"), CreateTextureValidator(false));
+    EmplaceFieldMeta<ReflectionComponent>(DAVA::FastName("reflectionsMap"), CreateTextureValidator(true));
 }
 
 void RegisterComponentExtensions(const TypeInheritance::Info& type)

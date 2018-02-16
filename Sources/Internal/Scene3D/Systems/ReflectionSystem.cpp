@@ -24,31 +24,106 @@ ReflectionSystem::~ReflectionSystem()
 {
 }
 
+void ReflectionSystem::UpdateReflections(ReflectionComponent* reflectionComponent)
+{
+    DVASSERT(reflectionComponent != nullptr);
+    ReflectionProbe* probe = reflectionComponent->GetReflectionProbe();
+    DVASSERT(probe != nullptr);
+
+    // GFX_COMPLETE if we do not do set of world transform matrix, we have NULL ptr in world matrix in UpdateProbe here
+    const Matrix4* worldTransformPointer = reflectionComponent->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+
+    probe->SetPosition(worldTransformPointer->GetTranslationVector());
+    probe->SetWorldTransformPtr(worldTransformPointer);
+    probe->SetCapturePosition(reflectionComponent->GetCapturePosition());
+    probe->SetCaptureSize(reflectionComponent->GetCaptureSize());
+    probe->UpdateProbe();
+
+    renderSystem->GetReflectionRenderer()->UpdateProbe(probe);
+
+    Vector<ReflectionComponent*> debugDrawComponents;
+    debugDrawComponents.reserve(allComponents.size());
+    for (ReflectionComponent* component : allComponents)
+    {
+        if (component->GetDebugDrawEnabled())
+            debugDrawComponents.emplace_back(component);
+    }
+
+    if (debugDrawComponents.empty())
+    {
+        renderSystem->GetReflectionRenderer()->SetDebugDrawProbe(nullptr);
+    }
+    else if (reflectionComponent->GetDebugDrawEnabled())
+    {
+        for (ReflectionComponent* component : debugDrawComponents)
+        {
+            if ((component != reflectionComponent))
+                component->DisableDebugDraw();
+        }
+        renderSystem->GetReflectionRenderer()->SetDebugDrawProbe(probe);
+    }
+}
+
+void ReflectionSystem::UpdateAndRegisterProbe(ReflectionComponent* component, ReflectionProbe::ProbeType targetType)
+{
+    ReflectionProbe* probe = component->GetReflectionProbe();
+    probe->SetReflectionType(targetType);
+
+    if (probe->IsStaticProbe())
+    {
+        ScopedPtr<Texture> image;
+        if (!component->GetReflectionsMap().IsEmpty() && DAVA::FileSystem::Instance()->Exists(component->GetReflectionsMap()))
+        {
+            image.reset(Texture::CreateFromFile(component->GetReflectionsMap()));
+        }
+        else
+        {
+            image.reset(Texture::CreatePink(rhi::TextureType::TEXTURE_TYPE_CUBE));
+        }
+        probe->SetCurrentTexture(image);
+        probe->SetSphericalHarmonics(component->GetSphericalHarmonics());
+    }
+
+    renderSystem->GetReflectionRenderer()->RegisterReflectionProbe(probe);
+    UpdateReflections(component);
+}
+
 void ReflectionSystem::ImmediateEvent(Component* component, uint32 event)
 {
     if (event == EventSystem::REFLECTION_COMPONENT_CHANGED)
     {
-        Entity* entity = component->GetEntity();
-        const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+        DVASSERT(component->GetType() == ReflectedTypeDB::Get<ReflectionComponent>()->GetType());
+        ReflectionComponent* reflectionComponent = static_cast<ReflectionComponent*>(component);
+        MakeUniqueGlobalProbe(reflectionComponent);
 
-        ReflectionComponent* reflectionComponent = entity->GetComponent<ReflectionComponent>();
-        if (nullptr != reflectionComponent)
+        ReflectionProbe* probe = reflectionComponent->GetReflectionProbe();
+        renderSystem->GetReflectionRenderer()->UnregisterReflectionProbe(probe);
+
+        if (probe->IsStaticProbe())
+            probe->SetCurrentTexture(nullptr);
+
+        UpdateAndRegisterProbe(reflectionComponent, reflectionComponent->GetReflectionType());
+    }
+}
+
+void ReflectionSystem::MakeUniqueGlobalProbe(ReflectionComponent* reflectionComponent)
+{
+    // make sure there is only one global probe on scene
+    if ((reflectionComponent->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL) ||
+        (reflectionComponent->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL_STATIC))
+    {
+        for (ReflectionComponent* component : allComponents)
         {
-            ReflectionProbe* probe = reflectionComponent->GetReflectionProbe();
-            if (nullptr != probe)
+            bool isGlobal = (component->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL) ||
+            (component->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL_STATIC);
+
+            if (isGlobal && (component != reflectionComponent))
             {
-                // GFX_COMPLETE if we do not do set of world transform matrix, we have NULL ptr in world matrix in UpdateProbe here
-                Vector3 newPosition = worldTransformPointer->GetTranslationVector();
-                probe->SetPosition(newPosition);
-                probe->SetWorldTransformPtr(worldTransformPointer);
-
-                probe->SetCapturePosition(reflectionComponent->GetCapturePosition());
-                probe->SetCaptureSize(reflectionComponent->GetCaptureSize());
-
-                probe->UpdateProbe();
-                renderSystem->GetReflectionRenderer()->UpdateProbe(probe);
+                ReflectionProbe* probe = component->GetReflectionProbe();
+                renderSystem->GetReflectionRenderer()->UnregisterReflectionProbe(probe);
+                component->SetReflectionTypeSilently(ReflectionProbe::ProbeType::LOCAL);
+                UpdateAndRegisterProbe(component, probe->IsStaticProbe() ? ReflectionProbe::ProbeType::LOCAL_STATIC : ReflectionProbe::ProbeType::LOCAL);
             }
-            renderSystem->GetReflectionRenderer()->SetDebugDrawEnabled(reflectionComponent->GetDebugDrawEnabled());
         }
     }
 }
@@ -56,27 +131,26 @@ void ReflectionSystem::ImmediateEvent(Component* component, uint32 event)
 void ReflectionSystem::AddEntity(Entity* entity)
 {
     ReflectionComponent* reflectionComponent = entity->GetComponent<ReflectionComponent>();
-    if (reflectionComponent)
-    {
-        ReflectionProbe* reflectionProbe = new ReflectionProbe();
-        reflectionProbe->SetReflectionType(reflectionComponent->GetReflectionType());
-        renderSystem->GetReflectionRenderer()->RegisterReflectionProbe(reflectionProbe);
-        reflectionComponent->SetReflectionProbe(reflectionProbe);
+    DVASSERT(reflectionComponent != nullptr);
 
-        allComponents.push_back(reflectionComponent);
-    }
+    MakeUniqueGlobalProbe(reflectionComponent);
+
+    reflectionComponent->SetReflectionProbe(new ReflectionProbe());
+    allComponents.push_back(reflectionComponent);
+
+    UpdateAndRegisterProbe(reflectionComponent, reflectionComponent->GetReflectionType());
 }
 
 void ReflectionSystem::RemoveEntity(Entity* entity)
 {
     ReflectionComponent* reflectionComponent = entity->GetComponent<ReflectionComponent>();
-    if (reflectionComponent)
-    {
-        ReflectionProbe* reflectionProbe = reflectionComponent->GetReflectionProbe();
-        renderSystem->GetReflectionRenderer()->UnregisterReflectionProbe(reflectionProbe);
-        SafeRelease(reflectionProbe);
-        FindAndRemoveExchangingWithLast(allComponents, reflectionComponent);
-    }
+    DVASSERT(reflectionComponent != nullptr);
+
+    ReflectionProbe* reflectionProbe = reflectionComponent->GetReflectionProbe();
+    renderSystem->GetReflectionRenderer()->UnregisterReflectionProbe(reflectionProbe);
+    SafeRelease(reflectionProbe);
+
+    FindAndRemoveExchangingWithLast(allComponents, reflectionComponent);
 }
 
 void ReflectionSystem::PrepareForRemove()
@@ -107,11 +181,13 @@ void ReflectionSystem::RemoveComponent(Entity* entity, Component* component)
 void ReflectionSystem::Process(float32 timeElapsed)
 {
 #if (UPDATE_PROBES_EACH_FRAME)
+
     for (ReflectionComponent* component : allComponents)
     {
         Entity* entity = component->GetEntity();
         {
             {
+
 #elif (UPDATE_PROBES_PERIODICALLY)
 
     timeToUpdate -= timeElapsed;
@@ -136,28 +212,20 @@ void ReflectionSystem::Process(float32 timeElapsed)
             for (Entity* entity : pair.second)
             {
 #endif
-                ReflectionComponent* reflectionComponent = entity->GetComponent<ReflectionComponent>();
-                if (nullptr != reflectionComponent)
-                {
-                    ReflectionProbe* probe = reflectionComponent->GetReflectionProbe();
-                    if (nullptr != probe)
-                    {
-                        const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-                        Vector3 newPosition = worldTransformPointer->GetTranslationVector();
-
-                        probe->SetPosition(newPosition);
-                        probe->SetWorldTransformPtr(worldTransformPointer);
-                        probe->SetCapturePosition(reflectionComponent->GetCapturePosition());
-                        probe->SetCaptureSize(reflectionComponent->GetCaptureSize());
-
-                        // GFX_COMPLETE - think about proper update mechanism
-                        probe->UpdateProbe();
-                        renderSystem->GetReflectionRenderer()->UpdateProbe(probe);
-                    }
-                    renderSystem->GetReflectionRenderer()->SetDebugDrawEnabled(reflectionComponent->GetDebugDrawEnabled());
-                }
+                UpdateReflections(entity->GetComponent<ReflectionComponent>());
             }
         }
     }
+
+    for (ReflectionComponent* component : allComponents)
+    {
+        ReflectionProbe* probe = component->GetReflectionProbe();
+        if (probe->ContainsUnprocessedSphericalHarmonics())
+        {
+            component->SetSphericalHarmonics(probe->GetSphericalHarmonicsArray());
+            probe->MarkSphericalHarmonicsAsProcessed();
+        }
+    }
 }
+
 }

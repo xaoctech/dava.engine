@@ -19,6 +19,12 @@ class ReflectionProbe;
 class ReflectionRenderer
 {
 public:
+    enum : uint32
+    {
+        CUBEMAP_QUALITY_LEVELS = 4
+    };
+
+public:
     ReflectionRenderer(RenderSystem* _renderSystem);
     ~ReflectionRenderer();
 
@@ -28,56 +34,20 @@ public:
     void UpdateProbe(ReflectionProbe* probe);
 
     void Draw(Camera* camera);
-    void SetDebugDrawEnabled(bool debugDraw);
+
     void InvalidateMaterials();
 
-    void UpdateGlobalLightProbe();
-
-    // void SaveCubemap(const FilePath & filePath, Texture * cubemap, uint32 mipmapLevelCount);
+    void SetDebugDrawProbe(ReflectionProbe* probe);
 
     Texture* GetSpecularConvolution2();
 
 private:
-    const uint32 MAX_NUMBER_OF_PROBES_TO_UPDATE_PER_FRAME = 1;
-
-    void EnumerateMaterials(Set<NMaterial*>& materials);
-    Texture* CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format = PixelFormat::FORMAT_RGBA16F);
-
-    ReflectionProbe* globalReflectionProbe = nullptr;
-    RenderSystem* renderSystem = nullptr;
-    RenderPass* reflectionPass = nullptr;
-
-    Vector<ReflectionProbe*> reflectionProbeArray;
-
-    Texture* reflectionMainFBO = nullptr;
-    Texture* reflectionTemporaryFBO = nullptr; // temporary convolution textures
-    Texture* globalProbeSpecularConvolution = nullptr;
-
-    rhi::HTexture sphericalHarmonicsTexture = rhi::HTexture();
-    Vector4 globalDiffuseSphericalHarmonics[9]{};
-    int32 sphericalHarmonicsGrabCountdown = -1;
-
-    Vector<Texture*> reflectionTextureCache;
-
-    static const uint32 CUBEMAP_QUALITY_LEVELS = 4;
-    static const uint32 maxCacheCubemapOnEachLevel[CUBEMAP_QUALITY_LEVELS]; // = {4, 8, 16, 32};
-    static const uint32 cacheCubemapFaceSize[CUBEMAP_QUALITY_LEVELS]; // = {256, 128, 64, 32};
-    uint32 cacheCubemapOffset[CUBEMAP_QUALITY_LEVELS];
-    List<Texture*> textureCache[CUBEMAP_QUALITY_LEVELS];
-    Vector<Texture*> allCacheTextures;
-
-    void AllocateTextureFromCacheAndRender(ReflectionProbe* probe);
-    void ReleaseTextureToCache(ReflectionProbe* probe);
-
-    void PrerenderReflections(ReflectionProbe* probe, uint32 layerFilter);
-    void GenerateReflectionProbe(ReflectionProbe* probe, Texture* reflectionTextureTarget);
-    void GenerateDiffuseProbe(ReflectionProbe* probe);
-
-    void UpdateProbeMaterialBindings(ReflectionProbe* probe);
-
-    ScopedPtr<NMaterial> debugMaterial;
-    QuadRenderer quadRenderer;
-    bool debugDrawEnabled = false;
+    struct SphericalHarmonicsUpdate
+    {
+        rhi::HTexture targetTexture;
+        ReflectionProbe* probe = nullptr;
+        uint32 countdown = 0;
+    };
 
     struct ReflectionProbeToUpdate
     {
@@ -101,12 +71,40 @@ private:
         uint32 priority = 0;
     };
 
-    std::set<ReflectionProbeToUpdate> probesForUpdate;
+    SphericalHarmonicsUpdate EnqueueSphericalHarmonicsUpdate(ReflectionProbe* probe);
+    void RetrieveUpdatedSphericalHarmonics();
+
+    void AllocateProbeTexture(ReflectionProbe* probe);
+    void ReleaseProbeTexture(ReflectionProbe* probe);
+
+    void UpdateProbeMaterialBindings(ReflectionProbe* probe);
+
+    void EnumerateMaterials(Set<NMaterial*>& materials);
+    Texture* CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format = PixelFormat::FORMAT_RGBA16F);
+
+    void RenderReflectionProbe(ReflectionProbe* probe);
+    void DrawDebugInfo();
+
+private:
+    RenderSystem* renderSystem = nullptr;
+    RenderPass* reflectionPass = nullptr;
+
+    ReflectionProbe* globalReflectionProbe = nullptr;
+    ReflectionProbe* debugDrawProbe = nullptr;
+    Vector<ReflectionProbe*> localReflectionProbes;
+    Vector<ReflectionProbeToUpdate> probesForUpdate;
+    Texture* temporaryFramebuffer = nullptr;
+    Texture* downsampledFramebuffer = nullptr; // temporary convolution textures
+    Texture* globalProbeSpecularConvolution = nullptr;
+
+    Vector<SphericalHarmonicsUpdate> shUpdateQueue;
+    Vector<Texture*> reflectionTextureCache;
+    List<Texture*> textureCache[CUBEMAP_QUALITY_LEVELS];
+    Vector<Texture*> allCacheTextures;
+    ScopedPtr<NMaterial> debugMaterial;
+    QuadRenderer quadRenderer;
+    Vector4 emptySphericalHarmonicsArray[9]{};
     uint64 invalidateCallback = 0;
 };
 
-inline void ReflectionRenderer::SetDebugDrawEnabled(bool debugDraw)
-{
-    debugDrawEnabled = debugDraw;
-}
 }

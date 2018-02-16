@@ -61,16 +61,12 @@ void LightUpdateSystem::Process(float32 timeElapsed)
 
 void LightUpdateSystem::RecalcLight(Entity* entity)
 {
-    // Update new transform pointer, and mark that transform is changed
-    bool updateProbe = false;
-
     const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
     Light* light = entity->GetComponent<LightComponent>()->GetLightObject();
     light->SetPositionDirectionFromMatrix(*worldTransformPointer);
     light->SetWorldTransformPtr(worldTransformPointer);
     if (light->GetLightType() == Light::TYPE_DIRECTIONAL)
     {
-        updateProbe = true;
         light->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     }
     else
@@ -91,11 +87,6 @@ void LightUpdateSystem::RecalcLight(Entity* entity)
         light->SetColor(Color(resultColor.x, resultColor.y, resultColor.y, 1.0f));
     }
     entity->GetScene()->renderSystem->MarkForUpdate(light);
-
-    if (updateProbe)
-    {
-        entity->GetScene()->renderSystem->GetReflectionRenderer()->UpdateGlobalLightProbe();
-    }
 }
 
 void LightUpdateSystem::AddEntity(Entity* entity)

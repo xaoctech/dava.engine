@@ -174,6 +174,8 @@ public:
     PixelFormat GetPixelFormatForGPU(eGPUFamily forGPU) const;
     ImageFormat GetImageFormatForGPU(eGPUFamily forGPU) const;
 
+    PixelFormat GetTextureFormat() const;
+
     bool Reload();
 
     bool IsPresetValid(const KeyedArchive* presetArchive) const;

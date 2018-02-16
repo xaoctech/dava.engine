@@ -484,15 +484,16 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image*>* images)
         texDescriptor->GetFacePathnames(facePathes);
 
         PixelFormat imagesFormat = FORMAT_INVALID;
-        for (uint32 i = 0; i < CUBE_FACE_COUNT; ++i)
+        for (uint32 faceIndex = 0; faceIndex < CUBE_FACE_COUNT; ++faceIndex)
         {
-            const FilePath& currentfacePath = facePathes[i];
+            const FilePath& currentfacePath = facePathes[faceIndex];
             if (currentfacePath.IsEmpty())
                 continue;
 
-            Vector<Image*> faceImage;
-            ImageSystem::Load(currentfacePath, faceImage, params);
-            if (faceImage.empty())
+            Vector<Image*> faceImages;
+            ImageSystem::Load(currentfacePath, faceImages, params);
+
+            if (faceImages.empty())
             {
                 Logger::Error("[Texture::LoadImages] Cannot open file %s", currentfacePath.GetAbsolutePathname().c_str());
 
@@ -500,34 +501,33 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image*>* images)
                 return false;
             }
 
-            DVASSERT(faceImage.size() == 1);
-
-            faceImage[0]->cubeFaceID = i;
-            faceImage[0]->mipmapLevel = 0;
-
-            //cubemap formats validation
             if (FORMAT_INVALID == imagesFormat)
             {
-                imagesFormat = faceImage[0]->format;
+                imagesFormat = faceImages.front()->format;
             }
-            else if (imagesFormat != faceImage[0]->format)
+            else if (imagesFormat != faceImages.front()->format)
             {
-                Logger::Error("[Texture::LoadImages] Face(%s) has different pixel format(%s)", currentfacePath.GetAbsolutePathname().c_str(), PixelFormatDescriptor::GetPixelFormatString(faceImage[0]->format));
+                Logger::Error("[Texture::LoadImages] Face(%s) has different pixel format(%s)", currentfacePath.GetAbsolutePathname().c_str(),
+                              PixelFormatDescriptor::GetPixelFormatString(faceImages.front()->format));
 
                 ReleaseImages(images);
                 return false;
             }
-            //end of cubemap formats validation
+
+            for (Image* img : faceImages)
+                img->cubeFaceID = faceIndex;
 
             if (texDescriptor->GetGenerateMipMaps())
             {
-                Vector<Image*> mipmapsImages = faceImage[0]->CreateMipMapsImages();
+                Vector<Image*> mipmapsImages = faceImages.front()->CreateMipMapsImages();
                 images->insert(images->end(), mipmapsImages.begin(), mipmapsImages.end());
-                SafeRelease(faceImage[0]);
+
+                for (Image* img : faceImages)
+                    SafeRelease(img);
             }
             else
             {
-                images->push_back(faceImage[0]);
+                images->insert(images->end(), faceImages.begin(), faceImages.end());
             }
         }
     }
@@ -1271,23 +1271,26 @@ void Texture::CreateCubemapImages(Vector<Image *> & images)
 
 void Texture::CreateCubemapMipmapImages(Vector<Vector<Image*>>& images, uint32 mipmapLevelCount)
 {
-    //DVASSERT(texDescriptor->IsCubeMap());
+    DVASSERT(textureType == rhi::TEXTURE_TYPE_CUBE);
 
+    images.reserve(Texture::CUBE_FACE_COUNT);
     for (uint32 i = 0; i < Texture::CUBE_FACE_COUNT; ++i)
     {
-        Vector<Image*> mipmapImages;
+        images.emplace_back();
+        Vector<Image*>& mipmapImages = images.back();
+        mipmapImages.reserve(mipmapLevelCount);
 
         for (uint32 mipLevel = 0; mipLevel < mipmapLevelCount; ++mipLevel)
         {
+            Size2i levelSize = rhi::TextureExtents(Size2i(width, height), mipLevel);
             void* data = rhi::MapTexture(handle, mipLevel, static_cast<rhi::TextureFace>(i));
-            Image* image = Image::CreateFromData(width, height, PixelFormat::FORMAT_RGBA8888, reinterpret_cast<uint8*>(data));
-            rhi::UnmapTexture(handle);
+            Image* image = Image::CreateFromData(levelSize.dx, levelSize.dy, texDescriptor->format, reinterpret_cast<uint8*>(data));
             image->mipmapLevel = mipLevel;
             image->cubeFaceID = i;
-            mipmapImages.push_back(image);
-        }
+            rhi::UnmapTexture(handle);
 
-        images.push_back(mipmapImages);
+            mipmapImages.emplace_back(image);
+        }
     }
 }
 
@@ -1316,6 +1319,11 @@ bool Texture::CreateDescriptor(const FilePath& texturePath, std::unique_ptr<Text
         descriptor->pathname = descriptorPath;
         descriptor->dataSettings.sourceFileFormat = sourceFormat;
         descriptor->dataSettings.sourceFileExtension = sourceExtension;
+
+        descriptor->dataSettings.cubefaceFlags = 0;
+        for (uint32 i = 0; i < info.faceCount; ++i)
+            descriptor->dataSettings.cubefaceFlags |= 1 << i;
+
         descriptor->compression[eGPUFamily::GPU_ORIGIN].imageFormat = sourceFormat;
         descriptor->compression[eGPUFamily::GPU_ORIGIN].format = info.format;
         descriptorChanged = true;

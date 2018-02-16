@@ -1090,6 +1090,11 @@ void TextureDescriptor::CreateLoadPathnamesForGPU(const eGPUFamily gpuFamily, Ve
     }
 }
 
+PixelFormat TextureDescriptor::GetTextureFormat() const
+{
+    return format;
+}
+
 PixelFormat TextureDescriptor::GetPixelFormatForGPU(eGPUFamily forGPU) const
 {
     if (forGPU == eGPUFamily::GPU_INVALID)

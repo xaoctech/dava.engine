@@ -87,6 +87,8 @@ public:
     static const FastName FORWARD_PBS_TRANSMITTANCE;
     static const FastName FORWARD_PBS_TRANSMITTANCE_BILLBOARDS;
 
+    static const FastName VT_COMBINE_BLEND;
+
     static const FastName FORWARD_PBS_SPEEDTREE;
     static const FastName FORWARD_PBS_SPEEDTREE_TRANSMITTANCE;
     static const FastName GBUFFER_COPY;

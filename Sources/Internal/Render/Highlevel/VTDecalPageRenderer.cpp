@@ -31,16 +31,26 @@ VTDecalPageRenderer::VTDecalPageRenderer(bool useFetch_)
     blitPacket.vertexCount = 4;
     blitPacket.primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
     blitPacket.primitiveCount = 2;
-    blitPacket.options |= rhi::Packet::OPT_OVERRIDE_SCISSOR;
 
     rhi::VertexLayout blitQuadLayout;
     blitQuadLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
     blitPacket.vertexLayoutUID = rhi::VertexLayout::UniqueId(blitQuadLayout);
+
+    blendTerrainPacket = blitPacket;
 }
 
 void VTDecalPageRenderer::SetVTDecalManager(VTDecalManager* manager)
 {
     vtDecalManager = manager;
+}
+
+void VTDecalPageRenderer::InitTerrainBlendTargets(const PageRenderParams& params)
+{
+    //GFX_COMPLETE - packing data
+    blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
+    blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
+    blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
+    blendTargetTerrainSize = params.pageSize;
 }
 
 bool VTDecalPageRenderer::RenderPage(const PageRenderParams& params)
@@ -66,16 +76,43 @@ bool VTDecalPageRenderer::RenderPage(const PageRenderParams& params)
     for (uint32 i = 0; i < layerCount; i++)
         Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_SRC_0 + i), params.pageSrc[i]->handle);
 
+    //GFX_COMPLETE for now we assume decoration is only suppressed by decals - no intermediate blend is required - MUL blending will be ok
+    bool useBlendTarget = (decalCount > 1) && (params.component == LandscapePageRenderer::eLandscapeComponent::COMPONENT_TERRAIN);
+
     //setup pass
     rhi::RenderPassConfig passConfig;
     passConfig.name = ProfilerGPUMarkerName::LANDSCAPE_PAGE_UPDATE_VT_DECALS;
     passConfig.priority = PRIORITY_SERVICE_3D + 20;
-    for (uint32 l = 0; l < layerCount; ++l)
+
+    if (useBlendTarget)
     {
-        passConfig.colorBuffer[l].texture = params.pageDst[l]->handle;
-        passConfig.colorBuffer[l].loadAction = rhi::LOADACTION_NONE;
-        passConfig.colorBuffer[l].storeAction = rhi::STOREACTION_STORE;
+        DVASSERT(layerCount == 2); //in case of intermediate blend we need to have exect layouts
+        if (blendTargetsTerrain.empty())
+            InitTerrainBlendTargets(params);
+        else
+            DVASSERT(params.pageSize == blendTargetTerrainSize); //no re-init yet
+
+        DVASSERT(blendTargetsTerrain.size() == 3); //a bit of paranoia
+
+        //setup blend targets
+        for (uint32 l = 0; l < 3; ++l)
+        {
+            passConfig.colorBuffer[l].texture = blendTargetsTerrain[l]->handle;
+            passConfig.colorBuffer[l].loadAction = rhi::LOADACTION_CLEAR;
+            passConfig.colorBuffer[l].storeAction = rhi::STOREACTION_STORE;
+            RhiUtils::SetTargetClearColor(passConfig, 0.0, 0.0, 0.0, 0.0, l);
+        }
     }
+    else
+    {
+        for (uint32 l = 0; l < layerCount; ++l)
+        {
+            passConfig.colorBuffer[l].texture = params.pageDst[l]->handle;
+            passConfig.colorBuffer[l].loadAction = rhi::LOADACTION_CLEAR; //GFX_COMPLETE - on-tiler optimizations for framebuffer fetch
+            passConfig.colorBuffer[l].storeAction = rhi::STOREACTION_STORE;
+        }
+    }
+
     passConfig.depthStencilBuffer.texture = rhi::InvalidHandle;
     passConfig.viewport.x = 0;
     passConfig.viewport.y = 0;
@@ -88,9 +125,10 @@ bool VTDecalPageRenderer::RenderPage(const PageRenderParams& params)
     rhi::BeginRenderPass(pass);
     rhi::BeginPacketList(packetList);
 
-    //blit source data
-    BlitSource(params);
-    const FastName& pathName = (params.component == LandscapePageRenderer::eLandscapeComponent::COMPONENT_TERRAIN) ? (useFetch ? PASS_VT_FETCH : PASS_VT) : PASS_VT_DECORATION;
+    //blit source data (in case of intermediate blend target it should be part of result blend pass)
+    if (!useBlendTarget)
+        BlitSource(params);
+    const FastName& pathName = (params.component == LandscapePageRenderer::eLandscapeComponent::COMPONENT_TERRAIN) ? (useFetch ? PASS_VT_FETCH : (useBlendTarget ? PASS_VT_BLEND : PASS_VT)) : PASS_VT_DECORATION;
     //draw to dest
     std::stable_sort(clipResult.begin(), clipResult.end(), [](const DecalRenderObject* lhs, const DecalRenderObject* rhs) { return lhs->GetSortingKey() < rhs->GetSortingKey(); });
     for (uint32 i = 0; i < decalCount; ++i)
@@ -119,6 +157,11 @@ bool VTDecalPageRenderer::RenderPage(const PageRenderParams& params)
 
     rhi::EndPacketList(packetList);
     rhi::EndRenderPass(pass);
+
+    if (useBlendTarget)
+    {
+        BlitSourceWithTerrainTargets(params);
+    }
 
     clipResult.clear();
     return true;
@@ -213,5 +256,62 @@ void VTDecalPageRenderer::BlitSource(const PageRenderParams& params)
     blitVBData[3] = Vector3(1.f, 1.f, .0f);
 
     rhi::AddPacket(packetList, blitPacket);
+}
+
+void VTDecalPageRenderer::BlitSourceWithTerrainTargets(const PageRenderParams& params)
+{
+    DVASSERT(blendTargetsTerrain.size() == 3);
+    if (nullptr == blendTerrainMaterial)
+    {
+        blendTerrainMaterial = new NMaterial();
+        blendTerrainMaterial->SetFXName(NMaterialName::VT_COMBINE_BLEND);
+        blendTerrainMaterial->AddTexture(FastName("blendedAlbedo"), blendTargetsTerrain[0].Get());
+        blendTerrainMaterial->AddTexture(FastName("blendedNormal"), blendTargetsTerrain[1].Get());
+        blendTerrainMaterial->AddTexture(FastName("blendedHeight"), blendTargetsTerrain[2].Get()); //GFX_COMPLETE switch it of in case we dont use microtesselation
+    }
+
+    if (!blendTerrainMaterial->PreBuildMaterial(PASS_VT))
+        return;
+
+    blendTerrainMaterial->BindParams(blendTerrainPacket);
+
+    DynamicBufferAllocator::AllocResultVB vb = DynamicBufferAllocator::AllocateVertexBuffer(sizeof(Vector3), 4);
+    blendTerrainPacket.vertexStream[0] = vb.buffer;
+    blendTerrainPacket.baseVertex = vb.baseVertex;
+    blendTerrainPacket.vertexCount = vb.allocatedVertices;
+    blendTerrainPacket.indexBuffer = DynamicBufferAllocator::AllocateQuadListIndexBuffer(1);
+
+    Vector3* blitVBData = reinterpret_cast<Vector3*>(vb.data);
+    blitVBData[0] = Vector3(-1.f, -1.f, .0f);
+    blitVBData[1] = Vector3(-1.f, 1.f, .0f);
+    blitVBData[2] = Vector3(1.f, -1.f, .0f);
+    blitVBData[3] = Vector3(1.f, 1.f, .0f);
+
+    //setup pass
+    uint32 layerCount = uint32(params.pageDst.size());
+    rhi::RenderPassConfig passConfig;
+    passConfig.name = ProfilerGPUMarkerName::LANDSCAPE_PAGE_UPDATE_VT_DECALS;
+    passConfig.priority = PRIORITY_SERVICE_3D + 20; //stable sort
+    for (uint32 l = 0; l < layerCount; ++l)
+    {
+        passConfig.colorBuffer[l].texture = params.pageDst[l]->handle;
+        passConfig.colorBuffer[l].loadAction = rhi::LOADACTION_CLEAR;
+        passConfig.colorBuffer[l].storeAction = rhi::STOREACTION_STORE;
+    }
+    passConfig.depthStencilBuffer.texture = rhi::InvalidHandle;
+    passConfig.viewport.x = 0;
+    passConfig.viewport.y = 0;
+    passConfig.viewport.width = params.pageSize;
+    passConfig.viewport.height = params.pageSize;
+    DAVA_PROFILER_GPU_RENDER_PASS(passConfig, ProfilerGPUMarkerName::LANDSCAPE_PAGE_UPDATE_VT_DECALS);
+    rhi::HPacketList packetList;
+    rhi::HRenderPass pass = rhi::AllocateRenderPass(passConfig, 1, &packetList);
+    rhi::BeginRenderPass(pass);
+    rhi::BeginPacketList(packetList);
+
+    rhi::AddPacket(packetList, blendTerrainPacket);
+
+    rhi::EndPacketList(packetList);
+    rhi::EndRenderPass(pass);
 }
 }

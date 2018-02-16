@@ -31,16 +31,22 @@ private:
     void RenderDecal(DecalRenderObject* decal);
     void RenderSpline(DecalRenderObject* decal);
     void BlitSource(const PageRenderParams& params);
+    void BlitSourceWithTerrainTargets(const PageRenderParams& params);
+    void InitTerrainBlendTargets(const PageRenderParams& params);
 
 private:
     bool useFetch = false;
-    rhi::Packet vtDecalsPacket, blitPacket;
+    rhi::Packet vtDecalsPacket, blitPacket, blendTerrainPacket;
     float32 vtPageInfo[4];
     float32 vtPos[2];
     float32 vtBasis[4];
-    NMaterial* blitMaterial = nullptr;
+    RefPtr<NMaterial> blitMaterial;
     VTDecalManager* vtDecalManager = nullptr;
     Vector<DecalRenderObject*> clipResult;
+
+    Vector<RefPtr<Texture>> blendTargetsTerrain;
+    uint32 blendTargetTerrainSize = 0;
+    RefPtr<NMaterial> blendTerrainMaterial;
 
     rhi::HPacketList packetList;
 };

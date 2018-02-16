@@ -19,8 +19,9 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    ReflectionProbe::eType GetReflectionType() const;
-    void SetReflectionType(ReflectionProbe::eType type_);
+    ReflectionProbe::ProbeType GetReflectionType() const;
+    void SetReflectionType(ReflectionProbe::ProbeType type_);
+    void SetReflectionTypeSilently(ReflectionProbe::ProbeType type_);
 
     void SetCapturePosition(const Vector3& capturePosition_);
     const Vector3& GetCapturePosition() const;
@@ -33,26 +34,40 @@ public:
 
     bool GetDebugDrawEnabled() const;
     void SetDebugDrawEnabled(bool enabled);
+    void DisableDebugDraw();
 
-private:
-    ReflectionProbe::eType type = ReflectionProbe::TYPE_GLOBAL;
-    ReflectionProbe* reflectionProbe = nullptr;
-    bool debugDraw = false;
-    Vector3 capturePosition = Vector3(0.0f, 0.0f, 0.0f);
-    Vector3 captureSize = Vector3(50.0f, 50.0f, 50.0f);
+    const FilePath& GetReflectionsMap() const;
+    void SetReflectionsMap(const FilePath& m);
+
+    const Vector4* GetSphericalHarmonics() const;
+    void SetSphericalHarmonics(Vector4 sh[9]);
 
 public:
     DAVA_VIRTUAL_REFLECTION(ReflectionComponent, Component);
+
+private:
+    ReflectionProbe::ProbeType probeType = ReflectionProbe::ProbeType::LOCAL;
+    ReflectionProbe* reflectionProbe = nullptr;
+    Vector4 sphericalHarmonics[9];
+    Vector3 capturePosition = Vector3(0.0f, 0.0f, 0.0f);
+    Vector3 captureSize = Vector3(50.0f, 50.0f, 50.0f);
+    FilePath reflectionsMap;
+    bool debugDraw = false;
 };
 
-inline ReflectionProbe::eType ReflectionComponent::GetReflectionType() const
+inline ReflectionProbe::ProbeType ReflectionComponent::GetReflectionType() const
 {
-    return type;
+    return probeType;
 }
 
-inline void ReflectionComponent::SetReflectionType(ReflectionProbe::eType type_)
+inline void ReflectionComponent::SetReflectionTypeSilently(ReflectionProbe::ProbeType t)
 {
-    type = type_;
+    probeType = t;
+}
+
+inline void ReflectionComponent::SetReflectionType(ReflectionProbe::ProbeType t)
+{
+    SetReflectionTypeSilently(t);
     GlobalEventSystem::Instance()->Event(this, EventSystem::REFLECTION_COMPONENT_CHANGED);
 }
 
@@ -77,6 +92,11 @@ inline void ReflectionComponent::SetDebugDrawEnabled(bool enabled)
     GlobalEventSystem::Instance()->Event(this, EventSystem::REFLECTION_COMPONENT_CHANGED);
 }
 
+inline void ReflectionComponent::DisableDebugDraw()
+{
+    debugDraw = false;
+}
+
 inline void ReflectionComponent::SetCapturePosition(const Vector3& capturePosition_)
 {
     capturePosition = capturePosition_;
@@ -97,5 +117,16 @@ inline void ReflectionComponent::SetCaptureSize(const Vector3& captureSize_)
 inline const Vector3& ReflectionComponent::GetCaptureSize() const
 {
     return captureSize;
+}
+
+inline const FilePath& ReflectionComponent::GetReflectionsMap() const
+{
+    return reflectionsMap;
+}
+
+inline void ReflectionComponent::SetReflectionsMap(const FilePath& m)
+{
+    reflectionsMap = m;
+    GlobalEventSystem::Instance()->Event(this, EventSystem::REFLECTION_COMPONENT_CHANGED);
 }
 };

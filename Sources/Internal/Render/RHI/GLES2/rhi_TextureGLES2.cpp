@@ -135,10 +135,8 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                 {
                   { GLCommand::BIND_RENDERBUFFER, { GL_RENDERBUFFER, glObjects[0] } },
                   { GLCommand::RENDERBUFFER_STORAGE, { GL_RENDERBUFFER, depthComponentFormat, desc.width, desc.height, desc.sampleCount } },
-
                   { GLCommand::BIND_RENDERBUFFER, { GL_RENDERBUFFER, glObjects[1] } },
                   { GLCommand::RENDERBUFFER_STORAGE, { GL_RENDERBUFFER, GL_STENCIL_INDEX8, desc.width, desc.height, desc.sampleCount } },
-
                   { GLCommand::BIND_RENDERBUFFER, { GL_RENDERBUFFER, 0 } }
                 };
                 ExecGL(d16s8cmd, countof(d16s8cmd), forceExecute);
@@ -192,7 +190,7 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             GetGLTextureFormat(desc.format, &int_fmt, &fmt, &type, &compressed);
 
             DVASSERT(desc.levelCount <= countof(desc.initialData));
-            for (unsigned s = 0; s != array_sz; ++s)
+            for (uint32 s = 0; s != array_sz; ++s)
             {
                 cmd2[cmd2_cnt].func = GLCommand::BIND_TEXTURE;
                 cmd2[cmd2_cnt].arg[0] = (desc.type == TEXTURE_TYPE_CUBE) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
@@ -201,7 +199,7 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
 
                 target = (desc.type == TEXTURE_TYPE_CUBE) ? face[s] : GL_TEXTURE_2D;
 
-                for (unsigned m = 0; m != desc.levelCount; ++m)
+                for (uint32 m = 0; m != desc.levelCount; ++m)
                 {
                     GLCommand* cmd = cmd2 + cmd2_cnt;
                     void* data = desc.initialData[s * desc.levelCount + m];
@@ -273,19 +271,19 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             if (isCubeMap)
             {
                 DVASSERT(desc.levelCount < 16);
-                unsigned cmd3Count = 2;
+                uint32 cmd3Count = 2;
                 GLCommand cmd3[4 + 6 * 16] =
                 {
                   { GLCommand::BIND_TEXTURE, { GL_TEXTURE_CUBE_MAP, uint64(&(this->uid)) } },
                   { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } }
                 };
 
-                for (unsigned m = 0; m != desc.levelCount; ++m)
+                for (uint32 m = 0; m != desc.levelCount; ++m)
                 {
                     GLenum face[] = { GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
                     Size2i sz = TextureExtents(Size2i(desc.width, desc.height), m);
 
-                    for (unsigned f = 0; f != countof(face); ++f)
+                    for (uint32 f = 0; f != countof(face); ++f)
                     {
                         cmd3[cmd3Count].func = GLCommand::TEX_IMAGE2D;
                         cmd3[cmd3Count].arg[0] = face[f];
@@ -347,14 +345,14 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
             }
             else
             {
-                unsigned cmd3Count = 2;
+                uint32 cmd3Count = 2;
                 GLCommand cmd3[4 + 3 * 16] =
                 {
                   { GLCommand::BIND_TEXTURE, { GL_TEXTURE_2D, uint64(&(this->uid)) } },
                   { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
                 };
 
-                for (unsigned m = 0; m != desc.levelCount; ++m)
+                for (uint32 m = 0; m != desc.levelCount; ++m)
                 {
                     Size2i sz = TextureExtents(Size2i(desc.width, desc.height), m);
                     cmd3[cmd3Count + 1] = { GLCommand::TEX_PARAMETER_I, { GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST } };
@@ -492,7 +490,7 @@ static Handle gles2_Texture_Create(const Texture::Descriptor& desc)
 
 //------------------------------------------------------------------------------
 
-static void* gles2_Texture_Map(Handle tex, unsigned level, TextureFace face)
+static void* gles2_Texture_Map(Handle tex, uint32 level, TextureFace face)
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
     void* data = nullptr;
@@ -500,26 +498,28 @@ static void* gles2_Texture_Map(Handle tex, unsigned level, TextureFace face)
 
     DVASSERT(!self->isRenderBuffer);
     DVASSERT(!self->isMapped);
+    DVASSERT(self->mappedData == nullptr);
 
-    self->mappedData = reinterpret_cast<uint8*>(::realloc(self->mappedData, data_sz));
+    self->mappedData = reinterpret_cast<uint8*>(calloc(1, data_sz));
 
     if (self->mappedData)
     {
         if (self->isRenderTarget)
         {
-            DVASSERT(level == 0);
-            DVASSERT(self->fbo != 0);
-            GLint internalFormat;
-            GLint format;
-            GLenum type;
-            bool compressed;
+            uint32 framebuffer = TextureGLES2::GetFrameBuffer(&tex, &face, &level, 1, InvalidHandle);
+            Size2i readSize = TextureExtents(Size2i(self->width, self->height), level);
+
+            GLint internalFormat = 0;
+            GLint format = 0;
+            GLenum type = 0;
+            bool compressed = false;
             GetGLTextureFormat(self->format, &internalFormat, &format, &type, &compressed);
 
             GLCommand cmd[] =
             {
-              { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, uint64(self->fbo) } },
+              { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, uint64(framebuffer) } },
               { GLCommand::READ_BUFFER, { uint64(GL_COLOR_ATTACHMENT0 + self->attachmentID) } },
-              { GLCommand::READ_PIXELS, { 0, 0, self->width, self->height, static_cast<uint64>(format), type, uint64(self->mappedData) } },
+              { GLCommand::READ_PIXELS, { 0, 0, uint64(readSize.dx), uint64(readSize.dy), static_cast<uint64>(format), type, uint64(self->mappedData) } },
               { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer } },
               { GLCommand::READ_BUFFER, { GL_COLOR_ATTACHMENT0 } }
             };
@@ -553,71 +553,73 @@ static void* gles2_Texture_Map(Handle tex, unsigned level, TextureFace face)
 
 //------------------------------------------------------------------------------
 
-static void
-gles2_Texture_Unmap(Handle tex)
+static void gles2_Texture_Unmap(Handle tex)
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
-    Size2i sz = TextureExtents(Size2i(self->width, self->height), self->mappedLevel);
-    GLint int_fmt;
-    GLint fmt;
-    GLenum type;
-    bool compressed;
-
-    uint32 textureDataSize = TextureSize(self->format, sz.dx, sz.dy);
-    GetGLTextureFormat(self->format, &int_fmt, &fmt, &type, &compressed);
-
     DVASSERT(self->isMapped);
-    if (self->format == TEXTURE_FORMAT_R4G4B4A4)
-    {
-        _FlipRGBA4_ABGR4(self->mappedData, self->mappedData, textureDataSize);
-    }
-    else if (self->format == TEXTURE_FORMAT_R5G5B5A1)
-    {
-        _RGBA5551toABGR1555(self->mappedData, self->mappedData, textureDataSize);
-    }
 
-    GLenum ttarget = (self->isCubeMap) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
-    GLenum target = GL_TEXTURE_2D;
-
-    if (self->isCubeMap)
+    if (!self->isRenderTarget)
     {
-        switch (self->mappedFace)
+        GLint int_fmt = 0;
+        GLint fmt = 0;
+        GLenum type = 0;
+        bool compressed = false;
+        GetGLTextureFormat(self->format, &int_fmt, &fmt, &type, &compressed);
+
+        Size2i sz = TextureExtents(Size2i(self->width, self->height), self->mappedLevel);
+        uint32 textureDataSize = TextureSize(self->format, sz.dx, sz.dy);
+
+        if (self->format == TEXTURE_FORMAT_R4G4B4A4)
         {
-        case TEXTURE_FACE_POSITIVE_X:
-            target = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-            break;
-        case TEXTURE_FACE_NEGATIVE_X:
-            target = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-            break;
-        case TEXTURE_FACE_POSITIVE_Y:
-            target = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-            break;
-        case TEXTURE_FACE_NEGATIVE_Y:
-            target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-            break;
-        case TEXTURE_FACE_POSITIVE_Z:
-            target = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-            break;
-        case TEXTURE_FACE_NEGATIVE_Z:
-            target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-            break;
-        default:
-            break;
+            _FlipRGBA4_ABGR4(self->mappedData, self->mappedData, textureDataSize);
         }
+        else if (self->format == TEXTURE_FORMAT_R5G5B5A1)
+        {
+            _RGBA5551toABGR1555(self->mappedData, self->mappedData, textureDataSize);
+        }
+
+        GLenum ttarget = (self->isCubeMap) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
+        GLenum target = GL_TEXTURE_2D;
+
+        if (self->isCubeMap)
+        {
+            switch (self->mappedFace)
+            {
+            case TEXTURE_FACE_POSITIVE_X:
+                target = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+                break;
+            case TEXTURE_FACE_NEGATIVE_X:
+                target = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+                break;
+            case TEXTURE_FACE_POSITIVE_Y:
+                target = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+                break;
+            case TEXTURE_FACE_NEGATIVE_Y:
+                target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+                break;
+            case TEXTURE_FACE_POSITIVE_Z:
+                target = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+                break;
+            case TEXTURE_FACE_NEGATIVE_Z:
+                target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+                break;
+            default:
+                break;
+            }
+        }
+
+        GLCommand cmd[] =
+        {
+          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
+          { GLCommand::BIND_TEXTURE, { ttarget, uint64(&(self->uid)) } },
+          { GLCommand::TEX_IMAGE2D, { target, self->mappedLevel, uint64(int_fmt), uint64(sz.dx), uint64(sz.dy), 0, uint64(fmt), type, uint64(textureDataSize), reinterpret_cast<uint64>(self->mappedData), compressed } },
+          { GLCommand::RESTORE_TEXTURE0, {} }
+        };
+
+        ExecGL(cmd, countof(cmd));
     }
-
-    GLCommand cmd[] =
-    {
-      { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
-      { GLCommand::BIND_TEXTURE, { ttarget, uint64(&(self->uid)) } },
-      { GLCommand::TEX_IMAGE2D, { target, self->mappedLevel, uint64(int_fmt), uint64(sz.dx), uint64(sz.dy), 0, uint64(fmt), type, uint64(textureDataSize), reinterpret_cast<uint64>(self->mappedData), compressed } },
-      { GLCommand::RESTORE_TEXTURE0, {} }
-    };
-
-    ExecGL(cmd, countof(cmd));
-
     self->isMapped = false;
-    ::free(self->mappedData);
+    free(self->mappedData);
     self->mappedData = nullptr;
 }
 
@@ -753,13 +755,13 @@ gles2_SamplerState_Create(const SamplerState::Descriptor& desc)
     SamplerStateGLES2_t* state = SamplerStateGLES2Pool::Get(handle);
 
     state->fragmentSamplerCount = desc.fragmentSamplerCount;
-    for (unsigned i = 0; i != desc.fragmentSamplerCount; ++i)
+    for (uint32 i = 0; i != desc.fragmentSamplerCount; ++i)
     {
         state->fragmentSampler[i] = desc.fragmentSampler[i];
     }
 
     state->vertexSamplerCount = desc.vertexSamplerCount;
-    for (unsigned i = 0; i != desc.vertexSamplerCount; ++i)
+    for (uint32 i = 0; i != desc.vertexSamplerCount; ++i)
     {
         state->vertexSampler[i] = desc.vertexSampler[i];
     }
@@ -893,7 +895,7 @@ void InvalidateCache()
     _GLES2_LastActiveTexture = -1;
 }
 
-void SetToRHI(Handle tex, unsigned unit_i, uint32 base_i)
+void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
     bool fragment = base_i != DAVA::InvalidIndex;
@@ -943,7 +945,7 @@ void SetToRHI(Handle tex, unsigned unit_i, uint32 base_i)
     }
 }
 
-unsigned GetFrameBuffer(const Handle* color, const TextureFace* face, const unsigned* level, uint32 colorCount, Handle depthStencil)
+uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32* level, uint32 colorCount, Handle depthStencil)
 {
     GLuint fb = 0;
 
@@ -957,7 +959,7 @@ unsigned GetFrameBuffer(const Handle* color, const TextureFace* face, const unsi
             sameTargets =
             (memcmp(f.color, color, sizeof(Handle) * colorCount) == 0) &&
             (memcmp(f.colorFace, face, sizeof(TextureFace) * colorCount) == 0) &&
-            (memcmp(f.colorLevel, level, sizeof(unsigned) * colorCount) == 0);
+            (memcmp(f.colorLevel, level, sizeof(uint32) * colorCount) == 0);
         }
 
         if (sameColor && sameDepth && sameTargets)
@@ -973,7 +975,7 @@ unsigned GetFrameBuffer(const Handle* color, const TextureFace* face, const unsi
         DVASSERT(fb != 0);
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, fb));
 
-        for (unsigned i = 0; i != colorCount; ++i)
+        for (uint32 i = 0; i != colorCount; ++i)
         {
             TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
 
@@ -1067,12 +1069,12 @@ unsigned GetFrameBuffer(const Handle* color, const TextureFace* face, const unsi
             f.colorCount = colorCount;
             memcpy(f.color, color, sizeof(Handle) * colorCount);
             memcpy(f.colorFace, face, sizeof(TextureFace) * colorCount);
-            memcpy(f.colorLevel, level, sizeof(unsigned) * colorCount);
+            memcpy(f.colorLevel, level, sizeof(uint32) * colorCount);
             f.depthStencil = depthStencil;
             f.depthStencilUID = (depthStencil != InvalidHandle && depthStencil != DefaultDepthBuffer) ? TextureGLES2Pool::Get(depthStencil)->uid : 0;
             f.frameBuffer = fb;
 
-            for (unsigned i = 0; i != colorCount; ++i)
+            for (uint32 i = 0; i != colorCount; ++i)
             {
                 TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
                 f.colorUID[i] = tex->uid;
@@ -1119,7 +1121,7 @@ void ResolveMultisampling(Handle fromTexture, Handle toTexture)
             // force create frame-buffer object
             Handle colorTex = toTexture;
             TextureFace colorFace = TEXTURE_FACE_NONE;
-            unsigned colorLevel = 0;
+            uint32 colorLevel = 0;
 
             GetFrameBuffer(&colorTex, &colorFace, &colorLevel, 1, InvalidHandle);
         }
@@ -1161,7 +1163,7 @@ void ReCreateAll()
     TextureGLES2Pool::ReCreateAll();
 }
 
-unsigned
+uint32
 NeedRestoreCount()
 {
     return TextureGLES2Pool::PendingRestoreCount();

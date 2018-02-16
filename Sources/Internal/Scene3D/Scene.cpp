@@ -1020,6 +1020,7 @@ void Scene::Update(float32 timeElapsed)
     GetSingletonComponent<ActionsSingleComponent>()->Clear();
     GetSingletonComponent<TransformSingleComponent>()->Clear();
     GetSingletonComponent<ChangedSystemsSingleComponent>()->Clear();
+    GetSingletonComponent<VTSingleComponent>()->Clear();
 
     sceneGlobalTime += timeElapsed;
 }

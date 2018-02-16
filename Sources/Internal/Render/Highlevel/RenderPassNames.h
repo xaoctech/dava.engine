@@ -22,6 +22,7 @@ static const FastName PASS_IB_REFLECTION("IBReflectionPass");
 static const FastName PASS_IB_REFLECTION_LDR("LDRIBReflectionPass");
 static const FastName PASS_VT("VTPass");
 static const FastName PASS_VT_FETCH("VTFetchPass");
+static const FastName PASS_VT_BLEND("VTBlendPass");
 static const FastName PASS_VT_DECORATION("VTDecorationPass");
 static const FastName PASS_RESCALE("RescalePass"); //later it would be converted to some AA part
 static const FastName PASS_FORWARD_LDR("LDRForwardPass");
