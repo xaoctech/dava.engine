@@ -89,7 +89,24 @@ void UIMovieTest::Update(float32 timeElapsed)
 void UIMovieTest::UpdatePlayerStateText()
 {
     bool isPlaying = movieView->IsPlaying();
-    playerStateText->SetText(isPlaying ? L"Playing" : L"Paused");
+    switch (movieView->GetState())
+    {
+    case eMoviePlayingState::stateStopped:
+        playerStateText->SetText(L"Stopped");
+        break;
+    case eMoviePlayingState::stateLoading:
+        playerStateText->SetText(L"Loading");
+        break;
+    case eMoviePlayingState::statePaused:
+        playerStateText->SetText(L"Paused");
+        break;
+    case eMoviePlayingState::statePlaying:
+        playerStateText->SetText(L"Playing");
+        break;
+    default:
+        playerStateText->SetText(L"Unknown state");
+        break;
+    }
 }
 
 UIButton* UIMovieTest::CreateUIButton(Font* font, const Rect& rect, const String& text,

@@ -35,8 +35,7 @@ public:
     void Pause() override;
     void Resume() override;
 
-    // Whether the movie is being played?
-    bool IsPlaying() const override;
+    eMoviePlayingState GetState() const override;
 
 private:
     void OnWindowVisibilityChanged(Window* w, bool visible);

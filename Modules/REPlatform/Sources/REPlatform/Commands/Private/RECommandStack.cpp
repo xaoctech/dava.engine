@@ -59,9 +59,21 @@ void RECommandStack::Exec(std::unique_ptr<Command>&& command)
     }
 }
 
+bool RECommandStack::IsClean() const
+{
+    return CommandStack::IsClean() && forceChanged == false;
+}
+
+void RECommandStack::SetClean()
+{
+    forceChanged = false;
+    CommandStack::SetClean();
+}
+
 void RECommandStack::SetChanged()
 {
     CommandStack::SetCleanState(false);
+    forceChanged = true;
 }
 
 CommandBatch* RECommandStack::CreateCommmandBatch(const String& name, uint32 commandsCount) const

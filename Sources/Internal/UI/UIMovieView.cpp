@@ -1,12 +1,13 @@
 #include "UI/UIMovieView.h"
-#include "UI/UIControlSystem.h"
-
+#include "Base/GlobalEnum.h"
+#include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "UI/UIControlSystem.h"
 
 #if defined(DISABLE_NATIVE_MOVIEVIEW)
 // Use stub movie control
 #define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
-#include "Platform/MovieViewControlStub.h"
+#include "UI/Private/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #elif defined(__DAVAENGINE_IPHONE__)
 #include "UI/Private/Ios/MovieViewControl.Ios.h"
@@ -17,18 +18,18 @@
 #elif defined(__DAVAENGINE_WIN_UAP__)
 #include "UI/Private/Win10/MovieViewControl.Win10.h"
 #elif defined(__DAVAENGINE_WIN32__)
-#include "Platform/TemplateWin32/MovieViewControl.Win.h"
+#include "UI/Private/Win32/MovieViewControl.Win32.h"
 #else
 // UIMovieView is not implemented for this platform yet, using stub one.
 #define DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
-#include "Platform/MovieViewControlStub.h"
+#include "UI/Private/MovieViewControlStub.h"
 #include "Render/RenderHelper.h"
 #endif
-#include "Render/2D/Systems/RenderSystem2D.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/Update/UIUpdateComponent.h"
-#include "UI/Events/UIMovieEventComponent.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
 #include "UI/Events/UIEventsSingleComponent.h"
+#include "UI/Events/UIMovieEventComponent.h"
+#include "UI/Update/UIUpdateComponent.h"
 
 namespace DAVA
 {
@@ -37,12 +38,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
     ReflectionRegistrator<UIMovieView>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieView* o) { o->Release(); })
+    .Field("state", &UIMovieView::GetState, nullptr)[M::EnumT<eMoviePlayingState>()]
     .Method<void (UIMovieView::*)(const FilePath& moviePath)>("OpenMovie", &UIMovieView::OpenMovie)
     .Method("Play", &UIMovieView::Play)
     .Method("Stop", &UIMovieView::Stop)
     .Method("Pause", &UIMovieView::Pause)
     .Method("Resume", &UIMovieView::Resume)
-    .Method("IsPlaying", &UIMovieView::IsPlaying)
     .End();
 }
 
@@ -104,7 +105,12 @@ void UIMovieView::Resume()
 
 bool UIMovieView::IsPlaying() const
 {
-    return movieViewControl->IsPlaying();
+    return GetState() == eMoviePlayingState::statePlaying;
+}
+
+eMoviePlayingState UIMovieView::GetState() const
+{
+    return movieViewControl->GetState();
 }
 
 void UIMovieView::UpdateControlRect()
@@ -135,13 +141,13 @@ void UIMovieView::Update(float32 timeElapsed)
     UIControl::Update(timeElapsed);
     movieViewControl->Update();
 
-    bool playing = IsPlaying();
-    if (lastPlayingState != playing)
+    eMoviePlayingState currentState = GetState();
+    if (lastPlayingState != currentState)
     {
         UIMovieEventComponent* events = GetComponent<UIMovieEventComponent>();
         if (events)
         {
-            FastName event = lastPlayingState ? events->GetStopEvent() : events->GetStartEvent();
+            FastName event = lastPlayingState == eMoviePlayingState::stateStopped ? events->GetStopEvent() : events->GetStartEvent();
             if (event.IsValid())
             {
                 if (GetScene())
@@ -154,7 +160,7 @@ void UIMovieView::Update(float32 timeElapsed)
                 }
             }
         }
-        lastPlayingState = playing;
+        lastPlayingState = currentState;
     }
 }
 

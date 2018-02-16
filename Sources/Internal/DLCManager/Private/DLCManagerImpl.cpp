@@ -15,8 +15,13 @@
 #include "DLCManager/Private/PackRequest.h"
 #include "Engine/EngineSettings.h"
 #include "Debug/ProfilerCPU.h"
+#include "MemoryManager/MemoryProfiler.h"
 
 #include <iomanip>
+
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+#include <sqlite_modern_cpp.h>
+#endif
 
 namespace DAVA
 {
@@ -110,6 +115,24 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : profiler(1024 * 16)
     , engine(*engine_)
 {
+#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+    // Configure sqlite memory allocators when memory profiler is enabled
+    static bool sqliteHasBeenConfigired = false;
+    if (!sqliteHasBeenConfigired)
+    {
+        sqliteHasBeenConfigired = true;
+        sqlite3_mem_methods sqliteMemConfig{};
+        sqliteMemConfig.xMalloc = [](int size) -> void* { return MemoryManager::Instance()->Allocate(size, ALLOC_POOL_SQLITE); };
+        sqliteMemConfig.xFree = [](void* ptr) { MemoryManager::Instance()->Deallocate(ptr); };
+        sqliteMemConfig.xRealloc = [](void* ptr, int size) -> void* { return MemoryManager::Instance()->Reallocate(ptr, size); };
+        sqliteMemConfig.xSize = [](void* ptr) -> int { return static_cast<int>(MemoryManager::Instance()->MemorySize(ptr)); };
+        sqliteMemConfig.xRoundup = [](int size) -> int { return 0 == size % 8 ? size : size + (8 - (size % 8)); };
+        sqliteMemConfig.xInit = [](void*) -> int { return 0; };
+        sqliteMemConfig.xShutdown = [](void*) {};
+        sqlite3_config(SQLITE_CONFIG_MALLOC, &sqliteMemConfig);
+    }
+#endif
+
     DVASSERT(Thread::IsMainThread());
     engine.update.Connect(this, [this](float32 frameDelta)
                           {
@@ -304,7 +327,7 @@ DLCManagerImpl::~DLCManagerImpl()
 
 void DLCManagerImpl::TestWriteAccessToPackDirectory(const FilePath& dirToDownloadPacks_)
 {
-    FilePath tmpFile = dirToDownloadPacks_ + "tmp.file";
+    const FilePath tmpFile = dirToDownloadPacks_ + "tmp.file";
     {
         ScopedPtr<File> f(File::Create(tmpFile, File::WRITE | File::CREATE));
         if (!f)
@@ -447,8 +470,11 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
         urlToSuperPack = urlToServerSuperpack_;
         hints = hints_;
 
-        TestPackDirectoryExist();
-        TestWriteAccessToPackDirectory(dirToDownloadPacks_);
+        if (!(dirToDownloadedPacks.IsEmpty() && urlToSuperPack.empty()))
+        {
+            TestPackDirectoryExist();
+            TestWriteAccessToPackDirectory(dirToDownloadPacks_);
+        }
     }
 
     CreateDownloader();

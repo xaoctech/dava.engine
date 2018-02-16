@@ -16,8 +16,8 @@ public:
     void BeginBatch(const String& name, uint32 commandsCount = 1);
     void EndBatch();
 
-    bool IsClean() const;
-    void SetClean();
+    virtual bool IsClean() const;
+    virtual void SetClean();
 
     void Undo();
     void Redo();

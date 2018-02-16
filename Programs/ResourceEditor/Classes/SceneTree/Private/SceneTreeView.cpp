@@ -94,8 +94,6 @@ void SceneTreeView::UpdateControl(const DAVA::ControlDescriptor& descriptor)
                 }
             }
         }
-
-        UpdateVisibleItem(selectionModel()->selection());
     }
 
     if (descriptor.IsChanged(Fields::SelectionModel) == true)
@@ -112,6 +110,8 @@ void SceneTreeView::UpdateControl(const DAVA::ControlDescriptor& descriptor)
             connections.AddConnection(newSelectionModel, &QItemSelectionModel::selectionChanged, DAVA::MakeFunction(this, &SceneTreeView::OnSelectionChanged));
         }
     }
+
+    UpdateVisibleItem(selectionModel()->selection());
 }
 
 void SceneTreeView::OnItemExpanded(const QModelIndex& index)
@@ -153,7 +153,7 @@ void SceneTreeView::UpdateVisibleItem(const QItemSelection& selected)
         QRegion region = visualRegionForSelection(selected);
         if (region.isEmpty())
         {
-            scrollTo(selected.indexes().front());
+            scrollTo(selected.indexes().front(), QAbstractItemView::PositionAtCenter);
         }
     }
 }
