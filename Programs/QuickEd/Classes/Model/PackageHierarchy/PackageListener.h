@@ -13,7 +13,7 @@ class ComponentPropertiesSection;
 class PackageListener
 {
 public:
-    virtual ~PackageListener() = 0;
+    virtual ~PackageListener(){};
 
     virtual void ActivePackageNodeWasChanged(PackageNode* node){};
 
@@ -42,7 +42,3 @@ public:
 
     virtual void StyleSheetsWereRebuilt(){};
 };
-
-inline PackageListener::~PackageListener()
-{
-}

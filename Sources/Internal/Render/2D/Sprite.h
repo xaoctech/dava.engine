@@ -134,8 +134,6 @@ public:
 
     static String GetPathString(const Sprite* sprite);
 
-    void SetOffsetsForFrame(int frame, float32 xOff, float32 yOff);
-
     Texture* GetTexture() const;
     Texture* GetTexture(int32 frameNumber) const;
 
@@ -152,9 +150,6 @@ public:
     void SetDefaultPivotPoint(float32 x, float32 y);
     void SetDefaultPivotPoint(const Vector2& newPivotPoint);
 
-    void SetModification(int32 modif);
-
-    void ResetModification();
     void Reset(); //Reset do not resets the pivot point
 
     /**
@@ -230,7 +225,6 @@ public:
 
 protected:
     Sprite();
-    Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);
     virtual ~Sprite();
 
     static Sprite* GetSpriteFromMap(const FilePath& pathname);
@@ -242,6 +236,8 @@ protected:
     void ReloadExistingTextures(eGPUFamily gpu);
 
     void SetRelativePathname(const FilePath& path);
+
+    void UpdateFrameGeometry(int32 x, int32 y, int32 frameIdx);
 
     static Mutex spriteMapMutex;
 
@@ -287,7 +283,13 @@ protected:
 
     FilePath relativePathname;
 
+    /** Original rectsAndOffsets data from sprite file. Used for recalculating vertex data in DynamicAtlasSystem. */
+    Vector<Array<int32, 6>> rectsAndOffsetsOriginal;
+    /** Is sprite registered in DynamicAtlasSystem? */
+    volatile bool inDynamicAtlas = false;
+
     friend class RenderSystem2D;
+    friend class DynamicAtlasSystem;
 };
 
 // inline functions implementation

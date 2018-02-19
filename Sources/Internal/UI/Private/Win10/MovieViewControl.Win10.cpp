@@ -105,13 +105,14 @@ void MovieViewControl::OpenMovie(const FilePath& moviePath, const OpenMovieParam
     using ::Windows::Storage::Streams::IRandomAccessStream;
 
     properties.stream = nullptr;
-    properties.playing = false;
     properties.canPlay = false;
+    properties.playingState = eMoviePlayingState::stateStopped;
 
     IRandomAccessStream ^ stream = CreateStreamFromFilePath(moviePath);
     if (stream != nullptr)
     {
         properties.canPlay = true;
+        properties.playingState = eMoviePlayingState::stateLoading;
 
         Stretch scaling = Stretch::None;
         switch (params.scalingMode)
@@ -149,7 +150,7 @@ void MovieViewControl::Play()
         // So assume movie is playing under following conditions:
         //  - movie is really playing
         //  - game has called Play() method
-        properties.playing = true;
+        properties.playingState = eMoviePlayingState::statePlaying;
 
         properties.action = MovieViewProperties::ACTION_PLAY;
         properties.actionChanged = true;
@@ -159,30 +160,21 @@ void MovieViewControl::Play()
 
 void MovieViewControl::Stop()
 {
-    // Game plays intro movie in the following sequence:
-    //  1. movie->Play();
-    //  2. while (movie->IsPlaying()) {}
-    //  3. movie->Stop();
-    // After Stop() method has been called native control shows first movie frame
-    // so UIMovieView emulates Stop() through Pause()
-    Pause();
+    if (properties.canPlay)
+    {
+        properties.playingState = eMoviePlayingState::stateStopped;
 
-    // DO NOT DELETE COMMENTED CODE
-    // if (properties.canPlay)
-    // {
-    //     properties.playing = false;
-    //
-    //     properties.action = MovieViewProperties::ACTION_STOP;
-    //     properties.actionChanged = true;
-    //     properties.anyPropertyChanged = true;
-    // }
+        properties.action = MovieViewProperties::ACTION_STOP;
+        properties.actionChanged = true;
+        properties.anyPropertyChanged = true;
+    }
 }
 
 void MovieViewControl::Pause()
 {
     if (properties.canPlay)
     {
-        properties.playing = false;
+        properties.playingState = eMoviePlayingState::statePaused;
 
         properties.action = MovieViewProperties::ACTION_PAUSE;
         properties.actionChanged = true;
@@ -360,10 +352,10 @@ Rect MovieViewControl::VirtualToWindow(const Rect& srcRect) const
     return coordSystem->ConvertVirtualToInput(srcRect);
 }
 
-void MovieViewControl::TellPlayingStatus(bool playing)
+void MovieViewControl::TellPlayingState(eMoviePlayingState state)
 {
-    RunOnMainThreadAsync([this, playing]() {
-        properties.playing = playing;
+    RunOnMainThreadAsync([this, state]() {
+        properties.playingState = state;
     });
 }
 
@@ -375,16 +367,21 @@ void MovieViewControl::OnMediaOpened()
         playAfterLoaded = false;
         nativeControl->Play();
     }
+    else
+    {
+        // Need to setup correct playing state
+        nativeControl->Stop();
+    }
 }
 
 void MovieViewControl::OnMediaEnded()
 {
-    TellPlayingStatus(false);
+    TellPlayingState(eMoviePlayingState::stateStopped);
 }
 
 void MovieViewControl::OnMediaFailed(::Windows::UI::Xaml::ExceptionRoutedEventArgs ^ args)
 {
-    TellPlayingStatus(false);
+    TellPlayingState(eMoviePlayingState::stateStopped);
     String errMessage = UTF8Utils::EncodeToUTF8(args->ErrorMessage->Data());
     Logger::Error("[MovieView] failed to decode media file: %s", errMessage.c_str());
 }

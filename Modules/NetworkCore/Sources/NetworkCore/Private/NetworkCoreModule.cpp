@@ -76,7 +76,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkRemoteInputComponent);
 
-    // Single components
+    // SingleComponents
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkClientSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDeltaSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkEntitiesSingleComponent);

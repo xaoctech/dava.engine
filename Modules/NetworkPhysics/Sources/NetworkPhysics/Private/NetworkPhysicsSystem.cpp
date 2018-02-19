@@ -25,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPhysicsSystem)
 {
     ReflectionRegistrator<NetworkPhysicsSystem>::Begin()[M::Tags("network", "physics")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkPhysicsSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 0.1f)]
+    .Method("ProcessFixed", &NetworkPhysicsSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_PHYSICS, SP::Type::FIXED, 2.0f)]
     .End();
 }
 
@@ -89,8 +89,7 @@ void NetworkPhysicsSystem::Simulate(Entity* entity)
     PhysicsSystem* physicsSystem = GetScene()->GetSystem<PhysicsSystem>();
     DVASSERT(physicsSystem);
 
-    physicsSystem->ProcessFixedSimulate(NetworkTimeSingleComponent::FrameDurationS);
-    physicsSystem->ProcessFixedFetch(NetworkTimeSingleComponent::FrameDurationS);
+    physicsSystem->ProcessFixed(NetworkTimeSingleComponent::FrameDurationS);
 }
 
 void NetworkPhysicsSystem::ReSimulationEnd(Entity* entity)
@@ -132,57 +131,56 @@ void NetworkPhysicsSystem::TransferDataToNetworkComponents()
 
                 physx::PxVehicleDrive* pxVehicleDrive = vehicleCarComponent->GetPxVehicle();
                 physx::PxVehicleDriveNW* pxVehicleDriveNW = static_cast<physx::PxVehicleDriveNW*>(pxVehicleDrive);
-                if (pxVehicleDriveNW != nullptr)
+                DVASSERT(pxVehicleDriveNW != nullptr);
+
+                uint32 numWheels = pxVehicleDriveNW->mWheelsSimData.getNbWheels();
+
+                networkVehicleCarComponent->numWheels = numWheels;
+                networkVehicleCarComponent->engineRotationSpeed = pxVehicleDriveNW->mDriveDynData.getEngineRotationSpeed();
+                networkVehicleCarComponent->gear = pxVehicleDriveNW->mDriveDynData.getCurrentGear();
+
+                for (uint32 i = 0; i < physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS; ++i)
                 {
-                    uint32 numWheels = pxVehicleDriveNW->mWheelsSimData.getNbWheels();
-
-                    networkVehicleCarComponent->numWheels = numWheels;
-                    networkVehicleCarComponent->engineRotationSpeed = pxVehicleDriveNW->mDriveDynData.getEngineRotationSpeed();
-                    networkVehicleCarComponent->gear = pxVehicleDriveNW->mDriveDynData.getCurrentGear();
-
-                    for (uint32 i = 0; i < physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS; ++i)
-                    {
-                        networkVehicleCarComponent->analogInputStates[i] = pxVehicleDriveNW->mDriveDynData.getAnalogInput(i);
-                    }
-
-                    pxVehicleDriveNW->mWheelsDynData.getWheels4InternalJounces(networkVehicleCarComponent->jounces.data());
-
-                    for (uint32 i = 0; i < numWheels; ++i)
-                    {
-                        pxVehicleDriveNW->mWheelsDynData.getWheelRotationSpeed(i, networkVehicleCarComponent->wheelsRotationSpeed[i], networkVehicleCarComponent->wheelsCorrectedRotationSpeed[i]);
-                        networkVehicleCarComponent->wheelsRotationAngle[i] = pxVehicleDriveNW->mWheelsDynData.getWheelRotationAngle(i);
-                    }
-
-                    int32 wheelIndex = 0;
-                    for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
-                    {
-                        Entity* child = entity->GetChild(i);
-                        DVASSERT(child != nullptr);
-
-                        TransformComponent* childTransformComponent = child->GetComponent<TransformComponent>();
-
-                        VehicleWheelComponent* wheelComponent = child->GetComponent<VehicleWheelComponent>();
-                        if (wheelComponent != nullptr)
-                        {
-                            DVASSERT(static_cast<uint32>(wheelIndex) < numWheels);
-                            networkVehicleCarComponent->wheelsOrientation[wheelIndex] = childTransformComponent->GetRotation();
-                            networkVehicleCarComponent->wheelsPosition[wheelIndex] = childTransformComponent->GetPosition();
-
-                            ++wheelIndex;
-                        }
-
-                        VehicleChassisComponent* chassisComponent = child->GetComponent<VehicleChassisComponent>();
-                        if (chassisComponent != nullptr)
-                        {
-                            DVASSERT(wheelComponent == nullptr);
-
-                            networkVehicleCarComponent->chassisOrientation = childTransformComponent->GetRotation();
-                            networkVehicleCarComponent->chassisPosition = childTransformComponent->GetPosition();
-                        }
-                    }
-
-                    DVASSERT(wheelIndex == numWheels);
+                    networkVehicleCarComponent->analogInputStates[i] = pxVehicleDriveNW->mDriveDynData.getAnalogInput(i);
                 }
+
+                pxVehicleDriveNW->mWheelsDynData.getWheels4InternalJounces(networkVehicleCarComponent->jounces.data());
+
+                for (uint32 i = 0; i < numWheels; ++i)
+                {
+                    pxVehicleDriveNW->mWheelsDynData.getWheelRotationSpeed(i, networkVehicleCarComponent->wheelsRotationSpeed[i], networkVehicleCarComponent->wheelsCorrectedRotationSpeed[i]);
+                    networkVehicleCarComponent->wheelsRotationAngle[i] = pxVehicleDriveNW->mWheelsDynData.getWheelRotationAngle(i);
+                }
+
+                int32 wheelIndex = 0;
+                for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
+                {
+                    Entity* child = entity->GetChild(i);
+                    DVASSERT(child != nullptr);
+
+                    TransformComponent* childTransformComponent = child->GetComponent<TransformComponent>();
+
+                    VehicleWheelComponent* wheelComponent = child->GetComponent<VehicleWheelComponent>();
+                    if (wheelComponent != nullptr)
+                    {
+                        DVASSERT(static_cast<uint32>(wheelIndex) < numWheels);
+                        networkVehicleCarComponent->wheelsOrientation[wheelIndex] = childTransformComponent->GetRotation();
+                        networkVehicleCarComponent->wheelsPosition[wheelIndex] = childTransformComponent->GetPosition();
+
+                        ++wheelIndex;
+                    }
+
+                    VehicleChassisComponent* chassisComponent = child->GetComponent<VehicleChassisComponent>();
+                    if (chassisComponent != nullptr)
+                    {
+                        DVASSERT(wheelComponent == nullptr);
+
+                        networkVehicleCarComponent->chassisOrientation = childTransformComponent->GetRotation();
+                        networkVehicleCarComponent->chassisPosition = childTransformComponent->GetPosition();
+                    }
+                }
+
+                DVASSERT(wheelIndex == numWheels);
             }
         }
     }
@@ -323,9 +321,9 @@ void NetworkPhysicsSystem::LogVehicleCar(VehicleCarComponent* carComponent, Stri
 
     DynamicBodyComponent* dynamicBodyComponent = entity->GetComponent<DynamicBodyComponent>();
     PxVehicleDriveNW* pxVehicle = static_cast<PxVehicleDriveNW*>(carComponent->GetPxVehicle());
+    PxRigidDynamic* actor = pxVehicle->getRigidDynamicActor();
     if (pxVehicle == nullptr)
         return;
-    PxRigidDynamic* actor = pxVehicle->getRigidDynamicActor();
 
     Logger::Info("VEHICLE STATE %s (frame: %d) =============", header.c_str(), GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>()->GetFrameId());
     Logger::Info("Actor global position: (%f, %f, %f), global rotation: (%f, %f, %f, %f)", actor->getGlobalPose().p.x, actor->getGlobalPose().p.y, actor->getGlobalPose().p.z, actor->getGlobalPose().q.x, actor->getGlobalPose().q.y, actor->getGlobalPose().q.z, actor->getGlobalPose().q.w);

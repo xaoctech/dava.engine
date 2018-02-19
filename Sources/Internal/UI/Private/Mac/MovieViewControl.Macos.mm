@@ -73,8 +73,8 @@ enum MoviePlayerHelperPlaybackState
 - (void)pause;
 - (void)stop;
 
-// Whether the movie is playing?
-- (bool)isPlaying;
+// Return playing state.
+- (DAVA::eMoviePlayingState)getState;
 
 @end
 
@@ -283,6 +283,7 @@ enum MoviePlayerHelperPlaybackState
         [videoPlayer play];
         break;
     case eStopped:
+        [videoPlayer seekToTime:CMTimeMakeWithSeconds(0.0, 1)];
         [videoPlayer pause];
         break;
     case ePaused:
@@ -297,13 +298,31 @@ enum MoviePlayerHelperPlaybackState
     [videoView setHidden:!videoVisible];
 }
 
-- (bool)isPlaying
+- (DAVA::eMoviePlayingState)getState
 {
     if (playerState == eStateInitializedOK)
     {
-        return ([videoPlayer rate] != 0.0f);
+        if ([videoPlayer rate] != 0.0f)
+        {
+            return DAVA::eMoviePlayingState::statePlaying;
+        }
+        else
+        {
+            double curPlayTime = CMTimeGetSeconds(videoPlayer.currentTime);
+            bool videoAtEnd = curPlayTime == videoDuration;
+            bool videoAtBegin = curPlayTime == 0.0;
+
+            if (videoAtEnd || videoAtBegin)
+            {
+                return DAVA::eMoviePlayingState::stateStopped;
+            }
+            else
+            {
+                return DAVA::eMoviePlayingState::statePaused;
+            }
+        }
     }
-    return false;
+    return DAVA::eMoviePlayingState::stateStopped;
 }
 
 @end
@@ -389,9 +408,9 @@ void MovieViewControl::Resume()
     Play();
 }
 
-bool MovieViewControl::IsPlaying() const
+eMoviePlayingState MovieViewControl::GetState() const
 {
-    return [static_cast<MoviePlayerHelper*>(moviePlayerHelper) isPlaying];
+    return [static_cast<MoviePlayerHelper*>(moviePlayerHelper) getState];
 }
 
 void MovieViewControl::OnWindowVisibilityChanged(Window* w, bool visible)

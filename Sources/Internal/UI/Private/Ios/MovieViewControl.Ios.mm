@@ -10,19 +10,50 @@
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
 
+@interface DavaMPMoviePlayerController : MPMoviePlayerController
+- (void)subscribeNotifications;
+- (void)unsubscribeNotifications;
+- (void)moviePlayBackDidFinish:(NSNotification*)notification;
+@end
+
+@implementation DavaMPMoviePlayerController
+
+- (void)subscribeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(moviePlayBackDidFinish:)
+                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                               object:self];
+}
+
+- (void)unsubscribeNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+                                                  object:self];
+}
+
+- (void)moviePlayBackDidFinish:(NSNotification*)notification
+{
+    [self stop];
+}
+
+@end
+
 namespace DAVA
 {
 struct MovieViewControl::MovieViewObjcBridge final
 {
-    MPMoviePlayerController* moviePlayer = nullptr;
+    DavaMPMoviePlayerController* moviePlayer = nullptr;
 };
 
 MovieViewControl::MovieViewControl(Window* w)
     : bridge(new MovieViewObjcBridge)
     , window(w)
 {
-    bridge->moviePlayer = [[MPMoviePlayerController alloc] init];
+    bridge->moviePlayer = [[DavaMPMoviePlayerController alloc] init];
 
+    [bridge->moviePlayer subscribeNotifications];
     [bridge->moviePlayer setShouldAutoplay:FALSE];
     [[bridge->moviePlayer view] setUserInteractionEnabled:NO];
 
@@ -37,6 +68,7 @@ MovieViewControl::MovieViewControl(Window* w)
 
 MovieViewControl::~MovieViewControl()
 {
+    [bridge->moviePlayer unsubscribeNotifications];
     PlatformApi::Ios::RemoveUIView(window, [bridge->moviePlayer view]);
     [bridge->moviePlayer release];
 }
@@ -104,9 +136,22 @@ void MovieViewControl::Resume()
     [bridge->moviePlayer play];
 }
 
-bool MovieViewControl::IsPlaying() const
+eMoviePlayingState MovieViewControl::GetState() const
 {
-    return [bridge->moviePlayer playbackState] == MPMoviePlaybackStatePlaying;
+    switch ([bridge->moviePlayer playbackState])
+    {
+    case MPMoviePlaybackStatePlaying:
+        return eMoviePlayingState::statePlaying;
+    case MPMoviePlaybackStatePaused:
+        return eMoviePlayingState::statePaused;
+    case MPMoviePlaybackStateSeekingForward:
+    case MPMoviePlaybackStateSeekingBackward:
+        return eMoviePlayingState::stateLoading;
+    case MPMoviePlaybackStateStopped:
+    case MPMoviePlaybackStateInterrupted:
+    default:
+        return eMoviePlayingState::stateStopped;
+    }
 }
 
 } // namespace DAVA

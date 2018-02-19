@@ -17,6 +17,5 @@ protected:
 
 private:
     virtual void Clear() = 0;
-    friend class Scene;
 };
 }

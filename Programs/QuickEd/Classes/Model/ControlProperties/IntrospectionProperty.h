@@ -28,6 +28,7 @@ public:
     const EnumMap* GetEnumMap() const override;
 
     DAVA::Any GetValue() const override;
+    DAVA::Any GetSerializationValue() const override;
 
     DAVA::BaseObject* GetBaseObject() const
     {

@@ -345,6 +345,14 @@ static void gles_check_GL_extensions()
         DAVA::Logger::Info("GL_MAX_SAMPLES -> %d", maxSamples);
     }
 
+#ifdef __DAVAENGINE_MACOS__
+    if (strstr(renderer, "Radeon HD 2400") != nullptr ||
+        strstr(renderer, "Radeon HD 2600") != nullptr)
+    {
+        maxSamples = 1;
+    }
+#endif
+
     MutableDeviceCaps::Get().maxSamples = static_cast<uint32>(maxSamples);
 
     GLint maxTextureSize = 1024;

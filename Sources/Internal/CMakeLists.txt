@@ -101,6 +101,8 @@ set( UNITY_IGNORE_LIST              "Internal/Autotesting"
                                     "Platform/Steam.cpp"
                                     "DataStorage/Steam/DataStorageSteam.cpp"
                                     "UI/Private/CEF/WebViewControl.cpp"
+                                    "UI/Private/Win32/FfmpegPlayer.Win32.cpp"
+                                    "UI/Private/Win32/MovieViewControl.Win32.cpp"
                                     "External/imgui")
 
 set( UNITY_IGNORE_LIST_APPLE        "DataStorage/Apple/ICloudKeyValue.cpp"

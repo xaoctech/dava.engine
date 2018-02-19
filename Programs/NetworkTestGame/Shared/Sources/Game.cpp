@@ -124,7 +124,7 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterBehaviorComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WaitTaskComponent);
 
-    // Single components
+    // SingleComponents
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BattleOptionsSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameCollisionSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSingleComponent);

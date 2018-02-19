@@ -49,6 +49,7 @@
 #include "Render/2D/TextBlock.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/2D/Systems/DynamicAtlasSystem.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/Image/ImageConverter.h"
 #include "Render/Renderer.h"
@@ -885,6 +886,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->versionInfo = new VersionInfo();
     context->renderSystem2D = new RenderSystem2D();
 
+    context->dynamicAtlasSystem = new DynamicAtlasSystem();
     context->uiControlSystem = new UIControlSystem();
 
     context->animationManager = new AnimationManager();
@@ -1038,6 +1040,12 @@ void EngineBackend::DestroySubsystems()
     }
 
     SafeRelease(context->localNotificationController);
+    SafeRelease(context->uiScreenManager);
+    if (context->dynamicAtlasSystem)
+    {
+        delete context->dynamicAtlasSystem;
+        context->dynamicAtlasSystem = nullptr;
+    }
     SafeRelease(context->fontManager);
     SafeDelete(context->animationManager);
     SafeRelease(context->renderSystem2D);

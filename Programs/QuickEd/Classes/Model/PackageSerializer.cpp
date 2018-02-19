@@ -459,7 +459,7 @@ void PackageSerializer::AcceptChildren(AbstractProperty* property)
 
 void PackageSerializer::PutValueProperty(const DAVA::String& name, ValueProperty* property)
 {
-    Any value = property->GetValue();
+    Any value = property->GetSerializationValue();
 
     if (property->GetType() == AbstractProperty::TYPE_FLAGS)
     {

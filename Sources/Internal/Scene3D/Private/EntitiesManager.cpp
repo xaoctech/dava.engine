@@ -39,6 +39,18 @@ void EntitiesManager::RegisterEntity(Entity* entity)
                 }
             }
         }
+
+        /*        bool needAdd = pair.first.matcher(mask, entity->GetAvailableComponentMask());
+        if (needAdd)
+        {
+            uint32 size = entity->GetComponentCount(componentType);
+            for (uint32 i = 0; i < size; ++i)
+            {
+                Component* c = entity->GetComponent(componentType, i);
+                CacheComponentAdded(base, c);
+            }
+        }
+        */
     }
 
     for (auto& pair : entityGroups)

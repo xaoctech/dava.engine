@@ -69,6 +69,8 @@ private:
     void TryRecreateCarVehicle(VehicleCarComponent* vehicleComponent);
     void TryRecreateTankVehicle(VehicleTankComponent* vehicleComponent);
 
+    void LogVehicleCar(VehicleComponent* vehicleComponent, String name);
+
 private:
     Scene* scene = nullptr;
     physx::PxScene* pxScene = nullptr;

@@ -4,7 +4,6 @@
 #include <UI/UIPackageLoader.h>
 #include <UI/UIControlSystem.h>
 #include <UI/UIScreen.h>
-#include <UI/RichContent/UIRichAliasMap.h>
 #include <UI/RichContent/UIRichContentAliasesComponent.h>
 #include <UI/RichContent/UIRichContentComponent.h>
 #include <UI/RichContent/UIRichContentSystem.h>
@@ -17,7 +16,10 @@ DAVA_TESTCLASS (UIRichContentTest)
 {
     BEGIN_FILES_COVERED_BY_TESTS()
     FIND_FILES_IN_TARGET(DavaFramework)
-    DECLARE_COVERED_FILES("UIRichAliasMap.cpp")
+    DECLARE_COVERED_FILES("RichStructs.cpp")
+    DECLARE_COVERED_FILES("XMLAliasesBuilder.cpp")
+    DECLARE_COVERED_FILES("XMLRichContentBuilder.cpp")
+    DECLARE_COVERED_FILES("UIRichContentAliasesComponent.cpp")
     DECLARE_COVERED_FILES("UIRichContentComponent.cpp")
     DECLARE_COVERED_FILES("UIRichContentSystem.cpp")
     END_FILES_COVERED_BY_TESTS();
@@ -82,83 +84,6 @@ DAVA_TESTCLASS (UIRichContentTest)
         c->SetClassesInheritance(false);
     }
 
-    DAVA_TEST (AliasesTest)
-    {
-        const String testData = R"(
-            <h1>Header</h1><text>Simple text<nl/> with </text><GoldPin/><text>image.</text>
-        )";
-        UIRichContentComponent* c = richControl->GetOrCreateComponent<UIRichContentComponent>();
-        UIRichContentAliasesComponent* ca = richControl->GetOrCreateComponent<UIRichContentAliasesComponent>();
-        DVASSERT(c);
-        DVASSERT(ca);
-
-        // Add aliases
-        UIRichAliasMap aliases;
-        // From Alias
-        {
-            UIRichAliasMap::Attributes attrs;
-            attrs["class"] = "dejavu";
-            UIRichAliasMap::Alias h1{ "h1", "p", attrs };
-            aliases.PutAlias(h1);
-
-            const UIRichAliasMap::Alias& a = aliases.GetAlias("h1");
-            TEST_VERIFY(a.alias == h1.alias);
-            TEST_VERIFY(a.tag == h1.tag);
-            TEST_VERIFY(a.attributes == h1.attributes);
-        }
-        // From alias, tag and attributes
-        {
-            UIRichAliasMap::Attributes attrs;
-            attrs["class"] = "text";
-            aliases.PutAlias("text", "span", attrs);
-            TEST_VERIFY(aliases.GetAlias("text").attributes == attrs);
-        }
-        // From alias and tag
-        {
-            aliases.PutAlias("nl", "br");
-            TEST_VERIFY(aliases.HasAlias("nl"));
-        }
-        // From alias and xml source
-        {
-            aliases.PutAliasFromXml("GoldPin", "<img src=\"~res:/UI/Images/GoldPin.png\" />");
-            TEST_VERIFY(aliases.GetAlias("GoldPin").tag == "img");
-        }
-        // Negative tests
-        {
-            TEST_VERIFY(aliases.HasAlias("notDefined") == false);
-        }
-
-        c->SetText(testData);
-        ca->SetAliases(aliases);
-
-        UpdateRichContentSystem();
-        TEST_VERIFY(richControl->GetChildren().size() == 6);
-
-        // Aliases from/to string
-        {
-            uint32 count = aliases.Count();
-            String aliasesStr = aliases.AsString();
-            aliases.FromString(aliasesStr);
-            TEST_VERIFY(count == aliases.Count());
-        }
-
-        // Remove aliases
-        {
-            aliases.RemoveAlias("h1");
-            TEST_VERIFY(aliases.HasAlias("h1") == false);
-            aliases.RemoveAll();
-            TEST_VERIFY(aliases.Count() == 0);
-        }
-        ca->SetAliases(aliases);
-
-        // Append and remove new aliases compoent
-        UIRichContentAliasesComponent* ca2 = new UIRichContentAliasesComponent();
-        richControl->AddComponent(ca2);
-        TEST_VERIFY(richControl->GetComponentCount<UIRichContentAliasesComponent>() == 2);
-        richControl->RemoveComponent(ca2);
-        TEST_VERIFY(richControl->GetComponentCount<UIRichContentAliasesComponent>() == 1);
-    }
-
     DAVA_TEST (RichComponentTest)
     {
         RefPtr<UIRichContentComponent> orig;
@@ -169,5 +94,44 @@ DAVA_TESTCLASS (UIRichContentTest)
 
         TEST_VERIFY(orig->GetText() == copy->GetText());
         TEST_VERIFY(orig->GetBaseClasses() == copy->GetBaseClasses());
+    }
+
+    DAVA_TEST (RichAliasesComponentTest)
+    {
+        const String testData = R"(
+        <h1>Header</h1><text>Simple text<nl/> with </text><GoldPin/><text>image.</text>
+        )";
+        UIRichContentComponent* c = richControl->GetOrCreateComponent<UIRichContentComponent>();
+        UIRichContentAliasesComponent* ca = richControl->GetOrCreateComponent<UIRichContentAliasesComponent>();
+        DVASSERT(c);
+        DVASSERT(ca);
+
+        UIRichContentAliasesComponent::AliasesMap aliases;
+        aliases["h1"] = "<p class=\"dejavu\" />";
+        aliases["test"] = "<span class=\"test\" />";
+        aliases["nl"] = "<br />";
+        aliases["GoldPin"] = "<img src=\"~res:/UI/Images/GoldPin.png\" />";
+
+        c->SetText(testData);
+        ca->SetAliases(aliases);
+
+        String aliasesAsString = ca->GetAliasesAsString();
+        ca->SetAliasesFromString(aliasesAsString);
+        TEST_VERIFY(ca->GetAliases() == aliases);
+
+        UpdateRichContentSystem();
+        TEST_VERIFY(richControl->GetChildren().size() == 6);
+
+        // Remove aliases
+        aliases.clear();
+
+        ca->SetAliases(aliases);
+
+        // Append, remove and clone new aliases compoent
+        UIRichContentAliasesComponent* ca2 = new UIRichContentAliasesComponent(*ca);
+        richControl->AddComponent(ca2);
+        TEST_VERIFY(richControl->GetComponentCount<UIRichContentAliasesComponent>() == 2);
+        richControl->RemoveComponent(ca2);
+        TEST_VERIFY(richControl->GetComponentCount<UIRichContentAliasesComponent>() == 1);
     }
 };

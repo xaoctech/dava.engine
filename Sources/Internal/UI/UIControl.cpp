@@ -46,6 +46,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     .DestructorByPointer([](UIControl* o) { o->Release(); })
     .Field<const FastName& (UIControl::*)() const, void (UIControl::*)(const FastName&)>("name", &UIControl::GetName, &UIControl::SetName)[M::HiddenField()] // Hide because QE control Name property manually
     .Field("position", &UIControl::GetPosition, &UIControl::SetPosition)
+    .Field("absolutePosition", &UIControl::GetAbsolutePosition, nullptr)[M::HiddenField()]
     .Field("size", &UIControl::GetSize, &UIControl::SetSize)
     .Field("scale", &UIControl::GetScale, &UIControl::SetScale)
     .Field("pivot", &UIControl::GetPivot, &UIControl::SetPivot)
@@ -58,7 +59,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     .Field("wheelSensitivity", &UIControl::GetWheelSensitivity, &UIControl::SetWheelSensitivity)
     .Field("tag", &UIControl::GetTag, &UIControl::SetTag)
     .Field("classes", &UIControl::GetClassesAsString, &UIControl::SetClassesFromString)
-    //    .Field("components", &UIControl::GetComponents, nullptr)
+    .Field("components", &UIControl::GetComponents, nullptr)[M::HiddenField()]
     .Method<UIControl* (UIControl::*)(const String&)>("FindByPath", &UIControl::FindByPath)
     .Method("GetComponentByName", &UIControl::GetComponentByName)
     .Method("GetOrCreateComponentByName", &UIControl::GetOrCreateComponentByName)

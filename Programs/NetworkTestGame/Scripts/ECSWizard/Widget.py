@@ -3,24 +3,48 @@
 
 import sys, os
 
-from configs import config, ROOT
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, QRadioButton, QButtonGroup
+from configs import config, ROOT, REFLECTION_REGISTER
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, QRadioButton, QButtonGroup, QMessageBox
 
-def on_create(txt, type_grop, place_grop):
-    name = txt.text()
-    resource = type_grop.checkedButton().text()
-    place = place_grop.checkedButton().text()
-    for ext in ('cpp', 'h'):
-        in_filename = '%s/%s.%s' % (place, resource, ext)
-        out_filename = '%s%s.%s' % (name, resource, ext)
+def on_create(widget, txt, type_grop, place_grop):
+    try:
+        name = txt.text()
+        resource = type_grop.checkedButton().text()
+        place = place_grop.checkedButton().text()
+        place_cfg = config[place]
+        # for ext in ('cpp', 'h'):
+        #     in_filename = '%s/%s.%s' % (place, resource, ext)
+        #     out_filename = '%s%s.%s' % (name, resource, ext)
+        #     with open(in_filename, 'rt') as fin:
+        #         with open(out_filename, 'wt') as fout:
+        #             for line in fin:
+        #                 fout.write(line.replace('TEMPLATE', name))
+        #
+        # os.system('mv %s%s.* %s/%s' % (name, resource, ROOT, place_cfg[resource]))
+
+        refl_register_file = place_cfg[REFLECTION_REGISTER]
+        in_filename = '%s/%s' % (ROOT, refl_register_file)
+        out_filename = '%s/%s.back' % (ROOT, refl_register_file)
+        was_found = False
+        tag = '// %s' % resource
         with open(in_filename, 'rt') as fin:
             with open(out_filename, 'wt') as fout:
                 for line in fin:
-                    fout.write(line.replace('TEMPLATE', name))
+                    fout.write(line)
+                    if tag in line:
+                        was_found = True
+                        fout.write('    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(%s%s);\n' % (name, resource))
 
-    print('mv %s%s.* %s/%s' % (name, resource, ROOT, config[place][resource]))
-    os.system('mv %s%s.* %s/%s' % (name, resource, ROOT, config[place][resource]))
-    exit(0)
+        if not was_found:
+            raise Exception('tag %s not found' % tag)
+
+        os.system('mv %s %s' % (out_filename, in_filename))
+
+    except:
+        QMessageBox.question(widget, 'Error', '\n'.join(str(s) for s in sys.exc_info()), QMessageBox.Ok)
+        raise
+    else:
+        exit(0)
 
 if __name__ == '__main__':
 
@@ -36,6 +60,7 @@ if __name__ == '__main__':
     txt = QLineEdit('ClassName')
     txt_and_btn.addWidget(txt)
     btn = QPushButton('Create')
+    btn.setStyleSheet("font-weight: bold")
     txt_and_btn.addWidget(btn)
     layout.addLayout(txt_and_btn)
 
@@ -59,9 +84,7 @@ if __name__ == '__main__':
         place_layout.addWidget(radio_button)
     radio_button_layout.addLayout(place_layout)
 
-
-
-    btn.clicked.connect(lambda : on_create(txt, type_grop, place_grop))
+    btn.clicked.connect(lambda : on_create(w, txt, type_grop, place_grop))
     w.setFixedSize(350, 150)
     w.show()
     sys.exit(app.exec_())
