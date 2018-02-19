@@ -5,6 +5,7 @@
 #include "Classes/Modules/IssueNavigatorModule/LayoutIssueHandler.h"
 #include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
 #include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/RichContentIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
@@ -56,6 +57,7 @@ void IssueNavigatorModule::PostInit()
     data->handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
     data->handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
     data->handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<RichContentIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
 
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }

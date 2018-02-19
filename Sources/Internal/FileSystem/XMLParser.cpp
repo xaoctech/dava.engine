@@ -10,20 +10,25 @@ namespace DAVA
 {
 namespace XMLParserDetails
 {
+struct UserData
+{
+    XMLParserDelegate* delegate = nullptr;
+};
+
 static void Characters(void* user_data, const xmlChar* ch, int len)
 {
-    XMLParserDelegate* delegateptr = reinterpret_cast<XMLParserDelegate*>(user_data);
-    if (delegateptr)
+    UserData* data = reinterpret_cast<UserData*>(user_data);
+    if (data->delegate)
     {
         String s(reinterpret_cast<const char*>(ch), len);
-        delegateptr->OnFoundCharacters(s);
+        data->delegate->OnFoundCharacters(s);
     }
 }
 
 static void StartElement(void* user_data, const xmlChar* name, const xmlChar** attrs)
 {
-    XMLParserDelegate* delegateptr = reinterpret_cast<XMLParserDelegate*>(user_data);
-    if (delegateptr)
+    UserData* data = reinterpret_cast<UserData*>(user_data);
+    if (data->delegate)
     {
         Map<String, String> attributes;
         if (attrs)
@@ -36,16 +41,16 @@ static void StartElement(void* user_data, const xmlChar* name, const xmlChar** a
                 i += 2;
             }
         }
-        delegateptr->OnElementStarted(reinterpret_cast<const char*>(name), "", "", attributes);
+        data->delegate->OnElementStarted(reinterpret_cast<const char*>(name), "", "", attributes);
     }
 }
 
 static void EndElement(void* user_data, const xmlChar* name)
 {
-    XMLParserDelegate* delegateptr = reinterpret_cast<XMLParserDelegate*>(user_data);
-    if (delegateptr)
+    UserData* data = reinterpret_cast<UserData*>(user_data);
+    if (data->delegate)
     {
-        delegateptr->OnElementEnded(reinterpret_cast<const char*>(name), "", "");
+        data->delegate->OnElementEnded(reinterpret_cast<const char*>(name), "", "");
     }
 }
 }
@@ -57,7 +62,7 @@ XMLParserStatus XMLParser::ParseFileEx(const FilePath& fileName, XMLParserDelega
     if (xmlFile)
     {
         uint64 dataSize = xmlFile->GetSize();
-        uint8* data = new uint8[static_cast<size_t>(dataSize)];
+        char8* data = new char8[static_cast<size_t>(dataSize)];
         if (data)
         {
             uint32 readBytes = xmlFile->Read(data, static_cast<uint32>(dataSize));
@@ -87,7 +92,7 @@ XMLParserStatus XMLParser::ParseFileEx(const FilePath& fileName, XMLParserDelega
     return status;
 }
 
-XMLParserStatus XMLParser::ParseBytesEx(const unsigned char* bytes, int length, XMLParserDelegate* delegateptr)
+XMLParserStatus XMLParser::ParseBytesEx(const char8* bytes, int32 length, XMLParserDelegate* delegateptr)
 {
     XMLParserStatus status;
 
@@ -96,7 +101,13 @@ XMLParserStatus XMLParser::ParseBytesEx(const unsigned char* bytes, int length, 
     saxHandler.endElement = XMLParserDetails::EndElement;
     saxHandler.characters = XMLParserDetails::Characters;
 
-    int32 retCode = xmlSAXUserParseMemory(&saxHandler, reinterpret_cast<void*>(delegateptr), reinterpret_cast<const char*>(bytes), length);
+    XMLParserDetails::UserData data;
+    data.delegate = delegateptr;
+
+    // Always use pointer to valid user data structure because if we send nullptr
+    // as user_data to xmlSAXUserParseMemory then pointer to xmlParserCtxtPtr
+    // will come to saxHandler's functions instead our nullptr.
+    int32 retCode = xmlSAXUserParseMemory(&saxHandler, reinterpret_cast<void*>(&data), reinterpret_cast<const char*>(bytes), static_cast<int>(length));
 
     if (retCode != xmlParserErrors::XML_ERR_OK)
     {
@@ -118,6 +129,11 @@ XMLParserStatus XMLParser::ParseBytesEx(const unsigned char* bytes, int length, 
     return status;
 }
 
+XMLParserStatus XMLParser::ParseStringEx(const String& str, XMLParserDelegate* delegate)
+{
+    return ParseBytesEx(str.c_str(), static_cast<int32>(str.length()), delegate);
+}
+
 bool XMLParser::ParseFile(const FilePath& fileName, XMLParserDelegate* delegateptr)
 {
     XMLParserStatus status = ParseFileEx(fileName, delegateptr);
@@ -131,7 +147,7 @@ bool XMLParser::ParseFile(const FilePath& fileName, XMLParserDelegate* delegatep
 
 bool XMLParser::ParseBytes(const unsigned char* bytes, int length, XMLParserDelegate* delegateptr)
 {
-    XMLParserStatus status = ParseBytesEx(bytes, length, delegateptr);
+    XMLParserStatus status = ParseBytesEx(reinterpret_cast<const char8*>(bytes), static_cast<int32>(length), delegateptr);
     if (!status.Success())
     {
         Logger::Error(status.errorMessage.c_str());

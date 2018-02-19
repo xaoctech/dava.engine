@@ -1,5 +1,4 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
-
 #include "FileSystem/XMLParser.h"
 #include "Logger/Logger.h"
 #include "UI/DefaultUIPackageBuilder.h"
@@ -8,8 +7,7 @@
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/RichContent/Private/RichContentUIPackageBuilder.h"
-#include "UI/RichContent/Private/RichLink.h"
-#include "UI/RichContent/UIRichAliasMap.h"
+#include "UI/RichContent/Private/RichStructs.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
 #include "UI/RichContent/UIRichContentObjectComponent.h"
@@ -24,7 +22,7 @@
 
 namespace DAVA
 {
-XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*= false*/, bool debugDraw /*= false*/)
+XMLRichContentBuilder::XMLRichContentBuilder(RichContentLink* link_, bool editorMode /*= false*/, bool debugDraw /*= false*/)
     : isEditorMode(editorMode)
     , isDebugDraw(debugDraw)
     , link(link_)
@@ -36,22 +34,16 @@ XMLRichContentBuilder::XMLRichContentBuilder(RichLink* link_, bool editorMode /*
     PutClass(defaultClasses);
 }
 
-bool XMLRichContentBuilder::Build(const String& text)
+XMLParserStatus XMLRichContentBuilder::Build(const String& text)
 {
     controls.clear();
     direction = bidiHelper.GetDirectionUTF8String(text); // Detect text direction
-    parserStatus = XMLParser::ParseBytesEx(reinterpret_cast<const unsigned char*>(text.c_str()), static_cast<int32>(text.length()), this);
-    return parserStatus.Success();
+    return XMLParser::ParseStringEx(text, this);
 }
 
 const Vector<RefPtr<UIControl>>& XMLRichContentBuilder::GetControls() const
 {
     return controls;
-}
-
-const XMLParserStatus& XMLRichContentBuilder::GetParserStatus() const
-{
-    return parserStatus;
 }
 
 void XMLRichContentBuilder::PutClass(const String& clazz)
@@ -155,10 +147,9 @@ void XMLRichContentBuilder::AppendControl(UIControl* ctrl)
 
 void XMLRichContentBuilder::OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes)
 {
-    for (UIRichContentAliasesComponent* c : link->aliasesComponents)
+    for (const RichContentAliasesLink& alink : link->aliasesLinks)
     {
-        const UIRichAliasMap& aliases = c->GetAliases();
-        const UIRichAliasMap::Alias& alias = aliases.GetAlias(elementName);
+        const RichContentAlias& alias = alink.GetAlias(elementName);
         if (!alias.tag.empty())
         {
             ProcessTagBegin(alias.tag, alias.attributes);
@@ -170,10 +161,9 @@ void XMLRichContentBuilder::OnElementStarted(const String& elementName, const St
 
 void XMLRichContentBuilder::OnElementEnded(const String& elementName, const String& namespaceURI, const String& qualifedName)
 {
-    for (UIRichContentAliasesComponent* c : link->aliasesComponents)
+    for (const RichContentAliasesLink& alink : link->aliasesLinks)
     {
-        const UIRichAliasMap& aliases = c->GetAliases();
-        const UIRichAliasMap::Alias& alias = aliases.GetAlias(elementName);
+        const RichContentAlias& alias = alink.GetAlias(elementName);
         if (!alias.tag.empty())
         {
             ProcessTagEnd(alias.tag);
@@ -186,7 +176,7 @@ void XMLRichContentBuilder::OnElementEnded(const String& elementName, const Stri
 void XMLRichContentBuilder::OnFoundCharacters(const String& chars)
 {
     // Concat input characters in one single string, because some kind
-    // of intarnalization characters break XML parser to few
+    // of internalization characters break XML parser to few
     // OnFoundCharacters callbacks per one word
     fullText += chars;
 }

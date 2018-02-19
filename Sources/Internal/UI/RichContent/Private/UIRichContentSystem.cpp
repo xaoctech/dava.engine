@@ -1,12 +1,13 @@
 #include "UI/RichContent/UIRichContentSystem.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "FileSystem/XMLParser.h"
 #include "Logger/Logger.h"
 #include "Render/RenderOptions.h"
 #include "Render/Renderer.h"
-#include "UI/RichContent/Private/RichLink.h"
+#include "UI/RichContent/Private/RichStructs.h"
+#include "UI/RichContent/Private/XMLAliasesBuilder.h"
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
-#include "UI/RichContent/UIRichAliasMap.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
 #include "UI/RichContent/UIRichContentObjectComponent.h"
@@ -98,6 +99,18 @@ void UIRichContentSystem::UnregisterComponent(UIControl* control, UIComponent* c
     UISystem::UnregisterComponent(control, component);
 }
 
+XMLParserStatus ValidateAliasName(const String& alias)
+{
+    if (alias.find_first_of("\t\n ") != String::npos)
+    {
+        XMLParserStatus status;
+        status.code = -1;
+        status.errorMessage = "Alias contains white-space character(s)";
+        return status;
+    }
+    return XMLParser::ParseStringEx("<" + alias + "/>", nullptr);
+}
+
 void UIRichContentSystem::Process(float32 elapsedTime)
 {
     // Add new links
@@ -109,32 +122,71 @@ void UIRichContentSystem::Process(float32 elapsedTime)
     // Remove empty links
     if (!links.empty())
     {
-        links.erase(std::remove_if(links.begin(), links.end(), [](std::shared_ptr<RichLink>& l) {
+        links.erase(std::remove_if(links.begin(), links.end(), [](std::shared_ptr<RichContentLink>& l) {
                         return l->component == nullptr;
                     }),
                     links.end());
     }
 
     // Process links
-    for (std::shared_ptr<RichLink>& l : links)
+    for (std::shared_ptr<RichContentLink>& l : links)
     {
         if (l->component)
         {
             bool update = l->component->IsModified();
             l->component->SetModified(false);
-            for (UIRichContentAliasesComponent* c : l->aliasesComponents)
+
+            for (RichContentAliasesLink& alink : l->aliasesLinks)
             {
-                update |= c->IsModified();
-                c->SetModified(false);
+                if (alink.component && alink.component->IsModified())
+                {
+                    update |= true;
+
+                    onBeginProcessComponent.Emit(alink.component);
+
+                    alink.RemoveAll();
+                    for (const auto& pair : alink.component->GetAliases())
+                    {
+                        XMLParserStatus parserStatus = ValidateAliasName(pair.first);
+                        if (parserStatus.Success())
+                        {
+                            XMLAliasesBuilder builder(pair.first);
+                            parserStatus = builder.Build(pair.second);
+                            if (parserStatus.Success())
+                            {
+                                alink.PutAlias(builder.GetAlias());
+                            }
+                            else
+                            {
+                                const String message = Format("Syntax error in rich content alias `%s` source: %s (%d:%d)", pair.first.c_str(), parserStatus.errorMessage.c_str(), parserStatus.errorLine, parserStatus.errorPosition);
+                                onAliasXMLParsingError.Emit(alink.component, pair.first, message);
+                                Logger::Error(message.c_str());
+                            }
+                        }
+                        else
+                        {
+                            const String message = Format("Wrong rich content alias `%s` name : %s", pair.first.c_str(), parserStatus.errorMessage.c_str());
+                            onAliasXMLParsingError.Emit(alink.component, pair.first, message);
+                            Logger::Error(message.c_str());
+                        }
+                    }
+
+                    onEndProcessComponent.Emit(alink.component);
+
+                    alink.component->SetModified(false);
+                }
             }
 
             if (update)
             {
+                onBeginProcessComponent.Emit(l->component);
+
                 UIControl* root = l->component->GetControl();
                 l->RemoveItems();
 
                 XMLRichContentBuilder builder(l.get(), isEditorMode, isDebugDraw);
-                if (builder.Build("<span>" + l->component->GetText() + "</span>"))
+                XMLParserStatus parserStatus = builder.Build("<span>" + l->component->GetText() + "</span>");
+                if (parserStatus.Success())
                 {
                     for (const RefPtr<UIControl>& ctrl : builder.GetControls())
                     {
@@ -144,9 +196,12 @@ void UIRichContentSystem::Process(float32 elapsedTime)
                 }
                 else
                 {
-                    const XMLParserStatus& st = builder.GetParserStatus();
-                    Logger::Error("Syntax error in rich content text: %s (%d:%d)", st.errorMessage.c_str(), st.errorLine, st.errorPosition);
+                    const String message = Format("Syntax error in rich content text: %s (%d:%d)", parserStatus.errorMessage.c_str(), parserStatus.errorLine, parserStatus.errorPosition);
+                    onTextXMLParsingError.Emit(l->component, message);
+                    Logger::Error(message.c_str());
                 }
+
+                onEndProcessComponent.Emit(l->component);
             }
         }
     }
@@ -162,7 +217,7 @@ void UIRichContentSystem::AddLink(UIRichContentComponent* component)
     DVASSERT(component);
     component->SetModified(true);
 
-    std::shared_ptr<RichLink> link = std::make_shared<RichLink>();
+    std::shared_ptr<RichContentLink> link = std::make_shared<RichContentLink>();
     link->component = component;
     link->control = component->GetControl();
 
@@ -170,6 +225,7 @@ void UIRichContentSystem::AddLink(UIRichContentComponent* component)
     for (uint32 i = 0; i < count; ++i)
     {
         UIRichContentAliasesComponent* c = link->control->GetComponent<UIRichContentAliasesComponent>(i);
+        c->SetModified(true);
         link->AddAliases(c);
     }
 
@@ -179,16 +235,25 @@ void UIRichContentSystem::AddLink(UIRichContentComponent* component)
 void UIRichContentSystem::RemoveLink(UIRichContentComponent* component)
 {
     DVASSERT(component);
-    auto findIt = std::find_if(links.begin(), links.end(), [&component](std::shared_ptr<RichLink>& l) {
+    auto findIt = std::find_if(links.begin(), links.end(), [&component](std::shared_ptr<RichContentLink>& l) {
         return l->component == component;
     });
     if (findIt != links.end())
     {
-        (*findIt)->RemoveItems();
-        (*findIt)->component = nullptr; // mark link for delete
+        RichContentLink* link = (*findIt).get();
+
+        link->RemoveItems();
+        link->component = nullptr; // mark link for delete
+
+        // Notify about removing components
+        onRemoveComponent.Emit(component);
+        for (RichContentAliasesLink& aliasLink : link->aliasesLinks)
+        {
+            onRemoveComponent.Emit(aliasLink.component);
+        }
     }
 
-    appendLinks.erase(std::remove_if(appendLinks.begin(), appendLinks.end(), [&component](std::shared_ptr<RichLink>& l) {
+    appendLinks.erase(std::remove_if(appendLinks.begin(), appendLinks.end(), [&component](std::shared_ptr<RichContentLink>& l) {
                           return l->component == component;
                       }),
                       appendLinks.end());
@@ -196,7 +261,10 @@ void UIRichContentSystem::RemoveLink(UIRichContentComponent* component)
 
 void UIRichContentSystem::AddAliases(UIControl* control, UIRichContentAliasesComponent* component)
 {
-    auto findIt = std::find_if(links.begin(), links.end(), [&control](std::shared_ptr<RichLink>& l) {
+    DVASSERT(component);
+    component->SetModified(true);
+
+    auto findIt = std::find_if(links.begin(), links.end(), [&control](std::shared_ptr<RichContentLink>& l) {
         return l->control == control;
     });
     if (findIt != links.end())
@@ -207,12 +275,16 @@ void UIRichContentSystem::AddAliases(UIControl* control, UIRichContentAliasesCom
 
 void UIRichContentSystem::RemoveAliases(UIControl* control, UIRichContentAliasesComponent* component)
 {
-    auto findIt = std::find_if(links.begin(), links.end(), [&control](std::shared_ptr<RichLink>& l) {
+    DVASSERT(component);
+    auto findIt = std::find_if(links.begin(), links.end(), [&control](std::shared_ptr<RichContentLink>& l) {
         return l->control == control;
     });
     if (findIt != links.end())
     {
         (*findIt)->RemoveAliases(component);
+
+        // Notify about removing components
+        onRemoveComponent.Emit(component);
     }
 }
 
@@ -223,7 +295,7 @@ void UIRichContentSystem::HandleEvent(Observable* observable)
     if (newVal != isDebugDraw)
     {
         isDebugDraw = newVal;
-        for (std::shared_ptr<RichLink>& l : links)
+        for (std::shared_ptr<RichContentLink>& l : links)
         {
             if (l->component)
             {
