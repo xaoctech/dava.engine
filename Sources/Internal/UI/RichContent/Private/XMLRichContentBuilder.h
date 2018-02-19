@@ -3,33 +3,31 @@
 #include "Base/BaseTypes.h"
 #include "Base/Vector.h"
 #include "Base/RefPtr.h"
-#include "FileSystem/XMLParserStatus.h"
 #include "FileSystem/XMLParserDelegate.h"
+#include "FileSystem/XMLParserStatus.h"
 #include "Utils/BiDiHelper.h"
 
 namespace DAVA
 {
-struct RichLink;
+struct RichContentLink;
 class UIControl;
 
 class XMLRichContentBuilder final : public XMLParserDelegate
 {
 public:
-    /** Constructor with specified RichLink pointer and editor mode and debug draw flags. */
-    XMLRichContentBuilder(RichLink* link_, bool editorMode = false, bool debugDraw = false);
+    /** Constructor with specified RichContentLink pointer and editor mode and debug draw flags. */
+    XMLRichContentBuilder(RichContentLink* link_, bool editorMode = false, bool debugDraw = false);
 
     /** Parse specified text and build list of controls. */
-    bool Build(const String& text);
+    XMLParserStatus Build(const String& text);
 
     /** Return generated controls. */
     const Vector<RefPtr<UIControl>>& GetControls() const;
 
-    /** Return last parsing error information. */
-    const XMLParserStatus& GetParserStatus() const;
-
+protected:
     // XMLParserDelegate interface implementation
-    void OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes) override;
-    void OnElementEnded(const String& elementName, const String& namespaceURI, const String& qualifedName) override;
+    void OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifiedName, const Map<String, String>& attributes) override;
+    void OnElementEnded(const String& elementName, const String& namespaceURI, const String& qualifiedName) override;
     void OnFoundCharacters(const String& chars) override;
 
 private:
@@ -65,8 +63,7 @@ private:
     String defaultClasses;
     Vector<String> classesStack;
     Vector<RefPtr<UIControl>> controls;
+    RichContentLink* link = nullptr;
     BiDiHelper bidiHelper;
-    RichLink* link = nullptr;
-    XMLParserStatus parserStatus;
 };
 }
