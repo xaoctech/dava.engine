@@ -37,6 +37,8 @@ const QString ApplyButtonName = "ApplyButton";
 QualitySwitcher::QualitySwitcher()
     : QDialog(DAVA::Deprecated::GetUI()->GetWindow(DAVA::mainWindowKey), Qt::Dialog | Qt::WindowStaysOnTopHint) //https://bugreports.qt.io/browse/QTBUG-34767
 {
+    using namespace DAVA;
+
     const int spacing = 5;
     const int minColumnW = 150;
     int currentRow = 1;
@@ -58,16 +60,16 @@ QualitySwitcher::QualitySwitcher()
         generalLayout->addWidget(labRenderFlow, currentRow, 0);
 
         QComboBox* comboFlow = new QComboBox(generalGroup);
-        comboFlow->addItem("LDR Forward", QVariant(int(DAVA::RenderFlow::LDRForward)));
-        comboFlow->addItem("HDR Forward", QVariant(int(DAVA::RenderFlow::HDRForward)));
-        comboFlow->addItem("HDR Deferred", QVariant(int(DAVA::RenderFlow::HDRDeferred)));
+        comboFlow->addItem("LDR Forward", QVariant(int(RenderFlow::LDRForward)));
+        comboFlow->addItem("HDR Forward", QVariant(int(RenderFlow::HDRForward)));
+        comboFlow->addItem("HDR Deferred", QVariant(int(RenderFlow::HDRDeferred)));
         if (rhi::DeviceCaps().isFramebufferFetchSupported)
         {
-            comboFlow->addItem("Tile Based HDR Forward", QVariant(int(DAVA::RenderFlow::TileBasedHDRForward)));
-            comboFlow->addItem("Tiled Based HDR Deferred", QVariant(int(DAVA::RenderFlow::TileBasedHDRDeferred)));
+            comboFlow->addItem("Tile Based HDR Forward", QVariant(int(RenderFlow::TileBasedHDRForward)));
+            comboFlow->addItem("Tiled Based HDR Deferred", QVariant(int(RenderFlow::TileBasedHDRDeferred)));
         }
         comboFlow->setObjectName(RenderFlowComboName);
-        comboFlow->setCurrentIndex(static_cast<int>(DAVA::Renderer::GetCurrentRenderFlow()) - 1);
+        comboFlow->setCurrentIndex(static_cast<int>(Renderer::GetCurrentRenderFlow()) - 1);
         generalLayout->addWidget(comboFlow, currentRow, 1);
         QObject::connect(comboFlow, SIGNAL(activated(int)), this, SLOT(OnSetSettingsDirty(int)));
 
@@ -77,8 +79,8 @@ QualitySwitcher::QualitySwitcher()
     for (uint32 i = 0; i < QualityGroup::Count; ++i)
     {
         QualityGroup group = static_cast<QualityGroup>(i);
-        const FastName& qualityGroupName = DAVA::QualitySettingsSystem::Instance()->GetQualityGroupName(group);
-        const Vector<FastName>& qualityGroupValues = DAVA::QualitySettingsSystem::Instance()->GetAvailableQualitiesForGroup(group);
+        const FastName& qualityGroupName = QualitySettingsSystem::Instance()->GetQualityGroupName(group);
+        const Vector<FastName>& qualityGroupValues = QualitySettingsSystem::Instance()->GetAvailableQualitiesForGroup(group);
 
         if (!qualityGroupValues.empty())
         {
@@ -89,8 +91,8 @@ QualitySwitcher::QualitySwitcher()
             combo->setObjectName(qualityGroupName.c_str());
             generalLayout->addWidget(combo, currentRow, 1);
 
-            FastName currentQuality = DAVA::QualitySettingsSystem::Instance()->GetCurrentQualityForGroup(group);
-            for (const DAVA::FastName& i : qualityGroupValues)
+            FastName currentQuality = QualitySettingsSystem::Instance()->GetCurrentQualityForGroup(group);
+            for (const FastName& i : qualityGroupValues)
             {
                 combo->addItem(i.c_str());
                 if (currentQuality == i)
@@ -113,17 +115,17 @@ QualitySwitcher::QualitySwitcher()
         optionsGroup->setTitle("Options");
         optionsGroup->setLayout(optionsLayout);
 
-        DAVA::int32 optionsCount = DAVA::QualitySettingsSystem::Instance()->GetOptionsCount();
-        for (DAVA::int32 i = 0; i < optionsCount; ++i)
+        int32 optionsCount = QualitySettingsSystem::Instance()->GetOptionsCount();
+        for (int32 i = 0; i < optionsCount; ++i)
         {
-            DAVA::FastName optionName = DAVA::QualitySettingsSystem::Instance()->GetOptionName(i);
+            FastName optionName = QualitySettingsSystem::Instance()->GetOptionName(i);
 
             QLabel* labOp = new QLabel(QString(optionName.c_str()) + ":", optionsGroup);
             optionsLayout->addWidget(labOp, i, 0);
 
             QCheckBox* checkOp = new QCheckBox(optionsGroup);
             checkOp->setObjectName(QString(optionName.c_str()) + "CheckBox");
-            checkOp->setChecked(DAVA::QualitySettingsSystem::Instance()->IsOptionEnabled(optionName));
+            checkOp->setChecked(QualitySettingsSystem::Instance()->IsOptionEnabled(optionName));
             checkOp->setProperty("qualityOptionName", QVariant(optionName.c_str()));
             optionsLayout->addWidget(checkOp, i, 1);
             QObject::connect(checkOp, SIGNAL(clicked(bool)), this, SLOT(OnOptionClick(bool)));
@@ -216,6 +218,8 @@ void QualitySwitcher::SetSettingsDirty(bool dirty)
 
 void QualitySwitcher::ApplySettings()
 {
+    using namespace DAVA;
+
     bool changedQualities[QualityGroup::Count] = {};
 
     bool materialSettingsChanged = false;
@@ -224,16 +228,15 @@ void QualitySwitcher::ApplySettings()
         for (uint32 i = 0; i < QualityGroup::Count; ++i)
         {
             QualityGroup group = static_cast<QualityGroup>(i);
-            const FastName& qualityGroupName = DAVA::QualitySettingsSystem::Instance()->GetQualityGroupName(group);
+            const FastName& qualityGroupName = QualitySettingsSystem::Instance()->GetQualityGroupName(group);
             QComboBox* combo = findChild<QComboBox*>(qualityGroupName.c_str());
             if (combo == nullptr)
                 continue;
 
-            // const Vector<FastName>& qualityGroupValues = DAVA::QualitySettingsSystem::Instance()->GetAvailableQualitiesForGroup(group);
-            DAVA::FastName selectedQuality(combo->currentText().toLatin1());
-            if (selectedQuality != DAVA::QualitySettingsSystem::Instance()->GetCurrentQualityForGroup(group))
+            FastName selectedQuality(combo->currentText().toLatin1());
+            if (selectedQuality != QualitySettingsSystem::Instance()->GetCurrentQualityForGroup(group))
             {
-                DAVA::QualitySettingsSystem::Instance()->SetCurrentQualityForGroup(group, selectedQuality);
+                QualitySettingsSystem::Instance()->SetCurrentQualityForGroup(group, selectedQuality);
                 changedQualities[group] = true;
             }
         }
@@ -241,25 +244,25 @@ void QualitySwitcher::ApplySettings()
         QComboBox* combo = findChild<QComboBox*>(RenderFlowComboName);
         if (combo != nullptr)
         {
-            DAVA::RenderFlow currentFlow = static_cast<DAVA::RenderFlow>(combo->currentData().toInt());
-            DAVA::Renderer::SetRenderFlow(currentFlow);
+            RenderFlow currentFlow = static_cast<RenderFlow>(combo->currentData().toInt());
+            Renderer::SetRenderFlow(currentFlow);
         }
     }
 
     // options
     {
-        DAVA::int32 optionsCount = DAVA::QualitySettingsSystem::Instance()->GetOptionsCount();
-        for (DAVA::int32 i = 0; i < optionsCount; ++i)
+        int32 optionsCount = QualitySettingsSystem::Instance()->GetOptionsCount();
+        for (int32 i = 0; i < optionsCount; ++i)
         {
-            DAVA::FastName optionName = DAVA::QualitySettingsSystem::Instance()->GetOptionName(i);
+            FastName optionName = QualitySettingsSystem::Instance()->GetOptionName(i);
             QCheckBox* checkBox = findChild<QCheckBox*>(QString(optionName.c_str()) + "CheckBox");
             if (nullptr != checkBox)
             {
-                DAVA::FastName optionName(checkBox->property("qualityOptionName").toString().toStdString().c_str());
+                FastName optionName(checkBox->property("qualityOptionName").toString().toStdString().c_str());
                 bool checked = checkBox->isChecked();
-                if (DAVA::QualitySettingsSystem::Instance()->IsOptionEnabled(optionName) != checked)
+                if (QualitySettingsSystem::Instance()->IsOptionEnabled(optionName) != checked)
                 {
-                    DAVA::QualitySettingsSystem::Instance()->EnableOption(optionName, checked);
+                    QualitySettingsSystem::Instance()->EnableOption(optionName, checked);
                     optionSettingsChanged = true;
                 }
             }
@@ -284,13 +287,13 @@ void QualitySwitcher::ApplySettings()
 
     if (materialSettingsChanged)
     {
-        DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadShaders.ID);
+        Deprecated::GetInvoker()->Invoke(ReloadShaders.ID);
     }
 
     if (materialSettingsChanged || optionSettingsChanged)
     {
-        DAVA::Deprecated::GetAccessor()->ForEachContext([&](const DAVA::DataContext& ctx) {
-            DAVA::SceneEditor2* scene = ctx.GetData<DAVA::SceneData>()->GetScene().Get();
+        Deprecated::GetAccessor()->ForEachContext([&](const DataContext& ctx) {
+            SceneEditor2* scene = ctx.GetData<SceneData>()->GetScene().Get();
             UpdateEntitiesToQuality(scene);
             scene->foliageSystem->SyncFoliageWithLandscape();
         });

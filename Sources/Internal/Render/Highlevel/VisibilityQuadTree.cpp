@@ -714,8 +714,6 @@ void QuadTree::Update()
     }
 }
 
-#if (DAVA_DEBUG_DRAW_OCTREE)
-
 void QuadTree::DebugDraw(const Matrix4& cameraMatrix, RenderHelper* renderHelper)
 {
     if (!worldInitialized)
@@ -742,6 +740,5 @@ void QuadTree::DebugDrawNode(uint16 nodeId, RenderHelper* renderHelper)
         }
     }
 }
-#endif
 
 } //namespace DAVA

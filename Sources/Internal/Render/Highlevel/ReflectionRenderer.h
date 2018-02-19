@@ -106,5 +106,4 @@ private:
     Vector4 emptySphericalHarmonicsArray[9]{};
     uint64 invalidateCallback = 0;
 };
-
 }

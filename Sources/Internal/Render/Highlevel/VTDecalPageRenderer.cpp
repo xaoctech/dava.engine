@@ -9,6 +9,7 @@
 #include "Render/Highlevel/VTDecalManager.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Highlevel/RenderPassNames.h"
+#include "Render/RhiUtils.h"
 
 namespace DAVA
 {

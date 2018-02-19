@@ -139,9 +139,7 @@ vertex_out vp_main(vertex_in input)
 
     float4 worldPosition = mul(float4(inputPosition, 1.0), worldMatrix);
     output.position = mul(worldPosition, viewProjMatrix);
-    #if (ALBEDO_ALPHA_MASK)
     output.varTexCoord = float4(input.texCoord0 * texCoordScale, 0.0, 0.0 /* lightmap not used in shadow write */);
-    #endif
 
 #else
 

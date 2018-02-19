@@ -1,0 +1,19 @@
+RenderTechnique:
+    MaterialType: Decal
+    Layers: ["DeferredDecals"]        
+    RenderPassDeferred:
+        Name: "gBufferPass"        
+        Shader: "~res:/Materials2/Shaders/deferred-decal"        
+        UniqueDefines: []
+        UniquePins:
+            - ["DECAL_TYPE", 6]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"            
+    RenderPassDeferredFetch:
+        Name: "gBufferFetchPass"        
+        Shader: "~res:/Materials2/Shaders/deferred-decal"        
+        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+        UniquePins:
+            - ["DECAL_TYPE", 6]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"            

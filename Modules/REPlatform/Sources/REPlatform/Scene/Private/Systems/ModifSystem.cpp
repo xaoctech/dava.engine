@@ -1,5 +1,6 @@
 #include "REPlatform/Scene/Systems/ModifSystem.h"
 
+#include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
 #include "REPlatform/Commands/BakeTransformCommand.h"
 #include "REPlatform/Commands/EntityAddCommand.h"
 #include "REPlatform/Commands/EntityLockCommand.h"
@@ -10,8 +11,11 @@
 #include "REPlatform/Scene/Systems/EditorParticlesSystem.h"
 #include "REPlatform/Scene/Systems/HoodSystem.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
+#include "REPlatform/Scene/Systems/CollisionSystem.h"
 
+#include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/Utils.h>
+#include <TArc/DataProcessing/DataContext.h>
 
 #include <Particles/ParticleForce.h>
 #include <Scene3D/Components/ComponentHelpers.h>

@@ -279,17 +279,20 @@ public:
             DAVA::KeyedArchive* hiddenProps = nullptr;
             DAVA::KeyedArchive* hiddenTextures = nullptr;
 
-            auto iter = templMap.find(material->GetEffectiveFXName().c_str());
-
-            if (editor->hiddenFieldsConfig.Get() != nullptr && iter != templMap.end())
+            if (!material->GetEffectiveFXName().empty())
             {
-                DAVA::KeyedArchive* templateArchive = editor->hiddenFieldsConfig->GetArchive(iter->second);
-                if (templateArchive != nullptr)
+                auto iter = templMap.find(material->GetEffectiveFXName().c_str());
+
+                if (editor->hiddenFieldsConfig.Get() != nullptr && iter != templMap.end())
                 {
-                    hiddenFlags = templateArchive->GetArchive(UIName::Flags.c_str());
-                    hiddenIllums = templateArchive->GetArchive(UIName::Illumination.c_str());
-                    hiddenProps = templateArchive->GetArchive(UIName::Properties.c_str());
-                    hiddenTextures = templateArchive->GetArchive(UIName::Textures.c_str());
+                    DAVA::KeyedArchive* templateArchive = editor->hiddenFieldsConfig->GetArchive(iter->second);
+                    if (templateArchive != nullptr)
+                    {
+                        hiddenFlags = templateArchive->GetArchive(UIName::Flags.c_str());
+                        hiddenIllums = templateArchive->GetArchive(UIName::Illumination.c_str());
+                        hiddenProps = templateArchive->GetArchive(UIName::Properties.c_str());
+                        hiddenTextures = templateArchive->GetArchive(UIName::Textures.c_str());
+                    }
                 }
             }
 

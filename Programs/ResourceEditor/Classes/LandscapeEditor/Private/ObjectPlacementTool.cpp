@@ -1,5 +1,6 @@
 #include "Classes/LandscapeEditor/Private/ObjectPlacementTool.h"
 #include "Classes/LandscapeEditor/Private/MassObjectCreationSystem.h"
+#include "Classes/LandscapeEditor/Private/MassObjectCreationComponents.h"
 #include "Classes/PropertyPanel/FilePathExtensions.h"
 
 #include <REPlatform/Commands/EntityAddCommand.h>
@@ -12,11 +13,13 @@
 #include <REPlatform/Scene/Systems/LandscapeEditorSystemV2/LandscapeEditorSystemV2.h>
 #include <REPlatform/Scene/Systems/StructureSystem.h>
 #include <REPlatform/Scene/Utils/Utils.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 
 #include <TArc/DataProcessing/PropertiesHolder.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/Utils.h>
 #include <TArc/Controls/FilePathEdit.h>
+#include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Controls/Slider.h>
 #include <TArc/Controls/DoubleSpinBox.h>
 #include <TArc/Controls/ControlDescriptor.h>
@@ -24,6 +27,7 @@
 #include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Controls/SpinSlider.h>
 #include <TArc/Controls/ListView.h>
+#include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
 #include <TArc/Core/Deprecated.h>
 
 #include <Command/Command.h>
@@ -32,6 +36,7 @@
 #include <Math/Rect.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Random.h>
 #include <Base/GlobalEnum.h>

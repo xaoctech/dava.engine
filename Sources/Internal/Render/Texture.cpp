@@ -22,6 +22,7 @@
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/Image/ImageConvert.h"
+#include "Render/RHI/Common/rhi_Utils.h"
 
 #include "Render/TextureDescriptor.h"
 #include "Render/GPUFamilyDescriptor.h"

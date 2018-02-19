@@ -144,7 +144,7 @@ void VTDecalManager::Initialize()
 void VTDecalManager::ReInitSpatialStructure()
 {
     //clear existing spatial data
-    for (uint32 i = 0, sz = leafIndices.size(); i < sz; ++i)
+    for (uint32 i = 0, sz = static_cast<uint32>(leafIndices.size()); i < sz; ++i)
     {
         if (leafIndices[i] != VT_EMPTY_LEAF)
         {
@@ -167,8 +167,13 @@ void VTDecalManager::ReInitSpatialStructure()
             vtSpace.AddPoint(landscapeBox.max.xy());
         }
     }
-    rcpVtCellSize = Vector2(cellsCount / (vtSpace.max.x - vtSpace.min.x), cellsCount / (vtSpace.max.x - vtSpace.min.x));
+    //corner case with some empty landscapes
+    if ((vtSpace.max.x - vtSpace.min.x) < 0.1)
+        vtSpace.max.x += 0.1f;
+    if ((vtSpace.max.y - vtSpace.min.y) < 0.1)
+        vtSpace.max.y += 0.1f;
 
+    rcpVtCellSize = Vector2(cellsCount / (vtSpace.max.x - vtSpace.min.x), cellsCount / (vtSpace.max.x - vtSpace.min.x));
     //put existing decals int corresponding lists
     for (DecalRenderObject* ro : decals)
     {
@@ -193,7 +198,7 @@ uint32 VTDecalManager::AllocLeaf()
     }
 
     leafs.resize(leafs.size() + 1);
-    return leafs.size() - 1;
+    return static_cast<uint32>(leafs.size() - 1);
 }
 void VTDecalManager::ReleaseLeaf(uint32 leaf)
 {

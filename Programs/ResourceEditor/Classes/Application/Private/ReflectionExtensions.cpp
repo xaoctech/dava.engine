@@ -23,6 +23,7 @@
 #include <Scene3D/Components/SoundComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/WaveComponent.h>
+#include <Scene3D/Components/ReflectionComponent.h>
 
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/Landscape.h>

@@ -78,6 +78,9 @@ private:
 
     uint16 FindObjectAddNode(uint16 startNodeId, const AABBox3& objBox);
 
+    void DebugDraw(const Matrix4& cameraMatrix, RenderHelper* renderHelper) override;
+    void DebugDrawNode(uint16 nodeId, RenderHelper* renderHelper);
+
 private:
     static const int32 RECALCULATE_Z_PER_FRAME = 10;
     static const int32 RECALCULATE_OBJECTS_PER_FRAME = 10;
@@ -89,12 +92,6 @@ private:
     List<RenderObject*> dirtyObjects;
     List<RenderObject*> worldInitObjects;
     std::queue<uint16> broadPhaseQueue;
-
-#if (DAVA_DEBUG_DRAW_OCTREE)
-    void DebugDraw(const Matrix4& cameraMatrix, RenderHelper* renderHelper) override;
-    void DebugDrawNode(uint16 nodeId);
-    void DebugDrawNode(uint16 nodeId, RenderHelper* renderHelper);    
-#endif
 
     AABBox3 worldBox;
     int32 maxTreeDepth = 0;

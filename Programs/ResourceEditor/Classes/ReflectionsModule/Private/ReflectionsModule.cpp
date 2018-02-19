@@ -12,6 +12,10 @@
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/Utils/ModuleCollection.h>
 
+#include <FileSystem/FileSystem.h>
+#include <Render/Image/ImageSystem.h>
+#include <Render/Texture.h>
+#include <Render/TextureDescriptor.h>
 #include <Scene3D/Systems/ReflectionSystem.h>
 #include <Debug/MessageBox.h>
 

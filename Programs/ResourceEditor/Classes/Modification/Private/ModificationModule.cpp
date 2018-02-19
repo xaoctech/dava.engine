@@ -2,6 +2,7 @@
 #include "Classes/Modification/Private/ModificationData.h"
 
 #include <REPlatform/Scene/Systems/CollisionSystem.h>
+#include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/DataNodes/SelectionData.h>
 
 #include <TArc/Controls/DoubleSpinBox.h>

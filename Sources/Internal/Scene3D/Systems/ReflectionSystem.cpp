@@ -1,6 +1,7 @@
 #include "Scene3D/Systems/ReflectionSystem.h"
 
 #include "Entity/ComponentUtils.h"
+#include "FileSystem/FileSystem.h"
 #include "Render/Highlevel/ReflectionRenderer.h"
 #include "Scene3D/Components/ReflectionComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -227,5 +228,4 @@ void ReflectionSystem::Process(float32 timeElapsed)
         }
     }
 }
-
 }

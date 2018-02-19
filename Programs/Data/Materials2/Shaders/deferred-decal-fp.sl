@@ -4,11 +4,12 @@
 #include "include/structures.h"
 #include "include/math.h"
 
-#define DECAL_GBUFFER 1
-#define DECAL_SNOW 2
-#define DECAL_WET 3
-#define DECAL_RAIN 4
-#define DECAL_GBUFFER_NORMAL 5
+#define DECAL_GBUFFER           1
+#define DECAL_SNOW              2
+#define DECAL_WET               3
+#define DECAL_RAIN              4
+#define DECAL_GBUFFER_NORMAL    5
+#define DECAL_AO                6
 
 #ifndef DECAL_TYPE
 #define DECAL_TYPE DECAL_GBUFFER
@@ -37,6 +38,8 @@ color_mask = rgba;
 // GFX_COMPLETE dte uses pma blending for wetness, but we have reflectance in gBuffer0.a so we are to blend manualy in this case
 #elif DECAL_TYPE == DECAL_RAIN
 color_mask = rgba;      
+#elif DECAL_TYPE == DECAL_AO
+color_mask = rgba;
 #endif
 
 fragment_in
@@ -60,6 +63,11 @@ fragment_out
 
 #if DECAL_TYPE == DECAL_RAIN
     #include "include/decals/rain.h" 
+#endif
+
+#if (DECAL_TYPE == DECAL_AO) //GFX_COMPLETE later add it to different decals
+    [material][instance] property float blendWidth = 0.2; 
+    [material][instance] property float aoScale = 0.0; 
 #endif
 
 fragment_out fp_main(fragment_in input)
@@ -186,6 +194,19 @@ fragment_out fp_main(fragment_in input)
     output.color = float4(resColor, inColor.a);
     output.normal = float4(worldNorm * 0.5 + 0.5, inNormal.w);
     output.params = float4(0.1, inParams.yzw);
+
+
+#elif DECAL_TYPE == DECAL_AO
+    float4 inColor = tex2D(gBuffer0_copy, texPos);
+    float4 inNormal = tex2D(gBuffer1_copy, texPos);
+    float4 inParams = tex2D(gBuffer2_copy, texPos);    
+    float3 dist_to_edge = float3(1.0, 1.0, 1.0) - absDecalPos;
+	float edge_fade_out = min(min(min(dist_to_edge.x, dist_to_edge.y), dist_to_edge.z)/blendWidth, 1.0); 
+    
+
+    output.color = inColor;
+    output.normal = inNormal;
+    output.params = float4(inParams.xy, lerp(inParams.z, inParams.z*aoScale, edge_fade_out), inParams.w);
 #endif
 
     return output;

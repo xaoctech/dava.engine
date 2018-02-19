@@ -11,6 +11,9 @@ Decal:
   name: "[PBR] Deferred Decal NormalRoughness"
   path: Materials2/deferreddecal.normal-roughness.material
  -
+  name: "[PBR] Deferred Decal AO"
+  path: Materials2/deferreddecal.AO.material
+ -
   name: "[PBR] Deferred Decal Snow"
   path: Materials2/deferreddecal.snow.material
  -
