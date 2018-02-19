@@ -38,13 +38,15 @@
 #endif
 
 #define LOG_CAMERA_POSITION 0
+#define DEBUG_DRAW_SPATIAL_HIERARCHY 0
+#define DEBUG_DRAW_VT_HIERARCHY 0
 
 namespace DAVA
 {
 RenderSystem::RenderSystem()
 {
     renderHierarchy = new QuadTree(10);
-    vtDecalManager = new VTDecalManager(10);
+    vtDecalManager = new VTDecalManager(40); //GFX_COMPLETE - make it at least configurable
     markedObjects.reserve(100);
     debugDrawer = new RenderHelper();
     postEffectRenderer = new PostEffectRenderer();
@@ -367,6 +369,7 @@ void RenderSystem::Update(float32 timeElapsed)
             //update before and after as source and dest should be re-rendered in VT
             AABBox3 prevBox = obj->GetWorldBoundingBox();
             obj->RecalculateWorldBoundingBox();
+            vtDecalManager->DecalUpdated(static_cast<DecalRenderObject*>(obj), prevBox);
             if (prevBox.IntersectsWithBox(obj->GetWorldBoundingBox())) //merge
             {
                 prevBox.AddAABBox(obj->GetWorldBoundingBox());
@@ -412,8 +415,12 @@ void RenderSystem::Update(float32 timeElapsed)
 
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 {
-    if (renderHierarchy)
-        renderHierarchy->DebugDraw(cameraMatrix, GetDebugDrawer());
+#if DEBUG_DRAW_SPATIAL_HIERARCHY
+    renderHierarchy->DebugDraw(cameraMatrix, GetDebugDrawer());
+#endif 
+#if DEBUG_DRAW_VT_HIERARCHY
+    vtDecalManager->DebugDraw(GetDebugDrawer());
+#endif
 }
 
 void RenderSystem::ConfigureActivePass()
@@ -531,6 +538,8 @@ void RenderSystem::Render()
     }
 
 #if (ENABLE_DEBUG_DRAW)
+    DebugDrawHierarchy(Matrix4::IDENTITY);
+
     RenderPass debugDrawPass(FastName("Debug"));
     debugDrawPass.passConfig = activeRenderPass->GetPassConfig();
     debugDrawPass.passConfig.priority = renderConfig.basePriority - 4;

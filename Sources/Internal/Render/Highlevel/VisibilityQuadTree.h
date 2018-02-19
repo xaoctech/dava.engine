@@ -56,7 +56,7 @@ public:
         const static uint16 NODE_DEPTH_OFFSET = 8;
         const static uint16 START_CLIP_PLANE_MASK = 0xF0;
         const static uint16 START_CLIP_PLANE_OFFSET = 4;
-        uint16 nodeInfo; // format : ddddddddddzccñ where c - numChildNodes, z - dirtyZ, d - depth
+        uint16 nodeInfo; // format : ddddddddddzccc where c - numChildNodes, z - dirtyZ, d - depth
         Vector<RenderObject*> objects;
         QuadTreeNode();
         void Reset();
@@ -93,8 +93,7 @@ private:
 #if (DAVA_DEBUG_DRAW_OCTREE)
     void DebugDraw(const Matrix4& cameraMatrix, RenderHelper* renderHelper) override;
     void DebugDrawNode(uint16 nodeId);
-    void DebugDrawNode(uint16 nodeId, RenderHelper* renderHelper);
-    UniqueHandle debugDrawStateHandle = InvalidUniqueHandle;
+    void DebugDrawNode(uint16 nodeId, RenderHelper* renderHelper);    
 #endif
 
     AABBox3 worldBox;
