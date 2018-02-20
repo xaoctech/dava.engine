@@ -192,6 +192,27 @@ Any IntrospectionProperty::GetValue() const
     return reflection.GetValue();
 }
 
+DAVA::Any IntrospectionProperty::GetSerializationValue() const
+{
+    if (sourceRectComponent.Valid())
+    {
+        if (GetName() == INTROSPECTION_PROPERTY_NAME_SIZE)
+        {
+            return sourceRectComponent->GetSize();
+        }
+        else if (GetName() == INTROSPECTION_PROPERTY_NAME_POSITION)
+        {
+            return sourceRectComponent->GetPosition();
+        }
+        else
+        {
+            DVASSERT(false);
+        }
+    }
+
+    return GetValue();
+}
+
 void IntrospectionProperty::DisableResetFeature()
 {
     flags &= ~EF_CAN_RESET;

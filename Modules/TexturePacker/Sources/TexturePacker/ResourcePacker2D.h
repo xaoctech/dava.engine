@@ -2,7 +2,7 @@
 #define __DAVAENGINE_RESOURCEPACKER2D_H__
 
 #include "TextureCompression/TextureConverter.h"
-#include "TexturePacker/Spritesheet.h"
+#include "Math/RectanglePacker/Spritesheet.h"
 #include "AssetCache/AssetCacheClient.h"
 
 #include <Base/BaseTypes.h>

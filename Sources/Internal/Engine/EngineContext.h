@@ -19,6 +19,7 @@ class DownloadManager;
 class InputSystem;
 class ActionSystem;
 class UIControlSystem;
+class DynamicAtlasSystem;
 
 class SoundSystem;
 class AnimationManager;
@@ -79,6 +80,7 @@ public:
     ActionSystem* actionSystem = nullptr;
     // TODO: move UI control system to Window
     UIControlSystem* uiControlSystem = nullptr;
+    DynamicAtlasSystem* dynamicAtlasSystem = nullptr;
 
     AnimationManager* animationManager = nullptr;
     FontManager* fontManager = nullptr;
