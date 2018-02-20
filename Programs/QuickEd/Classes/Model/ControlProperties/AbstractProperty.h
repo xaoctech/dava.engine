@@ -71,6 +71,7 @@ public:
 
     virtual const DAVA::Type* GetValueType() const = 0;
     virtual DAVA::Any GetValue() const;
+    virtual DAVA::Any GetSerializationValue() const;
     virtual void SetValue(const DAVA::Any& newValue);
     virtual DAVA::Any GetDefaultValue() const;
     virtual void SetDefaultValue(const DAVA::Any& newValue);

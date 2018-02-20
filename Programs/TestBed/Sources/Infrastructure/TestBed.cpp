@@ -61,6 +61,7 @@
 #include "Tests/SkillSystemTest.h"
 #include "Tests/DebugOverlayTest.h"
 #include "Tests/UIJoypadSystemTest.h"
+#include "Tests/TexturesLoadingTest.h"
 #include "Tests/OnLowMemorySignalTest.h"
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
@@ -450,6 +451,7 @@ void TestBed::RegisterTests()
     new TextSystemTest(*this);
     new SpineTest(*this);
     new SkeletonAnimationTest(*this);
+    new TexturesLoadingTest(*this);
     new UIEntityMarkerTest(*this);
     //$UNITTEST_CTOR
 }

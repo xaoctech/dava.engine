@@ -7,6 +7,7 @@
 #include "FileSystem/LocalizationSystem.h"
 #include "FileSystem/UnmanagedMemoryFile.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
+#include "Render/2D/Systems/DynamicAtlasSystem.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
@@ -185,8 +186,6 @@ File* Sprite::LoadLocalizedFile(const FilePath& spritePathname, FilePath& textur
 
 void Sprite::InitFromFile(File* file)
 {
-    bool usedForScale = false; //Думаю, после исправлений в конвертере, эта магия больше не нужна. Но переменную пока оставлю.
-
     type = SPRITE_FROM_FILE;
     const FilePath& pathName = file->GetFilename();
 
@@ -203,11 +202,8 @@ void Sprite::InitFromFile(File* file)
         sscanf(tempBuf, "%s", textureCharName);
 
         FilePath tp = pathName.GetDirectory() + String(textureCharName);
-        Texture* testTexture = Texture::CreateFromFile(tp);
-
-        textures[k] = testTexture;
         textureNames[k] = tp;
-        DVASSERT(textures[k], "ERROR: Texture loading failed" /* + pathName*/);
+        textures[k] = nullptr;
     }
 
     int32 width, height;
@@ -222,6 +218,7 @@ void Sprite::InitFromFile(File* file)
     frameVertices = new float32*[frameCount];
     rectsAndOffsets = new float32*[frameCount];
     frameTextureIndex = new int32[frameCount];
+    rectsAndOffsetsOriginal.resize(frameCount);
 
     frameNames.resize(frameCount);
     for (int32 i = 0; i < frameCount; i++)
@@ -237,54 +234,97 @@ void Sprite::InitFromFile(File* file)
         sscanf(tempBuf, "%d %d %d %d %d %d %d %s", &x, &y, &dx, &dy, &xOff, &yOff, &frameTextureIndex[i], frameName);
         frameNames[i] = (*frameName == '\0') ? FastName() : FastName(frameName);
 
-        Rect rect = GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtual(Rect(float32(xOff), float32(yOff), float32(dx), float32(dy)), resourceSizeIndex);
-
-        rectsAndOffsets[i][0] = float32(x);
-        rectsAndOffsets[i][1] = float32(y);
-        rectsAndOffsets[i][2] = rect.dx;
-        rectsAndOffsets[i][3] = rect.dy;
-        rectsAndOffsets[i][4] = rect.x;
-        rectsAndOffsets[i][5] = rect.y;
-
-        frameVertices[i][0] = rect.x;
-        frameVertices[i][1] = rect.y;
-        frameVertices[i][2] = rect.x + rect.dx;
-        frameVertices[i][3] = rect.y;
-        frameVertices[i][4] = rect.x;
-        frameVertices[i][5] = rect.y + rect.dy;
-        frameVertices[i][6] = rect.x + rect.dx;
-        frameVertices[i][7] = rect.y + rect.dy;
-
-        float32 xof = 0;
-        float32 yof = 0;
-        if (usedForScale)
-        {
-            xof = 0.15f + (0.45f - 0.15f) * (dx * 0.01f);
-            yof = 0.15f + (0.45f - 0.15f) * (dy * 0.01f);
-            if (xof > 0.45f)
-            {
-                xof = 0.45f;
-            }
-            if (yof > 0.45f)
-            {
-                yof = 0.45f;
-            }
-        }
-
-        dx += x;
-        dy += y;
-
-        texCoords[i][0] = (x + xof) / textures[frameTextureIndex[i]]->width;
-        texCoords[i][1] = (y + yof) / textures[frameTextureIndex[i]]->height;
-        texCoords[i][2] = (dx - xof) / textures[frameTextureIndex[i]]->width;
-        texCoords[i][3] = (y + yof) / textures[frameTextureIndex[i]]->height;
-        texCoords[i][4] = (x + xof) / textures[frameTextureIndex[i]]->width;
-        texCoords[i][5] = (dy - yof) / textures[frameTextureIndex[i]]->height;
-        texCoords[i][6] = (dx - xof) / textures[frameTextureIndex[i]]->width;
-        texCoords[i][7] = (dy - yof) / textures[frameTextureIndex[i]]->height;
+        rectsAndOffsetsOriginal[i][eRectsAndOffsets::X_POSITION_IN_TEXTURE] = x;
+        rectsAndOffsetsOriginal[i][eRectsAndOffsets::Y_POSITION_IN_TEXTURE] = y;
+        rectsAndOffsetsOriginal[i][eRectsAndOffsets::ACTIVE_WIDTH] = dx;
+        rectsAndOffsetsOriginal[i][eRectsAndOffsets::ACTIVE_HEIGHT] = dy;
+        rectsAndOffsetsOriginal[i][eRectsAndOffsets::X_OFFSET_TO_ACTIVE] = xOff;
+        rectsAndOffsetsOriginal[i][eRectsAndOffsets::Y_OFFSET_TO_ACTIVE] = yOff;
     }
     defaultPivotPoint.x = 0;
     defaultPivotPoint.y = 0;
+
+    if (GetEngineContext()->dynamicAtlasSystem->RegisterSprite(this))
+    {
+        // Sprite was added into system
+        // Texture will created in `DynamicAtlasSystem::EndAtlas()` call.
+    }
+    else
+    {
+        // Load default textures
+        for (int32 k = 0; k < textureCount; ++k)
+        {
+            textures[k] = Texture::CreateFromFile(textureNames[k]);
+            DVASSERT(textures[k], "ERROR: Texture loading failed" /* + pathName*/);
+        }
+    }
+
+    // Update default geometry
+    for (int32 i = 0; i < frameCount; i++)
+    {
+        UpdateFrameGeometry(rectsAndOffsetsOriginal[i][eRectsAndOffsets::X_POSITION_IN_TEXTURE],
+                            rectsAndOffsetsOriginal[i][eRectsAndOffsets::Y_POSITION_IN_TEXTURE], i);
+    }
+
+    if (!inDynamicAtlas)
+    {
+        // Reduces memory usage by freeing unused memory
+        rectsAndOffsetsOriginal.clear();
+        rectsAndOffsetsOriginal.shrink_to_fit();
+    }
+}
+
+void Sprite::UpdateFrameGeometry(int32 x, int32 y, int32 frameIdx)
+{
+    DVASSERT(rectsAndOffsetsOriginal.size() == frameCount);
+
+    float32 dx = static_cast<float32>(rectsAndOffsetsOriginal[frameIdx][eRectsAndOffsets::ACTIVE_WIDTH]);
+    float32 dy = static_cast<float32>(rectsAndOffsetsOriginal[frameIdx][eRectsAndOffsets::ACTIVE_HEIGHT]);
+    float32 xOff = static_cast<float32>(rectsAndOffsetsOriginal[frameIdx][eRectsAndOffsets::X_OFFSET_TO_ACTIVE]);
+    float32 yOff = static_cast<float32>(rectsAndOffsetsOriginal[frameIdx][eRectsAndOffsets::Y_OFFSET_TO_ACTIVE]);
+
+    Rect rect = GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtual(Rect(float32(xOff), float32(yOff), float32(dx), float32(dy)), resourceSizeIndex);
+
+    rectsAndOffsets[frameIdx][eRectsAndOffsets::X_POSITION_IN_TEXTURE] = static_cast<float32>(x);
+    rectsAndOffsets[frameIdx][eRectsAndOffsets::Y_POSITION_IN_TEXTURE] = static_cast<float32>(y);
+    rectsAndOffsets[frameIdx][eRectsAndOffsets::ACTIVE_WIDTH] = rect.dx;
+    rectsAndOffsets[frameIdx][eRectsAndOffsets::ACTIVE_HEIGHT] = rect.dy;
+    rectsAndOffsets[frameIdx][eRectsAndOffsets::X_OFFSET_TO_ACTIVE] = rect.x;
+    rectsAndOffsets[frameIdx][eRectsAndOffsets::Y_OFFSET_TO_ACTIVE] = rect.y;
+
+    frameVertices[frameIdx][0] = rect.x;
+    frameVertices[frameIdx][1] = rect.y;
+    frameVertices[frameIdx][2] = rect.x + rect.dx;
+    frameVertices[frameIdx][3] = rect.y;
+    frameVertices[frameIdx][4] = rect.x;
+    frameVertices[frameIdx][5] = rect.y + rect.dy;
+    frameVertices[frameIdx][6] = rect.x + rect.dx;
+    frameVertices[frameIdx][7] = rect.y + rect.dy;
+
+    dx += x;
+    dy += y;
+
+    Texture* frameTexture = textures[frameTextureIndex[frameIdx]];
+    float32 texWidth = 1.0;
+    float32 texHeight = 1.0;
+    if (frameTexture != nullptr)
+    {
+        texWidth = static_cast<float32>(frameTexture->width);
+        texHeight = static_cast<float32>(frameTexture->height);
+    }
+
+    float32 textureX = x / texWidth;
+    float32 textureDX = dx / texWidth;
+    float32 textureY = y / texHeight;
+    float32 textureDY = dy / texHeight;
+    texCoords[frameIdx][0] = textureX;
+    texCoords[frameIdx][1] = textureY;
+    texCoords[frameIdx][2] = textureDX;
+    texCoords[frameIdx][3] = textureY;
+    texCoords[frameIdx][4] = textureX;
+    texCoords[frameIdx][5] = textureDY;
+    texCoords[frameIdx][6] = textureDX;
+    texCoords[frameIdx][7] = textureDY;
 }
 
 Sprite* Sprite::Create(const FilePath& spriteName)
@@ -477,12 +517,12 @@ void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset,
         yOff = 0;
 
         float32* rectAndOffset = rectsAndOffsets[i];
-        rectAndOffset[0] = x;
-        rectAndOffset[1] = y;
-        rectAndOffset[2] = size.x;
-        rectAndOffset[3] = size.y;
-        rectAndOffset[4] = xOff;
-        rectAndOffset[5] = yOff;
+        rectAndOffset[eRectsAndOffsets::X_POSITION_IN_TEXTURE] = x;
+        rectAndOffset[eRectsAndOffsets::Y_POSITION_IN_TEXTURE] = y;
+        rectAndOffset[eRectsAndOffsets::ACTIVE_WIDTH] = size.x;
+        rectAndOffset[eRectsAndOffsets::ACTIVE_HEIGHT] = size.y;
+        rectAndOffset[eRectsAndOffsets::X_OFFSET_TO_ACTIVE] = xOff;
+        rectAndOffset[eRectsAndOffsets::Y_OFFSET_TO_ACTIVE] = yOff;
 
         float32* frameVerts = frameVertices[i];
         frameVerts[0] = xOff;
@@ -501,14 +541,19 @@ void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset,
         Texture* texture = textures[frameIndex];
         float32* texCoord = texCoords[i];
 
-        texCoord[0] = x / texture->width;
-        texCoord[1] = y / texture->height;
-        texCoord[2] = dx / texture->width;
-        texCoord[3] = y / texture->height;
-        texCoord[4] = x / texture->width;
-        texCoord[5] = dy / texture->height;
-        texCoord[6] = dx / texture->width;
-        texCoord[7] = dy / texture->height;
+        float32 textureX = x / texture->width;
+        float32 textureDX = dx / texture->width;
+        float32 textureY = y / texture->height;
+        float32 textureDY = dy / texture->height;
+
+        texCoord[0] = textureX;
+        texCoord[1] = textureY;
+        texCoord[2] = textureDX;
+        texCoord[3] = textureY;
+        texCoord[4] = textureX;
+        texCoord[5] = textureDY;
+        texCoord[6] = textureDX;
+        texCoord[7] = textureDY;
     }
 
     // DF-1984 - Set available sprite relative path name here. Use FBO sprite name only if sprite name is empty.
@@ -523,23 +568,6 @@ void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset,
 
     fboCounter++;
     Reset();
-}
-
-void Sprite::SetOffsetsForFrame(int frame, float32 xOff, float32 yOff)
-{
-    DVASSERT(frame < frameCount);
-
-    rectsAndOffsets[frame][4] = xOff;
-    rectsAndOffsets[frame][5] = yOff;
-
-    frameVertices[frame][0] = xOff;
-    frameVertices[frame][1] = yOff;
-    frameVertices[frame][2] = xOff + rectsAndOffsets[frame][2];
-    frameVertices[frame][3] = yOff;
-    frameVertices[frame][4] = xOff;
-    frameVertices[frame][5] = yOff + rectsAndOffsets[frame][3];
-    frameVertices[frame][6] = xOff + rectsAndOffsets[frame][2];
-    frameVertices[frame][7] = yOff + rectsAndOffsets[frame][3];
 }
 
 void Sprite::Clear()
@@ -566,6 +594,7 @@ void Sprite::Clear()
     SafeDeleteArray(rectsAndOffsets);
     SafeDeleteArray(frameTextureIndex);
     textureCount = 0;
+    rectsAndOffsetsOriginal.clear();
 }
 
 Sprite::~Sprite()
@@ -573,6 +602,7 @@ Sprite::~Sprite()
     spriteMapMutex.Lock();
     spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
     spriteMapMutex.Unlock();
+    GetEngineContext()->dynamicAtlasSystem->UnregisterSprite(this);
     Clear();
 }
 
@@ -645,29 +675,11 @@ int32 Sprite::GetFrameByName(const FastName& frameName) const
     return INVALID_FRAME_INDEX;
 }
 
-void Sprite::SetModification(int32 modif)
-{
-    modification = modif;
-    if (modif != 0)
-    {
-        flags = flags | EST_MODIFICATION;
-    }
-    else
-    {
-        ResetModification();
-    }
-}
-
 void Sprite::Reset()
 {
     flags = 0;
     modification = 0;
     clipPolygon = 0;
-}
-
-void Sprite::ResetModification()
-{
-    flags = flags & ~EST_MODIFICATION;
 }
 
 float32 Sprite::GetRectOffsetValueForFrame(int32 frame, eRectsAndOffsets valueType) const
@@ -712,6 +724,7 @@ void Sprite::PrepareForNewSize()
     spriteMapMutex.Lock();
     spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
     spriteMapMutex.Unlock();
+    GetEngineContext()->dynamicAtlasSystem->UnregisterSprite(this);
 
     textures = 0;
     textureNames = 0;
@@ -877,6 +890,7 @@ void Sprite::Reload(eGPUFamily gpu)
 {
     if (type == SPRITE_FROM_FILE)
     {
+        GetEngineContext()->dynamicAtlasSystem->UnregisterSprite(this);
         ReloadExistingTextures(gpu);
         Clear();
 

@@ -14,14 +14,8 @@ def main():
 
     commit_log = [x.lstrip() for x in commit_log if x != '']
 
-    auto_merge = [s for s in commit_log if 'Automatic merge' in s]
-
-    if auto_merge:
-        commit = [s for s in commit_log if '* commit' in s]
-        commit = ''.join(commit).split('\'')[1]
-    else:
-        commit = [s for s in commit_log if 'commit' in s]
-        commit = ''.join(commit).split(' ')[1]
+    commit = [s for s in commit_log if 'commit' in s]
+    commit = ''.join(commit).split(' ')[1]
 
     common_tool.flush_print_teamcity_set_parameter( 'env.from_commit', commit )
 

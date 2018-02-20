@@ -103,6 +103,11 @@ Any AbstractProperty::GetValue() const
     return Any();
 }
 
+DAVA::Any AbstractProperty::GetSerializationValue() const
+{
+    return GetValue();
+}
+
 void AbstractProperty::SetValue(const Any& /*newValue*/)
 {
     // Do nothing by default

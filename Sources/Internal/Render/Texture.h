@@ -186,6 +186,8 @@ public:
 
     static rhi::HSamplerState CreateSamplerStateHandle(const rhi::SamplerState::Descriptor::Sampler& samplerState);
 
+    static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor* descriptor);
+
 protected:
     void RestoreRenderResource();
 
@@ -205,14 +207,10 @@ protected:
 
     void MakePink(bool checkers = true);
 
-    void GenerateMipmapsInternal();
-
     Texture();
     virtual ~Texture();
 
     bool IsLoadAvailable(const eGPUFamily gpuFamily) const;
-
-    static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor* descriptor);
 
 public: // properties for fast access
     rhi::HTexture handle;
