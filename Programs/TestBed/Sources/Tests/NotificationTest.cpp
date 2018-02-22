@@ -30,10 +30,9 @@ void NotificationScreen::LoadResources()
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
 
-    font->SetSize(30);
-
     showNotificationText = new UIButton(Rect(10, 10, 450, 60));
     showNotificationText->SetStateFont(0xFF, font);
+    showNotificationText->SetStateFontSize(0xFF, 30.f);
     showNotificationText->SetStateFontColor(0xFF, Color::White);
     showNotificationText->SetStateText(0xFF, L"Notify text");
 
@@ -43,6 +42,7 @@ void NotificationScreen::LoadResources()
 
     showNotificationTextDelayed = new UIButton(Rect(10, 100, 400, 60));
     showNotificationTextDelayed->SetStateFont(0xFF, font);
+    showNotificationTextDelayed->SetStateFontSize(0xFF, 30.f);
     showNotificationTextDelayed->SetStateFontColor(0xFF, Color::White);
     showNotificationTextDelayed->SetStateText(0xFF, L"Notify text after X seconds");
 
@@ -52,6 +52,7 @@ void NotificationScreen::LoadResources()
 
     cancelDelayedNotifications = new UIButton(Rect(10, 200, 450, 60));
     cancelDelayedNotifications->SetStateFont(0xFF, font);
+    cancelDelayedNotifications->SetStateFontSize(0xFF, 30.f);
     cancelDelayedNotifications->SetStateFontColor(0xFF, Color::White);
     cancelDelayedNotifications->SetStateText(0xFF, L"Cancel all delayed notifications");
 
@@ -61,6 +62,7 @@ void NotificationScreen::LoadResources()
 
     hideNotificationText = new UIButton(Rect(10, 300, 450, 60));
     hideNotificationText->SetStateFont(0xFF, font);
+    hideNotificationText->SetStateFontSize(0xFF, 30.f);
     hideNotificationText->SetStateFontColor(0xFF, Color::White);
     hideNotificationText->SetStateText(0xFF, L"Hide text");
 
@@ -70,6 +72,7 @@ void NotificationScreen::LoadResources()
 
     showNotificationProgress = new UIButton(Rect(500, 10, 450, 60));
     showNotificationProgress->SetStateFont(0xFF, font);
+    showNotificationProgress->SetStateFontSize(0xFF, 30.f);
     showNotificationProgress->SetStateFontColor(0xFF, Color::White);
     showNotificationProgress->SetStateText(0xFF, L"Notify progress");
 
@@ -79,6 +82,7 @@ void NotificationScreen::LoadResources()
 
     hideNotificationProgress = new UIButton(Rect(500, 100, 450, 60));
     hideNotificationProgress->SetStateFont(0xFF, font);
+    hideNotificationProgress->SetStateFontSize(0xFF, 30.f);
     hideNotificationProgress->SetStateFontColor(0xFF, Color::White);
     hideNotificationProgress->SetStateText(0xFF, L"Hide progress");
 
@@ -88,6 +92,7 @@ void NotificationScreen::LoadResources()
 
     notificationStressTest = new UIButton(Rect(500, 300, 450, 60));
     notificationStressTest->SetStateFont(0xFF, font);
+    notificationStressTest->SetStateFontSize(0xFF, 30.f);
     notificationStressTest->SetStateFontColor(0xFF, Color::White);
     notificationStressTest->SetStateText(0xFF, L"Stress test (30 s)");
 
@@ -98,6 +103,7 @@ void NotificationScreen::LoadResources()
     activateFromNotification = new UIStaticText(Rect(10, 400, 450, 60));
     activateFromNotification->SetTextColor(Color::White);
     activateFromNotification->SetFont(font);
+    activateFromNotification->SetFontSize(30.f);
     activateFromNotification->SetMultiline(true);
     activateFromNotification->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     AddControl(activateFromNotification);
@@ -105,6 +111,7 @@ void NotificationScreen::LoadResources()
     notificationDelayTextField = new UITextField(Rect(420, 100, 35, 60));
     notificationDelayTextField->GetOrCreateComponent<UIFocusComponent>();
     notificationDelayTextField->SetFont(font);
+    notificationDelayTextField->SetFontSize(30.f);
     notificationDelayTextField->GetOrCreateComponent<UIDebugRenderComponent>();
     notificationDelayTextField->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     notificationDelayTextField->SetText(L"5");

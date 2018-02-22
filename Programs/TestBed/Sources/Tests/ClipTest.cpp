@@ -94,7 +94,7 @@ void ClipTest::LoadResources()
 {
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(13);
+
     //start points
     Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     float32 startX = 0.f, startY = 0.f, w = 0.f, h = 0.f;
@@ -142,6 +142,7 @@ void ClipTest::LoadResources()
     // button Clip
     clip = new UIButton(Rect(startX, startY, w, h));
     clip->SetStateFont(0xFF, font);
+    clip->SetStateFontSize(0xFF, 13.f);
     clip->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     clip->SetStateText(0xFF, L"clip");
     clip->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ClipTest::ClipPressed));
@@ -150,6 +151,7 @@ void ClipTest::LoadResources()
     // button DebugDraw
     debugDraw = new UIButton(Rect(startX, startY, w, h));
     debugDraw->SetStateFont(0xFF, font);
+    debugDraw->SetStateFontSize(0xFF, 13.f);
     debugDraw->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     debugDraw->SetStateText(0xFF, L"debugDraw");
     debugDraw->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &ClipTest::DebugDrawPressed));
@@ -158,6 +160,7 @@ void ClipTest::LoadResources()
     // button startPos
     startPos = new UIButton(Rect(startX, startY, w, h));
     startPos->SetStateFont(0xFF, font);
+    startPos->SetStateFontSize(0xFF, 13.f);
     startPos->GetOrCreateComponent<UIDebugRenderComponent>();
     startPos->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     startPos->SetStateText(0xFF, L"startPos");
@@ -167,6 +170,7 @@ void ClipTest::LoadResources()
     // button moveLeft
     moveLeft = new UIButton(Rect(startX, startY, w, h));
     moveLeft->SetStateFont(0xFF, font);
+    moveLeft->SetStateFontSize(0xFF, 13.f);
     moveLeft->GetOrCreateComponent<UIDebugRenderComponent>();
     moveLeft->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     moveLeft->SetStateText(0xFF, L"moveLeft");
@@ -176,6 +180,7 @@ void ClipTest::LoadResources()
     // button moveRight
     moveRight = new UIButton(Rect(startX, startY, w, h));
     moveRight->SetStateFont(0xFF, font);
+    moveRight->SetStateFontSize(0xFF, 13.f);
     moveRight->GetOrCreateComponent<UIDebugRenderComponent>();
     moveRight->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     moveRight->SetStateText(0xFF, L"moveRight");
@@ -185,6 +190,7 @@ void ClipTest::LoadResources()
     // button moveUp
     moveUp = new UIButton(Rect(startX, startY, w, h));
     moveUp->SetStateFont(0xFF, font);
+    moveUp->SetStateFontSize(0xFF, 13.f);
     moveUp->GetOrCreateComponent<UIDebugRenderComponent>();
     moveUp->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     moveUp->SetStateText(0xFF, L"moveUp");
@@ -194,6 +200,7 @@ void ClipTest::LoadResources()
     // button moveDown
     moveDown = new UIButton(Rect(startX, startY, w, h));
     moveDown->SetStateFont(0xFF, font);
+    moveDown->SetStateFontSize(0xFF, 13.f);
     moveDown->GetOrCreateComponent<UIDebugRenderComponent>();
     moveDown->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     moveDown->SetStateText(0xFF, L"moveDown");

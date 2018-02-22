@@ -111,7 +111,6 @@ void StaticWebViewTest::LoadResources()
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(20);
 
     const float32 w = 40;
 
@@ -228,6 +227,7 @@ UIButton* StaticWebViewTest::CreateUIButton(Font* font, const Rect& rect, const 
 {
     UIButton* button = new UIButton(rect);
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, 20.f);
     button->SetStateText(0xFF, str);
     button->SetStateFontColor(0xFF, Color::White);
     button->GetOrCreateComponent<UIDebugRenderComponent>();

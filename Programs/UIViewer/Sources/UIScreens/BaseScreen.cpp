@@ -28,17 +28,12 @@ bool BaseScreen::SystemInput(DAVA::UIEvent* currentInput)
 void BaseScreen::LoadResources()
 {
     DVASSERT(!font);
-    DVASSERT(!fontSmall);
     font = DAVA::FTFont::Create("~res:/UIViewer/Fonts/korinna.ttf");
-    font->SetSize(20.f);
-    fontSmall = DAVA::FTFont::Create("~res:/UIViewer/Fonts/korinna.ttf");
-    fontSmall->SetSize(15.f);
 }
 
 void BaseScreen::UnloadResources()
 {
     font.reset();
-    fontSmall.reset();
     RemoveAllControls();
 }
 
@@ -53,6 +48,7 @@ DAVA::UIButton* BaseScreen::CreateButton(const DAVA::Rect& rect, const DAVA::Wid
 
     button->SetStateFontColor(UIControl::STATE_NORMAL, Color::White);
     button->SetStateFont(UIControl::STATE_NORMAL, font);
+    button->SetStateFontSize(UIControl::STATE_NORMAL, fontSize);
     button->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
 
     button->SetStateDrawType(UIControl::STATE_NORMAL, UIControlBackground::DRAW_FILL);

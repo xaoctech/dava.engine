@@ -890,7 +890,7 @@ final class DavaTextField implements TextWatcher,
 
     void setNativeFontSize(float fontSize)
     {
-        nativeTextField.setTextSize(TypedValue.COMPLEX_UNIT_PX, (int)fontSize);
+        nativeTextField.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
     }
 
     void setNativeTextColor(int color)

@@ -5,6 +5,7 @@
 
 namespace DAVA
 {
+class FilePath;
 class TextFieldPlatformImpl;
 class UITextFieldDelegate;
 
@@ -133,6 +134,11 @@ public:
      */
     Font* GetFont() const;
     /**
+     \brief Returns the font's size of control
+     \returns Font's size of the control
+     */
+    float32 GetFontSize() const;
+    /**
      \brief Returns the text color of control.
      \returns Color color of control's text
      */
@@ -162,6 +168,13 @@ public:
      \param[in] font font used for text draw of the states.
      */
     void SetFont(Font* font);
+
+    /** Set path to font. */
+    void SetFontPath(const FilePath& fontPath);
+
+    /** Return path to font. */
+    const FilePath& GetFontPath() const;
+
     /**
      \brief Sets the color of the text.
      \param[in] fontColor font used for text draw of the states.
@@ -275,7 +288,7 @@ public:
     void SetMaxLength(int32 maxLength);
     int32 GetMaxLength() const;
 
-    String GetFontPresetName() const;
+    const String& GetFontPresetName() const;
 
     void SetFontByPresetName(const String& presetName);
 
@@ -310,6 +323,7 @@ private:
     void SetStopEditPolicyFromInt(int32 policy);
 
     WideString text;
+    String fontPresetName;
     UITextFieldDelegate* delegate = nullptr;
     float32 cursorBlinkingTime = 0.0f;
 

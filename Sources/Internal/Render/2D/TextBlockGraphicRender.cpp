@@ -38,7 +38,7 @@ TextBlockGraphicRender::TextBlockGraphicRender(TextBlock* textBlock)
 
     if (graphicFont->GetFontType() == Font::TYPE_DISTANCE)
     {
-        cachedSpread = graphicFont->GetSpread();
+        cachedSpread = graphicFont->GetSpread(textBlock->renderSize);
         dfMaterial = new NMaterial();
         dfMaterial->SetFXName(FastName("~res:/Materials/2d.DistanceFont.material"));
         dfMaterial->SetMaterialName(FastName("DistanceFontMaterial"));
@@ -141,7 +141,7 @@ void TextBlockGraphicRender::Draw(const Color& textColor, const Vector2* offset)
 
     if (graphicFont->GetFontType() == Font::TYPE_DISTANCE)
     {
-        float32 spread = graphicFont->GetSpread();
+        float32 spread = graphicFont->GetSpread(textBlock->renderSize);
         if (!FLOAT_EQUAL(cachedSpread, spread))
         {
             cachedSpread = spread;
@@ -185,7 +185,7 @@ Font::StringMetrics TextBlockGraphicRender::InternalDrawText(const WideString& d
 
     int32 lastDrawed = 0;
 
-    Font::StringMetrics metrics = graphicFont->DrawStringToBuffer(drawText, x, y, &vertexBuffer[0] + (charDrawed * 4), lastDrawed, NULL, w, lineSize);
+    Font::StringMetrics metrics = graphicFont->DrawStringToBuffer(textBlock->renderSize, drawText, x, y, &vertexBuffer[0] + (charDrawed * 4), lastDrawed, NULL, w, lineSize);
     if (metrics.drawRect.dx <= 0 && metrics.drawRect.dy <= 0)
         return metrics;
 

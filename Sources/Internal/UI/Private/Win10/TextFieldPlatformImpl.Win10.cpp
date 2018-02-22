@@ -167,10 +167,6 @@ TextFieldPlatformImpl::~TextFieldPlatformImpl()
 
 void TextFieldPlatformImpl::Initialize()
 {
-    UIControlBackground* bg = uiTextField->GetOrCreateComponent<UIControlBackground>();
-    bg->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
-    bg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_PREMULTIPLIED_ALPHA_MATERIAL);
-
     properties.createNew = true;
 
     window->sizeChanged.Connect(this, &TextFieldPlatformImpl::OnWindowSizeChanged);
@@ -1176,6 +1172,9 @@ void TextFieldPlatformImpl::RenderToTexture(bool moveOffScreenOnCompletion)
             {
                 sprite = CreateSpriteFromPreviewData(&buf[0], imageWidth, imageHeight);
                 UIControlBackground *bg = uiTextField->GetOrCreateComponent<UIControlBackground>();
+                bg->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
+                bg->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+                bg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_PREMULTIPLIED_ALPHA_MATERIAL);
                 bg->SetSprite(sprite, 0);
             }
             if (moveOffScreenOnCompletion)

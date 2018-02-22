@@ -159,7 +159,7 @@ void PerformanceResultsScreen::AddColorBoxes()
     using namespace DAVA;
 
     static const float32 boxMargin = 2.f;
-    float32 fontSize = fontSmall->GetSize();
+    float32 fontSize = fontSmallSize;
     float32 boxSize = fontSize - boxMargin - boxMargin;
     float32 boxDistanceY = fontSize + 5.f;
 
@@ -175,7 +175,8 @@ void PerformanceResultsScreen::AddColorBoxes()
         textRect.dy = fontSize;
 
         text = new UIStaticText(textRect);
-        text->SetFont(fontSmall);
+        text->SetFont(font);
+        text->SetFontSize(fontSmallSize);
         text->SetTextColor(Color::White);
         text->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
         text->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
@@ -251,7 +252,7 @@ void PerformanceResultsScreen::AddPreviewControls()
 
     Rect fpsRect;
     fpsRect.dx = infoColumnRect.dx;
-    fpsRect.dy = font->GetSize();
+    fpsRect.dy = fontSize;
     fpsRect.x = infoColumnRect.x;
     fpsRect.y = previewRect.y - fpsRect.dy;
 

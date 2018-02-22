@@ -42,16 +42,14 @@ void FunctionSignalTest::LoadResources()
 {
     BaseScreen::LoadResources();
 
-    Font* font30 = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
-    DVASSERT(font30);
-    font30->SetSize(30);
-
-    Font* font12 = FTFont::Create("~res:/TestBed/Fonts/DroidSansMono.ttf");
-    DVASSERT(font12);
-    font12->SetSize(14);
+    Font* fontKorinna = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
+    DVASSERT(fontKorinna);
+    Font* fontDroid = FTFont::Create("~res:/TestBed/Fonts/DroidSansMono.ttf");
+    DVASSERT(fontDroid);
 
     runResult = new UIStaticText(Rect(10, 10, 450, 600));
-    runResult->SetFont(font12);
+    runResult->SetFont(fontDroid);
+    runResult->SetFontSize(14.f);
     runResult->SetTextColor(Color::White);
     runResult->GetOrCreateComponent<UIDebugRenderComponent>();
     runResult->SetMultiline(true);
@@ -59,7 +57,8 @@ void FunctionSignalTest::LoadResources()
     AddControl(runResult);
 
     runButton = new UIButton(Rect(10, 620, 450, 60));
-    runButton->SetStateFont(0xFF, font30);
+    runButton->SetStateFont(0xFF, fontKorinna);
+    runButton->SetStateFontSize(0xFF, 30.f);
     runButton->SetStateFontColor(0xFF, Color::White);
     runButton->SetStateText(0xFF, L"Start bench test");
     runButton->SetStateText(UIButton::STATE_DISABLED, L"Running...");

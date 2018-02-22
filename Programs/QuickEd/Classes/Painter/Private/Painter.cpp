@@ -21,7 +21,7 @@ Painter::Painter()
 
     if (font->GetFontType() == Font::TYPE_DISTANCE)
     {
-        cachedSpread = font->GetSpread();
+        cachedSpread = font->GetSpread(14.f);
         fontMaterial = new NMaterial();
         fontMaterial->SetFXName(FastName("~res:/Materials/2d.DistanceFont.material"));
         fontMaterial->SetMaterialName(FastName("DistanceFontMaterial"));
@@ -91,12 +91,11 @@ void Painter::OnFrame(const DrawLineParams& params)
 
 void Painter::OnFrame(const DrawTextParams& params)
 {
-    font->SetSize(params.textSize);
     vertices.resize(4 * params.text.length());
 
     int32 charactersDrawn = 0;
 
-    font->DrawStringToBuffer(UTF8Utils::EncodeToWideString(params.text), static_cast<int32>(params.pos.x), static_cast<int32>(params.pos.y), vertices.data(), charactersDrawn);
+    font->DrawStringToBuffer(params.textSize, UTF8Utils::EncodeToWideString(params.text), static_cast<int32>(params.pos.x), static_cast<int32>(params.pos.y), vertices.data(), charactersDrawn);
     DVASSERT(charactersDrawn == params.text.length());
 
     uint32 vertexCount = static_cast<uint32>(vertices.size());
@@ -104,7 +103,7 @@ void Painter::OnFrame(const DrawTextParams& params)
 
     if (font->GetFontType() == Font::TYPE_DISTANCE)
     {
-        float32 spread = font->GetSpread();
+        float32 spread = font->GetSpread(params.textSize);
         if (!FLOAT_EQUAL(cachedSpread, spread))
         {
             cachedSpread = spread;
@@ -131,7 +130,7 @@ void Painter::OnFrame(const DrawTextParams& params)
 
 void Painter::ApplyParamPos(DrawTextParams& params) const
 {
-    Font::StringMetrics metrics = font->GetStringMetrics(UTF8Utils::EncodeToWideString(params.text));
+    Font::StringMetrics metrics = font->GetStringMetrics(params.textSize, UTF8Utils::EncodeToWideString(params.text));
     //while we using hard-coded font we need to fix it base line manually
     //DejaVuSans have a very big height which is invalid for digits. So while we use only digits, and font DejaVuSans and GraphicsFont have no GetBaseLine member function - i will change metrics height manually
     Vector2 size = Vector2(metrics.width, metrics.height);

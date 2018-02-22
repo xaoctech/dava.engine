@@ -81,8 +81,8 @@ UIListCell* TestListScreen::CellAtIndex(UIList* list, int32 index)
         Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
         DVASSERT(font);
 
-        font->SetSize(static_cast<float32>(20));
         buttonText->SetFont(font);
+        buttonText->SetFontSize(20.f);
         buttonText->GetOrCreateComponent<UIDebugRenderComponent>();
         {
             UISizePolicyComponent* sizePolicy = buttonText->GetOrCreateComponent<UISizePolicyComponent>();

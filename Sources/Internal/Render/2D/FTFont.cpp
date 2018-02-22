@@ -1,18 +1,18 @@
-#include "Engine/Engine.h"
-#include "Render/Renderer.h"
 #include "Render/2D/FTFont.h"
-#include "Render/2D/FontManager.h"
-#include "Logger/Logger.h"
-#include "Utils/UTF8Utils.h"
 #include "Debug/DVAssert.h"
+#include "Engine/Engine.h"
 #include "FileSystem/File.h"
-#include "FileSystem/LocalizationSystem.h"
-#include "FileSystem/YamlParser.h"
-#include "FileSystem/YamlNode.h"
 #include "FileSystem/FilePath.h"
-#include "UI/UIControlSystem.h"
-#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/YamlNode.h"
+#include "FileSystem/YamlParser.h"
+#include "Logger/Logger.h"
+#include "Render/2D/FontManager.h"
 #include "Render/2D/Private/FTManager.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/Renderer.h"
+#include "UI/UIControlSystem.h"
+#include "Utils/UTF8Utils.h"
 
 namespace DAVA
 {
@@ -105,11 +105,8 @@ void StreamClose(FT_Stream stream)
 
 FTFont::FTFont(FTInternalFont* _internalFont)
 {
-    internalFont = _internalFont;
-    internalFont->Retain();
+    internalFont = SafeRetain(_internalFont);
     fontType = TYPE_FT;
-    ascendScale = 1.f;
-    descendScale = 1.f;
 }
 
 FTFont::~FTFont()
@@ -151,7 +148,6 @@ void FTFont::ClearCache()
 FTFont* FTFont::Clone() const
 {
     FTFont* retFont = new FTFont(internalFont);
-    retFont->size = size;
     retFont->verticalSpacing = verticalSpacing;
     retFont->ascendScale = ascendScale;
     retFont->descendScale = descendScale;
@@ -180,12 +176,17 @@ String FTFont::GetRawHashString()
     return fontPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
 }
 
-Font::StringMetrics FTFont::DrawStringToBuffer(void* buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString& str, bool contentScaleIncluded)
+bool FTFont::IsTextSupportsSoftwareRendering() const
+{
+    return true;
+};
+
+Font::StringMetrics FTFont::DrawStringToBuffer(float32 size, void* buffer, int32 bufWidth, int32 bufHeight, int32 offsetX, int32 offsetY, int32 justifyWidth, int32 spaceAddon, const WideString& str, bool contentScaleIncluded)
 {
     return internalFont->DrawString(str, buffer, bufWidth, bufHeight, 255, 255, 255, 255, size, true, offsetX, offsetY, justifyWidth, spaceAddon, ascendScale, descendScale, NULL, contentScaleIncluded);
 }
 
-Font::StringMetrics FTFont::GetStringMetrics(const WideString& str, Vector<float32>* charSizes) const
+Font::StringMetrics FTFont::GetStringMetrics(float32 size, const WideString& str, Vector<float32>* charSizes) const
 {
     if (charSizes != nullptr)
     {
@@ -194,7 +195,7 @@ Font::StringMetrics FTFont::GetStringMetrics(const WideString& str, Vector<float
     return internalFont->DrawString(str, 0, 0, 0, 0, 0, 0, 0, size, false, 0, 0, 0, 0, ascendScale, descendScale, charSizes);
 }
 
-uint32 FTFont::GetFontHeight() const
+uint32 FTFont::GetFontHeight(float32 size) const
 {
     return internalFont->GetFontHeight(size, ascendScale, descendScale);
 }
@@ -264,7 +265,7 @@ FT_Long FT_MulFix_Wrapper(FT_Long a, FT_Long b)
 FTInternalFont::FTInternalFont(const FilePath& path)
     : fontPath(path)
 {
-    ftm = FontManager::Instance()->GetFT();
+    ftm = GetEngineContext()->fontManager->GetFT();
     DVASSERT(ftm);
 
     FT_Face face = nullptr;

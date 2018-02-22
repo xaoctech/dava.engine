@@ -152,11 +152,11 @@ void DialogConfigurePreset::UpdateDefaultFontWidgets()
 {
     ui->spinBox_defaultFontSize->blockSignals(true);
     ui->comboBox_defaultFont->blockSignals(true);
-    Font* font = editorFontSystem->GetFont(ui->lineEdit_currentFontPresetName->text().toStdString(), editorFontSystem->GetDefaultFontLocale());
-    ui->spinBox_defaultFontSize->setValue(font->GetSize());
+    const FontPreset& preset = editorFontSystem->GetFont(ui->lineEdit_currentFontPresetName->text().toStdString(), editorFontSystem->GetDefaultFontLocale());
+    ui->spinBox_defaultFontSize->setValue(preset.GetSize());
 
-    DVASSERT(font->GetFontType() == Font::TYPE_FT);
-    FTFont* ftFont = static_cast<FTFont*>(font);
+    DVASSERT(preset.GetFont()->GetFontType() == Font::TYPE_FT);
+    FTFont* ftFont = static_cast<FTFont*>(preset.GetFontPtr());
     QFileInfo fileInfo(QString::fromStdString(ftFont->GetFontPath().GetFrameworkPath()));
     ui->comboBox_defaultFont->setCurrentText(fileInfo.fileName());
     ui->spinBox_defaultFontSize->blockSignals(false);
@@ -167,11 +167,11 @@ void DialogConfigurePreset::UpdateLocalizedFontWidgets()
 {
     ui->spinBox_localizedFontSize->blockSignals(true);
     ui->comboBox_localizedFont->blockSignals(true);
-    Font* font = editorFontSystem->GetFont(ui->lineEdit_currentFontPresetName->text().toStdString(), ui->comboBox_locale->currentText().toStdString());
-    ui->spinBox_localizedFontSize->setValue(font->GetSize());
+    const FontPreset& preset = editorFontSystem->GetFont(ui->lineEdit_currentFontPresetName->text().toStdString(), ui->comboBox_locale->currentText().toStdString());
+    ui->spinBox_localizedFontSize->setValue(preset.GetSize());
 
-    DVASSERT(font->GetFontType() == Font::TYPE_FT);
-    FTFont* ftFont = static_cast<FTFont*>(font);
+    DVASSERT(preset.GetFont()->GetFontType() == Font::TYPE_FT);
+    FTFont* ftFont = static_cast<FTFont*>(preset.GetFontPtr());
     QFileInfo fileInfo = QFileInfo(QString::fromStdString(ftFont->GetFontPath().GetFrameworkPath()));
     ui->comboBox_localizedFont->setCurrentText(fileInfo.fileName());
     ui->spinBox_localizedFontSize->blockSignals(false);
@@ -181,12 +181,12 @@ void DialogConfigurePreset::UpdateLocalizedFontWidgets()
 void DialogConfigurePreset::SetFont(const QString& fontType, const int fontSize, const QString& locale)
 {
     QString fontPath = DialogConfigurePresetDetails::GetFontRelativePath(fontType, false);
-    Font* font = FTFont::Create(fontPath.toStdString());
-    if (nullptr == font)
+    FontPreset preset;
+    preset.SetFont(RefPtr<Font>(FTFont::Create(fontPath.toStdString())));
+    if (!preset.Valid())
     {
         QMessageBox::warning(this, tr("Font creation error"), tr("Can not create font from %1").arg(fontPath));
         return;
     }
-    font->SetSize(fontSize);
-    editorFontSystem->SetFont(ui->lineEdit_currentFontPresetName->text().toStdString(), locale.toStdString(), font);
+    editorFontSystem->SetFont(ui->lineEdit_currentFontPresetName->text().toStdString(), locale.toStdString(), preset);
 }

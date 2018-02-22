@@ -37,6 +37,7 @@ public:
     void DrawText(const Vector2& pos2d, const WideString& text, const Color& color, float32 fontSize, Align align = Align::TopLeft);
 
     GraphicFont* GetFont() const;
+    float32 GetFontSize() const;
 
 protected:
     void Draw() override;
@@ -67,6 +68,7 @@ protected:
 private:
     SceneCameraSystem* cameraSystem = nullptr;
     GraphicFont* font = nullptr;
+    float32 fontSize = 14.f;
     NMaterial* fontMaterial = nullptr;
     Vector<TextToDraw> textToDraw;
     GraphicFontVertexVector vertices;
@@ -75,5 +77,10 @@ private:
 inline GraphicFont* TextDrawSystem::GetFont() const
 {
     return font;
+}
+
+inline float32 TextDrawSystem::GetFontSize() const
+{
+    return fontSize;
 }
 } // namespace DAVA

@@ -19,7 +19,6 @@ DAVA_TESTCLASS (TextSizeTest)
     {
         font = FTFont::Create("~res:/Fonts/DejaVuSans.ttf");
         DVASSERT(font);
-        font->SetSize(20);
     }
 
     ~TextSizeTest()
@@ -44,7 +43,7 @@ DAVA_TESTCLASS (TextSizeTest)
         {
             const WideString& testString = testData[k].testString;
             Vector<float32> charSizes;
-            Size2i size = font->GetStringSize(testString, &charSizes);
+            Size2i size = font->GetStringSize(20.f, testString, &charSizes);
             float32 charsSum = 0;
             for (uint32 i = 0; i < charSizes.size(); ++i)
             {

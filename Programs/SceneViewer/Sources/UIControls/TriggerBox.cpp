@@ -4,9 +4,10 @@
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <Utils/StringFormat.h>
 
-TriggerBox::TriggerBox(TriggerBoxListener& listener, DAVA::ScopedPtr<DAVA::Font>& font)
+TriggerBox::TriggerBox(TriggerBoxListener& listener, DAVA::ScopedPtr<DAVA::Font>& font, DAVA::float32 fontSize)
     : listener(listener)
     , font(font)
+    , fontSize(fontSize)
 {
 }
 
@@ -27,9 +28,9 @@ bool TriggerBox::AddOption(TriggerBox::OptionID optionId, const DAVA::WideString
         return false;
     }
 
-    float32 textWidth = font->GetStringMetrics(text).width;
+    float32 textWidth = font->GetStringMetrics(fontSize, text).width;
     float32 buttonWidth = textWidth + 20.f;
-    float32 buttonHeight = font->GetSize() * 1.5f;
+    float32 buttonHeight = fontSize * 1.5f;
     Rect buttonRect(nextButtonX, 0.f, buttonWidth, buttonHeight);
     nextButtonX += buttonWidth + 10.f;
     ScopedPtr<LockedButton> lockedButton(new LockedButton(*this, font, text, buttonRect));

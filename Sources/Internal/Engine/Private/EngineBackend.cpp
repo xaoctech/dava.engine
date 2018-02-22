@@ -1019,7 +1019,7 @@ void EngineBackend::DestroySubsystems()
         delete context->dynamicAtlasSystem;
         context->dynamicAtlasSystem = nullptr;
     }
-    SafeRelease(context->fontManager);
+    SafeDelete(context->fontManager);
     SafeDelete(context->animationManager);
     SafeRelease(context->renderSystem2D);
     SafeRelease(context->performanceSettings);

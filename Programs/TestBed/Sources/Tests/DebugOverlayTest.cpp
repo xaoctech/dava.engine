@@ -42,10 +42,10 @@ void DebugOverlayTest::LoadResources()
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(14);
 
     UIButton* addItemButton = new UIButton(Rect(20, 20, 250, 50));
     addItemButton->SetStateFont(0xFF, font);
+    addItemButton->SetStateFontSize(0xFF, 14.f);
     addItemButton->SetStateFontColor(0xFF, Color::White);
     addItemButton->SetStateText(0xFF, L"Add test item to the overlay");
     addItemButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -55,6 +55,7 @@ void DebugOverlayTest::LoadResources()
 
     UIButton* removeItemButton = new UIButton(Rect(20, 70, 250, 50));
     removeItemButton->SetStateFont(0xFF, font);
+    removeItemButton->SetStateFontSize(0xFF, 14.f);
     removeItemButton->SetStateFontColor(0xFF, Color::White);
     removeItemButton->SetStateText(0xFF, L"Remove test item from the overlay");
     removeItemButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -64,6 +65,7 @@ void DebugOverlayTest::LoadResources()
 
     UIButton* showHideOverlayButton = new UIButton(Rect(20, 150, 250, 50));
     showHideOverlayButton->SetStateFont(0xFF, font);
+    showHideOverlayButton->SetStateFontSize(0xFF, 14.f);
     showHideOverlayButton->SetStateFontColor(0xFF, Color::White);
     showHideOverlayButton->SetStateText(0xFF, L"Show/hide overlay");
     showHideOverlayButton->GetOrCreateComponent<UIDebugRenderComponent>();

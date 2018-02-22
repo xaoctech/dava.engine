@@ -122,7 +122,7 @@ DAVA_TESTCLASS (LocalizationTest)
             WideString visual = visualNode->AsWString();
             WideString visual_work;
 
-            layout.Reset(input, *font);
+            layout.Reset(input, *font, 14.f);
             while (!layout.IsEndOfText())
             {
                 layout.NextByWords(FLT_MAX);

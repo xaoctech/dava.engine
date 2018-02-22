@@ -101,7 +101,6 @@ UIListCell* FormatsTest::CellAtIndex(UIList* list, int32 index)
     { //if cell of requested type isn't find in the store create new cell
         ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
         DVASSERT(font);
-        font->SetSize(16.0f);
 
         const float32 cellWidth = list->GetSize().x;
         const float32 cellHeight = CellHeight(list, index);
@@ -111,6 +110,7 @@ UIListCell* FormatsTest::CellAtIndex(UIList* list, int32 index)
         const float32 formatNameWidth = Min(cellWidth / 2.0f, 200.0f);
         formatName = new UIStaticText(Rect(0., 0., formatNameWidth, cellHeight));
         formatName->SetFont(font);
+        formatName->SetFontSize(16.f);
         formatName->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
         formatName->SetFittingOption(TextBlock::FITTING_REDUCE);
         cell->AddControl(formatName);
@@ -118,6 +118,7 @@ UIListCell* FormatsTest::CellAtIndex(UIList* list, int32 index)
         const float32 formatValueWidth = cellWidth - formatNameWidth;
         formatValue = new UIStaticText(Rect(formatNameWidth, 0., formatValueWidth, cellHeight));
         formatValue->SetFont(font);
+        formatValue->SetFontSize(16.f);
         formatValue->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
         cell->AddControl(formatValue);
     }

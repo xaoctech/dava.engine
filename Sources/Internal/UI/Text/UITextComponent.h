@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FileSystem/FilePath.h"
 #include "Reflection/Reflection.h"
 #include "Render/2D/TextBlock.h"
 #include "UI/Components/UIComponent.h"
@@ -82,10 +83,25 @@ public:
     /** Return content fitting style.*/
     eTextFitting GetFitting() const;
 
-    /** Set font by preset name from FontManager registery. \sa FontManager */
+    /** Set font preset by preset name from FontManager. */
     void SetFontName(const String& fontName);
-    /** Return font preset name. \sa FontManager */
+    /** Return font preset name. */
     String GetFontName() const;
+
+    /** Set font path. */
+    void SetFontPath(const FilePath& fontPath);
+    /** Return font path. */
+    const FilePath& GetFontPath() const;
+
+    /** Set font. */
+    void SetFont(const RefPtr<Font>& font);
+    /** Get font. */
+    Font* GetFont() const;
+
+    /** Set font size. */
+    void SetFontSize(float32 size);
+    /** Return font size. */
+    float32 GetFontSize() const;
 
     /** Set text color. */
     void SetColor(const Color& color);
@@ -140,9 +156,6 @@ public:
     /** Set requestedTextRectSize parameter. */
     Vector2 GetRequestedTextRectSize() const;
 
-    void SetFont(Font* font);
-    Font* GetFont();
-
     /** Set modification marker. */
     void SetModified(bool value);
     /** Check modification marker.*/
@@ -161,7 +174,6 @@ protected:
 private:
     int32 align = eAlign::ALIGN_HCENTER | eAlign::ALIGN_VCENTER;
     String text;
-    String fontName;
     eTextMultiline multiline = eTextMultiline::MULTILINE_DISABLED;
     eTextFitting fitting = eTextFitting::FITTING_NONE;
     Color color = Color::White;
@@ -174,7 +186,11 @@ private:
 
     Vector2 textOffset;
     Vector2 requestedTextRectSize = Vector2::Zero;
+
+    String fontPresetName;
     RefPtr<Font> font;
+    float32 fontSize = 0.f;
+    FilePath fontPath;
 
     bool modified = true;
 

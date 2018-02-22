@@ -32,7 +32,6 @@ void CoreV2Test::LoadResources()
     BaseScreen::LoadResources();
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
-    font->SetSize(12);
 
     float32 h = 60.0f;
     float32 gap = 10.0f;
@@ -300,6 +299,7 @@ DAVA::UIButton* CoreV2Test::CreateUIButton(DAVA::Font* font, const DAVA::Rect& r
 
     UIButton* button = new UIButton(rect);
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, 12.f);
     button->SetStateText(0xFF, UTF8Utils::EncodeToWideString(text));
     button->SetStateFontColor(0xFF, Color::White);
     button->GetOrCreateComponent<UIDebugRenderComponent>();

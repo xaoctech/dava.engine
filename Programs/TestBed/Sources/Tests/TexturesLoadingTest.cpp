@@ -291,12 +291,12 @@ void TexturesLoadingTest::ProfileFileIO(const FilePath& path)
     }
 #endif
 
-    tmpReadBuffer.reserve(size);
+    tmpReadBuffer.reserve(static_cast<size_t>(size));
 
     int64 rs = 0;
     {
         DAVA_PROFILER_CPU_SCOPE("fread");
-        rs = fread(tmpReadBuffer.data(), 1, size, pFile);
+        rs = fread(tmpReadBuffer.data(), 1, static_cast<size_t>(size), pFile);
     }
     DVASSERT(rs == size);
 

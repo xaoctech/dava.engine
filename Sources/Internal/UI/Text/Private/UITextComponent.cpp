@@ -1,7 +1,7 @@
 #include "UI/Text/UITextComponent.h"
+#include "Base/GlobalEnum.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
-#include "Base/GlobalEnum.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "UITextSystemLink.h"
 
@@ -30,6 +30,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
     .DestructorByPointer([](UITextComponent* o) { o->Release(); })
     .Field("text", &UITextComponent::GetText, &UITextComponent::SetText)
     .Field("fontName", &UITextComponent::GetFontName, &UITextComponent::SetFontName)
+    .Field("fontPath", &UITextComponent::GetFontPath, &UITextComponent::SetFontPath)
+    .Field("fontSize", &UITextComponent::GetFontSize, &UITextComponent::SetFontSize)
     .Field("color", &UITextComponent::GetColor, &UITextComponent::SetColor)
     .Field("colorInheritType", &UITextComponent::GetColorInheritType, &UITextComponent::SetColorInheritType)[M::EnumT<UIControlBackground::eColorInheritType>()]
     .Field("perPixelAccuracyType", &UITextComponent::GetPerPixelAccuracyType, &UITextComponent::SetPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>()]
@@ -49,7 +51,7 @@ UITextComponent::UITextComponent(const UITextComponent& src)
     : UIComponent(src)
     , align(src.align)
     , text(src.text)
-    , fontName(src.fontName)
+    , fontPresetName(src.fontPresetName)
     , multiline(src.multiline)
     , fitting(src.fitting)
     , color(src.color)
@@ -61,6 +63,7 @@ UITextComponent::UITextComponent(const UITextComponent& src)
     , forceBiDiSupport(src.forceBiDiSupport)
     , requestedTextRectSize(src.requestedTextRectSize)
     , font(src.font)
+    , fontSize(src.fontSize)
     , modified(true)
 {
 }
@@ -123,9 +126,9 @@ UITextComponent::eTextFitting UITextComponent::GetFitting() const
 
 void UITextComponent::SetFontName(const String& value)
 {
-    if (fontName != value)
+    if (fontPresetName != value)
     {
-        fontName = value;
+        fontPresetName = value;
         font = nullptr;
         modified = true;
     }
@@ -133,7 +136,52 @@ void UITextComponent::SetFontName(const String& value)
 
 String UITextComponent::GetFontName() const
 {
-    return fontName;
+    return fontPresetName;
+}
+
+void UITextComponent::SetFontPath(const FilePath& fontPath_)
+{
+    if (fontPath != fontPath_)
+    {
+        fontPath = fontPath_;
+        font = nullptr;
+        modified = true;
+    }
+}
+
+const FilePath& UITextComponent::GetFontPath() const
+{
+    return fontPath;
+}
+
+void UITextComponent::SetFont(const RefPtr<Font>& font_)
+{
+    if (font != font_)
+    {
+        font = font_;
+        fontPresetName = "";
+        fontPath = "";
+        modified = true;
+    }
+}
+
+Font* UITextComponent::GetFont() const
+{
+    return font.Get();
+}
+
+void UITextComponent::SetFontSize(float32 size)
+{
+    if (!FLOAT_EQUAL(fontSize, size))
+    {
+        fontSize = size;
+        modified = true;
+    }
+}
+
+float32 UITextComponent::GetFontSize() const
+{
+    return fontSize;
 }
 
 void UITextComponent::SetColor(const Color& value)
@@ -254,21 +302,6 @@ void UITextComponent::SetRequestedTextRectSize(const Vector2& value)
 DAVA::Vector2 UITextComponent::GetRequestedTextRectSize() const
 {
     return requestedTextRectSize;
-}
-
-void UITextComponent::SetFont(Font* value)
-{
-    if (font != value)
-    {
-        font = value;
-        fontName = "";
-        modified = true;
-    }
-}
-
-Font* UITextComponent::GetFont()
-{
-    return font.Get();
 }
 
 bool UITextComponent::IsForceBiDiSupportEnabled() const

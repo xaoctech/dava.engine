@@ -271,7 +271,6 @@ void RenderSystem2D::BeginRenderTargetPass(const RenderTargetPassDescriptor& des
     rhi::BeginRenderPass(passTargetHandle);
     rhi::BeginPacketList(currentPacketListHandle);
 
-    ShaderDescriptorCache::ClearDynamicBindigs();
     Setup2DMatrices();
 }
 
@@ -287,7 +286,7 @@ void RenderSystem2D::EndRenderTargetPass()
     currentPacketListHandle = packetList2DHandle;
 
     UpdateVirtualToPhysicalMatrix(virtualToPhysicalTransformEnabledDefaultValue);
-    ShaderDescriptorCache::ClearDynamicBindigs();
+
     Setup2DMatrices();
 }
 
@@ -301,6 +300,8 @@ void RenderSystem2D::SetViewMatrix(const Matrix4& _viewMatrix)
 
 void RenderSystem2D::Setup2DMatrices()
 {
+    ShaderDescriptorCache::ClearDynamicBindigs();
+
     Size2f targetSize;
     const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
     targetSize.dx = static_cast<float32>(descr.width == 0 ? Renderer::GetFramebufferWidth() : descr.width);

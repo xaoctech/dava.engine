@@ -372,9 +372,10 @@ void DebugDrawSystem::DrawSelectedSoundNode(Entity* entity)
         Vector3 position = entity->GetWorldTransform().GetTranslationVector();
 
         uint32 fontHeight = 0;
+        float32 fontSize = textDrawSystem->GetFontSize();
         GraphicFont* debugTextFont = textDrawSystem->GetFont();
         if (debugTextFont)
-            fontHeight = debugTextFont->GetFontHeight();
+            fontHeight = debugTextFont->GetFontHeight(fontSize);
 
         uint32 eventsCount = sc->GetEventsCount();
         for (uint32 i = 0; i < eventsCount; ++i)

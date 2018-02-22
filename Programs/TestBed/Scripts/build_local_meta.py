@@ -7,7 +7,7 @@
 import os
 import sys
 sys.path.append(os.path.abspath("../../Programs/SdlcBuilder"))
-from pack_datum import generate_meta
+from pack_datum import generate_meta  # noqa
 
 # collect all files
 all_files = []
@@ -25,29 +25,28 @@ for root, dirs, files in os.walk(input_data_dir):
 # print(all_files)
 
 with open(output_json_file, "wb") as f:
-	f.write(
-"""
+    f.write("""
 [
     {
         "name": "all",
         "dependencies": [],
         "files": [
-"""        )
+""")
 
-	for file_name in all_files:
-		f.write('            \"' + file_name)
-		if file_name == all_files[-1]:
-			f.write('\"\n')
-		else:
-			f.write('\",\n')
+    for file_name in all_files:
+        f.write('            \"' + file_name)
+        if file_name == all_files[-1]:
+            f.write('\"\n')
+        else:
+            f.write('\",\n')
 
-	f.write("""        ]
+    f.write("""        ]
         }
     ]
-"""		   )
+""")
 
 
 generate_meta(input_data_dir, [output_json_file], 'Scripts/exclude.json', input_data_dir + '/local_meta.db')
 
-os.remove(output_json_file) # uncoment for debug
+os.remove(output_json_file)  # uncomment for debug
 
