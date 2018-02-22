@@ -64,13 +64,13 @@ public:
         float32 normalFov = 70.f;
         float32 zoomFov = 6.5f;
 
-        float32 normalMaxHeightError = 0.02f;
-        float32 normalMaxPatchRadiusError = 0.33f;
-        float32 normalMaxAbsoluteHeightError = 12.f;
+        float32 normalMaxHeightError = 0.03f;
+        float32 normalMaxPatchRadiusError = 0.44f;
+        float32 normalMaxAbsoluteHeightError = 24.f;
 
-        float32 zoomMaxHeightError = 0.04f;
-        float32 zoomMaxPatchRadiusError = 0.66f;
-        float32 zoomMaxAbsoluteHeightError = 12.f;
+        float32 zoomMaxHeightError = 0.06f;
+        float32 zoomMaxPatchRadiusError = 0.88f;
+        float32 zoomMaxAbsoluteHeightError = 24.f;
 
         bool operator==(const SubdivisionMetrics& other) const;
 

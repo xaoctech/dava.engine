@@ -152,7 +152,8 @@ private:
     QPointer<QDockWidget> dockActionEvent;
     QPointer<QDockWidget> dockConsole;
     QPointer<QActionGroup> lightViewActionGroup;
-
+    DAVA::Vector<std::pair<QAction*, DAVA::int32>> lightViewActions;
+    bool updatingLightViewActions = false;
     bool globalInvalidate;
 
     QComboBox* objectTypesWidget;

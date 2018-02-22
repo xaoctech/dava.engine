@@ -54,7 +54,7 @@ fragment_out fp_main(fragment_in input)
 
 #if (USE_BAKED_LIGHTING)
     float4 prebakedShadowAOSample = tex2D(shadowaotexture, input.uv.zw);
-    float directionalLightStaticShadow = SampleStaticShadow(prebakedShadowAOSample.x, input.uv.zw);
+    float directionalLightStaticShadow = SampleStaticShadow(prebakedShadowAOSample.x, input.uv.zw, lightmapSize);
     ambientOcclusion *= prebakedShadowAOSample.y;
 #else
     float directionalLightStaticShadow = 1.0;

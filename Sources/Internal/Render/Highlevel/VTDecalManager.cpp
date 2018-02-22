@@ -102,6 +102,8 @@ void VTDecalManager::RemoveLandscape(Landscape* ro)
 
 void VTDecalManager::Clip(const AABBox2& box, Vector<DecalRenderObject*>& clipResult)
 {
+    const float32 decalSquareThreshold = 0.1f;
+    float32 thresholdBoxSize = (box.max.x - box.min.x) * (box.max.y - box.min.y) * decalSquareThreshold;
     VTSpaceBox vtSpaceBox = GetVTSpaceBox(box.min, box.max);
     for (uint32 y = vtSpaceBox.miny; y <= vtSpaceBox.maxy; ++y)
         for (uint32 x = vtSpaceBox.minx; x <= vtSpaceBox.maxx; ++x)
@@ -112,6 +114,9 @@ void VTDecalManager::Clip(const AABBox2& box, Vector<DecalRenderObject*>& clipRe
                 for (DecalRenderObject* decal : leafs[leafIndices[node]])
                 {
                     const AABBox3& decalBox = decal->GetWorldBoundingBox();
+                    float32 decalSize = (decalBox.max.x - decalBox.min.x) * (decalBox.max.y - decalBox.min.y);
+                    if (decalSize < thresholdBoxSize) //skip
+                        continue;
                     if (box.IsIntersectsWithBox(AABBox2(decalBox.min.xy(), decalBox.max.xy())))
                     {
                         if (decal->GetSplineData() == nullptr)

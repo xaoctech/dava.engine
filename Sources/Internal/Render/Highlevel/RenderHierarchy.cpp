@@ -31,11 +31,8 @@ void RenderHierarchy::ClipResult::AddObject(RenderObject* ro)
     {
         // ignore sun and sky lights
         Light* light = DynamicTypeCheck<Light*>(ro);
-        Light::eType lightType = light->GetLightType();
-        if ((lightType != Light::TYPE_ENVIRONMENT_IMAGE) && (lightType != Light::TYPE_SKY) && (lightType != Light::TYPE_SUN))
-        {
+        if ((light != nullptr) && light->IsLocal())
             lightArray.push_back(light);
-        }
         break;
     }
 

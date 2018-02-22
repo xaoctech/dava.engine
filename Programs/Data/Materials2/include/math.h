@@ -371,10 +371,10 @@ float3 rotateVertex(float3 inPos, float3 pivot, float3 rotationAxis, float rotat
     return result;
 }
 
-float SampleStaticShadow(float sampledValue, float2 uv)
+float SampleStaticShadow(float sampledValue, float2 uv, float lmSize)
 {
 #if (VIEW_MODE & VIEW_LIGHTMAP_CANVAS_BIT)
-    float lmSize = max(1.0, lightmapSize);
+    lmSize = max(1.0, lmSize);
     float cx = floor(fmod(uv.x * lmSize + 0.5, 2.0));
     float cy = floor(fmod(uv.y * lmSize + 0.5, 2.0));
     float checkboard = 0.25 * fmod(cx + fmod(cy, 2.0), 2.0);

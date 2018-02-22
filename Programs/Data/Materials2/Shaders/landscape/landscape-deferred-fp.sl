@@ -116,7 +116,7 @@ fragment_out fp_main(fragment_in input)
 
     float roughness = normalmapSample.z;
 
-    float directionalLightStaticShadow = SampleStaticShadow(saSample.x, input.texCoord1.xy);
+    float directionalLightStaticShadow = SampleStaticShadow(saSample.x, input.texCoord1.xy, lightmapSize);
     float ambientOcclusion = saSample.y;
 
     fragment_out output;
