@@ -15,7 +15,6 @@ void UIScrollViewTest::LoadResources()
 {
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(14);
 
     DefaultUIPackageBuilder builder;
     UIPackageLoader().LoadPackage("~res:/TestBed/UI/Test/ScrollScreen.yaml", &builder);
@@ -85,6 +84,7 @@ void UIScrollViewTest::LoadResources()
     testButton->CreateBackgroundForState(STATE_NORMAL);
     testButton->GetOrCreateComponent<UIDebugRenderComponent>();
     testButton->SetStateFont(STATE_NORMAL, font);
+    testButton->SetStateFontSize(STATE_NORMAL, 14.f);
     testButton->SetStateFontColor(STATE_NORMAL, Color::White);
     testButton->SetStateText(STATE_NORMAL, L"First button");
     testButton->GetBackground()->SetColor(Color(0.6667f, 0.6667f, 0.4980f, 1.0000f));
@@ -143,6 +143,7 @@ void UIScrollViewTest::LoadResources()
     testMessageText = new UIStaticText(Rect(10, 10, 300, 30));
     UIControlBackground* testMessageTextBg = testMessageText->GetOrCreateComponent<UIControlBackground>();
     testMessageText->SetFont(font);
+    testMessageText->SetFontSize(14.f);
     testMessageText->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
     testMessageTextBg->SetColor(Color(0.5, 0.0, 0.25, 1.0));
     testMessageTextBg->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -150,6 +151,7 @@ void UIScrollViewTest::LoadResources()
 
     finishTestBtn = new UIButton(Rect(10, 310, 300, 30));
     finishTestBtn->SetStateFont(0xFF, font);
+    finishTestBtn->SetStateFontSize(0xFF, 14.f);
     finishTestBtn->SetStateFontColor(0xFF, Color(1.0, 0.0, 0.0, 0.75));
     finishTestBtn->SetStateText(0xFF, L"Finish test");
 

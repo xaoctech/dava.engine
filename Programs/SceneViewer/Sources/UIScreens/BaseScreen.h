@@ -26,7 +26,8 @@ protected:
     void SetNextScreen() const;
 
     DAVA::ScopedPtr<DAVA::Font> font;
-    DAVA::ScopedPtr<DAVA::Font> fontSmall;
+    DAVA::float32 fontSize = 20.f;
+    DAVA::float32 fontSmallSize = 15.f;
 
     DAVA::int32 screenID;
 };

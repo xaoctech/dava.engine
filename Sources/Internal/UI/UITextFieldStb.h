@@ -37,6 +37,7 @@ public:
     void SetRenderToTexture(bool);
     void SetIsPassword(bool);
     void SetFontSize(float32);
+    float32 GetFontSize();
     void SetText(const WideString& text);
     void UpdateRect(const Rect&);
     void SetAutoCapitalizationType(int32);
@@ -55,6 +56,8 @@ public:
     void SetVisible(bool v);
     Font* GetFont() const;
     void SetFont(Font* f);
+    void SetFontPath(const FilePath& path);
+    const FilePath& GetFontPath() const;
     void SetTextColor(const Color& c);
     void SetShadowOffset(const Vector2& v);
     void SetShadowColor(const Color& c);

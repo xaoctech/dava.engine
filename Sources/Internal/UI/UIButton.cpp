@@ -263,6 +263,18 @@ void UIButton::SetStateFont(int32 state, Font* font)
     }
 }
 
+void UIButton::SetStateFontSize(int32 state, float32 size)
+{
+    for (int i = 0; i < DRAW_STATE_COUNT && state; i++)
+    {
+        if (state & 0x01)
+        {
+            GetOrCreateTextBlock(static_cast<eButtonDrawState>(i))->SetFontSize(size);
+        }
+        state >>= 1;
+    }
+}
+
 void UIButton::SetStateFontColor(int32 state, const Color& fontColor)
 {
     for (int i = 0; i < DRAW_STATE_COUNT && state; i++)

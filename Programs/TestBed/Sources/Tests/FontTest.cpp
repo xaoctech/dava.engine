@@ -7,6 +7,8 @@
 
 using namespace DAVA;
 
+namespace FontTestDetails
+{
 class InputDelegate : public UITextFieldDelegate
 {
 public:
@@ -36,6 +38,9 @@ enum Tags
     DECREASE_SIZE_TAG
 };
 
+const float32 FONT_SIZE = 14.f;
+}
+
 FontTest::FontTest(TestBed& app)
     : BaseScreen(app, "FontTest")
 {
@@ -53,6 +58,7 @@ void FontTest::LoadResources()
 
     ScopedPtr<UIStaticText> label(new UIStaticText(Rect(10, 10, 200, 20)));
     label->SetFont(uiFont);
+    label->SetFontSize(FontTestDetails::FONT_SIZE);
     label->SetTextColor(Color::White);
     label->SetText(L"Preview:");
     label->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
@@ -60,6 +66,7 @@ void FontTest::LoadResources()
 
     previewText = new UIStaticText(Rect(10, 40, 400, 200));
     previewText->SetFont(ftFont);
+    previewText->SetFontSize(FontTestDetails::FONT_SIZE);
     previewText->SetTextColor(Color::White);
     previewText->GetOrCreateComponent<UIDebugRenderComponent>();
     previewText->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
@@ -68,6 +75,7 @@ void FontTest::LoadResources()
 
     label = new UIStaticText(Rect(10, 250, 200, 20));
     label->SetFont(uiFont);
+    label->SetFontSize(FontTestDetails::FONT_SIZE);
     label->SetTextColor(Color::White);
     label->SetText(L"Input:");
     label->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
@@ -76,15 +84,17 @@ void FontTest::LoadResources()
     inputText = new UITextField(Rect(10, 280, 400, 200));
     inputText->GetOrCreateComponent<UIFocusComponent>();
     inputText->SetFont(uiFont);
+    inputText->SetFontSize(FontTestDetails::FONT_SIZE);
     inputText->SetTextColor(Color::White);
     inputText->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
     inputText->GetOrCreateComponent<UIDebugRenderComponent>();
-    inputText->SetDelegate(inputDelegate = new InputDelegate(previewText));
+    inputText->SetDelegate(inputDelegate = new FontTestDetails::InputDelegate(previewText));
     inputText->SetMultiline(true);
     AddControl(inputText);
 
     label = new UIStaticText(Rect(420, 10, 200, 20));
     label->SetFont(uiFont);
+    label->SetFontSize(FontTestDetails::FONT_SIZE);
     label->SetTextColor(Color::White);
     label->SetText(L"Font type:");
     label->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
@@ -92,6 +102,7 @@ void FontTest::LoadResources()
 
     ScopedPtr<UIButton> button(new UIButton(Rect(420, 40, 100, 20)));
     button->SetStateFont(0xFF, uiFont);
+    button->SetStateFontSize(0xFF, FontTestDetails::FONT_SIZE);
     button->SetStateText(0xFF, L"FreeType");
     button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FontTest::OnFontSelectClick));
@@ -100,6 +111,7 @@ void FontTest::LoadResources()
 
     button = new UIButton(Rect(530, 40, 100, 20));
     button->SetStateFont(0xFF, uiFont);
+    button->SetStateFontSize(0xFF, FontTestDetails::FONT_SIZE);
     button->SetStateText(0xFF, L"Distance");
     button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FontTest::OnFontSelectClick));
@@ -108,6 +120,7 @@ void FontTest::LoadResources()
 
     button = new UIButton(Rect(640, 40, 100, 20));
     button->SetStateFont(0xFF, uiFont);
+    button->SetStateFontSize(0xFF, FontTestDetails::FONT_SIZE);
     button->SetStateText(0xFF, L"Graphic");
     button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FontTest::OnFontSelectClick));
@@ -116,6 +129,7 @@ void FontTest::LoadResources()
 
     label = new UIStaticText(Rect(420, 70, 100, 20));
     label->SetFont(uiFont);
+    label->SetFontSize(FontTestDetails::FONT_SIZE);
     label->SetTextColor(Color::White);
     label->SetText(L"Font size:");
     label->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
@@ -123,6 +137,7 @@ void FontTest::LoadResources()
 
     sizeText = new UIStaticText(Rect(520, 70, 100, 20));
     sizeText->SetFont(uiFont);
+    label->SetFontSize(FontTestDetails::FONT_SIZE);
     sizeText->SetTextColor(Color::White);
     sizeText->SetText(L"00");
     sizeText->SetTextAlign(ALIGN_TOP | ALIGN_LEFT);
@@ -130,18 +145,20 @@ void FontTest::LoadResources()
 
     button = new UIButton(Rect(420, 100, 100, 20));
     button->SetStateFont(0xFF, uiFont);
+    button->SetStateFontSize(0xFF, FontTestDetails::FONT_SIZE);
     button->SetStateText(0xFF, L"Increase");
     button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FontTest::OnFontSizeClick));
-    button->SetTag(INCREASE_SIZE_TAG);
+    button->SetTag(FontTestDetails::INCREASE_SIZE_TAG);
     AddControl(button);
 
     button = new UIButton(Rect(530, 100, 100, 20));
     button->SetStateFont(0xFF, uiFont);
+    button->SetStateFontSize(0xFF, FontTestDetails::FONT_SIZE);
     button->SetStateText(0xFF, L"Decrease");
     button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIButton::EVENT_TOUCH_DOWN, Message(this, &FontTest::OnFontSizeClick));
-    button->SetTag(DECREASE_SIZE_TAG);
+    button->SetTag(FontTestDetails::DECREASE_SIZE_TAG);
     AddControl(button);
 
     UpdateFontSizeText();
@@ -183,18 +200,16 @@ void FontTest::OnFontSelectClick(BaseObject* sender, void* data, void* callerDat
 void FontTest::OnFontSizeClick(BaseObject* sender, void* data, void* callerData)
 {
     UIButton* btn = DynamicTypeCheck<UIButton*>(sender);
-    Font* font = previewText->GetFont();
-    float32 size = font->GetSize();
+    float32 size = previewText->GetFontSize();
     switch (btn->GetTag())
     {
-    case INCREASE_SIZE_TAG:
+    case FontTestDetails::INCREASE_SIZE_TAG:
         size += 1.f;
         break;
-    case DECREASE_SIZE_TAG:
+    case FontTestDetails::DECREASE_SIZE_TAG:
         size -= 1.f;
         break;
     }
-    font->SetSize(size);
     previewText->SetFontSize(size);
     UpdateFontSizeText();
 }

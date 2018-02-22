@@ -20,13 +20,13 @@ void SoundTest::LoadResources()
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(14);
 
     // Group 1
 
     UIStaticText* infoTextGroup1 = new UIStaticText(Rect(20, 20, 250, 50));
     infoTextGroup1->SetTextColor(Color::White);
     infoTextGroup1->SetFont(font);
+    infoTextGroup1->SetFontSize(14.f);
     infoTextGroup1->SetMultiline(true);
     infoTextGroup1->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     infoTextGroup1->SetText(L"Group 1");
@@ -35,6 +35,7 @@ void SoundTest::LoadResources()
 
     UIButton* playSoundButtonGroup1 = new UIButton(Rect(20, 60, 250, 50));
     playSoundButtonGroup1->SetStateFont(0xFF, font);
+    playSoundButtonGroup1->SetStateFontSize(0xFF, 14.f);
     playSoundButtonGroup1->SetStateFontColor(0xFF, Color::White);
     playSoundButtonGroup1->SetStateText(0xFF, L"Play sound");
     playSoundButtonGroup1->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -44,6 +45,7 @@ void SoundTest::LoadResources()
 
     UIButton* buttonSetSpeedGroup1 = new UIButton(Rect(20, 120, 200, 50));
     buttonSetSpeedGroup1->SetStateFont(0xFF, font);
+    buttonSetSpeedGroup1->SetStateFontSize(0xFF, 14.f);
     buttonSetSpeedGroup1->SetStateFontColor(0xFF, Color::White);
     buttonSetSpeedGroup1->SetStateText(0xFF, L"Set speed");
     buttonSetSpeedGroup1->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -54,6 +56,7 @@ void SoundTest::LoadResources()
     speedTextFieldGroup1 = new UITextField(Rect(225, 120, 45, 50));
     speedTextFieldGroup1->GetOrCreateComponent<UIFocusComponent>();
     speedTextFieldGroup1->SetFont(font);
+    speedTextFieldGroup1->SetFontSize(14.f);
     speedTextFieldGroup1->GetOrCreateComponent<UIDebugRenderComponent>();
     speedTextFieldGroup1->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     speedTextFieldGroup1->SetText(L"1.0");
@@ -64,6 +67,7 @@ void SoundTest::LoadResources()
     UIStaticText* infoTextGroup2 = new UIStaticText(Rect(320, 20, 250, 50));
     infoTextGroup2->SetTextColor(Color::White);
     infoTextGroup2->SetFont(font);
+    infoTextGroup2->SetFontSize(14.f);
     infoTextGroup2->SetMultiline(true);
     infoTextGroup2->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     infoTextGroup2->SetText(L"Group 2");
@@ -72,6 +76,7 @@ void SoundTest::LoadResources()
 
     UIButton* playSoundButtonGroup2 = new UIButton(Rect(320, 60, 250, 50));
     playSoundButtonGroup2->SetStateFont(0xFF, font);
+    playSoundButtonGroup2->SetStateFontSize(0xFF, 14.f);
     playSoundButtonGroup2->SetStateFontColor(0xFF, Color::White);
     playSoundButtonGroup2->SetStateText(0xFF, L"Play sound");
     playSoundButtonGroup2->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -81,6 +86,7 @@ void SoundTest::LoadResources()
 
     UIButton* buttonSetSpeedGroup2 = new UIButton(Rect(320, 120, 200, 50));
     buttonSetSpeedGroup2->SetStateFont(0xFF, font);
+    buttonSetSpeedGroup2->SetStateFontSize(0xFF, 14.f);
     buttonSetSpeedGroup2->SetStateFontColor(0xFF, Color::White);
     buttonSetSpeedGroup2->SetStateText(0xFF, L"Set speed");
     buttonSetSpeedGroup2->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -91,6 +97,7 @@ void SoundTest::LoadResources()
     speedTextFieldGroup2 = new UITextField(Rect(525, 120, 45, 50));
     speedTextFieldGroup2->GetOrCreateComponent<UIFocusComponent>();
     speedTextFieldGroup2->SetFont(font);
+    speedTextFieldGroup2->SetFontSize(14.f);
     speedTextFieldGroup2->GetOrCreateComponent<UIDebugRenderComponent>();
     speedTextFieldGroup2->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     speedTextFieldGroup2->SetText(L"1.0");

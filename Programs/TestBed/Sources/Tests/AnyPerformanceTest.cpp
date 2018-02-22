@@ -23,7 +23,6 @@ void AnyPerformanceTest::LoadResources()
     BaseScreen::LoadResources();
 
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
-    font->SetSize(14);
 
     float y = 10;
     float h = 35;
@@ -32,11 +31,13 @@ void AnyPerformanceTest::LoadResources()
     ScopedPtr<UIStaticText> uitext(new UIStaticText(Rect(10, y, 100, h)));
     uitext->SetText(L"Loop count:");
     uitext->SetFont(font);
+    uitext->SetFontSize(14.f);
     AddControl(uitext);
 
     testCount = new UITextField(Rect(110, y, 100, h));
     testCount->GetOrCreateComponent<UIDebugRenderComponent>();
     testCount->SetFont(font);
+    testCount->SetFontSize(14.f);
     testCount->SetInputEnabled(true);
     testCount->SetText(L"1000");
     testCount->GetOrCreateComponent<UIFocusComponent>();
@@ -46,6 +47,7 @@ void AnyPerformanceTest::LoadResources()
     ScopedPtr<UIButton> testCreate(new UIButton(Rect(10, y, 200, h)));
     testCreate->GetOrCreateComponent<UIDebugRenderComponent>();
     testCreate->SetStateFont(0xFF, font);
+    testCreate->SetStateFontSize(0xFF, 14.f);
     testCreate->SetStateFontColor(0xFF, Color::White);
     testCreate->SetStateText(0xFF, L"CreateTest");
     testCreate->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0, 1.0f, 1.0f, 1.0f));
@@ -59,6 +61,7 @@ void AnyPerformanceTest::LoadResources()
     ScopedPtr<UIButton> testGetSet(new UIButton(Rect(10, y, 200, h)));
     testGetSet->GetOrCreateComponent<UIDebugRenderComponent>();
     testGetSet->SetStateFont(0xFF, font);
+    testGetSet->SetStateFontSize(0xFF, 14.f);
     testGetSet->SetStateFontColor(0xFF, Color::White);
     testGetSet->SetStateText(0xFF, L"GetSetTest");
     testGetSet->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0, 1.0f, 1.0f, 1.0f));

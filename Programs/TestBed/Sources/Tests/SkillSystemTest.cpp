@@ -24,17 +24,18 @@ SkillBtn::SkillBtn(UIControl* parent, Rect rect, Color color, const WideString& 
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(25);
 
     skillName = new UIStaticText(Rect({ 0.f, 0.f }, GetSize()));
     skillName->SetMultiline(true);
     skillName->SetFont(font);
+    skillName->SetFontSize(25.f);
     skillName->SetTextColor(Color::White);
     skillName->SetText(name);
     AddControl(skillName);
 
     skillCdTextStatus = new UIStaticText(Rect({ 0.f, 0.f }, GetSize()));
     skillCdTextStatus->SetFont(font);
+    skillCdTextStatus->SetFontSize(25.f);
     skillCdTextStatus->SetTextColor(Color::White);
     skillCdTextStatus->SetVisibilityFlag(false);
     skillCdTextStatus->SetTextAlign(ALIGN_HCENTER | ALIGN_BOTTOM);
@@ -189,7 +190,6 @@ void SkillSystemTest::LoadResources()
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(25);
 
     FastName fireballAction("Fireball");
     DigitalBinding fireballBind;
@@ -240,6 +240,7 @@ void SkillSystemTest::LoadResources()
 
     disableFireball = new UIButton({ 31, 570, 300, 40 });
     disableFireball->SetStateFont(0xFF, font);
+    disableFireball->SetStateFontSize(0xFF, 25.f);
     disableFireball->SetStateColor(0xFF, Color::White);
     disableFireball->SetStateText(0xFF, fireball->enabled ? L"Disable" : L"Enable");
     disableFireball->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -248,6 +249,7 @@ void SkillSystemTest::LoadResources()
 
     disableFrostBite = new UIButton({ 362, 570, 300, 40 });
     disableFrostBite->SetStateFont(0xFF, font);
+    disableFrostBite->SetStateFontSize(0xFF, 25.f);
     disableFrostBite->SetStateColor(0xFF, Color::White);
     disableFrostBite->SetStateText(0xFF, frostBite->enabled ? L"Disable" : L"Enable");
     disableFrostBite->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -256,6 +258,7 @@ void SkillSystemTest::LoadResources()
 
     disableLightningStrike = new UIButton({ 693, 570, 300, 40 });
     disableLightningStrike->SetStateFont(0xFF, font);
+    disableLightningStrike->SetStateFontSize(0xFF, 25.f);
     disableLightningStrike->SetStateColor(0xFF, Color::White);
     disableLightningStrike->SetStateText(0xFF, lightningStrike->enabled ? L"Disable" : L"Enable");
     disableLightningStrike->GetOrCreateComponent<UIDebugRenderComponent>();

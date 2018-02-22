@@ -54,6 +54,8 @@ UIStyleSheetPropertyDataBase::UIStyleSheetPropertyDataBase()
                      UIStyleSheetPropertyDescriptor(&bgGroup, "topBottomStretchCap", 0.0f),
 
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "fontName", String("")),
+                     UIStyleSheetPropertyDescriptor(&staticTextGroup, "fontPath", FilePath()),
+                     UIStyleSheetPropertyDescriptor(&staticTextGroup, "fontSize", 0.0f),
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "color", Color::White),
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "colorInheritType", UIControlBackground::COLOR_MULTIPLY_ON_PARENT),
                      UIStyleSheetPropertyDescriptor(&staticTextGroup, "shadowOffset", Vector2(0.0f, 0.0f)),

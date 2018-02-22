@@ -65,10 +65,10 @@ void DLCManagerTest::LoadResources()
     const Color greyColor = Color(0.4f, 0.4f, 0.4f, 1.f);
 
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
-    font->SetSize(20);
 
     editPackName = new UITextField(Rect(5, 10, 500, 40));
     editPackName->SetFont(font);
+    editPackName->SetFontSize(20.f);
     editPackName->SetUtf8Text("test_pack");
     editPackName->SetFontSize(14);
     editPackName->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -101,6 +101,7 @@ void DLCManagerTest::LoadResources()
 
     textStatusOutput = new UIStaticText(Rect(5, 190, 500, 500));
     textStatusOutput->SetFont(font);
+    textStatusOutput->SetFontSize(20.f);
     textStatusOutput->SetTextColor(Color::White);
     textStatusOutput->SetMultiline(true);
     textStatusOutput->SetUtf8Text("status output: ");
@@ -111,6 +112,7 @@ void DLCManagerTest::LoadResources()
     buttonInitDLC = new UIButton(Rect(600, 10, 100, 40));
     buttonInitDLC->GetOrCreateComponent<UIDebugRenderComponent>();
     buttonInitDLC->SetStateFont(0xFF, font);
+    buttonInitDLC->SetStateFontSize(0xFF, 20.f);
     buttonInitDLC->SetStateFontColor(0xFF, Color::White);
     buttonInitDLC->SetStateText(0xFF, L"Init");
     buttonInitDLC->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
@@ -120,6 +122,7 @@ void DLCManagerTest::LoadResources()
     buttonLoadPack = new UIButton(Rect(600, 80, 100, 40));
     buttonLoadPack->GetOrCreateComponent<UIDebugRenderComponent>();
     buttonLoadPack->SetStateFont(0xFF, font);
+    buttonLoadPack->SetStateFontSize(0xFF, 20.f);
     buttonLoadPack->SetStateFontColor(0xFF, Color::White);
     buttonLoadPack->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
     buttonLoadPack->SetStateFontColor(STATE_DISABLED, greyColor);
@@ -131,6 +134,7 @@ void DLCManagerTest::LoadResources()
     buttonRemovePack = new UIButton(Rect(600, 150, 100, 40));
     buttonRemovePack->GetOrCreateComponent<UIDebugRenderComponent>();
     buttonRemovePack->SetStateFont(0xFF, font);
+    buttonRemovePack->SetStateFontSize(0xFF, 20.f);
     buttonRemovePack->SetStateFontColor(0xFF, Color::White);
     buttonRemovePack->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
     buttonRemovePack->SetStateText(0xFF, L"Delete");
@@ -142,6 +146,7 @@ void DLCManagerTest::LoadResources()
     buttonPauseResume = new UIButton(Rect(600, 220, 100, 40));
     buttonPauseResume->GetOrCreateComponent<UIDebugRenderComponent>();
     buttonPauseResume->SetStateFont(0xFF, font);
+    buttonPauseResume->SetStateFontSize(0xFF, 20.f);
     buttonPauseResume->SetStateFontColor(0xFF, Color::White);
     buttonPauseResume->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
     buttonPauseResume->SetStateText(0xFF, L"Pause");

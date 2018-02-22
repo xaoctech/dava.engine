@@ -27,7 +27,6 @@ void UIMovieTest::LoadResources()
     // Create the "player" buttons.
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(14);
 
     float32 y = vsz.dy - 90;
 
@@ -47,6 +46,7 @@ void UIMovieTest::LoadResources()
 
     playerStateText = new UIStaticText(Rect(vsz.dx - 100, vsz.dy - 110, 100, 20));
     playerStateText->SetFont(font);
+    playerStateText->SetFontSize(14.f);
     AddControl(playerStateText);
 
     SafeRelease(font);
@@ -114,6 +114,7 @@ UIButton* UIMovieTest::CreateUIButton(Font* font, const Rect& rect, const String
 {
     UIButton* button = new UIButton(rect);
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, 14.f);
     button->SetStateText(0xFF, UTF8Utils::EncodeToWideString(text));
     button->SetStateFontColor(0xFF, Color::White);
     button->GetOrCreateComponent<UIDebugRenderComponent>();

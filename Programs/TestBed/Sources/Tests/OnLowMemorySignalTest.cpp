@@ -21,14 +21,14 @@ void OnLowMemorySignalTest::LoadResources()
     numberOfCallbackCalls = 0;
     numberOfAllocatedMbytes = 0;
 
-    ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
-    Font* f = font.get();
-    f->SetSize(20.f);
+    RefPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
+    const float32 fontSize = 20.f;
 
-    auto SetText = [f](UIControl* c, const String& s) {
+    auto SetText = [&font, fontSize](UIControl* c, const String& s) {
         UITextComponent* t = c->GetOrCreateComponent<UITextComponent>();
-        t->SetFont(f);
+        t->SetFont(font);
         t->SetText(s);
+        t->SetFontSize(fontSize);
         t->SetColorInheritType(UIControlBackground::eColorInheritType::COLOR_IGNORE_PARENT);
         t->SetColor(Color::White);
         t->SetAlign(eAlign::ALIGN_LEFT);
@@ -41,7 +41,8 @@ void OnLowMemorySignalTest::LoadResources()
     UITextField* chunkSize = new UITextField({ 200.f, 50.f, 100.f, 60.f });
     chunkSize->SetName(FastName("chunkSize"));
     chunkSize->GetOrCreateComponent<UIDebugRenderComponent>();
-    chunkSize->SetFont(f);
+    chunkSize->SetFont(font.Get());
+    chunkSize->SetFontSize(fontSize);
     chunkSize->SetTextColor(Color::White);
     chunkSize->SetText(std::to_wstring(minChunkSize));
     chunkSize->GetOrCreateComponent<UIFocusComponent>();

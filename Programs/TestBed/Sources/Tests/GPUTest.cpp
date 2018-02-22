@@ -11,7 +11,6 @@ void GPUTest::LoadResources()
     BaseScreen::LoadResources();
 
     ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
-    font->SetSize(16.0F);
 
     { //create control to display texture, loaded with default GPU
         ScopedPtr<UIControl> textureBackground(new UIControl(Rect(10.f, 10.f, 256.f, 128.f)));
@@ -37,6 +36,7 @@ void GPUTest::LoadResources()
         textControl->GetOrCreateComponent<UIDebugRenderComponent>();
         textControl->SetTextColor(Color::White);
         textControl->SetFont(font);
+        textControl->SetFontSize(16.f);
         textControl->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 
         String text = Format("Detected GPU: %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(static_cast<eGPUFamily>(DeviceInfo::GetGPUFamily())));

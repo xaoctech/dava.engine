@@ -3,6 +3,7 @@
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/Engine.h"
 #include "Entity/Component.h"
 #include "Render/2D/FontManager.h"
 #include "UI/Text/UITextComponent.h"
@@ -87,19 +88,29 @@ void UITextSystem::ApplyData(UITextComponent* component)
 
         textBlock->SetText(UTF8Utils::EncodeToWideString(component->GetText()), component->GetRequestedTextRectSize());
 
-        String fontName = component->GetFontName();
-        Font* font = nullptr;
-        if (!fontName.empty())
+        FontPreset preset;
+        if (component->GetFont())
         {
-            font = FontManager::Instance()->GetFont(fontName);
+            preset.SetFont(RefPtr<Font>::ConstructWithRetain(component->GetFont()));
         }
-        else
+        else if (!component->GetFontPath().IsEmpty())
         {
-            font = component->GetFont();
+            preset.SetFont(GetEngineContext()->fontManager->LoadFont(component->GetFontPath()));
         }
-        if (font && textBlock->GetFont() != font)
+        else if (!component->GetFontName().empty())
         {
-            textBlock->SetFont(font);
+            preset = GetEngineContext()->fontManager->GetFontPreset(component->GetFontName());
+        }
+
+        if (!FLOAT_EQUAL(component->GetFontSize(), 0.f))
+        {
+            preset.SetSize(component->GetFontSize());
+        }
+
+        if (preset.Valid() && (textBlock->GetFont() != preset.GetFontPtr() || !FLOAT_EQUAL(textBlock->GetFontSize(), preset.GetSize())))
+        {
+            textBlock->SetFont(preset.GetFontPtr());
+            textBlock->SetFontSize(preset.GetSize());
             textBg->SetSprite(nullptr, 0);
             shadowBg->SetSprite(nullptr, 0);
         }

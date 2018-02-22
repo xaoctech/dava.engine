@@ -14,7 +14,6 @@ void MicroWebBrowserTest::LoadResources()
 {
     ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
     DVASSERT(font);
-    font->SetSize(14);
 
     Rect screenRect = GetRect();
 
@@ -26,6 +25,7 @@ void MicroWebBrowserTest::LoadResources()
 
     textField.Set(new UITextField(textFieldRect));
     textField->SetFont(font);
+    textField->SetFontSize(14.f);
     textField->GetOrCreateComponent<UIDebugRenderComponent>();
     textField->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
     textField->GetOrCreateComponent<UIFocusComponent>();
@@ -39,6 +39,7 @@ void MicroWebBrowserTest::LoadResources()
 
     ScopedPtr<UIButton> loadPage(new UIButton(loadPageRect));
     loadPage->SetStateFont(0xFF, font);
+    loadPage->SetStateFontSize(0xFF, 14.f);
     loadPage->SetStateFontColor(0xFF, Color::White);
     loadPage->SetStateText(0xFF, L"Load");
     loadPage->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -62,6 +63,7 @@ void MicroWebBrowserTest::LoadResources()
     fpsText = new UIStaticText(Rect(10.0f, screenRect.dy - 50.0f, 100.0f, 45.0f));
     fpsText->SetTextColor(Color::White);
     fpsText->SetFont(font);
+    fpsText->SetFontSize(14.f);
     fpsText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
     fpsText->SetUtf8Text("FPS: ");
     AddControl(fpsText);
@@ -70,6 +72,7 @@ void MicroWebBrowserTest::LoadResources()
     memoryText = new UIStaticText(Rect(110.0f, screenRect.dy - 50.0f, 200.0f, 45.0f));
     memoryText->SetTextColor(Color::White);
     memoryText->SetFont(font);
+    memoryText->SetFontSize(14.f);
     memoryText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
     memoryText->SetUtf8Text("Memory usage: ");
     AddControl(memoryText);

@@ -33,14 +33,23 @@ DAVA_TESTCLASS (StaticTextTest)
     StaticTextTest()
     {
         font = FTFont::Create("~res:/Fonts/korinna.ttf");
-        staticText = new UIStaticText(Rect(10.f, 10.f, static_cast<float32>(TEST_WIDTH), 200.f));
-        staticText->SetFont(font);
     }
 
     ~StaticTextTest()
     {
-        SafeRelease(staticText);
         SafeRelease(font);
+    }
+
+    void SetUp(const String& testName) override
+    {
+        staticText = new UIStaticText(Rect(10.f, 10.f, static_cast<float32>(TEST_WIDTH), 200.f));
+        staticText->SetFont(font);
+        staticText->SetFontSize(14.f);
+    }
+
+    void TearDown(const String& testName) override
+    {
+        SafeRelease(staticText);
     }
 
     void CheckLinesWidth()
@@ -48,7 +57,7 @@ DAVA_TESTCLASS (StaticTextTest)
         Vector<WideString> strings = staticText->GetMultilineStrings();
         for (const WideString& line : strings)
         {
-            Font::StringMetrics rmetrics = font->GetStringMetrics(line);
+            Font::StringMetrics rmetrics = font->GetStringMetrics(14.f, line);
             TEST_VERIFY_WITH_MESSAGE(rmetrics.width <= TEST_WIDTH, Format("Line width %d > limit %d in line: '%s'", rmetrics.width, TEST_WIDTH, UTF8Utils::EncodeToUTF8(line).c_str()));
         }
     }
@@ -113,7 +122,6 @@ DAVA_TESTCLASS (StaticTextTest)
 
     DAVA_TEST (TestFitting)
     {
-        const float32 originalFontSize = font->GetSize();
         staticText->SetText(TEST_DATA);
         staticText->SetMultiline(false);
         for (const auto& data : testData)
@@ -124,9 +132,7 @@ DAVA_TESTCLASS (StaticTextTest)
             const WideString& result = staticText->GetVisualText();
             TEST_VERIFY_WITH_MESSAGE(result.find(data.result) != String::npos, Format("Line '%s' doesn't contain '%s'", UTF8Utils::EncodeToUTF8(result).c_str(), UTF8Utils::EncodeToUTF8(data.result).c_str()));
 
-            font->SetSize(staticText->GetFontSize());
-            Font::StringMetrics rmetrics = font->GetStringMetrics(result);
-            font->SetSize(originalFontSize);
+            Font::StringMetrics rmetrics = font->GetStringMetrics(staticText->GetTextBlock()->GetRenderSize(), result);
             TEST_VERIFY_WITH_MESSAGE(rmetrics.width <= TEST_WIDTH, Format("Line width %d > limit %d in line: %s", rmetrics.width, TEST_WIDTH, UTF8Utils::EncodeToUTF8(result).c_str()));
         }
     }

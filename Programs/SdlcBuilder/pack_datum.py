@@ -27,8 +27,8 @@ Example: Using config file(android_superpack_build_on_windows.properties) file c
 EOF
 #
 # Now you can build remote_extended.dvpk using command line (example):
-# $> d:\j\client>python ../dava.framework/Programs/SdlcBuilder/pack_datum.py --config \
-android_superpack_build_on_windows.properties
+# $>C:\Python27\python.exe D:/j/dava.framework/Programs/SdlcBuilder/pack_datum.py --config \
+d:\j\dava.framework\Programs\SdlcBuilder\test_superpack.properties
 """
 
 
@@ -138,6 +138,9 @@ def build_all_files_dict(all_packs):
             else:
                 file_info = FileInfo(file_path, pack)
                 all_file_dict[file_path] = file_info
+
+    # check every pack dependencies successfully converted from list to set type
+    assert(all(type(pack.dependencies) is set for pack in all_packs))
     return all_file_dict
 
 
@@ -145,6 +148,7 @@ def build_shared_packs(all_files_dict, all_packs):
     auto_pack_index = 0
 
     for file_path, file_info in all_files_dict.iteritems():
+        # if same file exist in more then one pack we extract it to new dependent pack
         if len(file_info.packs) > 1:
             # collect all files with this combination of packs
             files_with_same_packs = set()
@@ -155,9 +159,10 @@ def build_shared_packs(all_files_dict, all_packs):
             # generate new shared pack with name combined with merged files packs
             shared_pack_name = '_' + str(auto_pack_index).zfill(4)
             auto_pack_index += 1
-            # no dependencies for auto generated new pack
+            # no dependencies for auto generated new pack and pass set() for dependencies
             shared_pack = Pack(shared_pack_name, files_with_same_packs, [])
             all_packs.add(shared_pack)
+            shared_pack.convert_dependencies_from_str_to_objects(all_packs)
             # save previous packs list to later use
             prev_packs = file_info.packs
             # update all_files_dict to move dependencies from old pack to new generated pack
@@ -184,6 +189,81 @@ def load_excluded_files_list(excluded_json_file):
         return []
 
 
+def is_texture(p):
+    _, ext = os.path.splitext(p)
+    return ext in ('.png', '.tga', '.psd', '.pvr', '.dds', '.webp')
+
+
+def is_texture_descriptor(p):
+    return p.endswith(".tex")
+
+
+def has_texture_file(pack):
+    for f in pack.files:
+        if is_texture(f):
+            return True
+    return False
+
+
+def has_texture_descriptor_file(pack):
+    for f in pack.files:
+        if is_texture_descriptor(f):
+            return True
+    return False
+
+
+def extract_textures(files):
+    textures = list(f for f in files if is_texture(f))
+
+    for t in textures:
+        files.remove(t)
+    return textures
+
+
+def extract_tex_descriptors(files):
+    tex_descriptors = list(f for f in files if is_texture_descriptor(f))
+
+    for t in tex_descriptors:
+        files.remove(t)
+    return tex_descriptors
+
+
+def split_pack(pack, existing_packs):
+    packs = []
+    if has_texture_file(pack) and has_texture_descriptor_file(pack):
+        files_count_before = len(pack.files)
+        # generate sub-packs with extracted textures and then texture descriptors and other files stay in original pack
+        # collect all textures
+        textures_from_pack = extract_textures(pack.files)
+        # collect all tex_descriptors
+        tex_descriptors_from_pack = extract_tex_descriptors(pack.files)
+
+        img_pack_name = pack.name + "_img"
+        if any(pack.name == img_pack_name for pack in existing_packs):
+            raise ValueError('Package name already used!: ' + str(img_pack_name))
+
+        sub_textures_pack = Pack(img_pack_name, textures_from_pack, [])
+
+        tex_pack_name = pack.name + "_tex_desc"
+        if any(pack.name == tex_pack_name for pack in existing_packs):
+            raise ValueError('Package name already used!: ' + str(tex_pack_name))
+
+        sub_tex_descriptors_pack = Pack(tex_pack_name, tex_descriptors_from_pack,
+                                        [sub_textures_pack.name])
+
+        pack.dependencies.append(sub_tex_descriptors_pack.name)
+
+        packs = [pack,                        # original pack
+                 sub_tex_descriptors_pack,    # extracted texture descriptors pack
+                 sub_textures_pack]           # extracted images pack
+        # validate file changes
+        assert (files_count_before == len(pack.files) + len(sub_tex_descriptors_pack.files) + len(sub_textures_pack.files))
+    else:
+        # just left original pack
+        packs.append(pack)
+    return packs
+
+
 def load_all_descriptors(descriptors_list, excluded_files, input_data_dir):
     packs = set()  # all packs are unique objects, its name unique too
     for descriptor_file_name in descriptors_list:
@@ -195,10 +275,15 @@ def load_all_descriptors(descriptors_list, excluded_files, input_data_dir):
             raise TypeError(msg)
         for data in pack_description_data:
             pack = Pack(*Pack.parse_data(data, excluded_files, input_data_dir, packs))
-            packs.add(pack)
+            # split pack into dependent textures-descriptors-sprites for correct loading order
+            packs_generated = split_pack(pack, packs)
+            for sub_pack in packs_generated:
+                packs.add(sub_pack)
 
     # now we can convert string dependencies names to list of objects
     convert_pack_dependencies_names_to_objects(packs)
+    # check every pack dependencies successfully converted from list to set type
+    assert(all(type(pack.dependencies) is set for pack in packs))
     return packs
 
 
@@ -257,6 +342,8 @@ class Pack(object):
                 if pack.name == dep:
                     dependencies.add(pack)
                     break
+        # all dependencies found
+        assert(len(self.dependencies) == len(dependencies))
         self.dependencies = dependencies
 
 

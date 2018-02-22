@@ -158,7 +158,12 @@ void TextFieldStbImpl::SetIsPassword(bool)
 
 void TextFieldStbImpl::SetFontSize(float32 size)
 {
-    // Size getting from the Font
+    staticText->SetFontSize(size);
+}
+
+float32 TextFieldStbImpl::GetFontSize()
+{
+    return staticText->GetFontSize();
 }
 
 void TextFieldStbImpl::SetText(const WideString& newText)
@@ -349,7 +354,18 @@ void TextFieldStbImpl::SetVisible(bool v)
 void TextFieldStbImpl::SetFont(Font* f)
 {
     DropLastCursorAndSelection();
-    staticText->SetFont(f);
+    staticText->SetFont(RefPtr<Font>::ConstructWithRetain(f));
+}
+
+void TextFieldStbImpl::SetFontPath(const FilePath& path)
+{
+    DropLastCursorAndSelection();
+    staticText->SetFontPath(path);
+}
+
+const FilePath& TextFieldStbImpl::GetFontPath() const
+{
+    return staticText->GetFontPath();
 }
 
 Font* TextFieldStbImpl::GetFont() const
@@ -647,7 +663,7 @@ void TextFieldStbImpl::UpdateCursor(uint32 cursorPos, bool insertMode)
     }
     else
     {
-        r.dy = GetFont() ? GetFont()->GetFontHeight() : 0.f;
+        r.dy = GetFont() ? GetFont()->GetFontHeight(GetFontSize()) : 0.f;
 
         int32 ctrlAlign = control->GetTextAlign();
         if (ctrlAlign & ALIGN_RIGHT)

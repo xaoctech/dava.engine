@@ -57,7 +57,6 @@ void DeviceManagerTest::OnDisplayConfigChanged()
 
     ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
     DVASSERT(font);
-    font->SetSize(10);
 
     const float32 unitLength = 100.f;
     float32 scale = displays[0].rect.dx;
@@ -76,6 +75,7 @@ void DeviceManagerTest::OnDisplayConfigChanged()
         UIStaticText* ui = new UIStaticText(rc);
         ui->SetTextColor(Color::White);
         ui->SetFont(font);
+        ui->SetFontSize(10.f);
         ui->GetOrCreateComponent<UIDebugRenderComponent>();
         ui->SetInputEnabled(true);
         UIControlBackground* uiBg = ui->GetOrCreateComponent<UIControlBackground>();
@@ -109,7 +109,6 @@ void DeviceManagerTest::OnDisplayConfigChanged()
 
     total.x += dx;
     total.y += dy;
-    font->SetSize(14);
 
     Rect rcDescr;
     rcDescr.x = total.x;
@@ -118,6 +117,7 @@ void DeviceManagerTest::OnDisplayConfigChanged()
     rcDescr.dy = 100;
     uiDisplayDescr->SetRect(rcDescr);
     uiDisplayDescr->SetFont(font);
+    uiDisplayDescr->SetFontSize(14.f);
     uiDisplayDescr->SetText(L"");
 }
 

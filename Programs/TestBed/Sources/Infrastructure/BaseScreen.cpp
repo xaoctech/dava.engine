@@ -26,11 +26,10 @@ void BaseScreen::LoadResources()
     using namespace DAVA;
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
 
-    font->SetSize(30);
-
     Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     exitButton = new UIButton(Rect(static_cast<DAVA::float32>(screenSize.dx - 300), static_cast<DAVA::float32>(screenSize.dy - 30), 300.0, 30.0));
     exitButton->SetStateFont(0xFF, font);
+    exitButton->SetStateFontSize(0xFF, 30.f);
     exitButton->SetStateFontColor(0xFF, Color::White);
     exitButton->SetStateText(0xFF, L"Exit From Screen");
 

@@ -25,7 +25,7 @@ TextDrawSystem::TextDrawSystem(Scene* scene)
 
     if (font->GetFontType() == Font::TYPE_DISTANCE)
     {
-        float32 cachedSpread = font->GetSpread();
+        float32 cachedSpread = font->GetSpread(fontSize);
         fontMaterial = new NMaterial();
         fontMaterial->SetFXName(FastName("~res:/Materials/2d.DistanceFont.material"));
         fontMaterial->SetMaterialName(FastName("DistanceFontMaterial"));
@@ -62,21 +62,16 @@ void TextDrawSystem::Draw()
     {
         for (const auto& textToDraw : textToDraw)
         {
-            float32 fSize = font->GetSize();
-            font->SetSize(textToDraw.fontSize);
-
             vertices.resize(4 * textToDraw.text.length());
 
             float32 x = textToDraw.pos.x;
             float32 y = textToDraw.pos.y;
-            AdjustPositionBasedOnAlign(x, y, font->GetStringSize(textToDraw.text), textToDraw.align);
+            AdjustPositionBasedOnAlign(x, y, font->GetStringSize(textToDraw.fontSize, textToDraw.text), textToDraw.align);
 
             int32 charactersDrawn = 0;
-            font->DrawStringToBuffer(textToDraw.text, static_cast<int>(x), static_cast<int>(y), vertices.data(), charactersDrawn);
+            font->DrawStringToBuffer(textToDraw.fontSize, textToDraw.text, static_cast<int>(x), static_cast<int>(y), vertices.data(), charactersDrawn);
 
             PushNextBatch(textToDraw.color);
-
-            font->SetSize(fSize);
         }
     }
 
@@ -106,14 +101,14 @@ void TextDrawSystem::PushNextBatch(const Color& color)
 
 void TextDrawSystem::DrawText(const DAVA::Vector2& pos2d, const DAVA::String& text, const DAVA::Color& color, Align align)
 {
-    DrawText(pos2d, UTF8Utils::EncodeToWideString(text), color, font->GetSize(), align);
+    DrawText(pos2d, UTF8Utils::EncodeToWideString(text), color, fontSize, align);
 }
 
-void TextDrawSystem::DrawText(const DAVA::Vector2& pos2d, const DAVA::WideString& text, const DAVA::Color& color, DAVA::float32 fontSize, Align align)
+void TextDrawSystem::DrawText(const DAVA::Vector2& pos2d, const DAVA::WideString& text, const DAVA::Color& color, DAVA::float32 fontSize_, Align align)
 {
     if ((pos2d.x >= 0.0f) && (pos2d.y >= 0.0f))
     {
-        textToDraw.emplace_back(pos2d, text, color, align, fontSize);
+        textToDraw.emplace_back(pos2d, text, color, align, fontSize_);
     }
 }
 

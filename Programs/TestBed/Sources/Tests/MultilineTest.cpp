@@ -4,6 +4,8 @@
 
 using namespace DAVA;
 
+namespace MultilineTestDatails
+{
 class TextDelegate1 : public UITextFieldDelegate
 {
 public:
@@ -56,6 +58,9 @@ public:
     virtual ~TextDelegateMulti() = default;
 };
 
+const float32 FONT_SIZE = 20.f;
+}
+
 MultilineTest::MultilineTest(TestBed& app)
     : BaseScreen(app, "MultilineTest")
 {
@@ -65,13 +70,13 @@ void MultilineTest::LoadResources()
 {
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(14);
 
-    textDelegate1 = new TextDelegate1;
-    textDelegate2 = new TextDelegate2;
+    textDelegate1 = new MultilineTestDatails::TextDelegate1();
+    textDelegate2 = new MultilineTestDatails::TextDelegate2();
 
     textField1 = new UITextField(Rect(5, 10, 400, 60));
     textField1->SetFont(font);
+    textField1->SetFontSize(MultilineTestDatails::FONT_SIZE);
     textField1->SetText(L"hello world");
     textField1->GetOrCreateComponent<UIDebugRenderComponent>();
     textField1->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
@@ -84,6 +89,7 @@ void MultilineTest::LoadResources()
     textField2 = new UITextField(Rect(5, 80, 400, 60));
     textField2->SetIsPassword(true);
     textField2->SetFont(font);
+    textField2->SetFontSize(MultilineTestDatails::FONT_SIZE);
     textField2->SetText(L"123456");
     textField2->GetOrCreateComponent<UIDebugRenderComponent>();
     textField2->SetTextColor(Color(0.0, 0.0, 1.0, 1.0));
@@ -95,6 +101,7 @@ void MultilineTest::LoadResources()
 
     RefPtr<UITextField> textField3(new UITextField(Rect(5, 150, 400, 60)));
     textField3->SetFont(font);
+    textField3->SetFontSize(MultilineTestDatails::FONT_SIZE);
     textField3->SetText(L"field w/o options");
     textField3->GetOrCreateComponent<UIDebugRenderComponent>();
     textField3->GetOrCreateComponent<UIFocusComponent>();
@@ -103,6 +110,7 @@ void MultilineTest::LoadResources()
     textFieldMulti = new UITextField(Rect(450, 10, 400, 120));
     textFieldMulti->GetOrCreateComponent<UIFocusComponent>();
     textFieldMulti->SetFont(font);
+    textFieldMulti->SetFontSize(MultilineTestDatails::FONT_SIZE);
     textFieldMulti->SetText(L"Multiline text field");
     textFieldMulti->GetOrCreateComponent<UIDebugRenderComponent>();
     textFieldMulti->SetTextColor(Color(0.0, 0.0, 1.0, 1.0));
@@ -114,12 +122,9 @@ void MultilineTest::LoadResources()
     const float32 CONTROL_LENGHT = 400;
     const float32 CONTROL_HEIGTH = 70;
 
-    font->SetSize(25.f);
-    ScopedPtr<FTFont> bigFont(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
-    bigFont->SetSize(50.f);
-
     UIButton* button = new UIButton(Rect(0, Y_OFFSET, CONTROL_LENGHT, CONTROL_HEIGTH));
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, MultilineTestDatails::FONT_SIZE);
     button->SetStateFontColor(0xFF, Color::White);
     button->SetStateText(0xFF, L"Show/Hide");
     button->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -129,6 +134,7 @@ void MultilineTest::LoadResources()
 
     UITextField* field = new UITextField(Rect(0, Y_OFFSET + CONTROL_HEIGTH + 10, CONTROL_LENGHT, CONTROL_HEIGTH));
     field->SetFont(font);
+    field->SetFontSize(MultilineTestDatails::FONT_SIZE);
     field->GetOrCreateComponent<UIDebugRenderComponent>();
     field->SetText(L"Test text inside UITextField used for test");
     field->SetDelegate(this);
@@ -138,6 +144,7 @@ void MultilineTest::LoadResources()
     field = new UITextField(Rect(0, Y_OFFSET + 2 * (CONTROL_HEIGTH + 10), CONTROL_LENGHT, CONTROL_HEIGTH));
     field->GetOrCreateComponent<UIFocusComponent>();
     field->SetFont(font);
+    field->SetFontSize(MultilineTestDatails::FONT_SIZE);
     field->GetOrCreateComponent<UIDebugRenderComponent>();
     field->SetText(L"Test text inside UITextField used for test");
     field->SetDelegate(this);

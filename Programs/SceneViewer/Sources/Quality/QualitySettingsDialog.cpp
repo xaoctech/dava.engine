@@ -25,7 +25,7 @@ float32 OPACITY = 0.45f;
 class QualitySettingsCell : public DAVA::UIListCell
 {
 public:
-    QualitySettingsCell(DAVA::Font* font)
+    QualitySettingsCell(DAVA::Font* font, float32 fontSize)
     {
         UISizePolicyComponent* sizePolicy = GetOrCreateComponent<UISizePolicyComponent>();
         sizePolicy->SetHorizontalPolicy(UISizePolicyComponent::PERCENT_OF_PARENT);
@@ -44,6 +44,7 @@ public:
 
         leftColumnText = new UIStaticText(Rect(0.f, 0.f, leftColumnWidth, 0.f));
         leftColumnText->SetFont(font);
+        leftColumnText->SetFontSize(fontSize);
         leftColumnText->SetTextAlign(ALIGN_LEFT);
         leftColumnText->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
         {
@@ -94,7 +95,7 @@ private:
 class CaptionCell : public UIListCell
 {
 public:
-    CaptionCell(Font* font, const WideString& text)
+    CaptionCell(Font* font, float32 fontSize, const WideString& text)
     {
         using namespace DAVA;
 
@@ -104,6 +105,7 @@ public:
 
         ScopedPtr<UIStaticText> captionText(new UIStaticText(Rect(0.f, 0.f, 150.f, 0.f)));
         captionText->SetFont(font);
+        captionText->SetFontSize(fontSize);
         captionText->SetTextAlign(ALIGN_VCENTER);
         captionText->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
         captionText->SetText(text);
@@ -132,7 +134,7 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
     cellHeight = screenSize.dy / 20.0f;
 
     font = FTFont::Create("~res:/SceneViewer/Fonts/korinna.ttf");
-    font->SetSize(cellHeight / 2.5f);
+    fontSize = cellHeight / 2.5f;
 
     GetOrCreateComponent<DAVA::UIControlBackground>();
     GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
@@ -148,6 +150,7 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
     captionText = new UIStaticText(Rect(0.f, 0.f, 0.f, cellHeight));
     captionText->SetText(L"Quality settings");
     captionText->SetFont(font);
+    captionText->SetFontSize(fontSize);
     captionText->SetTextAlign(ALIGN_VCENTER | ALIGN_HCENTER);
     captionText->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
     {
@@ -185,6 +188,7 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
     okButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     okButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.75f, 0.85f, 0.75f, 0.5f));
     okButton->SetStateFont(UIControl::STATE_NORMAL, font);
+    okButton->SetStateFontSize(UIControl::STATE_NORMAL, fontSize);
     okButton->SetStateText(UIControl::STATE_NORMAL, L"OK");
     okButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     okButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &QualitySettingsDialog::OnButtonOk));
@@ -203,6 +207,7 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
     cancelButton->SetStateDrawType(UIControl::STATE_PRESSED_INSIDE, UIControlBackground::DRAW_FILL);
     cancelButton->GetStateBackground(UIControl::STATE_PRESSED_INSIDE)->SetColor(Color(0.85f, 0.75f, 0.75f, 0.5f));
     cancelButton->SetStateFont(UIControl::STATE_NORMAL, font);
+    cancelButton->SetStateFontSize(UIControl::STATE_NORMAL, fontSize);
     cancelButton->SetStateText(UIControl::STATE_NORMAL, L"Cancel");
     cancelButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     cancelButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &QualitySettingsDialog::OnButtonCancel));
@@ -223,6 +228,7 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
     applyButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
     applyButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.75f, 0.65f, 0.65f, 0.5f));
     applyButton->SetStateFont(UIControl::STATE_NORMAL, font);
+    applyButton->SetStateFontSize(UIControl::STATE_NORMAL, fontSize);
     applyButton->SetStateText(UIControl::STATE_NORMAL, L"Apply");
     applyButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     applyButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &QualitySettingsDialog::OnButtonApply));
@@ -252,7 +258,7 @@ void QualitySettingsDialog::BuildQualityControls()
 
     auto AddCaptionCell = [this](const WideString& text)
     {
-        CaptionCell* captionCell = new CaptionCell(font, text);
+        CaptionCell* captionCell = new CaptionCell(font, fontSize, text);
         cells.push_back(captionCell);
     };
 
@@ -261,12 +267,12 @@ void QualitySettingsDialog::BuildQualityControls()
         AddCaptionCell(L"Textures");
 
         {
-            QualitySettingsCell* cell = new QualitySettingsCell(font);
+            QualitySettingsCell* cell = new QualitySettingsCell(font, fontSize);
             cells.push_back(cell);
 
             cell->SetLeftColumnText(L"Textures:");
 
-            textureQualityBox = new TriggerBox(*this, font);
+            textureQualityBox = new TriggerBox(*this, font, fontSize);
             cell->SetRightColumnControl(textureQualityBox);
 
             DAVA::FastName curTxQuality = DAVA::QualitySettingsSystem::Instance()->GetCurTextureQuality();
@@ -284,12 +290,12 @@ void QualitySettingsDialog::BuildQualityControls()
     {
         AddCaptionCell(L"Anisotropy");
 
-        QualitySettingsCell* cell = new QualitySettingsCell(font);
+        QualitySettingsCell* cell = new QualitySettingsCell(font, fontSize);
         cells.emplace_back(cell);
 
         cell->SetLeftColumnText(L"Anisotropy:");
 
-        anisotropyQualityBox = new TriggerBox(*this, font);
+        anisotropyQualityBox = new TriggerBox(*this, font, fontSize);
         cell->SetRightColumnControl(anisotropyQualityBox);
 
         DAVA::FastName curAnQuality = DAVA::QualitySettingsSystem::Instance()->GetCurAnisotropyQuality();
@@ -306,12 +312,12 @@ void QualitySettingsDialog::BuildQualityControls()
     {
         AddCaptionCell(L"Multisampling");
 
-        QualitySettingsCell* cell = new QualitySettingsCell(font);
+        QualitySettingsCell* cell = new QualitySettingsCell(font, fontSize);
         cells.emplace_back(cell);
 
         cell->SetLeftColumnText(L"Multisampling:");
 
-        multisamplingQualityBox = new TriggerBox(*this, font);
+        multisamplingQualityBox = new TriggerBox(*this, font, fontSize);
         cell->SetRightColumnControl(multisamplingQualityBox);
 
         DAVA::FastName curQuality = DAVA::QualitySettingsSystem::Instance()->GetCurMSAAQuality();
@@ -333,12 +339,12 @@ void QualitySettingsDialog::BuildQualityControls()
             DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupName(i);
             DAVA::FastName curGroupQuality = DAVA::QualitySettingsSystem::Instance()->GetCurMaterialQuality(groupName);
 
-            QualitySettingsCell* cell = new QualitySettingsCell(font);
+            QualitySettingsCell* cell = new QualitySettingsCell(font, fontSize);
             cells.emplace_back(cell);
 
             cell->SetLeftColumnText(ToWideString(groupName) + L":");
 
-            DAVA::ScopedPtr<TriggerBox> materialQualityBox(new TriggerBox(*this, font));
+            DAVA::ScopedPtr<TriggerBox> materialQualityBox(new TriggerBox(*this, font, fontSize));
             materialQualityBoxes.push_back(materialQualityBox);
             cell->SetRightColumnControl(materialQualityBox);
 
@@ -359,12 +365,12 @@ void QualitySettingsDialog::BuildQualityControls()
     {
         AddCaptionCell(L"Particles");
 
-        QualitySettingsCell* cell = new QualitySettingsCell(font);
+        QualitySettingsCell* cell = new QualitySettingsCell(font, fontSize);
         cells.emplace_back(cell);
 
         cell->SetLeftColumnText(L"Quality:");
 
-        particleQualityBox = new TriggerBox(*this, font);
+        particleQualityBox = new TriggerBox(*this, font, fontSize);
         cell->SetRightColumnControl(particleQualityBox);
 
         DAVA::FastName curQuality = particlesSettings.GetCurrentQuality();
@@ -384,13 +390,13 @@ void QualitySettingsDialog::BuildQualityControls()
         DAVA::int32 optionsCount = DAVA::QualitySettingsSystem::Instance()->GetOptionsCount();
         for (DAVA::int32 i = 0; i < optionsCount; ++i)
         {
-            QualitySettingsCell* cell = new QualitySettingsCell(font);
+            QualitySettingsCell* cell = new QualitySettingsCell(font, fontSize);
             cells.emplace_back(cell);
 
             DAVA::FastName optionName = DAVA::QualitySettingsSystem::Instance()->GetOptionName(i);
             cell->SetLeftColumnText(ToWideString(optionName) + L":");
 
-            ScopedPtr<BinaryTriggerBox> binaryBox(new BinaryTriggerBox(*this, font, L"Yes", L"No"));
+            ScopedPtr<BinaryTriggerBox> binaryBox(new BinaryTriggerBox(*this, font, fontSize, L"Yes", L"No"));
             qualityOptionBoxes.push_back(binaryBox);
             cell->SetRightColumnControl(binaryBox);
             binaryBox->SetOn(DAVA::QualitySettingsSystem::Instance()->IsOptionEnabled(optionName));

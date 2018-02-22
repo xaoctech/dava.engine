@@ -72,7 +72,6 @@ void OverdrawTest::LoadResources()
     if (font == nullptr)
     {
         font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
-        font->SetSize(17.f);
     }
     DAVA::Rect screenRect = GetRect();
     Size2i screenSize = DAVA::GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
@@ -90,6 +89,7 @@ void OverdrawTest::LoadResources()
     CreateLabel({ overdrawXOffset, overdrawYOffset - buttonHeight, buttonWidth * 3.0f, buttonHeight }, L"Overdraw screens count");
     overdrawCountLabel = new UIStaticText(DAVA::Rect(overdrawXOffset, overdrawYOffset, buttonWidth * 3.0f, buttonHeight));
     overdrawCountLabel->SetFont(font);
+    overdrawCountLabel->SetFontSize(17.f);
     overdrawCountLabel->SetTextColor(Color::White);
     overdrawCountLabel->SetText(Format(L"%d", OverdrawTestConfig::overdrawScreensCount));
     overdrawCountLabel->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
@@ -100,6 +100,7 @@ void OverdrawTest::LoadResources()
     CreateLabel({ overdrawXOffset, chartHeightYOffset - buttonHeight, buttonWidth * 3.0f, buttonHeight }, L"Max frametime");
     chartHeightLabel = new UIStaticText(DAVA::Rect(overdrawXOffset, chartHeightYOffset, buttonWidth * 3.0f, buttonHeight));
     chartHeightLabel->SetFont(font);
+    chartHeightLabel->SetFontSize(17.f);
     chartHeightLabel->SetTextColor(Color::White);
     chartHeightLabel->SetText(Format(L"%.3f", OverdrawTestConfig::chartHeight));
     chartHeightLabel->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
@@ -136,6 +137,7 @@ void OverdrawTest::CreateLabel(const DAVA::Rect&& rect, const WideString&& capti
 {
     ScopedPtr<UIStaticText> label(new UIStaticText(rect));
     label->SetFont(font);
+    label->SetFontSize(17.f);
     label->SetTextColor(Color::White);
     label->SetText(caption);
     label->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
@@ -225,13 +227,13 @@ DAVA::UIButton* OverdrawTest::CreateButton(const DAVA::Rect& rect, const WideStr
     if (font == nullptr)
     {
         font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
-        font->SetSize(17.f);
     }
 
     UIButton* button = new UIButton(rect);
     button->SetStateText(UIControl::STATE_NORMAL, text);
     button->SetStateTextAlign(UIControl::STATE_NORMAL, ALIGN_HCENTER | ALIGN_VCENTER);
     button->SetStateFont(UIControl::STATE_NORMAL, font);
+    button->SetStateFontSize(0xFF, 17.f);
     button->SetStateFontColor(UIControl::STATE_NORMAL, Color::White);
     button->SetStateFontColor(UIControl::STATE_PRESSED_INSIDE, Color(0.7f, 0.7f, 0.7f, 1.f));
 
