@@ -1,0 +1,45 @@
+RenderTechnique:
+    Layers: ["AfterOpaqueRenderLayer"]
+    RenderPass:
+        Name: "ForwardPass"
+        Shader: "~res:/Materials2/Shaders/background"
+        UniqueDefines: []
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"            
+    RenderPassLDR:
+        Name: "LDRForwardPass"
+        Shader: "~res:/Materials2/ShadersLDR/background"
+        UniqueDefines: []
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"            
+    RenderPassWithCombine:
+        Name: "ForwardPassWithCombine"
+        Shader: "~res:/Materials2/Shaders/background"
+        UniqueDefines: ["FOWARD_WITH_COMBINE"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"            
+    RenderPassReflections:
+        Name: "IBReflectionPass"
+        Shader: "~res:/Materials2/Shaders/background"
+        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"
+    RenderPassReflectionsLDR:
+        Name: "LDRIBReflectionPass"
+        Shader: "~res:/Materials2/ShadersLDR/background"
+        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"
+    RenderPassDeferredFetch:
+        Name: "gBufferFetchPass"
+        Shader: "~res:/Materials2/Shaders/background"
+        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"
+

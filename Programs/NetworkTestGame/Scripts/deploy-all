@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+./aws/aws-deploy _game/app dev
+./aws/aws-deploy run_bots.sh dev
+./aws/aws-deploy analyzer_agent.py dev
+./aws/aws-deploy put-s3 dev
+./aws/aws-deploy put-s3-impl dev
+./aws/aws-ips dev

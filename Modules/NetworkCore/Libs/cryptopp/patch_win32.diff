@@ -1,0 +1,515 @@
+diff --git a/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj b/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj
+index 8d5cb189db..1b6324543b 100644
+--- a/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj
++++ b/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -21,20 +21,17 @@
+   <PropertyGroup Label="Globals">
+     <ProjectGuid>{94a428a1-9ba8-4db2-b76e-bd2e3c08f257}</ProjectGuid>
+     <RootNamespace>cryptdll</RootNamespace>
+-    <PlatformToolset>v100</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <ConfigurationType>DynamicLibrary</ConfigurationType>
+   </PropertyGroup>
+-
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+-
+   <ImportGroup Label="ExtensionSettings" />
+   <ImportGroup Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+   </ImportGroup>
+   <PropertyGroup Label="UserMacros" />
+   <!-- End of Visual Studio boilerplate -->
+-
+   <!-- All Configurations -->
+   <PropertyGroup Label="All Configurations">
+     <ConfigurationType>DynamicLibrary</ConfigurationType>
+@@ -46,7 +43,6 @@
+     <OutDir>$(Platform)\DLL_Output\$(Configuration)\</OutDir>
+     <IntDir>$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+   </PropertyGroup>
+-
+   <!-- All Configurations -->
+   <ItemDefinitionGroup Label="All Configurations">
+     <ClCompile>
+@@ -67,7 +63,6 @@
+       <ImportLibrary>$(TargetDir)\cryptopp.lib</ImportLibrary>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- Debug Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'" Label="Debug Configuration">
+     <ClCompile>
+@@ -83,7 +78,6 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+   </ItemDefinitionGroup>
+-
+   <!-- Release Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'" Label="Release Configuration">
+     <ClCompile>
+@@ -105,7 +99,6 @@
+       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- X86 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'" Label="X86 Configuration">
+     <ClCompile>
+@@ -116,7 +109,6 @@
+       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- X64 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'" Label="X64 Configuration">
+     <ClCompile>
+@@ -126,7 +118,6 @@
+       <TargetMachine>MachineX64</TargetMachine>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- Win32/Debug cryptest.exe for DLL MAC'ing -->
+   <!-- Broken at the moment; see http://stackoverflow.com/q/39900437 -->
+   <!--   and http://stackoverflow.com/q/39929817/608639              -->
+@@ -142,7 +133,6 @@
+       Properties="Configuration=Debug;Platform=Win32;"/>
+   </Target>
+   -->
+-
+   <ItemDefinitionGroup Condition="!Exists('Win32\Output\Debug\cryptest.exe')" Label="MAC tool">
+     <PreBuildEvent>
+       <Message>Creating Win32/Debug cryptest.exe for MAC computation</Message>
+@@ -152,7 +142,6 @@
+       </Command>
+     </PreBuildEvent>
+   </ItemDefinitionGroup>
+-
+   <!-- DLL MAC'ing performed by cryptest.exe -->
+   <ItemDefinitionGroup Label="DLL MAC">
+     <PostBuildEvent>
+@@ -165,7 +154,6 @@
+       <Outputs>$(OutDir)cryptopp.mac.done;%(Outputs)</Outputs>
+     </PostBuildEvent>
+   </ItemDefinitionGroup>
+-
+   <!-- Original File with special treatment -->
+   <ItemGroup>
+     <CustomBuild Condition="'$(Platform)'=='x64' AND ('$(Configuration)'=='Debug' Or '$(Configuration)'=='Release')" Include="x64dll.asm">
+@@ -174,7 +162,6 @@
+       <Outputs>$(IntDir)x64dll.obj</Outputs>
+     </CustomBuild>
+   </ItemGroup>
+-
+   <!-- Source Files -->
+   <ItemGroup>
+     <ClCompile Include="pch.cpp">
+@@ -239,7 +226,6 @@
+     <ClCompile Include="strciphr.cpp" />
+     <ClCompile Include="trdlocal.cpp" />
+   </ItemGroup>
+-
+   <!-- Header Files -->
+   <ItemGroup>
+     <ClInclude Include="aes.h" />
+@@ -310,7 +296,6 @@
+     <ClInclude Include="trdlocal.h" />
+     <ClInclude Include="words.h" />
+   </ItemGroup>
+-
+   <!-- Back to Visual Studio boilerplate -->
+   <ItemGroup>
+     <ResourceCompile Include="cryptopp.rc" />
+@@ -319,4 +304,4 @@
+   <ImportGroup Label="ExtensionTargets">
+     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj.filters b/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj.filters
+index f73ba2dee9..3e49398f15 100644
+--- a/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj.filters
++++ b/Thirdparty/output/cryptopp/cryptopp_source/cryptdll.vcxproj.filters
+@@ -385,9 +385,4 @@
+       <Filter>Source Files</Filter>
+     </ResourceCompile>
+   </ItemGroup>
+-  <ItemGroup>
+-    <CustomBuild Include="x64dll.asm">
+-      <Filter>Source Files</Filter>
+-    </CustomBuild>
+-  </ItemGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/Thirdparty/output/cryptopp/cryptopp_source/cryptest.vcxproj b/Thirdparty/output/cryptopp/cryptopp_source/cryptest.vcxproj
+index 5e58fe4093..9d3128f1b8 100644
+--- a/Thirdparty/output/cryptopp/cryptopp_source/cryptest.vcxproj
++++ b/Thirdparty/output/cryptopp/cryptopp_source/cryptest.vcxproj
+@@ -1,5 +1,5 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -34,16 +34,14 @@
+       <Platform>x64</Platform>
+     </ProjectConfiguration>
+   </ItemGroup>
+-
+   <PropertyGroup Label="Globals">
+     <ProjectGuid>{09cdac08-e6ae-48a9-8de7-0fbc779eebde}</ProjectGuid>
+     <RootNamespace>cryptest</RootNamespace>
+-    <PlatformToolset>v100</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <ConfigurationType>Application</ConfigurationType>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+-
+   <ImportGroup Label="ExtensionSettings">
+     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+   </ImportGroup>
+@@ -52,7 +50,6 @@
+   </ImportGroup>
+   <PropertyGroup Label="UserMacros" />
+   <!-- End of Visual Studio boilerplate -->
+-
+   <!-- All Configurations -->
+   <PropertyGroup Label="All Configurations">
+     <ConfigurationType>Application</ConfigurationType>
+@@ -62,7 +59,6 @@
+     <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+-
+   <!-- Intermediate and Output directories -->
+   <!-- Cryptlib and Cryptest need extra care due to Non-DLL/DLL configs -->
+   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'" Label="Non-DLL Directories">
+@@ -77,7 +73,6 @@
+     <OutDir>$(Platform)\DLL_Output\Release\</OutDir>
+     <IntDir>$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+   </PropertyGroup>
+-
+   <!-- All Configurations -->
+   <ItemDefinitionGroup Label="All Configurations">
+     <ClCompile>
+@@ -97,7 +92,6 @@
+       <SubSystem>Console</SubSystem>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- Debug Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='DLL-Import Debug'" Label="Debug Configuration">
+     <ClCompile>
+@@ -113,7 +107,6 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+   </ItemDefinitionGroup>
+-
+   <!-- Release Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='DLL-Import Release'" Label="Release Configuration">
+     <ClCompile>
+@@ -135,7 +128,6 @@
+       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- DLL-Import Overrides for Preprocessor and Libraries -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='DLL-Import Debug'" Label="DLL Debug Configuration">
+     <ClCompile>
+@@ -155,7 +147,6 @@
+       <AdditionalDependencies>cryptopp.lib;cryptlib.lib;Ws2_32.lib</AdditionalDependencies>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- X86 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'" Label="X86 Configuration">
+     <ClCompile>
+@@ -166,7 +157,6 @@
+       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- X64 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'" Label="X64 Configuration">
+     <ClCompile>
+@@ -176,11 +166,10 @@
+       <TargetMachine>MachineX64</TargetMachine>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- FIPS Validated Warning -->
+   <ItemDefinitionGroup Label="FIPS Warning">
+     <PreBuildEvent Condition="'$(Configuration)'=='DLL-Import Debug' Or '$(Configuration)'=='DLL-Import Release'">
+-	  <Command>
++      <Command>
+         echo *************************************************************************
+         echo This configuration requires cryptopp.dll. You can build it yourself using
+         echo the cryptdll project, or obtain a pre-built, FIPS 140-2 validated DLL. If
+@@ -190,7 +179,6 @@
+       </Command>
+     </PreBuildEvent>
+   </ItemDefinitionGroup>
+-
+   <!-- Source Files -->
+   <ItemGroup>
+     <ClCompile Include="adhoc.cpp" />
+@@ -205,14 +193,12 @@
+     <ClCompile Include="validat2.cpp" />
+     <ClCompile Include="validat3.cpp" />
+   </ItemGroup>
+-
+   <!-- Header Files -->
+   <ItemGroup>
+     <ClInclude Include="bench.h" />
+     <ClInclude Include="factory.h" />
+     <ClInclude Include="validate.h" />
+   </ItemGroup>
+-
+   <!-- Test Files -->
+   <ItemGroup>
+     <None Include="TestVectors\aes.txt" />
+@@ -319,4 +305,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj b/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj
+index 0eae038bbf..c767b2c15f 100644
+--- a/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj
++++ b/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -34,17 +34,14 @@
+       <Platform>x64</Platform>
+     </ProjectConfiguration>
+   </ItemGroup>
+-
+   <PropertyGroup Label="Globals">
+     <ProjectGuid>{c39f4b46-6e89-4074-902e-ca57073044d2}</ProjectGuid>
+     <RootNamespace>cryptlib</RootNamespace>
+-    <PlatformToolset>v100</PlatformToolset>
+-	<ConfigurationType>StaticLibrary</ConfigurationType>
++    <PlatformToolset>v140</PlatformToolset>
++    <ConfigurationType>StaticLibrary</ConfigurationType>
+   </PropertyGroup>
+-
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+-
+   <ImportGroup Label="ExtensionSettings">
+     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+   </ImportGroup>
+@@ -53,7 +50,6 @@
+   </ImportGroup>
+   <PropertyGroup Label="UserMacros" />
+   <!-- End of Visual Studio boilerplate -->
+-
+   <!-- All Configurations -->
+   <PropertyGroup Label="All Configurations">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+@@ -63,7 +59,6 @@
+     <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+-
+   <!-- Intermediate and Output directories -->
+   <!-- Cryptlib and Cryptest need extra care due to Non-DLL/DLL configs -->
+   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'" Label="Non-DLL Directories">
+@@ -78,7 +73,6 @@
+     <OutDir>$(Platform)\DLL_Output\Release\</OutDir>
+     <IntDir>$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+   </PropertyGroup>
+-
+   <!-- All Configurations -->
+   <ItemDefinitionGroup Label="All Configurations">
+     <ClCompile>
+@@ -92,7 +86,6 @@
+       <ErrorReporting>NoErrorReport</ErrorReporting>
+     </Lib>
+   </ItemDefinitionGroup>
+-
+   <!-- Debug Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='DLL-Import Debug'" Label="Debug Configuration">
+     <ClCompile>
+@@ -108,7 +101,6 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+   </ItemDefinitionGroup>
+-
+   <!-- Release Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='DLL-Import Release'" Label="Release Configuration">
+     <ClCompile>
+@@ -126,7 +118,6 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+   </ItemDefinitionGroup>
+-
+   <!-- DLL-Import Overrides for Preprocessor -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='DLL-Import Debug'" Label="DLL Debug Configuration">
+     <ClCompile>
+@@ -138,7 +129,6 @@
+       <PreprocessorDefinitions>NDEBUG;USE_PRECOMPILED_HEADERS;CRYPTOPP_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+     </ClCompile>
+   </ItemDefinitionGroup>
+-
+   <!-- X86 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'" Label="X86 Configuration">
+     <ClCompile>
+@@ -149,7 +139,6 @@
+       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+     </Lib>
+   </ItemDefinitionGroup>
+-
+   <!-- X64 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'" Label="X64 Configuration">
+     <ClCompile>
+@@ -159,9 +148,7 @@
+       <TargetMachine>MachineX64</TargetMachine>
+     </Lib>
+   </ItemDefinitionGroup>
+-
+   <!-- Original File with special treatment -->
+-
+   <!-- Source Files -->
+   <!-- The order of the first three matters -->
+   <ItemGroup>
+@@ -480,4 +467,4 @@
+   <ImportGroup Label="ExtensionTargets">
+     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj.filters b/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj.filters
+index b13bba7de1..4284bd9e51 100644
+--- a/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj.filters
++++ b/Thirdparty/output/cryptopp/cryptopp_source/cryptlib.vcxproj.filters
+@@ -1,4 +1,4 @@
+-<?xml version="1.0" encoding="utf-8"?>
++﻿<?xml version="1.0" encoding="utf-8"?>
+ <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup>
+     <Filter Include="Source Files">
+@@ -827,11 +827,5 @@
+     <CustomBuild Include="rdrand.asm">
+       <Filter>Source Files</Filter>
+     </CustomBuild>
+-    <CustomBuild Include="x64dll.asm">
+-      <Filter>Source Files</Filter>
+-    </CustomBuild>
+-    <CustomBuild Include="x64masm.asm">
+-      <Filter>Source Files</Filter>
+-    </CustomBuild>
+   </ItemGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/Thirdparty/output/cryptopp/cryptopp_source/dlltest.vcxproj b/Thirdparty/output/cryptopp/cryptopp_source/dlltest.vcxproj
+index 3e0b6b594e..a41665cd41 100644
+--- a/Thirdparty/output/cryptopp/cryptopp_source/dlltest.vcxproj
++++ b/Thirdparty/output/cryptopp/cryptopp_source/dlltest.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -21,20 +21,17 @@
+   <PropertyGroup Label="Globals">
+     <ProjectGuid>{1974a53a-9863-41c9-886d-b2b8c2fc3c8b}</ProjectGuid>
+     <RootNamespace>dlltest</RootNamespace>
+-    <PlatformToolset>v100</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <ConfigurationType>Application</ConfigurationType>
+   </PropertyGroup>
+-
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+-
+   <ImportGroup Label="ExtensionSettings" />
+   <ImportGroup Label="PropertySheets">
+     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+   </ImportGroup>
+   <PropertyGroup Label="UserMacros" />
+   <!-- End of Visual Studio boilerplate -->
+-
+   <!-- All Configurations -->
+   <PropertyGroup Label="All Configurations">
+     <ConfigurationType>Application</ConfigurationType>
+@@ -44,7 +41,6 @@
+     <OutDir>$(Platform)\DLL_Output\$(Configuration)\</OutDir>
+     <IntDir>$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+   </PropertyGroup>
+-
+   <!-- All Configurations -->
+   <ItemDefinitionGroup Label="All Configurations">
+     <ClCompile>
+@@ -61,7 +57,6 @@
+       <GenerateDebugInformation>true</GenerateDebugInformation>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- Debug Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'" Label="Debug Configuration">
+     <ClCompile>
+@@ -77,7 +72,6 @@
+       <Culture>0x0409</Culture>
+     </ResourceCompile>
+   </ItemDefinitionGroup>
+-
+   <!-- Release Configurations -->
+   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'" Label="Release Configuration">
+     <ClCompile>
+@@ -99,7 +93,6 @@
+       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- X86 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'" Label="X86 Configuration">
+     <ClCompile>
+@@ -110,7 +103,6 @@
+       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- X64 Configurations -->
+   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'" Label="X64 Configuration">
+     <ClCompile>
+@@ -120,14 +112,12 @@
+       <TargetMachine>MachineX64</TargetMachine>
+     </Link>
+   </ItemDefinitionGroup>
+-
+   <!-- Source Files -->
+   <ItemGroup>
+     <ClCompile Include="dlltest.cpp" />
+   </ItemGroup>
+-
+   <!-- Back to Visual Studio boilerplate -->
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file

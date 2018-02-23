@@ -1,0 +1,3 @@
+include ':DavaEngine'
+project(':DavaEngine').projectDir = file('../../../../../Platforms/Android')
+include ':Client'

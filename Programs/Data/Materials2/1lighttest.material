@@ -1,0 +1,18 @@
+RenderTechnique:
+    Layers: ["OpaqueRenderLayer"]
+    RenderPassDeferred:
+        Name: "gBufferPass"
+        Layer: "DeferredDecals"
+        Shader: "~res:/Materials2/Shaders/deferred-light"
+        UniqueDefines: ["DEFERRED_LIGHT"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
+    RenderPassDeferred:
+        Name: "gBufferFetchPass"
+        Layer: "DeferredDecals"
+        Shader: "~res:/Materials2/Shaders/deferred-light"
+        UniqueDefines: ["DEFERRED_LIGHT", "USE_FRAMEBUFFER_FETCH"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            

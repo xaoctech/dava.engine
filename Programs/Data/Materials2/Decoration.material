@@ -1,0 +1,67 @@
+RenderTechnique:
+    Layers: ["OpaqueRenderLayer"]
+    RenderPass:
+        Name: "ForwardPass"
+        Shader: "~res:/Materials2/Shaders/landscape/decoration"
+        UniqueDefines: ["FLIP_BACKFACE_NORMALS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_BACK"
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPassLDR:
+        Name: "LDRForwardPass"
+        Shader: "~res:/Materials2/ShadersLDR/landscape/decoration"
+        UniqueDefines: ["FLIP_BACKFACE_NORMALS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_BACK"
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPassWithCombine:
+        Name: "ForwardPassWithCombine"
+        Shader: "~res:/Materials2/Shaders/landscape/decoration"
+        UniqueDefines: ["FLIP_BACKFACE_NORMALS", "FOWARD_WITH_COMBINE"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_BACK"
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPassDeferred:
+        Name: "gBufferPass"
+        Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
+        UniqueDefines: ["FLIP_BACKFACE_NORMALS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ONE"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_BACK"
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPassDeferredFetch:
+        Name: "gBufferFetchPass"
+        Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
+        UniqueDefines: ["FLIP_BACKFACE_NORMALS", "USE_FRAMEBUFFER_FETCH"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ONE"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_BACK"
+            depthFunc: "CMP_LESS"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"

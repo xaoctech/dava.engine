@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+TARGET=${1:-src/}
+DIR=${2:-dev}
+SECRET=${3:-secret.tfvars}
+SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+tar -czf package.tar.gz ${TARGET}
+hosts=(`aws/aws-ips ${DIR} ${SECRET}`)
+main_host=${hosts[0]}
+scp ${SSH_OPTS} package.tar.gz ec2-user@${main_host}:package.tar.gz
+
+for host in ${hosts[@]:1}; do
+    ssh ${SSH_OPTS} ec2-user@${main_host} "scp ${SSH_OPTS} package.tar.gz ec2-user@${host}:package.tar.gz"
+done
+
+for host in ${hosts[@]}; do
+    ssh ${SSH_OPTS} ec2-user@${host} "tar -xzf package.tar.gz"
+done

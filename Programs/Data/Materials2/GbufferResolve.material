@@ -1,0 +1,16 @@
+RenderTechnique:
+    Layers: ["ResolveLayer"]
+    RenderPass:
+        Name: "gBufferResolvePass"
+        Shader: "~res:/Materials2/Shaders/gbuffer-resolve"
+        UniqueDefines: ["TRANSMITTANCE"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPassDeferredFetch:
+        Name: "gBufferFetchPass"
+        Shader: "~res:/Materials2/Shaders/gbuffer-resolve"
+        UniqueDefines: ["USE_FRAMEBUFFER_FETCH", "TRANSMITTANCE"]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"

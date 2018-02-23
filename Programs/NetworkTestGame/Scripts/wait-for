@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+
+pod=${1}
+minutes=${2:-10}
+after_del=${3:-"--after-del-no"}
+
+for i in $(seq 1 ${minutes}); do
+    rem=$((minutes - i + 1))
+    echo -n "${rem} minute(s) remaining"
+    for j in $(seq 1 60); do
+        sleep 1
+        echo -n "."
+    done
+    echo ""
+    server_state=($(kubectl describe pod ${pod} | grep '^    State' | awk '{print $2}'))
+    if [[ ${#server_state[@]} -eq 0 ]]; then
+        exit 0
+    fi
+    if [[ "${after_del}" == "--after-del-no" && "${server_state[0]}" == "Terminated" ]]; then
+        exit 0
+    fi
+done

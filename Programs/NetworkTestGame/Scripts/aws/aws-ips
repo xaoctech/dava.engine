@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=${1:-dev}
+SECRET=${2:-secret.tfvars}
+
+. aws/aws-export-keys ${DIR} ${SECRET}
+cd terraform/${DIR}
+terraform show | grep "public_ip = [1-9]*" | awk -F' ' '{print $3}'
+cd - 1>/dev/null 2>&1

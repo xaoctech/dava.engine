@@ -1,0 +1,67 @@
+RenderTechnique:
+    Layers: ["PostEffectRenderLayer"]
+    RenderPass0:
+        Name: "ConvolutionDiffuse"
+        Shader: "~res:/Materials2/ShadersShared/convolution"
+        UniqueDefines: ["DIFFUSE_CONVOLUTION", "CUT_HALFSPACE", "CONVOLUTION_PASS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_FRONT"
+            depthFunc: "CMP_NEVER"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPass1:
+        Name: "ConvolutionSpecular"
+        Shader: "~res:/Materials2/ShadersShared/convolution"
+        UniqueDefines: ["SPECULAR_CONVOLUTION", "CONVOLUTION_PASS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_FRONT"
+            depthFunc: "CMP_NEVER"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPass2:
+        Name: "Downsampling"
+        Shader: "~res:/Materials2/ShadersShared/convolution"
+        UniqueDefines: ["CUT_HALFSPACE", "DOWNSAMPLING", "CONVOLUTION_PASS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_FRONT"
+            depthFunc: "CMP_NEVER"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPass3:
+        Name: "IntegrateBRDFLookup"
+        Shader: "~res:/Materials2/ShadersShared/convolution"
+        UniqueDefines: ["INTEGRATE_BRDF_LOOKUP"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_FRONT"
+            depthFunc: "CMP_NEVER"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+    RenderPass4:
+        Name: "ConvolutionSH"
+        Shader: "~res:/Materials2/ShadersShared/convolution"
+        UniqueDefines: ["DIFFUSE_SPHERICAL_HARMONICS", "CONVOLUTION_PASS"]
+        RenderState:
+            alphaFunc: "CMP_ALWAYS"
+            alphaFuncCmpValue: 0.0000
+            blendDest: "BLEND_ZERO"
+            blendSrc: "BLEND_ONE"
+            cullMode: "FACE_FRONT"
+            depthFunc: "CMP_NEVER"
+            fillMode: "FILLMODE_SOLID"
+            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"

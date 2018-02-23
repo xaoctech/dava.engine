@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=${1:-dev}
+SSH_KEY=${2:-~/.ssh/id_rsa}
+SECRET=${3:-secret.tfvars}
+
+. aws/aws-apply ${DIR} ${SECRET}
+ssh-add ${SSH_KEY}
+rm -f .inventory
+hosts=(`aws/aws-ips ${DIR} ${SECRET}`)
+host_id=0
+
+for host in ${hosts[@]}; do
+    echo "box${host_id} ansible_ssh_host=${host} ansible_ssh_user=ec2-user" >> .inventory
+    host_id=$((host_id+1))
+done
+aws/aws-ready ${DIR} ${SECRET}
+
+cat <<EOL >aws_env.sh
+export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+export AWS_REGION="eu-central-1"
+EOL
+aws/aws-deploy aws_env.sh ${DIR} ${SECRET}
+rm -rf aws_env.sh

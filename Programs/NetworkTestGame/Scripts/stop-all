@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -e
+
+name=${1:-dev}
+
+./aws/aws-down dev
+kubectl delete -f ${name}.yml

@@ -1,0 +1,180 @@
+textures:
+ default: "HIGHEST"
+ qualities:
+  - 
+   quality: "HIGHEST"
+   albedo: 0
+   normalmap: 0
+   minsize: 64
+  - 
+   quality: "HIGH"
+   albedo: 1
+   normalmap: 1
+   minsize: 64
+  -
+   quality: "MEDIUM"
+   albedo: 2
+   normalmap: 2
+   minsize: 64
+  -
+   quality: "LOW"
+   albedo: 3
+   normalmap: 3
+   minsize: 64
+  -
+   quality: "LOWEST"
+   albedo: 4
+   normalmap: 4
+   minsize: 64
+  
+anisotropy:
+ default: "16X"
+ qualities:
+  - 
+   quality: "OFF"
+   max: 1
+  - 
+   quality: "2X"
+   max: 2
+  - 
+   quality: "4X"
+   max: 4
+  - 
+   quality: "8X"
+   max: 8
+  - 
+   quality: "16X"
+   max: 16
+
+msaa:
+ default: "NONE"
+ qualities:
+  -
+   quality: "NONE"
+  - 
+   quality: "MSAA_2X"
+  - 
+   quality: "MSAA_4X"
+
+materials:
+ -
+  group: "Water"
+  quality: ["ULTRA_HIGH", "HIGH", "LOW"]
+  default: "ULTRA_HIGH"
+
+ -
+  group: "VegetationCount"
+  quality: ["500k", "60k", "regular"] 
+  default: "500k"
+
+ -
+  group: "Static object"
+  quality: ["MEDIUM", "LOW"]
+  default: "MEDIUM"
+
+ -
+  group: "Decoration Objects"
+  quality: ["ON", "OFF"]
+  default: "ON"
+
+ -
+  group: "Landscape"
+  quality: ["HIGH", "MEDIUM", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Particle"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Tank"
+  quality: ["HIGH", "MEDIUM", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Vegetation"
+  quality: ["HIGH", "LOW"] 
+  default: "HIGH"
+
+ -
+  group: "Spherical Harmonics"
+  quality: ["HIGH", "MEDIUM", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Lightmaps"
+  quality: ["HIGH", "LOW"] 
+  default: "HIGH"
+
+sounds:
+ default: "HIGH"
+ qualities:
+  - 
+   quality: "HIGH"
+   configPath: "~res:/Configs/Sfx/sfx_high.yaml"
+  - 
+   quality: "LOW"
+   configPath: "~res:/Configs/Sfx/sfx_low.yaml"
+
+particles:
+ settings:
+  qualities: ["HIGHEST", "HIGH", "MEDIUM", "LOW", "LOWEST"]
+  default: "HIGHEST"
+  current: "HIGHEST"
+  tagsCloud: []
+  qualitySheets:
+  - selector:
+      qualities: ["HIGHEST", "HIGH"]
+      tags: []
+    actions:
+    - replace: ["/Configs/Particles/", "/Configs/ParticlesHigh/"]
+    - replace: ["/3d/FX/", "/3d/FXHigh/"]
+  - selector:
+      qualities: ["LOW", "LOWEST"]
+      tags: []
+    actions:
+    - replace: ["/Configs/Particles/", "/Configs/ParticlesLow/"]
+    - replace: ["/3d/FX/", "/3d/FXLow/"]
+
+  - selector:
+      qualities: ["HIGHEST", "HIGH"]
+      tags: ["NIGHT"]
+    actions:
+    - replace: ["/Configs/Particles/", "/Configs/ParticlesNight/ParticlesHigh/"]
+    - replace: ["/Configs/ParticlesNight/Particles/", "/Configs/ParticlesNight/ParticlesHigh/"]
+    - replace: ["/3d/FX/", "/3d/FXNight/FXHigh/"]
+  - selector:
+      qualities: ["LOW", "LOWEST"]
+      tags: ["NIGHT"]
+    actions:
+    - replace: ["/Configs/Particles/", "/Configs/ParticlesNight/ParticlesLow/"]
+    - replace: ["/Configs/ParticlesNight/Particles/", "/Configs/ParticlesNight/ParticlesLow/"]
+    - replace: ["/3d/FX/", "/3d/FXNight/FXLow/"]
+  - selector:
+      qualities: []
+      tags: ["NIGHT"]
+    actions:
+    - replace: ["/Configs/Particles/", "/Configs/ParticlesNight/Particles/"]
+    - replace: ["/3d/FX/", "/3d/FXNight/FX/"]
+
+  - selector:
+      qualities: []
+      tags: ["1ST_AP"]
+    actions:
+    - replace: ["/Configs/Particles/", "/Configs/ParticlesEvent/1AP/"]
+    - replace: ["/3d/FX/", "/3d/FXEvent/1AP/"]
+
+  - selector:
+      qualities: []
+      tags: ["ARMORED_PERSONA"]
+    actions:
+    - replace: ["/3d/FX/hangar/", "/3d/FXEvent/armored_persona/hangar/"]
+    - replace: ["/3d/FX/hangarlow/", "/3d/FXEvent/armored_persona/hangar/"]
+    - replace: ["/3d/FX/Hangar_hell2016/", "/3d/FXEvent/armored_persona/hangar/"]
+
+  - selector:
+      qualities: []
+      tags: ["EVENT_BANNER"]
+    actions:
+    - replace: ["/Configs/Particles/Event/Banner_hangar/", "/Configs/ParticlesEvent/Banner_hangar/"]

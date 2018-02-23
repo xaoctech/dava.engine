@@ -1,0 +1,35 @@
+RenderTechnique:
+    MaterialType: Decal
+    Layers: ["VTDecals"]        
+    RenderPassVT:
+        Name: "VTPass"        
+        Shader: "~res:/Materials2/Shaders/landscape/vt-decal"
+        UniqueDefines: []
+        UniquePins:
+            - ["DECAL_TYPE", 0]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"           
+    RenderPassVTBlend:
+        Name: "VTBlendPass"        
+        Shader: "~res:/Materials2/Shaders/landscape/vt-decal"
+        UniqueDefines: ["BLEND_LAYER"]
+        UniquePins:
+            - ["DECAL_TYPE", 0]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"            
+    RenderPassVTFetch:
+        Name: "VTFetchPass"        
+        Shader: "~res:/Materials2/Shaders/landscape/vt-decal"
+        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+        UniquePins:
+            - ["DECAL_TYPE", 0]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"            
+    RenderPassVTDecoration:
+        Name: "VTDecorationPass"        
+        Shader: "~res:/Materials2/Shaders/landscape/vt-decal"
+        UniqueDefines: ["DECORATION"]
+        UniquePins:
+            - ["DECAL_TYPE", 0]
+        RenderState:            
+            fillMode: "FILLMODE_SOLID"            

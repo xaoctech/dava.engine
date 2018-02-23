@@ -1,0 +1,123 @@
+PATCHED: Define DISABLE_CUDA_PHYSX added into PxPreprocessor.h to disable CUDA. Enable __STDC_LIMIT_MACROS in PxSimpleTypes.h for Android. Added methods for accessing private member required for sync over a network.
+
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Include/vehicle/PxVehicleWheels.h ./PhysX-3.4-master/PhysX_3.4/Include/vehicle/PxVehicleWheels.h
+--- ./PhysX-3.4-master_original/PhysX_3.4/Include/vehicle/PxVehicleWheels.h	2017-12-11 17:57:28.493062600 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Include/vehicle/PxVehicleWheels.h	2017-12-12 11:44:27.992591400 +0300
+@@ -548,6 +548,10 @@
+ 	PxVehicleWheelsDynData(){}
+ 	~PxVehicleWheelsDynData(){}
+ 
++	void getWheels4InternalJounces(PxReal* outJounces);
++
++	void setWheels4InternalJounces(PxReal* inJounces);
++
+ 	/**
+ 	\brief Set all wheels to their rest state.
+ 	@see setup
+@@ -579,10 +583,14 @@
+ 	*/
+ 	void setWheelRotationSpeed(const PxU32 wheelIdx, const PxReal speed);
+ 
++	void setWheelRotationSpeed(const PxU32 wheelIdx, const PxReal speed, const PxReal correctedSpeed);
++
+ 	/**
+ 	\brief Return the rotation speed about the rolling axis of a specified wheel .
+ 	*/
+ 	PxReal getWheelRotationSpeed(const PxU32 wheelIdx) const;
++
++	void getWheelRotationSpeed(const PxU32 wheelIdx, PxReal& speedOut, PxReal& correctedSpeedOut) const;
+ 	
+ 	/**
+ 	\brief Set the wheel rotation angle (radians) about the rolling axis of the specified wheel.
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp ./PhysX-3.4-master/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp	2017-12-11 17:57:50.087744200 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp	2017-12-12 11:45:46.745424900 +0300
+@@ -517,6 +517,30 @@
+ 	return true;
+ }
+ 
++void PxVehicleWheelsDynData::getWheels4InternalJounces(PxReal* outJounces)
++{
++	PX_ASSERT(mWheels4DynData != NULL);
++	for(PxU32 i=0;i<mNbWheels4;i++)
++	{
++		outJounces[i * 4 + 0]  = mWheels4DynData[i].mJounces[0];
++		outJounces[i * 4 + 1]  = mWheels4DynData[i].mJounces[1];
++		outJounces[i * 4 + 2]  = mWheels4DynData[i].mJounces[2];
++		outJounces[i * 4 + 3]  = mWheels4DynData[i].mJounces[3];
++	}
++}
++
++void PxVehicleWheelsDynData::setWheels4InternalJounces(PxReal* inJounces)
++{
++	PX_ASSERT(mWheels4DynData != NULL);
++	for(PxU32 i=0;i<mNbWheels4;i++)
++	{
++		mWheels4DynData[i].mJounces[0] = inJounces[i * 4 + 0];
++		mWheels4DynData[i].mJounces[1] = inJounces[i * 4 + 1];
++		mWheels4DynData[i].mJounces[2] = inJounces[i * 4 + 2];
++		mWheels4DynData[i].mJounces[3] = inJounces[i * 4 + 3];
++	}
++}
++
+ void PxVehicleWheelsDynData::setToRestState()
+ {
+ 	//Set susp/wheel/tires to rest state.
+@@ -552,6 +576,14 @@
+ 	suspWheelTire4.mCorrectedWheelSpeeds[wheelIdx & 3] = speed;
+ }
+ 
++void PxVehicleWheelsDynData::setWheelRotationSpeed(const PxU32 wheelIdx, const PxReal speed, const PxReal correctedSpeed)
++{
++	PX_CHECK_AND_RETURN(wheelIdx < mNbActiveWheels, "PxVehicleWheelsDynData::setWheelRotationSpeed(speed, correctedSpeed) - Illegal wheel");
++	PxVehicleWheels4DynData& suspWheelTire4=mWheels4DynData[(wheelIdx>>2)];
++	suspWheelTire4.mWheelSpeeds[wheelIdx & 3] = speed;
++	suspWheelTire4.mCorrectedWheelSpeeds[wheelIdx & 3] = correctedSpeed;
++}
++
+ PxReal PxVehicleWheelsDynData::getWheelRotationSpeed(const PxU32 wheelIdx) const
+ {
+ 	PX_CHECK_AND_RETURN_VAL(wheelIdx < mNbActiveWheels, "PxVehicleWheelsDynData::getWheelRotationSpeed - Illegal wheel", 0.0f);
+@@ -559,6 +591,14 @@
+ 	return suspWheelTire4.mCorrectedWheelSpeeds[wheelIdx & 3];
+ }
+ 
++void PxVehicleWheelsDynData::getWheelRotationSpeed(const PxU32 wheelIdx, PxReal& speedOut, PxReal& correctedSpeedOut) const
++{
++	PX_CHECK_AND_RETURN(wheelIdx < mNbActiveWheels, "PxVehicleWheelsDynData::getWheelRotationSpeed(speedOut, correctedSpeedOut) - Illegal wheel");
++	const PxVehicleWheels4DynData& suspWheelTire4=mWheels4DynData[(wheelIdx>>2)];
++	speedOut = suspWheelTire4.mWheelSpeeds[wheelIdx & 3];
++	correctedSpeedOut = suspWheelTire4.mCorrectedWheelSpeeds[wheelIdx & 3];
++}
++
+ void PxVehicleWheelsDynData::setWheelRotationAngle(const PxU32 wheelIdx, const PxReal angle)
+ {
+ 	PX_CHECK_AND_RETURN(wheelIdx < mNbActiveWheels, "PxVehicleWheelsDynData::setWheelRotationAngle - Illegal wheel");
+diff -ur ./PhysX-3.4-master_original/PxShared/include/foundation/PxPreprocessor.h ./PhysX-3.4-master/PxShared/include/foundation/PxPreprocessor.h
+--- ./PhysX-3.4-master_original/PxShared/include/foundation/PxPreprocessor.h	2017-12-11 17:57:53.955683600 +0300
++++ ./PhysX-3.4-master/PxShared/include/foundation/PxPreprocessor.h	2017-12-12 11:43:28.806563900 +0300
+@@ -30,6 +30,8 @@
+ #ifndef PXFOUNDATION_PXPREPROCESSOR_H
+ #define PXFOUNDATION_PXPREPROCESSOR_H
+ 
++#define DISABLE_CUDA_PHYSX
++
+ #include <stddef.h>
+ #if !defined(PX_GENERATE_META_DATA)
+ #include <ciso646>  
+diff -ur ./PhysX-3.4-master_original/PxShared/include/foundation/PxSimpleTypes.h ./PhysX-3.4-master/PxShared/include/foundation/PxSimpleTypes.h
+--- ./PhysX-3.4-master_original/PxShared/include/foundation/PxSimpleTypes.h	2017-12-11 17:57:53.986662500 +0300
++++ ./PhysX-3.4-master/PxShared/include/foundation/PxSimpleTypes.h	2017-12-12 11:43:28.806563900 +0300
+@@ -44,9 +44,11 @@
+ // header
+ #endif
+ 
+-#if PX_LINUX
++#if PX_LINUX || PX_ANDROID
++#ifndef __STDC_LIMIT_MACROS
+ #define __STDC_LIMIT_MACROS
+ #endif
++#endif
+ 
+ #include <stdint.h>
+ #if PX_VC

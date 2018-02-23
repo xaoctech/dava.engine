@@ -1,0 +1,131 @@
+#include "UnitTests/UnitTests.h"
+
+#include <Engine/Engine.h>
+#include <Entity/Component.h>
+#include <Entity/ComponentManager.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Entity.h>
+#include <UI/Components/UIComponent.h>
+
+using namespace DAVA;
+
+class TestSceneComponent : public Component
+{
+public:
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestSceneComponent, Component)
+    {
+        ReflectionRegistrator<TestSceneComponent>::Begin()
+        .ConstructorByPointer()
+        .End();
+    }
+
+    Component* Clone(Entity* toEntity) override
+    {
+        TestSceneComponent* newComponent = new TestSceneComponent();
+        newComponent->SetEntity(toEntity);
+
+        return newComponent;
+    }
+};
+
+class TestUIComponent : public UIComponent
+{
+public:
+    DECLARE_UI_COMPONENT(TestUIComponent);
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(TestUIComponent, UIComponent)
+    {
+        ReflectionRegistrator<TestUIComponent>::Begin()
+        .ConstructorByPointer()
+        .End();
+    }
+
+    TestUIComponent* Clone() const override
+    {
+        return new TestUIComponent(*this);
+    }
+};
+
+IMPLEMENT_UI_COMPONENT(TestUIComponent);
+
+DAVA_TESTCLASS (ComponentManagerTest)
+{
+    ComponentManagerTest()
+    {
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TestSceneComponent);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TestUIComponent);
+    }
+
+    DAVA_TEST (AddComponent)
+    {
+        ComponentManager* cm = GetEngineContext()->componentManager;
+        uint32 oldSceneCount = cm->GetSceneComponentsCount();
+        cm->RegisterComponent<TestSceneComponent>();
+        TEST_VERIFY(cm->GetSceneComponentsCount() == oldSceneCount + 1);
+
+        uint32 oldUICount = cm->GetUIComponentsCount();
+        cm->RegisterComponent<TestUIComponent>();
+        TEST_VERIFY(cm->GetUIComponentsCount() == oldUICount + 1);
+    }
+
+    DAVA_TEST (IsSceneCompoennt)
+    {
+        ComponentManager* cm = GetEngineContext()->componentManager;
+        TEST_VERIFY(cm->IsRegisteredSceneComponent(Type::Instance<TestSceneComponent>()));
+        TEST_VERIFY(cm->IsRegisteredUIComponent(Type::Instance<TestUIComponent>()));
+    }
+
+    DAVA_TEST (CreateByType)
+    {
+        Component* c = ComponentUtils::CreateByType(Type::Instance<TestSceneComponent>());
+        TestSceneComponent* tsc = dynamic_cast<TestSceneComponent*>(c);
+        TEST_VERIFY(tsc);
+
+        UIComponent* u = UIComponent::CreateByType(Type::Instance<TestUIComponent>());
+        TestUIComponent* tuc = dynamic_cast<TestUIComponent*>(u);
+        TEST_VERIFY(tuc);
+    }
+
+    DAVA_TEST (GetRuntimeComponentIndex)
+    {
+        ComponentManager* cm = GetEngineContext()->componentManager;
+        uint32 runtimeIndex = cm->GetRuntimeComponentIndex(Type::Instance<TestSceneComponent>());
+        TEST_VERIFY(runtimeIndex >= 0);
+        const Type* storedType = cm->GetSceneComponentType(runtimeIndex);
+        TEST_VERIFY(storedType == Type::Instance<TestSceneComponent>());
+
+        uint32 uiRuntimeIndex = cm->GetRuntimeComponentIndex(Type::Instance<TestUIComponent>());
+        TEST_VERIFY(uiRuntimeIndex >= 0);
+    }
+
+    DAVA_TEST (GetRegisteredComponents)
+    {
+        ComponentManager* cm = GetEngineContext()->componentManager;
+        { //scene
+            auto& container = cm->GetRegisteredSceneComponents();
+            bool found = false;
+            for (const Type* type : container)
+            {
+                if (type == Type::Instance<TestSceneComponent>())
+                {
+                    TEST_VERIFY(found == false);
+                    found = true;
+                }
+            }
+            TEST_VERIFY(found == true);
+        }
+        { //ui
+            auto& container = cm->GetRegisteredUIComponents();
+            bool found = false;
+            for (const Type* type : container)
+            {
+                if (type == Type::Instance<TestUIComponent>())
+                {
+                    TEST_VERIFY(found == false);
+                    found = true;
+                }
+            }
+            TEST_VERIFY(found == true);
+        }
+    }
+};
