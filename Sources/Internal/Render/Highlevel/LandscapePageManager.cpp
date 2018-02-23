@@ -129,38 +129,35 @@ void LandscapePageManager::ProcessRequests(const LandscapeSubdivision* subdivisi
     {
         const UpdateRequest& request = updateRequests[i];
 
-        if (vTexture->GetFreePagesCount() == 0)
-            TryFreePage(request.priority);
+        if (vTexture->GetFreePagesCount() == 0 && !TryFreePage(request.priority))
+            break;
 
-        if (vTexture->GetFreePagesCount())
+        int32 pageID = vTexture->AcquireFreePage();
+        DVASSERT(pageID != -1);
+        DVASSERT(residentPages.count(request.pageKey) == 0);
+
+        Vector4 uv = GetPageUV(request.pageKey); //(uv0.x, uv0.y, uv1.x, uv1.y)
+        pageRenderParams.relativeCoord0 = Vector2(uv.x, uv.y);
+        pageRenderParams.relativeCoord1 = Vector2(uv.z, uv.w);
+        pageRenderParams.pageBBox = GetPageBBox(request.pageKey, subdivision);
+
+        uint64 pageLevel = PAGE_LEVEL(request.pageKey);
+        pageRenderParams.lod = (pageLevel < macroLODLevel) ? 2u : (pageLevel < middleLODLevel) ? 1u : 0u;
+
+        for (LandscapePageRenderer* renderer : pageRenderers)
         {
-            int32 pageID = vTexture->AcquireFreePage();
-            DVASSERT(pageID != -1);
-            DVASSERT(residentPages.count(request.pageKey) == 0);
+            pageRenderParams.pageSrc = vTexture->GetIntermediateSourceBuffers();
+            pageRenderParams.pageDst = vTexture->GetIntermediateDestinationBuffers();
 
-            Vector4 uv = GetPageUV(request.pageKey); //(uv0.x, uv0.y, uv1.x, uv1.y)
-            pageRenderParams.relativeCoord0 = Vector2(uv.x, uv.y);
-            pageRenderParams.relativeCoord1 = Vector2(uv.z, uv.w);
-            pageRenderParams.pageBBox = GetPageBBox(request.pageKey, subdivision);
-
-            uint64 pageLevel = PAGE_LEVEL(request.pageKey);
-            pageRenderParams.lod = (pageLevel < macroLODLevel) ? 2u : (pageLevel < middleLODLevel) ? 1u : 0u;
-
-            for (LandscapePageRenderer* renderer : pageRenderers)
-            {
-                pageRenderParams.pageSrc = vTexture->GetIntermediateSourceBuffers();
-                pageRenderParams.pageDst = vTexture->GetIntermediateDestinationBuffers();
-
-                bool renderHappens = renderer->RenderPage(pageRenderParams);
-                //GFX_COMPLETE solovey lets rethink this stuff - updating pageRenderParams after each swap looks not cool
-                if (renderHappens)
-                    vTexture->SwapIntermediateBuffers();
-            }
-
-            vTexture->BlitIntermediateBuffer(pageID);
-            uint32 frameIndex = Engine::Instance()->GetGlobalFrameIndex();
-            residentPages[request.pageKey] = { pageID, frameIndex, request.priority };
+            bool renderHappens = renderer->RenderPage(pageRenderParams);
+            //GFX_COMPLETE solovey lets rethink this stuff - updating pageRenderParams after each swap looks not cool
+            if (renderHappens)
+                vTexture->SwapIntermediateBuffers();
         }
+
+        vTexture->BlitIntermediateBuffer(pageID);
+        uint32 frameIndex = Engine::Instance()->GetGlobalFrameIndex();
+        residentPages[request.pageKey] = { pageID, frameIndex, request.priority };
     }
 
     updateRequests.clear();
@@ -200,7 +197,7 @@ void LandscapePageManager::Invalidate()
     vTexture->FreePages();
 }
 
-void LandscapePageManager::TryFreePage(float32 pagePriority)
+bool LandscapePageManager::TryFreePage(float32 pagePriority)
 {
     //search one visible and one invisible page with smallest radius-error
     auto it = residentPages.cbegin();
@@ -209,7 +206,9 @@ void LandscapePageManager::TryFreePage(float32 pagePriority)
     auto visiblePage = residentPages.cend();
     float32 lowestInvisiblePriority = std::numeric_limits<float32>::max();
     float32 lowestVisiblePriority = pagePriority;
+    bool pageFreed = false;
 
+    //GFX_COMPLETE try optimize page searching?
     uint32 frameIndex = Engine::Instance()->GetGlobalFrameIndex();
     for (; it != end; ++it)
     {
@@ -231,13 +230,19 @@ void LandscapePageManager::TryFreePage(float32 pagePriority)
         //try free invisible page
         vTexture->FreePage(invisiblePage->second.pageID);
         residentPages.erase(invisiblePage);
+
+        pageFreed = true;
     }
     else if (visiblePage != residentPages.cend())
     {
         //try free visible page
         vTexture->FreePage(visiblePage->second.pageID);
         residentPages.erase(visiblePage);
+
+        pageFreed = true;
     }
+
+    return pageFreed;
 }
 
 Vector4 LandscapePageManager::MapToPage(uint32 level, uint32 x, uint32 y, uint32 pLevel, int32 pageID)

@@ -75,7 +75,7 @@ void VTSplineDecalSystem::RebuildDecalGeometryData(VTDecalComponent* decalCompon
     rhi::DeleteVertexBuffer(splineRenderData->vertexBuffer);
     splineRenderData->resBox.Empty();
 
-    const Vector<SplineComponent::SplinePoint>& controlPoints = splineComponent->GetControlPoints();
+    const Vector<SplineComponent::SplinePoint*>& controlPoints = splineComponent->GetControlPoints();
     int32 controlPointsCount = static_cast<int32>(controlPoints.size());
     if (controlPointsCount < 2) //not ready spline
         return;
@@ -85,7 +85,7 @@ void VTSplineDecalSystem::RebuildDecalGeometryData(VTDecalComponent* decalCompon
     //GFX_COMPLETE dte count distance as DWORD num_splits = (DWORD)ceil(m_spline_num_segments * distance(point_1->m_position, point_2->m_position));
     for (int32 i = 0; i < (controlPointsCount - 1); ++i)
     {
-        float32 segmentDist = (controlPoints[i + 1].position.xy() - controlPoints[i].position.xy()).Length();
+        float32 segmentDist = (controlPoints[i + 1]->position.xy() - controlPoints[i]->position.xy()).Length();
         resSlicesCount += int32(ceil(segmentDist / decalComponent->splineSegmentationDistance));
     }
     resSlicesCount++; //closing point
@@ -103,10 +103,10 @@ void VTSplineDecalSystem::RebuildDecalGeometryData(VTDecalComponent* decalCompon
     float32 currUCoord = 0.0f;
     for (int32 i = 0; i < (controlPointsCount - 1); ++i)
     {
-        const SplineComponent::SplinePoint& sp0 = i == 0 ? controlPoints[0] : controlPoints[i - 1];
-        const SplineComponent::SplinePoint& sp1 = controlPoints[i];
-        const SplineComponent::SplinePoint& sp2 = controlPoints[i + 1];
-        const SplineComponent::SplinePoint& sp3 = i == (controlPointsCount - 2) ? controlPoints[controlPointsCount - 1] : controlPoints[i + 2];
+        const SplineComponent::SplinePoint& sp0 = i == 0 ? *controlPoints[0] : *controlPoints[i - 1];
+        const SplineComponent::SplinePoint& sp1 = *controlPoints[i];
+        const SplineComponent::SplinePoint& sp2 = *controlPoints[i + 1];
+        const SplineComponent::SplinePoint& sp3 = i == (controlPointsCount - 2) ? *controlPoints[controlPointsCount - 1] : *controlPoints[i + 2];
 
         Vector2 p1 = sp1.position.xy();
         Vector2 p2 = sp2.position.xy();
@@ -120,7 +120,7 @@ void VTSplineDecalSystem::RebuildDecalGeometryData(VTDecalComponent* decalCompon
         Vector2 c = r1;
         Vector2 d = p1;
 
-        float32 sliceLength = (controlPoints[i + 1].position.xy() - controlPoints[i].position.xy()).Length();
+        float32 sliceLength = (controlPoints[i + 1]->position.xy() - controlPoints[i]->position.xy()).Length();
         int32 sliceSegments = int32(ceil(sliceLength / decalComponent->splineSegmentationDistance));
         if (i == (controlPointsCount - 2))
             sliceSegments += 1; //closing point

@@ -41,6 +41,7 @@ class DecalComponent;
 class DecalRenderObject;
 class VTDecalComponent;
 class GeoDecalComponent;
+class SplineComponent;
 
 bool HasComponent(const Entity* fromEntity, const Type* componentType);
 
@@ -97,4 +98,5 @@ VariantType* GetCustomPropertiesValueRecursive(Entity* fromEntity, const String&
 
 PathComponent* GetPathComponent(const Entity* fromEntity);
 WaypointComponent* GetWaypointComponent(const Entity* fromEntity);
+SplineComponent* GetSplineComponent(const Entity* fromEntity);
 }

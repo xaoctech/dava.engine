@@ -13,6 +13,7 @@
 #include "Render/Highlevel/DecalRenderObject.h"
 #include "Render/Highlevel/DeferredDecalRenderer.h"
 #include "Render/Highlevel/DeferredLightsRenderer.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/RhiUtils.h"
 
@@ -440,6 +441,9 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     //GFX_COMPLETE - right now forward stuff requires post effect
     if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_DEFERRED_DRAW_FORWARD))
     {
+        for (Landscape* landscape : renderSystem->GetLandscapes())
+            landscape->SetPageUpdateLocked(true);
+
         Camera* mainCamera = renderSystem->GetMainCamera();
         Camera* drawCamera = renderSystem->GetDrawCamera();
         SetupCameraParams(mainCamera, drawCamera);
@@ -452,6 +456,9 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
             DrawLayers(mainCamera, drawLayersMask);
             EndRenderPass();
         }
+
+        for (Landscape* landscape : renderSystem->GetLandscapes())
+            landscape->SetPageUpdateLocked(false);
     }
     else
     {

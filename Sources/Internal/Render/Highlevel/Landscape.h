@@ -86,10 +86,12 @@ public:
     {
         uint32 landscapeTriangles = 0u;
         uint32 landscapePatches = 0u;
+        uint32 landscapePages = 0u;
 
         uint32 decorationTriangles = 0u;
         uint32 decorationItems = 0u;
         uint32 decorationPatches = 0u;
+        uint32 decorationPages = 0u;
 
         Vector<uint32> decorationLayerTriangles;
         Vector<uint32> decorationLayerItems;

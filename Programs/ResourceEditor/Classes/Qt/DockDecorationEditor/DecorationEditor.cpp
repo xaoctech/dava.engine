@@ -589,7 +589,7 @@ void DecorationEditor::SetupUI()
     {
         QVBoxLayout* variationSettingsLayout = new QVBoxLayout(variationSettingsWidget);
 
-        enabledCheckBox = new QCheckBox(QStringLiteral("Enabled"), variationSettingsWidget);
+        enabledCheckBox = new QCheckBox(QStringLiteral("Show"), variationSettingsWidget);
         variationSettingsLayout->addWidget(enabledCheckBox);
 
         QHBoxLayout* scaleLayout = new QHBoxLayout();

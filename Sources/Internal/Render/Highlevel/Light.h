@@ -102,6 +102,8 @@ public:
     bool GetAutoColor() const;
     void SetAutoColor(bool value);
 
+    bool IsLocal() const;
+
 private:
     DAVA_DEPRECATED(void SetAmbientColor(const Color& color));
     DAVA_DEPRECATED(const Color& GetAmbientColor() const);
@@ -269,5 +271,10 @@ inline bool Light::GetAutoColor() const
 inline void Light::SetAutoColor(bool value)
 {
     autoColor = value;
+}
+
+inline bool Light::IsLocal() const
+{
+    return (type == eType::TYPE_POINT) || (type == eType::TYPE_SPOT);
 }
 }

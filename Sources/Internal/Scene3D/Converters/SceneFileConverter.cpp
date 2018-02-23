@@ -21,6 +21,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/Landscape.h"
+#include "Render/Highlevel/LandscapeSubdivision.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 
 namespace DAVA
@@ -236,6 +237,7 @@ bool SceneFileConverter::ConvertLandscape(Landscape* landscape, Entity* entity, 
     landscapeComponent->SetMaxTexturingLevel(landscape->GetMaxTexturingLevel());
     landscapeComponent->SetTessellationLevelCount(landscape->GetTessellationLevels());
     landscapeComponent->SetTessellationHeight(landscape->GetTessellationHeight());
+    landscapeComponent->GetLandscape()->GetSubdivision()->SetMetrics(landscape->GetSubdivision()->GetMetrics());
 
     DecorationData* decoration = landscapeComponent->GetLandscape()->GetDecorationData();
     decoration->CopyParameters(landscape->GetDecorationData());

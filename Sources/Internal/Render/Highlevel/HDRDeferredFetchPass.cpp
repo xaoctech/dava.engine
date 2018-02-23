@@ -128,9 +128,9 @@ void DeferredLightsRenderer::Draw(RenderHierarchy::ClipResult& visibilityArray, 
             LightInstanceData* instanceDataPtr = reinterpret_cast<LightInstanceData*>(target.data);
             for (uint32 i = 0; i < target.allocatedInstances; ++i)
             {
+                const Color& color = dynamicLights[processedLights + i]->GetColor();
                 instanceDataPtr[i].pos = dynamicLights[processedLights + i]->GetPosition();
                 instanceDataPtr[i].radius = dynamicLights[processedLights + i]->GetRadius();
-                const Color& color = dynamicLights[processedLights + i]->GetColor();
                 instanceDataPtr[i].color[0] = color.r;
                 instanceDataPtr[i].color[1] = color.g;
                 instanceDataPtr[i].color[2] = color.b;

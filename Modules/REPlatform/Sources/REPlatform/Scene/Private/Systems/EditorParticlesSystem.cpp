@@ -16,6 +16,7 @@
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Utils/Utils.h>
 
 namespace DAVA
 {

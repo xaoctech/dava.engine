@@ -94,7 +94,7 @@ float3 mipColors[5] = {
 };
 float base = floor(mip);
 float next = min(4.0, base + 1.0);
-result += lerp(mipColors[int(base)], mipColors[int(next)], mip - base);
+result = lerp(mipColors[int(base)], mipColors[int(next)], mip - base) + (result * 0.00001);
 
 #elif defined(LDR_FLOW) && (IB_REFLECTIONS_PREPARE == 0)
 

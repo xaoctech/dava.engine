@@ -89,6 +89,7 @@
 #include <Scene3D/Systems/StaticOcclusionBuildSystem.h>
 #include <Scene3D/Systems/StaticOcclusionSystem.h>
 #include <Utils/StringFormat.h>
+#include <Debug/MessageBox.h>
 
 #include <QDesktopServices>
 #include <QMessageBox>
@@ -455,6 +456,31 @@ void QtMainWindow::SetupActions()
 
     QObject::connect(ui->actionValidateScene, SIGNAL(triggered()), this, SLOT(OnValidateScene()));
     QObject::connect(ui->actionValidateGeometry, SIGNAL(triggered()), this, SLOT(OnValidateGeometry()));
+
+    {
+        using namespace DAVA;
+        lightViewActions =
+        {
+          { ui->actionViewBaseColor, CommonInternalSettings::VIEW_BASE_COLOR | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewRoughness, CommonInternalSettings::VIEW_ROUGHNESS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewMetallness, CommonInternalSettings::VIEW_METALLNESS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewAO, CommonInternalSettings::VIEW_AO | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewShadow, CommonInternalSettings::VIEW_STATIC_SHADOWS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewNormals, CommonInternalSettings::VIEW_NORMALS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewTransmittance, CommonInternalSettings::VIEW_TRANSMITTANCE | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewCombinedResult, CommonInternalSettings::RESOLVE_RESULT },
+          { ui->actionViewCombinedDirectLighting, CommonInternalSettings::RESOLVE_DIRECT_LIGHT },
+          { ui->actionViewCombinedIndirectLighting, CommonInternalSettings::RESOLVE_IBL_LIGHT },
+          { ui->actionViewCombinedAmbientOcclusion, CommonInternalSettings::RESOLVE_AO },
+          { ui->actionViewCombinedTransmittance, CommonInternalSettings::RESOLVE_TRANSMITTANCE },
+          { ui->actionViewCombinedBaseColor, CommonInternalSettings::RESOLVE_BASE_COLOR },
+          { ui->actionViewCombinedNormalMapping, CommonInternalSettings::RESOLVE_NORMAL_MAP },
+          { ui->actionViewCombinedDiffuse, CommonInternalSettings::RESOLVE_DIFFUSE },
+          { ui->actionViewCombinedSpecular, CommonInternalSettings::RESOLVE_SPECULAR },
+          { ui->actionViewLightmapCanvas, CommonInternalSettings::VIEW_LIGHTMAP_CANVAS_BIT | CommonInternalSettings::VIEW_STATIC_SHADOWS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
+          { ui->actionViewTextureMipLevel, CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT | CommonInternalSettings::RESOLVE_RESULT },
+        };
+    }
 }
 
 // ###################################################################################################
@@ -469,8 +495,8 @@ void QtMainWindow::SceneActivated(DAVA::SceneEditor2* scene)
     LoadWayEditorState(scene);
     LoadEditorLightState(scene);
     LoadLandscapeEditorState(scene);
+    LoadMaterialLightViewMode();
 
-    OnMaterialLightViewChanged(true);
     OnViewLightmapCanvas(true);
 
     ui->actionSnapCameraToLandscape->setChecked(false);
@@ -737,47 +763,58 @@ void QtMainWindow::LoadEditorLightState(DAVA::SceneEditor2* scene)
 void QtMainWindow::ApplyMaterialLightViewMode(DAVA::int32 curViewMode)
 {
     using namespace DAVA;
-    DAVA::Vector<std::pair<QAction*, DAVA::int32>> views =
-    {
-      { ui->actionViewBaseColor, CommonInternalSettings::VIEW_BASE_COLOR | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewRoughness, CommonInternalSettings::VIEW_ROUGHNESS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewMetallness, CommonInternalSettings::VIEW_METALLNESS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewAO, CommonInternalSettings::VIEW_AO | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewShadow, CommonInternalSettings::VIEW_STATIC_SHADOWS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewNormals, CommonInternalSettings::VIEW_NORMALS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewTransmittance, CommonInternalSettings::VIEW_TRANSMITTANCE | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewCombinedResult, CommonInternalSettings::RESOLVE_RESULT },
-      { ui->actionViewCombinedDirectLighting, CommonInternalSettings::RESOLVE_DIRECT_LIGHT },
-      { ui->actionViewCombinedIndirectLighting, CommonInternalSettings::RESOLVE_IBL_LIGHT },
-      { ui->actionViewCombinedAmbientOcclusion, CommonInternalSettings::RESOLVE_AO },
-      { ui->actionViewCombinedTransmittance, CommonInternalSettings::RESOLVE_TRANSMITTANCE },
-      { ui->actionViewCombinedBaseColor, CommonInternalSettings::RESOLVE_BASE_COLOR },
-      { ui->actionViewCombinedNormalMapping, CommonInternalSettings::RESOLVE_NORMAL_MAP },
-      { ui->actionViewCombinedDiffuse, CommonInternalSettings::RESOLVE_DIFFUSE },
-      { ui->actionViewCombinedSpecular, CommonInternalSettings::RESOLVE_SPECULAR },
-      { ui->actionViewLightmapCanvas, CommonInternalSettings::VIEW_LIGHTMAP_CANVAS_BIT },
-      { ui->actionViewTextureMipLevel, CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT | CommonInternalSettings::RESOLVE_RESULT },
-    };
+
+    if (updatingLightViewActions)
+        return;
 
     if (curViewMode == 0)
-        curViewMode = CommonInternalSettings::RESOLVE_RESULT;
+        curViewMode = DAVA::CommonInternalSettings::RESOLVE_RESULT;
 
-    if (curViewMode & CommonInternalSettings::VIEW_BY_COMPONENT_BIT)
+    if (curViewMode & DAVA::CommonInternalSettings::VIEW_BY_COMPONENT_BIT)
     {
+        uint32 componentsMask = 0;
+
+        if (curViewMode & DAVA::CommonInternalSettings::VIEW_BASE_COLOR)
+        {
+            curViewMode |= DAVA::CommonInternalSettings::RESOLVE_BASE_COLOR;
+            componentsMask |= DAVA::CommonInternalSettings::RESOLVE_BASE_COLOR;
+        }
+
+        if (curViewMode & DAVA::CommonInternalSettings::VIEW_AO)
+        {
+            curViewMode |= DAVA::CommonInternalSettings::RESOLVE_AO;
+            componentsMask |= DAVA::CommonInternalSettings::RESOLVE_AO;
+        }
+
+        if (curViewMode & DAVA::CommonInternalSettings::VIEW_TRANSMITTANCE)
+        {
+            curViewMode |= DAVA::CommonInternalSettings::RESOLVE_TRANSMITTANCE;
+            componentsMask |= DAVA::CommonInternalSettings::RESOLVE_TRANSMITTANCE;
+        }
+
+        if (curViewMode & DAVA::CommonInternalSettings::VIEW_NORMALS)
+            componentsMask |= DAVA::CommonInternalSettings::RESOLVE_NORMAL_MAP;
+
+        if (curViewMode & DAVA::CommonInternalSettings::VIEW_STATIC_SHADOWS)
+            componentsMask |= DAVA::CommonInternalSettings::VIEW_LIGHTMAP_CANVAS_BIT;
+
         /* leave only per-component view */
-        curViewMode &= CommonInternalSettings::VIEW_BY_COMPONENT_BIT | CommonInternalSettings::VIEW_BY_COMPONENT_MASK |
-        CommonInternalSettings::VIEW_LIGHTMAP_CANVAS_BIT | CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT |
-        CommonInternalSettings::RESOLVE_NORMAL_MAP | CommonInternalSettings::RESOLVE_TRANSMITTANCE |
-        CommonInternalSettings::RESOLVE_SPECULAR | CommonInternalSettings::RESOLVE_SPECULAR;
+        curViewMode &= componentsMask |
+        DAVA::CommonInternalSettings::VIEW_BY_COMPONENT_BIT |
+        DAVA::CommonInternalSettings::VIEW_BY_COMPONENT_MASK;
     }
 
-    for (auto& p : views)
+    if ((curViewMode & DAVA::CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT) &&
+        ((Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) || (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred)))
     {
-        bool wasBlocked = p.first->signalsBlocked();
-        p.first->blockSignals(true);
-        p.first->setChecked((p.second & curViewMode) == p.second);
-        p.first->blockSignals(wasBlocked);
+        Debug::MessageBox("Warning", "Mip levels debug view is only available in forward rendering flow", { "Ok" });
+        curViewMode &= ~DAVA::CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT;
     }
+
+    updatingLightViewActions = true;
+    for (auto& p : lightViewActions)
+        p.first->setChecked((p.second & curViewMode) == p.second);
+    updatingLightViewActions = false;
 
     Deprecated::GetGlobalContext()->GetData<CommonInternalSettings>()->materialLightViewMode = static_cast<CommonInternalSettings::MaterialLightViewMode>(curViewMode);
     if (MainWindowDetails::GetCurrentScene().Get() != nullptr)
@@ -786,10 +823,37 @@ void QtMainWindow::ApplyMaterialLightViewMode(DAVA::int32 curViewMode)
     }
 }
 
+void QtMainWindow::UpdateMaterialLightViewMode(QAction* sender)
+{
+    using namespace DAVA;
+
+    if (updatingLightViewActions)
+        return;
+
+    {
+        updatingLightViewActions = true;
+        ui->actionViewCombinedResult->setChecked(false);
+        updatingLightViewActions = false;
+    }
+
+    DAVA::int32 viewMode = 0;
+    for (auto& p : lightViewActions)
+    {
+        viewMode |= p.first->isChecked() ? p.second : 0;
+    }
+
+    if (sender == nullptr)
+    {
+        /* sender is valid QAction only for separate component views (i.e called from QActionGroup) */
+        viewMode &= ~(CommonInternalSettings::VIEW_BY_COMPONENT_BIT | CommonInternalSettings::VIEW_BY_COMPONENT_MASK);
+    }
+
+    ApplyMaterialLightViewMode(viewMode);
+}
+
 void QtMainWindow::LoadMaterialLightViewMode()
 {
-    DAVA::int32 curViewMode = DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->materialLightViewMode;
-    ApplyMaterialLightViewMode(curViewMode);
+    ApplyMaterialLightViewMode(DAVA::CommonInternalSettings::RESOLVE_RESULT);
 }
 
 void QtMainWindow::OnMaterialLightViewChanged(bool)
@@ -814,52 +878,7 @@ void QtMainWindow::OnMaterialLightViewLightmapCanvas(bool)
 
 void QtMainWindow::OnMaterialLightViewTextureMipLevel(bool)
 {
-    ApplyMaterialLightViewMode(DAVA::CommonInternalSettings::VIEW_BY_COMPONENT_BIT | DAVA::CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT);
-}
-
-void QtMainWindow::UpdateMaterialLightViewMode(QAction* sender)
-{
-    using namespace DAVA;
-    DAVA::Vector<std::pair<QAction*, DAVA::int32>> views =
-    {
-      { ui->actionViewBaseColor, CommonInternalSettings::VIEW_BASE_COLOR | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewRoughness, CommonInternalSettings::VIEW_ROUGHNESS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewMetallness, CommonInternalSettings::VIEW_METALLNESS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewAO, CommonInternalSettings::VIEW_AO | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewShadow, CommonInternalSettings::VIEW_STATIC_SHADOWS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewNormals, CommonInternalSettings::VIEW_NORMALS | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewTransmittance, CommonInternalSettings::VIEW_TRANSMITTANCE | CommonInternalSettings::VIEW_BY_COMPONENT_BIT },
-      { ui->actionViewCombinedResult, CommonInternalSettings::RESOLVE_RESULT },
-      { ui->actionViewCombinedDirectLighting, CommonInternalSettings::RESOLVE_DIRECT_LIGHT },
-      { ui->actionViewCombinedIndirectLighting, CommonInternalSettings::RESOLVE_IBL_LIGHT },
-      { ui->actionViewCombinedAmbientOcclusion, CommonInternalSettings::RESOLVE_AO },
-      { ui->actionViewCombinedTransmittance, CommonInternalSettings::RESOLVE_TRANSMITTANCE },
-      { ui->actionViewCombinedBaseColor, CommonInternalSettings::RESOLVE_BASE_COLOR },
-      { ui->actionViewCombinedNormalMapping, CommonInternalSettings::RESOLVE_NORMAL_MAP },
-      { ui->actionViewCombinedDiffuse, CommonInternalSettings::RESOLVE_DIFFUSE },
-      { ui->actionViewCombinedSpecular, CommonInternalSettings::RESOLVE_SPECULAR },
-    };
-
-    {
-        bool blocked = ui->actionViewCombinedResult->signalsBlocked();
-        ui->actionViewCombinedResult->blockSignals(true);
-        ui->actionViewCombinedResult->setChecked(false);
-        ui->actionViewCombinedResult->blockSignals(blocked);
-    }
-
-    DAVA::int32 viewMode = 0;
-    for (auto& p : views)
-    {
-        viewMode |= p.first->isChecked() ? p.second : 0;
-    }
-
-    if (sender == nullptr)
-    {
-        /* sender is valid QAction only for separate component views (i.e called from QActionGroup) */
-        viewMode &= ~(CommonInternalSettings::VIEW_BY_COMPONENT_BIT | CommonInternalSettings::VIEW_BY_COMPONENT_MASK);
-    }
-
-    ApplyMaterialLightViewMode(viewMode);
+    ApplyMaterialLightViewMode(DAVA::CommonInternalSettings::RESOLVE_RESULT | DAVA::CommonInternalSettings::VIEW_TEXTURE_MIP_LEVEL_BIT);
 }
 
 void QtMainWindow::LoadLandscapeEditorState(DAVA::SceneEditor2* scene)

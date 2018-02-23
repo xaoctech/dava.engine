@@ -1,6 +1,7 @@
 #include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Render/Highlevel/Landscape.h"
+#include "Render/Highlevel/LandscapeSubdivision.h"
 #include "Scene3D/Components/LandscapeComponent.h"
 
 namespace DAVA
@@ -46,6 +47,7 @@ Component* LandscapeComponent::Clone(Entity* toEntity)
     newComponent->SetTessellationHeight(GetTessellationHeight());
     newComponent->landscape->SetFlags(landscape->GetFlags());
     newComponent->landscape->GetDecorationData()->CopyParameters(landscape->GetDecorationData());
+    newComponent->landscape->subdivision->SetMetrics(landscape->subdivision->GetMetrics());
 
     return newComponent;
 }
@@ -80,6 +82,7 @@ void LandscapeComponent::Serialize(KeyedArchive* archive, SerializationContext* 
 
     landscape->GetDecorationData()->Save(archive, serializationContext);
     landscape->SaveFlags(archive, serializationContext);
+    landscape->subdivision->GetMetrics().Save(archive);
 }
 
 void LandscapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -111,6 +114,10 @@ void LandscapeComponent::Deserialize(KeyedArchive* archive, SerializationContext
 
     landscape->GetDecorationData()->Load(archive, serializationContext);
     landscape->LoadFlags(archive, serializationContext);
+
+    LandscapeSubdivision::SubdivisionMetrics metrics;
+    metrics.Load(archive);
+    landscape->subdivision->SetMetrics(metrics);
 }
 
 Landscape* LandscapeComponent::GetLandscape() const

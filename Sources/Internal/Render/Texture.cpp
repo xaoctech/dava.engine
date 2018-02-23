@@ -1323,11 +1323,6 @@ bool Texture::CreateDescriptor(const FilePath& texturePath, std::unique_ptr<Text
         descriptor->pathname = descriptorPath;
         descriptor->dataSettings.sourceFileFormat = sourceFormat;
         descriptor->dataSettings.sourceFileExtension = sourceExtension;
-
-        descriptor->dataSettings.cubefaceFlags = 0;
-        for (uint32 i = 0; i < info.faceCount; ++i)
-            descriptor->dataSettings.cubefaceFlags |= 1 << i;
-
         descriptor->compression[eGPUFamily::GPU_ORIGIN].imageFormat = sourceFormat;
         descriptor->compression[eGPUFamily::GPU_ORIGIN].format = info.format;
         descriptorChanged = true;

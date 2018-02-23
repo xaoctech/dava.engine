@@ -15,32 +15,10 @@
 #define DECAL_TYPE DECAL_GBUFFER
 #endif
 
-#if DECAL_TYPE == DECAL_GBUFFER
-color_mask = rgb;
-color_mask1 = rg;
-blending
-{
-    src = src_alpha dst = inv_src_alpha
-}
-#elif DECAL_TYPE == DECAL_GBUFFER_NORMAL
-color_mask = none;
-color_mask1 = rgb;
-color_mask2 = r;
-blending
-{
-    src = src_alpha dst = inv_src_alpha
-}    
-#elif DECAL_TYPE == DECAL_SNOW
-color_mask = rgba;
-#elif DECAL_TYPE == DECAL_WET
-color_mask = rgba;
-// blending { src=one dst=inv_src_alpha }
-// GFX_COMPLETE dte uses pma blending for wetness, but we have reflectance in gBuffer0.a so we are to blend manualy in this case
-#elif DECAL_TYPE == DECAL_RAIN
-color_mask = rgba;      
-#elif DECAL_TYPE == DECAL_AO
-color_mask = rgba;
-#endif
+#define MODIFY_COLOR ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_SNOW) || (DECAL_TYPE == DECAL_WET) || (DECAL_TYPE == DECAL_RAIN))
+#define MODIFY_NORMAL ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_GBUFFER_NORMAL) ||(DECAL_TYPE == DECAL_RAIN))
+#define MODIFY_PARAMS ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_GBUFFER_NORMAL) || (DECAL_TYPE == DECAL_SNOW) || (DECAL_TYPE == DECAL_WET) || (DECAL_TYPE == DECAL_RAIN) || (DECAL_TYPE == DECAL_AO))
+
 
 fragment_in
 {
@@ -56,6 +34,7 @@ fragment_in
 
 fragment_out
 {
+    //GFX_COMPLETE - later mask chanels
     float4 color : SV_TARGET0;
     float4 normal : SV_TARGET1;
     float4 params : SV_TARGET2;
@@ -70,9 +49,21 @@ fragment_out
     [material][instance] property float aoScale = 0.0; 
 #endif
 
+float3 ComputeWorldNormal(float2 normalSample, float3 tbnToWorld0, float3 tbnToWorld1, float3 tbnToWorld2)
+{
+#if (VIEW_MODE & RESOLVE_NORMAL_MAP)
+    float2 xy = (2.0 * normalSample - 1.0) * normalScale;
+    float3 nts = float3(xy, sqrt(1.0 - saturate(dot(xy, xy))));
+    float3 n = normalize(float3(dot(nts, tbnToWorld0), dot(nts, tbnToWorld1), dot(nts, tbnToWorld2)));    
+#else
+    float3 n = normalize(float3(tbnToWorld0.z, tbnToWorld1.z, tbnToWorld2.z));
+#endif
+    return n;
+}
+
 fragment_out fp_main(fragment_in input)
 {
-    //the code above is generic fo
+    //the code above is generic for all decals
     //compute decal space pos
     float3 ndcPos = input.p_pos.xyz / input.p_pos.w;
     float2 texPos = ndcPos.xy * ndcToUvMapping.xy + ndcToUvMapping.zw;
@@ -97,35 +88,36 @@ fragment_out fp_main(fragment_in input)
 //compute specific decals
     
 #if DECAL_TYPE == DECAL_GBUFFER
-    //now we are actually applying decal
+    float4 inColor = tex2D(gBuffer0_copy, texPos);
+    float4 inNormal = tex2D(gBuffer1_copy, texPos);
+    float4 inParams = tex2D(gBuffer2_copy, texPos);
+    
     float4 baseColorSample = tex2D(albedo, uv);
     float4 normalMapSample = tex2D(normalmap, uv);
 
-#if (VIEW_MODE & RESOLVE_NORMAL_MAP)
-    float2 xy = (2.0 * normalMapSample.xy - 1.0) * normalScale;
-    float3 nts = float3(xy, sqrt(1.0 - saturate(dot(xy, xy))));
-    float3 n = normalize(float3(dot(nts, input.tbnToWorld0), dot(nts, input.tbnToWorld1), dot(nts, input.tbnToWorld2)));    
-#else
-    float3 n = normalize(float3(input.tbnToWorld0.z, input.tbnToWorld1.z, input.tbnToWorld2.z));
-#endif
+    float3 n = ComputeWorldNormal(normalMapSample.xy, input.tbnToWorld0, input.tbnToWorld1, input.tbnToWorld2);
 
     float roughness = normalMapSample.z * roughnessScale;
     float metallness = normalMapSample.w * metallnessScale;
-
-    float flags = 1.0;
-    output.color = float4(baseColorSample.xyz * baseColorScale.xyz, baseColorSample.w);
-    output.normal = float4(n * 0.5 + 0.5, baseColorSample.w);
-    output.params = float4(roughness, metallness, 1.0, baseColorSample.w); 
+    
+    float3 resColor = baseColorSample.xyz * baseColorScale.xyz;
+    output.color = float4(lerp(inColor.xyz, resColor, baseColorSample.w), inColor.w);
+    output.normal = float4(lerp(inNormal.xyz, n * 0.5 + 0.5, baseColorSample.w), inNormal.w);
+    output.params = float4(lerp(inParams.xy, float2(roughness, metallness), baseColorSample.w), inParams.zw);
     
 #elif DECAL_TYPE == DECAL_GBUFFER_NORMAL
+    float4 inColor = tex2D(gBuffer0_copy, texPos);
+    float4 inNormal = tex2D(gBuffer1_copy, texPos);
+    float4 inParams = tex2D(gBuffer2_copy, texPos);
+
     float4 normalMapSample = tex2D(normalmap, uv);
-    float2 xy = (2.0 * normalMapSample.xy - 1.0) * normalScale;
-    float3 nts = float3(xy, sqrt(1.0 - saturate(dot(xy, xy))));
-    float3 n = normalize(float3(dot(nts, input.tbnToWorld0), dot(nts, input.tbnToWorld1), dot(nts, input.tbnToWorld2)));
+    float3 n = ComputeWorldNormal(normalMapSample.xy, input.tbnToWorld0, input.tbnToWorld1, input.tbnToWorld2);
     float roughness = normalMapSample.z * roughnessScale;
-    output.color = float4(0.0, 0.0, 0.0, 0.0);
-    output.normal = float4(n * 0.5 + 0.5, normalMapSample.w);
-    output.params = float4(roughness, 0.0, 0.0, normalMapSample.w); 
+    
+    
+    output.color = inColor;//float4(lerp(inColor.xyz, n * 0.5 + 0.5, normalMapSample.w), inColor.w);
+    output.normal = float4(lerp(inNormal.xyz, n * 0.5 + 0.5, normalMapSample.w), inNormal.w);
+    output.params = float4(lerp(inParams.x, roughness, normalMapSample.w), inParams.yzw); 
 
 #elif DECAL_TYPE == DECAL_SNOW
 
@@ -134,9 +126,8 @@ fragment_out fp_main(fragment_in input)
     float4 inParams = tex2D(gBuffer2_copy, texPos);
 
     float mask = tex2D(albedo, uv).a; // FP_A8
-    float4 normalMapSample = tex2D(normalmap, wp.xy * 2.0);
-    float3 nts = normalMapSample.xyz * 2.0 - 1.0;
-    float3 microNormal = normalize(float3(dot(nts, input.tbnToWorld0), dot(nts, input.tbnToWorld1), dot(nts, input.tbnToWorld2)));
+    float4 normalMapSample = tex2D(normalmap, wp.xy * 2.0);    
+    float3 microNormal = ComputeWorldNormal(normalMapSample.xy, input.tbnToWorld0, input.tbnToWorld1, input.tbnToWorld2);
     float sparkle_mask = pow(saturate(dot(microNormal, normalize(cameraPosition - wp.xyz))), 20.0);
     float slope_mask = pow(saturate(inNormal.z * 2.0 - 1.0), 0.4);
     float resMask = mask * slope_mask;

@@ -14,6 +14,7 @@ enum eREPropertyType
     SlotPreviewProperty,
     SlotTemplateName,
     SlotPasteProperty,
-    LandscapeObject
+    LandscapeObject,
+    SplineObject
 };
 } // namespace PropertyPanel

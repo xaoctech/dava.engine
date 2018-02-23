@@ -18,6 +18,7 @@
 #include <Engine/EngineContext.h>
 #include <Input/Keyboard.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include "Scene3D/Components/SplineComponent.h"
 #include <Scene3D/Systems/EventSystem.h>
 #include <Particles/ParticleEmitter.h>
 #include <Base/Vector.h>
@@ -904,6 +905,10 @@ Selectable GetSelectableObject(const Selectable& object)
         }
 
         return result;
+    }
+    else if (object.CanBeCastedTo<SplineComponent::SplinePoint>())
+    {
+        return object;
     }
 
     DVASSERT(false);

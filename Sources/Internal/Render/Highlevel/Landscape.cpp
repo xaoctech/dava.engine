@@ -175,10 +175,12 @@ void Landscape::LansdcapeRenderStats::Reset()
 {
     landscapeTriangles = 0u;
     landscapePatches = 0u;
+    landscapePages = 0u;
 
     decorationTriangles = 0u;
     decorationItems = 0u;
     decorationPatches = 0u;
+    decorationPages = 0u;
 
     std::fill(decorationLayerTriangles.begin(), decorationLayerTriangles.end(), 0u);
     std::fill(decorationLayerItems.begin(), decorationLayerItems.end(), 0u);
@@ -1002,10 +1004,15 @@ void Landscape::RequestPages(const LandscapeSubdivision::SubdivisionPatch* subdi
         return;
 
     pageManager->RequestPage(subdivPatch->level, subdivPatch->x, subdivPatch->y, subdivPatch->radiusError);
-    if (subdivPatch->level <= decoration->GetBaseLevel())
-        decorationPageManager->RequestPage(subdivPatch->level, subdivPatch->x, subdivPatch->y, subdivPatch->radiusError);
+    renderStats.landscapePages++;
 
-    if (subdivPatch->level < maxTexturingLevel)
+    if (decoration != nullptr && subdivPatch->level <= decoration->GetBaseLevel())
+    {
+        decorationPageManager->RequestPage(subdivPatch->level, subdivPatch->x, subdivPatch->y, subdivPatch->radiusError);
+        renderStats.decorationPages++;
+    }
+
+    if ((subdivPatch->level < maxTexturingLevel) && (subdivPatch->radiusError >= subdivision->GetPatchRadiusError()))
     {
         RequestPages(subdivPatch->children[0]);
         RequestPages(subdivPatch->children[1]);
@@ -2070,6 +2077,10 @@ void Landscape::Load(KeyedArchive* archive, SerializationContext* serializationC
 
     decoration->Load(archive, serializationContext);
 
+    LandscapeSubdivision::SubdivisionMetrics metrics;
+    metrics.Load(archive);
+    subdivision->SetMetrics(metrics);
+
     BuildLandscapeFromHeightmapImage(heightmapPath, loadedBbox);
 }
 
@@ -2169,6 +2180,8 @@ RenderObject* Landscape::Clone(RenderObject* newObject)
 
     newLandscape->flags = flags;
     newLandscape->decoration->CopyParameters(decoration);
+
+    newLandscape->subdivision->SetMetrics(subdivision->GetMetrics());
 
     newLandscape->BuildLandscapeFromHeightmapImage(heightmapPath, bbox);
 

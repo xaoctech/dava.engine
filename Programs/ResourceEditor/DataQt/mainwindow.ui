@@ -110,8 +110,9 @@
     </widget>
     <widget class="QMenu" name="menuLightView">
      <property name="title">
-      <string>Per-component debug view</string>
+      <string>Debug Lighting</string>
      </property>
+     <addaction name="actionPer_component_View"/>
      <addaction name="actionViewBaseColor"/>
      <addaction name="actionViewRoughness"/>
      <addaction name="actionViewMetallness"/>
@@ -120,16 +121,20 @@
      <addaction name="actionViewNormals"/>
      <addaction name="actionViewTransmittance"/>
      <addaction name="separator"/>
+     <addaction name="actionFinal_Image_Components"/>
      <addaction name="actionViewCombinedResult"/>
      <addaction name="actionViewCombinedDirectLighting"/>
      <addaction name="actionViewCombinedIndirectLighting"/>
-     <addaction name="actionViewCombinedNormalMapping"/>
-     <addaction name="actionViewCombinedAmbientOcclusion"/>
-     <addaction name="actionViewCombinedTransmittance"/>
-     <addaction name="actionViewCombinedBaseColor"/>
      <addaction name="actionViewCombinedDiffuse"/>
      <addaction name="actionViewCombinedSpecular"/>
      <addaction name="separator"/>
+     <addaction name="actionInput_Data"/>
+     <addaction name="actionViewCombinedBaseColor"/>
+     <addaction name="actionViewCombinedNormalMapping"/>
+     <addaction name="actionViewCombinedAmbientOcclusion"/>
+     <addaction name="actionViewCombinedTransmittance"/>
+     <addaction name="separator"/>
+     <addaction name="actionDebug_Views"/>
      <addaction name="actionViewLightmapCanvas"/>
      <addaction name="actionViewTextureMipLevel"/>
     </widget>
@@ -707,7 +712,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Base Color</string>
+    <string>Base Color (only)</string>
    </property>
   </action>
   <action name="actionViewRoughness">
@@ -718,7 +723,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Roughness</string>
+    <string>Roughness (only)</string>
    </property>
   </action>
   <action name="actionViewMetallness">
@@ -729,7 +734,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Metallness</string>
+    <string>Metallness (only)</string>
    </property>
   </action>
   <action name="actionViewAO">
@@ -740,7 +745,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Ambient Occlusion</string>
+    <string>Ambient Occlusion (only)</string>
    </property>
   </action>
   <action name="actionCustomQuality">
@@ -1007,7 +1012,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Shadow</string>
+    <string>Shadows (only)</string>
    </property>
   </action>
   <action name="actionViewNormals">
@@ -1018,7 +1023,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Normals</string>
+    <string>Normals (only)</string>
    </property>
   </action>
   <action name="actionViewTransmittance">
@@ -1029,7 +1034,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Transmittance</string>
+    <string>Transmittance (only)</string>
    </property>
   </action>
   <action name="actionViewCombinedResult">
@@ -1043,7 +1048,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Combined Result</string>
+    <string>Show Final Image (Combined Result)</string>
    </property>
   </action>
   <action name="actionViewCombinedDirectLighting">
@@ -1054,7 +1059,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Direct Lighting</string>
+    <string>Enable Analytical Lighting</string>
    </property>
   </action>
   <action name="actionViewCombinedIndirectLighting">
@@ -1065,7 +1070,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Indirect Lighting</string>
+    <string>Enable IBL Lighting</string>
    </property>
   </action>
   <action name="actionViewCombinedAmbientOcclusion">
@@ -1076,7 +1081,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Ambient Occlusion</string>
+    <string>Sample Ambient Occlusion</string>
    </property>
   </action>
   <action name="actionViewCombinedShadows">
@@ -1098,7 +1103,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Transmittance</string>
+    <string>Sample Transmittance</string>
    </property>
   </action>
   <action name="actionViewCombinedBaseColor">
@@ -1109,7 +1114,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Base Color</string>
+    <string>Sample Base Color</string>
    </property>
   </action>
   <action name="actionViewLightmapCanvas">
@@ -1117,7 +1122,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Lightmap Canvas</string>
+    <string>Display Lightmap Canvas</string>
    </property>
   </action>
   <action name="actionViewCombinedNormalMapping">
@@ -1128,7 +1133,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Normal Mapping</string>
+    <string>Sample Normals</string>
    </property>
   </action>
   <action name="actionValidateGeometry">
@@ -1147,7 +1152,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Diffuse</string>
+    <string>Enable Diffuse Lighting</string>
    </property>
   </action>
   <action name="actionViewCombinedSpecular">
@@ -1158,7 +1163,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Specular</string>
+    <string>Enable Specular Lighting</string>
    </property>
   </action>
   <action name="actionReloadLandscapeDependencies">
@@ -1171,7 +1176,68 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Mip Levels</string>
+    <string>View Mip Levels</string>
+   </property>
+  </action>
+  <action name="action11">
+   <property name="text">
+    <string>11</string>
+   </property>
+  </action>
+  <action name="actionDebug_Views">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Debug Views</string>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+  </action>
+  <action name="actionPer_component_View">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Per-component View</string>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+  </action>
+  <action name="actionFinal_Image_Components">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Final Image Components</string>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+  </action>
+  <action name="actionInput_Data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Input Data</string>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
   </action>
  </widget>

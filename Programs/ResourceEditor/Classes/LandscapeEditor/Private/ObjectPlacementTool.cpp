@@ -1,7 +1,7 @@
 #include "Classes/LandscapeEditor/Private/ObjectPlacementTool.h"
+
 #include "Classes/LandscapeEditor/Private/MassObjectCreationComponents.h"
 #include "Classes/LandscapeEditor/Private/MassObjectCreationSystem.h"
-#include "Classes/LandscapeEditor/Private/MassObjectCreationComponents.h"
 #include "Classes/PropertyPanel/FilePathExtensions.h"
 
 #include <REPlatform/Commands/EntityAddCommand.h>
@@ -15,24 +15,24 @@
 #include <REPlatform/Scene/Systems/LandscapeEditorSystemV2/LandscapeEditorSystemV2.h>
 #include <REPlatform/Scene/Systems/StructureSystem.h>
 #include <REPlatform/Scene/Utils/Utils.h>
-#include <REPlatform/Scene/SceneEditor2.h>
 
-#include <TArc/DataProcessing/PropertiesHolder.h>
-#include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Utils/Utils.h>
+#include <TArc/Controls/ControlDescriptor.h>
+#include <TArc/Controls/DoubleSpinBox.h>
 #include <TArc/Controls/FilePathEdit.h>
+#include <TArc/Controls/ListView.h>
+#include <TArc/Controls/PopupLineEdit.h>
+#include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
+#include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Controls/Slider.h>
-#include <TArc/Controls/DoubleSpinBox.h>
-#include <TArc/Controls/ControlDescriptor.h>
-#include <TArc/Controls/QtBoxLayouts.h>
-#include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Controls/SpinSlider.h>
-#include <TArc/Controls/ListView.h>
 #include <TArc/Controls/ReflectedButton.h>
-#include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
 #include <TArc/Core/Deprecated.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/WindowSubSystem/UI.h>
 
+#include <Base/GlobalEnum.h>
 #include <Command/Command.h>
 #include <Engine/Engine.h>
 #include <FileSystem/FilePath.h>
@@ -42,12 +42,11 @@
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Random.h>
-#include <Base/GlobalEnum.h>
 
 #include <QInputDialog>
 #include <QModelIndex>
-#include <QStyleOptionViewItem>
 #include <QPainter>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 
 ENUM_DECLARE(ObjectPlacementTool::eMode)

@@ -83,5 +83,5 @@ void GraphicsLevel::Activate(void)
 
     qs->EnableOption(QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION, vegetationAnimation);
     qs->EnableOption(QualitySettingsSystem::QUALITY_OPTION_STENCIL_SHADOW, stencilShadows);
-    qs->SetCurTextureQuality(FastName(archive->GetString("textureQuality")));
+    qs->SetCurrentQualityForGroup(QualityGroup::Textures, FastName(archive->GetString("textureQuality")));
 }
