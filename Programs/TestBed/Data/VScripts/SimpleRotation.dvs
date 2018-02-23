@@ -1,0 +1,314 @@
+variables:
+    speed: ["float32", 100]
+    min: ["float32", 0]
+    max: ["float32", 300]
+nodes:
+    VisualScriptGetVarNode3:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetMemberNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode3"
+        node:
+            varPath: "min"
+            position: [803.520020, 1097.280029]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode3"
+    VisualScriptGetVarNode2:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode2"
+        node:
+            varPath: "max"
+            position: [1266.624023, 542.592041]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode2"
+    VisualScriptFunctionNode3:
+        connections:
+        -   out:
+                pin: "condition"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode3"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode2"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode3"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode3"
+        node:
+            functionName: ">"
+            className: "ConditionsFloat"
+            position: [1486.563843, 506.442261]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode3"
+    VisualScriptGetMemberNode1:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode1"
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode3"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode1"
+        node:
+            fieldName: "angle"
+            className: "UIControl"
+            position: [872.639954, 335.232025]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode1"
+    VisualScriptFunctionNode2:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode2"
+        -   out:
+                pin: "frameDelta"
+                name: "VisualScriptEventNode2"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode2"
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode2"
+        node:
+            functionName: "Mul"
+            className: "FloatMath"
+            position: [531.864014, 415.816010]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode2"
+    VisualScriptEventNode2:
+        connections:
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode3"
+            in:
+                pin: "component"
+                name: "VisualScriptEventNode2"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "event"
+                name: "VisualScriptEventNode2"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "frameDelta"
+                name: "VisualScriptEventNode2"
+        node:
+            eventName: "UIProcessEvent"
+            position: [156.815994, 159.272003]
+        type: "VisualScriptEventNode"
+        name: "VisualScriptEventNode2"
+    VisualScriptSetMemberNode2:
+        connections:
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode3"
+            in:
+                pin: "object"
+                name: "VisualScriptSetMemberNode2"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "set"
+                name: "VisualScriptSetMemberNode2"
+        -   out:
+                pin: "false"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetMemberNode2"
+        node:
+            fieldName: "angle"
+            className: "UIControl"
+            position: [2097.308105, 226.464767]
+        type: "VisualScriptSetMemberNode"
+        name: "VisualScriptSetMemberNode2"
+    VisualScriptGetMemberNode3:
+        connections:
+        -   out:
+                pin: "object"
+                name: "VisualScriptSetMemberNode2"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode3"
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode1"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode3"
+        -   out:
+                pin: "component"
+                name: "VisualScriptEventNode2"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode3"
+        node:
+            fieldName: "control"
+            className: "UIComponent"
+            position: [535.679993, 238.464005]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode3"
+    VisualScriptGetVarNode1:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+        node:
+            varPath: "speed"
+            position: [298.944000, 451.008026]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode1"
+    VisualScriptBranchNode1:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "condition"
+                name: "VisualScriptBranchNode1"
+        -   out:
+                pin: "event"
+                name: "VisualScriptEventNode2"
+            in:
+                pin: "exec"
+                name: "VisualScriptBranchNode1"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetMemberNode2"
+            in:
+                pin: "false"
+                name: "VisualScriptBranchNode1"
+        node:
+            position: [1822.113770, 154.248184]
+        type: "VisualScriptBranchNode"
+        name: "VisualScriptBranchNode1"
+    VisualScriptEventNode1:
+        connections:
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetMemberNode1"
+            in:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode2"
+            in:
+                pin: "component"
+                name: "VisualScriptEventNode1"
+        node:
+            eventName: "UIEventProcessEvent"
+            position: [160.703995, 914.112000]
+        type: "VisualScriptEventNode"
+        name: "VisualScriptEventNode1"
+    VisualScriptGetMemberNode2:
+        connections:
+        -   out:
+                pin: "component"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode2"
+        -   out:
+                pin: "object"
+                name: "VisualScriptSetMemberNode1"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode2"
+        node:
+            fieldName: "control"
+            className: "UIComponent"
+            position: [680.831970, 1007.424011]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode2"
+    VisualScriptFunctionNode1:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode1"
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetMemberNode2"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode1"
+        node:
+            functionName: "Sum"
+            className: "FloatMath"
+            position: [1185.984009, 376.416016]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode1"
+    VisualScriptSetMemberNode1:
+        connections:
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode2"
+            in:
+                pin: "object"
+                name: "VisualScriptSetMemberNode1"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode3"
+            in:
+                pin: "set"
+                name: "VisualScriptSetMemberNode1"
+        -   out:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetMemberNode1"
+        node:
+            fieldName: "angle"
+            className: "UIControl"
+            position: [1232.063965, 915.840027]
+        type: "VisualScriptSetMemberNode"
+        name: "VisualScriptSetMemberNode1"

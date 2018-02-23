@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/VisualScriptEditor">
+        <file>Icons/compile.png</file>
+        <file>Icons/execute.png</file>
+        <file>Icons/new.png</file>
+        <file>Icons/open.png</file>
+        <file>Icons/plus.png</file>
+        <file>Icons/save.png</file>
+    </qresource>
+</RCC>

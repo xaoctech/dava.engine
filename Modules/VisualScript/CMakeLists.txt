@@ -1,0 +1,18 @@
+set( MODULE_NAME VisualScript )
+
+set( MODULE_TYPE STATIC )
+
+set( HPP_FILES_RECURSE Sources/*.h )
+set( CPP_FILES_RECURSE Sources/*.cpp )
+
+set( INCLUDES Sources )
+set( INCLUDES_PRIVATE ${DAVA_INCLUDE_DIR})
+
+set( DEFINITIONS_PRIVATE_WIN      -D_CRT_SECURE_NO_WARNINGS )
+set( DEFINITIONS_PRIVATE_WINUAP   -D_CRT_SECURE_NO_WARNINGS )
+
+set( UNITY_IGNORE_LIST            "Sources/VisualScript/" )
+
+set(MODULE_INITIALIZATION true )
+
+setup_main_module()

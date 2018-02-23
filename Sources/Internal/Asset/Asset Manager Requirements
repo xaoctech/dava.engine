@@ -1,0 +1,44 @@
+Resource System Requirements
+------------------------------
+
+Asset 
+---------
+- Dependencies
+- Easy memory management for end user (shared_ptr)
+- Formats (.text / .bin)
+- Export interface
+- Streaming support
+- Resource reload, and ability to perform custom resource reconfiguration after load. 
+
+Resource System
+----------------
+- Common cache for all types of resources
+- Common interface for resource creation / deletion
+- Automatic memory management
+- Resource reload after change on disk
+- Streaming 
+
+Streaming System (Scene System?)
+------------------
+- Ability to add specific model to scene
+- Ability to stream specified map 
+
+List of engine resources
+-------------------------
+Texture - .tex
+Geometry / PolygonGroup - .geo
+
+Model .mod
+-----------
+- Lumberyard props - inheritance of params? Check lumberyard
+- Ability to load model 
+
+Map .map
+----------
+- Ability to store large world
+- Streaming of models / geometry
+- Ability to stream terrain / vegetation / forrests
+- Ability to edit map simultaneously
+
+Shader .fx
+

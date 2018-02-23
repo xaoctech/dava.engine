@@ -1,0 +1,10 @@
+variables:
+    qwe: ["int32", 0]
+nodes:
+    VisualScriptEventNode1:
+        connections: []
+        name: "VisualScriptEventNode1"
+        node:
+            position: [25.000000, 25.000000]
+            eventName: "ButtonClickEvent"
+        type: "VisualScriptEventNode"

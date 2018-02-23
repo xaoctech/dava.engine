@@ -1,0 +1,22 @@
+Header:
+    version: "20"
+Controls:
+-   class: "UIControl"
+    name: "UIControl"
+    position: [0.000000, 0.000000]
+    size: [593.000000, 413.000000]
+    children:
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [296.000000, 206.000000]
+        size: [120.000000, 120.000000]
+        pivot: [0.500000, 0.500000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+                color: [1.000000, 0.000000, 0.000000, 1.000000]
+            UIInputEventComponent:
+                onTouchUpInside: "RESET"
+            DebugRender: {}
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/SimpleRotation.dvs"
