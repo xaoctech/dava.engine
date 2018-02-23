@@ -1,0 +1,17 @@
+Header:
+    version: "20"
+Controls:
+-   class: "UIControl"
+    name: "UIControl"
+    position: [0.000000, 0.000000]
+    size: [719.000000, 453.000000]
+    children:
+    -   class: "UIControl"
+        name: "UIControl"
+        position: [359.000000, 226.000000]
+        size: [150.000000, 150.000000]
+        pivot: [0.500000, 0.500000]
+        components:
+            DebugRender: {}
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/Rotate.dvs"
