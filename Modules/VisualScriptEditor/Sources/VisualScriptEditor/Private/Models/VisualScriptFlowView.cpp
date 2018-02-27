@@ -19,6 +19,11 @@ VisualScriptFlowView::VisualScriptFlowView(QtNodes::FlowScene* scene)
     setAcceptDrops(true);
 }
 
+void VisualScriptFlowView::ClearSelectedNodes()
+{
+    scene()->clearSelection();
+}
+
 void VisualScriptFlowView::dragEnterEvent(QDragEnterEvent* dragEvent)
 {
     using namespace DAVA;
@@ -61,14 +66,16 @@ void VisualScriptFlowView::dropEvent(QDropEvent* dropEvent)
     {
         dropEvent->acceptProposedAction();
 
-        const Vector<ReflectedPropertyItem*>& items = propertyData->GetPropertyItem();
+        const Vector<Reflection::Field>& items = propertyData->GetPropertyItem();
         if (!items.empty())
         {
-            ReflectedPropertyItem* item = items.front();
+            const Reflection::Field& field = items[0];
 
             QPointF scenePos = mapToScene(dropEvent->pos());
             QPoint globalPos = mapToGlobal(dropEvent->pos());
-            QString filter = item->GetPropertyName();
+
+            String keyStr = field.key.Cast<String>();
+            QString filter = QString::fromStdString(keyStr);
 
             menuCaller.DelayedExecute([this, scenePos, globalPos, filter]() {
                 showContextMenu(scenePos, globalPos, filter);

@@ -61,11 +61,13 @@ void VisualScriptSetVarNode::Save(YamlNode* node) const
 {
     VisualScriptNode::Save(node);
     node->Add("varPath", varPath.c_str());
+    SaveDefaults(node);
 }
 
 void VisualScriptSetVarNode::Load(const YamlNode* node)
 {
     VisualScriptNode::Load(node);
     SetVarPath(node->Get("varPath")->AsFastName());
+    LoadDefaults(node);
 }
 }

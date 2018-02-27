@@ -42,6 +42,9 @@ private:
     void CompileScript();
     void ExecuteScript();
 
+    void ClearSelection();
+    void DeleteSelection();
+
     void StoreRecentScriptPathname(const FilePath& scriptPath);
 
     void OnTabChanged(int tabIndex);

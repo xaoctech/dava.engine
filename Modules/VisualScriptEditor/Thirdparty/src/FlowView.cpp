@@ -50,35 +50,35 @@ FlowView(FlowScene* scene)
 
     //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
-    // setup actions
-    _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
-    _clearSelectionAction->setShortcut(Qt::Key_Escape);
-    connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
-    addAction(_clearSelectionAction);
-
-    _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-    //    _deleteSelectionAction->setShortcut(Qt::Key_Delete);
-    _deleteSelectionAction->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace);
-
-    connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
-    addAction(_deleteSelectionAction);
+    //    // setup actions
+    //    _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+    //    _clearSelectionAction->setShortcut(Qt::Key_Escape);
+    //    connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
+    //    addAction(_clearSelectionAction);
+    //
+    //    _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+    //    //    _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+    //    _deleteSelectionAction->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace);
+    //
+    //    connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
+    //    addAction(_deleteSelectionAction);
 
     connect(scene, &FlowScene::sceneContextMenuRequested, this, &FlowView::showContextMenu);
 }
 
-QAction*
-FlowView::
-clearSelectionAction() const
-{
-    return _clearSelectionAction;
-}
-
-QAction*
-FlowView::
-deleteSelectionAction() const
-{
-    return _deleteSelectionAction;
-}
+//QAction*
+//FlowView::
+//clearSelectionAction() const
+//{
+//    return _clearSelectionAction;
+//}
+//
+//QAction*
+//FlowView::
+//deleteSelectionAction() const
+//{
+//    return _deleteSelectionAction;
+//}
 
 void
 FlowView::

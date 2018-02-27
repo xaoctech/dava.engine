@@ -175,13 +175,34 @@ protected:
         }
     }
 
+    void mousePressEvent(QMouseEvent* event) override
+    {
+        { // detect is clicked column draggable
+            QPoint normalizedEventPos = event->pos();
+            int testedColumn = 0;
+            if (isInFavoritesEdit)
+            {
+                normalizedEventPos.rx() += -headerView->offset();
+                testedColumn = 1;
+            }
+
+            QModelIndex index = indexAt(normalizedEventPos);
+            isDraggableColumnPressed = (index.isValid() && (index.column() == testedColumn) && (isFirstColumnSpanned(index.row(), index.parent()) == false));
+        }
+
+        QTreeView::mousePressEvent(event);
+    }
+
     void mouseMoveEvent(QMouseEvent* event) override
     {
         QAbstractItemView::State st = state();
         if (dragEnabled() && (st == QAbstractItemView::EditingState) && (event->buttons() != Qt::NoButton))
         {
-            setState(QAbstractItemView::NoState);
-            return;
+            if (isDraggableColumnPressed)
+            {
+                setState(QAbstractItemView::NoState);
+                return;
+            }
         }
 
         QTreeView::mouseMoveEvent(event);
@@ -252,6 +273,7 @@ protected:
 private:
     PropertiesViewDetail::PropertiesHeaderView* headerView = nullptr;
     bool isInFavoritesEdit = false;
+    bool isDraggableColumnPressed = false;
     ReflectedPropertyModel* propertiesModel = nullptr;
 };
 

@@ -96,6 +96,9 @@ public:
     Result GetCompileResult() const;
 
 protected:
+    void SaveDefaults(YamlNode* node) const;
+    void LoadDefaults(const YamlNode* node);
+
     eType type = NONE;
     FastName name;
     AnyFn function;

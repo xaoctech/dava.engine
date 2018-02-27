@@ -74,8 +74,7 @@ void VisualScriptFunctionNode::InitNodeWithAnyFn(const AnyFn& function)
 
     for (auto type : functionTypes)
     {
-        RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName(Format("arg%d", index++)), type));
-        //Logger::Debug("arg%d - %s", index - 1, type->GetDemangledName().c_str());
+        RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName(Format("arg%d", index++)), type, VisualScriptPin::DEFAULT_PARAM));
     }
 
     if (!function.IsConst() && !function.IsStatic())
@@ -96,6 +95,8 @@ void VisualScriptFunctionNode::Save(YamlNode* node) const
 
     node->Add("className", className.c_str());
     node->Add("functionName", functionName.c_str());
+
+    SaveDefaults(node);
 }
 
 void VisualScriptFunctionNode::Load(const YamlNode* node)
@@ -105,5 +106,7 @@ void VisualScriptFunctionNode::Load(const YamlNode* node)
     className = FastName(node->Get("className")->AsString());
     functionName = FastName(node->Get("functionName")->AsString());
     InitPins();
+
+    LoadDefaults(node);
 }
 }

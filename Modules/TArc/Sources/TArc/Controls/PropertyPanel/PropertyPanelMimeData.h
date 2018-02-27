@@ -1,18 +1,19 @@
 #pragma once
 
 #include <Base/Vector.h>
+#include <Reflection/Reflection.h>
+
 #include <QMimeData>
 
 namespace DAVA
 {
-class ReflectedPropertyItem;
 class PropertyPanelMimeData : public QMimeData
 {
 public:
-    void AddItem(ReflectedPropertyItem* item);
-    const Vector<ReflectedPropertyItem*>& GetPropertyItem() const;
+    void AddItem(Reflection::Field item);
+    const Vector<Reflection::Field>& GetPropertyItem() const;
 
 private:
-    Vector<ReflectedPropertyItem*> storedItems;
+    Vector<Reflection::Field> storedItems;
 };
 } //DAVA

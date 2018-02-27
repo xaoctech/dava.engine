@@ -15,7 +15,7 @@ public:
     bool IsOverriddenLocally(const DAVA::String& name);
     void UpdateRealProperties();
 
-    void SetValue(const DAVA::Any& newValue);
+    void SetValue(const DAVA::Any& newValue) override;
     void SetDefaultValue(const DAVA::Any& newValue) override;
     void ResetValue() override;
 };

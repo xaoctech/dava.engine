@@ -261,6 +261,11 @@ void VisualScriptPin::SetDefaultValue(Any defaultValue_)
     defaultValue = defaultValue_;
 }
 
+const Any& VisualScriptPin::GetDefaultValue() const
+{
+    return defaultValue;
+}
+
 void VisualScriptPin::SetValue(Any value_)
 {
     value = value_;

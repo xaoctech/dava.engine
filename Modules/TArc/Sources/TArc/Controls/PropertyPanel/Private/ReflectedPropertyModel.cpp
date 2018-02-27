@@ -252,7 +252,12 @@ QMimeData* ReflectedPropertyModel::mimeData(const QModelIndexList& indexes) cons
         PropertyPanelMimeData* mimeData = new PropertyPanelMimeData();
         for (ReflectedPropertyItem* item : acceptedItems)
         {
-            mimeData->AddItem(item);
+            int32 count = item->GetPropertyNodesCount();
+            for (int32 i = 0; i < count; ++i)
+            {
+                std::shared_ptr<PropertyNode> node = item->GetPropertyNode(i);
+                mimeData->AddItem(node->field);
+            }
         }
         return mimeData;
     }

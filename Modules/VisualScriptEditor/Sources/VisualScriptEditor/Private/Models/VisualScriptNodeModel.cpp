@@ -4,20 +4,24 @@
 
 #include <nodes/NodeData>
 
-#include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Controls/CheckBox.h>
-#include <TArc/Controls/Label.h>
-#include <TArc/Controls/IntSpinBox.h>
 #include <TArc/Controls/DoubleSpinBox.h>
-#include <TArc/Controls/LineEdit.h>
 #include <TArc/Controls/ImageView.h>
+#include <TArc/Controls/IntSpinBox.h>
+#include <TArc/Controls/Label.h>
+#include <TArc/Controls/LineEdit.h>
+#include <TArc/Controls/QtBoxLayouts.h>
+#include <TArc/Controls/ReflectedButton.h>
+#include <TArc/Controls/ReflectedWidget.h>
+#include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/UI.h>
+
+#include <VisualScript/VisualScriptPin.h>
 
 #include <Base/Result.h>
 #include <Debug/DVAssert.h>
 #include <Logger/Logger.h>
 #include <Render/Image/Image.h>
-#include <VisualScript/VisualScriptPin.h>
 
 #include <QLabel>
 #include <QLineEdit>
@@ -29,6 +33,68 @@
 
 namespace DAVA
 {
+struct VisualScriptNodeModel::PinWidgetDescriptor
+{
+    VisualScriptPin* pin = nullptr;
+    QWidget* widget = nullptr;
+    QWidget* additionalWidget = nullptr;
+    bool isSquare = false;
+
+    Any GetDefaultValue() const
+    {
+        if (pin)
+        {
+            return pin->GetDefaultValue();
+        }
+
+        return Any();
+    }
+
+    void SetDefaultValue(Any defaultValue)
+    {
+        if (pin != nullptr)
+        {
+            pin->SetDefaultValue(defaultValue);
+        }
+    }
+
+    void ResetDefaultValue()
+    {
+        SetDefaultValue(Any());
+    }
+
+    bool IsDefaultValueNotEmpty() const
+    {
+        if (pin != nullptr)
+        {
+            return pin->GetDefaultValue().IsEmpty() == false;
+        }
+        return false;
+    }
+
+    bool IsWidgetVisible() const
+    {
+        if (pin != nullptr)
+        {
+            return pin->GetConnectedSet().empty(); //return pin->GetConnectedTo() == nullptr;
+        }
+
+        return false;
+    }
+
+    DAVA_REFLECTION(VisualScriptNodeModel::PinWidgetDescriptor)
+    {
+        ReflectionRegistrator<VisualScriptNodeModel::PinWidgetDescriptor>::Begin()
+        .Field("defaultValue", &VisualScriptNodeModel::PinWidgetDescriptor::GetDefaultValue, &VisualScriptNodeModel::PinWidgetDescriptor::SetDefaultValue)
+        .Field("isWidgetVisible", &VisualScriptNodeModel::PinWidgetDescriptor::IsWidgetVisible, nullptr) //{ return pin->GetConnectedTo() == nullptr; }, nullptr)
+
+        .Method("resetDefaultValue", &VisualScriptNodeModel::PinWidgetDescriptor::ResetDefaultValue)
+        .Field("resetDefaultValueIcon", []() { return SharedIcon(":/VisualScriptEditor/Icons/delete.png"); }, nullptr)
+        .Field("resetDefaultValueEnabled", &VisualScriptNodeModel::PinWidgetDescriptor::IsDefaultValueNotEmpty, nullptr)
+        .End();
+    }
+};
+
 VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_, VisualScript* script_, VisualScriptNode* visualScriptNode_)
     : QtNodes::NodeDataModel()
     , visualScriptNode(visualScriptNode_)
@@ -39,16 +105,14 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
     DVASSERT(visualScriptNode);
 
     size_t portsTypesCount = PortToIndex(QtNodes::PortType::Count);
-    portWidgets.resize(portsTypesCount);
-    squareWidgets.resize(portsTypesCount);
+    portWidgetDescriptors.resize(portsTypesCount);
 
     Vector<bool> hasWidgets(portsTypesCount, false);
     for (size_t portType = 0; portType < portsTypesCount; ++portType)
     {
         QtNodes::PortType qnPortType = static_cast<QtNodes::PortType>(portType);
         size_t portsCount = nPorts(qnPortType);
-        portWidgets[portType].resize(portsCount, nullptr);
-        squareWidgets[portType].resize(portsCount, false);
+        portWidgetDescriptors[portType].resize(portsCount);
 
         for (size_t portIndex = 0; portIndex < portsCount; ++portIndex)
         {
@@ -56,21 +120,23 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
             VisualScriptPin* pin = GetPin(qnPortType, qnPortIndex);
             DVASSERT(pin != nullptr);
 
+            Reflection inReflection = Reflection::Create(ReflectedObject(&portWidgetDescriptors[portType][portIndex]));
+            QtHBoxLayout* layout = nullptr;
+
             const Type* pinType = pin->GetType();
             if ((qnPortType == QtNodes::PortType::In) && (pinType != nullptr && pin->HasDefaultValue()))
             {
-                Reflection reflection = Reflection::Create(ReflectedObject(pin));
-
                 const Type* valueType = pinType->Decay();
                 if (valueType == Type::Instance<bool>())
                 {
                     CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[CheckBox::Fields::Checked] = "defaultValue";
-                    params.fields[CheckBox::Fields::IsVisible] = "defaultValueVisible";
-                    CheckBox* checkBox = new CheckBox(params, accessor, reflection, nullptr);
+                    CheckBox* checkBox = new CheckBox(params, accessor, inReflection, nullptr);
 
-                    portWidgets[portType][portIndex] = checkBox->ToWidgetCast();
-                    squareWidgets[portType][portIndex] = true;
+                    layout = new QtHBoxLayout();
+                    layout->AddControl(checkBox);
+
+                    portWidgetDescriptors[portType][portIndex].isSquare = true;
                 }
                 else if (valueType == Type::Instance<String>()
                          || valueType == Type::Instance<WideString>()
@@ -78,10 +144,10 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                 {
                     LineEdit::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[LineEdit::Fields::Text] = "defaultValue";
-                    params.fields[LineEdit::Fields::IsVisible] = "defaultValueVisible";
-                    LineEdit* lineEdit = new LineEdit(params, accessor, reflection, nullptr);
+                    LineEdit* lineEdit = new LineEdit(params, accessor, inReflection, nullptr);
 
-                    portWidgets[portType][portIndex] = lineEdit->ToWidgetCast();
+                    layout = new QtHBoxLayout();
+                    layout->AddControl(lineEdit);
                 }
                 else if (valueType == Type::Instance<int8>()
                          || valueType == Type::Instance<uint8>()
@@ -92,20 +158,20 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                 {
                     IntSpinBox::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[IntSpinBox::Fields::Value] = "defaultValue";
-                    params.fields[IntSpinBox::Fields::IsVisible] = "defaultValueVisible";
-                    IntSpinBox* spinBox = new IntSpinBox(params, accessor, reflection, nullptr);
+                    IntSpinBox* spinBox = new IntSpinBox(params, accessor, inReflection, nullptr);
 
-                    portWidgets[portType][portIndex] = spinBox->ToWidgetCast();
+                    layout = new QtHBoxLayout();
+                    layout->AddControl(spinBox);
                 }
                 else if (valueType == Type::Instance<float32>()
                          || valueType == Type::Instance<float64>())
                 {
                     DoubleSpinBox::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[DoubleSpinBox::Fields::Value] = "defaultValue";
-                    params.fields[DoubleSpinBox::Fields::IsVisible] = "defaultValueVisible";
-                    DoubleSpinBox* spinBox = new DoubleSpinBox(params, accessor, reflection, nullptr);
+                    DoubleSpinBox* spinBox = new DoubleSpinBox(params, accessor, inReflection, nullptr);
 
-                    portWidgets[portType][portIndex] = spinBox->ToWidgetCast();
+                    layout = new QtHBoxLayout();
+                    layout->AddControl(spinBox);
                 }
                 else
                 {
@@ -114,21 +180,45 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
             }
             else if ((qnPortType == QtNodes::PortType::Out) && (pinType != nullptr))
             {
-                Reflection reflection = Reflection::Create(ReflectedObject(pin));
-
                 const Type* valueType = pinType->Decay();
                 if (valueType == Type::Instance<Image*>())
                 {
+                    Reflection outReflection = Reflection::Create(ReflectedObject(pin));
+
                     ImageView::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[ImageView::Fields::Image] = "pinValue";
-                    ImageView* imageView = new ImageView(params, accessor, reflection, nullptr);
+                    ImageView* imageView = new ImageView(params, accessor, outReflection, nullptr);
 
-                    portWidgets[portType][portIndex] = imageView->ToWidgetCast();
-                    squareWidgets[portType][portIndex] = true;
+                    portWidgetDescriptors[portType][portIndex].isSquare = true;
+                    portWidgetDescriptors[portType][portIndex].widget = imageView->ToWidgetCast();
+                    portWidgetDescriptors[portType][portIndex].pin = pin;
                 }
             }
 
-            hasWidgets[portType] = hasWidgets[portType] || (portWidgets[portType][portIndex] != nullptr);
+            if (layout != nullptr)
+            {
+                ReflectedButton::Params btnParams(accessor, ui, DAVA::mainWindowKey);
+                btnParams.fields[ReflectedButton::Fields::Clicked] = "resetDefaultValue";
+                btnParams.fields[ReflectedButton::Fields::Icon] = "resetDefaultValueIcon";
+                btnParams.fields[ReflectedButton::Fields::Enabled] = "resetDefaultValueEnabled";
+                ReflectedButton* resetButton = new ReflectedButton(btnParams, accessor, inReflection, nullptr);
+                layout->AddControl(resetButton);
+                portWidgetDescriptors[portType][portIndex].additionalWidget = resetButton->ToWidgetCast();
+
+                ReflectedWidget::Params phParams(accessor, ui, DAVA::mainWindowKey);
+                phParams.fields[ReflectedWidget::Fields::Visible] = "isWidgetVisible";
+
+                ReflectedWidget* placeHolder = new ReflectedWidget(phParams, accessor, inReflection, nullptr);
+                portWidgetDescriptors[portType][portIndex].widget = placeHolder->ToWidgetCast();
+                portWidgetDescriptors[portType][portIndex].widget->setLayout(layout);
+
+                portWidgetDescriptors[portType][portIndex].pin = pin;
+
+                layout->setSpacing(0);
+                layout->setMargin(0);
+            }
+
+            hasWidgets[portType] = hasWidgets[portType] || (portWidgetDescriptors[portType][portIndex].widget != nullptr);
         }
     }
 
@@ -180,9 +270,9 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
             for (size_t portIndex = 0; portIndex < portsCount; ++portIndex)
             {
                 int32 index = static_cast<int32>(portIndex);
-                if (portWidgets[portType][portIndex] != nullptr)
+                if (portWidgetDescriptors[portType][portIndex].widget != nullptr)
                 {
-                    gridLayouts[portType]->addWidget(portWidgets[portType][portIndex], index, 0);
+                    gridLayouts[portType]->addWidget(portWidgetDescriptors[portType][portIndex].widget, index, 0);
                 }
                 else
                 {
@@ -495,13 +585,21 @@ void VisualScriptNodeModel::SetEntryHeight(unsigned int height)
         {
             if (gridLayouts[layIndex] != nullptr)
             {
-                size_t rowsCount = portWidgets[layIndex].size();
+                size_t rowsCount = portWidgetDescriptors[layIndex].size();
                 for (size_t row = 0; row < rowsCount; ++row)
                 {
-                    if (squareWidgets[layIndex][row] == true)
+                    VisualScriptNodeModel::PinWidgetDescriptor& descr = portWidgetDescriptors[layIndex][row];
+                    if (descr.isSquare == true)
                     {
-                        portWidgets[layIndex][row]->setFixedHeight(height);
-                        portWidgets[layIndex][row]->setFixedWidth(height);
+                        descr.widget->setFixedHeight(height);
+
+                        int width = height;
+                        if (descr.additionalWidget != nullptr)
+                        {
+                            width += height;
+                        }
+
+                        descr.widget->setFixedWidth(width);
                     }
 
                     gridLayouts[layIndex]->setRowMinimumHeight(static_cast<int32>(row), height);

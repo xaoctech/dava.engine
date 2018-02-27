@@ -220,26 +220,29 @@ void VisualScriptExecutor::ExecuteFunctionNode(VisualScriptFunctionNode* node, V
         }
 
         VisualScriptPin* connectedTo = pin->GetConnectedTo();
-        if (!connectedTo)
+        if (connectedTo)
+        {
+            VisualScriptNode* owner = connectedTo->GetExecutionOwner();
+            DVASSERT(owner != nullptr);
+        }
+        else if (!pin->HasDefaultValue())
         {
             DAVA_THROW(Exception, Format("Pin #%lld is not connected", pinIndex));
         }
-
-        VisualScriptNode* owner = connectedTo->GetExecutionOwner();
-        DVASSERT(owner != nullptr);
 
         Any value = pin->GetValue();
         params.emplace_back(value);
     }
 
-    const Vector<const Type*>& types = function.GetInvokeParams().argsType;
-    for (size_t ti = 0; ti < size; ++ti)
-    {
-        if (types[ti] != params[ti].GetType())
-        {
-            DAVA_THROW(Exception, Format("Incorrect param type at #%lld position", ti));
-        }
-    }
+    // TODO: Support cast check between Type* and Type* or Any and Type*
+    //    const Vector<const Type*>& types = function.GetInvokeParams().argsType;
+    //    for (size_t ti = 0; ti < size; ++ti)
+    //    {
+    //        if (types[ti] != params[ti].GetType())
+    //        {
+    //            DAVA_THROW(Exception, Format("Incorrect param type at #%lld position", ti));
+    //        }
+    //    }
 
     // Debug
     String strParams;

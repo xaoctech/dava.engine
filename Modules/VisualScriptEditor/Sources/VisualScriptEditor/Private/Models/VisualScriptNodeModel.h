@@ -73,8 +73,8 @@ private:
 
     QWidget* containerWidget = nullptr;
 
-    Vector<Vector<QWidget*>> portWidgets;
-    Vector<Vector<bool>> squareWidgets;
+    struct PinWidgetDescriptor;
+    Vector<Vector<PinWidgetDescriptor>> portWidgetDescriptors;
     Vector<QGridLayout*> gridLayouts;
 
     ContextAccessor* accessor = nullptr;

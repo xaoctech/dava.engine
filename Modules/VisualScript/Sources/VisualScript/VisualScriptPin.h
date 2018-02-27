@@ -78,6 +78,7 @@ public:
 
     bool HasDefaultValue() const;
     void SetDefaultValue(Any defaultValue_);
+    const Any& GetDefaultValue() const;
     void SetValue(Any value_);
     const Any& GetValue() const;
 

@@ -1,14 +1,13 @@
 #include "TArc/Controls/PropertyPanel/PropertyPanelMimeData.h"
-#include "TArc/Controls/PropertyPanel/Private/ReflectedPropertyItem.h"
 
 namespace DAVA
 {
-void PropertyPanelMimeData::AddItem(ReflectedPropertyItem* item)
+void PropertyPanelMimeData::AddItem(Reflection::Field item)
 {
     storedItems.push_back(item);
 }
 
-const Vector<ReflectedPropertyItem*>& PropertyPanelMimeData::GetPropertyItem() const
+const Vector<Reflection::Field>& PropertyPanelMimeData::GetPropertyItem() const
 {
     return storedItems;
 }

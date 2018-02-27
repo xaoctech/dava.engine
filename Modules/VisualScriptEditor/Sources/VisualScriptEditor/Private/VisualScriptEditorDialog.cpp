@@ -26,12 +26,12 @@
 #include <VisualScript/VisualScriptPin.h>
 #include <VisualScript/Nodes/VisualScriptEventNode.h>
 
-
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QTabWidget>
 #include <QWidget>
+#include <QAction>
 
 #include <iterator>
 
@@ -213,12 +213,33 @@ QToolBar* VisualScriptEditorDialog::CreateToolBar() const
         });
         QObject::connect(actionExecute, &QAction::triggered, this, &VisualScriptEditorDialog::ExecuteScript);
 
+        QtAction* actionClearSelection = new QtAction(accessor, QIcon(":/VisualScriptEditor/Icons/clear.png"), "Clear Selection", toolbar);
+        actionClearSelection->SetStateUpdationFunction(QtAction::Enabled, scriptNodesFieldDescr, [](const Any& v) {
+            Vector<VisualScriptNode*> nodes = v.Cast<Vector<VisualScriptNode*>>(Vector<VisualScriptNode*>());
+            return nodes.empty() == false;
+        });
+        //        actionClearSelection->setShortcutContext(Qt::WindowShortcut);
+        //        actionClearSelection->setShortcut(Qt::Key_Escape);
+        QObject::connect(actionClearSelection, &QAction::triggered, this, &VisualScriptEditorDialog::ClearSelection);
+
+        QtAction* actionDeleteSelection = new QtAction(accessor, QIcon(":/VisualScriptEditor/Icons/delete.png"), "Delete Selection", toolbar);
+        actionDeleteSelection->SetStateUpdationFunction(QtAction::Enabled, scriptNodesFieldDescr, [](const Any& v) {
+            Vector<VisualScriptNode*> nodes = v.Cast<Vector<VisualScriptNode*>>(Vector<VisualScriptNode*>());
+            return nodes.empty() == false;
+        });
+        actionDeleteSelection->setShortcutContext(Qt::WindowShortcut);
+        actionDeleteSelection->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::CTRL + Qt::Key_Backspace);
+        QObject::connect(actionDeleteSelection, &QAction::triggered, this, &VisualScriptEditorDialog::DeleteSelection);
+
         toolbar->addAction(actionNew);
         toolbar->addAction(actionOpen);
         toolbar->addAction(actionSave);
         toolbar->addSeparator();
         toolbar->addAction(actionCompile);
         toolbar->addAction(actionExecute);
+        toolbar->addSeparator();
+        toolbar->addAction(actionClearSelection);
+        toolbar->addAction(actionDeleteSelection);
     }
 
     return toolbar;
@@ -433,6 +454,22 @@ void VisualScriptEditorDialog::OnNodeDoubleClicked(QtNodes::Node& n)
         NewScriptImpl(scriptPath);
     }
 #endif
+}
+
+void VisualScriptEditorDialog::ClearSelection()
+{
+    VisualScriptEditorData* editorData = accessor->GetGlobalContext()->GetData<VisualScriptEditorData>();
+    DVASSERT(editorData->activeDescriptor != nullptr);
+
+    editorData->activeDescriptor->flowView->ClearSelectedNodes();
+}
+
+void VisualScriptEditorDialog::DeleteSelection()
+{
+    VisualScriptEditorData* editorData = accessor->GetGlobalContext()->GetData<VisualScriptEditorData>();
+    DVASSERT(editorData->activeDescriptor != nullptr);
+
+    editorData->activeDescriptor->flowView->deleteSelectedNodes();
 }
 
 } // DAVA

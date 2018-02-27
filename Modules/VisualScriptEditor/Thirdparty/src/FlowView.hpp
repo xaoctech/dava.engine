@@ -19,9 +19,9 @@ public:
   FlowView(const FlowView&) = delete;
   FlowView operator=(const FlowView&) = delete;
 
-  QAction* clearSelectionAction() const;
-
-  QAction* deleteSelectionAction() const;
+//  QAction* clearSelectionAction() const;
+//
+//  QAction* deleteSelectionAction() const;
 
 public slots:
 
@@ -55,8 +55,8 @@ protected:
 
 private:
 
-  QAction* _clearSelectionAction;
-  QAction* _deleteSelectionAction;
+//  QAction* _clearSelectionAction;
+//  QAction* _deleteSelectionAction;
 
   QPointF _clickPos;
 

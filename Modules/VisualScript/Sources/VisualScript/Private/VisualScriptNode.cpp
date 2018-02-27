@@ -273,5 +273,36 @@ void VisualScriptNode::Load(const YamlNode* node)
     position = node->Get("position")->AsVector2();
 }
 
+void VisualScriptNode::SaveDefaults(YamlNode* node) const
+{
+    if (!GetDataInputPins().empty())
+    {
+        YamlNode* defsNode = YamlNode::CreateMapNode();
+        for (VisualScriptPin* inPin : GetDataInputPins())
+        {
+            if (!inPin->GetDefaultValue().IsEmpty())
+            {
+                defsNode->Add(inPin->GetName().c_str(), defsNode->CreateNodeFromAny(inPin->GetDefaultValue()));
+            }
+        }
+        node->Add("defaults", defsNode);
+    }
+}
+
+void VisualScriptNode::LoadDefaults(const YamlNode* node)
+{
+    const YamlNode* defsNode = node->Get("defaults");
+    if (defsNode)
+    {
+        for (VisualScriptPin* inPin : GetDataInputPins())
+        {
+            const YamlNode* valNode = defsNode->Get(inPin->GetName().c_str());
+            if (valNode)
+            {
+                inPin->SetDefaultValue(valNode->AsAny(inPin->GetType()));
+            }
+        }
+    }
+}
 
 } //DAVA

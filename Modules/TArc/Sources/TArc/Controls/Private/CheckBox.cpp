@@ -61,6 +61,13 @@ void CheckBox::UpdateControl(const ControlDescriptor& changedFields)
             setTristate(false);
             setCheckState(state);
         }
+        else if (fieldValue.GetValue().IsEmpty() == true)
+        {
+            dataType = eContainedDataType::TYPE_CHECK_STATE;
+
+            setTristate(true);
+            setCheckState(Qt::PartiallyChecked);
+        }
         else
         {
             DVASSERT(false);

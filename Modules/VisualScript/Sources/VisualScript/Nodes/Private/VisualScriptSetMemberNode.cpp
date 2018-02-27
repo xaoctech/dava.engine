@@ -55,6 +55,7 @@ void VisualScriptSetMemberNode::Save(YamlNode* node) const
     VisualScriptNode::Save(node);
     node->Add("className", className.c_str());
     node->Add("fieldName", fieldName.c_str());
+    SaveDefaults(node);
 }
 
 void VisualScriptSetMemberNode::Load(const YamlNode* node)
@@ -63,6 +64,7 @@ void VisualScriptSetMemberNode::Load(const YamlNode* node)
     SetClassName(node->Get("className")->AsFastName());
     SetFieldName(node->Get("fieldName")->AsFastName());
     InitPins();
+    LoadDefaults(node);
 }
 
 const ValueWrapper* VisualScriptSetMemberNode::GetValueWrapper() const

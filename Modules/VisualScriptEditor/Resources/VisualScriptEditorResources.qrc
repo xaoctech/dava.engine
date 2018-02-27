@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/VisualScriptEditor">
+        <file>Icons/clear.png</file>
         <file>Icons/compile.png</file>
+        <file>Icons/delete.png</file>
         <file>Icons/execute.png</file>
         <file>Icons/new.png</file>
         <file>Icons/open.png</file>

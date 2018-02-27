@@ -16,6 +16,8 @@ class VisualScriptFlowView : public QtNodes::FlowView
 public:
     VisualScriptFlowView(QtNodes::FlowScene* scene);
 
+    void ClearSelectedNodes();
+
 protected:
     void dragEnterEvent(QDragEnterEvent*) override;
     void dragMoveEvent(QDragMoveEvent*) override;
