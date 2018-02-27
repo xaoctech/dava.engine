@@ -20,7 +20,6 @@ public:
 
 protected:
     void CreateTextureFiles();
-    void DeleteTextureFiles();
 
 private:
     CreatePlaneLODCommandHelper::RequestPointer request;

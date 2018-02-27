@@ -1,16 +1,21 @@
 #include "IntrospectionProperty.h"
 
-#include "LocalizedTextValueProperty.h"
-#include "FontValueProperty.h"
-#include "VisibleValueProperty.h"
+#include "Model/ControlProperties/LocalizedTextValueProperty.h"
+#include "Model/ControlProperties/FontValueProperty.h"
+#include "Model/ControlProperties/VisibleValueProperty.h"
 
-#include "PropertyVisitor.h"
-#include "SubValueProperty.h"
+#include "Model/ControlProperties/PropertyVisitor.h"
+#include "Model/ControlProperties/SubValueProperty.h"
+#include "Model/ControlProperties/RootProperty.h"
+#include "Model/PackageHierarchy/ControlNode.h"
+#include "Model/PackageHierarchy/PackageNode.h"
 
 #include <Base/BaseMath.h>
+#include <Base/RefPtrUtils.h>
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Reflection/ReflectedMeta.h>
+#include <UI/DataBinding/UIDataBindingComponent.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>
 #include <UI/UIControl.h>
@@ -31,30 +36,26 @@ const String INTROSPECTION_PROPERTY_NAME_FONT("font");
 const String INTROSPECTION_PROPERTY_NAME_FONT_NAME("fontName");
 const String INTROSPECTION_PROPERTY_NAME_CLASSES("classes");
 const String INTROSPECTION_PROPERTY_NAME_VISIBLE("visible");
+const String INTROSPECTION_PROPERTY_NAME_CONTROL_PROTOTYPE("prototype");
 }
 
-IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const DAVA::Type* componentType, const String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
+IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const DAVA::Type* componentType_, const String& name, const DAVA::Reflection& ref, const IntrospectionProperty* prototypeProperty)
     : ValueProperty(name, ref.GetValueType())
     , object(SafeRetain(anObject))
     , reflection(ref)
     , flags(EF_CAN_RESET)
+    , componentType(componentType_)
 {
     int32 propertyIndex = UIStyleSheetPropertyDataBase::Instance()->FindStyleSheetProperty(componentType, FastName(name));
     SetStylePropertyIndex(propertyIndex);
 
-    if (sourceProperty)
+    bindable = reflection.GetMeta<M::Bindable>() != nullptr;
+
+    if (prototypeProperty)
     {
-        if (copyType == CT_COPY)
-        {
-            SetOverridden(sourceProperty->IsOverriddenLocally());
-            SetDefaultValue(sourceProperty->GetDefaultValue());
-        }
-        else
-        {
-            AttachPrototypeProperty(sourceProperty);
-            SetDefaultValue(reflection.GetValue());
-        }
-        reflection.SetValue(sourceProperty->GetValue());
+        AttachPrototypeProperty(prototypeProperty);
+        SetDefaultValue(reflection.GetValue());
+        reflection.SetValue(prototypeProperty->GetValue());
     }
     else
     {
@@ -89,15 +90,15 @@ IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const D
         {
             sourceRectComponent = control->GetOrCreateComponent<UILayoutSourceRectComponent>();
 
-            if (sourceProperty != nullptr && sourceProperty->sourceRectComponent)
+            if (prototypeProperty != nullptr && prototypeProperty->sourceRectComponent)
             {
                 if (name == INTROSPECTION_PROPERTY_NAME_SIZE)
                 {
-                    sourceRectComponent->SetSize(sourceProperty->sourceRectComponent->GetSize());
+                    sourceRectComponent->SetSize(prototypeProperty->sourceRectComponent->GetSize());
                 }
                 else
                 {
-                    sourceRectComponent->SetPosition(sourceProperty->sourceRectComponent->GetPosition());
+                    sourceRectComponent->SetPosition(prototypeProperty->sourceRectComponent->GetPosition());
                 }
             }
             else
@@ -117,26 +118,31 @@ IntrospectionProperty::IntrospectionProperty(DAVA::BaseObject* anObject, const D
 
 IntrospectionProperty::~IntrospectionProperty()
 {
+    if (bindingComponent.Valid() && bindingComponent->GetControl())
+    {
+        bindingComponent->GetControl()->RemoveComponent(bindingComponent.Get());
+        bindingComponent = nullptr;
+    }
     SafeRelease(object);
 }
 
-IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, const DAVA::Type* componentType, const String& name, const Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType cloneType)
+IntrospectionProperty* IntrospectionProperty::Create(BaseObject* object, const DAVA::Type* componentType, const String& name, const Reflection& ref, const IntrospectionProperty* prototypeProperty)
 {
     if (name == INTROSPECTION_PROPERTY_NAME_TEXT)
     {
-        return new LocalizedTextValueProperty(object, name, ref, sourceProperty, cloneType);
+        return new LocalizedTextValueProperty(object, componentType, name, ref, prototypeProperty);
     }
     else if (name == INTROSPECTION_PROPERTY_NAME_FONT || name == INTROSPECTION_PROPERTY_NAME_FONT_NAME)
     {
-        return new FontValueProperty(object, componentType, name, ref, sourceProperty, cloneType);
+        return new FontValueProperty(object, componentType, name, ref, prototypeProperty);
     }
     else if (name == INTROSPECTION_PROPERTY_NAME_VISIBLE)
     {
-        return new VisibleValueProperty(object, name, ref, sourceProperty, cloneType);
+        return new VisibleValueProperty(object, name, ref, prototypeProperty);
     }
     else
     {
-        return new IntrospectionProperty(object, componentType, name, ref, sourceProperty, cloneType);
+        return new IntrospectionProperty(object, componentType, name, ref, prototypeProperty);
     }
 }
 
@@ -218,9 +224,154 @@ void IntrospectionProperty::DisableResetFeature()
     flags &= ~EF_CAN_RESET;
 }
 
+void IntrospectionProperty::ResetValue()
+{
+    ValueProperty::ResetValue();
+    ResetBindingExpression();
+}
+
+void IntrospectionProperty::Refresh(DAVA::int32 refreshFlags)
+{
+    ValueProperty::Refresh(refreshFlags);
+
+    if (!IsOverriddenLocally())
+    {
+        if (GetPrototypeProperty() && GetPrototypeProperty()->IsBound())
+        {
+            SetBindingExpressionImpl(GetPrototypeProperty()->GetBindingExpression(), GetPrototypeProperty()->GetBindingUpdateMode());
+        }
+        else
+        {
+            ResetBindingExpression();
+        }
+    }
+    else if (IsBound())
+    {
+        SetBindingExpressionImpl(bindingExpression, bindingMode);
+    }
+}
+
+bool IntrospectionProperty::IsBindable() const
+{
+    return bindable;
+}
+
+bool IntrospectionProperty::IsBound() const
+{
+    return bound;
+}
+
+DAVA::int32 IntrospectionProperty::GetBindingUpdateMode() const
+{
+    return bindingMode;
+}
+
+String IntrospectionProperty::GetBindingExpression() const
+{
+    return bindingExpression;
+}
+
+void IntrospectionProperty::SetBindingExpression(const String& expression, DAVA::int32 bindingUpdateMode)
+{
+    ValueProperty::SetBindingExpression(expression, bindingUpdateMode);
+    SetOverridden(true);
+    SetBindingExpressionImpl(expression, bindingUpdateMode);
+}
+
+DAVA::String IntrospectionProperty::GetFullFieldName() const
+{
+    String name;
+    if (componentType != nullptr)
+    {
+        name = ReflectedTypeDB::GetByType(componentType)->GetPermanentName();
+        name += ".";
+    }
+    name += GetName();
+    return name;
+}
+
+bool IntrospectionProperty::HasError() const
+{
+    return false;
+}
+
+DAVA::String IntrospectionProperty::GetErrorString() const
+{
+    return "";
+}
+
 bool IntrospectionProperty::IsReadOnly() const
 {
     return forceReadOnly || ValueProperty::IsReadOnly();
+}
+
+void IntrospectionProperty::ComponentWithPropertyWasInstalled()
+{
+    if (bindingComponent.Valid())
+    {
+        GetLinkedControl()->AddComponent(bindingComponent.Get());
+    }
+}
+
+void IntrospectionProperty::ComponentWithPropertyWasUninstalled()
+{
+    if (bindingComponent.Valid())
+    {
+        GetLinkedControl()->RemoveComponent(bindingComponent.Get());
+    }
+}
+
+void IntrospectionProperty::SetBindingExpressionImpl(const DAVA::String& expression, DAVA::int32 bindingUpdateMode)
+{
+    UIControl* control = GetLinkedControl();
+
+    bindingExpression = expression;
+    bindingMode = bindingUpdateMode;
+    bound = true;
+
+    DVASSERT(reflection.GetMeta<M::Bindable>() != nullptr);
+
+    if (bindingComponent == nullptr)
+    {
+        for (uint32 i = 0; i < control->GetComponentCount<UIDataBindingComponent>(); i++)
+        {
+            UIDataBindingComponent* candidate = control->GetComponent<UIDataBindingComponent>(i);
+            if (candidate->GetControlFieldName() == GetName())
+            {
+                bindingComponent = candidate;
+                break;
+            }
+        }
+
+        if (bindingComponent == nullptr)
+        {
+            bindingComponent = MakeRef<UIDataBindingComponent>();
+            bindingComponent->SetControlFieldName(GetFullFieldName());
+            control->AddComponent(bindingComponent.Get());
+        }
+    }
+
+    if (bindingComponent)
+    {
+        bindingComponent->SetBindingExpression(bindingExpression);
+        bindingComponent->SetUpdateMode(static_cast<UIDataBindingComponent::UpdateMode>(bindingUpdateMode));
+    }
+    else
+    {
+        DVASSERT(false);
+    }
+}
+
+void IntrospectionProperty::ResetBindingExpression()
+{
+    bound = false;
+    bindingExpression = "";
+
+    if (bindingComponent.Valid())
+    {
+        bindingComponent->GetControl()->RemoveComponent(bindingComponent.Get());
+        bindingComponent = nullptr;
+    }
 }
 
 void IntrospectionProperty::ApplyValue(const DAVA::Any& value)
@@ -250,4 +401,13 @@ void IntrospectionProperty::SetLayoutSourceRectValue(const DAVA::Any& value)
     {
         DVASSERT(false);
     }
+}
+
+DAVA::UIControl* IntrospectionProperty::GetLinkedControl()
+{
+    if (componentType != nullptr)
+    {
+        return DynamicTypeCheck<UIComponent*>(object)->GetControl();
+    }
+    return DynamicTypeCheck<UIControl*>(object);
 }

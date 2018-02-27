@@ -58,8 +58,10 @@ public:
         BoxBuilder& AddRenderComponent();
         BoxBuilder& AddGeometry();
         BoxBuilder& AddSlotComponent(const String& slotName, const FilePath& configPath);
+        BoxBuilder& AddCollisionTypeComponent(DAVA::int32 collisionType);
         BoxBuilder& AddRefToOwner();
         BoxBuilder& AddToScene(Scene* scene);
+        BoxBuilder& AddToScene(SceneBuilder& builder);
         Entity* GetBox();
         BoxBuilder& Reset();
 

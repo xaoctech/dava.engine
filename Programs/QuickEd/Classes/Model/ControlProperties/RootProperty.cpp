@@ -22,19 +22,19 @@
 
 using namespace DAVA;
 
-RootProperty::RootProperty(ControlNode* _node, const RootProperty* sourceProperties, eCloneType cloneType)
+RootProperty::RootProperty(ControlNode* _node, const RootProperty* sourceProperties)
     : node(_node)
     , classProperty(nullptr)
     , customClassProperty(nullptr)
     , prototypeProperty(nullptr)
     , nameProperty(nullptr)
 {
-    AddBaseProperties(node->GetControl(), sourceProperties, cloneType);
+    AddBaseProperties(node->GetControl(), sourceProperties);
 
     UIControl* control = node->GetControl();
     Reflection controlRef = Reflection::Create(&control);
     Vector<Reflection::Field> fields = controlRef.GetFields();
-    MakeControlPropertiesSection(node->GetControl(), ReflectedTypeDB::GetByPointer(control)->GetType(), fields, sourceProperties, cloneType);
+    MakeControlPropertiesSection(node->GetControl(), ReflectedTypeDB::GetByPointer(control)->GetType(), fields, sourceProperties);
 
     if (sourceProperties)
     {
@@ -42,7 +42,7 @@ RootProperty::RootProperty(ControlNode* _node, const RootProperty* sourcePropert
         {
             const Type* type = section->GetComponent()->GetType();
             int32 index = section->GetComponentIndex();
-            ScopedPtr<ComponentPropertiesSection> newSection(new ComponentPropertiesSection(node->GetControl(), type, index, section, cloneType));
+            ScopedPtr<ComponentPropertiesSection> newSection(new ComponentPropertiesSection(node->GetControl(), type, index, section));
             AddComponentPropertiesSection(newSection);
         }
     }
@@ -191,7 +191,7 @@ ComponentPropertiesSection* RootProperty::AddComponentPropertiesSection(const DA
             index++;
     }
 
-    ScopedPtr<ComponentPropertiesSection> section(new ComponentPropertiesSection(node->GetControl(), componentType, index, nullptr, CT_INHERIT));
+    ScopedPtr<ComponentPropertiesSection> section(new ComponentPropertiesSection(node->GetControl(), componentType, index, nullptr));
     AddComponentPropertiesSection(section);
     return section;
 }
@@ -300,6 +300,14 @@ void RootProperty::SetProperty(AbstractProperty* property, const DAVA::Any& newV
         listener->PropertyChanged(property);
 }
 
+void RootProperty::SetBindingProperty(AbstractProperty* property, const DAVA::String& newValue, int32 bindingUpdateMode)
+{
+    property->SetBindingExpression(newValue, bindingUpdateMode);
+
+    for (PropertyListener* listener : listeners)
+        listener->PropertyChanged(property);
+}
+
 void RootProperty::SetDefaultProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetDefaultValue(newValue);
@@ -363,28 +371,28 @@ ControlNode* RootProperty::GetControlNode() const
     return node;
 }
 
-void RootProperty::AddBaseProperties(DAVA::UIControl* control, const RootProperty* sourceProperties, eCloneType cloneType)
+void RootProperty::AddBaseProperties(DAVA::UIControl* control, const RootProperty* sourceProperties)
 {
     NameProperty* sourceNameProperty = sourceProperties == nullptr ? nullptr : sourceProperties->GetNameProperty();
-    nameProperty = new NameProperty(node, sourceNameProperty, cloneType);
+    nameProperty = new NameProperty(node, sourceNameProperty);
     baseProperties.push_back(nameProperty);
 
     PrototypeNameProperty* sourcePrototypeProperty = sourceProperties == nullptr ? nullptr : sourceProperties->GetPrototypeProperty();
-    prototypeProperty = new PrototypeNameProperty(node, sourcePrototypeProperty, cloneType);
+    prototypeProperty = new PrototypeNameProperty(node, sourcePrototypeProperty);
     baseProperties.push_back(prototypeProperty);
 
     classProperty = new ClassProperty(node);
     baseProperties.push_back(classProperty);
 
     CustomClassProperty* sourceCustomClassProperty = sourceProperties == nullptr ? nullptr : sourceProperties->GetCustomClassProperty();
-    customClassProperty = new CustomClassProperty(node, sourceCustomClassProperty, cloneType);
+    customClassProperty = new CustomClassProperty(node, sourceCustomClassProperty);
     baseProperties.push_back(customClassProperty);
 
     for (ValueProperty* prop : baseProperties)
         prop->SetParent(this);
 }
 
-void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, const Vector<Reflection::Field>& fields, const RootProperty* sourceProperties, eCloneType copyType)
+void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, const Vector<Reflection::Field>& fields, const RootProperty* sourceProperties)
 {
     const TypeInheritance* inheritance = type->GetInheritance();
     if (type != Type::Instance<UIControl>() && inheritance != nullptr)
@@ -392,7 +400,7 @@ void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const 
         const Vector<TypeInheritance::Info>& baseTypesInfo = inheritance->GetBaseTypes();
         for (const TypeInheritance::Info& baseInfo : baseTypesInfo)
         {
-            MakeControlPropertiesSection(control, baseInfo.type, fields, sourceProperties, copyType);
+            MakeControlPropertiesSection(control, baseInfo.type, fields, sourceProperties);
         }
     }
 
@@ -412,7 +420,7 @@ void RootProperty::MakeControlPropertiesSection(DAVA::UIControl* control, const 
         String sectionName = rt->GetPermanentName();
         ControlPropertiesSection* sourceSection = sourceProperties == nullptr ? nullptr : sourceProperties->GetControlPropertiesSection(sectionName);
 
-        ControlPropertiesSection* section = new ControlPropertiesSection(sectionName, control, type, fields, sourceSection, copyType);
+        ControlPropertiesSection* section = new ControlPropertiesSection(sectionName, control, type, fields, sourceSection);
         section->SetParent(this);
         controlProperties.push_back(section);
     }

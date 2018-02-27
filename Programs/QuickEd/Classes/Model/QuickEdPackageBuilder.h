@@ -23,8 +23,8 @@ public:
     virtual void BeginPackage(const DAVA::FilePath& packagePath, DAVA::int32 version) override;
     virtual void EndPackage() override;
 
-    virtual bool ProcessImportedPackage(const DAVA::String& packagePath, DAVA::AbstractUIPackageLoader* loader) override;
-    virtual void ProcessStyleSheet(const DAVA::Vector<DAVA::UIStyleSheetSelectorChain>& selectorChains, const DAVA::Vector<DAVA::UIStyleSheetProperty>& properties) override;
+    bool ProcessImportedPackage(const DAVA::String& packagePath, DAVA::AbstractUIPackageLoader* loader) override;
+    void ProcessStyleSheet(const DAVA::Vector<DAVA::UIStyleSheetSelectorChain>& selectorChains, const DAVA::Vector<DAVA::UIStyleSheetProperty>& properties) override;
 
     virtual const DAVA::ReflectedType* BeginControlWithClass(const DAVA::FastName& controlName, const DAVA::String& className) override;
     virtual const DAVA::ReflectedType* BeginControlWithCustomClass(const DAVA::FastName& controlName, const DAVA::String& customClassName, const DAVA::String& className) override;
@@ -33,13 +33,14 @@ public:
     virtual const DAVA::ReflectedType* BeginUnknownControl(const DAVA::FastName& controlName, const DAVA::YamlNode* node) override;
     virtual void EndControl(eControlPlace controlPlace) override;
 
-    virtual void BeginControlPropertiesSection(const DAVA::String& name) override;
-    virtual void EndControlPropertiesSection() override;
+    void BeginControlPropertiesSection(const DAVA::String& name) override;
+    void EndControlPropertiesSection() override;
 
     virtual const DAVA::ReflectedType* BeginComponentPropertiesSection(const DAVA::Type* componentType, DAVA::uint32 componentIndex) override;
     virtual void EndComponentPropertiesSection() override;
 
-    virtual void ProcessProperty(const DAVA::ReflectedStructure::Field& field, const DAVA::Any& value) override;
+    void ProcessProperty(const DAVA::ReflectedStructure::Field& field, const DAVA::Any& value) override;
+    void ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode) override;
 
     virtual void ProcessCustomData(const DAVA::YamlNode* customDataNode) override;
     void ProcessGuides(const DAVA::YamlNode* guidesNode);
@@ -54,9 +55,8 @@ public:
     const DAVA::ResultList& GetResults() const;
 
 private:
-    ControlNode* FindPrototype(const DAVA::String& name) const;
+    ControlNode* FindPrototype(const DAVA::FastName& name) const;
 
-private:
     struct ControlDescr
     {
         ControlNode* node;
@@ -69,7 +69,6 @@ private:
         ControlDescr& operator=(const ControlDescr& descr);
     };
 
-private:
     DAVA::FilePath packagePath;
     DAVA::List<ControlDescr> controlsStack;
 

@@ -7,7 +7,6 @@
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
 #include <UI/Scene3D/UISceneComponent.h>
-#include <UI/RichContent/UIRichContentObjectComponent.h>
 #include <UI/Scroll/UIScrollComponent.h>
 #include <Utils/StringFormat.h>
 #include <Reflection/ReflectedMeta.h>
@@ -17,12 +16,12 @@
 
 using namespace DAVA;
 
-ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, const DAVA::Type* type_, int32 index_, const ComponentPropertiesSection* sourceSection, eCloneType cloneType)
+ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_, const DAVA::Type* type_, int32 index_, const ComponentPropertiesSection* prototypeSection_)
     : SectionProperty("")
     , control(SafeRetain(control_))
     , component(nullptr)
     , index(index_)
-    , prototypeSection(nullptr) // weak
+    , prototypeSection(prototypeSection_) // weak
 {
     component = control->GetComponent(type_, index_);
     if (component != nullptr)
@@ -36,11 +35,6 @@ ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_
     }
     DVASSERT(component);
 
-    if (sourceSection && cloneType == CT_INHERIT)
-    {
-        prototypeSection = sourceSection; // weak
-    }
-
     RefreshName();
 
     Reflection componentRef = Reflection::Create(&component);
@@ -50,8 +44,8 @@ ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_
         if (!field.ref.IsReadonly() && nullptr == field.ref.GetMeta<DAVA::M::ReadOnly>() && nullptr == field.ref.GetMeta<DAVA::M::HiddenField>())
         {
             String name = field.key.Get<FastName>().c_str();
-            const IntrospectionProperty* sourceProp = sourceSection == nullptr ? nullptr : sourceSection->FindChildPropertyByName(name);
-            IntrospectionProperty* prop = IntrospectionProperty::Create(component, type_, name.c_str(), field.ref, sourceProp, cloneType);
+            const IntrospectionProperty* sourceProp = prototypeSection == nullptr ? nullptr : prototypeSection->FindChildPropertyByName(name);
+            IntrospectionProperty* prop = IntrospectionProperty::Create(component, type_, name.c_str(), field.ref, sourceProp);
             AddProperty(prop);
             SafeRelease(prop);
         }
@@ -168,6 +162,11 @@ void ComponentPropertiesSection::InstallComponent()
         {
             control->InsertComponentAt(component, index);
         }
+
+        for (uint32 i = 0; i < GetCount(); i++)
+        {
+            GetProperty(i)->ComponentWithPropertyWasInstalled();
+        }
     }
 }
 
@@ -175,6 +174,11 @@ void ComponentPropertiesSection::UninstallComponent()
 {
     if (componentWasCreated)
     {
+        for (uint32 i = 0; i < GetCount(); i++)
+        {
+            GetProperty(i)->ComponentWithPropertyWasUninstalled();
+        }
+
         UIComponent* installedComponent = control->GetComponent(component->GetType(), index);
         if (installedComponent)
         {

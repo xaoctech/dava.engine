@@ -10,7 +10,7 @@
 #include "UI/RichContent/Private/XMLRichContentBuilder.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
-#include "UI/RichContent/UIRichContentObjectComponent.h"
+#include "UI/Components/UIControlSourceComponent.h"
 #include "UI/UIControl.h"
 
 namespace DAVA

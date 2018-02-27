@@ -48,9 +48,10 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
             using namespace CommandLineModuleTestUtils;
             CreateProjectInfrastructure(AddSwitchTestDetails::testFolder);
             SceneBuilder builder(AddSwitchTestDetails::testScenePath, AddSwitchTestDetails::testFolder);
+            SceneBuilder::BoxBuilder boxBuilder;
 
             { // without chidren
-                Vector<Entity* >entities;
+                Vector<Entity*> entities;
                 Entity* simpleEntity = builder.AddWater(SceneBuilder::R2OMode::WITH_REF_TO_OWNER);
                 KeyedArchive *archive = GetCustomPropertiesArchieve(simpleEntity);
                 archive->SetInt32("CollisionType", 1);
@@ -84,6 +85,7 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
 
             { //with children
                 Vector<Entity* >entities;
+
                 Entity* simpleEntity = builder.AddWater(SceneBuilder::R2OMode::WITH_REF_TO_OWNER);
                 Entity* simpleEntityChild = builder.AddWater(SceneBuilder::R2OMode::WITH_REF_TO_OWNER);
                 simpleEntity->AddNode(simpleEntityChild);
@@ -112,7 +114,6 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                 TEST_VERIFY(archiveSwitch != nullptr)
 
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionType", 0) == 1);
-                TEST_VERIFY(archiveSwitch->GetInt32("CollisionTypeCrashed", 0) == 2);
 
                 SwitchComponent* sw = GetSwitchComponent(switchEntity);
                 sw->SetSwitchIndex(0);

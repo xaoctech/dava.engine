@@ -53,6 +53,7 @@ private:
     void LoadControlPropertiesFromYamlNode(const ReflectedType* ref, const YamlNode* node, AbstractUIPackageBuilder* builder);
 
     void LoadComponentPropertiesFromYamlNode(const YamlNode* node, AbstractUIPackageBuilder* builder);
+    void LoadBindingsFromYamlNode(const YamlNode* node, AbstractUIPackageBuilder* builder);
     void ProcessLegacyAligns(const YamlNode* node, AbstractUIPackageBuilder* builder) const;
     void ProcessLegacyDebugDraw(const YamlNode* node, AbstractUIPackageBuilder* builder) const;
     void ProcessLegacyClipContent(const YamlNode* node, AbstractUIPackageBuilder* builder) const;

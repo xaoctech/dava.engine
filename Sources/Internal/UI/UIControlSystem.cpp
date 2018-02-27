@@ -19,6 +19,8 @@
 #include "Render/RenderHelper.h"
 #include "Render/Renderer.h"
 #include "Time/SystemTimer.h"
+#include "UI/DataBinding/UIDataBindingSystem.h"
+#include "UI/DataBinding/UIDataBindingPostProcessingSystem.h"
 #include "UI/Flow/Private/UIFlowTransitionAnimationSystem.h"
 #include "UI/Flow/UIFlowControllerSystem.h"
 #include "UI/Flow/UIFlowStateSystem.h"
@@ -55,6 +57,7 @@ UIControlSystem::UIControlSystem()
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
+    AddSystem(std::make_unique<UIDataBindingSystem>());
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIFlowStateSystem>());
@@ -72,6 +75,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UISoundSystem>());
     AddSystem(std::make_unique<UIJoypadSystem>());
     AddSystem(std::make_unique<UIRenderSystem>(RenderSystem2D::Instance()));
+    AddSystem(std::make_unique<UIDataBindingPostProcessingSystem>(GetSystem<UIDataBindingSystem>()));
 
     AddSystem(std::make_unique<UIFlowTransitionAnimationSystem>(GetSystem<UIFlowStateSystem>(), GetSystem<UIRenderSystem>()), GetSystem<UIFlowViewSystem>());
 

@@ -35,6 +35,12 @@ DocumentData::DocumentData(const DAVA::RefPtr<PackageNode>& package_)
     {
         displayedRootControls.insert(controlsNode->Get(index));
     }
+
+    PackageControlsNode* prototypesNode = package->GetPrototypes();
+    for (int index = 0; index < prototypesNode->GetCount(); ++index)
+    {
+        displayedRootControls.insert(prototypesNode->Get(index));
+    }
 }
 
 DocumentData::~DocumentData() = default;

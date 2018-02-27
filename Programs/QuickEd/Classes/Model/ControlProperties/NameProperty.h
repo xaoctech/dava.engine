@@ -7,7 +7,7 @@ class ControlNode;
 class NameProperty : public ValueProperty
 {
 public:
-    NameProperty(ControlNode* controlNode, const NameProperty* sourceProperty, eCloneType cloneType);
+    NameProperty(ControlNode* controlNode, const NameProperty* prototypeProperty);
 
 public:
     void Refresh(DAVA::int32 refreshFlags) override;

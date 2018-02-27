@@ -51,14 +51,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     .Field("scale", &UIControl::GetScale, &UIControl::SetScale)
     .Field("pivot", &UIControl::GetPivot, &UIControl::SetPivot)
     .Field("angle", &UIControl::GetAngleInDegrees, &UIControl::SetAngleInDegrees)
-    .Field("visible", &UIControl::GetVisibilityFlag, &UIControl::SetVisibilityFlag)
-    .Field("enabled", &UIControl::GetEnabled, &UIControl::SetEnabledNotHierarchic)
-    .Field("selected", &UIControl::GetSelected, &UIControl::SetSelectedNotHierarchic)
+    .Field("visible", &UIControl::GetVisibilityFlag, &UIControl::SetVisibilityFlag)[M::Bindable()]
+    .Field("enabled", &UIControl::GetEnabled, &UIControl::SetEnabledNotHierarchic)[M::Bindable()]
+    .Field("selected", &UIControl::GetSelected, &UIControl::SetSelectedNotHierarchic)[M::Bindable()]
     .Field("noInput", &UIControl::GetNoInput, &UIControl::SetNoInput)
     .Field("exclusiveInput", &UIControl::GetExclusiveInput, &UIControl::SetExclusiveInputNotHierarchic)
     .Field("wheelSensitivity", &UIControl::GetWheelSensitivity, &UIControl::SetWheelSensitivity)
     .Field("tag", &UIControl::GetTag, &UIControl::SetTag)
-    .Field("classes", &UIControl::GetClassesAsString, &UIControl::SetClassesFromString)
+    .Field("classes", &UIControl::GetClassesAsString, &UIControl::SetClassesFromString)[M::Bindable()]
     .Field("components", &UIControl::GetComponents, nullptr)[M::HiddenField()]
     .Method<UIControl* (UIControl::*)(const String&)>("FindByPath", &UIControl::FindByPath)
     .Method("GetComponentByName", &UIControl::GetComponentByName)

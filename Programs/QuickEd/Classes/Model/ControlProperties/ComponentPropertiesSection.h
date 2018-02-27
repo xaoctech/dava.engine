@@ -14,7 +14,7 @@ class UIControl;
 class ComponentPropertiesSection : public SectionProperty<IntrospectionProperty>
 {
 public:
-    ComponentPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, DAVA::int32 index, const ComponentPropertiesSection* sourceSection, eCloneType copyType);
+    ComponentPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, DAVA::int32 index, const ComponentPropertiesSection* prototypeSection);
 
 protected:
     virtual ~ComponentPropertiesSection();

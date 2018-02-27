@@ -772,7 +772,7 @@ void PreviewWidget::RegisterPackageActions(Interfaces::PackageActionsInterface* 
     renderWidget->addAction(packageActions->GetJumpToPrototypeAction());
 }
 
-void PreviewWidget::UnregisterPackageActions(Interfaces::PackageActionsInterface* packageActions)
+void PreviewWidget::UnregisterPackageActions()
 {
     renderWidget->removeAction(packageActions->GetImportPackageAction());
     renderWidget->removeAction(packageActions->GetCopyAction());

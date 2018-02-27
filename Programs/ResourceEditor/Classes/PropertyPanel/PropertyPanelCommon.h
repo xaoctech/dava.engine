@@ -13,6 +13,8 @@ enum eREPropertyType
     SlotJointAttachment,
     SlotPreviewProperty,
     SlotTemplateName,
-    SlotPasteProperty
+    SlotPasteProperty,
+    CollisionPropertyType,
+    CollisionPropertyTypeCrashed
 };
 } // namespace PropertyPanel

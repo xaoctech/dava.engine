@@ -44,7 +44,14 @@ void ChangePropertyValueCommand::Undo()
 {
     for (const Item& item : items)
     {
-        ApplyProperty(item.node.Get(), item.property.Get(), item.oldValue);
+        if (item.wasBound)
+        {
+            package->SetControlBindingProperty(item.node.Get(), item.property.Get(), item.oldBindingValue, item.oldBindingMode);
+        }
+        else
+        {
+            ApplyProperty(item.node.Get(), item.property.Get(), item.oldValue);
+        }
     }
 }
 
@@ -95,5 +102,8 @@ ChangePropertyValueCommand::Item::Item(ControlNode* node_, AbstractProperty* pro
     , property(DAVA::RefPtr<AbstractProperty>::ConstructWithRetain(property_))
     , newValue(newValue_)
     , oldValue(ChangePropertyValueCommandDetails::GetValueFromProperty(property_))
+    , oldBindingValue(property_->GetBindingExpression())
+    , oldBindingMode(property_->GetBindingUpdateMode())
+    , wasBound(property_->IsBound())
 {
 }

@@ -6,20 +6,20 @@
 #include <UI/UIControl.h>
 #include <UI/UIControlHelpers.h>
 
-NameProperty::NameProperty(ControlNode* controlNode_, const NameProperty* sourceProperty, eCloneType cloneType)
-    : ValueProperty("Name", DAVA::Type::Instance<DAVA::String>())
+NameProperty::NameProperty(ControlNode* controlNode_, const NameProperty* prototypeProperty)
+    : ValueProperty("Name", DAVA::Type::Instance<DAVA::FastName>())
     , controlNode(controlNode_)
 {
     using namespace DAVA;
 
     FastName name;
-    if (sourceProperty != nullptr)
+    if (prototypeProperty != nullptr)
     {
-        name = sourceProperty->GetValue().Cast<FastName>();
+        name = prototypeProperty->GetValue().Cast<FastName>();
 
-        if (cloneType == CT_INHERIT && controlNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE_CHILD)
+        if (controlNode->GetCreationType() == ControlNode::CREATED_FROM_PROTOTYPE_CHILD)
         {
-            AttachPrototypeProperty(sourceProperty);
+            AttachPrototypeProperty(prototypeProperty);
         }
     }
     else

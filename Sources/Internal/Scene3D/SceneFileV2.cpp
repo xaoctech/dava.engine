@@ -36,7 +36,6 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
-#include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
 #include "Scene3D/Converters/SpeedTreeConverter.h"
 
 #include "Job/JobManager.h"

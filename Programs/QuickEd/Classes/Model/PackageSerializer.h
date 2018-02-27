@@ -12,6 +12,11 @@ class PackageBaseNode;
 class AbstractProperty;
 class ValueProperty;
 
+namespace DAVA
+{
+class UIDataBindingComponent;
+}
+
 class PackageSerializer : private PackageVisitor, private PropertyVisitor
 {
 public:
@@ -31,6 +36,7 @@ public:
 
     virtual void BeginArray(const DAVA::String& name, bool flow = false) = 0;
     virtual void BeginArray() = 0;
+    virtual void BeginFlowArray() = 0;
     virtual void EndArray() = 0;
 
     bool HasErrors() const;
@@ -82,6 +88,14 @@ private:
     DAVA::Vector<ControlNode*> controls;
     DAVA::Vector<ControlNode*> prototypes;
     DAVA::Vector<StyleSheetNode*> styles;
+
+    struct DataBindingInfo
+    {
+        DAVA::String fieldName;
+        DAVA::String expression;
+        DAVA::String mode;
+    };
+    DAVA::Vector<DataBindingInfo> dataBindings;
 
     DAVA::ResultList results;
 };

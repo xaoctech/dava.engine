@@ -7,8 +7,8 @@
 
 using namespace DAVA;
 
-LocalizedTextValueProperty::LocalizedTextValueProperty(DAVA::BaseObject* anObject, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType cloneType)
-    : IntrospectionProperty(anObject, nullptr, name, ref, sourceProperty, cloneType)
+LocalizedTextValueProperty::LocalizedTextValueProperty(DAVA::BaseObject* anObject, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* prototypeProperty)
+    : IntrospectionProperty(anObject, componentType, name, ref, prototypeProperty)
 {
     ApplyValue(ref.GetValue());
 }
@@ -20,8 +20,7 @@ LocalizedTextValueProperty::~LocalizedTextValueProperty()
 void LocalizedTextValueProperty::Refresh(DAVA::int32 refreshFlags)
 {
     IntrospectionProperty::Refresh(refreshFlags);
-
-    if (refreshFlags & REFRESH_LOCALIZATION)
+    if ((refreshFlags & REFRESH_LOCALIZATION) != 0 && !IsBound())
     {
         reflection.SetValue(LocalizedUtf8String(text));
     }

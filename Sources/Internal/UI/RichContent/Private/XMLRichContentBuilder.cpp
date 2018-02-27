@@ -6,11 +6,10 @@
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
-#include "UI/RichContent/Private/RichContentUIPackageBuilder.h"
 #include "UI/RichContent/Private/RichStructs.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
-#include "UI/RichContent/UIRichContentObjectComponent.h"
+#include "UI/Components/UIControlSourceComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlBackground.h"
@@ -253,7 +252,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
                 UIControl* ctrl = link->control;
                 while (ctrl != nullptr)
                 {
-                    UIRichContentObjectComponent* objComp = ctrl->GetComponent<UIRichContentObjectComponent>();
+                    UIControlSourceComponent* objComp = ctrl->GetComponent<UIControlSourceComponent>();
                     if (objComp)
                     {
                         if (path == objComp->GetPackagePath() &&
@@ -270,10 +269,11 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
 
             if (valid)
             {
-                std::unique_ptr<DefaultUIPackageBuilder> pkgBuilder = isEditorMode ? std::make_unique<RichContentUIPackageBuilder>() : std::make_unique<DefaultUIPackageBuilder>();
-                UIPackageLoader().LoadPackage(path, pkgBuilder.get());
+                DefaultUIPackageBuilder pkgBuilder;
+                pkgBuilder.SetEditorMode(isEditorMode);
+                UIPackageLoader().LoadPackage(path, &pkgBuilder);
                 UIControl* obj = nullptr;
-                UIPackage* pkg = pkgBuilder->GetPackage();
+                UIPackage* pkg = pkgBuilder.GetPackage();
                 if (pkg != nullptr)
                 {
                     if (!controlName.empty())
@@ -294,7 +294,7 @@ void XMLRichContentBuilder::ProcessTagBegin(const String& tag, const Map<String,
 
                     PrepareControl(obj, false);
 
-                    UIRichContentObjectComponent* objComp = obj->GetOrCreateComponent<UIRichContentObjectComponent>();
+                    UIControlSourceComponent* objComp = obj->GetOrCreateComponent<UIControlSourceComponent>();
                     objComp->SetPackagePath(path);
                     objComp->SetControlName(controlName);
                     objComp->SetPrototypeName(prototypeName);

@@ -34,12 +34,7 @@ public:
         REFRESH_DEFAULT_VALUE = 0x01,
         REFRESH_LOCALIZATION = 0x02,
         REFRESH_FONT = 0x04,
-    };
-
-    enum eCloneType
-    {
-        CT_INHERIT,
-        CT_COPY
+        REFRESH_ALL = REFRESH_FONT | REFRESH_LOCALIZATION | REFRESH_DEFAULT_VALUE
     };
 
 public:
@@ -79,6 +74,13 @@ public:
     virtual void ResetValue();
     virtual bool IsOverriddenLocally() const;
     virtual bool IsOverridden() const;
+    virtual bool IsBindable() const;
+    virtual bool IsBound() const;
+    virtual bool HasError() const;
+    virtual DAVA::String GetErrorString() const;
+    virtual DAVA::int32 GetBindingUpdateMode() const;
+    virtual DAVA::String GetBindingExpression() const;
+    virtual void SetBindingExpression(const DAVA::String& expression, DAVA::int32 bindingUpdateMode);
 
     AbstractProperty* GetRootProperty();
     const AbstractProperty* GetRootProperty() const;

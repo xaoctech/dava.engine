@@ -72,24 +72,6 @@ enum eEditActions
     EDIT_COUNT
 };
 
-// list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall", "Speed Tree", "Undefined collision"]
-enum eSceneObjectType
-{
-    ESOT_NONE = -1,
-    ESOT_NO_COLISION,
-    ESOT_TREE,
-    ESOT_BUSH,
-    ESOT_FRAGILE_PROJ,
-    ESOT_FRAGILE_PROJ_INV,
-    ESOT_FALLING,
-    ESOT_BUILDING,
-    ESOT_INVISIBLE_WALL,
-    ESOT_SPEED_TREE,
-    ESOT_UNDEFINED_COLLISION,
-
-    ESOT_COUNT,
-};
-
 // coefficient for converting brush size from UI value to system value for landscape editors
 const float32 LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF = 4.0f;
 

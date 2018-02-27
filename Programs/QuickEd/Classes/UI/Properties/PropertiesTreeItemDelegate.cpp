@@ -33,6 +33,7 @@
 #include "Vector4PropertyDelegate.h"
 #include "FontPropertyDelegate.h"
 #include "TablePropertyDelegate.h"
+#include "BindingPropertyDelegate.h"
 #include "CompletionsProviderForScrollBar.h"
 #include "CompletionsProviderForUIReflection.h"
 #include "PredefinedCompletionsProvider.h"
@@ -66,6 +67,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     const QList<QString> particleExtensions{ Project::Get3dFileExtension() };
     const QList<QString> spineSkeletonExtensions{ ".json", ".skel" };
     const QList<QString> spineAtlasExtensions{ ".atlas" };
+    const QList<QString> dataBindingModelExtension{ ".model" };
+    const QList<QString> dataBindingSourceDataExtensions{ ".model", ".yaml" };
     const QList<QString> uiExtensions{ ".yaml" };
     const QList<QString> luaExtensions{ ".lua" };
     const QList<QString> fontExtensions{ ".ttf", ".otf", ".fnt", ".fntconf" };
@@ -108,10 +111,16 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
     propertyNameTypeItemDelegates[PropertyPath("*", "particleEffect-effectPath")] = new ResourceFilePropertyDelegate(particleExtensions, "/3d/", this, false);
 
     propertyNameTypeItemDelegates[PropertyPath("Sound", "*")] = new FMODEventPropertyDelegate(this);
+
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchDown")] = new FMODEventPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchUpInside")] = new FMODEventPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchUpOutside")] = new FMODEventPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("*", "sound-touchValueChanged")] = new FMODEventPropertyDelegate(this);
+
+    bindingPropertyDelegate = new BindingPropertyDelegate(this);
+    propertyNameTypeItemDelegates[PropertyPath("UIDataSourceComponent", "dataFile")] = new ResourceFilePropertyDelegate(dataBindingSourceDataExtensions, "/UI/", this, false);
+    propertyNameTypeItemDelegates[PropertyPath("UIDataListComponent", "cellPackage")] = new ResourceFilePropertyDelegate(dataBindingSourceDataExtensions, "/UI/", this, false);
+    propertyNameTypeItemDelegates[PropertyPath("UIDataViewModelComponent", "viewModel")] = new ResourceFilePropertyDelegate(dataBindingModelExtension, "/UI/", this, false);
 
     propertyNameTypeItemDelegates[PropertyPath("*", "aliases")] = new TablePropertyDelegate(QList<QString>({ "Alias", "Xml" }), this);
 
@@ -153,6 +162,8 @@ PropertiesTreeItemDelegate::~PropertiesTreeItemDelegate()
     {
         SafeDelete(iter.value());
     }
+
+    SafeDelete(bindingPropertyDelegate);
 }
 
 QWidget* PropertiesTreeItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -161,7 +172,7 @@ QWidget* PropertiesTreeItemDelegate::createEditor(QWidget* parent, const QStyleO
     AbstractPropertyDelegate* currentDelegate = GetCustomItemDelegateForIndex(sourceIndex);
     if (currentDelegate)
     {
-        PropertyWidget* editorWidget = new PropertyWidget(parent);
+        PropertyWidget* editorWidget = new PropertyWidget(currentDelegate, parent);
         editorWidget->setObjectName(QString::fromUtf8("editorWidget"));
         QWidget* editor = currentDelegate->createEditor(editorWidget, context, option, sourceIndex);
         if (!editor)
@@ -210,8 +221,12 @@ void PropertiesTreeItemDelegate::setEditorData(QWidget* editor, const QModelInde
 {
     QModelIndex sourceIndex = GetSourceIndex(index, nullptr);
 
-    AbstractPropertyDelegate* currentDelegate = GetCustomItemDelegateForIndex(sourceIndex);
-    if (currentDelegate)
+    PropertyWidget* propertyWidget = DynamicTypeCheck<PropertyWidget*>(editor);
+    AbstractPropertyDelegate* currentDelegate = propertyWidget->delegate;
+
+    AbstractProperty* property = static_cast<AbstractProperty*>(sourceIndex.internalPointer());
+
+    if (property->IsBound() == (currentDelegate == bindingPropertyDelegate))
     {
         return currentDelegate->setEditorData(editor, sourceIndex);
     }
@@ -241,9 +256,16 @@ AbstractPropertyDelegate* PropertiesTreeItemDelegate::GetCustomItemDelegateForIn
     AbstractProperty* property = static_cast<AbstractProperty*>(index.internalPointer());
     if (property)
     {
+        if (property->IsBound())
+        {
+            return bindingPropertyDelegate;
+        }
+
         auto prop_iter = propertyItemDelegates.find(property->GetType());
         if (prop_iter != propertyItemDelegates.end())
+        {
             return prop_iter.value();
+        }
 
         QString parentName;
         AbstractProperty* parentProperty = property->GetParent();
@@ -345,9 +367,10 @@ QModelIndex PropertiesTreeItemDelegate::GetSourceIndex(QModelIndex index, QAbstr
     return sourceIndex;
 }
 
-PropertyWidget::PropertyWidget(QWidget* parent /*= NULL*/)
+PropertyWidget::PropertyWidget(AbstractPropertyDelegate* delegate_, QWidget* parent /*= NULL*/)
     : QWidget(parent)
     , editWidget(NULL)
+    , delegate(delegate_)
 {
 }
 

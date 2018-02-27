@@ -6,19 +6,21 @@
 namespace DAVA
 {
 class UIControl;
+class UIDataBindingComponent;
 class UILayoutSourceRectComponent;
 }
 
 class IntrospectionProperty : public ValueProperty
 {
 public:
-    IntrospectionProperty(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType);
+    IntrospectionProperty(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* prototypeProperty);
 
 protected:
+    IntrospectionProperty(DAVA::BaseObject* object, DAVA::int32 componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* prototypeProperty);
     virtual ~IntrospectionProperty();
 
 public:
-    static IntrospectionProperty* Create(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType cloneType);
+    static IntrospectionProperty* Create(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty);
 
     void Accept(PropertyVisitor* visitor) override;
 
@@ -37,18 +39,41 @@ public:
 
     void DisableResetFeature();
 
+    void ResetValue() override;
+    void Refresh(DAVA::int32 refreshFlags) override;
+    bool IsBindable() const override;
+    bool IsBound() const override;
+    DAVA::int32 GetBindingUpdateMode() const override;
+    DAVA::String GetBindingExpression() const override;
+    void SetBindingExpression(const DAVA::String& expression, DAVA::int32 bindingUpdateMode) override;
+    DAVA::String GetFullFieldName() const;
+
+    bool HasError() const override;
+    DAVA::String GetErrorString() const override;
+
     bool IsReadOnly() const override;
 
-protected:
-    void ApplyValue(const DAVA::Any& value) override;
+    void ComponentWithPropertyWasInstalled();
+    void ComponentWithPropertyWasUninstalled();
 
 protected:
+    void SetBindingExpressionImpl(const DAVA::String& expression, DAVA::int32 bindingUpdateMode);
+    void ResetBindingExpression();
+    void ApplyValue(const DAVA::Any& value) override;
+
     DAVA::BaseObject* object = nullptr;
     DAVA::Reflection reflection;
     DAVA::int32 flags;
+    DAVA::String bindingExpression;
+    DAVA::int32 bindingMode = 0;
     bool forceReadOnly = false;
 
 private:
+    DAVA::UIControl* GetLinkedControl();
+    bool bindable = false;
+    bool bound = false;
+    const DAVA::Type* componentType = nullptr;
+    DAVA::RefPtr<DAVA::UIDataBindingComponent> bindingComponent;
     void SetLayoutSourceRectValue(const DAVA::Any& value);
     DAVA::RefPtr<DAVA::UILayoutSourceRectComponent> sourceRectComponent;
 };

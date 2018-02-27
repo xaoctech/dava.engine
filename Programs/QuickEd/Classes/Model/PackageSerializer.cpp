@@ -23,8 +23,10 @@
 
 #include "Utils/QtDavaConvertion.h"
 
+#include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIPackage.h>
 #include <UI/UIControl.h>
+#include <UI/DataBinding/UIDataBindingComponent.h>
 
 #include <Utils/StringFormat.h>
 
@@ -64,6 +66,8 @@ void PackageSerializer::SerializePackage(PackageNode* package)
     importedPackages.clear();
     controls.clear();
     styles.clear();
+
+    DVASSERT(dataBindings.empty());
 }
 
 void PackageSerializer::SerializePackageNodes(PackageNode* package, const DAVA::Vector<ControlNode*>& serializationControls, const DAVA::Vector<StyleSheetNode*>& serializationStyles)
@@ -305,6 +309,8 @@ bool PackageSerializer::HasNonPrototypeChildren(const ControlNode* node) const
 
 void PackageSerializer::VisitRootProperty(RootProperty* property)
 {
+    DVASSERT(dataBindings.empty());
+
     property->GetPrototypeProperty()->Accept(this);
     property->GetClassProperty()->Accept(this);
     property->GetCustomClassProperty()->Accept(this);
@@ -333,6 +339,22 @@ void PackageSerializer::VisitRootProperty(RootProperty* property)
 
         EndMap();
     }
+
+    if (!dataBindings.empty())
+    {
+        BeginArray("bindings");
+        for (const DataBindingInfo& info : dataBindings)
+        {
+            BeginFlowArray();
+            PutValue(info.fieldName, true);
+            PutValue(info.expression, true);
+            PutValue(info.mode, true);
+            EndArray();
+        }
+        dataBindings.clear();
+
+        EndArray();
+    }
 }
 
 void PackageSerializer::VisitControlSection(ControlPropertiesSection* property)
@@ -342,7 +364,7 @@ void PackageSerializer::VisitControlSection(ControlPropertiesSection* property)
 
 void PackageSerializer::VisitComponentSection(ComponentPropertiesSection* property)
 {
-    if (property->HasChanges())
+    if (property->HasChanges() && property->GetComponentType() != Type::Instance<UIDataBindingComponent>())
     {
         String name = property->GetComponentName();
         if (UIComponent::IsMultiple(property->GetComponentType()))
@@ -410,7 +432,18 @@ void PackageSerializer::VisitIntrospectionProperty(IntrospectionProperty* proper
 {
     if (property->IsOverriddenLocally())
     {
-        PutValueProperty(property->GetName(), property);
+        if (property->IsBound())
+        {
+            DataBindingInfo info;
+            info.fieldName = property->GetFullFieldName();
+            info.expression = property->GetBindingExpression();
+            info.mode = GlobalEnumMap<UIDataBindingComponent::UpdateMode>::Instance()->ToString(property->GetBindingUpdateMode());
+            dataBindings.push_back(info);
+        }
+        else
+        {
+            PutValueProperty(property->GetName(), property);
+        }
     }
 }
 

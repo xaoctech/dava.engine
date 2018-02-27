@@ -60,7 +60,7 @@ public:
     DAVA::Signal<bool> droppingFile;
 
     void RegisterPackageActions(Interfaces::PackageActionsInterface* packageActions);
-    void UnregisterPackageActions(Interfaces::PackageActionsInterface* packageActions);
+    void UnregisterPackageActions();
 
 signals:
     void OpenPackageFiles(const QStringList& links);

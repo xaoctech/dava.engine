@@ -7,23 +7,15 @@
 
 using namespace DAVA;
 
-CustomClassProperty::CustomClassProperty(ControlNode* aControl, const CustomClassProperty* sourceProperty, eCloneType cloneType)
+CustomClassProperty::CustomClassProperty(ControlNode* aControl, const CustomClassProperty* prototypeProperty)
     : ValueProperty("Custom Class", Type::Instance<String>())
     , control(aControl) // weak
 {
-    if (sourceProperty)
+    if (prototypeProperty)
     {
-        if (cloneType == CT_COPY)
-        {
-            SetOverridden(sourceProperty->IsOverriddenLocally());
-            SetDefaultValue(sourceProperty->GetDefaultValue());
-        }
-        else
-        {
-            AttachPrototypeProperty(sourceProperty);
-            SetDefaultValue(sourceProperty->GetValue());
-        }
-        customClass = sourceProperty->customClass;
+        AttachPrototypeProperty(prototypeProperty);
+        SetDefaultValue(prototypeProperty->GetValue());
+        customClass = prototypeProperty->customClass;
     }
     else
     {

@@ -22,8 +22,9 @@ public:
     virtual void BeginMap(const DAVA::String& name, bool quotes = false) override;
     virtual void EndMap() override;
 
-    virtual void BeginArray() override;
     virtual void BeginArray(const DAVA::String& name, bool flow = false) override;
+    virtual void BeginArray() override;
+    virtual void BeginFlowArray() override;
     virtual void EndArray() override;
 
     DAVA::YamlNode* GetYamlNode() const;

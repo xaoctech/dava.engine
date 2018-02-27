@@ -47,7 +47,7 @@ FileSystemWidget::FileSystemWidget(DAVA::ContextAccessor* accessor_, QWidget* pa
 #endif // platform
     deleteAction->setShortcutContext(Qt::WidgetShortcut);
     connect(deleteAction, &QAction::triggered, this, &FileSystemWidget::onDeleteFile);
-    
+
 #if defined Q_OS_WIN
     QString actionName = tr("Show in explorer");
 #elif defined Q_OS_MAC

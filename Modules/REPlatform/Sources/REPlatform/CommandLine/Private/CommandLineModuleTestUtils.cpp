@@ -1,4 +1,5 @@
 #include "REPlatform/CommandLine/CommandLineModuleTestUtils.h"
+#include "REPlatform/Scene/Components/CollisionTypeComponent.h"
 #include "REPlatform/Scene/Utils/RETextureDescriptorUtils.h"
 #include "REPlatform/Scene/Systems/BeastSystem.h"
 
@@ -501,6 +502,16 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddSlotComponent(const Strin
     return *this;
 }
 
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddCollisionTypeComponent(DAVA::int32 collisionType)
+{
+    DVASSERT(box.get() != nullptr);
+    CollisionTypeComponent* collTypeComp = new CollisionTypeComponent();
+    collTypeComp->SetCollisionType(collisionType);
+    box->AddComponent(collTypeComp);
+
+    return *this;
+}
+
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddRefToOwner()
 {
     Detail::CreateR2OCustomProperty(box, path);
@@ -509,6 +520,14 @@ SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddRefToOwner()
 
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddToScene(Scene* scene)
 {
+    scene->AddNode(box);
+    return *this;
+}
+
+SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::AddToScene(SceneBuilder& builder)
+{
+    Scene* scene = builder.scene.get();
+    DVASSERT(scene != nullptr);
     scene->AddNode(box);
     return *this;
 }
@@ -552,6 +571,61 @@ bool CreateSlotYaml(const FilePath& yamlPath, const FilePath& slotContentsPath)
     return YamlEmitter::SaveToYamlFile(yamlPath, rootNode);
 }
 
+bool CreateEditorConfigYaml(const FilePath& yamlPath)
+{
+    ScopedPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+
+    {
+        YamlNode* node = YamlNode::CreateMapNode(false);
+        node->Set(String("name"), String("CollisionType"));
+        node->Set(String("type"), String("CollisionTypeMap"));
+        node->Set(String("default"), 0);
+
+        YamlNode* array = YamlNode::CreateArrayNode();
+        {
+            YamlNode* entry = YamlNode::CreateArrayNode();
+            entry->Add(String("First"));
+            entry->Add(0);
+            array->AddNodeToArray(entry);
+        }
+        {
+            YamlNode* entry = YamlNode::CreateArrayNode();
+            entry->Add(String("Second"));
+            entry->Add(1);
+            array->AddNodeToArray(entry);
+        }
+        node->Set(String("map"), array);
+
+        rootNode->Add(node);
+    }
+
+    {
+        YamlNode* node = YamlNode::CreateMapNode(false);
+        node->Set(String("name"), String("CollisionTypeCrashed"));
+        node->Set(String("type"), String("CollisionTypeMap"));
+        node->Set(String("default"), 0);
+
+        YamlNode* array = YamlNode::CreateArrayNode();
+        {
+            YamlNode* entry = YamlNode::CreateArrayNode();
+            entry->Add(String("First"));
+            entry->Add(0);
+            array->AddNodeToArray(entry);
+        }
+        {
+            YamlNode* entry = YamlNode::CreateArrayNode();
+            entry->Add(String("Second"));
+            entry->Add(1);
+            array->AddNodeToArray(entry);
+        }
+        node->Set(String("map"), array);
+
+        rootNode->Add(node);
+    }
+
+    return YamlEmitter::SaveToYamlFile(yamlPath, rootNode);
+}
+
 void CreateProjectInfrastructure(const FilePath& projectPathname)
 {
     ClearTestFolder(projectPathname); // to be sure that we have no any data at project folder that could stay in case of crash or stopping of debugging
@@ -561,6 +635,9 @@ void CreateProjectInfrastructure(const FilePath& projectPathname)
 
     FilePath qulityPath = projectPathname + "DataSource/quality.yaml";
     FileSystem::Instance()->CopyFile("~res:/ResourceEditor/quality.template.yaml", qulityPath, true);
+
+    FilePath editorConfigPath = projectPathname + "EditorConfig.yaml";
+    CreateEditorConfigYaml(editorConfigPath);
 }
 
 String SceneBuilder::GetSceneRelativePathname(const FilePath& scenePath, const FilePath& dataSourcePath, const String& filename)

@@ -1,18 +1,27 @@
-# type: Bool, Int, Float String, Combobox
+# type: Bool, Int, Float String, Combobox, CollisionTypeMap
 -
     name: "CollisionType"
-    type: "Combobox"
+    type: "CollisionTypeMap"
     default: 0
-    list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall", "SpeedTree", "Water"]
+    hidden: true
+    list: [["No Collision", 0], ["Fragile Proj", 3], ["Fragile ^Proj", 4], ["Falling", 5], ["Building", 6], ["Invisible Wall", 7], ["SpeedTree", 8], ["Water", 9]]
 -
     name: "CollisionTypeCrashed"
-    type: "Combobox"
+    type: "CollisionTypeMap"
     default: 0
-    list: ["No Collision", "Tree", "Bush", "Fragile Proj", "Fragile ^Proj", "Falling", "Building", "Invisible Wall", "SpeedTree"]
+    hidden: true
+    list: [["No Collision", 0], ["Fragile Proj", 3], ["Fragile ^Proj", 4], ["Falling", 5], ["Building", 6], ["Invisible Wall", 7], ["SpeedTree", 8]]
+-
+    name: "CollisionTypeIgnoreVisibilityCheck"
+    type: "CollisionTypeMap"
+    hidden: true
+    default: 0
+    list: [["No Collision", 0], ["Fragile ^Proj", 4], ["Falling", 5], ["SpeedTree", 8]]
 -
     name: "CollisionTypeColor"
     type: "ColorList"
     default: 0
+    hidden: true
     list: [[0, 0, 0, 255], [255, 255, 255, 255], [255, 255, 0, 255], [255, 0, 255, 255], [0, 255, 255, 255], [255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255]]
 -
     name: "MaterialKind"

@@ -100,7 +100,8 @@ String UIControlHelpers::GetControlPath(const UIControl* control, const Function
         }
         else
         {
-            controlPath = String(controlIter->GetName().c_str()) + PATH_SEPARATOR + controlPath;
+            const char* name = controlIter->GetName().IsValid() ? controlIter->GetName().c_str() : "";
+            controlPath = String(name) + PATH_SEPARATOR + controlPath;
         }
         controlIter = controlIter->GetParent();
     }
