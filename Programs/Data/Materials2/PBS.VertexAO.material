@@ -64,7 +64,7 @@ RenderTechnique:
             cullMode: "FACE_BACK"
             depthFunc: "CMP_LESS"
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
     RenderPassDeferredFetch:
         Name: "gBufferFetchPass"
         Shader: "~res:/Materials2/Shaders/deferred-pbs"        
@@ -73,4 +73,4 @@ RenderTechnique:
             depthFunc: "CMP_LESS"
             UniqueDefines: ["VERTEX_BAKED_AO", "USE_FRAMEBUFFER_FETCH"]
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"

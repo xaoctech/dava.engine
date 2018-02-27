@@ -428,6 +428,17 @@ float QueryLodLevel(float2 texCoords, float2 texSize)
     return max(0.0, 0.5 * log2(dm));
 }
 
+/// RDB <--> YCoCg color space transitions.
+float3 RGBToYCoCg(float3 c)
+{
+    return float3(c.x / 4.0 + c.y / 2.0 + c.z / 4.0, c.x / 2.0 - c.z / 2.0, -c.x / 4.0 + c.y / 2.0 - c.z / 4.0);
+}
+
+float3 YCoCgToRGB(float3 c)
+{
+    return saturate(float3(c.x + c.y - c.z, c.x + c.z, c.x - c.y - c.z));
+}
+
 float4 AnalyticDFGApproximation(float NdotV_, float roughness_)
 {
     float b1 = -0.1688;

@@ -247,6 +247,8 @@ void SceneInfo::InitializeLODSectionInFrame()
     AddChild("Objects without LOD Triangles", header);
     AddChild("Landscape Triangles", header);
     AddChild("Landscape Patches", header);
+    AddChild("Landscape Pages", header);
+    AddChild("Decoration Pages", header);
     AddChild("Decoration Triangles", header);
     AddChild("Decoration Layers Triangles", header);
     AddChild("Decoration Items", header);
@@ -308,6 +310,8 @@ void SceneInfo::RefreshLODInfoInFrame()
 
         SetChild("Landscape Triangles", landscapeStats.landscapeTriangles, header);
         SetChild("Landscape Patches", landscapeStats.landscapePatches, header);
+        SetChild("Landscape Pages", landscapeStats.landscapePages, header);
+        SetChild("Decoration Pages", landscapeStats.decorationPages, header);
         SetChild("Decoration Triangles", landscapeStats.decorationTriangles, header);
         SetChild("Decoration Items", landscapeStats.decorationItems, header);
         SetChild("Decoration Patches", landscapeStats.decorationPatches, header);
@@ -326,6 +330,8 @@ void SceneInfo::RefreshLODInfoInFrame()
         SetChild("Objects without LOD Triangles", 0, header);
         SetChild("Landscape Triangles", 0, header);
         SetChild("Landscape Patches", 0, header);
+        SetChild("Landscape Pages", 0, header);
+        SetChild("Decoration Pages", 0, header);
         SetChild("Decoration Triangles", 0, header);
         SetChild("Decoration Items", 0, header);
         SetChild("Decoration Patches", 0, header);

@@ -102,6 +102,8 @@
 #ensuredefined NORMAL_BLEND_MODE 0
 #ensuredefined USE_DETAIL_NORMAL_AO 0
 
+#ensuredefined ENABLE_TXAA 0
+
 #ensuredefined USE_DFG_APPROXIMATION 0
 
 #ensuredefined PLACEHOLDER 0

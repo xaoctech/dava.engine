@@ -39,33 +39,9 @@ LandscapeSystem::~LandscapeSystem()
 void LandscapeSystem::AddEntity(Entity* entity)
 {
     Landscape* landscapeObject = GetLandscape(entity);
-    if (landscapeObject)
+    if (landscapeObject != nullptr)
     {
         landscapeEntities.push_back(entity);
-
-        const LandscapeQuality* quality = QualitySettingsSystem::Instance()->GetLandscapeQuality(QualitySettingsSystem::Instance()->GetCurLandscapeQuality());
-        if (quality)
-        {
-            LandscapeSubdivision::SubdivisionMetrics metrics;
-            metrics.normalMaxHeightError = quality->normalMaxHeightError;
-            metrics.normalMaxPatchRadiusError = quality->normalMaxPatchRadiusError;
-            metrics.normalMaxAbsoluteHeightError = quality->normalMaxAbsoluteHeightError;
-
-            metrics.zoomMaxHeightError = quality->zoomMaxHeightError;
-            metrics.zoomMaxPatchRadiusError = quality->zoomMaxPatchRadiusError;
-            metrics.zoomMaxAbsoluteHeightError = quality->zoomMaxAbsoluteHeightError;
-
-            landscapeObject->GetSubdivision()->SetMetrics(metrics);
-
-            if (quality->morphing && landscapeObject->renderMode != Landscape::RENDERMODE_INSTANCING_MORPHING)
-            {
-                landscapeObject->SetUseMorphing(quality->morphing);
-            }
-            else
-            {
-                landscapeObject->GetSubdivision()->UpdateHeightChainData(Rect2i(0, 0, -1, -1));
-            }
-        }
     }
 }
 

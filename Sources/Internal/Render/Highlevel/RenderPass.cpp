@@ -20,7 +20,7 @@
 
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-
+#include "Particles/ParticlesRandom.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 namespace DAVA
@@ -96,6 +96,9 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
 
     bool invertProjection = rhi::IsInvertedProjectionRequired(passConfig.IsRenderTargetPass(), passConfig.IsCubeRenderTargetPass());
     passConfig.invertCulling = invertProjection ? 1 : 0;
+
+    Vector2 offset = enableFrameJittering ? GetCurrentFrameJitterOffset() : Vector2::Zero;
+    mainCamera->SetProjectionJitterOffset(offset);
 
     drawCamera->SetupDynamicParameters(invertProjection, passConfig.usesReverseDepth, externalClipPlane);
 
@@ -229,6 +232,13 @@ void RenderPass::ValidateMultisampledTextures(const rhi::RenderPassConfig& confi
 
         multisampledTexture = Texture::CreateFBO(multisampledDescription);
     }
+}
+
+Vector2 RenderPass::GetCurrentFrameJitterOffset() const
+{
+    Size2i size = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+    Vector2 currOffset = ParticlesRandom::SobolSequenceV2Prebult(Engine::Instance()->GetGlobalFrameIndex());
+    return Vector2(currOffset.x / float32(size.dx), currOffset.y / float32(size.dy)) * 2.0f;
 }
 
 bool RenderPass::BeginRenderPass(const rhi::RenderPassConfig& config)

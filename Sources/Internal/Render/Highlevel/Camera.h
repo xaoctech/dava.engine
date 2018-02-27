@@ -49,8 +49,8 @@ public:
 
     /**
         \brief SetupPerspective camera with basic camera params.
-		This function set all parameters for the camera. All these parameters will be applied in case if camera Set function will be called.
-	*/
+        This function set all parameters for the camera. All these parameters will be applied in case if camera Set function will be called.
+    */
     void Setup(float32 xmin, float32 xmax, float32 ymin, float32 ymax, float32 znear, float32 zfar);
 
     /**
@@ -324,6 +324,12 @@ public:
     const Vector2& GetProjectionMatrixOffset() const;
     void SetProjectionMatrixOffset(const Vector2& offset);
 
+    /*
+     * Projection jitter offset is used with TXAA.
+     */
+    const Vector2& GetProjectionJitterOffset() const;
+    void SetProjectionJitterOffset(const Vector2& offset);
+
     Quaternion GetOrientation();
     void Rotate(const Quaternion& rot);
     void RestoreCameraTransform();
@@ -350,6 +356,7 @@ protected:
     Vector3 up;
     Vector3 left;
     Vector2 projectionMatrixOffset;
+    Vector2 jitterOffset;
     Vector3 direction; // right now this variable updated only when you call GetDirection.
 
     //Quaternion rotation;	//

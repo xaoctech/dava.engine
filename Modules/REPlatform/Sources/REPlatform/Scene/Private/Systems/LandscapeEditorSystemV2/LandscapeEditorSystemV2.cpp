@@ -88,6 +88,8 @@ public:
             material->AddTexture(coverTextureSlotName, coverTexture.Get());
         }
 
+        Color c(0.5f, 0.5f, 1.0f, 1.0f);
+        material->AddProperty(FastName("landCursorColor"), c.color, rhi::ShaderProp::TYPE_FLOAT3);
         FastName cursorTextureSlotName(TextureRenderBrushApplicant::CURSOR_TEXTURE_SLOT_NAME);
         DVASSERT(material->HasLocalTexture(cursorTextureSlotName) == false);
         material->AddTexture(cursorTextureSlotName, cursor.Get());
@@ -125,6 +127,8 @@ public:
             DVASSERT(material->HasLocalTexture(coverTextureSlotName) == true);
             material->RemoveTexture(coverTextureSlotName);
         }
+
+        material->RemoveProperty(FastName("landCursorColor"));
 
         FastName cursorTextureSlotName(TextureRenderBrushApplicant::CURSOR_TEXTURE_SLOT_NAME);
         DVASSERT(material->HasLocalTexture(cursorTextureSlotName) == true);
@@ -326,6 +330,8 @@ void LandscapeEditorSystemV2::Process(float32 delta)
     NMaterial* landscapeMaterial = editedLandscape->GetLandscapeMaterial();
     {
         // check if cursor texture changed
+        Color cursorColor = activeTool->GetCursorColor();
+        landscapeMaterial->SetPropertyValue(FastName("landCursorColor"), cursorColor.color);
         RefPtr<Texture> cursorTexture = activeTool->GetCursorTexture();
         if (cursorTexture.Get() != nullptr && currentCursorTexture != cursorTexture)
         {
@@ -459,7 +465,12 @@ bool LandscapeEditorSystemV2::ActivateTool(BaseLandscapeTool* tool)
         // Render Widget modification
         RenderWidget* renderWidget = PlatformApi::Qt::GetRenderWidget();
         prevCursor = renderWidget->cursor();
-        renderWidget->setCursor(QCursor(Qt::BlankCursor));
+        QCursor blankCursor(Qt::BlankCursor);
+        renderWidget->setCursor(blankCursor);
+        foreach (QWidget* w, renderWidget->findChildren<QWidget*>())
+        {
+            w->setCursor(blankCursor);
+        }
         renderWidget->mouseEntered.Connect(this, &LandscapeEditorSystemV2::OnMouseEnterRenderWidget);
         renderWidget->mouseLeaved.Connect(this, &LandscapeEditorSystemV2::OnMouseLeaveRenderWidget);
     }
@@ -502,6 +513,10 @@ void LandscapeEditorSystemV2::DeactivateTool()
         // Render Widget modification
         RenderWidget* renderWidget = PlatformApi::Qt::GetRenderWidget();
         renderWidget->setCursor(prevCursor);
+        foreach (QWidget* w, renderWidget->findChildren<QWidget*>())
+        {
+            w->setCursor(prevCursor);
+        }
         renderWidget->mouseEntered.Disconnect(this);
         renderWidget->mouseLeaved.Disconnect(this);
     }

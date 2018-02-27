@@ -28,6 +28,7 @@ public:
     DAVA::BaseBrushApplicant* GetBrushApplicant() const override;
     QWidget* CreateEditorWidget(const WidgetParams& params) override;
     DAVA::RefPtr<DAVA::Texture> GetCursorTexture() const override;
+    DAVA::Color GetCursorColor() const override;
     DAVA::Vector2 GetBrushSize() const override;
     DAVA::float32 GetBrushRotation() const override;
     void Deactivate(DAVA::PropertiesItem& settings) override;
@@ -41,6 +42,9 @@ private:
 
     DAVA::float32 GetBrushRadius() const;
     void SetBrushRadius(const DAVA::float32& brushRadius);
+
+    eMode GetMode() const;
+    void SetMode(eMode newMode);
 
     DAVA::float32 GetMinRotation() const;
     void SetMinRotation(const DAVA::float32& v);

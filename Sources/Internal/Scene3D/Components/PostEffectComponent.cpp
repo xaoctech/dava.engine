@@ -31,7 +31,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PostEffectComponent)
 
     .Field("lightMeterTable", &PostEffectComponent::GetLightMeterTable, &PostEffectComponent::SetLightMeterTable)[M::DisplayName("Exposure Meter Mask")]
     .Field("resetLuminanceHistory", &PostEffectComponent::GetResetHistory, &PostEffectComponent::SetResetHistory)[M::DisplayName("Reset Luminance History")]
-
     .End();
 }
 

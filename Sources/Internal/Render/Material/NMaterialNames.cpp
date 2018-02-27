@@ -69,6 +69,7 @@ const FastName NMaterialName::LANDSCAPE_BRUSH = FastName("~res:/Materials2/Lands
 const FastName NMaterialName::WATER_ALL_QUALITIES = FastName("~res:/Materials/WaterAllQualities.material");
 
 const FastName NMaterialName::GBUFFER_RESOLVE = FastName("~res:/Materials2/GbufferResolve.material");
+const FastName NMaterialName::VELOCITY = FastName("~res:/Materials2/Velocity.material");
 const FastName NMaterialName::RESCALE_QUAD = FastName("~res:/Materials2/rescale.material");
 const FastName NMaterialName::TEXTURE_BLIT = FastName("~res:/Materials2/TextureBlit.material");
 const FastName NMaterialName::VT_COMBINE_BLEND = FastName("~res:/Materials2/vt-decal.combine.blend.material");

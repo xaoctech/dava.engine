@@ -78,6 +78,8 @@ public:
 
     static const FastName GBUFFER_RESOLVE;
 
+    static const FastName VELOCITY;
+
     static const FastName RESCALE_QUAD;
 
     static const FastName TEXTURE_BLIT;

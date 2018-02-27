@@ -41,8 +41,8 @@ public:
         virtual bool TransformDependsFromObject(const Any& dependant, const Any& dependsOn) const = 0;
     };
 
-    template <typename CLASS, typename PROXY>
-    static void AddTransformProxyForClass();
+    template <typename CLASS, typename PROXY, typename... PROXYARGS>
+    static void AddTransformProxyForClass(PROXYARGS... args);
     static void RemoveAllTransformProxies();
 
 public:
@@ -147,12 +147,12 @@ inline Entity* Selectable::AsEntity() const
     return Cast<Entity>();
 }
 
-template <typename CLASS, typename PROXY>
-inline void Selectable::AddTransformProxyForClass()
+template <typename CLASS, typename PROXY, typename... PROXYARGS>
+inline void Selectable::AddTransformProxyForClass(PROXYARGS... arg)
 {
     static_assert(std::is_base_of<Selectable::TransformProxy, PROXY>::value,
                   "Transform proxy should be derived from Selectable::TransformProxy");
-    AddConcreteProxy(Type::Instance<CLASS>(), new PROXY());
+    AddConcreteProxy(Type::Instance<CLASS>(), new PROXY(arg...));
 }
 
 inline bool Selectable::ContainsObject() const

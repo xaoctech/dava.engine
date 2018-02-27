@@ -1,3 +1,4 @@
+#include "FileSystem/KeyedArchive.h"
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/LandscapeSubdivision.h"
 #include "Render/Highlevel/Frustum.h"
@@ -43,6 +44,36 @@ bool LandscapeSubdivision::SubdivisionMetrics::operator==(const SubdivisionMetri
     zoomMaxHeightError == other.zoomMaxHeightError &&
     zoomMaxPatchRadiusError == other.zoomMaxPatchRadiusError &&
     zoomMaxAbsoluteHeightError == other.zoomMaxAbsoluteHeightError;
+}
+
+void LandscapeSubdivision::SubdivisionMetrics::Save(KeyedArchive* archive) const
+{
+    DVASSERT(archive != nullptr);
+
+    archive->SetFloat("subdiv.metrics.normalFov", normalFov);
+    archive->SetFloat("subdiv.metrics.zoomFov", zoomFov);
+
+    archive->SetFloat("subdiv.metrics.normalMaxHeightError", normalMaxHeightError);
+    archive->SetFloat("subdiv.metrics.normalMaxPatchRadiusError", normalMaxPatchRadiusError);
+    archive->SetFloat("subdiv.metrics.normalMaxAbsoluteHeightError", normalMaxAbsoluteHeightError);
+
+    archive->SetFloat("subdiv.metrics.zoomMaxHeightError", zoomMaxHeightError);
+    archive->SetFloat("subdiv.metrics.zoomMaxPatchRadiusError", zoomMaxPatchRadiusError);
+    archive->SetFloat("subdiv.metrics.zoomMaxAbsoluteHeightError", zoomMaxAbsoluteHeightError);
+}
+
+void LandscapeSubdivision::SubdivisionMetrics::Load(KeyedArchive* archive)
+{
+    normalFov = archive->GetFloat("subdiv.metrics.normalFov", normalFov);
+    zoomFov = archive->GetFloat("subdiv.metrics.zoomFov", zoomFov);
+
+    normalMaxHeightError = archive->GetFloat("subdiv.metrics.normalMaxHeightError", normalMaxHeightError);
+    normalMaxPatchRadiusError = archive->GetFloat("subdiv.metrics.normalMaxPatchRadiusError", normalMaxPatchRadiusError);
+    normalMaxAbsoluteHeightError = archive->GetFloat("subdiv.metrics.normalMaxAbsoluteHeightError", normalMaxAbsoluteHeightError);
+
+    zoomMaxHeightError = archive->GetFloat("subdiv.metrics.zoomMaxHeightError", zoomMaxHeightError);
+    zoomMaxPatchRadiusError = archive->GetFloat("subdiv.metrics.zoomMaxPatchRadiusError", zoomMaxPatchRadiusError);
+    zoomMaxAbsoluteHeightError = archive->GetFloat("subdiv.metrics.zoomMaxAbsoluteHeightError", zoomMaxAbsoluteHeightError);
 }
 
 LandscapeSubdivision::SubdivisionPatch::~SubdivisionPatch()
@@ -291,10 +322,14 @@ const LandscapeSubdivision::SubdivisionPatch* LandscapeSubdivision::PrepareSubdi
 void LandscapeSubdivision::SubdividePatch(SubdivisionPatch*& subdivPatch, SubdivisionPatch* parent, uint32 level, uint32 x, uint32 y, uint8 clippingFlags)
 {
     uint8 startClipPlane = subdivPatch ? subdivPatch->startClipPlane : 0;
-    AABBox3 bbox = (subdivPatch && !subdivPatch->bbox.IsEmpty()) ? subdivPatch->bbox : GetPatchAABBox(level, x, y);
+    AABBox3 bbox = (subdivPatch != nullptr && !subdivPatch->bbox.IsEmpty()) ? subdivPatch->bbox : GetPatchAABBox(level, x, y);
 
     //frustum-culling
-    if (clippingFlags && (frustum->Classify(bbox, clippingFlags, startClipPlane) == Frustum::EFR_OUTSIDE))
+    AABBox3 clippingBbox = bbox;
+    clippingBbox.min.z -= patchBBoxGapMin;
+    clippingBbox.max.z += patchBBoxGapMax;
+
+    if (clippingFlags && (frustum->Classify(clippingBbox, clippingFlags, startClipPlane) == Frustum::EFR_OUTSIDE))
     {
         SafeDelete(subdivPatch);
         return;
@@ -459,9 +494,6 @@ AABBox3 LandscapeSubdivision::GetPatchAABBox(uint32 level, uint32 x, uint32 y) c
         bbox.min.z = (subdivisionBBox.min.z + heights[0] / Heightmap::MAX_VALUE * bboxSize.z);
         bbox.max.z = (subdivisionBBox.min.z + heights[3] / Heightmap::MAX_VALUE * bboxSize.z);
     }
-
-    bbox.min.z -= patchBBoxGapMin;
-    bbox.max.z += patchBBoxGapMax;
 
     return bbox;
 }

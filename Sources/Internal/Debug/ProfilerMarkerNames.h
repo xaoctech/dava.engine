@@ -93,6 +93,8 @@ extern const char* LANDSCAPE_PAGE_UPDATE;
 extern const char* LANDSCAPE_PAGE_UPDATE_VT_DECALS;
 extern const char* DEBUG_DRAW;
 
+extern const char* VELOCITY_PASS;
+
 extern const char* RESCALE_PASS;
 };
 }; //ns DAVA

@@ -12,7 +12,7 @@ vertex_in
     float3 binormal : BINORMAL;
     float2 texCoord0 : TEXCOORD0;
 
-#if (USE_BAKED_LIGHTING)
+#if (USE_BAKED_LIGHTING || ALBEDO_MODIFIER_BLEND_MODE != 0)
     float2 texCoord1 : TEXCOORD1;
 #endif
 
@@ -140,8 +140,8 @@ vertex_out vp_main(vertex_in input)
     output.tbnToWorld2.w = dot(worldNormal, cameraPosition - worldPosition.xyz);
     output.projectedPosition = output.position;
 
-#if (USE_BAKED_LIGHTING)
-    output.uv = float4(texCoordScale * input.texCoord0, uvOffset + uvScale * input.texCoord1);
+#if (USE_BAKED_LIGHTING || ALBEDO_MODIFIER_BLEND_MODE != 0)
+    output.uv = float4(texCoordScale * input.texCoord0, input.texCoord1 * uvScale + uvOffset);
 #else
     output.uv = float4(texCoordScale * input.texCoord0, 0.0, 0.0);
 #endif

@@ -2,6 +2,7 @@
 #include "REPlatform/Scene/Systems/CameraSystem.h"
 #include "REPlatform/Scene/SceneEditor2.h"
 
+#include "REPlatform/Commands/BakeTransformCommand.h"
 #include "REPlatform/Commands/ConvertToBillboardCommand.h"
 #include "REPlatform/Commands/CreatePlaneLODCommand.h"
 #include "REPlatform/Commands/DeleteLODCommand.h"
@@ -11,9 +12,12 @@
 #include "REPlatform/Commands/ParticleEditorCommands.h"
 #include "REPlatform/Commands/RECommandNotificationObject.h"
 #include "REPlatform/Commands/SetFieldValueCommand.h"
+#include "REPlatform/Commands/SplineEditorCommands.h"
 #include "REPlatform/Commands/TransformCommand.h"
-#include "REPlatform/Commands/BakeTransformCommand.h"
 #include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
+#include "REPlatform/Scene/Components/SplineEditorDrawComponent.h"
+#include "REPlatform/Scene/Systems/SelectionSystem.h"
+#include "REPlatform/Scene/Systems/SplineEditorSystem.h"
 
 #include <TArc/Core/Deprecated.h>
 
@@ -689,15 +693,17 @@ Landscape* SceneCollisionSystem::GetCurrentLandscape() const
 
 void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object, bool forceRecreate)
 {
-    bool shouldBeRecreated = false;
-    EnumerateObjectHierarchy(object, false, [&shouldBeRecreated](const Any&, physx::PxRigidActor*, bool recreate) {
+    bool shouldBeRecreated = forceRecreate;
+    UnorderedSet<Any, AnyPointerHasher, AnyPointerEqual> childObjects;
+    EnumerateObjectHierarchy(object, false, [&](const Any& child, physx::PxRigidActor*, bool recreate) {
         shouldBeRecreated |= recreate;
+        childObjects.insert(child);
     });
 
-    shouldBeRecreated |= forceRecreate;
     if (shouldBeRecreated == false)
     {
         objectsToUpdateTransform.insert(object.GetContainedObject());
+        objectsToUpdateTransform.insert(childObjects.begin(), childObjects.end());
         return;
     }
 
@@ -891,6 +897,15 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
         {
             UpdateCollisionObject(Selectable(curLandscapeEntity), true);
         }
+
+        const Vector<Selectable>& selection = GetScene()->GetSystem<SelectionSystem>()->GetSelection().GetContent();
+        for (const Selectable& selectable : selection)
+        {
+            if (selectable.CanBeCastedTo<SplineComponent::SplinePoint>())
+            {
+                UpdateCollisionObject(selectable, true);
+            }
+        }
     });
 
     commandNotification.ForEach<DeleteLODCommand>([&](const DeleteLODCommand* cmd) {
@@ -900,6 +915,15 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
     commandNotification.ForEach<CommandRemoveParticleEmitter>([&](const CommandRemoveParticleEmitter* cmd) {
         (commandNotification.IsRedo() ? objectsToRemove : objectsToAdd).insert(cmd->GetEmitterInstance());
     });
+
+    {
+        auto fn = [&](const SplinePointAddRemoveCommand* cmd)
+        {
+            (cmd->IsPointInserted() ? objectsToAdd : objectsToRemove).insert(cmd->GetSplinePoint());
+        };
+        commandNotification.ForEach<AddSplinePointCommand>(fn);
+        commandNotification.ForEach<RemoveSplinePointCommand>(fn);
+    }
 
     commandNotification.ForEach<TransformCommand>([&](const TransformCommand* cmd) {
         UpdateCollisionObject(cmd->GetTransformedObject());
@@ -1052,6 +1076,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
 
     float32 debugBoxScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxScale;
     float32 debugBoxParticleScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxParticleScale;
+    float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxWaypointScale;
     if (object.CanBeCastedTo<Entity>())
     {
         CollisionObj result;
@@ -1059,7 +1084,6 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
         QueryObjectDataComponent* queryData = entity->GetComponent<QueryObjectDataComponent>();
 
         float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxUserScale;
-        float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxWaypointScale;
 
         Landscape* landscape = GetLandscape(entity);
         if (landscape != nullptr)
@@ -1130,6 +1154,15 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxWaypointScale), queryData, userData);
             }
+            else if (entity->GetComponent<SplineEditorDrawComponent>() != nullptr && (createCollision == false || entity->GetComponent<SplineEditorDrawComponent>()->IsSplineVisible()))
+            {
+                SplineComponent* spline = GetSplineComponent(entity);
+                for (SplineComponent::SplinePoint* point : spline->controlPoints)
+                {
+                    EnumerateObjectHierarchy(Selectable(point), createCollision, callback);
+                }
+                result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), queryData, userData);
+            }
             else
             {
                 result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), queryData, userData);
@@ -1143,7 +1176,22 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     }
     else
     {
-        float32 scale = object.CanBeCastedTo<ParticleEmitterInstance>() ? debugBoxParticleScale : debugBoxScale;
+        float32 scale = debugBoxScale;
+        if (object.CanBeCastedTo<ParticleEmitterInstance>())
+        {
+            scale = debugBoxParticleScale;
+        }
+        else if (object.CanBeCastedTo<SplineComponent::SplinePoint>())
+        {
+            SplineComponent::SplinePoint* point = object.Cast<SplineComponent::SplinePoint>();
+            SplineEditorDrawComponent* draw = GetScene()->GetSystem<SplineEditorSystem>()->GetSplineDrawByPoint(point);
+            if (draw != nullptr && draw->IsSplineVisible() == false && createCollision == true)
+            {
+                return;
+            }
+            scale = debugBoxWaypointScale;
+        }
+
         const Any& containedObject = object.GetContainedObject();
         CollisionObj result = CreateBox(createCollision, false, object.GetWorldTransform(), toVec3Fn(scale), nullptr, userData);
         callback(containedObject, result.collisionObject, result.shouldRecreate);

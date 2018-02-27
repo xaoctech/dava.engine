@@ -8,7 +8,10 @@ RenderTechnique:
         UniquePins:
             - ["DECAL_TYPE", 6]
         RenderState:            
-            fillMode: "FILLMODE_SOLID"            
+            depthFunc: "CMP_GEQUAL"
+            fillMode: "FILLMODE_SOLID"
+            cullMode: "FACE_FRONT"
+            state: "STATE_DEPTH_TEST | STATE_CULL"
     RenderPassDeferredFetch:
         Name: "gBufferFetchPass"        
         Shader: "~res:/Materials2/Shaders/deferred-decal"        
@@ -16,4 +19,7 @@ RenderTechnique:
         UniquePins:
             - ["DECAL_TYPE", 6]
         RenderState:            
-            fillMode: "FILLMODE_SOLID"            
+            depthFunc: "CMP_GEQUAL"
+            fillMode: "FILLMODE_SOLID"
+            cullMode: "FACE_FRONT"
+            state: "STATE_DEPTH_TEST | STATE_CULL"

@@ -91,6 +91,11 @@ public:
         return RefPtr<Texture>();
     }
 
+    virtual Color GetCursorColor() const
+    {
+        return Color(0.5f, 0.5f, 1.0f, 1.0f);
+    }
+
     // Brush size in UV coordinates according to Landscape size
     virtual Vector2 GetBrushSize() const = 0;
     virtual float32 GetBrushRotation() const = 0; // [0.0f, 1.0f]

@@ -1,36 +1,38 @@
-#include "Scene3D/Entity.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+
 #include "Particles/ParticleEmitter.h"
-#include "Scene3D/Components/CameraComponent.h"
-#include "Scene3D/Components/LightComponent.h"
-#include "Scene3D/Lod/LodComponent.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/AnimationComponent.h"
-#include "Scene3D/Components/QualitySettingsComponent.h"
-#include "Scene3D/Components/CustomPropertiesComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SkeletonComponent.h"
-#include "Scene3D/Components/MotionComponent.h"
-#include "Scene3D/Components/StaticOcclusionComponent.h"
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Components/GeoDecalComponent.h"
-#include "Scene3D/Components/Waypoint/WaypointComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
-#include "Scene3D/Components/ComponentHelpers.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
+#include "Scene3D/Components/AnimationComponent.h"
+#include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/DecalComponent.h"
+#include "Scene3D/Components/GeoDecalComponent.h"
+#include "Scene3D/Components/GeoDecalComponent.h"
+#include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/MotionComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/QualitySettingsComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
-#include "Scene3D/Components/WindComponent.h"
-#include "Scene3D/Components/WaveComponent.h"
-#include "Scene3D/Components/Waypoint/PathComponent.h"
-#include "Scene3D/Components/Waypoint/EdgeComponent.h"
-#include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
-#include "Scene3D/Components/DecalComponent.h"
+#include "Scene3D/Components/SplineComponent.h"
+#include "Scene3D/Components/StaticOcclusionComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/VTDecalComponent.h"
-#include "Scene3D/Components/GeoDecalComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
+#include "Scene3D/Components/Waypoint/EdgeComponent.h"
+#include "Scene3D/Components/Waypoint/PathComponent.h"
+#include "Scene3D/Components/Waypoint/WaypointComponent.h"
+#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Lod/LodComponent.h"
 
 namespace DAVA
 {
@@ -486,5 +488,12 @@ GeoDecalComponent* GetGeoDecalComponent(const Entity* fromEntity)
     }
 
     return nullptr;
+}
+SplineComponent* GetSplineComponent(const Entity* fromEntity)
+{
+    if (fromEntity)
+        return fromEntity->GetComponent<SplineComponent>();
+    else
+        return nullptr;
 }
 }

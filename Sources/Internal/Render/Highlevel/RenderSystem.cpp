@@ -530,6 +530,7 @@ void RenderSystem::Render()
     lightShadowSystem.Render(this);
 
     reflectionRenderer->Draw(mainCamera);
+    activeRenderPass->SetEnableFrameJittering(QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_TXAA));
     activeRenderPass->Draw(this);
 
     if (renderConfig.shouldRenderPickingPass == true)

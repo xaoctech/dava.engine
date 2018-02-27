@@ -67,7 +67,7 @@ protected:
         }
     };
 
-    void TryFreePage(float32 requestedRadiusError);
+    bool TryFreePage(float32 requestedRadiusError);
     Vector4 MapToPage(uint32 level, uint32 x, uint32 y, uint32 pLevel, int32 pageID); //(offset, scale)
     Vector4 GetPageUV(uint64 pagekey); //(uv0.x, uv0.y, uv1.x, uv1.y)
     AABBox3 GetPageBBox(uint64 pageKey, const LandscapeSubdivision* subdivision);

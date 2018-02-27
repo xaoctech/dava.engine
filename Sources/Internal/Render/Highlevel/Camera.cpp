@@ -316,14 +316,14 @@ void Camera::RebuildProjectionMatrix(bool invertProjection, bool invertZ)
     if (ortho)
     {
         projMatrix.BuildOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, zeroBasedClipRange, GetReverseZEnabled());
-        projMatrix.data[12] += projectionMatrixOffset.x;
-        projMatrix.data[13] += projectionMatrixOffset.y;
+        projMatrix.data[12] += projectionMatrixOffset.x + jitterOffset.x;
+        projMatrix.data[13] += projectionMatrixOffset.y + jitterOffset.y;
     }
     else
     {
         projMatrix.BuildPerspective(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, zeroBasedClipRange, GetReverseZEnabled());
-        projMatrix.data[8] += projectionMatrixOffset.x;
-        projMatrix.data[9] += projectionMatrixOffset.y;
+        projMatrix.data[8] += projectionMatrixOffset.x + jitterOffset.x;
+        projMatrix.data[9] += projectionMatrixOffset.y + jitterOffset.y;
     }
 }
 
@@ -685,6 +685,17 @@ void Camera::SetProjectionMatrixOffset(const Vector2& offset)
 {
     projectionMatrixOffset = offset;
     Recalc();
+}
+
+const Vector2& Camera::GetProjectionJitterOffset() const
+{
+    return jitterOffset;
+}
+
+void Camera::SetProjectionJitterOffset(const Vector2& offset)
+{
+    jitterOffset = offset;
+    flags |= REQUIRE_REBUILD_PROJECTION;
 }
 
 Quaternion Camera::GetOrientation()

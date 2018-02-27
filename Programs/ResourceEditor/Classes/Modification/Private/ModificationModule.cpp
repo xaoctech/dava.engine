@@ -50,7 +50,11 @@ void ModificationModule::BindData()
 
     FieldDescriptor selectionField;
     selectionField.type = ReflectedTypeDB::Get<SelectionData>();
-    selectionField.fieldName = FastName(SelectionData::selectionBoxPropertyName);
+    selectionField.fieldName = FastName(SelectionData::selectionPropertyName);
+
+    FieldDescriptor selectionBoxField;
+    selectionBoxField.type = ReflectedTypeDB::Get<SelectionData>();
+    selectionBoxField.fieldName = FastName(SelectionData::selectionBoxPropertyName);
 
     FieldDescriptor transformTypeField;
     transformTypeField.type = ReflectedTypeDB::Get<ModificationData>();
@@ -58,6 +62,7 @@ void ModificationModule::BindData()
 
     fieldBinder->BindField(transformTypeField, [this](const Any&) { RecalculateTransformableSelectionField(); });
     fieldBinder->BindField(selectionField, [this](const Any&) { RecalculateTransformableSelectionField(); });
+    fieldBinder->BindField(selectionBoxField, [this](const Any&) { RecalculateTransformableSelectionField(); });
 }
 
 void ModificationModule::CreateToolbar()

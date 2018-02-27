@@ -187,19 +187,19 @@ void VTDecalPageRenderer::RenderDecal(DecalRenderObject* decal)
     Vector3 decalSize = decal->GetDecalSize();
 
     vertices[0].position = Vector2(-decalSize.x, -decalSize.y);
-    vertices[0].uv = Vector3(0.0f, 0.0f, 1.0f);
+    vertices[0].uv = Vector3(0.0f, 1.0f, 1.0f);
     vertices[0].tangents = tangents;
 
     vertices[1].position = Vector2(decalSize.x, -decalSize.y);
-    vertices[1].uv = Vector3(1.0f, 0.0f, 1.0f);
+    vertices[1].uv = Vector3(1.0f, 1.0f, 1.0f);
     vertices[1].tangents = tangents;
 
     vertices[2].position = Vector2(-decalSize.x, decalSize.y);
-    vertices[2].uv = Vector3(0.0f, 1.0f, 1.0f);
+    vertices[2].uv = Vector3(0.0f, 0.0f, 1.0f);
     vertices[2].tangents = tangents;
 
     vertices[3].position = Vector2(decalSize.x, decalSize.y);
-    vertices[3].uv = Vector3(1.0f, 1.0f, 1.0f);
+    vertices[3].uv = Vector3(1.0f, 0.0f, 1.0f);
     vertices[3].tangents = tangents;
 
     rhi::AddPacket(packetList, vtDecalsPacket);

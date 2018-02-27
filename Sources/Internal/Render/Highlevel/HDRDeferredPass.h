@@ -4,6 +4,7 @@
 
 namespace DAVA
 {
+class VelocityPass;
 /*Draw opaque surface params to g-buffer -> draw decals to g-buffer-> resolve  sun light -> add spot lights -> draw translusent forward stuff*/
 class HDRDeferredPass : public RenderPass
 {
@@ -23,6 +24,7 @@ private:
     GBufferPass* gBufferPass = nullptr;
     DeferredDecalPass* deferredDecalPass = nullptr;
     GBufferResolvePass* gBufferResolvePass = nullptr;
+    VelocityPass* velocityPass = nullptr;
 
     void DebugDumpGBuffers();
 };

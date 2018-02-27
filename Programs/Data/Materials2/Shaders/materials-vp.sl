@@ -12,7 +12,7 @@ vertex_in
     float3 binormal : BINORMAL;
     float2 texCoord0 : TEXCOORD0;
 
-#if (USE_BAKED_LIGHTING)
+#if (USE_BAKED_LIGHTING || ALBEDO_MODIFIER_BLEND_MODE != 0)
     float2 texCoord1 : TEXCOORD1;
 #endif
 
@@ -143,15 +143,15 @@ vertex_out vp_main(vertex_in input)
 
 #else
 
-    #if (USE_BAKED_LIGHTING)
-    output.varTexCoord = float4(input.texCoord0 * texCoordScale, input.texCoord1);
-    #else
+#if (USE_BAKED_LIGHTING || ALBEDO_MODIFIER_BLEND_MODE != 0)
+    output.varTexCoord = float4(input.texCoord0 * texCoordScale, input.texCoord1 * uvScale + uvOffset);
+#else
     output.varTexCoord = float4(input.texCoord0 * texCoordScale, 0.0, 0.0);
-    #endif
+#endif
 
-    #if (VERTEX_BAKED_AO)
+#if (VERTEX_BAKED_AO)
     output.vertexBakedAO = input.color.x;
-    #endif
+#endif
 
     output.worldPosition = mul(float4(inputPosition, 1.0), worldMatrix);
     output.projectedPosition = mul(output.worldPosition, viewProjMatrix);

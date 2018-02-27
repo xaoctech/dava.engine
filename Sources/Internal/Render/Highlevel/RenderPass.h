@@ -32,6 +32,7 @@ public:
     void SetViewport(const Rect& viewPort);
 
     void SetRenderTargetProperties(uint32 width, uint32 height, PixelFormat format);
+    void SetEnableFrameJittering(bool jitter);
 
     virtual void InvalidateMaterials();
 
@@ -39,6 +40,7 @@ protected:
     FastName passName;
     rhi::RenderPassConfig passConfig;
     Rect viewport;
+    bool enableFrameJittering = false; // for TXAA
 
     Vector2 viewportSize, rcpViewportSize, viewportOffset; //storage fro dynamic bindings
 
@@ -56,6 +58,8 @@ protected:
     void EndRenderPass();
 
     void ValidateMultisampledTextures(const rhi::RenderPassConfig& forConfig);
+
+    Vector2 GetCurrentFrameJitterOffset() const;
 
     Vector<RenderLayer*> renderLayers;
     std::array<RenderBatchArray, RENDER_LAYER_ID_COUNT> layersBatchArrays;
@@ -108,5 +112,10 @@ inline RenderLayer* RenderPass::GetRenderLayer(uint32 index) const
 
 inline void RenderPass::InvalidateMaterials()
 {
+}
+
+inline void RenderPass::SetEnableFrameJittering(bool jitter)
+{
+    enableFrameJittering = jitter;
 }
 }

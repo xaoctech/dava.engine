@@ -1,50 +1,52 @@
 #include "Classes/LandscapeEditor/Private/ObjectPlacementTool.h"
-#include "Classes/LandscapeEditor/Private/MassObjectCreationSystem.h"
+
 #include "Classes/LandscapeEditor/Private/MassObjectCreationComponents.h"
+#include "Classes/LandscapeEditor/Private/MassObjectCreationSystem.h"
 #include "Classes/PropertyPanel/FilePathExtensions.h"
 
 #include <REPlatform/Commands/EntityAddCommand.h>
 #include <REPlatform/Commands/EntityRemoveCommand.h>
 #include <REPlatform/Commands/RECommandBatch.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/Scene/Systems/CollisionSystem.h>
 #include <REPlatform/Scene/Systems/LandscapeEditorSystemV2/BaseBrushApplicant.h>
 #include <REPlatform/Scene/Systems/LandscapeEditorSystemV2/BrushWidgetBuilder.h>
 #include <REPlatform/Scene/Systems/LandscapeEditorSystemV2/LandscapeEditorSystemV2.h>
 #include <REPlatform/Scene/Systems/StructureSystem.h>
 #include <REPlatform/Scene/Utils/Utils.h>
-#include <REPlatform/Scene/SceneEditor2.h>
 
-#include <TArc/DataProcessing/PropertiesHolder.h>
-#include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Utils/Utils.h>
+#include <TArc/Controls/ControlDescriptor.h>
+#include <TArc/Controls/DoubleSpinBox.h>
 #include <TArc/Controls/FilePathEdit.h>
+#include <TArc/Controls/ListView.h>
+#include <TArc/Controls/PopupLineEdit.h>
+#include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
+#include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Controls/Slider.h>
-#include <TArc/Controls/DoubleSpinBox.h>
-#include <TArc/Controls/ControlDescriptor.h>
-#include <TArc/Controls/QtBoxLayouts.h>
-#include <TArc/Controls/PopupLineEdit.h>
 #include <TArc/Controls/SpinSlider.h>
-#include <TArc/Controls/ListView.h>
-#include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
 #include <TArc/Core/Deprecated.h>
+#include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Utils/Utils.h>
+#include <TArc/WindowSubSystem/UI.h>
 
+#include <Base/GlobalEnum.h>
 #include <Command/Command.h>
 #include <Engine/Engine.h>
 #include <FileSystem/FilePath.h>
+#include <Math/Color.h>
 #include <Math/Rect.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Random.h>
-#include <Base/GlobalEnum.h>
 
 #include <QInputDialog>
 #include <QModelIndex>
-#include <QStyleOptionViewItem>
 #include <QPainter>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 
 ENUM_DECLARE(ObjectPlacementTool::eMode)
@@ -154,7 +156,7 @@ public:
         DVASSERT(createdControl != nullptr);
         createdControl->TearDown();
         createdControl = nullptr;
-        delete editor;
+        editor->deleteLater();
 
         cachedValue = DAVA::FilePath();
     }
@@ -195,6 +197,7 @@ private:
     void SetValue(const DAVA::FilePath& path)
     {
         cachedValue = path;
+        emit commitData(createdControl->ToWidgetCast());
     }
 
 private:
@@ -247,7 +250,7 @@ public:
 
     void ApplyBrush(DAVA::Scene* scene, const DAVA::Rect& applyRect) override
     {
-        if (tool->mode == MODE_SPAWN)
+        if (tool->GetMode() == MODE_SPAWN)
         {
             ApplySpawnBrush(scene, applyRect);
         }
@@ -274,7 +277,7 @@ public:
         DAVA::Vector2 rectCenter = landscapeRect.GetCenter();
         DAVA::float32 brushRadius = 0.5f * landscapeRect.dx;
 
-        DAVA::float32 minDistance = tool->params.minDistanceBetweenObjects;
+        DAVA::float32 minDistance = std::max(tool->params.minDistanceBetweenObjects, 0.00001f);
         DAVA::float32 halfMinDistance = 0.5f * minDistance;
 
         DAVA::Entity* parentEntity = tool->GetCurrentLayer();
@@ -361,27 +364,42 @@ public:
             }
         }
 
-        for (size_t leftIndex = 0; leftIndex < objects.size() - 1; ++leftIndex)
+        bool removeAll = tool->params.minDistanceBetweenObjects < 0.0001f;
+        if (removeAll == true)
         {
-            for (size_t rightIndex = leftIndex + 1; rightIndex < objects.size(); ++rightIndex)
+            for (DAVA::Entity* e : objects)
             {
-                EntitySphereNode& left = spheres[leftIndex];
-                EntitySphereNode& right = spheres[rightIndex];
+                DAVA::Entity* parent = e->GetParent();
+                DVASSERT(parent != nullptr);
 
-                if (left.e == nullptr || right.e == nullptr)
+                batch->Add(std::make_unique<ObjectPlacementToolDetail::MassRemoveEntityCommand>(e));
+                parent->RemoveNode(e);
+            }
+        }
+        else
+        {
+            for (size_t leftIndex = 0; leftIndex < objects.size() - 1; ++leftIndex)
+            {
+                for (size_t rightIndex = leftIndex + 1; rightIndex < objects.size(); ++rightIndex)
                 {
-                    continue;
-                }
+                    EntitySphereNode& left = spheres[leftIndex];
+                    EntitySphereNode& right = spheres[rightIndex];
 
-                float32 distance = (left.pos - right.pos).Length();
-                if (distance - left.radius - right.radius < tool->params.minDistanceBetweenObjects)
-                {
-                    DAVA::Entity* parent = right.e->GetParent();
-                    DVASSERT(parent != nullptr);
+                    if (left.e == nullptr || right.e == nullptr)
+                    {
+                        continue;
+                    }
 
-                    batch->Add(std::make_unique<ObjectPlacementToolDetail::MassRemoveEntityCommand>(right.e));
-                    parent->RemoveNode(right.e);
-                    right.e = nullptr;
+                    float32 distance = (left.pos - right.pos).Length();
+                    if (distance - left.radius - right.radius < tool->params.minDistanceBetweenObjects)
+                    {
+                        DAVA::Entity* parent = right.e->GetParent();
+                        DVASSERT(parent != nullptr);
+
+                        batch->Add(std::make_unique<ObjectPlacementToolDetail::MassRemoveEntityCommand>(right.e));
+                        parent->RemoveNode(right.e);
+                        right.e = nullptr;
+                    }
                 }
             }
         }
@@ -398,8 +416,8 @@ private:
     {
         DAVA::AABBox3 objectBox = model->bbox;
         DAVA::Vector3 size = objectBox.GetSize();
-        DAVA::float32 step = std::max(size.x, size.y);
-        DAVA::float32 moveStep = step;
+        DAVA::float32 moveStep = std::sqrt(size.x * size.x + size.y * size.y);
+        DAVA::float32 step = 0.5f * moveStep;
 
         DAVA::Vector3 landscapePos;
         if (tool->GetLandscapeProjection(position, landscapePos) == true)
@@ -472,7 +490,7 @@ ObjectPlacementTool::ObjectPlacementTool(DAVA::LandscapeEditorSystemV2* system)
     applicant.reset(new ObjectPlacementApplicant(this));
 
     inputController->RegisterVarCallback(DAVA::eInputElements::KB_H, [this](const DAVA::Vector2& delta) {
-        brushSize = DAVA::Saturate(brushSize + delta.dy);
+        brushSize = DAVA::Saturate(brushSize + 0.1 * delta.dy);
     });
 }
 
@@ -565,7 +583,7 @@ QWidget* ObjectPlacementTool::CreateEditorWidget(const WidgetParams& params)
     {
         ControlDescriptorBuilder<ComboBox::Fields> p;
         p[ComboBox::Fields::Value] = "mode";
-        builder.RegisterParam<ComboBox>("Mode", p);
+        builder.RegisterParam<ComboBox>("Mode (Ctrl)", p);
     }
 
     {
@@ -673,6 +691,16 @@ DAVA::RefPtr<DAVA::Texture> ObjectPlacementTool::GetCursorTexture() const
     return cursorTexture;
 }
 
+DAVA::Color ObjectPlacementTool::GetCursorColor() const
+{
+    if (GetMode() == MODE_SPAWN)
+    {
+        return BaseLandscapeTool::GetCursorColor();
+    }
+
+    return DAVA::Color(1.0f, 0.2f, 0.2f, 1.0f);
+}
+
 DAVA::Vector2 ObjectPlacementTool::GetBrushSize() const
 {
     return DAVA::Vector2(brushSize, brushSize);
@@ -744,7 +772,8 @@ DAVA::Vector<DAVA::Entity*> ObjectPlacementTool::LookupObjects(const DAVA::Rect&
     if (GetLandscapeProjection(r.GetCenter(), landscapePos))
     {
         DAVA::Vector2 size = r.GetSize();
-        collision->OverlapSphereTest(landscapePos, 0.5f * std::max(size.x, size.y), collection, 1);
+        DAVA::float32 radius = 0.5f * std::max(size.x, size.y);
+        collision->OverlapSphereTest(landscapePos, radius, collection, 1);
     }
 
     DAVA::Vector<DAVA::Entity*> objects;
@@ -768,6 +797,27 @@ DAVA::float32 ObjectPlacementTool::GetBrushRadius() const
 void ObjectPlacementTool::SetBrushRadius(const DAVA::float32& brushRadius)
 {
     brushSize = DAVA::Saturate(brushRadius / system->GetEditedLandscape()->GetLandscapeSize());
+}
+
+ObjectPlacementTool::eMode ObjectPlacementTool::GetMode() const
+{
+    bool isPressed = inputController->IsModifierPressed(DAVA::eModifierKeys::CONTROL);
+    if (isPressed == false)
+    {
+        return mode;
+    }
+
+    if (mode == MODE_SPAWN)
+    {
+        return MODE_REMOVE;
+    }
+
+    return MODE_SPAWN;
+}
+
+void ObjectPlacementTool::SetMode(eMode newMode)
+{
+    mode = newMode;
 }
 
 DAVA::float32 ObjectPlacementTool::GetMinRotation() const
@@ -1090,7 +1140,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ObjectPlacementTool)
     .Field("currentLayer", &ObjectPlacementTool::GetCurrentLayer, &ObjectPlacementTool::SetCurrentLayer)
     .Method("onAddLayer", &ObjectPlacementTool::OnAddLayer)
     .Field("models", &ObjectPlacementTool::models)
-    .Field("mode", &ObjectPlacementTool::mode)[DAVA::M::EnumT<ObjectPlacementTool::eMode>()]
+    .Field("mode", &ObjectPlacementTool::GetMode, &ObjectPlacementTool::SetMode)[DAVA::M::EnumT<ObjectPlacementTool::eMode>()]
     .Field("brushSize", &ObjectPlacementTool::brushSize)[DAVA::M::Range(0.0, 1.0, 0.001)]
     .Field("brushRadius", &ObjectPlacementTool::GetBrushRadius, &ObjectPlacementTool::SetBrushRadius)
     .Field("minRotation", &ObjectPlacementTool::GetMinRotation, &ObjectPlacementTool::SetMinRotation)

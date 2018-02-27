@@ -18,8 +18,8 @@ DeferredLightsRenderer::DeferredLightsRenderer(bool useFetch_)
     unityCube = MeshUtils::BuildAABox(Vector3(1.0f, 1.0f, 1.0f));
 
     rhi::DepthStencilState::Descriptor dsDescr;
-    dsDescr.depthTestEnabled = 0;
-    dsDescr.depthFunc = rhi::CMP_LESS;
+    dsDescr.depthTestEnabled = 1;
+    dsDescr.depthFunc = rhi::CMP_GREATEREQUAL;
     dsDescr.depthWriteEnabled = 0;
 
     rhi::VertexLayout deferredLightLayout;
@@ -40,7 +40,7 @@ DeferredLightsRenderer::DeferredLightsRenderer(bool useFetch_)
     deferredLightsPacket.vertexLayoutUID = rhi::VertexLayout::UniqueId(deferredLightLayout);
     deferredLightsPacket.startIndex = 0;
     deferredLightsPacket.depthStencilState = rhi::AcquireDepthStencilState(dsDescr);
-    //deferredLightsPacket.cullMode = rhi::CULL_CW;
+    deferredLightsPacket.cullMode = rhi::CULL_CCW;
     InvalidateMaterials();
 }
 

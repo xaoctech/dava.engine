@@ -25,6 +25,7 @@ const FastName QualitySettingsSystem::QUALITY_OPTION_DISABLE_FOG_ATMOSPHERE_SCAT
 const FastName QualitySettingsSystem::QUALITY_OPTION_DISABLE_FOG_HALF_SPACE("Disable half-space fog");
 const FastName QualitySettingsSystem::QUALITY_OPTION_DEFERRED_DRAW_FORWARD("Deferred Rendering Includes Forward Objects");
 const FastName QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D("Half Resolution Rendering");
+const FastName QualitySettingsSystem::QUALITY_OPTION_TXAA("Enable TXAA");
 
 QualitySettingsSystem::QualitySettingsSystem()
 {
@@ -65,6 +66,7 @@ QualitySettingsSystem::QualitySettingsSystem()
 
     EnableOption(QUALITY_OPTION_DEFERRED_DRAW_FORWARD, true);
     EnableOption(QUALITY_OPTION_HALF_RESOLUTION_3D, false);
+    EnableOption(QUALITY_OPTION_TXAA, false);
 }
 
 void QualitySettingsSystem::Load(const FilePath& path)

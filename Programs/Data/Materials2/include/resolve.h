@@ -53,12 +53,12 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
         float3 specular = F * (D * G * T);
 
         float NdotL = lerp(directionalBrdf.NdotL, 1.0, 0.5 * surfaceParameters.transmittance);
-        float diffuse = (NdotL + PhaseFunctionSchlick(directionalBrdf.LdotV, -0.625) * surfaceParameters.transmittance) * invMetallness / _PI;
+        float diffuse = (NdotL + PhaseFunctionSchlick(directionalBrdf.LdotV, 0.625) * surfaceParameters.transmittance) * invMetallness / _PI;
         
     #if (DIFFUSE_BURLEY)
-        diffuse *= BurleyDiffuse(directionalBrdf.NdotL, directionalBrdf.NdotV, directionalBrdf.LdotH, surfaceParameters.roughness);
+        diffuse *= BurleyDiffuse(NdotL, directionalBrdf.NdotV, directionalBrdf.LdotH, surfaceParameters.roughness);
     #endif
-        
+       
 #if (VIEW_MODE & RESOLVE_DIFFUSE)
         directLighting += surfaceParameters.baseColor * diffuse;
 #endif
@@ -84,7 +84,7 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
         float4 brdfLookup = tex2D(indirectSpecularLookup, float2(directionalBrdf.NdotV, surfaceParameters.roughness));
     #endif
 
-        float indirectDiffuseScale = brdfLookup.z * invMetallness * surfaceParameters.ambientOcclusion;
+        float indirectDiffuseScale = brdfLookup.z * invMetallness * (surfaceParameters.ambientOcclusion + surfaceParameters.transmittance);
         float3 indirectDiffuse = input.environmentDiffuseSample * surfaceParameters.baseColor * indirectDiffuseScale;
         float3 indirectSpecular = environmentSpecularSample * (surfaceParameters.f0 * brdfLookup.x + surfaceParameters.f90 * brdfLookup.y);
 

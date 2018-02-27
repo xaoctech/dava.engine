@@ -65,7 +65,7 @@ void ReflectionsModule::BakeReflections()
     String targetPath = scene->GetScenePath().GetDirectory().GetAbsolutePathname() + "/reflections";
     if (FileSystem::Instance()->CreateDirectory(targetPath, true) == FileSystem::eCreateDirectoryResult::DIRECTORY_CANT_CREATE)
     {
-        Debug::MessageBox("Save Scene", DAVA::Format("Failed to create directory\n%s", targetPath), { "Close" });
+        Debug::MessageBox("Save Scene", DAVA::Format("Failed to create directory\n%s", targetPath.c_str()), { "Close" });
         return;
     }
 

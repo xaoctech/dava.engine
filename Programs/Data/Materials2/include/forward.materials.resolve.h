@@ -7,8 +7,14 @@ bakedAo *= input.vertexBakedAO;
 #endif
 
 #if (USE_BAKED_LIGHTING)
-float2 bakedShadowAOSample = tex2D(shadowaotexture, input.varTexCoord.zw* uvScale + uvOffset).xy;
-float bakedShadow = SampleStaticShadow(bakedShadowAOSample.x, input.varTexCoord.zw, lightmapSize);
+float2 bakedShadowAOSample = tex2D(shadowaotexture, input.varTexCoord.zw).xy;
+float2 staticShadowUV = input.varTexCoord.zw;
+
+#if (VIEW_MODE & VIEW_LIGHTMAP_CANVAS_BIT)
+staticShadowUV = (staticShadowUV - uvOffset) / uvScale;
+#endif
+
+float bakedShadow = SampleStaticShadow(bakedShadowAOSample.x, staticShadowUV, lightmapSize);
 bakedAo *= bakedShadowAOSample.y;
 #else
 float bakedShadow = 1.0;

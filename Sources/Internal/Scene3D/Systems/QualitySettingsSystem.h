@@ -116,6 +116,7 @@ public:
 
     static const FastName QUALITY_OPTION_DEFERRED_DRAW_FORWARD;
     static const FastName QUALITY_OPTION_HALF_RESOLUTION_3D;
+    static const FastName QUALITY_OPTION_TXAA;
 
     QualitySettingsSystem();
 

@@ -102,7 +102,7 @@ fragment_out fp_main(fragment_in input)
             brushFactor = GetBrushMaskFactor(input.texCoord1.xy, landCursorPosition, cursorRotation, invertFactor);
         }
         albedoSample.rgb *= 1.0 - brushFactor;
-        albedoSample.rgb += float3(0.5, 0.5, 1.0) * brushFactor;
+        albedoSample.rgb += landCursorColor * brushFactor;
     }
 #endif
 

@@ -45,17 +45,11 @@ Legacy:
   name: "[PBR] Forward with Baked AO in Vertex Color"
   path: Materials2/PBS.VertexAO.material
  -
-  name: "[PBR] Forward SpeedTree Billboards"
-  path: Materials2/PBS.Transmittance.Billboards.material
- -
   name: "[PBR] Forward SpeedTree Leafs"
   path: Materials2/PBS.Transmittance.SpeedTree.material
  -
   name: "[PBR] Reflection Show"
   path: Materials2/Reflection-Show.material
- -
-  name: "[PBR] Deferred PBS"
-  path: Materials2/Deferred.PBS.material
  -
   name: "[PBR] Detail normal"
   path: Materials2/DetailNormal.material

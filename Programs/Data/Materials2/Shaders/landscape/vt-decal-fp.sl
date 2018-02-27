@@ -77,8 +77,7 @@ fragment_out fp_main(fragment_in input)
     output.decorationmask = float4(0, 0, 0, alphaValue);
 #else
     float4 decalAlbedoSample = tex2D(albedoDecal, uvDecal);
-    float4 decalNormalSample = tex2D(normalDecal, uvDecal);
-    
+    float4 decalNormalSample = tex2D(normalDecal, uvDecal);   
         
     #if DECAL_TYPE == DECAL_VT_GENERIC
     float alphaValue = decalNormalSample.w * input.value;

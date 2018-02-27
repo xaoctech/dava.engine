@@ -14,6 +14,7 @@ namespace DAVA
 class Frustum;
 class Heightmap;
 class Camera;
+class KeyedArchive;
 
 class LandscapeSubdivision : public InspBase
 {
@@ -74,6 +75,9 @@ public:
 
         bool operator==(const SubdivisionMetrics& other) const;
 
+        void Save(KeyedArchive* archive) const;
+        void Load(KeyedArchive* archive);
+
         DAVA_VIRTUAL_REFLECTION(SubdivisionMetrics, InspBase);
     };
 
@@ -84,6 +88,8 @@ public:
 
     const SubdivisionMetrics& GetMetrics() const;
     void SetMetrics(const SubdivisionMetrics& metrics);
+
+    float32 GetPatchRadiusError() const;
 
     void SetMinSubdivisionLevel(uint32 level);
     void SetMaxSubdivisionLevel(uint32 level);
@@ -185,9 +191,14 @@ inline const LandscapeSubdivision::SubdivisionMetrics& LandscapeSubdivision::Get
     return metrics;
 }
 
-inline void LandscapeSubdivision::SetMetrics(const SubdivisionMetrics& _metrics)
+inline void LandscapeSubdivision::SetMetrics(const LandscapeSubdivision::SubdivisionMetrics& _metrics)
 {
     metrics = _metrics;
+}
+
+inline float32 LandscapeSubdivision::GetPatchRadiusError() const
+{
+    return maxPatchRadiusError;
 }
 
 inline const AABBox3& LandscapeSubdivision::GetSubdivisionAABBox() const

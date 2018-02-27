@@ -86,6 +86,7 @@ public:
         bool enableColorGrading = false;
         bool enableToneMapping = false;
         bool enableHeatMap = false;
+        bool enableTXAA = false;
         bool resetHistory = false;
     };
 
@@ -169,6 +170,7 @@ private:
     {
         HISTOGRAM,
         BLOOM,
+        TXAA,
 
         RENDERER_COUNT
     };

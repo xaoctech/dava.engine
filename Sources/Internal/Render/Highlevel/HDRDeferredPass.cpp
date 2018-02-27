@@ -13,8 +13,10 @@
 #include "Render/Highlevel/DecalRenderObject.h"
 #include "Render/Highlevel/DeferredDecalRenderer.h"
 #include "Render/Highlevel/DeferredLightsRenderer.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/RhiUtils.h"
+#include "Render/Highlevel/VelocityPass.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
@@ -396,6 +398,8 @@ HDRDeferredPass::HDRDeferredPass()
     gBufferResolvePass->GetPassConfig().depthStencilBuffer.loadAction = rhi::LOADACTION_CLEAR;
     gBufferResolvePass->GetPassConfig().depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
     gBufferResolvePass->GetPassConfig().usesReverseDepth = passConfig.usesReverseDepth;
+
+    velocityPass = new VelocityPass();
 }
 
 void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
@@ -416,8 +420,15 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 
     //draw to g-buffer
     gBufferPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D;
+    gBufferPass->SetEnableFrameJittering(enableFrameJittering);
     gBufferPass->SetViewport(viewport);
     gBufferPass->Draw(renderSystem);
+
+    // velocity  pass
+    velocityPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1;
+    velocityPass->SetEnableFrameJittering(enableFrameJittering);
+    velocityPass->SetViewport(viewport);
+    velocityPass->Draw(renderSystem);
 
     //deferred decals
     deferredDecalPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1; //right after
@@ -440,6 +451,9 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     //GFX_COMPLETE - right now forward stuff requires post effect
     if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_DEFERRED_DRAW_FORWARD))
     {
+        for (Landscape* landscape : renderSystem->GetLandscapes())
+            landscape->SetPageUpdateLocked(true);
+
         Camera* mainCamera = renderSystem->GetMainCamera();
         Camera* drawCamera = renderSystem->GetDrawCamera();
         SetupCameraParams(mainCamera, drawCamera);
@@ -452,6 +466,9 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
             DrawLayers(mainCamera, drawLayersMask);
             EndRenderPass();
         }
+
+        for (Landscape* landscape : renderSystem->GetLandscapes())
+            landscape->SetPageUpdateLocked(false);
     }
     else
     {
@@ -476,6 +493,7 @@ HDRDeferredPass::~HDRDeferredPass()
 {
     SafeDelete(gBufferPass);
     SafeDelete(gBufferResolvePass);
+    SafeDelete(velocityPass);
 }
 
 void HDRDeferredPass::DebugDumpGBuffers()
