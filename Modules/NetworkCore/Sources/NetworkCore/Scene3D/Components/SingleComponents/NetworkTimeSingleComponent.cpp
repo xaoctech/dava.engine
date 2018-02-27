@@ -8,7 +8,12 @@ uint32 NetworkTimeSingleComponent::FrequencyHz = 60;
 float32 NetworkTimeSingleComponent::FrameDurationS = 1.f / 60.f;
 uint32 NetworkTimeSingleComponent::FrameDurationMs = 1000 / 60;
 uint32 NetworkTimeSingleComponent::FrameDurationUs = 1000000 / 60;
-const float32 NetworkTimeSingleComponent::FrameAccelerationS = 0.001f;
+float32 NetworkTimeSingleComponent::FrameSpeedupS = 0.001f;
+float32 NetworkTimeSingleComponent::FrameSlowdownS = 0.001f;
+float32 NetworkTimeSingleComponent::UptimeInitFactor = 0.5f;
+float32 NetworkTimeSingleComponent::UptimeDelayFactor = 3.0f;
+int32 NetworkTimeSingleComponent::ArtificialLatency = 4;
+float32 NetworkTimeSingleComponent::LossFactor = 0.05f;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimeSingleComponent)
 {
@@ -46,14 +51,24 @@ void NetworkTimeSingleComponent::SetFrameId(uint32 value)
     frameId = value;
 }
 
-int32 NetworkTimeSingleComponent::GetWaitFrames() const
+int32 NetworkTimeSingleComponent::GetAdjustedFrames() const
 {
-    return waitFrames;
+    return adjustedFrames;
 }
 
-void NetworkTimeSingleComponent::SetWaitFrames(int32 value)
+void NetworkTimeSingleComponent::SetAdjustedFrames(int32 value)
 {
-    waitFrames = value;
+    adjustedFrames = value;
+}
+
+int32 NetworkTimeSingleComponent::GetLastSyncDiff() const
+{
+    return lastSyncDiff;
+}
+
+void NetworkTimeSingleComponent::SetLastSyncDiff(int32 value)
+{
+    lastSyncDiff = value;
 }
 
 uint32 NetworkTimeSingleComponent::GetLastServerFrameId() const
@@ -61,9 +76,9 @@ uint32 NetworkTimeSingleComponent::GetLastServerFrameId() const
     return lastServerFrameId;
 }
 
-void NetworkTimeSingleComponent::SetLastServerFrameId(uint32 value)
+void NetworkTimeSingleComponent::SetLastServerFrameId(uint32 frameId)
 {
-    lastServerFrameId = value;
+    lastServerFrameId = frameId;
 }
 
 float32 NetworkTimeSingleComponent::GetFps() const
@@ -76,34 +91,77 @@ void NetworkTimeSingleComponent::SetFps(float32 value)
     fps = value;
 }
 
+void NetworkTimeSingleComponent::SetResyncDelayUptime(const FastName& token, uint32 uptime)
+{
+    resyncDelayUptime[token] = uptime;
+}
+
+uint32 NetworkTimeSingleComponent::GetResyncDelayUptime(const FastName& token) const
+{
+    uint32 uptime = 0;
+    auto findIt = resyncDelayUptime.find(token);
+    if (findIt != resyncDelayUptime.end())
+    {
+        uptime = findIt->second;
+    }
+    return uptime;
+}
+
 void NetworkTimeSingleComponent::SetLastClientFrameId(const FastName& token, uint32 frameId)
 {
-    lastClientFrameIds[token] = frameId;
+    lastClientFrameId[token] = frameId;
 }
 
 uint32 NetworkTimeSingleComponent::GetLastClientFrameId(const FastName& token) const
 {
-    uint32 lastClientFrameId = 0;
-    auto findIt = lastClientFrameIds.find(token);
-    if (findIt != lastClientFrameIds.end())
+    uint32 frameID = 0;
+    auto findIt = lastClientFrameId.find(token);
+    if (findIt != lastClientFrameId.end())
     {
-        lastClientFrameId = findIt->second;
+        frameID = findIt->second;
     }
-    return lastClientFrameId;
+    return frameID;
 }
 
-void NetworkTimeSingleComponent::SetClientServerDiff(const FastName& token, int32 diff)
+void NetworkTimeSingleComponent::SetClientOutrunning(const FastName& token, int32 diff)
 {
-    clientServerDiff[token] = diff;
+    clientOutrunning[token] = diff;
 }
 
-int32 NetworkTimeSingleComponent::GetClientServerDiff(const FastName& token) const
+int32 NetworkTimeSingleComponent::GetClientOutrunning(const FastName& token) const
 {
     int32 diff = 0;
-    auto findIt = clientServerDiff.find(token);
-    if (findIt != clientServerDiff.end())
+    auto findIt = clientOutrunning.find(token);
+    if (findIt != clientOutrunning.end())
     {
         diff = findIt->second;
+    }
+    return diff;
+}
+
+void NetworkTimeSingleComponent::SetClientViewDelay(const FastName& token, uint32 frameID,
+                                                    int32 diff)
+{
+    auto findIt = clientViewDelayHistory.find(token);
+    if (findIt != clientViewDelayHistory.end())
+    {
+        findIt->second[frameID % diffHistorySize] = diff;
+    }
+    else
+    {
+        Vector<int32> history(diffHistorySize, 0);
+        history[frameID % diffHistorySize] = diff;
+        clientViewDelayHistory[token] = history;
+    }
+}
+
+int32 NetworkTimeSingleComponent::GetClientViewDelay(const FastName& token, uint32 frameID) const
+{
+    int32 diff = 0;
+    auto findIt = clientViewDelayHistory.find(token);
+    if (findIt != clientViewDelayHistory.end())
+    {
+        diff = findIt->second[frameID % diffHistorySize];
     }
     return diff;
 }

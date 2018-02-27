@@ -5,6 +5,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/UDPTransport/UDPClient.h"
 #include "NetworkCore/UDPTransport/UDPServer.h"
 
@@ -27,17 +28,16 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimeSystem)
     .End();
 }
 
-static bool IsServerSynced(const Responder& responder, float32 lossFactor, uint32 serverFrameId, uint32 clientFrameId, int32& diff)
+static bool IsServerSynced(const Responder& responder, uint32 serverFrameId, uint32 clientFrameId, int32& diff)
 {
-    const uint32 losses = static_cast<uint32>(std::round(responder.GetPacketLoss() / lossFactor));
-    const uint32 buffMinSize = losses + 1; // 1 - artificial latency
-    diff = static_cast<int32>(clientFrameId - serverFrameId) - buffMinSize;
+    const uint32 losses = static_cast<uint32>(std::round(responder.GetPacketLoss() / NetworkTimeSingleComponent::LossFactor));
+    diff = static_cast<int32>(clientFrameId - serverFrameId) - losses - NetworkTimeSingleComponent::ArtificialLatency;
     return std::abs(diff) <= static_cast<int32>(NetworkTimeSingleComponent::FrequencyHz / 2);
 }
 
 static int8 GetNetDiff(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA::Responder& responder)
 {
-    int32 clientServerDiff = netTimeComp->GetClientServerDiff(responder.GetToken());
+    int32 clientServerDiff = netTimeComp->GetClientOutrunning(responder.GetToken());
     int32 max = std::numeric_limits<int8>::max();
     int32 min = std::numeric_limits<int8>::min();
     return static_cast<int8>(DAVA::Max(DAVA::Min(clientServerDiff, max), min));
@@ -46,11 +46,16 @@ static int8 GetNetDiff(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA
 static void SendUptime(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA::Responder& responder)
 {
     TimeSyncHeader timeSyncHeader;
-    timeSyncHeader.uptimeMs = netTimeComp->GetUptimeMs() + responder.GetRtt() / 2;
+    timeSyncHeader.uptimeMs = netTimeComp->GetUptimeMs() +
+    static_cast<uint32>(responder.GetRtt() * NetworkTimeSingleComponent::UptimeInitFactor);
     timeSyncHeader.type = TimeSyncHeader::Type::UPTIME;
     timeSyncHeader.netDiff = GetNetDiff(netTimeComp, responder);
     responder.Send(reinterpret_cast<const uint8*>(&timeSyncHeader), TIMESYNC_PACKET_HEADER_SIZE,
                    PacketParams::Reliable(PacketParams::TIME_CHANNEL_ID));
+
+    uint32 resyncDelayUptime = netTimeComp->GetUptimeMs() +
+    static_cast<uint32>(responder.GetRtt() * NetworkTimeSingleComponent::UptimeDelayFactor);
+    netTimeComp->SetResyncDelayUptime(responder.GetToken(), resyncDelayUptime);
 }
 
 NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
@@ -80,16 +85,6 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     {
         DVASSERT(false);
     }
-}
-
-void NetworkTimeSystem::SetSlowDownFactor(float32 value)
-{
-    slowDownFactor = value;
-}
-
-void NetworkTimeSystem::SetLossFactor(float32 value)
-{
-    lossFactor = value;
 }
 
 const ComponentMask& NetworkTimeSystem::GetResimulationComponents() const
@@ -136,7 +131,8 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
 {
     const TimeSyncHeader* timeSyncHeader = reinterpret_cast<const TimeSyncHeader*>(data);
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-    netTimeComp->SetClientServerDiff(client->GetAuthToken(), timeSyncHeader->netDiff);
+    netTimeComp->SetClientOutrunning(client->GetAuthToken(), timeSyncHeader->netDiff);
+    netTimeComp->SetLastSyncDiff(timeSyncHeader->diff);
     switch (timeSyncHeader->type)
     {
     case TimeSyncHeader::Type::UPTIME:
@@ -161,15 +157,21 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8*
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::OnReceiveServer");
     const TimeSyncHeader* inHeader = reinterpret_cast<const TimeSyncHeader*>(data);
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-    uint32 lastClientFramId = netTimeComp->GetLastClientFrameId(responder.GetToken());
-    if (inHeader->frameId <= lastClientFramId)
+    uint32 lastClientFrameId = netTimeComp->GetLastClientFrameId(responder.GetToken());
+    if (inHeader->frameId <= lastClientFrameId)
     { // is too late
         return;
     }
     netTimeComp->SetLastClientFrameId(responder.GetToken(), inHeader->frameId);
+    netTimeComp->SetClientViewDelay(responder.GetToken(), inHeader->frameId, inHeader->netDiff);
+
+    if (netTimeComp->GetUptimeMs() < netTimeComp->GetResyncDelayUptime(responder.GetToken()))
+    { // wait till resync reaches client
+        return;
+    }
 
     int32 diff = 0;
-    if (IsServerSynced(responder, lossFactor, netTimeComp->GetFrameId(), inHeader->frameId, diff))
+    if (IsServerSynced(responder, netTimeComp->GetFrameId(), inHeader->frameId, diff))
     {
         TimeSyncHeader outHeader;
         outHeader.type = TimeSyncHeader::Type::DIFF;
@@ -190,39 +192,43 @@ void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
 
     uint32 uptime = netTimeComp->GetUptimeMs();
+    uptime += static_cast<uint32>(timeElapsed * 1000);
+    netTimeComp->SetUptimeMs(uptime);
+
     uint32 frameId = netTimeComp->GetFrameId();
+    ++frameId;
+    netTimeComp->SetFrameId(frameId);
 
     if (client)
     {
-        int32 waitFrames = netTimeComp->GetWaitFrames();
-        if (waitFrames == 0)
+        int32 adjustedFrames = netTimeComp->GetAdjustedFrames();
+        if (adjustedFrames == 0)
         {
             GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
         }
         else
         {
-            if (waitFrames > 0)
+            if (adjustedFrames > 0)
             {
-                GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS + NetworkTimeSingleComponent::FrameAccelerationS);
-                netTimeComp->SetWaitFrames(waitFrames - 1);
+                // client is ahead of server - slowing down
+                GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS + NetworkTimeSingleComponent::FrameSlowdownS);
+                netTimeComp->SetAdjustedFrames(adjustedFrames - 1);
             }
-            if (waitFrames < 0)
+            if (adjustedFrames < 0)
             {
-                GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS - NetworkTimeSingleComponent::FrameAccelerationS);
-                netTimeComp->SetWaitFrames(waitFrames + 1);
+                // client is behind server - speeding up
+                GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS - NetworkTimeSingleComponent::FrameSpeedupS);
+                netTimeComp->SetAdjustedFrames(adjustedFrames + 1);
             }
         }
 
         TimeSyncHeader timeSyncHeader;
         timeSyncHeader.type = TimeSyncHeader::Type::FRAME;
-        timeSyncHeader.frameId = netTimeComp->GetFrameId();
-        timeSyncHeader.netDiff = 0;
+        timeSyncHeader.frameId = frameId;
+        timeSyncHeader.netDiff = static_cast<int8>(frameId - netTimeComp->GetLastServerFrameId());
         client->Send(reinterpret_cast<const uint8*>(&timeSyncHeader), TIMESYNC_PACKET_HEADER_SIZE,
                      PacketParams::Unreliable(PacketParams::TIME_CHANNEL_ID));
     }
-
-    netTimeComp->SetUptimeMs(uptime + static_cast<uint32>(timeElapsed * 1000));
-    netTimeComp->SetFrameId(frameId + 1);
 }
 
 void NetworkTimeSystem::Process(float32 timeElapsed)
@@ -238,27 +244,27 @@ void NetworkTimeSystem::Process(float32 timeElapsed)
     overlay->AddCustomMetric(FastName("FPS"), netTimeComp->GetFps());
     if (client)
     {
-        overlay->AddCustomMetric(FastName("Wait Frames"), netTimeComp->GetWaitFrames());
+        overlay->AddCustomMetric(FastName("Wait Frames"), netTimeComp->GetAdjustedFrames());
         overlay->AddCustomMetric(FastName("Frame ID"), netTimeComp->GetFrameId());
     }
 }
 
 void NetworkTimeSystem::ProcessFrameDiff(int32 diff)
 {
+    if (diff == 0)
+    { // perfectly synced
+        return;
+    }
+
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-    if (diff != 0 && netTimeComp->GetWaitFrames() == 0)
-    {
-        int32 waitFrames = diff * static_cast<int32>(NetworkTimeSingleComponent::FrameDurationS / NetworkTimeSingleComponent::FrameAccelerationS);
-        if (diff < 0)
-        {
-            netTimeComp->SetWaitFrames(waitFrames);
-        }
-        else
-        {
-            waitFrames = static_cast<int32>(static_cast<float32>(waitFrames) * slowDownFactor);
-            waitFrames = diff == 1 ? std::max(waitFrames, 1) : waitFrames;
-            netTimeComp->SetWaitFrames(waitFrames);
-        }
+    int32 adjustedFrames = netTimeComp->GetAdjustedFrames();
+    bool sameDirection = (diff > 0) ^ (adjustedFrames < 0);
+
+    if (adjustedFrames == 0 || (diff < 0 && !sameDirection))
+    { // starting over or changing direction to speedup
+        float32 deltaS = diff < 0 ? NetworkTimeSingleComponent::FrameSpeedupS : NetworkTimeSingleComponent::FrameSlowdownS;
+        adjustedFrames = static_cast<int32>(std::round(diff * NetworkTimeSingleComponent::FrameDurationS / deltaS));
+        netTimeComp->SetAdjustedFrames(adjustedFrames);
     }
 }
 }

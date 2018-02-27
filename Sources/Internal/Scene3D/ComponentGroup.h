@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/HashVector.h"
+#include "Base/Type.h"
 #include "Functional/Signal.h"
 
 namespace DAVA
@@ -21,6 +22,7 @@ protected:
     virtual void UpdateCachedRemoved() = 0;
     virtual void EmitAdded(Component* component) = 0;
     virtual void EmitRemoved(Component* component) = 0;
+    const Type* trackedType = nullptr;
 
     friend class EntitiesManager;
 };

@@ -33,6 +33,7 @@
 #include "NetworkCore/Scene3D/Systems/SnapshotSystemClient.h"
 #include "NetworkCore/Scene3D/Systems/SnapshotSystemServer.h"
 #include "NetworkCore/Scene3D/Systems/NetworkHealthCheckSystem.h"
+#include "NetworkCore/Scene3D/Systems/NetworkTransformInterpolationSystem.h"
 
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
@@ -91,6 +92,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSingleComponent);
 
     // Systems
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformInterpolationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(INetworkInputSimulationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugDrawSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugPredictDrawSystem);

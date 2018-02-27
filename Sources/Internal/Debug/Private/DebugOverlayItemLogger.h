@@ -17,7 +17,7 @@ public:
     ~DebugOverlayItemLogger();
 
     String GetName() const override;
-    void Draw() override;
+    void Draw(float32 elapsedTime) override;
 
 private:
     std::unique_ptr<DebugOverlayItemLoggerDetail::LoggerOutputContainer> loggerOutput;

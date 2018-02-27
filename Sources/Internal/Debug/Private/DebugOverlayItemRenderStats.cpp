@@ -12,7 +12,7 @@ String DebugOverlayItemRenderStats::GetName() const
     return "Render stats";
 }
 
-void DebugOverlayItemRenderStats::Draw()
+void DebugOverlayItemRenderStats::Draw(float32 elapsedTime)
 {
     bool shown = true;
     ImGui::SetNextWindowSizeConstraints(ImVec2(300.0f, 200.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));

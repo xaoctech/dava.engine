@@ -25,48 +25,70 @@ public:
     uint32 GetFrameId() const;
     void SetFrameId(uint32 value);
 
-    // number of frames with unusual frame duration
-    // if waitFrames > 0 then frame duration > constant duration
-    // else frame duration < constant duration
-    int32 GetWaitFrames() const;
-    void SetWaitFrames(int32 value);
+    // number of adjusted frames (frames with unusual frame duration)
+    // if adjustedFrames > 0 then we slow down: frame duration > constant duration
+    // if adjustedFrames < 0 then we speed up: frame duration < constant duration
+    int32 GetAdjustedFrames() const;
+    void SetAdjustedFrames(int32 value);
 
-    // last approved frame ID from server
+    // last frames diff processed during synchronization
+    int32 GetLastSyncDiff() const;
+    void SetLastSyncDiff(int32 value);
+
+    // last frame ID received from server
     uint32 GetLastServerFrameId() const;
-    void SetLastServerFrameId(uint32 value);
+    void SetLastServerFrameId(uint32 frameId);
 
     // frames per second
     float32 GetFps() const;
     void SetFps(float32 value);
 
+    // delay end uptime after doing a resync
+    void SetResyncDelayUptime(const FastName& token, uint32 uptime);
+    uint32 GetResyncDelayUptime(const FastName& token) const;
+
     // last frame ID was received from client
     void SetLastClientFrameId(const FastName& token, uint32 frameId);
     uint32 GetLastClientFrameId(const FastName& token) const;
 
-    // difference between client and server frame ids
-    void SetClientServerDiff(const FastName& token, int32 diff);
-    int32 GetClientServerDiff(const FastName& token) const;
+    // difference between client and server frame ids (positive if client is ahead of server)
+    void SetClientOutrunning(const FastName& token, int32 diff);
+    int32 GetClientOutrunning(const FastName& token) const;
+
+    // client view delay in frames
+    void SetClientViewDelay(const FastName& token, uint32 frameID, int32 diff);
+    int32 GetClientViewDelay(const FastName& token, uint32 frameID) const;
 
     static void SetFrequencyHz(float32 freqHz);
+
+    virtual ~NetworkTimeSingleComponent(){};
 
     static uint32 FrequencyHz;
     static float32 FrameDurationS;
     static uint32 FrameDurationMs;
     static uint32 FrameDurationUs;
-    static const float32 FrameAccelerationS;
-
-    virtual ~NetworkTimeSingleComponent(){};
+    static float32 FrameSpeedupS; // speedup: time in seconds adjusted frame is decreased by
+    static float32 FrameSlowdownS; // slowdown: time in seconds adjusted frame is increased by
+    static float32 UptimeInitFactor; // factor applied to RTT when setting client uptime
+    static float32 UptimeDelayFactor; // factor applied to RTT when making a delay after setting uptime
+    static int32 ArtificialLatency; // difference in frames we try to keep between client and server
+    static float32 LossFactor; // frames difference buffer is increased by (packets loss) / LossFactor
 
 private:
+    static const uint32 diffHistorySize = 32;
+
     bool initialized = false;
     uint32 uptime = 0;
     uint32 frameId = 0;
-    int32 waitFrames = 0;
-    uint32 lastServerFrameId = 0;
+    uint32 lastServerFrameId;
+    int32 adjustedFrames = 0;
+    int32 lastSyncDiff = 0;
     float32 fps = 0.f;
 
-    UnorderedMap<FastName, uint32> lastClientFrameIds;
-    UnorderedMap<FastName, int32> clientServerDiff;
+    UnorderedMap<FastName, uint32> resyncDelayUptime;
+    UnorderedMap<FastName, uint32> lastClientFrameId;
+    UnorderedMap<FastName, int32> clientOutrunning;
+    UnorderedMap<FastName, Vector<int32>> clientViewDelayHistory;
 
     void Clear() override;
 };

@@ -14,6 +14,7 @@ class NetworkEntitiesSingleComponent;
 class NetworkDeltaSingleComponent;
 class NetworkReplicationSingleComponent;
 class NetworkTimeSingleComponent;
+class NetworkClientSingleComponent;
 class SnapshotSingleComponent;
 class NetworkReplicationSystem2 : public SceneSystem
 {
@@ -50,6 +51,7 @@ private:
     NetworkDeltaSingleComponent* networkDeltaSingleComponent;
     NetworkReplicationSingleComponent* networkReplicationSingleComponent;
     NetworkTimeSingleComponent* networkTimeSingleComponent;
+    NetworkClientSingleComponent* networkClientSingleComponent;
 
     void AddPendingEntity(Entity* entity, Entity* parent);
     void RemovePendingEntity(Entity* entity);

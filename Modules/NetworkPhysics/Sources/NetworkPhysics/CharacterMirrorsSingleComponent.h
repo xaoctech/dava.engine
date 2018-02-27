@@ -17,6 +17,7 @@ public:
     void RemoveMirrorForCharacter(DAVA::Entity* character);
     DAVA::Entity* GetMirrorForCharacter(DAVA::Entity* character) const;
     DAVA::Entity* GetCharacterFromMirror(DAVA::Entity* entity) const;
+    const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& GetCharacterToMirrorMap() const;
     void Clear() override;
 
 private:

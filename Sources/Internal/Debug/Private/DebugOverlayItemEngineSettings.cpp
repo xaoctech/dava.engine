@@ -14,7 +14,7 @@ String DebugOverlayItemEngineSettings::GetName() const
     return "Engine settings";
 }
 
-void DebugOverlayItemEngineSettings::Draw()
+void DebugOverlayItemEngineSettings::Draw(float32 elapsedTime)
 {
     static Reflection settingsReflection = Reflection::Create(&GetEngineContext()->settings);
     static Vector<Reflection::Field> settingsFields = settingsReflection.GetFields();

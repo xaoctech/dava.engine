@@ -35,13 +35,43 @@ void TransformInterpolationComponent::Reset()
     done = false;
     elapsed = 0;
 
-    startPosition = curPosition;
-    startRotation = curRotation;
-    startScale = curScale;
+    prevPosition = curPosition;
+    prevRotation = curRotation;
+    prevScale = curScale;
 }
 
 void TransformInterpolationComponent::ApplyImmediately()
 {
     immediately = true;
 }
+
+void TransformInterpolationComponent::SetNewTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
+{
+    switch (state)
+    {
+    case InterpolationState::ELASTIC:
+    {
+        Reset();
+        break;
+    }
+
+    case InterpolationState::FIXED:
+    {
+        Reset();
+        curPosition = position;
+        curRotation = rotation;
+        curScale = scale;
+        if (!isInit)
+        {
+            isInit = true;
+            Reset();
+        }
+        break;
+    }
+
+    default:
+        break;
+    }
+}
+
 } // namespace DAVA

@@ -59,12 +59,6 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     {
         port = std::stoi(portStr);
     }
-    String slowDownFactorStr = CommandLineParser::GetCommandParam("--slow-down");
-    float32 slowDownFactor = 0.01f;
-    if (!slowDownFactorStr.empty())
-    {
-        slowDownFactor = std::stof(slowDownFactorStr);
-    }
     String freqHzStr = CommandLineParser::GetCommandParam("--hz");
     uint32 freqHz = 60;
     if (!freqHzStr.empty())
@@ -132,7 +126,6 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     clientOptions->SetFastName("token", token);
     clientOptions->SetBool("isProfile", isProfile);
     clientOptions->SetBool("isDebug", isDebug);
-    clientOptions->SetFloat("slowDownFactor", slowDownFactor);
     clientOptions->SetUInt32("freqHz", freqHz);
     TestClient app(e, clientOptions);
     return e.Run();

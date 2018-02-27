@@ -15,7 +15,6 @@ BattleOptions BattleOptions::FromKeyedArchive(DAVA::KeyedArchive* archive)
         options.port = archive->GetUInt32("port");
         options.playerKind = PlayerKind(archive->GetUInt32("playerKind"));
         options.isDebug = archive->GetBool("isDebug");
-        options.slowDownFactor = archive->GetFloat("slowDownFactor");
         options.freqHz = archive->GetUInt32("freqHz");
     }
     return options;
@@ -28,6 +27,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BattleOptionsSingleComponent)
     .Field("GameModeId", &BattleOptionsSingleComponent::gameModeId)[M::Replicable()]
     .Field("IsEnemyPredicted", &BattleOptionsSingleComponent::isEnemyPredicted)[M::Replicable()]
     .Field("CompareInputs", &BattleOptionsSingleComponent::compareInputs)[M::Replicable()]
+    .Field("CollisionResolveMode", &BattleOptionsSingleComponent::collisionResolveMode)[M::Replicable()]
     .End();
 }
 

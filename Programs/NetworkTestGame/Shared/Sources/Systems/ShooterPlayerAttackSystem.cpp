@@ -107,7 +107,7 @@ void ShooterPlayerAttackSystem::PrepareForRemove()
 {
 }
 
-void ShooterPlayerAttackSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) const
+void ShooterPlayerAttackSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)
 {
     using namespace DAVA;
 
@@ -152,7 +152,7 @@ void ShooterPlayerAttackSystem::ApplyDigitalActions(DAVA::Entity* entity, const 
     }
 }
 
-void ShooterPlayerAttackSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) const
+void ShooterPlayerAttackSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)
 {
 }
 
@@ -266,10 +266,10 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
             NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
             DVASSERT(timeSingleComponent != nullptr);
 
-            int32 fdiff = timeSingleComponent->GetClientServerDiff(token);
+            int32 fdiff = timeSingleComponent->GetClientViewDelay(token, clientFrameId);
             if (fdiff < 0)
             {
-                Logger::Error("fdiff is negative");
+                Logger::Error("client view delay is negative");
                 return;
             }
 

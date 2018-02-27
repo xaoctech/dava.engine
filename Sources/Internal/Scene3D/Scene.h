@@ -298,8 +298,10 @@ public:
 
     template <class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup();
-    template <class Matcher, class T, class... Args>
+    template <class MaskMatcher, class TypeMatcher, class T, class... Args>
     ComponentGroup<T>* AquireComponentGroupWithMatcher();
+
+    float32 GetTimeOverrunInterpolatedFactor() const;
 
 public: // deprecated methods
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
@@ -325,11 +327,12 @@ protected:
     {
         float32 constantTime = 1.f / 60.f;
         float32 fixedTime = 1.f / 60.f;
-        float32 lastTime = 0.f;
+        float32 accumulatedTime = 0.f;
     } fixedUpdate;
     bool pauseFixedUpdate = false;
 
     bool isPerformFixedProcessOnlyOnce = false;
+    float32 timeOverrunInterpolatedFactor = 0.f;
 
     friend class Entity;
     DAVA_VIRTUAL_REFLECTION(Scene, Entity);

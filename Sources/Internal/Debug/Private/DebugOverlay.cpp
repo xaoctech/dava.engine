@@ -156,7 +156,7 @@ void DebugOverlay::UnregisterDefaultItems()
     UnregisterItem(defaultItemProfiler.get());
 }
 
-void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
+void DebugOverlay::OnUpdate(Window* window, float32 elapsedTime)
 {
     DVASSERT(ImGui::IsInitialized());
 
@@ -315,9 +315,17 @@ void DebugOverlay::OnUpdate(Window* window, float32 timeDelta)
         {
             if (itemData.shown)
             {
-                itemData.item->Draw();
+                itemData.item->Draw(elapsedTime);
             }
         }
+    }
+}
+
+void DebugOverlay::SetScene(Scene* scene)
+{
+    for (ItemData& itemData : items)
+    {
+        itemData.item->SetScene(scene);
     }
 }
 }

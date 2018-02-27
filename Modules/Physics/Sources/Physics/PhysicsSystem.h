@@ -73,6 +73,10 @@ public:
 
     void SyncTransformToPhysx();
 
+public:
+    Signal<CharacterControllerComponent*> beforeCCTMove;
+    Signal<CharacterControllerComponent*> afterCCTMove;
+
 private:
     bool FetchResults(bool waitForFetchFinish);
 
@@ -91,8 +95,6 @@ private:
 
     void MoveCharacterControllers(float32 timeElapsed);
 
-    void UpdateCCTFilterData(CharacterControllerComponent* cctComponent, uint32 typeMask, uint32 typeMaskToCollideWith);
-
     // Initialization of different component types
     void InitBodyComponent(PhysicsComponent* bodyComponent);
     void InitShapeComponent(CollisionShapeComponent* shapeComponent);
@@ -110,6 +112,8 @@ private:
     void ExecuteForEachPendingBody(Function<void(PhysicsComponent*)> func);
     void ExecuteForEachCCT(Function<void(CharacterControllerComponent*)> func);
     void ExecuteForEachPendingCCT(Function<void(CharacterControllerComponent*)> func);
+
+    void UpdateCCTFilterData(CharacterControllerComponent* cctComponent, uint32 typeMask, uint32 typeMaskToCollideWith);
 
 private:
     class SimulationEventCallback : public physx::PxSimulationEventCallback

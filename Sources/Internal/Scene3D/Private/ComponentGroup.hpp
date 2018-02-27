@@ -5,6 +5,7 @@ namespace DAVA
 template<class T>
 ComponentGroup<T>::ComponentGroup()
 {
+    trackedType = Type::Instance<T>();
     onComponentAdded.reset(new Signal<T*>());
     onComponentRemoved.reset(new Signal<T*>());
 }

@@ -34,17 +34,17 @@ Component* TransformComponent::Clone(Entity* toEntity)
 
 void TransformComponent::SetLocalTransform(const Matrix4& transform)
 {
-    BeginInterpolation();
     transform.Decomposition(position, scale, rotation);
+    BeginInterpolation();
     ApplyLocalTransfomChanged();
 }
 
 void TransformComponent::SetLocalTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
 {
-    BeginInterpolation();
     this->position = position;
     this->rotation = rotation;
     this->scale = scale;
+    BeginInterpolation();
     ApplyLocalTransfomChanged();
 }
 
@@ -104,9 +104,9 @@ void TransformComponent::Deserialize(KeyedArchive* archive, SerializationContext
 void TransformComponent::BeginInterpolation()
 {
     TransformInterpolationComponent* tic = GetEntity()->GetComponent<TransformInterpolationComponent>();
-    if (nullptr != tic)
+    if (tic)
     {
-        tic->Reset();
+        tic->SetNewTransform(position, rotation, scale);
     }
 }
 

@@ -11,7 +11,7 @@ String DebugOverlayItemRenderOptions::GetName() const
     return "Render options";
 }
 
-void DebugOverlayItemRenderOptions::Draw()
+void DebugOverlayItemRenderOptions::Draw(float32 elapsedTime)
 {
     RenderOptions* options = Renderer::GetOptions();
 

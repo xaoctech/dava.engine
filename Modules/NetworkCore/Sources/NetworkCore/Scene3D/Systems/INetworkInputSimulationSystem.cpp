@@ -81,10 +81,8 @@ void INetworkInputSimulationSystem::Simulate(Entity* entity)
 #endif
             }
 
-            ApplyDigitalActions(entity, cache.actions.digitalActions,
-                                frameFail, NetworkTimeSingleComponent::FrameDurationS);
-            ApplyAnalogActions(entity, cache.actions.analogActions,
-                               frameFail, NetworkTimeSingleComponent::FrameDurationS);
+            ApplyDigitalActions(entity, cache.actions.digitalActions, frameFail, NetworkTimeSingleComponent::FrameDurationS);
+            ApplyAnalogActions(entity, cache.actions.analogActions, frameFail, NetworkTimeSingleComponent::FrameDurationS);
 
             inputToApplyFound = true;
 

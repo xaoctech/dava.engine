@@ -24,7 +24,7 @@ protected:
     void ApplyDigitalActions(DAVA::Entity* entity,
                              const DAVA::Vector<DAVA::FastName>& actions,
                              DAVA::uint32 clientFrameId,
-                             DAVA::float32 duration) const override;
+                             DAVA::float32 duration) override;
 
     bool CanShoot(const DAVA::Entity* entity) const;
 

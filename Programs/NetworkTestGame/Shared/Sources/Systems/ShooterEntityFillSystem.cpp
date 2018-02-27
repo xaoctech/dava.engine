@@ -119,7 +119,7 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
     controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
     controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-    controllerComponent->SetTypeMaskToCollideWith(UINT32_MAX);
+    controllerComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
     entity->AddComponent(controllerComponent);
 
     if (IsServer(GetScene()))
@@ -153,29 +153,31 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         entity->AddComponent(new ShootCooldownComponent());
         entity->AddComponent(new RocketSpawnComponent());
         entity->AddComponent(new ShooterStateComponent());
-
-        // Mirror
-
-        entity->AddComponent(new ShooterMirroredCharacterComponent());
-
-        Entity* mirror = PhysicsUtils::CreateCharacterMirror(controllerComponent);
-        DVASSERT(mirror != nullptr);
-
-        DynamicBodyComponent* mirrorBodyComponent = mirror->GetComponent<DynamicBodyComponent>();
-        DVASSERT(mirrorBodyComponent != nullptr);
-
-        mirrorBodyComponent->SetLinearDamping(0.5f);
-        mirrorBodyComponent->SetLockFlags(static_cast<DynamicBodyComponent::eLockFlags>(DynamicBodyComponent::eLockFlags::AngularX | DynamicBodyComponent::eLockFlags::AngularY | DynamicBodyComponent::eLockFlags::AngularZ));
-
-        CapsuleShapeComponent* mirrorShapeComponent = mirror->GetComponent<CapsuleShapeComponent>();
-        DVASSERT(mirrorShapeComponent != nullptr);
-
-        mirrorShapeComponent->SetOverrideMass(true);
-        mirrorShapeComponent->SetMass(120.0f);
-
-        GetScene()->AddNode(mirror);
-        GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>()->AddMirrorForCharacter(entity, mirror);
     }
+
+    // Mirror
+
+    entity->AddComponent(new ShooterMirroredCharacterComponent());
+
+    Entity* mirror = PhysicsUtils::CreateCharacterMirror(controllerComponent);
+    DVASSERT(mirror != nullptr);
+
+    DynamicBodyComponent* mirrorBodyComponent = mirror->GetComponent<DynamicBodyComponent>();
+    DVASSERT(mirrorBodyComponent != nullptr);
+
+    mirrorBodyComponent->SetLinearDamping(0.5f);
+    mirrorBodyComponent->SetLockFlags(static_cast<DynamicBodyComponent::eLockFlags>(DynamicBodyComponent::eLockFlags::AngularX | DynamicBodyComponent::eLockFlags::AngularY | DynamicBodyComponent::eLockFlags::AngularZ));
+
+    CapsuleShapeComponent* mirrorShapeComponent = mirror->GetComponent<CapsuleShapeComponent>();
+    DVASSERT(mirrorShapeComponent != nullptr);
+
+    mirrorShapeComponent->SetOverrideMass(true);
+    mirrorShapeComponent->SetMass(120.0f);
+    mirrorShapeComponent->SetTypeMask(SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE);
+    mirrorShapeComponent->SetTypeMaskToCollideWith(0);
+
+    GetScene()->AddNode(mirror);
+    GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>()->AddMirrorForCharacter(entity, mirror);
 
     if (!IsServer(GetScene()))
     {

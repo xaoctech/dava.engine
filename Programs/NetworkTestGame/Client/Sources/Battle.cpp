@@ -25,6 +25,7 @@
 #include "Components/SingleComponents/GameCollisionSingleComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
+#include <Debug/DebugOverlay.h>
 #include <Debug/ProfilerCPU.h>
 #include <Debug/ProfilerGPU.h>
 #include <Debug/ProfilerOverlay.h>
@@ -183,5 +184,8 @@ void Battle::SetupTestGame()
         battleScene->GetSystem<PhysicsSystem>()->SetSimulationEnabled(true);
     }
 
-    battleScene->GetSystem<NetworkTimeSystem>()->SetSlowDownFactor(optionsSingleComp->options.slowDownFactor);
+    if (GetEngineContext()->debugOverlay != nullptr)
+    {
+        GetEngineContext()->debugOverlay->SetScene(battleScene);
+    }
 }

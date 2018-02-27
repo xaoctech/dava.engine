@@ -151,7 +151,7 @@ void NetworkInputSystem::OnReceive(const Responder& responder, const uint8* data
     }
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
     uint32 frameId = netTimeComp->GetFrameId();
-    netTimeComp->SetClientServerDiff(responder.GetToken(), header->frameId - frameId);
+    netTimeComp->SetClientOutrunning(responder.GetToken(), header->frameId - frameId);
     entityIt->second.Update(inputData, header->frameId);
     auto tokenIt = tokensToEntities.find(responder.GetToken());
     if (tokenIt == tokensToEntities.end())

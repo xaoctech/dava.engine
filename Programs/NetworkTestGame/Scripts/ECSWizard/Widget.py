@@ -12,15 +12,15 @@ def on_create(widget, txt, type_grop, place_grop):
         resource = type_grop.checkedButton().text()
         place = place_grop.checkedButton().text()
         place_cfg = config[place]
-        # for ext in ('cpp', 'h'):
-        #     in_filename = '%s/%s.%s' % (place, resource, ext)
-        #     out_filename = '%s%s.%s' % (name, resource, ext)
-        #     with open(in_filename, 'rt') as fin:
-        #         with open(out_filename, 'wt') as fout:
-        #             for line in fin:
-        #                 fout.write(line.replace('TEMPLATE', name))
-        #
-        # os.system('mv %s%s.* %s/%s' % (name, resource, ROOT, place_cfg[resource]))
+        for ext in ('cpp', 'h'):
+            in_filename = '%s/%s.%s' % (place, resource, ext)
+            out_filename = '%s%s.%s' % (name, resource, ext)
+            with open(in_filename, 'rt') as fin:
+                with open(out_filename, 'wt') as fout:
+                    for line in fin:
+                        fout.write(line.replace('TEMPLATE', name))
+
+        os.system('mv %s%s.* %s/%s' % (name, resource, ROOT, place_cfg[resource]))
 
         refl_register_file = place_cfg[REFLECTION_REGISTER]
         in_filename = '%s/%s' % (ROOT, refl_register_file)

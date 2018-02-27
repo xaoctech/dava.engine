@@ -75,13 +75,13 @@ EntityGroup* Scene::AquireEntityGroupWithMatcher()
 template <class T, class... Args>
 ComponentGroup<T>* Scene::AquireComponentGroup()
 {
-    return entitiesManager->AquireComponentGroup<AllOfEntityMatcher, T, Args...>(this);
+    return entitiesManager->AquireComponentGroup<AllOfEntityMatcher, ExactTypeMatcher, T, Args...>(this);
 }
 
-template <class Matcher, class T, class... Args>
+template <class MaskMatcher, class TypeMatcher, class T, class... Args>
 ComponentGroup<T>* Scene::AquireComponentGroupWithMatcher()
 {
-    return entitiesManager->AquireComponentGroup<Matcher, T, Args...>(this);
+    return entitiesManager->AquireComponentGroup<MaskMatcher, TypeMatcher, T, Args...>(this);
 }
 
 

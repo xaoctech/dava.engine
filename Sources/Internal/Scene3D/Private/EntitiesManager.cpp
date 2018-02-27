@@ -24,33 +24,20 @@ void EntitiesManager::RegisterEntity(Entity* entity)
         ComponentGroupBase* base = pair.second;
         const Type* componentType = pair.first.componentType;
 
-        bool needAdd = pair.first.matcher(mask, entity->GetAvailableComponentMask());
+        bool needAdd = pair.first.maskMatcher(mask, entity->GetAvailableComponentMask());
         if (needAdd)
         {
             uint32 count = entity->GetComponentCount();
             for (uint32 i = 0; i < count; ++i)
             {
                 Component* c = entity->GetComponentByIndex(i);
-                ComponentMask componentToCheckType = ComponentUtils::MakeMask(c->GetType());
-                bool needAddComponent = pair.first.matcher(componentToCheckType, mask);
+                bool needAddComponent = pair.first.typeMatcher(base->trackedType, c->GetType());
                 if (needAddComponent)
                 {
                     CacheComponentAdded(base, c);
                 }
             }
         }
-
-        /*        bool needAdd = pair.first.matcher(mask, entity->GetAvailableComponentMask());
-        if (needAdd)
-        {
-            uint32 size = entity->GetComponentCount(componentType);
-            for (uint32 i = 0; i < size; ++i)
-            {
-                Component* c = entity->GetComponent(componentType, i);
-                CacheComponentAdded(base, c);
-            }
-        }
-        */
     }
 
     for (auto& pair : entityGroups)
@@ -58,7 +45,7 @@ void EntitiesManager::RegisterEntity(Entity* entity)
         ComponentMask cm = pair.first.mask;
         EntityGroup& eg = pair.second;
 
-        bool needAdd = pair.first.matcher(cm, entity->GetAvailableComponentMask());
+        bool needAdd = pair.first.maskMatcher(cm, entity->GetAvailableComponentMask());
         if (needAdd)
         {
             CacheEntityAdded(&eg, entity);
@@ -74,14 +61,18 @@ void EntitiesManager::UnregisterEntity(Entity* entity)
         ComponentGroupBase* base = pair.second;
         const Type* componentType = pair.first.componentType;
 
-        bool needRemove = pair.first.matcher(mask, entity->GetAvailableComponentMask());
+        bool needRemove = pair.first.maskMatcher(mask, entity->GetAvailableComponentMask());
         if (needRemove)
         {
-            uint32 size = entity->GetComponentCount(componentType);
-            for (uint32 i = 0; i < size; ++i)
+            uint32 count = entity->GetComponentCount();
+            for (uint32 i = 0; i < count; ++i)
             {
-                Component* c = entity->GetComponent(componentType, i);
-                CacheComponentRemoved(base, c);
+                Component* c = entity->GetComponentByIndex(i);
+                bool needAddComponent = pair.first.typeMatcher(base->trackedType, c->GetType());
+                if (needAddComponent)
+                {
+                    CacheComponentRemoved(base, c);
+                }
             }
         }
     }
@@ -91,7 +82,7 @@ void EntitiesManager::UnregisterEntity(Entity* entity)
         ComponentMask cm = pair.first.mask;
         EntityGroup& eg = pair.second;
 
-        bool needRemove = pair.first.matcher(cm, entity->GetAvailableComponentMask());
+        bool needRemove = pair.first.maskMatcher(cm, entity->GetAvailableComponentMask());
         if (needRemove)
         {
             CacheEntityRemoved(&eg, entity);
@@ -106,16 +97,38 @@ void EntitiesManager::RegisterComponent(Entity* entity, Component* component)
         ComponentMask cm = pair.first.mask;
         ComponentGroupBase* cg = pair.second;
 
+        const Type* componentType = component->GetType();
+        const Type* trackedType = cg->trackedType;
         const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
-        ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
+        ComponentMask componentToCheckType = ComponentUtils::MakeMask(componentType);
 
-        bool isAllRequiredComponentsAvailable = pair.first.matcher(cm, entityComponentMask);
+        bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, entityComponentMask);
         bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
 
         bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
         if (fit)
         {
-            CacheComponentAdded(cg, component);
+            if (entity->GetComponentCount(componentType) == 1) //it's the 1st time entity is added to system
+            {
+                uint32 count = entity->GetComponentCount();
+                for (uint32 i = 0; i < count; ++i)
+                {
+                    Component* c = entity->GetComponentByIndex(i);
+                    bool needAddComponent = pair.first.typeMatcher(trackedType, c->GetType());
+                    if (needAddComponent)
+                    {
+                        CacheComponentAdded(cg, c);
+                    }
+                }
+            }
+            else //extra component for already added entity
+            {
+                bool needAddComponent = componentType == cg->trackedType;
+                if (needAddComponent)
+                {
+                    CacheComponentAdded(cg, component);
+                }
+            }
         }
     }
 
@@ -127,7 +140,7 @@ void EntitiesManager::RegisterComponent(Entity* entity, Component* component)
         const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
         ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
 
-        bool isAllRequiredComponentsAvailable = pair.first.matcher(cm, entityComponentMask);
+        bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, entityComponentMask);
         bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
 
         bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
@@ -148,16 +161,38 @@ void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
         ComponentMask cm = pair.first.mask;
         ComponentGroupBase* cg = pair.second;
 
+        const Type* componentType = component->GetType();
+        const Type* trackedType = cg->trackedType;
         const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
-        ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
+        ComponentMask componentToCheckType = ComponentUtils::MakeMask(componentType);
 
-        bool isAllRequiredComponentsAvailable = pair.first.matcher(cm, entityComponentMask);
+        bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, entityComponentMask);
         bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
 
         bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
         if (fit)
         {
-            CacheComponentRemoved(cg, component);
+            if (entity->GetComponentCount(componentType) == 1) //group is no more interested in entity
+            {
+                uint32 count = entity->GetComponentCount();
+                for (uint32 i = 0; i < count; ++i)
+                {
+                    Component* c = entity->GetComponentByIndex(i);
+                    bool needAddComponent = pair.first.typeMatcher(trackedType, c->GetType());
+                    if (needAddComponent)
+                    {
+                        CacheComponentRemoved(cg, c);
+                    }
+                }
+            }
+            else //remove just this component
+            {
+                bool needRemoveComponent = componentType == cg->trackedType;
+                if (needRemoveComponent)
+                {
+                    CacheComponentRemoved(cg, component);
+                }
+            }
         }
     }
 
@@ -169,7 +204,7 @@ void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
         const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
         ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
 
-        bool isAllRequiredComponentsAvailable = pair.first.matcher(cm, entityComponentMask);
+        bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, entityComponentMask);
         bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
 
         bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
@@ -257,24 +292,28 @@ void EntitiesManager::UpdateCaches()
 
 bool EntitiesManager::ComponentGroupKey::operator==(const ComponentGroupKey& other) const
 {
-    return (mask == other.mask) && (componentType == other.componentType) && (matcher == other.matcher);
+    return (mask == other.mask)
+    && (componentType == other.componentType)
+    && (maskMatcher == other.maskMatcher)
+    && (typeMatcher == other.typeMatcher);
 }
 
 std::size_t EntitiesManager::ComponentGroupKeyHasher::operator()(const ComponentGroupKey& k) const
 {
     return (std::hash<ComponentMask>()(k.mask)
-            ^ (std::hash<const Type*>()(k.componentType) << 1) >> 1)
-    ^ (std::hash<void*>()(reinterpret_cast<void*>(k.matcher)) << 1);
+            ^ (std::hash<const Type*>()(k.componentType) << 2) >> 2)
+    ^ ((std::hash<void*>()(reinterpret_cast<void*>(k.maskMatcher)) << 1) >> 1)
+    ^ (std::hash<void*>()(reinterpret_cast<void*>(k.typeMatcher)) << 1);
 }
 
 std::size_t EntitiesManager::EntityGroupKeyHasher::operator()(const EntityGroupKey& k) const
 {
     return std::hash<ComponentMask>()(k.mask)
-    ^ (std::hash<void*>()(reinterpret_cast<void*>(k.matcher)) << 1);
+    ^ (std::hash<void*>()(reinterpret_cast<void*>(k.maskMatcher)) << 1);
 }
 
 bool EntitiesManager::EntityGroupKey::operator==(const EntityGroupKey& other) const
 {
-    return (mask == other.mask) && (matcher == other.matcher);
+    return (mask == other.mask) && (maskMatcher == other.maskMatcher);
 }
 }

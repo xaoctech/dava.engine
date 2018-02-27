@@ -86,4 +86,7 @@ private:
     int syntheticCrashCountDown = 600;
 
     static void GenerateCrash(CrashType type);
+
+    void DebugInit();
+    void DebugUpdate();
 };

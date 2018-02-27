@@ -314,6 +314,32 @@ class CCTQueryFilterCallback final : public physx::PxQueryFilterCallback
     }
 };
 
+class CCTAndCCTQueryFilterCallback final : public physx::PxControllerFilterCallback
+{
+    bool filter(const physx::PxController& cct0, const physx::PxController& cct1) override
+    {
+        physx::PxShape* shape0 = nullptr;
+        physx::PxShape* shape1 = nullptr;
+
+        cct0.getActor()->getShapes(&shape0, 1, 0);
+        DVASSERT(shape0 != nullptr);
+
+        cct1.getActor()->getShapes(&shape1, 1, 0);
+        DVASSERT(shape1 != nullptr);
+
+        const physx::PxFilterData& filterData0 = shape0->getSimulationFilterData();
+        const physx::PxFilterData& filterData1 = shape1->getSimulationFilterData();
+
+        if ((filterData0.word1 & filterData1.word2) == 0 &&
+            (filterData1.word1 & filterData0.word2) == 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+};
+
 PhysicsSystem::SimulationEventCallback::SimulationEventCallback(DAVA::CollisionSingleComponent* targetCollisionSingleComponent)
     : targetCollisionSingleComponent(targetCollisionSingleComponent)
 {
@@ -470,7 +496,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     // Component groups for all physics components
     staticBodies = scene->AquireComponentGroup<StaticBodyComponent, StaticBodyComponent>();
     dynamicBodies = scene->AquireComponentGroup<DynamicBodyComponent, DynamicBodyComponent>();
-    shapes = scene->AquireComponentGroupWithMatcher<AnyOfEntityMatcher,
+    shapes = scene->AquireComponentGroupWithMatcher<AnyOfEntityMatcher, BaseOfTypeMatcher,
                                                     CollisionShapeComponent,
                                                     BoxShapeComponent, SphereShapeComponent, CapsuleShapeComponent, PlaneShapeComponent, MeshShapeComponent, ConvexHullShapeComponent, HeightFieldShapeComponent>();
     boxCCTs = scene->AquireComponentGroup<BoxCharacterControllerComponent, BoxCharacterControllerComponent>();
@@ -1215,11 +1241,16 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
                               controller->getActor()->getShapes(&cctShape, 1, 0);
                               DVASSERT(cctShape != nullptr);
 
+                              beforeCCTMove.Emit(controllerComponent);
+
                               CCTQueryFilterCallback filterCallback;
+                              CCTAndCCTQueryFilterCallback cctFilterCallback;
+
                               physx::PxFilterData filterData = cctShape->getSimulationFilterData();
 
                               physx::PxControllerFilters filter;
                               filter.mFilterCallback = &filterCallback;
+                              filter.mCCTFilterCallback = &cctFilterCallback;
                               filter.mFilterData = &filterData;
                               filter.mFilterFlags = physx::PxQueryFlag::ePREFILTER | physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC;
 
@@ -1258,6 +1289,8 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
                               {
                                   transformComponent->SetLocalTransform(newPosition, transformComponent->GetRotation(), transformComponent->GetScale());
                               }
+
+                              afterCCTMove.Emit(controllerComponent);
                           }
                       });
 }
@@ -1265,17 +1298,23 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
 void PhysicsSystem::UpdateCCTFilterData(CharacterControllerComponent* cctComponent, uint32 typeMask, uint32 typeMaskToCollideWith)
 {
     DVASSERT(cctComponent != nullptr);
+    DVASSERT(cctComponent->controller != nullptr);
 
     physx::PxShape* controllerShape = nullptr;
     cctComponent->controller->getActor()->getShapes(&controllerShape, 1, 0);
     DVASSERT(controllerShape != nullptr);
 
+    // Setup word 0 to be the same for every CCT since physx filters out CCTs whose words do not intersect for some reason
+    // See NpQueryShared.h, physx::applyFilterEquation function
+
     physx::PxFilterData simFilterData = controllerShape->getSimulationFilterData();
+    simFilterData.word0 |= (1 << 31);
     simFilterData.word1 = typeMask;
     simFilterData.word2 = typeMaskToCollideWith;
     controllerShape->setSimulationFilterData(simFilterData);
 
     physx::PxFilterData queryFilterData = controllerShape->getQueryFilterData();
+    queryFilterData.word0 |= (1 << 31);
     queryFilterData.word1 = typeMask;
     queryFilterData.word2 = typeMaskToCollideWith;
     controllerShape->setQueryFilterData(queryFilterData);

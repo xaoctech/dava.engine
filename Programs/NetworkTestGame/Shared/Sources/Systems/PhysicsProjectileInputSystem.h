@@ -19,5 +19,5 @@ public:
     void PrepareForRemove() override{};
     DAVA::Entity* CreateProjectileModel() const;
 
-    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) const override;
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
 };

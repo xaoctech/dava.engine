@@ -55,7 +55,7 @@ String DebugOverlayItemProfiler::GetName() const
     return "Profiler";
 }
 
-void DebugOverlayItemProfiler::Draw()
+void DebugOverlayItemProfiler::Draw(float32 elapsedTime)
 {
     bool shown = true;
     ImGui::SetNextWindowSizeConstraints(ImVec2(420.0f, 400.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));

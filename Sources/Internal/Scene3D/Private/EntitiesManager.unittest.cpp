@@ -110,6 +110,57 @@ public:
     ComponentGroup<EMComponentComponent>* componentGroup;
 };
 
+class EMComponentA : public Component
+{
+public:
+    Component* Clone(Entity* toEntity) override
+    {
+        return new EMComponentA(*this);
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMComponentA, Component)
+    {
+        ReflectionRegistrator<EMComponentA>::Begin()
+        .ConstructorByPointer()
+        .End();
+    }
+};
+
+class EMComponentB : public Component
+{
+public:
+    Component* Clone(Entity* toEntity) override
+    {
+        return new EMComponentB(*this);
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMComponentB, Component)
+    {
+        ReflectionRegistrator<EMComponentB>::Begin()
+        .ConstructorByPointer()
+        .End();
+    }
+};
+
+class EMSystemAB : public SceneSystem
+{
+public:
+    EMSystemAB(Scene* scene)
+        : SceneSystem(scene, 0)
+    {
+        componentGroup = scene->AquireComponentGroup<EMComponentA, EMComponentA, EMComponentB>();
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMSystemAB, SceneSystem)
+    {
+        ReflectionRegistrator<EMSystemAB>::Begin()[M::Tags("EMSystemAB")]
+        .ConstructorByPointer<Scene*>()
+        .End();
+    }
+
+    ComponentGroup<EMComponentA>* componentGroup;
+};
+
 DAVA_TESTCLASS (EntitiesManagerTest)
 {
     EntitiesManagerTest()
@@ -122,6 +173,13 @@ DAVA_TESTCLASS (EntitiesManagerTest)
 
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMComponentComponent);
         GetEngineContext()->componentManager->RegisterComponent<EMComponentComponent>();
+
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMComponentA);
+        GetEngineContext()->componentManager->RegisterComponent<EMComponentA>();
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMComponentB);
+        GetEngineContext()->componentManager->RegisterComponent<EMComponentB>();
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMSystemAB);
+        GetEngineContext()->systemManager->RegisterAllDerivedSceneSystemsRecursively();
     }
 
     DAVA_TEST (EntityGroupSignals)
@@ -190,6 +248,96 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         scene->Update(0.1f);
         TEST_VERIFY(componentAddCount == 1);
         TEST_VERIFY(componentRemoveCount == 0);
+
+        SafeRelease(scene);
+    }
+
+    DAVA_TEST (ComponentGroupABA)
+    {
+        Scene* scene = new Scene({ FastName("EMSystemAB") });
+        scene->CreateSystemsByTags();
+        EMSystemAB* system = scene->GetSystem<EMSystemAB>();
+
+        Entity* e = new Entity;
+        SCOPE_EXIT
+        {
+            SafeRelease(e);
+        };
+
+        //add B, A
+        e->AddComponent(new EMComponentB);
+        scene->AddNode(e);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+
+        e->AddComponent(new EMComponentA);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 1);
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(0)->GetType() == Type::Instance<EMComponentA>());
+
+        //clean
+        e->RemoveComponent<EMComponentA>();
+        e->RemoveComponent<EMComponentB>();
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+
+        //add A, B
+        e->AddComponent(new EMComponentA);
+        scene->Update(0.1f);
+        e->AddComponent(new EMComponentB);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 1);
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(0)->GetType() == Type::Instance<EMComponentA>());
+
+        //clean
+        e->RemoveComponent<EMComponentA>();
+        e->RemoveComponent<EMComponentB>();
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+
+        //add A, A, B
+        e->AddComponent(new EMComponentA);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+        e->AddComponent(new EMComponentA);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+        e->AddComponent(new EMComponentB);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 2);
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(0)->GetType() == Type::Instance<EMComponentA>());
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(1)->GetType() == Type::Instance<EMComponentA>());
+
+        //clean
+        e->RemoveComponent<EMComponentB>();
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+        e->RemoveComponent<EMComponentA>();
+        e->RemoveComponent<EMComponentA>();
+        scene->Update(0.1f);
+
+        //add A, B, A
+        e->AddComponent(new EMComponentA);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
+        e->AddComponent(new EMComponentB);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 1);
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(0)->GetType() == Type::Instance<EMComponentA>());
+        e->AddComponent(new EMComponentA);
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 2);
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(1)->GetType() == Type::Instance<EMComponentA>());
+
+        //clean
+        e->RemoveComponent<EMComponentA>();
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 1);
+        TEST_VERIFY(system->componentGroup->components.GetObjectAt(0)->GetType() == Type::Instance<EMComponentA>());
+        e->RemoveComponent<EMComponentA>();
+        scene->Update(0.1f);
+        TEST_VERIFY(system->componentGroup->components.GetSize() == 0);
 
         SafeRelease(scene);
     }

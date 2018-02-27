@@ -302,7 +302,7 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, WaitTaskComponent* task)
     case WaitTaskComponent::Type::TIMESTAMP:
     {
         const NetworkTimeSingleComponent* time = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-        float32 serverTime = time->GetLastServerFrameId() / time->GetFps();
+        float32 serverTime = time->GetUptimeMs() * 1000;
         if (serverTime >= task->time)
         {
             task->status = BotTaskStatus::SUCCESS;

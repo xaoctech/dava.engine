@@ -1,20 +1,34 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Base/Type.h"
 
 namespace DAVA
 {
-using MatcherFunction = bool (*)(const ComponentMask&, const ComponentMask&);
+using MaskMatcherFunction = bool (*)(const ComponentMask&, const ComponentMask&);
+using TypeMatcherFunction = bool (*)(const Type*, const Type*);
 
 class AllOfEntityMatcher
 {
 public:
-    static bool Match(const ComponentMask& mask1, const ComponentMask& mask2);
+    static bool MatchMask(const ComponentMask& mask1, const ComponentMask& mask2);
 };
 
 class AnyOfEntityMatcher
 {
 public:
-    static bool Match(const ComponentMask& mask1, const ComponentMask& mask2);
+    static bool MatchMask(const ComponentMask& mask1, const ComponentMask& mask2);
+};
+
+class ExactTypeMatcher
+{
+public:
+    static bool MatchType(const Type* type1, const Type* type2);
+};
+
+class BaseOfTypeMatcher
+{
+public:
+    static bool MatchType(const Type* type1, const Type* type2);
 };
 }

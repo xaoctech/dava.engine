@@ -147,7 +147,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
     DAVA::UDPClient& udpClient = client->GetUDPClient();
 
     NetworkTimeSingleComponent* netTimeComp = battleScene->GetSingletonComponent<NetworkTimeSingleComponent>();
-    int32 frameDiff = netTimeComp->GetClientServerDiff(udpClient.GetAuthToken());
+    int32 frameDiff = netTimeComp->GetClientOutrunning(udpClient.GetAuthToken());
     float32 a = 2.f / (NetworkTimeSingleComponent::FrequencyHz + 1.f);
     diffAvg = a * frameDiff + (1.f - a) * diffAvg;
 

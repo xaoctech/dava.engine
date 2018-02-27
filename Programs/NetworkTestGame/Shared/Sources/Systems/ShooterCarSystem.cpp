@@ -115,7 +115,7 @@ void ShooterCarSystem::PrepareForRemove()
 {
 }
 
-void ShooterCarSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) const
+void ShooterCarSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)
 {
     using namespace DAVA;
 
@@ -200,7 +200,7 @@ void ShooterCarSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vec
     }
 }
 
-void ShooterCarSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) const
+void ShooterCarSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)
 {
 }
 
@@ -414,7 +414,7 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
         controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
         controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
         controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-        controllerComponent->SetTypeMaskToCollideWith(UINT32_MAX);
+        controllerComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
         player->AddComponent(controllerComponent);
     }
 }

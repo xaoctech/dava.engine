@@ -52,6 +52,11 @@ DAVA::Entity* CharacterMirrorsSingleComponent::GetCharacterFromMirror(DAVA::Enti
     return nullptr;
 }
 
+const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& CharacterMirrorsSingleComponent::GetCharacterToMirrorMap() const
+{
+    return characterToMirror;
+}
+
 void CharacterMirrorsSingleComponent::Clear()
 {
     characterToMirror.clear();

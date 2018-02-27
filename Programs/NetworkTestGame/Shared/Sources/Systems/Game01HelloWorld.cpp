@@ -68,7 +68,7 @@ void Game01HelloWorld::ProcessFixed(DAVA::float32 timeElapsed)
 void Game01HelloWorld::ApplyDigitalActions(DAVA::Entity* entity,
                                            const DAVA::Vector<DAVA::FastName>& actions,
                                            DAVA::uint32 clientFrameId,
-                                           DAVA::float32 duration) const
+                                           DAVA::float32 duration)
 {
     for (const DAVA::FastName& actionName : actions)
     {

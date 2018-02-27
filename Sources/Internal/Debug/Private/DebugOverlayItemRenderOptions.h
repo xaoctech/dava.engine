@@ -11,6 +11,6 @@ public:
     ~DebugOverlayItemRenderOptions() = default;
 
     String GetName() const override;
-    void Draw() override;
+    void Draw(float32 elapsedTime) override;
 };
 }

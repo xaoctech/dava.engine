@@ -57,6 +57,7 @@ protected:
 
     void CopyFieldsIntoClone(CollisionShapeComponent* component) const;
     void ScheduleUpdate();
+    void UpdateFilterData();
     virtual void UpdateLocalProperties();
 
     Matrix4 localPose;

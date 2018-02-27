@@ -3,6 +3,8 @@
 #include "Base/BaseTypes.h"
 #include "Base/Vector.h"
 
+#include <Scene3D/Scene.h>
+
 namespace DAVA
 {
 namespace Private
@@ -56,13 +58,15 @@ public:
     */
     void HideItem(DebugOverlayItem* overlayItem);
 
+    void SetScene(Scene* scene);
+
 private:
     DebugOverlay();
     ~DebugOverlay();
     DebugOverlay(const DebugOverlay&) = delete;
     DebugOverlay& operator=(const DebugOverlay&) = delete;
 
-    void OnUpdate(Window* window, float32 timeDelta);
+    void OnUpdate(Window* window, float32 elapsedTime);
 
     void RegisterDefaultItems();
     void UnregisterDefaultItems();

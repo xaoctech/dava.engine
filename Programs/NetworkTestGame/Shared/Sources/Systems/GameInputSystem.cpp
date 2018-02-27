@@ -170,7 +170,7 @@ void GameInputSystem::ProcessFixed(float32 timeElapsed)
 void GameInputSystem::ApplyDigitalActions(Entity* entity,
                                           const Vector<FastName>& actions,
                                           uint32 clientFrameId,
-                                          DAVA::float32 duration) const
+                                          DAVA::float32 duration)
 {
     if (!CanMove(entity))
     {
@@ -353,7 +353,7 @@ void GameInputSystem::ApplyDigitalActions(Entity* entity,
 void GameInputSystem::ApplyAnalogActions(Entity* entity,
                                          const AnalogActionsMap& actions,
                                          uint32 clientFrameId,
-                                         float32 duration) const
+                                         float32 duration)
 {
     if (!CanMove(entity))
     {

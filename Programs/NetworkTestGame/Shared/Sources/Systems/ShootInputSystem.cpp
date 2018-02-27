@@ -74,7 +74,7 @@ void ShootInputSystem::ProcessFixed(float32 timeElapsed)
 void ShootInputSystem::ApplyDigitalActions(Entity* shooter,
                                            const Vector<FastName>& actions,
                                            uint32 clientFrameId,
-                                           float32 duration) const
+                                           float32 duration)
 {
     if (!CanShoot(shooter))
     {

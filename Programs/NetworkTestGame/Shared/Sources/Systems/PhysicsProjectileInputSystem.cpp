@@ -81,7 +81,7 @@ Entity* PhysicsProjectileInputSystem::CreateProjectileModel() const
     return bulletModel->Clone();
 }
 
-void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vector<FastName>& actions, uint32 clientFrameId, float32 duration) const
+void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vector<FastName>& actions, uint32 clientFrameId, float32 duration)
 {
     using namespace PhysicsProjectileInputSystemDetail;
 

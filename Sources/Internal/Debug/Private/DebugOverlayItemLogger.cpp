@@ -56,7 +56,7 @@ String DebugOverlayItemLogger::GetName() const
     return "Logger";
 }
 
-void DebugOverlayItemLogger::Draw()
+void DebugOverlayItemLogger::Draw(float32 elapsedTime)
 {
     using namespace DebugOverlayItemLoggerDetail;
 

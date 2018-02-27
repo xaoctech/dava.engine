@@ -8,6 +8,6 @@ class DebugOverlayItemEngineSettings final : public DebugOverlayItem
 {
 public:
     String GetName() const override;
-    void Draw() override;
+    void Draw(float32 elapsedTime) override;
 };
 }

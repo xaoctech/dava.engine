@@ -525,6 +525,9 @@ void Scene::RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* ent
 void Scene::RegisterComponent(Entity* entity, Component* component)
 {
     DVASSERT(entity && component);
+    static bool entered = false;
+    DVASSERT(entered == false, "Scene::RegisterComponent should not be called recurlively");
+    entered = true;
     uint32 systemsCount = static_cast<uint32>(systemsVector.size());
     for (uint32 k = 0; k < systemsCount; ++k)
     {
@@ -532,6 +535,7 @@ void Scene::RegisterComponent(Entity* entity, Component* component)
     }
 
     entitiesManager->RegisterComponent(entity, component);
+    entered = false;
 }
 
 void Scene::UnregisterComponent(Entity* entity, Component* component)
@@ -780,8 +784,8 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
-            fixedUpdate.lastTime += timeElapsed;
-            while (fixedUpdate.lastTime >= fixedUpdate.fixedTime)
+            fixedUpdate.accumulatedTime += timeElapsed;
+            while (fixedUpdate.accumulatedTime > 0)
             {
                 for (SceneSystem* system : systemsToFixedProcess)
                 {
@@ -792,8 +796,11 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
                 {
                     break;
                 }
-                fixedUpdate.lastTime -= fixedUpdate.fixedTime;
+
+                fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
             }
+            const float32 timeOverrun = fixedUpdate.fixedTime + fixedUpdate.accumulatedTime;
+            timeOverrunInterpolatedFactor = timeOverrun / fixedUpdate.fixedTime;
         }
     }
 
@@ -848,16 +855,18 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
-            fixedUpdate.lastTime += timeElapsed;
-            while (fixedUpdate.lastTime >= fixedUpdate.fixedTime)
+            fixedUpdate.accumulatedTime += timeElapsed;
+            while (fixedUpdate.accumulatedTime > 0)
             {
                 ProcessFixedMethods();
                 if (pauseFixedUpdate)
                 {
                     break;
                 }
-                fixedUpdate.lastTime -= fixedUpdate.fixedTime;
+                fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
             }
+            const float32 timeOverrun = fixedUpdate.fixedTime + fixedUpdate.accumulatedTime;
+            timeOverrunInterpolatedFactor = timeOverrun / fixedUpdate.fixedTime;
         }
     }
 
@@ -1326,5 +1335,10 @@ void Scene::UnpauseFixedUpdate()
 bool Scene::IsFixedUpdatePaused() const
 {
     return pauseFixedUpdate;
+}
+
+float32 Scene::GetTimeOverrunInterpolatedFactor() const
+{
+    return timeOverrunInterpolatedFactor;
 }
 };

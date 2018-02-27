@@ -107,7 +107,15 @@ void CollisionShapeComponent::SetTypeMask(uint32 typeMask_)
     if (typeMask != typeMask_)
     {
         typeMask = typeMask_;
-        ScheduleUpdate();
+
+        if (shape != nullptr)
+        {
+            UpdateFilterData();
+        }
+        else
+        {
+            ScheduleUpdate();
+        }
     }
 }
 
@@ -121,7 +129,15 @@ void CollisionShapeComponent::SetTypeMaskToCollideWith(uint32 typeMaskToCollideW
     if (typeMaskToCollideWith != typeMaskToCollideWith_)
     {
         typeMaskToCollideWith = typeMaskToCollideWith_;
-        ScheduleUpdate();
+
+        if (shape != nullptr)
+        {
+            UpdateFilterData();
+        }
+        else
+        {
+            ScheduleUpdate();
+        }
     }
 }
 
@@ -227,6 +243,28 @@ void CollisionShapeComponent::ScheduleUpdate()
     }
 }
 
+void CollisionShapeComponent::UpdateFilterData()
+{
+    DVASSERT(shape != nullptr);
+
+    // Setup word 0 to be the same for every shape since physx filters out shapes whose words do not intersect for some reason
+    // See NpQueryShared.h, physx::applyFilterEquation function
+
+    physx::PxFilterData filterData = shape->getSimulationFilterData();
+    filterData.word0 |= (1 << 31);
+    filterData.word1 = typeMask;
+    filterData.word2 = typeMaskToCollideWith;
+    // be careful and do not change first bit in filterData.word0 (CCD flag) as this flag is setting
+    // directly from PhysicsSystem::UpdateComponents and should be synchronized with CCD flag of actor.
+    shape->setSimulationFilterData(filterData);
+
+    physx::PxFilterData queryFilterData = shape->getQueryFilterData();
+    queryFilterData.word0 |= (1 << 31);
+    queryFilterData.word1 = typeMask;
+    queryFilterData.word2 = typeMaskToCollideWith;
+    shape->setQueryFilterData(queryFilterData);
+}
+
 void CollisionShapeComponent::UpdateLocalProperties()
 {
     DVASSERT(shape != nullptr);
@@ -238,17 +276,7 @@ void CollisionShapeComponent::UpdateLocalProperties()
         mass = massProperties.mass;
     }
 
-    physx::PxFilterData filterData = shape->getSimulationFilterData();
-    filterData.word1 = typeMask;
-    filterData.word2 = typeMaskToCollideWith;
-    // be careful and do not change first bit in filterData.word0 (CCD flag) as this flag is setting
-    // directly from PhysicsSystem::UpdateComponents and should be synchronized with CCD flag of actor.
-    shape->setSimulationFilterData(filterData);
-
-    physx::PxFilterData queryFilterData = shape->getQueryFilterData();
-    queryFilterData.word1 = typeMask;
-    queryFilterData.word2 = typeMaskToCollideWith;
-    shape->setQueryFilterData(queryFilterData);
+    UpdateFilterData();
 
     shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, !triggerMode);
     shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, triggerMode);

@@ -1,6 +1,7 @@
 #include "ShooterUtils.h"
 #include "ShooterConstants.h"
 #include "Components/ShooterRoleComponent.h"
+#include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
 #include <Base/UnordererMap.h>
 #include <Scene3D/Scene.h>
@@ -238,4 +239,30 @@ DAVA::Vector3 GetRandomPlayerSpawnPosition()
     float32 y = Random::Instance()->RandFloat32InBounds(47, -1);
 
     return Vector3(x, y, 18.0f);
+}
+
+DAVA::uint32 GetCharacterDefaultTypesToCollideWith(DAVA::Scene* scene)
+{
+    BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+    DVASSERT(optionsSingleComponent != nullptr);
+
+    if (optionsSingleComponent->collisionResolveMode == COLLISION_RESOLVE_MODE_REWIND_IN_PAST)
+    {
+        return SHOOTER_CCT_COLLIDE_WITH_MASK_IGNORE_OTHER_CCTS;
+    }
+    else if (optionsSingleComponent->collisionResolveMode == COLLISION_RESOLVE_MODE_SERVER_COLLISIONS)
+    {
+        if (IsServer(scene))
+        {
+            return SHOOTER_CCT_COLLIDE_WITH_MASK_DEFAULT;
+        }
+        else
+        {
+            return SHOOTER_CCT_COLLIDE_WITH_MASK_IGNORE_OTHER_CCTS;
+        }
+    }
+    else
+    {
+        return SHOOTER_CCT_COLLIDE_WITH_MASK_DEFAULT;
+    }
 }

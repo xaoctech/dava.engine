@@ -14,14 +14,18 @@
 
 #include <CommandLine/CommandLineParser.h>
 #include <Concurrency/Thread.h>
+#include <Debug/DebugOverlay.h>
 #include <Debug/DVAssertDefaultHandlers.h>
+#include <Debug/Private/ImGui.h>
 #include <Debug/ProfilerUtils.h>
 #include <Debug/ProfilerCPU.h>
 #include <Debug/ProfilerGPU.h>
 #include <Debug/ProfilerOverlay.h>
+#include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
 #include <Entity/Component.h>
 #include <Entity/ComponentManager.h>
+#include <Input/Keyboard.h>
 #include <Logger/Logger.h>
 #include <MemoryManager/MemoryLogger.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -242,6 +246,8 @@ void TestServer::OnWindowCreated(DAVA::Window* w)
     mainScreen = new MainScreen(scene);
     UIScreenManager::Instance()->RegisterScreen(mainScreen->GetScreenID(), mainScreen);
     UIScreenManager::Instance()->SetFirst(mainScreen->GetScreenID());
+
+    DebugInit();
 }
 
 void TestServer::OnLoopStarted()
@@ -371,6 +377,8 @@ void TestServer::OnUpdate(float32 frameDelta)
         };
         doCrash(syntheticCrashSite, syntheticCrashType);
     }
+
+    DebugUpdate();
 }
 
 void TestServer::AddTokenToGame(NetworkGameModeSingleComponent* netGameModeComp, const FastName& token) const
@@ -442,6 +450,20 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     optionsSingleComponent->compareInputs = CommandLineParser::CommandIsFound("--compare_inputs");
     optionsSingleComponent->isSet = true;
 
+    String resolveCollisionString = CommandLineParser::GetCommandParam("--resolve-collisions");
+    if (resolveCollisionString == "rewind")
+    {
+        optionsSingleComponent->collisionResolveMode = COLLISION_RESOLVE_MODE_REWIND_IN_PAST;
+    }
+    else if (resolveCollisionString == "server")
+    {
+        optionsSingleComponent->collisionResolveMode = COLLISION_RESOLVE_MODE_SERVER_COLLISIONS;
+    }
+    else if (resolveCollisionString == "none")
+    {
+        optionsSingleComponent->collisionResolveMode = COLLISION_RESOLVE_MODE_NONE;
+    }
+
     NetworkTimeSingleComponent::SetFrequencyHz(static_cast<float32>(freqHz));
 
     scene->GetSingletonComponent<NetworkServerSingleComponent>()->SetServer(&gameServer.GetUDPServer());
@@ -461,9 +483,6 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 
     NetworkRemoteInputSystem* remoteInputSystem = scene->GetSystem<NetworkRemoteInputSystem>();
     remoteInputSystem->SetFullInputComparisonFlag(optionsSingleComponent->compareInputs);
-
-    NetworkTimeSystem* networkTimeSystem = scene->GetSystem<NetworkTimeSystem>();
-    networkTimeSystem->SetLossFactor(lossFactor);
 
     if (isShooterGm)
     {
@@ -518,6 +537,11 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
         if (IsGm("gm_shooter"))
             DVASSERT(false, "No bots for shooter mode ftm.");
     }
+
+    if (GetEngineContext()->debugOverlay != nullptr)
+    {
+        GetEngineContext()->debugOverlay->SetScene(scene);
+    }
 }
 
 void TestServer::SetupShooterServerCamera()
@@ -566,5 +590,46 @@ void TestServer::AddServerBots(NetworkGameModeSingleComponent* netGameModeComp, 
         AddTokenToGame(netGameModeComp, botResponder.GetToken());
 #endif
         gameModeSystem->OnClientConnected(botResponder);
+    }
+}
+
+void TestServer::DebugInit()
+{
+    ImGui::Initialize();
+}
+
+void TestServer::DebugUpdate()
+{
+    using namespace DAVA;
+    const EngineContext* context = GetEngineContext();
+    Keyboard* kb = context->deviceManager->GetKeyboard();
+    if (kb != nullptr)
+    {
+        DigitalElementState keyState = kb->GetKeyState(DAVA::eInputElements::KB_GRAVE);
+        if (keyState.IsJustPressed())
+        {
+            if (!context->debugOverlay->IsShown())
+            {
+                context->debugOverlay->Show();
+            }
+            else
+            {
+                context->debugOverlay->Hide();
+            }
+        }
+
+        keyState = kb->GetKeyState(DAVA::eInputElements::KB_ESCAPE);
+        if (keyState.IsJustPressed())
+        {
+            eCursorCapture c = GetPrimaryWindow()->GetCursorCapture();
+            if (c == eCursorCapture::PINNING)
+            {
+                GetPrimaryWindow()->SetCursorCapture(eCursorCapture::OFF);
+            }
+            else
+            {
+                GetPrimaryWindow()->SetCursorCapture(eCursorCapture::PINNING);
+            }
+        }
     }
 }

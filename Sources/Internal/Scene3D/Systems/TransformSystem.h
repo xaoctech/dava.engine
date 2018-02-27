@@ -35,7 +35,7 @@ private:
     void OnEngineSettingsChanged(EngineSettings::eSetting);
 
     bool UpdateEntity(Entity* entity, bool forceUpdate = false);
-    Matrix4 GetWorldTransform(TransformComponent* tc, bool* isFinal) const;
+    Matrix4 GetWorldTransform(TransformComponent* tc, bool& isFinal) const;
 
     int32 passedNodes;
     int32 multipliedNodes;

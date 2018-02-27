@@ -29,12 +29,12 @@ public:
     virtual void ApplyDigitalActions(Entity* entity,
                                      const Vector<FastName>& actions,
                                      uint32 clientFrameId,
-                                     float32 duration) const = 0;
+                                     float32 duration) = 0;
 
     virtual void ApplyAnalogActions(Entity* entity,
                                     const AnalogActionsMap& actions,
                                     uint32 clientFrameId,
-                                    float32 duration) const
+                                    float32 duration)
     {
     }
 };

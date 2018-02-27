@@ -17,9 +17,6 @@ public:
 
     NetworkTimeSystem(Scene* scene);
 
-    void SetSlowDownFactor(float32 value);
-    void SetLossFactor(float32 value);
-
     const ComponentMask& GetResimulationComponents() const override;
     void ReSimulationStart(Entity* entity, uint32 frameId) override;
     void ReSimulationEnd(Entity* entity) override;
@@ -38,7 +35,5 @@ private:
     IClient* client = nullptr;
     FpsMeter fpsMeter;
     uint32 realCurrFrameId = 0;
-    float32 slowDownFactor = 0.01f;
-    float32 lossFactor = 0.05f; // every 5% increase bucket size
 };
 }

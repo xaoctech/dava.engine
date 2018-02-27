@@ -24,7 +24,7 @@ public:
     struct EntityGroupKey
     {
         ComponentMask mask;
-        MatcherFunction matcher;
+        MaskMatcherFunction maskMatcher;
         bool operator==(const EntityGroupKey& other) const;
     };
     struct EntityGroupKeyHasher
@@ -40,7 +40,8 @@ public:
     {
         const Type* componentType;
         ComponentMask mask;
-        MatcherFunction matcher;
+        MaskMatcherFunction maskMatcher;
+        TypeMatcherFunction typeMatcher;
         bool operator==(const ComponentGroupKey& other) const;
     };
     struct ComponentGroupKeyHasher
@@ -66,11 +67,11 @@ public:
     template <class Matcher, class... Args>
     EntityGroup* AquireEntityGroup(Entity* entity);
 
-    template <class Matcher, class T, class... Args>
+    template <class MaskMatcher, class TypeMatcher, class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup(Entity* entity);
 };
 
-template <class Matcher, class T, class... Args>
+template <class MaskMatcher, class TypeMatcher, class T, class... Args>
 ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 {
     const Type* componentType = Type::Instance<T>();
@@ -89,7 +90,7 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
     }
 
     ComponentGroupBase* base = nullptr;
-    ComponentGroupKey key{ componentType, mask, &Matcher::Match };
+    ComponentGroupKey key{ componentType, mask, &MaskMatcher::MatchMask, &TypeMatcher::MatchType };
     auto it = componentGroups.find(key);
     if (it == componentGroups.end())
     {
@@ -104,15 +105,14 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 
     Function<void(Entity*)> recursiveRegister = [&](Entity* e)
     {
-        bool needAdd = Matcher::Match(mask, e->GetAvailableComponentMask());
+        bool needAdd = MaskMatcher::MatchMask(mask, e->GetAvailableComponentMask());
         if (needAdd)
         {
             uint32 count = e->GetComponentCount();
             for (uint32 i = 0; i < count; ++i)
             {
                 Component* c = e->GetComponentByIndex(i);
-                ComponentMask componentToCheckType = ComponentUtils::MakeMask(c->GetType());
-                bool needAddComponent = Matcher::Match(componentToCheckType, mask);
+                bool needAddComponent = TypeMatcher::MatchType(base->trackedType, c->GetType());
                 if (needAddComponent)
                 {
                     ComponentGroup<T>* group = static_cast<ComponentGroup<T>*>(base);
@@ -142,7 +142,7 @@ EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
         mask |= m;
     }
 
-    EntityGroupKey key{ mask, &Matcher::Match };
+    EntityGroupKey key{ mask, &Matcher::MatchMask };
 
     EntityGroup* eg = nullptr;
     auto it = entityGroups.find(key);
@@ -154,7 +154,7 @@ EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
 
         Function<void(Entity*)> recursiveRegister = [&](Entity* e)
         {
-            bool needAdd = Matcher::Match(mask, e->GetAvailableComponentMask());
+            bool needAdd = Matcher::MatchMask(mask, e->GetAvailableComponentMask());
             if (needAdd)
             {
                 eg->entities.Add(e);

@@ -74,6 +74,7 @@ void TransformSystem::Process(float32 timeElapsed)
 
 bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false */)
 {
+    // Finish updating only when calculated world transform is final
     bool updateDone = true;
 
     if (entity->GetFlags() & Entity::TRANSFORM_NEED_UPDATE || forceUpdate)
@@ -85,13 +86,8 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
         TransformComponent* tc = entity->GetComponent<TransformComponent>();
         if (nullptr != tc->parentMatrix)
         {
-            bool isFinal = true;
-
-            Matrix4 transform = GetWorldTransform(tc, &isFinal);
+            Matrix4 transform = GetWorldTransform(tc, updateDone);
             const Matrix4& parentTransform = *tc->parentMatrix;
-
-            // Finish updating only when calculated world transform is final
-            updateDone = isFinal;
 
             AnimationComponent* animation = entity->GetComponent<AnimationComponent>();
             if (nullptr != animation)
@@ -131,68 +127,85 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
     return updateDone;
 }
 
-Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool* isFinal) const
+Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool& isFinal) const
 {
     DVASSERT(interpolationMode >= EngineSettings::INTERPOLATION_OFF && interpolationMode <= EngineSettings::INTERPOLATION_CUBIC);
-
-    if (EngineSettings::INTERPOLATION_OFF != interpolationMode)
+    TransformInterpolationComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolationComponent>();
+    if (tic)
     {
-        TransformInterpolationComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolationComponent>();
-        if (nullptr != tic && !tic->done)
+        if (tic->immediately)
         {
-            float32 fx = 1.0f;
+            tic->immediately = false;
+            tic->done = true;
+        }
 
-            if (tic->immediately)
+        if (!tic->done)
+        {
+            if (tic->state == InterpolationState::FIXED)
             {
-                tic->immediately = false;
-                tic->done = true;
-            }
-            else if (tic->time > 0 && tic->elapsed < tic->time)
-            {
-                float32 lenPosition = (tc->position - tic->curPosition).Length();
-                float32 lenScale = (tc->scale - tic->curScale).Length();
-                float32 lenRotation = (Vector3(tc->rotation.x, tc->rotation.y, tc->rotation.z) - Vector3(tic->curRotation.x, tic->curRotation.y, tic->curRotation.z)).Length();
-                float32 force = std::max({ lenPosition, lenScale, lenRotation }) * tic->spring;
-
-                tic->elapsed += (timeElapsed * (1.0f + force) * interpolationSpeed);
-                float32 x = std::min(1.0f, tic->elapsed / tic->time);
-
-                if (interpolationMode == EngineSettings::INTERPOLATION_LINEAR)
-                {
-                    fx = x;
-                }
-                else if (interpolationMode == EngineSettings::INTERPOLATION_SIN)
-                {
-                    static const float32 pi = static_cast<float32>(std::acos(-1));
-                    static const float32 pi05 = pi * 0.5f;
-                    fx = std::sin(pi05 * x);
-                }
-                else if (interpolationMode == EngineSettings::INTERPOLATION_LOG)
-                {
-                    fx = std::max(0.1f, 0.5f * std::log(x) + 1);
-                }
-                else if (interpolationMode == EngineSettings::INTERPOLATION_CUBIC)
-                {
-                    fx = x * x * x;
-                }
-            }
-            else
-            {
-                tic->done = true;
+                const float32 fx = GetScene()->GetTimeOverrunInterpolatedFactor();
+                const Vector3& position = Lerp(tic->prevPosition, tic->curPosition, fx);
+                const Vector3& scale = Lerp(tic->prevScale, tic->curScale, fx);
+                Quaternion rotation = tic->prevRotation;
+                rotation.Slerp(tic->prevRotation, tic->curRotation, fx);
+                isFinal = true;
+                return Matrix4(position, rotation, scale);
             }
 
-            tic->curPosition = Lerp(tic->startPosition, tc->position, fx);
-            tic->curScale = Lerp(tic->startScale, tc->scale, fx);
-            tic->curRotation.Slerp(tic->startRotation, tc->rotation, fx);
+            if (EngineSettings::INTERPOLATION_OFF != interpolationMode)
+            {
+                float32 fx = 1.0f;
+                bool continueInterpolation = tic->time > 0 && tic->elapsed < tic->time;
+                if (continueInterpolation)
+                {
+                    float32 lenPosition = (tc->position - tic->curPosition).Length();
+                    float32 lenScale = (tc->scale - tic->curScale).Length();
+                    float32 lenRotation = (Vector3(tc->rotation.x, tc->rotation.y, tc->rotation.z) -
+                                           Vector3(tic->curRotation.x, tic->curRotation.y,
+                                                   tic->curRotation.z))
+                                          .Length();
+                    float32 force = std::max({ lenPosition, lenScale, lenRotation }) * tic->spring;
 
-            *isFinal = tic->done;
-            return Matrix4(tic->curPosition, tic->curRotation, tic->curScale);
+                    tic->elapsed += (timeElapsed * (1.0f + force) * interpolationSpeed);
+                    float32 x = std::min(1.0f, tic->elapsed / tic->time);
+
+                    if (interpolationMode == EngineSettings::INTERPOLATION_LINEAR)
+                    {
+                        fx = x;
+                    }
+                    else if (interpolationMode == EngineSettings::INTERPOLATION_SIN)
+                    {
+                        static const float32 pi = static_cast<float32>(std::acos(-1));
+                        static const float32 pi05 = pi * 0.5f;
+                        fx = std::sin(pi05 * x);
+                    }
+                    else if (interpolationMode == EngineSettings::INTERPOLATION_LOG)
+                    {
+                        fx = std::max(0.1f, 0.5f * std::log(x) + 1);
+                    }
+                    else if (interpolationMode == EngineSettings::INTERPOLATION_CUBIC)
+                    {
+                        fx = x * x * x;
+                    }
+                }
+                else if (tic->state == InterpolationState::TRANSIENT)
+                {
+                    tic->state = InterpolationState::FIXED;
+                }
+
+                tic->curPosition = Lerp(tic->prevPosition, tc->position, fx);
+                tic->curScale = Lerp(tic->prevScale, tc->scale, fx);
+                tic->curRotation.Slerp(tic->prevRotation, tc->rotation, fx);
+
+                tic->done = !continueInterpolation;
+                isFinal = tic->done;
+                return Matrix4(tic->curPosition, tic->curRotation, tic->curScale);
+            }
         }
     }
 
-    *isFinal = true;
+    isFinal = true;
     return Matrix4(tc->position, tc->rotation, tc->scale);
-
     /*
     if (nullptr != tic && interpolationType > 0)
     {

@@ -4,10 +4,12 @@
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkReplicationSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
+#include "NetworkCore/UDPTransport/UDPClient.h"
 
 #include "NetworkCore/NetworkCoreUtils.h"
 
@@ -33,6 +35,7 @@ NetworkReplicationSystem2::NetworkReplicationSystem2(Scene* scene)
     networkDeltaSingleComponent = scene->GetSingletonComponent<NetworkDeltaSingleComponent>();
     snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
     networkTimeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+    networkClientSingleComponent = scene->GetSingletonComponent<NetworkClientSingleComponent>();
 }
 
 void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
@@ -144,10 +147,11 @@ void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
             LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "##> ApplyingChanges\n");
 
             uint32 currentFrameId = networkTimeSingleComponent->GetFrameId();
+            uint32 maxServerFrameID = 0;
             for (auto& info : networkReplicationSingleComponent->replicationInfo)
             {
                 // Server snapshots can some times be ahead of the current
-                // client frameId. But we can apply only thous server entities
+                // client frameId. But we can apply only those server entities
                 // that are below currentFrameId.
                 if (currentFrameId >= info.second.frameIdLastTouch)
                 {
@@ -157,7 +161,7 @@ void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
                     uint32 frameId = info.second.frameIdLastChange;
 
                     // Apply only recently touched entities and
-                    // remember frameId on witch that entity was applied.
+                    // remember frameId on which that entity was applied.
                     if (frameId > info.second.frameIdLastApply)
                     {
                         info.second.frameIdLastApply = frameId;
@@ -168,7 +172,17 @@ void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
                             ApplySnapshotWithoutPrediction(entity, snapshot);
                         }
                     }
+
+                    if (info.second.frameIdServer > maxServerFrameID)
+                    {
+                        maxServerFrameID = info.second.frameIdServer;
+                    }
                 }
+            }
+
+            if (networkTimeSingleComponent->IsInitialized() && maxServerFrameID > 0)
+            {
+                networkTimeSingleComponent->SetLastServerFrameId(maxServerFrameID);
             }
 
             LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "##< ApplyingChanges Done" << std::endl);

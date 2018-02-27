@@ -11,6 +11,14 @@ class Entity;
 class TransformSystem;
 class SerializationContext;
 
+enum class InterpolationState : uint8
+{
+    DISABLED = 0,
+    FIXED,
+    ELASTIC,
+    TRANSIENT
+};
+
 class TransformInterpolationComponent : public Component
 {
     friend class TransformSystem;
@@ -21,17 +29,21 @@ public:
     float32 time = 1.0f;
     float32 spring = 0.5f;
 
+    InterpolationState state = InterpolationState::ELASTIC;
+
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    void Reset();
     void ApplyImmediately();
+    void SetNewTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
 
 private:
-    Vector3 startPosition;
-    Quaternion startRotation;
-    Vector3 startScale;
+    void Reset();
+
+    Vector3 prevPosition;
+    Quaternion prevRotation;
+    Vector3 prevScale;
 
     Vector3 curPosition;
     Quaternion curRotation;
@@ -40,5 +52,7 @@ private:
     bool done = false;
     bool immediately = true;
     float32 elapsed = 0.0f;
+
+    bool isInit = false;
 };
 } // namespace DAVA

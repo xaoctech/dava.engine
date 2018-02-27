@@ -226,7 +226,7 @@ void GameModeSystemPhysics::Simulate(DAVA::Entity* entity)
     }
 }
 
-void GameModeSystemPhysics::ApplyDigitalActions(Entity* entity, const Vector<FastName>& actions, uint32 clientFrameId, float32 duration) const
+void GameModeSystemPhysics::ApplyDigitalActions(Entity* entity, const Vector<FastName>& actions, uint32 clientFrameId, float32 duration)
 {
     using namespace GameModeSystemPhysicsDetail;
 

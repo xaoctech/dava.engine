@@ -1,6 +1,7 @@
 #include "Systems/ShooterCarAttackSystem.h"
 #include "Components/HealthComponent.h"
 #include "ShooterConstants.h"
+#include "ShooterUtils.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
@@ -80,11 +81,11 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
             if (cctMirrorBodyComponent->GetLinearVelocity().Length() < 1.0f)
             {
                 cctMirrorBodyComponent->SetIsKinematic(true);
-                cctMirrorShapeComponent->SetTypeMask(0);
+                cctMirrorShapeComponent->SetTypeMask(SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE);
                 cctMirrorShapeComponent->SetTypeMaskToCollideWith(0);
                 cctComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Walking);
                 cctComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-                cctComponent->SetTypeMaskToCollideWith(UINT32_MAX);
+                cctComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
                 mirroredCctComponent->SetMirrorIsMaster(false);
 
                 pushedCctsToRemove.push_back(mirroredCctComponent);
@@ -135,7 +136,7 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
 
                         cctMirrorBodyComponent->SetIsKinematic(false);
                         cctMirrorShapeComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-                        cctMirrorShapeComponent->SetTypeMaskToCollideWith(UINT32_MAX);
+                        cctMirrorShapeComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
                         cctComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Flying);
                         cctComponent->SetTypeMask(0);
                         cctComponent->SetTypeMaskToCollideWith(0);
