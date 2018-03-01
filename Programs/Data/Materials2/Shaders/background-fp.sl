@@ -10,6 +10,7 @@
 #ensuredefined USE_FRAMEBUFFER_FETCH 0
 #ensuredefined DIRECTIONAL_LIGHT 0
 #ensuredefined ATMOSPHERE 0
+#ensuredefined RGBM_INPUT 0
 
 #if (DIRECTIONAL_LIGHT)
 blending
@@ -57,13 +58,21 @@ fragment_out fp_main(fragment_in input)
 
 #elif (CUBEMAP_ENVIRONMENT_TEXTURE)
 
-    float3 value = environmentColor.xyz / globalLuminanceScale;
-    value *= texCUBElod(environmentMap, normalizedDir, 0.0).xyz;
+    float4 sampledColor = texCUBElod(environmentMap, normalizedDir, 0.0);
+    #if (RGBM_INPUT)
+    sampledColor.xyz = DecodeRGBM(sampledColor);
+    #endif
+
+    float3 value = sampledColor.xyz * environmentColor.xyz / globalLuminanceScale;
 
 #elif (EQUIRECTANGULAR_ENVIRONMENT_TEXTURE)
 
-    float3 value = environmentColor.xyz / globalLuminanceScale;
-    value *= tex2Dlod(environmentMap, UnwrapDirectionToEquirectangular(normalizedDir), 0.0).xyz;
+    float4 sampledColor = tex2Dlod(environmentMap, UnwrapDirectionToEquirectangular(normalizedDir), 0.0);
+    #if (RGBM_INPUT)
+    sampledColor.xyz = DecodeRGBM(sampledColor);
+    #endif
+
+    float3 value = sampledColor.xyz * environmentColor.xyz / globalLuminanceScale;
 
 #elif (DIRECTIONAL_LIGHT)
 

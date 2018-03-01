@@ -206,22 +206,26 @@ void SelectionSystem::ProcessSelectedGroup(const SelectableGroup::CollectionType
     {
         bool wasAdded = false;
 
-        Entity* entity = item.AsEntity();
-        if (entity == nullptr)
+        bool itemTypeIsSelectable = std::all_of(selectionDelegates.begin(), selectionDelegates.end(), [&item](SelectionSystemDelegate* delegate) { return delegate->AllowAddToSelection(item); });
+        if (itemTypeIsSelectable)
         {
-            Selectable selectable = GetSelectableObject(item);
-            if (selectable.ContainsObject())
+            Entity* entity = item.AsEntity();
+            if (entity == nullptr)
             {
-                collisionObjects.emplace_back(selectable.GetContainedObject());
-                wasAdded = true;
+                Selectable selectable = GetSelectableObject(item);
+                if (selectable.ContainsObject())
+                {
+                    collisionObjects.emplace_back(selectable.GetContainedObject());
+                    wasAdded = true;
+                }
             }
-        }
-        else if ((componentMaskForSelection & entity->GetAvailableComponentMask()).any())
-        {
-            if (GetCamera(entity) != GetScene()->GetCurrentCamera())
+            else if ((componentMaskForSelection & entity->GetAvailableComponentMask()).any())
             {
-                collisionObjects.emplace_back(GetSelectableEntity(entity));
-                wasAdded = true;
+                if (GetCamera(entity) != GetScene()->GetCurrentCamera())
+                {
+                    collisionObjects.emplace_back(GetSelectableEntity(entity));
+                    wasAdded = true;
+                }
             }
         }
 
@@ -368,24 +372,28 @@ void SelectionSystem::PerformSelectionInCurrentBox()
     SelectableGroup selectedObjects;
     for (const Selectable& item : allSelectedObjects)
     {
-        Entity* entity = item.AsEntity();
-        if (entity == nullptr)
+        bool itemTypeIsSelectable = std::all_of(selectionDelegates.begin(), selectionDelegates.end(), [&item](SelectionSystemDelegate* delegate) { return delegate->AllowAddToSelection(item); });
+        if (itemTypeIsSelectable)
         {
-            Selectable selectableItem = GetSelectableObject(item);
-            Any object = selectableItem.GetContainedObject();
-            if (!selectedObjects.ContainsObject(object))
+            Entity* entity = item.AsEntity();
+            if (entity == nullptr)
             {
-                selectedObjects.Add(object, collisionSystem->GetUntransformedBoundingBox(object));
-            }
-        }
-        else if (IsEntitySelectable(entity))
-        {
-            if (GetCamera(entity) != GetScene()->GetCurrentCamera())
-            {
-                Entity* selectableEntity = GetSelectableEntity(entity);
-                if (!selectableEntity->GetLocked() && !selectedObjects.ContainsObject(selectableEntity))
+                Selectable selectableItem = GetSelectableObject(item);
+                const Any& object = selectableItem.GetContainedObject();
+                if (!selectedObjects.ContainsObject(object))
                 {
-                    selectedObjects.Add(selectableEntity, collisionSystem->GetUntransformedBoundingBox(selectableEntity));
+                    selectedObjects.Add(object, collisionSystem->GetUntransformedBoundingBox(object));
+                }
+            }
+            else if (IsEntitySelectable(entity))
+            {
+                if (GetCamera(entity) != GetScene()->GetCurrentCamera())
+                {
+                    Entity* selectableEntity = GetSelectableEntity(entity);
+                    if (!selectableEntity->GetLocked() && !selectedObjects.ContainsObject(selectableEntity))
+                    {
+                        selectedObjects.Add(selectableEntity, collisionSystem->GetUntransformedBoundingBox(selectableEntity));
+                    }
                 }
             }
         }

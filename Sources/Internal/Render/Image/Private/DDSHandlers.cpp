@@ -37,6 +37,7 @@ const uint32 FOURCC_BC5S = MAKEFOURCC('B', 'C', '5', 'S');
 
 const uint32 FOURCC_RGBG = MAKEFOURCC('R', 'G', 'B', 'G');
 const uint32 FOURCC_GRGB = MAKEFOURCC('G', 'R', 'G', 'B');
+const uint32 FOURCC_RGBM = MAKEFOURCC('R', 'G', 'B', 'M');
 
 const uint32 FOURCC_ATC_RGB = MAKEFOURCC('A', 'T', 'C', ' ');
 const uint32 FOURCC_ATC_RGBA_EXPLICIT_ALPHA = MAKEFOURCC('A', 'T', 'C', 'I');
@@ -769,6 +770,12 @@ bool DDSHandler::SetFormatInfo()
         fourcc = dds::D3DFMT_A32B32G32R32F;
         break;
     }
+    case FORMAT_RGBM:
+    {
+        flags = dds::DDPF_FOURCC;
+        fourcc = dds::FOURCC_RGBM;
+        break;
+    }
     default:
     {
         return false;
@@ -943,6 +950,10 @@ void DDSHandler::FetchPixelFormats()
             else if (fourcc == dds::D3DFMT_A32B32G32R32F)
             {
                 davaPixelFormat = FORMAT_RGBA32F;
+            }
+            if (fourcc == dds::FOURCC_RGBM)
+            {
+                davaPixelFormat = FORMAT_RGBM;
             }
         }
     }

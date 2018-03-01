@@ -20,7 +20,8 @@ const uint32 maxCacheCubemapOnEachLevel[ReflectionRenderer::CUBEMAP_QUALITY_LEVE
 const FastName DISPLAY_SPHERICAL_HARMONICS = FastName("DISPLAY_SPHERICAL_HARMONICS");
 const FastName DISPLAY_INDIRECT_LOOKUP = FastName("DISPLAY_INDIRECT_LOOKUP");
 const FastName GLOBAL_SPHERICAL_HARMONICS = FastName("sphericalHarmonics");
-const PixelFormat ReflectionsTextureFormat = PixelFormat::FORMAT_RGBA16F;
+const PixelFormat ReflectionsIntermediateTextureFormat = PixelFormat::FORMAT_RGBA16F;
+const PixelFormat ReflectionsTargetTextureFormat = PixelFormat::FORMAT_RGBM;
 
 ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     : debugMaterial(new NMaterial())
@@ -36,17 +37,17 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_TRANSLUCENT));
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_AFTER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_AFTER_TRANSLUCENT));
 
-    temporaryFramebuffer = Texture::CreateFBO(HIGH_RES_FBO_CUBEMAP_SIZE, HIGH_RES_FBO_CUBEMAP_SIZE, ReflectionsTextureFormat, true, rhi::TEXTURE_TYPE_CUBE);
+    temporaryFramebuffer = Texture::CreateFBO(HIGH_RES_FBO_CUBEMAP_SIZE, HIGH_RES_FBO_CUBEMAP_SIZE, ReflectionsIntermediateTextureFormat, true, rhi::TEXTURE_TYPE_CUBE);
     temporaryFramebuffer->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
 
-    downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTextureFormat);
-    globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTextureFormat);
+    downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
+    globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
 
     for (uint32 qualityLevel = 0; qualityLevel < CUBEMAP_QUALITY_LEVELS; ++qualityLevel)
     {
         for (uint32 t = 0; t < maxCacheCubemapOnEachLevel[qualityLevel]; ++t)
         {
-            Texture* texture = CreateCubeTextureForReflection(cacheCubemapFaceSize[qualityLevel].first, cacheCubemapFaceSize[qualityLevel].second);
+            Texture* texture = CreateCubeTextureForReflection(cacheCubemapFaceSize[qualityLevel].first, cacheCubemapFaceSize[qualityLevel].second, ReflectionsTargetTextureFormat);
             textureCache[qualityLevel].push_back(texture);
             allCacheTextures.push_back(texture);
         }

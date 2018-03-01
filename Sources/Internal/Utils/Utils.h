@@ -141,6 +141,20 @@ protected:
     std::size_t currentIndex = 0;
 };
 
+template <typename T>
+size_t GetIndexOfElement(const Vector<T>& v, T& element)
+{
+    for (size_t index = 0; index < v.size(); ++index)
+    {
+        if (v[index] == element)
+        {
+            return index;
+        }
+    }
+    DVASSERT(false, "can't find element in vector");
+    return 0;
+}
+
 // Open the URL in external browser.
 void OpenURL(const String& url);
 

@@ -7,6 +7,7 @@
 #include "Render/RHI/rhi_ShaderSource.h"
 
 #define RHI_TRACE_CACHE_USAGE 0
+#define TRACE_SHADER_CONST_BUFFERS 0
 
 namespace DAVA
 {
@@ -339,6 +340,38 @@ ShaderDescriptor* GetShaderDescriptor(const FastName& name, const UnorderedMap<F
         DAVA::Logger::Info("  vprog-uid = %s", vProgUid.c_str());
         DAVA::Logger::Info("  fprog-uid = %s", fProgUid.c_str());
     }
+
+#if TRACE_SHADER_CONST_BUFFERS
+    DAVA::Logger::Info("Shader vertex const buffers for %s", vProgUid.c_str());
+    for (int32 i = 0, sz = vSource->ConstBufferCount(); i < sz; ++i)
+    {
+        String s;
+        for (const rhi::ShaderProp& prop : vSource->Properties())
+        {
+            if (prop.bufferindex == i)
+            {
+                s += prop.uid.c_str();
+                s += " ";
+            }
+        }
+        Logger::Info(" %d -- %s : [%s]", i, vSource->ConstBufferTag(i).c_str(), s.c_str());
+    }
+
+    Logger::Info("Shader fragment const buffers for %s", fProgUid.c_str());
+    for (int32 i = 0, sz = fSource->ConstBufferCount(); i < sz; ++i)
+    {
+        String s;
+        for (const rhi::ShaderProp& prop : fSource->Properties())
+        {
+            if (prop.bufferindex == i)
+            {
+                s += prop.uid.c_str();
+                s += " ";
+            }
+        }
+        Logger::Info(" %d -- %s : [%s]", i, fSource->ConstBufferTag(i).c_str(), s.c_str());
+    }
+#endif
 
     shaderDescriptors[key] = res;
     return res;

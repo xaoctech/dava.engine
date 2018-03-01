@@ -14,8 +14,8 @@
 #include "include/atlas.h"
 #endif
 
-#if (ALBEDO_MODIFIER_BLEND_MODE != 0)
-uniform sampler2D albedoModifier;
+#if (ALBEDO_TINT_BLEND_MODE != 0)
+uniform sampler2D albedoTint;
 #endif
 
 fragment_out
@@ -70,12 +70,12 @@ fragment_out fp_main(fragment_in input)
     baseColorSample.xyz = saturate(baseColorSample.xyz * 2.0);
 #endif
 
-#if (ALBEDO_MODIFIER_BLEND_MODE == 1)
-    float4 albedoModifierSample = tex2D(albedoModifier, input.varTexCoord.zw);
-    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoModifierSample.xyz, albedoModifierSample.w);
-#elif (ALBEDO_MODIFIER_BLEND_MODE == 2)
-    float4 albedoModifierSample = tex2D(albedoModifier, input.varTexCoord.zw);
-    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoModifierSample.xyz), albedoModifierSample.w);
+#if (ALBEDO_TINT_BLEND_MODE == 1)
+    float4 albedoTintSample = tex2D(albedoTint, input.varTexCoord.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoTintSample.xyz, albedoTintSample.w);
+#elif (ALBEDO_TINT_BLEND_MODE == 2)
+    float4 albedoTintSample = tex2D(albedoTint, input.varTexCoord.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoTintSample.xyz), albedoTintSample.w);
 #endif
 
     float bakedAo = albedoMinAOValue;

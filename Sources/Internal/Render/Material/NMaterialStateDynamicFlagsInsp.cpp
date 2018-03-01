@@ -14,7 +14,7 @@ enum eNormalBlendMode
     NormalBlendReorientedNormal = 5
 };
 
-enum eAlbedoModifierBlendMode
+enum eAlbedoTintBlendMode
 {
     AlbedoBlendNone = 0,
     AlbedoBlendMultiply = 1,
@@ -38,7 +38,7 @@ ENUM_DECLARE(eNormalBlendMode)
     ENUM_ADD(NormalBlendReorientedNormal);
 }
 
-ENUM_DECLARE(eAlbedoModifierBlendMode)
+ENUM_DECLARE(eAlbedoTintBlendMode)
 {
     ENUM_ADD(AlbedoBlendNone);
     ENUM_ADD(AlbedoBlendMultiply);
@@ -59,7 +59,7 @@ namespace NMaterialStateDynamicFlagsInspDetails
 Array<FastName, 3> enumProps =
 { {
 NMaterialFlagName::FLAG_NORMAL_BLEND_MODE,
-NMaterialFlagName::FLAG_ALBEDO_MODIFIER_BLEND_MODE,
+NMaterialFlagName::FLAG_ALBEDO_TINT_BLEND_MODE,
 NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT
 } };
 }
@@ -80,7 +80,7 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
 
     if (ret.empty())
     {
-        ret.reserve(37);
+        ret.reserve(38);
 
         ret.emplace_back(NMaterialFlagName::FLAG_VERTEXFOG);
         ret.emplace_back(NMaterialFlagName::FLAG_FOG_LINEAR);
@@ -122,13 +122,14 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
         ret.emplace_back(NMaterialFlagName::FLAG_VERTEX_BLEND_TEXTURES);
         ret.emplace_back(NMaterialFlagName::FLAG_VERTEX_BLEND_4_TEXTURES);
 
-        ret.emplace_back(NMaterialFlagName::FLAG_ALBEDO_MODIFIER_BLEND_MODE);
+        ret.emplace_back(NMaterialFlagName::FLAG_ALBEDO_TINT_BLEND_MODE);
 
         ret.emplace_back(NMaterialFlagName::FLAG_NORMAL_BLEND_MODE);
 
         ret.emplace_back(NMaterialFlagName::FLAG_USE_DETAIL_NORMAL_AO);
 
         ret.emplace_back(NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT);
+        ret.emplace_back(NMaterialFlagName::FLAG_RGBM_INPUT);
     }
 
     return ret;
@@ -141,9 +142,9 @@ InspDesc NMaterialStateDynamicFlagsInsp::MemberDesc(const DynamicData& ddata, co
     {
         descr.enumMap = GlobalEnumMap<eNormalBlendMode>::Instance();
     }
-    else if (member == NMaterialFlagName::FLAG_ALBEDO_MODIFIER_BLEND_MODE)
+    else if (member == NMaterialFlagName::FLAG_ALBEDO_TINT_BLEND_MODE)
     {
-        descr.enumMap = GlobalEnumMap<eAlbedoModifierBlendMode>::Instance();
+        descr.enumMap = GlobalEnumMap<eAlbedoTintBlendMode>::Instance();
     }
     else if (member == NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT)
     {

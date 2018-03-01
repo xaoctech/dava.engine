@@ -29,9 +29,9 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
     float3 environmentSpecularSample = 0.0;
 #elif (USE_DOMINANT_DIRECTION)
     float3 specularDominantDirection = GetSpecularDominantDirection(input.n, -reflect(input.v, input.n), surfaceParameters.roughness);
-    float3 environmentSpecularSample = float3(texCUBElod(globalReflection, specularDominantDirection, specularSampleLod).xyz);
+    float3 environmentSpecularSample = DecodeRGBM(texCUBElod(globalReflection, specularDominantDirection, specularSampleLod));
 #else
-    float3 environmentSpecularSample = float3(texCUBElod(globalReflection, float3(-reflect(input.v, input.n)), specularSampleLod).xyz);
+    float3 environmentSpecularSample = DecodeRGBM(texCUBElod(globalReflection, float3(-reflect(input.v, input.n)), specularSampleLod));
 #endif
 
     float transmittanceEnabled = step(EPSILON, surfaceParameters.transmittance);

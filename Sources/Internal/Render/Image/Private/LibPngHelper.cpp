@@ -24,6 +24,25 @@ namespace DAVA
 {
 namespace
 {
+void SwatA16ByteOrder(Image* image)
+{
+    if (image->format == FORMAT_A16)
+    {
+        uint16* data = reinterpret_cast<uint16*>(image->GetData());
+        uint32 w = image->width;
+        uint32 h = image->height;
+        for (uint32 y = 0; y < h; ++y)
+        {
+            for (uint32 x = 0; x < w; ++x)
+            {
+                uint16* pixel = &data[y * w + x];
+                uint16 lPixel = (*pixel) & 0xFF;
+                uint16 hPixel = (*pixel) & 0xFF00;
+                *pixel = lPixel << 8 | hPixel >> 8;
+            }
+        }
+    }
+}
 struct PngImageRawData
 {
     File* file;
@@ -89,6 +108,9 @@ eErrorCode LibPngHelper::WriteFile(const FilePath& fileName, const Vector<Image*
     int32 width = imageSet[0]->width;
     int32 height = imageSet[0]->height;
     uint8* imageData = imageSet[0]->data;
+
+    SwatA16ByteOrder(imageSet[0]);
+
     Image* convertedImage = nullptr;
     if (FORMAT_RGB888 == imageSet[0]->format)
     {
@@ -228,6 +250,7 @@ eErrorCode LibPngHelper::WriteFile(const FilePath& fileName, const Vector<Image*
     png_write_end(png_ptr, nullptr);
 
     ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+    SwatA16ByteOrder(imageSet[0]);
     return eErrorCode::SUCCESS;
 }
 
@@ -334,7 +357,18 @@ DAVA::ImageInfo DAVA::LibPngHelper::GetImageInfo(File* infile) const
     }
     case PNG_COLOR_TYPE_GRAY:
     {
-        info.format = FORMAT_A8;
+        switch (bit_depth)
+        {
+        case 8:
+            info.format = FORMAT_A8;
+            break;
+        case 16:
+            info.format = FORMAT_A16;
+            break;
+        default:
+            info.format = FORMAT_INVALID;
+            break;
+        }
         break;
     }
     case PNG_COLOR_TYPE_GRAY_ALPHA:
@@ -509,6 +543,8 @@ eErrorCode LibPngHelper::ReadPngFile(File* infile, Image* image, PixelFormat tar
 
     // Clean up
     png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
+
+    SwatA16ByteOrder(image);
 
     return eErrorCode::SUCCESS;
 }

@@ -307,19 +307,6 @@ float3 DetectNan(float3 color)
     return res;
 }
 
-float4 EncodeRGBD(float3 inColor)
-{
-    float maxComponent = max(inColor.x, max(inColor.y, inColor.z));
-    float d = max(RGB_ENCODING_MAX_RANGE / maxComponent, 1.0);
-    d = saturate(floor(d) / 255.0);
-    return float4(inColor.xyz * (d * (255.0 / RGB_ENCODING_MAX_RANGE)), d);
-}
-
-float3 DecodeRGBD(float4 inColor)
-{
-    return inColor.xyz * ((RGB_ENCODING_MAX_RANGE / 255.0) / inColor.w);
-}
-
 #if SOFT_SKINNING
 
 float3 JointTransformPosition(float3 inPosition, float4 jQuaternion, float4 jPosition, float jWeight)
@@ -491,4 +478,30 @@ float3 PerformToneMapping(float3 v, float2 dynamicRange, float gain)
     float3 scaled = 1.0 - exp(-compressed);
     float3 srgb = LinearTosRGB(scaled);
     return srgb;
+}
+
+float4 EncodeRGBM(float3 inColor)
+{
+    inColor = saturate(inColor / RGBM_ENCODING_RANGE);
+    float m = max(max(inColor.x, inColor.y), max(inColor.z, 1.0e-6));
+    m = ceil(m * 255.0) / 255.0;
+    return float4(inColor / m, m);
+}
+
+float3 DecodeRGBM(float4 rgbm)
+{
+    return rgbm.xyz * rgbm.w * RGBM_ENCODING_RANGE;
+}
+
+float4 EncodeRGBD(float3 inColor)
+{
+    float m = max(max(inColor.x, inColor.y), max(inColor.z, 1.0e-6));
+    float d = max(RGBM_ENCODING_RANGE / m, 1.0);
+    d = saturate(floor(d) / 255.0);
+    return float4(inColor.xyz * (d * (255.0 / RGBM_ENCODING_RANGE)), d);
+}
+
+float3 DecodeRGBD(float4 inColor)
+{
+    return inColor.xyz * ((RGBM_ENCODING_RANGE / 255.0) / inColor.w);
 }

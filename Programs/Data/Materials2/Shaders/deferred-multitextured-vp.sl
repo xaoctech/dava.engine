@@ -11,7 +11,7 @@ vertex_in
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
     float2 texCoord0 : TEXCOORD0;
-#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_MODIFIER_BLEND_MODE != 0)
+#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_TINT_BLEND_MODE != 0)
     float2 texCoord1 : TEXCOORD1;
 #endif
 
@@ -138,10 +138,10 @@ vertex_out vp_main(vertex_in input)
     output.tbnToWorld2 = float3(worldTangent.z, worldBinormal.z, worldNormal.z);
     output.projectedPosition = output.position;
 
-#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_MODIFIER_BLEND_MODE != 0)
-    output.uv = float4(texCoordScale * input.texCoord0, input.texCoord1.xy);
+#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_TINT_BLEND_MODE != 0)
+    output.uv = float4(input.texCoord0, input.texCoord1.xy);
 #else
-    output.uv = float4(texCoordScale * input.texCoord0, 0.0, 0.0);
+    output.uv = float4(input.texCoord0, 0.0, 0.0);
 #endif
 
 #if (VERTEX_BAKED_AO)

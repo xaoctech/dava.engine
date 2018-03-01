@@ -16,7 +16,11 @@
 #include "Utils/StringFormat.h"
 #include "FileSystem/YamlParser.h"
 
+#include "Debug/Backtrace.h"
+
 #include "Logger/Logger.h"
+
+#define TRACE_MATERIAL_REBUILDS 0
 
 namespace DAVA
 {
@@ -573,8 +577,11 @@ void NMaterial::SetFlag(const FastName& flagName, int32 value)
 
     DVASSERT(config.localFlags.find(flagName) != config.localFlags.end());
 
-    config.localFlags[flagName] = value;
-    InvalidateRenderVariants();
+    if (config.localFlags[flagName] != value)
+    {
+        config.localFlags[flagName] = value;
+        InvalidateRenderVariants();
+    }
 }
 
 int32 NMaterial::GetEffectiveFlagValue(const FastName& flagName)
@@ -693,8 +700,11 @@ void NMaterial::SetCurrentConfigName(const FastName& newName)
 void NMaterial::SetCurrentConfigIndex(uint32 index)
 {
     DVASSERT(index < materialConfigs.size());
-    currentConfig = index;
-    InvalidateRenderVariants();
+    if (currentConfig != index)
+    {
+        currentConfig = index;
+        InvalidateRenderVariants();
+    }
 }
 
 void NMaterial::SetConfigName(uint32 index, const FastName& name)
@@ -785,6 +795,14 @@ void NMaterial::ClearLocalBuffers()
 
 void NMaterial::InvalidateBufferBindings()
 {
+#if TRACE_MATERIAL_REBUILDS
+    if (!needRebuildBindings)
+    {
+        Logger::Info("InvalidateBufferBindings , material %s pointer %p", materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+    }
+#endif
+
     ClearLocalBuffers(); //RHI_COMPLETE - as local buffers can have binding for this property now just clear them all, later rethink to erase just buffers containing this property
     needRebuildBindings = true;
     for (auto& child : children)
@@ -801,6 +819,14 @@ void NMaterial::InvalidateTextureBindings()
 
 void NMaterial::InvalidateRenderVariants()
 {
+#if TRACE_MATERIAL_REBUILDS
+    if (!needRebuildVariants)
+    {
+        Logger::Info("InvalidateRenderVariants , material %s pointer %p", materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+    }
+#endif
+
     // release existing descriptor?
     ClearLocalBuffers(); // to avoid using incorrect buffers in certain situations (e.g chaning parent)
     needRebuildVariants = true;
@@ -892,6 +918,13 @@ void NMaterial::RebuildRenderVariants()
     activeVariantName = FastName();
     activeVariantInstance = nullptr;
     needRebuildVariants = false;
+#if TRACE_MATERIAL_REBUILDS
+    if (!needRebuildBindings)
+    {
+        Logger::Info("RebuildRenderVariants , material %s pointer %p", materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+    }
+#endif
     needRebuildBindings = true;
     needRebuildTextures = true;
 }
@@ -1184,13 +1217,21 @@ bool NMaterial::PreBuildMaterial(const FastName& passName)
         Logger::Info("Used passes: %s", buffer);
     }
     // */
-
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
     //shader rebuild first - as it sets needRebuildBindings and needRebuildTextures
     if (needRebuildVariants)
         RebuildRenderVariants();
     if (needRebuildBindings)
+    {
+#if TRACE_MATERIAL_REBUILDS
+        static int pbc = 0;
+        pbc++;
+        Logger::Info("Rebuilding Bindings %d for pass %s , material %s pointer %p", pbc, passName.c_str(), materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+#endif
         RebuildBindings();
+    }
+
     if (needRebuildTextures)
         RebuildTextureBindings();
 

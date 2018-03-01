@@ -7,13 +7,6 @@
 #include "include/shadowmapping-v2.h"
 #include "include/landscape-mask.h"
 
-uniform sampler2D albedo;
-uniform sampler2D normalmap;
-uniform sampler2D shadowaotexture;
-uniform sampler2D noiseTexture64x64;
-uniform samplerCUBE globalReflection;
-uniform samplerCUBE localReflection;
-
 fragment_in
 {
     float3 tangentToFinal0 : TANGENT;
@@ -60,12 +53,12 @@ fragment_out fp_main(fragment_in input)
 
 #if LANDSCAPE_TOOL
     float4 toolColor = tex2D(toolTexture, input.texCoord1.xy);
-#if LANDSCAPE_TOOL_MIX
+    #if LANDSCAPE_TOOL_MIX
     albedoSample.rgb = (albedoSample.rgb + toolColor.rgb) / 2.0;
-#else
+    #else
     albedoSample.rgb *= 1.0 - toolColor.a;
     albedoSample.rgb += toolColor.rgb * toolColor.a;
-#endif
+    #endif
 #endif
 
 #if (LANDSCAPE_LOD_MORPHING && LANDSCAPE_MORPHING_COLOR) || (LANDSCAPE_TESSELLATION_COLOR && LANDSCAPE_MICRO_TESSELLATION)
@@ -115,7 +108,6 @@ fragment_out fp_main(fragment_in input)
 #endif
 
     float roughness = normalmapSample.z;
-
     float directionalLightStaticShadow = SampleStaticShadow(saSample.x, input.texCoord1.xy, lightmapSize);
     float ambientOcclusion = saSample.y;
 

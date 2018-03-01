@@ -49,6 +49,7 @@ void SplinePointAddRemoveCommand::AddSplinePoint()
 
 void SplinePointAddRemoveCommand::RemoveSplinePoint()
 {
+    pointIndex = GetIndexOfElement(spline->controlPoints, point);
     spline->controlPoints.erase(spline->controlPoints.begin() + pointIndex);
     isPointInserted = false;
 }
@@ -78,8 +79,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(AddSplinePointCommand)
 
 //////////////////////////////////////////////////////////////////////////
 
-RemoveSplinePointCommand::RemoveSplinePointCommand(Entity* entity, SplineComponent* spline, SplineComponent::SplinePoint* point, size_t pointIndex)
-    : SplinePointAddRemoveCommand(entity, spline, point, pointIndex, "Remove point")
+RemoveSplinePointCommand::RemoveSplinePointCommand(Entity* entity, SplineComponent* spline, SplineComponent::SplinePoint* point)
+    : SplinePointAddRemoveCommand(entity, spline, point, GetIndexOfElement(spline->controlPoints, point), "Remove Spline Point")
 {
     isPointInserted = true;
 }
@@ -99,4 +100,34 @@ DAVA_VIRTUAL_REFLECTION_IMPL(RemoveSplinePointCommand)
     ReflectionRegistrator<RemoveSplinePointCommand>::Begin()
     .End();
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+ChangeSplinePointCommand::ChangeSplinePointCommand(SplineComponent::SplinePoint* point_, float32 newWidth_, float32 newValue_)
+    : point(point_)
+    , origWidth(point_->width)
+    , origValue(point_->value)
+    , newWidth(newWidth_)
+    , newValue(newValue_)
+{
+}
+
+void ChangeSplinePointCommand::Redo()
+{
+    point->width = newWidth;
+    point->value = newValue;
+}
+
+void ChangeSplinePointCommand::Undo()
+{
+    point->width = origWidth;
+    point->value = origValue;
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ChangeSplinePointCommand)
+{
+    ReflectionRegistrator<ChangeSplinePointCommand>::Begin()
+    .End();
+}
+
 } // namespace DAVA

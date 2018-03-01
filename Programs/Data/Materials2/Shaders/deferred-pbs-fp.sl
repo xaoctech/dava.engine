@@ -4,8 +4,8 @@
 #include "include/structures.h"
 #include "include/math.h"
 
-#if (ALBEDO_MODIFIER_BLEND_MODE != 0)
-uniform sampler2D albedoModifier;
+#if (ALBEDO_TINT_BLEND_MODE != 0)
+uniform sampler2D albedoTint;
 #endif
 
 fragment_in
@@ -46,12 +46,12 @@ fragment_out fp_main(fragment_in input)
     baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, input.vertexColor.xyz), input.vertexColor.a);
 #endif
 
-#if (ALBEDO_MODIFIER_BLEND_MODE == 1)
-    float4 albedoModifierSample = tex2D(albedoModifier, input.uv.zw);
-    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoModifierSample.xyz, albedoModifierSample.w);
-#elif (ALBEDO_MODIFIER_BLEND_MODE == 2)
-    float4 albedoModifierSample = tex2D(albedoModifier, input.uv.zw);
-    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoModifierSample.xyz), albedoModifierSample.w);
+#if (ALBEDO_TINT_BLEND_MODE == 1)
+    float4 albedoTintSample = tex2D(albedoTint, input.uv.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoTintSample.xyz, albedoTintSample.w);
+#elif (ALBEDO_TINT_BLEND_MODE == 2)
+    float4 albedoTintSample = tex2D(albedoTint, input.uv.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoTintSample.xyz), albedoTintSample.w);
 #endif
 
     float4 normalMapSample = tex2D(normalmap, input.uv.xy);

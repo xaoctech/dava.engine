@@ -24,7 +24,8 @@
 #include <TArc/Core/FieldBinder.h>
 
 #include <Render/PixelFormatDescriptor.h>
-#include <Render/Image/LibPVRHelper.h>
+#include <Render/Image/ImageConvert.h>
+#include <Render/Image/LibDdsHelper.h>
 #include <Render/Image/LibDdsHelper.h>
 
 #include <QAbstractItemModel>
@@ -82,6 +83,9 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     // convector signals
     QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor*, const TextureInfo&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor*, const TextureInfo&)));
     QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor*, const DAVA::eGPUFamily, const TextureInfo&)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor*, const DAVA::eGPUFamily, const TextureInfo&)));
+
+    QObject::connect(ui->buttonCovertToRGBM, SIGNAL(clicked(bool)), this, SLOT(OnConvertToRGBM()));
+    ui->buttonCovertToRGBM->setEnabled(false);
 
     setupStatusBar();
     setupTextureToolbar();
@@ -325,36 +329,28 @@ void TextureBrowser::updateConvertedImageAndInfo(const QList<QImage>& images, DA
 
 void TextureBrowser::updateInfoColor(QLabel* label, const QColor& color /* = QColor() */)
 {
-    if (NULL != label)
-    {
-        char tmp[1024];
+    if (label == nullptr)
+        return;
 
-        sprintf(tmp, "R: %02X\nG: %02X\nB: %02X\nA: %02X",
-                color.red(), color.green(), color.blue(), color.alpha());
-
-        label->setText(tmp);
-    }
+    char tmp[1024] = {};
+    sprintf(tmp, "R: %02X\nG: %02X\nB: %02X\nA: %02X", color.red(), color.green(), color.blue(), color.alpha());
+    label->setText(tmp);
 }
 
 void TextureBrowser::updateInfoPos(QLabel* label, const QPoint& pos /* = QPoint() */)
 {
-    if (NULL != label)
-    {
-        char tmp[1024];
+    if (label == nullptr)
+        return;
 
-        sprintf(tmp, "X : %d\nY : %d",
-                pos.x(), pos.y());
-
-        label->setText(tmp);
-    }
+    char tmp[1024] = {};
+    sprintf(tmp, "X : %d\nY : %d", pos.x(), pos.y());
+    label->setText(tmp);
 }
 
 void TextureBrowser::updateInfoOriginal(const QList<QImage>& images)
 {
     if (nullptr != curTexture && nullptr != curDescriptor)
     {
-        char tmp[1024];
-
         DAVA::FilePath imagePath;
         if (curDescriptor->IsCubeMap())
         {
@@ -374,11 +370,15 @@ void TextureBrowser::updateInfoOriginal(const QList<QImage>& images)
         int datasize = TextureCache::Instance()->getOriginalSize(curDescriptor);
         int filesize = TextureCache::Instance()->getOriginalFileSize(curDescriptor);
 
+        char tmp[1024] = {};
         sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr.c_str(), images[0].width(), images[0].height(),
                 DAVA::SizeInBytesToString(datasize).c_str(),
                 DAVA::SizeInBytesToString(filesize).c_str());
 
         ui->labelOriginalFormat->setText(tmp);
+
+        bool formatConvertibleToRGBM = (info.format == DAVA::PixelFormat::FORMAT_RGBA32F) || (info.format == DAVA::PixelFormat::FORMAT_RGBA16F);
+        ui->buttonCovertToRGBM->setEnabled(formatConvertibleToRGBM);
     }
     else
     {
@@ -1154,4 +1154,74 @@ void TextureBrowser::textureDescriptorChanged(DAVA::TextureDescriptor* descripto
     }
 
     setTextureView(curGPU, requestedConvertMode);
+}
+
+void TextureBrowser::OnConvertToRGBM()
+{
+    using namespace DAVA;
+
+    DVASSERT(curDescriptor != nullptr);
+    if (curDescriptor->IsCubeMap())
+    {
+        Logger::Error("Converting cubemaps to RGBM not supported yet");
+        return;
+    }
+
+    FilePath imagePath = curDescriptor->GetSourceTexturePathname();
+
+    Vector<Image*> inputImages;
+    if (ImageSystem::Load(imagePath, inputImages) != eErrorCode::SUCCESS)
+    {
+        Logger::Error("Failed to load images from %s", imagePath.GetAbsolutePathname().c_str());
+        return;
+    }
+
+    Vector<Image*> outputImages;
+    outputImages.reserve(inputImages.size());
+    for (Image* inputImage : inputImages)
+    {
+        Image* outputImage = Image::Create(inputImage->GetWidth(), inputImage->GetHeight(), PixelFormat::FORMAT_RGBM);
+        DAVA::ImageConvert::ConvertImage(inputImage, outputImage);
+        outputImages.emplace_back(outputImage);
+    }
+
+    bool textureChanged = false;
+    bool originalFileMoved = false;
+    const String targetExtension = ".dds";
+
+    FilePath originalPath = imagePath;
+    String originalExtension = originalPath.GetExtension();
+    if (originalExtension == targetExtension)
+    {
+        originalPath.ReplaceExtension(".original" + originalExtension);
+        originalFileMoved = FileSystem::Instance()->MoveFile(imagePath, originalPath, true);
+    }
+    else
+    {
+        imagePath.ReplaceExtension(targetExtension);
+    }
+
+    if (ImageSystem::Save(imagePath, outputImages, PixelFormat::FORMAT_RGBM) == eErrorCode::SUCCESS)
+    {
+        textureChanged = true;
+        curDescriptor->format = PixelFormat::FORMAT_RGBM;
+        curDescriptor->dataSettings.sourceFileExtension = targetExtension;
+        curDescriptor->Save();
+    }
+    else if (originalFileMoved)
+    {
+        imagePath.ReplaceExtension(originalExtension);
+        Logger::Error("Failed to save converted images to %s", imagePath.GetAbsolutePathname().c_str());
+        FileSystem::Instance()->MoveFile(originalPath, imagePath, true);
+    }
+
+    for (Image* inputImage : inputImages)
+        SafeRelease(inputImage);
+    for (Image* outputImage : outputImages)
+        SafeRelease(outputImage);
+
+    if (textureChanged)
+    {
+        textureDescriptorReload(curDescriptor);
+    }
 }

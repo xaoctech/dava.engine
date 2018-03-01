@@ -51,7 +51,7 @@ std::unique_ptr<Command> RemoveSplinePointProducer::CreateCommand(const std::sha
     DVASSERT(entityNode.get() != nullptr);
     Entity* entity = entityNode->field.ref.GetValueObject().GetPtr<Entity>();
 
-    return std::make_unique<RemoveSplinePointCommand>(entity, spline, spline->controlPoints[indexOfRemovedValue], indexOfRemovedValue);
+    return std::make_unique<RemoveSplinePointCommand>(entity, spline, spline->controlPoints[indexOfRemovedValue]);
 }
 }
 

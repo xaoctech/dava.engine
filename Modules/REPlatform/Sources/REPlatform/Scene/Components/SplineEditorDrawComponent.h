@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Entity/Component.h>
-
 #include <Reflection/Reflection.h>
 
 namespace DAVA

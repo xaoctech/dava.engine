@@ -43,10 +43,35 @@ public:
 class RemoveSplinePointCommand : public SplinePointAddRemoveCommand
 {
 public:
-    RemoveSplinePointCommand(Entity* entity, SplineComponent* spline, SplineComponent::SplinePoint* point, size_t pointIndex);
+    RemoveSplinePointCommand(Entity* entity, SplineComponent* spline, SplineComponent::SplinePoint* point);
 
     void Redo() override;
     void Undo() override;
     DAVA_VIRTUAL_REFLECTION(RemoveSplinePointCommand, RECommand);
 };
+
+class ChangeSplinePointCommand : public RECommand
+{
+public:
+    ChangeSplinePointCommand(SplineComponent::SplinePoint* point, float32 newWidth, float32 newValue);
+
+    void Redo() override;
+    void Undo() override;
+
+    SplineComponent::SplinePoint* GetPoint() const;
+
+private:
+    SplineComponent::SplinePoint* point = nullptr;
+    float32 origWidth = 0.f;
+    float32 origValue = 0.f;
+    float32 newWidth = 0.f;
+    float32 newValue = 0.f;
+
+    DAVA_VIRTUAL_REFLECTION(ChangeSplinePointCommand, RECommand);
+};
+
+inline DAVA::SplineComponent::SplinePoint* ChangeSplinePointCommand::GetPoint() const
+{
+    return point;
+}
 } // namespace DAVA

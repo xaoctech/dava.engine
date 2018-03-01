@@ -17,28 +17,10 @@
 #include <Scene3D/Components/SplineComponent.h>
 #include <Scene3D/Components/VTDecalComponent.h>
 #include <Scene3D/Systems/VTSplineDecalSystem.h>
+#include <Utils/Utils.h>
 
 namespace DAVA
 {
-namespace SplineEditorSystemDetails
-{
-using namespace DAVA;
-
-template <typename T>
-size_t GetIndexOfElement(const Vector<T>& v, T element)
-{
-    for (size_t index = 0; index < v.size(); ++index)
-    {
-        if (v[index] == element)
-        {
-            return index;
-        }
-    }
-    DVASSERT(false, "can't find element in vector");
-    return 0;
-}
-}
-
 SplineEditorSystem::SplineEditorSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<SplineComponent>())
 {
@@ -96,6 +78,12 @@ void SplineEditorSystem::PrepareForRemove()
 {
 }
 
+bool SplineEditorSystem::AllowAddToSelection(const Selectable& itemToAdd)
+{
+    bool noSnappedSplines = std::none_of(splineDrawComponents.begin(), splineDrawComponents.end(), [](const SplineEditorDrawComponent* c) { return c->IsSnapped(); });
+    return noSnappedSplines || (itemToAdd.CanBeCastedTo<SplineComponent::SplinePoint>());
+}
+
 const DAVA::UnorderedSet<SplineEditorDrawComponent*>& SplineEditorSystem::GetSplineDrawComponents() const
 {
     return splineDrawComponents;
@@ -117,112 +105,137 @@ void SplineEditorSystem::Process(float32 timeElapsed)
 {
     if (shouldBeSelectedOnNextFrame.IsEmpty() == false)
     {
-        GetScene()->GetSystem<SelectionSystem>()->SetSelection(shouldBeSelectedOnNextFrame);
+        SelectionSystem* selectionSystem = GetScene()->GetSystem<SelectionSystem>();
+        selectionSystem->SetSelectionAllowed(true);
+        selectionSystem->SetSelection(shouldBeSelectedOnNextFrame);
         shouldBeSelectedOnNextFrame.Clear();
     }
 }
 
 bool SplineEditorSystem::Input(UIEvent* event)
 {
-    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
-    Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
-
-    if (eMouseButtons::LEFT == event->mouseButton && UIEvent::Phase::ENDED == event->phase)
+    if (eMouseButtons::LEFT == event->mouseButton && UIEvent::Phase::BEGAN == event->phase)
     {
+        Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         bool shiftPressed = (kb != nullptr) && (kb->GetKeyState(eInputElements::KB_LSHIFT).IsPressed() || kb->GetKeyState(eInputElements::KB_RSHIFT).IsPressed());
-        if (!shiftPressed)
+        if (shiftPressed)
         {
-            return false;
-        }
-
-        SelectionSystem* selectionSystem = scene->GetSystem<SelectionSystem>();
-        const SelectableGroup& selectableGroup = selectionSystem->GetSelection();
-
-        SplineComponent* spline = nullptr;
-        SplineComponent::SplinePoint* selectedPoint = nullptr;
-
-        if (selectableGroup.GetSize() == 1)
-        {
-            const Selectable& selectable = selectableGroup.GetFirst();
-            Entity* e = selectable.AsEntity();
-            if (e != nullptr)
-            {
-                spline = GetSplineComponent(e);
-                if (spline == nullptr || spline->GetControlPoints().empty() == false)
-                {
-                    return false;
-                }
-            }
-            else if (selectable.GetObjectType() == ReflectedTypeDB::Get<SplineComponent::SplinePoint>())
-            {
-                selectedPoint = selectable.Cast<SplineComponent::SplinePoint>();
-
-                auto found = pointsToSplines.find(selectedPoint);
-                DVASSERT(found != pointsToSplines.end());
-                spline = found->second;
-            }
-        }
-
-        if (spline == nullptr && selectedPoint == nullptr)
-        {
-            return false;
-        }
-
-        Vector3 landscapeIntersectionPos;
-        SceneCollisionSystem* collisionSystem = scene->GetSystem<SceneCollisionSystem>();
-        bool landscapeIntersected = collisionSystem->LandRayTestFromCamera(landscapeIntersectionPos);
-        if (landscapeIntersected)
-        {
-            Matrix4 parentTransform = spline->GetEntity()->GetWorldTransform();
-            parentTransform.Inverse();
-
-            Matrix4 newPointTransform;
-            newPointTransform.SetTranslationVector(landscapeIntersectionPos);
-            newPointTransform = newPointTransform * parentTransform;
-
-            SplineComponent::SplinePoint* newPoint = new SplineComponent::SplinePoint;
-            newPoint->position = newPointTransform.GetTranslationVector();
-            size_t newPointIndex = (selectedPoint != nullptr) ? SplineEditorSystemDetails::GetIndexOfElement(spline->controlPoints, selectedPoint) + 1 : 0;
-
-            scene->Exec(std::make_unique<AddSplinePointCommand>(scene, spline, newPoint, newPointIndex));
+            AddPointByShiftAndClick();
         }
     }
-    else if (event->phase == UIEvent::Phase::KEY_DOWN && event->key == eInputElements::KB_D)
+    else if (event->phase == UIEvent::Phase::WHEEL)
     {
+        Keyboard* kb = GetEngineContext()->deviceManager->GetKeyboard();
         bool shiftPressed = (kb != nullptr) && (kb->GetKeyState(eInputElements::KB_LSHIFT).IsPressed() || kb->GetKeyState(eInputElements::KB_RSHIFT).IsPressed());
-        if (!shiftPressed)
+        bool ctrlPressed = (kb != nullptr) && (kb->GetKeyState(eInputElements::KB_LCTRL).IsPressed() || kb->GetKeyState(eInputElements::KB_RCTRL).IsPressed());
+        if (shiftPressed || ctrlPressed)
         {
-            return false;
+            ChangePointValueByWheel(event, shiftPressed);
         }
-
-        SelectionSystem* selectionSystem = scene->GetSystem<SelectionSystem>();
-        const SelectableGroup& selectableGroup = selectionSystem->GetSelection();
-
-        SplineComponent* spline = nullptr;
-        SplineComponent::SplinePoint* selectedPoint = nullptr;
-
-        if (selectableGroup.GetSize() == 1)
-        {
-            const Selectable& selectable = selectableGroup.GetFirst();
-            if (selectable.GetObjectType() == ReflectedTypeDB::Get<SplineComponent::SplinePoint>())
-            {
-                selectedPoint = selectable.Cast<SplineComponent::SplinePoint>();
-
-                auto found = pointsToSplines.find(selectedPoint);
-                DVASSERT(found != pointsToSplines.end());
-                spline = found->second;
-            }
-        }
-
-        if (spline == nullptr && selectedPoint == nullptr)
-        {
-            return false;
-        }
-
-        size_t pointIndex = SplineEditorSystemDetails::GetIndexOfElement(spline->controlPoints, selectedPoint);
-        scene->Exec(std::make_unique<RemoveSplinePointCommand>(scene, spline, selectedPoint, pointIndex));
     }
     return false;
+}
+
+void SplineEditorSystem::AddPointByShiftAndClick()
+{
+    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
+    SelectionSystem* selectionSystem = scene->GetSystem<SelectionSystem>();
+    const SelectableGroup& selectableGroup = selectionSystem->GetSelection();
+
+    SplineComponent* spline = nullptr;
+    SplineComponent::SplinePoint* selectedPoint = nullptr;
+
+    if (selectableGroup.GetSize() == 1)
+    {
+        const Selectable& selectable = selectableGroup.GetFirst();
+        Entity* e = selectable.AsEntity();
+        if (e != nullptr)
+        {
+            spline = GetSplineComponent(e);
+            if (spline == nullptr || spline->GetControlPoints().empty() == false)
+            {
+                return;
+            }
+        }
+        else if (selectable.GetObjectType() == ReflectedTypeDB::Get<SplineComponent::SplinePoint>())
+        {
+            selectedPoint = selectable.Cast<SplineComponent::SplinePoint>();
+
+            auto found = pointsToSplines.find(selectedPoint);
+            DVASSERT(found != pointsToSplines.end());
+            spline = found->second;
+        }
+    }
+
+    if (spline == nullptr && selectedPoint == nullptr)
+    {
+        return;
+    }
+
+    Vector3 landscapeIntersectionPos;
+    SceneCollisionSystem* collisionSystem = scene->GetSystem<SceneCollisionSystem>();
+    bool landscapeIntersected = collisionSystem->LandRayTestFromCamera(landscapeIntersectionPos);
+    if (landscapeIntersected)
+    {
+        selectionSystem->SetSelectionAllowed(false);
+
+        Matrix4 parentTransform = spline->GetEntity()->GetWorldTransform();
+        parentTransform.Inverse();
+
+        Matrix4 newPointTransform;
+        newPointTransform.SetTranslationVector(landscapeIntersectionPos);
+        newPointTransform = newPointTransform * parentTransform;
+
+        size_t newPointIndex = 0;
+        SplineComponent::SplinePoint* newPoint = new SplineComponent::SplinePoint;
+        newPoint->position = newPointTransform.GetTranslationVector();
+        if (selectedPoint != nullptr)
+        {
+            newPoint->value = selectedPoint->value;
+            newPoint->width = selectedPoint->width;
+            newPointIndex = GetIndexOfElement(spline->controlPoints, selectedPoint) + 1;
+        }
+
+        scene->Exec(std::make_unique<AddSplinePointCommand>(scene, spline, newPoint, newPointIndex));
+    }
+}
+
+void SplineEditorSystem::ChangePointValueByWheel(UIEvent* event, bool shiftPressed)
+{
+    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
+
+    SelectionSystem* selectionSystem = scene->GetSystem<SelectionSystem>();
+    const SelectableGroup& selectableGroup = selectionSystem->GetSelection();
+
+    if (selectableGroup.ContainsOnlyObjectsOfType<SplineComponent::SplinePoint>())
+    {
+        scene->BeginBatch("Change Spline Points values", selectableGroup.GetSize());
+
+        for (const Selectable& selectable : selectableGroup.GetContent())
+        {
+            SplineComponent::SplinePoint* point = selectable.Cast<SplineComponent::SplinePoint>();
+            SplineComponent* spline = GetSplineByPoint(point);
+            float32 origEntry = shiftPressed ? point->width : point->value;
+            float32 wheelStep = origEntry > 1.f ? 1.f : 0.1f;
+
+            float32 newEntry = origEntry + (event->wheelDelta.y * wheelStep);
+            if (newEntry < 0.f)
+            {
+                newEntry = 0.f;
+            }
+            else if (newEntry < 1.f && origEntry > 1.f)
+            {
+                newEntry = 1.f;
+            }
+
+            float32 newWidth = shiftPressed ? newEntry : point->width;
+            float32 newValue = shiftPressed ? point->value : newEntry;
+            scene->Exec(std::make_unique<ChangeSplinePointCommand>(point, newWidth, newValue));
+        }
+
+        scene->EndBatch();
+        event->wheelDelta.y = 0.f;
+    }
 }
 
 void SplineEditorSystem::ProcessCommand(const RECommandNotificationObject& commandNotification)
@@ -252,7 +265,7 @@ void SplineEditorSystem::ProcessCommand(const RECommandNotificationObject& comma
                 shouldBeSelectedOnNextFrame.Add(cmd->GetSpline()->controlPoints[pointIndex - 1]);
             }
         }
-        GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(cmd->GetSpline()->GetEntity());
+        GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(cmd->GetSpline()->GetEntity()); // todo: use spline single component
     };
 
     commandNotification.ForEach<AddSplinePointCommand>(fn);
@@ -263,7 +276,7 @@ void SplineEditorSystem::ProcessCommand(const RECommandNotificationObject& comma
         {
             SplineComponent::SplinePoint* point = cmd->GetTransformedObject().Cast<SplineComponent::SplinePoint>();
             SplineComponent* spline = GetSplineByPoint(point);
-            GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(spline->GetEntity());
+            GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(spline->GetEntity()); // todo: use spline single component
         }
     });
 
@@ -275,9 +288,14 @@ void SplineEditorSystem::ProcessCommand(const RECommandNotificationObject& comma
             {
                 SplineComponent::SplinePoint* point = selectable.Cast<SplineComponent::SplinePoint>();
                 SplineComponent* spline = GetSplineByPoint(point);
-                GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(spline->GetEntity());
+                GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(spline->GetEntity()); // todo: use spline single component
             }
         }
+    });
+
+    commandNotification.ForEach<ChangeSplinePointCommand>([this](const ChangeSplinePointCommand* cmd) {
+        SplineComponent* spline = GetSplineByPoint(cmd->GetPoint());
+        GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(spline->GetEntity()); // todo: use spline single component
     });
 }
 
@@ -291,6 +309,14 @@ void SplineEditorSystem::Draw()
         {
             SplineComponent* spline = GetSplineComponent(splineDraw->GetEntity());
 
+            static const Color solidDepthColorNormal = Color(1.0f, 0.5f, 0.25f, 0.3f);
+            static const Color wireDepthColorNormal = Color(1.0f, 0.5f, 0.25f, 1.0f);
+            static const Color solidDepthColorSnapped = Color(1.0f, 0.4f, 0.15f, 0.3f);
+            static const Color wireDepthColorSnapped = Color(1.0f, 0.4f, 0.15f, 1.0f);
+
+            const Color& solidDepthColor = splineDraw->IsSnapped() ? solidDepthColorSnapped : solidDepthColorNormal;
+            const Color& wireDepthColor = splineDraw->IsSnapped() ? wireDepthColorSnapped : wireDepthColorNormal;
+
             size_t pointsCount = spline->controlPoints.size();
             for (size_t i = 0; i < pointsCount; ++i)
             {
@@ -300,8 +326,8 @@ void SplineEditorSystem::Draw()
                 const AABBox3 splinePointBoundingBox(startPosition, 2.f);
                 const auto& transform = spline->GetEntity()->GetWorldTransform();
 
-                debugDrawer->DrawAABoxTransformed(splinePointBoundingBox, transform, Color(1.0f, 0.5f, 0.25f, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
-                debugDrawer->DrawAABoxTransformed(splinePointBoundingBox, transform, Color(1.0f, 0.5f, 0.25f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+                debugDrawer->DrawAABoxTransformed(splinePointBoundingBox, transform, solidDepthColor, RenderHelper::DRAW_SOLID_DEPTH);
+                debugDrawer->DrawAABoxTransformed(splinePointBoundingBox, transform, wireDepthColor, RenderHelper::DRAW_WIRE_DEPTH);
 
                 if (i < pointsCount - 1)
                 {

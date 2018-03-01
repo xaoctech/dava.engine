@@ -218,7 +218,8 @@ float4 ConvoluteSpecular(float2 texcoord_, Convolution conv)
         result.xyz += LdotN * texCUBElod(smp_src, l, sampledLevel).xyz;
         result.w += LdotN;
     }
-    return result / result.w;
+    result = EncodeRGBM(result / result.w);
+    return result;
 }
 #endif
 

@@ -229,6 +229,9 @@ void SceneValidator::ValidateRenderBatch(Entity* ownerNode, RenderBatch* renderB
 
 void SceneValidator::ValidateMaterials(Scene* scene)
 {
+    //GFX_COMPLETE, GFX_TMP - to test count of const buffers
+    return;
+
     Set<NMaterial*> materials;
     SceneHelper::BuildMaterialList(scene, materials, false);
     auto globalMaterial = scene->GetGlobalMaterial();

@@ -62,7 +62,7 @@ void ReflectionsModule::BakeReflections()
         return;
     }
 
-    String targetPath = scene->GetScenePath().GetDirectory().GetAbsolutePathname() + "/reflections";
+    String targetPath = scene->GetScenePath().GetDirectory().GetAbsolutePathname() + "reflections";
     if (FileSystem::Instance()->CreateDirectory(targetPath, true) == FileSystem::eCreateDirectoryResult::DIRECTORY_CANT_CREATE)
     {
         Debug::MessageBox("Save Scene", DAVA::Format("Failed to create directory\n%s", targetPath.c_str()), { "Close" });
@@ -73,49 +73,62 @@ void ReflectionsModule::BakeReflections()
 
     const char* faceId[6] = { "px", "nx", "py", "ny", "pz", "nz" };
 
-    Set<uint32> processedTextures;
+    Set<String> processedTextures;
+
+    DateTime now = DateTime::Now();
+    String timestamp = Format("%d-%d-%d_%d-%d-%d", now.GetYear(), now.GetMonth(), now.GetDay(), now.GetHour(), now.GetMinute(), now.GetSecond());
 
     for (ReflectionComponent* component : reflectionSystem->GetAllComponents())
     {
         ReflectionProbe* probe = component->GetReflectionProbe();
         if (probe->IsDynamicProbe())
         {
+            uint32 probeIndex = 0;
+            String imageId = DAVA::Format("%s_", component->GetEntity()->GetName().c_str());
+            while (processedTextures.count(imageId) > 0)
+            {
+                imageId = DAVA::Format("%s%03u_", component->GetEntity()->GetName().c_str(), probeIndex);
+                ++probeIndex;
+            }
+            processedTextures.emplace(imageId);
+            imageId += timestamp;
+
+            FilePath descriptorPath = DAVA::Format("%s/%s.tex", targetPath.c_str(), imageId.c_str());
+
+            FilePath descriptorBaseName = descriptorPath;
+            descriptorBaseName.ReplaceExtension(String());
+
             Vector<Vector<Image*>> images;
             Texture* tex = probe->GetCurrentTexture();
             tex->CreateCubemapMipmapImages(images, tex->GetMipLevelsCount());
 
-            uint32 imageId = reinterpret_cast<uintptr_t>(probe->GetCurrentTexture()) & 0xFFFFFFFF;
-            FilePath descriptorPath = DAVA::Format("%s/%u.tex", targetPath.c_str(), imageId);
-
-            if (processedTextures.count(imageId) == 0)
+            uint32 faceIndex = 0;
+            for (Vector<Image*>& face : images)
             {
-                uint32 faceIndex = 0;
-                for (Vector<Image*>& face : images)
-                {
-                    FilePath targetFileName = DAVA::Format("%s/%u_%s.dds", targetPath.c_str(), imageId, faceId[faceIndex]);
-                    ImageSystem::Save(targetFileName, face, tex->GetDescriptor()->GetTextureFormat());
-                    ++faceIndex;
-                }
-                {
-                    TextureDescriptor desc;
-                    desc.pathname = descriptorPath;
-                    desc.dataSettings.sourceFileFormat = ImageFormat::IMAGE_FORMAT_DDS;
-                    desc.dataSettings.sourceFileExtension = ".dds";
-                    desc.dataSettings.cubefaceFlags = 0x3f /* all faces*/;
-                    desc.dataSettings.cubefaceExtensions[0] = ".dds";
-                    desc.dataSettings.cubefaceExtensions[1] = ".dds";
-                    desc.dataSettings.cubefaceExtensions[2] = ".dds";
-                    desc.dataSettings.cubefaceExtensions[3] = ".dds";
-                    desc.dataSettings.cubefaceExtensions[4] = ".dds";
-                    desc.dataSettings.cubefaceExtensions[5] = ".dds";
-                    desc.dataSettings.textureFlags = 0;
-                    desc.Save(descriptorPath);
-                }
-                processedTextures.emplace(imageId);
+                FilePath targetFileName = DAVA::Format("%s_%s.dds", descriptorBaseName.GetAbsolutePathname().c_str(), faceId[faceIndex]);
+                ImageSystem::Save(targetFileName, face, tex->GetDescriptor()->GetTextureFormat());
+                ++faceIndex;
+            }
+
+            {
+                TextureDescriptor desc;
+                desc.pathname = descriptorPath;
+                desc.dataSettings.sourceFileFormat = ImageFormat::IMAGE_FORMAT_DDS;
+                desc.dataSettings.sourceFileExtension = ".dds";
+                desc.dataSettings.cubefaceFlags = 0x3f /* all faces*/;
+                desc.dataSettings.cubefaceExtensions[0] = ".dds";
+                desc.dataSettings.cubefaceExtensions[1] = ".dds";
+                desc.dataSettings.cubefaceExtensions[2] = ".dds";
+                desc.dataSettings.cubefaceExtensions[3] = ".dds";
+                desc.dataSettings.cubefaceExtensions[4] = ".dds";
+                desc.dataSettings.cubefaceExtensions[5] = ".dds";
+                desc.dataSettings.textureFlags = 0;
+                desc.Save(descriptorPath);
             }
 
             component->SetReflectionsMap(descriptorPath);
             component->SetReflectionType(probe->IsGlobalProbe() ? ReflectionProbe::ProbeType::GLOBAL_STATIC : ReflectionProbe::ProbeType::LOCAL_STATIC);
+            ++probeIndex;
         }
     }
 }

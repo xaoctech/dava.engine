@@ -97,7 +97,7 @@
 #ensuredefined VERTEX_BLEND_TEXTURES 0
 #ensuredefined VERTEX_BLEND_4_TEXTURES 0
 
-#ensuredefined ALBEDO_MODIFIER_BLEND_MODE 0
+#ensuredefined ALBEDO_TINT_BLEND_MODE 0
 
 #ensuredefined NORMAL_BLEND_MODE 0
 #ensuredefined USE_DETAIL_NORMAL_AO 0
@@ -106,7 +106,6 @@
 
 #ensuredefined USE_DFG_APPROXIMATION 0
 
-#ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0

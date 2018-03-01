@@ -97,7 +97,8 @@ PixelFormat GetDAVAFormatFromPVR(uint64 pixelFormat, uint32 u32ChannelType)
       { PVRTGENPIXELID1('a', 8), FORMAT_A8 },
       { PVRTGENPIXELID1('a', 16), FORMAT_A16 },
       { PVRTGENPIXELID4('r', 'g', 'b', 'a', 16, 16, 16, 16), FORMAT_RGBA16161616 },
-      { PVRTGENPIXELID4('r', 'g', 'b', 'a', 32, 32, 32, 32), FORMAT_RGBA32323232 }
+      { PVRTGENPIXELID4('r', 'g', 'b', 'a', 32, 32, 32, 32), FORMAT_RGBA32323232 },
+      { PVRTGENPIXELID4('r', 'g', 'b', 'm', 8, 8, 8, 8), FORMAT_RGBM },
     };
 
     auto found = mapping.find(pixelFormat);
@@ -145,7 +146,8 @@ uint64 GetPVRFormatFromDAVA(PixelFormat pixelFormat)
       { FORMAT_RGBA16161616, PVRTGENPIXELID4('r', 'g', 'b', 'a', 16, 16, 16, 16) },
       { FORMAT_RGBA32323232, PVRTGENPIXELID4('r', 'g', 'b', 'a', 32, 32, 32, 32) },
       { FORMAT_RGBA16F, PVRTGENPIXELID4('r', 'g', 'b', 'a', 16, 16, 16, 16) },
-      { FORMAT_RGBA32F, PVRTGENPIXELID4('r', 'g', 'b', 'a', 32, 32, 32, 32) }
+      { FORMAT_RGBA32F, PVRTGENPIXELID4('r', 'g', 'b', 'a', 32, 32, 32, 32) },
+      { FORMAT_RGBM, PVRTGENPIXELID4('r', 'g', 'b', 'm', 8, 8, 8, 8) },
     };
 
     auto found = mapping.find(pixelFormat);
@@ -176,6 +178,7 @@ uint32 GetPVRChannelType(PixelFormat pixelFormat)
 
     case FORMAT_RGBA8888:
     case FORMAT_RGB888:
+    case FORMAT_RGBM:
     case FORMAT_A8:
     case FORMAT_RGBA16161616:
     case FORMAT_RGBA32323232:

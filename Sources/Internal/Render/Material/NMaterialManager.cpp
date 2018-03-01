@@ -48,8 +48,12 @@ void NMaterialManager::UpdateMaterialHierarchy(NMaterial* material)
 
 void NMaterialManager::SetGlobalFlag(const FastName& name, int32 value)
 {
-    _impl->globalFlags[name] = value;
-    InvalidateMaterials();
+    //GFX_COMPLETE NMaterialManager singleton thats sets flags for all materials in all scenes seems something wired
+    if (_impl->globalFlags[name] != value)
+    {
+        _impl->globalFlags[name] = value;
+        InvalidateMaterials();
+    }
 }
 
 void NMaterialManager::RemoveGlobalFlag(const FastName& name)

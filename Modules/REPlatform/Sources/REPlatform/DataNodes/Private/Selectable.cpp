@@ -70,6 +70,18 @@ const ReflectedType* Selectable::GetObjectType() const
     return GetValueReflectedType(object);
 }
 
+bool Selectable::CanBeCastedTo(const Type* type) const
+{
+    if (ContainsObject() == false)
+    {
+        return false;
+    }
+    DVASSERT(object.GetType()->IsPointer());
+    const ReflectedType* t = GetValueReflectedType(object);
+    DVASSERT(t != nullptr);
+    return TypeInheritance::CanCast(t->GetType()->Pointer(), type);
+}
+
 void Selectable::SetBoundingBox(const AABBox3& box)
 {
     boundingBox = box;

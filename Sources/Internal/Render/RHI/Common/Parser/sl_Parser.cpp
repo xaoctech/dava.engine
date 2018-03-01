@@ -1521,82 +1521,51 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
         }
         else
         {
-            /*
-             if (typeFlags & HLSLTypeFlag_Property)
-             {
-             // Uniform declaration.
-             HLSLDeclaration* declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
-             declaration->name = globalName;
-             declaration->type.baseType = type;
-             declaration->type.flags = typeFlags;
-             
-             for (HLSLAttribute* a = attributes; a; a = a->nextAttribute)
-             {
-             const char* aa = a->attrText;
-             }
-             
-             // Add property here
-             
-             statement = declaration;
-             }
-             else
-             */
+            if (m_tree->FindGlobalDeclaration(globalName) != nullptr)
             {
-                // Uniform declaration.
-                HLSLDeclaration* declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
-                declaration->name = globalName;
-                declaration->type.baseType = type;
-                declaration->type.flags = typeFlags;
-
-                // Handle array syntax.
-                if (Accept('['))
-                {
-                    if (!Accept(']'))
-                    {
-                        if (!ParseExpression(declaration->type.arraySize) || !Expect(']'))
-                        {
-                            return false;
-                        }
-                    }
-                    declaration->type.array = true;
-                }
-                /*
-                 // Handle optional register.
-                 if (Accept(':'))
-                 {
-                 // @@ Currently we support either a semantic or a register, but not both.
-                 if (AcceptIdentifier(declaration->semantic))
-                 {
-                 int k = 1;
-                 }
-                 else if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
-                 {
-                 return false;
-                 }
-                 }
-                 */
-
-                if (Accept(':'))
-                {
-                    if (m_tokenizer.GetToken() == '\"')
-                    {
-                        m_tokenizer.ScanString();
-                        declaration->annotation = m_tree->AddString(m_tokenizer.GetIdentifier());
-                        m_tokenizer.Next();
-                    }
-                }
-
-                DeclareVariable(globalName, declaration->type);
-
-                if (!ParseDeclarationAssignment(declaration))
-                {
-                    return false;
-                }
-
-                // TODO: Multiple variables declared on one line.
-
-                statement = declaration;
+                DAVA::Logger::Error("Duplicate global declaration %s in %s, line %u", globalName, fileName, line);
+                return false;
             }
+
+            // Uniform declaration.
+            HLSLDeclaration* declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
+            declaration->name = globalName;
+            declaration->type.baseType = type;
+            declaration->type.flags = typeFlags;
+
+            // Handle array syntax.
+            if (Accept('['))
+            {
+                if (!Accept(']'))
+                {
+                    if (!ParseExpression(declaration->type.arraySize) || !Expect(']'))
+                    {
+                        return false;
+                    }
+                }
+                declaration->type.array = true;
+            }
+
+            if (Accept(':'))
+            {
+                if (m_tokenizer.GetToken() == '\"')
+                {
+                    m_tokenizer.ScanString();
+                    declaration->annotation = m_tree->AddString(m_tokenizer.GetIdentifier());
+                    m_tokenizer.Next();
+                }
+            }
+
+            DeclareVariable(globalName, declaration->type);
+
+            if (!ParseDeclarationAssignment(declaration))
+            {
+                return false;
+            }
+
+            // TODO: Multiple variables declared on one line.
+
+            statement = declaration;
         }
     }
     else if (ParseTechnique(statement))

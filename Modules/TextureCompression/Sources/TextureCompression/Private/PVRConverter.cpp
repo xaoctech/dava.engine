@@ -214,7 +214,7 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
 
     FilePath outputName;
     ImageInfo sourceInfo = ImageSystem::GetImageInfo(inputPathname);
-    if (PixelFormatDescriptor::IsFloatPixelFormat(sourceInfo.format))
+    if (PixelFormatDescriptor::IsHDRPixelFormat(sourceInfo.format))
     {
         if (descriptor.IsCubeMap())
         {

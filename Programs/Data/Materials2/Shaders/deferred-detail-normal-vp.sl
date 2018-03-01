@@ -142,9 +142,9 @@ vertex_out vp_main(vertex_in input)
     output.projectedPosition = output.position;
 
 #if (USE_BAKED_LIGHTING)
-    output.uv = float4(texCoordScale * input.texCoord0, uvOffset + uvScale * input.texCoord1);
+    output.uv = float4(input.texCoord0, uvOffset + uvScale * input.texCoord1);
 #else
-    output.uv = float4(texCoordScale * input.texCoord0, 0.0, 0.0);
+    output.uv = float4(input.texCoord0, 0.0, 0.0);
 #endif
 
 #if (VERTEX_BAKED_AO)

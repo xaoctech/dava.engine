@@ -15,6 +15,7 @@ static const FastName NMaterialParamName_LIGHT_DIRECTION = FastName("lightDirect
 static const FastName NMaterialFlagName_FLAG_CUBEMAP_ENVIRONMENT_TEXTURE = FastName("CUBEMAP_ENVIRONMENT_TEXTURE");
 static const FastName NMaterialFlagName_FLAG_EQUIRECTANGULAR_ENVIRONMENT_TEXTURE = FastName("EQUIRECTANGULAR_ENVIRONMENT_TEXTURE");
 static const FastName NMaterialFlagName_FLAG_ATMOSPHERE = FastName("ATMOSPHERE");
+static const FastName NMaterialFlagName_FLAG_RGBM = FastName("RGBM_INPUT");
 
 LightRenderObject::LightRenderObject()
     : renderBatch(new RenderBatch())
@@ -28,6 +29,7 @@ LightRenderObject::LightRenderObject()
     sunDiskMaterial->SetFXName(FastName("~res:/Materials2/SunDisk.material"));
     backgroundMaterial->SetFXName(FastName("~res:/Materials2/EnvironmentBackground.material"));
 
+    backgroundMaterial->AddFlag(NMaterialFlagName_FLAG_RGBM, 0);
     backgroundMaterial->AddFlag(NMaterialFlagName_FLAG_ATMOSPHERE, 0);
     backgroundMaterial->AddFlag(NMaterialFlagName_FLAG_CUBEMAP_ENVIRONMENT_TEXTURE, 0);
     backgroundMaterial->AddFlag(NMaterialFlagName_FLAG_EQUIRECTANGULAR_ENVIRONMENT_TEXTURE, 0);
@@ -81,6 +83,7 @@ void LightRenderObject::SetLight(Light* light)
         int32 isCubeMap = texture->GetDescriptor()->IsCubeMap() ? 1 : 0;
 
         material->SetFlag(NMaterialFlagName_FLAG_ATMOSPHERE, 0);
+        material->SetFlag(NMaterialFlagName_FLAG_RGBM, (texture->GetFormat() == PixelFormat::FORMAT_RGBM) ? 1 : 0);
         material->SetFlag(NMaterialFlagName_FLAG_CUBEMAP_ENVIRONMENT_TEXTURE, isCubeMap);
         material->SetFlag(NMaterialFlagName_FLAG_EQUIRECTANGULAR_ENVIRONMENT_TEXTURE, 1 - isCubeMap);
         material->SetTexture(NMaterialTextureName::TEXTURE_ENVIRONMENT_MAP, texture);

@@ -236,7 +236,7 @@ public:
     static const FastName FLAG_VERTEX_BLEND_TEXTURES;
     static const FastName FLAG_VERTEX_BLEND_4_TEXTURES;
 
-    static const FastName FLAG_ALBEDO_MODIFIER_BLEND_MODE;
+    static const FastName FLAG_ALBEDO_TINT_BLEND_MODE;
 
     static const FastName FLAG_FLOWMAP_SKY;
     static const FastName FLAG_PARTICLES_FLOWMAP;
@@ -280,6 +280,7 @@ public:
     static const FastName FLAG_TEXTURE_COUNT;
 
     static const FastName FLAG_TRANSMITTANCE;
+    static const FastName FLAG_RGBM_INPUT;
 
     //Illumination params
     static const FastName FLAG_ILLUMINATION_USED;

@@ -104,6 +104,7 @@ enum PixelFormat : uint8
     FORMAT_RGBA32F,
 
     FORMAT_R11G11B10F,
+    FORMAT_RGBM,
 
     FORMAT_COUNT,
     FORMAT_CLOSEST = 255 // fit PixelFormat at 8bits (PixelFormat format:8;)
@@ -216,7 +217,8 @@ enum eVertexFormat
 enum : uint32
 {
     MAX_SHADOW_CASCADES = 4,
-    VERTEX_FORMAT_STREAM_MAX_COUNT = 16
+    VERTEX_FORMAT_STREAM_MAX_COUNT = 16,
+    RGBM_ENCODING_RANGE = 5 /* WARNING : should be synced with shaders */
 };
 
 struct RenderTargetProperites

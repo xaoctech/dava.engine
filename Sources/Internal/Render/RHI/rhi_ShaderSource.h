@@ -86,6 +86,7 @@ public:
     uint32 ConstBufferCount() const;
     uint32 ConstBufferSize(uint32 bufIndex) const;
     ShaderProp::Source ConstBufferSource(uint32 bufIndex) const;
+    const FastName& ConstBufferTag(uint32 bufIndex) const;
     BlendState Blending() const;
 
     static void PurgeIncludesCache();

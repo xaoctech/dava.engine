@@ -11,7 +11,7 @@ vertex_in
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
     float2 texCoord0 : TEXCOORD0;
-#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_MODIFIER_BLEND_MODE != 0)
+#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_TINT_BLEND_MODE != 0)
     float2 texCoord1 : TEXCOORD1;
 #endif
 
@@ -139,15 +139,15 @@ vertex_out vp_main(vertex_in input)
     float4 worldPosition = mul(float4(inputPosition, 1.0), worldMatrix);
     output.position = mul(worldPosition, viewProjMatrix);
     #if (TRANSMITTANCE)
-    output.varTexCoord = float4(input.texCoord0 * texCoordScale, 0.0, 0.0 /* lightmap not used in shadow write */);
+    output.varTexCoord = float4(input.texCoord0, 0.0, 0.0 /* lightmap not used in shadow write */);
     #endif
 
 #else
 
-#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_MODIFIER_BLEND_MODE != 0)
-    output.varTexCoord = float4(input.texCoord0 * texCoordScale, input.texCoord1);
+#if (USE_BAKED_LIGHTING || VERTEX_BLEND_TEXTURES == 0 || ALBEDO_TINT_BLEND_MODE != 0)
+    output.varTexCoord = float4(input.texCoord0, input.texCoord1);
 #else
-    output.varTexCoord = float4(texCoordScale * input.texCoord0, 0.0, 0.0);
+    output.varTexCoord = float4(input.texCoord0, 0.0, 0.0);
 #endif
 
 #if (VERTEX_BAKED_AO)
