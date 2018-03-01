@@ -135,7 +135,18 @@ void MovieViewControl::Update()
         return;
     }
 
-    videoTextureBuffer = drawData.data;
+    // Copy image data from video frame to texture buffer
+    const uint32 pixelSize = PixelFormatDescriptor::GetPixelFormatSizeInBits(drawData.format) / 8;
+    const uint32 textureLine = textureWidth * pixelSize;
+    const uint32 frameLine = drawData.frameWidth * pixelSize;
+    DVASSERT(textureWidth >= drawData.frameWidth && textureHeight >= drawData.frameHeight, "Incorrect frame size!");
+    for (uint32 y = 0; y < drawData.frameHeight; ++y)
+    {
+        uint8* dst = videoTextureBuffer.data() + y * textureLine;
+        uint8* src = drawData.data.data() + y * frameLine;
+        Memcpy(dst, src, frameLine);
+    }
+
     if (nullptr == videoTexture)
     {
         videoTexture = Texture::CreateFromData(drawData.format, reinterpret_cast<uint8*>(videoTextureBuffer.data()), textureWidth, textureHeight, false);
@@ -148,8 +159,9 @@ void MovieViewControl::Update()
         case scalingModeAspectFill:
         {
             float32 drawingRectAspect = static_cast<float32>(controlRect.dx) / controlRect.dy;
+            float32 frameAspect = static_cast<float32>(drawData.frameWidth) / drawData.frameHeight;
 
-            if (drawingRectAspect > 1)
+            if (drawingRectAspect > frameAspect)
             {
                 float32 visibleFrameHeight = drawData.frameWidth / drawingRectAspect;
                 float32 dh = drawData.frameHeight - visibleFrameHeight;
@@ -161,7 +173,6 @@ void MovieViewControl::Update()
                 float32 visibleFrameWidth = drawData.frameHeight * drawingRectAspect;
                 float32 dl = drawData.frameWidth - visibleFrameWidth;
                 float32 dx = dl / 2;
-
                 textureRectToMap = Rect(dx, 0, visibleFrameWidth, static_cast<float32>(drawData.frameHeight));
             }
 

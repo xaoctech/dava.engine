@@ -46,6 +46,7 @@ bool FBXImporter::ConvertToSC2(const FilePath& fbxPath, const FilePath& sc2Path)
         bool combinedSuccessfull = SceneUtils::CombineLods(scene);
         if (combinedSuccessfull)
         {
+            SceneUtils::RemoveEmptyEntities(scene);
             scene->SaveScene(sc2Path);
             return true;
         }
