@@ -37,7 +37,7 @@ protected:
     void SetupSpinBoxBase();
     void UpdateRange();
 
-    void ValueChanged(TEditableType val);
+    void EditingFinished();
 
     void ToEditingState();
     void ToInvalidState();

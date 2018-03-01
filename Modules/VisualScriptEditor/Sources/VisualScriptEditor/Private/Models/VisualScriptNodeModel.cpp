@@ -39,15 +39,22 @@ struct VisualScriptNodeModel::PinWidgetDescriptor
     QWidget* widget = nullptr;
     QWidget* additionalWidget = nullptr;
     bool isSquare = false;
+    bool customPlaceholder = false;
 
     Any GetDefaultValue() const
     {
+        Any retValue;
         if (pin)
         {
-            return pin->GetDefaultValue();
+            retValue = pin->GetDefaultValue();
         }
 
-        return Any();
+        if (retValue.IsEmpty() && customPlaceholder == true)
+        {
+            retValue = GetPlaceHolderString();
+        }
+
+        return retValue;
     }
 
     void SetDefaultValue(Any defaultValue)
@@ -82,11 +89,18 @@ struct VisualScriptNodeModel::PinWidgetDescriptor
         return false;
     }
 
+    String GetPlaceHolderString() const
+    {
+        return "Value not set";
+    }
+
     DAVA_REFLECTION(VisualScriptNodeModel::PinWidgetDescriptor)
     {
         ReflectionRegistrator<VisualScriptNodeModel::PinWidgetDescriptor>::Begin()
         .Field("defaultValue", &VisualScriptNodeModel::PinWidgetDescriptor::GetDefaultValue, &VisualScriptNodeModel::PinWidgetDescriptor::SetDefaultValue)
         .Field("isWidgetVisible", &VisualScriptNodeModel::PinWidgetDescriptor::IsWidgetVisible, nullptr) //{ return pin->GetConnectedTo() == nullptr; }, nullptr)
+
+        .Field("placeHolderString", &VisualScriptNodeModel::PinWidgetDescriptor::GetPlaceHolderString, nullptr)
 
         .Method("resetDefaultValue", &VisualScriptNodeModel::PinWidgetDescriptor::ResetDefaultValue)
         .Field("resetDefaultValueIcon", []() { return SharedIcon(":/VisualScriptEditor/Icons/delete.png"); }, nullptr)
@@ -144,6 +158,7 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                 {
                     LineEdit::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[LineEdit::Fields::Text] = "defaultValue";
+                    params.fields[LineEdit::Fields::PlaceHolder] = "placeHolderString";
                     LineEdit* lineEdit = new LineEdit(params, accessor, inReflection, nullptr);
 
                     layout = new QtHBoxLayout();
@@ -162,6 +177,8 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
 
                     layout = new QtHBoxLayout();
                     layout->AddControl(spinBox);
+
+                    portWidgetDescriptors[portType][portIndex].customPlaceholder = true;
                 }
                 else if (valueType == Type::Instance<float32>()
                          || valueType == Type::Instance<float64>())
@@ -172,6 +189,8 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
 
                     layout = new QtHBoxLayout();
                     layout->AddControl(spinBox);
+
+                    portWidgetDescriptors[portType][portIndex].customPlaceholder = true;
                 }
                 else
                 {

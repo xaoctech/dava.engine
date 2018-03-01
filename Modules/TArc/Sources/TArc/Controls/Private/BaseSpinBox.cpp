@@ -189,20 +189,21 @@ template <typename TBase, typename TEditableType>
 void BaseSpinBox<TBase, TEditableType>::SetupSpinBoxBase()
 {
     this->setKeyboardTracking(false);
-    connections.AddConnection(this, static_cast<void (TBase::*)(TEditableType)>(&TBase::valueChanged), MakeFunction(this, &BaseSpinBox<TBase, TEditableType>::ValueChanged));
+    connections.AddConnection(this, &TBase::editingFinished, MakeFunction(this, &BaseSpinBox<TBase, TEditableType>::EditingFinished));
     ToValidState();
 
     this->setFocusPolicy(Qt::StrongFocus);
 }
 
 template <typename TBase, typename TEditableType>
-void BaseSpinBox<TBase, TEditableType>::ValueChanged(TEditableType val)
+void BaseSpinBox<TBase, TEditableType>::EditingFinished()
 {
     if (this->isReadOnly() == true || this->isEnabled() == false)
     {
         return;
     }
 
+    TEditableType val = this->value();
     ControlState currentState = stateHistory.top();
     if (currentState == ControlState::Editing)
     {
