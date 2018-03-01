@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Asset/AssetBase.h"
+#include "Asset/Asset.h"
+#include "Base/Any.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA
@@ -9,15 +10,8 @@ class Scene;
 class Prefab : public AssetBase
 {
 public:
-    Prefab();
+    Prefab(const Any& assetKey);
     ~Prefab() override;
-
-    void Load(const FilePath& filepath) override;
-    void Save(const FilePath& filepath) override;
-    /*
-        STREAMING_COMPLETE ? How reload can force update of model in scene if it's already added ?
-     */
-    void Reload() override;
 
     /**
         Clone prefab entities
@@ -39,22 +33,12 @@ public:
      */
     void ConstructFrom(Scene* scene);
 
-    struct Header
-    {
-        enum
-        {
-            CURRENT_VERSION = 1,
-        };
-
-        char8 signature[4] = { 'P', 'R', 'F', 'B' };
-        uint32 version = CURRENT_VERSION;
-    };
-
 private:
     Scene* scene = nullptr;
     /* Do not give direct access to this entity. This is placeholder of other entities for convinience. */
     Entity* rootEntity = nullptr;
 
     friend class PrefabComponent;
+    friend class PrefabAssetLoader;
 };
 }

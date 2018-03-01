@@ -6,6 +6,7 @@
 #include <Asset/AssetManager.h>
 #include <Engine/Engine.h>
 #include <Scene3D/Prefab.h>
+#include <Scene3D/AssetLoaders/PrefabAssetLoader.h>
 
 eColladaErrorCodes ConvertDaeToPrefab(const DAVA::FilePath& pathToFile, std::unique_ptr<DAEConverter::ImportParams>&& importParams)
 {
@@ -33,7 +34,8 @@ eColladaErrorCodes ConvertDaeToPrefab(const DAVA::FilePath& pathToFile, std::uni
 
         ScopedPtr<Scene> scene(new Scene());
 
-        Asset<Prefab> prefabAsset = GetEngineContext()->assetManager->LoadAsset<Prefab>(prefabPath);
+        PrefabAssetLoader::PathKey key(prefabPath);
+        Asset<Prefab> prefabAsset = GetEngineContext()->assetManager->GetAsset<Prefab>(key, false);
         if (prefabAsset != nullptr)
         {
             scene->ConstructFromPrefab(prefabAsset);
@@ -46,7 +48,7 @@ eColladaErrorCodes ConvertDaeToPrefab(const DAVA::FilePath& pathToFile, std::uni
         DAEConverter::RestoreSceneParams(RefPtr<Scene>::ConstructWithRetain(scene), prefabPath, importParams.get());
 
         prefabAsset->ConstructFrom(scene);
-        prefabAsset->Save(prefabAsset->GetFilepath());
+        GetEngineContext()->assetManager->SaveAsset(prefabAsset);
     }
 
     return ret;

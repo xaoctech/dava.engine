@@ -31,13 +31,13 @@ public:
     uint32 GetLayersCount() const;
 
     void SetPageMaterialPath(uint32 layer, uint32 lod, const FilePath& path);
-    const FilePath& GetPageMaterialPath(uint32 layer, uint32 lod) const;
+    FilePath GetPageMaterialPath(uint32 layer, uint32 lod) const;
 
     void SetHeightmapPath(const FilePath& path);
     const FilePath& GetHeighmapPath() const;
 
     void SetLandscapeMaterialPath(const FilePath& path);
-    const FilePath& GetLandscapeMaterialPath() const;
+    FilePath GetLandscapeMaterialPath() const;
 
     void SetLandscapeSize(float32 size);
     float32 GetLandscapeSize() const;

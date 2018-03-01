@@ -1,27 +1,25 @@
 #pragma once
 
+#include "Base/Any.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Render/3D/PolygonGroup.h"
-#include "Asset/AssetBase.h"
+#include "Asset/Asset.h"
 
 namespace DAVA
 {
 class Geometry : public AssetBase
 {
 public:
+    Geometry(const Any& assetKey);
     ~Geometry();
-    Geometry();
 
     void AddPolygonGroup(PolygonGroup* pgroup);
     uint32 GetPolygonGroupCount() const;
     PolygonGroup* GetPolygonGroup(uint32 index) const;
 
-    void Load(const FilePath& filepath) override;
-    void Save(const FilePath& filepath) override;
-    void Reload() override;
-
 protected:
+    friend class GeometryAssetLoader;
     Vector<PolygonGroup*> geometries;
 };
 };

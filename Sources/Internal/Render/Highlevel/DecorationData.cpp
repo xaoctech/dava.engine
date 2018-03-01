@@ -2,6 +2,7 @@
 
 #include "Asset/AssetManager.h"
 #include "Scene3D/Prefab.h"
+#include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
 #include "Scene3D/Components/MeshComponent.h"
 #include "Scene3D/Converters/SceneFileConverter.h"
 
@@ -9,6 +10,7 @@
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Highlevel/RenderObject.h"
 
+#include "Base/Any.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
 
@@ -58,7 +60,8 @@ void DecorationData::ReloadDecoration()
     if (!decorationPath.IsEqualToExtension(".prefab"))
         return;
 
-    Asset<Prefab> decorationPrefab = GetEngineContext()->assetManager->LoadAsset<Prefab>(decorationPath);
+    PrefabAssetLoader::PathKey key(decorationPath);
+    Asset<Prefab> decorationPrefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, false);
     if (decorationPrefab == nullptr)
         return;
 

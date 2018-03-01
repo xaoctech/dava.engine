@@ -1,9 +1,10 @@
 #include "PrefabComponent.h"
+#include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Asset/AssetManager.h"
+#include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
 
 namespace DAVA
 {
@@ -46,14 +47,15 @@ void PrefabComponent::Deserialize(KeyedArchive* archive, SerializationContext* s
 
     String relativePath = archive->GetString("relPath");
     filepath = serializationContext->GetScenePath() + relativePath;
+    PrefabAssetLoader::PathKey key(filepath);
 
-    prefab = GetEngineContext()->assetManager->LoadAsset<Prefab>(filepath);
+    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, false);
 }
 
 void PrefabComponent::SetFilepath(const FilePath& path)
 {
     filepath = path;
-    prefab = GetEngineContext()->assetManager->LoadAsset<Prefab>(filepath);
+    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(filepath), false);
 }
 
 const FilePath& PrefabComponent::GetFilepath() const

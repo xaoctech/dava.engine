@@ -2,11 +2,13 @@
 #include "Classes/Collada/ColladaConvert.h"
 #include "Classes/Collada/ImportParams.h"
 
+#include <Base/Any.h>
 #include <Asset/AssetManager.h>
 #include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
 #include <Scene3D/Prefab.h>
+#include <Scene3D/AssetLoaders/PrefabAssetLoader.h>
 
 namespace DAEConverter
 {
@@ -23,7 +25,8 @@ bool Convert(const DAVA::FilePath& daePath)
             DAVA::RefPtr<DAVA::Scene> scene;
             scene.ConstructInplace();
 
-            DAVA::Asset<DAVA::Prefab> prefabAsset = DAVA::GetEngineContext()->assetManager->LoadAsset<DAVA::Prefab>(etalonScenePath);
+            DAVA::PrefabAssetLoader::PathKey key(etalonScenePath);
+            DAVA::Asset<DAVA::Prefab> prefabAsset = DAVA::GetEngineContext()->assetManager->GetAsset<DAVA::Prefab>(key, false);
             scene->ConstructFromPrefab(prefabAsset);
 
             AccumulateImportParams(scene, etalonScenePath, importParams.get());

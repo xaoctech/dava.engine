@@ -1,11 +1,15 @@
 #include "SceneFileConverter.h"
 
+#include "Base/Any.h"
 #include "Asset/AssetManager.h"
 #include "Base/UnordererMap.h"
 #include "Engine/Engine.h"
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/Prefab.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
+#include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
+#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/PrefabComponent.h"
@@ -57,21 +61,23 @@ void SceneFileConverter::ConvertSceneToLevelFormat(Scene* scene, const FilePath&
         {
             FilePath ownerPath = FilePath(props->GetString("editor.referenceToOwner"));
             props->DeleteKey("editor.referenceToOwner");
+
             FilePath prefabPath = FilePath::CreateWithNewExtension(ownerPath, ".prefab");
+            PrefabAssetLoader::PathKey assetKey(prefabPath);
 
             Matrix4 prefabLocalTransform = child->GetLocalTransform();
 
-            Asset<Prefab> prefab = assetManager->FindAsset<Prefab>(prefabPath);
+            Asset<Prefab> prefab = assetManager->FindAsset<Prefab>(assetKey);
             if (prefab == nullptr)
             {
                 FileSystem::Instance()->CreateDirectory(prefabPath.GetDirectory(), true);
 
                 child->SetLocalTransform(Matrix4::IDENTITY);
-                prefab = assetManager->CreateNewAsset<Prefab>(prefabPath);
+                prefab = assetManager->CreateAsset<Prefab>(assetKey);
 
                 ScopedPtr<Entity> childClone(child->Clone());
                 prefab->ConstructFrom(childClone);
-                prefab->Save(prefabPath);
+                assetManager->SaveAsset(prefab);
             }
 
             Entity* prefabEntity = new Entity();
@@ -138,7 +144,7 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
     if (lodCount == 0)
     {
         lodDescriptors[0].geometryPath = assetsPath + Format("%s.geo", entity->GetName().c_str());
-        lodDescriptors[0].geometryAsset = assetManager->CreateNewAsset<Geometry>(lodDescriptors[0].geometryPath);
+        lodDescriptors[0].geometryAsset = assetManager->CreateAsset<Geometry>(GeometryAssetLoader::PathKey(lodDescriptors[0].geometryPath));
     }
     else
     {
@@ -146,7 +152,7 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
         {
             lodDescriptors[l].lodIndex = l;
             lodDescriptors[l].geometryPath = assetsPath + Format("%s_lod%d.geo", entity->GetName().c_str(), l);
-            lodDescriptors[l].geometryAsset = assetManager->CreateNewAsset<Geometry>(lodDescriptors[l].geometryPath);
+            lodDescriptors[l].geometryAsset = assetManager->CreateAsset<Geometry>(GeometryAssetLoader::PathKey(lodDescriptors[l].geometryPath));
         }
     }
 
@@ -185,7 +191,7 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
         batchDesc.switchIndex = switchIndex;
 
         batchDesc.materialAsset = materialAsset;
-        batchDesc.materialPath = materialAsset->GetFilepath();
+        batchDesc.materialPath = FilePath(GetEngineContext()->assetManager->GetAssetFileInfo(materialAsset).fileName);
 
         batchDesc.geometryIndex = lodDesc.geometryAsset->GetPolygonGroupCount();
         lodDesc.geometryAsset->AddPolygonGroup(batch->GetPolygonGroup());
@@ -196,7 +202,9 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
     }
 
     for (const MeshLODDescriptor& desc : lodDescriptors)
-        desc.geometryAsset->Save(desc.geometryAsset->GetFilepath());
+    {
+        assetManager->SaveAsset(desc.geometryAsset);
+    }
 
     if (mesh->GetType() == RenderObject::TYPE_SPEED_TREE)
     {
@@ -243,8 +251,10 @@ bool SceneFileConverter::ConvertLandscape(Landscape* landscape, Entity* entity, 
     decoration->CopyParameters(landscape->GetDecorationData());
     decoration->SetDecorationPath(ConvertDecoration(decoration->GetDecorationPath()));
 
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     Asset<Material> landscapeMaterialAsset = CreateMaterialAsset(landscape->GetLandscapeMaterial(), assetsPath);
-    landscapeComponent->SetLandscapeMaterialPath(landscapeMaterialAsset->GetFilepath());
+    AssetFileInfo fileInfo = assetManager->GetAssetFileInfo(landscapeMaterialAsset);
+    landscapeComponent->SetLandscapeMaterialPath(FilePath(fileInfo.fileName));
 
     const float* lightmapSizeProperty = landscape->GetLandscapeMaterial()->GetEffectivePropValue(SceneFileConverterDetails::PARAM_LIGHTMAP_SIZE);
 
@@ -254,7 +264,8 @@ bool SceneFileConverter::ConvertLandscape(Landscape* landscape, Entity* entity, 
         for (uint32 i = 0; i < 3; ++i)
         {
             Asset<Material> pageMaterialAsset = CreateMaterialAsset(landscape->GetPageMaterials(l, i), assetsPath);
-            landscapeComponent->SetPageMaterialPath(l, i, pageMaterialAsset->GetFilepath());
+            AssetFileInfo fileInfo = assetManager->GetAssetFileInfo(pageMaterialAsset);
+            landscapeComponent->SetPageMaterialPath(l, i, FilePath(fileInfo.fileName));
 
             if (lightmapSizeProperty == nullptr)
                 lightmapSizeProperty = landscape->GetPageMaterials(l, i)->GetEffectivePropValue(SceneFileConverterDetails::PARAM_LIGHTMAP_SIZE);
@@ -304,12 +315,16 @@ FilePath SceneFileConverter::ConvertDecoration(const FilePath& decorationPath)
             SceneFileConverter::ConvertRenderComponentsRecursive(scene, decorationPath.GetDirectory());
 
             prefabPath = FilePath::CreateWithNewExtension(decorationPath, ".prefab");
-            Asset<Prefab> decorationPrefab = GetEngineContext()->assetManager->FindAsset<Prefab>(prefabPath);
+            PrefabAssetLoader::PathKey assetKey(prefabPath);
+            AssetManager* assetManager = GetEngineContext()->assetManager;
+            Asset<Prefab> decorationPrefab = assetManager->FindAsset<Prefab>(assetKey);
             if (decorationPrefab == nullptr)
-                decorationPrefab = GetEngineContext()->assetManager->CreateNewAsset<Prefab>(prefabPath);
+            {
+                decorationPrefab = GetEngineContext()->assetManager->CreateAsset<Prefab>(assetKey);
+            }
 
             decorationPrefab->ConstructFrom(scene);
-            decorationPrefab->Save(decorationPrefab->GetFilepath());
+            assetManager->SaveAsset(decorationPrefab);
         }
     }
 
@@ -373,18 +388,21 @@ Asset<Material> SceneFileConverter::CreateMaterialAsset(NMaterial* material, con
         materialFileName += String(materialHierarchyCopy.back()->GetMaterialName().c_str());
 
         FilePath materialPath = pathRoot + materialFileName + ".mat";
-        Asset<Material> materialAsset = assetManager->FindAsset<Material>(materialPath);
+        Asset<Material> materialAsset = assetManager->FindAsset<Material>(MaterialAssetLoader::PathKey(materialPath));
         if (materialAsset == nullptr)
         {
-            materialAsset = assetManager->CreateNewAsset<Material>(materialPath);
+            materialAsset = assetManager->CreateAsset<Material>(MaterialAssetLoader::PathKey(materialPath));
 
             NMaterial* materialCopy = materialHierarchyCopy.back();
             materialAsset->SetMaterial(materialCopy);
 
             if (result != nullptr)
-                materialAsset->SetParentPath(result->GetFilepath());
+            {
+                AssetFileInfo fileInfo = assetManager->GetAssetFileInfo(result);
+                materialAsset->SetParentPath(FilePath(fileInfo.fileName));
+            }
 
-            materialAsset->Save(materialAsset->GetFilepath());
+            assetManager->SaveAsset(materialAsset);
         }
         result = materialAsset;
 

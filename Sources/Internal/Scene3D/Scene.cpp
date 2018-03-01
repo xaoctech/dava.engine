@@ -1,5 +1,6 @@
 #include "Scene3D/Scene.h"
 
+#include "Asset/AbstractAssetLoader.h"
 #include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -97,6 +98,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/StaticLightingSystem.h"
 #include "Scene3D/Systems/StreamingSystem.h"
+#include "Engine/Engine.h"
 #include "Sound/SoundSystem.h"
 #include "Time/SystemTimer.h"
 #include "UI/UIEvent.h"
@@ -121,6 +123,7 @@
 #endif
 
 #include <functional>
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -324,7 +327,8 @@ void Scene::CreateSystems()
         return;
     }
 
-    AddSystem(new StreamingSystem(this));
+    // TODO UVR
+    //AddSystem(new StreamingSystem(this));
     AddSystem(new ActionCollectSystem(this));
     AddSystem(new StaticOcclusionSystem(this));
     AddSystem(new AnimationSystem(this));
@@ -671,7 +675,8 @@ void Scene::InitLegacyPointers()
     staticOcclusionDebugDrawSystem = GetSystem<StaticOcclusionDebugDrawSystem>();
     particleEffectDebugDrawSystem = GetSystem<ParticleEffectDebugDrawSystem>();
     geoDecalSystem = GetSystem<GeoDecalSystem>();
-    streamingSystem = GetSystem<StreamingSystem>();
+    // TODO UVR
+    //streamingSystem = GetSystem<StreamingSystem>();
 }
 
 void Scene::ProcessChangedTags()
@@ -1187,7 +1192,8 @@ void Scene::ConstructFromPrefab(const Asset<Prefab>& prefab)
 
     if (prefab != nullptr)
     {
-        SetName(prefab->GetFilepath().GetFilename().c_str());
+        AssetFileInfo fileInfo = GetEngineContext()->assetManager->GetAssetFileInfo(prefab);
+        SetName(fileInfo.fileName.c_str());
 
         Vector<Entity*> prefabEntities = prefab->GetPrefabEntities();
         for (Entity* prefabChildren : prefabEntities)

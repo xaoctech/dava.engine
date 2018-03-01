@@ -49,6 +49,7 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderBatchArray.h>
 #include <Render/Highlevel/RenderPass.h>
+#include <Scene3D/AssetLoaders/PrefabAssetLoader.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/Controller/RotationControllerComponent.h>
@@ -214,7 +215,7 @@ SceneFileV2::eError SceneEditor2::LoadScene(const FilePath& path)
 
 SceneFileV2::eError SceneEditor2::LoadAsPrefab(const FilePath& path)
 {
-    Asset<Prefab> prefab = GetEngineContext()->assetManager->LoadAsset<Prefab>(path);
+    Asset<Prefab> prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(path), false);
 
     if (prefab != nullptr)
     {
@@ -355,17 +356,16 @@ SceneFileV2::eError SceneEditor2::SaveAsLevel(const FilePath& pathname)
 
     if (pathname.GetExtension() == ".level")
     {
-        DAVA::Asset<DAVA::Level> level = DAVA::GetEngineContext()->assetManager->CreateNewAsset<DAVA::Level>(pathname);
+        // TODO UVR
+        /*DAVA::Asset<DAVA::Level> level = DAVA::GetEngineContext()->assetManager->CreateNewAsset<DAVA::Level>(pathname);
         level->SetScene(this);
-        level->Save(pathname);
+        level->Save(pathname);*/
     }
     else if (pathname.GetExtension() == ".prefab")
     {
-        DAVA::Asset<DAVA::Prefab> prefab = DAVA::GetEngineContext()->assetManager->CreateNewAsset<DAVA::Prefab>(pathname);
-
         ScopedPtr<SceneEditor2> clone(static_cast<SceneEditor2*>(Clone(nullptr)));
-        prefab->ConstructFrom(clone);
-        prefab->Save(pathname);
+        DAVA::PrefabAssetLoader::PathKey assetKey(pathname);
+        DAVA::GetEngineContext()->assetManager->SaveAssetFromData(static_cast<Scene*>(clone.get()), assetKey);
     }
 
     curScenePath = pathname;

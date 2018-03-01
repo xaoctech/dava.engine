@@ -14,6 +14,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Prefab.h"
 #include "Scene3D/SceneUtils.h"
+#include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
 
 namespace DAVA
 {
@@ -59,11 +60,8 @@ bool FBXImporter::ConvertToPrefab(const FilePath& fbxPath, const FilePath& prefa
     ScopedPtr<Scene> scene(ConstructSceneFromFBX(fbxPath));
     if (scene)
     {
-        Asset<Prefab> prefab = GetEngineContext()->assetManager->CreateNewAsset<Prefab>(prefabPath);
-        prefab->ConstructFrom(scene);
-        prefab->Save(prefab->GetFilepath());
-
-        return true;
+        PrefabAssetLoader::PathKey assetKey(prefabPath);
+        return GetEngineContext()->assetManager->SaveAssetFromData(scene, assetKey);
     }
 
     return false;

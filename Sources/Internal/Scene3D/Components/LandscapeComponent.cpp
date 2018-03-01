@@ -3,6 +3,7 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/LandscapeSubdivision.h"
 #include "Scene3D/Components/LandscapeComponent.h"
+#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 
 namespace DAVA
 {
@@ -55,9 +56,13 @@ Component* LandscapeComponent::Clone(Entity* toEntity)
 void LandscapeComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
+    AssetManager* assetManager = GetEngineContext()->assetManager;
 
     if (landscapeMaterial != nullptr)
-        archive->SetString("landscapeMaterialPath", landscapeMaterial->GetFilepath().GetRelativePathname(serializationContext->GetScenePath()));
+    {
+        AssetFileInfo fileInfo = assetManager->GetAssetFileInfo(landscapeMaterial);
+        archive->SetString("landscapeMaterialPath", FilePath(fileInfo.fileName).GetRelativePathname(serializationContext->GetScenePath()));
+    }
 
     if (!heightmapPath.IsEmpty())
         archive->SetString("heightmapPath", heightmapPath.GetRelativePathname(serializationContext->GetScenePath()));
@@ -77,7 +82,10 @@ void LandscapeComponent::Serialize(KeyedArchive* archive, SerializationContext* 
     for (uint32 l = 0; l < GetLayersCount(); ++l)
     {
         for (uint32 i = 0; i < 3; ++i)
-            archive->SetString(Format("layer%u_lod%u_materialPath", l, i), layersPageMaterials[l][i]->GetFilepath().GetRelativePathname(serializationContext->GetScenePath()));
+        {
+            AssetFileInfo fileInfo = assetManager->GetAssetFileInfo(layersPageMaterials[l][i]);
+            archive->SetString(Format("layer%u_lod%u_materialPath", l, i), FilePath(fileInfo.fileName).GetRelativePathname(serializationContext->GetScenePath()));
+        }
     }
 
     landscape->GetDecorationData()->Save(archive, serializationContext);
@@ -137,15 +145,16 @@ uint32 LandscapeComponent::GetLayersCount() const
 
 void LandscapeComponent::SetPageMaterialPath(uint32 layer, uint32 lod, const FilePath& path)
 {
-    layersPageMaterials[layer][lod] = GetEngineContext()->assetManager->LoadAsset<Material>(path);
+    layersPageMaterials[layer][lod] = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), false);
     DVASSERT(layersPageMaterials[layer][lod] != nullptr);
     if (layersPageMaterials[layer][lod] != nullptr)
         landscape->SetPageMaterial(layer, lod, layersPageMaterials[layer][lod]->GetMaterial());
 }
 
-const FilePath& LandscapeComponent::GetPageMaterialPath(uint32 layer, uint32 lod) const
+FilePath LandscapeComponent::GetPageMaterialPath(uint32 layer, uint32 lod) const
 {
-    return layersPageMaterials[layer][lod]->GetFilepath();
+    AssetFileInfo info = GetEngineContext()->assetManager->GetAssetFileInfo(layersPageMaterials[layer][lod]);
+    return FilePath(info.fileName);
 }
 
 void LandscapeComponent::SetHeightmapPath(const FilePath& path)
@@ -161,15 +170,16 @@ const FilePath& LandscapeComponent::GetHeighmapPath() const
 
 void LandscapeComponent::SetLandscapeMaterialPath(const FilePath& path)
 {
-    landscapeMaterial = GetEngineContext()->assetManager->LoadAsset<Material>(path);
+    landscapeMaterial = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), false);
     DVASSERT(landscapeMaterial != nullptr);
     if (landscapeMaterial != nullptr)
         landscape->SetLandscapeMaterial(landscapeMaterial->GetMaterial());
 }
 
-const FilePath& LandscapeComponent::GetLandscapeMaterialPath() const
+FilePath LandscapeComponent::GetLandscapeMaterialPath() const
 {
-    return landscapeMaterial->GetFilepath();
+    AssetFileInfo fileInfo = GetEngineContext()->assetManager->GetAssetFileInfo(landscapeMaterial);
+    return FilePath(fileInfo.fileName);
 }
 
 void LandscapeComponent::SetLandscapeSize(float32 size)

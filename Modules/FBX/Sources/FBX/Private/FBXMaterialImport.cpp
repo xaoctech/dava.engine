@@ -6,6 +6,7 @@
 #include "FileSystem/FilePath.h"
 #include "Render/Material/Material.h"
 #include "Render/Material/NMaterial.h"
+#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 
 namespace DAVA
 {
@@ -64,14 +65,14 @@ FilePath ImportMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexI
 
         FilePath materialPath = currentAssetsFolder + materialName + ".mat";
 
-        Asset<Material> materialAsset = GetEngineContext()->assetManager->CreateNewAsset<Material>(materialPath);
+        Asset<Material> materialAsset = GetEngineContext()->assetManager->CreateAsset<Material>(MaterialAssetLoader::PathKey(materialPath));
         materialAsset->SetMaterial(material);
-        materialAsset->Save(materialAsset->GetFilepath());
+        GetEngineContext()->assetManager->SaveAsset(materialAsset);
 
         found = materialCache.emplace(std::make_pair(fbxMaterial, maxVertexInfluence), materialAsset).first;
     }
 
-    return found->second->GetFilepath();
+    return FilePath(GetEngineContext()->assetManager->GetAssetFileInfo(found->second).fileName);
 }
 
 void ClearMaterialCache()
