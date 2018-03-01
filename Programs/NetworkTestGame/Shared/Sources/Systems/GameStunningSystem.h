@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Scene3D/Systems/BaseSimulationSystem.h"
 #include "Base/BaseTypes.h"
+#include "Entity/SceneSystem.h"
 #include "Functional/Signal.h"
 
 namespace DAVA

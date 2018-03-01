@@ -9,14 +9,14 @@
 
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/TransformInterpolationComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
 #include "Utils/Random.h"
 
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h"
-#include "NetworkCore/Snapshot.h"
+#include <NetworkCore/Snapshot.h>
+#include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 
 #include "Components/GameStunningComponent.h"
 #include "Components/DamageComponent.h"
@@ -35,7 +35,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShootSystem)
 {
     ReflectionRegistrator<ShootSystem>::Begin()[M::Tags("shoot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShootSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 8.0f)]
+    .Method("ProcessFixed", &ShootSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 8.0f)]
     .End();
 }
 
@@ -59,29 +59,13 @@ static bool CompareTransform(const T& lhs, const T& rhs, uint32 size, float32 ep
 
 ShootSystem::ShootSystem(Scene* scene)
     : DAVA::BaseSimulationSystem(scene, ComponentUtils::MakeMask<ShootComponent>())
+    , entityGroup(scene->AquireEntityGroup<ShootComponent>())
+    , pendingEntities(entityGroup)
 {
 }
 
 ShootSystem::~ShootSystem()
 {
-}
-
-void ShootSystem::AddEntity(Entity* entity)
-{
-    pendingEntities.insert(entity);
-    if (IsServer(this) || IsClientOwner(this, entity))
-    {
-        BaseSimulationSystem::AddEntity(entity);
-    }
-}
-
-void ShootSystem::RemoveEntity(Entity* entity)
-{
-    pendingEntities.erase(entity);
-    if (IsServer(this) || IsClientOwner(this, entity))
-    {
-        BaseSimulationSystem::RemoveEntity(entity);
-    }
 }
 
 void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA::float32 timeElapsed)
@@ -139,15 +123,9 @@ void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA
     }
 }
 
-void ShootSystem::Simulate(Entity* bullet)
-{
-    ShootComponent* shootComponent = bullet->GetComponent<ShootComponent>();
-    NextState(bullet, shootComponent, NetworkTimeSingleComponent::FrameDurationS);
-}
-
 void ShootSystem::ProcessFixed(float32 timeElapsed)
 {
-    for (Entity* bullet : pendingEntities)
+    for (Entity* bullet : pendingEntities.entities)
     {
         ShootComponent* shootComponent = bullet->GetComponent<ShootComponent>();
         Entity* bulletModel = GetBulletModel();
@@ -164,12 +142,10 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
             Vector3 translation = srcTransComp->GetPosition();
 
             // translation += rotation.ApplyToVectorFast(Vector3(0.f, 5.f, 0.f));
-            transComp->SetLocalTransform(translation,
-                                         rotation,
-                                         srcTransComp->GetScale());
+            transComp->SetLocalTransform(translation, rotation, srcTransComp->GetScale());
         }
 
-        if (IsServer(GetScene()))
+        if (IsServer(this))
         {
             if (shootComponent->GetShootType() & ShootComponent::ShootType::MAIN)
             {
@@ -204,11 +180,16 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
         }
     }
 
-    pendingEntities.clear();
+    pendingEntities.entities.clear();
 
     Vector<Entity*> destroyedBullets;
-    for (const auto& bullet : entities)
+    for (Entity* bullet : entityGroup->GetEntities())
     {
+        if (IsClient(this) && !IsClientOwner(bullet))
+        {
+            continue;
+        }
+
         ShootComponent* shootComponent = bullet->GetComponent<ShootComponent>();
         NextState(bullet, shootComponent, timeElapsed);
 
@@ -218,7 +199,7 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
         }
     }
 
-    for (auto destroyedBullet : destroyedBullets)
+    for (Entity* destroyedBullet : destroyedBullets)
     {
         GetScene()->RemoveNode(destroyedBullet);
         // SERVER_COMPLETE
@@ -230,7 +211,7 @@ Entity* ShootSystem::GetBulletModel() const
 {
     if (nullptr == bulletModel)
     {
-        ScopedPtr<Scene> model(new Scene());
+        ScopedPtr<Scene> model(new Scene(0));
         SceneFileV2::eError err = model->LoadScene("~res:/Sniper_2.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
         bulletModel = model->GetEntityByID(1)->GetChild(1)->Clone();

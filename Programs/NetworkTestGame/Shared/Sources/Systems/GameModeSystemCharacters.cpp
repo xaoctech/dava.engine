@@ -45,7 +45,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystemCharacters)
 {
     ReflectionRegistrator<GameModeSystemCharacters>::Begin()[M::Tags("gm_characters")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameModeSystemCharacters::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 3.0f)]
+    .Method("Process", &GameModeSystemCharacters::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 3.0f)]
     .End();
 }
 

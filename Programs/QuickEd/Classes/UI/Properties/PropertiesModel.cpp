@@ -12,9 +12,9 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/StyleSheetNode.h"
 #include "Utils/QtDavaConvertion.h"
-#include "Utils/StringFormat.h"
 #include "QECommands/ChangePropertyValueCommand.h"
 #include "QECommands/ChangeStylePropertyCommand.h"
+#include "QECommands/ChangeBindingCommand.h"
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Core/FieldBinder.h>
@@ -25,11 +25,15 @@
 #include <Engine/Engine.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIControl.h>
+#include <UI/DataBinding/UIDataBindingComponent.h>
+#include <Utils/StringFormat.h>
 #include <UI/UIControlSystem.h>
 
 #include <QFont>
+#include <QIcon>
 #include <QVector2D>
 #include <QVector4D>
+#include <QMimeData>
 
 using namespace DAVA;
 
@@ -134,7 +138,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
     {
     case Qt::CheckStateRole:
     {
-        if (value.CanGet<bool>() && index.column() == 1)
+        if (value.CanGet<bool>() && index.column() == 1 && !property->IsBound())
             return value.Get<bool>() ? Qt::Checked : Qt::Unchecked;
     }
     break;
@@ -147,21 +151,49 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
         {
             QString res = makeQVariant(property);
 
+            if (property->IsBound())
+            {
+                return QString::fromStdString(property->GetBindingExpression());
+            }
+
             StyleSheetProperty* p = dynamic_cast<StyleSheetProperty*>(property);
             if (p && p->HasTransition())
             {
                 const char* interp = GlobalEnumMap<Interpolation::FuncType>::Instance()->ToString(p->GetTransitionFunction());
                 res += QString(" (") + QVariant(p->GetTransitionTime()).toString() + " sec., " + interp + ")";
             }
+
             return res;
         }
     }
     break;
 
+    case Qt::DecorationRole:
+        if (property->IsBound() && index.column() == 1)
+        {
+            return QIcon(GetDataBindingIcon(property->GetBindingUpdateMode()));
+        }
+
+        break;
+
+    case BindingRole:
+    {
+        QMap<QString, QVariant> map;
+        map.insert("mode", property->GetBindingUpdateMode());
+        map.insert("value", QString::fromStdString(property->GetBindingExpression()));
+        return QVariant(map);
+    }
+
     case Qt::ToolTipRole:
     {
+        if (property->HasError())
+        {
+            return QVariant(property->GetErrorString().c_str());
+        }
         if (index.column() == 0)
+        {
             return QVariant(property->GetName().c_str());
+        }
 
         return makeQVariant(property);
     }
@@ -171,7 +203,14 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
         QVariant var;
         if (index.column() != 0)
         {
-            var.setValue<Any>(value);
+            if (property->IsBound())
+            {
+                var.setValue<Any>(Any(String("=") + property->GetBindingExpression()));
+            }
+            else
+            {
+                var.setValue<Any>(value);
+            }
         }
         return var;
     }
@@ -200,6 +239,10 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
 
     case Qt::TextColorRole:
     {
+        if (property->IsBound())
+        {
+            return GetBoundColor();
+        }
         if (property->IsOverriddenLocally() || property->IsReadOnly())
         {
             return accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetChangedPropertyColor();
@@ -239,7 +282,7 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value, i
     {
     case Qt::CheckStateRole:
     {
-        if (property->GetValueType() == Type::Instance<bool>())
+        if (property->GetValueType() == Type::Instance<bool>() && !property->IsBound())
         {
             Any newVal(value != Qt::Unchecked);
             ChangeProperty(property, newVal);
@@ -267,6 +310,31 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value, i
         return true;
     }
 
+    case BindingRole:
+    {
+        if (property->IsBindable())
+        {
+            QMap<QString, QVariant> map = value.toMap();
+            auto modeIt = map.find("mode");
+            auto valueIt = map.find("value");
+            if (modeIt == map.end() || valueIt == map.end())
+            {
+                ResetProperty(property);
+                UpdateProperty(property);
+            }
+            else
+            {
+                String expr = (*valueIt).toString().toStdString();
+                int32 mode = (*modeIt).toInt();
+
+                ChangeBindingProperty(property, expr, mode);
+                UpdateProperty(property);
+            }
+            return true;
+        }
+    }
+    break;
+
     case ResetRole:
     {
         ResetProperty(property);
@@ -279,14 +347,24 @@ bool PropertiesModel::setData(const QModelIndex& index, const QVariant& value, i
 
 Qt::ItemFlags PropertiesModel::flags(const QModelIndex& index) const
 {
-    if (index.column() != 1)
-        return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    if (!index.isValid())
+    {
+        return Qt::NoItemFlags;
+    }
 
     AbstractProperty* prop = static_cast<AbstractProperty*>(index.internalPointer());
-    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled;
     AbstractProperty::ePropertyType propType = prop->GetType();
-    if (!prop->IsReadOnly() && (propType == AbstractProperty::TYPE_ENUM || propType == AbstractProperty::TYPE_FLAGS || propType == AbstractProperty::TYPE_VARIANT))
-        flags |= Qt::ItemIsEditable;
+    bool editable = !prop->IsReadOnly() && (propType == AbstractProperty::TYPE_ENUM || propType == AbstractProperty::TYPE_FLAGS || propType == AbstractProperty::TYPE_VARIANT);
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+    if (index.column() == 1)
+    {
+        flags |= Qt::ItemIsUserCheckable;
+
+        if (editable)
+            flags |= Qt::ItemIsEditable;
+    }
+
     return flags;
 }
 
@@ -327,7 +405,16 @@ void PropertiesModel::UpdateProperty(AbstractProperty* property)
     QPersistentModelIndex nameIndex = indexByProperty(property, 0);
     QPersistentModelIndex valueIndex = nameIndex.sibling(nameIndex.row(), 1);
     if (nameIndex.isValid() && valueIndex.isValid())
-        emit dataChanged(nameIndex, valueIndex, QVector<int>() << Qt::DisplayRole);
+    {
+        if (property->IsBound())
+        {
+            emit dataChanged(nameIndex, valueIndex, QVector<int>() << BindingRole);
+        }
+        else
+        {
+            emit dataChanged(nameIndex, valueIndex, QVector<int>() << Qt::DisplayRole);
+        }
+    }
 }
 
 void PropertiesModel::ComponentPropertiesWillBeAdded(RootProperty* root, ComponentPropertiesSection* section, int index)
@@ -434,6 +521,23 @@ void PropertiesModel::ChangeProperty(AbstractProperty* property, const Any& valu
     else if (styleSheet)
     {
         documentData->ExecCommand<ChangeStylePropertyCommand>(styleSheet, property, value);
+    }
+    else
+    {
+        DVASSERT(false);
+    }
+}
+
+void PropertiesModel::ChangeBindingProperty(AbstractProperty* property, const DAVA::String& value, int32 mode)
+{
+    DAVA::DataContext* activeContext = accessor->GetActiveContext();
+    DVASSERT(activeContext != nullptr);
+    DocumentData* documentData = activeContext->GetData<DocumentData>();
+    DVASSERT(documentData != nullptr);
+
+    if (controlNode != nullptr)
+    {
+        documentData->ExecCommand<ChangeBindingCommand>(controlNode, property, value, mode);
     }
     else
     {
@@ -601,6 +705,12 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
         return StringToQString(val.Get<FilePath>().GetStringValue());
     }
 
+    if (val.CanGet<RefPtr<UIControl>>())
+    {
+        RefPtr<UIControl> c = val.Get<RefPtr<UIControl>>();
+        return c.Valid() ? (QString("<") + QString::fromStdString(c->GetName().c_str()) + QString(">")) : "<null>";
+    }
+
     DVASSERT(false);
     return QString();
 }
@@ -683,4 +793,32 @@ void PropertiesModel::BindFields()
         fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         fieldBinder->BindField(fieldDescr, MakeFunction(this, &PropertiesModel::OnPackageChanged));
     }
+}
+
+QColor PropertiesModel::GetErrorBgColor() const
+{
+    DAVA::ThemesSettings::eTheme theme = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetTheme();
+    return theme == DAVA::ThemesSettings::Light ? QColor(0xff, 0x88, 0x88) : QColor(0x88, 0x00, 0x00);
+}
+
+QColor PropertiesModel::GetBoundColor() const
+{
+    DAVA::ThemesSettings::eTheme theme = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetTheme();
+    return theme == DAVA::ThemesSettings::Light ? QColor(0x85, 0x5F, 0xF0) : QColor(0xB1, 0xAB, 0xFF);
+}
+
+QString PropertiesModel::GetDataBindingIcon(DAVA::int32 bindingUpdateMode) const
+{
+    DAVA::ThemesSettings::eTheme theme = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetTheme();
+    switch (bindingUpdateMode)
+    {
+    case UIDataBindingComponent::MODE_READ:
+        return theme == DAVA::ThemesSettings::Light ? ":/Icons/link-r-classic.png" : ":/Icons/link-r-dark.png";
+    case UIDataBindingComponent::MODE_WRITE:
+        return theme == DAVA::ThemesSettings::Light ? ":/Icons/link-w-classic.png" : ":/Icons/link-w-dark.png";
+    case UIDataBindingComponent::MODE_READ_WRITE:
+        return theme == DAVA::ThemesSettings::Light ? ":/Icons/link-rw-classic.png" : ":/Icons/link-rw-dark.png";
+    }
+    DVASSERT(false);
+    return "";
 }

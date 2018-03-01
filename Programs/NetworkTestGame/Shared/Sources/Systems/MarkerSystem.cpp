@@ -24,12 +24,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MarkerSystem)
 {
     ReflectionRegistrator<MarkerSystem>::Begin()[M::Tags("marker")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &MarkerSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_END, SP::Type::FIXED, 1000.0f)]
+    .Method("ProcessFixed", &MarkerSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 1000.0f)]
     .End();
 }
 
 MarkerSystem::MarkerSystem(DAVA::Scene* scene)
-    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<HealthComponent>() | ComponentUtils::MakeMask<GameStunnableComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<HealthComponent, GameStunnableComponent>())
 {
 }
 
@@ -44,7 +44,7 @@ void MarkerSystem::RemoveEntity(Entity* entity)
     tankToBar.erase(entity);
 }
 
-void MarkerSystem::Simulate(DAVA::Entity* tank)
+void MarkerSystem::SimulateHealthBar(DAVA::Entity* tank)
 {
     Entity* bar = tankToBar[tank];
     DVASSERT(bar);
@@ -104,7 +104,7 @@ void MarkerSystem::ProcessFixed(DAVA::float32 timeElapsed)
 {
     for (Entity* tank : pendingEntities)
     {
-        ScopedPtr<Scene> model(new Scene());
+        ScopedPtr<Scene> model(new Scene(0));
         SceneFileV2::eError ret = model->LoadScene("~res:/tst.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == ret);
         Entity* bar = model->GetEntityByID(1)->Clone();
@@ -131,7 +131,7 @@ void MarkerSystem::ProcessFixed(DAVA::float32 timeElapsed)
     for (auto it : tankToBar)
     {
         Entity* tank = it.first;
-        Simulate(tank);
+        SimulateHealthBar(tank);
     }
 }
 

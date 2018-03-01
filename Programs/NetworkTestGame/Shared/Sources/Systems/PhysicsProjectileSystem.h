@@ -18,7 +18,6 @@ public:
 
     PhysicsProjectileSystem(DAVA::Scene* scene);
 
-    void Simulate(DAVA::Entity* entity) override;
     void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
@@ -26,5 +25,6 @@ private:
     void NextState(DAVA::Entity* entity, PhysicsProjectileComponent* projectileComponent);
 
 private:
+    DAVA::EntityGroup* entityGroup = nullptr;
     DAVA::UnorderedMap<DAVA::Entity*, DAVA::float32> grenadeDetonationTimers;
 };

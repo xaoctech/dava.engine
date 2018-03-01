@@ -211,6 +211,17 @@ private:
 };
 
 /**
+    Indicates that we can bind UIControl/UIComponent reflection field to some
+    data from model. QuickEd uses this indication to build special editor in 
+    Property Panel.
+*/
+class Bindable
+{
+public:
+    Bindable();
+};
+
+/**
     We think about some types like about base types: Vector2, Vector3, Vector4, Color, Rect etc
     But in real this types are complex and have fields. For example Vector3 comprises the following fields: X, Y, Z
     This meta mark field of "BaseType" as "field to edit". As a reaction there will be created separate sub-editor
@@ -430,9 +441,7 @@ enum class Type
 enum class Group
 {
     ENGINE_BEGIN = 0, //!< first part of base engine processes/fixed processes. Do not use this group for gameplay processes/fixed processes.
-    GAMEPLAY_BEGIN, //!< gameplay processes/fixed processes. If gameplay fixed process should be executed before physics, choose this gorup.
-    ENGINE_PHYSICS, //!< physics fixed process. Do not use this group, unless you know what this group for.
-    GAMEPLAY_END, //!< gameplay processes/fixed processes. If gameplay fixed process should be executed after physics, choose this gorup.
+    GAMEPLAY, //!< gameplay processes/fixed processes.
     ENGINE_END //!< last part of base engine processes/fixed processes. Do not use this group for gameplay processes/fixed processes.
 };
 

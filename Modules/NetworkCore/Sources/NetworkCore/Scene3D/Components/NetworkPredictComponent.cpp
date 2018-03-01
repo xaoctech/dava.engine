@@ -1,11 +1,10 @@
 #include "NetworkPredictComponent.h"
-#include "Scene3D/Systems/BaseSimulationSystem.h"
-#include "Reflection/ReflectionRegistrator.h"
-#include "Reflection/ReflectedMeta.h"
-#include "NetworkCore/Snapshot.h"
 #include "NetworkCore/NetworkCoreUtils.h"
+#include "NetworkCore/Snapshot.h"
 
 #include <Logger/Logger.h>
+#include <Reflection/ReflectedMeta.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
@@ -38,8 +37,6 @@ void NetworkPredictComponent::Deserialize(KeyedArchive* archive, SerializationCo
 
 bool NetworkPredictComponent::IsPredictedComponent(Component* component) const
 {
-    Entity* entity = component->GetEntity();
-    DVASSERT(!entity || !entity->GetScene() || IsClientOwner(entity));
     return IsPredictedComponent(ReflectedTypeDB::GetByPointer(component)->GetType());
 }
 } //namespace DAVA

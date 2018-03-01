@@ -13,10 +13,23 @@ class NetworkPlayerComponent : public Component
     DAVA_VIRTUAL_REFLECTION(NetworkPlayerComponent, Component);
 
 public:
+    struct SendPeriodInfo
+    {
+        const Entity* target;
+        uint8 period;
+        bool fresh = true;
+    };
+
     NetworkPlayerComponent();
 
     Component* Clone(Entity* toEntity) override;
 
+    void SetSendPeriod(const Entity* target, uint8 period);
+
+    Vector<SendPeriodInfo> periods;
     FixedVector<NetworkID> visibleEntityIds;
+
+private:
+    UnorderedMap<const Entity*, size_t> entityToInternalIndex;
 };
 }

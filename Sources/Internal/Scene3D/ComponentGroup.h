@@ -11,18 +11,20 @@ class Component;
 class ComponentGroupBase
 {
 public:
-    virtual ~ComponentGroupBase()
-    {
-    }
+    virtual ~ComponentGroupBase() = default;
+    ComponentGroupBase() = default;
 
 protected:
     Vector<Component*> cachedAdded;
     Vector<Component*> cachedRemoved;
+    const Type* trackedType = nullptr;
+
     virtual void UpdateCachedAdded() = 0;
     virtual void UpdateCachedRemoved() = 0;
     virtual void EmitAdded(Component* component) = 0;
     virtual void EmitRemoved(Component* component) = 0;
-    const Type* trackedType = nullptr;
+    virtual ComponentGroupBase* Create() = 0;
+    virtual void MoveTo(ComponentGroupBase* dest, bool clear = true) = 0;
 
     friend class EntitiesManager;
 };
@@ -42,6 +44,8 @@ private:
     void UpdateCachedRemoved() override;
     void EmitAdded(Component* component) override;
     void EmitRemoved(Component* component) override;
+    ComponentGroupBase* Create() override;
+    void MoveTo(ComponentGroupBase* dest, bool clear = true) override;
 
     friend class EntitiesManager;
 };

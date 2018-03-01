@@ -10,7 +10,7 @@ class SnapshotSystemClient final : public SnapshotSystemBase, public ISimulation
 public:
     DAVA_VIRTUAL_REFLECTION(SnapshotSystemClient, SnapshotSystemBase);
 
-    using SnapshotSystemBase::SnapshotSystemBase;
+    SnapshotSystemClient(Scene* scene);
 
 protected:
     bool isResimulation = false;
@@ -22,9 +22,13 @@ protected:
     void UnregisterComponent(Entity* entity, Component* component) override;
     void ProcessFixed(float32 timeElapsed) override;
 
-    void ReSimulationStart(Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
-    void Simulate(Entity* entity) override;
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
+
+    void ReSnapEntities();
     const ComponentMask& GetResimulationComponents() const override;
+
+private:
+    EntityGroup* entities = nullptr;
 };
 }

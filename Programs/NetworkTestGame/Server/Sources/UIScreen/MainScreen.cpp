@@ -9,7 +9,7 @@
 
 using namespace DAVA;
 
-MainScreen::MainScreen(const ScopedPtr<Scene>& scene_)
+MainScreen::MainScreen(Scene* scene_)
     : scene(scene_)
 {
     actionsSingleComponent = scene_->GetSingletonComponent<ActionsSingleComponent>();
@@ -19,9 +19,11 @@ void MainScreen::LoadResources()
 {
     if (scene)
     {
-        ScopedPtr<UI3DView> sceneView(new UI3DView(GetRect()));
-        AddControl(sceneView);
-        sceneView->SetScene(scene);
+        DVASSERT(ui3DView.get() == nullptr);
+
+        ui3DView.reset(new UI3DView(GetRect()));
+        AddControl(ui3DView);
+        ui3DView->SetScene(scene);
     }
 
     AddJoypadControl();
@@ -29,6 +31,8 @@ void MainScreen::LoadResources()
 
 void MainScreen::UnloadResources()
 {
+    RemoveControl(ui3DView);
+    ui3DView.reset(nullptr);
     RemoveControl(moveJoyPAD);
     SafeRelease(moveJoyPAD);
 }

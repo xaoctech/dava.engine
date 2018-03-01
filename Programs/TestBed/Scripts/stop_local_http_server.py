@@ -16,6 +16,6 @@ def get_status_code(host, path="/"):
 
 
 if get_status_code("127.0.0.1:2424", "/packs/stop_local_http_server") == 404:
-    sys.exit(status=None)
+    sys.exit(0)
 else:
-    sys.exit(status=1)
+    sys.exit(1)

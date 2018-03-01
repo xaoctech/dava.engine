@@ -34,7 +34,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CreateGameModeSystem)
 {
     ReflectionRegistrator<CreateGameModeSystem>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &CreateGameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 2.0f)]
+    .Method("Process", &CreateGameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 2.0f)]
     .End();
 }
 
@@ -51,9 +51,15 @@ void CreateGameModeSystem::Process(DAVA::float32 timeElapsed)
     if (!isInit && entityToInfo.find(NetworkID::SCENE_ID) != entityToInfo.end())
     {
         CreateGameSystems(optionsComp->gameModeId);
+
         if (optionsComp->isEnemyPredicted)
         {
             GetScene()->AddTag(FastName("enemy_predict"));
+        }
+
+        if (!optionsComp->options.gameStatsLogPath.empty())
+        {
+            GetScene()->AddTag(FastName("log_game_stats"));
         }
 
         isInit = true;
@@ -73,6 +79,7 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
 {
     UnorderedSet<FastName> tags = { FastName("input") };
     bool isShooterGm = false;
+    bool isInvaderGm = false;
     switch (gameModeId)
     {
     case GameMode::Id::HELLO:
@@ -91,8 +98,12 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
         tags.insert({ FastName("gm_tanks"), FastName("shoot") });
         break;
     case GameMode::Id::SHOOTER:
-        tags.insert(FastName("gm_shooter"));
+        tags.insert({ FastName("gm_shooter"), FastName("gameshow") });
         isShooterGm = true;
+        break;
+    case GameMode::Id::INVADERS:
+        tags.insert({ FastName("gm_invaders") });
+        isInvaderGm = true;
         break;
     default:
         DVASSERT(0);
@@ -105,7 +116,7 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
 
         InitializeScene(*GetScene());
     }
-    else
+    else if (!isInvaderGm)
     {
         tags.insert({ FastName("gameinput"), FastName("gameshow"), FastName("playerentity") });
     }

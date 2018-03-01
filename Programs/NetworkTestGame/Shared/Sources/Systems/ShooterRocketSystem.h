@@ -2,6 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
+#include "Math/Color.h"
 #include "Scene3D/Systems/BaseSimulationSystem.h"
 
 namespace DAVA
@@ -20,11 +21,12 @@ public:
     ShooterRocketSystem(DAVA::Scene* scene);
     ~ShooterRocketSystem();
 
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
-
     void ProcessFixed(DAVA::float32 timeElapsed) override;
-    void Simulate(DAVA::Entity* entity) override;
+
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
+
+    void SimulateRocket(DAVA::Entity* entity);
     void PrepareForRemove() override{};
 
 protected:
@@ -32,14 +34,18 @@ protected:
     const bool SELF_DAMAGE = false;
 
     DAVA::Entity* GetRocketModel();
-    bool IsSimulated(DAVA::Entity* rocket);
     void FillRocket(DAVA::Entity* rocket);
     const DAVA::Entity* GetTarget(DAVA::Entity* rocket, DAVA::Entity* shooter);
     DAVA::Entity* SpawnSubRocket(DAVA::Entity* shooter, const DAVA::Entity* target, const DAVA::FrameActionID& shootActionId);
     void Colorize(DAVA::Entity* rocket);
     void Colorize(DAVA::Entity* model, const DAVA::Color& color);
 
-    DAVA::UnorderedSet<DAVA::Entity*> pendingEntities;
+    DAVA::EntityGroup* entityGroup = nullptr;
+    DAVA::EntityGroupOnAdd pendingEntities;
+    struct
+    {
+        DAVA::Vector<DAVA::Entity*> entities;
+    } pendingBackUp;
     DAVA::UnorderedSet<DAVA::Entity*> destroyedEntities;
     DAVA::Entity* rocketModel = nullptr;
 

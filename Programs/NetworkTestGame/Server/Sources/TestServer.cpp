@@ -10,7 +10,9 @@
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
 #include "Systems/GameModeSystemCharacters.h"
-#include <Systems/GameVisibilitySystem.h>
+#include <Visibility/NetworkFrequencySystem.h>
+#include <Visibility/SimpleVisibilitySystem.h>
+#include <Visibility/ShooterVisibilitySystem.h>
 
 #include <CommandLine/CommandLineParser.h>
 #include <Concurrency/Thread.h>
@@ -21,8 +23,10 @@
 #include <Debug/ProfilerCPU.h>
 #include <Debug/ProfilerGPU.h>
 #include <Debug/ProfilerOverlay.h>
+#include <DLCManager/DLCDownloader.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Entity/Component.h>
 #include <Entity/ComponentManager.h>
 #include <Input/Keyboard.h>
@@ -43,7 +47,6 @@
 #include <NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h>
 #include <NetworkCore/Scene3D/Systems/NetworkTimeSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkTimelineControlSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkVisibilitySystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemServer.h>
 #include <NetworkCore/Scene3D/Systems/SnapshotSystemServer.h>
 #include <NetworkCore/Scene3D/Systems/NetworkRemoteInputSystem.h>
@@ -185,6 +188,32 @@ TestServer::TestServer(Engine& engine, GameMode::Id gameModeId, uint16 port, uin
     }
 
     {
+        DLCDownloader::Hints hints;
+        hints.timeout = 3;
+        DLCDownloader* downloader = DLCDownloader::Create(hints);
+        SCOPE_EXIT
+        {
+            DLCDownloader::Destroy(downloader);
+        };
+
+        DLCDownloader::ITask* task = downloader->StartTask("localhost:9100/feature_config.yaml", "~doc:/feature_config.yaml");
+        SCOPE_EXIT
+        {
+            downloader->RemoveTask(task);
+        };
+        downloader->WaitTask(task);
+        const DLCDownloader::TaskStatus& status = downloader->GetTaskStatus(task);
+        if (status.error.errorHappened == false)
+        {
+            Logger::Info("Feature manager config successfully loaded");
+        }
+        else
+        {
+            Logger::Error("Feature manager config not loaded");
+        }
+    }
+
+    {
         String type = CommandLineParser::GetCommandParam("--synthetic-crash");
         if (type == "null_pointer")
             syntheticCrashType = CrashType::NULL_POINTER;
@@ -283,6 +312,10 @@ void TestServer::OnLoopStopped()
     SafeDelete(networkTransportSystem);
 #endif
 
+    // TODO: it's a quick workaround to fix case when modules shutdown before scene is destroyed
+    // This class should be rewritten entirely
+    mainScreen->RemoveControl(mainScreen->ui3DView);
+    mainScreen->ui3DView.reset(nullptr);
     SafeRelease(mainScreen);
     scene.reset();
 }
@@ -398,38 +431,42 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
         tags.insert({ FastName("bot"), FastName("randombot") });
     }
 
+    bool isShooterGm = false;
     switch (gameModeId)
     {
     case GameMode::Id::HELLO:
         // broken
         break;
     case GameMode::Id::CHARACTERS:
-        tags.insert(FastName("gm_characters"));
+        tags.insert({ FastName("gm_characters"), FastName("gameinput"), FastName("playerentity"),
+                      FastName("simple_visibility") });
         break;
     case GameMode::Id::PHYSICS:
         // broken
         break;
     case GameMode::Id::CARS:
-        tags.insert(FastName("gm_cars"));
+        tags.insert({ FastName("gm_cars"), FastName("gameinput"), FastName("playerentity"),
+                      FastName("simple_visibility") });
         break;
     case GameMode::Id::SHOOTER:
+        isShooterGm = true;
         tags.insert({ FastName("gm_shooter"), FastName("controller") });
         break;
-    default:
-        tags.insert({ FastName("gm_tanks"), FastName("shoot") });
+    case GameMode::Id::INVADERS:
+        tags.insert(FastName("gm_invaders"));
+        if (!gameStatsLogPath.empty())
+        {
+            tags.insert({ FastName("log_game_stats"), FastName("simple_visibility") });
+        }
         break;
-    }
-
-    bool isShooterGm = tags.find(FastName("gm_shooter")) != tags.end();
-
-    if (!isShooterGm)
-    {
-        tags.insert({ FastName("gameinput"), FastName("playerentity") });
-    }
-
-    if (!gameStatsLogPath.empty())
-    {
-        tags.insert(FastName("log_game_stats"));
+    default:
+        tags.insert({ FastName("gm_tanks"), FastName("shoot"), FastName("gameinput"), FastName("playerentity"),
+                      FastName("simple_visibility") });
+        if (!gameStatsLogPath.empty())
+        {
+            tags.insert({ FastName("monitor_game_stats"), FastName("log_game_stats") });
+        }
+        break;
     }
 
     scene = new Scene(tags);
@@ -445,8 +482,9 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 
     BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
     optionsSingleComponent->gameModeId = gameModeId;
+    optionsSingleComponent->options.gameStatsLogPath = gameStatsLogPath;
     optionsSingleComponent->isEnemyPredicted = CommandLineParser::CommandIsFound("--predict_enemy");
-    optionsSingleComponent->gameStatsLogPath = gameStatsLogPath;
+    optionsSingleComponent->isEnemyRewound = CommandLineParser::CommandIsFound("--rewind_enemy");
     optionsSingleComponent->compareInputs = CommandLineParser::CommandIsFound("--compare_inputs");
     optionsSingleComponent->isSet = true;
 
@@ -498,8 +536,9 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 
     if (enableVisibilityLods)
     {
-        scene->GetSystem<GameVisibilitySystem>()->SetMaxAOI(500.f);
-        scene->GetSystem<GameVisibilitySystem>()->SetPeriodIncreaseDistance(63.f);
+        NetworkFrequencySystem* nwFrequencySystem = scene->GetSystem<NetworkFrequencySystem>();
+        nwFrequencySystem->SetMaxAOI(500.f);
+        nwFrequencySystem->SetNetworkPeriodIncreaseDistance(63.f);
     }
 
     gameServer.Setup(GameServer::Options{

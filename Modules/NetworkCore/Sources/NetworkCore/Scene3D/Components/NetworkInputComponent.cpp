@@ -53,16 +53,6 @@ bool NetworkInputComponent::Data::operator!=(const NetworkInputComponent::Data& 
     return !(*this == rhs);
 }
 
-uint32 NetworkInputComponent::GetFrameFail() const
-{
-    return frameFail;
-}
-
-void NetworkInputComponent::SetFrameFail(uint32 frameId)
-{
-    frameFail = frameId;
-}
-
 const NetworkInputComponent::History& NetworkInputComponent::GetHistory() const
 {
     return history;
@@ -87,10 +77,5 @@ void NetworkInputComponent::SetLastCameraOrientation(const Quaternion& camOrient
 const Quaternion& NetworkInputComponent::GetLastCameraOrientation() const
 {
     return lastCamOrient;
-}
-
-NetworkInputComponent::ResimulationCache& NetworkInputComponent::ModifyResimulationCache()
-{
-    return resimulationCache;
 }
 }

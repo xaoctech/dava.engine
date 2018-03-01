@@ -1,16 +1,14 @@
 #include "ShootInputSystem.h"
 
-#include "Components/ShootComponent.h"
-#include "Components/ExplosiveRocketComponent.h"
-#include "Components/ShootCooldownComponent.h"
+#include "InputUtils.h"
 
+#include "Components/ExplosiveRocketComponent.h"
 #include "Components/GameStunnableComponent.h"
 #include "Components/HealthComponent.h"
-#include <Reflection/ReflectionRegistrator.h>
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/ActionCollectSystem.h"
-#include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
+#include "Components/ShootComponent.h"
+#include "Components/ShootCooldownComponent.h"
+#include "Visibility/ObservableComponent.h"
+#include "Visibility/SimpleVisibilityShapeComponent.h"
 
 #include "NetworkCore/NetworkCoreUtils.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
@@ -18,20 +16,21 @@
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Snapshot.h"
 
-#include "Debug/ProfilerCPU.h"
-#include "Logger/Logger.h"
+#include <Debug/ProfilerCPU.h>
+#include <Logger/Logger.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShootInputSystem)
 {
-    ReflectionRegistrator<ShootInputSystem>::Begin()[M::Tags("input", "shoot")]
+    ReflectionRegistrator<ShootInputSystem>::Begin()[M::Tags("gameinput", "shoot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShootInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 6.0f)]
+    .Method("ProcessFixed", &ShootInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 6.0f)]
     .End();
 }
 
@@ -43,11 +42,11 @@ static const uint32 COOLDOWN = 10;
 }
 
 ShootInputSystem::ShootInputSystem(Scene* scene)
-    : INetworkInputSimulationSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>() | ComponentUtils::MakeMask<ShootCooldownComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent, ShootCooldownComponent>())
 {
     using namespace ShootInputSystemDetail;
-    uint32 mouseId = GetMouseDeviceId();
-    uint32 keyboardId = GetKeyboardDeviceId();
+    uint32 mouseId = InputUtils::GetMouseDeviceId();
+    uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
 
     actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
 
@@ -55,13 +54,15 @@ ShootInputSystem::ShootInputSystem(Scene* scene)
     actionsSingleComponent->CollectDigitalAction(SECOND_SHOOT, eInputElements::MOUSE_RBUTTON, mouseId);
     actionsSingleComponent->CollectDigitalAction(FIRST_SHOOT, eInputElements::KB_SPACE, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SECOND_SHOOT, eInputElements::KB_LSHIFT, keyboardId);
+
+    entityGroup = scene->AquireEntityGroup<NetworkInputComponent, ShootCooldownComponent>();
 }
 
 void ShootInputSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("ShootInputSystem::ProcessFixed");
 
-    for (Entity* entity : entities)
+    for (Entity* entity : entityGroup->GetEntities())
     {
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
         for (const auto& actions : allActions)
@@ -71,10 +72,7 @@ void ShootInputSystem::ProcessFixed(float32 timeElapsed)
     }
 }
 
-void ShootInputSystem::ApplyDigitalActions(Entity* shooter,
-                                           const Vector<FastName>& actions,
-                                           uint32 clientFrameId,
-                                           float32 duration)
+void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastName>& actions, uint32 clientFrameId, float32 duration)
 {
     if (!CanShoot(shooter))
     {
@@ -122,10 +120,16 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter,
                 NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent();
                 bulletReplComp->SetNetworkPlayerID(playerID);
                 bullet->AddComponent(bulletReplComp);
-
                 networkPredictComponent->SetFrameActionID(shootActionId);
                 bullet->AddComponent(networkPredictComponent);
                 bullet->AddComponent(new NetworkTransformComponent());
+
+                if (IsServer(GetScene()))
+                {
+                    bullet->AddComponent(new ObservableComponent());
+                    bullet->AddComponent(new SimpleVisibilityShapeComponent());
+                }
+
                 networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
                 GetScene()->AddNode(bullet);
 

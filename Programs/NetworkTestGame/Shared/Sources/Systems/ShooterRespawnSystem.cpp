@@ -13,7 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRespawnSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterRespawnSystem>::Begin()[M::Tags("gm_shooter", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterRespawnSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 20.0f)]
+    .Method("ProcessFixed", &ShooterRespawnSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 20.0f)]
     .End();
 }
 

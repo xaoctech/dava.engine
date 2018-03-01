@@ -82,7 +82,7 @@ bool CompareTransform(const T& lhs, const T& rhs, uint32 size, float32 epsilon, 
 }
 
 GameModeSystemPhysics::GameModeSystemPhysics(Scene* scene)
-    : INetworkInputSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>() | ComponentUtils::MakeMask<NetworkInputComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>() | ComponentUtils::MakeMask<NetworkInputComponent>())
     , scene(scene)
 {
     using namespace GameModeSystemPhysicsDetail;
@@ -217,8 +217,6 @@ void GameModeSystemPhysics::PrepareForRemove()
 void GameModeSystemPhysics::Simulate(DAVA::Entity* entity)
 {
     DVASSERT(server == nullptr);
-
-    INetworkInputSimulationSystem::Simulate(entity);
 
     if (entity != bigCube)
     {

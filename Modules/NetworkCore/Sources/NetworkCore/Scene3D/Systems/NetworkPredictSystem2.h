@@ -5,7 +5,6 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkPredictionSingleComponent.h"
 
 #include <Scene3D/Scene.h>
-#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
@@ -17,7 +16,7 @@ class SnapshotSingleComponent;
 class NetworkEntitiesSingleComponent;
 class NetworkReplicationSingleComponent;
 
-class NetworkPredictSystem2 : public SceneSystem, public ISimulationSystem
+class NetworkPredictSystem2 : public SceneSystem
 {
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkPredictSystem2, SceneSystem);
@@ -30,14 +29,7 @@ public:
     void RemoveEntity(Entity* entity) override;
 
 protected:
-    bool isResimulation = false;
     Vector<Entity*> pendingForRemove;
-
-    void ReSimulationStart(Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
-
-    const ComponentMask& GetResimulationComponents() const override;
-    void Simulate(Entity* entity) override;
 
 private:
     bool ConfirmComponentValues(Snapshot* clientSnapshot, Snapshot* entitySnapshot, NetworkID entityId, EntityMisprediction& misprediction);

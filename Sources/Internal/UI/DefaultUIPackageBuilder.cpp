@@ -9,6 +9,7 @@
 #include "Base/ObjectFactory.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlHelpers.h"
+#include "UI/DataBinding/UIDataBindingComponent.h"
 #include "UI/Components/UIComponent.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "UI/UIPackagesCache.h"
@@ -380,6 +381,21 @@ void DefaultUIPackageBuilder::ProcessProperty(const ReflectedStructure::Field& f
     }
 }
 
+void DefaultUIPackageBuilder::ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode)
+{
+    UIControl* control = controlsStack.back()->control.Get();
+    RefPtr<UIDataBindingComponent> component = MakeRef<UIDataBindingComponent>();
+    component->SetControlFieldName(fieldName);
+    component->SetBindingExpression(expression);
+    component->SetUpdateMode(static_cast<UIDataBindingComponent::UpdateMode>(bindingMode));
+    control->AddComponent(component.Get());
+}
+
+void DefaultUIPackageBuilder::SetEditorMode(bool editorMode_)
+{
+    editorMode = editorMode_;
+}
+
 void DefaultUIPackageBuilder::PutImportredPackage(const FilePath& path, UIPackage* package)
 {
     int32 index = static_cast<int32>(importedPackages.size());
@@ -399,10 +415,15 @@ UIPackage* DefaultUIPackageBuilder::FindImportedPackageByName(const String& name
 
 RefPtr<UIControl> DefaultUIPackageBuilder::CreateControlByName(const String& customClassName, const String& className)
 {
-    RefPtr<UIControl> c(ObjectFactory::Instance()->New<UIControl>(customClassName));
-    if (c == nullptr)
+    RefPtr<UIControl> c;
+    if (!editorMode || ObjectFactory::Instance()->IsTypeRegistered(customClassName))
     {
-        DVASSERT(false);
+        c.Set(ObjectFactory::Instance()->New<UIControl>(customClassName));
+        DVASSERT(c.Valid());
+    }
+
+    if (!c.Valid())
+    {
         c.Set(ObjectFactory::Instance()->New<UIControl>(className));
     }
     return c;
@@ -410,6 +431,8 @@ RefPtr<UIControl> DefaultUIPackageBuilder::CreateControlByName(const String& cus
 
 std::unique_ptr<DefaultUIPackageBuilder> DefaultUIPackageBuilder::CreateBuilder(UIPackagesCache* packagesCache)
 {
-    return std::make_unique<DefaultUIPackageBuilder>(packagesCache);
+    std::unique_ptr<DefaultUIPackageBuilder> builder = std::make_unique<DefaultUIPackageBuilder>(packagesCache);
+    builder->SetEditorMode(editorMode);
+    return builder;
 }
 }

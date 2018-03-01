@@ -13,6 +13,7 @@
 #include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
 #include <REPlatform/Scene/SceneEditor2.h>
+#include <REPlatform/Scene/Components/CollisionTypeComponent.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
@@ -46,8 +47,12 @@ DAVA_TARC_TESTCLASS(SceneManagerModuleTests)
 {
     DAVA::Vector<const DAVA::ReflectedType*> componentTypes;
     DAVA::Set<const DAVA::ReflectedType*> ignoreComponentTypes = {
-        // TODO remove this ignores after fix assert in PhysicsSystem
-        DAVA::ReflectedTypeDB::Get<DAVA::CharacterControllerComponent>()
+        // TODO remove this ignore after fix assert in PhysicsSystem
+        DAVA::ReflectedTypeDB::Get<DAVA::CharacterControllerComponent>(),
+        // CollisionTypeComponent may be registered in earlier tests,
+        // but since we can't unregister components and this component's
+        // presence makes no sense in this test, we should ignore it
+        DAVA::ReflectedTypeDB::Get<DAVA::CollisionTypeComponent>()
     };
     void InitComponentDerivedTypes(const DAVA::Type* type)
     {
@@ -216,7 +221,6 @@ private:
                 {
                     Any newComponent = cType->CreateObject(ReflectedType::CreatePolicy::ByPointer);
                     Component* component = newComponent.Cast<Component*>();
-
                     TEST_VERIFY(entity->GetComponentCount(component->GetType()) > 0);
 
                     delete component;

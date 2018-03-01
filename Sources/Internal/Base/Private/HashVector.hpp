@@ -4,13 +4,13 @@ namespace DAVA
 {
 
 template<class T>
-const Vector<T*>& HashVector<T>::GetObjects()
+const Vector<T*>& HashVector<T>::GetObjects() const
 {
     return vector;
 }
 
 template<class T>
-uint32 HashVector<T>::GetSize()
+uint32 HashVector<T>::GetSize() const
 {
     return static_cast<uint32>(vector.size());
 }
@@ -55,7 +55,7 @@ void HashVector<T>::Remove(T * value)
 
 
 template<class T>
-bool HashVector<T>::Contains(T* value)
+bool HashVector<T>::Contains(T* value) const
 {
     return map.find(value) != map.end();
 }
@@ -69,13 +69,12 @@ T* HashVector<T>::GetObjectAt(uint32 index)
 }
 
 template<class T>
-uint32 HashVector<T>::GetIndexOf(T* value)
+uint32 HashVector<T>::GetIndexOf(T* value) const
 {
     auto it = map.find(value);
     DVASSERT(it != map.end());
     return static_cast<uint32>(it->second);
 }
-
 
 template <class T>
 void HashVector<T>::Clear()

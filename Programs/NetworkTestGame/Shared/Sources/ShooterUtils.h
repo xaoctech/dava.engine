@@ -24,7 +24,10 @@ enum class RaycastFilter : DAVA::uint32
     IGNORE_SOURCE = 1 << 0,
 
     // Ignore all non-static objects. If raycast affects predicted state, this flag should always be used since for now all cars and other players are not predicted
-    IGNORE_DYNAMICS = 1 << 1
+    IGNORE_DYNAMICS = 1 << 1,
+
+    // Ignore entity controller. Entity is supposed to have a mirror, collision checks should be performed with it instead.
+    IGNORE_CONTROLLER = 1 << 2
 };
 DAVA_DEFINE_ENUM_BITWISE_OPERATORS(RaycastFilter)
 

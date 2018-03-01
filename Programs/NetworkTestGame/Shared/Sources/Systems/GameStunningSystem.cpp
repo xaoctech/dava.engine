@@ -20,7 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameStunningSystem)
 {
     ReflectionRegistrator<GameStunningSystem>::Begin()[M::Tags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &GameStunningSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 1.0f)]
+    .Method("ProcessFixed", &GameStunningSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 1.0f)]
     .End();
 }
 

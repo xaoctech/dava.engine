@@ -6,7 +6,7 @@
 
 using namespace DAVA;
 
-PrototypeNameProperty::PrototypeNameProperty(ControlNode* aNode, const PrototypeNameProperty* sourceProperty, eCloneType cloneType)
+PrototypeNameProperty::PrototypeNameProperty(ControlNode* aNode, const PrototypeNameProperty* prototypeProperty)
     : ValueProperty("Prototype", Type::Instance<String>())
     , node(aNode) // weak
 {

@@ -22,7 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterBehaviorSystem)
 {
     ReflectionRegistrator<ShooterBehaviorSystem>::Begin()[M::Tags("bot", "shooterbot")]
     .ConstructorByPointer<Scene*>() // TODO: system out of place. Should be in gameplay group, or be a part of fw.
-    .Method("ProcessFixed", &ShooterBehaviorSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 4.1f)]
+    .Method("ProcessFixed", &ShooterBehaviorSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 15.0f)]
     .End();
 }
 

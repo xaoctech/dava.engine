@@ -17,6 +17,7 @@ struct BattleOptions
     PlayerKind playerKind;
     bool isDebug = false;
     DAVA::uint32 freqHz = 0;
+    DAVA::String gameStatsLogPath;
 
     static BattleOptions FromKeyedArchive(DAVA::KeyedArchive* archive);
 };
@@ -43,12 +44,13 @@ class BattleOptionsSingleComponent : public DAVA::SingletonComponent
 public:
     void Clear() override;
 
+    GameMode::Id gameModeId;
+
     BattleOptions options;
     BattleControls controls;
 
-    GameMode::Id gameModeId;
     bool isEnemyPredicted;
-    DAVA::String gameStatsLogPath;
+    bool isEnemyRewound;
     bool compareInputs;
     COLLISION_RESOLVE_MODE collisionResolveMode = COLLISION_RESOLVE_MODE_REWIND_IN_PAST;
 

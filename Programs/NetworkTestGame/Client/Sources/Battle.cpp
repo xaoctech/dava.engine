@@ -16,6 +16,7 @@
 #include "Systems/BotSystem.h"
 #include "Systems/AI/BotTaskSystem.h"
 #include "Systems/AI/ShooterBehaviorSystem.h"
+#include "Systems/AI/InvaderBehaviorSystem.h"
 
 #include "Components/GameStunnableComponent.h"
 #include "Components/HealthComponent.h"
@@ -152,12 +153,17 @@ void Battle::SetupTestGame()
         {
         case (PlayerKind::Id::SHOOTER_BOT):
         {
-            tags.insert(FastName("shooterbot"));
+            tags.insert({FastName("shooterbot"), FastName("taskbot")});
             break;
         }
         case (PlayerKind::Id::RANDOM_BOT):
         {
             tags.insert(FastName("randombot"));
+            break;
+        }
+        case (PlayerKind::Id::INVADER_BOT):
+        {
+            tags.insert({FastName("invaderbot"), FastName("taskbot")});
             break;
         }
         default:

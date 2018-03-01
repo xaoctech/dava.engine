@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Entity/SceneSystem.h"
-#include "Reflection/ReflectedTypeDB.h"
+#include "Scene3D/EntityGroup.h"
 
 namespace DAVA
 {
@@ -9,9 +9,8 @@ class ISimulationSystem
 {
 public:
     virtual const ComponentMask& GetResimulationComponents() const = 0;
-    virtual void ReSimulationStart(Entity* entity, uint32 frameId) = 0;
-    virtual void Simulate(Entity* entity) = 0;
-    virtual void ReSimulationEnd(Entity* entity) = 0;
+    virtual void ReSimulationStart() = 0;
+    virtual void ReSimulationEnd() = 0;
 };
 
 class BaseSimulationSystem : public SceneSystem, public ISimulationSystem
@@ -25,11 +24,15 @@ public:
     void RemoveEntity(Entity* entity) override;
 
     const ComponentMask& GetResimulationComponents() const override;
-    void ReSimulationStart(Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
 
-protected:
-    Vector<Entity*> entities;
+    static void ReSimulationOn();
+    static void ReSimulationOff();
+    static bool IsReSimulating();
+
+private:
+    static bool isReSimulating;
 };
 
 } //namespace DAVA

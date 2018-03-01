@@ -18,7 +18,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsProjectileSystem)
 {
     ReflectionRegistrator<PhysicsProjectileSystem>::Begin()[M::Tags("gm_characters", "physics")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PhysicsProjectileSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_END, SP::Type::FIXED, 1.0f)]
+    .Method("ProcessFixed", &PhysicsProjectileSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 21.0f)]
     .End();
 }
 
@@ -41,16 +41,9 @@ static bool CompareTransform(const T& lhs, const T& rhs, uint32 size, float32 ep
 }
 
 PhysicsProjectileSystem::PhysicsProjectileSystem(Scene* scene)
-    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>() | ComponentUtils::MakeMask<PhysicsProjectileComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent, PhysicsProjectileComponent>())
 {
-}
-
-void PhysicsProjectileSystem::Simulate(Entity* entity)
-{
-    PhysicsProjectileComponent* projectileComponent = entity->GetComponent<PhysicsProjectileComponent>();
-    DVASSERT(projectileComponent != nullptr);
-
-    NextState(entity, projectileComponent);
+    entityGroup = scene->AquireEntityGroup<NetworkTransformComponent, PhysicsProjectileComponent>();
 }
 
 void PhysicsProjectileSystem::ProcessFixed(float32 timeElapsed)
@@ -58,11 +51,13 @@ void PhysicsProjectileSystem::ProcessFixed(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE("PhysicsProjectileSystem::ProcessFixed");
 
     Vector<Entity*> destroyedEntities;
-    for (const auto& projectile : entities)
+    for (Entity* projectile : entityGroup->GetEntities())
     {
-        Simulate(projectile);
-
         PhysicsProjectileComponent* projectileComponent = projectile->GetComponent<PhysicsProjectileComponent>();
+
+        DVASSERT(projectileComponent != nullptr);
+
+        NextState(projectile, projectileComponent);
 
         if (projectileComponent->GetProjectileState() == PhysicsProjectileComponent::eProjectileStates::DESTROYED)
         {

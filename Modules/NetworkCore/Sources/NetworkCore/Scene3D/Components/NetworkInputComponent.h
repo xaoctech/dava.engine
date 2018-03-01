@@ -33,14 +33,6 @@ public:
 #pragma pack(pop)
     using History = NetworkBucket<Data>;
 
-    struct ResimulationCache
-    {
-        uint32 startCounter = 0;
-        uint32 simulationCounter = 0;
-
-        ActionsSingleComponent::Actions actions;
-    };
-
     NetworkInputComponent();
 
     Component* Clone(Entity* toEntity) override;
@@ -49,8 +41,6 @@ public:
 
     void SaveHistory(uint32 frameId, const NetworkInputComponent::Data& data);
 
-    uint32 GetFrameFail() const;
-    void SetFrameFail(uint32 frameId);
     const History& GetHistory() const;
     History& ModifyHistory();
 
@@ -58,15 +48,10 @@ public:
     void SetLastCameraOrientation(const Quaternion& camOrient);
     const Quaternion& GetLastCameraOrientation() const;
 
-    ResimulationCache& ModifyResimulationCache();
-
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkInputComponent, Component);
 
 private:
-    ResimulationCache resimulationCache;
-
-    uint32 frameFail = 0;
     Quaternion lastCameraOrientation;
     bool hasLastCameraOrientation = false;
 

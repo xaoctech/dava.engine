@@ -3,8 +3,8 @@
 #include <Base/BaseTypes.h>
 #include <Base/UnordererSet.h>
 #include <Base/UnordererMap.h>
-#include <Scene3D/Systems/BaseSimulationSystem.h>
 #include <Math/Vector.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
@@ -25,26 +25,24 @@ public:
 
     NetworkPhysicsSystem(Scene* scene);
 
-    void AddEntity(Entity* entity) override;
-    void RemoveEntity(Entity* entity) override;
     void ProcessFixed(float32 dt) override;
     void PrepareForRemove() override;
-    void ReSimulationStart(DAVA::Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
-    void Simulate(Entity* entity) override;
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
 
     /** Logs all the data about a vehicle, for debugging purposes. */
     void LogVehicleCar(VehicleCarComponent* carComponent, String const& header);
 
 private:
     void TransferDataToNetworkComponents();
-    void TransferDataFromNetworkComponent(NetworkDynamicBodyComponent* networkDynamicBodyComponent);
+    void TransferDataFromNetworkComponent(Entity* entity);
 
-    void FreezeEverythingExceptEntity(Entity* entity);
+    void FreezeEverything();
+    void UnfreezeBody(DynamicBodyComponent* body);
     void UnfreezeEverything();
 
 private:
-    UnorderedSet<NetworkDynamicBodyComponent*> networkDynamicBodyComponents;
+    EntityGroup* entityGroup = nullptr;
     UnorderedMap<DynamicBodyComponent*, std::tuple<Vector3, Vector3>> frozenDynamicBodiesParams;
     ComponentGroup<DynamicBodyComponent>* dynamicBodies = nullptr;
 };

@@ -17,7 +17,7 @@ Component* NetworkDynamicBodyComponent::Clone(Entity* toEntity)
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDynamicBodyComponent)
 {
     ReflectionRegistrator<NetworkDynamicBodyComponent>::Begin()
-    [M::Replicable(M::Privacy::PRIVATE)]
+    [M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
     .Field("linearVelocity", &NetworkDynamicBodyComponent::linearVelocity)[M::Replicable(), M::HiddenField()]
     .Field("angularVelocity", &NetworkDynamicBodyComponent::angularVelocity)[M::Replicable(), M::HiddenField()]

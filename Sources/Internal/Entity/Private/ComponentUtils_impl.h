@@ -11,7 +11,14 @@ uint32 ComponentUtils::GetRuntimeId()
 template <typename... Args>
 ComponentMask ComponentUtils::MakeMask()
 {
-    return MakeMask((Type::Instance<Args>())...);
+    if (sizeof...(Args) > 0)
+    {
+        return MakeMask((Type::Instance<Args>())...);
+    }
+    else
+    {
+        return ComponentMask();
+    }
 }
 
 template <typename... Args>

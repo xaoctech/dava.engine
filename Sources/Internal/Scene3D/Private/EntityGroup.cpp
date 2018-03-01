@@ -13,6 +13,17 @@ EntityGroup::EntityGroup()
     onEntityRemoved.reset(new Signal<Entity*>());
 }
 
+void EntityGroup::MoveTo(EntityGroup& dest)
+{
+    dest.entities = std::move(entities);
+    dest.cachedAdded = std::move(cachedAdded);
+    dest.cachedRemoved = std::move(cachedRemoved);
+
+    entities.Clear();
+    cachedAdded.clear();
+    cachedRemoved.clear();
+}
+
 EntityGroupOnAdd::EntityGroupOnAdd(EntityGroup* group)
     : group(group)
 {

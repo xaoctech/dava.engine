@@ -48,6 +48,7 @@ class ReflectedTypeDB;
 
 class DebugOverlay;
 class ImageConverter;
+class FeatureManager;
 
 namespace Net
 {
@@ -117,6 +118,8 @@ public:
 
     DebugOverlay* debugOverlay = nullptr;
     ImageConverter* imageConverter = nullptr;
+
+    FeatureManager* featureManager = nullptr;
 };
 
 // TODO: this is temporary solution

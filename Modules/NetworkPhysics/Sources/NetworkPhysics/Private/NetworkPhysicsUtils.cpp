@@ -116,7 +116,11 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
     bool result = false;
 
     physx::PxQueryFilterData queryFilter;
-    queryFilter.flags = physx::PxQueryFlag::ePREFILTER | physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC;
+    queryFilter.flags = physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC;
+    if (filterCallback != nullptr)
+    {
+        queryFilter.flags |= physx::PxQueryFlag::ePREFILTER;
+    }
 
     physx::PxRaycastBuffer hitBuffer;
     bool collisionDetected = physicsSystem->Raycast(origin, direction, distance, hitBuffer, queryFilter, filterCallback);
@@ -155,7 +159,6 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
     physicsSystem->SyncTransformToPhysx();
 
     // Return result
-
     return result;
 }
 }

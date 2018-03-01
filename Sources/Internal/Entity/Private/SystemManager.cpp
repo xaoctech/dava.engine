@@ -31,7 +31,7 @@ struct SysTypeToMethod
     }
 };
 
-static const Array<String, 5> groups = { "ENGINE_BEGIN", "GAMEPLAY_BEGIN", "ENGINE_PHYSICS", "GAMEPLAY_END", "ENGINE_END" };
+static const Array<String, 3> groups = { "ENGINE_BEGIN", "GAMEPLAY", "ENGINE_END" };
 
 void CollectMethods(UnorderedMap<SP::Type, Set<SysTypeToMethod>>& methods, const Type* type, const Vector<std::unique_ptr<ReflectedStructure::Method>>& systemMethods)
 {
@@ -43,7 +43,7 @@ void CollectMethods(UnorderedMap<SP::Type, Set<SysTypeToMethod>>& methods, const
             if (meta != nullptr)
             {
                 const auto& argsType = method->fn.GetInvokeParams().argsType;
-                if (argsType.size() == 2 && argsType[0] == type->Pointer() && (argsType[1]->Is<float32>() || argsType[1]->Is<UIEvent*>()))
+                if (argsType.size() == 2 && argsType[0] == type->Pointer() && argsType[1]->Is<float32>())
                 {
                     DVASSERT(methods[meta->type].count({ type, method.get() }) == 0, "Order already in use. System will not be added.");
                     methods[meta->type].emplace(type, method.get());
@@ -110,21 +110,21 @@ void SystemManager::RegisterAllDerivedSceneSystemsRecursively()
 #endif
             if (!structure->methods.empty())
             {
-                sceneSystems.emplace_back();
-
-                SystemManager::SceneTagInfo& tinfo = sceneSystems.back();
+                SystemManager::SceneTagInfo tinfo;
                 tinfo.systemType = type;
                 tinfo.tags = &tags->tags;
+
+                sceneSystems.push_back(tinfo);
 
                 SystemManagerDetails::CollectMethods(methods, type, structure->methods);
             }
             else
             {
-                systemsWithoutProcessMethods.emplace_back();
-
-                SystemManager::SceneTagInfo& tinfo = systemsWithoutProcessMethods.back();
+                SystemManager::SceneTagInfo tinfo;
                 tinfo.systemType = type;
                 tinfo.tags = &tags->tags;
+
+                systemsWithoutProcessMethods.push_back(tinfo);
 
                 Logger::Debug("SystemManager: system with tags and without methods: '%s'", rType->GetPermanentName().c_str());
             }
@@ -153,11 +153,11 @@ void SystemManager::RegisterAllDerivedSceneSystemsRecursively()
     Logger::Info("\nFixed process methods order:");
     for (const auto& p : methods[SP::Type::FIXED])
     {
-        methodsToFixedProcess.emplace_back();
-
-        SystemManager::SceneProcessInfo& pinfo = methodsToFixedProcess.back();
+        SystemManager::SceneProcessInfo pinfo;
         pinfo.systemType = p.type;
         pinfo.method = &p.method->fn;
+
+        methodsToFixedProcess.push_back(pinfo);
 
         int32 group = static_cast<int32>(p.method->meta->GetMeta<M::SystemProcess>()->group);
 
@@ -175,11 +175,11 @@ void SystemManager::RegisterAllDerivedSceneSystemsRecursively()
     Logger::Info("\nNormal process methods order:");
     for (const auto& p : methods[SP::Type::NORMAL])
     {
-        methodsToProcess.emplace_back();
-
-        SystemManager::SceneProcessInfo& pinfo = methodsToProcess.back();
+        SystemManager::SceneProcessInfo pinfo;
         pinfo.systemType = p.type;
         pinfo.method = &p.method->fn;
+
+        methodsToProcess.push_back(pinfo);
 
         int32 group = static_cast<int32>(p.method->meta->GetMeta<M::SystemProcess>()->group);
 

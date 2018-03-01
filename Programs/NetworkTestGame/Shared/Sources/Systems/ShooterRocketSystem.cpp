@@ -1,38 +1,39 @@
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
 #include "ShooterRocketSystem.h"
-
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/TransformComponent.h"
-
-#include "Utils/Random.h"
 #include "ShooterConstants.h"
 
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkVisibilitySingleComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
-#include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
-#include "NetworkCore/NetworkCoreUtils.h"
+#include "Visibility/ObservableComponent.h"
+
+#include <Base/BaseMath.h>
+#include <Base/BaseObject.h>
+
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Scene.h>
+#include <Render/Highlevel/RenderObject.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Utils/Random.h>
+
+#include <NetworkCore/NetworkCoreUtils.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
 
 #include "Components/DamageComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/ShooterRocketComponent.h"
+#include "Visibility/ObservableComponent.h"
+#include "Visibility/SimpleVisibilityShapeComponent.h"
 
-#include <Physics/PhysicsSystem.h>
-#include <Physics/CollisionSingleComponent.h>
-#include <Physics/DynamicBodyComponent.h>
 #include <Physics/BoxShapeComponent.h>
 #include <Physics/CapsuleCharacterControllerComponent.h>
-
-#include <Render/Highlevel/RenderObject.h>
-
-#include <Reflection/ReflectionRegistrator.h>
+#include <Physics/CollisionSingleComponent.h>
+#include <Physics/DynamicBodyComponent.h>
+#include <Physics/PhysicsSystem.h>
 
 using namespace DAVA;
 
@@ -40,39 +41,23 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRocketSystem)
 {
     ReflectionRegistrator<ShooterRocketSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterRocketSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 14.2f)]
+    .Method("ProcessFixed", &ShooterRocketSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 14.2f)]
     .End();
 }
 
 ShooterRocketSystem::ShooterRocketSystem(Scene* scene)
     : DAVA::BaseSimulationSystem(scene, ComponentUtils::MakeMask<ShooterRocketComponent>())
+    , entityGroup(scene->AquireEntityGroup<ShooterRocketComponent>())
+    , pendingEntities(entityGroup)
 {
-    entitiesComp = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    entitiesComp = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
 }
 
 ShooterRocketSystem::~ShooterRocketSystem()
 {
 }
 
-void ShooterRocketSystem::AddEntity(Entity* entity)
-{
-    pendingEntities.insert(entity);
-    if (IsSimulated(entity))
-    {
-        BaseSimulationSystem::AddEntity(entity);
-    }
-}
-
-void ShooterRocketSystem::RemoveEntity(Entity* entity)
-{
-    pendingEntities.erase(entity);
-    if (IsSimulated(entity))
-    {
-        BaseSimulationSystem::RemoveEntity(entity);
-    }
-}
-
-void ShooterRocketSystem::Simulate(Entity* rocket)
+void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 {
     CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
     ShooterRocketComponent* rocketComp = rocket->GetComponent<ShooterRocketComponent>();
@@ -184,24 +169,49 @@ void ShooterRocketSystem::Simulate(Entity* rocket)
 
 void ShooterRocketSystem::ProcessFixed(float32 timeElapsed)
 {
-    for (Entity* rocket : pendingEntities)
+    for (Entity* rocket : Vector<Entity*>(pendingEntities.entities))
     {
         FillRocket(rocket);
     }
-    pendingEntities.clear();
+    pendingEntities.entities.clear();
 
-    Vector<Entity*> rockets(entities);
-    for (Entity* rocket : rockets)
+    for (Entity* rocket : entityGroup->GetEntities())
     {
-        Simulate(rocket);
+        if (IsClient(this) && !IsClientOwner(rocket))
+        {
+            continue;
+        }
+        SimulateRocket(rocket);
     }
 
-    for (auto destroyedBullet : destroyedEntities)
+    for (Entity* destroyedBullet : destroyedEntities)
     {
         GetScene()->RemoveNode(destroyedBullet);
     }
 
     destroyedEntities.clear();
+}
+
+void ShooterRocketSystem::ReSimulationStart()
+{
+    pendingBackUp.entities = std::move(pendingEntities.entities);
+    pendingEntities.entities.clear();
+}
+
+void ShooterRocketSystem::ReSimulationEnd()
+{
+    auto& entities = pendingEntities.entities;
+
+    for (Entity* entity : pendingBackUp.entities)
+    {
+        bool notFound = std::find(entities.begin(), entities.end(), entity) == entities.end();
+        if (notFound)
+        {
+            entities.push_back(entity);
+        }
+    }
+
+    pendingBackUp.entities.clear();
 }
 
 Entity* ShooterRocketSystem::GetRocketModel()
@@ -216,11 +226,6 @@ Entity* ShooterRocketSystem::GetRocketModel()
     }
 
     return rocketModel->Clone();
-}
-
-bool ShooterRocketSystem::IsSimulated(Entity* rocket)
-{
-    return (IsServer(this) || rocket->GetComponent<NetworkPredictComponent>());
 }
 
 void ShooterRocketSystem::FillRocket(Entity* rocket)
@@ -258,6 +263,9 @@ void ShooterRocketSystem::FillRocket(Entity* rocket)
     dynamicBody->SetBodyFlags(PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
     rocket->AddComponent(dynamicBody);
     rocket->AddComponent(new DamageComponent());
+
+    rocket->AddComponent(new ObservableComponent());
+    rocket->AddComponent(new SimpleVisibilityShapeComponent());
 
     if (!IsServer(this))
     {
@@ -325,19 +333,24 @@ Entity* ShooterRocketSystem::SpawnSubRocket(Entity* shooter, const Entity* targe
     const NetworkPlayerID playerId = shooterReplicationComp->GetNetworkPlayerID();
     replComp->SetNetworkPlayerID(playerId);
     subRocket->AddComponent(replComp);
+
     NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
     networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
     networkPredictComponent->AddPredictedComponent(Type::Instance<ShooterRocketComponent>());
     networkPredictComponent->SetFrameActionID(shootActionId);
     subRocket->AddComponent(networkPredictComponent);
     subRocket->AddComponent(new NetworkTransformComponent());
+
+    subRocket->AddComponent(new ObservableComponent());
+    subRocket->AddComponent(new SimpleVisibilityShapeComponent());
+
     return subRocket;
 }
 
-void ShooterRocketSystem::Colorize(DAVA::Entity* rocket)
+void ShooterRocketSystem::Colorize(Entity* rocket)
 {
     Color color;
-    if (IsSimulated(rocket))
+    if (IsServer(this) || IsClientOwner(rocket))
     {
         color = Color::Green;
     }
@@ -354,7 +367,7 @@ void ShooterRocketSystem::Colorize(DAVA::Entity* rocket)
     }
 }
 
-void ShooterRocketSystem::Colorize(DAVA::Entity* model, const Color& color)
+void ShooterRocketSystem::Colorize(Entity* model, const Color& color)
 {
     RenderObject* ro = GetRenderObject(model);
     for (uint32 batchIdx = 0; batchIdx < ro->GetRenderBatchCount(); ++batchIdx)

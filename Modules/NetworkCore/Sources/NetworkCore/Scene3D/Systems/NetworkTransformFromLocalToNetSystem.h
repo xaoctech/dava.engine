@@ -8,26 +8,22 @@
 
 namespace DAVA
 {
-class NetworkTransformFromLocalToNetSystem : public SceneSystem, public ISimulationSystem
+class NetworkTransformFromLocalToNetSystem : public BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(NetworkTransformFromLocalToNetSystem, SceneSystem);
+    DAVA_VIRTUAL_REFLECTION(NetworkTransformFromLocalToNetSystem, BaseSimulationSystem);
 
     NetworkTransformFromLocalToNetSystem(Scene* scene);
 
-    void AddEntity(Entity* entity) override;
-    void RemoveEntity(Entity* entity) override;
     void ProcessFixed(float32 timeElapsed) override;
     void PrepareForRemove() override;
 
-    void ReSimulationStart(Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
-    void Simulate(Entity* entity) override;
-    const ComponentMask& GetResimulationComponents() const override;
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
 
 private:
     void CopyFromLocalToNet(Entity* entity);
 
-    UnorderedSet<Entity*> entities;
+    EntityGroup* entities = nullptr;
 };
 } // namespace DAVA

@@ -69,24 +69,54 @@ public:
 
     template <class MaskMatcher, class TypeMatcher, class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup(Entity* entity);
+
+    /* Suppress signals. `onEntity(Added\Removed)`, `onComponent(Added\Removed)` signals will not be emitted when corresponding event happen. */
+    void SuppressSignals();
+
+    /* Allow signals. `onEntity(Added\Removed)`, `onComponent(Added\Removed)` signals will be emitted when corresponding event happen. */
+    void AllowSignals();
+
+    /* Backup and clear content of all groups. */
+    void DetachGroups();
+
+    /* Restore groups and merge all new entities added in detached state. */
+    void RestoreGroups();
+
+    /* Register special 'detached' entity that will not be merged after `RestoreGroups()` call */
+    void RegisterDetachedEntity(Entity* entity);
+
+    bool IsInDetachedState();
+
+private:
+    struct
+    {
+        UnorderedMap<EntityGroupKey, EntityGroup, EntityGroupKeyHasher> entityGroups;
+        UnorderedMap<ComponentGroupKey, ComponentGroupBase*, ComponentGroupKeyHasher> componentGroups;
+    } backUp;
+    UnorderedSet<Entity*> entitiesAddedInDetachedState;
+    UnorderedSet<Entity*> entitiesRemovedInDetachedState;
+    UnorderedMap<Component*, Entity*> componentsAddedInDetachedState;
+    UnorderedMap<Component*, Entity*> componentsRemovedInDetachedState;
+
+    bool isSignalsSuppressed = false;
+    bool isInDetachedState = false;
 };
 
 template <class MaskMatcher, class TypeMatcher, class T, class... Args>
 ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 {
+    DVASSERT(!isInDetachedState);
+
     const Type* componentType = Type::Instance<T>();
-    ComponentMask mask = 0;
-    std::initializer_list<const Type*> list = { Type::Instance<Args>()... };
-    if (list.size() == 0)
+    ComponentMask mask;
+
+    if (sizeof...(Args) == 0)
     {
         mask = ComponentUtils::MakeMask<T>();
     }
     else
     {
-        for (const Type* t : list)
-        {
-            mask |= ComponentUtils::MakeMask(t);
-        }
+        mask = ComponentUtils::MakeMask<Args...>();
     }
 
     ComponentGroupBase* base = nullptr;
@@ -94,7 +124,7 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
     auto it = componentGroups.find(key);
     if (it == componentGroups.end())
     {
-        auto result = componentGroups.emplace(key, new ComponentGroup<T>);
+        auto result = componentGroups.emplace(key, new ComponentGroup<T>());
         DVASSERT(result.second == true);
         base = result.first->second;
     }
@@ -135,12 +165,7 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 template <class Matcher, class... Args>
 EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
 {
-    auto list = { ComponentUtils::MakeMask<Args>()... };
-    ComponentMask mask = 0;
-    for (ComponentMask m : list)
-    {
-        mask |= m;
-    }
+    ComponentMask mask = ComponentUtils::MakeMask<Args...>();
 
     EntityGroupKey key{ mask, &Matcher::MatchMask };
 
@@ -148,6 +173,8 @@ EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
     auto it = entityGroups.find(key);
     if (it == entityGroups.end())
     {
+        DVASSERT(!isInDetachedState);
+
         auto result = entityGroups.emplace(key, EntityGroup());
         DVASSERT(result.second == true);
         eg = &result.first->second;

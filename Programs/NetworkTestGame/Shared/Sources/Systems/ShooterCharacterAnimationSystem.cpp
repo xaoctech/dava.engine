@@ -22,7 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCharacterAnimationSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterCharacterAnimationSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &ShooterCharacterAnimationSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 6.0f)]
+    .Method("Process", &ShooterCharacterAnimationSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 6.0f)]
     .End();
 }
 

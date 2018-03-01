@@ -7,8 +7,8 @@
 
 using namespace DAVA;
 
-FontValueProperty::FontValueProperty(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
-    : IntrospectionProperty(object, componentType, name, ref, sourceProperty, copyType)
+FontValueProperty::FontValueProperty(DAVA::BaseObject* object, const DAVA::Type* componentType, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* prototypeProperty)
+    : IntrospectionProperty(object, componentType, name, ref, prototypeProperty)
 {
     ApplyValue(ref.GetValue());
 }

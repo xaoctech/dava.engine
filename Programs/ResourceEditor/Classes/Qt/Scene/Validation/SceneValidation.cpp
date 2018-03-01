@@ -3,17 +3,12 @@
 
 #include <REPlatform/Scene/SceneHelper.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Scene/Components/CollisionTypeComponent.h>
+#include <REPlatform/DataNodes/DebugDrawModuleData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
 
-#include <Base/Vector.h>
-#include <FileSystem/FilePath.h>
-#include <FileSystem/FileSystem.h>
-#include <Logger/Logger.h>
-#include <Render/GPUFamilyDescriptor.h>
-#include <Render/Material/NMaterial.h>
-#include <Render/Material/NMaterialNames.h>
-#include <Render/RenderBase.h>
-#include <Render/Texture.h>
-#include <Render/TextureDescriptor.h>
+#include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Scene.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
@@ -37,6 +32,107 @@ void CollectEntitiesByName(const Entity* entity, MultiMap<FastName, const Entity
     container.emplace(entity->GetName(), entity);
 }
 
+void CompareCollisionTypeComponents(const Entity* entity1, const Entity* entity2, ValidationProgress& validationProgress)
+{
+    DVASSERT(entity1 != nullptr);
+    DVASSERT(entity2 != nullptr);
+
+    CollisionTypeComponent* comp1 = GetCollisionTypeComponent(entity1);
+    CollisionTypeComponent* comp2 = GetCollisionTypeComponent(entity2);
+
+    bool entity1HasCollisionTypeComponent = (comp1 != nullptr);
+    bool entity2HasCollisionTypeComponent = (comp2 != nullptr);
+
+    if (entity2HasCollisionTypeComponent == false && entity2HasCollisionTypeComponent == false)
+        return; // it's ok and valid case
+
+    if (entity1HasCollisionTypeComponent != entity2HasCollisionTypeComponent)
+    {
+        validationProgress.Alerted(DAVA::Format("Entity '%s' (id=%u) %s collision type component while entity '%s' (id=%u) %s",
+                                                entity1->GetName().c_str(), entity1->GetID(),
+                                                (entity1HasCollisionTypeComponent ? "has" : "doesn't have"),
+                                                entity2->GetName().c_str(), entity2->GetID(),
+                                                (entity2HasCollisionTypeComponent ? "has" : "doesn't")));
+        return;
+    }
+
+    int32 collisionType1 = comp1->GetCollisionType();
+    int32 collisionType2 = comp2->GetCollisionType();
+    if (collisionType1 != collisionType2)
+    {
+        validationProgress.Alerted(Format("Collision types differ for entity '%s' (id=%u) and entity '%s' (id=%u)",
+                                          entity1->GetName().c_str(), entity1->GetID(),
+                                          entity2->GetName().c_str(), entity2->GetID()));
+        return;
+    }
+
+    int32 collisionTypeCrashed1 = comp1->GetCollisionTypeCrashed();
+    int32 collisionTypeCrashed2 = comp2->GetCollisionTypeCrashed();
+    if (collisionTypeCrashed1 != collisionTypeCrashed2)
+    {
+        validationProgress.Alerted(Format("Collision types (crashed state) differ for entity '%s' (id=%u) and entity '%s' (id=%u)",
+                                          entity1->GetName().c_str(), entity1->GetID(),
+                                          entity2->GetName().c_str(), entity2->GetID()));
+    }
+}
+
+void CompareCollisionTypeCustomProperties(const Entity* entity1, const Entity* entity2, ValidationProgress& validationProgress)
+{
+    DVASSERT(entity1 != nullptr);
+    DVASSERT(entity2 != nullptr);
+
+    KeyedArchive* props1 = GetCustomPropertiesArchieve(entity1);
+    KeyedArchive* props2 = GetCustomPropertiesArchieve(entity2);
+
+    bool entity1HasCustomProperties = (props1 != nullptr);
+    bool entity2HasCustomProperties = (props2 != nullptr);
+
+    if (entity2HasCustomProperties == false && entity2HasCustomProperties == false)
+        return;
+
+    if (entity1HasCustomProperties != entity2HasCustomProperties)
+    {
+        validationProgress.Alerted(DAVA::Format("Entity '%s' (id=%u) %s custom properties while entity '%s' (id=%u) %s",
+                                                entity1->GetName().c_str(), entity1->GetID(),
+                                                (entity1HasCustomProperties ? "has" : "doesn't have"),
+                                                entity2->GetName().c_str(), entity2->GetID(),
+                                                (entity2HasCustomProperties ? "has" : "doesn't")));
+        return;
+    }
+
+    static const char* CHECKED_PROPERTIES[] = { "CollisionType", "CollisionTypeCrashed" };
+
+    for (const char* checkedProperty : CHECKED_PROPERTIES)
+    {
+        bool entity1HasProperty = props1->IsKeyExists(checkedProperty);
+        bool entity2HasProperty = props2->IsKeyExists(checkedProperty);
+        if (entity2HasProperty == false && entity1HasProperty == false)
+            continue;
+
+        if (entity1HasProperty != entity2HasProperty)
+        {
+            validationProgress.Alerted(Format("Entity '%s' (id=%u) %s property '%s' while entity '%s' (id=%u) %s",
+                                              entity1->GetName().c_str(), entity1->GetID(),
+                                              (entity1HasProperty ? "has" : "doesn't have"),
+                                              checkedProperty,
+                                              entity2->GetName().c_str(), entity2->GetID(),
+                                              (entity2HasProperty ? "has" : "doesn't")));
+            continue;
+        }
+
+        VariantType* entity1Value = props1->GetVariant(checkedProperty);
+        VariantType* entity2Value = props2->GetVariant(checkedProperty);
+
+        if (*entity1Value != *entity2Value)
+        {
+            validationProgress.Alerted(Format("Property '%s' values are different for entity '%s' (id=%u) and entity '%s' (id=%u)",
+                                              checkedProperty,
+                                              entity1->GetName().c_str(), entity1->GetID(),
+                                              entity2->GetName().c_str(), entity2->GetID()));
+        }
+    }
+}
+
 void CompareCustomProperties(const Entity* entity1, const Entity* entity2, ValidationProgress& validationProgress)
 {
     DVASSERT(entity1 != nullptr);
@@ -52,13 +148,13 @@ void CompareCustomProperties(const Entity* entity1, const Entity* entity2, Valid
     {
         validationProgress.Alerted(DAVA::Format("Entity '%s' (id=%u) %s custom properties while entity '%s' (id=%u) %s",
                                                 entity1->GetName().c_str(), entity1->GetID(),
-                                                (entity1HasCustomProperties ? "has" : "hasn't"),
+                                                (entity1HasCustomProperties ? "has" : "doesn't have"),
                                                 entity2->GetName().c_str(), entity2->GetID(),
-                                                (entity2HasCustomProperties ? "has" : "hasn't")));
+                                                (entity2HasCustomProperties ? "has" : "doesn't")));
     }
     else if (entity1HasCustomProperties && entity2HasCustomProperties)
     {
-        static const char* CHECKED_PROPERTIES[] = { "CollisionType", "CollisionTypeCrashed", "editor.referenceToOwner", "Health", "MaterialKind" };
+        static const char* CHECKED_PROPERTIES[] = { "editor.referenceToOwner", "Health", "MaterialKind" };
 
         for (const char* checkedProperty : CHECKED_PROPERTIES)
         {
@@ -69,10 +165,10 @@ void CompareCustomProperties(const Entity* entity1, const Entity* entity2, Valid
             {
                 validationProgress.Alerted(Format("Entity '%s' (id=%u) %s property '%s' while entity '%s' (id=%u) %s",
                                                   entity1->GetName().c_str(), entity1->GetID(),
-                                                  (entity1HasProperty ? "has" : "hasn't"),
+                                                  (entity1HasProperty ? "has" : "doesn't have"),
                                                   checkedProperty,
                                                   entity2->GetName().c_str(), entity2->GetID(),
-                                                  (entity2HasProperty ? "has" : "hasn't")));
+                                                  (entity2HasProperty ? "has" : "doesn't")));
             }
             else if (entity1HasProperty && entity2HasProperty)
             {
@@ -257,34 +353,6 @@ bool IsAssignableMaterialTemplate(const FastName& materialTemplatePath)
     return materialTemplatePath != NMaterialName::SHADOW_VOLUME;
 }
 
-int32 GetCollisionTypeID(const char* collisionTypeName)
-{
-    // copied from EditorConfig.yaml
-    // temporary. should be replaced after implementaion of resource system or alike
-    static const Vector<String>& collisionTypes = {
-        "No Collision",
-        "Tree",
-        "Bush",
-        "Fragile Proj",
-        "Fragile ^Proj",
-        "Falling",
-        "Building",
-        "Invisible Wall",
-        "SpeedTree",
-        "Water"
-    };
-
-    for (int32 i = 0; i < collisionTypes.size(); ++i)
-    {
-        if (collisionTypes[i] == collisionTypeName)
-        {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 String MaterialPrettyName(NMaterial* material)
 {
     DVASSERT(material);
@@ -306,8 +374,9 @@ String MaterialPrettyName(NMaterial* material)
 
 } // namespace SceneValidationDetails
 
-SceneValidation::SceneValidation(DAVA::ProjectManagerData* data)
+SceneValidation::SceneValidation(DAVA::ProjectManagerData* data, const DAVA::Vector<std::pair<DAVA::int32, DAVA::String>>& collisionTypes)
     : projectManagerData(data)
+    , collisionTypes(collisionTypes)
 {
 }
 
@@ -396,6 +465,8 @@ void SceneValidation::ValidateSameNames(DAVA::Scene* scene, ValidationProgress& 
                  ++rangeNextIter)
             {
                 SceneValidationDetails::CompareCustomProperties(rangePair.first->second, rangeNextIter->second, validationProgress);
+                SceneValidationDetails::CompareCollisionTypeComponents(rangePair.first->second, rangeNextIter->second, validationProgress);
+                SceneValidationDetails::CompareCollisionTypeCustomProperties(rangePair.first->second, rangeNextIter->second, validationProgress);
                 SceneValidationDetails::CompareSoundComponents(rangePair.first->second, rangeNextIter->second, validationProgress);
                 SceneValidationDetails::CompareEffects(rangePair.first->second, rangeNextIter->second, validationProgress);
             }
@@ -415,27 +486,72 @@ void SceneValidation::ValidateCollisionProperties(DAVA::Scene* scene, Validation
 
     DVASSERT(scene);
 
-    int32 collisionTypeWaterId = SceneValidationDetails::GetCollisionTypeID("Water");
-    int32 collisionTypeSpeedTreeId = SceneValidationDetails::GetCollisionTypeID("SpeedTree");
+    auto it = std::find_if(std::begin(collisionTypes), std::end(collisionTypes),
+                           [](const std::pair<DAVA::int32, DAVA::String>& val) {
+                               return val.second == "Water";
+                           });
+    int32 collisionTypeWaterId = -1;
+    if (it != std::end(collisionTypes))
+    {
+        collisionTypeWaterId = it->first;
+    }
 
+    it = std::find_if(std::begin(collisionTypes), std::end(collisionTypes),
+                      [](const std::pair<DAVA::int32, DAVA::String>& val) {
+                          return val.second == "SpeedTree";
+                      });
+    int32 collisionTypeSpeedTreeId = -1;
+    if (it != std::end(collisionTypes))
+    {
+        collisionTypeSpeedTreeId = it->first;
+    }
+
+    // validate collision type components (if present)
     Vector<Entity*> container;
-    scene->GetChildEntitiesWithComponent(container, Type::Instance<CustomPropertiesComponent>());
+    scene->GetChildEntitiesWithComponent(container, Type::Instance<CollisionTypeComponent>());
+    for (const Entity* entity : container)
+    {
+        CollisionTypeComponent* comp = GetCollisionTypeComponent(entity);
+        DVASSERT(comp != nullptr);
 
+        bool isWater = (comp->GetCollisionType() == collisionTypeWaterId);
+        bool isSpeedTree = (comp->GetCollisionType() == collisionTypeSpeedTreeId);
+
+        if (isWater || isSpeedTree)
+            continue;
+
+        KeyedArchive* props = GetCustomPropertiesArchieve(entity);
+        if (props == nullptr)
+        {
+            validationProgress.Alerted(Format("Entity '%s' (id=%u) has CollisionType component but doesn't have any custom properies",
+                                              entity->GetName().c_str(), entity->GetID()));
+            continue;
+        }
+
+        if (!props->IsKeyExists("MaterialKind") && !props->IsKeyExists("FallType"))
+        {
+            validationProgress.Alerted(Format("Entity '%s' (id=%u) has CollisionType component but doesn't have 'MaterialKind' or 'FallType'",
+                                              entity->GetName().c_str(), entity->GetID()));
+        }
+    }
+
+    // validate collision type custom properties (if present)
+    scene->GetChildEntitiesWithComponent(container, DAVA::Type::Instance<CustomPropertiesComponent>());
     for (const Entity* entity : container)
     {
         KeyedArchive* props = GetCustomPropertiesArchieve(entity);
-        DVASSERT(props);
+        DVASSERT(props != nullptr);
+        if (props->IsKeyExists("CollisionType") == false)
+            continue;
 
         bool isWater = (props->GetInt32("CollisionType") == collisionTypeWaterId);
         bool isSpeedTree = (props->GetInt32("CollisionType") == collisionTypeSpeedTreeId);
+        if (isWater || isSpeedTree)
+            continue;
 
-        if (props->IsKeyExists("CollisionType")
-            && !isWater
-            && !isSpeedTree
-            && !props->IsKeyExists("MaterialKind")
-            && !props->IsKeyExists("FallType"))
+        if (!props->IsKeyExists("MaterialKind") && !props->IsKeyExists("FallType"))
         {
-            validationProgress.Alerted(Format("Entity '%s' (id=%u) has 'CollisionType' property but hasn't 'MaterialKind' or 'FallType'",
+            validationProgress.Alerted(Format("Entity '%s' (id=%u) has 'CollisionType' property but doesn't have 'MaterialKind' or 'FallType'",
                                               entity->GetName().c_str(), entity->GetID()));
         }
     }

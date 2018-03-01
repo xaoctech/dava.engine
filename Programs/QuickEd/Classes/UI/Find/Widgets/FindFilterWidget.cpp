@@ -20,6 +20,29 @@ using namespace DAVA;
 
 namespace FindFilterWidgetDetail
 {
+template <typename Meta>
+bool HasMeta(const Type* t)
+{
+    if (t == nullptr)
+    {
+        return false;
+    }
+
+    const ReflectedType* refType = ReflectedTypeDB::GetByType(t);
+    if (refType == nullptr)
+    {
+        return false;
+    }
+
+    const ReflectedStructure* structure = refType->GetStructure();
+    if (structure == nullptr || structure->meta == nullptr)
+    {
+        return false;
+    }
+
+    return structure->meta->GetMeta<Meta>() != nullptr;
+}
+
 class AbstractFindFilter
 {
 public:
@@ -65,10 +88,13 @@ public:
         int32 i = 0;
         for (auto& c : components)
         {
-            ComboBoxFilterEditor::ComboBoxData d;
-            d.description = ReflectedTypeDB::GetByType(c)->GetPermanentName();
-            d.userData = reinterpret_cast<uint64>(c);
-            data.push_back(d);
+            if (!HasMeta<M::HiddenField>(c))
+            {
+                ComboBoxFilterEditor::ComboBoxData d;
+                d.description = ReflectedTypeDB::GetByType(c)->GetPermanentName();
+                d.userData = reinterpret_cast<uint64>(c);
+                data.push_back(d);
+            }
         }
 
         return new ComboBoxFilterEditor(parent,

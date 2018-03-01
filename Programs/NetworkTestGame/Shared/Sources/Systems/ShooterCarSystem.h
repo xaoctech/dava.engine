@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Base/UnordererSet.h>
-
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
+#include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
 
 namespace DAVA
 {
@@ -11,20 +11,22 @@ class UIControl;
 }
 
 class ShooterAimComponent;
+class ShooterCarUserComponent;
 
 // System that handles players interactions with cars
-class ShooterCarSystem final : public DAVA::INetworkInputSimulationSystem
+class ShooterCarSystem final : public DAVA::BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(ShooterCarSystem, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(ShooterCarSystem, DAVA::BaseSimulationSystem);
 
     ShooterCarSystem(DAVA::Scene* scene);
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
+
     void ProcessFixed(DAVA::float32 dt) override;
+
     void PrepareForRemove() override;
-    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
-    void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
+
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
+    void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
 
     void SetInteractionControl(DAVA::UIControl* value);
 
@@ -47,10 +49,17 @@ private:
     // Get information about the car
     CarInfo GetCarInfo(DAVA::Entity* car) const;
 
+    // If all conditions are met, put a player into the car
+    void TryPutInCar(ShooterCarUserComponent* playerCarUserComponent, DAVA::Entity* car);
+
+    // Move plyaer out of the car he is in now
+    void MoveOutOfCar(ShooterCarUserComponent* playerCarUserComponent);
+
     void UpdateInteractionControl(ShooterAimComponent* aimComponent);
     void ToggleCharacterStateIfRequired(DAVA::Entity* player) const;
 
 private:
+    DAVA::EntityGroup* entityGroup = nullptr;
     DAVA::UIControl* interactionControl;
     DAVA::UnorderedSet<ShooterAimComponent*> aimComponents;
 };

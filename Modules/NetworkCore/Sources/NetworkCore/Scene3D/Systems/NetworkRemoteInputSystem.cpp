@@ -1,9 +1,11 @@
 #include "NetworkRemoteInputSystem.h"
+
 #include "NetworkCore/Scene3D/Components/NetworkRemoteInputComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkInputComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkReplicationSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkResimulationSingleComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkInputSystem.h"
 #include "NetworkCore/NetworkCoreUtils.h"
 
@@ -28,8 +30,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkRemoteInputSystem)
 {
     ReflectionRegistrator<NetworkRemoteInputSystem>::Begin()[M::Tags("network", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessClient", &NetworkRemoteInputSystem::ProcessClient)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 6.0f)]
-    .Method("ProcessServer", &NetworkRemoteInputSystem::ProcessServer)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 2.0f)]
+    .Method("ProcessClient", &NetworkRemoteInputSystem::ProcessClient)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 19.0f)]
+    .Method("ProcessServer", &NetworkRemoteInputSystem::ProcessServer)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 3.0f)]
     .End();
 }
 
@@ -61,42 +63,32 @@ NetworkRemoteInputSystem::NetworkRemoteInputSystem(Scene* scene)
     , numIncorrectInputsCurrent(0)
     , numHandledFrames(0)
 {
+    networkResimulationSingleComponent = scene->AquireSingleComponentForRead<NetworkResimulationSingleComponent>();
+
+    remoteInputGroup = scene->AquireComponentGroup<NetworkRemoteInputComponent, NetworkRemoteInputComponent>();
+    remoteInputGroup->onComponentAdded->Connect(this, [this](NetworkRemoteInputComponent* c) { lastReplicatedFrameIds[c] = -1; });
+    remoteInputGroup->onComponentRemoved->Connect(this, [this](NetworkRemoteInputComponent* c) { lastReplicatedFrameIds.erase(c); });
 }
 
-void NetworkRemoteInputSystem::AddEntity(Entity* entity)
+NetworkRemoteInputSystem::~NetworkRemoteInputSystem()
 {
-    NetworkRemoteInputComponent* remoteInputComponent = entity->GetComponent<NetworkRemoteInputComponent>();
-    DVASSERT(remoteInputComponent != nullptr);
-
-    remoteInputComponents.insert(remoteInputComponent);
-    lastReplicatedFrameIds[remoteInputComponent] = -1;
-}
-
-void NetworkRemoteInputSystem::RemoveEntity(Entity* entity)
-{
-    NetworkRemoteInputComponent* remoteInputComponent = entity->GetComponent<NetworkRemoteInputComponent>();
-    DVASSERT(remoteInputComponent != nullptr);
-
-    remoteInputComponents.erase(remoteInputComponent);
-    lastReplicatedFrameIds.erase(remoteInputComponent);
+    remoteInputGroup->onComponentAdded->Disconnect(this);
+    remoteInputGroup->onComponentRemoved->Disconnect(this);
 }
 
 void NetworkRemoteInputSystem::ProcessFixed(float32 dt)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkRemoteInputSystem::ProcessFixed");
 
-    if (remoteInputComponents.size() == 0)
-    {
-        return;
-    }
+    DVASSERT(false, "Remove this assert if for some reason client and server processes are single process now.");
 
-    if (IsServer(GetScene()))
+    if (IsServer(this))
     {
         TransferInputToComponents();
     }
     else
     {
-        DVASSERT(IsClient(GetScene()));
+        DVASSERT(IsClient(this));
         TransferInputFromComponentsAndCompare();
     }
 }
@@ -105,7 +97,23 @@ void NetworkRemoteInputSystem::ProcessClient(float32 dt)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkRemoteInputSystem::ProcessClient");
 
-    if (IsClient(GetScene()))
+    if (!IsClient(this))
+    {
+        return;
+    }
+
+    if (IsReSimulating())
+    {
+        for (NetworkRemoteInputComponent* c : remoteInputGroup->components)
+        {
+            if (!IsClientOwner(c->GetEntity()))
+            {
+                uint32 resimFrameId = networkResimulationSingleComponent->GetResimulationFrameId();
+                ReplicateInputOnRange(c, resimFrameId, resimFrameId);
+            }
+        }
+    }
+    else
     {
         TransferInputFromComponentsAndCompare();
     }
@@ -115,7 +123,7 @@ void NetworkRemoteInputSystem::ProcessServer(float32 dt)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkRemoteInputSystem::ProcessServer");
 
-    if (IsServer(GetScene()))
+    if (IsServer(this))
     {
         TransferInputToComponents();
     }
@@ -123,29 +131,6 @@ void NetworkRemoteInputSystem::ProcessServer(float32 dt)
 
 void NetworkRemoteInputSystem::PrepareForRemove()
 {
-}
-
-void NetworkRemoteInputSystem::ReSimulationStart(Entity* entity, uint32 frameId)
-{
-    if (!IsClientOwner(this, entity))
-    {
-        resimFrameId = frameId;
-    }
-}
-
-void NetworkRemoteInputSystem::Simulate(Entity* entity)
-{
-    if (resimFrameId > 0)
-    {
-        ++resimFrameId;
-        NetworkRemoteInputComponent* netRemoteInputComp = entity->GetComponent<NetworkRemoteInputComponent>();
-        ReplicateInputOnRange(netRemoteInputComp, resimFrameId, resimFrameId);
-    }
-}
-
-void NetworkRemoteInputSystem::ReSimulationEnd(Entity* entity)
-{
-    resimFrameId = 0;
 }
 
 void NetworkRemoteInputSystem::SetFullInputComparisonFlag(bool enabled)
@@ -172,7 +157,7 @@ void NetworkRemoteInputSystem::TransferInputToComponents()
     uint32 currentFrameId = networkTimeSingleComponent->GetFrameId();
 
     // Move input from ActionsSingleComponent to NetworkRemoteInputComponents
-    for (NetworkRemoteInputComponent* remoteInputComponent : remoteInputComponents)
+    for (NetworkRemoteInputComponent* remoteInputComponent : remoteInputGroup->components)
     {
         DVASSERT(remoteInputComponent != nullptr);
 
@@ -220,7 +205,7 @@ void NetworkRemoteInputSystem::TransferInputFromComponentsAndCompare()
     uint32 currentFrameId = networkTimeSingleComponent->GetFrameId();
 
     // Move input from NetworkRemoteInputComponent to ActionsSingleComponent for other players entities
-    for (NetworkRemoteInputComponent* remoteInputComponent : remoteInputComponents)
+    for (NetworkRemoteInputComponent* remoteInputComponent : remoteInputGroup->components)
     {
         DVASSERT(remoteInputComponent != nullptr);
 

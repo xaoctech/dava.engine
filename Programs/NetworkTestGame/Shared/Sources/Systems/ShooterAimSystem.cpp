@@ -35,12 +35,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterAimSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterAimSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterAimSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 12.0f)]
+    .Method("ProcessFixed", &ShooterAimSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 12.0f)]
     .End();
 }
 
 ShooterAimSystem::ShooterAimSystem(DAVA::Scene* scene)
-    : DAVA::INetworkInputSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterAimComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::NetworkInputComponent>())
+    : DAVA::BaseSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterAimComponent, DAVA::NetworkInputComponent>())
 {
     using namespace DAVA;
 
@@ -71,27 +71,13 @@ ShooterAimSystem::ShooterAimSystem(DAVA::Scene* scene)
     actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
 
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_ANALOG_ROTATE, AnalogPrecision::ANALOG_UINT16);
+
+    entityGroup = scene->AquireEntityGroup<ShooterAimComponent, NetworkInputComponent>();
 }
 
 ShooterAimSystem::~ShooterAimSystem()
 {
     DAVA::Engine::Instance()->update.Disconnect(this);
-}
-
-void ShooterAimSystem::AddEntity(DAVA::Entity* entity)
-{
-    ShooterAimComponent* aimComponent = entity->GetComponent<ShooterAimComponent>();
-    DVASSERT(aimComponent != nullptr);
-
-    aimComponents.insert(aimComponent);
-}
-
-void ShooterAimSystem::RemoveEntity(DAVA::Entity* entity)
-{
-    ShooterAimComponent* aimComponent = entity->GetComponent<ShooterAimComponent>();
-    DVASSERT(aimComponent != nullptr);
-
-    aimComponents.erase(aimComponent);
 }
 
 void ShooterAimSystem::ProcessFixed(DAVA::float32 dt)
@@ -100,41 +86,32 @@ void ShooterAimSystem::ProcessFixed(DAVA::float32 dt)
 
     DAVA_PROFILER_CPU_SCOPE("ShooterAimSystem::ProcessFixed");
 
-    ActionsSingleComponent* actionsSingleComponent = GetScene()->GetSingletonComponent<ActionsSingleComponent>();
-
-    for (ShooterAimComponent* aimComponent : aimComponents)
+    for (Entity* aimingEntity : entityGroup->GetEntities())
     {
-        DVASSERT(aimComponent != nullptr);
-
-        Entity* aimingEntity = aimComponent->GetEntity();
         DVASSERT(aimingEntity != nullptr);
 
-        // Process input
+        ShooterAimComponent* aimComponent = aimingEntity->GetComponent<ShooterAimComponent>();
+
+        DVASSERT(aimComponent != nullptr);
+
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), aimingEntity);
+
         if (!allActions.empty())
         {
             const auto& actions = allActions.back();
-            ApplyDigitalActions(aimingEntity, actions.digitalActions, actions.clientFrameId, dt);
             ApplyAnalogActions(aimingEntity, actions.analogActions, actions.clientFrameId, dt);
         }
 
         IncreaseCurrentAngles(aimingEntity);
-        UpdateCurrentAimControlPosition(aimComponent);
+
+        if (!IsReSimulating())
+        {
+            UpdateCurrentAimControlPosition(aimComponent);
+        }
     }
 }
 
-void ShooterAimSystem::Simulate(DAVA::Entity* entity)
-{
-    INetworkInputSimulationSystem::Simulate(entity);
-
-    IncreaseCurrentAngles(entity);
-}
-
 void ShooterAimSystem::PrepareForRemove()
-{
-}
-
-void ShooterAimSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)
 {
 }
 
@@ -261,11 +238,11 @@ void ShooterAimSystem::GenerateAimRotationFromDeltas(DAVA::float32 deltaX, DAVA:
     deltaX = Clamp(deltaX, -1.0f, 1.0f);
     deltaY = Clamp(deltaY, -1.0f, 1.0f);
 
-    for (ShooterAimComponent* aimComponent : aimComponents)
+    for (Entity* entity : entityGroup->GetEntities())
     {
-        if (IsClientOwner(GetScene(), aimComponent->GetEntity()))
+        if (IsClientOwner(entity))
         {
-            AddAnalogActionForClient(GetScene(), aimComponent->GetEntity(), SHOOTER_ACTION_ANALOG_ROTATE, Vector2(deltaX, deltaY));
+            AddAnalogActionForClient(GetScene(), entity, SHOOTER_ACTION_ANALOG_ROTATE, Vector2(deltaX, deltaY));
         }
     }
 }

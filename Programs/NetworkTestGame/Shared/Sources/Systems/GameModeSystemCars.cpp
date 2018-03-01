@@ -22,7 +22,6 @@
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
@@ -38,7 +37,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystemCars)
 {
     ReflectionRegistrator<GameModeSystemCars>::Begin()[M::Tags("gm_cars")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameModeSystemCars::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 4.0f)]
+    .Method("Process", &GameModeSystemCars::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 4.0f)]
     .End();
 }
 

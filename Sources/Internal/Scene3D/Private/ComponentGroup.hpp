@@ -1,3 +1,4 @@
+#include "Base/TemplateHelpers.h"
 
 namespace DAVA
 {
@@ -45,6 +46,31 @@ void ComponentGroup<T>::UpdateCachedRemoved()
 }
 
 template <class T>
+ComponentGroupBase* ComponentGroup<T>::Create()
+{
+    return new ComponentGroup();
+}
+
+template <class T>
+void ComponentGroup<T>::MoveTo(ComponentGroupBase* dest, bool clear)
+{
+    DVASSERT(cachedAdded.empty());
+    DVASSERT(cachedRemoved.empty());
+
+    ComponentGroup* castedDest = DynamicTypeCheck<ComponentGroup*>(dest);
+
+    DVASSERT(castedDest != nullptr);
+
+    castedDest->trackedType = trackedType;
+    castedDest->components = std::move(components);
+
+    if (clear)
+    {
+        components.Clear();
+    }
+}
+
+template <class T>
 ComponentGroupOnAdd<T>::~ComponentGroupOnAdd()
 {
     group->onComponentAdded->Disconnect(this);
@@ -52,9 +78,9 @@ ComponentGroupOnAdd<T>::~ComponentGroupOnAdd()
 }
 
 template <class T>
-void ComponentGroupOnAdd<T>::OnAdded(T* entity)
+void ComponentGroupOnAdd<T>::OnAdded(T* component)
 {
-    components.push_back(entity);
+    components.push_back(component);
 }
 
 

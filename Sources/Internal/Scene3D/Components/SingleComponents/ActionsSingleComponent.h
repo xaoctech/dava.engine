@@ -51,6 +51,21 @@ public:
         UnorderedMap<AnalogActionInfo, Vector2, AnalogActionInfoHasher> analogActions;
         Quaternion cameraDelta;
         uint32 clientFrameId = 0;
+
+        bool IsEmpty()
+        {
+            return digitalActions.empty() && analogActions.empty() && cameraDelta == Quaternion();
+        }
+
+        bool operator==(const Actions& other)
+        {
+            return std::all_of(digitalActions.begin(), digitalActions.end(), [& d = other.digitalActions](const auto& x) {
+                       return std::find(d.begin(), d.end(), x) != d.end();
+                   }) &&
+            analogActions == other.analogActions &&
+            cameraDelta == other.cameraDelta &&
+            clientFrameId == other.clientFrameId;
+        }
     };
 
     ActionsSingleComponent();
@@ -101,10 +116,9 @@ public:
 
     Vector<DigitalAction> collectedDigitalActions;
     Vector<AnalogAction> collectedAnalogActions;
-
-private:
     UnorderedMap<uint8, Vector<Actions>> playerIdsToActions;
 
+private:
     Vector<FastName> availableDigitalActions;
     UnorderedSet<FastName> digitalIndex;
 

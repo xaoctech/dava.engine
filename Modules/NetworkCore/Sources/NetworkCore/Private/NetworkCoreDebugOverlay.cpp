@@ -149,8 +149,7 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
                                     PlotResponderHistory(fdiffsByToken, token, frameId, FastName("fdiff"),
                                                          fdiff, FastName(Format("%d", fdiff)), { -10.f, 20.f });
 
-                                    int32 delay = timeSingleComponent->GetClientViewDelay(token,
-                                                                                          frameId);
+                                    int32 delay = timeSingleComponent->GetClientViewDelay(token, frameId);
                                     PlotResponderHistory(delaysByToken, token, frameId, FastName("delay"),
                                                          delay, FastName(Format("%d", delay)), { -10.f, 20.f });
                                 });

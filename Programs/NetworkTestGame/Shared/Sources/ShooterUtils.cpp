@@ -10,6 +10,7 @@
 #include <Render/RenderHelper.h>
 #include <Render/Highlevel/RenderSystem.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Math/AABBox2.h>
 
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
@@ -19,7 +20,6 @@
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/SnapshotUtils.h>
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
-#include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/PhysicsUtils.h>
 #include <Physics/DynamicBodyComponent.h>
@@ -28,6 +28,8 @@
 #include <Physics/Private/PhysicsMath.h>
 
 #include <physx/PxRigidActor.h>
+
+static const DAVA::AABBox2 PLAYER_SPAWN_BOUNDS = DAVA::AABBox2(DAVA::Vector2(87.f, -1.f), DAVA::Vector2(138.f, 47.f));
 
 QueryFilterCallback::QueryFilterCallback(DAVA::Entity const* source_, RaycastFilter filter_)
     : source(source_)
@@ -47,7 +49,10 @@ physx::PxQueryHitType::Enum QueryFilterCallback::preFilter(const physx::PxFilter
 
     bool block = true;
 
-    block &= (entity->GetComponent<CapsuleCharacterControllerComponent>() == nullptr);
+    if ((filter & RaycastFilter::IGNORE_CONTROLLER) == RaycastFilter::IGNORE_CONTROLLER)
+    {
+        block &= (entity->GetComponent<CapsuleCharacterControllerComponent>() == nullptr);
+    }
 
     if ((filter & RaycastFilter::IGNORE_SOURCE) == RaycastFilter::IGNORE_SOURCE)
     {
@@ -235,8 +240,9 @@ DAVA::Vector3 GetRandomPlayerSpawnPosition()
 {
     using namespace DAVA;
 
-    float32 x = Random::Instance()->RandFloat32InBounds(87, 138);
-    float32 y = Random::Instance()->RandFloat32InBounds(47, -1);
+    const AABBox2& bounds = PLAYER_SPAWN_BOUNDS;
+    float32 x = Random::Instance()->RandFloat32InBounds(bounds.min.x, bounds.max.x);
+    float32 y = Random::Instance()->RandFloat32InBounds(bounds.min.y, bounds.max.y);
 
     return Vector3(x, y, 18.0f);
 }

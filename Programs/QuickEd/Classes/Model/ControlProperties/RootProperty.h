@@ -24,7 +24,7 @@ class UIControl;
 class RootProperty : public AbstractProperty
 {
 public:
-    RootProperty(ControlNode* node, const RootProperty* sourceProperties, eCloneType cloneType);
+    RootProperty(ControlNode* node, const RootProperty* sourceProperties);
 
 protected:
     virtual ~RootProperty();
@@ -75,6 +75,7 @@ public:
     void RemoveListener(PropertyListener* listener);
 
     void SetProperty(AbstractProperty* property, const DAVA::Any& newValue);
+    void SetBindingProperty(AbstractProperty* property, const DAVA::String& newValue, DAVA::int32 bindingUpdateMode);
     void SetDefaultProperty(AbstractProperty* property, const DAVA::Any& newValue);
     void ResetProperty(AbstractProperty* property);
     void RefreshProperty(AbstractProperty* property, DAVA::int32 refreshFlags);
@@ -90,8 +91,8 @@ public:
     ControlNode* GetControlNode() const;
 
 private:
-    void AddBaseProperties(DAVA::UIControl* control, const RootProperty* sourceProperties, eCloneType cloneType);
-    void MakeControlPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, const DAVA::Vector<DAVA::Reflection::Field>& fields, const RootProperty* sourceProperties, eCloneType cloneType);
+    void AddBaseProperties(DAVA::UIControl* control, const RootProperty* sourceProperties);
+    void MakeControlPropertiesSection(DAVA::UIControl* control, const DAVA::Type* type, const DAVA::Vector<DAVA::Reflection::Field>& fields, const RootProperty* sourceProperties);
     DAVA::uint32 GetComponentAbsIndex(const DAVA::Type* componentType, DAVA::uint32 index) const;
     void RefreshComponentIndices();
 

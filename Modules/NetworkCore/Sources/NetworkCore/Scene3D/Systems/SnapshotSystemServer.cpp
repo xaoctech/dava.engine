@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SnapshotSystemServer)
 {
     ReflectionRegistrator<SnapshotSystemServer>::Begin()[M::Tags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SnapshotSystemServer::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 5.0f)]
+    .Method("ProcessFixed", &SnapshotSystemServer::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 8.0f)]
     .End();
 }
 

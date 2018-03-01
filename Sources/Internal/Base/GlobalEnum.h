@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_GLOBAL_ENUM_H__
-#define __DAVAENGINE_GLOBAL_ENUM_H__
+#pragma once
 
 #include "Base/EnumMap.h"
 
@@ -51,5 +50,3 @@ void GlobalEnumMap<T>::Register(const int e, const char* s)
 //
 // Usage:
 //  GlobalEnumMap::Instance<AnyEnumType>();
-
-#endif // __DAVAENGINE_GLOBAL_ENUM_H__

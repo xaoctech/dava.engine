@@ -2,7 +2,7 @@
 
 #include <Entity/SceneSystem.h>
 #include <Entity/SingletonComponent.h>
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 /* I want to do mini "hello world" example
    to create string on user click into window
@@ -17,18 +17,15 @@ public:
     void Clear() override{};
 };
 
-class Game01HelloWorld : public DAVA::INetworkInputSimulationSystem
+class Game01HelloWorld : public DAVA::BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(Game01HelloWorld, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(Game01HelloWorld, DAVA::BaseSimulationSystem);
 
     void CreateEntityAfterClientConnected(DAVA::Scene* scene);
     explicit Game01HelloWorld(DAVA::Scene* scene);
     void PrepareForRemove() override{};
     void ProcessFixed(DAVA::float32 timeElapsed) override;
 
-    void ApplyDigitalActions(DAVA::Entity* entity,
-                             const DAVA::Vector<DAVA::FastName>& actions,
-                             DAVA::uint32 clientFrameId,
-                             DAVA::float32 duration) override;
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
 };

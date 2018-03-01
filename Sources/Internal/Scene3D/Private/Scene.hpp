@@ -88,13 +88,13 @@ ComponentGroup<T>* Scene::AquireComponentGroupWithMatcher()
 template <class T>
 T* Scene::AquireSingleComponentForWrite()
 {
-    return AquireSingleComponentForWrite(Type::Instance<T>());
+    return DynamicTypeCheck<T*>(AquireSingleComponentForWrite(Type::Instance<T>()));
 }
 
 template <class T>
 const T* Scene::AquireSingleComponentForRead()
 {
-    return AquireSingleComponentForRead(Type::Instance<T>());
+    return DynamicTypeCheck<const T*>(AquireSingleComponentForRead(Type::Instance<T>()));
 }
 
 }

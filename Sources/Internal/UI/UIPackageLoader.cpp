@@ -16,6 +16,7 @@
 #include "UI/UIControlHelpers.h"
 #include "UI/UIPackage.h"
 #include "UI/Components/UIComponent.h"
+#include "UI/DataBinding/UIDataBindingComponent.h"
 #include "UI/Layouts/UIAnchorComponent.h"
 #include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
@@ -379,6 +380,7 @@ void UIPackageLoader::LoadControl(const YamlNode* node, AbstractUIPackageBuilder
     {
         LoadControlPropertiesFromYamlNode(controlReflectedType, node, builder);
         LoadComponentPropertiesFromYamlNode(node, builder);
+        LoadBindingsFromYamlNode(node, builder);
 
         if (version <= VERSION_WITH_LEGACY_ALIGNS)
         {
@@ -520,6 +522,40 @@ void UIPackageLoader::LoadComponentPropertiesFromYamlNode(const YamlNode* node, 
         }
 
         builder->EndComponentPropertiesSection();
+    }
+}
+
+void UIPackageLoader::LoadBindingsFromYamlNode(const YamlNode* node, AbstractUIPackageBuilder* builder)
+{
+    const YamlNode* bindingsNode = node ? node->Get("bindings") : nullptr;
+
+    if (bindingsNode)
+    {
+        for (uint32 i = 0; i < bindingsNode->GetCount(); i++)
+        {
+            const YamlNode* bindingNode = bindingsNode->Get(i);
+            if (bindingNode->GetCount() == 3)
+            {
+                String fieldName = bindingNode->Get(0)->AsString();
+                String expression = bindingNode->Get(1)->AsString();
+                String modeStr = bindingNode->Get(2)->AsString();
+                int32 mode = 0;
+
+                if (GlobalEnumMap<UIDataBindingComponent::UpdateMode>::Instance()->ToValue(modeStr.c_str(), mode))
+                {
+                    builder->ProcessDataBinding(fieldName, expression, mode);
+                }
+                else
+                {
+                    Logger::Error("Unknown binding mode: %s", modeStr.c_str());
+                    DVASSERT(false);
+                }
+            }
+            else
+            {
+                DVASSERT(false);
+            }
+        }
     }
 }
 

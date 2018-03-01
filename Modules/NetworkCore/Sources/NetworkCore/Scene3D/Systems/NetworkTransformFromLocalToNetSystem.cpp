@@ -13,30 +13,21 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTransformFromLocalToNetSystem)
 {
     ReflectionRegistrator<NetworkTransformFromLocalToNetSystem>::Begin()[M::Tags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkTransformFromLocalToNetSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 3.0f)]
+    .Method("ProcessFixed", &NetworkTransformFromLocalToNetSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 6.0f)]
     .End();
 }
 
 NetworkTransformFromLocalToNetSystem::NetworkTransformFromLocalToNetSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>())
 {
-}
-
-void NetworkTransformFromLocalToNetSystem::AddEntity(Entity* entity)
-{
-    entities.insert(entity);
-}
-
-void NetworkTransformFromLocalToNetSystem::RemoveEntity(Entity* entity)
-{
-    entities.erase(entity);
+    entities = scene->AquireEntityGroup<NetworkTransformComponent>();
 }
 
 void NetworkTransformFromLocalToNetSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTransformFromLocalToNetSystem::ProcessFixed");
 
-    for (auto& entity : entities)
+    for (Entity* entity : entities->GetEntities())
     {
         CopyFromLocalToNet(entity);
     }
@@ -46,22 +37,12 @@ void NetworkTransformFromLocalToNetSystem::PrepareForRemove()
 {
 }
 
-void NetworkTransformFromLocalToNetSystem::ReSimulationStart(Entity* entity, uint32 frameId)
+void NetworkTransformFromLocalToNetSystem::ReSimulationStart()
 {
 }
 
-void NetworkTransformFromLocalToNetSystem::ReSimulationEnd(Entity* entity)
+void NetworkTransformFromLocalToNetSystem::ReSimulationEnd()
 {
-}
-
-const ComponentMask& NetworkTransformFromLocalToNetSystem::GetResimulationComponents() const
-{
-    return GetRequiredComponents();
-}
-
-void NetworkTransformFromLocalToNetSystem::Simulate(Entity* entity)
-{
-    CopyFromLocalToNet(entity);
 }
 
 void NetworkTransformFromLocalToNetSystem::CopyFromLocalToNet(Entity* entity)

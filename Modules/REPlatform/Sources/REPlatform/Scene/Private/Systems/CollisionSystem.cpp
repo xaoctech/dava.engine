@@ -552,18 +552,21 @@ Landscape* SceneCollisionSystem::GetCurrentLandscape() const
 void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object, bool forceRecreate)
 {
     bool shouldBeRecreated = false;
-    EnumerateObjectHierarchy(object, false, [&shouldBeRecreated](const Any&, physx::PxRigidActor*, bool recreate) {
+    UnorderedSet<Any, AnyPointerHasher, AnyPointerEqual> childObjects;
+    EnumerateObjectHierarchy(object, false, [&](const Any& child, physx::PxRigidActor*, bool recreate) {
         shouldBeRecreated |= recreate;
+        childObjects.insert(child);
     });
 
     shouldBeRecreated |= forceRecreate;
     if (shouldBeRecreated == false)
     {
         objectsToUpdateTransform.insert(object.GetContainedObject());
+        objectsToUpdateTransform.insert(childObjects.begin(), childObjects.end());
         return;
     }
 
-    if (object.CanBeCastedTo<Entity>() && shouldBeRecreated == false)
+    if (object.CanBeCastedTo<Entity>())
     {
         auto entity = object.AsEntity();
         RemoveEntity(entity);
@@ -621,6 +624,14 @@ void SceneCollisionSystem::Process(float32 timeElapsed)
     for (Entity* entity : tsc->transformParentChanged)
     {
         UpdateCollisionObject(Selectable(entity));
+    }
+
+    for (auto node : tsc->worldTransformChanged.map)
+    {
+        for (Entity* entity : node.second)
+        {
+            UpdateCollisionObject(Selectable(entity));
+        }
     }
 
     // check in there are entities that should be added or removed

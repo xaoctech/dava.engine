@@ -169,8 +169,7 @@ void DocumentsModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceT
 {
     if (interfaceType == DAVA::Type::Instance<Interfaces::PackageActionsInterface>() && previewWidget.isNull() == false)
     {
-        Interfaces::PackageActionsInterface* packageActions = QueryInterface<Interfaces::PackageActionsInterface>();
-        previewWidget->UnregisterPackageActions(packageActions);
+        previewWidget->UnregisterPackageActions();
     }
 }
 
@@ -659,11 +658,11 @@ DAVA::RefPtr<PackageNode> DocumentsModule::CreatePackage(const QString& path)
     UIPackageLoader packageLoader(projectData->GetPrototypes());
     bool packageLoaded = packageLoader.LoadPackage(davaPath, &builder);
 
-    if (packageLoaded)
+    if (packageLoaded == true)
     {
         bool canLoadPackage = true;
 
-        if (builder.GetResults().HasErrors())
+        if (builder.GetResults().HasErrors() == true)
         {
             ModalMessageParams params;
             params.icon = ModalMessageParams::Question;

@@ -19,6 +19,7 @@
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/Styles/UIStyleSheet.h>
 #include <UI/Styles/UIStyleSheetYamlLoader.h>
+#include <UI/DataBinding/UIDataBindingComponent.h>
 #include <UI/UIControl.h>
 #include <UI/UIControlPackageContext.h>
 #include <UI/UIPackage.h>
@@ -55,8 +56,8 @@ QuickEdPackageBuilder::~QuickEdPackageBuilder()
         control->Release();
     rootControls.clear();
 
-    for (ControlNode* control : prototypes)
-        control->Release();
+    for (ControlNode* prototype : prototypes)
+        prototype->Release();
     prototypes.clear();
 
     for (StyleSheetNode* styleSheet : styleSheets)
@@ -180,11 +181,11 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPrototype(const Fast
     String prototypeName(prototypeFastName.c_str());
     if (packageName.empty())
     {
-        prototypeNode = FindPrototype(prototypeName);
+        prototypeNode = FindPrototype(prototypeFastName);
         if (prototypeNode == nullptr)
         {
             if (loader->LoadControlByName(prototypeFastName, this))
-                prototypeNode = FindPrototype(prototypeName);
+                prototypeNode = FindPrototype(prototypeFastName);
         }
     }
     else
@@ -373,6 +374,44 @@ void QuickEdPackageBuilder::ProcessProperty(const ReflectedStructure::Field& fie
     }
 }
 
+void QuickEdPackageBuilder::ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode)
+{
+    Vector<String> pathParts;
+    Split(fieldName, ".", pathParts);
+
+    ControlNode* node = controlsStack.back().node;
+    RootProperty* rootProperty = node->GetRootProperty();
+
+    AbstractProperty* property = nullptr;
+    if (pathParts.size() > 1)
+    {
+        for (ComponentPropertiesSection* section : rootProperty->GetComponents())
+        {
+            if (section->GetName() == pathParts[0])
+            {
+                property = section->FindPropertyByName(pathParts[1]);
+                break;
+            }
+        }
+    }
+    else
+    {
+        for (int32 i = 0; i < rootProperty->GetControlPropertiesSectionsCount(); i++)
+        {
+            property = rootProperty->GetControlPropertiesSection(i)->FindPropertyByName(pathParts[0]);
+            if (property)
+            {
+                break;
+            }
+        }
+    }
+
+    if (property)
+    {
+        property->SetBindingExpression(expression, bindingMode);
+    }
+}
+
 void QuickEdPackageBuilder::ProcessCustomData(const YamlNode* customDataNode)
 {
     DVASSERT(customDataNode != nullptr);
@@ -511,17 +550,17 @@ const DAVA::ResultList& QuickEdPackageBuilder::GetResults() const
     return results;
 }
 
-ControlNode* QuickEdPackageBuilder::FindPrototype(const DAVA::String& name) const
+ControlNode* QuickEdPackageBuilder::FindPrototype(const DAVA::FastName& name) const
 {
     for (ControlNode* control : prototypes)
     {
-        if (control->GetName() == name)
+        if (control->GetName() == name.c_str())
             return control;
     }
 
     for (ControlNode* control : rootControls)
     {
-        if (control->GetName() == name)
+        if (control->GetName() == name.c_str())
         {
             return control;
         }

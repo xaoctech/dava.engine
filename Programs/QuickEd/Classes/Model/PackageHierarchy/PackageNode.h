@@ -64,7 +64,9 @@ public:
     void RemoveListener(PackageListener* listener);
 
     void SetControlProperty(ControlNode* node, AbstractProperty* property, const DAVA::Any& newValue);
+    void SetControlBindingProperty(ControlNode* node, AbstractProperty* property, const DAVA::String& newBinding, DAVA::int32 bindingUpdateMode);
     void ResetControlProperty(ControlNode* node, AbstractProperty* property);
+
     void RefreshProperty(ControlNode* node, AbstractProperty* property);
 
     void AddComponent(ControlNode* node, ComponentPropertiesSection* section);

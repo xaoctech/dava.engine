@@ -34,6 +34,9 @@
 #include "Components/PowerupCatcherComponent.h"
 #include "Components/AI/ShooterBehaviorComponent.h"
 #include "Components/AI/RandomMovementTaskComponent.h"
+#include "Visibility/ObserverComponent.h"
+#include "Visibility/ObservableComponent.h"
+#include "Visibility/SimpleVisibilityShapeComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
 #include <Physics/PhysicsSystem.h>
@@ -73,7 +76,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerEntitySystem)
 {
     ReflectionRegistrator<PlayerEntitySystem>::Begin()[M::Tags("playerentity")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &PlayerEntitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 1.0f)]
+    .Method("Process", &PlayerEntitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1.0f)]
     .End();
 }
 
@@ -132,6 +135,9 @@ void PlayerEntitySystem::FillTankPlayerEntity(DAVA::Entity* entity)
         entity->AddComponent(new HealthComponent());
         entity->AddComponent(new PowerupCatcherComponent());
         entity->AddComponent(new NetworkTrafficLimitComponent());
+        entity->AddComponent(new ObserverComponent());
+        entity->AddComponent(new ObservableComponent());
+        entity->AddComponent(new SimpleVisibilityShapeComponent());
     }
     else
     {
@@ -259,6 +265,10 @@ void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)
 
         entity->AddComponent(new NetworkDynamicBodyComponent());
         entity->AddComponent(new NetworkVehicleCarComponent());
+
+        entity->AddComponent(new ObserverComponent());
+        entity->AddComponent(new ObservableComponent());
+        entity->AddComponent(new SimpleVisibilityShapeComponent());
     }
     else
     {
@@ -318,6 +328,10 @@ void PlayerEntitySystem::FillCharacterPlayerEntity(DAVA::Entity* entity)
         controller->SetHalfForwardExtent(3.6f);
         controller->SetHalfSideExtent(1.75f);
         entity->AddComponent(controller);
+
+        entity->AddComponent(new ObserverComponent());
+        entity->AddComponent(new ObservableComponent());
+        entity->AddComponent(new SimpleVisibilityShapeComponent());
     }
     else if (IsClientOwner(this, entity))
     {
@@ -350,7 +364,7 @@ DAVA::Entity* PlayerEntitySystem::GetModel(const DAVA::String& pathname) const
     if (modelCache.find(pathname) == modelCache.end())
     {
         DAVA::FilePath name(pathname);
-        ScopedPtr<Scene> model(new Scene());
+        ScopedPtr<Scene> model(new Scene(0));
         SceneFileV2::eError err = model->LoadScene(DAVA::FilePath(pathname));
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
         modelCache.emplace(pathname, model->GetEntityByID(1)->Clone());

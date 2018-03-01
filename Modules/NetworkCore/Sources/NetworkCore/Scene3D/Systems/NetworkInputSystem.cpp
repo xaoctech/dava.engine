@@ -11,7 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
 {
     ReflectionRegistrator<NetworkInputSystem>::Begin()[M::Tags("network", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 5.0f)]
+    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 18.0f)]
     .End();
 }
 

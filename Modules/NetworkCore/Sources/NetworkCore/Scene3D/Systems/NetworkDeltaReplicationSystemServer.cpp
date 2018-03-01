@@ -5,7 +5,6 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkVisibilitySingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
@@ -31,12 +30,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemServer)
 {
     ReflectionRegistrator<NetworkDeltaReplicationSystemServer>::Begin()[M::Tags("network", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkDeltaReplicationSystemServer::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 7.0f)]
+    .Method("ProcessFixed", &NetworkDeltaReplicationSystemServer::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 11.0f)]
     .End();
 }
 
 NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* scene)
     : NetworkDeltaReplicationSystemBase(scene)
+    , responderDataList(MAX_NETWORK_PLAYERS_COUNT)
+    , playerIdUpperBound(0)
 {
     DVASSERT(IsServer(scene));
 
@@ -45,12 +46,26 @@ NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* 
     server->SubscribeOnReceive(PacketParams::DELTA_REPLICATION_CHANNEL_ID,
                                OnServerReceiveCb(this, &NetworkDeltaReplicationSystemServer::OnReceiveCallback));
 
+    server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkDeltaReplicationSystemServer::OnClientConnect));
     server->SubscribeOnDisconnect(OnServerDisconnectCb(this, &NetworkDeltaReplicationSystemServer::OnClientDisconnect));
 
     snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
-    netVisSingleComp = scene->GetSingletonComponent<NetworkVisibilitySingleComponent>();
     netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
     timeComp = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+
+    playerComponentGroup = scene->AquireComponentGroup<NetworkPlayerComponent, NetworkPlayerComponent, NetworkReplicationComponent>();
+    for (NetworkPlayerComponent* c : playerComponentGroup->components)
+    {
+        OnPlayerComponentAdded(c);
+    }
+    playerComponentGroup->onComponentAdded->Connect(this, &NetworkDeltaReplicationSystemServer::OnPlayerComponentAdded);
+    playerComponentGroup->onComponentRemoved->Connect(this, &NetworkDeltaReplicationSystemServer::OnPlayerComponentRemoved);
+}
+
+NetworkDeltaReplicationSystemServer::~NetworkDeltaReplicationSystemServer()
+{
+    playerComponentGroup->onComponentAdded->Disconnect(this);
+    playerComponentGroup->onComponentRemoved->Disconnect(this);
 }
 
 void NetworkDeltaReplicationSystemServer::RemoveEntity(Entity* entity)
@@ -59,30 +74,47 @@ void NetworkDeltaReplicationSystemServer::RemoveEntity(Entity* entity)
     const NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
     const NetworkID netEntityId = netReplComp->GetNetworkID();
     const NetworkPlayerID entPlayerId = netReplComp->GetNetworkPlayerID();
-    server->Foreach([this, frameId, netEntityId, entPlayerId](const Responder& responder)
-                    {
-                        ResponderData& responderData = respondersData[&responder];
-                        auto findIt = responderData.baseFrames.find(netEntityId);
-                        if (findIt != responderData.baseFrames.end())
-                        {
-                            FrameRange& frameRange = findIt->second;
-                            frameRange.delFrameId = frameId;
-                            const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
-                            responderData.removedEntities[netEntityId] = GetPrivacy(playerID, entPlayerId);
-                        }
-                    });
+
+    for (NetworkPlayerID playerId = 0; playerId <= playerIdUpperBound; ++playerId)
+    {
+        ResponderData& data = responderDataList[playerId];
+        if (data.responder)
+        {
+            auto findIt = data.baseFrames.find(netEntityId);
+            if (findIt != data.baseFrames.end())
+            {
+                FrameRange& frameRange = findIt->second;
+                frameRange.delFrameId = frameId;
+                data.removedEntities[netEntityId] = GetPrivacy(playerId, entPlayerId);
+            }
+        }
+    }
+}
+
+void NetworkDeltaReplicationSystemServer::OnPlayerComponentAdded(NetworkPlayerComponent* component)
+{
+    NetworkReplicationComponent* replComp = component->GetEntity()->GetComponent<NetworkReplicationComponent>();
+    responderDataList[replComp->GetNetworkPlayerID()].playerComponent = component;
+}
+
+void NetworkDeltaReplicationSystemServer::OnPlayerComponentRemoved(NetworkPlayerComponent* component)
+{
+    NetworkReplicationComponent* replComp = component->GetEntity()->GetComponent<NetworkReplicationComponent>();
+    responderDataList[replComp->GetNetworkPlayerID()].playerComponent = nullptr;
 }
 
 void NetworkDeltaReplicationSystemServer::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::ProcessFixed");
-    server->Foreach([this](const Responder& responder)
-                    {
-                        ResponderData& responderData = respondersData[&responder];
-                        ProcessAckPackets(responder, responderData);
-                        ProcessResponder(responder, responderData);
-                    });
-    netVisSingleComp->Clear();
+    for (NetworkPlayerID playerId = 0; playerId <= playerIdUpperBound; ++playerId)
+    {
+        ResponderData& data = responderDataList[playerId];
+        if (data.responder)
+        {
+            ProcessAckPackets(data);
+            ProcessResponder(data, playerId);
+        }
+    }
 }
 
 size_t
@@ -103,14 +135,20 @@ void NetworkDeltaReplicationSystemServer::OnReceiveCallback(const Responder& res
         DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::OnReceiveCallback");
         const uint32 offset = ackPacket.Load(data, size);
         DVASSERT(offset == size);
-        ResponderData& responderData = respondersData[&responder];
+
+        NetworkPlayerID playerID = responderToPlayerID[&responder];
+        ResponderData& responderData = responderDataList[playerID];
         std::copy(ackPacket.sequenceIds.begin(), ackPacket.sequenceIds.end(), std::back_inserter(responderData.acks));
     }
 }
 
-void NetworkDeltaReplicationSystemServer::ProcessAckPackets(const Responder& responder, ResponderData& responderData)
+void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& responderData)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::ProcessAckPackets");
+
+    DVASSERT(responderData.responder);
+    const Responder& responder = *responderData.responder;
+
     SeqToSentFrames& seqToSentFrames = responderData.sentFrames;
     EntityToBaseFrames& entityToBaseFrames = responderData.baseFrames;
     for (const SequenceId& sequenceId : responderData.acks)
@@ -179,13 +217,34 @@ void NetworkDeltaReplicationSystemServer::ProcessAckPackets(const Responder& res
     responderData.acks.clear();
 }
 
+void NetworkDeltaReplicationSystemServer::OnClientConnect(const Responder& responder)
+{
+    const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
+    playerIdUpperBound = std::max(playerID, playerIdUpperBound);
+
+    ResponderData& data = responderDataList[playerID];
+    data.responder = &responder;
+
+    responderToPlayerID[&responder] = playerID;
+}
+
 void NetworkDeltaReplicationSystemServer::OnClientDisconnect(const FastName& token)
 {
     if (server->HasResponder(token))
     {
         Logger::Debug("[NetworkDeltaReplicationSystemServer::OnClientDisconnect] Wipe state token:%s", token.c_str());
         const Responder& responder = server->GetResponder(token);
-        respondersData.erase(&responder);
+        const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
+
+        ResponderData& data = responderDataList[playerID];
+
+        responderToPlayerID.erase(data.responder);
+
+        data.responder = nullptr;
+        data.acks.clear();
+        data.baseFrames.clear();
+        data.removedEntities.clear();
+        data.maxSeq = 0;
     }
 }
 
@@ -325,10 +384,13 @@ M::Privacy NetworkDeltaReplicationSystemServer::GetPrivacy(NetworkPlayerID playe
     return M::Privacy::PUBLIC;
 }
 
-void NetworkDeltaReplicationSystemServer::ProcessResponder(const Responder& responder, ResponderData& responderData)
+void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& responderData, NetworkPlayerID playerId)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::ProcessResponder");
-    const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
+
+    const Responder* responder = responderData.responder;
+    DVASSERT(responder);
+
     const uint32 frameId = timeComp->GetFrameId();
 
     SequenceId& sequenceId = responderData.maxSeq;
@@ -337,12 +399,12 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(const Responder& resp
         sequenceId = 1;
     }
 
-    ResponderEnvironment env{ responder, frameId, sequenceId, responderData.baseFrames, responderData.sentFrames };
+    ResponderEnvironment env{ *responder, frameId, sequenceId, responderData.baseFrames, responderData.sentFrames };
     NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingletonComponent<NetworkStatisticsSingleComponent>();
     // prob. need bool flag inside NetworkStatisticsSingleComponent here
     //if (statsComp)
     {
-        uint64 tsKey = NetStatTimestamps::GetKey(frameId, playerID);
+        uint64 tsKey = NetStatTimestamps::GetKey(frameId, playerId);
         env.pktHeader.timestamps = statsComp->RemoveTimestamps(tsKey);
         if (env.pktHeader.timestamps)
         {
@@ -351,35 +413,35 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(const Responder& resp
     }
 
     mtuBlock.size = env.pktHeader.GetSize();
-    const UnorderedSet<const Entity*>& addedEntities = netVisSingleComp->GetAddedEntities(playerID);
-    const NetworkVisibilitySingleComponent::EntityToFrequency& entityToFrequency =
-    netVisSingleComp->GetVisibleEntities(playerID);
 
     ProcessEntity(NetworkID::SCENE_ID, M::Privacy::PUBLIC, env);
 
-    for (const auto& entityToFrequencyIt : entityToFrequency)
+    if (responderData.playerComponent)
     {
-        const Entity* entity = entityToFrequencyIt.first;
-        if (entity->GetParent() != GetScene())
+        for (auto& info : responderData.playerComponent->periods)
         {
-            // Child entities should be replicated via root entity
-            continue;
-        }
+            const Entity* entity = info.target;
+            if (entity->GetParent() != GetScene())
+            {
+                // Child entities should be replicated via root entity
+                continue;
+            }
 
-        if (addedEntities.find(entity) == addedEntities.end())
-        {
-            const uint8 frequency = entityToFrequencyIt.second;
-            if ((0 == frequency) || (frequency > 1 && (frameId + entity->GetID()) % frequency > 0))
+            if (info.fresh)
+            {
+                info.fresh = false;
+            }
+            else if (info.period > 1 && (frameId + entity->GetID()) % info.period > 0)
             {
                 /* Throttling. */
                 continue;
             }
-        }
 
-        NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
-        const NetworkID netEntityId = netReplComp->GetNetworkID();
-        M::Privacy privacy = GetPrivacy(playerID, netReplComp->GetNetworkPlayerID());
-        ProcessEntity(netEntityId, privacy, env);
+            NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
+            const NetworkID netEntityId = netReplComp->GetNetworkID();
+            M::Privacy privacy = GetPrivacy(playerId, netReplComp->GetNetworkPlayerID());
+            ProcessEntity(netEntityId, privacy, env);
+        }
     }
 
     for (const auto& it : responderData.removedEntities)

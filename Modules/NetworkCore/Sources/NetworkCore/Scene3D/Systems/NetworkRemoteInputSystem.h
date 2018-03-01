@@ -4,12 +4,13 @@
 #include <Base/Map.h>
 #include <Base/FastName.h>
 #include <Entity/SceneSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 #include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
 
 namespace DAVA
 {
 class NetworkRemoteInputComponent;
+class NetworkResimulationSingleComponent;
 class Scene;
 
 /**
@@ -24,17 +25,12 @@ class NetworkRemoteInputSystem final : public BaseSimulationSystem
 
 public:
     NetworkRemoteInputSystem(Scene* scene);
+    ~NetworkRemoteInputSystem();
 
-    void AddEntity(Entity* entity) override;
-    void RemoveEntity(Entity* entity) override;
     void ProcessFixed(float32 dt) override;
     void ProcessClient(float32 dt);
     void ProcessServer(float32 dt);
     void PrepareForRemove() override;
-
-    void ReSimulationStart(Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
-    void Simulate(Entity* entity) override;
 
     /** Enable full input comparison. Value should be the same for server and client systems in order for comparison to work correctly. */
     void SetFullInputComparisonFlag(bool enabled);
@@ -60,7 +56,9 @@ private:
     bool GetIndexWithFrame(NetworkRemoteInputComponent* remoteInputComponent, uint32 frameId, uint32& outIndex) const; // Return index in remote input component buffers where action for `frameId` is saved. Return `false` if there is no known action for passed `frameId`
 
 private:
-    UnorderedSet<NetworkRemoteInputComponent*> remoteInputComponents;
+    const NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
+    ComponentGroup<NetworkRemoteInputComponent>* remoteInputGroup = nullptr;
+
     UnorderedMap<NetworkRemoteInputComponent*, int64> lastReplicatedFrameIds; // Until what frame input was replicated
 
     // Member variables for comparing remote and local inputs
@@ -72,7 +70,5 @@ private:
     uint32 numIncorrectInputsIndex; // Current index in `numIncorrectInputs` ring buffer
     uint32 numIncorrectInputsCurrent; // Accumulator for number of incorrect frames during the second
     uint32 numHandledFrames; // Number of frames compared in `CompareRemoteToLocalInput`
-
-    uint32 resimFrameId = 0;
 };
 }

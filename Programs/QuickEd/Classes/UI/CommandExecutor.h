@@ -39,6 +39,7 @@ public:
     void RemoveImportedPackagesFromPackage(const DAVA::Vector<PackageNode*>& importedPackage, const PackageNode* package);
 
     void ChangeProperty(ControlNode* node, AbstractProperty* property, const DAVA::Any& value);
+    void ChangeBindingProperty(ControlNode* node, AbstractProperty* property, const DAVA::String& value, DAVA::int32 mode);
     void ResetProperty(ControlNode* node, AbstractProperty* property);
 
     void AddComponent(ControlNode* node, const DAVA::Type* componentType);

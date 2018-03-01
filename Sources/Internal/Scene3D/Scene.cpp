@@ -20,7 +20,6 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/ChangedSystemsSingleComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
@@ -597,7 +596,7 @@ void Scene::AddSystem(SceneSystem* sceneSystem, SceneSystem* insertBeforeSceneFo
     sceneSystem->SetScene(this);
     RegisterEntitiesInSystemRecursively(sceneSystem, this);
 
-    GetSingletonComponent<ChangedSystemsSingleComponent>()->addedSystems.push_back(sceneSystem);
+    systemAdded.Emit(sceneSystem);
 }
 
 void Scene::RemoveSystem(SceneSystem* sceneSystem)
@@ -614,7 +613,7 @@ void Scene::RemoveSystem(SceneSystem* sceneSystem)
     if (removed)
     {
         sceneSystem->SetScene(nullptr);
-        GetSingletonComponent<ChangedSystemsSingleComponent>()->removedSystems.push_back(sceneSystem);
+        systemRemoved.Emit(sceneSystem);
     }
     else
     {
@@ -765,7 +764,7 @@ void Scene::CreateSystemsToMethods(const Vector<SystemManager::SceneProcessInfo>
             systemsVector.push_back(sceneSystem);
             sceneSystem->SetScene(this);
             RegisterEntitiesInSystemRecursively(sceneSystem, this);
-            GetSingletonComponent<ChangedSystemsSingleComponent>()->addedSystems.push_back(sceneSystem);
+            systemAdded.Emit(sceneSystem);
         }
     }
 }
@@ -938,7 +937,7 @@ void Scene::CreateSystemsByTags()
                 systemsVector.push_back(sceneSystem);
                 sceneSystem->SetScene(this);
                 RegisterEntitiesInSystemRecursively(sceneSystem, this);
-                GetSingletonComponent<ChangedSystemsSingleComponent>()->addedSystems.push_back(sceneSystem);
+                systemAdded.Emit(sceneSystem);
             }
         }
     }
@@ -1040,7 +1039,6 @@ void Scene::Update(float32 timeElapsed)
 
     GetSingletonComponent<ActionsSingleComponent>()->Clear();
     GetSingletonComponent<TransformSingleComponent>()->Clear();
-    GetSingletonComponent<ChangedSystemsSingleComponent>()->Clear();
 
     sceneGlobalTime += timeElapsed;
 }
@@ -1112,6 +1110,11 @@ void Scene::SetCustomDrawCamera(Camera* _camera)
 Camera* Scene::GetDrawCamera() const
 {
     return drawCamera;
+}
+
+EntitiesManager* Scene::GetEntitiesManager() const
+{
+    return entitiesManager;
 }
 
 EventSystem* Scene::GetEventSystem() const
@@ -1340,5 +1343,10 @@ bool Scene::IsFixedUpdatePaused() const
 float32 Scene::GetTimeOverrunInterpolatedFactor() const
 {
     return timeOverrunInterpolatedFactor;
+}
+
+const Vector<SceneSystem*>& Scene::GetSystems() const
+{
+    return systemsVector;
 }
 };

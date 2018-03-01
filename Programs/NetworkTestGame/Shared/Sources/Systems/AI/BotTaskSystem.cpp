@@ -12,9 +12,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(BotTaskSystem)
 {
-    ReflectionRegistrator<BotTaskSystem>::Begin()[M::Tags("bot", "shooterbot")]
+    ReflectionRegistrator<BotTaskSystem>::Begin()[M::Tags("bot", "taskbot")]
     .ConstructorByPointer<Scene*>() // TODO: system out of place. Should be in gameplay group, or be a part of fw.
-    .Method("ProcessFixed", &BotTaskSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 4.2f)]
+    .Method("ProcessFixed", &BotTaskSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 16.0f)]
     .End();
 }
 
@@ -159,6 +159,7 @@ bool BotTaskSystem::GetShotParams(float& outYawCorrection, float& outDist, float
 
     return true;
 }
+
 
 void BotTaskSystem::ProcessTask(float32 timeElapsed, AttackTaskComponent* task)
 {
@@ -373,5 +374,138 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, RandomMovementTaskComponent
     if (task->turnRight)
     {
         currentDigitalActions.push_back(FastName("RIGHT"));
+    }
+}
+
+void BotTaskSystem::ProcessTask(float32 timeElapsed, SlideToBorderTaskComponent* task)
+{
+    Entity* entity = task->GetEntity();
+    Vector3 selfPos = entity->GetWorldTransform().GetTranslationVector();
+
+    if (task->movingRight)
+    {
+        if (selfPos.x >= 30.f)
+        {
+            task->movingRight = false;
+        }
+    }
+    else
+    {
+        if (selfPos.x <= -30.f)
+        {
+            task->movingRight = true;
+        }
+    }
+
+    if (task->movingRight)
+    {
+        currentDigitalActions.push_back(FastName("RIGHT"));
+    }
+    else
+    {
+        currentDigitalActions.push_back(FastName("LEFT"));
+    }
+}
+
+void BotTaskSystem::ProcessTask(float32 timeElapsed, WagToBorderTaskComponent* task)
+{
+    Entity* entity = task->GetEntity();
+    Vector3 selfPos = entity->GetWorldTransform().GetTranslationVector();
+
+    if (task->movingRight)
+    {
+        if (selfPos.x >= 30.f)
+        {
+            task->movingRight = false;
+        }
+    }
+    else
+    {
+        if (selfPos.x <= -30.f)
+        {
+            task->movingRight = true;
+        }
+    }
+
+    if (task->waggingRight)
+    {
+        if (task->framesWithSameWagging >= (task->movingRight ? 9 : 3))
+        {
+            task->waggingRight = false;
+            task->framesWithSameWagging = 0;
+        }
+    }
+    else
+    {
+        if (task->framesWithSameWagging >= (task->movingRight ? 3 : 9))
+        {
+            task->waggingRight = true;
+            task->framesWithSameWagging = 0;
+        }
+    }
+
+    if (task->waggingRight)
+    {
+        currentDigitalActions.push_back(FastName("RIGHT"));
+    }
+    else
+    {
+        currentDigitalActions.push_back(FastName("LEFT"));
+    }
+    currentDigitalActions.push_back(FastName("ACCELERATE"));
+
+    task->framesWithSameWagging++;
+}
+
+void BotTaskSystem::ProcessTask(float32 timeElapsed, DodgeCenterTaskComponent* task)
+{
+    Entity* entity = task->GetEntity();
+    Vector3 selfPos = entity->GetWorldTransform().GetTranslationVector();
+
+    if (task->movingRight)
+    {
+        if (selfPos.x >= -2.f)
+        {
+            task->movingRight = false;
+        }
+    }
+    else
+    {
+        if (selfPos.x <= -30.f)
+        {
+            task->movingRight = true;
+        }
+    }
+
+    if (task->movingRight)
+    {
+        currentDigitalActions.push_back(FastName("RIGHT"));
+    }
+    else
+    {
+        currentDigitalActions.push_back(FastName("LEFT"));
+    }
+}
+
+void BotTaskSystem::ProcessTask(float32 timeElapsed, ShootIfSeeingTargetTaskComponent* task)
+{
+    if (task->noAmmo)
+    {
+        return;
+    }
+
+    Entity* target = GetScene()->GetEntityByID(task->targetID);
+    if (!target)
+    {
+        return;
+    }
+
+    Vector3 shooterPos = task->GetEntity()->GetWorldTransform().GetTranslationVector();
+    Vector3 targetPos = target->GetWorldTransform().GetTranslationVector();
+
+    if (fabs(shooterPos.x - targetPos.x) < 0.5f)
+    {
+        currentDigitalActions.push_back(FastName("FIRST_SHOOT"));
+        task->noAmmo = true;
     }
 }

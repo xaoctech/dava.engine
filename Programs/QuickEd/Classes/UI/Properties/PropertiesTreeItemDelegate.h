@@ -79,12 +79,14 @@ protected:
     QMap<AbstractProperty::ePropertyType, AbstractPropertyDelegate*> propertyItemDelegates;
     QMap<const DAVA::Type*, AbstractPropertyDelegate*> anyItemDelegates;
     QMap<PropertyPath, AbstractPropertyDelegate*> propertyNameTypeItemDelegates;
+    AbstractPropertyDelegate* bindingPropertyDelegate;
 };
+
 class PropertyWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PropertyWidget(QWidget* parent = NULL);
+    explicit PropertyWidget(AbstractPropertyDelegate* delegate, QWidget* parent = NULL);
     ~PropertyWidget(){};
 
     bool event(QEvent* e) override;
@@ -101,4 +103,5 @@ public:
 
 public:
     QWidget* editWidget;
+    AbstractPropertyDelegate* delegate;
 };

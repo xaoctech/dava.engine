@@ -26,6 +26,7 @@ NetworkIdSystem::NetworkIdSystem(Scene* scene)
 void NetworkIdSystem::AddEntity(Entity* entity)
 {
     NetworkReplicationComponent* nrc = entity->GetComponent<NetworkReplicationComponent>();
+
     if (nullptr != nrc)
     {
         NetworkID id = nrc->GetNetworkID();

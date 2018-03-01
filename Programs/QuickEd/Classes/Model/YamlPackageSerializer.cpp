@@ -87,6 +87,13 @@ void YamlPackageSerializer::BeginArray()
     nodesStack.push_back(node);
 }
 
+void YamlPackageSerializer::BeginFlowArray()
+{
+    YamlNode* node = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
+    nodesStack.back()->Add(node);
+    nodesStack.push_back(node);
+}
+
 void YamlPackageSerializer::EndArray()
 {
     nodesStack.pop_back();

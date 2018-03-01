@@ -49,23 +49,11 @@ public:
     void SetEntityType(EntityType entityType_);
     EntityType GetEntityType() const;
 
-    void SetFrameID(uint32 frameID);
-    uint32 GetFrameID() const;
-
-    void SetEntityIndexInFrame(uint8 entityIndexInFrame_);
-    uint8 GetEntityIndexInFrame() const;
-
-    void SetEntityCountInFrame(uint8 entityCountInFrame_);
-    uint8 GetEntityCountInFrame() const;
-
 private:
     NetworkPlayerID networkPlayerID = 0;
     EntityType entityType;
     NetworkID networkUniqueID = NetworkID::INVALID;
     uint8 teamID = 0;
-    uint32 frameID = 0;
-    uint8 entityIndexInFrame = 0;
-    uint8 entityCountInFrame = 0;
 
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkReplicationComponent, Component);
@@ -103,33 +91,5 @@ inline const uint8 NetworkReplicationComponent::GetOwnerTeamID() const
 inline void NetworkReplicationComponent::SetOwnerTeamID(uint8 teamID_)
 {
     teamID = teamID_;
-}
-
-inline void NetworkReplicationComponent::SetFrameID(uint32 frameID_)
-{
-    frameID = frameID_;
-}
-inline uint32 NetworkReplicationComponent::GetFrameID() const
-{
-    return frameID;
-}
-
-inline void NetworkReplicationComponent::SetEntityIndexInFrame(uint8 entityIndexInFrame_)
-{
-    entityIndexInFrame = entityIndexInFrame_;
-}
-
-inline uint8 NetworkReplicationComponent::GetEntityIndexInFrame() const
-{
-    return entityIndexInFrame;
-}
-
-inline void NetworkReplicationComponent::SetEntityCountInFrame(uint8 entityCountInFrame_)
-{
-    entityCountInFrame = entityCountInFrame_;
-}
-inline uint8 NetworkReplicationComponent::GetEntityCountInFrame() const
-{
-    return entityCountInFrame;
 }
 }

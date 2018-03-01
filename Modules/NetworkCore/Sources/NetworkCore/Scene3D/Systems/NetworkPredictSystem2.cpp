@@ -17,7 +17,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictSystem2)
 {
     ReflectionRegistrator<NetworkPredictSystem2>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkPredictSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 10.0f)]
+    .Method("ProcessFixed", &NetworkPredictSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.1f)]
     .End();
 }
 
@@ -173,25 +173,6 @@ void NetworkPredictSystem2::ProcessFixed(float32 timeElapsed)
 }
 
 void NetworkPredictSystem2::PrepareForRemove()
-{
-}
-
-void NetworkPredictSystem2::ReSimulationStart(Entity* entity, uint32 frameId)
-{
-    isResimulation = true;
-}
-
-void NetworkPredictSystem2::ReSimulationEnd(Entity* entity)
-{
-    isResimulation = false;
-}
-
-const ComponentMask& NetworkPredictSystem2::GetResimulationComponents() const
-{
-    return SceneSystem::GetRequiredComponents();
-}
-
-void NetworkPredictSystem2::Simulate(Entity* entity)
 {
 }
 

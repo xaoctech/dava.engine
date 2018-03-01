@@ -1,4 +1,5 @@
 #include "Game01HelloWorld.h"
+#include "InputUtils.h"
 
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
@@ -32,10 +33,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Game01HelloWorld)
 }
 
 Game01HelloWorld::Game01HelloWorld(DAVA::Scene* scene)
-    : INetworkInputSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<DAVA::NetworkInputComponent>())
+    : BaseSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<DAVA::NetworkInputComponent>())
 {
-    DAVA::uint32 mouseId = DAVA::GetMouseDeviceId();
-    //uint32 keyboardId = GetKeyboardDeviceId();
+    DAVA::uint32 mouseId = InputUtils::GetMouseDeviceId();
+    //uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
 
     scene->GetSingletonComponent<ActionsSingleComponent>()->CollectDigitalAction(DAVA::FastName("FIRST_SHOOT"), DAVA::MOUSE_LBUTTON, mouseId);
 
@@ -55,6 +56,7 @@ Game01HelloWorld::Game01HelloWorld(DAVA::Scene* scene)
 
 void Game01HelloWorld::ProcessFixed(DAVA::float32 timeElapsed)
 {
+    /*
     for (DAVA::Entity* entity : entities)
     {
         const DAVA::Vector<DAVA::ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
@@ -63,12 +65,10 @@ void Game01HelloWorld::ProcessFixed(DAVA::float32 timeElapsed)
             ApplyDigitalActions(entity, actions.digitalActions, actions.clientFrameId, timeElapsed);
         }
     }
+    */
 }
 
-void Game01HelloWorld::ApplyDigitalActions(DAVA::Entity* entity,
-                                           const DAVA::Vector<DAVA::FastName>& actions,
-                                           DAVA::uint32 clientFrameId,
-                                           DAVA::float32 duration)
+void Game01HelloWorld::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)
 {
     for (const DAVA::FastName& actionName : actions)
     {

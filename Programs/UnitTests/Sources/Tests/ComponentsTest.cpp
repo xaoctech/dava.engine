@@ -426,6 +426,10 @@ DAVA_TESTCLASS (ComponentsTest)
             TEST_VERIFY(entity->GetComponent(type)->GetType() == type);
         }
 
+        mask = ComponentUtils::MakeMask();
+
+        TEST_VERIFY(mask.none());
+
         SafeRelease(entity); // Components will be released in Entity destructor
     }
 

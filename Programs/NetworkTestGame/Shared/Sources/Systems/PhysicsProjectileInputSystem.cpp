@@ -1,4 +1,5 @@
 #include "PhysicsProjectileInputSystem.h"
+#include "InputUtils.h"
 
 #include "Systems/PhysicsProjectileSystem.h"
 #include "Components/PhysicsProjectileComponent.h"
@@ -26,7 +27,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsProjectileInputSystem)
 {
     ReflectionRegistrator<PhysicsProjectileInputSystem>::Begin()[M::Tags("gm_characters", "physics", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PhysicsProjectileInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 7.0f)]
+    .Method("ProcessFixed", &PhysicsProjectileInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 7.0f)]
     .End();
 }
 
@@ -37,14 +38,15 @@ static const FastName FIRE_GRENADE("FIRE_GRENADE");
 }
 
 PhysicsProjectileInputSystem::PhysicsProjectileInputSystem(Scene* scene)
-    : INetworkInputSimulationSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>())
 {
     using namespace PhysicsProjectileInputSystemDetail;
 
-    uint32 mouseId = GetMouseDeviceId();
-    uint32 keyboardId = GetKeyboardDeviceId();
+    uint32 mouseId = InputUtils::GetMouseDeviceId();
+    uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
 
     ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    entityGroup = scene->AquireEntityGroup<NetworkInputComponent>();
 
     actionsSingleComponent->CollectDigitalAction(FIRE_MISSILE, eInputElements::MOUSE_LBUTTON, mouseId);
     actionsSingleComponent->CollectDigitalAction(FIRE_GRENADE, eInputElements::MOUSE_RBUTTON, mouseId);
@@ -56,7 +58,7 @@ void PhysicsProjectileInputSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("PhysicsProjectileInputSystem::ProcessFixed");
 
-    for (Entity* entity : entities)
+    for (Entity* entity : entityGroup->GetEntities())
     {
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
         for (const auto& actions : allActions)

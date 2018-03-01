@@ -16,7 +16,8 @@ public:
         CHARACTERS,
         PHYSICS,
         TANKS,
-        SHOOTER
+        SHOOTER,
+        INVADERS
     };
 
     static Id IdByName(DAVA::String name);
@@ -32,7 +33,8 @@ public:
     {
         NORMAL_PLAYER,
         RANDOM_BOT,
-        SHOOTER_BOT
+        SHOOTER_BOT,
+        INVADER_BOT
     };
 
     PlayerKind(Id id = Id::NORMAL_PLAYER);
@@ -61,6 +63,10 @@ inline PlayerKind::PlayerKind(const DAVA::String& name)
     if (name == "random")
     {
         id = Id::RANDOM_BOT;
+    }
+    else if (name == "invader")
+    {
+        id = Id::INVADER_BOT;
     }
     else if (name == "shooter")
     {

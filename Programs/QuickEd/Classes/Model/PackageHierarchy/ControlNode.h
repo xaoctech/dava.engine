@@ -36,8 +36,6 @@ public:
     static ControlNode* CreateFromPrototypeChild(ControlNode* sourceNode);
 
 public:
-    ControlNode* Clone();
-
     // ControlsContainerNode
     void Add(ControlNode* node) override;
     void InsertAtIndex(int index, ControlNode* node) override;

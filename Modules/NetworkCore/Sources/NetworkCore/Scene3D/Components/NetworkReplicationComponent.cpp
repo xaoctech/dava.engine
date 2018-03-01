@@ -11,10 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationComponent)
     .ConstructorByPointer()
     .Field("networkPlayerID", &NetworkReplicationComponent::GetNetworkPlayerID, &NetworkReplicationComponent::SetNetworkPlayerID)[M::Replicable()]
     .Field("entityType", &NetworkReplicationComponent::GetEntityType, &NetworkReplicationComponent::SetEntityType)[M::Replicable()]
-    .Field("frameID", &NetworkReplicationComponent::GetFrameID, &NetworkReplicationComponent::SetFrameID)[M::Replicable()]
     .Field("networkID", &NetworkReplicationComponent::GetNetworkID, &NetworkReplicationComponent::SetNetworkID)[M::Replicable()]
-    .Field("entityIndexInFrame", &NetworkReplicationComponent::GetEntityIndexInFrame, &NetworkReplicationComponent::SetEntityIndexInFrame)[M::Replicable()]
-    .Field("entityCountInFrame", &NetworkReplicationComponent::GetEntityCountInFrame, &NetworkReplicationComponent::SetEntityCountInFrame)[M::Replicable()]
     .End();
 }
 

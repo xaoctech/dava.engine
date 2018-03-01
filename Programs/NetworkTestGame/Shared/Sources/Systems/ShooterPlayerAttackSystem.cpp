@@ -44,12 +44,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerAttackSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterPlayerAttackSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterPlayerAttackSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 14.0f)]
+    .Method("ProcessFixed", &ShooterPlayerAttackSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 14.0f)]
     .End();
 }
 
 ShooterPlayerAttackSystem::ShooterPlayerAttackSystem(DAVA::Scene* scene)
-    : DAVA::INetworkInputSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterRoleComponent>() | DAVA::ComponentUtils::MakeMask<ShooterStateComponent>())
+    : DAVA::BaseSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterRoleComponent, ShooterStateComponent>())
 {
     using namespace DAVA;
 
@@ -68,22 +68,10 @@ ShooterPlayerAttackSystem::ShooterPlayerAttackSystem(DAVA::Scene* scene)
 
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_BULLET, eInputElements::MOUSE_LBUTTON, mouseId, DigitalElementState::JustPressed());
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET, eInputElements::MOUSE_RBUTTON, mouseId, DigitalElementState::Pressed());
-}
 
-void ShooterPlayerAttackSystem::AddEntity(DAVA::Entity* entity)
-{
-    ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
-    DVASSERT(roleComponent != nullptr);
+    optionsComp = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
 
-    if (roleComponent->GetRole() == ShooterRoleComponent::Role::Player)
-    {
-        playerEntities.insert(entity);
-    }
-}
-
-void ShooterPlayerAttackSystem::RemoveEntity(DAVA::Entity* entity)
-{
-    playerEntities.erase(entity);
+    entityGroup = scene->AquireEntityGroup<ShooterRoleComponent, ShooterStateComponent>();
 }
 
 void ShooterPlayerAttackSystem::ProcessFixed(DAVA::float32 dt)
@@ -92,8 +80,14 @@ void ShooterPlayerAttackSystem::ProcessFixed(DAVA::float32 dt)
 
     DAVA_PROFILER_CPU_SCOPE("ShooterPlayerAttackSystem::ProcessFixed");
 
-    for (Entity* entity : playerEntities)
+    for (Entity* entity : entityGroup->GetEntities())
     {
+        // TODO: separate components for each role
+        if (entity->GetComponent<ShooterRoleComponent>()->GetRole() != ShooterRoleComponent::Role::Player)
+        {
+            continue;
+        }
+
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
         for (const auto& actions : allActions)
         {
@@ -241,7 +235,8 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
     Vector3 aimRayDirection;
     Vector3 aimRayEnd;
     Entity* aimRayEndEntity;
-    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE, aimRayOrigin, aimRayDirection, aimRayEnd, &aimRayEndEntity);
+    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE, aimRayOrigin, aimRayDirection,
+                     aimRayEnd, &aimRayEndEntity);
 
     Entity* weaponBarrelEntity = aimingEntity->FindByName(SHOOTER_GUN_BARREL_ENTITY_NAME);
     if (weaponBarrelEntity != nullptr)
@@ -254,49 +249,68 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
 
         if (IsServer(GetScene()))
         {
-            PhysicsSystem* physics = GetScene()->GetSystem<PhysicsSystem>();
-            DVASSERT(physics != nullptr);
-
-            NetworkReplicationComponent* replicationComponent = aimingEntity->GetComponent<NetworkReplicationComponent>();
-            DVASSERT(replicationComponent != nullptr);
-
-            const FastName& token = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>()->GetToken(replicationComponent->GetNetworkPlayerID());
-            DVASSERT(token.IsValid());
-
             NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
             DVASSERT(timeSingleComponent != nullptr);
-
-            int32 fdiff = timeSingleComponent->GetClientViewDelay(token, clientFrameId);
-            if (fdiff < 0)
-            {
-                Logger::Error("client view delay is negative");
-                return;
-            }
-
-            uint32 numFramesToRollBack = std::min(10, fdiff);
             const uint32 frameId = timeSingleComponent->GetFrameId();
-            uint32 pastFrameId = clientFrameId == 0 ? frameId : clientFrameId - numFramesToRollBack;
 
-            physx::PxRaycastHit hit;
-            CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
-            QueryFilterCallback filterCallback(mirrorsSingleComponent->GetMirrorForCharacter(aimingEntity), RaycastFilter::IGNORE_SOURCE);
-            ComponentMask possibleComponents = ComponentUtils::MakeMask<CapsuleCharacterControllerComponent>() | ComponentUtils::MakeMask<DynamicBodyComponent>();
-            bool collision = NetworkPhysicsUtils::GetRaycastHitInPast(*aimingEntity->GetScene(), possibleComponents, shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, pastFrameId, &filterCallback, hit);
-            if (collision)
+            Entity* player = nullptr;
+
+            if (optionsComp->isEnemyRewound)
             {
-                Component* component = static_cast<Component*>(hit.actor->userData);
+                PhysicsSystem* physics = GetScene()->GetSystem<PhysicsSystem>();
+                DVASSERT(physics != nullptr);
 
-                if (component->GetType() == Type::Instance<DynamicBodyComponent>())
+                NetworkReplicationComponent* replicationComponent = aimingEntity->GetComponent<NetworkReplicationComponent>();
+                DVASSERT(replicationComponent != nullptr);
+
+                const FastName& token = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>()->GetToken(replicationComponent->GetNetworkPlayerID());
+                DVASSERT(token.IsValid());
+
+                int32 fdiff = timeSingleComponent->GetClientViewDelay(token, clientFrameId);
+                if (fdiff < 0)
                 {
-                    Entity* player = mirrorsSingleComponent->GetCharacterFromMirror(component->GetEntity());
-                    if (player != nullptr)
-                    {
-                        HealthComponent* healthComponent = player->GetComponent<HealthComponent>();
-                        DVASSERT(healthComponent);
+                    Logger::Error("client view delay is negative");
+                    return;
+                }
 
-                        healthComponent->DecHealth(1, frameId);
+                uint32 numFramesToRollBack = std::min(10, fdiff);
+                uint32 pastFrameId = clientFrameId == 0 ? frameId : clientFrameId - numFramesToRollBack;
+
+                physx::PxRaycastHit hit;
+                CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
+                QueryFilterCallback filterCallback(mirrorsSingleComponent->GetMirrorForCharacter(aimingEntity), RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
+                ComponentMask possibleComponents = ComponentUtils::MakeMask<CapsuleCharacterControllerComponent>() | ComponentUtils::MakeMask<DynamicBodyComponent>();
+                bool collision = NetworkPhysicsUtils::GetRaycastHitInPast(*aimingEntity->GetScene(), possibleComponents, shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, pastFrameId, &filterCallback, hit);
+                if (collision)
+                {
+                    Component* component = static_cast<Component*>(hit.actor->userData);
+                    if (component->GetType()->Is<DynamicBodyComponent>())
+                    {
+                        player = mirrorsSingleComponent->GetCharacterFromMirror(component->GetEntity());
                     }
                 }
+            }
+            else
+            {
+                physx::PxRaycastHit hit;
+                QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_SOURCE);
+                bool collision = GetRaycastHit(*aimingEntity->GetScene(), shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
+                if (collision)
+                {
+                    Component* component = static_cast<Component*>(hit.actor->userData);
+                    if (component->GetType()->Is<CapsuleCharacterControllerComponent>())
+                    {
+                        player = component->GetEntity();
+                    }
+                }
+            }
+
+            if (player != nullptr)
+            {
+                HealthComponent* healthComponent = player->GetComponent<HealthComponent>();
+                DVASSERT(healthComponent);
+
+                healthComponent->DecHealth(1, frameId);
             }
         }
     }

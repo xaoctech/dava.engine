@@ -16,7 +16,6 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkVisibilitySingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 
@@ -290,8 +289,9 @@ struct ServerContext : public CommonContext
 
     void SetVisibility(NetworkID entityId, uint8 frequency)
     {
-        auto* netVisComp = scene->GetSingletonComponent<NetworkVisibilitySingleComponent>();
-        netVisComp->SetVisibility(server.responder.ID, entities[entityId], frequency);
+        Entity* target = entities[entityId];
+        NetworkPlayerComponent* playerComp = target->GetComponent<NetworkPlayerComponent>();
+        playerComp->SetSendPeriod(target, frequency);
     }
 
     DeltaReplicationSystemServerMock* system;

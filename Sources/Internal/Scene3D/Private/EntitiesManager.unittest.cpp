@@ -341,4 +341,106 @@ DAVA_TESTCLASS (EntitiesManagerTest)
 
         SafeRelease(scene);
     }
+
+    DAVA_TEST (DetachedState)
+    {
+        Scene* scene = new Scene({ FastName("base") });
+        scene->CreateSystemsByTags();
+
+        EntitiesManager* em = scene->GetEntitiesManager();
+        EntityGroup* eg = scene->AquireEntityGroup<EMComponentA, EMComponentB>();
+
+        Entity* e1 = new Entity();
+        SCOPE_EXIT
+        {
+            SafeRelease(e1);
+        };
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 0);
+
+        e1->AddComponent(new EMComponentA());
+        e1->AddComponent(new EMComponentB());
+        scene->AddNode(e1);
+        scene->Update(0.1f);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 1);
+        TEST_VERIFY(eg->GetEntities().Contains(e1));
+
+        size_t entitiesAddedCount = 0;
+        eg->onEntityAdded->Connect([& x = entitiesAddedCount](Entity*) { ++x; });
+
+        em->DetachGroups();
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 0);
+
+        Entity* e2 = new Entity();
+        SCOPE_EXIT
+        {
+            SafeRelease(e2);
+        };
+
+        e2->AddComponent(new EMComponentA());
+        e2->AddComponent(new EMComponentB());
+        scene->AddNode(e2);
+        scene->Update(0.1f);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 1);
+        TEST_VERIFY(entitiesAddedCount == 1);
+        TEST_VERIFY(!eg->GetEntities().Contains(e1));
+        TEST_VERIFY(eg->GetEntities().Contains(e2));
+
+        em->RegisterDetachedEntity(e1);
+        em->UpdateCaches();
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 2);
+        TEST_VERIFY(entitiesAddedCount == 1);
+        TEST_VERIFY(eg->GetEntities().Contains(e1));
+        TEST_VERIFY(eg->GetEntities().Contains(e2));
+
+        Entity* e3 = new Entity();
+        SCOPE_EXIT
+        {
+            SafeRelease(e3);
+        };
+
+        e3->AddComponent(new EMComponentA());
+        e3->AddComponent(new EMComponentB());
+        scene->AddNode(e3);
+        scene->Update(0.1f);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 3);
+        TEST_VERIFY(entitiesAddedCount == 2);
+        TEST_VERIFY(eg->GetEntities().Contains(e1));
+        TEST_VERIFY(eg->GetEntities().Contains(e2));
+        TEST_VERIFY(eg->GetEntities().Contains(e3));
+
+        em->RestoreGroups();
+        em->UpdateCaches();
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 3);
+        TEST_VERIFY(entitiesAddedCount == 2);
+        TEST_VERIFY(eg->GetEntities().Contains(e1));
+        TEST_VERIFY(eg->GetEntities().Contains(e2));
+        TEST_VERIFY(eg->GetEntities().Contains(e3));
+
+        Entity* e4 = new Entity();
+        SCOPE_EXIT
+        {
+            SafeRelease(e4);
+        };
+
+        e4->AddComponent(new EMComponentA());
+        e4->AddComponent(new EMComponentB());
+        scene->AddNode(e4);
+        scene->Update(0.1f);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 4);
+        TEST_VERIFY(entitiesAddedCount == 3);
+        TEST_VERIFY(eg->GetEntities().Contains(e1));
+        TEST_VERIFY(eg->GetEntities().Contains(e2));
+        TEST_VERIFY(eg->GetEntities().Contains(e3));
+        TEST_VERIFY(eg->GetEntities().Contains(e4));
+
+        SafeRelease(scene);
+    }
 };

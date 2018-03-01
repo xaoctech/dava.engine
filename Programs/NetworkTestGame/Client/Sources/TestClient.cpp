@@ -72,6 +72,7 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     bool isProfile = CommandLineParser::CommandIsFound("--profile");
     bool isDebug = CommandLineParser::CommandIsFound("--debug");
     bool isLog = CommandLineParser::CommandIsFound("--log");
+    String gameStatsLogPath = CommandLineParser::GetCommandParam("--game-stats-log");
 
     Vector<String> modules{
         "JobManager",
@@ -127,6 +128,7 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     clientOptions->SetBool("isProfile", isProfile);
     clientOptions->SetBool("isDebug", isDebug);
     clientOptions->SetUInt32("freqHz", freqHz);
+    clientOptions->SetString("gameStatsLogPath", gameStatsLogPath);
     TestClient app(e, clientOptions);
     return e.Run();
 }

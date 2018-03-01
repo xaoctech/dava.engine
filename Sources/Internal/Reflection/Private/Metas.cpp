@@ -72,6 +72,10 @@ String ValueDescription::GetDescription(const Any& v) const
     return fn(v);
 }
 
+Bindable::Bindable()
+{
+}
+
 Tooltip::Tooltip(const String& tooltipFieldName_)
     : tooltipFieldName(tooltipFieldName_)
 {

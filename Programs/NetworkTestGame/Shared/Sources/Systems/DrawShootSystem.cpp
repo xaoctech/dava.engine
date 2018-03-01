@@ -26,7 +26,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DrawShootSystem)
 {
     ReflectionRegistrator<DrawShootSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &DrawShootSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_END, SP::Type::NORMAL, 1001.0f)]
+    .Method("Process", &DrawShootSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1001.0f)]
     .End();
 }
 

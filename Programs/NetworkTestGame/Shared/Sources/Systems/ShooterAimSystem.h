@@ -3,8 +3,8 @@
 #include <Base/FastName.h>
 #include <Base/UnordererSet.h>
 #include <Entity/SceneSystem.h>
-
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
+#include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
 
 namespace DAVA
 {
@@ -18,20 +18,19 @@ class ActionsSingleComponent;
 class ShooterAimComponent;
 
 // System that manages aims and according UI
-class ShooterAimSystem final : public DAVA::INetworkInputSimulationSystem
+class ShooterAimSystem final : public DAVA::BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(ShooterAimSystem, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(ShooterAimSystem, DAVA::BaseSimulationSystem);
 
     ShooterAimSystem(DAVA::Scene* scene);
     ~ShooterAimSystem();
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
+
     void ProcessFixed(DAVA::float32 dt) override;
-    void Simulate(DAVA::Entity* entity) override;
+
     void PrepareForRemove() override;
-    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
-    void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
+
+    void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
 
     void OnUpdate(DAVA::Window*, DAVA::float32 elapsedTime);
 
@@ -43,7 +42,7 @@ public:
 
 private:
     DAVA::ActionsSingleComponent* actionsSingleComponent = nullptr;
-    DAVA::UnorderedSet<ShooterAimComponent*> aimComponents;
+    DAVA::EntityGroup* entityGroup = nullptr;
     DAVA::UIControl* currentAimUiControl = nullptr;
     DAVA::UIControl* finalAimUiControl = nullptr;
     DAVA::UIJoypadComponent* movementJoypad = nullptr; // TODO: Only to check if we're touching joypad, to block rotation. Better be done with UI changes, but it's the simpler way for now

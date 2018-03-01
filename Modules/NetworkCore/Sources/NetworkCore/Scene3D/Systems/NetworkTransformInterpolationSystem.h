@@ -3,7 +3,7 @@
 #include <Base/BaseTypes.h>
 #include <Scene3D/ComponentGroup.h>
 #include <Scene3D/EntityGroup.h>
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
@@ -17,9 +17,8 @@ public:
     void ProcessFixed(float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
-    void ReSimulationStart(Entity* entity, uint32 frameId) override;
-    void ReSimulationEnd(Entity* entity) override;
-    void Simulate(Entity* entity) override{};
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
 
 private:
     ComponentGroup<TransformInterpolationComponent>* fixedInterpolationGroup;

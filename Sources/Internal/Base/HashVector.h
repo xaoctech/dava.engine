@@ -49,19 +49,19 @@ public:
     void Remove(T* value);
 
     /** Check if specified value is present in container. */
-    bool Contains(T* value);
+    bool Contains(T* value) const;
 
     /** Return vector containing all objects added with 'Add'. */
-    const Vector<T*>& GetObjects();
+    const Vector<T*>& GetObjects() const;
 
     /** Return object with specified 'index'. The behavior is undefined unless 'index' is less than 'GetSize()' value. */
     T* GetObjectAt(uint32 index);
 
     /** Return index of object with specified 'value'. The behavior is undefined unless 'value' is already added to container. */
-    uint32 GetIndexOf(T* value);
+    uint32 GetIndexOf(T* value) const;
 
     /** Return number of objects in container. */
-    uint32 GetSize();
+    uint32 GetSize() const;
 
     /** Clear contents by removing all items. */
     void Clear();
@@ -74,6 +74,18 @@ public:
 
     /** end for range-based support */
     Iterator end()
+    {
+        return { vector.data(), static_cast<int32>(vector.size()), static_cast<int32>(vector.size()) };
+    }
+
+    /** begin for range-based support */
+    Iterator begin() const
+    {
+        return { vector.data(), static_cast<int32>(vector.size()), 0 };
+    }
+
+    /** end for range-based support */
+    Iterator end() const
     {
         return { vector.data(), static_cast<int32>(vector.size()), static_cast<int32>(vector.size()) };
     }

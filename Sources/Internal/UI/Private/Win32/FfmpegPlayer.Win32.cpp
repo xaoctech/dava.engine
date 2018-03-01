@@ -5,10 +5,12 @@
 #if defined(__DAVAENGINE_WIN32__)
 #if !defined(DISABLE_NATIVE_MOVIEVIEW)
 
+#include "Concurrency/LockGuard.h"
+#include "Concurrency/Thread.h"
+#include "Engine/Engine.h"
+#include "Logger/Logger.h"
 #include "Render/Image/Image.h"
 #include "Sound/SoundSystem.h"
-#include "Concurrency/Thread.h"
-#include "Concurrency/LockGuard.h"
 
 namespace DAVA
 {
@@ -21,6 +23,42 @@ FfmpegPlayer::~FfmpegPlayer()
 // Initialize the control.
 void FfmpegPlayer::Initialize(const Rect&)
 {
+    AV::av_log_set_level(AV_LOG_ERROR);
+    AV::av_log_set_callback([](void* avcl, int level, const char* fmt, va_list vl) {
+        // We need to check ffmpeg log level here
+        if (level > AV::av_log_get_level())
+        {
+            return;
+        }
+
+        Logger* log = GetEngineContext()->logger;
+        if (nullptr != log)
+        {
+            Logger::eLogLevel l = Logger::LEVEL_DEBUG;
+            switch (level)
+            {
+            case AV_LOG_DEBUG:
+            case AV_LOG_TRACE:
+                l = Logger::LEVEL_FRAMEWORK;
+                break;
+            case AV_LOG_INFO:
+            case AV_LOG_VERBOSE:
+                l = Logger::LEVEL_INFO;
+                break;
+            case AV_LOG_WARNING:
+                l = Logger::LEVEL_WARNING;
+                break;
+            case AV_LOG_PANIC:
+            case AV_LOG_FATAL:
+            case AV_LOG_ERROR:
+            default:
+                l = Logger::LEVEL_ERROR;
+                break;
+            }
+            log->Logv(l, fmt, vl);
+        }
+    });
+
     static bool isFFMGEGInited = false;
 
     if (!isFFMGEGInited)
@@ -327,21 +365,36 @@ bool FfmpegPlayer::InitAudio()
 
     //Out Audio Param
     uint64_t outChannelLayout = AV_CH_LAYOUT_STEREO;
-    //nb_samples: AAC-1024 MP3-1152
-    int outNbSamples = audioCodecContext->frame_size;
     AV::AVSampleFormat outSampleFmt = AV::AV_SAMPLE_FMT_S16;
-
     int outSampleRate = static_cast<int>(SoundStream::GetDefaultSampleRate());
-    audioBufSize = outSampleRate;
     outChannels = AV::av_get_channel_layout_nb_channels(outChannelLayout);
-    //Out Buffer Size
-    outAudioBufferSize = static_cast<uint32>(av_samples_get_buffer_size(nullptr, outChannels, outNbSamples, outSampleFmt, 1));
+    audioBufSize = outSampleRate;
 
     //FIX:Some Codec's Context Information is missing
     int64_t inChannelLayout = AV::av_get_default_channel_layout(audioCodecContext->channels);
 
     audioConvertContext = AV::swr_alloc_set_opts(audioConvertContext, outChannelLayout, outSampleFmt, outSampleRate, inChannelLayout, audioCodecContext->sample_fmt, audioCodecContext->sample_rate, 0, nullptr);
     AV::swr_init(audioConvertContext);
+
+    //nb_samples: AAC-1024 MP3-1152
+    // If audioCodecContext->frame_size == 0 that means dynamic number of samplers in audio frames
+    int outNbSamples = audioCodecContext->frame_size;
+    if (outNbSamples > 0)
+    {
+        if (outSampleRate != audioCodecContext->sample_rate)
+        {
+            int64 calc_samples = AV::av_rescale_rnd(AV::swr_get_delay(audioConvertContext, audioCodecContext->sample_rate) + outNbSamples, outSampleRate, audioCodecContext->sample_rate, AV::AV_ROUND_DOWN);
+            DVASSERT(calc_samples >= static_cast<int64>(std::numeric_limits<int32>::min()) && calc_samples <= static_cast<int64>(std::numeric_limits<int32>::max()), "Too big value of calculated sample rate!");
+            outNbSamples = (int32)calc_samples;
+        }
+        outAudioBufferSize = static_cast<uint32>(av_samples_get_buffer_size(nullptr, outChannels, outNbSamples, outSampleFmt, 1));
+    }
+    else
+    {
+        DVASSERT(false, "Unsupported audio stream. Non constant number of samplers in audio stream!");
+        Logger::Error("Unsupported audio stream. Non constant number of samplers in audio stream!");
+        outAudioBufferSize = 0;
+    }
 
     DVASSERT(nullptr == audioDecodingThread);
 
@@ -577,7 +630,10 @@ void FfmpegPlayer::DecodeAudio(AV::AVPacket* packet, float64 timeElapsed)
         audioClock = AV::av_q2d(audioCodecContext->time_base) * pts;
     }
 
-    pcmBuffer.Write(outAudioBuffer.data(), outAudioBufferSize);
+    if (outAudioBufferSize > 0)
+    {
+        pcmBuffer.Write(outAudioBuffer.data(), outAudioBufferSize);
+    }
 }
 
 void FfmpegPlayer::AudioDecodingThread()

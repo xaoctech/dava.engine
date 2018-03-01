@@ -13,7 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterMirroredCharacterSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterMirroredCharacterSystem>::Begin()[M::Tags("gm_shooter", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterMirroredCharacterSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 18.0f)]
+    .Method("ProcessFixed", &ShooterMirroredCharacterSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 18.0f)]
     .End();
 }
 

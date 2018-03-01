@@ -7,13 +7,14 @@
 #include "NetworkCore/Private/NetworkSerialization.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemBase.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
 #include "NetworkCore/UDPTransport/UDPServer.h"
 
+#include "Scene3D/ComponentGroup.h"
 #include "Reflection/ReflectedMeta.h"
 
 namespace DAVA
 {
-class NetworkVisibilitySingleComponent;
 class NetworkGameModeSingleComponent;
 class NetworkTimeSingleComponent;
 
@@ -23,10 +24,12 @@ public:
     DAVA_VIRTUAL_REFLECTION(NetworkDeltaReplicationSystemServer, NetworkDeltaReplicationSystemBase);
 
     NetworkDeltaReplicationSystemServer(Scene* scene);
+    ~NetworkDeltaReplicationSystemServer() override;
 
     void RemoveEntity(Entity* entity) override;
     void ProcessFixed(float32 timeElapsed) override;
     void OnReceiveCallback(const Responder& responder, const uint8* data, size_t size);
+    void OnClientConnect(const Responder& responder);
     void OnClientDisconnect(const FastName& token);
 
 protected:
@@ -101,12 +104,16 @@ private:
         Vector<SequenceId> acks;
         EntityToBaseFrames baseFrames;
         SeqToSentFrames sentFrames;
-        SequenceId maxSeq;
         RemovedEntityToPrivacy removedEntities;
+        const Responder* responder = nullptr;
+        NetworkPlayerComponent* playerComponent = nullptr;
+        SequenceId maxSeq = 0;
     };
 
-    void ProcessAckPackets(const Responder& responder, ResponderData& responderData);
-    void ProcessResponder(const Responder& responder, ResponderData& responderData);
+    void OnPlayerComponentAdded(NetworkPlayerComponent* component);
+    void OnPlayerComponentRemoved(NetworkPlayerComponent* component);
+    void ProcessAckPackets(ResponderData& responderData);
+    void ProcessResponder(ResponderData& responderData, NetworkPlayerID playerId);
     void ProcessEntity(NetworkID netEntityId, M::Privacy privacy, ResponderEnvironment& env);
     WriteResult WriteEntity(NetworkID netEntityId, M::Privacy privacy, ResponderEnvironment& env);
     void SendMtuBlock(ResponderEnvironment& env);
@@ -114,7 +121,9 @@ private:
 
     M::Privacy GetPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId);
 
-    UnorderedMap<const Responder*, ResponderData> respondersData;
+    UnorderedMap<const Responder*, NetworkPlayerID> responderToPlayerID;
+    Vector<ResponderData> responderDataList;
+    NetworkPlayerID playerIdUpperBound;
 
     void CheckTrafficLimit(NetworkID netEntityId, uint32 diffSize);
     uint32 DumpComponent(const ReflectedObject& reflectedObject, StringStream& stream);
@@ -122,9 +131,9 @@ private:
     IServer* server;
 
     SnapshotSingleComponent* snapshotSingleComponent;
-    NetworkVisibilitySingleComponent* netVisSingleComp;
     NetworkGameModeSingleComponent* netGameModeComp;
     NetworkTimeSingleComponent* timeComp;
+    ComponentGroup<NetworkPlayerComponent>* playerComponentGroup;
 };
 
 } //namespace DAVA

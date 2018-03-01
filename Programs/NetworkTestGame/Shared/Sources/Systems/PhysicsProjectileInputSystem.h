@@ -1,16 +1,16 @@
 #pragma once
 
 #include <Base/BaseTypes.h>
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
 class Entity;
 }
 
-class PhysicsProjectileInputSystem : public DAVA::INetworkInputSimulationSystem
+class PhysicsProjectileInputSystem : public DAVA::BaseSimulationSystem
 {
-    DAVA_VIRTUAL_REFLECTION(PhysicsProjectileInputSystem, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(PhysicsProjectileInputSystem, DAVA::BaseSimulationSystem);
 
 public:
     PhysicsProjectileInputSystem(DAVA::Scene* scene);
@@ -19,5 +19,8 @@ public:
     void PrepareForRemove() override{};
     DAVA::Entity* CreateProjectileModel() const;
 
-    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
+private:
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
+
+    DAVA::EntityGroup* entityGroup = nullptr;
 };

@@ -4,6 +4,7 @@
 #include "NetworkCore/NetworkTypes.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkResimulationSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/UDPTransport/UDPClient.h"
@@ -24,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimeSystem)
     ReflectionRegistrator<NetworkTimeSystem>::Begin()[M::Tags("network")]
     .ConstructorByPointer<Scene*>()
     .Method("Process", &NetworkTimeSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 17.0f)]
-    .Method("ProcessFixed", &NetworkTimeSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 4.0f)]
+    .Method("ProcessFixed", &NetworkTimeSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 3.0f)]
     .End();
 }
 
@@ -59,9 +60,11 @@ static void SendUptime(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA
 }
 
 NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : BaseSimulationSystem(scene, 0)
     , fpsMeter(10.f)
 {
+    netTimeComp = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+
     scene->SetConstantUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
     scene->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
 
@@ -71,6 +74,7 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
         client->SubscribeOnConnect(OnClientConnectCb(this, &NetworkTimeSystem::OnConnectClient));
         client->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
                                    OnClientReceiveCb(this, &NetworkTimeSystem::OnReceiveClient));
+        networkResimulationSingleComponent = scene->AquireSingleComponentForRead<NetworkResimulationSingleComponent>();
     }
     else if (IsServer(this))
     {
@@ -78,7 +82,6 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
         server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkTimeSystem::OnConnectServer));
         server->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
                                    OnServerReceiveCb(this, &NetworkTimeSystem::OnReceiveServer));
-        NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
         netTimeComp->SetIsInitialized(true);
     }
     else
@@ -87,52 +90,40 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     }
 }
 
-const ComponentMask& NetworkTimeSystem::GetResimulationComponents() const
+void NetworkTimeSystem::ReSimulationStart()
 {
-    return SceneSystem::GetRequiredComponents();
-}
-
-void NetworkTimeSystem::ReSimulationStart(Entity*, uint32 frameId)
-{
-    DVASSERT(!realCurrFrameId);
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    DVASSERT(realCurrFrameId == 0);
     realCurrFrameId = netTimeComp->GetFrameId();
+
+    uint32 frameId = networkResimulationSingleComponent->GetResimulationFrameId();
     netTimeComp->SetFrameId(frameId);
 }
 
-void NetworkTimeSystem::Simulate(Entity*)
+void NetworkTimeSystem::ReSimulationEnd()
 {
-    DVASSERT(realCurrFrameId);
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-    netTimeComp->SetFrameId(netTimeComp->GetFrameId() + 1);
-}
-
-void NetworkTimeSystem::ReSimulationEnd(Entity*)
-{
-    DVASSERT(realCurrFrameId);
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    DVASSERT(realCurrFrameId != 0);
     netTimeComp->SetFrameId(realCurrFrameId);
     realCurrFrameId = 0;
 }
 
 void NetworkTimeSystem::OnConnectClient()
 {
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
     netTimeComp->SetIsInitialized(false);
 }
 
 void NetworkTimeSystem::OnConnectServer(const Responder& responder)
 {
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
     SendUptime(netTimeComp, responder);
 }
 
 void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channelId, uint32)
 {
     const TimeSyncHeader* timeSyncHeader = reinterpret_cast<const TimeSyncHeader*>(data);
+
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
     netTimeComp->SetClientOutrunning(client->GetAuthToken(), timeSyncHeader->netDiff);
     netTimeComp->SetLastSyncDiff(timeSyncHeader->diff);
+
     switch (timeSyncHeader->type)
     {
     case TimeSyncHeader::Type::UPTIME:
@@ -156,6 +147,7 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8*
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::OnReceiveServer");
     const TimeSyncHeader* inHeader = reinterpret_cast<const TimeSyncHeader*>(data);
+
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
     uint32 lastClientFrameId = netTimeComp->GetLastClientFrameId(responder.GetToken());
     if (inHeader->frameId <= lastClientFrameId)
@@ -189,15 +181,20 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8*
 void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::ProcessFixed");
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-
-    uint32 uptime = netTimeComp->GetUptimeMs();
-    uptime += static_cast<uint32>(timeElapsed * 1000);
-    netTimeComp->SetUptimeMs(uptime);
 
     uint32 frameId = netTimeComp->GetFrameId();
     ++frameId;
     netTimeComp->SetFrameId(frameId);
+
+    if (IsReSimulating())
+    {
+        DVASSERT(realCurrFrameId);
+        return;
+    }
+
+    uint32 uptime = netTimeComp->GetUptimeMs();
+    uptime += static_cast<uint32>(timeElapsed * 1000);
+    netTimeComp->SetUptimeMs(uptime);
 
     if (client)
     {
@@ -233,7 +230,6 @@ void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
 
 void NetworkTimeSystem::Process(float32 timeElapsed)
 {
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
     fpsMeter.Update(timeElapsed);
     if (fpsMeter.IsFpsReady())
     {

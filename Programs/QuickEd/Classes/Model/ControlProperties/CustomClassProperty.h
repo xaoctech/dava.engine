@@ -8,7 +8,7 @@ class ControlNode;
 class CustomClassProperty : public ValueProperty
 {
 public:
-    CustomClassProperty(ControlNode* control, const CustomClassProperty* sourceProperty, eCloneType cloneType);
+    CustomClassProperty(ControlNode* control, const CustomClassProperty* prototypeProperty);
 
 protected:
     virtual ~CustomClassProperty();

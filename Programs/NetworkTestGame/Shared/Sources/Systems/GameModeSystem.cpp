@@ -15,7 +15,6 @@
 #include <Scene3D/Scene.h>
 #include <Systems/GameStunningSystem.h>
 #include <Systems/ShootInputSystem.h>
-#include <Components/ShootComponent.h>
 #include <Debug/ProfilerCPU.h>
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -37,7 +36,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystem)
 {
     ReflectionRegistrator<GameModeSystem>::Begin()[M::Tags("gm_tanks")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 5.0f)]
+    .Method("Process", &GameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 5.0f)]
     .End();
 }
 
@@ -103,6 +102,7 @@ void GameModeSystem::OnClientConnected(const Responder& responder)
         replicationComponent->SetNetworkPlayerID(playerID);
         replicationComponent->SetOwnerTeamID(responder.GetTeamID());
         tank->AddComponent(replicationComponent);
+
         tank->AddComponent(new PlayerTankComponent());
         GetScene()->AddNode(tank);
         Logger::Debug("[GameServer] Create Tank %p:%u For Player ID : %d", tank, static_cast<uint32>(replicationComponent->GetNetworkID()), playerID);

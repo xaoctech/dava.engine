@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Base/UnordererSet.h>
+#include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Base/UnordererSet.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
+#include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
 
 namespace DAVA
 {
@@ -10,18 +12,17 @@ class Scene;
 }
 
 // System that responsible for invoking attack actions (i.e. raycasting, spawning bullets etc.)
-class ShooterPlayerAttackSystem : public DAVA::INetworkInputSimulationSystem
+class ShooterPlayerAttackSystem : public DAVA::BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(ShooterPlayerAttackSystem, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(ShooterPlayerAttackSystem, DAVA::BaseSimulationSystem);
 
     ShooterPlayerAttackSystem(DAVA::Scene* scene);
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
     void ProcessFixed(DAVA::float32 dt) override;
     void PrepareForRemove() override;
-    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
-    void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
+
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
+    void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
 
 private:
     void SpawnBullet(DAVA::Entity* player, DAVA::uint32 clientFrameId) const;
@@ -29,5 +30,6 @@ private:
     void RocketAttack(DAVA::Entity* player, DAVA::uint32 clientFrameId) const;
 
 private:
-    DAVA::UnorderedSet<DAVA::Entity*> playerEntities;
+    BattleOptionsSingleComponent* optionsComp = nullptr;
+    DAVA::EntityGroup* entityGroup = nullptr;
 };

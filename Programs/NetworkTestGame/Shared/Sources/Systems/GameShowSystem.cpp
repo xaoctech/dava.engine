@@ -15,7 +15,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameShowSystem)
 {
     ReflectionRegistrator<GameShowSystem>::Begin()[M::Tags("gameshow", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameShowSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_END, SP::Type::NORMAL, 1000.0f)]
+    .Method("Process", &GameShowSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1000.0f)]
     .End();
 }
 

@@ -3,6 +3,7 @@
 #include "Components/ShooterRoleComponent.h"
 #include "Components/ShooterCarUserComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
+#include "Visibility/ObserverComponent.h"
 #include "ShooterUtils.h"
 #include "ShooterConstants.h"
 
@@ -26,20 +27,21 @@
 #include <Physics/Private/PhysicsMath.h>
 #include <Physics/PhysicsUtils.h>
 
-#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/NetworkCoreUtils.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCarSystem)
 {
     using namespace DAVA;
     ReflectionRegistrator<ShooterCarSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterCarSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 16.0f)]
+    .Method("ProcessFixed", &ShooterCarSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 16.0f)]
     .End();
 }
 
 ShooterCarSystem::ShooterCarSystem(DAVA::Scene* scene)
-    : DAVA::INetworkInputSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterAimComponent>())
+    : DAVA::BaseSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterAimComponent>())
+    , entityGroup(scene->AquireEntityGroup<ShooterAimComponent>())
     , interactionControl(nullptr)
 {
     using namespace DAVA;
@@ -62,46 +64,37 @@ ShooterCarSystem::ShooterCarSystem(DAVA::Scene* scene)
     interactionControl = battleOptionsSingleComponent->controls.interactControl;
 }
 
-void ShooterCarSystem::AddEntity(DAVA::Entity* entity)
-{
-    ShooterAimComponent* aimComponent = entity->GetComponent<ShooterAimComponent>();
-    DVASSERT(aimComponent != nullptr);
-
-    aimComponents.insert(aimComponent);
-}
-
-void ShooterCarSystem::RemoveEntity(DAVA::Entity* entity)
-{
-    ShooterAimComponent* aimComponent = entity->GetComponent<ShooterAimComponent>();
-    DVASSERT(aimComponent != nullptr);
-
-    aimComponents.erase(aimComponent);
-}
-
 void ShooterCarSystem::ProcessFixed(DAVA::float32 dt)
 {
     using namespace DAVA;
 
     DAVA_PROFILER_CPU_SCOPE("ShooterCarSystem::ProcessFixed");
 
-    for (ShooterAimComponent* aimComponent : aimComponents)
+    for (Entity* aimingEntity : entityGroup->GetEntities())
     {
-        DVASSERT(aimComponent != nullptr);
-
-        Entity* aimingEntity = aimComponent->GetEntity();
         DVASSERT(aimingEntity != nullptr);
 
-        if (!IsServer(this) && IsClientOwner(this, aimingEntity))
+        ShooterAimComponent* aimComponent = aimingEntity->GetComponent<ShooterAimComponent>();
+
+        DVASSERT(aimComponent != nullptr);
+
+        if (IsClient(this) && !IsClientOwner(aimingEntity))
         {
-            UpdateInteractionControl(aimComponent);
+            continue;
         }
 
-        if (IsServer(this) || IsClientOwner(this, aimingEntity))
+        if (!IsReSimulating())
         {
+            if (IsClient(this))
+            {
+                UpdateInteractionControl(aimComponent);
+            }
+
             ToggleCharacterStateIfRequired(aimingEntity);
         }
 
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), aimingEntity);
+
         if (!allActions.empty())
         {
             const auto& actions = allActions.back();
@@ -119,82 +112,40 @@ void ShooterCarSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vec
 {
     using namespace DAVA;
 
+    // Putting in a car / getting out of a car is handled on a server for now
+    if (!IsServer(GetScene()))
+    {
+        return;
+    }
+
     ShooterAimComponent* aimComponent = entity->GetComponent<ShooterAimComponent>();
     DVASSERT(aimComponent != nullptr);
+
+    ShooterCarUserComponent* carUserComponent = entity->GetComponent<ShooterCarUserComponent>();
+    DVASSERT(carUserComponent != nullptr);
 
     for (const FastName& action : actions)
     {
         if (action == SHOOTER_ACTION_INTERACT)
         {
-            if (IsServer(GetScene()))
+            // If playerCarUserComponent is outside of a car, put him in if he points at one
+            // Otherwise get him out
+            if (carUserComponent->carNetworkId == NetworkID::INVALID)
             {
-                ShooterCarUserComponent* carUserComponent = entity->GetComponent<ShooterCarUserComponent>();
-                DVASSERT(carUserComponent != nullptr);
-
-                // If player is outside of a car, put him in
-                // Otherwise get him out
-                if (carUserComponent->carNetworkId == NetworkID::INVALID)
+                // If there is a car he points to
+                Entity* interactionEntity = GetTargetCar(aimComponent);
+                if (interactionEntity != nullptr)
                 {
-                    // If there is a car he points to
-                    Entity* interactionEntity = GetTargetCar(aimComponent);
-                    if (interactionEntity != nullptr)
+                    ShooterRoleComponent* roleComponent = interactionEntity->GetComponent<ShooterRoleComponent>();
+                    if (roleComponent != nullptr && roleComponent->GetRole() == ShooterRoleComponent::Role::Car)
                     {
-                        ShooterRoleComponent* roleComponent = interactionEntity->GetComponent<ShooterRoleComponent>();
-                        if (roleComponent != nullptr && roleComponent->GetRole() == ShooterRoleComponent::Role::Car)
-                        {
-                            DynamicBodyComponent* carDynamicBodyComponent = interactionEntity->GetComponent<DynamicBodyComponent>();
-                            DVASSERT(carDynamicBodyComponent != nullptr);
-
-                            // If car is not moving too fast...
-                            if (carDynamicBodyComponent->GetLinearVelocity().Length() < 7.0f)
-                            {
-                                CarInfo carInfo = GetCarInfo(interactionEntity);
-
-                                // ...and if it's not full, put him in
-                                if (carInfo.numPassengers < SHOOTER_MAX_NUM_PASSENGERS)
-                                {
-                                    NetworkReplicationComponent* carReplicationComponent = interactionEntity->GetComponent<NetworkReplicationComponent>();
-                                    DVASSERT(carReplicationComponent != nullptr);
-
-                                    carUserComponent->carNetworkId = carReplicationComponent->GetNetworkID();
-                                    carUserComponent->passengerIndex = carInfo.firstFreeIndex;
-
-                                    // Teleport player under the ground for now
-                                    // TODO: change hierarchy so that player is a child of the car. Can't do that right now since replication system fails when hierarchy changes
-                                    TransformComponent* carUserTransformComponent = entity->GetComponent<TransformComponent>();
-                                    carUserTransformComponent->SetLocalTransform(Vector3(0.0f, 0.0f, 0.0f), carUserTransformComponent->GetRotation(), carUserTransformComponent->GetScale());
-                                }
-                            }
-                        }
+                        TryPutInCar(carUserComponent, interactionEntity);
                     }
                 }
-                else
-                {
-                    Entity* car = GetEntityWithNetworkId(GetScene(), carUserComponent->carNetworkId);
-                    DVASSERT(car != nullptr);
-
-                    // Calculate position to position character when he gets out
-                    Vector3 nodePositionLocalSpace = SHOOTER_CAR_PASSENGER_NODES_POSITIONS[carUserComponent->passengerIndex];
-                    Vector3 nodePositionWorldSpace = nodePositionLocalSpace * car->GetWorldTransform();
-                    physx::PxRaycastHit hit;
-                    QueryFilterCallback filterCallback(nullptr, RaycastFilter::NONE);
-                    bool collision = GetRaycastHit(*GetScene(), Vector3(nodePositionWorldSpace.x, nodePositionWorldSpace.y, nodePositionWorldSpace.z), Vector3(0.0f, 0.0f, -1.0f), 100.0f, &filterCallback, hit);
-                    if (collision)
-                    {
-                        nodePositionWorldSpace = PhysicsMath::PxVec3ToVector3(hit.position);
-                    }
-
-                    // Position him
-                    TransformComponent* carUserTransformComponent = entity->GetComponent<TransformComponent>();
-                    carUserTransformComponent->SetLocalTransform(nodePositionWorldSpace, carUserTransformComponent->GetRotation(), carUserTransformComponent->GetScale());
-
-                    // Reset his aim angle around X axis
-                    aimComponent->SetFinalAngleX(0.0f);
-                    aimComponent->SetCurrentAngleX(0.0f);
-
-                    // Remember he's not in the car anymore
-                    carUserComponent->carNetworkId = NetworkID::INVALID;
-                }
+            }
+            else
+            {
+                MoveOutOfCar(carUserComponent);
             }
         }
     }
@@ -311,6 +262,88 @@ ShooterCarSystem::CarInfo ShooterCarSystem::GetCarInfo(DAVA::Entity* car) const
     return resultInfo;
 }
 
+void ShooterCarSystem::TryPutInCar(ShooterCarUserComponent* playerCarUserComponent, DAVA::Entity* car)
+{
+    using namespace DAVA;
+
+    DVASSERT(playerCarUserComponent != nullptr);
+    DVASSERT(car != nullptr);
+
+    DynamicBodyComponent* carDynamicBodyComponent = car->GetComponent<DynamicBodyComponent>();
+    DVASSERT(carDynamicBodyComponent != nullptr);
+
+    // If car is not moving too fast...
+    if (carDynamicBodyComponent->GetLinearVelocity().Length() < 7.0f)
+    {
+        CarInfo carInfo = GetCarInfo(car);
+
+        // ...and if it's not full, put him in
+        if (carInfo.numPassengers < SHOOTER_MAX_NUM_PASSENGERS)
+        {
+            Entity* playerEntity = playerCarUserComponent->GetEntity();
+            DVASSERT(playerEntity != nullptr);
+
+            NetworkReplicationComponent* carReplicationComponent = car->GetComponent<NetworkReplicationComponent>();
+            DVASSERT(carReplicationComponent != nullptr);
+
+            playerCarUserComponent->carNetworkId = carReplicationComponent->GetNetworkID();
+            playerCarUserComponent->passengerIndex = carInfo.firstFreeIndex;
+
+            // Teleport playerCarUserComponent under the ground for now
+            // TODO: change hierarchy so that playerCarUserComponent is a child of the car. Can't do that right now since replication system fails when hierarchy changes
+            TransformComponent* carUserTransformComponent = playerEntity->GetComponent<TransformComponent>();
+            carUserTransformComponent->SetLocalTransform(Vector3(0.0f, 0.0f, 0.0f), carUserTransformComponent->GetRotation(), carUserTransformComponent->GetScale());
+
+            // Hack: make all objects in the scene unconditionally visible for playerCarUserComponent
+            ObserverComponent* observerComp = playerEntity->GetComponent<ObserverComponent>();
+            observerComp->maxVisibilityRadius = 1e6f;
+            observerComp->unconditionalVisibilityRadius = 1e6f;
+        }
+    }
+}
+
+void ShooterCarSystem::MoveOutOfCar(ShooterCarUserComponent* playerCarUserComponent)
+{
+    using namespace DAVA;
+
+    Entity* car = GetEntityWithNetworkId(GetScene(), playerCarUserComponent->carNetworkId);
+    DVASSERT(car != nullptr);
+
+    Entity* playerEntity = playerCarUserComponent->GetEntity();
+    DVASSERT(playerEntity != nullptr);
+
+    // Calculate position to position character when he gets out
+    Vector3 nodePositionLocalSpace = SHOOTER_CAR_PASSENGER_NODES_POSITIONS[playerCarUserComponent->passengerIndex];
+    Vector3 nodePositionWorldSpace = nodePositionLocalSpace * car->GetWorldTransform();
+    physx::PxRaycastHit hit;
+    QueryFilterCallback filterCallback(nullptr, RaycastFilter::NONE);
+    bool collision = GetRaycastHit(*GetScene(), Vector3(nodePositionWorldSpace.x, nodePositionWorldSpace.y, nodePositionWorldSpace.z), Vector3(0.0f, 0.0f, -1.0f), 100.0f, &filterCallback, hit);
+    if (collision)
+    {
+        nodePositionWorldSpace = PhysicsMath::PxVec3ToVector3(hit.position);
+    }
+
+    // Position him
+    TransformComponent* carUserTransformComponent = playerEntity->GetComponent<TransformComponent>();
+    carUserTransformComponent->SetLocalTransform(nodePositionWorldSpace, carUserTransformComponent->GetRotation(), carUserTransformComponent->GetScale());
+
+    // Reset his aim angle around X axis
+
+    ShooterAimComponent* aimComponent = playerEntity->GetComponent<ShooterAimComponent>();
+    DVASSERT(aimComponent != nullptr);
+
+    aimComponent->SetFinalAngleX(0.0f);
+    aimComponent->SetCurrentAngleX(0.0f);
+
+    // Set normal visibility settings
+    ObserverComponent* observerComp = playerEntity->GetComponent<ObserverComponent>();
+    observerComp->maxVisibilityRadius = SHOOTER_MAX_VISIBILITY_RADIUS;
+    observerComp->unconditionalVisibilityRadius = SHOOTER_UNCONDITIONAL_VISIBILITY_RADIUS;
+
+    // Remember he's not in the car anymore
+    playerCarUserComponent->carNetworkId = NetworkID::INVALID;
+}
+
 void ShooterCarSystem::UpdateInteractionControl(ShooterAimComponent* aimComponent)
 {
     using namespace DAVA;
@@ -403,7 +436,7 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
         if (player->GetComponent<CapsuleCharacterControllerComponent>() != nullptr)
         {
             // Remove CCT
-            // Will be recreated when player gets out
+            // Will be recreated when playerCarUserComponent gets out
             player->RemoveComponent<CapsuleCharacterControllerComponent>();
         }
     }

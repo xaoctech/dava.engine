@@ -765,7 +765,7 @@ void PackageModule::OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::
 
     Any selectionValue = wrapper.GetFieldValue(DocumentData::selectionPropertyName);
 
-    if (fields.empty())
+    if (fields.empty() == true)
     {
         packageWidget->OnSelectionChanged(Any());
         packageWidget->OnPackageChanged(&context, package);

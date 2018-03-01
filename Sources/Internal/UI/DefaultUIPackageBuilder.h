@@ -39,6 +39,9 @@ public:
     void EndComponentPropertiesSection() override;
 
     void ProcessProperty(const ReflectedStructure::Field& field, const Any& value) override;
+    void ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode) override;
+
+    void SetEditorMode(bool editorMode);
 
 protected:
     virtual RefPtr<UIControl> CreateControlByName(const String& customClassName, const String& className);
@@ -66,5 +69,7 @@ private:
     Vector<UIPriorityStyleSheet> styleSheets;
     Map<FilePath, int32> packsByPaths;
     Map<String, int32> packsByNames;
+
+    bool editorMode = false;
 };
 }

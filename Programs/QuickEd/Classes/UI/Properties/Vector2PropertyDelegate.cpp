@@ -38,6 +38,10 @@ void Vector2PropertyDelegate::setEditorData(QWidget* rawEditor, const QModelInde
         const Vector2& v = variant.Get<Vector2>();
         stringValue.QString::sprintf("%g; %g", v.x, v.y);
     }
+    else if (variant.CanGet<DAVA::String>())
+    {
+        stringValue = QString::fromStdString(variant.Get<DAVA::String>());
+    }
     else
     {
         stringValue = "?";

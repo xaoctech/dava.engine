@@ -8,7 +8,6 @@
 #include "Base/Introspection.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Scene3D/Systems/BaseSimulationSystem.h"
 #include "Math/Vector.h"
 
 #include "NetworkCore/Snapshot.h"

@@ -41,7 +41,6 @@
 #include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/ChangedSystemsSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Scene3D/Lod/LodSystem.h"
@@ -147,9 +146,15 @@
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/Update/UICustomUpdateDeltaComponent.h"
 #include "UI/RichContent/UIRichContentComponent.h"
-#include "UI/RichContent/UIRichContentObjectComponent.h"
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
+#include "UI/Components/UIControlSourceComponent.h"
 #include "UI/Scroll/UIScrollComponent.h"
+#include "UI/DataBinding/UIDataBindingComponent.h"
+#include "UI/DataBinding/UIDataListComponent.h"
+#include "UI/DataBinding/UIDataScopeComponent.h"
+#include "UI/DataBinding/UIDataSourceComponent.h"
+#include "UI/DataBinding/UIDataViewModelComponent.h"
+#include "UI/DataBinding/UIDataChildFactoryComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/Flow/UIFlowContext.h"
 #include "UI/Flow/UIFlowController.h"
@@ -348,7 +353,6 @@ void RegisterPermanentNames()
 
     // Single components
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ActionsSingleComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ChangedSystemsSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MotionSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TransformSingleComponent);
 
@@ -464,13 +468,19 @@ void RegisterPermanentNames()
     DECL_UI_COMPONENT(UICustomUpdateDeltaComponent, "CustomDeltaUpdate");
     DECL_UI_COMPONENT(UIRichContentComponent, "RichContent");
     DECL_UI_COMPONENT(UIRichContentAliasesComponent, "RichContentAliases");
-    DECL_UI_COMPONENT(UIRichContentObjectComponent, "RichContentObject");
+    DECL_UI_COMPONENT(UIControlSourceComponent, "UIControlSourceComponent");
     DECL_UI_COMPONENT(UIDebugRenderComponent, "DebugRender");
     DECL_UI_COMPONENT(UIClipContentComponent, "ClipContent");
     DECL_UI_COMPONENT(UISceneComponent, "SceneComponent");
     DECL_UI_COMPONENT(UIEntityMarkerComponent, "UIEntityMarkerComponent");
     DECL_UI_COMPONENT(UIEntityMarkersContainerComponent, "UIEntityMarkersContainerComponent");
     DECL_UI_COMPONENT(UITextComponent, "UITextComponent");
+    DECL_UI_COMPONENT(UIDataSourceComponent, "UIDataSourceComponent");
+    DECL_UI_COMPONENT(UIDataScopeComponent, "UIDataScopeComponent");
+    DECL_UI_COMPONENT(UIDataViewModelComponent, "UIDataViewModelComponent");
+    DECL_UI_COMPONENT(UIDataListComponent, "UIDataListComponent");
+    DECL_UI_COMPONENT(UIDataBindingComponent, "UIDataBindingComponent");
+    DECL_UI_COMPONENT(UIDataChildFactoryComponent, "UIDataChildFactoryComponent");
     DECL_UI_COMPONENT(UIScriptComponent, "UIScriptComponent");
 
     DECL_UI_COMPONENT(UIFlowControllerComponent, "UIFlowControllerComponent");

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Scene3D/Systems/BaseSimulationSystem.h"
-#include "Base/BaseTypes.h"
+#include <Base/BaseTypes.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
@@ -18,7 +18,6 @@ public:
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
 
-    void Simulate(DAVA::Entity* entity) override;
     void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
@@ -26,6 +25,8 @@ public:
     void SetHealthParams(DAVA::uint32 maxHealth, DAVA::float32 maxHealthBarHeight);
 
 private:
+    void SimulateHealthBar(DAVA::Entity* entity);
+
     DAVA::Set<DAVA::Entity*> pendingEntities;
     DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*> tankToBar;
 

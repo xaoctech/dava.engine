@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h"
+#include <Base/BaseTypes.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
@@ -10,10 +10,10 @@ class TransformComponent;
 class ActionsSingleComponent;
 }
 
-class ShootInputSystem : public DAVA::INetworkInputSimulationSystem
+class ShootInputSystem : public DAVA::BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(ShootInputSystem, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(ShootInputSystem, DAVA::BaseSimulationSystem);
 
     ShootInputSystem(DAVA::Scene* scene);
 
@@ -21,12 +21,10 @@ public:
     void PrepareForRemove() override{};
 
 protected:
-    void ApplyDigitalActions(DAVA::Entity* entity,
-                             const DAVA::Vector<DAVA::FastName>& actions,
-                             DAVA::uint32 clientFrameId,
-                             DAVA::float32 duration) override;
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
 
     bool CanShoot(const DAVA::Entity* entity) const;
 
+    DAVA::EntityGroup* entityGroup = nullptr;
     DAVA::ActionsSingleComponent* actionsSingleComponent = nullptr;
 };

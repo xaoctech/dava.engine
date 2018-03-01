@@ -21,7 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DamageSystem)
 {
     ReflectionRegistrator<DamageSystem>::Begin()[M::Tags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &DamageSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 3.0f)]
+    .Method("ProcessFixed", &DamageSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 3.0f)]
     .End();
 }
 

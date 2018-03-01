@@ -13,7 +13,7 @@ class NetworkIdSystem : public SceneSystem
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkIdSystem, SceneSystem);
 
-    NetworkIdSystem(Scene* scene_);
+    NetworkIdSystem(Scene* scene);
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;

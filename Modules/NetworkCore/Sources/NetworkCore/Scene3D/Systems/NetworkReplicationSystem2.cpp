@@ -3,9 +3,9 @@
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkReplicationSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
@@ -23,7 +23,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationSystem2)
 {
     ReflectionRegistrator<NetworkReplicationSystem2>::Begin()[M::Tags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkReplicationSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 8.0f)]
+    .Method("ProcessFixed", &NetworkReplicationSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.0f)]
     .End();
 }
 
@@ -157,7 +157,6 @@ void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
                 {
                     info.second.frameIdServer = info.second.frameIdLastTouch;
 
-                    Entity* entity = networkEntities->FindByID(info.first);
                     uint32 frameId = info.second.frameIdLastChange;
 
                     // Apply only recently touched entities and
@@ -169,6 +168,10 @@ void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
                         Snapshot* snapshot = snapshotSingleComponent->GetServerSnapshot(frameId);
                         if (snapshot != nullptr)
                         {
+                            Entity* entity = networkEntities->FindByID(info.first);
+
+                            DVASSERT(entity != nullptr);
+
                             ApplySnapshotWithoutPrediction(entity, snapshot);
                         }
                     }
@@ -265,7 +268,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
         param.entityParam.outEntity = entity;
 
         // update info about added entity
-        networkReplicationSingleComponent->replicationInfo.insert({ entityId, NetworkReplicationSingleComponent::EntityReplicationInfo() });
+        networkReplicationSingleComponent->replicationInfo.emplace(entityId, NetworkReplicationSingleComponent::EntityReplicationInfo());
         UpdateReplicationInfo(entityId, frameId, true);
 
         LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Entity " << entityId << " will be added to " << param.entityParam.parentId << "\n");
@@ -490,9 +493,11 @@ void NetworkReplicationSystem2::AddPendingEntity(Entity* entity, Entity* parent)
 
 void NetworkReplicationSystem2::RemovePendingEntity(Entity* entity)
 {
-    std::remove_if(pendingAddEntityOrdered.begin(), pendingAddEntityOrdered.end(), [entity](const PendingEntityParams& params) {
+    auto it = std::remove_if(pendingAddEntityOrdered.begin(), pendingAddEntityOrdered.end(), [entity](const PendingEntityParams& params) {
         return (entity == params.entity);
     });
+
+    pendingAddEntityOrdered.erase(it, pendingAddEntityOrdered.end());
 }
 
 Entity* NetworkReplicationSystem2::GetPendingEntityParent(Entity* entity)

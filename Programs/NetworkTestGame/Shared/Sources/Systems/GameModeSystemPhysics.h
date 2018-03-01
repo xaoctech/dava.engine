@@ -2,11 +2,11 @@
 
 #include <Base/Set.h>
 #include <Scene3D/Components/CameraComponent.h>
-
-#include <NetworkCore/NetworkTypes.h>
-#include <NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 #include <Physics/DynamicBodyComponent.h>
+
+#include <NetworkCore/NetworkTypes.h>
 
 namespace DAVA
 {
@@ -17,9 +17,9 @@ class PolygonGroup;
 class IServer;
 }
 
-class GameModeSystemPhysics final : public DAVA::INetworkInputSimulationSystem
+class GameModeSystemPhysics final : public DAVA::BaseSimulationSystem
 {
-    DAVA_VIRTUAL_REFLECTION(GameModeSystemPhysics, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(GameModeSystemPhysics, DAVA::BaseSimulationSystem);
 
 public:
     GameModeSystemPhysics(DAVA::Scene* scene);
@@ -28,11 +28,9 @@ public:
     void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override;
 
-    // BaseSimulationSystem overrides
-    void Simulate(DAVA::Entity* entity) override;
+    void Simulate(DAVA::Entity* entity);
 
-    // INetworkInputSimulationSystem overrides
-    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration) override;
+    void ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
 
 private:
     void CreateFloorAndWalls();

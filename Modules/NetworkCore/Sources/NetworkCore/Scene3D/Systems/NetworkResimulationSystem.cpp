@@ -1,19 +1,22 @@
 #include "NetworkResimulationSystem.h"
 
+#include <NetworkCore/NetworkCoreUtils.h>
+#include <NetworkCore/Scene3D/Systems/NetworkTransformFromNetToLocalSystem.h>
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkPredictionSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkResimulationSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
-#include "NetworkCore/SnapshotUtils.h"
-#include "NetworkCore/NetworkCoreUtils.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Entity/SystemManager.h>
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
-#include <Scene3D/Components/SingleComponents/ChangedSystemsSingleComponent.h>
+#include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 
 namespace DAVA
 {
@@ -21,136 +24,177 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkResimulationSystem)
 {
     ReflectionRegistrator<NetworkResimulationSystem>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkResimulationSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 11.0f)]
-    .Method("Process", &NetworkResimulationSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 11.1f)]
+    .Method("ProcessFixed", &NetworkResimulationSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.2f)]
     .End();
 }
 
 NetworkResimulationSystem::NetworkResimulationSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent>() | ComponentUtils::MakeMask<NetworkReplicationComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent, NetworkReplicationComponent>())
 {
-    timeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
-    predictionComp = GetScene()->GetSingletonComponent<NetworkPredictionSingleComponent>();
-    ssc = GetScene()->GetSingletonComponent<SnapshotSingleComponent>();
-    changedSystemsSingleComponent = scene->GetSingletonComponent<ChangedSystemsSingleComponent>();
+    networkTimeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+    predictionSingleComponent = scene->GetSingletonComponent<NetworkPredictionSingleComponent>();
+    snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
+    networkResimulationSingleComponent = scene->AquireSingleComponentForWrite<NetworkResimulationSingleComponent>();
+
+    // Collect already added systems.
+    for (SceneSystem* system : scene->GetSystems())
+    {
+        OnSystemAdded(system);
+    }
+
+    scene->systemAdded.Connect(this, &NetworkResimulationSystem::OnSystemAdded);
+    scene->systemRemoved.Connect(this, &NetworkResimulationSystem::OnSystemRemoved);
 }
 
-void NetworkResimulationSystem::Process(float32 timeElapsed)
+NetworkResimulationSystem::~NetworkResimulationSystem()
 {
-    if (!changedSystemsSingleComponent->addedSystems.empty() ||
-        !changedSystemsSingleComponent->removedSystems.empty())
-    {
-        isCollectedSystems = false;
-    }
+    GetScene()->systemAdded.Disconnect(this);
+    GetScene()->systemRemoved.Disconnect(this);
 }
 
 void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 {
-    DAVA_PROFILER_CPU_SCOPE("NetworkResimulationSystem::Process");
+    DAVA_PROFILER_CPU_SCOPE("NetworkResimulationSystem::ProcessFixed");
 
-    if (!isCollectedSystems)
+    DVASSERT(IsClient(this));
+
+    if (!predictionSingleComponent->mispredictedEntities.empty())
     {
-        CollectSystems();
-    }
+        resimulationsCount += predictionSingleComponent->mispredictedEntities.size();
 
-    const uint32 maxFrameId = timeComp->GetFrameId();
+        const uint32 maxFrameId = networkTimeSingleComponent->GetFrameId();
 
-    if (predictionComp->mispredictedEntities.size() > 0)
-    {
-        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#> Resimulate\n");
-        for (auto it : predictionComp->mispredictedEntities)
+        // TODO: change `predictionSingleComponent->mispredictedEntities` to right data structure.
+        Map<uint32, Vector<Entity*>> resimulationFrameIdToEntities;
+
+        for (const auto& p : predictionSingleComponent->mispredictedEntities)
         {
-            Entity* entity = it.first;
-            uint32 frameId = it.second.frameId;
-            NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
+            resimulationFrameIdToEntities[p.second.frameId].push_back(p.first);
+        }
 
-            Snapshot* serverSnapshot = ssc->GetServerSnapshot(frameId);
-            DVASSERT(nullptr != serverSnapshot);
+        // There are systems whose simulation results can be fetched with delay
+        // E.g. physics system starts simulation at the end of a frame and fetches results at the beginning of the next frame
+        //
+        // Previous implementation had fundamental problems when working with such systems. It worked using these rules:
+        // - Each snapshot represented state at the end of a frame N
+        // - When detecting mis-prediction on frame N, it rolled back to N and started resimulation on interval [N + 1; current frame]
+        // Thus, if a system runs simulation at the end of a frame and fetches results at the beginning of the next frame,
+        // and mis-prediction is detected, we roll back to the end of a frame N but we cannot run correct simulation at the end of a frame N as we did on a server,
+        // since input has not been processed on a client by other systems, leading to possible incorrect simulation results
+        //
+        // In order to support resimulation of such systems, new implementation follows these rules:
+        //  - Snapshots represent scene states at the beginning of a frame N
+        //  - When detecting mis-prediction on frame N, we roll back to beginning of frame N and resimulate on interval [N; current frame)
+        //  - Resimulation starts from process of NetworkTransformNetToLocalSystem,
+        //    since this is the moment we have all the results from previous frame (i.e. all systems fetched their results)
 
-            LOG_SNAPSHOT_SYSTEM(SnapshotUtils::Log() << "##> Resimulate Entity " << entityId << " (" << frameId << " -> " << maxFrameId << ")\n");
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "## Rolling back Entity " << entityId << " to " << frameId << "\n");
+        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#> Resimulate\n");
 
-            // revert entity to the specified frameId state
-            SnapshotUtils::ApplySnapshot(serverSnapshot, entityId, entity);
+        BaseSimulationSystem::ReSimulationOn();
 
-            Vector<ISimulationSystem*> affectedSystems = {};
-            affectedSystems.reserve(systems.size());
-            for (auto& r : systems)
+        const uint32 resimulationStartFrameId = resimulationFrameIdToEntities.begin()->first;
+
+        networkResimulationSingleComponent->SetResimulationFrameId(resimulationStartFrameId);
+
+        for (const auto& p : resimulationSystems)
+        {
+            ISimulationSystem* system = dynamic_cast<ISimulationSystem*>(p.second);
+            system->ReSimulationStart();
+        }
+
+        EntitiesManager* entitiesManager = GetScene()->GetEntitiesManager();
+
+        /*                                  HERE BE DRAGONS.
+            Now entities groups will be cleared and filled with entities that were mispredicted.
+            Callbacks (while refilling) will NOT be emitted, since mispredicted entities have been processed already (theoretically).
+            But if new entity will be added during resimulation, callbacks WILL be emitted.
+        */
+
+        entitiesManager->DetachGroups();
+
+        for (uint32 frameId = resimulationStartFrameId; frameId < maxFrameId; ++frameId)
+        {
+            networkResimulationSingleComponent->SetResimulationFrameId(frameId);
+
+            const Vector<Entity*>& entities = resimulationFrameIdToEntities[frameId];
+
+            if (!entities.empty())
             {
-                const ComponentMask& requiredComponents = r.system->GetResimulationComponents();
-                bool isAffectedSystems = ((requiredComponents & entity->GetAvailableComponentMask()) == requiredComponents);
-                if (isAffectedSystems)
+                Snapshot* serverSnapshot = snapshotSingleComponent->GetServerSnapshot(frameId);
+
+                DVASSERT(nullptr != serverSnapshot);
+
+                for (Entity* entity : entities)
                 {
-                    r.system->ReSimulationStart(entity, frameId);
-                    affectedSystems.push_back(r.system);
+                    DVASSERT(entity != nullptr);
+
+                    NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
+
+                    LOG_SNAPSHOT_SYSTEM(SnapshotUtils::Log() << "## Rolling back Entity " << entityId << " to " << frameId << "\n");
+
+                    // Revert entity to the specified frameId state.
+                    SnapshotUtils::ApplySnapshot(serverSnapshot, entityId, entity);
+
+                    entitiesManager->RegisterDetachedEntity(entity);
                 }
+
+                entitiesManager->UpdateCaches();
             }
 
-            const char* entName = entity->GetName().c_str();
-            Logger::Debug("[ReSimulation] entity:%lu:%s from %d to %d", static_cast<uint32>(entityId), entName, frameId, maxFrameId);
-            ++resimulationsCount;
+            const auto& methods = GetEngineContext()->systemManager->GetFixedProcessMethods();
 
-            for (++frameId; frameId <= maxFrameId; ++frameId)
-            {
-                LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "##> Simulate Entity " << entityId << " frame " << frameId << "\n");
+            auto networkTransformFromNetToLocalSystemMethod = std::find_if(methods.begin(), methods.end(), [](const SystemManager::SceneProcessInfo& x) {
+                return x.systemType->Is<NetworkTransformFromNetToLocalSystem>();
+            });
 
-                for (auto& system : affectedSystems)
+            DVASSERT(networkTransformFromNetToLocalSystemMethod != methods.end());
+
+            auto InvokeIfPartOfResimulation = [this, entitiesManager](const SystemManager::SceneProcessInfo& processInfo) {
+                auto it = resimulationSystems.find(processInfo.systemType);
+                if (it != resimulationSystems.end())
                 {
-                    system->Simulate(entity);
+                    SceneSystem* system = it->second;
+                    processInfo.method->InvokeWithCast(system, NetworkTimeSingleComponent::FrameDurationS);
+                    entitiesManager->UpdateCaches();
                 }
+            };
 
-                LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "##> Simulate Done" << std::endl);
-            }
-
-            for (auto& system : affectedSystems)
+            // Invoke resimulation systems processes from NetworkTransformFromNetToLocalSystem (including) to the end.
+            for (auto method = networkTransformFromNetToLocalSystemMethod; method != methods.end(); ++method)
             {
-                system->ReSimulationEnd(entity);
+                InvokeIfPartOfResimulation(*method);
             }
+
+            GetScene()->AquireSingleComponentForWrite<ActionsSingleComponent>()->Clear();
+
+            // Invoke resimulation systems processes from begin to the NetworkTransformFromNetToLocalSystem (excluding).
+            for (auto method = methods.begin(); method != networkTransformFromNetToLocalSystemMethod; ++method)
+            {
+                InvokeIfPartOfResimulation(*method);
+            }
+
+            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "##> Simulation is done for frame " << frameId << std::endl);
         }
 
         GetScene()->GetSystem<TransformSystem>()->Process(0);
+        entitiesManager->UpdateCaches();
+
+        /*
+            Restore entities groups.
+            All NEW entities that were added (and not removed) during resimulation will be merged to original groups.
+        */
+        entitiesManager->RestoreGroups();
+
+        for (const auto& p : resimulationSystems)
+        {
+            ISimulationSystem* system = dynamic_cast<ISimulationSystem*>(p.second);
+            system->ReSimulationEnd();
+        }
+
+        BaseSimulationSystem::ReSimulationOff();
 
         LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#< Resimulate Done\n");
     }
-}
-
-void NetworkResimulationSystem::CollectSystems()
-{
-    systems.clear();
-
-    for (SceneSystem* system : GetScene()->systemsVector)
-    {
-        ISimulationSystem* isys = dynamic_cast<ISimulationSystem*>(system);
-
-        if (isys != nullptr)
-        {
-            const ReflectedStructure* structure = ReflectedTypeDB::GetByPointer(system)->GetStructure();
-
-            for (const auto& method : structure->methods)
-            {
-                if (method->meta != nullptr && method.get()->name != FastName("ProcessServer")) // This is ugly, but the only way right now.
-                {
-                    const M::SystemProcess* meta = method->meta->GetMeta<M::SystemProcess>();
-
-                    if (meta->type == SP::Type::FIXED)
-                    {
-                        ResimulationSystem tmp;
-                        tmp.system = isys;
-                        tmp.order = meta->order;
-                        tmp.group = meta->group;
-
-                        systems.push_back(tmp);
-                    }
-                }
-            }
-        }
-    }
-
-    std::sort(systems.begin(), systems.end(), [](const ResimulationSystem& l, const ResimulationSystem& r) {
-        return l.group == r.group ? l.order < r.order : l.group < r.group;
-    });
-
-    isCollectedSystems = true;
 }
 
 void NetworkResimulationSystem::PrepareForRemove()
@@ -160,5 +204,25 @@ void NetworkResimulationSystem::PrepareForRemove()
 uint32 NetworkResimulationSystem::GetResimulationsCount() const
 {
     return resimulationsCount;
+}
+
+void NetworkResimulationSystem::OnSystemAdded(SceneSystem* system)
+{
+    if (dynamic_cast<ISimulationSystem*>(system) != nullptr)
+    {
+        const Type* type = ReflectedTypeDB::GetByPointer(system)->GetType();
+        DVASSERT(resimulationSystems.count(type) == 0);
+        resimulationSystems[type] = system;
+    }
+}
+
+void NetworkResimulationSystem::OnSystemRemoved(SceneSystem* system)
+{
+    if (dynamic_cast<ISimulationSystem*>(system) != nullptr)
+    {
+        const Type* type = ReflectedTypeDB::GetByPointer(system)->GetType();
+        DVASSERT(resimulationSystems.count(type) != 0);
+        resimulationSystems.erase(type);
+    }
 }
 }

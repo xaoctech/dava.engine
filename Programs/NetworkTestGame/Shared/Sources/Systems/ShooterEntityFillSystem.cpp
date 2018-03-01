@@ -1,6 +1,8 @@
 #include "Systems/ShooterEntityFillSystem.h"
+
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
+
 #include "Components/ShooterRoleComponent.h"
 #include "Components/ShooterAimComponent.h"
 #include "Components/ShooterProjectileComponent.h"
@@ -11,6 +13,12 @@
 #include "Components/ShooterMirroredCharacterComponent.h"
 #include "Components/RocketSpawnComponent.h"
 #include "Components/ShooterStateComponent.h"
+#include "Components/SingleComponents/BattleOptionsSingleComponent.h"
+#include "Visibility/ObservableComponent.h"
+#include "Visibility/SimpleVisibilityShapeComponent.h"
+
+#include "Visibility/CharacterVisibilityShapeComponent.h"
+#include "Visibility/ObservableComponent.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Entity.h>
@@ -53,7 +61,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterEntityFillSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterEntityFillSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterEntityFillSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 10.0f)]
+    .Method("ProcessFixed", &ShooterEntityFillSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 10.0f)]
     .End();
 }
 
@@ -281,6 +289,9 @@ void ShooterEntityFillSystem::FillCarEntity(DAVA::Entity* entity)
 
         NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
         chassis->AddComponent(replicationComponent);
+
+        entity->AddComponent(new ObservableComponent());
+        entity->AddComponent(new SimpleVisibilityShapeComponent());
 
         entity->AddNode(chassis);
 

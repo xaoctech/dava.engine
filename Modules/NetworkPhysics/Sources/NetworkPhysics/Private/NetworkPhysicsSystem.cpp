@@ -25,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPhysicsSystem)
 {
     ReflectionRegistrator<NetworkPhysicsSystem>::Begin()[M::Tags("network", "physics")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkPhysicsSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_PHYSICS, SP::Type::FIXED, 2.0f)]
+    .Method("ProcessFixed", &NetworkPhysicsSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 5.0f)]
     .End();
 }
 
@@ -33,30 +33,35 @@ NetworkPhysicsSystem::NetworkPhysicsSystem(Scene* scene)
     : DAVA::BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkDynamicBodyComponent>())
 {
     dynamicBodies = scene->AquireComponentGroup<DynamicBodyComponent, DynamicBodyComponent>();
-}
-
-void NetworkPhysicsSystem::AddEntity(Entity* entity)
-{
-    NetworkDynamicBodyComponent* networkDynamicBodyComponent = entity->GetComponent<NetworkDynamicBodyComponent>();
-    DVASSERT(networkDynamicBodyComponent != nullptr);
-
-    networkDynamicBodyComponents.insert(networkDynamicBodyComponent);
-}
-
-void NetworkPhysicsSystem::RemoveEntity(Entity* entity)
-{
-    NetworkDynamicBodyComponent* networkDynamicBodyComponent = entity->GetComponent<NetworkDynamicBodyComponent>();
-    DVASSERT(networkDynamicBodyComponent != nullptr);
-
-    networkDynamicBodyComponents.erase(networkDynamicBodyComponent);
+    entityGroup = scene->AquireEntityGroup<DynamicBodyComponent, NetworkDynamicBodyComponent>();
 }
 
 void NetworkPhysicsSystem::ProcessFixed(float32 dt)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkPhysicsSystem::ProcessFixed");
 
-    if (networkDynamicBodyComponents.size() == 0)
+    if (IsReSimulating())
     {
+        PhysicsSystem* physicsSystem = GetScene()->GetSystem<PhysicsSystem>();
+
+        DVASSERT(physicsSystem);
+
+        for (Entity* entity : entityGroup->GetEntities())
+        {
+            DynamicBodyComponent* body = entity->GetComponent<DynamicBodyComponent>();
+
+            DVASSERT(body != nullptr);
+
+            if (frozenDynamicBodiesParams.count(body) != 0)
+            {
+                UnfreezeBody(body);
+                TransferDataFromNetworkComponent(entity);
+            }
+        }
+
+        physicsSystem->ProcessFixedSimulate(dt);
+        physicsSystem->ProcessFixedFetch(dt);
+
         return;
     }
 
@@ -70,31 +75,20 @@ void NetworkPhysicsSystem::PrepareForRemove()
 {
 }
 
-void NetworkPhysicsSystem::ReSimulationStart(DAVA::Entity* entity, uint32 frameId)
+void NetworkPhysicsSystem::ReSimulationStart()
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkPhysicsSystem::ReSimulationStart");
 
-    DVASSERT(IsClient(GetScene()));
+    DVASSERT(IsClient(this));
 
-    NetworkDynamicBodyComponent* networkDynamicBodyComponent = entity->GetComponent<NetworkDynamicBodyComponent>();
-    DVASSERT(networkDynamicBodyComponent != nullptr);
-    DVASSERT(networkDynamicBodyComponents.find(networkDynamicBodyComponent) != networkDynamicBodyComponents.end());
-
-    FreezeEverythingExceptEntity(entity);
-    TransferDataFromNetworkComponent(networkDynamicBodyComponent);
+    FreezeEverything();
 }
 
-void NetworkPhysicsSystem::Simulate(Entity* entity)
-{
-    PhysicsSystem* physicsSystem = GetScene()->GetSystem<PhysicsSystem>();
-    DVASSERT(physicsSystem);
-
-    physicsSystem->ProcessFixed(NetworkTimeSingleComponent::FrameDurationS);
-}
-
-void NetworkPhysicsSystem::ReSimulationEnd(Entity* entity)
+void NetworkPhysicsSystem::ReSimulationEnd()
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkPhysicsSystem::ReSimulationEnd");
+
+    DVASSERT(IsClient(this));
 
     UnfreezeEverything();
 }
@@ -105,12 +99,13 @@ void NetworkPhysicsSystem::TransferDataToNetworkComponents()
 
     DVASSERT(IsServer(GetScene()));
 
-    for (NetworkDynamicBodyComponent* networkDynamicBodyComponent : networkDynamicBodyComponents)
+    for (Entity* entity : entityGroup->GetEntities())
     {
-        DVASSERT(networkDynamicBodyComponent != nullptr);
-
-        Entity* entity = networkDynamicBodyComponent->GetEntity();
         DVASSERT(entity != nullptr);
+
+        NetworkDynamicBodyComponent* networkDynamicBodyComponent = entity->GetComponent<NetworkDynamicBodyComponent>();
+
+        DVASSERT(networkDynamicBodyComponent != nullptr);
 
         // Fill network dynamic body component
 
@@ -131,71 +126,73 @@ void NetworkPhysicsSystem::TransferDataToNetworkComponents()
 
                 physx::PxVehicleDrive* pxVehicleDrive = vehicleCarComponent->GetPxVehicle();
                 physx::PxVehicleDriveNW* pxVehicleDriveNW = static_cast<physx::PxVehicleDriveNW*>(pxVehicleDrive);
-                DVASSERT(pxVehicleDriveNW != nullptr);
-
-                uint32 numWheels = pxVehicleDriveNW->mWheelsSimData.getNbWheels();
-
-                networkVehicleCarComponent->numWheels = numWheels;
-                networkVehicleCarComponent->engineRotationSpeed = pxVehicleDriveNW->mDriveDynData.getEngineRotationSpeed();
-                networkVehicleCarComponent->gear = pxVehicleDriveNW->mDriveDynData.getCurrentGear();
-
-                for (uint32 i = 0; i < physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS; ++i)
+                if (pxVehicleDriveNW != nullptr)
                 {
-                    networkVehicleCarComponent->analogInputStates[i] = pxVehicleDriveNW->mDriveDynData.getAnalogInput(i);
-                }
+                    uint32 numWheels = pxVehicleDriveNW->mWheelsSimData.getNbWheels();
 
-                pxVehicleDriveNW->mWheelsDynData.getWheels4InternalJounces(networkVehicleCarComponent->jounces.data());
+                    networkVehicleCarComponent->numWheels = numWheels;
+                    networkVehicleCarComponent->engineRotationSpeed = pxVehicleDriveNW->mDriveDynData.getEngineRotationSpeed();
+                    networkVehicleCarComponent->gear = pxVehicleDriveNW->mDriveDynData.getCurrentGear();
 
-                for (uint32 i = 0; i < numWheels; ++i)
-                {
-                    pxVehicleDriveNW->mWheelsDynData.getWheelRotationSpeed(i, networkVehicleCarComponent->wheelsRotationSpeed[i], networkVehicleCarComponent->wheelsCorrectedRotationSpeed[i]);
-                    networkVehicleCarComponent->wheelsRotationAngle[i] = pxVehicleDriveNW->mWheelsDynData.getWheelRotationAngle(i);
-                }
-
-                int32 wheelIndex = 0;
-                for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
-                {
-                    Entity* child = entity->GetChild(i);
-                    DVASSERT(child != nullptr);
-
-                    TransformComponent* childTransformComponent = child->GetComponent<TransformComponent>();
-
-                    VehicleWheelComponent* wheelComponent = child->GetComponent<VehicleWheelComponent>();
-                    if (wheelComponent != nullptr)
+                    for (uint32 i = 0; i < physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS; ++i)
                     {
-                        DVASSERT(static_cast<uint32>(wheelIndex) < numWheels);
-                        networkVehicleCarComponent->wheelsOrientation[wheelIndex] = childTransformComponent->GetRotation();
-                        networkVehicleCarComponent->wheelsPosition[wheelIndex] = childTransformComponent->GetPosition();
-
-                        ++wheelIndex;
+                        networkVehicleCarComponent->analogInputStates[i] = pxVehicleDriveNW->mDriveDynData.getAnalogInput(i);
                     }
 
-                    VehicleChassisComponent* chassisComponent = child->GetComponent<VehicleChassisComponent>();
-                    if (chassisComponent != nullptr)
+                    pxVehicleDriveNW->mWheelsDynData.getWheels4InternalJounces(networkVehicleCarComponent->jounces.data());
+
+                    for (uint32 i = 0; i < numWheels; ++i)
                     {
-                        DVASSERT(wheelComponent == nullptr);
-
-                        networkVehicleCarComponent->chassisOrientation = childTransformComponent->GetRotation();
-                        networkVehicleCarComponent->chassisPosition = childTransformComponent->GetPosition();
+                        pxVehicleDriveNW->mWheelsDynData.getWheelRotationSpeed(i, networkVehicleCarComponent->wheelsRotationSpeed[i], networkVehicleCarComponent->wheelsCorrectedRotationSpeed[i]);
+                        networkVehicleCarComponent->wheelsRotationAngle[i] = pxVehicleDriveNW->mWheelsDynData.getWheelRotationAngle(i);
                     }
-                }
 
-                DVASSERT(wheelIndex == numWheels);
+                    int32 wheelIndex = 0;
+                    for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
+                    {
+                        Entity* child = entity->GetChild(i);
+                        DVASSERT(child != nullptr);
+
+                        TransformComponent* childTransformComponent = child->GetComponent<TransformComponent>();
+
+                        VehicleWheelComponent* wheelComponent = child->GetComponent<VehicleWheelComponent>();
+                        if (wheelComponent != nullptr)
+                        {
+                            DVASSERT(static_cast<uint32>(wheelIndex) < numWheels);
+                            networkVehicleCarComponent->wheelsOrientation[wheelIndex] = childTransformComponent->GetRotation();
+                            networkVehicleCarComponent->wheelsPosition[wheelIndex] = childTransformComponent->GetPosition();
+
+                            ++wheelIndex;
+                        }
+
+                        VehicleChassisComponent* chassisComponent = child->GetComponent<VehicleChassisComponent>();
+                        if (chassisComponent != nullptr)
+                        {
+                            DVASSERT(wheelComponent == nullptr);
+
+                            networkVehicleCarComponent->chassisOrientation = childTransformComponent->GetRotation();
+                            networkVehicleCarComponent->chassisPosition = childTransformComponent->GetPosition();
+                        }
+                    }
+
+                    DVASSERT(wheelIndex == numWheels);
+                }
             }
         }
     }
 }
 
-void NetworkPhysicsSystem::TransferDataFromNetworkComponent(NetworkDynamicBodyComponent* networkDynamicBodyComponent)
+void NetworkPhysicsSystem::TransferDataFromNetworkComponent(Entity* entity)
 {
-    DAVA_PROFILER_CPU_SCOPE("NetworkPhysicsSystem::TransferDataFromNetworkComponents");
+    DAVA_PROFILER_CPU_SCOPE("NetworkPhysicsSystem::TransferDataFromNetworkComponent");
 
     DVASSERT(!IsServer(GetScene()));
 
-    DVASSERT(networkDynamicBodyComponent != nullptr);
-
-    Entity* entity = networkDynamicBodyComponent->GetEntity();
     DVASSERT(entity != nullptr);
+
+    NetworkDynamicBodyComponent* networkDynamicBodyComponent = entity->GetComponent<NetworkDynamicBodyComponent>();
+
+    DVASSERT(networkDynamicBodyComponent != nullptr);
 
     // Fill dynamic body component
 
@@ -203,8 +200,6 @@ void NetworkPhysicsSystem::TransferDataFromNetworkComponent(NetworkDynamicBodyCo
 
     if (dynamicBodyComponent != nullptr)
     {
-        DVASSERT(dynamicBodyComponent != nullptr);
-
         dynamicBodyComponent->SetLinearVelocity(networkDynamicBodyComponent->linearVelocity);
         dynamicBodyComponent->SetAngularVelocity(networkDynamicBodyComponent->angularVelocity);
 
@@ -272,27 +267,47 @@ void NetworkPhysicsSystem::TransferDataFromNetworkComponent(NetworkDynamicBodyCo
     }
 }
 
-void NetworkPhysicsSystem::FreezeEverythingExceptEntity(Entity* entity)
+void NetworkPhysicsSystem::FreezeEverything()
 {
+    DAVA_PROFILER_CPU_SCOPE("NetworkPhysicsSystem::FreezeEverything");
+
     DVASSERT(frozenDynamicBodiesParams.size() == 0);
 
     PhysicsSystem* physicsSystem = GetScene()->GetSystem<PhysicsSystem>();
+
     DVASSERT(physicsSystem);
 
     for (DynamicBodyComponent* body : dynamicBodies->components)
     {
-        Entity* currentEntity = body->GetEntity();
-        DVASSERT(currentEntity != nullptr);
-
-        if (currentEntity != entity)
+        if (body->GetIsKinematic() == false)
         {
-            if (body->GetIsKinematic() == false)
-            {
-                frozenDynamicBodiesParams[body] = std::make_tuple(body->GetLinearVelocity(), body->GetAngularVelocity());
-                body->SetIsKinematic(true);
-            }
+            frozenDynamicBodiesParams[body] = std::make_tuple(body->GetLinearVelocity(), body->GetAngularVelocity());
+            body->SetIsKinematic(true);
         }
     }
+}
+
+void NetworkPhysicsSystem::UnfreezeBody(DynamicBodyComponent* body)
+{
+    if (body != nullptr && body->GetIsKinematic())
+    {
+        auto it = frozenDynamicBodiesParams.find(body);
+
+        if (it != frozenDynamicBodiesParams.end())
+        {
+            auto& params = it->second;
+
+            body->SetIsKinematic(false);
+            body->SetLinearVelocity(std::get<0>(params));
+            body->SetAngularVelocity(std::get<1>(params));
+
+            frozenDynamicBodiesParams.erase(it);
+
+            return;
+        }
+    }
+
+    DVASSERT(false, "Corrupted dynamic body.");
 }
 
 void NetworkPhysicsSystem::UnfreezeEverything()
@@ -321,9 +336,9 @@ void NetworkPhysicsSystem::LogVehicleCar(VehicleCarComponent* carComponent, Stri
 
     DynamicBodyComponent* dynamicBodyComponent = entity->GetComponent<DynamicBodyComponent>();
     PxVehicleDriveNW* pxVehicle = static_cast<PxVehicleDriveNW*>(carComponent->GetPxVehicle());
-    PxRigidDynamic* actor = pxVehicle->getRigidDynamicActor();
     if (pxVehicle == nullptr)
         return;
+    PxRigidDynamic* actor = pxVehicle->getRigidDynamicActor();
 
     Logger::Info("VEHICLE STATE %s (frame: %d) =============", header.c_str(), GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>()->GetFrameId());
     Logger::Info("Actor global position: (%f, %f, %f), global rotation: (%f, %f, %f, %f)", actor->getGlobalPose().p.x, actor->getGlobalPose().p.y, actor->getGlobalPose().p.z, actor->getGlobalPose().q.x, actor->getGlobalPose().q.y, actor->getGlobalPose().q.z, actor->getGlobalPose().q.w);

@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Scene3D/Systems/BaseSimulationSystem.h"
-#include "Base/BaseTypes.h"
-#include "NetworkCore/NetworkTypes.h"
+#include <Base/BaseTypes.h>
+#include <NetworkCore/NetworkTypes.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 namespace DAVA
 {
 class Scene;
-class Entity;
-class NetworkReplicationSingleComponent;
 }
 
 class GameInputSystem;
@@ -19,15 +17,10 @@ public:
 
     EnemyMovingSystem(DAVA::Scene* scene);
 
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
-
     void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
-    void Simulate(DAVA::Entity* entity) override;
-
 private:
     GameInputSystem* gameInputSystem = nullptr;
-    DAVA::NetworkReplicationSingleComponent* replicationSingleComponent = nullptr;
+    DAVA::EntityGroup* entityGroup = nullptr;
 };

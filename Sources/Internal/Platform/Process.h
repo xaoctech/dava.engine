@@ -13,7 +13,7 @@ namespace DAVA
 class Process
 {
 public:
-    Process(const FilePath& path, const Vector<String>& args);
+    Process(const String& path, const Vector<String>& args);
     ~Process();
 
     bool Run(bool showWindow);
@@ -21,7 +21,7 @@ public:
 
     const String& GetOutput() const;
     int64 GetPID() const;
-    const FilePath& GetPath() const;
+    const String& GetPath() const;
     const Vector<String>& GetArgs() const;
 
     int GetExitCode() const;
@@ -38,7 +38,7 @@ private:
 private:
     int64 pid = -1;
     String output;
-    FilePath executablePath;
+    String executablePath;
     Vector<String> runArgs;
     bool running = false;
 

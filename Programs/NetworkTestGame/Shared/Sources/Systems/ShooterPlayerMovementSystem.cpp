@@ -46,12 +46,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterMovementSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterMovementSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterMovementSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 13.0f)]
+    .Method("ProcessFixed", &ShooterMovementSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 13.0f)]
     .End();
 }
 
 ShooterMovementSystem::ShooterMovementSystem(DAVA::Scene* scene)
-    : DAVA::INetworkInputSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterRoleComponent>() | DAVA::ComponentUtils::MakeMask<DAVA::NetworkInputComponent>())
+    : DAVA::BaseSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterRoleComponent, DAVA::NetworkInputComponent>())
 {
     using namespace DAVA;
 
@@ -71,22 +71,8 @@ ShooterMovementSystem::ShooterMovementSystem(DAVA::Scene* scene)
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_RIGHT, eInputElements::KB_D, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ACCELERATE, eInputElements::KB_LSHIFT, keyboardId);
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_ANALOG_MOVE, AnalogPrecision::ANALOG_UINT16);
-}
 
-void ShooterMovementSystem::AddEntity(DAVA::Entity* entity)
-{
-    ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
-    DVASSERT(roleComponent != nullptr);
-
-    if (roleComponent->GetRole() == ShooterRoleComponent::Role::Player)
-    {
-        playerEntities.insert(entity);
-    }
-}
-
-void ShooterMovementSystem::RemoveEntity(DAVA::Entity* entity)
-{
-    playerEntities.erase(entity);
+    entityGroup = scene->AquireEntityGroup<ShooterRoleComponent, DAVA::NetworkInputComponent>();
 }
 
 void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
@@ -112,8 +98,13 @@ void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
         handledResolveCollisionMode = true;
     }
 
-    for (Entity* entity : playerEntities)
+    for (Entity* entity : entityGroup->GetEntities())
     {
+        if (entity->GetComponent<ShooterRoleComponent>()->GetRole() != ShooterRoleComponent::Role::Player)
+        {
+            continue;
+        }
+
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
         if (!allActions.empty())
         {
@@ -128,12 +119,6 @@ void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
 
 void ShooterMovementSystem::PrepareForRemove()
 {
-}
-
-void ShooterMovementSystem::Simulate(DAVA::Entity* entity)
-{
-    DAVA::INetworkInputSimulationSystem::Simulate(entity);
-    RotateEntityTowardsCurrentAim(entity);
 }
 
 void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA::Vector<DAVA::FastName>& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration)

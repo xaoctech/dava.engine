@@ -36,7 +36,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCarAttackSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterCarAttackSystem>::Begin()[M::Tags("gm_shooter", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterCarAttackSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 19.0f)]
+    .Method("ProcessFixed", &ShooterCarAttackSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 19.0f)]
     .End();
 }
 

@@ -21,7 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCameraSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterCameraSystem>::Begin()[M::Tags("gm_shooter", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterCameraSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 2.1f)] // We do not have a group after transform and between renderer, so use engine end for now
+    .Method("Process", &ShooterCameraSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 2.1f)] // We do not have a group after transform and between renderer, so use engine end for now
     .End();
 }
 
@@ -87,7 +87,7 @@ void ShooterCameraSystem::Process(DAVA::float32 dt)
 {
     using namespace DAVA;
 
-    DAVA_PROFILER_CPU_SCOPE("ShooterCameraSystem::ProcessFixed");
+    DAVA_PROFILER_CPU_SCOPE("ShooterCameraSystem::Process");
 
     if (trackedAimComponent != nullptr)
     {

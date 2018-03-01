@@ -1,11 +1,14 @@
 #pragma once
 
-#include "Base/UnordererSet.h"
-#include "Base/FastName.h"
-#include "Math/Vector.h"
-#include "Math/Quaternion.h"
-#include "NetworkCore/Scene3D/Systems/INetworkInputSimulationSystem.h"
-#include "NetworkCore/NetworkTypes.h"
+#include <Base/FastName.h>
+#include <Base/UnordererSet.h>
+#include <Math/Vector.h>
+#include <Math/Quaternion.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
+#include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
+
+
+#include <NetworkCore/NetworkTypes.h>
 
 namespace DAVA
 {
@@ -18,10 +21,10 @@ namespace GameInputSystemDetail
 DAVA::Vector2 GetNormalizedTeleportPosition(const DAVA::Vector2& pos);
 }
 
-class GameInputSystem : public DAVA::INetworkInputSimulationSystem
+class GameInputSystem : public DAVA::BaseSimulationSystem
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(GameInputSystem, DAVA::INetworkInputSimulationSystem);
+    DAVA_VIRTUAL_REFLECTION(GameInputSystem, DAVA::BaseSimulationSystem);
 
     GameInputSystem(DAVA::Scene* scene);
 
@@ -31,14 +34,16 @@ public:
     void ApplyDigitalActions(DAVA::Entity* entity,
                              const DAVA::Vector<DAVA::FastName>& actions,
                              DAVA::uint32 clientFrameId,
-                             DAVA::float32 duration) override;
+                             DAVA::float32 duration);
 
     void ApplyAnalogActions(DAVA::Entity* entity,
                             const DAVA::AnalogActionsMap& actions,
                             DAVA::uint32 clientFrameId,
-                            DAVA::float32 duration) override;
+                            DAVA::float32 duration);
 
 private:
+    DAVA::EntityGroup* entityGroup = nullptr;
+
     // server only
     void ApplyCameraDelta(DAVA::Entity* entity, const DAVA::Quaternion& cameraDelta,
                           DAVA::uint32 clientFrameId,

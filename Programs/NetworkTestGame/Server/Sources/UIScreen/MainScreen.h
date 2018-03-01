@@ -14,7 +14,7 @@ class ActionsSingleComponent;
 class MainScreen : public DAVA::UIScreen
 {
 public:
-    MainScreen(const DAVA::ScopedPtr<DAVA::Scene>& scene_);
+    MainScreen(DAVA::Scene* scene_);
 
     void LoadResources() override;
     void UnloadResources() override;
@@ -26,8 +26,10 @@ public:
         return 1;
     }
 
+    DAVA::ScopedPtr<DAVA::UI3DView> ui3DView;
+
 private:
-    DAVA::ScopedPtr<DAVA::Scene> scene;
+    DAVA::Scene* scene;
     DAVA::ActionsSingleComponent* actionsSingleComponent = nullptr;
 
     DAVA::UIJoypad* moveJoyPAD = nullptr;

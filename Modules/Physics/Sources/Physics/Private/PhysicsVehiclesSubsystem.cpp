@@ -13,6 +13,7 @@
 #include "Physics/DynamicBodyComponent.h"
 #include "Physics/Private/PhysicsMath.h"
 
+#include <Debug/ProfilerCPU.h>
 #include <Engine/Engine.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TransformComponent.h>
@@ -334,6 +335,8 @@ void PhysicsVehiclesSubsystem::ProcessFixed(float32 timeElapsed)
 {
     using namespace physx;
     using namespace PhysicsVehicleSubsystemDetail;
+
+    DAVA_PROFILER_CPU_SCOPE("PhysicsVehiclesSubsystem::ProcessFixed");
 
     static PxVehicleWheels* physxVehicles[MAX_VEHICLES_COUNT];
     static PxVehicleWheelQueryResult vehicleQueryResults[MAX_VEHICLES_COUNT];

@@ -83,6 +83,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         virtual void ProcessFrame()
         {
             networkTimeSingleComponent->SetFrameId(networkTimeSingleComponent->GetFrameId() + 1);
+            scene->GetEntitiesManager()->UpdateCaches();
         }
 
         virtual void EndFrame()
@@ -219,6 +220,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         {
             BaseContext::ProcessFrame();
             remoteInputSystem->ProcessServer(1.0f / 60.0f);
+            scene->GetEntitiesManager()->UpdateCaches();
         }
     };
 
@@ -242,6 +244,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         {
             BaseContext::ProcessFrame();
             remoteInputSystem->ProcessClient(1.0f / 60.0f);
+            scene->GetEntitiesManager()->UpdateCaches();
         }
     };
 

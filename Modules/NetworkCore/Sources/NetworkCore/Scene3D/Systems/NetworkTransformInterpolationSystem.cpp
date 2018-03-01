@@ -1,13 +1,13 @@
 #include "NetworkTransformInterpolationSystem.h"
+
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 
-#include "Scene3D/Components/TransformInterpolationComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-
 #include <Debug/ProfilerCPU.h>
-#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/TransformInterpolationComponent.h>
 #include <Reflection/ReflectedMeta.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
@@ -26,7 +26,7 @@ NetworkTransformInterpolationSystem::NetworkTransformInterpolationSystem(Scene* 
 {
 }
 
-void NetworkTransformInterpolationSystem::ReSimulationStart(Entity* entity, uint32 frameId)
+void NetworkTransformInterpolationSystem::ReSimulationStart()
 {
     for (TransformInterpolationComponent* tic : fixedInterpolationGroup->components)
     {
@@ -34,7 +34,7 @@ void NetworkTransformInterpolationSystem::ReSimulationStart(Entity* entity, uint
     }
 }
 
-void NetworkTransformInterpolationSystem::ReSimulationEnd(Entity* entity)
+void NetworkTransformInterpolationSystem::ReSimulationEnd()
 {
     for (TransformInterpolationComponent* tic : fixedInterpolationGroup->components)
     {
@@ -47,9 +47,10 @@ void NetworkTransformInterpolationSystem::ReSimulationEnd(Entity* entity)
 void NetworkTransformInterpolationSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTransformInterpolationSystem::ProcessFixed");
+
     for (TransformInterpolationComponent* tic : fixedInterpolationPendingAdd.components)
     {
-        tic->state = InterpolationState::FIXED;
+        tic->state = (IsReSimulating() ? InterpolationState::DISABLED : InterpolationState::FIXED);
     }
     fixedInterpolationPendingAdd.components.clear();
 }

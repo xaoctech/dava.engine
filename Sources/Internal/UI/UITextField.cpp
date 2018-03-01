@@ -46,7 +46,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextField)
     ReflectionRegistrator<UITextField>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UITextField* o) { o->Release(); })
-    .Field("text", &UITextField::GetUtf8Text, &UITextField::SetUtf8Text)
+    .Field("text", &UITextField::GetUtf8Text, &UITextField::SetUtf8Text)[M::Bindable()]
     .Field("font", &UITextField::GetFontPresetName, &UITextField::SetFontByPresetName)
     .Field("fontPath", &UITextField::GetFontPath, &UITextField::SetFontPath)
     .Field("fontSize", &UITextField::GetFontSize, &UITextField::SetFontSize)

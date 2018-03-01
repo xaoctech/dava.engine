@@ -1,24 +1,18 @@
 #include "GameInputSystem.h"
 
+#include "InputUtils.h"
+
 #include "Base/FastName.h"
-#include "Engine/Engine.h"
 #include <Debug/ProfilerCPU.h>
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Systems/ActionCollectSystem.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
 #include "Systems/GameModeSystemCharacters.h"
-#include "Time/SystemTimer.h"
 
 #include "NetworkCore/Scene3D/Components/NetworkInputComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
-#include "NetworkCore/Scene3D/Systems/NetworkInputSystem.h"
-#include "NetworkCore/Scene3D/Systems/NetworkTimeSystem.h"
 #include "NetworkCore/NetworkCoreUtils.h"
 
 #include "Components/GameStunnableComponent.h"
@@ -37,7 +31,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameInputSystem)
 {
     ReflectionRegistrator<GameInputSystem>::Begin()[M::Tags("gameinput")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &GameInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 5.0f)]
+    .Method("ProcessFixed", &GameInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 5.0f)]
     .End();
 }
 
@@ -124,11 +118,13 @@ inline Vector2 GetWorldTeleportPosition(const Vector2& normalizedPosition)
 }
 
 GameInputSystem::GameInputSystem(Scene* scene)
-    : INetworkInputSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>() | ComponentUtils::MakeMask<NetworkInputComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent, NetworkInputComponent>())
 {
     using namespace GameInputSystemDetail;
 
-    uint32 keyboardId = GetKeyboardDeviceId();
+    uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
+
+    entityGroup = scene->AquireEntityGroup<NetworkTransformComponent, NetworkInputComponent>();
 
     ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
     actionsSingleComponent->CollectDigitalAction(UP, eInputElements::KB_W, keyboardId);
@@ -152,9 +148,10 @@ void GameInputSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameInputSystem::ProcessFixed");
 
-    for (Entity* entity : entities)
+    for (Entity* entity : entityGroup->GetEntities())
     {
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
+
         if (!allActions.empty())
         {
             const auto& actions = allActions.back();

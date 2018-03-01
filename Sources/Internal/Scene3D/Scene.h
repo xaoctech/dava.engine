@@ -248,6 +248,8 @@ public:
 
     void CreateSystems();
 
+    EntitiesManager* GetEntitiesManager() const;
+
     EventSystem* GetEventSystem() const;
     RenderSystem* GetRenderSystem() const;
     AnimationSystem* GetAnimationSystem() const;
@@ -289,10 +291,10 @@ public:
     void UnpauseFixedUpdate();
     bool IsFixedUpdatePaused() const;
     void CreateSystemsByTags();
-    Vector<SceneSystem*> systemsVector;
 
     template <class... Args>
     EntityGroup* AquireEntityGroup();
+
     template <class Matcher, class... Args>
     EntityGroup* AquireEntityGroupWithMatcher();
 
@@ -302,6 +304,11 @@ public:
     ComponentGroup<T>* AquireComponentGroupWithMatcher();
 
     float32 GetTimeOverrunInterpolatedFactor() const;
+
+    const Vector<SceneSystem*>& GetSystems() const;
+
+    Signal<SceneSystem*> systemAdded;
+    Signal<SceneSystem*> systemRemoved;
 
 public: // deprecated methods
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
@@ -316,6 +323,7 @@ protected:
 
     float32 sceneGlobalTime = 0.f;
 
+    UnorderedMap<const Type*, SceneSystem*> systemsMap;
     Vector<Camera*> cameras;
 
     NMaterial* sceneGlobalMaterial;
@@ -358,7 +366,7 @@ private:
     };
     Vector<std::pair<FastName, TagAction>> tagsToChange;
 
-    UnorderedMap<const Type*, SceneSystem*> systemsMap;
+    Vector<SceneSystem*> systemsVector;
 
     Vector<Function<void(float32)>> systemProcesses;
 

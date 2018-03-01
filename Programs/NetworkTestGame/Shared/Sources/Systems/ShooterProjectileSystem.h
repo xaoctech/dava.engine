@@ -17,10 +17,8 @@ public:
     DAVA_VIRTUAL_REFLECTION(ShooterProjectileSystem, DAVA::BaseSimulationSystem);
 
     ShooterProjectileSystem(DAVA::Scene* scene);
-    void AddEntity(DAVA::Entity* entity) override;
-    void RemoveEntity(DAVA::Entity* entity) override;
+
     void ProcessFixed(DAVA::float32 dt) override;
-    void Simulate(DAVA::Entity* entity) override;
     void PrepareForRemove() override;
 
 private:

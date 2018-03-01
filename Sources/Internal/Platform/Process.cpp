@@ -30,12 +30,12 @@ String EscapeSpaces(const String& str)
 #endif //__DAVAENGINE_WIN32__
 }
 
-Process::Process(const FilePath& path, const Vector<String>& args)
+Process::Process(const String& path, const Vector<String>& args)
     : output("[Process::Process] The program has not been started yet!")
     , executablePath(path)
     , runArgs(args)
 {
-    Logger::FrameworkDebug("Proces: run %s", executablePath.GetAbsolutePathname().c_str());
+    Logger::FrameworkDebug("Process: run %s", executablePath.c_str());
     
 #if defined(__DAVAENGINE_WINDOWS__)
     childProcIn[0] = childProcIn[1] = 0;
@@ -60,7 +60,7 @@ int64 Process::GetPID() const
     return pid;
 }
 
-const FilePath& Process::GetPath() const
+const String& Process::GetPath() const
 {
     return executablePath;
 }
@@ -164,7 +164,7 @@ bool Process::Run(bool showWindow)
 
         // Create the child process.
         String runArgsFlat = "cmd.exe /c \"";
-        runArgsFlat += ProcessDetails::EscapeSpaces(executablePath.GetAbsolutePathname());
+        runArgsFlat += ProcessDetails::EscapeSpaces(executablePath);
         for (const String& arg : runArgs)
         {
             runArgsFlat += " " + ProcessDetails::EscapeSpaces(arg);
@@ -209,6 +209,11 @@ bool Process::Run(bool showWindow)
                                  &piProcInfo); // receives PROCESS_INFORMATION
 
 #endif
+        if (bSuccess == 0)
+        {
+            DWORD error = GetLastError();
+            Logger::Error("Process::Run failed with 0x%x", error);
+        }
         result = (TRUE == bSuccess);
 
         if (result)
@@ -261,7 +266,7 @@ void Process::Wait()
     if (res == FALSE)
     {
         exitCode = -1;
-        Logger::Error("[Process::Wait] Can't get exit code for process %s, error %d", executablePath.GetAbsolutePathname().c_str(), ::GetLastError());
+        Logger::Error("[Process::Wait] Can't get exit code for process %s, error %d", executablePath.c_str(), ::GetLastError());
     }
 
     CleanupHandles();
@@ -305,8 +310,7 @@ bool Process::Run(bool showWindow)
 
     Vector<char*> execArgs;
 
-    String execPath = executablePath.GetAbsolutePathname();
-    execArgs.push_back(const_cast<char*>(execPath.c_str()));
+    execArgs.push_back(const_cast<char*>(executablePath.c_str()));
 
     for (const String& arg : runArgs)
     {
@@ -329,7 +333,7 @@ bool Process::Run(bool showWindow)
         close(pipes[READ]);
         pipes[READ] = -1;
 
-        int execResult = execv(execArgs[0], &execArgs[0]);
+        int execResult = execvp(execArgs[0], &execArgs[0]);
         DVASSERT(execResult >= 0);
         _exit(0); //if we got here - there's a problem
     }
@@ -337,7 +341,7 @@ bool Process::Run(bool showWindow)
     case -1: //error
     {
         result = false;
-        Logger::Error("[Process::Run] Failed to start process %s", executablePath.GetAbsolutePathname().c_str());
+        Logger::Error("[Process::Run] Failed to start process %s", executablePath.c_str());
         break;
     }
 
@@ -378,7 +382,9 @@ void Process::Wait()
         {
             exitCode = -1; //to say external code about problems
         }
-        Logger::Error("[Process::Wait] The process %s exited abnormally! (exitcode=%d, errno=%d)", executablePath.GetAbsolutePathname().c_str(), exitCode, errno);
+        Logger::Error("[Process::Wait] The process %s exited abnormally! (exitcode=%d, errno=%d)", executablePath.
+                                                                                                   c_str(),
+                      exitCode, errno);
     }
 
     output = "";

@@ -20,6 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UISwitch)
     ReflectionRegistrator<UISwitch>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UISwitch* o) { o->Release(); })
+    .Field("isLeftSelected", &UISwitch::GetIsLeftSelected, &UISwitch::SetIsLeftSelected)[M::Bindable()]
     .End();
 }
 
@@ -240,6 +241,11 @@ void UISwitch::Input(UIEvent* currentInput)
 
 void UISwitch::SetIsLeftSelected(bool aIsLeftSelected)
 {
+    if (!buttonLeft.Valid() || !buttonRight.Valid() || !toggle.Valid())
+    {
+        return;
+    }
+
     InternalSetIsLeftSelected(aIsLeftSelected, true);
     float32 toggleXPosition = GetToggleUttermostPosition();
     toggle->StopAnimations(UISWITCH_MOVE_ANIMATION_TRACK);

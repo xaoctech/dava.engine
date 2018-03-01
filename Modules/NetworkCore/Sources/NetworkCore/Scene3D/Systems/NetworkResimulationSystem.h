@@ -1,16 +1,15 @@
 #pragma once
 
+#include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Scene.h>
-#include <Base/BaseTypes.h>
 
 namespace DAVA
 {
-class ISimulationSystem;
 class SnapshotSingleComponent;
 class NetworkPredictionSingleComponent;
 class NetworkTimeSingleComponent;
-class ChangedSystemsSingleComponent;
+class NetworkResimulationSingleComponent;
 
 class NetworkResimulationSystem : public SceneSystem
 {
@@ -18,30 +17,23 @@ class NetworkResimulationSystem : public SceneSystem
 
 public:
     NetworkResimulationSystem(Scene* scene);
+    ~NetworkResimulationSystem();
 
-    void Process(float32 timeElapsed) override;
     void ProcessFixed(float32 timeElapsed) override;
     void PrepareForRemove() override;
-
-    void CollectSystems();
 
     uint32 GetResimulationsCount() const;
 
 private:
-    struct ResimulationSystem
-    {
-        ISimulationSystem* system;
-        float32 order;
-        SP::Group group;
-    };
+    void OnSystemAdded(SceneSystem* system);
+    void OnSystemRemoved(SceneSystem* system);
 
-    Vector<ResimulationSystem> systems;
-    bool isCollectedSystems = false;
+    UnorderedMap<const Type*, SceneSystem*> resimulationSystems;
     uint32 resimulationsCount = 0;
 
-    NetworkTimeSingleComponent* timeComp = nullptr;
-    NetworkPredictionSingleComponent* predictionComp = nullptr;
-    SnapshotSingleComponent* ssc = nullptr;
-    ChangedSystemsSingleComponent* changedSystemsSingleComponent = nullptr;
+    NetworkTimeSingleComponent* networkTimeSingleComponent = nullptr;
+    NetworkPredictionSingleComponent* predictionSingleComponent = nullptr;
+    SnapshotSingleComponent* snapshotSingleComponent = nullptr;
+    NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
 };
 }

@@ -16,8 +16,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SnapshotSystemClient)
 {
     ReflectionRegistrator<SnapshotSystemClient>::Begin()[M::Tags("client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SnapshotSystemClient::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 4.0f)]
+    .Method("ProcessFixed", &SnapshotSystemClient::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 7.0f)]
     .End();
+}
+
+SnapshotSystemClient::SnapshotSystemClient(Scene* scene)
+    : SnapshotSystemBase(scene)
+{
+    entities = scene->AquireEntityGroup<NetworkReplicationComponent>();
 }
 
 bool SnapshotSystemClient::NeedToBeTracked(Entity* entity)
@@ -103,6 +109,13 @@ void SnapshotSystemClient::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("SnapshotSystemClient::ProcessFixed");
 
+    // TODO: try to make pure ProcessFixed for both (resimulation and normal) processes.
+    if (isResimulation)
+    {
+        ReSnapEntities();
+        return;
+    }
+
     UpdateSnapshot();
 
     uint32 curFrameId = timeSingleComponent->GetFrameId();
@@ -115,49 +128,51 @@ void SnapshotSystemClient::ProcessFixed(float32 timeElapsed)
     }
 }
 
-void SnapshotSystemClient::ReSimulationStart(Entity* entity, uint32 frameId)
+void SnapshotSystemClient::ReSimulationStart()
 {
     isResimulation = true;
 }
 
-void SnapshotSystemClient::ReSimulationEnd(Entity* entity)
+void SnapshotSystemClient::ReSimulationEnd()
 {
     isResimulation = false;
 }
 
 const ComponentMask& SnapshotSystemClient::GetResimulationComponents() const
 {
-    // should be empty for now
     return SceneSystem::GetRequiredComponents();
 }
 
-void SnapshotSystemClient::Simulate(Entity* entity)
+void SnapshotSystemClient::ReSnapEntities()
 {
     uint32 simulateFrameId = timeSingleComponent->GetFrameId();
     Snapshot* clientSnapshot = snapshotSingleComponent->GetClientSnapshot(simulateFrameId);
 
     if (nullptr != clientSnapshot)
     {
-        NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
-        SnapshotEntity* target = clientSnapshot->FindEntity(entityId);
-
-        if (nullptr != target)
+        for (Entity* entity : entities->GetEntities())
         {
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#> ReSnap entity " << entityId << " | frame " << simulateFrameId << "\n");
+            NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
+            SnapshotEntity* target = clientSnapshot->FindEntity(entityId);
 
-            UpdateSnapshot(entityId);
-
-            auto it = snapshot.entities.find(entityId);
-            if (it != snapshot.entities.end())
+            if (nullptr != target)
             {
-                *target = it->second;
-            }
+                LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#> ReSnap entity " << entityId << " | frame " << simulateFrameId << "\n");
 
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#< ReSnap Done\n");
-        }
-        else
-        {
-            LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "# ReSnap Failed, can't find target entity " << entityId << "\n");
+                UpdateSnapshot(entityId);
+
+                auto it = snapshot.entities.find(entityId);
+                if (it != snapshot.entities.end())
+                {
+                    *target = it->second;
+                }
+
+                LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#< ReSnap Done\n");
+            }
+            else
+            {
+                LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "# ReSnap Failed, can't find target entity " << entityId << "\n");
+            }
         }
     }
     else

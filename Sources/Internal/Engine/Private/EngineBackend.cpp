@@ -27,6 +27,7 @@
 #include "DLC/Downloader/CurlDownloader.h"
 #include "DLC/Downloader/DownloadManager.h"
 #include "Engine/EngineSettings.h"
+#include "FeatureManager/FeatureManager.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/LocalizationSystem.h"
@@ -879,6 +880,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
 {
     // Create subsystems
     context->allocatorFactory = new AllocatorFactory();
+    context->featureManager = new FeatureManager();
     context->random = new Random();
     ParticleForcesUtils::GenerateNoise();
     ParticleForcesUtils::GenerateSphereRandomVectors();
@@ -1033,6 +1035,8 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->moduleManager);
     SafeDelete(context->pluginManager);
 
+    SafeRelease(context->uiScreenManager);
+
     if (context->uiControlSystem)
     {
         delete context->uiControlSystem; // Private destructor
@@ -1040,7 +1044,7 @@ void EngineBackend::DestroySubsystems()
     }
 
     SafeRelease(context->localNotificationController);
-    SafeRelease(context->uiScreenManager);
+
     if (context->dynamicAtlasSystem)
     {
         delete context->dynamicAtlasSystem;
@@ -1090,6 +1094,9 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->logger);
 
     SafeDelete(context->imageConverter);
+
+    delete context->featureManager;
+    context->featureManager = nullptr;
 }
 
 void EngineBackend::OnRenderingError(rhi::RenderingError err, void* param)

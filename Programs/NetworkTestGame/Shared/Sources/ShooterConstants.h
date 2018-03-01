@@ -49,3 +49,8 @@ static const DAVA::Vector3 SHOOTER_CAR_CAMERA_OFFSET = DAVA::Vector3(0.0f, 10.0f
 static const DAVA::uint32 SHOOTER_NUM_CARS = 5;
 static const DAVA::uint32 SHOOTER_MAX_NUM_PASSENGERS = 4;
 static const DAVA::float32 SHOOTER_CAR_IMPULSE_MAGNITUDE_PER_DAMAGE = 5000.0f;
+
+// Visibility constants
+static const DAVA::float32 SHOOTER_MAX_VISIBILITY_RADIUS = 500.f;
+static const DAVA::float32 SHOOTER_UNCONDITIONAL_VISIBILITY_RADIUS = 50.f;
+static const DAVA::float32 SHOOTER_CHARACTER_VISIBILITY_HEIGHT = 2.f;

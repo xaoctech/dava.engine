@@ -229,7 +229,7 @@ FilePath PVRConverter::ConvertToPvr(const TextureDescriptor& descriptor, eGPUFam
     {
         Vector<String> args;
         GetToolCommandLine(descriptor, inputPathname, gpuFamily, quality, outFolder, args);
-        Process process(pvrTexToolPathname, args);
+        Process process(pvrTexToolPathname.GetAbsolutePathname(), args);
         if (process.Run(false))
         {
             process.Wait();

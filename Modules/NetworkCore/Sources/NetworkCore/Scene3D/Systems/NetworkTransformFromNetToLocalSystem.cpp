@@ -13,30 +13,21 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTransformFromNetToLocalSystem)
 {
     ReflectionRegistrator<NetworkTransformFromNetToLocalSystem>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkTransformFromNetToLocalSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 3.0f)]
+    .Method("ProcessFixed", &NetworkTransformFromNetToLocalSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 14.0f)]
     .End();
 }
 
 NetworkTransformFromNetToLocalSystem::NetworkTransformFromNetToLocalSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkTransformComponent>())
 {
-}
-
-void NetworkTransformFromNetToLocalSystem::AddEntity(Entity* entity)
-{
-    entities.insert(entity);
-}
-
-void NetworkTransformFromNetToLocalSystem::RemoveEntity(Entity* entity)
-{
-    entities.erase(entity);
+    entities = scene->AquireEntityGroup<NetworkTransformComponent>();
 }
 
 void NetworkTransformFromNetToLocalSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTransformFromNetToLocalSystem::ProcessFixed");
 
-    for (auto& entity : entities)
+    for (Entity* entity : entities->GetEntities())
     {
         CopyFromNetToLocal(entity);
     }
@@ -44,24 +35,6 @@ void NetworkTransformFromNetToLocalSystem::ProcessFixed(float32 timeElapsed)
 
 void NetworkTransformFromNetToLocalSystem::PrepareForRemove()
 {
-}
-
-void NetworkTransformFromNetToLocalSystem::ReSimulationStart(Entity* entity, uint32 frameId)
-{
-}
-
-void NetworkTransformFromNetToLocalSystem::ReSimulationEnd(Entity* entity)
-{
-}
-
-const ComponentMask& NetworkTransformFromNetToLocalSystem::GetResimulationComponents() const
-{
-    return GetRequiredComponents();
-}
-
-void NetworkTransformFromNetToLocalSystem::Simulate(Entity* entity)
-{
-    CopyFromNetToLocal(entity);
 }
 
 void NetworkTransformFromNetToLocalSystem::CopyFromNetToLocal(Entity* entity)

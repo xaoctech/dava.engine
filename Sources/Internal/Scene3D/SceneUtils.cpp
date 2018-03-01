@@ -10,6 +10,7 @@
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/SkeletonComponent.h"
 #include "Scene3D/Lod/LodComponent.h"
@@ -17,8 +18,6 @@
 #include "Base/Map.h"
 
 namespace DAVA
-{
-namespace SceneUtils
 {
 namespace SceneUtilsDetails
 {
@@ -29,29 +28,6 @@ void RetainRenderEntitiesRecursive(Entity* node, Vector<Entity*>& entities)
 
     if (GetRenderObject(node) != nullptr)
         entities.push_back(SafeRetain(node));
-}
-}
-
-bool CombineLods(Scene* scene)
-{
-    bool result = true;
-    Vector<Entity*> childrenCopy = scene->children;
-
-    for (auto child : childrenCopy)
-        child->Retain();
-
-    for (auto child : childrenCopy)
-        result &= CombineEntityLods(child);
-
-    for (auto child : childrenCopy)
-        child->Release();
-
-    return result;
-}
-
-String LodNameForIndex(const String& pattern, uint32 lodIndex)
-{
-    return Format(pattern.c_str(), lodIndex);
 }
 
 bool VerifyNames(const List<Entity*>& lodNodes, const String& lodSubString)
@@ -78,7 +54,74 @@ bool VerifyNames(const List<Entity*>& lodNodes, const String& lodSubString)
     return allNamesAreDifferent;
 }
 
-bool CombineEntityLods(Entity* forRootNode)
+bool RemoveEmptyEntitiesRecursive(Entity* entity)
+{
+    for (int32 c = 0; c < entity->GetChildrenCount(); ++c)
+    {
+        Entity* childNode = entity->GetChild(c);
+        bool removed = RemoveEmptyEntitiesRecursive(childNode);
+        if (removed)
+        {
+            c--;
+        }
+    }
+
+    if ((entity->GetChildrenCount() == 0) && (typeid(*entity) == typeid(Entity)))
+    {
+        KeyedArchive* customProperties = GetCustomPropertiesArchieve(entity);
+        bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
+
+        uint32 componentCount = entity->GetComponentCount();
+
+        Component* tr = entity->GetComponent(Type::Instance<TransformComponent>());
+        Component* cp = entity->GetComponent(Type::Instance<CustomPropertiesComponent>());
+        if (((componentCount == 2) && (!cp || !tr)) || (componentCount > 2))
+        {
+            doNotRemove = true;
+        }
+
+        if (entity->GetName().find("dummy") != String::npos)
+        {
+            doNotRemove = true;
+        }
+
+        if (!doNotRemove)
+        {
+            Entity* parent = entity->GetParent();
+            if (parent)
+            {
+                parent->RemoveNode(entity);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+} //SceneUtilsDetails
+
+bool SceneUtils::CombineLods(Scene* scene)
+{
+    bool result = true;
+    Vector<Entity*> childrenCopy = scene->children;
+
+    for (Entity* child : childrenCopy)
+        child->Retain();
+
+    for (Entity* child : childrenCopy)
+        result &= CombineEntityLods(child);
+
+    for (Entity* child : childrenCopy)
+        child->Release();
+
+    return result;
+}
+
+String SceneUtils::LodNameForIndex(const String& pattern, uint32 lodIndex)
+{
+    return Format(pattern.c_str(), lodIndex);
+}
+
+bool SceneUtils::CombineEntityLods(Entity* forRootNode)
 {
     const String lodNamePattern("_lod%d");
     const String dummyLodNamePattern("_lod%ddummy");
@@ -94,7 +137,7 @@ bool CombineEntityLods(Entity* forRootNode)
     }
 
     //model validation step: we should ignore combination of lods if we found several geometry meshes per lod
-    if (VerifyNames(lod0Nodes, lod0) == false)
+    if (SceneUtilsDetails::VerifyNames(lod0Nodes, lod0) == false)
     {
         return false;
     }
@@ -225,9 +268,9 @@ bool CombineEntityLods(Entity* forRootNode)
     return true;
 }
 
-void BakeTransformsUpToFarParent(Entity* parent, Entity* currentNode)
+void SceneUtils::BakeTransformsUpToFarParent(Entity* parent, Entity* currentNode)
 {
-    for (auto child : currentNode->children)
+    for (Entity* child : currentNode->children)
     {
         BakeTransformsUpToFarParent(parent, child);
     }
@@ -242,13 +285,13 @@ void BakeTransformsUpToFarParent(Entity* parent, Entity* currentNode)
     }
 
     // Set local transform as Ident because transform is already baked up into geometry
-    auto transformComponent = GetTransformComponent(currentNode);
+    TransformComponent* transformComponent = GetTransformComponent(currentNode);
     transformComponent->SetLocalTransform(Matrix4::IDENTITY);
 }
 
-void CollapseAnimationsUpToFarParent(Entity* node, Entity* parent)
+void SceneUtils::CollapseAnimationsUpToFarParent(Entity* node, Entity* parent)
 {
-    for (auto child : parent->children)
+    for (Entity* child : parent->children)
     {
         CollapseAnimationsUpToFarParent(child, parent);
     }
@@ -261,6 +304,9 @@ void CollapseAnimationsUpToFarParent(Entity* node, Entity* parent)
     }
 }
 
-} //namespace SceneUtils
+bool SceneUtils::RemoveEmptyEntities(Scene* scene)
+{
+    return SceneUtilsDetails::RemoveEmptyEntitiesRecursive(scene);
+}
 
 } //namespace DAVA

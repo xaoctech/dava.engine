@@ -33,8 +33,8 @@ namespace DAVA
      {
      ReflectionRegistrator<YourCustomSystem>::Begin()[M::Tags("tag1", "tag2", ..., "tagn")]
      .ConstructorByPointer<Scene*>()
-     .Method("ProcessFixed", &YourCustomSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 4.0f)]
-     .Method("Process", &YourCustomSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::NORMAL, 2.0f)]
+     .Method("ProcessFixed", &YourCustomSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 4.0f)]
+     .Method("Process", &YourCustomSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 2.0f)]
      .End();
      }
      \endcode

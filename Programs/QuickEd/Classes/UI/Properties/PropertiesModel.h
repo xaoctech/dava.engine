@@ -31,7 +31,8 @@ class PropertiesModel : public QAbstractItemModel, private PropertyListener, pri
 public:
     enum
     {
-        ResetRole = Qt::UserRole + 1
+        ResetRole = Qt::UserRole + 1,
+        BindingRole = Qt::UserRole + 2
     };
 
     PropertiesModel(QObject* parent = nullptr);
@@ -86,6 +87,7 @@ protected:
     void OnStylePropertyChanged(DAVA::UIControl* control, DAVA::UIComponent* component, DAVA::uint32 propertyIndex) override;
 
     virtual void ChangeProperty(AbstractProperty* property, const DAVA::Any& value);
+    virtual void ChangeBindingProperty(AbstractProperty* property, const DAVA::String& value, DAVA::int32 mode);
     virtual void ResetProperty(AbstractProperty* property);
 
     QString makeQVariant(const AbstractProperty* property) const;
@@ -94,6 +96,10 @@ protected:
 
     void OnPackageChanged(const DAVA::Any& package);
     void BindFields();
+
+    QColor GetErrorBgColor() const;
+    QColor GetBoundColor() const;
+    QString GetDataBindingIcon(DAVA::int32 bindingUpdateMode) const;
 
     ControlNode* controlNode = nullptr;
     StyleSheetNode* styleSheet = nullptr;

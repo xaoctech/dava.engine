@@ -1,24 +1,26 @@
 #include "REPlatform/Scene/Systems/VisibilityCheckSystem.h"
-
 #include "REPlatform/Global/Constants.h"
+#include "REPlatform/Scene/Components/CollisionTypeComponent.h"
+#include "REPlatform/DataNodes/ProjectManagerData.h"
+#include "REPlatform/Deprecated/EditorConfig.h"
 
+#include <TArc/Core/Deprecated.h>
+
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Math/MathHelpers.h>
+#include <Render/2D/Systems/RenderSystem2D.h>
+#include <Render/Highlevel/Landscape.h>
+#include <Render/Highlevel/RenderSystem.h>
+#include <Render/PixelFormatDescriptor.h>
+#include <Render/Renderer.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/VisibilityCheckComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
-
-#include <Math/MathHelpers.h>
 #include <Utils/Random.h>
-
-#include <Render/2D/Systems/RenderSystem2D.h>
-#include <Render/Highlevel/Landscape.h>
-#include <Render/Highlevel/RenderSystem.h>
-#include <Render/PixelFormatDescriptor.h>
-#include <Render/Renderer.h>
-#include <Engine/Engine.h>
-#include <Engine/EngineContext.h>
 
 namespace DAVA
 {
@@ -380,27 +382,31 @@ bool VisibilityCheckSystem::ShouldDrawRenderObject(RenderObject* object)
     if (entityIterator == renderObjectToEntity.end())
         return false;
 
-    String collisionTypeString = "CollisionType";
+    CollisionTypeComponent* collisionComp = GetCollisionTypeComponent(entityIterator->second);
+    if (collisionComp == nullptr)
+        return false;
+
+    int32 collisionType;
     if ((object->GetMaxSwitchIndex() > 0) && (object->GetSwitchIndex() > 0))
     {
-        collisionTypeString = "CollisionTypeCrashed";
+        collisionType = collisionComp->GetCollisionTypeCrashed();
     }
-
-    VariantType* collisionValue = GetCustomPropertiesValueRecursive(entityIterator->second, collisionTypeString);
-    if ((collisionValue == nullptr) || (collisionValue->type != VariantType::TYPE_INT32))
-        return false;
-
-    const int32 collisiontype = collisionValue->AsInt32();
-    if ((ResourceEditor::ESOT_NO_COLISION == collisiontype) ||
-        (ResourceEditor::ESOT_TREE == collisiontype) ||
-        (ResourceEditor::ESOT_BUSH == collisiontype) ||
-        (ResourceEditor::ESOT_FALLING == collisiontype) ||
-        (ResourceEditor::ESOT_FRAGILE_PROJ_INV == collisiontype) ||
-        (ResourceEditor::ESOT_SPEED_TREE == collisiontype))
+    else
     {
-        return false;
+        collisionType = collisionComp->GetCollisionType();
     }
 
+    if (collisionType == CollisionTypeValues::COLLISION_TYPE_UNDEFINED)
+        return false;
+
+    ProjectManagerData* projectData = Deprecated::GetDataNode<ProjectManagerData>();
+    Vector<std::pair<int32, String>> ignoreTypesMap = projectData->GetEditorConfig()->GetCollisionTypeMap("CollisionTypeIgnoreVisibilityCheck");
+    ignoreTypesMap.emplace_back();
+    for (const std::pair<int32, String>& p : ignoreTypesMap)
+    {
+        if (collisionType == p.first)
+            return false;
+    }
     return true;
 }
 

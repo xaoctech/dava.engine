@@ -20,6 +20,8 @@ public:
 private:
     EntityGroup();
 
+    void MoveTo(EntityGroup& dest);
+
     HashVector<Entity> entities;
     Vector<Entity*> cachedAdded;
     Vector<Entity*> cachedRemoved;

@@ -5,12 +5,17 @@
 #include "Components/AI/WaitTaskComponent.h"
 #include "Components/AI/CompositeTaskComponent.h"
 #include "Components/AI/RandomMovementTaskComponent.h"
+#include "Components/AI/SlideToBorderTaskComponent.h"
+#include "Components/AI/WagToBorderTaskComponent.h"
+#include "Components/AI/DodgeCenterTaskComponent.h"
+#include "Components/AI/ShootIfSeeingTargetTaskComponent.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/Vector.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Scene.h>
 #include <Components/AI/ShooterBehaviorComponent.h>
+#include <Components/AI/InvaderBehaviorComponent.h>
 
 using namespace DAVA;
 
@@ -73,13 +78,21 @@ private:
     void ProcessTask(float32 timeElapsed, WaitTaskComponent* task);
     void ProcessTask(float32 timeElapsed, CompositeTaskComponent* task);
     void ProcessTask(float32 timeElapsed, RandomMovementTaskComponent* task);
+    void ProcessTask(float32 timeElapsed, SlideToBorderTaskComponent* task);
+    void ProcessTask(float32 timeElapsed, WagToBorderTaskComponent* task);
+    void ProcessTask(float32 timeElapsed, DodgeCenterTaskComponent* task);
+    void ProcessTask(float32 timeElapsed, ShootIfSeeingTargetTaskComponent* task);
 
     TaskStorage<
     AttackTaskComponent,
     MoveToPointTaskComponent,
     WaitTaskComponent,
     CompositeTaskComponent,
-    RandomMovementTaskComponent> taskStorage;
+    RandomMovementTaskComponent,
+    SlideToBorderTaskComponent,
+    WagToBorderTaskComponent,
+    DodgeCenterTaskComponent,
+    ShootIfSeeingTargetTaskComponent> taskStorage;
 
     Vector<FastName> currentDigitalActions;
 };

@@ -1,9 +1,14 @@
 #include "Systems/ShooterPlayerConnectSystem.h"
 #include "Components/ShooterRoleComponent.h"
+#include "Visibility/ObserverComponent.h"
+#include "Visibility/ObservableComponent.h"
+#include "Visibility/CharacterVisibilityShapeComponent.h"
+#include "ShooterConstants.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 
+#include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
@@ -15,7 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterPlayerConnectSystem>::Begin()[M::Tags("gm_shooter", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterPlayerConnectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 9.0f)]
+    .Method("ProcessFixed", &ShooterPlayerConnectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 9.0f)]
     .End();
 }
 
@@ -67,12 +72,20 @@ void ShooterPlayerConnectSystem::AddPlayerToScene(const DAVA::Responder& respond
         replicationComponent->SetOwnerTeamID(responder.GetTeamID());
         replicationComponent->SetEntityType(EntityType::VEHICLE); // Workaround for GameVisbilitySystem to work properly
         player->AddComponent(replicationComponent);
-
         player->AddComponent(new NetworkPlayerComponent());
 
         ShooterRoleComponent* roleComponent = new ShooterRoleComponent();
         roleComponent->SetRole(ShooterRoleComponent::Role::Player);
         player->AddComponent(roleComponent);
+
+        ObserverComponent* observer = player->GetOrCreateComponent<ObserverComponent>();
+        observer->maxVisibilityRadius = SHOOTER_MAX_VISIBILITY_RADIUS;
+        observer->unconditionalVisibilityRadius = SHOOTER_UNCONDITIONAL_VISIBILITY_RADIUS;
+        player->AddComponent(new ObservableComponent());
+
+        CharacterVisibilityShapeComponent* charVisShape = new CharacterVisibilityShapeComponent();
+        charVisShape->height = SHOOTER_CHARACTER_VISIBILITY_HEIGHT;
+        player->AddComponent(charVisShape);
 
         GetScene()->AddNode(player);
     }

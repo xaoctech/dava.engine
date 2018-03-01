@@ -439,6 +439,34 @@ ReflectionTestClass::ReflectionTestClass()
 
 DAVA_TESTCLASS (ReflectionTest)
 {
+    DAVA_TEST (RefletedTypeGetByPointerTest)
+    {
+        using namespace DAVA;
+        {
+            // non polymorph reflection test
+            // Force creation of ReflectedType for SimpleStruct
+            const ReflectedType* excpectedType = ReflectedTypeDB::Get<SimpleStruct>();
+
+            SimpleStruct s;
+            void* ptr = &s;
+            const Type* structType = Type::Instance<SimpleStruct>();
+            const ReflectedType* refStructType = ReflectedTypeDB::GetByPointer(ptr, structType);
+            TEST_VERIFY(refStructType == excpectedType);
+        }
+
+        {
+            // polymorph reflection test
+            // Force creation of ReflectedType for A
+            const ReflectedType* excpectedType = ReflectedTypeDB::Get<A>();
+
+            A a;
+            void* ptr = &a;
+            const Type* structType = Type::Instance<A>();
+            const ReflectedType* refStructType = ReflectedTypeDB::GetByPointer(ptr, structType);
+            TEST_VERIFY(refStructType == excpectedType);
+        }
+    }
+
     DAVA_TEST (DumpTest)
     {
         std::ostringstream dumpOutput;
