@@ -264,7 +264,8 @@ inline const Any& Any::Cast<const Any&>(const Any& defaultValue) const
 template <typename T>
 void AnyHash<T>::Register(size_t (*fn)(const Any&))
 {
-    Type::Instance<T>()->SetUserData(AnyTypeData::GetHashFnIndex(), fn, [](void*) {});
+    void* data = reinterpret_cast<void*>(fn);
+    Type::Instance<T>()->SetUserData(AnyTypeData::GetHashFnIndex(), data, [](void*) {});
 }
 
 } // namespace DAVA

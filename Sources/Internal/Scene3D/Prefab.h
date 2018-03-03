@@ -3,6 +3,7 @@
 #include "Asset/Asset.h"
 #include "Base/Any.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -40,5 +41,7 @@ private:
 
     friend class PrefabComponent;
     friend class PrefabAssetLoader;
+
+    DAVA_VIRTUAL_REFLECTION(Prefab, AssetBase);
 };
 }

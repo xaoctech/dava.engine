@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Base/RefPtr.h"
 #include "Asset/Asset.h"
 #include "Asset/AbstractAssetLoader.h"
 #include "Concurrency/Mutex.h"
+#include "Concurrency/ConcurrentDeque.h"
 #include "Functional/Function.h"
 
 namespace DAVA
 {
+class File;
 class AssetListener;
 class AssetManager final
 {
@@ -18,9 +21,9 @@ public:
 
     void RegisterListener(AssetListener* listener, const Type* assetType);
     void UnregisterListener(AssetListener* listener);
+    void UnregisterListener(const Asset<AssetBase>& asset, AssetListener* listener);
 
-    void RegisterAssetLoader(AbstractAssetLoader* loader);
-    void UnregisterAssetLoader(AbstractAssetLoader* loader);
+    void RegisterAssetLoader(std::unique_ptr<AbstractAssetLoader>&& loader);
 
     template <typename AssetType>
     Asset<AssetType> GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener = nullptr);
@@ -41,19 +44,22 @@ public:
     AssetFileInfo GetAssetFileInfo(const Asset<AssetBase>& asset) const;
 
 private:
-    Asset<AssetBase> LoadAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener, bool reloading);
+    void Process();
+    Asset<AssetBase> GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener, bool reloadRequest);
     AbstractAssetLoader* GetAssetLoader(const Any& assetKey) const;
+
+    RefPtr<File> CreateAssetFile(const Any& assetKey, AbstractAssetLoader* loader, String& errorMsg) const;
 
     void UnloadAsset(AssetBase* ptr);
     void NotifyLoaded(Asset<AssetBase> asset, bool reloaded);
     void NotifyError(Asset<AssetBase> asset, bool reloaded, const String& msg);
-    void NotifyUnloaded(Asset<AssetBase> asset);
-    void Notify(Asset<AssetBase> asset, const Function<void(AssetListener*)>& callback);
+    void NotifyUnloaded(AssetBase* asset);
+    void Notify(AssetBase* asset, const Function<void(AssetListener*)>& callback, bool notifyInstance = true);
+
+    void LoadingThreadFn();
+    void AsyncLoadingFinished(const std::weak_ptr<AssetBase>& asset, bool reloading, const String& errorMsg);
 
     struct AssetDeleter;
-
-    // "second" type depend on "first" type
-    UnorderedMap<const Type*, Vector<const Type*>> dependencyMap;
 
     UnorderedMap<const Type*, AbstractAssetLoader*> keyTypeToLoader;
     UnorderedMap<const Type*, AbstractAssetLoader*> assetTypeToLoader;
@@ -65,7 +71,45 @@ private:
         std::weak_ptr<AssetBase> asset;
     };
 
+    Mutex assetMapMutex;
     UnorderedMap<Any, AssetNode> assetMap;
+
+    struct AsyncLoadTask
+    {
+        std::weak_ptr<AssetBase> asset;
+        AbstractAssetLoader* loader;
+        bool reloadRequest = false;
+    };
+    ConcurrentDeque<AsyncLoadTask> loadQueueAssets;
+
+    Mutex loadedMutex;
+    struct LoadedAssetNode
+    {
+        LoadedAssetNode() = default;
+        LoadedAssetNode(const LoadedAssetNode& other)
+            : reloadRequest(other.reloadRequest)
+            , asset(other.asset)
+            , errorMsg(other.errorMsg)
+        {
+        }
+
+        LoadedAssetNode(LoadedAssetNode&& other)
+            : reloadRequest(other.reloadRequest)
+            , asset(std::move(other.asset))
+            , errorMsg(std::move(other.errorMsg))
+        {
+        }
+
+        bool reloadRequest = false;
+        std::weak_ptr<AssetBase> asset;
+        String errorMsg;
+    };
+    Vector<LoadedAssetNode> loadedAssets;
+
+    Mutex unloadQueueMutex;
+    UnorderedMap<Any, AssetBase*> unloadAssets;
+
+    Thread* loadingThread = nullptr;
 };
 } // namespace DAVA
 

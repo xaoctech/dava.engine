@@ -174,11 +174,6 @@ Vector<const Type*> PrefabAssetLoader::GetAssetTypes() const
     return Vector<const Type*>{ Type::Instance<Prefab>() };
 }
 
-Vector<const Type*> PrefabAssetLoader::GetDependOnAssetTypes(const Type* assetType) const
-{
-    return Vector<const Type*>{ Type::Instance<Material>(), Type::Instance<Geometry>() };
-}
-
 template <>
 bool AnyCompare<PrefabAssetLoader::PathKey>::IsEqual(const Any& v1, const Any& v2)
 {

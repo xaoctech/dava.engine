@@ -5,6 +5,7 @@
 #include "Base/BaseMath.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Asset/Asset.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -21,5 +22,7 @@ public:
 protected:
     friend class GeometryAssetLoader;
     Vector<PolygonGroup*> geometries;
+
+    DAVA_VIRTUAL_REFLECTION(Geometry, AssetBase);
 };
 };

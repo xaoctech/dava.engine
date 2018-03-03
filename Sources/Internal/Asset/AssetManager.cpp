@@ -28,15 +28,35 @@ struct AssetManager::AssetDeleter
 
 AssetManager::AssetManager()
 {
-    RegisterAssetLoader(new PrefabAssetLoader());
-    RegisterAssetLoader(new GeometryAssetLoader());
-    RegisterAssetLoader(new MaterialAssetLoader());
+    Engine::Instance()->endFrame.Connect(MakeFunction(this, &AssetManager::Process));
+    RegisterAssetLoader(std::make_unique<PrefabAssetLoader>());
+    RegisterAssetLoader(std::make_unique<GeometryAssetLoader>());
+    RegisterAssetLoader(std::make_unique<MaterialAssetLoader>());
+
+    loadingThread = Thread::Create(MakeFunction(this, &AssetManager::LoadingThreadFn));
 }
 
 AssetManager::~AssetManager()
 {
+    loadQueueAssets.Cancel();
+    if (loadingThread->IsJoinable() == true)
+    {
+        loadingThread->Join();
+    }
+    else
+    {
+        while (true)
+        {
+            Thread::eThreadState state = loadingThread->GetState();
+            if (state == Thread::eThreadState::STATE_ENDED ||
+                state == Thread::eThreadState::STATE_KILLED)
+            {
+                break;
+            }
+        }
+    }
+
     DVASSERT(assetMap.empty());
-    dependencyMap.clear();
 
     Set<AbstractAssetLoader*> loaders;
     for (auto node : keyTypeToLoader)
@@ -86,6 +106,7 @@ void AssetManager::UnregisterListener(AssetListener* listener)
 
     if (listener->instanceListener == true)
     {
+        LockGuard<Mutex> guard(assetMapMutex);
         for (auto mapNode : assetMap)
         {
             AssetNode& assetNode = mapNode.second;
@@ -97,59 +118,184 @@ void AssetManager::UnregisterListener(AssetListener* listener)
     }
 }
 
-void AssetManager::RegisterAssetLoader(AbstractAssetLoader* loader)
+void AssetManager::UnregisterListener(const Asset<AssetBase>& asset, AssetListener* listener)
 {
-    DVASSERT(assetMap.empty(), "All AssetLoaders should be registered at application start");
-    DVASSERT(loader != nullptr);
-    Vector<const Type*> types = loader->GetAssetTypes();
-    for (const Type* assetType : types)
-    {
-        DVASSERT(dependencyMap.find(assetType) == dependencyMap.end());
-        DVASSERT(assetTypeToLoader.find(assetType) == assetTypeToLoader.end());
+    LockGuard<Mutex> guard(assetMapMutex);
+    auto iter = assetMap.find(asset->assetKey);
+    DVASSERT(iter != assetMap.end());
 
-        assetTypeToLoader[assetType] = loader;
-        dependencyMap[assetType] = loader->GetDependOnAssetTypes(assetType);
-    }
-
-    Vector<const Type*> keyTypes = loader->GetAssetKeyTypes();
-    for (const Type* keyType : keyTypes)
-    {
-        keyTypeToLoader[keyType] = loader;
-    }
+    AssetNode& assetNode = iter->second;
+    assetNode.listeners.erase(std::remove(assetNode.listeners.begin(), assetNode.listeners.end(), listener));
 }
 
-void AssetManager::UnregisterAssetLoader(AbstractAssetLoader* loader)
+void AssetManager::RegisterAssetLoader(std::unique_ptr<AbstractAssetLoader>&& loader)
 {
-    DVASSERT(loader != nullptr);
+#if defined(__DAVAENGINE_DEBUG__)
+    {
+        LockGuard<Mutex> guard(assetMapMutex);
+        DVASSERT(assetMap.empty(), "All AssetLoaders should be registered at application start");
+    }
+#endif
+
+    AbstractAssetLoader* assetLoader = loader.release();
+    DVASSERT(assetLoader != nullptr);
+    Vector<const Type*> types = assetLoader->GetAssetTypes();
+    for (const Type* assetType : types)
+    {
+        DVASSERT(assetTypeToLoader.find(assetType) == assetTypeToLoader.end());
+        assetTypeToLoader[assetType] = assetLoader;
+    }
+
+    Vector<const Type*> keyTypes = assetLoader->GetAssetKeyTypes();
+    for (const Type* keyType : keyTypes)
+    {
+        keyTypeToLoader[keyType] = assetLoader;
+    }
 }
 
 Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener)
 {
-    auto iter = assetMap.find(assetKey);
-    if (iter != assetMap.end())
-    {
-        AssetNode& assetNode = iter->second;
-        if (listener != nullptr)
+    return GetAsset(assetKey, asyncLoading, listener, false);
+}
+
+Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener, bool reloadRequest)
+{
+    AbstractAssetLoader* loader = GetAssetLoader(assetKey);
+    Asset<AssetBase> asset;
+
+    bool loadFallback = false;
+
+    { // assetMapMutex.Lock()
+        LockGuard<Mutex> guad(assetMapMutex);
+
+        auto iter = assetMap.find(assetKey);
+        if (iter != assetMap.end())
         {
-            bool found = std::binary_search(assetNode.listeners.begin(), assetNode.listeners.end(), listener);
-            if (found == false)
+            AssetNode& assetNode = iter->second;
+            asset = assetNode.asset.lock();
+
+            if (asset == nullptr)
             {
-                assetNode.listeners.push_back(listener);
-                listener->instanceListener = true;
-                std::sort(assetNode.listeners.begin(), assetNode.listeners.end());
+                {
+                    LockGuard<Mutex> unloadQueueGuard(unloadQueueMutex);
+                    auto iter = unloadAssets.find(assetKey);
+                    DVASSERT(iter != unloadAssets.end());
+                    asset = Asset<AssetBase>(iter->second, AssetDeleter());
+                    assetNode.asset = asset;
+                    unloadAssets.erase(iter);
+                }
+
+                if (asset->state == AssetBase::QUEUED)
+                {
+                    loadFallback = true;
+                }
+            }
+            else
+            {
+                if (asset->state == AssetBase::QUEUED && asyncLoading == false)
+                {
+                    bool inQueue = false;
+                    loadQueueAssets.ProcessDeque([&asset, &inQueue](Deque<AsyncLoadTask>& deque) {
+                        auto iter = std::find_if(deque.begin(), deque.end(), [&asset](const AsyncLoadTask& task) {
+                            return task.asset.lock() == asset;
+                        });
+
+                        if (iter != deque.end())
+                        {
+                            inQueue = true;
+                            deque.erase(iter);
+                        }
+                    });
+
+                    if (inQueue == false)
+                    {
+                        loadFallback = true;
+                    }
+                    else
+                    {
+                        while (asset->state == AssetBase::QUEUED)
+                        {
+                            Thread::Yield();
+                        }
+                    }
+                }
+            }
+
+            if (listener != nullptr)
+            {
+                bool found = std::binary_search(assetNode.listeners.begin(), assetNode.listeners.end(), listener);
+                if (found == false)
+                {
+                    assetNode.listeners.push_back(listener);
+                    listener->instanceListener = true;
+                    std::sort(assetNode.listeners.begin(), assetNode.listeners.end());
+                }
+
+                if (asset->state == AssetBase::LOADED)
+                {
+                    listener->OnAssetLoaded(asset, reloadRequest);
+                }
             }
         }
+        else
+        {
+            DVASSERT(asset == nullptr);
 
-        Asset<AssetBase> asset = assetNode.asset.lock();
-        DVASSERT(asset != nullptr);
-        return asset;
+            loadFallback = true;
+            asset = Asset<AssetBase>(loader->CreateAsset(assetKey), AssetDeleter());
+            asset->state = AssetBase::QUEUED;
+
+            AssetNode node;
+            node.asset = asset;
+            if (listener != nullptr)
+            {
+                node.listeners.push_back(listener);
+            }
+
+            assetMap.emplace(assetKey, node);
+        }
+    } // assetMapMutex.Unlock()
+
+    if (loadFallback == true)
+    {
+        if (asyncLoading == true)
+        {
+            DVASSERT(asset->state == AssetBase::QUEUED);
+
+            AsyncLoadTask task;
+            task.asset = asset;
+            task.loader = loader;
+            task.reloadRequest = reloadRequest;
+            loadQueueAssets.PushBack(task);
+        }
+        else
+        {
+            String errorMsg;
+            RefPtr<File> file(CreateAssetFile(assetKey, loader, errorMsg));
+            if (errorMsg.empty() == true)
+            {
+                loader->LoadAsset(asset, file.Get(), errorMsg);
+            }
+
+            if (errorMsg.empty() == true)
+            {
+                asset->state = AssetBase::LOADED;
+                NotifyLoaded(asset, reloadRequest);
+            }
+            else
+            {
+                asset->state = AssetBase::ERROR;
+                NotifyError(asset, reloadRequest, errorMsg);
+            }
+        }
     }
 
-    return LoadAsset(assetKey, asyncLoading, listener, false);
+    return asset;
 }
 
 Asset<AssetBase> AssetManager::FindAsset(const Any& assetKey)
 {
+    LockGuard<Mutex> guard(assetMapMutex);
     auto iter = assetMap.find(assetKey);
     if (iter != assetMap.end())
     {
@@ -161,7 +307,11 @@ Asset<AssetBase> AssetManager::FindAsset(const Any& assetKey)
 
 Asset<AssetBase> AssetManager::CreateAsset(const Any& assetKey)
 {
-    DVASSERT(assetMap.find(assetKey) == assetMap.end());
+    LockGuard<Mutex> guard(assetMapMutex);
+    if (assetMap.find(assetKey) != assetMap.end())
+    {
+        return Asset<AssetBase>();
+    }
 
     AbstractAssetLoader* loader = GetAssetLoader(assetKey);
 
@@ -175,7 +325,12 @@ Asset<AssetBase> AssetManager::CreateAsset(const Any& assetKey)
 bool AssetManager::SaveAsset(const Asset<AssetBase>& asset, AbstractAssetLoader::eSaveMode saveMode)
 {
     Any assetKey = asset->assetKey;
-    DVASSERT(assetMap.find(assetKey) != assetMap.end());
+#if defined(__DAVAENGINE_DEBUG__)
+    {
+        LockGuard<Mutex> guard(assetMapMutex);
+        DVASSERT(assetMap.find(assetKey) != assetMap.end());
+    }
+#endif
     AbstractAssetLoader* loader = GetAssetLoader(assetKey);
     AssetFileInfo fileInfo = loader->GetAssetFileInfo(assetKey);
     if (fileInfo.IsValid() == false)
@@ -186,7 +341,7 @@ bool AssetManager::SaveAsset(const Asset<AssetBase>& asset, AbstractAssetLoader:
     RefPtr<File> file(File::Create(fileInfo.fileName, File::CREATE | File::WRITE));
     if (file.Get() == nullptr)
     {
-        Logger::Error("[AssetManager] Can't open file for save asset %s", fileInfo.fileName);
+        Logger::Error("[AssetManager] Can't open file for save asset %s", fileInfo.fileName.c_str());
         return false;
     }
 
@@ -194,6 +349,7 @@ bool AssetManager::SaveAsset(const Asset<AssetBase>& asset, AbstractAssetLoader:
     if (result == true)
     {
         asset->state = AssetBase::LOADED;
+        NotifyLoaded(asset, false);
     }
 
     return result;
@@ -211,7 +367,7 @@ bool AssetManager::SaveAssetFromData(const Any& saveInfo, const Any& assetKey, A
     RefPtr<File> file(File::Create(fileInfo.fileName, File::CREATE | File::WRITE));
     if (file.Get() == nullptr)
     {
-        Logger::Error("[AssetManager] Can't open file for save asset %s", fileInfo.fileName);
+        Logger::Error("[AssetManager] Can't open file for save asset %s", fileInfo.fileName.c_str());
         return false;
     }
 
@@ -220,60 +376,68 @@ bool AssetManager::SaveAssetFromData(const Any& saveInfo, const Any& assetKey, A
 
 void AssetManager::ReloadAsset(const Any& assetKey)
 {
-    auto iter = assetMap.find(assetKey);
-    if (iter == assetMap.end())
     {
-        return;
-    }
+        LockGuard<Mutex> guard(assetMapMutex);
+        auto iter = assetMap.find(assetKey);
+        if (iter == assetMap.end())
+        {
+            return;
+        }
 
-    Asset<AssetBase> asset = iter->second.asset.lock();
-    DVASSERT(asset != nullptr);
-    asset->state = AssetBase::OUT_OF_DATE;
-    LoadAsset(assetKey, true, nullptr, true);
+        Asset<AssetBase> asset = iter->second.asset.lock();
+        DVASSERT(asset != nullptr);
+        asset->state = AssetBase::OUT_OF_DATE;
+        assetMap.erase(iter);
+    }
+    GetAsset(assetKey, false, nullptr, true);
 }
 
 AssetFileInfo AssetManager::GetAssetFileInfo(const Asset<AssetBase>& asset) const
 {
-    DVASSERT(assetMap.find(asset->assetKey) != assetMap.end());
+#if defined(__DAVAENGINE_DEBUG__)
+    {
+        LockGuard<Mutex> guard(const_cast<AssetManager*>(this)->assetMapMutex);
+        DVASSERT(assetMap.find(asset->assetKey) != assetMap.end());
+    }
+#endif
     AbstractAssetLoader* loader = GetAssetLoader(asset->assetKey);
     return loader->GetAssetFileInfo(asset->assetKey);
 }
 
 void AssetManager::UnloadAsset(AssetBase* ptr)
 {
-    auto iter = assetMap.find(ptr->assetKey);
-    DVASSERT(iter != assetMap.end());
-    assetMap.erase(iter);
-
-    AbstractAssetLoader* loader = GetAssetLoader(ptr->assetKey);
-    loader->DeleteAsset(ptr);
+    LockGuard<Mutex> guard(unloadQueueMutex);
+    unloadAssets.emplace(ptr->assetKey, ptr);
 }
 
 void AssetManager::NotifyLoaded(Asset<AssetBase> asset, bool reloaded)
 {
-    Notify(asset, [&](AssetListener* listener) {
+    Notify(asset.get(), [&](AssetListener* listener) {
         listener->OnAssetLoaded(asset, reloaded);
     });
 }
 
 void AssetManager::NotifyError(Asset<AssetBase> asset, bool reloaded, const String& msg)
 {
-    Notify(asset, [&](AssetListener* listener) {
+    Notify(asset.get(), [&](AssetListener* listener) {
         listener->OnAssetError(asset, reloaded, msg);
     });
 }
 
-void AssetManager::NotifyUnloaded(Asset<AssetBase> asset)
+void AssetManager::NotifyUnloaded(AssetBase* asset)
 {
     Notify(asset, [&](AssetListener* listener) {
         listener->OnAssetUnloaded(asset);
-    });
+    },
+           false);
 }
 
-void AssetManager::Notify(Asset<AssetBase> asset, const Function<void(AssetListener*)>& callback)
+void AssetManager::Notify(AssetBase* asset, const Function<void(AssetListener*)>& callback, bool notifyInstance)
 {
+    if (notifyInstance == true)
     {
         // Per instance notification
+        LockGuard<Mutex> guard(assetMapMutex);
         auto iter = assetMap.find(asset->assetKey);
         DVASSERT(iter != assetMap.end());
 
@@ -285,10 +449,10 @@ void AssetManager::Notify(Asset<AssetBase> asset, const Function<void(AssetListe
 
     {
         // Per type notification
-        const ReflectedType* assetRefType = ReflectedTypeDB::GetByPointer(asset.get());
+        const ReflectedType* assetRefType = ReflectedTypeDB::GetByPointer(asset);
         DVASSERT(assetRefType != nullptr);
 
-        const Type* assetType = assetRefType->GetType()->Deref();
+        const Type* assetType = assetRefType->GetType();
         auto typeIter = typeListeners.find(assetType);
         if (typeIter != typeListeners.end())
         {
@@ -312,77 +476,59 @@ void AssetManager::Notify(Asset<AssetBase> asset, const Function<void(AssetListe
     }
 }
 
-Asset<AssetBase> AssetManager::LoadAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener, bool reloading)
+void AssetManager::Process()
 {
-    AbstractAssetLoader* loader = GetAssetLoader(assetKey);
-
-    Asset<AssetBase> asset(loader->CreateAsset(assetKey), AssetDeleter());
-    asset->state = AssetBase::EMPTY;
-
-    AssetNode node;
-    node.asset = asset;
-    if (listener != nullptr)
+    Vector<Asset<AssetBase>> lockedLoadedAssets;
+    Vector<bool> assetReloadRequested;
     {
-        node.listeners.push_back(listener);
-        listener->instanceListener = true;
-    }
-
-    assetMap[assetKey] = node;
-
-    if (asyncLoading == false)
-    {
-        FileSystem* fs = GetEngineContext()->fileSystem;
-
-        String errorMsg;
-        RefPtr<DynamicMemoryFile> loadFile;
-        AssetFileInfo fileInfo = loader->GetAssetFileInfo(assetKey);
-        DVASSERT(fileInfo.IsValid() == true);
-        if (fileInfo.inMemoryAsset == false || fs->Exists(fileInfo.fileName))
+        Vector<LoadedAssetNode> weakLoadedAssets;
         {
-            RefPtr<File> file(File::Create(fileInfo.fileName, File::OPEN | File::READ));
-
-            uint64 dataSize = fileInfo.dataLength;
-            if (dataSize == AssetFileInfo::FULL_FILE)
-            {
-                dataSize = file->GetSize();
-            }
-            file->Seek(fileInfo.dataOffset, File::SEEK_FROM_START);
-
-            Vector<uint8> data;
-            data.resize(dataSize);
-            uint32 readed = file->Read(data.data(), static_cast<uint32>(dataSize));
-            if (readed != dataSize)
-            {
-                errorMsg = "[AssetManager] Requested part of asset file can't be readed";
-            }
-            else
-            {
-                loadFile.Set(DynamicMemoryFile::Create(std::move(data), File::READ, fileInfo.fileName));
-            }
+            LockGuard<Mutex> guard(loadedMutex);
+            weakLoadedAssets = std::move(loadedAssets);
         }
 
-        if (errorMsg.empty() == false)
+        lockedLoadedAssets.reserve(weakLoadedAssets.size());
+        assetReloadRequested.reserve(weakLoadedAssets.size());
+        for (const LoadedAssetNode& weakAsset : weakLoadedAssets)
         {
-            NotifyError(asset, reloading, errorMsg);
-        }
-        else
-        {
-            String errorMsg;
-            loader->LoadAsset(asset, loadFile.Get(), errorMsg);
-            if (errorMsg.empty() == true)
+            Asset<AssetBase> lockedAsset = weakAsset.asset.lock();
+            if (lockedAsset != nullptr)
             {
-                asset->state = AssetBase::LOADED;
-                NotifyLoaded(asset, reloading);
-            }
-            else
-            {
-                asset->state = AssetBase::ERROR;
-                NotifyError(asset, reloading, errorMsg);
+                lockedLoadedAssets.push_back(lockedAsset);
+                assetReloadRequested.push_back(weakAsset.reloadRequest);
             }
         }
     }
 
-    return asset;
+    for (size_t i = 0; i < lockedLoadedAssets.size(); ++i)
+    {
+        NotifyLoaded(lockedLoadedAssets[i], assetReloadRequested[i]);
+    }
+
+    UnorderedMap<Any, AssetBase*> unloadAssetsCopy;
+    {
+        LockGuard<Mutex> assetMapGuard(assetMapMutex);
+        {
+            {
+                LockGuard<Mutex> unloadQueueGuard(unloadQueueMutex);
+                unloadAssetsCopy = std::move(unloadAssets);
+            }
+
+            for (auto node : unloadAssetsCopy)
+            {
+                AssetBase* asset = node.second;
+                size_t removedCount = assetMap.erase(asset->assetKey);
+                DVASSERT(removedCount == 1);
+            }
+        }
+    }
+
+    for (auto node : unloadAssetsCopy)
+    {
+        AssetBase* asset = node.second;
+        NotifyUnloaded(asset);
+        delete asset;
+    }
 }
 
 AbstractAssetLoader* AssetManager::GetAssetLoader(const Any& assetKey) const
@@ -392,5 +538,95 @@ AbstractAssetLoader* AssetManager::GetAssetLoader(const Any& assetKey) const
     auto loaderIter = keyTypeToLoader.find(keyType);
     DVASSERT(loaderIter != keyTypeToLoader.end());
     return loaderIter->second;
+}
+
+RefPtr<File> AssetManager::CreateAssetFile(const Any& assetKey, AbstractAssetLoader* loader, String& errorMsg) const
+{
+    DVASSERT(loader != nullptr);
+
+    FileSystem* fs = GetEngineContext()->fileSystem;
+
+    AssetFileInfo fileInfo = loader->GetAssetFileInfo(assetKey);
+    DVASSERT(fileInfo.IsValid() == true);
+
+    if (fileInfo.inMemoryAsset == true)
+    {
+        return RefPtr<File>();
+    }
+
+    FilePath path(fileInfo.fileName);
+    if (fs->Exists(path) == false)
+    {
+        errorMsg = Format("[AssetManager] Could not find file %s", path.GetAbsolutePathname().c_str());
+        return RefPtr<File>();
+    }
+
+    RefPtr<File> file(File::Create(path, File::OPEN | File::READ));
+    if (file.Get() == nullptr)
+    {
+        errorMsg = Format("[AssetManager] Could not open file %s", path.GetAbsolutePathname().c_str());
+        return RefPtr<File>();
+    }
+
+    if (fileInfo.dataLength == AssetFileInfo::FULL_FILE)
+    {
+        DVASSERT(fileInfo.dataOffset == 0);
+        return file;
+    }
+
+    uint64 fileSize = file->GetSize();
+    if (fileInfo.dataOffset + fileInfo.dataLength > fileSize)
+    {
+        errorMsg = Format("[AssetManager] Requested region of file %s is out of range", path.GetAbsolutePathname().c_str());
+        return RefPtr<File>();
+    }
+
+    DVASSERT(fileInfo.dataLength <= std::numeric_limits<uint32>::max());
+    uint32 fileRegionLength = static_cast<uint32>(fileInfo.dataLength);
+
+    Vector<uint8> data;
+    data.resize(fileRegionLength);
+    file->Seek(fileInfo.dataOffset, File::SEEK_FROM_START);
+    uint32 readed = file->Read(data.data(), fileRegionLength);
+
+    if (readed != fileRegionLength)
+    {
+        errorMsg = "[AssetManager] Requested part of asset file can't be readed";
+        return RefPtr<File>();
+    }
+
+    return RefPtr<File>(DynamicMemoryFile::Create(data.data(), data.size(), File::OPEN | File::READ));
+}
+
+void AssetManager::LoadingThreadFn()
+{
+    while (loadQueueAssets.IsCanceled() == false)
+    {
+        AsyncLoadTask task = loadQueueAssets.Front(true);
+        Asset<AssetBase> lockedAsset = task.asset.lock();
+        if (lockedAsset != nullptr)
+        {
+            String errorMsg;
+            RefPtr<File> file = CreateAssetFile(lockedAsset->assetKey, task.loader, errorMsg);
+
+            if (errorMsg.empty() == true)
+            {
+                task.loader->LoadAsset(lockedAsset, file.Get(), errorMsg);
+            }
+
+            AsyncLoadingFinished(task.asset, task.reloadRequest, errorMsg);
+        }
+    }
+}
+
+void AssetManager::AsyncLoadingFinished(const std::weak_ptr<AssetBase>& asset, bool reloading, const String& errorMsg)
+{
+    LockGuard<Mutex> guard(loadedMutex);
+
+    LoadedAssetNode node;
+    node.asset = asset;
+    node.reloadRequest = reloading;
+    node.errorMsg = errorMsg;
+    loadedAssets.push_back(node);
 }
 }

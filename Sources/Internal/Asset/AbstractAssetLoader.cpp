@@ -10,11 +10,6 @@ AssetFileInfo AbstractAssetLoader::GetAdditionalLoadFileInfo(String& dependOnFil
     return AssetFileInfo();
 }
 
-Vector<const Type*> AbstractAssetLoader::GetDependOnAssetTypes(const Type* assetType) const
-{
-    return Vector<const Type*>();
-}
-
 Vector<String> AbstractAssetLoader::GetAdditionalFileExtensionsDependOn() const
 {
     return Vector<String>();

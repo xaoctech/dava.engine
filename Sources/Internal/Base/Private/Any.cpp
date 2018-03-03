@@ -85,7 +85,7 @@ size_t Any::GetHash() const
     }
 
     using HashFn = size_t (*)(const Any&);
-    HashFn fn = static_cast<HashFn>(type->GetUserData(AnyTypeData::GetHashFnIndex()));
+    HashFn fn = reinterpret_cast<HashFn>(type->GetUserData(AnyTypeData::GetHashFnIndex()));
 
     if (fn != nullptr)
     {

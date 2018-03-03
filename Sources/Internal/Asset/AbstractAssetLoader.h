@@ -43,7 +43,6 @@ public:
 
     virtual Vector<const Type*> GetAssetKeyTypes() const = 0;
     virtual Vector<const Type*> GetAssetTypes() const = 0;
-    virtual Vector<const Type*> GetDependOnAssetTypes(const Type* assetType) const;
 
     virtual AssetFileInfo GetAdditionalLoadFileInfo(String& dependOnFilePath) const;
     virtual Vector<String> GetAdditionalFileExtensionsDependOn() const;

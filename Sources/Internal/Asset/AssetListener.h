@@ -11,7 +11,7 @@ public:
     virtual ~AssetListener();
     virtual void OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded) = 0;
     virtual void OnAssetError(const Asset<AssetBase>& asset, bool reloaded, const String& msg) = 0;
-    virtual void OnAssetUnloaded(const Asset<AssetBase>& asset) = 0;
+    virtual void OnAssetUnloaded(const AssetBase* asset) = 0;
 
 private:
     friend class AssetManager;
@@ -23,10 +23,10 @@ class SimpleAssetListener : public AssetListener
 public:
     void OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded) override;
     void OnAssetError(const Asset<AssetBase>& asset, bool reloaded, const String& msg) override;
-    void OnAssetUnloaded(const Asset<AssetBase>& asset) override;
+    void OnAssetUnloaded(const AssetBase* asset) override;
 
     Function<void(const Asset<AssetBase>&, bool)> onLoaded;
     Function<void(const Asset<AssetBase>&, bool, const String&)> onError;
-    Function<void(const Asset<AssetBase>&)> onUnloaded;
+    Function<void(const AssetBase*)> onUnloaded;
 };
 } // namespace DAVA

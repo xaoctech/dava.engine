@@ -37,7 +37,6 @@ public:
 
     Vector<const Type*> GetAssetKeyTypes() const override;
     Vector<const Type*> GetAssetTypes() const override;
-    Vector<const Type*> GetDependOnAssetTypes(const Type* assetType) const override;
 };
 
 template <>

@@ -3,6 +3,8 @@
 #include "Base/Any.h"
 #include "Asset/Asset.h"
 
+#include "Reflection/Reflection.h"
+
 namespace DAVA
 {
 class NMaterial;
@@ -26,5 +28,7 @@ protected:
     //runtime
     Asset<Material> parentAsset = nullptr;
     NMaterial* material = nullptr;
+
+    DAVA_VIRTUAL_REFLECTION(Material, AssetBase);
 };
 };

@@ -12,6 +12,7 @@
 #include "Concurrency/SyncBarrier.h"
 #include "Concurrency/Thread.h"
 #include "Concurrency/ThreadLocalPtr.h"
+#include "Concurrency/ConcurrentDeque.h"
 
 //TODO: uncomment this include in client
 #include "Concurrency/PosixThreads.h"

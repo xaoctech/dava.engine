@@ -6,6 +6,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/FilePath.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -56,5 +57,11 @@ void Prefab::ConstructFrom(Scene* scene)
         prefabEntities[i] = scene->GetChild(i);
 
     ConstructFrom(prefabEntities);
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Prefab)
+{
+    ReflectionRegistrator<Prefab>::Begin()
+    .End();
 }
 };

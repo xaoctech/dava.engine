@@ -4,6 +4,7 @@
 #include "Render/Material/Material.h"
 #include "Render/Material/NMaterial.h"
 #include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -45,4 +46,9 @@ const FilePath& Material::GetParentPath() const
     return parentPath;
 }
 
+DAVA_VIRTUAL_REFLECTION_IMPL(Material)
+{
+    ReflectionRegistrator<Material>::Begin()
+    .End();
+}
 };

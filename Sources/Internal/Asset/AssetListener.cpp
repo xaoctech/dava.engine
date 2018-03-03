@@ -27,7 +27,7 @@ void SimpleAssetListener::OnAssetError(const Asset<AssetBase>& asset, bool reloa
     }
 }
 
-void SimpleAssetListener::OnAssetUnloaded(const Asset<AssetBase>& asset)
+void SimpleAssetListener::OnAssetUnloaded(const AssetBase* asset)
 {
     if (onUnloaded != nullptr)
     {

@@ -217,7 +217,7 @@ NMaterial* ImportLibrary::GetOrCreateMaterialParent(ColladaMaterial* colladaMate
         parentMaterialName = FastName(colladaMaterial->material->GetDaeId().c_str());
         parentMaterialTemplate = NMaterialName::FORWARD_PBS;
     }
-    FastName materialUniqueKey = FastName(Format("%s_%u", parentMaterialName, maxInfluenceCount));
+    FastName materialUniqueKey = FastName(Format("%s_%u", parentMaterialName.c_str(), maxInfluenceCount));
 
     NMaterial* davaMaterialParent = materialParents[materialUniqueKey];
     if (nullptr == davaMaterialParent)

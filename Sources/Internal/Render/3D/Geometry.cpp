@@ -1,5 +1,6 @@
 #include "Render/3D/Geometry.h"
 #include "FileSystem/File.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -31,5 +32,11 @@ PolygonGroup* Geometry::GetPolygonGroup(uint32 index) const
 {
     DVASSERT(index < uint32(geometries.size()));
     return geometries[index];
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Geometry)
+{
+    ReflectionRegistrator<Geometry>::Begin()
+    .End();
 }
 };
