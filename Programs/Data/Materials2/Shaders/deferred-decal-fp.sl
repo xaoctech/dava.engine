@@ -45,7 +45,6 @@ fragment_out
 
 #if (DECAL_TYPE == DECAL_AO) //GFX_COMPLETE later add it to different decals
 [material][instance] property float blendWidth = 0.2;
-[material][instance] property float aoScale = 0.0; 
 #endif
 
 float3 ComputeWorldNormal(float2 normalSample, float3 tbnToWorld0, float3 tbnToWorld1, float3 tbnToWorld2)
