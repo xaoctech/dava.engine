@@ -35,7 +35,7 @@ NMaterial* Material::GetMaterial() const
 void Material::SetParentPath(const FilePath& path)
 {
     parentPath = path;
-    parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(parentPath), false);
+    parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(parentPath), AssetManager::SYNC);
 
     if (material != nullptr && parentAsset != nullptr)
         material->SetParent(parentAsset->GetMaterial());

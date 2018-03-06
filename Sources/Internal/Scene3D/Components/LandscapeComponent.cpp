@@ -145,7 +145,7 @@ uint32 LandscapeComponent::GetLayersCount() const
 
 void LandscapeComponent::SetPageMaterialPath(uint32 layer, uint32 lod, const FilePath& path)
 {
-    layersPageMaterials[layer][lod] = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), false);
+    layersPageMaterials[layer][lod] = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), AssetManager::SYNC);
     DVASSERT(layersPageMaterials[layer][lod] != nullptr);
     if (layersPageMaterials[layer][lod] != nullptr)
         landscape->SetPageMaterial(layer, lod, layersPageMaterials[layer][lod]->GetMaterial());
@@ -170,7 +170,7 @@ const FilePath& LandscapeComponent::GetHeighmapPath() const
 
 void LandscapeComponent::SetLandscapeMaterialPath(const FilePath& path)
 {
-    landscapeMaterial = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), false);
+    landscapeMaterial = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), AssetManager::SYNC);
     DVASSERT(landscapeMaterial != nullptr);
     if (landscapeMaterial != nullptr)
         landscape->SetLandscapeMaterial(landscapeMaterial->GetMaterial());

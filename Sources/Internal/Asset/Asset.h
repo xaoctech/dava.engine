@@ -1,6 +1,7 @@
 #pragma once
 #include "Base/BaseTypes.h"
 #include "Reflection/Reflection.h"
+#include <Concurrency/Atomic.h>
 
 namespace DAVA
 {
@@ -28,7 +29,7 @@ private:
     DAVA_VIRTUAL_REFLECTION(AssetBase);
 
     friend class AssetManager;
-    eState state = EMPTY;
+    Atomic<eState> state;
     Any assetKey;
 };
 

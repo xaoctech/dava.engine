@@ -15,6 +15,12 @@ class AssetListener;
 class AssetManager final
 {
 public:
+    enum LoadingMode
+    {
+        SYNC,
+        ASYNC
+    };
+
     AssetManager();
     ~AssetManager();
     void SetResourceRoot(String& path);
@@ -26,8 +32,8 @@ public:
     void RegisterAssetLoader(std::unique_ptr<AbstractAssetLoader>&& loader);
 
     template <typename AssetType>
-    Asset<AssetType> GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener = nullptr);
-    Asset<AssetBase> GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener = nullptr);
+    Asset<AssetType> GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener = nullptr);
+    Asset<AssetBase> GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener = nullptr);
 
     template <typename AssetType>
     Asset<AssetType> FindAsset(const Any& assetKey);
@@ -45,7 +51,7 @@ public:
 
 private:
     void Process();
-    Asset<AssetBase> GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener, bool reloadRequest);
+    Asset<AssetBase> GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener, bool reloadRequest);
     AbstractAssetLoader* GetAssetLoader(const Any& assetKey) const;
 
     RefPtr<File> CreateAssetFile(const Any& assetKey, AbstractAssetLoader* loader, String& errorMsg) const;

@@ -34,6 +34,8 @@ AssetManager::AssetManager()
     RegisterAssetLoader(std::make_unique<MaterialAssetLoader>());
 
     loadingThread = Thread::Create(MakeFunction(this, &AssetManager::LoadingThreadFn));
+    loadingThread->SetName("AssetManagerThread");
+    loadingThread->Start();
 }
 
 AssetManager::~AssetManager()
@@ -53,6 +55,34 @@ AssetManager::~AssetManager()
             {
                 break;
             }
+        }
+    }
+
+    for (auto node : unloadAssets)
+    {
+        assetMap.erase(node.first);
+        delete node.second;
+    }
+
+    loadQueueAssets.ProcessDeque([this](Deque<AsyncLoadTask>& deque) {
+        for (AsyncLoadTask& task : deque)
+        {
+            Asset<AssetBase> asset = task.asset.lock();
+            if (asset != nullptr)
+            {
+                assetMap.erase(asset->assetKey);
+            }
+        }
+
+        deque.clear();
+    });
+
+    for (const LoadedAssetNode& node : loadedAssets)
+    {
+        Asset<AssetBase> asset = node.asset.lock();
+        if (asset != nullptr)
+        {
+            assetMap.erase(asset->assetKey);
         }
     }
 
@@ -153,12 +183,12 @@ void AssetManager::RegisterAssetLoader(std::unique_ptr<AbstractAssetLoader>&& lo
     }
 }
 
-Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener)
+Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener)
 {
-    return GetAsset(assetKey, asyncLoading, listener, false);
+    return GetAsset(assetKey, mode, listener, false);
 }
 
-Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener, bool reloadRequest)
+Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener, bool reloadRequest)
 {
     AbstractAssetLoader* loader = GetAssetLoader(assetKey);
     Asset<AssetBase> asset;
@@ -192,7 +222,7 @@ Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, 
             }
             else
             {
-                if (asset->state == AssetBase::QUEUED && asyncLoading == false)
+                if (asset->state == AssetBase::QUEUED && mode == AssetManager::SYNC)
                 {
                     bool inQueue = false;
                     loadQueueAssets.ProcessDeque([&asset, &inQueue](Deque<AsyncLoadTask>& deque) {
@@ -207,7 +237,7 @@ Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, 
                         }
                     });
 
-                    if (inQueue == false)
+                    if (inQueue == true)
                     {
                         loadFallback = true;
                     }
@@ -258,7 +288,7 @@ Asset<AssetBase> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, 
 
     if (loadFallback == true)
     {
-        if (asyncLoading == true)
+        if (mode == ASYNC)
         {
             DVASSERT(asset->state == AssetBase::QUEUED);
 
@@ -389,7 +419,7 @@ void AssetManager::ReloadAsset(const Any& assetKey)
         asset->state = AssetBase::OUT_OF_DATE;
         assetMap.erase(iter);
     }
-    GetAsset(assetKey, false, nullptr, true);
+    GetAsset(assetKey, AssetManager::SYNC, nullptr, true);
 }
 
 AssetFileInfo AssetManager::GetAssetFileInfo(const Asset<AssetBase>& asset) const
@@ -480,6 +510,7 @@ void AssetManager::Process()
 {
     Vector<Asset<AssetBase>> lockedLoadedAssets;
     Vector<bool> assetReloadRequested;
+    Vector<String> assetErrors;
     {
         Vector<LoadedAssetNode> weakLoadedAssets;
         {
@@ -496,13 +527,22 @@ void AssetManager::Process()
             {
                 lockedLoadedAssets.push_back(lockedAsset);
                 assetReloadRequested.push_back(weakAsset.reloadRequest);
+                assetErrors.push_back(weakAsset.errorMsg);
             }
         }
     }
 
     for (size_t i = 0; i < lockedLoadedAssets.size(); ++i)
     {
-        NotifyLoaded(lockedLoadedAssets[i], assetReloadRequested[i]);
+        const String& error = assetErrors[i];
+        if (error.empty() == true)
+        {
+            NotifyLoaded(lockedLoadedAssets[i], assetReloadRequested[i]);
+        }
+        else
+        {
+            NotifyError(lockedLoadedAssets[i], assetReloadRequested[i], error);
+        }
     }
 
     UnorderedMap<Any, AssetBase*> unloadAssetsCopy;
@@ -612,6 +652,15 @@ void AssetManager::LoadingThreadFn()
             if (errorMsg.empty() == true)
             {
                 task.loader->LoadAsset(lockedAsset, file.Get(), errorMsg);
+            }
+
+            if (errorMsg.empty() == true)
+            {
+                lockedAsset->state.Set(AssetBase::LOADED);
+            }
+            else
+            {
+                lockedAsset->state.Set(AssetBase::ERROR);
             }
 
             AsyncLoadingFinished(task.asset, task.reloadRequest, errorMsg);

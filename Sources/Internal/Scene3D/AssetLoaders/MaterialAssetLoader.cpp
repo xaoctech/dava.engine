@@ -77,7 +77,7 @@ void MaterialAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, String& 
     if (archive->IsKeyExists("parentPath"))
     {
         materialAsset->parentPath = serializationContext.GetScenePath() + archive->GetString("parentPath");
-        materialAsset->parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(PathKey(materialAsset->parentPath), false);
+        materialAsset->parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(PathKey(materialAsset->parentPath), AssetManager::SYNC);
 
         materialAsset->material->SetParent(materialAsset->parentAsset->GetMaterial());
     }

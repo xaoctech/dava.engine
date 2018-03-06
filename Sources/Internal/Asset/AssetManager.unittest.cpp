@@ -20,7 +20,7 @@ namespace AssetManagerTestsDetail
 using namespace DAVA;
 
 FilePath workDir;
-FilePath materialPath;
+Array<FilePath, 5> material;
 FilePath geomPath;
 
 struct ListenerResult
@@ -74,7 +74,7 @@ public:
 class BaseTest
 {
 public:
-    ~BaseTest()
+    virtual ~BaseTest()
     {
         AssetManager* assetManager = GetEngineContext()->assetManager;
         std::for_each(listeners.begin(), listeners.end(), [this, assetManager](AssetListener* listener) {
@@ -133,27 +133,32 @@ class CreateAssetT : public BaseTest
 protected:
     void RunImpl() override
     {
-        MaterialAssetLoader::PathKey key(materialPath);
         AssetManager* assetManager = GetEngineContext()->assetManager;
 
+        for (int32 i = 0; i < material.size(); ++i)
         {
-            Asset<Material> matAsset = assetManager->CreateAsset<Material>(key);
-            TEST_VERIFY(matAsset->GetState() == AssetBase::EMPTY);
-
+            MaterialAssetLoader::PathKey matKey(material[i]);
+            Asset<Material> asset = assetManager->CreateAsset<Material>(matKey);
             ScopedPtr<NMaterial> nmat(new NMaterial());
-            nmat->SetMaterialName(FastName("dummy"));
-            matAsset->SetMaterial(nmat);
-            bool result = assetManager->SaveAsset(matAsset);
+            nmat->SetFXName(NMaterialName::VERTEXLIT_OPAQUE);
+            nmat->SetMaterialName(FastName(Format("dummy_material_%d", i)));
+            asset->SetMaterial(nmat);
+
+            bool result = assetManager->SaveAsset(asset);
             TEST_VERIFY(result == true);
-            TEST_VERIFY(matAsset->GetState() == AssetBase::LOADED);
+            TEST_VERIFY(asset->GetState() == AssetBase::LOADED);
 
-            Asset<Material> lookedUpAsset = assetManager->FindAsset<Material>(key);
-            TEST_VERIFY(lookedUpAsset == matAsset);
+            Asset<Material> lookedUpAsset = assetManager->FindAsset<Material>(matKey);
+            TEST_VERIFY(lookedUpAsset == asset);
 
-            TEST_VERIFY(GetEngineContext()->fileSystem->Exists(materialPath));
+            TEST_VERIFY(GetEngineContext()->fileSystem->Exists(material[i]));
         }
 
-        TEST_VERIFY(assetManager->FindAsset<Material>(key) == nullptr);
+        for (int32 i = 0; i < material.size(); ++i)
+        {
+            MaterialAssetLoader::PathKey matKey(material[i]);
+            TEST_VERIFY(assetManager->FindAsset<Material>(matKey) == nullptr);
+        }
     }
 };
 
@@ -166,10 +171,10 @@ protected:
     void RunImpl() override
     {
         RegisterListener(&listener);
-        MaterialAssetLoader::PathKey key(materialPath);
+        MaterialAssetLoader::PathKey key(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
         {
-            Asset<Material> matAsset = assetManager->GetAsset<Material>(key, false, &listener);
+            Asset<Material> matAsset = assetManager->GetAsset<Material>(key, AssetManager::SYNC, &listener);
             assetRawPtr = matAsset.get();
             TEST_VERIFY(matAsset != nullptr);
             TEST_VERIFY(matAsset->GetState() == AssetBase::LOADED);
@@ -183,7 +188,7 @@ protected:
 
         // error notify test
         {
-            Asset<Material> matAsset = assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(workDir + "1.mat"), false, &listener);
+            Asset<Material> matAsset = assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(workDir + "failed.mat"), AssetManager::SYNC, &listener);
             TEST_VERIFY(matAsset != nullptr);
             TEST_VERIFY(matAsset->GetState() == AssetBase::ERROR);
             TEST_VERIFY(listener.results.size() == 1);
@@ -205,18 +210,18 @@ protected:
         RegisterListener(&listener1);
         RegisterListener(&listener2);
 
-        MaterialAssetLoader::PathKey key(materialPath);
+        MaterialAssetLoader::PathKey key(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
 
         {
-            Asset<Material> matAsset1 = assetManager->GetAsset<Material>(key, false, &listener1);
+            Asset<Material> matAsset1 = assetManager->GetAsset<Material>(key, AssetManager::SYNC, &listener1);
             TEST_VERIFY(matAsset1->GetState() == AssetBase::LOADED);
             TEST_VERIFY(listener1.results.size() == 1);
             TEST_VERIFY(listener1.results[0].asset == matAsset1.get());
             TEST_VERIFY(listener1.results[0].e == ListenerResult::Loaded);
             listener1.results.clear();
 
-            Asset<Material> matAsset2 = assetManager->GetAsset<Material>(key, false, &listener2);
+            Asset<Material> matAsset2 = assetManager->GetAsset<Material>(key, AssetManager::SYNC, &listener2);
             TEST_VERIFY(matAsset2->GetState() == AssetBase::LOADED);
             TEST_VERIFY(listener2.results.size() == 1);
             TEST_VERIFY(listener2.results[0].asset == matAsset2.get());
@@ -237,12 +242,12 @@ protected:
     {
         RegisterListener(&typeListener);
         RegisterListener(&instanceListener);
-        MaterialAssetLoader::PathKey key(materialPath);
+        MaterialAssetLoader::PathKey key(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
         assetManager->RegisterListener(&typeListener, Type::Instance<Material>());
 
         {
-            Asset<Material> matAsset = assetManager->GetAsset<Material>(key, false, &instanceListener);
+            Asset<Material> matAsset = assetManager->GetAsset<Material>(key, AssetManager::SYNC, &instanceListener);
             assetRawPtr = matAsset.get();
             TEST_VERIFY(matAsset->GetState() == AssetBase::LOADED);
             TEST_VERIFY(typeListener.results.size() == 1);
@@ -259,7 +264,7 @@ protected:
 
         {
             // Asset has not deleted yet, so typeListener would not been notified
-            Asset<Material> matAsset = assetManager->GetAsset<Material>(key, false);
+            Asset<Material> matAsset = assetManager->GetAsset<Material>(key, AssetManager::SYNC);
             TEST_VERIFY(typeListener.results.size() == 0);
             TEST_VERIFY(instanceListener.results.size() == 0);
         }
@@ -295,7 +300,7 @@ protected:
         RegisterListener(&instanceListener);
         RegisterListener(&commonListener);
         GeometryAssetLoader::PathKey geoKey(geomPath);
-        MaterialAssetLoader::PathKey matKey(materialPath);
+        MaterialAssetLoader::PathKey matKey(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
         assetManager->RegisterListener(&typeListener, Type::Instance<Material>());
         assetManager->RegisterListener(&commonListener, nullptr);
@@ -310,13 +315,13 @@ protected:
             TEST_VERIFY(commonListener.results.empty() == false);
         }
         {
-            Asset<Material> matAsset = assetManager->GetAsset<Material>(matKey, false);
+            Asset<Material> matAsset = assetManager->GetAsset<Material>(matKey, AssetManager::SYNC);
             matRawPtr = matAsset.get();
         }
         {
             // geometry asset has not been deleted yet, so GetAsset return same reference
             // it means that common and type listener will be not notified
-            Asset<Geometry> geoAsset = assetManager->GetAsset<Geometry>(geoKey, false, &instanceListener);
+            Asset<Geometry> geoAsset = assetManager->GetAsset<Geometry>(geoKey, AssetManager::SYNC, &instanceListener);
             TEST_VERIFY(geomRawPtr == geoAsset.get());
         }
 
@@ -357,6 +362,131 @@ protected:
         return false;
     }
 };
+
+class AsyncMaterialLoadT : public BaseTest
+{
+    Asset<Material> asset;
+    TestListener instanceListener;
+
+public:
+    void RunImpl() override
+    {
+        RegisterListener(&instanceListener);
+        MaterialAssetLoader::PathKey matKey(material[0]);
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+
+        asset = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC, &instanceListener);
+    }
+
+    bool IsCompletedImpl() override
+    {
+        if (instanceListener.results.empty() == true)
+        {
+            return false;
+        }
+
+        TEST_VERIFY(asset->GetState() == AssetBase::LOADED);
+        TEST_VERIFY(instanceListener.results[0].e == ListenerResult::Loaded);
+        TEST_VERIFY(instanceListener.results[0].asset == asset.get());
+
+        return true;
+    }
+};
+
+class SyncAfterAsyncLoadT : public BaseTest
+{
+public:
+    void RunImpl() override
+    {
+        MaterialAssetLoader::PathKey matKey(material[0]);
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+
+        Asset<Material> asset = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC);
+        TEST_VERIFY(asset->GetState() == AssetBase::QUEUED);
+
+        Asset<Material> syncAsset = assetManager->GetAsset<Material>(matKey, AssetManager::SYNC);
+        TEST_VERIFY(asset->GetState() == AssetBase::LOADED);
+        TEST_VERIFY(syncAsset->GetState() == AssetBase::LOADED);
+        TEST_VERIFY(asset == syncAsset);
+    }
+};
+
+class SyncAfterAsyncLoadWithRemoveFromQueueT : public BaseTest
+{
+    Vector<Asset<Material>> assets;
+
+public:
+    void RunImpl() override
+    {
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+
+        assets.resize(material.size());
+        for (int32 i = 0; i < material.size() - 1; ++i)
+        {
+            MaterialAssetLoader::PathKey matKey(material[i]);
+            assets[i] = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC);
+            TEST_VERIFY(assets[i]->GetState() == AssetBase::QUEUED);
+        }
+
+        MaterialAssetLoader::PathKey matKey(material[material.size() - 1]);
+        assets[material.size() - 1] = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC);
+        TEST_VERIFY(assets[material.size() - 1]->GetState() == AssetBase::QUEUED);
+
+        Asset<Material> syncAsset = assetManager->GetAsset<Material>(matKey, AssetManager::SYNC);
+        TEST_VERIFY(assets[material.size() - 1]->GetState() == AssetBase::LOADED);
+        TEST_VERIFY(syncAsset->GetState() == AssetBase::LOADED);
+        TEST_VERIFY(assets[material.size() - 1] == syncAsset);
+    }
+
+    bool IsCompletedImpl() override
+    {
+        for (Asset<Material> m : assets)
+        {
+            TEST_VERIFY(m->GetState() != AssetBase::ERROR);
+            if (m->GetState() != AssetBase::LOADED)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+class CancelAsyncLoadingT : public BaseTest
+{
+    TestListener typeListener;
+
+public:
+    void RunImpl() override
+    {
+        RegisterListener(&typeListener);
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        assetManager->RegisterListener(&typeListener, nullptr);
+
+        for (int32 i = 0; i < material.size(); ++i)
+        {
+            MaterialAssetLoader::PathKey matKey(material[i]);
+            Asset<AssetBase> asset = assetManager->GetAsset(matKey, AssetManager::ASYNC);
+            TEST_VERIFY(asset->GetState() == AssetBase::QUEUED);
+        }
+    }
+
+    bool IsCompletedImpl() override
+    {
+        if (typeListener.results.size() == material.size())
+        {
+            for (size_t i = 0; i < typeListener.results.size(); ++i)
+            {
+                TEST_VERIFY(typeListener.results[i].e == ListenerResult::Unloaded);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+};
 } // namespace AssetManagerTestsDetail
 
 DAVA_TESTCLASS (AssetManagerTests)
@@ -376,7 +506,11 @@ DAVA_TESTCLASS (AssetManagerTests)
         fs->DeleteDirectory(workDir);
         fs->CreateDirectory(workDir, true);
 
-        materialPath = workDir + "materialAsset.mat";
+        for (int32 i = 0; i < material.size(); ++i)
+        {
+            material[i] = workDir + Format("%d.mat", i);
+        }
+
         geomPath = workDir + "geometry.geo";
     }
 
@@ -437,5 +571,29 @@ DAVA_TESTCLASS (AssetManagerTests)
     {
         using namespace AssetManagerTestsDetail;
         RunTest<CommonListenerT>();
+    }
+
+    DAVA_TEST (AsyncMaterialLoadTest)
+    {
+        using namespace AssetManagerTestsDetail;
+        RunTest<AsyncMaterialLoadT>();
+    }
+
+    DAVA_TEST (SyncAfterAsyncLoadTest)
+    {
+        using namespace AssetManagerTestsDetail;
+        RunTest<SyncAfterAsyncLoadT>();
+    }
+
+    DAVA_TEST (SyncAfterAsyncLoadWithRemoveFromQueueTest)
+    {
+        using namespace AssetManagerTestsDetail;
+        RunTest<SyncAfterAsyncLoadWithRemoveFromQueueT>();
+    }
+
+    DAVA_TEST (CancelAsyncLoadingTest)
+    {
+        using namespace AssetManagerTestsDetail;
+        RunTest<CancelAsyncLoadingT>();
     }
 };

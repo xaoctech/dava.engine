@@ -49,13 +49,13 @@ void PrefabComponent::Deserialize(KeyedArchive* archive, SerializationContext* s
     filepath = serializationContext->GetScenePath() + relativePath;
     PrefabAssetLoader::PathKey key(filepath);
 
-    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, false);
+    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, AssetManager::SYNC);
 }
 
 void PrefabComponent::SetFilepath(const FilePath& path)
 {
     filepath = path;
-    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(filepath), false);
+    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(filepath), AssetManager::SYNC);
 }
 
 const FilePath& PrefabComponent::GetFilepath() const

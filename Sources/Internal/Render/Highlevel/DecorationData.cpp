@@ -61,7 +61,7 @@ void DecorationData::ReloadDecoration()
         return;
 
     PrefabAssetLoader::PathKey key(decorationPath);
-    Asset<Prefab> decorationPrefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, false);
+    Asset<Prefab> decorationPrefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, AssetManager::SYNC);
     if (decorationPrefab == nullptr)
         return;
 

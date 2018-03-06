@@ -5,9 +5,9 @@
 namespace DAVA
 {
 template <typename AssetType>
-Asset<AssetType> AssetManager::GetAsset(const Any& assetKey, bool asyncLoading, AssetListener* listener)
+Asset<AssetType> AssetManager::GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener)
 {
-    Asset<AssetBase> asset = GetAsset(assetKey, asyncLoading, listener);
+    Asset<AssetBase> asset = GetAsset(assetKey, mode, listener);
     return std::dynamic_pointer_cast<AssetType>(asset);
 }
 
