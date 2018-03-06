@@ -86,7 +86,10 @@ Quaternion ColladaAnimation::EvaluateRotation(FCDTransform* transform, float32 t
         angleAxis.angle = (curveAngle != nullptr) ? curveAngle->Evaluate(time) : angleAxis.angle;
     }
 
-    return Quaternion::MakeRotation(Vector3(static_cast<float32*>(angleAxis.axis)), DegToRad(angleAxis.angle));
+    if (angleAxis.axis.LengthSquared() > EPSILON)
+        return Quaternion::MakeRotation(Vector3(static_cast<float32*>(angleAxis.axis)), DegToRad(angleAxis.angle));
+    else
+        return Quaternion();
 }
 
 Vector3 ColladaAnimation::EvaluateScale(FCDTransform* transform, float32 time)

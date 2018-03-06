@@ -2,23 +2,16 @@
 
 #include "Animation/AnimationManager.h"
 #include "Animation/LinearAnimation.h"
-#include "Components/UIComponent.h"
-#include "Components/UIControlFamily.h"
+#include "Base/RefPtrUtils.h"
 #include "Concurrency/LockGuard.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
-#include "Input/InputSystem.h"
-#include "Input/Mouse.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Render/RenderHelper.h"
-#include "Render/Renderer.h"
 #include "UI/Components/UIComponent.h"
 #include "UI/Components/UIControlFamily.h"
 #include "UI/Focus/FocusHelpers.h"
-#include "UI/Input/UIInputSystem.h"
-#include "UI/Layouts/UIAnchorComponent.h"
 #include "UI/Layouts/UILayoutSystem.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIRenderSystem.h"
@@ -86,43 +79,21 @@ static void StopControlTracking(const UIControl* control)
 }
 
 UIControl::UIControl(const Rect& rect)
-    : isInputProcessed(false)
+    : exclusiveInput(false)
+    , isInputProcessed(false)
+    , visible(true)
+    , hiddenForDebug(false)
+    , multiInput(false)
+    , isIteratorCorrupted(false)
     , styleSheetDirty(true)
     , styleSheetInitialized(false)
     , layoutDirty(true)
     , layoutPositionDirty(true)
     , layoutOrderDirty(true)
-    , family(nullptr)
-    , parentWithContext(nullptr)
+    , inputEnabled(true)
 {
     StartControlTracking(this);
-
-    parent = NULL;
-    controlState = STATE_NORMAL;
-    visible = true;
-
     UpdateFamily();
-    /*
-            VB:
-            please do not change anymore to false, it no make any sense to make all controls untouchable by default.
-            for particular controls it can be changed, but no make sense to make that for all controls.
-         */
-    inputEnabled = true;
-    inputProcessorsCount = 1;
-
-    eventDispatcher = NULL;
-
-    hiddenForDebug = false;
-    pivot = Vector2(0.0f, 0.0f);
-    scale = Vector2(1.0f, 1.0f);
-    angle = 0;
-
-    multiInput = false;
-    exclusiveInput = false;
-    currentInputID = 0;
-    touchesInside = 0;
-    totalTouches = 0;
-
     SetRect(rect);
 }
 
@@ -136,7 +107,7 @@ UIControl::~UIControl()
     {
         GetEngineContext()->uiControlSystem->CancelInputs(this);
     }
-    SafeRelease(eventDispatcher);
+    eventDispatcher = nullptr;
     RemoveAllControls();
     RemoveAllComponents();
     UIControlFamily::Release(family);
@@ -216,7 +187,7 @@ void UIControl::AddEvent(int32 eventType, const Message& msg)
 {
     if (!eventDispatcher)
     {
-        eventDispatcher = new EventDispatcher();
+        eventDispatcher = MakeRef<EventDispatcher>();
     }
     eventDispatcher->AddEvent(eventType, msg);
 }
@@ -275,18 +246,6 @@ void UIControl::PerformEventWithData(int32 eventType, void* callerData, const UI
 const List<UIControl*>& UIControl::GetChildren() const
 {
     return children;
-}
-
-bool UIControl::AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive)
-{
-    UIControl* control = FindByName(controlName, isRecursive);
-    if (control)
-    {
-        controlsList.push_back(control);
-        return true;
-    }
-
-    return false;
 }
 
 void UIControl::SetName(const String& name_)
@@ -353,66 +312,9 @@ void UIControl::RemoveState(int32 state)
     SetState(controlState & ~state);
 }
 
-Sprite* UIControl::GetSprite() const
-{
-    return GetBackground()->GetSprite();
-}
-
 int32 UIControl::GetFrame() const
 {
-    return GetBackground()->GetFrame();
-}
-
-int32 UIControl::GetSpriteAlign() const
-{
-    return GetBackground()->GetAlign();
-}
-
-void UIControl::SetSprite(const FilePath& spriteName, int32 spriteFrame)
-{
-    GetBackground()->SetSprite(spriteName, spriteFrame);
-}
-
-void UIControl::SetSprite(Sprite* newSprite, int32 spriteFrame)
-{
-    GetBackground()->SetSprite(newSprite, spriteFrame);
-}
-
-void UIControl::SetSpriteFrame(int32 spriteFrame)
-{
-    GetBackground()->SetFrame(spriteFrame);
-}
-
-void UIControl::SetSpriteFrame(const FastName& frameName)
-{
-    GetBackground()->SetFrame(frameName);
-}
-
-void UIControl::SetSpriteAlign(int32 align)
-{
-    GetBackground()->SetAlign(align);
-}
-
-void UIControl::SetBackground(UIControlBackground* newBg)
-{
-    UIControlBackground* currentBg = GetComponent<UIControlBackground>();
-    if (currentBg != newBg)
-    {
-        if (currentBg != nullptr)
-        {
-            RemoveComponent(currentBg);
-        }
-
-        if (newBg != nullptr)
-        {
-            AddComponent(newBg);
-        }
-    }
-}
-
-UIControlBackground* UIControl::GetBackground() const
-{
-    return GetComponent<UIControlBackground>();
+    return GetComponent<UIControlBackground>()->GetFrame();
 }
 
 const UIGeometricData& UIControl::GetGeometricData() const
@@ -941,7 +843,7 @@ void UIControl::CopyDataFrom(UIControl* srcControl)
     layoutOrderDirty = srcControl->layoutOrderDirty;
     packageContext = srcControl->packageContext;
 
-    SafeRelease(eventDispatcher);
+    eventDispatcher = nullptr;
     if (srcControl->eventDispatcher != nullptr && srcControl->eventDispatcher->GetEventsCount() != 0)
     {
         Logger::FrameworkDebug("[UIControl::CopyDataFrom] Source control \"%s:%s\" have events."

@@ -106,11 +106,11 @@ DAVA_TESTCLASS (UIRichContentTest)
         DVASSERT(c);
         DVASSERT(ca);
 
-        UIRichContentAliasesComponent::AliasesMap aliases;
-        aliases["h1"] = "<p class=\"dejavu\" />";
-        aliases["test"] = "<span class=\"test\" />";
-        aliases["nl"] = "<br />";
-        aliases["GoldPin"] = "<img src=\"~res:/UI/Images/GoldPin.png\" />";
+        UIRichContentAliasesComponent::Aliases aliases;
+        aliases.push_back({ "h1", "<p class=\"dejavu\" />" });
+        aliases.push_back({ "test", "<span class=\"test\" />" });
+        aliases.push_back({ "nl", "<br />" });
+        aliases.push_back({ "GoldPin", "<img src=\"~res:/UI/Images/GoldPin.png\" />" });
 
         c->SetText(testData);
         ca->SetAliases(aliases);

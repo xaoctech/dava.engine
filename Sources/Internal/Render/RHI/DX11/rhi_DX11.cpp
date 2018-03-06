@@ -742,6 +742,17 @@ void dx11_Initialize(const InitParam& param)
     if (param.maxTextureCount)
         TextureDX11::Init(param.maxTextureCount);
 
+    if (param.maxSamplerStateCount)
+        SamplerStateDX11::Init(param.maxSamplerStateCount);
+    if (param.maxPipelineStateCount)
+        PipelineStateDX11::Init(param.maxPipelineStateCount);
+    if (param.maxDepthStencilStateCount)
+        DepthStencilStateDX11::Init(param.maxDepthStencilStateCount);
+    if (param.maxRenderPassCount)
+        RenderPassDX11::Init(param.maxRenderPassCount);
+    if (param.maxCommandBuffer)
+        CommandBufferDX11::Init(param.maxCommandBuffer);
+
     stat_DIP = StatSet::AddStat("rhi'dip", "dip");
     stat_DP = StatSet::AddStat("rhi'dp", "dp");
     stat_DTL = StatSet::AddStat("rhi'dtl", "dtl");

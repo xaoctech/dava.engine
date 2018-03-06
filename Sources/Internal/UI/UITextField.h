@@ -112,8 +112,6 @@ public:
     void StartEdit();
     void StopEdit();
 
-    void SetSpriteAlign(int32 align) override;
-
     DAVA_DEPRECATED(const WideString& GetText());
     DAVA_DEPRECATED(virtual void SetText(const WideString& text));
 

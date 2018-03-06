@@ -174,6 +174,10 @@ static void dx9_RenderPass_End(Handle pass)
 
 namespace RenderPassDX9
 {
+void Init(uint32 maxCount)
+{
+    RenderPassPoolDX9::Reserve(maxCount);
+}
 void SetupDispatch(Dispatch* dispatch)
 {
     dispatch->impl_Renderpass_Allocate = &dx9_RenderPass_Allocate;
@@ -1707,6 +1711,11 @@ void ExecDX9(DX9Command* command, uint32 cmdCount, bool forceExecute)
 
 namespace CommandBufferDX9
 {
+void Init(uint32 maxCount)
+{
+    CommandBufferPoolDX9::Reserve(maxCount);
+}
+
 void SetupDispatch(Dispatch* dispatch)
 {
     dispatch->impl_CommandBuffer_Begin = &dx9_CommandBuffer_Begin;

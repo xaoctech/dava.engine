@@ -49,14 +49,17 @@ void SimpleMotion::Update(float32 timeElapsed)
     {
         currentAnimationTime += timeElapsed;
 
-        if (animationClip->GetDuration() <= currentAnimationTime)
+        if (currentAnimationTime >= animationClip->GetDuration())
         {
-            currentAnimationTime -= animationClip->GetDuration();
-
             if (repeatsCount != 0)
             {
                 --repeatsLeft;
                 isPlaying = (repeatsLeft > 0);
+            }
+
+            if (isPlaying)
+            {
+                currentAnimationTime -= animationClip->GetDuration();
             }
         }
     }

@@ -67,10 +67,8 @@ class UIControl : public AnimatedObject
     friend class UIInputSystem;
     friend class UIControlSystem;
     friend class UILayoutSystem; // Need for isIteratorCorrupted. See UILayoutSystem::UpdateControl.
-
+    friend class UIRenderSystem; // Need for isIteratorCorrupted. See UILayoutSystem::UpdateControl.
     DAVA_VIRTUAL_REFLECTION(UIControl, AnimatedObject);
-    // Need for isIteratorCorrupted. See UILayoutSystem::UpdateControl.
-    friend class UIRenderSystem;
 
 public:
     /**
@@ -118,62 +116,11 @@ public:
     UIControl(const Rect& rect = Rect());
 
     /**
-     \brief Returns Sprite used for draw in the current UIControlBackground object.
-        You can call this function directly for the controlBackgound.
-     \returns Sprite used for draw.
-     */
-    DAVA_DEPRECATED(Sprite* GetSprite() const);
-    /**
      \brief Returns Sprite frame used for draw in the current UIControlBackground object.
         You can call this function directly for the controlBackgound.
      \returns Sprite frame used for draw.
      */
     DAVA_DEPRECATED(int32 GetFrame() const);
-    /**
-     \brief Returns Sprite align used for draw in the current UIControlBackground object.
-        You can call this function directly for the controlBackgound.
-     \returns Sprite eAlign bit mask used for draw.
-     */
-    DAVA_DEPRECATED(virtual int32 GetSpriteAlign() const);
-    /**
-     \brief Sets Sprite for the control UIControlBackground object.
-     \param[in] spriteName Sprite path-name.
-     \param[in] spriteFrame Sprite frame you want to use for draw.
-     */
-    DAVA_DEPRECATED(virtual void SetSprite(const FilePath& spriteName, int32 spriteFrame));
-    /**
-     \brief Sets Sprite for the control UIControlBackground object.
-     \param[in] newSprite Pointer for a Sprite.
-     \param[in] spriteFrame Sprite frame you want to use for draw.
-     */
-    DAVA_DEPRECATED(virtual void SetSprite(Sprite* newSprite, int32 spriteFrame));
-    /**
-     \brief Sets Sprite frame you want to use for draw for the control UIControlBackground object.
-     \param[in] spriteFrame Sprite frame.
-     */
-    DAVA_DEPRECATED(virtual void SetSpriteFrame(int32 spriteFrame));
-    /**
-     \brief Sets Sprite frame you want to use for draw for the control UIControlBackground object.
-     \param[in] frame Sprite frame name.
-     */
-    DAVA_DEPRECATED(virtual void SetSpriteFrame(const FastName& frameName));
-    /**
-     \brief Sets Sprite align you want to use for draw for the control UIControlBackground object.
-     \param[in] drawAlign Sprite eAlign bit mask.
-     */
-    DAVA_DEPRECATED(virtual void SetSpriteAlign(int32 align));
-
-    /**
-     \brief Sets background what will be used for draw.
-        Background is cloned inside control.
-     \param[in] newBg control background you want to use for draw.
-     */
-    DAVA_DEPRECATED(void SetBackground(UIControlBackground* newBg));
-    /**
-     \brief Returns current background used for draw.
-     \returns background used for draw.
-     */
-    DAVA_DEPRECATED(UIControlBackground* GetBackground() const);
 
     /**
      \brief Returns untransformed control rect.
@@ -913,20 +860,17 @@ public:
     virtual void UpdateLayout();
     virtual void OnSizeChanged();
 
-    // Find the control by name and add it to the list, if found.
-    bool AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive = false);
-
     void DumpInputs(int32 depthLevel);
 
     static void DumpControls(bool onlyOrphans);
 
 private:
     FastName name;
-    Vector2 pivot; //!<control pivot. Top left control corner by default.
+    Vector2 pivot = Vector2(0.0f, 0.0f); //!<control pivot. Top left control corner by default.
 
     UIControlSystem* scene = nullptr;
 
-    UIControl* parent;
+    UIControl* parent = nullptr;
     List<UIControl*> children;
 
     DAVA_DEPRECATED(bool isUpdated = false);
@@ -938,8 +882,8 @@ public:
     Vector2 relativePosition; //!<position in the parent control.
     Vector2 size; //!<control size.
 
-    Vector2 scale; //!<control scale. Scale relative to pivot point.
-    float32 angle; //!<control rotation angle. Rotation around pivot point.
+    Vector2 scale = Vector2(1.0f, 1.0f); //!<control scale. Scale relative to pivot point.
+    float32 angle = 0.0f; //!<control rotation angle. Rotation around pivot point.
 
 protected:
     float32 wheelSensitivity = 30.f;
@@ -959,15 +903,15 @@ protected:
     bool layoutPositionDirty : 1;
     bool layoutOrderDirty : 1;
 
-    int32 inputProcessorsCount;
+    int32 inputProcessorsCount = 1;
 
-    int32 currentInputID;
-    int32 touchesInside;
-    int32 totalTouches;
+    int32 currentInputID = 0;
+    int32 touchesInside = 0;
+    int32 totalTouches = 0;
 
     mutable UIGeometricData tempGeometricData;
 
-    EventDispatcher* eventDispatcher;
+    RefPtr<EventDispatcher> eventDispatcher;
 
     void SetScene(UIControlSystem* scene);
     void SetParent(UIControl* newParent);
@@ -982,7 +926,7 @@ protected:
 private:
     int32 tag = 0;
     eViewState viewState = eViewState::INACTIVE;
-    int32 controlState;
+    int32 controlState = eControlState::STATE_NORMAL;
 
     bool inputEnabled : 1;
 
@@ -1090,7 +1034,7 @@ public:
 
 private:
     Vector<UIComponent*> components;
-    UIControlFamily* family;
+    UIControlFamily* family = nullptr;
     void RemoveComponent(const Vector<UIComponent*>::iterator& it);
     void UpdateFamily();
 
@@ -1144,7 +1088,7 @@ private:
     UIStyleSheetPropertySet localProperties;
     UIStyleSheetPropertySet styledProperties;
     RefPtr<UIControlPackageContext> packageContext;
-    UIControl* parentWithContext;
+    UIControl* parentWithContext = nullptr;
 
     void PropagateParentWithContext(UIControl* newParentWithContext);
     /* Styles */

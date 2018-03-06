@@ -36,9 +36,9 @@ public:
             anchor->SetHCenterAnchorEnabled(true);
         }
 
-        GetOrCreateComponent<DAVA::UIControlBackground>();
-        GetBackground()->SetColor(Color(0.65f, 0.65f, 0.65f, OPACITY));
-        GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+        DAVA::UIControlBackground* bg = GetOrCreateComponent<DAVA::UIControlBackground>();
+        bg->SetColor(Color(0.65f, 0.65f, 0.65f, OPACITY));
+        bg->SetDrawType(UIControlBackground::DRAW_FILL);
 
         float32 leftColumnWidth = 170.f;
 
@@ -136,9 +136,9 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
     font = FTFont::Create("~res:/SceneViewer/Fonts/korinna.ttf");
     fontSize = cellHeight / 2.5f;
 
-    GetOrCreateComponent<DAVA::UIControlBackground>();
-    GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
-    GetBackground()->SetColor(Color(0.6f, 0.6f, 0.6f, QualitySettingsDialogDetails::OPACITY));
+    DAVA::UIControlBackground* bg = GetOrCreateComponent<DAVA::UIControlBackground>();
+    bg->SetDrawType(UIControlBackground::DRAW_FILL);
+    bg->SetColor(Color(0.6f, 0.6f, 0.6f, QualitySettingsDialogDetails::OPACITY));
 
     {
         UIAnchorComponent* anchor = GetOrCreateComponent<UIAnchorComponent>();
@@ -175,9 +175,9 @@ QualitySettingsDialog::QualitySettingsDialog(Settings& settings)
         anchor->SetBottomAnchorEnabled(true);
         anchor->SetBottomAnchor(cellHeight);
     }
-    scrollableOptionsList->GetOrCreateComponent<DAVA::UIControlBackground>();
-    scrollableOptionsList->GetBackground()->SetColor(Color(0.75f, 0.75f, 0.75f, QualitySettingsDialogDetails::OPACITY));
-    scrollableOptionsList->GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+    DAVA::UIControlBackground* scrollableOptionsListBg = scrollableOptionsList->GetOrCreateComponent<DAVA::UIControlBackground>();
+    scrollableOptionsListBg->SetColor(Color(0.75f, 0.75f, 0.75f, QualitySettingsDialogDetails::OPACITY));
+    scrollableOptionsListBg->SetDrawType(UIControlBackground::DRAW_FILL);
     AddControl(scrollableOptionsList);
 
     float32 buttonWidth = cellHeight * 3.0f;

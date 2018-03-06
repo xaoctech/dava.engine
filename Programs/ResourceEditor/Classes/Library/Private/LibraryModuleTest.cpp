@@ -1,5 +1,6 @@
 #include "Classes/Library/LibraryModule.h"
 #include "Classes/Library/Private/DAEConverter.h"
+#include "Classes/Library/Private/SceneImporter.h"
 
 #include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 #include <REPlatform/DataNodes/ProjectResources.h>
@@ -197,10 +198,20 @@ DAVA_TARC_TESTCLASS(LibraryModuleTests)
 
     DAVA_TEST (ConvertDAETest)
     {
+        using namespace DAVA;
+        
         TEST_VERIFY(DAEConverter::Convert(LibraryTest::testDAEPathname) == true);
         ModifyScene();
 
-        TEST_VERIFY(DAEConverter::Convert(LibraryTest::testDAEPathname) == true);
+        FilePath scenePath = FilePath::CreateWithNewExtension(LibraryTest::testDAEPathname, ".sc2");
+        SceneImporter importer(scenePath);
+        importer.AccumulateParams();
+        bool converted = DAEConverter::Convert(LibraryTest::testDAEPathname);
+        TEST_VERIFY(converted == true);
+        if(converted == true)
+        {
+            importer.RestoreParams();
+        }
         TestScene();
     }
 

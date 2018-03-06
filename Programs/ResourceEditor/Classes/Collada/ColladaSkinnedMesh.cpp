@@ -197,9 +197,10 @@ void ColladaSkinnedMesh::LinkJoints(ColladaSceneNode* node, int32 parentJointInd
             Joint& joint = joints[j];
 
             joint.node = node;
+            joint.index = j;
+
             if (parentJointIndex != -1)
             {
-                joint.index = j;
                 joint.hierarhyDepth = joints[parentJointIndex].hierarhyDepth + 1;
             }
 

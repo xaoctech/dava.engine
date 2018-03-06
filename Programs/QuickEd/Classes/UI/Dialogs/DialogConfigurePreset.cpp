@@ -183,6 +183,7 @@ void DialogConfigurePreset::SetFont(const QString& fontType, const int fontSize,
     QString fontPath = DialogConfigurePresetDetails::GetFontRelativePath(fontType, false);
     FontPreset preset;
     preset.SetFont(RefPtr<Font>(FTFont::Create(fontPath.toStdString())));
+    preset.SetSize(static_cast<float32>(fontSize));
     if (!preset.Valid())
     {
         QMessageBox::warning(this, tr("Font creation error"), tr("Can not create font from %1").arg(fontPath));

@@ -27,7 +27,7 @@ void GPUTest::LoadResources()
         spriteBackground->GetOrCreateComponent<UIDebugRenderComponent>();
         ScopedPtr<Sprite> sprite(Sprite::Create("~res:/TestBed/TestData/GPUTest/Sprite/texture"));
         UIControlBackground* spriteBackgroundBg = spriteBackground->GetOrCreateComponent<UIControlBackground>();
-        spriteBackground->SetSprite(sprite, 0);
+        spriteBackgroundBg->SetSprite(sprite, 0);
         AddControl(spriteBackground);
     }
 

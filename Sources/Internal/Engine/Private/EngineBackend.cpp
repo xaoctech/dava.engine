@@ -926,7 +926,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     {
         context->inputSystem = new InputSystem(engine);
         context->actionSystem = new ActionSystem();
-        context->uiScreenManager = new UIScreenManager();
+        context->uiScreenManager = new UIScreenManager(context->uiControlSystem);
         context->localNotificationController = new LocalNotificationController();
         context->debugOverlay = new DebugOverlay();
         
@@ -1008,7 +1008,7 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->pluginManager);
 
     SafeRelease(context->localNotificationController);
-    SafeRelease(context->uiScreenManager);
+    SafeDelete(context->uiScreenManager);
     if (context->uiControlSystem)
     {
         delete context->uiControlSystem; // Private destructor

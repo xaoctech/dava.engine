@@ -52,7 +52,7 @@ void UITextSystem::ApplyData(UITextComponent* component)
         TextBlock* textBlock = link->GetTextBlock();
 
         UIControl* control = component->GetControl();
-        DVASSERT(control, "Invalid control poiner!");
+        DVASSERT(control, "Invalid control pointer!");
 
         component->SetModified(false);
 
@@ -107,7 +107,7 @@ void UITextSystem::ApplyData(UITextComponent* component)
             preset.SetSize(component->GetFontSize());
         }
 
-        if (preset.Valid() && (textBlock->GetFont() != preset.GetFontPtr() || !FLOAT_EQUAL(textBlock->GetFontSize(), preset.GetSize())))
+        if (textBlock->GetFont() != preset.GetFontPtr() || !FLOAT_EQUAL(textBlock->GetFontSize(), preset.GetSize()))
         {
             textBlock->SetFont(preset.GetFontPtr());
             textBlock->SetFontSize(preset.GetSize());

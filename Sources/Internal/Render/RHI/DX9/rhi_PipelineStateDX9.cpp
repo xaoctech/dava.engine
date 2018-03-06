@@ -936,6 +936,11 @@ void SetupDispatch(Dispatch* dispatch)
     dispatch->impl_PipelineState_CreateFragmentConstBuffer = &dx9_PipelineState_CreateFragmentConstBuffer;
 }
 
+void Init(uint32 maxCount)
+{
+    PipelineStateDX9Pool::Reserve(maxCount);
+}
+
 //------------------------------------------------------------------------------
 
 void SetToRHI(Handle ps, uint32 layoutUID)

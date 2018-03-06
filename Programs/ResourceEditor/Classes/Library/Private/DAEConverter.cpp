@@ -1,33 +1,16 @@
 #include "Classes/Library/Private/DAEConverter.h"
 #include "Classes/Collada/ColladaConvert.h"
-#include "Classes/Collada/ImportParams.h"
 
 #include <FileSystem/FileSystem.h>
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
 
-namespace DAEConverter
-{
-bool Convert(const DAVA::FilePath& daePath)
+bool DAEConverter::Convert(const DAVA::FilePath& daePath)
 {
     DAVA::FileSystem* fileSystem = DAVA::GetEngineContext()->fileSystem;
     if (fileSystem->Exists(daePath) && daePath.IsEqualToExtension(".dae"))
     {
-        std::unique_ptr<ImportParams> importParams = std::make_unique<ImportParams>();
-        DAVA::FilePath etalonScenePath = daePath;
-        etalonScenePath.ReplaceExtension(".sc2");
-        if (fileSystem->Exists(etalonScenePath))
-        {
-            DAVA::RefPtr<DAVA::Scene> scene;
-            scene.ConstructInplace();
-            DAVA::SceneFileV2::eError ret = scene->LoadScene(etalonScenePath);
-            if (ret == DAVA::SceneFileV2::ERROR_NO_ERROR)
-            {
-                AccumulateImportParams(scene, etalonScenePath, importParams.get());
-            }
-        }
-
-        eColladaErrorCodes code = ConvertDaeToSc2(daePath, std::move(importParams));
+        eColladaErrorCodes code = ConvertDaeToSc2(daePath);
         if (code == COLLADA_OK)
         {
             return true;
@@ -49,7 +32,7 @@ bool Convert(const DAVA::FilePath& daePath)
     return false;
 }
 
-bool ConvertAnimations(const DAVA::FilePath& daePath)
+bool DAEConverter::ConvertAnimations(const DAVA::FilePath& daePath)
 {
     DAVA::FileSystem* fileSystem = DAVA::GetEngineContext()->fileSystem;
     if (fileSystem->Exists(daePath) && daePath.IsEqualToExtension(".dae"))
@@ -70,5 +53,4 @@ bool ConvertAnimations(const DAVA::FilePath& daePath)
     }
 
     return false;
-}
 }

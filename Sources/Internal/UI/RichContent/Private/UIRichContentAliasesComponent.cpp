@@ -31,7 +31,7 @@ UIRichContentAliasesComponent* UIRichContentAliasesComponent::Clone() const
     return new UIRichContentAliasesComponent(*this);
 }
 
-void UIRichContentAliasesComponent::SetAliases(const AliasesMap& _aliases)
+void UIRichContentAliasesComponent::SetAliases(const Aliases& _aliases)
 {
     if (aliases != _aliases)
     {
@@ -56,7 +56,7 @@ void UIRichContentAliasesComponent::SetAliasesFromString(const String& _aliases)
 {
     aliasesAsString = _aliases;
 
-    AliasesMap newAliases;
+    Aliases newAliases;
     Vector<String> tokens;
     Split(_aliases, ";", tokens);
     for (const String& token : tokens)
@@ -66,7 +66,18 @@ void UIRichContentAliasesComponent::SetAliasesFromString(const String& _aliases)
         {
             String alias = token.substr(0, pos);
             String xmlSrc = token.substr(pos + 1);
-            newAliases[alias] = xmlSrc;
+
+            auto it = std::find_if(newAliases.begin(), newAliases.end(), [&alias](const std::pair<String, String>& a) {
+                return a.first == alias;
+            });
+            if (it != newAliases.end())
+            {
+                it->second = xmlSrc;
+            }
+            else
+            {
+                newAliases.push_back({ alias, xmlSrc });
+            }
         }
         else
         {

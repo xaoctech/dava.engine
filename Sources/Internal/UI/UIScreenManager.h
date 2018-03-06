@@ -1,50 +1,34 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Base/Singleton.h"
+#include "Base/RefPtr.h"
 
 namespace DAVA
 {
+class UIControlSystem;
 class UIScreen;
 
-class UIScreenManager : public Singleton<UIScreenManager>
+class UIScreenManager final
 {
 public:
-    UIScreenManager();
-    virtual ~UIScreenManager();
+    UIScreenManager(UIControlSystem* uiControlSystem);
+    ~UIScreenManager();
 
-    void RegisterScreen(int screenId, UIScreen* screen);
+    DAVA_DEPRECATED(bool RegisterScreen(int32 screenId, UIScreen* screen));
+    bool RegisterScreen(int32 screenId, const RefPtr<UIScreen>& screen);
+    bool UnregisterScreen(int32 screenId);
 
-    void SetFirst(int screenId);
-    void SetScreen(int screenId);
+    void SetFirst(int32 screenId);
+    void SetScreen(int32 screenId);
     void ResetScreen();
 
-    UIScreen* GetScreen(int screenId);
-    UIScreen* GetScreen();
-    int32 GetScreenId();
+    UIScreen* GetScreen(int32 screenId) const;
+    UIScreen* GetScreen() const;
+    int32 GetScreenId() const;
 
 private:
-    void ActivateGLController();
-
-    struct Screen
-    {
-        enum eType
-        {
-            TYPE_NULL = 0,
-            TYPE_SCREEN,
-        };
-        Screen(eType _type = TYPE_NULL, void* _value = 0)
-        {
-            type = _type;
-            value = _value;
-        }
-        eType type;
-        void* value;
-    };
-
-    Map<int, Screen> screens;
-    int glControllerId;
-    int activeControllerId;
-    int activeScreenId;
+    UIControlSystem* uiControlSystem = nullptr;
+    UnorderedMap<int32, RefPtr<UIScreen>> screens;
+    int32 activeScreenId = -1;
 };
 };
