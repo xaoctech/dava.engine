@@ -255,7 +255,7 @@ void LightShadowSystem::BuildCascades(Light* sourceLight, Camera* viewCamera, co
     const int32 cacadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
     const Size2i smSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
     const float shadowmapSizeWidth = static_cast<float>(smSize.dx);
-    const float32* cascadeIntervals = sourceLight->GetShadowCascadesIntervals().data;
+    Vector4 cascadeIntervals = sourceLight->GetShadowCascadesIntervals();
 
     shadowCascadesPass->shadowMapParameters = &shadowMapParameters;
     shadowCascadesPass->cascadesCount = cacadesCount;
@@ -296,7 +296,7 @@ void LightShadowSystem::BuildCascades(Light* sourceLight, Camera* viewCamera, co
     float intervalBegin = 0.0f;
     for (uint32 cascadeIndex = 0; cascadeIndex < shadowCascadesPass->cascadesCount; ++cascadeIndex)
     {
-        CreateFrustumPointsFromCascadeInterval(intervalBegin, cascadeIntervals[cascadeIndex], invViewProj, directionalLight.frustums[cascadeIndex]);
+        CreateFrustumPointsFromCascadeInterval(intervalBegin, cascadeIntervals.data[cascadeIndex], invViewProj, directionalLight.frustums[cascadeIndex]);
 
         Vector3 minExtent = Vector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         Vector3 maxExtent = -minExtent;
@@ -352,7 +352,7 @@ void LightShadowSystem::BuildCascades(Light* sourceLight, Camera* viewCamera, co
 
         if (cascadeIndex > 0)
         {
-            intervalBegin = cascadeIntervals[cascadeIndex - 1];
+            intervalBegin = cascadeIntervals.data[cascadeIndex - 1];
         }
     }
 }

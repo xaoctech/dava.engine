@@ -792,6 +792,11 @@ void QtMainWindow::ApplyMaterialLightViewMode(DAVA::int32 curViewMode)
             componentsMask |= DAVA::CommonInternalSettings::RESOLVE_TRANSMITTANCE;
         }
 
+        if (curViewMode & DAVA::CommonInternalSettings::VIEW_STATIC_SHADOWS)
+        {
+            componentsMask |= DAVA::CommonInternalSettings::RESOLVE_TRANSMITTANCE;
+        }
+
         if (curViewMode & DAVA::CommonInternalSettings::VIEW_NORMALS)
             componentsMask |= DAVA::CommonInternalSettings::RESOLVE_NORMAL_MAP;
 

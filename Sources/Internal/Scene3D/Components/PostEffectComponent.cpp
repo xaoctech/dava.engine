@@ -12,23 +12,18 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PostEffectComponent)
 {
     ReflectionRegistrator<PostEffectComponent>::Begin()
     .ConstructorByPointer()
+    .Field("aperture", &PostEffectComponent::GetAperture, &PostEffectComponent::SetAperture)[M::DisplayName("Aperture (f-stops)")]
+    .Field("shutterTimeInv", &PostEffectComponent::GetShutterTimeInv, &PostEffectComponent::SetShutterTimeInv)[M::DisplayName("Shutter Time (1/s)")]
+    .Field("ISO", &PostEffectComponent::GetISO, &PostEffectComponent::SetISO)[M::DisplayName("ISO")]
     .Field("useEv", &PostEffectComponent::GetUseEv, &PostEffectComponent::SetUseEv)[M::DisplayName("Use EV")]
     .Field("baseEV", &PostEffectComponent::GetBaseEV, &PostEffectComponent::SetBaseEV)[M::DisplayName("EV")]
     .Field("dynamicRange", &PostEffectComponent::GetDynamicRange, &PostEffectComponent::SetDynamicRange)[M::DisplayName("Dynamic Range (+/- EV)")]
     .Field("adaptationRange", &PostEffectComponent::GetAdaptationRange, &PostEffectComponent::SetAdaptationRange)[M::DisplayName("Adaptation Range (+/- EV)")]
-
-    .Field("aperture", &PostEffectComponent::GetAperture, &PostEffectComponent::SetAperture)[M::DisplayName("Aperture (f-stops)")]
-    .Field("shutterTimeInv", &PostEffectComponent::GetShutterTimeInv, &PostEffectComponent::SetShutterTimeInv)[M::DisplayName("Shutter Time (1/s)")]
-    .Field("ISO", &PostEffectComponent::GetISO, &PostEffectComponent::SetISO)[M::DisplayName("ISO")]
     .Field("adaptationSpeed", &PostEffectComponent::GetAdaptationSpeed, &PostEffectComponent::SetAdaptationSpeed)[M::DisplayName("Adaptation Speed")]
-
-    .Field("toneMapping", &PostEffectComponent::GetToneMapping, &PostEffectComponent::SetToneMapping)[M::DisplayName("Tone mapping")]
     .Field("colorGrading", &PostEffectComponent::GetColorGrading, &PostEffectComponent::SetColorGrading)[M::DisplayName("Color Grading")]
     .Field("colorGradingTable", &PostEffectComponent::GetColorGradingTable, &PostEffectComponent::SetColorGradingTable)[M::DisplayName("Color Grading Table")]
-
     .Field("heatmap", &PostEffectComponent::GetHeapMapEnabled, &PostEffectComponent::SetHeapMapEnabled)[M::DisplayName("Display Heat Map")]
     .Field("heatmapTable", &PostEffectComponent::GetHeatmapTable, &PostEffectComponent::SetHeatmapTable)[M::DisplayName("Heatmap Table")]
-
     .Field("lightMeterTable", &PostEffectComponent::GetLightMeterTable, &PostEffectComponent::SetLightMeterTable)[M::DisplayName("Exposure Meter Mask")]
     .Field("resetLuminanceHistory", &PostEffectComponent::GetResetHistory, &PostEffectComponent::SetResetHistory)[M::DisplayName("Reset Luminance History")]
     .End();

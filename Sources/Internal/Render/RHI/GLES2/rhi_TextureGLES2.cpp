@@ -506,25 +506,35 @@ static void* gles2_Texture_Map(Handle tex, uint32 level, TextureFace face)
     {
         if (self->isRenderTarget)
         {
-            uint32 framebuffer = TextureGLES2::GetFrameBuffer(&tex, &face, &level, 1, InvalidHandle);
-            Size2i readSize = TextureExtents(Size2i(self->width, self->height), level);
-
-            GLint internalFormat = 0;
-            GLint format = 0;
-            GLenum type = 0;
-            bool compressed = false;
-            GetGLTextureFormat(self->format, &internalFormat, &format, &type, &compressed);
-
-            GLCommand cmd[] =
+            struct LocalContext
             {
-              { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, uint64(framebuffer) } },
-              { GLCommand::READ_BUFFER, { uint64(GL_COLOR_ATTACHMENT0 + self->attachmentID) } },
-              { GLCommand::READ_PIXELS, { 0, 0, uint64(readSize.dx), uint64(readSize.dy), static_cast<uint64>(format), type, uint64(self->mappedData) } },
-              { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer } },
-              { GLCommand::READ_BUFFER, { GL_COLOR_ATTACHMENT0 } }
+                TextureGLES2_t* self;
+                Handle handle;
+                uint32 level;
+                TextureFace face;
+            } localContext = { self, tex, level, face };
+
+            GLCommand::Function func = [](void* context) {
+                LocalContext* ctx = reinterpret_cast<LocalContext*>(context);
+                TextureGLES2_t* self = ctx->self;
+                uint32 framebuffer = TextureGLES2::GetFrameBuffer(&ctx->handle, &ctx->face, &ctx->level, 1, InvalidHandle);
+                Size2i readSize = TextureExtents(Size2i(self->width, self->height), ctx->level);
+
+                GLint internalFormat = 0;
+                GLint format = 0;
+                GLenum type = 0;
+                bool compressed = false;
+                GetGLTextureFormat(self->format, &internalFormat, &format, &type, &compressed);
+
+                GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
+                GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0 + self->attachmentID));
+                GL_CALL(glReadPixels(0, 0, readSize.dx, readSize.dy, format, type, self->mappedData));
+                GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0));
+                GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer));
             };
 
-            ExecGL(cmd, countof(cmd));
+            GLCommand cmd[] = { GLCommand::INVOKE_FUNCTION, { reinterpret_cast<uint64>(&func), reinterpret_cast<uint64>(&localContext) } };
+            ExecGL(cmd, 1);
 
             data = self->mappedData;
             self->mappedLevel = 0;

@@ -14,7 +14,6 @@ namespace DAVA
 {
 namespace
 {
-const static int32 SHADOW_CASCADE_SIZE = 2048;
 const FastName RUNTIME_TEXTURE_NAMES[RuntimeTextures::RUNTIME_TEXTURES_COUNT] =
 {
   FastName("unknownTexture"),
@@ -45,6 +44,7 @@ const static PixelFormat SHADOWMAP_PIXEL_FORMAT = PixelFormat::FORMAT_R16F;
 const static PixelFormat GBUFFER_PIXEL_FORMAT = PixelFormat::FORMAT_RGBA8888;
 const static PixelFormat LDR_PIXEL_FORMAT = PixelFormat::FORMAT_RGBA8888;
 const static PixelFormat VELOCITY_PIXEL_FORMAT = PixelFormat::FORMAT_RG16F;
+const static int32 SHADOW_CASCADE_SIZE = 1024;
 
 static uint64 RuntimeTexturesInvalidateCallback = 0;
 }
@@ -67,12 +67,11 @@ RuntimeTextures::~RuntimeTextures()
 
 void RuntimeTextures::Reset(Size2i screenDim)
 {
-    //GFX_COMPLETE not affected by screen dim for now, later ensure gbuffer is enough
+    // GFX_COMPLETE not affected by screen dim for now, later ensure gbuffer is enough
     const static int32 REFLECTION_TEX_SIZE = 512;
     const static int32 REFRACTION_TEX_SIZE = 512;
     const static int32 PICKING_TEX_SIZE = 2048;
     const static int32 TEXTURE_GLOBAL_REFLECTION = 512;
-    const static int32 SHADOW_CASCADE_SIZE = 2048;
     const static int32 VELOCITY_BUFFER_SIZE = 2048;
 
     Size2i GBUFFER_TEX_SIZE;
@@ -292,7 +291,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         descriptor.needRestore = false;
         descriptor.memoryless = false;
         descriptor.type = rhi::TEXTURE_TYPE_2D;
-        descriptor.format = rhi::TEXTURE_FORMAT_D32F;
+        descriptor.format = rhi::TEXTURE_FORMAT_D24S8;
         runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
         runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_INVALID;
         break;

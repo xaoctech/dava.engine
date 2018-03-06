@@ -11,7 +11,7 @@ RenderTechnique:
             cullMode: "FACE_BACK"
             depthFunc: "CMP_LEQUAL"
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_STENCIL_TEST | STATE_BLEND | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+            state: "STATE_STENCIL_TEST | STATE_BLEND"
             stencil:
                 failBack: "STENCILOP_KEEP"
                 failFront: "STENCILOP_KEEP"

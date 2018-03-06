@@ -36,11 +36,6 @@ fragment_out
 uniform sampler2D toolTexture;
 #endif
 
-#if LANDSCAPE_CURSOR
-uniform sampler2D cursorTexture;
-[material][instance] property float4 cursorCoordSize = float4(0, 0, 1, 1);
-#endif
-
 fragment_out fp_main(fragment_in input)
 {
     float4 albedoSample0 = tex2D(albedo, input.texCoord0.xy);

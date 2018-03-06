@@ -5,7 +5,6 @@
 
 namespace QualityPreferences
 {
-DAVA::String SETTNING_RENDER_FLOW = "Render/Flow";
 DAVA::String SETTING_QUALITY_MATERIALS = "Quality/Material/";
 DAVA::String SETTING_QUALITY_PARTICLE = "Quality/Particle";
 DAVA::String SETTING_QUALITY_OPTIONS = "Quality/Options/";
@@ -19,12 +18,6 @@ void LoadFromSettings(Settings& appSettings)
     const KeyedArchive* settings = appSettings.GetQualitySettings();
     if (settings != nullptr)
     {
-        uint32 flow = settings->GetUInt32(SETTNING_RENDER_FLOW, static_cast<uint32>(Renderer::GetCurrentRenderFlow()));
-        if (Renderer::IsRenderFlowSupported(static_cast<RenderFlow>(flow)))
-        {
-            Renderer::SetRenderFlow(static_cast<RenderFlow>(flow));
-        }
-
         for (uint32 i = 0; i < QualityGroup::Count; ++i)
         {
             QualityGroup group = static_cast<QualityGroup>(i);
@@ -32,6 +25,10 @@ void LoadFromSettings(Settings& appSettings)
             if ((value != nullptr) && (value->GetType() == VariantType::TYPE_FASTNAME) && qs->HasQualityInGroup(group, value->AsFastName()))
             {
                 qs->SetCurrentQualityForGroup(group, value->AsFastName());
+                if (group == QualityGroup::RenderFlowType)
+                {
+                    Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
+                }
             }
         }
 
@@ -106,8 +103,6 @@ void SaveToSettings(Settings& appSettings)
     QualitySettingsSystem* qs = QualitySettingsSystem::Instance();
 
     ScopedPtr<KeyedArchive> archive(new KeyedArchive());
-
-    archive->SetUInt32(SETTNING_RENDER_FLOW, static_cast<uint32>(Renderer::GetCurrentRenderFlow()));
 
     for (uint32 i = 0; i < QualityGroup::Count; ++i)
     {

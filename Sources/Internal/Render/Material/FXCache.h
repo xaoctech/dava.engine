@@ -13,6 +13,7 @@ struct RenderPassDescriptor
     FastName shaderFileName;
     UnorderedMap<FastName, int> templateDefines = UnorderedMap<FastName, int>(8);
     ShaderDescriptor* shader = nullptr;
+    bool supportsRenderFlow[uint32(RenderFlow::Count)]{};
     rhi::DepthStencilState::Descriptor depthStateDescriptor;
     rhi::HDepthStencilState depthStencilState;
     eRenderLayerID renderLayer = RENDER_LAYER_INVALID_ID;

@@ -155,11 +155,15 @@ enum eRenderLayerID
 enum class RenderFlow : uint32
 {
     Undefined,
+
     LDRForward,
     HDRForward,
     HDRDeferred,
     TileBasedHDRForward,
     TileBasedHDRDeferred,
+
+    Count,
+    FirstValid = LDRForward
 };
 
 static const int32 INDEX_FORMAT_SIZE[2] = { 2, 4 };

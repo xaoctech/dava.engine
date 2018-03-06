@@ -1,8 +1,4 @@
-RenderTechnique:    
-    RenderPass:
-        Name: "RescalePass"
-        Shader: "~res:/Materials2/ShadersShared/rescale"
-        UniqueDefines: []
-        RenderState:            
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
+RenderTechnique:
+    Passes:
+        RescalePass:
+            Shader: "~res:/Materials2/ShadersShared/rescale"

@@ -1,9 +1,4 @@
 RenderTechnique:
-    RenderPassDeferredFetch:
-        Name: "VelocityPass"
-        Shader: "~res:/Materials2/Shaders/velocity"
-        UniqueDefines: []
-        RenderState:
-            depthFunc: "CMP_ALWAYS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN"
+    Passes:
+        VelocityPass:
+            Shader: "~res:/Materials2/Shaders/velocity"

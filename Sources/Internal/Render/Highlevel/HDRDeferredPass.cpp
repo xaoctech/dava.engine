@@ -440,10 +440,10 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     gBufferResolvePass->SetViewport(viewport);
     gBufferResolvePass->SetRenderTargetProperties(renderTargetProperties.width, renderTargetProperties.height, renderTargetProperties.format);
     gBufferResolvePass->GetPassConfig().colorBuffer[0] = passConfig.colorBuffer[0];
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[0] = 1;
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[1] = 0;
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[2] = 0;
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[3] = 1;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[0] = 0.25f;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[1] = 1.0f;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[2] = 1.0f;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[3] = 1.0f;
     gBufferResolvePass->GetPassConfig().depthStencilBuffer = passConfig.depthStencilBuffer;
 
     gBufferResolvePass->Draw(renderSystem);

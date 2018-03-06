@@ -84,7 +84,6 @@ private:
     };
     DAVA::Vector<CellData> cells;
 
-    DAVA::ScopedPtr<TriggerBox> renderFlowBox;
     DAVA::ScopedPtr<TriggerBox> qualityBoxes[DAVA::QualityGroup::Count];
     DAVA::Vector<DAVA::ScopedPtr<BinaryTriggerBox>> qualityOptionBoxes;
 

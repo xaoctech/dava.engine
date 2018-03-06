@@ -365,7 +365,6 @@ PostEffectRenderer::PostEffectRenderer()
         {
             materials[i]->AddProperty(FastName("lightMeterMaskWeight"), &float1, rhi::ShaderProp::Type::TYPE_FLOAT1);
             materials[i]->AddFlag(FastName("COMBINE_INPLACE"), 0);
-            materials[i]->AddFlag(FastName("ADVANCED_TONE_MAPPING"), 0);
             materials[i]->AddFlag(FastName("ENABLE_COLOR_GRADING"), 0);
             materials[i]->AddFlag(FastName("DISPLAY_HEAT_MAP"), 0);
             materials[i]->AddFlag(FastName("DISPLAY_LIGHT_METER_MASK"), 0);
@@ -722,20 +721,22 @@ void PostEffectRenderer::GetHistogram()
 
 void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
 {
-    bool txaaEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_TXAA);
+    bool txaaEnabled =
+    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
+    (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
+
     BloomRenderer* bloomRenderer = static_cast<BloomRenderer*>(renderers[RendererType::BLOOM]);
     rhi::HTexture bloomTexture = (bloomRenderer != nullptr) ? bloomRenderer->blurChain[0].blur.handle : rhi::HTexture();
-    rhi::HTexture lumTexture = debugRenderer.disableAdaptation ? allRenderer.averageColorArray.back() : (mode == CombineMode::Separate ? allRenderer.luminanceHistory : allRenderer.luminanceTexture);
+    rhi::HTexture lumTexture = (mode == CombineMode::Separate) ? allRenderer.luminanceHistory : allRenderer.luminanceTexture;
 
     TXAARenderer* txaa = static_cast<TXAARenderer*>(renderers[RendererType::TXAA]);
 
     NMaterial* material = materials[MaterialType::COMBINE];
+    material->SetPropertyValue(FastName("lightMeterMaskWeight"), &settings.lightMeterTableWeight);
     material->SetFlag(FastName("COMBINE_INPLACE"), static_cast<uint32>(mode));
-    material->SetFlag(FastName("ADVANCED_TONE_MAPPING"), settings.enableToneMapping ? 1 : 0);
     material->SetFlag(FastName("ENABLE_COLOR_GRADING"), settings.enableColorGrading ? 1 : 0);
     material->SetFlag(FastName("DISPLAY_HEAT_MAP"), settings.enableHeatMap ? 1 : 0);
     material->SetFlag(FastName("DISPLAY_LIGHT_METER_MASK"), debugRenderer.drawLightMeterMask ? 1 : 0);
-    material->SetPropertyValue(FastName("lightMeterMaskWeight"), &settings.lightMeterTableWeight);
     material->SetFlag(FastName("ENABLE_TXAA"), txaaEnabled);
 
     QuadRenderer::Options options;
@@ -796,24 +797,26 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     }
     else
     {
-        uint32 textureIndex = 0;
         RhiUtils::FragmentTextureSet fragmentTextures;
-        fragmentTextures[textureIndex++] = hdrRenderer.hdrTarget;
-        if (settings.enableColorGrading)
-            fragmentTextures[textureIndex++] = settings.colorGradingTable->handle;
-        if (settings.enableHeatMap)
-            fragmentTextures[textureIndex++] = settings.heatmapTable->handle;
-        if (txaaEnabled && txaa != nullptr)
         {
-            fragmentTextures[textureIndex++] = txaa->GetSrc()->handle;
-            //fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
-            fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
+            uint32 textureIndex = 0;
+            fragmentTextures[textureIndex++] = hdrRenderer.hdrTarget;
+
+            if (txaaEnabled && (txaa != nullptr))
+            {
+                fragmentTextures[textureIndex++] = txaa->GetSrc()->handle;
+                fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
+            }
+
+            if (settings.enableColorGrading)
+                fragmentTextures[textureIndex++] = settings.colorGradingTable->handle;
+
+            if (settings.enableHeatMap)
+                fragmentTextures[textureIndex++] = settings.heatmapTable->handle;
+
+            fragmentTextures[textureIndex++] = settings.lightMeterTable->handle;
         }
-
-        fragmentTextures[textureIndex++] = settings.lightMeterTable->handle;
-
         options.renderPassName = "Combine";
-
         options.loadAction = rhi::LoadAction::LOADACTION_CLEAR;
         options.material = material;
         options.textureSet = RhiUtils::TextureSet({ lumTexture }, fragmentTextures);

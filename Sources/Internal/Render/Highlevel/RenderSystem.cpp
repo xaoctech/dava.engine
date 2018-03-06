@@ -526,11 +526,15 @@ void RenderSystem::ConfigureActivePass()
 
 void RenderSystem::Render()
 {
+    bool taaEnabled =
+    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
+    (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
+
     ConfigureActivePass();
     lightShadowSystem.Render(this);
 
     reflectionRenderer->Draw(mainCamera);
-    activeRenderPass->SetEnableFrameJittering(QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_TXAA));
+    activeRenderPass->SetEnableFrameJittering(taaEnabled);
     activeRenderPass->Draw(this);
 
     if (renderConfig.shouldRenderPickingPass == true)

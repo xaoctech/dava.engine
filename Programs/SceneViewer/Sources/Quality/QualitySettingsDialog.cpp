@@ -256,51 +256,6 @@ void QualitySettingsDialog::BuildQualityControls()
         cells.push_back(captionCell);
     };
 
-    /*/ textures quality
-    {
-        AddCaptionCell(L"Textures");
-        {
-            QualitySettingsCell* cell = new QualitySettingsCell(font);
-            cells.push_back(cell);
-
-            cell->SetLeftColumnText(L"Textures:");
-
-            textureQualityBox = new TriggerBox(*this, font);
-            cell->SetRightColumnControl(textureQualityBox);
-
-            DAVA::FastName curTxQuality = DAVA::QualitySettingsSystem::Instance()->GetCurTextureQuality();
-
-            for (size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetTextureQualityCount(); ++i)
-            {
-                DAVA::FastName txQualityName = DAVA::QualitySettingsSystem::Instance()->GetTextureQualityName(i);
-                bool isCurrentQuality = (txQualityName == curTxQuality);
-                textureQualityBox->AddOption(static_cast<TriggerBox::OptionID>(i), ToWideString(txQualityName), isCurrentQuality);
-            }
-        }
-    }
-    // */
-
-    {
-        AddCaptionCell(L"Render Flow");
-
-        QualitySettingsCell* cell = new QualitySettingsCell(font);
-        cells.emplace_back(cell);
-
-        cell->SetLeftColumnText(L"Render Flow:");
-
-        renderFlowBox = new TriggerBox(*this, font);
-        cell->SetRightColumnControl(renderFlowBox);
-
-        renderFlowBox->AddOption(DAVA::uint32(DAVA::RenderFlow::LDRForward), L"LDR Forward", Renderer::GetCurrentRenderFlow() == DAVA::RenderFlow::LDRForward);
-        renderFlowBox->AddOption(DAVA::uint32(DAVA::RenderFlow::HDRForward), L"HDR Forward", Renderer::GetCurrentRenderFlow() == DAVA::RenderFlow::HDRForward);
-        renderFlowBox->AddOption(DAVA::uint32(DAVA::RenderFlow::HDRDeferred), L"HDR Deferred", Renderer::GetCurrentRenderFlow() == DAVA::RenderFlow::HDRDeferred);
-        if (rhi::DeviceCaps().isFramebufferFetchSupported)
-        {
-            renderFlowBox->AddOption(DAVA::uint32(DAVA::RenderFlow::TileBasedHDRForward), L"TB HDR Forward", Renderer::GetCurrentRenderFlow() == DAVA::RenderFlow::TileBasedHDRForward);
-            renderFlowBox->AddOption(DAVA::uint32(DAVA::RenderFlow::TileBasedHDRDeferred), L"TB HDR Deferred", Renderer::GetCurrentRenderFlow() == DAVA::RenderFlow::TileBasedHDRDeferred);
-        }
-    }
-
     DAVA::QualitySettingsSystem* qs = DAVA::QualitySettingsSystem::Instance();
 
     for (uint32 groupIndex = 0; groupIndex < QualityGroup::Count; ++groupIndex)
@@ -323,61 +278,6 @@ void QualitySettingsDialog::BuildQualityControls()
             ++qualityIndex;
         }
     }
-
-    /*/ materials quality
-    {
-        AddCaptionCell(L"Materials");
-
-        for (size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupCount(); ++i)
-        {
-            DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupName(i);
-            DAVA::FastName curGroupQuality = DAVA::QualitySettingsSystem::Instance()->GetCurMaterialQuality(groupName);
-
-            QualitySettingsCell* cell = new QualitySettingsCell(font);
-            cells.emplace_back(cell);
-
-            cell->SetLeftColumnText(ToWideString(groupName) + L":");
-
-            DAVA::ScopedPtr<TriggerBox> materialQualityBox(new TriggerBox(*this, font));
-            materialQualityBoxes.push_back(materialQualityBox);
-            cell->SetRightColumnControl(materialQualityBox);
-
-            DAVA::FastName curQuality = DAVA::QualitySettingsSystem::Instance()->GetCurMaterialQuality(groupName);
-
-            for (size_t j = 0; j < DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityCount(groupName); ++j)
-            {
-                DAVA::FastName qualityName = DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityName(groupName, j);
-                bool isCurrentQuality = (qualityName == curQuality);
-                materialQualityBox->AddOption(static_cast<TriggerBox::OptionID>(j), ToWideString(qualityName), isCurrentQuality);
-            }
-        }
-    }
-    // */
-
-    /*/ particles quality
-    const DAVA::ParticlesQualitySettings& particlesSettings = DAVA::QualitySettingsSystem::Instance()->GetParticlesQualitySettings();
-    if (particlesSettings.GetQualitiesCount() > 0)
-    {
-        AddCaptionCell(L"Particles");
-
-        QualitySettingsCell* cell = new QualitySettingsCell(font);
-        cells.emplace_back(cell);
-
-        cell->SetLeftColumnText(L"Quality:");
-
-        particleQualityBox = new TriggerBox(*this, font);
-        cell->SetRightColumnControl(particleQualityBox);
-
-        DAVA::FastName curQuality = particlesSettings.GetCurrentQuality();
-
-        for (size_t i = 0; i < particlesSettings.GetQualitiesCount(); ++i)
-        {
-            DAVA::FastName qualityName = particlesSettings.GetQualityName(i);
-            bool isCurrentQuality = (qualityName == curQuality);
-            particleQualityBox->AddOption(static_cast<TriggerBox::OptionID>(i), ToWideString(qualityName), isCurrentQuality);
-        }
-    }
-    // */
 
     // quality options
     {
@@ -419,28 +319,8 @@ void QualitySettingsDialog::ApplyQualitySettings()
 {
     using namespace DAVA;
 
-    /*/ textures quality
-    if (textureQualityBox)
-    {
-        size_t selectedQualityIndex = static_cast<size_t>(textureQualityBox->GetSelectedOptionID());
-        FastName curQuality = QualitySettingsSystem::Instance()->GetCurTextureQuality();
-        FastName selectedQuality = QualitySettingsSystem::Instance()->GetTextureQualityName(selectedQualityIndex);
-        if (curQuality != selectedQuality)
-        {
-            QualitySettingsSystem::Instance()->SetCurTextureQuality(selectedQuality);
-            ApplyTextureQuality();
-        }
-    }
-    // */
-
-    bool materialSettingsChanged = false;
-    bool optionSettingsChanged = false;
-
-    if (renderFlowBox)
-    {
-        size_t selectedIndex = static_cast<size_t>(renderFlowBox->GetSelectedOptionID());
-        Renderer::SetRenderFlow(static_cast<RenderFlow>(selectedIndex));
-    }
+    bool qualityChanged = false;
+    bool qualityGroupChanged[QualityGroup::Count] = {};
 
     DAVA::QualitySettingsSystem* qs = DAVA::QualitySettingsSystem::Instance();
     for (uint32 i = 0; i < QualityGroup::Count; ++i)
@@ -451,53 +331,13 @@ void QualitySettingsDialog::ApplyQualitySettings()
         if (selectedQuality != qs->GetCurrentQualityForGroup(group))
         {
             qs->SetCurrentQualityForGroup(group, selectedQuality);
-            materialSettingsChanged = true;
+            qualityGroupChanged[i] = true;
+            qualityChanged = true;
         }
     }
-
-    /*/ materials quality
-    for (size_t i = 0; i < qs->GetMaterialQualityGroupCount(); ++i)
-    {
-        DVASSERT(i < materialQualityBoxes.size());
-        TriggerBox* materialQualityBox = materialQualityBoxes[i];
-
-        FastName groupName = qs->GetMaterialQualityGroupName(i);
-
-        size_t selectedQualityIndex = static_cast<size_t>(materialQualityBox->GetSelectedOptionID());
-        FastName curQuality = qs->GetCurMaterialQuality(groupName);
-        FastName selectedQuality = qs->GetMaterialQualityName(groupName, selectedQualityIndex);
-        if (curQuality != selectedQuality)
-        {
-            qs->SetCurMaterialQuality(groupName, selectedQuality);
-            materialSettingsChanged = true;
-        }
-    }
-    // */
-
-    /*/ particles quality
-    if (particleQualityBox)
-    {
-        bool settingsChanged = false;
-
-        ParticlesQualitySettings& particlesSettings = qs->GetParticlesQualitySettings();
-
-        size_t selectedQualityIndex = static_cast<size_t>(particleQualityBox->GetSelectedOptionID());
-        FastName curQuality = particlesSettings.GetCurrentQuality();
-        FastName selectedQuality = particlesSettings.GetQualityName(selectedQualityIndex);
-        if (curQuality != selectedQuality)
-        {
-            particlesSettings.SetCurrentQuality(selectedQuality);
-            settingsChanged = true;
-        }
-
-        if (settingsChanged)
-        {
-            ApplyParticlesQuality();
-        }
-    }
-    // */
 
     // quality options
+    bool optionsChanged = false;
     int32 optionsCount = qs->GetOptionsCount();
     for (int32 i = 0; i < optionsCount; ++i)
     {
@@ -510,17 +350,18 @@ void QualitySettingsDialog::ApplyQualitySettings()
         if (qs->IsOptionEnabled(optionName) != checked)
         {
             qs->EnableOption(optionName, checked);
-            optionSettingsChanged = true;
+            optionsChanged = true;
         }
     }
 
-    if (materialSettingsChanged)
+    if (qualityGroupChanged[QualityGroup::RenderFlowType])
     {
-        ApplyMaterialQuality();
+        Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
     }
 
-    if (materialSettingsChanged || optionSettingsChanged)
+    if (qualityChanged || optionsChanged)
     {
+        ApplyMaterialQuality();
         qs->UpdateEntityVisibility(scene);
         scene->foliageSystem->SyncFoliageWithLandscape();
     }

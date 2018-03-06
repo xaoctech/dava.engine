@@ -19,7 +19,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PostEffectDebugComponent)
     .Field("drawAdaptation", &PostEffectDebugComponent::GetDrawAdaptataion, &PostEffectDebugComponent::SetDrawAdaptation)[M::DisplayName("Draw Adaptation")]
     .Field("drawHistogram", &PostEffectDebugComponent::GetDrawHistogram, &PostEffectDebugComponent::SetDrawHistogram)[M::DisplayName("Draw Histogram")]
     .Field("drawBloom", &PostEffectDebugComponent::GetDrawBloom, &PostEffectDebugComponent::SetDrawBloom)[M::DisplayName("Draw Bloom")]
-    .Field("disableAdaptation", &PostEffectDebugComponent::GetDisableAdaptation, &PostEffectDebugComponent::SetDisableAdaptation)[M::DisplayName("Disable Adaptation")]
     .Field("debugRectOffset", &PostEffectDebugComponent::GetDebugRectOffset, &PostEffectDebugComponent::SetDebugRectOffset)[M::DisplayName("Debug Rect Offset")]
     .Field("debugRectSize", &PostEffectDebugComponent::GetDebugRectSize, &PostEffectDebugComponent::SetDebugRectSize)[M::DisplayName("Debug Rect Size")]
     .End();
@@ -32,7 +31,6 @@ Component* PostEffectDebugComponent::Clone(Entity* toEntity)
 
     component->drawHDRTarget = drawHDRTarget;
     component->drawLuminance = drawLuminance;
-    component->disableAdaptation = disableAdaptation;
     component->drawAdaptation = drawAdaptation;
     component->debugRectOffset = debugRectOffset;
     component->debugRectSize = debugRectSize;
@@ -51,7 +49,6 @@ void PostEffectDebugComponent::Serialize(KeyedArchive* archive, SerializationCon
     {
         archive->SetBool("pe.debug.drawHDRTarget", drawHDRTarget);
         archive->SetBool("pe.debug.drawLuminance", drawLuminance);
-        archive->SetBool("pe.debug.disableAdaptation", disableAdaptation);
         archive->SetBool("pe.debug.drawAdaptation", drawAdaptation);
         archive->SetVector2("pe.debug.debugRectOffset", debugRectOffset);
         archive->SetInt32("pe.debug.debugRectSize", debugRectSize);
@@ -68,7 +65,6 @@ void PostEffectDebugComponent::Deserialize(KeyedArchive* archive, SerializationC
     {
         drawHDRTarget = archive->GetBool("pe.debug.drawHDRTarget", false);
         drawLuminance = archive->GetBool("pe.debug.drawLuminance", false);
-        disableAdaptation = archive->GetBool("pe.debug.disableAdaptation", false);
         drawAdaptation = archive->GetBool("pe.debug.drawAdaptation", false);
         debugRectOffset = archive->GetVector2("pe.debug.debugRectOffset");
         debugRectSize = archive->GetInt32("pe.debug.debugRectSize", 128);
@@ -122,17 +118,6 @@ void PostEffectDebugComponent::SetDebugRectSize(const int32& size)
 int32 PostEffectDebugComponent::GetDebugRectSize()
 {
     return debugRectSize;
-}
-
-void PostEffectDebugComponent::SetDisableAdaptation(bool disable)
-{
-    disableAdaptation = disable;
-    GlobalEventSystem::Instance()->Event(this, EventSystem::POSTEFFECT_DEBUG_CHANGED);
-}
-
-bool PostEffectDebugComponent::GetDisableAdaptation() const
-{
-    return disableAdaptation;
 }
 
 void PostEffectDebugComponent::SetDrawAdaptation(bool draw)

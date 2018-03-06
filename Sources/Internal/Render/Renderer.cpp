@@ -24,6 +24,7 @@ bool initialized = false;
 rhi::Api api;
 int32 desiredFPS = 60;
 RenderFlow currentRenderFlow = RenderFlow::HDRDeferred;
+Set<RenderFlow> allowedRenderFlows;
 
 RenderOptions renderOptions;
 DynamicBindings dynamicBindings;
@@ -191,16 +192,35 @@ bool IsVSyncEnabled()
 
 bool IsRenderFlowSupported(RenderFlow flow)
 {
-    bool supported = (flow == RenderFlow::HDRDeferred) || (flow == RenderFlow::HDRForward) || (flow == RenderFlow::LDRForward);
-    if (rhi::DeviceCaps().isFramebufferFetchSupported)
+    switch (flow)
     {
-        supported = supported || (flow == RenderFlow::TileBasedHDRDeferred) || (flow == RenderFlow::TileBasedHDRForward);
+    case RenderFlow::Undefined:
+        return false;
+
+    case RenderFlow::LDRForward:
+    case RenderFlow::HDRForward:
+        return true;
+
+    case RenderFlow::HDRDeferred:
+        return (rhi::DeviceCaps().maxSimultaneousRT >= 4);
+
+    case RenderFlow::TileBasedHDRForward:
+        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxSimultaneousRT >= 2);
+
+    case RenderFlow::TileBasedHDRDeferred:
+        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxSimultaneousRT >= 4);
+
+    default:
+        DVASSERT(0, "Invalid RenderFlow");
+        return false;
     }
-    return supported;
 }
 
 void SetRenderFlow(RenderFlow flow)
 {
+    // allow at least current render flow
+    RendererDetails::allowedRenderFlows.insert(flow);
+
     if (RendererDetails::currentRenderFlow == flow)
         return;
 
@@ -215,6 +235,16 @@ void SetRenderFlow(RenderFlow flow)
 RenderFlow GetCurrentRenderFlow()
 {
     return RendererDetails::currentRenderFlow;
+}
+
+bool IsRenderFlowAllowed(RenderFlow flow)
+{
+    return IsRenderFlowSupported(flow) && (RendererDetails::allowedRenderFlows.count(flow) > 0);
+}
+
+void SetAllowedRenderFlows(const Set<RenderFlow>& flows)
+{
+    RendererDetails::allowedRenderFlows = flows;
 }
 
 RenderOptions* GetOptions()

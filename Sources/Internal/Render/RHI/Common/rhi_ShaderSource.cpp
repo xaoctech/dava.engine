@@ -216,6 +216,46 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
             const char* entryName = (progType == PROG_VERTEX) ? "vp_main" : "fp_main";
             sl::PruneTree(ast, entryName);
 
+            if (progType == PROG_FRAGMENT)
+            {
+                uint32 maxRenderTarget = 0;
+                sl::HLSLStruct* fragment_out = ast->FindGlobalStruct("fragment_out");
+                if (fragment_out != nullptr)
+                {
+                    for (sl::HLSLStructField* field = fragment_out->field; field != nullptr; field = field->nextField)
+                    {
+                        if ((field->semantic != nullptr) && (strlen(field->semantic) >= 9))
+                        {
+                            uint32 semanticStringLength = uint32(strlen(field->semantic));
+                            char semanticIndexChar = (semanticStringLength == 9) ? '0' : field->semantic[semanticStringLength - 1];
+                            if ((semanticIndexChar >= '0') && (semanticIndexChar <= '0' + MAX_RENDER_TARGET_COUNT))
+                            {
+                                uint32 index = semanticIndexChar - 48;
+                                maxRenderTarget = std::max(maxRenderTarget, index);
+                            }
+                            else
+                            {
+                                PrintSource(src.data(), static_cast<uint32>(src.size()));
+                                DAVA::Logger::Error("Fragment output %s contains invalid semantic: %s", field->name, field->semantic);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            PrintSource(src.data(), static_cast<uint32>(src.size()));
+                            DAVA::Logger::Error("Fragment output %s does not include SV_TARGER semantic", field->name);
+                            return false;
+                        }
+                    }
+                }
+
+                if (maxRenderTarget + 1 >= rhi::DeviceCaps().maxSimultaneousRT)
+                {
+                    DAVA::Logger::Error("Fragment shader uses more render targets than current implementation supports.");
+                    return false;
+                }
+            }
+
             // some sanity checks
             bool hasReturn = false;
 
@@ -234,7 +274,6 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
             else
             {
                 PrintSource(src.data(), static_cast<uint32>(src.size()));
-                sl::HLSLFunction* entryFunction = ast->FindFunction(entryName);
                 DAVA::Logger::Error("Missing entry-point function '%s'", entryName);
                 return false;
             }

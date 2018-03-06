@@ -24,12 +24,6 @@
 #ensuredefined TECH_COPY 0
 #ensuredefined TECH_RESET_LUMINANCE_HISTORY 0
 #ensuredefined TECH_COMBINE_FORWARD_INPLACE 0
-#ensuredefined SPECULAR_CONVOLUTION 0
-#ensuredefined DIFFUSE_CONVOLUTION 0
-#ensuredefined DIFFUSE_SPHERICAL_HARMONICS 0
-#ensuredefined INTEGRATE_BRDF_LOOKUP 0
-#ensuredefined DOWNSAMPLING 0
-#ensuredefined CONVOLUTION_PASS 0
 #ensuredefined TRANSMITTANCE 0
 #ensuredefined IB_REFLECTIONS_PREPARE 0
 #ensuredefined WRITE_SHADOW_MAP 0
@@ -71,7 +65,6 @@
 #ensuredefined FOWARD_WITH_COMBINE 0
 #ensuredefined TECH_COMBINED_LUMINANCE 0
 
-#ensuredefined ADVANCED_TONE_MAPPING 0
 #ensuredefined ENABLE_COLOR_GRADING 0
 #ensuredefined DISPLAY_HEAT_MAP 0
 #ensuredefined DISPLAY_LIGHT_METER_MASK 0

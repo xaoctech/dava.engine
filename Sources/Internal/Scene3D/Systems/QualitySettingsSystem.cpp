@@ -25,48 +25,70 @@ const FastName QualitySettingsSystem::QUALITY_OPTION_DISABLE_FOG_ATMOSPHERE_SCAT
 const FastName QualitySettingsSystem::QUALITY_OPTION_DISABLE_FOG_HALF_SPACE("Disable half-space fog");
 const FastName QualitySettingsSystem::QUALITY_OPTION_DEFERRED_DRAW_FORWARD("Deferred Rendering Includes Forward Objects");
 const FastName QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D("Half Resolution Rendering");
-const FastName QualitySettingsSystem::QUALITY_OPTION_TXAA("Enable TXAA");
 
 QualitySettingsSystem::QualitySettingsSystem()
 {
+    const Map<RenderFlow, FastName> renderFlowNames = {
+        { RenderFlow::HDRDeferred, FastName("HDR Deferred") },
+        { RenderFlow::HDRForward, FastName("HDR Forward") },
+        { RenderFlow::LDRForward, FastName("LDR Forward") },
+        { RenderFlow::TileBasedHDRDeferred, FastName("TB HDR Deferred") },
+        { RenderFlow::TileBasedHDRForward, FastName("TB HDR Forward") },
+    };
+
+    qualityGroups[QualityGroup::RenderFlowType].groupName = FastName("Render Flow");
+    for (uint32 i = uint32(RenderFlow::FirstValid); i < uint32(RenderFlow::Count); ++i)
+    {
+        RenderFlow flow = RenderFlow(i);
+        qualityGroups[QualityGroup::RenderFlowType].values.emplace_back(renderFlowNames.at(flow), flow);
+        if (Renderer::GetCurrentRenderFlow() == flow)
+        {
+            qualityGroups[QualityGroup::RenderFlowType].currentValue = renderFlowNames.at(flow);
+        }
+    }
+
+    static_assert(MAX_SHADOW_CASCADES == 4, "Max shadow cascades should be 4");
+
     qualityGroups[QualityGroup::Shadow].groupName = FastName("Shadows");
-    qualityGroups[QualityGroup::Shadow].values.emplace(FastName("0: Low"), ShadowQuality(1, false));
-    qualityGroups[QualityGroup::Shadow].values.emplace(FastName("1: Medium"), ShadowQuality(1, true));
-    qualityGroups[QualityGroup::Shadow].values.emplace(FastName("2: High"), ShadowQuality(4, true));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Poor"), ShadowQuality(1, false));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Low"), ShadowQuality(1, true));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Medium"), ShadowQuality(2, true));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("High"), ShadowQuality(3, true));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Ultra"), ShadowQuality(4, true));
     qualityGroups[QualityGroup::Shadow].currentValue = qualityGroups[QualityGroup::Shadow].values.rbegin()->first;
 
     qualityGroups[QualityGroup::Anisotropy].groupName = FastName("Anisotropy");
-    qualityGroups[QualityGroup::Anisotropy].values.emplace(FastName("0: Disabled"), 1u);
-    qualityGroups[QualityGroup::Anisotropy].values.emplace(FastName("1: 2x"), 2u);
-    qualityGroups[QualityGroup::Anisotropy].values.emplace(FastName("2: 4x"), 8u);
-    qualityGroups[QualityGroup::Anisotropy].values.emplace(FastName("3: 8x"), 8u);
-    qualityGroups[QualityGroup::Anisotropy].values.emplace(FastName("4: 16x"), 16u);
+    qualityGroups[QualityGroup::Anisotropy].values.emplace_back(FastName("Disabled"), 1u);
+    qualityGroups[QualityGroup::Anisotropy].values.emplace_back(FastName("2x"), 2u);
+    qualityGroups[QualityGroup::Anisotropy].values.emplace_back(FastName("4x"), 8u);
+    qualityGroups[QualityGroup::Anisotropy].values.emplace_back(FastName("8x"), 8u);
+    qualityGroups[QualityGroup::Anisotropy].values.emplace_back(FastName("16x"), 16u);
     qualityGroups[QualityGroup::Anisotropy].currentValue = qualityGroups[QualityGroup::Anisotropy].values.rbegin()->first;
 
     qualityGroups[QualityGroup::Antialiasing].groupName = FastName("Antialiasing");
-    qualityGroups[QualityGroup::Antialiasing].values.emplace(FastName("0: Disabled"), rhi::AntialiasingType::NONE);
-    qualityGroups[QualityGroup::Antialiasing].values.emplace(FastName("1: MSAA 2X"), rhi::AntialiasingType::MSAA_2X);
-    qualityGroups[QualityGroup::Antialiasing].values.emplace(FastName("2: MSAA 4X"), rhi::AntialiasingType::MSAA_4X);
+    qualityGroups[QualityGroup::Antialiasing].values.emplace_back(FastName("Disabled"), rhi::AntialiasingType::NONE);
+    qualityGroups[QualityGroup::Antialiasing].values.emplace_back(FastName("MSAA 2X"), rhi::AntialiasingType::MSAA_2X);
+    qualityGroups[QualityGroup::Antialiasing].values.emplace_back(FastName("MSAA 4X"), rhi::AntialiasingType::MSAA_4X);
+    qualityGroups[QualityGroup::Antialiasing].values.emplace_back(FastName("TAA"), rhi::AntialiasingType::TEMPORAL_REPROJECTION);
     qualityGroups[QualityGroup::Antialiasing].currentValue = qualityGroups[QualityGroup::Antialiasing].values.begin()->first;
 
     qualityGroups[QualityGroup::Textures].groupName = FastName("Textures");
-    qualityGroups[QualityGroup::Textures].values.emplace(FastName("0: Default"), TexturesQuality(0));
-    qualityGroups[QualityGroup::Textures].values.emplace(FastName("1: Medium"), TexturesQuality(1));
-    qualityGroups[QualityGroup::Textures].values.emplace(FastName("2: Low"), TexturesQuality(2));
-    qualityGroups[QualityGroup::Textures].values.emplace(FastName("3: Poor"), TexturesQuality(3));
+    qualityGroups[QualityGroup::Textures].values.emplace_back(FastName("Default"), TexturesQuality(0));
+    qualityGroups[QualityGroup::Textures].values.emplace_back(FastName("Medium"), TexturesQuality(1));
+    qualityGroups[QualityGroup::Textures].values.emplace_back(FastName("Low"), TexturesQuality(2));
+    qualityGroups[QualityGroup::Textures].values.emplace_back(FastName("Poor"), TexturesQuality(3));
     qualityGroups[QualityGroup::Textures].currentValue = qualityGroups[QualityGroup::Textures].values.begin()->first;
 
     qualityGroups[QualityGroup::Scattering].groupName = FastName("Atmospheric Scattering");
-    qualityGroups[QualityGroup::Scattering].values.emplace(FastName("0: Low"), ScatteringQuality(8));
-    qualityGroups[QualityGroup::Scattering].values.emplace(FastName("1: High"), ScatteringQuality(16));
-    qualityGroups[QualityGroup::Scattering].values.emplace(FastName("2: Ultra"), ScatteringQuality(32));
+    qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Low"), ScatteringQuality(8));
+    qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("High"), ScatteringQuality(16));
+    qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Ultra"), ScatteringQuality(32));
     qualityGroups[QualityGroup::Scattering].currentValue = qualityGroups[QualityGroup::Scattering].values.begin()->first;
 
     Load("~res:/quality.yaml");
 
     EnableOption(QUALITY_OPTION_DEFERRED_DRAW_FORWARD, true);
     EnableOption(QUALITY_OPTION_HALF_RESOLUTION_3D, false);
-    EnableOption(QUALITY_OPTION_TXAA, false);
 }
 
 void QualitySettingsSystem::Load(const FilePath& path)
@@ -615,6 +637,9 @@ void QualitySettingsSystem::SetCurrentQualityForGroup(QualityGroup group, const 
 bool QualitySettingsSystem::HasQualityInGroup(QualityGroup group, const FastName& value) const
 {
     DVASSERT(group < QualityGroup::Count);
-    return qualityGroups[group].values.count(value) > 0;
+
+    return std::find_if(qualityGroups[group].values.begin(), qualityGroups[group].values.end(), [&value](const auto& p) {
+               return p.first == value;
+           }) != qualityGroups[group].values.end();
 }
 }

@@ -125,14 +125,14 @@ void RenderPass::PrepareVisibilityArrays(Camera* camera, RenderSystem* renderSys
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PASS_PREPARE_ARRAYS)
 
+    visibilityArray.Clear();
     uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
         currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
-
-    visibilityArray.Clear();
     renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, currVisibilityCriteria);
 
     ClearLayersArrays();
+
     PrepareLayersArrays(visibilityArray.geometryArray, camera);
 }
 

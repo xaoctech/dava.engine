@@ -101,12 +101,11 @@ void VelocityPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask /*= 0x
 
         rhi::BeginRenderPass(pass);
         rhi::BeginPacketList(packetList);
-
         rhi::AddPacket(packetList, velocityPacket);
-
         rhi::EndPacketList(packetList);
         rhi::EndRenderPass(pass);
     }
+
     bool invertProjection = rhi::IsInvertedProjectionRequired(passConfig.IsRenderTargetPass(), passConfig.IsCubeRenderTargetPass());
     previousVPUnjit = mainCamera->GetViewProjMatrix(invertProjection, passConfig.usesReverseDepth);
 }

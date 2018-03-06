@@ -78,7 +78,19 @@ public:
     void RemoveFlag(uint32 flag);
     uint32 GetFlags();
 
-    const Vector4& GetShadowCascadesIntervals() const;
+    const float& GetShadowCascadesIntervals1() const;
+    void SetShadowCascadesIntervals1(const float& values);
+
+    const Vector2& GetShadowCascadesIntervals2() const;
+    void SetShadowCascadesIntervals2(const Vector2& values);
+
+    const Vector3& GetShadowCascadesIntervals3() const;
+    void SetShadowCascadesIntervals3(const Vector3& values);
+
+    const Vector4& GetShadowCascadesIntervals4() const;
+    void SetShadowCascadesIntervals4(const Vector4& values);
+
+    Vector4 GetShadowCascadesIntervals() const;
     void SetShadowCascadesIntervals(const Vector4& values);
 
     const Vector2& GetShadowFilterRadius() const;
@@ -125,7 +137,11 @@ protected:
     Color baseColor = Color::White;
     float32 lastSetColorTemperature = 0.0f;
 
-    Vector4 shadowCascadesIntervals = Vector4(16.0f, 32.0f, 64.0f, 128.0f);
+    float shadowCascadesIntervals1 = 4.0f;
+    Vector2 shadowCascadesIntervals2 = Vector2(4.0f, 32.0f);
+    Vector3 shadowCascadesIntervals3 = Vector3(4.0f, 32.0f, 128.0);
+    Vector4 shadowCascadesIntervals4 = Vector4(4.0f, 32.0f, 128.0f, 512);
+
     Vector2 shadowFilterRadius = Vector2(0.0f, 0.0f);
     Vector2 shadowWriteBias = Vector2(0.0, 0.0);
     float32 radius = 1.0f;
@@ -203,16 +219,6 @@ inline void Light::SetShadowFilterRadius(const Vector2& value)
     shadowFilterRadius = value;
 }
 
-inline const Vector4& Light::GetShadowCascadesIntervals() const
-{
-    return shadowCascadesIntervals;
-}
-
-inline void Light::SetShadowCascadesIntervals(const Vector4& values)
-{
-    shadowCascadesIntervals = values;
-}
-
 inline bool Light::GetDebugDrawShadowMapEnabled() const
 {
     return debugDrawShadowMaps;
@@ -276,5 +282,38 @@ inline void Light::SetAutoColor(bool value)
 inline bool Light::IsLocal() const
 {
     return (type == eType::TYPE_POINT) || (type == eType::TYPE_SPOT);
+}
+
+inline const float& Light::GetShadowCascadesIntervals1() const
+{
+    return shadowCascadesIntervals1;
+}
+inline void Light::SetShadowCascadesIntervals1(const float& values)
+{
+    shadowCascadesIntervals1 = values;
+}
+inline const Vector2& Light::GetShadowCascadesIntervals2() const
+{
+    return shadowCascadesIntervals2;
+}
+inline void Light::SetShadowCascadesIntervals2(const Vector2& values)
+{
+    shadowCascadesIntervals2 = values;
+}
+inline const Vector3& Light::GetShadowCascadesIntervals3() const
+{
+    return shadowCascadesIntervals3;
+}
+inline void Light::SetShadowCascadesIntervals3(const Vector3& values)
+{
+    shadowCascadesIntervals3 = values;
+}
+inline const Vector4& Light::GetShadowCascadesIntervals4() const
+{
+    return shadowCascadesIntervals4;
+}
+inline void Light::SetShadowCascadesIntervals4(const Vector4& values)
+{
+    shadowCascadesIntervals4 = values;
 }
 }

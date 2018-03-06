@@ -24,8 +24,6 @@ public:
     Vector2 GetDebugRectOffset() const;
     void SetDebugRectSize(const int32& size);
     int32 GetDebugRectSize();
-    void SetDisableAdaptation(bool disable);
-    bool GetDisableAdaptation() const;
     void SetDrawAdaptation(bool draw);
     bool GetDrawAdaptataion() const;
     void SetDrawHistogram(bool draw);
@@ -42,7 +40,6 @@ public:
 private:
     bool drawHDRTarget = false;
     bool drawLuminance = false;
-    bool disableAdaptation = false;
     bool drawAdaptation = false;
     bool drawHistogram = false;
     bool drawBloom = false;

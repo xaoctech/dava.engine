@@ -223,6 +223,8 @@ static void gles_check_GL_extensions()
         MutableDeviceCaps::Get().isPerfQuerySupported = strstr(ext, "EXT_timer_query") != nullptr || _GLES2_TimeStampQuerySupported;
     }
 
+    bool checkForMaxRT = false;
+
     _GLES2_APIVersion = 2;
     int minorVersion = 0;
     const char* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -253,6 +255,7 @@ static void gles_check_GL_extensions()
                 MutableDeviceCaps::Get().isInstancingSupported = true;
                 Short_Int_Supported = true;
                 PackedFloat_Supported = true;
+                checkForMaxRT = true;
             }
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -300,6 +303,24 @@ static void gles_check_GL_extensions()
         Float_Supported |= _GLES2_APIVersion >= 3;
         Half_Supported |= _GLES2_APIVersion >= 3;
         RG_Supported |= _GLES2_APIVersion >= 3;
+        checkForMaxRT = true;
+    }
+
+    if (checkForMaxRT)
+    {
+    #if !defined(GL_MAX_DRAW_BUFFERS) && defined(GL_MAX_DRAW_BUFFERS_ARB)
+        #define GL_MAX_DRAW_BUFFERS GL_MAX_DRAW_BUFFERS_ARB
+    #endif
+    #if !defined(GL_MAX_DRAW_BUFFERS)
+        #define GL_MAX_DRAW_BUFFERS 0x8824
+    #endif
+        GLint maxDrawBuffers = 0;
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
+        MutableDeviceCaps::Get().maxSimultaneousRT = uint32(maxDrawBuffers);
+    }
+    else
+    {
+        MutableDeviceCaps::Get().maxSimultaneousRT = 1;
     }
 
     if (MutableDeviceCaps::Get().isReverseDepthSupported)

@@ -30,7 +30,7 @@ void NMaterialStateDynamicTexturesInsp::FindMaterialTexturesRecursive(NMaterial*
         FXDescriptor fxDescriptor = FXCache::GetFXDescriptor(fxName, flags, QualitySettingsSystem::Instance()->GetCurMaterialQuality(material->qualityGroup));
         for (auto& descriptor : fxDescriptor.renderPassDescriptors)
         {
-            if (!descriptor.shader->IsValid())
+            if ((descriptor.shader == nullptr) || !descriptor.shader->IsValid())
                 continue;
 
             const rhi::ShaderSamplerList& fragmentSamplers = descriptor.shader->GetFragmentSamplerList();

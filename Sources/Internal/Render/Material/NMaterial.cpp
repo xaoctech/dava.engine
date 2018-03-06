@@ -259,7 +259,7 @@ uint32 NMaterial::GetRequiredVertexFormat()
     uint32 res = 0;
     for (auto& variant : renderVariants)
     {
-        bool shaderValid = (nullptr != variant.second) && (variant.second->shader->IsValid());
+        bool shaderValid = (variant.second != nullptr) && (variant.second->shader != nullptr) && (variant.second->shader->IsValid());
         // DVASSERT(shaderValid, "Shader is invalid. Check log for details.");
 
         if (shaderValid)
@@ -961,9 +961,10 @@ void NMaterial::RebuildBindings()
     for (auto& variant : renderVariants)
     {
         RenderVariantInstance* currRenderVariant = variant.second;
-        ShaderDescriptor* currShader = currRenderVariant->shader;
-        if (!currShader->IsValid()) //cant build for empty shader
+        ShaderDescriptor* currShader = (currRenderVariant != nullptr) ? currRenderVariant->shader : nullptr;
+        if ((currShader == nullptr) || (currShader->IsValid() == false))
             continue;
+
         currRenderVariant->vertexConstBuffers.resize(currShader->GetVertexConstBuffersCount());
         currRenderVariant->fragmentConstBuffers.resize(currShader->GetFragmentConstBuffersCount());
 
@@ -1074,8 +1075,8 @@ void NMaterial::RebuildTextureBindings()
         rhi::ReleaseTextureSet(currRenderVariant->textureSet);
         rhi::ReleaseSamplerState(currRenderVariant->samplerState);
 
-        ShaderDescriptor* currShader = currRenderVariant->shader;
-        if (!currShader->IsValid()) //cant build for empty shader
+        ShaderDescriptor* currShader = (currRenderVariant != nullptr) ? currRenderVariant->shader : nullptr;
+        if ((currShader == nullptr) || (currShader->IsValid() == false))
             continue;
 
         rhi::TextureSetDescriptor textureDescr;
@@ -1235,7 +1236,7 @@ bool NMaterial::PreBuildMaterial(const FastName& passName)
     if (needRebuildTextures)
         RebuildTextureBindings();
 
-    bool res = (activeVariantInstance != nullptr) && (activeVariantInstance->shader->IsValid());
+    bool res = (activeVariantInstance != nullptr) && (activeVariantInstance->shader != nullptr) && (activeVariantInstance->shader->IsValid());
     if (activeVariantName != passName)
     {
         auto it = renderVariants.find(passName); // [passName];
@@ -1244,7 +1245,7 @@ bool NMaterial::PreBuildMaterial(const FastName& passName)
             activeVariantName = passName;
             activeVariantInstance = it->second;
 
-            res = (activeVariantInstance->shader->IsValid());
+            res = (activeVariantInstance->shader != nullptr) && (activeVariantInstance->shader->IsValid());
         }
         else
         {

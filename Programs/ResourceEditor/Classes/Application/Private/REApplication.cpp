@@ -106,10 +106,20 @@ DAVA::BaseApplication::EngineInitInfo REApplication::GetInitInfo() const
 void REApplication::CreateModules(DAVA::Core* tarcCore) const
 {
     DAVA::ContextAccessor* accessor = tarcCore->GetCoreInterface();
-    DAVA::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
-    DAVA::RenderingBackend renderBackend = item.Get("renderBackend", DAVA::RenderingBackend::OpenGL);
+    {
+        DAVA::PropertiesItem item = accessor->CreatePropertiesNode("renderBackendMirrorNode");
+        DAVA::RenderingBackend renderBackend = item.Get("renderBackend", DAVA::RenderingBackend::OpenGL);
+        appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
+    }
 
-    appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
+    if (!isConsoleMode)
+    {
+        DAVA::PropertiesItem item = accessor->CreatePropertiesNode("renderFlow");
+        DAVA::RenderFlow renderFlow = item.Get("renderFlow", DAVA::RenderFlow::HDRDeferred);
+        DAVA::QualitySettingsSystem::Instance()->SetCurrentQualityValue<DAVA::QualityGroup::RenderFlowType>(renderFlow);
+        DAVA::Renderer::SetAllowedRenderFlows({ DAVA::RenderFlow::LDRForward, DAVA::RenderFlow::HDRForward, DAVA::RenderFlow::HDRDeferred });
+        DAVA::Renderer::SetRenderFlow(renderFlow);
+    }
 
     renderBackEndListener.reset(new DAVA::FieldBinder(accessor));
     DAVA::FieldDescriptor descr;
@@ -188,7 +198,6 @@ void REApplication::Init(DAVA::Core* tarcCore)
 void REApplication::Cleanup()
 {
     DAVA::VisibilityCheckSystem::ReleaseCubemapRenderTargets();
-
     cmdLine.clear();
 }
 

@@ -35,7 +35,6 @@ void PostEffectDebugSystem::ImmediateEvent(Component* component, uint32 event)
         debugRenderer->drawLuminance = debugComponent->GetDrawLuminance();
         debugRenderer->debugRectOffset = Size2i(int32(debugComponent->GetDebugRectOffset().dx), int32(debugComponent->GetDebugRectOffset().dy));
         debugRenderer->debugRectSize = debugComponent->GetDebugRectSize();
-        debugRenderer->disableAdaptation = debugComponent->GetDisableAdaptation();
         debugRenderer->drawAdaptation = debugComponent->GetDrawAdaptataion();
         debugRenderer->drawHistogram = debugComponent->GetDrawHistogram();
         debugRenderer->drawBloom = debugComponent->GetDrawBloom();

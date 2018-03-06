@@ -57,7 +57,6 @@ public:
     {
         bool drawHDRTarget = false;
         bool drawLuminance = false;
-        bool disableAdaptation = false;
         bool drawAdaptation = false;
         bool drawHistogram = false;
         bool drawBloom = false;

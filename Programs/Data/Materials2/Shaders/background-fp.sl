@@ -28,7 +28,7 @@ fragment_in
 
 fragment_out
 {
-#if USE_FRAMEBUFFER_FETCH
+#if (USE_FRAMEBUFFER_FETCH)
     float4 color : SV_TARGET4;
 #elif (FOWARD_WITH_COMBINE)
     float4 color : SV_TARGET1;

@@ -92,10 +92,20 @@ void Light::Save(KeyedArchive* archive, SerializationContext* serializationConte
     archive->SetUInt32("flags", flags);
     archive->SetBool("autoColor", autoColor);
 
-    archive->SetFloat("shadow.cascades.0", shadowCascadesIntervals.x);
-    archive->SetFloat("shadow.cascades.1", shadowCascadesIntervals.y);
-    archive->SetFloat("shadow.cascades.2", shadowCascadesIntervals.z);
-    archive->SetFloat("shadow.cascades.3", shadowCascadesIntervals.w);
+    archive->SetFloat("shadow.cascades1.0", shadowCascadesIntervals1);
+
+    archive->SetFloat("shadow.cascades2.0", shadowCascadesIntervals2.x);
+    archive->SetFloat("shadow.cascades2.1", shadowCascadesIntervals2.y);
+
+    archive->SetFloat("shadow.cascades3.0", shadowCascadesIntervals3.x);
+    archive->SetFloat("shadow.cascades3.1", shadowCascadesIntervals3.y);
+    archive->SetFloat("shadow.cascades3.2", shadowCascadesIntervals3.z);
+
+    archive->SetFloat("shadow.cascades4.0", shadowCascadesIntervals4.x);
+    archive->SetFloat("shadow.cascades4.1", shadowCascadesIntervals4.y);
+    archive->SetFloat("shadow.cascades4.2", shadowCascadesIntervals4.z);
+    archive->SetFloat("shadow.cascades4.3", shadowCascadesIntervals4.w);
+
     archive->SetFloat("shadow.write.bias", shadowWriteBias.x);
     archive->SetFloat("shadow.write.bias_scale", shadowWriteBias.y);
     archive->SetFloat("shadow.filter.radius", shadowFilterRadius.x);
@@ -131,10 +141,20 @@ void Light::Load(KeyedArchive* archive, SerializationContext* serializationConte
         environmentMap = serializationContext->GetScenePath() + envMap;
     }
 
-    shadowCascadesIntervals.x = archive->GetFloat("shadow.cascades.0", shadowCascadesIntervals.x);
-    shadowCascadesIntervals.y = archive->GetFloat("shadow.cascades.1", shadowCascadesIntervals.y);
-    shadowCascadesIntervals.z = archive->GetFloat("shadow.cascades.2", shadowCascadesIntervals.z);
-    shadowCascadesIntervals.w = archive->GetFloat("shadow.cascades.3", shadowCascadesIntervals.w);
+    shadowCascadesIntervals1 = archive->GetFloat("shadow.cascades1.0", shadowCascadesIntervals1);
+
+    shadowCascadesIntervals2.x = archive->GetFloat("shadow.cascades2.0", shadowCascadesIntervals2.x);
+    shadowCascadesIntervals2.y = archive->GetFloat("shadow.cascades2.1", shadowCascadesIntervals2.y);
+
+    shadowCascadesIntervals3.x = archive->GetFloat("shadow.cascades3.0", shadowCascadesIntervals3.x);
+    shadowCascadesIntervals3.y = archive->GetFloat("shadow.cascades3.1", shadowCascadesIntervals3.y);
+    shadowCascadesIntervals3.z = archive->GetFloat("shadow.cascades3.2", shadowCascadesIntervals3.z);
+
+    shadowCascadesIntervals4.x = archive->GetFloat("shadow.cascades4.0", shadowCascadesIntervals4.x);
+    shadowCascadesIntervals4.y = archive->GetFloat("shadow.cascades4.1", shadowCascadesIntervals4.y);
+    shadowCascadesIntervals4.z = archive->GetFloat("shadow.cascades4.2", shadowCascadesIntervals4.z);
+    shadowCascadesIntervals4.w = archive->GetFloat("shadow.cascades4.3", shadowCascadesIntervals4.w);
+
     shadowFilterRadius.x = archive->GetFloat("shadow.filter.radius", shadowFilterRadius.x);
     shadowFilterRadius.y = archive->GetFloat("shadow.filter.elongation", shadowFilterRadius.y);
     shadowWriteBias.x = archive->GetFloat("shadow.write.bias", shadowWriteBias.x);
@@ -162,10 +182,20 @@ void Light::SaveToYaml(const FilePath& presetPath, YamlNode* parentNode, const F
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "ao.radius", aoRadius);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(lightNode, "flags", flags);
 
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades.0", shadowCascadesIntervals.x);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades.1", shadowCascadesIntervals.y);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades.2", shadowCascadesIntervals.z);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades.3", shadowCascadesIntervals.w);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades1.0", shadowCascadesIntervals1);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades2.0", shadowCascadesIntervals2.x);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades2.1", shadowCascadesIntervals2.y);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades3.0", shadowCascadesIntervals3.x);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades3.1", shadowCascadesIntervals3.y);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades3.2", shadowCascadesIntervals3.z);
+
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades4.0", shadowCascadesIntervals4.x);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades4.1", shadowCascadesIntervals4.y);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades4.2", shadowCascadesIntervals4.z);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades4.3", shadowCascadesIntervals4.w);
+
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.filter.radius", shadowFilterRadius.x);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.filter.elongation", shadowFilterRadius.y);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.write.bias", shadowWriteBias.x);
@@ -222,21 +252,22 @@ void Light::LoadFromYaml(const FilePath& presetPath, const YamlNode* parentNode)
     if (flagsNode != nullptr)
         flags = static_cast<uint32>(flagsNode->AsInt32());
 
-    const YamlNode* shadowCascadesIntervalsNodeX = parentNode->Get("shadow.cascades.0");
-    if (shadowCascadesIntervalsNodeX != nullptr)
-        shadowCascadesIntervals.x = shadowCascadesIntervalsNodeX->AsFloat();
+    auto GetCascade = [parentNode](const char* keyId, float& output) {
+        const YamlNode* node = parentNode->Get(keyId);
+        if (node != nullptr)
+            output = node->AsFloat();
+    };
 
-    const YamlNode* shadowCascadesIntervalsNodeY = parentNode->Get("shadow.cascades.1");
-    if (shadowCascadesIntervalsNodeY != nullptr)
-        shadowCascadesIntervals.y = shadowCascadesIntervalsNodeY->AsFloat();
-
-    const YamlNode* shadowCascadesIntervalsNodeZ = parentNode->Get("shadow.cascades.2");
-    if (shadowCascadesIntervalsNodeZ != nullptr)
-        shadowCascadesIntervals.z = shadowCascadesIntervalsNodeZ->AsFloat();
-
-    const YamlNode* shadowCascadesIntervalsNodeW = parentNode->Get("shadow.cascades.3");
-    if (shadowCascadesIntervalsNodeW != nullptr)
-        shadowCascadesIntervals.w = shadowCascadesIntervalsNodeW->AsFloat();
+    GetCascade("shadow.cascades1.0", shadowCascadesIntervals1);
+    GetCascade("shadow.cascades2.0", shadowCascadesIntervals2.x);
+    GetCascade("shadow.cascades2.1", shadowCascadesIntervals2.y);
+    GetCascade("shadow.cascades3.0", shadowCascadesIntervals3.x);
+    GetCascade("shadow.cascades3.1", shadowCascadesIntervals3.y);
+    GetCascade("shadow.cascades3.2", shadowCascadesIntervals3.z);
+    GetCascade("shadow.cascades4.0", shadowCascadesIntervals4.x);
+    GetCascade("shadow.cascades4.1", shadowCascadesIntervals4.y);
+    GetCascade("shadow.cascades4.2", shadowCascadesIntervals4.z);
+    GetCascade("shadow.cascades4.2", shadowCascadesIntervals4.w);
 
     const YamlNode* shadowFilterRadiusNode = parentNode->Get("shadow.filter.radius");
     if (shadowFilterRadiusNode != nullptr)
@@ -376,5 +407,45 @@ void Light::SetColorTemperature(float k)
 float Light::GetColorTemperature() const
 {
     return lastSetColorTemperature;
+}
+
+Vector4 Light::GetShadowCascadesIntervals() const
+{
+    Vector4 result;
+    switch (Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES))
+    {
+    case 1:
+        result = Vector4(shadowCascadesIntervals1, 0.0f, 0.0f, 0.0f);
+        break;
+    case 2:
+        result = Vector4(shadowCascadesIntervals2.x, shadowCascadesIntervals2.y, 0.0f, 0.0f);
+        break;
+    case 3:
+        result = Vector4(shadowCascadesIntervals3.x, shadowCascadesIntervals3.y, shadowCascadesIntervals3.z, 0.0f);
+        break;
+    case 4:
+        result = shadowCascadesIntervals4;
+        break;
+    default:
+        DVASSERT(0, "Invalid cascades count");
+    }
+    return result;
+}
+
+void Light::SetShadowCascadesIntervals(const Vector4& values)
+{
+    shadowCascadesIntervals1 = values.x;
+    shadowCascadesIntervals2.x = values.x;
+    shadowCascadesIntervals3.x = values.x;
+    shadowCascadesIntervals4.x = values.x;
+
+    shadowCascadesIntervals2.y = values.y;
+    shadowCascadesIntervals3.y = values.y;
+    shadowCascadesIntervals4.y = values.y;
+
+    shadowCascadesIntervals3.z = values.z;
+    shadowCascadesIntervals4.z = values.z;
+
+    shadowCascadesIntervals4.w = values.w;
 }
 };

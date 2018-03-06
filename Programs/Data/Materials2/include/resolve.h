@@ -35,7 +35,7 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
 #endif
 
     float transmittanceEnabled = step(EPSILON, surfaceParameters.transmittance);
-    shadowParameters.filterRadius *= float2(1.0, transmittanceEnabled);
+    shadowParameters.filterRadius.y *= transmittanceEnabled;
     float shadowValue = SampleDirectionalShadow(input.directionalLightViewSpaceCoords, shadowParameters);
 
     BRDFValues directionalBrdf = BuildBRDFValues(input.n, input.directionalLightDirection, input.v, input.NdotV);

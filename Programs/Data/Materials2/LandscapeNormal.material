@@ -11,16 +11,4 @@ RenderTechnique:
             blendSrc: "BLEND_SRC_ALPHA"
             cullMode: "FACE_BACK"
             depthFunc: "CMP_LESS"
-            state: "STATE_BLEND | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
-            fillMode: "FILLMODE_SOLID"
-            stencil:
-                failBack: "STENCILOP_KEEP"
-                failFront: "STENCILOP_KEEP"
-                funcBack: "CMP_ALWAYS"
-                funcFront: "CMP_ALWAYS"
-                mask: -1
-                passBack: "STENCILOP_KEEP"
-                passFront: "STENCILOP_KEEP"
-                ref: 0
-                zFailBack: "STENCILOP_KEEP"
-                zFailFront: "STENCILOP_KEEP"
+            state: "STATE_BLEND"

@@ -438,3 +438,12 @@ ENUM_DECLARE(DAVA::GeoDecalManager::Mapping)
     ENUM_ADD_DESCR(DAVA::GeoDecalManager::Mapping::SPHERICAL, "Spherical");
     ENUM_ADD_DESCR(DAVA::GeoDecalManager::Mapping::CYLINDRICAL, "Cylindrical");
 }
+
+ENUM_DECLARE(DAVA::RenderFlow)
+{
+    ENUM_ADD_DESCR(DAVA::RenderFlow::LDRForward, "LDRForward");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::HDRForward, "HDRForward");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::HDRDeferred, "HDRDeferred");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::TileBasedHDRDeferred, "TileBasedHDRDeferred");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::TileBasedHDRForward, "TileBasedHDRForward");
+}

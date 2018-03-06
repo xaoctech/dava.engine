@@ -9,7 +9,6 @@ RenderTechnique:
             - ["DECAL_TYPE", 6]
         RenderState:            
             depthFunc: "CMP_GEQUAL"
-            fillMode: "FILLMODE_SOLID"
             cullMode: "FACE_FRONT"
             state: "STATE_DEPTH_TEST | STATE_CULL"
     RenderPassDeferredFetch:
@@ -20,6 +19,5 @@ RenderTechnique:
             - ["DECAL_TYPE", 6]
         RenderState:            
             depthFunc: "CMP_GEQUAL"
-            fillMode: "FILLMODE_SOLID"
             cullMode: "FACE_FRONT"
             state: "STATE_DEPTH_TEST | STATE_CULL"

@@ -10,7 +10,6 @@ RenderTechnique:
             - ["DECAL_TYPE", 0]
         RenderState:            
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
     RenderPassVTFetch:
         Name: "VTFetchPass"
         Layer: "VTDecals"
@@ -20,4 +19,4 @@ RenderTechnique:
             - ["DECAL_TYPE", 0]
         RenderState:            
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+

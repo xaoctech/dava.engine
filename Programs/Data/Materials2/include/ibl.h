@@ -1,4 +1,8 @@
-#if (CONVOLUTION_PASS)
+#ensuredefined INTEGRATE_BRDF_LOOKUP 0
+#ensuredefined DOWNSAMPLING 0
+#ensuredefined DIFFUSE_CONVOLUTION 0
+#ensuredefined DIFFUSE_SPHERICAL_HARMONICS 0
+#ensuredefined SPECULAR_CONVOLUTION 0
 
 float3 DirectionForCurrentBasis(float2 uv, Convolution cnv)
 {
@@ -10,13 +14,52 @@ float3 DirectionForCurrentBasis(float2 uv, Convolution cnv)
     return direction;
 }
 
-#if (DOWNSAMPLING)
+#if (INTEGRATE_BRDF_LOOKUP)
 
-/****************************************
- *
- * DOWNSAMPLING
- *
- ****************************************/
+float4 IntegrateBRDFLookupTexture(float2 texCoord)
+{
+    float3 result = float3(0.0, 0.0, 0.0);
+    float NdotV = texCoord.x;
+
+    float r1 = max(MIN_ROUGHNESS, texCoord.y);
+    float r2 = r1 * r1;
+    float r4 = r2 * r2;
+
+    float3 V = float3(0.0, sqrt(1.0 - NdotV * NdotV), NdotV);
+    float3 N = float3(0.0, 0.0, 1.0);
+
+    for (float i = 0.0; i < HAMMERSLEY_SET_SIZE; i += 1.0)
+    {
+        float sampleU = i / HAMMERSLEY_SET_SIZE;
+        float2 Xi = tex2Dlod(hammersleySet, float2(sampleU, 0.0), 0.0).xy;
+
+        float3 H = ImportanceSampleGGX(Xi, r4);
+        float3 L = 2.0 * dot(V, H) * H - V;
+
+        float LdotN = dot(L, N);
+        if (LdotN > 0.0)
+        {
+            float HdotN = saturate(dot(H, N));
+            float VdotH = saturate(dot(V, H));
+            float brdf_over_pdf = G_Smith(NdotV, LdotN, r4) * VdotH / (HdotN * NdotV);
+            float Fc = pow(1.0 - VdotH, 5.0);
+            result.x += brdf_over_pdf * (1.0 - Fc);
+            result.y += brdf_over_pdf * Fc;
+        }
+
+        L = ImportanceSampleCosine(Xi);
+        LdotN = saturate(dot(L, N));
+        if (LdotN > 0.0)
+        {
+            float cosTheta = saturate(dot(L, normalize(L + V)));
+            result.z += BurleyDiffuse(LdotN, NdotV, cosTheta, r2);
+        }
+    }
+    return float4(result / HAMMERSLEY_SET_SIZE, 1.0);
+}
+
+#elif (DOWNSAMPLING)
+
 float4 Downsample(float2 texcoord_, Convolution cv)
 {
     return texCUBElod(smp_src, DirectionForCurrentBasis(texcoord_, cv), cv.cubemap_src_mip_level);
@@ -24,11 +67,6 @@ float4 Downsample(float2 texcoord_, Convolution cv)
 
 #elif (DIFFUSE_CONVOLUTION)
 
-/****************************************
- *
- * DIFFUSE CONVOLUTION
- *
- ****************************************/
 float4 ConvoluteDiffuse(float2 texcoord_, Convolution conv)
 {
     float3 t0[6];
@@ -92,11 +130,6 @@ float4 ConvoluteDiffuse(float2 texcoord_, Convolution conv)
 
 #elif (DIFFUSE_SPHERICAL_HARMONICS)
 
-/****************************************
- *
- * CONVOLUTE DIFFUSE TO SPHERICAL HARMONICS CONVOLUTION
- *
- ****************************************/
 struct SphericalHarmonics
 {
     float4 sh[9];
@@ -176,11 +209,6 @@ SphericalHarmonics ConvoluteSphericalHarmonics(float dummy /* to trick sl-parser
 
 #elif (SPECULAR_CONVOLUTION)
 
-/****************************************
- *
- * SPECULAR CONVOLUTION
- *
- ****************************************/
 float4 ConvoluteSpecular(float2 texcoord_, Convolution conv)
 {
     float t = max(MIN_ROUGHNESS, conv.cubemap_dst_mip_level / conv.cubemap_dst_last_mip);
@@ -221,55 +249,6 @@ float4 ConvoluteSpecular(float2 texcoord_, Convolution conv)
     result = EncodeRGBM(result / result.w);
     return result;
 }
-#endif
-
-#elif /* CONVOLUTION_PASS */ (INTEGRATE_BRDF_LOOKUP)
-
-/********************************************
- *
- * LOOKUP TEXTURE GENERATION
- *
- ********************************************/
-float4 IntegrateBRDFLookupTexture(float2 texCoord)
-{
-    float3 result = float3(0.0, 0.0, 0.0);
-    float NdotV = texCoord.x;
-
-    float r1 = max(MIN_ROUGHNESS, texCoord.y);
-    float r2 = r1 * r1;
-    float r4 = r2 * r2;
-
-    float3 V = float3(0.0, sqrt(1.0 - NdotV * NdotV), NdotV);
-    float3 N = float3(0.0, 0.0, 1.0);
-
-    for (float i = 0.0; i < HAMMERSLEY_SET_SIZE; i += 1.0)
-    {
-        float sampleU = i / HAMMERSLEY_SET_SIZE;
-        float2 Xi = tex2Dlod(hammersleySet, float2(sampleU, 0.0), 0.0).xy;
-
-        float3 H = ImportanceSampleGGX(Xi, r4);
-        float3 L = 2.0 * dot(V, H) * H - V;
-
-        float LdotN = dot(L, N);
-        if (LdotN > 0.0)
-        {
-            float HdotN = saturate(dot(H, N));
-            float VdotH = saturate(dot(V, H));
-            float brdf_over_pdf = G_Smith(NdotV, LdotN, r4) * VdotH / (HdotN * NdotV);
-            float Fc = pow(1.0 - VdotH, 5.0);
-            result.x += brdf_over_pdf * (1.0 - Fc);
-            result.y += brdf_over_pdf * Fc;
-        }
-
-        L = ImportanceSampleCosine(Xi);
-        LdotN = saturate(dot(L, N));
-        if (LdotN > 0.0)
-        {
-            float cosTheta = saturate(dot(L, normalize(L + V)));
-            result.z += BurleyDiffuse(LdotN, NdotV, cosTheta, r2);
-        }
-    }
-    return float4(result / HAMMERSLEY_SET_SIZE, 1.0);
-}
-
+#else
+    #error Invalid Shader Configuration
 #endif
