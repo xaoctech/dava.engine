@@ -13,6 +13,8 @@
 #include "VisualScript/VisualScriptPin.h"
 #include "VisualScript/VisualScriptNode.h"
 
+#include <Math/Color.h>
+
 #include <iomanip>
 #include <algorithm>
 #include <cstring>
@@ -52,7 +54,9 @@ const PrintersTable valuePrinters =
   { Type::Instance<String>(), [](std::ostringstream& out, const Any& any) { out << any.Get<String>().c_str(); } },
   { Type::Instance<FastName>(), [](std::ostringstream& out, const Any& any) { out << any.Get<FastName>().c_str(); } },
   { Type::Instance<size_t>(), [](std::ostringstream& out, const Any& any) { out << any.Get<size_t>(); } },
+  { Type::Instance<Vector2>(), [](std::ostringstream& out, const Any& any) { Vector2 v = any.Get<Vector2>(); out << Format("Vector2(%.3f, %.3f)", v.x, v.y); } },
   { Type::Instance<bool>(), [](std::ostringstream& out, const Any& any) { out << any.Get<bool>(); } },
+  { Type::Instance<Color>(), [](std::ostringstream& out, const Any& any) { Color c = any.Get<Color>();  out  << Format("Color(%.3f, %.3f, %.3f, %.3f)", c.r, c.g, c.b, c.a); } },
   { Type::Instance<void>(), [](std::ostringstream& out, const Any& any) { out << "???"; } }
 };
 
@@ -113,7 +117,7 @@ void VisualScriptExecutor::ExecuteGetVarNode(VisualScriptGetVarNode* node, Visua
 {
     Any result = node->GetReflection().GetValue();
     node->GetDataOutputPin(0)->SetValue(result);
-    Logger::Debug("Get Var: %s", DumpAny(result).c_str());
+    Logger::Debug("Get Var: %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
 }
 
 void VisualScriptExecutor::ExecuteSetVarNode(VisualScriptSetVarNode* node, VisualScriptPin* entryPin)
@@ -121,13 +125,13 @@ void VisualScriptExecutor::ExecuteSetVarNode(VisualScriptSetVarNode* node, Visua
     if (entryPin == node->GetExecInputPin(0))
     {
         Any setValue = node->GetDataInputPin(0)->GetValue();
-        node->GetReflection().SetValue(setValue);
-        Logger::Debug("Set Var:= %s", DumpAny(setValue).c_str());
+        node->GetReflection().SetValueWithCast(setValue);
+        Logger::Debug("Set Var: %s <= %s", node->GetVarPath().c_str(), DumpAny(setValue).c_str());
     }
 
     Any result = node->GetReflection().GetValue();
     node->GetDataOutputPin(0)->SetValue(result);
-    Logger::Debug("Get Var: %s", DumpAny(result).c_str());
+    Logger::Debug("Get Var: %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
 
     if (node->GetExecOutputPins().size() == 1)
     {
@@ -144,6 +148,7 @@ void VisualScriptExecutor::ExecuteGetMemberNode(VisualScriptGetMemberNode* node,
         return;
 
     Any object = node->GetDataInputPin(0)->GetValue();
+    DVASSERT(object.GetType());
     if (object.GetType()->IsPointer())
     {
         const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType()->Deref());
@@ -153,6 +158,19 @@ void VisualScriptExecutor::ExecuteGetMemberNode(VisualScriptGetMemberNode* node,
 
             Any result = vw->GetValue(refObj);
             node->GetDataOutputPin(0)->SetValue(result);
+            Logger::Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
+        }
+    }
+    else
+    {
+        const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType());
+        if (objType)
+        {
+            ReflectedObject refObj(const_cast<void*>(object.GetData()), objType);
+
+            Any result = vw->GetValue(refObj);
+            node->GetDataOutputPin(0)->SetValue(result);
+            Logger::Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
         }
     }
 }
@@ -175,6 +193,19 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
 
                 Any value = node->GetDataInputPin(1)->GetValue();
                 vw->SetValueWithCast(refObj, value);
+                Logger::Debug("Set Member: %s::%s <= %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(value).c_str());
+            }
+        }
+        else
+        {
+            const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType());
+            if (objType)
+            {
+                ReflectedObject refObj(const_cast<void*>(object.GetData()), objType);
+
+                Any value = node->GetDataInputPin(1)->GetValue();
+                vw->SetValueWithCast(refObj, value);
+                Logger::Debug("Set Member: %s::%s <= %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(value).c_str());
             }
         }
     }
@@ -189,6 +220,19 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
 
             Any result = vw->GetValue(refObj);
             node->GetDataOutputPin(0)->SetValue(result);
+            Logger::Debug("Set Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
+        }
+    }
+    else
+    {
+        const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType());
+        if (objType)
+        {
+            ReflectedObject refObj(const_cast<void*>(object.GetData()), objType);
+
+            Any result = vw->GetValue(refObj);
+            node->GetDataOutputPin(0)->SetValue(result);
+            Logger::Debug("Set Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
         }
     }
 
@@ -375,11 +419,9 @@ void VisualScriptExecutor::ExecuteEventNode(VisualScriptEventNode* node, VisualS
     PushInstruction(node->GetExecOutputPins()[0]->GetConnectedTo());
 }
 
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
 void VisualScriptExecutor::ExecuteAnotherScriptNode(VisualScriptAnotherScriptNode* node, VisualScriptPin* entryPin)
 {
 }
-#endif
 
 void VisualScriptExecutor::CompileNode(VisualScriptNode* node)
 {

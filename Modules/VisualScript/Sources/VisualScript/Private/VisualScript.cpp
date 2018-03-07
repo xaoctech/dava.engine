@@ -77,6 +77,7 @@ VisualScript::VisualScript()
     defaultValues[FastName("String")] = String();
     defaultValues[FastName("WideString")] = WideString();
     defaultValues[FastName("FastName")] = FastName();
+    defaultValues[FastName("Color")] = Color();
     defaultValues[FastName("Vector2")] = Vector2();
     defaultValues[FastName("Vector3")] = Vector3();
     defaultValues[FastName("Vector4")] = Vector4();
@@ -205,6 +206,8 @@ void VisualScript::Save(const FilePath& filepath)
         YamlNode* yVar = YamlNode::CreateArrayNode();
         YamlNode* yVarData = YamlNode::CreateNodeFromAny(value);
 
+        DVASSERT(reflType->GetPermanentName() != "");
+
         yVar->Add(reflType->GetPermanentName());
         yVar->Add(yVarData);
         yVariables->Add(name.c_str(), yVar);
@@ -311,6 +314,7 @@ void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filep
         FastName varName = FastName(variables->GetItemKeyName(k));
         const YamlNode* var = variables->Get(k);
         const String typeName = var->Get(0)->AsString();
+        DVASSERT(typeName != "");
         const Type* type = ReflectedTypeDB::GetByPermanentName(typeName)->GetType();
         Any value = var->Get(1)->AsAny(type);
         dataRegistry.emplace(varName, value);

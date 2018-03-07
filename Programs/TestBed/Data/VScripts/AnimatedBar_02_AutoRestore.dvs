@@ -1,0 +1,923 @@
+variables:
+    value: ["float32", 0.000000]
+    speed: ["float32", 1.000000]
+    _var_prev_value: ["float32", 0.000000]
+    ZERO: ["float32", 0.000000]
+    _var_time: ["float32", -1.000000]
+    PATH: ["String", "ValueControl"]
+nodes:
+    VisualScriptEventNode1:
+        connections:
+        -   out:
+                pin: "exec"
+                name: "VisualScriptBranchNode2"
+            in:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode1"
+            in:
+                pin: "component"
+                name: "VisualScriptEventNode1"
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode2"
+            in:
+                pin: "component"
+                name: "VisualScriptEventNode1"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode4"
+            in:
+                pin: "frameDelta"
+                name: "VisualScriptEventNode1"
+        node:
+            eventName: "UIProcessEvent"
+            position: [-2365.329346, -155.179962]
+        type: "VisualScriptEventNode"
+        name: "VisualScriptEventNode1"
+    VisualScriptSetVarNode6:
+        connections:
+        -   out:
+                pin: "exit"
+                name: "VisualScriptFunctionNode9"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode6"
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode3"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode6"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode4"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode6"
+        node:
+            defaults: {}
+            varPath: "_var_prev_value"
+            position: [589.599976, -694.359985]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode6"
+    VisualScriptFunctionNode9:
+        connections:
+        -   out:
+                pin: "true"
+                name: "VisualScriptBranchNode2"
+            in:
+                pin: "exec"
+                name: "VisualScriptFunctionNode9"
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode2"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode9"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode4"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode9"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode6"
+            in:
+                pin: "exit"
+                name: "VisualScriptFunctionNode9"
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode4"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode9"
+        node:
+            functionName: "FindByPath"
+            defaults: {}
+            className: "UIControl"
+            position: [-578.880005, -717.119995]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode9"
+    VisualScriptSetVarNode5:
+        connections:
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode3"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode5"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode5"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode5"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode5"
+        node:
+            defaults: {}
+            varPath: "_var_time"
+            position: [343.880005, -198.880005]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode5"
+    VisualScriptFunctionNode8:
+        connections:
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "false"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode4"
+            in:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode5"
+            in:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode15"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetMemberNode1"
+            in:
+                pin: "exit"
+                name: "VisualScriptFunctionNode8"
+        -   out:
+                pin: "object"
+                name: "VisualScriptSetMemberNode1"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode8"
+        node:
+            functionName: "FindByPath"
+            defaults: {}
+            className: "UIControl"
+            position: [1261.194824, -162.277512]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode8"
+    VisualScriptGetMemberNode4:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode9"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode4"
+        -   out:
+                pin: "object"
+                name: "VisualScriptGetMemberNode3"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode4"
+        node:
+            fieldName: "scale"
+            className: "UIControl"
+            position: [-10.800003, -608.359985]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode4"
+    VisualScriptGetMemberNode3:
+        connections:
+        -   out:
+                pin: "get"
+                name: "VisualScriptGetMemberNode4"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode3"
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode6"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode3"
+        node:
+            fieldName: "X"
+            className: "Vector2"
+            position: [299.440002, -604.920044]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode3"
+    VisualScriptGetVarNode14:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode3"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode14"
+        node:
+            varPath: "value"
+            position: [-312.040009, -133.239990]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode14"
+    VisualScriptGetVarNode8:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode4"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode8"
+        node:
+            varPath: "ZERO"
+            position: [855.144043, -560.832031]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode8"
+    VisualScriptGetVarNode12:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode12"
+        node:
+            varPath: "_var_time"
+            position: [-1672.703979, 184.895996]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode12"
+    VisualScriptGetMemberNode2:
+        connections:
+        -   out:
+                pin: "component"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode2"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode9"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode2"
+        node:
+            fieldName: "control"
+            className: "UIComponent"
+            position: [-1222.319946, -698.880005]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode2"
+    VisualScriptFunctionNode10:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode7"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode10"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode16"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode10"
+        -   out:
+                pin: "arg2"
+                name: "VisualScriptFunctionNode5"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode10"
+        node:
+            functionName: "Mul"
+            defaults: {}
+            className: "FloatMath"
+            position: [1484.697632, 327.628815]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode10"
+    VisualScriptGetVarNode5:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode5"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode5"
+        node:
+            varPath: "ZERO"
+            position: [10.920013, -160.199997]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode5"
+    VisualScriptFunctionNode6:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode6"
+        -   out:
+                pin: "condition"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode6"
+        node:
+            functionName: ">="
+            defaults:
+                arg1: 1.000000
+            className: "ConditionsFloat"
+            position: [-1073.088745, 117.224365]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode6"
+    VisualScriptGetVarNode13:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode13"
+        node:
+            varPath: "_var_prev_value"
+            position: [-1595.520020, -358.559998]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode13"
+    VisualScriptSetVarNode3:
+        connections:
+        -   out:
+                pin: "true"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode3"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode14"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode3"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode5"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode3"
+        node:
+            defaults: {}
+            varPath: "_var_prev_value"
+            position: [-116.279999, -280.920013]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode3"
+    VisualScriptGetVarNode3:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode7"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode3"
+        node:
+            varPath: "_var_time"
+            position: [-2664.719971, -550.176025]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode3"
+    VisualScriptGetVarNode2:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode5"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode2"
+        node:
+            varPath: "value"
+            position: [1278.330688, 235.461899]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode2"
+    VisualScriptGetVarNode17:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode17"
+        node:
+            varPath: "value"
+            position: [-1598.400024, -273.600006]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode17"
+    VisualScriptGetVarNode11:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode4"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode11"
+        node:
+            varPath: "_var_time"
+            position: [-1927.337524, 123.093498]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode11"
+    VisualScriptGetVarNode7:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode10"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode7"
+        node:
+            varPath: "_var_time"
+            position: [1284.139038, 322.693604]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode7"
+    VisualScriptGetVarNode1:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode7"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+        node:
+            varPath: "ZERO"
+            position: [-2653.631836, -461.328003]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode1"
+    VisualScriptBranchNode2:
+        connections:
+        -   out:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptBranchNode2"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode7"
+            in:
+                pin: "condition"
+                name: "VisualScriptBranchNode2"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptFunctionNode9"
+            in:
+                pin: "true"
+                name: "VisualScriptBranchNode2"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode2"
+            in:
+                pin: "false"
+                name: "VisualScriptBranchNode2"
+        node:
+            position: [-2013.407959, -471.167999]
+        type: "VisualScriptBranchNode"
+        name: "VisualScriptBranchNode2"
+    VisualScriptFunctionNode5:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode6"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode5"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode2"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode5"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode10"
+            in:
+                pin: "arg2"
+                name: "VisualScriptFunctionNode5"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode5"
+        node:
+            functionName: "Lerp"
+            defaults: {}
+            className: "FloatMath"
+            position: [1935.429077, 186.388977]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode5"
+    VisualScriptGetVarNode9:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode9"
+        node:
+            varPath: "speed"
+            position: [-1682.035156, 274.694397]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode9"
+    VisualScriptBranchNode1:
+        connections:
+        -   out:
+                pin: "false"
+                name: "VisualScriptBranchNode3"
+            in:
+                pin: "exec"
+                name: "VisualScriptBranchNode1"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode6"
+            in:
+                pin: "condition"
+                name: "VisualScriptBranchNode1"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode3"
+            in:
+                pin: "true"
+                name: "VisualScriptBranchNode1"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "false"
+                name: "VisualScriptBranchNode1"
+        node:
+            position: [-638.616211, -115.596924]
+        type: "VisualScriptBranchNode"
+        name: "VisualScriptBranchNode1"
+    VisualScriptFunctionNode1:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode17"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode1"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode13"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode1"
+        -   out:
+                pin: "condition"
+                name: "VisualScriptBranchNode3"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+        node:
+            functionName: "Equal"
+            defaults:
+                arg0: 0.500000
+            className: "ConditionsFloat"
+            position: [-1399.680054, -381.600006]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode1"
+    VisualScriptFunctionNode4:
+        connections:
+        -   out:
+                pin: "frameDelta"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode4"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode11"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode4"
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode2"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode4"
+        node:
+            functionName: "Sum"
+            defaults: {}
+            className: "FloatMath"
+            position: [-1715.165894, 22.407644]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode4"
+    VisualScriptSetVarNode4:
+        connections:
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode6"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode4"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode8"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode4"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode4"
+        node:
+            defaults: {}
+            varPath: "_var_time"
+            position: [1043.527344, -605.165833]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode4"
+    VisualScriptGetVarNode4:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode9"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode4"
+        node:
+            varPath: "PATH"
+            position: [-783.359985, -594.719971]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode4"
+    VisualScriptSetVarNode1:
+        connections:
+        -   out:
+                pin: "exec"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode1"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode10"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode1"
+        -   out:
+                pin: "true"
+                name: "VisualScriptBranchNode3"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode1"
+        node:
+            defaults: {}
+            varPath: "_var_time"
+            position: [-526.719971, -421.519989]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode1"
+    VisualScriptFunctionNode7:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode3"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode7"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode7"
+        -   out:
+                pin: "condition"
+                name: "VisualScriptBranchNode2"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode7"
+        node:
+            functionName: "<"
+            defaults: {}
+            className: "ConditionsFloat"
+            position: [-2450.303955, -532.223999]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode7"
+    VisualScriptGetVarNode15:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode15"
+        node:
+            varPath: "PATH"
+            position: [886.138245, 152.339371]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode15"
+    VisualScriptSetVarNode2:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode4"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode2"
+        -   out:
+                pin: "false"
+                name: "VisualScriptBranchNode2"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode2"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptBranchNode3"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode2"
+        node:
+            defaults: {}
+            varPath: "_var_time"
+            position: [-1377.950684, -162.013062]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode2"
+    VisualScriptFunctionNode3:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode5"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode3"
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetMemberNode1"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode3"
+        node:
+            functionName: "Make"
+            defaults:
+                arg1: 1.000000
+                arg0: 0.500000
+            className: "Vector2"
+            position: [2371.388428, 135.967316]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode3"
+    VisualScriptBranchNode3:
+        connections:
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode2"
+            in:
+                pin: "exec"
+                name: "VisualScriptBranchNode3"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "condition"
+                name: "VisualScriptBranchNode3"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "true"
+                name: "VisualScriptBranchNode3"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptBranchNode1"
+            in:
+                pin: "false"
+                name: "VisualScriptBranchNode3"
+        node:
+            position: [-1005.119995, -311.040009]
+        type: "VisualScriptBranchNode"
+        name: "VisualScriptBranchNode3"
+    VisualScriptGetVarNode16:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode10"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode16"
+        node:
+            varPath: "speed"
+            position: [1282.129883, 411.192566]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode16"
+    VisualScriptGetVarNode10:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode10"
+        node:
+            varPath: "ZERO"
+            position: [-763.280029, -280.000000]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode10"
+    VisualScriptGetMemberNode1:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "get"
+                name: "VisualScriptGetMemberNode1"
+        -   out:
+                pin: "component"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "object"
+                name: "VisualScriptGetMemberNode1"
+        node:
+            fieldName: "control"
+            className: "UIComponent"
+            position: [376.310120, 183.409546]
+        type: "VisualScriptGetMemberNode"
+        name: "VisualScriptGetMemberNode1"
+    VisualScriptGetVarNode6:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode5"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode6"
+        node:
+            varPath: "_var_prev_value"
+            position: [1277.793823, 146.380005]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode6"
+    VisualScriptFunctionNode2:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode6"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode2"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode9"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode2"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode12"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode2"
+        node:
+            functionName: "Div"
+            defaults: {}
+            className: "FloatMath"
+            position: [-1486.598511, 193.593597]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode2"
+    VisualScriptSetMemberNode1:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "object"
+                name: "VisualScriptSetMemberNode1"
+        -   out:
+                pin: "exit"
+                name: "VisualScriptFunctionNode8"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetMemberNode1"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "set"
+                name: "VisualScriptSetMemberNode1"
+        node:
+            fieldName: "scale"
+            defaults: {}
+            className: "UIControl"
+            position: [2853.097656, -12.891763]
+        type: "VisualScriptSetMemberNode"
+        name: "VisualScriptSetMemberNode1"

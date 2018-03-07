@@ -522,23 +522,19 @@ void PackageSerializer::PutValueProperty(const DAVA::String& name, ValueProperty
     {
         BeginMap(name);
         const VarTable& varTable = value.Get<VarTable>();
-        for (auto& it : varTable.GetProperties())
-        {
-            const FastName& varName = it.first;
-            const VarTable::VarProperty& var = it.second;
-            if ((property->GetPrototypeProperty() != nullptr || varTable.HasDefaultValues()) && !var.flags[VarTable::Flags::OVERRIDDEN])
+        const bool hasDefaults = (property->GetPrototypeProperty() != nullptr || varTable.HasDefaultValues());
+        varTable.ForEachProperty([&](const FastName& name, const Any& value) {
+            if ((!hasDefaults) || varTable.IsPropertyOverridden(name))
             {
-                continue;
+                const Type* type = value.GetType();
+                const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);
+                DVASSERT(!name.empty());
+                BeginArray(name.c_str(), true);
+                PutValue(reflType->GetPermanentName(), true);
+                PutValue(value);
+                EndArray();
             }
-
-            const Type* type = var.value.GetType();
-            const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);
-            DVASSERT(!varName.empty());
-            BeginArray(varName.c_str(), true);
-            PutValue(reflType->GetPermanentName(), true);
-            PutValue(AnyToString(var.value), var.value.CanGet<String>() || var.value.CanGet<FilePath>() || var.value.CanGet<FastName>());
-            EndArray();
-        }
+        });
         EndMap();
     }
     else

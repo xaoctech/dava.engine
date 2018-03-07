@@ -16,6 +16,7 @@ public:
     enum class Fields : uint32
     {
         Checked,
+        EmptyValue,
         IsReadOnly,
         TextHint,
         IsEnabled,
@@ -42,5 +43,6 @@ private:
 
     eContainedDataType dataType = eContainedDataType::TYPE_NONE;
     QtConnections connections;
+    bool inUpdate = false;
 };
 } // namespace DAVA

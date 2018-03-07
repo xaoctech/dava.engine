@@ -1,4 +1,5 @@
 #include "TArc/Controls/CheckBox.h"
+#include "TArc/Utils/ScopedValueGuard.h"
 
 #include <Base/FastName.h>
 #include <Reflection/ReflectedMeta.h>
@@ -24,6 +25,7 @@ void CheckBox::SetupControl()
 
 void CheckBox::UpdateControl(const ControlDescriptor& changedFields)
 {
+    ScopedValueGuard<bool> guard(inUpdate, true);
     Reflection fieldValue = model.GetField(changedFields.GetName(Fields::Checked));
     DVASSERT(fieldValue.IsValid());
 
@@ -70,14 +72,17 @@ void CheckBox::UpdateControl(const ControlDescriptor& changedFields)
         }
         else
         {
-            DVASSERT(false);
+            dataType = eContainedDataType::TYPE_BOOL;
+            Qt::CheckState state = GetFieldValue(Fields::EmptyValue, Qt::Unchecked);
+            setTristate(false);
+            setCheckState(state);
         }
     }
 }
 
 void CheckBox::StateChanged(int newState)
 {
-    if (isEnabled() == false)
+    if (isEnabled() == false || inUpdate == true)
     {
         return;
     }

@@ -1,0 +1,59 @@
+Header:
+    version: "20"
+Controls:
+-   class: "UIControl"
+    name: "UIControl_01"
+    position: [0.000000, 0.000000]
+    size: [452.000000, 478.000000]
+    components:
+        LinearLayout:
+            orientation: "TopDown"
+            dynamicPadding: true
+            dynamicSpacing: false
+    children:
+    -   class: "UIStaticText"
+        name: "UIStaticText"
+        position: [76.000000, 90.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "Change script 'value' variable:"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "UIControl_00"
+        position: [76.000000, 127.000000]
+        size: [300.000000, 74.000000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/ColorLerp_00_Basic.dvs"
+    -   class: "UIStaticText"
+        name: "UIStaticText"
+        position: [76.000000, 201.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "Drag small square in QuickEd:"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "UIControl_01"
+        position: [76.000000, 238.000000]
+        size: [300.000000, 150.000000]
+        components:
+            Background: {}
+            DebugRender: {}
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/ColorLerp_01_ByChildPosition.dvs"
+        children:
+        -   class: "UIControl"
+            name: "DragMe"
+            position: [42.000000, 59.000000]
+            size: [32.000000, 32.000000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"

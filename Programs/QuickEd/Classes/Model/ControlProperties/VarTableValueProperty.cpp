@@ -106,7 +106,7 @@ void VarTableValueProperty::UpdateRealProperties()
     DVASSERT(vt.CanGet<VarTable>());
 
     VarTable varTable = vt.Get<VarTable>();
-    hasOverriden = varTable.HasAnyOverridden();
+    hasOverriden = varTable.HasAnyPropertyOverridden();
 
     if (hasOverriden == false && GetPrototypeProperty() != nullptr)
     {
@@ -129,15 +129,15 @@ void VarTableValueProperty::SetValue(const Any& newValue)
         DVASSERT(valueDefault.CanGet<VarTable>());
         VarTable varTableDefault = valueDefault.Get<VarTable>();
 
-        varTable.MarkOverriddenValues(varTableDefault);
+        varTable.SetOverriddenIfNotEqual(varTableDefault);
         ValueProperty::SetValue(Any(varTable));
-        SetOverridden(varTable.HasAnyOverridden());
+        SetOverridden(varTable.HasAnyPropertyOverridden());
     }
     else if (varTable.HasDefaultValues())
     {
-        varTable.MarkOverridden();
+        varTable.SetOverriddenIfNotEqualDefaultValues();
         ValueProperty::SetValue(Any(varTable));
-        SetOverridden(varTable.HasAnyOverridden());
+        SetOverridden(varTable.HasAnyPropertyOverridden());
     }
     else
     {
@@ -167,7 +167,7 @@ void VarTableValueProperty::ResetValue()
     }
     else if (varTable.HasDefaultValues())
     {
-        varTable.ResetValuesToDefaults();
+        varTable.ResetAllPropertiesToDefaultValues();
         SetDefaultValue(Any(varTable));
         IntrospectionProperty::ResetValue();
     }

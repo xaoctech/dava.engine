@@ -68,10 +68,23 @@ VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnectDataPinsOutputToIn
     if (outputPin->type->Pointer() && TypeInheritance::CanCast(outputPin->type->Pointer(), inputPin->type))
         return CAN_CONNECT_WITH_CAST;
 
-    if ((outputPin->type == Type::Instance<uint32>()) && (inputPin->type == Type::Instance<int32>()))
+#define CHECK_CAST(from, to) \
+    if ((outputPin->type == Type::Instance<from>()) && (inputPin->type == Type::Instance<to>())) \
+        return CAN_CONNECT_WITH_CAST; \
+    if ((outputPin->type == Type::Instance<to>()) && (inputPin->type == Type::Instance<from>())) \
         return CAN_CONNECT_WITH_CAST;
-    if ((outputPin->type == Type::Instance<int32>()) && (inputPin->type == Type::Instance<uint32>()))
-        return CAN_CONNECT_WITH_CAST;
+
+    CHECK_CAST(bool, int32);
+    CHECK_CAST(bool, uint32);
+    CHECK_CAST(int32, uint32);
+    CHECK_CAST(int32, float32);
+    CHECK_CAST(String, const char*);
+    CHECK_CAST(String, FastName);
+    CHECK_CAST(String, int32);
+    CHECK_CAST(String, uint32);
+    CHECK_CAST(String, float32);
+
+#undef CHECK_CAST
 
     return CANNOT_CONNECT;
 }

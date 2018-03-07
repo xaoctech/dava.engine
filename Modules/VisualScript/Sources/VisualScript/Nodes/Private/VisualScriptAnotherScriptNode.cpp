@@ -1,13 +1,14 @@
 #include "VisualScript/Nodes/VisualScriptAnotherScriptNode.h"
 #include "VisualScript/VisualScript.h"
 #include "VisualScript/VisualScriptPin.h"
-#include <FileSystem/FilePath.h>
+
+#include <Engine/Engine.h>
+#include <FileSystem/YamlNode.h>
 #include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
 
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
 DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptAnotherScriptNode)
 {
     ReflectionRegistrator<VisualScriptAnotherScriptNode>::Begin()
@@ -26,13 +27,20 @@ VisualScriptAnotherScriptNode::~VisualScriptAnotherScriptNode()
 
 void VisualScriptAnotherScriptNode::SetScriptFilepath(const FilePath& scriptFilepath_)
 {
-    scriptFilepath = scriptFilepath_;
-    SetName(FastName(scriptFilepath.GetBasename()));
-    anotherScript = GetEngineContext()->assetManager->LoadAsset<VisualScript>(scriptFilepath,
-                                                                              nullptr, false);
-    // MakeFunction(this, &VisualScriptAnotherScriptNode::AssetLoadedCallback);
-    GetEngineContext()->jobManager->WaitWorkerJobs();
-    AssetLoadedCallback(anotherScript);
+    if (scriptFilepath != scriptFilepath_)
+    {
+        scriptFilepath = scriptFilepath_;
+        SetName(FastName(scriptFilepath.GetBasename()));
+
+        anotherScript = std::make_unique<VisualScript>();
+        anotherScript->Load(scriptFilepath);
+        anotherScript->Compile();
+
+        //anotherScript = GetEngineContext()->assetManager->LoadAsset<VisualScript>(scriptFilepath, MakeFunction(this, &VisualScriptAnotherScriptNode::AssetLoadedCallback), false);
+        //GetEngineContext()->jobManager->WaitWorkerJobs();
+
+        CompleteScriptLoad();
+    }
 }
 
 const FilePath& VisualScriptAnotherScriptNode::GetScriptFilepath() const
@@ -40,9 +48,29 @@ const FilePath& VisualScriptAnotherScriptNode::GetScriptFilepath() const
     return scriptFilepath;
 }
 
-void VisualScriptAnotherScriptNode::AssetLoadedCallback(Asset<AssetBase> asset)
+//void VisualScriptAnotherScriptNode::AssetLoadedCallback(Asset<AssetBase> asset)
+//{
+//    DVASSERT(asset == anotherScript);
+//    CompleteScriptLoading();
+//}
+
+void VisualScriptAnotherScriptNode::Save(YamlNode* node) const
 {
-    DVASSERT(asset == anotherScript);
+    VisualScriptNode::Save(node);
+    node->Add("scriptName", scriptFilepath.GetAbsolutePathname());
+    SaveDefaults(node);
+}
+
+void VisualScriptAnotherScriptNode::Load(const YamlNode* node)
+{
+    VisualScriptNode::Load(node);
+    FilePath scriptPath(node->Get("scriptName")->AsString());
+    SetScriptFilepath(scriptPath);
+    LoadDefaults(node);
+}
+
+void VisualScriptAnotherScriptNode::CompleteScriptLoad()
+{
     const Vector<VisualScriptNode*>& nodes = anotherScript->GetNodes();
 
     Vector<VisualScriptPin*> allInputPins;
@@ -65,7 +93,7 @@ void VisualScriptAnotherScriptNode::AssetLoadedCallback(Asset<AssetBase> asset)
         }*/
         for (const auto& inPin : inputPins)
         {
-            if (inPin->GetConnectedSet().size() == 0)
+            if (inPin->GetConnectedSet().size() == 0 && inPin->GetDefaultValue().IsEmpty())
                 allInputPins.emplace_back(inPin);
         }
 
@@ -83,7 +111,7 @@ void VisualScriptAnotherScriptNode::AssetLoadedCallback(Asset<AssetBase> asset)
         when owner will serialize this script, all connections connected to that internal nodes, will be
         treated as connections to this AnotherScriptNode.
      
-        Execution of nodes work automagically because during compilation phase, script compiles as it has
+        Execution of nodes work automatically because during compilation phase, script compiles as it has
         all nodes included to itself.
      */
     uint32 index = 0;
@@ -107,22 +135,7 @@ void VisualScriptAnotherScriptNode::AssetLoadedCallback(Asset<AssetBase> asset)
     }
 }
 
-void VisualScriptAnotherScriptNode::Save(YamlNode* node) const
-{
-    VisualScriptNode::Save(node);
-    node->Add("scriptName", scriptFilepath.GetAbsolutePathname());
-}
-
-void VisualScriptAnotherScriptNode::Load(const YamlNode* node)
-{
-    VisualScriptNode::Load(node);
-
-    scriptFilepath = FilePath(node->Get("scriptName")->AsString());
-    SetScriptFilepath(scriptFilepath);
-}
-
 void VisualScriptAnotherScriptNode::BindReflection(const Reflection& reflection)
 {
 }
-#endif
 }

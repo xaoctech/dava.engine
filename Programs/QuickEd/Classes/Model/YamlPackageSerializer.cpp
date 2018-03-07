@@ -53,6 +53,13 @@ void YamlPackageSerializer::PutValue(const DAVA::String& value, bool quotes)
     parent->Add(node);
 }
 
+void YamlPackageSerializer::PutValue(const DAVA::Any& value)
+{
+    YamlNode* parent = nodesStack.back();
+    YamlNode* node = YamlNode::CreateNodeFromAny(value);
+    parent->Add(node);
+}
+
 void YamlPackageSerializer::BeginMap()
 {
     YamlNode* node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);

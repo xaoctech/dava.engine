@@ -4,6 +4,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Any.h"
 #include "Base/FastName.h"
+#include "Functional/Function.h"
 
 namespace DAVA
 {
@@ -15,49 +16,48 @@ public:
     {
         OVERRIDDEN = 0,
     };
-    struct VarProperty
+    struct VarMeta
     {
-        Any value;
         FlagsType flags = 0;
+        Any defaultValue;
     };
-    using VarMap = Map<FastName, VarProperty>;
-    using DefaultsMap = Map<FastName, Any>;
 
-    void Clear();
-    VarMap& GetProperties();
+    using VarMap = Map<FastName, Any>;
+    using MetaMap = Map<FastName, VarMeta>;
 
-    const VarMap& GetProperties() const;
-    void SetProperties(const VarMap& value);
+    void ClearProperties();
 
-    void ResetValuesToDefaults();
-    void ClearDefaults();
-    bool HasDefaultValues() const;
-    bool HasDefaultValue(const FastName& name) const;
-    void SetDefaultValue(const FastName& name, const Any& value);
-    const Any& GetDefaultValue(const FastName& name);
-    void RemoveDefault(const FastName& name);
+    void ForEachProperty(const Function<void(const FastName& name, const Any& value)>& f) const;
 
-    bool HasAnyOverridden() const;
-
-    const Any& GetPropertyValue(const FastName& name);
+    bool HasProperty(const FastName& name) const;
+    Any GetPropertyValue(const FastName& name) const;
     void SetPropertyValue(const FastName& name, const Any& value);
     void RemoveProperty(const FastName& name);
-    bool HasProperty(const FastName& name) const;
-    void SetPropertyFlag(const FastName& name, Flags flag, bool value);
-    bool IsPropertyOverridden(const FastName& name) const;
-    void SetPropertyOverridden(const FastName& name, bool value);
+
+    bool HasDefaultValues() const;
+    bool HasDefaultValue(const FastName& name) const;
+    Any GetDefaultValue(const FastName& name) const;
+    void SetDefaultValue(const FastName& name, const Any& value);
+    void RemoveDefaultValue(const FastName& name);
+    void ClearDefaultValues();
+
+    void ResetAllPropertiesToDefaultValues();
 
     void ClearFlags();
     void SetFlag(Flags flag, bool value);
+    void SetPropertyFlag(const FastName& name, Flags flag, bool value);
+    bool GetPropertyFlag(const FastName& name, Flags flag, bool defaultValue = false) const;
+
+    bool HasAnyPropertyOverridden() const;
+    bool IsPropertyOverridden(const FastName& name) const;
+    void SetPropertyOverridden(const FastName& name, bool value);
 
     void AddPropertiesIfNotExists(const VarTable& other);
-    void MarkOverriddenValues(const VarTable& other);
-    void MarkOverridden();
+    void SetOverriddenIfNotEqual(const VarTable& other);
+    void SetOverriddenIfNotEqualDefaultValues();
+    void SetPropertyOverriddenFlagIfNotEqual(const FastName& propertyName, const Any& otherValue);
 
     String GetNamesString(const String& sep = ", ") const;
-
-    void AddAnyFromString(const String& name, const String& typeStr, const String& value);
-    void AddAnyFromString(const String& name, const Type* type, const String& value);
 
     static Any ParseString(const Type* type, const String& str);
     static String AnyToString(const Any& val);
@@ -65,7 +65,7 @@ public:
     static const Vector<const Type*> SUPPORTED_TYPES;
 
 private:
-    VarMap propeties;
-    DefaultsMap defaults;
+    MetaMap metaMap;
+    VarMap properties;
 };
 }

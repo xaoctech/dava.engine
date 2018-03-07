@@ -1,20 +1,20 @@
 #pragma once
 
 #include "VisualScript/VisualScriptNode.h"
+#include <FileSystem/FilePath.h>
 
 namespace DAVA
 {
-class FilePath;
 class YamlNode;
+class VisualScript;
 
-#if TODO_VISUAL_ANOTHER_SCRIPT_NODE
 class VisualScriptAnotherScriptNode : public VisualScriptNode
 {
     DAVA_VIRTUAL_REFLECTION(VisualScriptAnotherScriptNode, VisualScriptNode);
 
 public:
     VisualScriptAnotherScriptNode();
-    ~VisualScriptAnotherScriptNode() override = default;
+    ~VisualScriptAnotherScriptNode() override;
 
     void SetScriptFilepath(const FilePath& scriptFilepath_);
     const FilePath& GetScriptFilepath() const;
@@ -26,9 +26,9 @@ public:
 
 protected:
     FilePath scriptFilepath;
-    VisualScript* anotherScript = nullptr;
+    std::unique_ptr<VisualScript> anotherScript;
 
-    void AssetLoadedCallback(VisualScript* script);
+    void CompleteScriptLoad();
+    //void AssetLoadedCallback(VisualScript* script);
 };
-#endif
 }

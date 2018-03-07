@@ -1,0 +1,177 @@
+Header:
+    version: "20"
+Controls:
+-   class: "UIControl"
+    name: "UIControl"
+    position: [0.000000, 0.000000]
+    size: [719.000000, 453.000000]
+    components:
+        LinearLayout:
+            orientation: "TopDown"
+            dynamicPadding: true
+    children:
+    -   class: "UIStaticText"
+        name: "UIStaticText"
+        position: [201.000000, 59.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "Random animation:"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "BarControl_00_BasicRandom"
+        position: [201.000000, 96.000000]
+        size: [300.000000, 30.000000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.000000, 0.000000, 0.000000, 1.000000]
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/AnimatedBar_00_BasicRandom.dvs"
+        children:
+        -   class: "UIControl"
+            name: "ValueControl"
+            position: [2.000000, 2.000000]
+            size: [296.000000, 26.000000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"
+                    color: [0.000000, 1.000000, 0.000000, 1.000000]
+    -   class: "UIStaticText"
+        name: "UIStaticText_1"
+        position: [201.000000, 126.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "DemoMode option:"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "BarControl_01_DemoModeOption"
+        position: [201.000000, 163.000000]
+        size: [300.000000, 30.000000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.000000, 0.000000, 0.000000, 1.000000]
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/AnimatedBar_01_DemoModeOption.dvs"
+                properties:
+                    demoMode: ["bool", true]
+        children:
+        -   class: "UIControl"
+            name: "ValueControl"
+            position: [2.000000, 2.000000]
+            size: [296.000000, 26.000000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"
+                    color: [0.000000, 1.000000, 0.000000, 1.000000]
+    -   class: "UIStaticText"
+        name: "UIStaticText_2"
+        position: [201.000000, 193.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "Automatic animation:"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "BarControl_02_AutoRestore"
+        position: [201.000000, 230.000000]
+        size: [300.000000, 30.000000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.000000, 0.000000, 0.000000, 1.000000]
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/AnimatedBar_02_AutoRestore.dvs"
+                properties:
+                    value: ["float32", 0.500000]
+        children:
+        -   class: "UIControl"
+            name: "ValueControl"
+            position: [2.000000, 2.000000]
+            size: [296.000000, 26.000000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"
+                    color: [0.000000, 1.000000, 0.000000, 1.000000]
+    -   class: "UIStaticText"
+        name: "UIStaticText_3"
+        position: [201.000000, 260.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "Automatic with color 'lerp':"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "BarControl_03_AutoRestoreWithColor"
+        position: [201.000000, 297.000000]
+        size: [300.000000, 30.000000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.000000, 0.000000, 0.000000, 1.000000]
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/AnimatedBar_03_AutoRestoreWithColor.dvs"
+                properties:
+                    value: ["float32", 0.500000]
+        children:
+        -   class: "UIControl"
+            name: "ValueControl"
+            position: [2.000000, 2.000000]
+            size: [296.000000, 26.000000]
+            components:
+                Background:
+                    drawType: "DRAW_FILL"
+    -   class: "UIStaticText"
+        name: "UIStaticText_4"
+        position: [201.000000, 327.000000]
+        size: [300.000000, 37.000000]
+        components:
+            UITextComponent:
+                text: "Automatic with color 'lerp' complex:"
+                fontName: "DejaVuSans_18"
+                colorInheritType: "COLOR_IGNORE_PARENT"
+                align: ["HCENTER", "BOTTOM"]
+    -   class: "UIControl"
+        name: "BarControl_04_AutoRestoreWithColorRefcatoring"
+        position: [201.000000, 364.000000]
+        size: [300.000000, 30.000000]
+        components:
+            Background:
+                drawType: "DRAW_FILL"
+                color: [0.000000, 0.000000, 0.000000, 1.000000]
+            UIVisualScriptComponent:
+                scriptPath: "~res:/VScripts/AnimatedBar_04_AutoRestoreWithColorRefactoring.dvs"
+                properties:
+                    value: ["float32", 0.500000]
+        children:
+        -   class: "UIControl"
+            name: "animatedCtrl"
+            position: [0.000000, 0.000000]
+            size: [300.000000, 30.000000]
+            components:
+                SizePolicy:
+                    horizontalPolicy: "PercentOfParent"
+                    verticalPolicy: "PercentOfParent"
+                Background:
+                    drawType: "DRAW_FILL"
+        -   class: "UIControl"
+            name: "staticCtrl"
+            position: [0.000000, 0.000000]
+            size: [300.000000, 30.000000]
+            components:
+                SizePolicy:
+                    horizontalPolicy: "PercentOfParent"
+                    horizontalValue: 100.000000
+                    verticalPolicy: "PercentOfParent"
+                Background:
+                    drawType: "DRAW_FILL"

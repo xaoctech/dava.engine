@@ -313,10 +313,15 @@ VarTable YamlNode::AsVarTable() const
 
     for (auto it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
     {
-        const String& name = it->first;
+        const FastName name(it->first);
         const YamlNode* typeNode = it->second->Get(0);
         const YamlNode* valueNode = it->second->Get(1);
-        result.AddAnyFromString(name, typeNode->AsString(), valueNode->AsString());
+
+        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(typeNode->AsString());
+        DVASSERT(reflectedType);
+        const Type* type = reflectedType->GetType();
+
+        result.SetPropertyValue(name, valueNode->AsAny(type));
     }
     return result;
 }
@@ -1130,6 +1135,11 @@ bool YamlNode::InitStringFromAny(const Any& any)
             representation = SR_DOUBLE_QUOTED_REPRESENTATION;
 
         InternalSetString(string, representation);
+        return true;
+    }
+    else if (any.CanGet<bool>())
+    {
+        InternalSetString(any.Get<bool>() ? "true" : "false", SR_PLAIN_REPRESENTATION);
         return true;
     }
     return false;

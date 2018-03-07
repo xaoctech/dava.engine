@@ -61,7 +61,7 @@ VisualScriptNode::~VisualScriptNode()
             Check that this is our own pin. Some nodes like AnotherScriptNode register pins from it's internals.
             We do not need to release them.
          */
-        if (pin->GetExecutionOwner() == this)
+        if (pin->GetExecutionOwner() == this && pin->GetSerializationOwner() == this)
         {
             delete pin;
         }
@@ -297,9 +297,11 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
         for (VisualScriptPin* inPin : GetDataInputPins())
         {
             const YamlNode* valNode = defsNode->Get(inPin->GetName().c_str());
-            if (valNode)
+            const Type* inPinType = inPin->GetType();
+            // DVASSERT(inPinType);
+            if (valNode && inPinType)
             {
-                inPin->SetDefaultValue(valNode->AsAny(inPin->GetType()));
+                inPin->SetDefaultValue(valNode->AsAny(inPinType->Decay() ? inPinType->Decay() : inPinType));
             }
         }
     }

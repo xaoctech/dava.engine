@@ -15,9 +15,7 @@ class VisualScriptBranchNode;
 class VisualScriptForNode;
 class VisualScriptWhileNode;
 class VisualScriptEventNode;
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
 class VisualScriptAnotherScriptNode;
-#endif
 class VisualScriptGetMemberNode;
 class VisualScriptSetMemberNode;
 class VisualScriptNode;
@@ -46,9 +44,7 @@ private:
     void ExecuteDoNNode(VisualScriptNode* node, VisualScriptPin* entryPin);
     void ExecuteEventNode(VisualScriptEventNode* node, VisualScriptPin* entryPin);
     void ExecuteCustomEventNode(VisualScriptEventNode* node, VisualScriptPin* entryPin);
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
     void ExecuteAnotherScriptNode(VisualScriptAnotherScriptNode* node, VisualScriptPin* entryPin);
-#endif
     void ExecuteGetMemberNode(VisualScriptGetMemberNode* node, VisualScriptPin* entryPin);
     void ExecuteSetMemberNode(VisualScriptSetMemberNode* node, VisualScriptPin* entryPin);
 

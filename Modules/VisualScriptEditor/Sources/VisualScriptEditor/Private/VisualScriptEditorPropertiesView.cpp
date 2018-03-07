@@ -310,17 +310,19 @@ public:
         if (parent->propertyType == PropertyNode::SelfRoot)
         {
             VisualScriptEditorReflectionHolder* holder = parent->field.ref.GetValue().Get<VisualScriptEditorReflectionHolder*>(nullptr);
-            for (const Reflection& ref : holder->reflectedModels)
+            if (holder)
             {
-                Reflection::Field f;
+                for (const Reflection& ref : holder->reflectedModels)
+                {
+                    Reflection::Field f;
 
-                const ReflectedType* refType = GetValueReflectedType(ref);
-                f.key = refType->GetPermanentName();
-                f.ref = ref;
+                    const ReflectedType* refType = GetValueReflectedType(ref);
+                    f.key = refType->GetPermanentName();
+                    f.ref = ref;
 
-                children.push_back(allocator->CreatePropertyNode(parent, std::move(f), static_cast<int32>(children.size()), PropertyNode::RealProperty));
+                    children.push_back(allocator->CreatePropertyNode(parent, std::move(f), static_cast<int32>(children.size()), PropertyNode::RealProperty));
+                }
             }
-
             Reflection::Field addValueField;
             addValueField.key = "Add Value";
             addValueField.ref = parent->field.ref;

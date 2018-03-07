@@ -11,6 +11,7 @@
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Reflection/ReflectedStructure.h>
+#include <VisualScript/Nodes/VisualScriptAnotherScriptNode.h>
 #include <VisualScript/Nodes/VisualScriptEventNode.h>
 #include <VisualScript/VisualScript.h>
 #include <VisualScript/VisualScriptEvents.h>
@@ -213,7 +214,6 @@ void VisualScriptRegistryModel::RegisterReflectedMethods()
 
 void VisualScriptRegistryModel::RegisterSubscriptsAction()
 {
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
     RegistryItemDescriptorData* descrData = CreateStaticItem("Another Script: Load", "Select *.dvs");
     descrData->creator = [this]()
     {
@@ -248,7 +248,6 @@ void VisualScriptRegistryModel::RegisterSubscriptsAction()
         node->SetScriptFilepath(scriptPath);
         return node;
     };
-#endif
 }
 
 void VisualScriptRegistryModel::RegisterReflectedData()
@@ -269,8 +268,11 @@ void VisualScriptRegistryModel::RegisterReflectedData()
                     FastName key = f.key.Get<FastName>();
                     Reflection ref = model;
 
+                    String title = key.c_str();
+                    title[0] = std::toupper(title[0], std::locale()); // Capitalize first letter
+
                     {
-                        RegistryItemDescriptorData* descrData = CreateDynamicItem("Values: Set", QString::fromLatin1(key.c_str()));
+                        RegistryItemDescriptorData* descrData = CreateDynamicItem("Values", QString::fromLatin1(("Set" + title).c_str()));
                         descrData->creator = [ref, key, this]() {
                             const ReflectedType* scriptNodeType = ReflectedTypeDB::GetByPermanentName("VisualScriptSetVarNode");
                             return script->CreateNode(scriptNodeType, ref, key);
@@ -278,7 +280,7 @@ void VisualScriptRegistryModel::RegisterReflectedData()
                     }
 
                     {
-                        RegistryItemDescriptorData* descrData = CreateDynamicItem("Values: Get", QString::fromLatin1(key.c_str()));
+                        RegistryItemDescriptorData* descrData = CreateDynamicItem("Values", QString::fromLatin1(("Get" + title).c_str()));
                         descrData->creator = [ref, key, this]() {
                             const ReflectedType* scriptNodeType = ReflectedTypeDB::GetByPermanentName("VisualScriptGetVarNode");
                             return script->CreateNode(scriptNodeType, ref, key);
@@ -297,7 +299,6 @@ void VisualScriptRegistryModel::RegisterReflectedData()
 
 void VisualScriptRegistryModel::RegisterSubscripts()
 {
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
     VisualScriptEditorDialogSettings* settings = accessor->GetGlobalContext()->GetData<VisualScriptEditorDialogSettings>();
     for (const String& pathStr : settings->recentScripts)
     {
@@ -311,7 +312,6 @@ void VisualScriptRegistryModel::RegisterSubscripts()
             return node;
         };
     }
-#endif
 }
 
 void VisualScriptRegistryModel::ReleaseReflectedItems(std::map<QString, std::vector<QtNodes::RegistryItemDescriptor*>>& reflectedItems)

@@ -230,6 +230,7 @@ void RegisterVector2()
     .Method("Normalize", static_cast<Vector2 (*)(const Vector2&)>(&DAVA::Normalize))
     .Method("Reflect", static_cast<Vector2 (*)(const Vector2&, const Vector2&)>(&DAVA::Reflect))
     .Method("Rotate", static_cast<Vector2 (*)(const Vector2&, float32)>(&DAVA::Rotate))
+    .Method("Make", [](float32 x, float32 y) { return Vector2(x, y); })
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Vector2);
@@ -312,7 +313,10 @@ void RegisterColor()
     .Field("G", &Color::g)
     .Field("B", &Color::b)
     .Field("A", &Color::a)
+    .Method("Lerp", [](Color a, Color b, float32 t) { return a + (b - a) * DAVA::Clamp(t, 0.0f, 1.0f); })
     .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Color);
 }
 
 void RegisterIntegerMath()
@@ -320,10 +324,16 @@ void RegisterIntegerMath()
     ReflectionRegistrator<IntegerMath>::Begin()
     .Method("Inc", [](int32 a) { return ++a; })
     .Method("Dec", [](int32 a) { return --a; })
+    .Method("Sign", [](int32 a) { return (a == 0 ? 0 : (a > 0 ? 1 : -1)); })
+    .Method("Abs", [](int32 a) { return DAVA::Abs(a); })
+    .Method("Min", [](int32 a, int32 b) { return DAVA::Min(a, b); })
+    .Method("Max", [](int32 a, int32 b) { return DAVA::Max(a, b); })
     .Method("Sum", [](int32 a, int32 b) { return a + b; })
     .Method("Sub", [](int32 a, int32 b) { return a - b; })
     .Method("Mul", [](int32 a, int32 b) { return a * b; })
     .Method("Div", [](int32 a, int32 b) { return a / b; })
+    .Method("Mod", [](int32 a, int32 b) { return a % b; })
+    .Method("Clamp", [](int32 a, int32 b, int32 c) { return DAVA::Clamp(a, b, c); })
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(IntegerMath);
@@ -332,10 +342,20 @@ void RegisterIntegerMath()
 void RegisterFloatMath()
 {
     ReflectionRegistrator<FloatMath>::Begin()
+    .Method("Sign", [](float32 a) { return static_cast<float32>(a == 0.0 ? 0 : (a > 0.0 ? 1.0 : -1.0)); })
+    .Method("Abs", [](float32 a) { return DAVA::Abs(a); })
+    .Method("Floor", [](float32 a) { return std::floor(a); })
+    .Method("Ceil", [](float32 a) { return std::ceil(a); })
+    .Method("Round", [](float32 a) { return std::round(a); })
+    .Method("Min", [](float32 a, float32 b) { return DAVA::Min(a, b); })
+    .Method("Max", [](float32 a, float32 b) { return DAVA::Max(a, b); })
     .Method("Sum", [](float32 a, float32 b) { return a + b; })
     .Method("Sub", [](float32 a, float32 b) { return a - b; })
     .Method("Mul", [](float32 a, float32 b) { return a * b; })
     .Method("Div", [](float32 a, float32 b) { return a / b; })
+    .Method("Mod", [](float32 a, float32 b) { return fmod(a, b); })
+    .Method("Clamp", [](float32 a, float32 b, float32 c) { return DAVA::Clamp(a, b, c); })
+    .Method("Lerp", [](float32 a, float32 b, float32 t) { return a + (b - a) * DAVA::Clamp(t, 0.0f, 1.0f); })
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(FloatMath);
@@ -376,6 +396,9 @@ class ConditionsInt
 class ConditionsFloat
 {
 };
+class ConditionsBool
+{
+};
 
 void RegisterConditions()
 {
@@ -390,6 +413,8 @@ void RegisterConditions()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConditionsInt);
 
     ReflectionRegistrator<ConditionsFloat>::Begin()
+    .Method("Equal", [](float32 a, float32 b) { return static_cast<bool>(FLOAT_EQUAL(a, b)); })
+    .Method("EqualEpsilon", [](float32 a, float32 b, float32 c) { return static_cast<bool>(FLOAT_EQUAL_EPS(a, b, c)); })
     .Method("==", &CompareFuncEqual<float32>)
     .Method("!=", &CompareFuncNEqual<float32>)
     .Method("<", &CompareFuncLess<float32>)
@@ -398,13 +423,23 @@ void RegisterConditions()
     .Method(">=", &CompareFuncGEqual<float32>)
     .End();
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConditionsFloat);
+
+    ReflectionRegistrator<ConditionsBool>::Begin()
+    .Method("==", [](bool a, bool b) { return a == b; })
+    .Method("!=", [](bool a, bool b) { return a != b; })
+    .Method("And", [](bool a, bool b) { return a && b; })
+    .Method("Or", [](bool a, bool b) { return a || b; })
+    .Method("Xor", [](bool a, bool b) { return a ^ b; })
+    .Method("Not", [](bool a) { return !a; })
+    .End();
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConditionsBool);
 }
 
 void RegisterRandom()
 {
     ReflectionRegistrator<Random>::Begin()
     .Method("Random", [](uint32 n) { return Random::Instance()->Rand(n); })
-    .Method("RandomFloat", []() { return Random::Instance()->RandFloat(); })
+    .Method("RandomFloat", []() { return static_cast<float32>(Random::Instance()->RandFloat()); })
     .Method("RandomVector2", []() { return Vector2(static_cast<float32>(Random::Instance()->RandFloat()),
                                                    static_cast<float32>(Random::Instance()->RandFloat())); })
     .Method("RandomVector3", []() { return Vector3(static_cast<float32>(Random::Instance()->RandFloat()),

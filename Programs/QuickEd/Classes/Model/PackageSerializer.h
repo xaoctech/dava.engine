@@ -24,6 +24,7 @@ public:
     virtual void PutValue(const DAVA::String& name, const DAVA::String& value, bool quotes) = 0;
     virtual void PutValue(const DAVA::String& name, const DAVA::Vector<DAVA::String>& value) = 0;
     virtual void PutValue(const DAVA::String& value, bool quotes) = 0;
+    virtual void PutValue(const DAVA::Any& value) = 0;
 
     virtual void BeginMap(const DAVA::String& name, bool quotes = false) = 0;
     virtual void BeginMap() = 0;

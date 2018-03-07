@@ -60,14 +60,15 @@ void VirtualPropertiesSection::RebuildVirtualProperties()
     if (vt.CanGet<VarTable>())
     {
         VarTable varTable = vt.Get<VarTable>();
-        for (const auto& field : varTable.GetProperties())
-        {
-            String fieldName = field.first.c_str();
-            VirtualProperty* prop = new VirtualProperty(this, fieldName, field.second.value.GetType());
+        varTable.ForEachProperty([&](const FastName& name, const Any& value) {
+            VirtualProperty* prop = new VirtualProperty(this, name.c_str(), value.GetType());
             AddProperty(prop);
             SafeRelease(prop);
-        }
+        });
     }
+    std::sort(children.begin(), children.end(), [](VirtualProperty* a, VirtualProperty* b) {
+        return strcmp(a->GetName().c_str(), b->GetName().c_str()) < 0;
+    });
 }
 
 void VirtualPropertiesSection::Accept(PropertyVisitor* visitor)

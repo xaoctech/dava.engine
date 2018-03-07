@@ -84,10 +84,7 @@ VarTableEditorDialog::VarTableEditorDialog(const DAVA::VarTable& values_, QWidge
     model = new QStandardItemModel(0, header.size(), this);
     model->setHorizontalHeaderLabels(header);
 
-    for (auto& it : values.GetProperties())
-    {
-        const String& varName = it.first.c_str();
-        const Any& value = it.second.value;
+    values.ForEachProperty([&](const FastName& varName, const Any& value) {
         const Type* type = value.GetType();
         const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);
 
@@ -99,12 +96,12 @@ VarTableEditorDialog::VarTableEditorDialog(const DAVA::VarTable& values_, QWidge
             items.push_back(item);
         };
 
-        column(varName);
+        column(String(varName.c_str()));
         column(reflType->GetPermanentName());
         column(VarTable::AnyToString(value));
 
         model->appendRow(items);
-    }
+    });
 
     ui.tableView->setModel(model);
     ui.tableView->resizeColumnsToContents();
@@ -119,24 +116,17 @@ const VarTable& VarTableEditorDialog::GetValues() const
 
 void VarTableEditorDialog::OnOk()
 {
-    values.GetProperties().clear();
+    values.ClearProperties();
 
     for (int row = 0; row < model->rowCount(); row++)
     {
-        QString nameStr = model->data(model->index(row, 0), Qt::DisplayRole).toString();
-        QString typeStr = model->data(model->index(row, 1), Qt::DisplayRole).toString();
-        QString valueStr = model->data(model->index(row, 2), Qt::DisplayRole).toString();
-        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(QStringToString(typeStr));
-        String name = QStringToString(nameStr);
-        if (reflectedType == nullptr)
-        {
-            values.AddAnyFromString(name, Type::Instance<String>(), QStringToString(valueStr));
-        }
-        else
-        {
-            const Type* type = reflectedType->GetType();
-            values.AddAnyFromString(name, type, QStringToString(valueStr));
-        }
+        String nameStr = QStringToString(model->data(model->index(row, 0), Qt::DisplayRole).toString());
+        String typeStr = QStringToString(model->data(model->index(row, 1), Qt::DisplayRole).toString());
+        String valueStr = QStringToString(model->data(model->index(row, 2), Qt::DisplayRole).toString());
+        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(typeStr);
+        const Type* type = reflectedType ? reflectedType->GetType() : Type::Instance<String>();
+        DVASSERT(type);
+        values.SetPropertyValue(FastName(nameStr), VarTable::ParseString(type, valueStr));
     }
     accept();
 }

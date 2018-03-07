@@ -17,6 +17,7 @@ public:
     virtual void PutValue(const DAVA::String& name, const DAVA::String& value, bool quotes) override;
     virtual void PutValue(const DAVA::String& name, const DAVA::Vector<DAVA::String>& value) override;
     virtual void PutValue(const DAVA::String& value, bool quotes) override;
+    virtual void PutValue(const DAVA::Any& value) override;
 
     virtual void BeginMap() override;
     virtual void BeginMap(const DAVA::String& name, bool quotes = false) override;

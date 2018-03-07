@@ -1,0 +1,12 @@
+variables: {}
+nodes:
+    VisualScriptFunctionNode1:
+        connections: []
+        name: "VisualScriptFunctionNode1"
+        node:
+            functionName: "Sum"
+            position: [486.000000, 245.000000]
+            className: "FloatMath"
+            defaults:
+                arg1: 10.000000
+        type: "VisualScriptFunctionNode"

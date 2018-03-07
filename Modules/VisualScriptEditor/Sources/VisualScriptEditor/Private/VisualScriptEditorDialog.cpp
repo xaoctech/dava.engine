@@ -434,7 +434,6 @@ void VisualScriptEditorDialog::StoreRecentScriptPathname(const FilePath& scriptP
 
 void VisualScriptEditorDialog::OnNodeDoubleClicked(QtNodes::Node& n)
 {
-#ifdef TODO_VISUAL_ANOTHER_SCRIPT_NODE
     VisualScriptNodeModel* dataModel = static_cast<VisualScriptNodeModel*>(n.nodeDataModel());
     VisualScriptAnotherScriptNode* scriptNode = dynamic_cast<VisualScriptAnotherScriptNode*>(dataModel->GetScriptNode());
     if (scriptNode != nullptr)
@@ -453,7 +452,6 @@ void VisualScriptEditorDialog::OnNodeDoubleClicked(QtNodes::Node& n)
 
         NewScriptImpl(scriptPath);
     }
-#endif
 }
 
 void VisualScriptEditorDialog::ClearSelection()

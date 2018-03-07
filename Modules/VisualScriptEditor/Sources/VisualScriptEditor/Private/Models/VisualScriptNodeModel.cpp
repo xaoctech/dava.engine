@@ -145,6 +145,8 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                 {
                     CheckBox::Params params(accessor, ui, DAVA::mainWindowKey);
                     params.fields[CheckBox::Fields::Checked] = "defaultValue";
+                    params.fields[CheckBox::Fields::EmptyValue].BindConstValue(Qt::PartiallyChecked);
+                    params.fields[CheckBox::Fields::IsVisible] = "defaultValueVisible";
                     CheckBox* checkBox = new CheckBox(params, accessor, inReflection, nullptr);
 
                     layout = new QtHBoxLayout();

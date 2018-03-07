@@ -1,0 +1,50 @@
+variables:
+    var1: ["float32", 0.000000]
+    var2: ["String", "15.75"]
+nodes:
+    VisualScriptGetVarNode1:
+        connections:
+        -   in:
+                name: "VisualScriptGetVarNode1"
+                pin: "value"
+            out:
+                name: "VisualScriptSetVarNode1"
+                pin: "set"
+        name: "VisualScriptGetVarNode1"
+        node:
+            position: [135.000000, 355.000000]
+            varPath: "var2"
+        type: "VisualScriptGetVarNode"
+    VisualScriptSetVarNode1:
+        connections:
+        -   in:
+                name: "VisualScriptSetVarNode1"
+                pin: "set"
+            out:
+                name: "VisualScriptGetVarNode1"
+                pin: "value"
+        -   in:
+                name: "VisualScriptSetVarNode1"
+                pin: "exec"
+            out:
+                name: "VisualScriptEventNode1"
+                pin: "event"
+        name: "VisualScriptSetVarNode1"
+        node:
+            position: [411.000000, 259.000000]
+            varPath: "var1"
+            defaults: {}
+        type: "VisualScriptSetVarNode"
+    VisualScriptEventNode1:
+        connections:
+        -   in:
+                name: "VisualScriptEventNode1"
+                pin: "event"
+            out:
+                name: "VisualScriptSetVarNode1"
+                pin: "exec"
+        name: "VisualScriptEventNode1"
+        node:
+            position: [133.000000, 176.000000]
+            eventName: "ButtonClickEvent"
+        type: "VisualScriptEventNode"
