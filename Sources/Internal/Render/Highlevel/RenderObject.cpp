@@ -372,11 +372,13 @@ void RenderObject::Load(KeyedArchive* archive, SerializationContext* serializati
 
 void RenderObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
-    DVASSERT(worldTransform != 0);
+    DVASSERT(worldTransform != nullptr);
 
     DynamicBindings& bindings = Renderer::GetDynamicBindings();
 
     bindings.SetDynamicParam(DynamicBindings::PARAM_WORLD, worldTransform, reinterpret_cast<pointer_size>(worldTransform));
+    if (prevWorldTransform != nullptr)
+        bindings.SetDynamicParam(DynamicBindings::PARAM_WORLD_PREVIOUS, prevWorldTransform, reinterpret_cast<pointer_size>(worldTransform));
 
     if (camera && lights[0])
     {

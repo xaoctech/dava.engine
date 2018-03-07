@@ -19,6 +19,7 @@ void InitDynamicParamNames()
         DYNAMIC_PARAM_NAMES = {
             FastName("unknownSemantic"),
             FastName("worldMatrix"), //PARAM_WORLD,
+            FastName("prevWorldMatrix"), //PARAM_WORLD_PREVIOUS,
             FastName("invWorldMatrix"), //PARAM_INV_WORLD,
             FastName("worldInvTransposeMatrix"), //PARAM_WORLD_INV_TRANSPOSE,
 
@@ -33,6 +34,8 @@ void InitDynamicParamNames()
 
             FastName("viewProjMatrix"), //PARAM_VIEW_PROJ,
             FastName("invViewProjMatrix"), //PARAM_INV_VIEW_PROJ,
+
+            FastName("prevViewProjMatrix"), //PARAM_INV_VIEW_PROJ,
 
             FastName("worldViewProjMatrix"), //PARAM_WORLD_VIEW_PROJ,
             FastName("invWorldViewProjMatrix"), //PARAM_INV_WORLD_VIEW_PROJ,
@@ -92,6 +95,7 @@ void InitDynamicParamNames()
             FastName("tessellationHeight"),
             FastName("cameraDynamicRange"),
             FastName("cameraTargetLuminance"),
+            FastName("cameraProjJitterPrevCurr")
         };
     }
 };

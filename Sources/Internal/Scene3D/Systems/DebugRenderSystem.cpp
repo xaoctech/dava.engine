@@ -49,12 +49,15 @@ void DebugRenderSystem::Process(float32 timeElapsed)
             for (Entity* entity : pair.second)
             {
                 // Update new transform pointer, and mark that transform is changed
-                const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+                TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+                const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+                const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
 
                 RenderObject* object = entity->GetComponent<DebugRenderComponent>()->GetRenderObject();
                 if (nullptr != object)
                 {
                     object->SetWorldTransformPtr(worldTransformPointer);
+                    object->SetPrevWorldTransformPtr(prevWorldTransformPointer);
                     entity->GetScene()->renderSystem->MarkForUpdate(object);
                 }
             }
@@ -69,8 +72,12 @@ void DebugRenderSystem::RegisterComponent(Entity* entity, Component* component)
         RenderObject* renderObject = entity->GetComponent<DebugRenderComponent>()->GetRenderObject();
         if (!renderObject)
             return;
-        const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+        TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+        const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+        const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
+
         renderObject->SetWorldTransformPtr(worldTransformPointer);
+        renderObject->SetPrevWorldTransformPtr(prevWorldTransformPointer);
 
         componentRenderObjectMap[component] = renderObject;
         GetScene()->GetRenderSystem()->RenderPermanent(renderObject);

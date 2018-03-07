@@ -57,6 +57,7 @@ LightRenderObject::LightRenderObject()
     renderBatch->SetPolygonGroup(backgroundQuadPolygon);
 
     SetWorldTransformPtr(&worldTransform);
+    SetPrevWorldTransformPtr(&worldTransform);
     AddRenderBatch(renderBatch.Get());
     AddFlag(ALWAYS_CLIPPING_VISIBLE);
 }

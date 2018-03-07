@@ -5,7 +5,8 @@ RenderTechnique:
     RenderState:            
         blendDest: "BLEND_ONE"
         blendSrc: "BLEND_ONE"
-        state: "STATE_BLEND | STATE_DEPTH_TEST"
+        blendEnabled: true
+        depthTest: true
     Passes:
         ForwardPass:
         ForwardPassWithCombine:

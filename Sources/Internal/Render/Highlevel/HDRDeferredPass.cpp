@@ -29,6 +29,7 @@ class HDRDeferredPass::GBufferPass : public RenderPass
 public:
     GBufferPass();
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
+    void DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask = 0xFFFFFFFF) override;
 
 private:
     ScopedPtr<Texture> defaultCubemap;
@@ -39,6 +40,7 @@ class HDRDeferredPass::DeferredDecalPass : public RenderPass
 public:
     DeferredDecalPass();
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
+    void DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask = 0xFFFFFFFF) override;
 
 private:
     DeferredDecalRenderer* deferredDecalRenderer = nullptr;
@@ -79,6 +81,12 @@ void HDRDeferredPass::GBufferPass::Draw(RenderSystem* renderSystem, uint32 drawL
 {
     DAVA_PROFILER_GPU_RENDER_PASS(passConfig, ProfilerGPUMarkerName::GBUFFER_PASS);
     RenderPass::Draw(renderSystem, drawLayersMask);
+}
+
+void HDRDeferredPass::GBufferPass::DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask)
+{
+    DAVA_PROFILER_GPU_RENDER_PASS(passConfig, ProfilerGPUMarkerName::GBUFFER_PASS);
+    RenderPass::DrawVisibilityArray(renderSystem, preparedVisibilityArray, drawLayersMask);
 }
 
 HDRDeferredPass::DeferredDecalPass::DeferredDecalPass()
@@ -124,8 +132,6 @@ void HDRDeferredPass::DeferredDecalPass::Draw(RenderSystem* renderSystem, uint32
 
     //GFX_COMPLETE - GBufferPass and DeferredDecalPass actually share camera params and visibility arrays - so we can do clipping only once
     Camera* mainCamera = renderSystem->GetMainCamera();
-    Camera* drawCamera = renderSystem->GetDrawCamera();
-    SetupCameraParams(mainCamera, drawCamera);
     uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
         currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
@@ -135,6 +141,17 @@ void HDRDeferredPass::DeferredDecalPass::Draw(RenderSystem* renderSystem, uint32
     if (visibilityArray.decalArray.empty())
         return;
 
+    DrawVisibilityArray(renderSystem, visibilityArray, drawLayersMask);
+}
+
+void HDRDeferredPass::DeferredDecalPass::DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask)
+{
+    if (preparedVisibilityArray.decalArray.empty())
+        return;
+
+    Camera* mainCamera = renderSystem->GetMainCamera();
+    Camera* drawCamera = renderSystem->GetDrawCamera();
+    SetupCameraParams(mainCamera, drawCamera);
     //per pass viewport bindings
     viewportSize = Vector2(viewport.dx, viewport.dy);
     rcpViewportSize = Vector2(1.0f / viewport.dx, 1.0f / viewport.dy);
@@ -150,7 +167,7 @@ void HDRDeferredPass::DeferredDecalPass::Draw(RenderSystem* renderSystem, uint32
     uint32 gbuffersMask = 0;
     if (BeginRenderPass(passConfig))
     {
-        gbuffersMask = deferredDecalRenderer->Draw(visibilityArray, packetList);
+        gbuffersMask = deferredDecalRenderer->Draw(preparedVisibilityArray, packetList);
 
         EndRenderPass();
     }
@@ -406,6 +423,9 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 {
     DebugDumpGBuffers();
 
+    Camera* mainCamera = renderSystem->GetMainCamera();
+    Camera* drawCamera = renderSystem->GetDrawCamera();
+
     rhi::RenderPassConfig originalConfig = passConfig;
     Rect originalVP = viewport;
     {
@@ -418,22 +438,28 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     passConfig.depthStencilBuffer.loadAction = rhi::LOADACTION_LOAD;
     passConfig.depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
 
+    Clip(mainCamera, renderSystem);
+    PrepareRenderObjectsToRender(visibilityArray.geometryArray, mainCamera);
+
     //draw to g-buffer
     gBufferPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D;
     gBufferPass->SetEnableFrameJittering(enableFrameJittering);
     gBufferPass->SetViewport(viewport);
-    gBufferPass->Draw(renderSystem);
+    gBufferPass->DrawVisibilityArray(renderSystem, visibilityArray);
 
-    // velocity  pass
-    velocityPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1;
-    velocityPass->SetEnableFrameJittering(enableFrameJittering);
-    velocityPass->SetViewport(viewport);
-    velocityPass->Draw(renderSystem);
+    if (enableFrameJittering) // GFX_COMPLETE: right now we need velocity pass only in conjunction with TXAA so frame jittering will be on in this case.
+    {
+        // velocity pass
+        velocityPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1;
+        velocityPass->SetEnableFrameJittering(enableFrameJittering);
+        velocityPass->SetViewport(viewport);
+        velocityPass->DrawVisibilityArray(renderSystem, visibilityArray);
+    }
 
     //deferred decals
     deferredDecalPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1; //right after
     deferredDecalPass->SetViewport(viewport);
-    deferredDecalPass->Draw(renderSystem);
+    deferredDecalPass->DrawVisibilityArray(renderSystem, visibilityArray);
 
     //resolve g-buffer
     gBufferResolvePass->GetPassConfig().priority = passConfig.priority + PRIORITY_MAIN_3D + 1; //right before
@@ -454,8 +480,6 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
         for (Landscape* landscape : renderSystem->GetLandscapes())
             landscape->SetPageUpdateLocked(true);
 
-        Camera* mainCamera = renderSystem->GetMainCamera();
-        Camera* drawCamera = renderSystem->GetDrawCamera();
         SetupCameraParams(mainCamera, drawCamera);
         PrepareVisibilityArrays(mainCamera, renderSystem);
         //draw forward stuff

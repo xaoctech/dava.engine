@@ -17,6 +17,7 @@ void RenderHierarchy::ClipResult::Clear()
     lightArray.clear();
     probeArray.clear();
     geometryArray.clear();
+    velocityObjects.clear();
 }
 
 void RenderHierarchy::ClipResult::AddObject(RenderObject* ro)
@@ -43,6 +44,10 @@ void RenderHierarchy::ClipResult::AddObject(RenderObject* ro)
     default:
         geometryArray.push_back(ro);
         break;
+    }
+    if ((ro->GetFlags() & RenderObject::VELOCITY_UPDATE) != 0)
+    {
+        velocityObjects.push_back(ro);
     }
 }
 void LinearRenderHierarchy::AddRenderObject(RenderObject* object)

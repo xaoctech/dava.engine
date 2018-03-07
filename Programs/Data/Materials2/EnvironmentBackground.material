@@ -2,7 +2,7 @@ RenderTechnique:
     Layers: ["AfterOpaqueRenderLayer"]
     Shader: "~res:/Materials2/Shaders/background"
     RenderState:            
-        state: "STATE_DEPTH_TEST"            
+        depthTest: true
     RenderPass0:
         Name: "ForwardPass"
     RenderPass1:

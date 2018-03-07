@@ -23,10 +23,10 @@ enum QualityGroup : uint32
 struct ShadowQuality
 {
     uint32 cascadesCount = 1;
-    bool enablePCF = false;
-    ShadowQuality(uint32 c, bool pcf)
+    uint32 PCFsamples = 0;
+    ShadowQuality(uint32 c, uint32 pcfsmp)
         : cascadesCount(c)
-        , enablePCF(pcf)
+        , PCFsamples(pcfsmp)
     {
     }
 };
@@ -289,8 +289,8 @@ inline typename QualityGroupValueClass<group>::ValueClass QualitySettingsSystem:
     });
     DVASSERT(i != qualityGroups[group].values.end());
 
-    DVASSERT(i->second.CanGet<typename QualityGroupValueClass<group>::ValueClass>());
-    return i->second.Get<typename QualityGroupValueClass<group>::ValueClass>();
+    DVASSERT(i->second.template CanGet<typename QualityGroupValueClass<group>::ValueClass>());
+    return i->second.template Get<typename QualityGroupValueClass<group>::ValueClass>();
 }
 
 template <QualityGroup group>

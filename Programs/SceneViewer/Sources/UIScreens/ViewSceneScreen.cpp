@@ -1,6 +1,7 @@
 #include "ViewSceneScreen.h"
 #include "SceneViewerApp.h"
 #include "Settings.h"
+#include "Quality/QualityPreferences.h"
 
 #include <DocDirSetup/DocDirSetup.h>
 
@@ -31,20 +32,20 @@
 
 namespace ViewSceneScreenDetails
 {
-const DAVA::float32 ABOVE_LANDSCAPE_ELEVATION = 10.f;
-const DAVA::float32 INFO_UPDATE_INTERVAL_SEC = 0.5f;
-
-const DAVA::String BOTSPAWN_PROPERTY_VALUE = "botspawn";
-const DAVA::String TANK_MODEL_PATH = "~res:/Tanks/USSR/T54S.sc2";
+    const DAVA::float32 ABOVE_LANDSCAPE_ELEVATION = 10.f;
+    const DAVA::float32 INFO_UPDATE_INTERVAL_SEC = 0.5f;
+    
+    const DAVA::String BOTSPAWN_PROPERTY_VALUE = "botspawn";
+    const DAVA::String TANK_MODEL_PATH = "~res:/Tanks/USSR/T54S.sc2";
 }
 
 ViewSceneScreen::ViewSceneScreen(SceneViewerData& data)
-    : data(data)
-    , scenePath(data.scenePath)
-    , scene(data.scene)
-    , fpsMeter(ViewSceneScreenDetails::INFO_UPDATE_INTERVAL_SEC)
+: data(data)
+, scenePath(data.scenePath)
+, scene(data.scene)
+, fpsMeter(ViewSceneScreenDetails::INFO_UPDATE_INTERVAL_SEC)
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
-    , gridTest(data.engine, this)
+, gridTest(data.engine, this)
 #endif
 {
     GetOrCreateComponent<DAVA::UIUpdateComponent>();
@@ -71,25 +72,25 @@ void ViewSceneScreen::UnloadResources()
 void ViewSceneScreen::PlaceSceneAtScreen()
 {
     using namespace DAVA;
-
+    
     if (scene)
     {
         sceneView = new DAVA::UI3DView(GetRect());
         sceneView->SetMultiInput(true);
         AddControl(sceneView);
-
+        
         Camera* camera = scene->GetCurrentCamera();
         camera->SetupPerspective(70.f, data.screenAspect, 0.5f, 2500.f);
         camera->SetUp(DAVA::Vector3(0.f, 0.f, 1.f));
         SetCameraAtCenter(camera);
-
+        
         rotationControllerSystem = new DAVA::RotationControllerSystem(scene);
         wasdSystem = new WASDControllerSystem(scene);
-
+        
         AddCameraControllerSystems();
-
+        
         sceneView->SetScene(scene);
-
+        
         if (menu)
         {
             menu->BringAtFront();
@@ -98,8 +99,9 @@ void ViewSceneScreen::PlaceSceneAtScreen()
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
             performanceTestMenuItem->SetEnabled(true);
 #endif
+            characterSpawnMenuItem->SetEnabled(true);
         }
-
+        
         if (moveJoyPAD)
         {
             BringChildFront(moveJoyPAD);
@@ -121,18 +123,19 @@ void ViewSceneScreen::RemoveSceneFromScreen()
             characterModule->DisableController(scene);
             characterSpawned = false;
         }
-
+        
         SafeDelete(rotationControllerSystem);
         SafeDelete(wasdSystem);
-
+        
         RemoveControl(sceneView);
         sceneView.reset();
-
+        
         if (menu)
         {
             qualitySettingsMenuItem->SetEnabled(false);
             reloadShadersMenuItem->SetEnabled(false);
             performanceTestMenuItem->SetEnabled(false);
+            characterSpawnMenuItem->SetEnabled(false);
         }
     }
 }
@@ -140,67 +143,34 @@ void ViewSceneScreen::RemoveSceneFromScreen()
 void ViewSceneScreen::LoadScene()
 {
     using namespace DAVA;
-
+    
     scene = new Scene();
-
+    
     SceneFileV2::eError result = scene->LoadScene(scenePath);
     if (result == SceneFileV2::ERROR_NO_ERROR)
     {
-        /*
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        Entity* landscapeEntity = scene->FindByName("Landscape");
+        if (landscapeEntity != nullptr)
         {
-        Entity* hullNode = entity->FindByName("hull")->Clone();
-
-
-        //create hull hierarchy to collapse in skinned mesh
-        Entity * hullSkeletonRoot = new Entity();
-        hullSkeletonRoot->SetName("hull");
-        hullSkeletonRoot->AddNode(hullNode);
-
-        Vector<SkeletonComponent::JointConfig> hullJointsConfig;
-        RenderObject * skinnedHullObject = MeshUtils::CreateSkinnedMesh(hullSkeletonRoot, hullJointsConfig);
-        hullNode->GetOrCreateComponent<RenderComponent>()->SetRenderObject(skinnedHullObject);
-        skinnedHullObject->Release();
-        hullSkeletonRoot->Release();
-
-        Matrix4 x;
-        x.CreateTranslation(Vector3(-20,0,0));
-
-        //    hullNode->SetLocalTransform( x );
-        hullNode->RemoveAllChildren();
-        scene->AddNode( hullNode );
-
-        SkeletonComponent * hullSkeleton = new SkeletonComponent();
-        hullSkeleton->SetConfigJoints(hullJointsConfig);
-        hullNode->AddComponent(hullSkeleton);
-
-
-        Light*          light   = new Light();
-        LightComponent* light_c = new LightComponent( light );
-        Entity*         light_e = new Entity();
-        Matrix4         light_x; light_x.Identity();
-
-        light_c->SetLightType( Light::TYPE_DIRECTIONAL );
-        light_c->SetDirection( Vector3(0,-1,0) );
-
-        light_e->SetLocalTransform( light_x );
-
-        light_e->SetName( "test-light" );
-        light_e->AddComponent( light_c );
-        scene->AddNode( light_e );
+            landscapeEntity->AddComponent(new StaticBodyComponent());
+            HeightFieldShapeComponent* heightFieldComponent = new HeightFieldShapeComponent();
+            heightFieldComponent->SetTypeMask(2);
+            landscapeEntity->AddComponent(heightFieldComponent);
         }
-        */
-
+        
+        scene->physicsSystem->SetSimulationEnabled(true);
+#endif
+        
         ScopedPtr<Camera> camera(new Camera);
         scene->AddCamera(camera);
         scene->SetCurrentCamera(camera);
-
+        
         ScopedPtr<Entity> cameraEntity(new Entity());
         cameraEntity->AddComponent(new CameraComponent(camera));
         cameraEntity->AddComponent(new WASDControllerComponent());
         cameraEntity->AddComponent(new RotationControllerComponent());
         scene->AddNode(cameraEntity);
-
-        AddTanksAtScene();
     }
     else
     {
@@ -212,15 +182,15 @@ void ViewSceneScreen::AddTanksAtScene()
 {
     using namespace ViewSceneScreenDetails;
     using namespace DAVA;
-
+    
     List<Entity*> spawnPoints;
     scene->GetChildEntitiesWithComponent(spawnPoints, Type::Instance<CustomPropertiesComponent>(), false);
-
+    
     for (List<Entity*>::iterator it = spawnPoints.begin(); it != spawnPoints.end();)
     {
         KeyedArchive* props = GetCustomPropertiesArchieve(*it);
         DVASSERT(props);
-
+        
         if (props->IsKeyExists("type") && props->GetString("type") == BOTSPAWN_PROPERTY_VALUE)
         {
             ++it;
@@ -231,7 +201,7 @@ void ViewSceneScreen::AddTanksAtScene()
             spawnPoints.erase(itDel);
         }
     }
-
+    
     if (!spawnPoints.empty())
     {
         ScopedPtr<Scene> tank(new Scene());
@@ -255,20 +225,22 @@ void ViewSceneScreen::AddMenuControl()
     DVASSERT(!menu);
     DAVA::Rect rect = DAVA::Rect(10.f, 30.f, 250.f, 60.f);
     menu.reset(new Menu(nullptr, this, font, rect));
-
+    
     SubMenuItem* mainSubMenuItem = menu->AddSubMenuItem(L"Menu");
     Menu* mainSubMenu = mainSubMenuItem->submenu.get();
-
+    
     SubMenuItem* selectSceneSubMenuItem = mainSubMenu->AddSubMenuItem(L"Select scene");
     qualitySettingsMenuItem = mainSubMenu->AddActionItem(L"Quality settings", DAVA::Message(this, &ViewSceneScreen::OnButtonQualitySettings));
     reloadShadersMenuItem = mainSubMenu->AddActionItem(L"Reload shaders", DAVA::Message(this, &ViewSceneScreen::OnButtonReloadShaders));
     performanceTestMenuItem = mainSubMenu->AddActionItem(L"Performance test", DAVA::Message(this, &ViewSceneScreen::OnButtonPerformanceTest));
+    characterSpawnMenuItem = mainSubMenu->AddActionItem(L"Toggle Spawn Character", DAVA::Message(this, &ViewSceneScreen::OnButtonToggleSpawnCharacter));
     mainSubMenu->AddBackItem();
-
+    
     qualitySettingsMenuItem->SetEnabled(false);
     reloadShadersMenuItem->SetEnabled(false);
     performanceTestMenuItem->SetEnabled(false);
-
+    characterSpawnMenuItem->SetEnabled(false);
+    
     Menu* selectSceneSubMenu = selectSceneSubMenuItem->submenu.get();
     selectSceneSubMenu->AddActionItem(L"Select from ~res", DAVA::Message(this, &ViewSceneScreen::OnButtonSelectFromRes));
     selectSceneSubMenu->AddActionItem(L"Select from documents", DAVA::Message(this, &ViewSceneScreen::OnButtonSelectFromDoc));
@@ -283,7 +255,7 @@ void ViewSceneScreen::AddFileDialogControl()
     fileSystemDialog->SetDelegate(this);
     fileSystemDialog->SetExtensionFilter(".sc2");
     fileSystemDialog->SetOperationType(DAVA::UIFileSystemDialog::OPERATION_LOAD);
-
+    
     DAVA::UIAnchorComponent* anchor = fileSystemDialog->GetOrCreateComponent<DAVA::UIAnchorComponent>();
     anchor->SetRightAnchorEnabled(true);
     anchor->SetRightAnchor(30.f);
@@ -294,6 +266,7 @@ void ViewSceneScreen::AddJoypadControl()
 {
     DVASSERT(!moveJoyPAD);
     moveJoyPAD = new DAVA::UIJoypad(DAVA::Rect(10, GetRect().dy - 210.f, 200.f, 200.f));
+    moveJoyPAD->SetDeadAreaSize(30.f);
     DAVA::ScopedPtr<DAVA::Sprite> stickSprite(DAVA::Sprite::CreateFromSourceFile("~res:/SceneViewer/UI/Joypad.png", true));
     moveJoyPAD->SetStickSprite(stickSprite, 0);
     AddControl(moveJoyPAD);
@@ -332,17 +305,18 @@ void ViewSceneScreen::RemoveControls()
     infoText.reset();
     moveJoyPAD.reset();
     fileSystemDialog.reset();
-
+    
     menu.reset();
     qualitySettingsMenuItem = nullptr;
     reloadShadersMenuItem = nullptr;
     performanceTestMenuItem = nullptr;
+    characterSpawnMenuItem = nullptr;
 }
 
 void ViewSceneScreen::SetCameraAtCenter(DAVA::Camera* camera)
 {
     DAVA::Vector3 position = DAVA::Vector3(0.f, -65.f, 10.f);
-
+    
     DAVA::Landscape* landscape = FindLandscape(scene);
     if (landscape != nullptr)
     {
@@ -350,43 +324,43 @@ void ViewSceneScreen::SetCameraAtCenter(DAVA::Camera* camera)
         landscape->GetHeightAtPoint(position, landscapeHeight);
         position.z = landscapeHeight + ViewSceneScreenDetails::ABOVE_LANDSCAPE_ELEVATION;
     }
-
+    
     camera->SetValidZInterval(0.0f, std::numeric_limits<float>::max());
-    camera->SetZNear(0.01f);
-    camera->SetZFar(65536.0f);
-
+    camera->SetZNear(1.0f);
+    camera->SetZFar(20000.0f);
+    
     camera->SetLeft(DAVA::Vector3(1.f, 0.f, 0.f));
     camera->SetTarget(DAVA::Vector3(0.f, 0.f, 0.f));
     camera->SetPosition(position);
-
+    
     DAVA::Vector3 cameraPos;
     DAVA::Vector3 cameraTarget;
-
+    
     // Rural House test map
-    cameraPos = DAVA::Vector3(61.651f, 62.749f, 47.804f);
-    cameraTarget = DAVA::Vector3(71.204f, 65.606f, 47.050f);
+    cameraPos = DAVA::Vector3(-14.09f, 1.286f, 8.78f);
+    cameraTarget = DAVA::Vector3(-14.612f, -8.673f, 8.054f);
     // */
-
+    
     /*/ Bunny scene ^_^
-    cameraPos = DAVA::Vector3(-34.888f, 150.043f, 78.085f);
-    cameraTarget = DAVA::Vector3(-32.960f, 140.669f, 75.187f);
-    // */
-
+     cameraPos = DAVA::Vector3(-34.888f, 150.043f, 78.085f);
+     cameraTarget = DAVA::Vector3(-32.960f, 140.669f, 75.187f);
+     // */
+    
     /*/ New Bunny scene ^_^
-    cameraPos = DAVA::Vector3(-98.206f, -145.482f, 69.942f);
-    cameraTarget = DAVA::Vector3(-90.493f, -139.516f, 67.727f);
-    // */
-
+     cameraPos = DAVA::Vector3(-98.206f, -145.482f, 69.942f);
+     cameraTarget = DAVA::Vector3(-90.493f, -139.516f, 67.727f);
+     // */
+    
     /*/ Sphere test scene
-    cameraPos = DAVA::Vector3(16.5470676f, 5.04428148f, 11.8170156f);
-    cameraTarget = DAVA::Vector3(7.22723865, 2.75506783f, 9.0062704f);
-    // */
-
-    // Balls scene
+     cameraPos = DAVA::Vector3(16.5470676f, 5.04428148f, 11.8170156f);
+     cameraTarget = DAVA::Vector3(7.22723865, 2.75506783f, 9.0062704f);
+     // */
+    
+    /*/ Balls scene
     cameraPos = DAVA::Vector3(9.564f, 9.320f, 2.727f);
     cameraTarget = DAVA::Vector3(2.592f, 2.366f, 0.986f);
     // */
-
+    
     camera->SetPosition(cameraPos);
     camera->SetTarget(cameraTarget);
 }
@@ -442,7 +416,7 @@ void ViewSceneScreen::OnButtonSelectFromExt(DAVA::BaseObject* caller, void* para
 {
     using namespace DAVA;
     DVASSERT(fileSystemDialog);
-
+    
     List<DeviceInfo::StorageInfo> storageList = DeviceInfo::GetStoragesList();
     for (const DeviceInfo::StorageInfo& storage : storageList)
     {
@@ -482,57 +456,45 @@ void ViewSceneScreen::OnQualitySettingsEditDone()
 
 void ViewSceneScreen::OnButtonReloadShaders(DAVA::BaseObject* caller, void* param, void* callerData)
 {
-    using namespace DAVA;
+    QualityPreferences::ReloadShaders();
+}
 
-    if (scene)
+void ViewSceneScreen::OnButtonToggleSpawnCharacter(DAVA::BaseObject* caller, void* param, void* callerData)
+{
+    DAVA::TestCharacterControllerModule* characterModule = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::TestCharacterControllerModule>();
+    
+    if (characterSpawned)
     {
-        ShaderDescriptorCache::ReloadShaders();
-
-        List<NMaterial*> materials;
-        scene->GetDataNodes(materials);
-        for (auto material : materials)
-        {
-            material->InvalidateRenderVariants();
-        }
-
-        const auto particleInstances = scene->particleEffectSystem->GetMaterialInstances();
-        for (auto& material : particleInstances)
-        {
-            material.second->InvalidateRenderVariants();
-        }
-
-        DAVA::Set<DAVA::NMaterial*> materialList;
-        scene->foliageSystem->CollectFoliageMaterials(materialList);
-        for (auto material : materialList)
-        {
-            if (material)
-                material->InvalidateRenderVariants();
-        }
-
-        scene->renderSystem->GetDebugDrawer()->InvalidateMaterials();
-        scene->renderSystem->SetForceUpdateLights();
+        characterModule->DisableController(scene);
+        AddCameraControllerSystems();
+        scene->GetCurrentCamera()->SetUp(DAVA::Vector3::UnitZ);
         
-    #define INVALIDATE_2D_MATERIAL(material) \
-        if (RenderSystem2D::material) \
-            RenderSystem2D::material->InvalidateRenderVariants();
-
-        INVALIDATE_2D_MATERIAL(DEFAULT_2D_COLOR_MATERIAL)
-        INVALIDATE_2D_MATERIAL(DEFAULT_2D_FILL_ALPHA_MATERIAL)
-        INVALIDATE_2D_MATERIAL(DEFAULT_2D_TEXTURE_MATERIAL)
-        INVALIDATE_2D_MATERIAL(DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL)
-        INVALIDATE_2D_MATERIAL(DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL)
-        INVALIDATE_2D_MATERIAL(DEFAULT_2D_TEXTURE_GRAYSCALE_MATERIAL)
+        DAVA::Engine::Instance()->PrimaryWindow()->SetCursorCapture(DAVA::eCursorCapture::OFF);
+        characterSpawned = false;
+    }
+    else
+    {
+        if (DAVA::DeviceInfo::GetPlatform() == DAVA::DeviceInfo::PLATFORM_MACOS
+            || DAVA::DeviceInfo::GetPlatform() == DAVA::DeviceInfo::PLATFORM_WIN32
+            || DAVA::DeviceInfo::GetPlatform() == DAVA::DeviceInfo::PLATFORM_DESKTOP_WIN_UAP)
+        {
+            DAVA::Engine::Instance()->PrimaryWindow()->SetCursorCapture(DAVA::eCursorCapture::PINNING);
+            sceneView->SetMultiInput(true);
+        }
         
-    #undef INVALIDATE_2D_MATERIAL
+        characterModule->EnableController(scene, scene->GetCurrentCamera()->GetPosition());
+        RemoveCameraControllerSystems();
+        
+        characterSpawned = true;
     }
 }
 
 void ViewSceneScreen::Draw(const DAVA::UIGeometricData& geometricData)
 {
     //DAVA::uint64 startTime = DAVA::SystemTimer::Instance()->GetNs();
-
+    
     BaseScreen::Draw(geometricData);
-
+    
     //drawTime += (SystemTimer::Instance()->GetNs() - startTime);
 }
 
@@ -548,37 +510,43 @@ void ViewSceneScreen::ProcessUserInput(DAVA::float32 timeElapsed)
     if (scene)
     {
         using namespace DAVA;
-
+        
         Keyboard* keyboard = GetEngineContext()->deviceManager->GetKeyboard();
         if (keyboard != nullptr)
         {
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD6))
-            //         cursorPosition.x += timeElapsed / 16.f;
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD4))
-            //         cursorPosition.x -= timeElapsed / 16.f;
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD8))
-            //         cursorPosition.y += timeElapsed / 16.f;
-            //     if (keyboard.IsKeyPressed(Key::NUMPAD2))
-            //         cursorPosition.y -= timeElapsed / 16.f;
             if (keyboard->GetKeyState(eInputElements::KB_SPACE).IsPressed())
                 wasdSystem->SetMoveSpeed(30.f);
             else
                 wasdSystem->SetMoveSpeed(10.f);
+            
+            if (characterSpawned && keyboard->GetKeyState(eInputElements::KB_ESCAPE).IsJustPressed())
+                OnButtonToggleSpawnCharacter(nullptr, nullptr, nullptr);
         }
-
-        Camera* camera = scene->GetDrawCamera();
-        Vector2 joypadPos = moveJoyPAD->GetDigitalPosition();
-        Vector3 cameraMoveOffset = (-joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
-
-        camera->SetPosition(camera->GetPosition() + cameraMoveOffset);
-        camera->SetTarget(camera->GetTarget() + cameraMoveOffset);
+        
+        if (characterSpawned)
+        {
+            DAVA::TestCharacterControllerModule* characterModule = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::TestCharacterControllerModule>();
+            DAVA::TestCharacterControllerSystem* characterControllerSystem = characterModule->GetCharacterControllerSystem(scene);
+            if (characterControllerSystem != nullptr)
+                characterControllerSystem->SetJoypadDirection(moveJoyPAD->GetAnalogPosition());
+        }
+        else
+        {
+            Vector2 joypadPos = moveJoyPAD->GetDigitalPosition();
+            
+            Camera* camera = scene->GetDrawCamera();
+            Vector3 cameraMoveOffset = (-joypadPos.x * camera->GetLeft() - joypadPos.y * camera->GetDirection()) * timeElapsed * 20.f;
+            
+            camera->SetPosition(camera->GetPosition() + cameraMoveOffset);
+            camera->SetTarget(camera->GetTarget() + cameraMoveOffset);
+        }
     }
 }
 
 void ViewSceneScreen::Update(DAVA::float32 timeElapsed)
 {
     BaseScreen::Update(timeElapsed);
-
+    
     UpdateInfo(timeElapsed);
     ProcessUserInput(timeElapsed);
 }
@@ -623,6 +591,6 @@ void ViewSceneScreen::Input(DAVA::UIEvent* currentInput)
     //         if (currentInput->keyChar == '-')
     //             cursorSize *= .8f;
     //     }
-
+    
     BaseScreen::Input(currentInput);
 }

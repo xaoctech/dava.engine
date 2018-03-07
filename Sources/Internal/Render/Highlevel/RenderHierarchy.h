@@ -34,6 +34,7 @@ public:
         Vector<Light*> lightArray;
         Vector<DecalRenderObject*> decalArray;
         Vector<ReflectionProbe*> probeArray;
+        Vector<RenderObject*> velocityObjects;
 
         void Clear();
         void AddObject(RenderObject* ro);

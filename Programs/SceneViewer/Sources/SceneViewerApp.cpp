@@ -56,7 +56,6 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     DAVA::QualitySettingsSystem::Instance()->Load("~res:/SceneViewer/quality.yaml");
 
     DAVA::FilePath::AddResourcesFolder(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
-    QualityPreferences::LoadFromSettings(data.settings);
     data.scenePath = data.settings.GetLastOpenedScenePath();
     DAVA::FilePath::RemoveResourcesFolder(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
 
@@ -125,6 +124,8 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
 
     Renderer::SetDesiredFPS(60);
 
+    QualityPreferences::LoadFromSettings(data.settings);
+    
     viewSceneScreen = new ViewSceneScreen(data);
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
     performanceResultsScreen = new PerformanceResultsScreen(data);
@@ -242,7 +243,7 @@ DAVA::KeyedArchive* CreateOptions()
 {
     DAVA::KeyedArchive* appOptions = new DAVA::KeyedArchive();
 
-    appOptions->SetInt32("shader_const_buffer_size", 4 * 1024 * 1024);
+    appOptions->SetInt32("shader_const_buffer_size", 12 * 1024 * 1024);
 
     appOptions->SetInt32("max_index_buffer_count", 4 * 1024);
     appOptions->SetInt32("max_vertex_buffer_count", 4 * 1024);

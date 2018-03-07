@@ -28,11 +28,15 @@ void VTDecalSystem::Process(float32 timeElapsed)
                 VTDecalComponent* decalComponent = entity->GetComponent<VTDecalComponent>();
 
                 // Update new transform pointer, and mark that transform is changed
-                const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
+                TransformComponent* transformComponent = GetTransformComponent(entity);
+                const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+                const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
+
                 RenderObject* object = decalComponent->renderObject;
                 if (NULL != object)
                 {
                     object->SetWorldTransformPtr(worldTransformPointer);
+                    object->SetPrevWorldTransformPtr(prevWorldTransformPointer);
                     entity->GetScene()->renderSystem->MarkForUpdate(object);
                 }
             }
@@ -72,8 +76,11 @@ void VTDecalSystem::AddEntity(Entity* entity)
     {
         ScopedPtr<DecalRenderObject> renderObject(new DecalRenderObject());
         renderObject->SetDomain(DecalRenderObject::DOMAIN_VT);
-        const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
+        TransformComponent* transformComponent = GetTransformComponent(entity);
+        const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+        const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
         renderObject->SetWorldTransformPtr(worldTransformPointer);
+        renderObject->SetPrevWorldTransformPtr(prevWorldTransformPointer);
         renderObject->SetMaterial(component->GetMaterial());
         renderObject->SetDecalSize(component->GetLocalSize());
         renderObject->SetSortingOffset(component->GetSortingOffset());

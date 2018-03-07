@@ -109,10 +109,21 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
 void RenderPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 {
     Camera* mainCamera = renderSystem->GetMainCamera();
+
+    Clip(mainCamera, renderSystem);
+    PrepareRenderObjectsToRender(visibilityArray.geometryArray, mainCamera);
+
+    DrawVisibilityArray(renderSystem, visibilityArray, drawLayersMask);
+}
+
+void RenderPass::DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask /*= 0xFFFFFFFF*/)
+{
+    Camera* mainCamera = renderSystem->GetMainCamera();
     Camera* drawCamera = renderSystem->GetDrawCamera();
     SetupCameraParams(mainCamera, drawCamera);
 
-    PrepareVisibilityArrays(mainCamera, renderSystem);
+    ClearLayersArrays();
+    PrepareLayersArrays(preparedVisibilityArray.geometryArray, mainCamera);
 
     if (BeginRenderPass(passConfig))
     {
@@ -125,28 +136,28 @@ void RenderPass::PrepareVisibilityArrays(Camera* camera, RenderSystem* renderSys
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PASS_PREPARE_ARRAYS)
 
-    visibilityArray.Clear();
-    uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
-    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
-        currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
-    renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, currVisibilityCriteria);
-
+    Clip(camera, renderSystem);
+    PrepareRenderObjectsToRender(visibilityArray.geometryArray, camera);
     ClearLayersArrays();
-
     PrepareLayersArrays(visibilityArray.geometryArray, camera);
 }
 
-void RenderPass::PrepareLayersArrays(const Vector<RenderObject*> objectsArray, Camera* camera)
+void RenderPass::Clip(Camera* camera, RenderSystem* renderSystem)
+{
+    uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
+    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
+        currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
+
+    visibilityArray.Clear();
+    renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, currVisibilityCriteria);
+}
+
+void RenderPass::PrepareLayersArrays(const Vector<RenderObject*>& objectsArray, Camera* camera)
 {
     size_t size = objectsArray.size();
     for (size_t ro = 0; ro < size; ++ro)
     {
         RenderObject* renderObject = objectsArray[ro];
-        if (renderObject->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
-        {
-            renderObject->PrepareToRender(camera);
-        }
-
         uint32 batchCount = renderObject->GetActiveRenderBatchCount();
         for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
         {
@@ -159,6 +170,15 @@ void RenderPass::PrepareLayersArrays(const Vector<RenderObject*> objectsArray, C
                 layersBatchArrays[material->GetRenderLayerID()].AddRenderBatch(batch);
             }
         }
+    }
+}
+
+void RenderPass::PrepareRenderObjectsToRender(const Vector<RenderObject*>& objectsArray, Camera* camera)
+{
+    for (RenderObject* renderObject : objectsArray)
+    {
+        if (renderObject->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
+            renderObject->PrepareToRender(camera);
     }
 }
 

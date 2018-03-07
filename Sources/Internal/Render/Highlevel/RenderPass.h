@@ -24,6 +24,10 @@ public:
     void RemoveRenderLayer(RenderLayer* layer);
 
     virtual void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF);
+    /*
+     * CAUTION! If you decide to draw using this method - prepareToRender for render objects will not be called!
+     */
+    virtual void DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask = 0xFFFFFFFF);
 
     uint32 GetRenderLayerCount() const;
     RenderLayer* GetRenderLayer(uint32 index) const;
@@ -46,7 +50,11 @@ protected:
 
     /*convinience*/
     void PrepareVisibilityArrays(Camera* camera, RenderSystem* renderSystem);
-    void PrepareLayersArrays(const Vector<RenderObject*> objectsArray, Camera* camera);
+
+    void Clip(Camera* camera, RenderSystem* renderSystem);
+
+    void PrepareLayersArrays(const Vector<RenderObject*>& objectsArray, Camera* camera);
+    void PrepareRenderObjectsToRender(const Vector<RenderObject*>& objectsArray, Camera* camera);
     void ClearLayersArrays();
 
     void SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vector4* externalClipPlane = NULL);

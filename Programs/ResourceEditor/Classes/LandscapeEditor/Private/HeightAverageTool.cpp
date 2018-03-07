@@ -209,6 +209,7 @@ HeightAverageTool::HeightAverageTool(DAVA::LandscapeEditorSystemV2* system)
 
     normalDebugDrawGeometry->AddRenderBatch(batch);
     normalDebugDrawGeometry->SetWorldTransformPtr(&DAVA::Matrix4::IDENTITY);
+    normalDebugDrawGeometry->SetPrevWorldTransformPtr(&DAVA::Matrix4::IDENTITY);
     normalDebugDrawGeometry->AddFlag(DAVA::RenderObject::ALWAYS_CLIPPING_VISIBLE);
 }
 

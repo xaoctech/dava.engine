@@ -110,7 +110,7 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
     result = lerp(result, indirectLighting, MIN_HALF_PRECISION);
 #endif
     
-#if (ENABLE_ATMOSPHERE_SCATTERING)
+#if (ATMOSPHERE_SCATTERING_SAMPLES)
     {
         float lightIntensity = dot(input.directionalLightColor, float3(0.2126, 0.7152, 0.0722));
         float3 viewDirection = -input.v;

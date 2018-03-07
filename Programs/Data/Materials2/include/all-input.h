@@ -28,6 +28,7 @@
 [auto][global] property float4x4 invViewProjMatrix;
 [auto][global] property float4x4 invWorldViewMatrix;
 [auto][global] property float4x4 localProbeCaptureWorldToLocalMatrix;
+[auto][global] property float4x4 prevWorldMatrix;
 [auto][global] property float4x4 projMatrix;
 [auto][global] property float4x4 shadowView;
 [auto][global] property float4x4 viewMatrix;

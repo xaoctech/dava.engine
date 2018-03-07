@@ -18,6 +18,7 @@
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/Systems/ReflectionSystem.h>
 #include <Debug/MessageBox.h>
+#include <Time/DateTime.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ReflectionsModule)
 {

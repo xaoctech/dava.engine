@@ -27,6 +27,7 @@ Component* TransformComponent::Clone(Entity* toEntity)
     newTransform->rotation = rotation;
     newTransform->scale = scale;
     newTransform->worldMatrix = worldMatrix;
+    newTransform->prevWorldMatrix = prevWorldMatrix;
     newTransform->parent = this->parent;
 
     return newTransform;
@@ -50,6 +51,7 @@ void TransformComponent::SetLocalTransform(const Vector3& position, const Quater
 
 void TransformComponent::SetWorldTransform(const Matrix4& transform)
 {
+    prevWorldMatrix = worldMatrix;
     worldMatrix = transform;
     ApplyWorldTransfomChanged();
 }
@@ -114,6 +116,7 @@ void TransformComponent::ApplyLocalTransfomChanged()
 {
     if (!parent)
     {
+        prevWorldMatrix = worldMatrix;
         worldMatrix = GetLocalTransform();
         ApplyWorldTransfomChanged();
     }

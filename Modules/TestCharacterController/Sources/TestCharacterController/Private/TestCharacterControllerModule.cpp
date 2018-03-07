@@ -44,7 +44,10 @@ void TestCharacterControllerModule::CheckCharacterResources()
             testCharacterEntity = new Entity();
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-            testCharacterEntity->AddComponent(new CapsuleCharacterControllerComponent());
+            CapsuleCharacterControllerComponent* capsuleComponent = new CapsuleCharacterControllerComponent();
+            capsuleComponent->SetTypeMask(1);
+            capsuleComponent->SetTypeMaskToCollideWith(UINT32_MAX);
+            testCharacterEntity->AddComponent(capsuleComponent);
 #endif
 
             ScopedPtr<Entity> characterMeshEntity(characterSourceEntity->Clone());

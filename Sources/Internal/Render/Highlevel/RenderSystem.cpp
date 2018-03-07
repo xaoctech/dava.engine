@@ -48,6 +48,7 @@ RenderSystem::RenderSystem()
     renderHierarchy = new QuadTree(10);
     vtDecalManager = new VTDecalManager(40); //GFX_COMPLETE - make it at least configurable
     markedObjects.reserve(100);
+    velocityUpdatedObjects.reserve(100);
     debugDrawer = new RenderHelper();
     postEffectRenderer = new PostEffectRenderer();
     cubemapRenderer = new CubemapRenderer();
@@ -388,6 +389,9 @@ void RenderSystem::Update(float32 timeElapsed)
 
             if (obj->GetTreeNodeIndex() != QuadTree::INVALID_TREE_NODE_INDEX)
                 renderHierarchy->ObjectUpdated(obj);
+
+            velocityUpdatedObjects.push_back(obj);
+            obj->AddFlag(RenderObject::VELOCITY_UPDATE);
         }
 
         obj->RemoveFlag(RenderObject::NEED_UPDATE | RenderObject::MARKED_FOR_UPDATE);
@@ -580,6 +584,10 @@ void RenderSystem::Render()
         Logger::Debug("cameraTarget = DAVA::Vector3(%.3ff, %.3ff, %.3ff);", cameraTarget.x, cameraTarget.y, cameraTarget.z);
     }
 #endif
+
+    for (RenderObject* ro : velocityUpdatedObjects)
+        ro->RemoveFlag(RenderObject::VELOCITY_UPDATE);
+    velocityUpdatedObjects.clear();
 }
 
 void RenderSystem::SetAntialiasingAllowed(bool allow)

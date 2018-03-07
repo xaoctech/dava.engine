@@ -43,6 +43,7 @@ void PickingRenderPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask /
         renderSystem->GetRenderHierarchy()->Clip(mainCamera, visibilityArray, currVisibilityCriteria);
 
         ClearLayersArrays();
+        PrepareRenderObjectsToRender(visibilityArray.geometryArray, mainCamera);
         PrepareLayersArrays(visibilityArray.geometryArray, mainCamera);
 
         DrawLayers(mainCamera, drawLayersMask);

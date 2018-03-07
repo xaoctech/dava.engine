@@ -99,12 +99,65 @@ const YamlNode* ExtractNode(const YamlNode* base, const char* nodeName, const Ya
     return output;
 }
 
+void ParseStencilNode(const YamlNode* stencilNode, RenderPassDescriptor& target, const FastName& fxName)
+{
+    if (stencilNode == nullptr)
+        return;
+
+    const YamlNode* node = nullptr;
+
+    rhi::DepthStencilState::Descriptor& ds = target.depthStateDescriptor;
+
+    if (ExtractNode(stencilNode, "ref", node))
+    {
+        uint8 refValue = static_cast<uint8>(node->AsInt32());
+        ds.stencilBack.refValue = refValue;
+        ds.stencilFront.refValue = refValue;
+    }
+
+    if (ExtractNode(stencilNode, "mask", node))
+    {
+        uint8 maskValue = static_cast<uint8>(node->AsInt32());
+        ds.stencilBack.readMask = maskValue;
+        ds.stencilBack.writeMask = maskValue;
+        ds.stencilFront.readMask = maskValue;
+        ds.stencilFront.writeMask = maskValue;
+    }
+
+    if (ExtractNode(stencilNode, "enabled", node))
+        ds.stencilEnabled = node->AsBool();
+
+    if (ExtractNode(stencilNode, "funcFront", node))
+        ds.stencilFront.func = GetCmpFuncByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "funcBack", node))
+        ds.stencilBack.func = GetCmpFuncByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "passFront", node))
+        ds.stencilFront.depthStencilPassOperation = GetStencilOpByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "passBack", node))
+        ds.stencilBack.depthStencilPassOperation = GetStencilOpByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "failFront", node))
+        ds.stencilFront.failOperation = GetStencilOpByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "failBack", node))
+        ds.stencilBack.failOperation = GetStencilOpByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "zFailFront", node))
+        ds.stencilFront.depthFailOperation = GetStencilOpByName(node->AsString());
+
+    if (ExtractNode(stencilNode, "zFailBack", node))
+        ds.stencilBack.depthFailOperation = GetStencilOpByName(node->AsString());
+
+    ds.stencilTwoSided = (memcmp(&ds.stencilBack, &ds.stencilFront, sizeof(rhi::DepthStencilState::Descriptor::StencilDescriptor)) != 0);
+}
+
 void ParseStateNode(const YamlNode* renderStateNode, RenderPassDescriptor& target, const FastName& fxName)
 {
     if (renderStateNode == nullptr)
         return;
-
-    rhi::DepthStencilState::Descriptor& ds = target.depthStateDescriptor;
 
     const YamlNode* node = nullptr;
     const YamlNode* stencilNode = nullptr;
@@ -112,8 +165,8 @@ void ParseStateNode(const YamlNode* renderStateNode, RenderPassDescriptor& targe
     if (ExtractNode(renderStateNode, "fillMode", node))
         target.wireframe = (node->AsString() == "FILLMODE_WIREFRAME");
 
-    if (ExtractNode(renderStateNode, "depthFunc", node))
-        ds.depthFunc = GetCmpFuncByName(node->AsString());
+    if (ExtractNode(renderStateNode, "blendEnabled", node))
+        target.hasBlend = node->AsBool();
 
     if (ExtractNode(renderStateNode, "cullMode", node))
     {
@@ -125,57 +178,25 @@ void ParseStateNode(const YamlNode* renderStateNode, RenderPassDescriptor& targe
             target.cullMode = rhi::CULL_NONE;
     }
 
+    rhi::DepthStencilState::Descriptor& ds = target.depthStateDescriptor;
+
+    if (ExtractNode(renderStateNode, "depthFunc", node))
+        ds.depthFunc = GetCmpFuncByName(node->AsString());
+
+    if (ExtractNode(renderStateNode, "depthWrite", node))
+        ds.depthWriteEnabled = node->AsBool();
+
+    if (ExtractNode(renderStateNode, "depthTest", node))
+        ds.depthTestEnabled = node->AsBool();
+
     if (ExtractNode(renderStateNode, "stencil", stencilNode))
-    {
-        if (ExtractNode(stencilNode, "ref", node))
-        {
-            uint8 refValue = static_cast<uint8>(node->AsInt32());
-            ds.stencilBack.refValue = refValue;
-            ds.stencilFront.refValue = refValue;
-        }
+        ParseStencilNode(stencilNode, target, fxName);
 
-        if (ExtractNode(stencilNode, "mask", node))
-        {
-            uint8 maskValue = static_cast<uint8>(node->AsInt32());
-            ds.stencilBack.readMask = maskValue;
-            ds.stencilBack.writeMask = maskValue;
-            ds.stencilFront.readMask = maskValue;
-            ds.stencilFront.writeMask = maskValue;
-        }
-
-        if (ExtractNode(stencilNode, "funcFront", node))
-            ds.stencilFront.func = GetCmpFuncByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "funcBack", node))
-            ds.stencilBack.func = GetCmpFuncByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "passFront", node))
-            ds.stencilFront.depthStencilPassOperation = GetStencilOpByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "passBack", node))
-            ds.stencilBack.depthStencilPassOperation = GetStencilOpByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "failFront", node))
-            ds.stencilFront.failOperation = GetStencilOpByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "failBack", node))
-            ds.stencilBack.failOperation = GetStencilOpByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "zFailFront", node))
-            ds.stencilFront.depthFailOperation = GetStencilOpByName(node->AsString());
-
-        if (ExtractNode(stencilNode, "zFailBack", node))
-            ds.stencilBack.depthFailOperation = GetStencilOpByName(node->AsString());
-    }
-
-    const YamlNode* stateFlagsNode = renderStateNode->Get("state");
-    if (stateFlagsNode)
+    const YamlNode* stateFlagsNode = nullptr;
+    if (ExtractNode(renderStateNode, "state", stateFlagsNode))
     {
         Vector<String> states;
         Split(stateFlagsNode->AsString(), "| ", states);
-
-        bool hasCull = false;
-
         for (String& state : states)
         {
             if (state == "STATE_BLEND")
@@ -192,8 +213,7 @@ void ParseStateNode(const YamlNode* renderStateNode, RenderPassDescriptor& targe
             }
             else if (state == "STATE_STENCIL_TEST")
             {
-                ds.stencilEnabled = 1;
-                ds.stencilTwoSided = (memcmp(&ds.stencilBack, &ds.stencilFront, sizeof(rhi::DepthStencilState::Descriptor::StencilDescriptor)) != 0);
+                ds.stencilEnabled = true;
             }
         }
     }
@@ -310,6 +330,7 @@ static const Vector<std::pair<ParseNodeFunction, String>> NodeParsingFunctions =
     { ParseLayerNode, "Layers" },
     { ParseUniquePinsNode, "UniquePins" },
     { ParseFlowsNode, "SupportedRenderFlows" },
+    { ParseStencilNode, "Stencil" },
 };
 
 void ProcessRenderPassNode(const YamlNode* renderPassNode, const String& explicitName, RenderPassDescriptor& passDescriptor, const FastName& fxName)

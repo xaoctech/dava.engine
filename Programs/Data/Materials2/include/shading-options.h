@@ -17,8 +17,6 @@
 #ensuredefined POINT_LIGHTS_BUFFER_SIZE 20
 #ensuredefined POINT_LIGHT_SIZE 0.01
 
-#ensuredefined ENABLE_ATMOSPHERE_SCATTERING 1
-
 #ensuredefined ROUGHNESS_ENCODING_MAX_RANGE 4.0
 
 #ensuredefined RGBM_ENCODING_RANGE 5.0

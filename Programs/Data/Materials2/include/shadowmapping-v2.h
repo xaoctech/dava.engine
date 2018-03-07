@@ -25,7 +25,7 @@ float SampleShadow(float4 lightSpaceCoords, float4 projectionScale, float4 proje
     float2 r0 = float2(cosTheta, -sinTheta) / sp.shadowMapSize.x;
     float2 r1 = float2(sinTheta, cosTheta) / sp.shadowMapSize.y;
 
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < SHADOW_PCF; ++i)
     {
         lightSpaceCoords.z = originalZ + poissonDistribution[i].z;
 
@@ -35,7 +35,7 @@ float SampleShadow(float4 lightSpaceCoords, float4 projectionScale, float4 proje
 
         shadow += FP_SHADOW(tex2Dcmp(directionalShadowMap, projectedCoords.xyz));
     }
-    shadow *= 1.0 / 8.0;
+    shadow *= 1.0 / float(SHADOW_PCF);
 
 #else
 
@@ -118,7 +118,7 @@ float SampleDirectionalShadow(float4 lightViewSpaceCoords, ShadowParameters ds)
 
     shadow = SampleShadow(lightViewSpaceCoords, ds.cascadesProjectionScale[0], ds.cascadesProjectionOffset[0], ds);
     {
-        float2 internalCoords = lightViewSpaceCoords * ds.cascadesProjectionScale[0] + ds.cascadesProjectionOffset[0];
+        float2 internalCoords = lightViewSpaceCoords.xy * ds.cascadesProjectionScale[0].xy + ds.cascadesProjectionOffset[0].xy;
         float blendPos = 0.5 - max(abs(internalCoords.x - 0.5), abs(internalCoords.y - 0.5));
         outBlendAmount = 1.0 - saturate(blendPos / edgeBlendSize - 0.25);
     }

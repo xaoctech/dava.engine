@@ -16,7 +16,7 @@ fragment_in
 #endif
 
 #if (ENABLE_TXAA)
-    float4 texClmp : TEXCOORD5;
+    float4 texClmp : TEXCOORD4;
 #endif
 };
 

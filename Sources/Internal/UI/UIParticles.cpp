@@ -214,6 +214,7 @@ void UIParticles::Draw(const UIGeometricData& geometricData)
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &matrix, reinterpret_cast<pointer_size>(&matrix));
 
         effect->effectRenderObject->SetWorldTransformPtr(&Matrix4::IDENTITY);
+        effect->effectRenderObject->SetPrevWorldTransformPtr(&Matrix4::IDENTITY);
     }
     else
     {
@@ -221,6 +222,7 @@ void UIParticles::Draw(const UIGeometricData& geometricData)
         matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
         effect->effectRenderObject->BindDynamicParameters(defaultCamera, nullptr);
         effect->effectRenderObject->SetWorldTransformPtr(&matrix);
+        effect->effectRenderObject->SetPrevWorldTransformPtr(&matrix);
     }
 
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_CAMERA_POS, &Vector3::Zero, reinterpret_cast<pointer_size>(&Vector3::Zero));

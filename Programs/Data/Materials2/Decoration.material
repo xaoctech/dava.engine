@@ -3,9 +3,9 @@ RenderTechnique:
     Shader: "~res:/Materials2/Shaders/landscape/decoration"
     UniqueDefines: ["FLIP_BACKFACE_NORMALS"]
     RenderState:
-        cullMode: "NONE"
         depthFunc: "CMP_LESS"
-        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
+        depthWrite: true
+        depthTest: true
     RenderPass0:
         Name: "ForwardPass"
     RenderPass1:
@@ -17,33 +17,31 @@ RenderTechnique:
     RenderPass3:
         Name: "gBufferPass"
         Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
-                failBack: "STENCILOP_REPLACE"
-                failFront: "STENCILOP_REPLACE"
-                funcBack: "CMP_ALWAYS"
-                funcFront: "CMP_ALWAYS"
-                mask: 1
-                passBack: "STENCILOP_REPLACE"
-                passFront: "STENCILOP_REPLACE"
-                ref: 1
-                zFailBack: "STENCILOP_REPLACE"
-                zFailFront: "STENCILOP_REPLACE"
+        Stencil:
+            enabled: true
+            failBack: "STENCILOP_REPLACE"
+            failFront: "STENCILOP_REPLACE"
+            funcBack: "CMP_ALWAYS"
+            funcFront: "CMP_ALWAYS"
+            mask: 1
+            passBack: "STENCILOP_REPLACE"
+            passFront: "STENCILOP_REPLACE"
+            ref: 1
+            zFailBack: "STENCILOP_REPLACE"
+            zFailFront: "STENCILOP_REPLACE"
     RenderPass4:
         Name: "gBufferFetchPass"
         Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
         UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
-                failBack: "STENCILOP_REPLACE"
-                failFront: "STENCILOP_REPLACE"
-                funcBack: "CMP_ALWAYS"
-                funcFront: "CMP_ALWAYS"
-                mask: 1
-                passBack: "STENCILOP_REPLACE"
-                passFront: "STENCILOP_REPLACE"
-                ref: 1
-                zFailBack: "STENCILOP_REPLACE"
-                zFailFront: "STENCILOP_REPLACE"
+        Stencil:
+            enabled: true
+            failBack: "STENCILOP_REPLACE"
+            failFront: "STENCILOP_REPLACE"
+            funcBack: "CMP_ALWAYS"
+            funcFront: "CMP_ALWAYS"
+            mask: 1
+            passBack: "STENCILOP_REPLACE"
+            passFront: "STENCILOP_REPLACE"
+            ref: 1
+            zFailBack: "STENCILOP_REPLACE"
+            zFailFront: "STENCILOP_REPLACE"

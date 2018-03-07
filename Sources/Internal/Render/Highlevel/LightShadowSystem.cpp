@@ -685,6 +685,8 @@ void LightShadowSystem::ShadowCascadePass::Draw(RenderSystem* renderSystem, uint
             ClearLayersArrays();
             visibilityArray.Clear();
             renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_SHADOW_CASTER);
+
+            PrepareRenderObjectsToRender(visibilityArray.geometryArray, camera);
             PrepareLayersArrays(visibilityArray.geometryArray, camera);
 
             SetupCameraParams(camera, camera, nullptr);
@@ -752,6 +754,8 @@ void LightShadowSystem::PointLightShadowPass::Draw(RenderSystem* renderSystem, u
             ClearLayersArrays();
             visibilityArray.Clear();
             renderSystem->GetRenderHierarchy()->Clip(cam, visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_SHADOW_CASTER);
+
+            PrepareRenderObjectsToRender(visibilityArray.geometryArray, cam);
             PrepareLayersArrays(visibilityArray.geometryArray, cam);
 
             Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_PARAMS, shadowMapParameters->data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);

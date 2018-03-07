@@ -36,6 +36,7 @@ void ReflectionSystem::UpdateReflections(ReflectionComponent* reflectionComponen
 
     probe->SetPosition(worldTransformPointer->GetTranslationVector());
     probe->SetWorldTransformPtr(worldTransformPointer);
+    probe->SetPrevWorldTransformPtr(worldTransformPointer); // GFX_COMPLETE because we don't actually care here.
     probe->SetCapturePosition(reflectionComponent->GetCapturePosition());
     probe->SetCaptureSize(reflectionComponent->GetCaptureSize());
     probe->UpdateProbe();

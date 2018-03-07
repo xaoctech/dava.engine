@@ -119,6 +119,8 @@ void CharacterControllerComponent::ScheduleUpdate()
 void CharacterControllerComponent::CopyFieldsToComponent(CharacterControllerComponent* dest)
 {
     dest->mode = this->mode;
+    dest->typeMask = this->typeMask;
+    dest->typeMaskToCollideWith = this->typeMaskToCollideWith;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CharacterControllerComponent)

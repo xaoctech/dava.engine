@@ -4,8 +4,6 @@ RenderTechnique:
     RenderPassVT:
         Name: "VTPass"        
         Shader: "~res:/Materials2/Shaders/landscape/vt-decal-combine"
-        UniqueDefines: []
         UniquePins:
             - ["DECAL_TYPE", 0]
-        RenderState:            
-            fillMode: "FILLMODE_SOLID"
+

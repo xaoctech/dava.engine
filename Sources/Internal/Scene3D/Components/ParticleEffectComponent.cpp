@@ -37,6 +37,7 @@ ParticleEffectComponent::ParticleEffectComponent()
     // instead particles are generated in corresponding world position
     effectRenderObject = new ParticleRenderObject(&effectData);
     effectRenderObject->SetWorldTransformPtr(&Matrix4::IDENTITY);
+    effectRenderObject->SetPrevWorldTransformPtr(&Matrix4::IDENTITY);
 
     if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_LOD0_EFFECTS))
     {

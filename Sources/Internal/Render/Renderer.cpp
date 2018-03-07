@@ -100,7 +100,7 @@ void Initialize(rhi::Api _api, rhi::InitParam& params)
 
     runtimeFlags.SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, 8);
     runtimeFlags.SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, MAX_SHADOW_CASCADES);
-    runtimeFlags.SetFlag(RuntimeFlags::Flag::SHADOW_PCF, 1);
+    runtimeFlags.SetFlag(RuntimeFlags::Flag::SHADOW_PCF, 8);
 
     runtimeTextures.Reset(Size2i(params.width, params.height));
 

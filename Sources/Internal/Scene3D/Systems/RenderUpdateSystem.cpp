@@ -45,8 +45,11 @@ void RenderUpdateSystem::AddEntity(Entity* entity)
     RenderObject* renderObject = entity->GetComponent<RenderComponent>()->GetRenderObject();
     if (!renderObject)
         return;
-    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+    TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+    const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+    const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
     renderObject->SetWorldTransformPtr(worldTransformPointer);
+    renderObject->SetPrevWorldTransformPtr(prevWorldTransformPointer);
     UpdateActiveIndexes(entity, renderObject);
     entityObjectMap.emplace(entity, renderObject);
     GetScene()->GetRenderSystem()->RenderPermanent(renderObject);
@@ -94,9 +97,12 @@ void RenderUpdateSystem::Process(float32 timeElapsed)
                 RenderObject* renderObject = rc->GetRenderObject();
                 if (renderObject)
                 {
+                    TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
                     // Update new transform pointer, and mark that transform is changed
-                    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+                    const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+                    const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
                     renderObject->SetWorldTransformPtr(worldTransformPointer);
+                    renderObject->SetPrevWorldTransformPtr(prevWorldTransformPointer);
                     entity->GetScene()->renderSystem->MarkForUpdate(renderObject);
 
                     Matrix4 inverseWorldTransform = Matrix4::IDENTITY;

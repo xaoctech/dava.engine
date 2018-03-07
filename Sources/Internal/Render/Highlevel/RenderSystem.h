@@ -170,6 +170,7 @@ private:
     Vector<RenderObject*> objectsForPermanentUpdate;
     Vector<RenderObject*> markedObjects;
     Vector<RenderObject*> renderObjectArray;
+    Vector<RenderObject*> velocityUpdatedObjects;
 
     Vector<Light*> allLights;
     Vector<Light*> dynamicLights;

@@ -821,8 +821,8 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
         options.material = material;
         options.textureSet = RhiUtils::TextureSet({ lumTexture }, fragmentTextures);
         options.renderPassPriority = 4;
-        bool invertProjection = (options.dstTexture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
-        float32 cv = invertProjection ? 1.0f : -1.0f;
+        
+        float32 cv = 1.f;
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &cv, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
         quadRenderer.Render(options);

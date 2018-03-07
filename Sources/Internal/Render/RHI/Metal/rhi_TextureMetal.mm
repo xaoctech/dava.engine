@@ -226,8 +226,6 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
 
     id<MTLTexture> uid = [_Metal_Device newTextureWithDescriptor:desc];
 
-    [desc release];
-
     if (uid != nil)
     {
         [uid retain];
@@ -297,6 +295,7 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
             desc2.mipmapLevelCount = 1;
             desc2.sampleCount = texDesc.sampleCount;
             desc2.textureType = texDesc.sampleCount > 1 ? MTLTextureType2DMultisample : MTLTextureType2D;
+            desc2.usage = desc.usage;
 
             id<MTLTexture> uid2 = [_Metal_Device newTextureWithDescriptor:desc2];
 
@@ -321,7 +320,9 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
         DAVA::Logger::Debug("failed to create tex%s %ux%u fmt=%i", (texDesc.isRenderTarget) ? "-rt" : "", texDesc.width, texDesc.height, int(texDesc.format));
         success = false;
     }
-
+    
+    [desc release];
+    
     tex->need_restoring = texDesc.needRestore;
     tex->creationDesc = texDesc;
 
