@@ -38,36 +38,35 @@ struct DefaultUIPackageBuilder::ControlDescr
     bool addToParent;
 
     ControlDescr(UIControl* aControl, bool aAddToParent)
-        : control(SafeRetain(aControl))
+        : control(RefPtr<UIControl>::ConstructWithRetain(aControl))
         , addToParent(aAddToParent)
     {
     }
 };
 
-DefaultUIPackageBuilder::DefaultUIPackageBuilder(UIPackagesCache* _cache)
+DefaultUIPackageBuilder::DefaultUIPackageBuilder(const RefPtr<UIPackagesCache>& _packagesCache)
 {
-    if (_cache)
-        cache = SafeRetain(_cache);
+    if (_packagesCache)
+        cache = _packagesCache;
     else
-        cache = new UIPackagesCache();
+        cache = MakeRef<UIPackagesCache>();
+}
+
+DefaultUIPackageBuilder::DefaultUIPackageBuilder(UIPackagesCache* _packagesCache)
+    : DefaultUIPackageBuilder(RefPtr<UIPackagesCache>::ConstructWithRetain(_packagesCache))
+{
 }
 
 DefaultUIPackageBuilder::~DefaultUIPackageBuilder()
 {
-    SafeRelease(cache);
+    cache = nullptr;
 
     if (!controlsStack.empty())
     {
-        for (auto& descr : controlsStack)
-            SafeDelete(descr);
-
         controlsStack.clear();
-
         DVASSERT(false);
     }
 
-    for (UIPackage* importedPackage : importedPackages)
-        SafeRelease(importedPackage);
     importedPackages.clear();
 }
 
@@ -76,7 +75,7 @@ UIPackage* DefaultUIPackageBuilder::GetPackage() const
     return package.Get();
 }
 
-UIPackage* DefaultUIPackageBuilder::FindInCache(const String& packagePath) const
+RefPtr<UIPackage> DefaultUIPackageBuilder::FindInCache(const String& packagePath) const
 {
     return cache->GetPackage(packagePath);
 }
@@ -90,7 +89,7 @@ void DefaultUIPackageBuilder::BeginPackage(const FilePath& packagePath, int32 ve
 
 void DefaultUIPackageBuilder::EndPackage()
 {
-    for (UIPackage* importedPackage : importedPackages)
+    for (const auto& importedPackage : importedPackages)
     {
         const Vector<UIPriorityStyleSheet>& packageStyleSheets = importedPackage->GetControlPackageContext()->GetSortedStyleSheets();
         for (const UIPriorityStyleSheet& packageStyleSheet : packageStyleSheets)
@@ -124,11 +123,11 @@ void DefaultUIPackageBuilder::EndPackage()
 
 bool DefaultUIPackageBuilder::ProcessImportedPackage(const String& packagePath, AbstractUIPackageLoader* loader)
 {
-    UIPackage* importedPackage = cache->GetPackage(packagePath);
+    RefPtr<UIPackage> importedPackage = cache->GetPackage(packagePath);
 
     if (!importedPackage)
     {
-        std::unique_ptr<DefaultUIPackageBuilder> builder = CreateBuilder(cache);
+        std::unique_ptr<DefaultUIPackageBuilder> builder = CreateBuilder(cache.Get());
         if (loader->LoadPackage(packagePath, builder.get()) && builder->GetPackage())
         {
             importedPackage = builder->GetPackage();
@@ -184,7 +183,7 @@ const ReflectedType* DefaultUIPackageBuilder::BeginControlWithClass(const FastNa
         DVASSERT(false);
     }
 
-    controlsStack.push_back(new ControlDescr(control.Get(), true));
+    controlsStack.push_back(std::make_unique<ControlDescr>(control.Get(), true));
 
     return ReflectedTypeDB::GetByPointer(control.Get());
 }
@@ -207,7 +206,7 @@ const ReflectedType* DefaultUIPackageBuilder::BeginControlWithCustomClass(const 
         }
     }
 
-    controlsStack.push_back(new ControlDescr(control.Get(), true));
+    controlsStack.push_back(std::make_unique<ControlDescr>(control.Get(), true));
 
     return ReflectedTypeDB::GetByPointer(control.Get());
 }
@@ -252,9 +251,9 @@ const ReflectedType* DefaultUIPackageBuilder::BeginControlWithPrototype(const Fa
         control->SetName(controlName);
     }
 
-    control->SetPackageContext(nullptr);
+    control->SetPackageContext(RefPtr<UIControlPackageContext>());
 
-    controlsStack.push_back(new ControlDescr(control.Get(), true));
+    controlsStack.push_back(std::make_unique<ControlDescr>(control.Get(), true));
     return ReflectedTypeDB::GetByPointer(control.Get());
 }
 
@@ -267,7 +266,7 @@ const ReflectedType* DefaultUIPackageBuilder::BeginControlWithPath(const String&
     }
 
     DVASSERT(control);
-    controlsStack.push_back(new ControlDescr(control, false));
+    controlsStack.push_back(std::make_unique<ControlDescr>(control, false));
 
     return ReflectedTypeDB::GetByPointer(control);
 }
@@ -275,13 +274,13 @@ const ReflectedType* DefaultUIPackageBuilder::BeginControlWithPath(const String&
 const ReflectedType* DefaultUIPackageBuilder::BeginUnknownControl(const FastName& controlName, const YamlNode* node)
 {
     DVASSERT(false);
-    controlsStack.push_back(new ControlDescr(nullptr, false));
+    controlsStack.push_back(std::make_unique<ControlDescr>(nullptr, false));
     return nullptr;
 }
 
 void DefaultUIPackageBuilder::EndControl(eControlPlace controlPlace)
 {
-    ControlDescr* lastDescr = controlsStack.back();
+    std::unique_ptr<ControlDescr> lastDescr = std::move(controlsStack.back());
     controlsStack.pop_back();
 
     DVASSERT(lastDescr->control != nullptr);
@@ -320,7 +319,6 @@ void DefaultUIPackageBuilder::EndControl(eControlPlace controlPlace)
             break;
         }
     }
-    SafeDelete(lastDescr);
 }
 
 void DefaultUIPackageBuilder::BeginControlPropertiesSection(const String& name)
@@ -396,10 +394,10 @@ void DefaultUIPackageBuilder::SetEditorMode(bool editorMode_)
     editorMode = editorMode_;
 }
 
-void DefaultUIPackageBuilder::PutImportredPackage(const FilePath& path, UIPackage* package)
+void DefaultUIPackageBuilder::PutImportredPackage(const FilePath& path, const RefPtr<UIPackage>& package)
 {
     int32 index = static_cast<int32>(importedPackages.size());
-    importedPackages.push_back(SafeRetain(package));
+    importedPackages.push_back(package);
     packsByPaths[path] = index;
     packsByNames[path.GetBasename()] = index;
 }
@@ -408,7 +406,7 @@ UIPackage* DefaultUIPackageBuilder::FindImportedPackageByName(const String& name
 {
     auto it = packsByNames.find(name);
     if (it != packsByNames.end())
-        return importedPackages[it->second];
+        return importedPackages[it->second].Get();
 
     return nullptr;
 }

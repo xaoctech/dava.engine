@@ -113,7 +113,7 @@ UIControl* UIFlowViewSystem::InitView(UIFlowViewComponent* component, UIFlowCont
                 }
                 else if (!pkgBuilder.GetPackage()->GetControls().empty())
                 {
-                    root = pkgBuilder.GetPackage()->GetControls().front();
+                    root = pkgBuilder.GetPackage()->GetControls().front().Get();
                 }
 
                 if (root != nullptr)

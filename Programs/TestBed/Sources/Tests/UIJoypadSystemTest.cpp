@@ -39,7 +39,7 @@ void UIJoypadSystemTest::LoadResources()
     armSprites.second = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/arm_inactive.png", true);
     arrowSprite = Sprite::CreateFromSourceFile("~res:/TestBed/TestData/UIJoypadSystemTest/arrow.png", true);
 
-    for (UIControl* c : stuff->GetChildren())
+    for (const auto& c : stuff->GetChildren())
     {
         if (StringUtils::StartsWith(c->GetName().c_str(), "Btn"))
         {
@@ -65,11 +65,11 @@ void UIJoypadSystemTest::LoadResources()
                     c->RemoveClass(FastName("touchDown"));
 
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Area"))
-                        ToggleStickElement(eStickElements::STICK_AREA, c);
+                        ToggleStickElement(eStickElements::STICK_AREA, c.Get());
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Arm"))
-                        ToggleStickElement(eStickElements::STICK_ARM, c);
+                        ToggleStickElement(eStickElements::STICK_ARM, c.Get());
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Arrow"))
-                        ToggleStickElement(eStickElements::STICK_ARROW, c);
+                        ToggleStickElement(eStickElements::STICK_ARROW, c.Get());
                 }
                 );
             }

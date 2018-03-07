@@ -237,7 +237,7 @@ void FrameControl::InitFromGD(const UIGeometricData& gd)
 void FrameControl::SetRect(const DAVA::Rect& rect)
 {
     drawable->SetRect(rect);
-    List<UIControl*> children = drawable->GetChildren();
+    const auto& children = drawable->GetChildren();
     auto iter = children.begin();
     for (uint32 i = 0; i < eBorder::COUNT; ++i, ++iter)
     {

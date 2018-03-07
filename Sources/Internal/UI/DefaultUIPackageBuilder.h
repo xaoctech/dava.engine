@@ -13,11 +13,12 @@ class UIPackagesCache;
 class DefaultUIPackageBuilder : public AbstractUIPackageBuilder
 {
 public:
+    DefaultUIPackageBuilder(const RefPtr<UIPackagesCache>& _packagesCache);
     DefaultUIPackageBuilder(UIPackagesCache* _packagesCache = nullptr);
     ~DefaultUIPackageBuilder() override;
 
     UIPackage* GetPackage() const;
-    UIPackage* FindInCache(const String& packagePath) const;
+    RefPtr<UIPackage> FindInCache(const String& packagePath) const;
 
     void BeginPackage(const FilePath& packagePath, int32 version) override;
     void EndPackage() override;
@@ -48,7 +49,7 @@ protected:
     virtual std::unique_ptr<DefaultUIPackageBuilder> CreateBuilder(UIPackagesCache* packagesCache);
 
 private:
-    void PutImportredPackage(const FilePath& path, UIPackage* package);
+    void PutImportredPackage(const FilePath& path, const RefPtr<UIPackage>& package);
     UIPackage* FindImportedPackageByName(const String& name) const;
 
 private:
@@ -56,16 +57,16 @@ private:
     struct ControlDescr;
 
     //Vector<PackageDescr*> packagesStack;
-    Vector<ControlDescr*> controlsStack;
+    Vector<std::unique_ptr<ControlDescr>> controlsStack;
 
-    UIPackagesCache* cache;
+    RefPtr<UIPackagesCache> cache;
     ReflectedObject currentObject;
     const Type* currentComponentType = nullptr;
 
     RefPtr<UIPackage> package;
     FilePath currentPackagePath;
 
-    Vector<UIPackage*> importedPackages;
+    Vector<RefPtr<UIPackage>> importedPackages;
     Vector<UIPriorityStyleSheet> styleSheets;
     Map<FilePath, int32> packsByPaths;
     Map<String, int32> packsByNames;

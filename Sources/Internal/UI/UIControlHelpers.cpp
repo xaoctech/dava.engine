@@ -180,14 +180,14 @@ UIControl* UIControlHelpers::FindChildControlByName(const String& controlName, c
 
 UIControl* UIControlHelpers::FindChildControlByName(const FastName& controlName, const UIControl* rootControl, bool recursive)
 {
-    for (UIControl* c : rootControl->GetChildren())
+    for (const auto& c : rootControl->GetChildren())
     {
         if (c->GetName() == controlName)
-            return c;
+            return c.Get();
 
         if (recursive)
         {
-            UIControl* res = FindChildControlByName(controlName, c, recursive);
+            UIControl* res = FindChildControlByName(controlName, c.Get(), recursive);
             if (res)
             {
                 return res;
@@ -248,9 +248,9 @@ const UIControl* UIControlHelpers::FindControlByPathImpl(Vector<FastName>::const
         else if (name == WILDCARD_MATCHES_ONE_LEVEL)
         {
             auto nextIt = it + 1;
-            for (UIControl* c : control->GetChildren())
+            for (const auto& c : control->GetChildren())
             {
-                const UIControl* res = FindControlByPathImpl(nextIt, end, c);
+                const UIControl* res = FindControlByPathImpl(nextIt, end, c.Get());
                 if (res)
                 {
                     return res;
@@ -286,9 +286,9 @@ const UIControl* UIControlHelpers::FindControlByPathRecursivelyImpl(Vector<FastN
         return res;
     }
 
-    for (UIControl* c : control->GetChildren())
+    for (const auto& c : control->GetChildren())
     {
-        res = FindControlByPathRecursivelyImpl(begin, end, c);
+        res = FindControlByPathRecursivelyImpl(begin, end, c.Get());
         if (res)
         {
             return res;

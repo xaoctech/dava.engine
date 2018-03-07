@@ -292,7 +292,7 @@ protected:
     ~UIControlBackground() override;
     Color drawColor;
 
-    NMaterial* material = nullptr;
+    RefPtr<NMaterial> material;
     Vector<BatchDescriptor2D> batchDescriptors;
 #if defined(LOCALIZATION_DEBUG)
     std::unique_ptr<SpriteDrawState> lastDrawState;

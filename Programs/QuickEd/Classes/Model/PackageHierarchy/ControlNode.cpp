@@ -6,7 +6,9 @@
 #include "Classes/Model/PackageHierarchy/PackageVisitor.h"
 
 #include <UI/UIControl.h>
+#include <UI/UIControlPackageContext.h>
 #include <Base/ObjectFactory.h>
+#include <Base/RefPtr.h>
 
 using namespace DAVA;
 
@@ -34,10 +36,10 @@ ControlNode::ControlNode(UIControl* control, bool recursively)
 
     if (recursively)
     {
-        const List<UIControl*>& children = control->GetChildren();
-        for (UIControl* child : children)
+        const auto& children = control->GetChildren();
+        for (const auto& child : children)
         {
-            ControlNode* childNode(new ControlNode(child, recursively));
+            ControlNode* childNode(new ControlNode(child.Get(), recursively));
             childNode->SetParent(this);
             childNode->SetPackageContext(GetPackageContext());
             nodes.push_back(childNode);
@@ -188,12 +190,12 @@ UIControl* ControlNode::GetControl() const
 
 UIControlPackageContext* ControlNode::GetPackageContext() const
 {
-    return control->GetPackageContext();
+    return control->GetPackageContext().Get();
 }
 
 void ControlNode::SetPackageContext(UIControlPackageContext* context)
 {
-    control->SetPackageContext(context);
+    control->SetPackageContext(RefPtr<UIControlPackageContext>::ConstructWithRetain(context));
     for (ControlNode* child : nodes)
         child->SetPackageContext(context);
 }

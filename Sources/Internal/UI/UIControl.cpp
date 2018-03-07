@@ -126,7 +126,7 @@ void UIControl::SetScene(UIControlSystem* scene_)
         return;
     }
     scene = scene_;
-    for (auto child : children)
+    for (const auto& child : children)
     {
         child->SetScene(scene);
     }
@@ -161,7 +161,7 @@ void UIControl::SetExclusiveInput(bool isExclusiveInput, bool hierarchic /* = tr
 
     if (hierarchic)
     {
-        List<UIControl*>::iterator it = children.begin();
+        auto it = children.begin();
         for (; it != children.end(); ++it)
         {
             (*it)->SetExclusiveInput(isExclusiveInput, hierarchic);
@@ -175,7 +175,7 @@ void UIControl::SetMultiInput(bool isMultiInput, bool hierarchic /* = true*/)
 
     if (hierarchic)
     {
-        List<UIControl*>::iterator it = children.begin();
+        auto it = children.begin();
         for (; it != children.end(); ++it)
         {
             (*it)->SetMultiInput(isMultiInput, hierarchic);
@@ -243,9 +243,17 @@ void UIControl::PerformEventWithData(int32 eventType, void* callerData, const UI
     }
 }
 
-const List<UIControl*>& UIControl::GetChildren() const
+const List<RefPtr<UIControl>>& UIControl::GetChildren() const
 {
     return children;
+}
+
+void UIControl::SortChildren(const SortFunction& predicate)
+{
+    children.sort(predicate); // std::stable_sort and std::sort are not allowed for list
+
+    isIteratorCorrupted = true;
+    SetLayoutOrderDirty();
 }
 
 void UIControl::SetName(const String& name_)
@@ -530,7 +538,7 @@ void UIControl::SetInputEnabled(bool isEnabled, bool hierarchic /* = true*/)
     }
     if (hierarchic)
     {
-        List<UIControl*>::iterator it = children.begin();
+        auto it = children.begin();
         for (; it != children.end(); ++it)
         {
             (*it)->SetInputEnabled(isEnabled, hierarchic);
@@ -566,7 +574,7 @@ void UIControl::SetDisabled(bool isDisabled, bool hierarchic /* = true*/)
 
     if (hierarchic)
     {
-        List<UIControl*>::iterator it = children.begin();
+        auto it = children.begin();
         for (; it != children.end(); ++it)
         {
             (*it)->SetDisabled(isDisabled, hierarchic);
@@ -592,7 +600,7 @@ void UIControl::SetSelected(bool isSelected, bool hierarchic /* = true*/)
 
     if (hierarchic)
     {
-        List<UIControl*>::iterator it = children.begin();
+        auto it = children.begin();
         for (; it != children.end(); ++it)
         {
             (*it)->SetSelected(isSelected, hierarchic);
@@ -605,9 +613,10 @@ bool UIControl::GetHover() const
     return (controlState & STATE_HOVER) != 0;
 }
 
-void UIControl::AddControl(UIControl* control)
+void UIControl::AddControl(UIControl* _control)
 {
-    control->Retain();
+    RefPtr<UIControl> control(RefPtr<UIControl>::ConstructWithRetain(_control));
+
     control->RemoveFromParent();
 
     control->isInputProcessed = false;
@@ -621,14 +630,21 @@ void UIControl::AddControl(UIControl* control)
     SetLayoutDirty();
 }
 
-void UIControl::RemoveControl(UIControl* control)
+void UIControl::AddControl(RefPtr<UIControl> control)
 {
-    if (nullptr == control)
+    AddControl(control.Get());
+}
+
+void UIControl::RemoveControl(UIControl* _control)
+{
+    if (nullptr == _control)
     {
         return;
     }
 
-    List<UIControl*>::iterator it = children.begin();
+    RefPtr<UIControl> control(RefPtr<UIControl>::ConstructWithRetain(_control));
+
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
         if ((*it) == control)
@@ -638,12 +654,16 @@ void UIControl::RemoveControl(UIControl* control)
             control->SetScene(nullptr);
             control->SetParent(NULL);
             children.erase(it);
-            control->Release();
             isIteratorCorrupted = true;
             SetLayoutDirty();
             return;
         }
     }
+}
+
+void UIControl::RemoveControl(RefPtr<UIControl> control)
+{
+    RemoveControl(control.Get());
 }
 
 void UIControl::RemoveFromParent()
@@ -662,30 +682,17 @@ void UIControl::RemoveAllControls()
         RemoveControl(children.front());
     }
 }
-void UIControl::BringChildFront(UIControl* _control)
+
+void UIControl::BringChildFront(const UIControl* _control)
 {
-    List<UIControl*>::iterator it = children.begin();
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
-        if ((*it) == _control)
+        if ((*it).Get() == _control)
         {
+            RefPtr<UIControl> control(*it);
             children.erase(it);
-            children.push_back(_control);
-            isIteratorCorrupted = true;
-            SetLayoutOrderDirty();
-            return;
-        }
-    }
-}
-void UIControl::BringChildBack(UIControl* _control)
-{
-    List<UIControl*>::iterator it = children.begin();
-    for (; it != children.end(); ++it)
-    {
-        if ((*it) == _control)
-        {
-            children.erase(it);
-            children.push_front(_control);
+            children.push_back(control);
             isIteratorCorrupted = true;
             SetLayoutOrderDirty();
             return;
@@ -693,14 +700,30 @@ void UIControl::BringChildBack(UIControl* _control)
     }
 }
 
-void UIControl::InsertChildBelow(UIControl* control, UIControl* _belowThisChild)
+void UIControl::BringChildBack(const UIControl* _control)
 {
-    List<UIControl*>::iterator it = children.begin();
+    auto it = children.begin();
+    for (; it != children.end(); ++it)
+    {
+        if ((*it) == _control)
+        {
+            RefPtr<UIControl> control(*it);
+            children.erase(it);
+            children.push_front(control);
+            isIteratorCorrupted = true;
+            SetLayoutOrderDirty();
+            return;
+        }
+    }
+}
+void UIControl::InsertChildBelow(UIControl* _control, const UIControl* _belowThisChild)
+{
+    RefPtr<UIControl> control(RefPtr<UIControl>::ConstructWithRetain(_control));
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
         if ((*it) == _belowThisChild)
         {
-            control->Retain();
             control->RemoveFromParent();
 
             children.insert(it, control);
@@ -718,14 +741,19 @@ void UIControl::InsertChildBelow(UIControl* control, UIControl* _belowThisChild)
     AddControl(control);
 }
 
-void UIControl::InsertChildAbove(UIControl* control, UIControl* _aboveThisChild)
+void UIControl::InsertChildBelow(RefPtr<UIControl> control, const UIControl* _belowThisChild)
 {
-    List<UIControl*>::iterator it = children.begin();
+    InsertChildBelow(control.Get(), _belowThisChild);
+}
+
+void UIControl::InsertChildAbove(UIControl* _control, const UIControl* _aboveThisChild)
+{
+    RefPtr<UIControl> control(RefPtr<UIControl>::ConstructWithRetain(_control));
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
         if ((*it) == _aboveThisChild)
         {
-            control->Retain();
             control->RemoveFromParent();
 
             children.insert(++it, control);
@@ -743,50 +771,71 @@ void UIControl::InsertChildAbove(UIControl* control, UIControl* _aboveThisChild)
     AddControl(control);
 }
 
-void UIControl::SendChildBelow(UIControl* _control, UIControl* _belowThisChild)
+void UIControl::InsertChildAbove(RefPtr<UIControl> control, const UIControl* _aboveThisChild)
+{
+    InsertChildAbove(control.Get(), _aboveThisChild);
+}
+
+void UIControl::SendChildBelow(const UIControl* _control, const UIControl* _belowThisChild)
 {
     //TODO: Fix situation when controls not from this hierarchy
 
     // firstly find control in list and erase it
-    List<UIControl*>::iterator it = children.begin();
+    RefPtr<UIControl> control;
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
-        if ((*it) == _control)
+        if ((*it) == control)
         {
+            control = *it;
             children.erase(it);
             isIteratorCorrupted = true;
             break;
         }
     }
+
+    if (control == nullptr)
+    {
+        DVASSERT(control != nullptr, Format("[UIControl::SendChildBelow] Control \"%s\" not found in current hierarchy", _control->GetName().c_str()).c_str());
+        return;
+    }
+
     // after that find place where we should put the control and do that
     it = children.begin();
     for (; it != children.end(); ++it)
     {
         if ((*it) == _belowThisChild)
         {
-            children.insert(it, _control);
+            children.insert(it, control);
             isIteratorCorrupted = true;
             SetLayoutOrderDirty();
             return;
         }
     }
-    DVASSERT(0, "Control _belowThisChild not found");
+    DVASSERT(0, Format("[UIControl::SendChildBelow] Control \"%s\" not found in current hierarchy", _belowThisChild->GetName().c_str()).c_str());
 }
 
-void UIControl::SendChildAbove(UIControl* _control, UIControl* _aboveThisChild)
+void UIControl::SendChildAbove(const UIControl* _control, const UIControl* _aboveThisChild)
 {
     //TODO: Fix situation when controls not from this hierarhy
 
     // firstly find control in list and erase it
-    List<UIControl*>::iterator it = children.begin();
+    RefPtr<UIControl> control;
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
         if ((*it) == _control)
         {
+            control = *it;
             children.erase(it);
             isIteratorCorrupted = true;
             break;
         }
+    }
+    if (control == nullptr)
+    {
+        DVASSERT(control != nullptr, Format("[UIControl::SendChildAbove] Control \"%s\" not found in current hierarchy", _control->GetName().c_str()).c_str());
+        return;
     }
     // after that find place where we should put the control and do that
     it = children.begin();
@@ -794,14 +843,14 @@ void UIControl::SendChildAbove(UIControl* _control, UIControl* _aboveThisChild)
     {
         if ((*it) == _aboveThisChild)
         {
-            children.insert(++it, _control);
+            children.insert(++it, control);
             isIteratorCorrupted = true;
             SetLayoutOrderDirty();
             return;
         }
     }
 
-    DVASSERT(0, "Control _aboveThisChild not found");
+    DVASSERT(0, Format("[UIControl::SendChildAbove] Control \"%s\" not found in current hierarchy", _aboveThisChild->GetName().c_str()).c_str());
 }
 
 UIControl* UIControl::Clone()
@@ -867,9 +916,9 @@ void UIControl::CopyDataFrom(UIControl* srcControl)
         inputProcessorsCount = 0;
     }
 
-    for (UIControl* srcChild : srcControl->GetChildren())
+    for (const auto& srcChild : srcControl->GetChildren())
     {
-        AddControl(srcChild->SafeClone().Get());
+        AddControl(srcChild->SafeClone());
     }
 }
 
@@ -1184,28 +1233,26 @@ bool UIControl::SystemInput(UIEvent* currentInput)
             }
         }
 
-        std::for_each(begin(children), end(children), [](UIControl* c) {
-            c->isInputProcessed = false;
-        });
+        for (const auto& child : children)
+        {
+            child->isInputProcessed = false;
+        };
 
-        List<UIControl*>::reverse_iterator it = children.rbegin();
-        List<UIControl*>::reverse_iterator itEnd = children.rend();
+        auto it = children.rbegin();
+        auto itEnd = children.rend();
         while (it != itEnd)
         {
             isIteratorCorrupted = false;
-            UIControl* current = *it;
+            RefPtr<UIControl> current = *it;
             if (!current->isInputProcessed)
             {
-                current->Retain();
                 if (current->inputProcessorsCount > 0)
                 {
                     if (current->SystemInput(currentInput))
                     {
-                        current->Release();
                         return true;
                     }
                 }
-                current->Release();
                 if (isIteratorCorrupted)
                 {
                     it = children.rbegin();
@@ -1869,7 +1916,7 @@ void UIControl::DumpInputs(int32 depthLevel)
         outStr += " ***";
     }
     Logger::Info("%s", outStr.c_str());
-    List<UIControl*>::iterator it = children.begin();
+    auto it = children.begin();
     for (; it != children.end(); ++it)
     {
         (*it)->DumpInputs(depthLevel + 1);
@@ -2314,7 +2361,7 @@ void UIControl::ResetLayoutOrderDirty()
     layoutOrderDirty = false;
 }
 
-void UIControl::SetPackageContext(UIControlPackageContext* newPackageContext)
+void UIControl::SetPackageContext(const RefPtr<UIControlPackageContext>& newPackageContext)
 {
     if (packageContext != newPackageContext)
     {
@@ -2322,7 +2369,7 @@ void UIControl::SetPackageContext(UIControlPackageContext* newPackageContext)
     }
 
     packageContext = newPackageContext;
-    for (UIControl* child : children)
+    for (const auto& child : children)
         child->PropagateParentWithContext(packageContext ? this : parentWithContext);
 }
 
@@ -2338,23 +2385,23 @@ void UIControl::PropagateParentWithContext(UIControl* newParentWithContext)
     parentWithContext = newParentWithContext;
     if (packageContext == nullptr)
     {
-        for (UIControl* child : children)
+        for (const auto& child : children)
         {
             child->PropagateParentWithContext(newParentWithContext);
         }
     }
 }
 
-UIControlPackageContext* UIControl::GetPackageContext() const
+RefPtr<UIControlPackageContext> UIControl::GetPackageContext() const
 {
     return packageContext.Valid() ?
-    packageContext.Get() :
-    (parentWithContext ? parentWithContext->GetLocalPackageContext() : nullptr);
+    packageContext :
+    (parentWithContext ? parentWithContext->GetLocalPackageContext() : RefPtr<UIControlPackageContext>());
 }
 
-UIControlPackageContext* UIControl::GetLocalPackageContext() const
+const RefPtr<UIControlPackageContext>& UIControl::GetLocalPackageContext() const
 {
-    return packageContext.Get();
+    return packageContext;
 }
 
 /* Styles */

@@ -148,9 +148,9 @@ void UITextSystem::ForceProcessControl(float32 elapsedTime, UIControl* control)
         ApplyData(component);
     }
 
-    for (UIControl* c : control->GetChildren())
+    for (const auto& c : control->GetChildren())
     {
-        ForceProcessControl(elapsedTime, c);
+        ForceProcessControl(elapsedTime, c.Get());
     }
 }
 

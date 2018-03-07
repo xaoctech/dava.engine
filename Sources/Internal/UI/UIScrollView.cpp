@@ -92,10 +92,10 @@ void UIScrollView::RemoveControl(UIControl* control)
 void UIScrollView::PushContentToBounds(UIControl* parentControl)
 {
     // We have to shift each child of ScrollContent to fit its bounds
-    const List<UIControl*>& childslist = parentControl->GetChildren();
-    for (List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
+    const auto& childslist = parentControl->GetChildren();
+    for (auto it = childslist.begin(); it != childslist.end(); ++it)
     {
-        UIControl* childControl = (*it);
+        UIControl* childControl = it->Get();
         if (!(childControl && childControl->GetVisibilityFlag()))
             continue;
 
@@ -125,10 +125,10 @@ Vector2 UIScrollView::GetControlOffset(UIControl* parentControl, Vector2 current
 {
     Vector2 currentOffset = currentContentOffset;
     // Get control's farest position inside scrollContainer
-    const List<UIControl*>& childslist = parentControl->GetChildren();
-    for (List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
+    const auto& childslist = parentControl->GetChildren();
+    for (auto it = childslist.begin(); it != childslist.end(); ++it)
     {
-        UIControl* childControl = (*it);
+        UIControl* childControl = it->Get();
         if (!(childControl && childControl->GetVisibilityFlag()))
             continue;
 
@@ -148,10 +148,10 @@ Vector2 UIScrollView::GetMaxSize(UIControl* parentControl, Vector2 currentMaxSiz
     // Initial content max size is actual control sizes
     Vector2 maxSize = currentMaxSize;
 
-    const List<UIControl*>& childslist = parentControl->GetChildren();
-    for (List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
+    const auto& childslist = parentControl->GetChildren();
+    for (auto it = childslist.begin(); it != childslist.end(); ++it)
     {
-        UIControl* childControl = (*it);
+        UIControl* childControl = it->Get();
         if (!(childControl && childControl->GetVisibilityFlag()))
             continue;
 

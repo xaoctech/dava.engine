@@ -141,7 +141,7 @@ void XMLRichContentBuilder::PrepareControl(UIControl* ctrl, bool autosize)
 
 void XMLRichContentBuilder::AppendControl(UIControl* ctrl)
 {
-    controls.emplace_back(SafeRetain(ctrl));
+    controls.emplace_back(RefPtr<UIControl>::ConstructWithRetain(ctrl));
 }
 
 void XMLRichContentBuilder::OnElementStarted(const String& elementName, const String& namespaceURI, const String& qualifedName, const Map<String, String>& attributes)

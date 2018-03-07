@@ -234,13 +234,19 @@ void AnimationManager::Update(float32 timeElapsed)
 
 void AnimationManager::DeleteAllFinishedAnimation()
 {
-    auto newEndIt = std::stable_partition(begin(animations), end(animations), [](const auto& animation) { return !(animation->state & Animation::STATE_DELETE_ME); });
-    for (auto it = newEndIt; it != animations.end(); ++it)
+    Vector<RefPtr<Animation>> finishedAnimations;
+    for (const auto& animation : animations)
     {
-        (*it)->state &= ~Animation::STATE_DELETE_ME;
-        DVASSERT((*it)->state == 0);
-        (*it)->state |= Animation::STATE_DELETED;
+        if ((animation->state & Animation::STATE_DELETE_ME))
+        {
+            animation->state &= ~Animation::STATE_DELETE_ME;
+            DVASSERT(animation->state == 0);
+            animation->state |= Animation::STATE_DELETED;
+            finishedAnimations.push_back(animation);
+        }
     }
+
+    auto newEndIt = std::remove_if(begin(animations), end(animations), [](const auto& animation) { return (animation->state & Animation::STATE_DELETED); });
     animations.erase(newEndIt, animations.end());
 }
 

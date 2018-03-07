@@ -147,7 +147,7 @@ void CalculateTotalRectImpl(UIControl* control, Rect& totalRect, Vector2& rootCo
 
     for (const auto& child : control->GetChildren())
     {
-        CalculateTotalRectImpl(child, totalRect, rootControlPosition, tempGeometricData);
+        CalculateTotalRectImpl(child.Get(), totalRect, rootControlPosition, tempGeometricData);
     }
 }
 
@@ -267,7 +267,7 @@ void BackgroundController::CalculateTotalRect(DAVA::Rect& totalRect, DAVA::Vecto
 
         for (const auto& child : nestedControl->GetChildren())
         {
-            EditorControlsViewDetails::CalculateTotalRectImpl(child, totalRect, rootControlPosition, gd);
+            EditorControlsViewDetails::CalculateTotalRectImpl(child.Get(), totalRect, rootControlPosition, gd);
         }
     }
 }
@@ -493,7 +493,7 @@ void EditorControlsView::AddBackgroundControllerToCanvas(BackgroundController* b
     {
         auto iterToInsertControl = controlsCanvas->GetChildren().begin();
         std::advance(iterToInsertControl, pos);
-        controlsCanvas->InsertChildBelow(grid, *iterToInsertControl);
+        controlsCanvas->InsertChildBelow(grid, iterToInsertControl->Get());
 
         auto iterToInsertController = gridControls.begin();
         std::advance(iterToInsertController, pos);
