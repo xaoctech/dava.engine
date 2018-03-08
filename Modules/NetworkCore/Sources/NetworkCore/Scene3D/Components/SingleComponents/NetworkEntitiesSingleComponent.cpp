@@ -27,9 +27,10 @@ void NetworkEntitiesSingleComponent::RegisterEntity(NetworkID networkID, Entity*
     else
     {
         Entity* netEntity = findIt->second;
-
         if (netEntity != entity && netEntity->GetScene() != nullptr)
         {
+            DVASSERT(networkID.IsStaticId());
+
             // the scene already has an entity with the same network ID
             // for example: if we are loading a map with static objects on the client,
             findIt->second = entity; // but replication system has replicated static objects from server
@@ -51,19 +52,5 @@ Entity* NetworkEntitiesSingleComponent::FindByID(NetworkID networkID) const
         return networkIt->second;
     }
     return nullptr;
-}
-
-void NetworkEntitiesSingleComponent::Clear()
-{
-}
-
-NetworkID NetworkEntitiesSingleComponent::GetNextUniqueEntityID()
-{
-#ifdef USE_SNAPSHOT_SYSTEM
-    DVASSERT(false);
-#endif
-
-    ++nextUniqueEntityID;
-    return nextUniqueEntityID;
 }
 }

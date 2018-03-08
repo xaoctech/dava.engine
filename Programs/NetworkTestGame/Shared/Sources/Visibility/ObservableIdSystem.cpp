@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ObservableIdSystem)
 }
 
 ObservableIdSystem::ObservableIdSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
     , nextNewObservableId(0)
 {
     observableEntityGroup = GetScene()->AquireEntityGroup<ObservableComponent>();

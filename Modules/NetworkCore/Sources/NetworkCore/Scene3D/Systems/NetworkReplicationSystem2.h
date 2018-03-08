@@ -51,7 +51,6 @@ private:
     NetworkDeltaSingleComponent* networkDeltaSingleComponent;
     NetworkReplicationSingleComponent* networkReplicationSingleComponent;
     NetworkTimeSingleComponent* networkTimeSingleComponent;
-    NetworkClientSingleComponent* networkClientSingleComponent;
 
     void AddPendingEntity(Entity* entity, Entity* parent);
     void RemovePendingEntity(Entity* entity);

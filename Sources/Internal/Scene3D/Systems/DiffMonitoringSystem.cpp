@@ -230,7 +230,7 @@ DiffMonitoringSystem::DiffMonitoringSystem(Scene* scene, UDPServer* server_, UDP
         AddWatchLine(std::make_unique<DiffMonitoringDetail::TrivialWatchLine>());
         AddWatchLine(std::make_unique<DiffMonitoringDetail::SetterGetterTrivialWatchLine>());
 
-        for (auto& sc : scene->singletonComponents)
+        for (auto& sc : scene->singleComponents)
         {
             StartWatching(sc.first);
         }
@@ -256,7 +256,7 @@ void DiffMonitoringSystem::Process(float32 timeElapsed)
     size_t diffSize = 0;
     if (server)
     {
-        NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+        NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
         AnyBitIOStream anyStream(sendBuffer.data(), sendBuffer.size());
 
         for (auto& line : watchLines)
@@ -282,8 +282,8 @@ void DiffMonitoringSystem::Process(float32 timeElapsed)
                         if (nullptr != entity)
                         {
                             NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
-                            NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
-                            if (playerID == netReplComp->GetNetworkPlayerID())
+                            NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerId(responder.GetToken());
+                            if (playerID == netReplComp->GetNetworkPlayerId())
                             {
                                 privacy = M::Privacy::PRIVATE;
                             }
@@ -516,7 +516,7 @@ void DiffMonitoringSystem::SaveSingleDiff(AnyBitIOStream& wrStream, const WatchP
 
 void DiffMonitoringSystem::LoadSingleDiff(AnyBitIOStream& rdStream)
 {
-    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>();
 
     Any entityId = rdStream.Read();
     Any componentId = rdStream.Read();
@@ -534,7 +534,7 @@ void DiffMonitoringSystem::LoadSingleDiff(AnyBitIOStream& rdStream)
     }
     else
     {
-        component = GetScene()->GetSingletonComponent(compType);
+        component = GetScene()->GetSingleComponent(compType);
     }
 
     Any rootPathLen = rdStream.Read();

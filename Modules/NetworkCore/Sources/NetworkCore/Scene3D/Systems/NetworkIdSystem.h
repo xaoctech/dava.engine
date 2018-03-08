@@ -19,14 +19,9 @@ public:
     void RemoveEntity(Entity* entity) override;
     void PrepareForRemove() override;
 
-    static bool IsGeneratedFromAction(NetworkID entityId);
-    static NetworkID GetEntityIdFromAction(FrameActionID frameActionId);
-    static NetworkID GetEntityIdForStaticObject();
-    static bool IsEntityIdForStaticObject(NetworkID networkID);
-
 private:
-    bool IsPredicted(Entity* entity, const Type* componentType);
-    NetworkID GenerateUniqueId(Entity* entity);
+    bool isServer = false;
+    uint32 playerOwnIdCounter = 0;
 
     NetworkEntitiesSingleComponent* networkEntities;
 };

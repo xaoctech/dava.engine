@@ -13,7 +13,6 @@
 
 namespace DAVA
 {
-
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSimulationSystem)
 {
     ReflectionRegistrator<NetworkInputSimulationSystem>::Begin()[M::Tags("network", "input", "client")]
@@ -25,8 +24,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSimulationSystem)
 NetworkInputSimulationSystem::NetworkInputSimulationSystem(Scene* scene)
     : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>())
 {
-    asc = scene->GetSingletonComponent<ActionsSingleComponent>();
-    networkTimeSingleComponent = scene->AquireSingleComponentForRead<NetworkTimeSingleComponent>();
+    asc = scene->GetSingleComponentForWrite<ActionsSingleComponent>(this);
+    networkTimeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
 
     entityGroup = scene->AquireEntityGroup<NetworkInputComponent>();
 }
@@ -69,7 +68,7 @@ void NetworkInputSimulationSystem::ProcessFixed(float32 dt)
 #else
                 actions.cameraDelta.Unpack(data.cameraDelta.GetData());
 #endif
-                AddActionsForClient(GetScene(), entity, std::move(actions));
+                AddActionsForClient(this, entity, std::move(actions));
 
                 break;
             }

@@ -17,7 +17,7 @@ namespace DAVA
 bool IsServer(Scene* scene)
 {
     DVASSERT(scene != nullptr);
-    return nullptr != scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+    return nullptr != scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
 }
 
 bool IsServer(SceneSystem* sceneSystem)
@@ -29,7 +29,7 @@ bool IsServer(SceneSystem* sceneSystem)
 bool IsClient(Scene* scene)
 {
     DVASSERT(scene != nullptr);
-    return nullptr != scene->GetSingletonComponent<NetworkClientSingleComponent>()->GetClient();
+    return nullptr != scene->GetSingleComponent<NetworkClientSingleComponent>()->GetClient();
 }
 
 bool IsClient(SceneSystem* sceneSystem)
@@ -42,11 +42,13 @@ bool IsClientOwner(Scene* scene, const Entity* entity)
 {
     DVASSERT(scene);
     const bool isClient = IsClient(scene);
-    const NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    const NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
     const NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
     if (isClient && netGameModeComp && netReplComp)
     {
-        return (netReplComp->GetNetworkPlayerID() == netGameModeComp->GetNetworkPlayerID());
+        NetworkPlayerID entityPlayerID = netReplComp->GetNetworkPlayerID();
+        NetworkPlayerID currentPlayerID = netGameModeComp->GetNetworkPlayerID();
+        return (entityPlayerID == currentPlayerID);
     }
     return false;
 }
@@ -89,42 +91,42 @@ Vector<ActionsSingleComponent::Actions>& GetCollectedActionsForClient(Scene* sce
     DVASSERT(networkReplicationComponent != nullptr);
     NetworkPlayerID playerId = networkReplicationComponent->GetNetworkPlayerID();
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
     return actionsSingleComponent->GetActions(playerId);
 }
 
-void AddActionsForClient(Scene* scene, const Entity* clientEntity, ActionsSingleComponent::Actions&& actions)
+void AddActionsForClient(const SceneSystem* system, const Entity* clientEntity, ActionsSingleComponent::Actions&& actions)
 {
     NetworkReplicationComponent* networkReplicationComponent = clientEntity->GetComponent<NetworkReplicationComponent>();
     DVASSERT(networkReplicationComponent != nullptr);
     NetworkPlayerID playerId = networkReplicationComponent->GetNetworkPlayerID();
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = system->GetScene()->GetSingleComponentForWrite<ActionsSingleComponent>(system);
     DVASSERT(actionsSingleComponent != nullptr);
 
     actionsSingleComponent->AddActions(playerId, std::move(actions));
 }
 
-void AddDigitalActionForClient(Scene* scene, const Entity* clientEntity, const FastName& action)
+void AddDigitalActionForClient(const SceneSystem* system, const Entity* clientEntity, const FastName& action)
 {
     NetworkReplicationComponent* networkReplicationComponent = clientEntity->GetComponent<NetworkReplicationComponent>();
     DVASSERT(networkReplicationComponent != nullptr);
     NetworkPlayerID playerId = networkReplicationComponent->GetNetworkPlayerID();
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = system->GetScene()->GetSingleComponentForWrite<ActionsSingleComponent>(system);
     DVASSERT(actionsSingleComponent != nullptr);
 
     actionsSingleComponent->AddDigitalAction(action, playerId);
 }
 
-void AddAnalogActionForClient(Scene* scene, const Entity* clientEntity, const FastName& action, const Vector2& data)
+void AddAnalogActionForClient(const SceneSystem* system, const Entity* clientEntity, const FastName& action, const Vector2& data)
 {
     NetworkReplicationComponent* networkReplicationComponent = clientEntity->GetComponent<NetworkReplicationComponent>();
     DVASSERT(networkReplicationComponent != nullptr);
     NetworkPlayerID playerId = networkReplicationComponent->GetNetworkPlayerID();
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = system->GetScene()->GetSingleComponentForWrite<ActionsSingleComponent>(system);
     DVASSERT(actionsSingleComponent != nullptr);
 
     actionsSingleComponent->AddAnalogAction(action, data, playerId);

@@ -78,7 +78,7 @@ void PhysicsProjectileSystem::NextState(DAVA::Entity* entity, PhysicsProjectileC
     {
     case PhysicsProjectileComponent::eProjectileStates::FLYING:
     {
-        CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
+        CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
         const bool collided = collisionSingleComponent->GetCollisionsWithEntity(entity).size() > 0;
 
         if (collided)

@@ -35,7 +35,7 @@ void UIFlowUtils::RemoveSharingParentsFromQueue(UIFlowStateSystem* system, List<
 
         // Check target's sibling elements
         UIControl* ctrl = state->GetControl();
-        for (UIControl* c : ctrl->GetChildren())
+        for (const auto& c : ctrl->GetChildren())
         {
             if (c == target->GetControl())
             {
@@ -117,8 +117,8 @@ void UIFlowUtils::BuildActivatedQueue(UIFlowStateSystem* system, List<UIFlowStat
     }
 
     auto* ctrl = back->GetControl();
-    auto& children = ctrl->GetChildren();
-    for (auto* child : children)
+    const auto& children = ctrl->GetChildren();
+    for (const auto& child : children)
     {
         UIFlowStateComponent* state = child->GetComponent<UIFlowStateComponent>();
         DVASSERT(state);
@@ -144,7 +144,7 @@ UIFlowStateComponent* UIFlowUtils::FindNearChildSingleState(UIFlowStateComponent
     if (parent)
     {
         UIControl* ctrl = parent->GetControl();
-        for (UIControl* c : ctrl->GetChildren())
+        for (const auto& c : ctrl->GetChildren())
         {
             UIFlowStateComponent* state = c->GetComponent<UIFlowStateComponent>();
             if (state)

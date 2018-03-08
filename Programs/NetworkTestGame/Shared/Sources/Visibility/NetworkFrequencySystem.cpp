@@ -23,7 +23,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkFrequencySystem)
 }
 
 NetworkFrequencySystem::NetworkFrequencySystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
     , updatePeriod(NetworkFrequencyDetail::DEFAULT_UPDATE_PERIOD)
 {
     observerGroup = GetScene()->AquireComponentGroup<ObserverComponent, ObserverComponent, NetworkPlayerComponent>();

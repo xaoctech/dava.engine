@@ -14,6 +14,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionSingleComponent)
     .End();
 }
 
+MotionSingleComponent::MotionSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::AllProcesses)
+{
+}
+
 void MotionSingleComponent::Clear()
 {
     startSimpleMotion.clear();

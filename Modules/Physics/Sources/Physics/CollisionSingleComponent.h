@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Base/Vector.h>
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <Math/Vector.h>
 
 namespace DAVA
@@ -44,10 +44,12 @@ struct TriggerInfo
 };
 
 /** Single component providing information about current collisions */
-class CollisionSingleComponent : public SingletonComponent
+class CollisionSingleComponent : public ClearableSingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(CollisionSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(CollisionSingleComponent, ClearableSingleComponent);
+
+    CollisionSingleComponent();
 
     /** Vector of currently active triggers */
     Vector<TriggerInfo> activeTriggers;
@@ -63,6 +65,7 @@ public:
     Vector<CollisionInfo> GetCollisionsWithEntity(Entity* entity) const;
     void GetCollisionEntities(Entity* entity, UnorderedSet<Entity*>& result) const;
 
+private:
     void Clear() override;
 };
 }

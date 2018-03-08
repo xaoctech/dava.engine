@@ -27,7 +27,6 @@
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTrafficLimitComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
-#include <NetworkPhysics/NetworkDynamicBodyComponent.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/DynamicBodyComponent.h>
 #include <Physics/BoxShapeComponent.h>
@@ -45,10 +44,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(InvaderEntityFillSystem)
 }
 
 InvaderEntityFillSystem::InvaderEntityFillSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
-    optionsComp = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
-    subscriber.reset(new EntityGroupOnAdd(GetScene()->AquireEntityGroup<PlayerInvaderComponent>()));
+    optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
+    subscriber = scene->AquireEntityGroupOnAdd(scene->AquireEntityGroup<PlayerInvaderComponent>(), this);
 }
 
 void InvaderEntityFillSystem::Process(DAVA::float32 timeElapsed)
@@ -67,7 +66,23 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
 
     if (IsServer(this))
     {
-        Logger::Debug("[PlayerEntitySystem::Process] %d vehicle factory", entity->GetID());
+        PlayerInvaderComponent* invComponent = entity->GetComponent<PlayerInvaderComponent>();
+        NetworkPlayerID playerId = invComponent->playerId;
+        NetworkID invaderId = NetworkID::CreatePlayerOwnId(playerId);
+
+        Logger::Debug("[InvaderEntityFillSystem] Create Invader %u For Player ID : %d", invaderId, playerId);
+
+        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(invaderId);
+        replicationComponent->SetForReplication<PlayerInvaderComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<NetworkPlayerComponent>(M::Privacy::PRIVATE);
+        replicationComponent->SetForReplication<NetworkInputComponent>(M::Privacy::PRIVATE);
+        replicationComponent->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<NetworkRemoteInputComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<HealthComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<GameStunnableComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ShootCooldownComponent>(M::Privacy::PRIVATE);
+
+        entity->AddComponent(replicationComponent);
         entity->AddComponent(new NetworkInputComponent());
 
         NetworkRemoteInputComponent* netRemoteInputComp = new NetworkRemoteInputComponent();
@@ -88,7 +103,6 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
         entity->AddComponent(new GameStunnableComponent());
         entity->AddComponent(new HealthComponent());
         entity->AddComponent(new NetworkTrafficLimitComponent());
-        entity->AddComponent(new NetworkDynamicBodyComponent());
         entity->AddComponent(new ObserverComponent());
         entity->AddComponent(new ObservableComponent());
         entity->AddComponent(new SimpleVisibilityShapeComponent());
@@ -120,7 +134,7 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
         if (isClientOwner || optionsComp->isEnemyPredicted)
         {
             NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
-            networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
+            networkPredictComponent->SetForPrediction<NetworkTransformComponent>();
             entity->AddComponent(networkPredictComponent);
         }
     }

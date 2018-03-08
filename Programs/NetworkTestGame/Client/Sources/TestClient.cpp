@@ -1,11 +1,11 @@
 #include "TestClient.h"
+
 #include "Battle.h"
-#include "Components/SingleComponents/BattleOptionsSingleComponent.h"
+#include "Game.h"
+#include "GameClient.h"
 #include "Flow/FlowBattleController.h"
 #include "Flow/FlowBattleService.h"
-#include "GameClient.h"
-
-#include "Game.h"
+#include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
 #include <Base/FastName.h>
 #include <CommandLine/CommandLineParser.h>
@@ -89,9 +89,9 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
             Engine::Instance()->QuitAsync(0);
         });
 #endif
-        KeyedArchive* appOptions = new KeyedArchive();
-        appOptions->SetInt32("renderer", rhi::RHI_NULL_RENDERER);
-        e.Init(eEngineRunMode::CONSOLE_MODE, modules, appOptions);
+        KeyedArchive* options = TestClient::CreateOptions();
+        options->SetInt32("renderer", rhi::RHI_NULL_RENDERER);
+        e.Init(eEngineRunMode::CONSOLE_MODE, modules, options);
     }
     else
     {
@@ -225,13 +225,13 @@ void TestClient::OnWindowCreated(DAVA::Window* w)
             {
                 DAVA::DefaultUIPackageBuilder pkgBuilder;
                 DAVA::UIPackageLoader().LoadPackage("~res:/UI/Flow.yaml", &pkgBuilder);
-                UIControl* flow = pkgBuilder.GetPackage()->GetControls().at(0);
-                stateSys->SetFlowRoot(flow);
+                const auto& flow = pkgBuilder.GetPackage()->GetControls().at(0);
+                stateSys->SetFlowRoot(flow.Get());
             }
             {
                 DAVA::DefaultUIPackageBuilder pkgBuilder;
                 DAVA::UIPackageLoader().LoadPackage("~res:/UI/Root.yaml", &pkgBuilder);
-                UIControl* uiRoot = pkgBuilder.GetPackage()->GetControls().at(0);
+                const auto& uiRoot = pkgBuilder.GetPackage()->GetControls().at(0);
                 screen->AddControl(uiRoot);
             }
 

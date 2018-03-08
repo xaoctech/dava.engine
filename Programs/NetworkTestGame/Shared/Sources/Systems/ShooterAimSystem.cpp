@@ -55,10 +55,9 @@ ShooterAimSystem::ShooterAimSystem(DAVA::Scene* scene)
                 primaryWindow->SetCursorCapture(eCursorCapture::PINNING);
             }
 #endif
-            primaryWindow->update.Connect(this, &ShooterAimSystem::OnUpdate);
         }
 
-        BattleOptionsSingleComponent* battleOptionsSingleComponent = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+        BattleOptionsSingleComponent* battleOptionsSingleComponent = scene->GetSingleComponent<BattleOptionsSingleComponent>();
 
         DVASSERT(battleOptionsSingleComponent->isSet);
 
@@ -68,16 +67,11 @@ ShooterAimSystem::ShooterAimSystem(DAVA::Scene* scene)
         movementJoypad = controls.movementJoypad;
     }
 
-    actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_ANALOG_ROTATE, AnalogPrecision::ANALOG_UINT16);
 
     entityGroup = scene->AquireEntityGroup<ShooterAimComponent, NetworkInputComponent>();
-}
-
-ShooterAimSystem::~ShooterAimSystem()
-{
-    DAVA::Engine::Instance()->update.Disconnect(this);
 }
 
 void ShooterAimSystem::ProcessFixed(DAVA::float32 dt)
@@ -88,6 +82,11 @@ void ShooterAimSystem::ProcessFixed(DAVA::float32 dt)
 
     for (Entity* aimingEntity : entityGroup->GetEntities())
     {
+        if (IsClient(this) && IsClientOwner(aimingEntity))
+        {
+            GenerateDeviceIndependentAimRotation();
+        }
+
         DVASSERT(aimingEntity != nullptr);
 
         ShooterAimComponent* aimComponent = aimingEntity->GetComponent<ShooterAimComponent>();
@@ -130,11 +129,6 @@ void ShooterAimSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA::Anal
             ApplyDeviceIndependentAimRotation(aimComponent, analogActionState);
         }
     }
-}
-
-void ShooterAimSystem::OnUpdate(DAVA::Window*, DAVA::float32 elapsedTime)
-{
-    GenerateDeviceIndependentAimRotation();
 }
 
 void ShooterAimSystem::GenerateDeviceIndependentAimRotation() const
@@ -242,7 +236,7 @@ void ShooterAimSystem::GenerateAimRotationFromDeltas(DAVA::float32 deltaX, DAVA:
     {
         if (IsClientOwner(entity))
         {
-            AddAnalogActionForClient(GetScene(), entity, SHOOTER_ACTION_ANALOG_ROTATE, Vector2(deltaX, deltaY));
+            AddAnalogActionForClient(this, entity, SHOOTER_ACTION_ANALOG_ROTATE, Vector2(deltaX, deltaY));
         }
     }
 }

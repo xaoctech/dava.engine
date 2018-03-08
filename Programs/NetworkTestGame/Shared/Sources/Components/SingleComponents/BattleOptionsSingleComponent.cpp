@@ -32,8 +32,3 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BattleOptionsSingleComponent)
     .Field("CollisionResolveMode", &BattleOptionsSingleComponent::collisionResolveMode)[M::Replicable()]
     .End();
 }
-
-void BattleOptionsSingleComponent::Clear()
-{
-    //should bever be cleared during game
-}

@@ -83,10 +83,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VehicleWheelComponent)
 {
     ReflectionRegistrator<VehicleWheelComponent>::Begin()
     .ConstructorByPointer()
-    .Field("Radius", &VehicleWheelComponent::GetRadius, &VehicleWheelComponent::SetRadius)[M::Range(0.01f, Any(), 0.5f)]
-    .Field("Width", &VehicleWheelComponent::GetWidth, &VehicleWheelComponent::SetWidth)[M::Range(0.01f, Any(), 0.4f)]
-    .Field("Max handbrake torque", &VehicleWheelComponent::GetMaxHandbrakeTorque, &VehicleWheelComponent::SetMaxHandbrakeTorque)[M::Range(0.0f, Any(), 0.0f)]
-    .Field("Max steer angle", &VehicleWheelComponent::GetMaxSteerAngle, &VehicleWheelComponent::SetMaxSteerAngle)[M::Range(0.0f, Any(), 0.0f)]
+    .Field("Radius", &VehicleWheelComponent::GetRadius, &VehicleWheelComponent::SetRadius)[M::Replicable(), M::Range(0.01f, Any(), 0.5f)]
+    .Field("Width", &VehicleWheelComponent::GetWidth, &VehicleWheelComponent::SetWidth)[M::Replicable(), M::Range(0.01f, Any(), 0.4f)]
+    .Field("Max handbrake torque", &VehicleWheelComponent::GetMaxHandbrakeTorque, &VehicleWheelComponent::SetMaxHandbrakeTorque)[M::Replicable(), M::Range(0.0f, Any(), 0.0f)]
+    .Field("Max steer angle", &VehicleWheelComponent::GetMaxSteerAngle, &VehicleWheelComponent::SetMaxSteerAngle)[M::Replicable(), M::Range(0.0f, Any(), 0.0f)]
+    .Field("Jounce", &VehicleWheelComponent::jounce)[M::HiddenField(), M::Replicable(), M::ComparePrecision(0.01f), M::Range(0.0f, Any(), 0.0f)]
+    .Field("Rotation speed", &VehicleWheelComponent::rotationSpeed)[M::HiddenField(), M::Replicable(), M::ComparePrecision(0.01f), M::Range(0.0f, Any(), 0.0f)]
+    .Field("Corrected rotation speed", &VehicleWheelComponent::correctedRotationSpeed)[M::HiddenField(), M::Replicable(), M::ComparePrecision(0.01f), M::Range(0.0f, Any(), 0.0f)]
+    .Field("Rotation angle", &VehicleWheelComponent::rotationAngle)[M::HiddenField(), M::Replicable(), M::ComparePrecision(0.01f), M::Range(0.0f, Any(), 0.0f)]
     .End();
 }
 }

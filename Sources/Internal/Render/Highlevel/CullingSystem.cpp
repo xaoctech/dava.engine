@@ -13,7 +13,7 @@
 namespace DAVA
 {
 CullingSystem::CullingSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
 }
 

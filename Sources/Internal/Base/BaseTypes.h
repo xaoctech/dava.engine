@@ -56,8 +56,6 @@
 
 namespace DAVA
 {
-using ComponentMask = Bitset<128>;
-
 //Platform-independent signed and unsigned integer type
 using uint8 = uint8_t;
 using uint16 = uint16_t;

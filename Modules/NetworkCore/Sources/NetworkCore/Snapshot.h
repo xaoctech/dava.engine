@@ -81,7 +81,7 @@ struct SnapshotComponent final
     Component* component = nullptr;
     Vector<SnapshotField> fields;
 
-    void Fill(Component* component);
+    void Fill(Component* component, M::Privacy privacy);
 };
 
 struct SnapshotEntity final

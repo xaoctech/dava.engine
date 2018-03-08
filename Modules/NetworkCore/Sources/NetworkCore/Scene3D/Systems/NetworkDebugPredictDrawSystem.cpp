@@ -52,9 +52,9 @@ void NetworkDebugPredictDrawSystem::RemoveEntity(Entity* entity)
 
 void NetworkDebugPredictDrawSystem::Process(float32 timeElapsed)
 {
-    NetworkPredictionSingleComponent* predictionComp = GetScene()->GetSingletonComponent<NetworkPredictionSingleComponent>();
-    SnapshotSingleComponent* snapshotComp = GetScene()->GetSingletonComponent<SnapshotSingleComponent>();
-    NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingletonComponent<NetworkReplicationSingleComponent>();
+    const NetworkPredictionSingleComponent* predictionComp = GetScene()->GetSingleComponentForRead<NetworkPredictionSingleComponent>(this);
+    SnapshotSingleComponent* snapshotComp = GetScene()->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
+    const NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingleComponentForRead<NetworkReplicationSingleComponent>(this);
 
     const NetworkReplicationSingleComponent::EntityToInfo& entityToReplInfo = replicationSingleComponent->replicationInfo;
     const NetworkPredictionSingleComponent::EntityToMisprediction& entityToMisprediction = predictionComp->mispredictedEntities;
@@ -65,7 +65,7 @@ void NetworkDebugPredictDrawSystem::Process(float32 timeElapsed)
     {
         Entity* entity = it.first;
         Matrix4& transform = it.second;
-        const NetworkID networkID = entity->GetComponent<NetworkReplicationComponent>()->GetNetworkID();
+        NetworkID networkID = entity->GetComponent<NetworkReplicationComponent>()->GetNetworkID();
 
         auto findEntityIt = entityToReplInfo.find(networkID);
         if (findEntityIt == entityToReplInfo.end())

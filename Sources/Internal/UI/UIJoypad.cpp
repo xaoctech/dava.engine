@@ -207,14 +207,14 @@ void UIJoypad::RecalcAnalogPosition()
 
 Sprite* UIJoypad::GetStickSprite() const
 {
-    return stick ? stick->GetSprite() : NULL;
+    return stick ? stick->GetComponent<UIControlBackground>()->GetSprite() : NULL;
 }
 
 int32 UIJoypad::GetStickSpriteFrame() const
 {
-    if (stick && stick->GetSprite())
+    if (stick && stick->GetComponent<UIControlBackground>()->GetSprite())
     {
-        return stick->GetFrame();
+        return stick->GetComponent<UIControlBackground>()->GetFrame();
     }
 
     return 0;
@@ -226,7 +226,7 @@ void UIJoypad::SetStickSprite(Sprite* stickSprite, int32 frame)
     if (!stick.Valid())
         return;
 
-    stick->SetSprite(stickSprite, frame);
+    stick->GetComponent<UIControlBackground>()->SetSprite(stickSprite, frame);
 }
 
 void UIJoypad::SetStickSprite(const FilePath& stickSpriteName, int32 frame)
@@ -235,16 +235,16 @@ void UIJoypad::SetStickSprite(const FilePath& stickSpriteName, int32 frame)
     if (!stick.Valid())
         return;
 
-    stick->SetSprite(stickSpriteName, frame);
+    stick->GetComponent<UIControlBackground>()->SetSprite(stickSpriteName, frame);
 }
 
 void UIJoypad::SetStickSpriteFrame(int32 frame)
 {
     DVASSERT(stick.Valid());
 
-    if (stick.Valid() && stick->GetSprite())
+    if (stick.Valid() && stick->GetComponent<UIControlBackground>()->GetSprite())
     {
-        stick->SetSpriteFrame(frame);
+        stick->GetComponent<UIControlBackground>()->SetFrame(frame);
     }
 }
 

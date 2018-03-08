@@ -131,8 +131,8 @@ private:
     IServer* server;
 
     SnapshotSingleComponent* snapshotSingleComponent;
-    NetworkGameModeSingleComponent* netGameModeComp;
-    NetworkTimeSingleComponent* timeComp;
+    const NetworkGameModeSingleComponent* netGameModeComp;
+    const NetworkTimeSingleComponent* timeComp;
     ComponentGroup<NetworkPlayerComponent>* playerComponentGroup;
 };
 

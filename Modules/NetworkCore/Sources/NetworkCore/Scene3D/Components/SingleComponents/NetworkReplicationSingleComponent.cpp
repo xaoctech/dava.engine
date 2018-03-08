@@ -9,8 +9,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationSingleComponent)
     .ConstructorByPointer()
     .End();
 }
-
-void NetworkReplicationSingleComponent::Clear()
-{
-}
 }

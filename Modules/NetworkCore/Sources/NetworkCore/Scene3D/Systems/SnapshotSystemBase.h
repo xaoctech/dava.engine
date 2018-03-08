@@ -9,6 +9,7 @@ namespace DAVA
 {
 struct ReflectedComponentField;
 class NetworkTimeSingleComponent;
+class NetworkReplicationComponent;
 class SnapshotSingleComponent;
 
 class SnapshotSystemBase : public SceneSystem
@@ -40,7 +41,7 @@ protected:
     [[deprecated]] uint32 GetComponentIndex(Entity* entity, Component* component);
 
     virtual bool NeedToBeTracked(Entity* entity);
-    virtual bool NeedToBeTracked(Component* component);
+    virtual bool NeedToBeTracked(Component* component, const NetworkReplicationComponent* nrc);
 
     SnapshotSingleComponent* snapshotSingleComponent;
     const NetworkTimeSingleComponent* timeSingleComponent;

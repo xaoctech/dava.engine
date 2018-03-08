@@ -6,7 +6,7 @@
 #include <Base/FastName.h>
 
 //#define COMPRESSOR_DEBUG_ENABLED
-//#define COMPRESSION_DISABLED
+#define COMPRESSION_DISABLED
 
 namespace DAVA
 {

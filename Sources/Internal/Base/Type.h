@@ -64,6 +64,7 @@ public:
     bool IsTrivial() const;
     bool IsTriviallyCopyable() const;
     bool IsIntegral() const;
+    bool IsSigned() const;
     bool IsFloatingPoint() const;
     bool IsEnum() const;
     bool IsAbstract() const;
@@ -92,6 +93,7 @@ private:
         isTrivial,
         isTriviallyCopyable,
         isIntegral,
+        isSigned,
         isFloatingPoint,
         isEnum,
         isAbstract,

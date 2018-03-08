@@ -32,14 +32,14 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
 {
     if (IsServer(this))
     {
-        server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+        server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnTokenConfirmation(OnServerTokenConfirmationCb(this, &NetworkGameModeSystem::OnTokenConfirmationServer));
         server->SubscribeOnDisconnect(OnServerDisconnectCb(this, &NetworkGameModeSystem::OnDisconnectServer));
         server->SubscribeOnReceive(PacketParams::GAMEMODE_CHANNEL_ID, OnServerReceiveCb(this, &NetworkGameModeSystem::OnReceiveServer));
     }
     else if (IsClient(this))
     {
-        client = scene->GetSingletonComponent<NetworkClientSingleComponent>()->GetClient();
+        client = scene->GetSingleComponentForRead<NetworkClientSingleComponent>(this)->GetClient();
         client->SubscribeOnReceive(PacketParams::GAMEMODE_CHANNEL_ID, OnClientReceiveCb(this, &NetworkGameModeSystem::OnReceiveClient));
     }
     else
@@ -47,8 +47,8 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
         DVASSERT(false);
     }
 
-    netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
-    actionSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    netGameModeComp = scene->GetSingleComponentForWrite<NetworkGameModeSingleComponent>(this);
+    actionSingleComponent = scene->GetSingleComponentForWrite<ActionsSingleComponent>(this);
 }
 
 void NetworkGameModeSystem::AddEntity(Entity* entity)

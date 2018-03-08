@@ -88,12 +88,13 @@ ScopedPtr<Entity> PowerupSpawnSystem::CreateBonusEntityOnServer()
     descr.type = Random::Instance()->Rand() % 2 ? PowerupType::HEALTH : PowerupType::SPEED;
     descr.factor = 1.5f;
 
+    NetworkID powerupId = NetworkID::CreatePlayerOwnId(0);
+
     PowerupComponent* powerup = new PowerupComponent();
     powerup->SetDescriptor(descr);
     bonus->AddComponent(powerup);
-
     bonus->AddComponent(new NetworkTransformComponent());
-    bonus->AddComponent(new NetworkReplicationComponent());
+    bonus->AddComponent(new NetworkReplicationComponent(powerupId));
 
     Entity* model = AddBonusModel(bonus);
 

@@ -2,6 +2,7 @@
 
 #include "Entity/Component.h"
 #include <Reflection/Reflection.h>
+#include <NetworkCore/NetworkTypes.h>
 
 namespace DAVA
 {
@@ -24,6 +25,8 @@ public:
 
     void SetRole(Role value);
     Role GetRole() const;
+
+    DAVA::NetworkPlayerID playerID = 0;
 
 private:
     int role;

@@ -26,8 +26,11 @@ public:
     const FastName& GetName() const;
     void SetName(const FastName& name);
 
-    const Matrix4& GetLocalPose() const;
-    void SetLocalPose(const Matrix4& localPose);
+    const Vector3& GetLocalPosition() const;
+    void SetLocalPosition(const Vector3& value);
+
+    const Quaternion& GetLocalOrientation() const;
+    void SetLocalOrientation(const Quaternion& value);
 
     bool GetOverrideMass() const;
     void SetOverrideMass(bool override);
@@ -47,6 +50,9 @@ public:
     void SetTriggerMode(bool isEnabled);
     bool GetTriggerMode() const;
 
+    const FastName& GetJointName() const;
+    void SetJointName(const FastName& value);
+
     static CollisionShapeComponent* GetComponent(physx::PxShape* shape);
     static bool IsCCDEnabled(const physx::PxFilterData& filterData);
 
@@ -60,7 +66,8 @@ protected:
     void UpdateFilterData();
     virtual void UpdateLocalProperties();
 
-    Matrix4 localPose;
+    Vector3 localPosition = Vector3::Zero;
+    Quaternion localOrientation = Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
     Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
 
     virtual void ReleasePxShape();
@@ -73,6 +80,7 @@ private:
     uint32 typeMaskToCollideWith = 0;
     FastName materialName;
     bool triggerMode = false;
+    FastName jointName;
 
     physx::PxShape* shape = nullptr;
 

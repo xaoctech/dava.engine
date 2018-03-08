@@ -26,7 +26,7 @@ static const size_t heatmapDataSize = heatmapWidth * heatmapHeight * 4;
 }
 
 ParticleEffectDebugDrawSystem::ParticleEffectDebugDrawSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     if (scene != nullptr)
     {

@@ -157,10 +157,6 @@ bool NetworkStatisticsSingleComponent::IsExecTime(uint32 frameId) const
     return frameId > 0 && frameId % NetworkStatisticsSingleComponentDetail::GRANULARITY == 0;
 }
 
-void NetworkStatisticsSingleComponent::Clear()
-{
-}
-
 uint64 NetStatTimestamps::GetKey(uint32 frameId, NetworkPlayerID playerID /*=0*/)
 {
     return (static_cast<uint64>(playerID) << 32) + frameId;

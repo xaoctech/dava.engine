@@ -33,8 +33,8 @@ private:
     void SetCurrentTask(InvaderBehaviorComponent* agent, BotTaskComponent* task);
 
     void InitPosition(InvaderBehaviorComponent* agent);
-    BotTaskComponent* CreateInitialTask(InvaderBehaviorComponent *agent);
-    BotTaskComponent* CreateNextTask(InvaderBehaviorComponent *agent);
+    BotTaskComponent* CreateInitialTask(InvaderBehaviorComponent* agent);
+    BotTaskComponent* CreateNextTask(InvaderBehaviorComponent* agent);
 
     Vector<InvaderBehaviorComponent*> agents;
     Vector<InvaderBehaviorComponent*> pendingAgents;

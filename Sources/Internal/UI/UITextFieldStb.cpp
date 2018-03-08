@@ -161,7 +161,7 @@ void TextFieldStbImpl::SetFontSize(float32 size)
     staticText->SetFontSize(size);
 }
 
-float32 TextFieldStbImpl::GetFontSize()
+float32 TextFieldStbImpl::GetFontSize() const
 {
     return staticText->GetFontSize();
 }
@@ -330,7 +330,7 @@ WideString TextFieldStbImpl::GetText() const
 
 bool TextFieldStbImpl::IsCharAvaliable(WideString::value_type ch) const
 {
-    Font* f = GetFont();
+    Font* f = GetRealFont();
     if (f)
     {
         return ch == '\n' || f->IsCharAvaliable(static_cast<char16>(ch));
@@ -349,6 +349,12 @@ void TextFieldStbImpl::SetInputEnabled(bool, bool hierarchic /*= true*/)
 
 void TextFieldStbImpl::SetVisible(bool v)
 {
+}
+
+void TextFieldStbImpl::SetFontName(const String& presetName)
+{
+    DropLastCursorAndSelection();
+    staticText->SetFontName(presetName);
 }
 
 void TextFieldStbImpl::SetFont(Font* f)
@@ -663,7 +669,7 @@ void TextFieldStbImpl::UpdateCursor(uint32 cursorPos, bool insertMode)
     }
     else
     {
-        r.dy = GetFont() ? GetFont()->GetFontHeight(GetFontSize()) : 0.f;
+        r.dy = GetRealFont() ? GetRealFont()->GetFontHeight(GetRealFontSize()) : 0.f;
 
         int32 ctrlAlign = control->GetTextAlign();
         if (ctrlAlign & ALIGN_RIGHT)
@@ -844,5 +850,15 @@ TextBlock* TextFieldStbImpl::GetTextBlock() const
         }
     }
     return staticText->GetLink()->GetTextBlock();
+}
+
+Font* TextFieldStbImpl::GetRealFont() const
+{
+    return GetFont() ? GetFont() : GetTextBlock()->GetFont();
+}
+
+float32 TextFieldStbImpl::GetRealFontSize() const
+{
+    return !FLOAT_EQUAL(GetFontSize(), 0.f) ? GetFontSize() : GetTextBlock()->GetFontSize();
 }
 }

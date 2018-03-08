@@ -4,7 +4,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Observer.h"
 #include "Entity/SceneSystem.h"
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 #include "Entity/SystemManager.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Reflection/Reflection.h"
@@ -204,19 +204,28 @@ public:
     DiffMonitoringSystem* diffMonitoringSystem = nullptr;
     PhysicsSystem* physicsSystem = nullptr;
 
-    template <class T>
-    const T* AquireSingleComponentForRead();
-    const SingletonComponent* AquireSingleComponentForRead(const Type* type);
-    template <class T>
-    T* AquireSingleComponentForWrite();
-    SingletonComponent* AquireSingleComponentForWrite(const Type* type);
-
     /** Get singleton component. Never return nullptr. */
     template <class T>
-    T* GetSingletonComponent();
+    T* GetSingleComponent();
 
     /** Get singleton component. Never return nullptr. */
-    SingletonComponent* GetSingletonComponent(const Type* type);
+    SingleComponent* GetSingleComponent(const Type* type);
+
+    template <class T>
+    const T* GetSingleComponentForRead(const SceneSystem* user);
+
+    const SingleComponent* GetSingleComponentForRead(const Type* type, const SceneSystem* user);
+
+    template <class T>
+    T* GetSingleComponentForWrite(const SceneSystem* user);
+
+    SingleComponent* GetSingleComponentForWrite(const Type* type, const SceneSystem* user);
+
+    /** Clear single components that used only by fixed processes. */
+    void ClearFixedProcessesSingleComponents();
+
+    /** Clear single components that used by all processes. */
+    void ClearAllProcessesSingleComponents();
 
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -294,14 +303,16 @@ public:
 
     template <class... Args>
     EntityGroup* AquireEntityGroup();
-
     template <class Matcher, class... Args>
     EntityGroup* AquireEntityGroupWithMatcher();
+    EntityGroupOnAdd* AquireEntityGroupOnAdd(EntityGroup* eg, SceneSystem* sceneSystem);
 
     template <class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup();
     template <class MaskMatcher, class TypeMatcher, class T, class... Args>
     ComponentGroup<T>* AquireComponentGroupWithMatcher();
+    template <class T>
+    ComponentGroupOnAdd<T>* AquireComponentGroupOnAdd(ComponentGroup<T>* cg, SceneSystem* sceneSystem);
 
     float32 GetTimeOverrunInterpolatedFactor() const;
 
@@ -354,9 +365,13 @@ private:
     void ProcessChangedTags();
 
     template <typename T>
-    void AddSingletonComponent(T* component);
-    void AddSingletonComponent(SingletonComponent* component, const Type* type);
+    void AddSingleComponent(T* component);
+    void AddSingleComponent(SingleComponent* component, const Type* type);
 
+    void HandleSingleComponentAccess(const SingleComponent* singleComponent, const SceneSystem* user, bool write);
+    void ValidateSingleComponentsReadsWrites() const;
+
+private:
     UnorderedSet<FastName> tags;
 
     enum TagAction
@@ -372,7 +387,24 @@ private:
 
     EntitiesManager* entitiesManager = nullptr;
 
-    UnorderedMap<const Type*, SingletonComponent*> singletonComponents;
+    UnorderedMap<const Type*, SingleComponent*> singleComponents;
+    Vector<ClearableSingleComponent*> clearableSingleComponentsAll; // Vector of single components to be cleared after all processes
+    Vector<ClearableSingleComponent*> clearableSingleComponentsFixed; // Vector of single components to be cleared after fixed processes
+
+#if defined(__DAVAENGINE_DEBUG__)
+
+    // For validating usages of single components
+
+    struct SingleComponentAccessInfo final
+    {
+        uint32 systemIndex;
+        const Type* systemType;
+    };
+
+    UnorderedMap<const Type*, SingleComponentAccessInfo> clearableSingleComponentsWriters;
+    UnorderedMap<const Type*, SingleComponentAccessInfo> clearableSingleComponentsReaders;
+    bool pendingSingleComponentsUsageValidation = false;
+#endif
 
     friend class SnapshotSystemBase;
     friend class NetworkDeltaReplicationSystemServer;

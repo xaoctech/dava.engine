@@ -69,7 +69,7 @@ void GameClient::Update(DAVA::float32 timeElapsed)
 
     if (opts.scene)
     {
-        GameModeSingleComponent* gameModeComp = opts.scene->GetSingletonComponent<GameModeSingleComponent>();
+        GameModeSingleComponent* gameModeComp = opts.scene->GetSingleComponent<GameModeSingleComponent>();
         if (gameModeComp != nullptr && gameModeComp->GetPlayer() != nullptr)
         {
             serviceInfo.entityId = gameModeComp->GetPlayer()->GetID();

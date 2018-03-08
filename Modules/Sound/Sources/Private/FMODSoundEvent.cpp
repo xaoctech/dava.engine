@@ -100,14 +100,24 @@ bool FMODSoundEvent::Trigger()
             PerformEvent(EVENT_TRIGGERED);
             return true;
         }
-        else if (startResult != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
+        if (startResult != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
         {
-            Logger::Error("[FMODSoundEvent::Trigger()] Failed to start event by %d on eventID: %s", startResult, eventName.c_str());
+            static int32 lastStartResult = FMOD_OK;
+            if (lastStartResult != startResult) // disable spam with same error message
+            {
+                Logger::Error("[FMODSoundEvent::Trigger()] Failed to start event by %d on eventID: %s", startResult, eventName.c_str());
+                lastStartResult = startResult;
+            }
         }
     }
     else if (result != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
     {
-        Logger::Error("[FMODSoundEvent::Trigger()] Failed to retrieve event by %d on eventID: %s", result, eventName.c_str());
+        static int32 lastResult = FMOD_OK;
+        if (lastResult != result) // disable spam with same error message
+        {
+            Logger::Error("[FMODSoundEvent::Trigger()] Failed to retrieve event by %d on eventID: %s", result, eventName.c_str());
+            lastResult = result;
+        }
     }
 
     return false;

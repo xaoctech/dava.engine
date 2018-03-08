@@ -25,9 +25,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
 }
 
 ShooterPlayerConnectSystem::ShooterPlayerConnectSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, DAVA::ComponentMask())
 {
-    DAVA::IServer* server = scene->GetSingletonComponent<DAVA::NetworkServerSingleComponent>()->GetServer();
+    DAVA::IServer* server = scene->GetSingleComponent<DAVA::NetworkServerSingleComponent>()->GetServer();
 
     DVASSERT(server != nullptr);
 
@@ -56,25 +56,19 @@ void ShooterPlayerConnectSystem::PrepareForRemove()
 
 void ShooterPlayerConnectSystem::AddPlayerToScene(const DAVA::Responder& responder)
 {
+    // This system only creates replication & role components, ShooterEntityFillSystem is responsible for the rest
+
     using namespace DAVA;
 
-    NetworkGameModeSingleComponent* networkGameModeSingleComponent = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* networkGameModeSingleComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     NetworkPlayerID playerId = networkGameModeSingleComponent->GetNetworkPlayerID(responder.GetToken());
     Entity* playerEntity = networkGameModeSingleComponent->GetPlayerEnity(playerId);
     if (playerEntity == nullptr)
     {
         Entity* player = new Entity();
 
-        // This system only creates replication & role components, ShooterEntityFillSystem is responsible for the rest
-
-        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-        replicationComponent->SetNetworkPlayerID(playerId);
-        replicationComponent->SetOwnerTeamID(responder.GetTeamID());
-        replicationComponent->SetEntityType(EntityType::VEHICLE); // Workaround for GameVisbilitySystem to work properly
-        player->AddComponent(replicationComponent);
-        player->AddComponent(new NetworkPlayerComponent());
-
         ShooterRoleComponent* roleComponent = new ShooterRoleComponent();
+        roleComponent->playerID = playerId;
         roleComponent->SetRole(ShooterRoleComponent::Role::Player);
         player->AddComponent(roleComponent);
 

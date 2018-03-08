@@ -1,15 +1,12 @@
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_LINUX__)
 
 #include <UnitTests/UnitTests.h>
 
 #include <Concurrency/Thread.h>
-#include <DLCManager/DLCDownloader.h>
 #include <Engine/Engine.h>
 #include <FeatureManager/FeatureManager.h>
+#include <FeatureManager/FeatureManagerUtils.h>
 #include <FileSystem/FileSystem.h>
-#include <Platform/Process.h>
-
-#include <cstdlib>
 
 using namespace DAVA;
 
@@ -17,41 +14,12 @@ DAVA_TESTCLASS (FeatureManagerTest)
 {
     void DownloadConfig()
     {
-        auto* fileSystem = GetEngineContext()->fileSystem;
-
         GetEngineContext()->fileSystem->DeleteFile("~doc:/FeatureManagerTest/feature_config.yaml");
 
-        String enginePath(LOCAL_FRAMEWORK_SOURCE_PATH);
-        String startPath = enginePath + "/Programs/FeatureServer/start_server.py";
-        String serverPath = enginePath + "/Programs/FeatureServer/feature_server.py";
-        String configPath = enginePath + "/Programs/UnitTests/Data/FeatureManager/";
-
-        Process procStart("python", { startPath, serverPath, configPath });
-        procStart.Run(false);
-        //let server start...
-        Thread::Sleep(1000);
-
-        DLCDownloader::Hints hints;
-        hints.timeout = 3;
-        DLCDownloader* downloader = DLCDownloader::Create(hints);
-        SCOPE_EXIT
-        {
-            DLCDownloader::Destroy(downloader);
-        };
-
-        DLCDownloader::ITask* task = downloader->StartTask("localhost:9191/feature_config.yaml", "~doc:/feature_config.yaml");
-        SCOPE_EXIT
-        {
-            downloader->RemoveTask(task);
-        };
-        downloader->WaitTask(task);
-        const DLCDownloader::TaskStatus& status = downloader->GetTaskStatus(task);
-        TEST_VERIFY(status.error.errorHappened == false);
-
-        Process procStop("python", { enginePath + "/Programs/FeatureServer/stop_server.py" });
-        procStop.Run(false);
-        procStop.Wait();
-        procStart.Wait();
+        FeatureManagerUtils* featureManagerUtils = GetEngineContext()->featureManagerUtils;
+        featureManagerUtils->InitLocalFeatureServer(String(LOCAL_FRAMEWORK_SOURCE_PATH) + "/Programs/UnitTests/Data/FeatureManager/");
+        featureManagerUtils->DownloadConfig();
+        featureManagerUtils->ShutdownLocalFeatureServer();
     }
 
     DAVA_TEST (InitManager)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <Game.h>
 
 namespace DAVA
@@ -37,13 +37,11 @@ enum COLLISION_RESOLVE_MODE
     COLLISION_RESOLVE_MODE_REWIND_IN_PAST
 };
 
-class BattleOptionsSingleComponent : public DAVA::SingletonComponent
+class BattleOptionsSingleComponent : public DAVA::SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(BattleOptionsSingleComponent, DAVA::SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(BattleOptionsSingleComponent, DAVA::SingleComponent);
 
 public:
-    void Clear() override;
-
     GameMode::Id gameModeId;
 
     BattleOptions options;

@@ -523,6 +523,17 @@ void dx9_Initialize(const InitParam& param)
     if (param.maxTextureCount)
         TextureDX9::Init(param.maxTextureCount);
 
+    if (param.maxSamplerStateCount)
+        SamplerStateDX9::Init(param.maxSamplerStateCount);
+    if (param.maxPipelineStateCount)
+        PipelineStateDX9::Init(param.maxPipelineStateCount);
+    if (param.maxDepthStencilStateCount)
+        DepthStencilStateDX9::Init(param.maxDepthStencilStateCount);
+    if (param.maxRenderPassCount)
+        RenderPassDX9::Init(param.maxRenderPassCount);
+    if (param.maxCommandBuffer)
+        CommandBufferDX9::Init(param.maxCommandBuffer);
+
     uint32 ringBufferSize = 4 * 1024 * 1024;
     if (param.shaderConstRingBufferSize)
         ringBufferSize = param.shaderConstRingBufferSize;

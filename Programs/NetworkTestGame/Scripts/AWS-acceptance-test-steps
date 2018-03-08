@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# 1. Git lfs pull ________________________________________________________________________
+git lfs pull
+
+# 2. Command Line ________________________________________________________________________
+set -e
+python docker_build.py --image network-test-game:%build.number% --with-push --with-breakpad
+sed -e 's/BUILD_NUMBER/%build.number%/g' -e 's/CUSTOM_OPTIONS//g' network-test-game.yml > network-test-game-version.yml
+kubectl delete -f network-test-game-version.yml ||:
+./wait-for network-test-game 10 --after-del-yes
+kubectl apply -f network-test-game-version.yml
+
+# 3. Up AWS cluster _____________________________________________________________________
+set -e
+./aws/aws-up cluster ~/.ssh/autobot ~/secret.tfvars
+./aws/aws-deploy _game/app cluster ~/secret.tfvars
+./aws/aws-deploy run_bots.sh cluster ~/secret.tfvars
+./aws/aws-deploy analyzer_agent.py cluster ~/secret.tfvars
+./aws/aws-deploy put-s3 cluster ~/secret.tfvars
+./aws/aws-deploy put-s3-impl cluster ~/secret.tfvars
+./aws/aws-ips cluster ~/secret.tfvars
+
+# 4. Run stress acceptance test _________________________________________________________
+set -e
+./remote-stop cluster ~/secret.tfvars
+./remote-run 32000 cluster ~/secret.tfvars
+export ANALYZER_OPTS="--max-client-traffic=100000000 --max-client-memory=50"
+./analyzer network-test-game start cluster ~/secret.tfvars
+./wait-for network-test-game
+./analyzer network-test-game stop cluster ~/secret.tfvars
+
+# 5. Run gameplay shooter acceptance test _______________________________________________________
+set -e
+./remote-stop cluster ~/secret.tfvars
+kubectl delete -f network-test-game-version.yml ||:
+./wait-for network-test-game 10 --after-del-yes
+sed -e 's/BUILD_NUMBER/%build.number%/g' -e 's/CUSTOM_OPTIONS/, "--visibility", "--game-stats-log", "\/debug\/game-stats.log"/g' network-test-game.yml > network-test-game-version.yml
+kubectl apply -f network-test-game-version.yml
+sleep 10
+export ANALYZER_OPTS="--max-client-traffic=100000000 --max-client-memory=60"
+./remote-run -b shooter 32000 cluster ~/secret.tfvars
+./analyzer network-test-game start cluster ~/secret.tfvars
+./wait-for network-test-game
+./analyzer network-test-game stop cluster ~/secret.tfvars
+./check-game-stats network-test-game
+
+# 6. Run gameplay invader acceptance tests _______________________________________________________
+set -e
+opts=("" " ,\"--rewind_enemy\"" " ,\"--predict_enemy\"")
+ping_comp=(NONE REWIND_ENEMY PREDICT_ENEMY)
+for i in "${!opts[@]}"; do
+	./remote-stop cluster ~/secret.tfvars
+	kubectl delete -f network-test-game-version.yml ||:
+	./wait-for network-test-game 10 --after-del-yes
+	sed -e 's/BUILD_NUMBER/%build.number%/g' -e 's/CUSTOM_OPTIONS/, "--game", "invaders", "--visibility", "--game-stats-log", "\/debug\/game-stats.log"'"${opts[$i]}"'/g' network-test-game.yml > network-test-game-version.yml
+	kubectl apply -f network-test-game-version.yml
+	sleep 10
+	./remote-run -c 3 -b invader -s 32000 cluster ~/secret.tfvars
+	./wait-for network-test-game 3
+	./check-invaders-stats ${ping_comp[$i]} network-test-game debug cluster ~/secret.tfvars
+done
+
+# 7. Shutdown AWS cluster _______________________________________________________________
+./aws/aws-down cluster ~/secret.tfvars
+
+# 8. SUCCESS ____________________________________________________________________________
+echo "##teamcity[setParameter name='env.build_failed' value='false']"
+python slack_report_status.py success --build-id %teamcity.build.id% --teamcity-env-build-failed %env.build_failed% --configuration-name %system.teamcity.buildConfName%
+
+# 9. FAILED _____________________________________________________________________________
+if [ "true" == "%env.build_failed%" ]
+then
+docker stop build-cnt
+docker rm $(docker ps -a -q)
+python slack_report_status.py failure --build-id %teamcity.build.id% --teamcity-env-build-failed %env.build_failed% --configuration-name %system.teamcity.buildConfName%
+fi

@@ -20,8 +20,4 @@ uint32 NetworkResimulationSingleComponent::GetResimulationFrameId() const
 {
     return resimulationFrameId;
 }
-
-void NetworkResimulationSingleComponent::Clear()
-{
-}
 } // namespace DAVA

@@ -64,7 +64,7 @@ ShooterMovementSystem::ShooterMovementSystem(DAVA::Scene* scene)
         keyboardId = kb->GetId();
     }
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponentForWrite<ActionsSingleComponent>(this);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_FORWARD, eInputElements::KB_W, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_BACKWARD, eInputElements::KB_S, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_LEFT, eInputElements::KB_A, keyboardId);
@@ -84,7 +84,7 @@ void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
     static bool handledResolveCollisionMode = false;
     if (!handledResolveCollisionMode)
     {
-        BattleOptionsSingleComponent* optionsSingleComponent = GetScene()->GetSingletonComponent<BattleOptionsSingleComponent>();
+        BattleOptionsSingleComponent* optionsSingleComponent = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
         DVASSERT(optionsSingleComponent != nullptr);
 
         if (optionsSingleComponent->collisionResolveMode == COLLISION_RESOLVE_MODE_REWIND_IN_PAST)
@@ -302,16 +302,16 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
 
     // Collisions in the past implementation
 
-    SnapshotSingleComponent* snapshotSingleComponent = GetScene()->GetSingletonComponent<SnapshotSingleComponent>();
+    SnapshotSingleComponent* snapshotSingleComponent = GetScene()->GetSingleComponent<SnapshotSingleComponent>();
     DVASSERT(snapshotSingleComponent != nullptr);
 
-    NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     DVASSERT(timeSingleComponent != nullptr);
 
-    NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingletonComponent<NetworkReplicationSingleComponent>();
+    NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingleComponent<NetworkReplicationSingleComponent>();
     DVASSERT(replicationSingleComponent != nullptr);
 
-    CharacterMirrorsSingleComponent* mirrorSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
+    CharacterMirrorsSingleComponent* mirrorSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
     DVASSERT(mirrorSingleComponent != nullptr);
 
     const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& characterToMirrorMap = mirrorSingleComponent->GetCharacterToMirrorMap();
@@ -358,7 +358,7 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
             {
                 // On server, we move the other player's mirror in the past
 
-                const FastName& movingPlayerToken = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>()->GetToken(movingPlayerReplicationComponent->GetNetworkPlayerID());
+                const FastName& movingPlayerToken = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>()->GetToken(movingPlayerReplicationComponent->GetNetworkPlayerID());
                 DVASSERT(movingPlayerToken.IsValid());
 
                 int32 fdiff = timeSingleComponent->GetClientViewDelay(movingPlayerToken,
@@ -464,7 +464,7 @@ void ShooterMovementSystem::AfterCharacterMove(DAVA::CharacterControllerComponen
 
     // Collisions in the past implementation
 
-    CharacterMirrorsSingleComponent* mirrorSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
+    CharacterMirrorsSingleComponent* mirrorSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
     DVASSERT(mirrorSingleComponent != nullptr);
 
     const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& characterToMirrorMap = mirrorSingleComponent->GetCharacterToMirrorMap();

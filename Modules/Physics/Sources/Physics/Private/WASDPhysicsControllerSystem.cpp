@@ -23,7 +23,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(WASDPhysicsControllerSystem)
 }
 
 WASDPhysicsControllerSystem::WASDPhysicsControllerSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
 }
 

@@ -1,16 +1,16 @@
 #pragma once
 
 #include <Base/BaseTypes.h>
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <Reflection/Reflection.h>
 #include <Base/UnordererMap.h>
 #include <Base/FastName.h>
 
 namespace DAVA
 {
-class NetworkTimeSingleComponent : public SingletonComponent
+class NetworkTimeSingleComponent : public SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(NetworkTimeSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkTimeSingleComponent, SingleComponent);
 
 public:
     // client flag to check receiving uptime from server
@@ -89,7 +89,5 @@ private:
     UnorderedMap<FastName, uint32> lastClientFrameId;
     UnorderedMap<FastName, int32> clientOutrunning;
     UnorderedMap<FastName, Vector<int32>> clientViewDelayHistory;
-
-    void Clear() override;
 };
 }

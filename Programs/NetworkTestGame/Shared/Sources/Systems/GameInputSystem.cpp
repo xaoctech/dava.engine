@@ -9,7 +9,6 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
-#include "Systems/GameModeSystemCharacters.h"
 
 #include "NetworkCore/Scene3D/Components/NetworkInputComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
@@ -126,7 +125,7 @@ GameInputSystem::GameInputSystem(Scene* scene)
 
     entityGroup = scene->AquireEntityGroup<NetworkTransformComponent, NetworkInputComponent>();
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     actionsSingleComponent->CollectDigitalAction(UP, eInputElements::KB_W, keyboardId);
     actionsSingleComponent->CollectDigitalAction(DOWN, eInputElements::KB_S, keyboardId);
     actionsSingleComponent->CollectDigitalAction(LEFT, eInputElements::KB_A, keyboardId);
@@ -218,44 +217,6 @@ void GameInputSystem::ApplyDigitalActions(Entity* entity,
             }
 
             car->SetAnalogAcceleration(std::abs(Clamp(acceleration, -1.0f, 1.0f)));
-        }
-    }
-    else if (GetScene()->GetSystem<GameModeSystemCharacters>() != nullptr)
-    {
-        CharacterControllerComponent* controller = PhysicsUtils::GetCharacterControllerComponent(entity);
-
-        if (controller != nullptr)
-        {
-            Vector3 vec;
-            float32 angle = 0.f;
-
-            for (const FastName& action : actions)
-            {
-                if (action == UP)
-                {
-                    vec += MOV_SPEED * duration;
-                }
-                else if (action == DOWN)
-                {
-                    vec -= MOV_SPEED * duration;
-                }
-                else if (action == LEFT)
-                {
-                    angle -= ROT_SPEED * duration;
-                }
-                else if (action == RIGHT)
-                {
-                    angle += ROT_SPEED * duration;
-                }
-            }
-
-            Quaternion rotation = transComp->GetRotation();
-            Vector3 position = transComp->GetPosition();
-            rotation *= Quaternion::MakeRotation(Vector3::UnitZ, -angle);
-            transComp->SetLocalTransform(position, rotation, Vector3(1.0, 1.0, 1.0));
-
-            Vector3 displacement = rotation.ApplyToVectorFast(vec);
-            controller->Move(displacement);
         }
     }
     else

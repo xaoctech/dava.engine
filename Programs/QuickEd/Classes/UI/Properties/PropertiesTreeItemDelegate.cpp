@@ -135,6 +135,8 @@ PropertiesTreeItemDelegate::PropertiesTreeItemDelegate(QObject* parent)
 
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontName")] = new FontPropertyDelegate(this);
     propertyNameTypeItemDelegates[PropertyPath("UITextComponent", "fontPath")] = new ResourceFilePropertyDelegate(fontExtensions, "/Fonts/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("UITextField", "fontPath")] = new ResourceFilePropertyDelegate(fontExtensions, "/Fonts/", this, true);
+    propertyNameTypeItemDelegates[PropertyPath("*", "text-fontPath")] = new ResourceFilePropertyDelegate(fontExtensions, "/Fonts/", this, true);
 
     propertyNameTypeItemDelegates[PropertyPath("UIScriptComponent", "luaScriptPath")] = new ResourceFilePropertyDelegate(luaExtensions, "/Lua/", this, true);
 

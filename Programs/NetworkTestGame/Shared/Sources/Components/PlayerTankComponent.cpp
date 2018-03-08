@@ -12,17 +12,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerTankComponent)
     .End();
 }
 
-PlayerTankComponent::PlayerTankComponent()
-{
-}
-
 Component* PlayerTankComponent::Clone(Entity* toEntity)
 {
     PlayerTankComponent* component = new PlayerTankComponent();
     component->SetEntity(toEntity);
     return component;
-}
-
-PlayerTankComponent::~PlayerTankComponent()
-{
 }

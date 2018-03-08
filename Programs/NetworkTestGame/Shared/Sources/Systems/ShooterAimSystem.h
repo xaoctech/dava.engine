@@ -24,15 +24,12 @@ public:
     DAVA_VIRTUAL_REFLECTION(ShooterAimSystem, DAVA::BaseSimulationSystem);
 
     ShooterAimSystem(DAVA::Scene* scene);
-    ~ShooterAimSystem();
 
     void ProcessFixed(DAVA::float32 dt) override;
 
     void PrepareForRemove() override;
 
     void ApplyAnalogActions(DAVA::Entity* entity, const DAVA::AnalogActionsMap& actions, DAVA::uint32 clientFrameId, DAVA::float32 duration);
-
-    void OnUpdate(DAVA::Window*, DAVA::float32 elapsedTime);
 
     void GenerateDeviceIndependentAimRotation() const;
     void GenerateAimRotationFromDeltas(DAVA::float32 deltaX, DAVA::float32 deltaY) const;

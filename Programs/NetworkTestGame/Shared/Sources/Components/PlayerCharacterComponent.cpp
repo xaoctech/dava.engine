@@ -12,17 +12,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerCharacterComponent)
     .End();
 }
 
-PlayerCharacterComponent::PlayerCharacterComponent()
-{
-}
-
 Component* PlayerCharacterComponent::Clone(Entity* toEntity)
 {
     PlayerCharacterComponent* component = new PlayerCharacterComponent();
     component->SetEntity(toEntity);
     return component;
-}
-
-PlayerCharacterComponent::~PlayerCharacterComponent()
-{
 }

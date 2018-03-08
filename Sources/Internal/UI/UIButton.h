@@ -259,7 +259,8 @@ public:
      */
     virtual void CreateBackgroundForState(int32 state);
 
-    using UIControl::GetBackground; //need to avoid name hiding
+    UIControlBackground* GetBackground() const;
+    void SetBackground(UIControlBackground* newBg);
 
 protected:
     virtual ~UIButton();

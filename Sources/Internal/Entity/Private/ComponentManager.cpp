@@ -2,7 +2,7 @@
 
 #include "Entity/Component.h"
 #include "Entity/ComponentUtils.h"
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Scene3D/Entity.h"
 #include "Utils/CRC32.h"
@@ -44,7 +44,7 @@ void ComponentManager::RegisterComponent(const Type* type)
         type->SetUserData(runtimeIdUserDataIndex, Uint32ToVoidPtr(runtimeSceneComponentsCount));
         type->SetUserData(componentTypeUserDataIndex, Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT));
 
-        DVASSERT(static_cast<size_t>(runtimeSceneComponentsCount) < ComponentMask().size());
+        DVASSERT(static_cast<size_t>(runtimeSceneComponentsCount) < ComponentMask().bits.size());
 
         registeredSceneComponents.push_back(type);
 

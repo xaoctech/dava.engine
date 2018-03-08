@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
 #include "Base/Type.h"
+#include "Entity/ComponentMask.h"
 
 namespace DAVA
 {

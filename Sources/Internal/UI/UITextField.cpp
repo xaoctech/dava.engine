@@ -104,8 +104,6 @@ void UITextField::SetupDefaults()
     SetTextColor(GetTextColor());
     SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
 
-    SetFontSize(26); //12 is default size for IOS
-
     SetText(L"");
     SetRenderToTexture(true);
 }
@@ -223,7 +221,6 @@ void UITextField::ReleaseFocus()
 void UITextField::SetFont(Font* font)
 {
 #if defined(DAVA_TEXTFIELD_USE_STB)
-    fontPresetName.clear();
     textFieldImpl->SetFont(font);
 #endif // !defined(DAVA_TEXTFIELD_USE_STB)
 }
@@ -231,7 +228,6 @@ void UITextField::SetFont(Font* font)
 void UITextField::SetFontPath(const FilePath& fontPath)
 {
 #if defined(DAVA_TEXTFIELD_USE_STB)
-    fontPresetName.clear();
     textFieldImpl->SetFontPath(fontPath);
 #endif // !defined(DAVA_TEXTFIELD_USE_STB)
 }
@@ -290,7 +286,6 @@ void UITextField::SetTextUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign)
 
 void UITextField::SetFontSize(float32 size)
 {
-    fontPresetName.clear();
     textFieldImpl->SetFontSize(size);
 }
 
@@ -305,11 +300,6 @@ void UITextField::SetDelegate(UITextFieldDelegate* _delegate)
 UITextFieldDelegate* UITextField::GetDelegate()
 {
     return delegate;
-}
-
-void UITextField::SetSpriteAlign(int32 align)
-{
-    UIControl::SetSpriteAlign(align);
 }
 
 void UITextField::SetSize(const DAVA::Vector2& newSize)
@@ -705,6 +695,10 @@ void UITextField::SetFontByPresetName(const String& presetName)
 {
     if (fontPresetName != presetName)
     {
+#if defined(DAVA_TEXTFIELD_USE_STB)
+        textFieldImpl->SetFontName(presetName);
+
+#else // for native text fields
         FontPreset preset;
         if (!presetName.empty())
         {
@@ -713,21 +707,16 @@ void UITextField::SetFontByPresetName(const String& presetName)
 
         if (preset.Valid())
         {
-            SetFont(preset.GetFontPtr());
-
-#if defined(DAVA_TEXTFIELD_USE_STB)
-            SetFontSize(preset.GetSize());
-#else
             // WORKAROUND: For compatibility with old version of font size setter
             // we should use font height in pixels as font size in native fields.
             uint32 height = preset.GetFont()->GetFontHeight(preset.GetSize());
-            SetFontSize(static_cast<float32>(height));
-#endif
+            textFieldImpl->SetFontSize(static_cast<float32>(height));
         }
         else
         {
-            SetFont(nullptr);
+            textFieldImpl->SetFontSize(preset.GetSize());
         }
+#endif
 
         fontPresetName = presetName;
     }

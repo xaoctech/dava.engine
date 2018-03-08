@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <NetworkCore/NetworkTypes.h>
 #include <NetworkCore/Private/NetworkSerialization.h>
 
@@ -36,10 +36,10 @@ struct NetStatTimestamps
 };
 #pragma pack(pop)
 
-class NetworkStatisticsSingleComponent : public SingletonComponent
+class NetworkStatisticsSingleComponent : public SingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(NetworkStatisticsSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkStatisticsSingleComponent, SingleComponent);
 
     NetworkStatisticsSingleComponent();
 
@@ -61,7 +61,5 @@ private:
     UnorderedMap<uint64, std::unique_ptr<NetStatTimestamps>> timestamps;
 
     bool IsExecTime(uint32 frameId) const;
-
-    void Clear() override;
 };
 }

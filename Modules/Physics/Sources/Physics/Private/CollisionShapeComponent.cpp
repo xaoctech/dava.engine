@@ -24,15 +24,23 @@ void CollisionShapeComponent::Serialize(KeyedArchive* archive, SerializationCont
 {
     Component::Serialize(archive, serializationContext);
     archive->SetFastName("shape.name", name);
-    archive->SetMatrix4("shape.localPose", localPose);
+    archive->SetVector3("shape.localPosition", localPosition);
+    archive->SetQuaternion("shape.localOrientation", localOrientation);
     archive->SetBool("shape.overrideMass", overrideMass);
     archive->SetFloat("shape.mass", mass);
     archive->SetUInt32("shape.typeMask", typeMask);
     archive->SetUInt32("shape.typeMaskToCollideWith", typeMaskToCollideWith);
+
+    if (jointName.IsValid())
+    {
+        archive->SetFastName("shape.jointName", jointName);
+    }
+
     if (materialName.IsValid())
     {
         archive->SetFastName("shape.materialName", materialName);
     }
+
     archive->SetUInt32("shape.triggerMode", triggerMode);
 }
 
@@ -40,13 +48,15 @@ void CollisionShapeComponent::Deserialize(KeyedArchive* archive, SerializationCo
 {
     Component::Deserialize(archive, serializationContext);
     name = archive->GetFastName("shape.name", FastName(""));
-    localPose = archive->GetMatrix4("shape.localPose");
+    localPosition = archive->GetVector3("shape.localPosition", localPosition);
+    localOrientation = archive->GetQuaternion("shape.localOrientation", localOrientation);
     overrideMass = archive->GetBool("shape.overrideMass", overrideMass);
     mass = archive->GetFloat("shape.mass", mass);
     typeMask = archive->GetUInt32("shape.typeMask", typeMask);
     typeMaskToCollideWith = archive->GetUInt32("shape.typeMaskToCollideWith", typeMaskToCollideWith);
     materialName = archive->GetFastName("shape.materialName", materialName);
     triggerMode = archive->GetUInt32("shape.triggerMode", triggerMode);
+    jointName = archive->GetFastName("shape.jointName", jointName);
 }
 
 physx::PxShape* CollisionShapeComponent::GetPxShape() const
@@ -66,14 +76,25 @@ void CollisionShapeComponent::SetName(const FastName& name_)
     ScheduleUpdate();
 }
 
-const Matrix4& CollisionShapeComponent::GetLocalPose() const
+const Vector3& CollisionShapeComponent::GetLocalPosition() const
 {
-    return localPose;
+    return localPosition;
 }
 
-void CollisionShapeComponent::SetLocalPose(const Matrix4& localPose_)
+void CollisionShapeComponent::SetLocalPosition(const Vector3& value)
 {
-    localPose = localPose_;
+    localPosition = value;
+    ScheduleUpdate();
+}
+
+const Quaternion& CollisionShapeComponent::GetLocalOrientation() const
+{
+    return localOrientation;
+}
+
+void CollisionShapeComponent::SetLocalOrientation(const Quaternion& value)
+{
+    localOrientation = value;
     ScheduleUpdate();
 }
 
@@ -95,7 +116,7 @@ float32 CollisionShapeComponent::GetMass() const
 
 void CollisionShapeComponent::SetMass(float32 mass_)
 {
-    if (overrideMass == true)
+    if (overrideMass)
     {
         mass = mass_;
         ScheduleUpdate();
@@ -174,6 +195,20 @@ bool CollisionShapeComponent::GetTriggerMode() const
     return triggerMode;
 }
 
+const FastName& CollisionShapeComponent::GetJointName() const
+{
+    return jointName;
+}
+
+void CollisionShapeComponent::SetJointName(const FastName& value)
+{
+    if (jointName != value)
+    {
+        jointName = value;
+        ScheduleUpdate();
+    }
+}
+
 CollisionShapeComponent* CollisionShapeComponent::GetComponent(physx::PxShape* shape)
 {
     DVASSERT(shape != nullptr);
@@ -210,7 +245,7 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
     shape->userData = this;
     DVASSERT(name.IsValid());
     shape->setName(name.c_str());
-    shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+    shape->setLocalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(localPosition), PhysicsMath::QuaternionToPxQuat(localOrientation)));
     shape->acquireReference();
 
 #if defined(__DAVAENGINE_DEBUG__)
@@ -223,12 +258,16 @@ void CollisionShapeComponent::SetPxShape(physx::PxShape* shape_)
 void CollisionShapeComponent::CopyFieldsIntoClone(CollisionShapeComponent* component) const
 {
     component->name = name;
-    component->localPose = localPose;
+    component->localPosition = localPosition;
+    component->localOrientation = localOrientation;
     component->overrideMass = overrideMass;
     component->mass = mass;
     component->typeMask = typeMask;
     component->typeMaskToCollideWith = typeMaskToCollideWith;
     component->materialName = materialName;
+    component->triggerMode = triggerMode;
+    component->jointName = jointName;
+    component->scale = scale;
 }
 
 void CollisionShapeComponent::ScheduleUpdate()
@@ -269,7 +308,7 @@ void CollisionShapeComponent::UpdateLocalProperties()
 {
     DVASSERT(shape != nullptr);
     shape->setName(name.c_str());
-    shape->setLocalPose(physx::PxTransform(PhysicsMath::Matrix4ToPxMat44(localPose)));
+    shape->setLocalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(localPosition), PhysicsMath::QuaternionToPxQuat(localOrientation)));
     if (overrideMass == false)
     {
         physx::PxMassProperties massProperties = physx::PxRigidBodyExt::computeMassPropertiesFromShapes(&shape, 1);
@@ -291,15 +330,17 @@ void CollisionShapeComponent::ReleasePxShape()
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CollisionShapeComponent)
 {
-    ReflectionRegistrator<CollisionShapeComponent>::Begin()
-    .Field("Name", &CollisionShapeComponent::GetName, &CollisionShapeComponent::SetName)
-    .Field("material", &CollisionShapeComponent::GetMaterialName, &CollisionShapeComponent::SetMaterialName)[M::DisplayName("Material name")]
-    .Field("Local pose", &CollisionShapeComponent::localPose)
-    .Field("Override mass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)
-    .Field("Mass", &CollisionShapeComponent::GetMass, &CollisionShapeComponent::SetMass)
-    .Field("Type", &CollisionShapeComponent::GetTypeMask, &CollisionShapeComponent::SetTypeMask)
-    .Field("Types to collide with", &CollisionShapeComponent::GetTypeMaskToCollideWith, &CollisionShapeComponent::SetTypeMaskToCollideWith)
-    .Field("Enable trigger mode", &CollisionShapeComponent::GetTriggerMode, &CollisionShapeComponent::SetTriggerMode)
+    ReflectionRegistrator<CollisionShapeComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
+    .Field("Name", &CollisionShapeComponent::GetName, &CollisionShapeComponent::SetName)[M::Replicable()]
+    .Field("material", &CollisionShapeComponent::GetMaterialName, &CollisionShapeComponent::SetMaterialName)[M::Replicable(), M::DisplayName("Material name")]
+    .Field("Local position", &CollisionShapeComponent::GetLocalPosition, &CollisionShapeComponent::SetLocalPosition)[M::Replicable(), M::ComparePrecision(0.01f)]
+    .Field("Local orientation", &CollisionShapeComponent::GetLocalOrientation, &CollisionShapeComponent::SetLocalOrientation)[M::Replicable(), M::ComparePrecision(0.01f)]
+    .Field("Override mass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)[M::Replicable()]
+    .Field("Mass", &CollisionShapeComponent::GetMass, &CollisionShapeComponent::SetMass)[M::Replicable()]
+    .Field("Type", &CollisionShapeComponent::GetTypeMask, &CollisionShapeComponent::SetTypeMask)[M::Replicable()]
+    .Field("Types to collide with", &CollisionShapeComponent::GetTypeMaskToCollideWith, &CollisionShapeComponent::SetTypeMaskToCollideWith)[M::Replicable()]
+    .Field("Enable trigger mode", &CollisionShapeComponent::GetTriggerMode, &CollisionShapeComponent::SetTriggerMode)[M::Replicable()]
+    .Field("Joint name", &CollisionShapeComponent::GetJointName, &CollisionShapeComponent::SetJointName)[M::Replicable()]
     .End();
 }
 

@@ -10,6 +10,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaSingleComponent)
     .End();
 }
 
+NetworkDeltaSingleComponent::NetworkDeltaSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::FixedProcesses)
+{
+}
+
 void NetworkDeltaSingleComponent::Clear()
 {
     deltas.clear();

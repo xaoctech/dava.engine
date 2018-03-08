@@ -18,7 +18,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterMirroredCharacterSystem)
 }
 
 ShooterMirroredCharacterSystem::ShooterMirroredCharacterSystem(DAVA::Scene* scene)
-    : DAVA::SceneSystem(scene, 0)
+    : DAVA::SceneSystem(scene, DAVA::ComponentMask())
     , ccts(scene->AquireComponentGroup<ShooterMirroredCharacterComponent, ShooterMirroredCharacterComponent>())
 {
 }
@@ -27,7 +27,7 @@ void ShooterMirroredCharacterSystem::ProcessFixed(DAVA::float32 dt)
 {
     using namespace DAVA;
 
-    CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
+    CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
     DVASSERT(mirrorsSingleComponent != nullptr);
 
     for (ShooterMirroredCharacterComponent* mirrorCctComponent : ccts->components)

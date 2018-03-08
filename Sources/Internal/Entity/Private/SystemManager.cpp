@@ -225,4 +225,53 @@ const Vector<SystemManager::SceneProcessInfo>& SystemManager::GetFixedProcessMet
 {
     return methodsToFixedProcess;
 }
+
+bool SystemManager::SystemHasFixedProcess(const Type* systemType) const
+{
+    for (const SceneProcessInfo& fixedProcessInfo : methodsToFixedProcess)
+    {
+        if (fixedProcessInfo.systemType == systemType)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool SystemManager::SystemHasProcess(const Type* systemType) const
+{
+    for (const SceneProcessInfo& processInfo : methodsToProcess)
+    {
+        if (processInfo.systemType == systemType)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+uint32 SystemManager::GetSystemIndex(const Type* systemType) const
+{
+    for (uint32 i = 0; i < methodsToFixedProcess.size(); ++i)
+    {
+        if (methodsToFixedProcess[i].systemType == systemType)
+        {
+            return i;
+        }
+    }
+
+    for (uint32 i = 0; i < methodsToProcess.size(); ++i)
+    {
+        if (methodsToProcess[i].systemType == systemType)
+        {
+            return methodsToFixedProcess.size() + i;
+        }
+    }
+
+    DVASSERT(false);
+
+    return UINT32_MAX;
+}
 }

@@ -6,6 +6,7 @@
 #include <Debug/Private/ImGui.h>
 #include <UI/Update/UIUpdateComponent.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include "UI/UIControlBackground.h"
 
 ImGuiTest::ImGuiTest(TestBed& app)
     : BaseScreen(app, "ImGuiTest")
@@ -41,7 +42,7 @@ void ImGuiTest::Update(DAVA::float32 timeElapsed)
             ImGui::Text("Hello, world!");
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
             if (ImGui::ColorEdit3("clear color", backColor.color))
-                GetBackground()->SetColor(backColor);
+                GetComponent<DAVA::UIControlBackground>()->SetColor(backColor);
             if (ImGui::Button("Test Window"))
                 showTestWindow ^= 1;
             if (ImGui::Button("Another Window"))

@@ -546,7 +546,7 @@ void ActionComponent::OnActionAnimationStart(const Action& action)
         MotionComponent* motionComponent = GetMotionComponent(target);
         if (motionComponent)
         {
-            MotionSingleComponent* msc = target->GetScene()->GetSingletonComponent<MotionSingleComponent>();
+            MotionSingleComponent* msc = target->GetScene()->GetSingleComponent<MotionSingleComponent>();
             motionComponent->SetSingleAnimationRepeatsCount((action.stopAfterNRepeats == -1) ? 0u : uint32(action.stopAfterNRepeats));
             msc->stopSimpleMotion.push_back(motionComponent);
             msc->startSimpleMotion.push_back(motionComponent);
@@ -570,7 +570,7 @@ void ActionComponent::OnActionAnimationStop(const Action& action)
         if (motionComponent)
         {
             motionComponent->SetSingleAnimationRepeatsCount((action.stopAfterNRepeats == -1) ? 0u : uint32(action.stopAfterNRepeats));
-            target->GetScene()->GetSingletonComponent<MotionSingleComponent>()->stopSimpleMotion.push_back(motionComponent);
+            target->GetScene()->GetSingleComponent<MotionSingleComponent>()->stopSimpleMotion.push_back(motionComponent);
         }
     }
 }

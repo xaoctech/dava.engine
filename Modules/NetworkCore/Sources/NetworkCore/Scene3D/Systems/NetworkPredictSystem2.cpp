@@ -24,9 +24,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictSystem2)
 NetworkPredictSystem2::NetworkPredictSystem2(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent>())
 {
-    snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
-    replicationComponent = scene->GetSingletonComponent<NetworkReplicationSingleComponent>();
-    predictionComponent = scene->GetSingletonComponent<NetworkPredictionSingleComponent>();
+    snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
+    replicationComponent = scene->GetSingleComponentForRead<NetworkReplicationSingleComponent>(this);
+    predictionComponent = scene->GetSingleComponentForWrite<NetworkPredictionSingleComponent>(this);
 }
 
 void NetworkPredictSystem2::AddEntity(Entity* entity)
@@ -52,11 +52,6 @@ void NetworkPredictSystem2::AddEntity(Entity* entity)
 #endif
 
     PredictedEntityInfo info;
-    if (NetworkIdSystem::IsGeneratedFromAction(entityId))
-    {
-        NetworkPredictComponent* netPredictComp = entity->GetComponent<NetworkPredictComponent>();
-        info.creationFrameId = netPredictComp->GetFrameActionID().frameId;
-    }
     predictedEntities[entity] = std::move(info);
     predictedEntityIds[entityId] = entity;
 }
@@ -75,7 +70,6 @@ void NetworkPredictSystem2::ProcessFixed(float32 timeElapsed)
         return;
     }
 
-    predictionComponent->Clear();
     const NetworkReplicationSingleComponent::FullyReceivedFrames& fullyReceivedFrames = replicationComponent->fullyReceivedFrames;
     if (predictedEntities.size() > 0)
     {
@@ -119,32 +113,49 @@ void NetworkPredictSystem2::ProcessFixed(float32 timeElapsed)
                 }
             }
 
-            // track ttl only for
-            // generated entities
-            const uint32 creationFrameId = info.creationFrameId;
-            if (creationFrameId != 0)
+            // track TTL only for "action" entities
+            if (entityId.IsPlayerActionId())
             {
+                // check if entity with such id was
+                // received from server
                 if (existConfirmed)
                 {
                     info.ttl = maxTTL;
                 }
                 else
                 {
+                    // When such entity wasn't received from server it may
+                    // be client-wrongly created. But wait some more time
+                    // before removing it - until TTL is > 0
                     bool waitConfirmation = false;
                     if (info.ttl > 0)
                     {
                         info.ttl--;
                         waitConfirmation = true;
 
+                        // Some times we can delete wrongly created client-side entity
+                        // quicker than just waiting for TTL expiration:
+                        //   if full server frame already received such as that server-frameId
+                        //   is >= client-entity-creation-frameId and there was no
+                        //   existence confirmation (`existConfirmed` == true) we can delete
+                        //   client-entity immediately.
                         if (!hasAnyReplicationInfo)
                         {
+                            uint32 creationFrameId = entityId.GetPlayerActionFrameId();
                             const auto hasFullyFrame = [creationFrameId](const uint32 frameId)
                             {
                                 return creationFrameId <= frameId;
                             };
+
+                            // if there is fullyReceived server frame older than
+                            // frameId for client-entity we should stop waiting
+                            // for that entity confirmation
                             auto findIt = std::find_if(fullyReceivedFrames.begin(), fullyReceivedFrames.end(), hasFullyFrame);
-                            waitConfirmation = (findIt == fullyReceivedFrames.end());
-                            ;
+                            if (findIt != fullyReceivedFrames.end())
+                            {
+                                // such entity will be deleted
+                                waitConfirmation = false;
+                            }
                         }
                     }
 

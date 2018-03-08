@@ -163,9 +163,9 @@ void UIRenderSystem::RenderControlHierarhy(UIControl* control, const UIGeometric
     const UIControlBackground* bg = control->GetComponent<UIControlBackground>();
     const UIControlBackground* parentBgForChild = bg ? bg : parentBackground;
     control->isIteratorCorrupted = false;
-    for (UIControl* child : control->GetChildren())
+    for (const auto& child : control->GetChildren())
     {
-        RenderControlHierarhy(child, drawData, parentBgForChild);
+        RenderControlHierarhy(child.Get(), drawData, parentBgForChild);
         DVASSERT(!control->isIteratorCorrupted);
     }
 

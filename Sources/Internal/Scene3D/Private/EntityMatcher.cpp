@@ -11,7 +11,7 @@ bool AllOfEntityMatcher::MatchMask(const ComponentMask& mask1, const ComponentMa
 
 bool AnyOfEntityMatcher::MatchMask(const ComponentMask& mask1, const ComponentMask& mask2)
 {
-    return (mask1 & mask2) != 0;
+    return (mask1 & mask2).IsAnySet();
 }
 
 bool ExactTypeMatcher::MatchType(const Type* type1, const Type* type2)

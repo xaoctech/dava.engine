@@ -39,7 +39,7 @@ void TransformSystem::Process(float32 timeElapsed)
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_TRANSFORM_SYSTEM);
     this->timeElapsed = timeElapsed;
 
-    TransformSingleComponent* tsc = GetScene()->GetSingletonComponent<TransformSingleComponent>();
+    const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
     for (Entity* e : tsc->localTransformChanged)
     {
         EntityNeedUpdate(e);
@@ -322,7 +322,7 @@ void TransformSystem::UnregisterEntity(Entity* entity)
 
     DVASSERT(GetScene() != nullptr);
 
-    GetScene()->GetSingletonComponent<TransformSingleComponent>()->EraseEntity(entity);
+    GetScene()->GetSingleComponent<TransformSingleComponent>()->EraseEntity(entity);
 }
 
 void TransformSystem::PrepareForRemove()

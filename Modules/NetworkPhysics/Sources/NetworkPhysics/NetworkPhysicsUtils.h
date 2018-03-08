@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Base/BaseTypes.h>
+#include <Entity/ComponentMask.h>
 #include <Math/Vector.h>
-
 #include <Scene3D/Components/TransformComponent.h>
 
 #include <physx/PxQueryReport.h>

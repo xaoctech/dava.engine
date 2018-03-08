@@ -22,7 +22,7 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(MarkerSystem)
 {
-    ReflectionRegistrator<MarkerSystem>::Begin()[M::Tags("marker")]
+    ReflectionRegistrator<MarkerSystem>::Begin()[M::Tags("marker", "server")]
     .ConstructorByPointer<Scene*>()
     .Method("ProcessFixed", &MarkerSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 1000.0f)]
     .End();

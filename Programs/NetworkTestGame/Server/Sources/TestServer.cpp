@@ -9,7 +9,6 @@
 #include "Systems/MarkerSystem.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
-#include "Systems/GameModeSystemCharacters.h"
 #include <Visibility/NetworkFrequencySystem.h>
 #include <Visibility/SimpleVisibilitySystem.h>
 #include <Visibility/ShooterVisibilitySystem.h>
@@ -35,8 +34,8 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Renderer.h>
 #include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
-#include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
@@ -58,8 +57,6 @@
 #include <UI/UIControlSystem.h>
 
 #include <Physics/PhysicsSystem.h>
-
-#include <NetworkPhysics/NetworkPhysicsSystem.h>
 
 //////////////////
 #include <NetworkCore/Scene3D/Systems/NetworkTransformFromLocalToNetSystem.h>
@@ -273,8 +270,8 @@ void TestServer::OnWindowCreated(DAVA::Window* w)
     CreateScene(screenAspect);
 
     mainScreen = new MainScreen(scene);
-    UIScreenManager::Instance()->RegisterScreen(mainScreen->GetScreenID(), mainScreen);
-    UIScreenManager::Instance()->SetFirst(mainScreen->GetScreenID());
+    GetEngineContext()->uiScreenManager->RegisterScreen(mainScreen->GetScreenID(), mainScreen);
+    GetEngineContext()->uiScreenManager->SetFirst(mainScreen->GetScreenID());
 
     DebugInit();
 }
@@ -434,16 +431,6 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     bool isShooterGm = false;
     switch (gameModeId)
     {
-    case GameMode::Id::HELLO:
-        // broken
-        break;
-    case GameMode::Id::CHARACTERS:
-        tags.insert({ FastName("gm_characters"), FastName("gameinput"), FastName("playerentity"),
-                      FastName("simple_visibility") });
-        break;
-    case GameMode::Id::PHYSICS:
-        // broken
-        break;
     case GameMode::Id::CARS:
         tags.insert({ FastName("gm_cars"), FastName("gameinput"), FastName("playerentity"),
                       FastName("simple_visibility") });
@@ -453,10 +440,10 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
         tags.insert({ FastName("gm_shooter"), FastName("controller") });
         break;
     case GameMode::Id::INVADERS:
-        tags.insert(FastName("gm_invaders"));
+        tags.insert({ FastName("gm_invaders"), FastName("simple_visibility") });
         if (!gameStatsLogPath.empty())
         {
-            tags.insert({ FastName("log_game_stats"), FastName("simple_visibility") });
+            tags.insert(FastName("log_game_stats"));
         }
         break;
     default:
@@ -472,15 +459,20 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     scene = new Scene(tags);
     scene->SetPerformFixedProcessOnlyOnce(true);
 
+    NetworkReplicationComponent* nrc = new NetworkReplicationComponent(NetworkID::SCENE_ID);
+    nrc->SetForReplication<NetworkGameModeSingleComponent>(M::Privacy::PUBLIC);
+    nrc->SetForReplication<BattleOptionsSingleComponent>(M::Privacy::PUBLIC);
+    scene->AddComponent(nrc);
+
     ScopedPtr<Camera> camera(new Camera());
     scene->AddCamera(camera);
     scene->SetCurrentCamera(camera);
 
-    NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
     netGameModeComp->SetGameModeType(GameModeSystem::WAITING);
     netGameModeComp->SetMapName(FastName("map_01.sc2"));
 
-    BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+    BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingleComponent<BattleOptionsSingleComponent>();
     optionsSingleComponent->gameModeId = gameModeId;
     optionsSingleComponent->options.gameStatsLogPath = gameStatsLogPath;
     optionsSingleComponent->isEnemyPredicted = CommandLineParser::CommandIsFound("--predict_enemy");
@@ -504,7 +496,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 
     NetworkTimeSingleComponent::SetFrequencyHz(static_cast<float32>(freqHz));
 
-    scene->GetSingletonComponent<NetworkServerSingleComponent>()->SetServer(&gameServer.GetUDPServer());
+    scene->GetSingleComponent<NetworkServerSingleComponent>()->SetServer(&gameServer.GetUDPServer());
 
     scene->CreateSystemsByTags();
 
@@ -525,7 +517,10 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     if (isShooterGm)
     {
         MarkerSystem* markerSystem = scene->GetSystem<MarkerSystem>();
-        markerSystem->SetHealthParams(SHOOTER_CHARACTER_MAX_HEALTH, 0.02f);
+        if (markerSystem)
+        {
+            markerSystem->SetHealthParams(SHOOTER_CHARACTER_MAX_HEALTH, 0.02f);
+        }
 
         scene->GetSystem<WASDControllerSystem>()->SetMoveSpeed(50.0f);
 
@@ -571,8 +566,6 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
             AddServerBots(netGameModeComp, scene->GetSystem<GameModeSystem>());
         if (IsGm("gm_cars"))
             AddServerBots(netGameModeComp, scene->GetSystem<GameModeSystemCars>());
-        if (IsGm("gm_characters"))
-            AddServerBots(netGameModeComp, scene->GetSystem<GameModeSystemCharacters>());
         if (IsGm("gm_shooter"))
             DVASSERT(false, "No bots for shooter mode ftm.");
     }

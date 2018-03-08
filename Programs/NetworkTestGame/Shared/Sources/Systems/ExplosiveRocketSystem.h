@@ -1,5 +1,7 @@
 #pragma once
 
+#include <NetworkCore/NetworkTypes.h>
+
 #include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Systems/BaseSimulationSystem.h>
@@ -23,9 +25,6 @@ public:
     void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
-    void ReSimulationStart() override;
-    void ReSimulationEnd() override;
-
     void SimulateRocket(DAVA::Entity* entity);
 
 protected:
@@ -38,15 +37,11 @@ protected:
 
     void FillRocket(DAVA::Entity* rocket);
     const DAVA::Entity* GetTarget(DAVA::Entity* rocket, DAVA::Entity* shooter);
-    DAVA::Entity* SpawnSubRocket(DAVA::Entity* shooter, const DAVA::Entity* target, const DAVA::FrameActionID& shootActionId);
+    DAVA::Entity* SpawnSubRocket(DAVA::Entity* shooter, const DAVA::Entity* target, DAVA::NetworkID rocketId);
     void Colorize(DAVA::Entity* rocket);
 
     DAVA::EntityGroup* entityGroup = nullptr;
-    DAVA::EntityGroupOnAdd pendingEntities;
-    struct
-    {
-        DAVA::Vector<DAVA::Entity*> entities;
-    } pendingBackUp;
+    DAVA::EntityGroupOnAdd* pendingEntities = nullptr;
 
     DAVA::UnorderedSet<DAVA::Entity*> destroyedEntities;
 

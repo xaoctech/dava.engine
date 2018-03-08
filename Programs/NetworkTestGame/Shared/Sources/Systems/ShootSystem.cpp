@@ -60,7 +60,7 @@ static bool CompareTransform(const T& lhs, const T& rhs, uint32 size, float32 ep
 ShootSystem::ShootSystem(Scene* scene)
     : DAVA::BaseSimulationSystem(scene, ComponentUtils::MakeMask<ShootComponent>())
     , entityGroup(scene->AquireEntityGroup<ShootComponent>())
-    , pendingEntities(entityGroup)
+    , pendingEntities(scene->AquireEntityGroupOnAdd(entityGroup, this))
 {
 }
 
@@ -70,7 +70,7 @@ ShootSystem::~ShootSystem()
 
 void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA::float32 timeElapsed)
 {
-    CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
 
     switch (shootComponent->GetPhase())
     {
@@ -125,7 +125,7 @@ void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA
 
 void ShootSystem::ProcessFixed(float32 timeElapsed)
 {
-    for (Entity* bullet : pendingEntities.entities)
+    for (Entity* bullet : pendingEntities->entities)
     {
         ShootComponent* shootComponent = bullet->GetComponent<ShootComponent>();
         Entity* bulletModel = GetBulletModel();
@@ -180,7 +180,7 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
         }
     }
 
-    pendingEntities.entities.clear();
+    pendingEntities->entities.clear();
 
     Vector<Entity*> destroyedBullets;
     for (Entity* bullet : entityGroup->GetEntities())

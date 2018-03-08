@@ -2,12 +2,9 @@
 #include "GameClient.h"
 #include "Game.h"
 
-#include "Systems/Game01HelloWorld.h"
 #include "Systems/GameInputSystem.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
-#include "Systems/GameModeSystemCharacters.h"
-#include "Systems/GameModeSystemPhysics.h"
 #include "Systems/GameShowSystem.h"
 #include "Systems/MarkerSystem.h"
 #include "Systems/PhysicsProjectileInputSystem.h"
@@ -41,6 +38,7 @@
 
 #include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
@@ -68,8 +66,6 @@
 #include <Physics/VehicleChassisComponent.h>
 #include <Physics/VehicleTankComponent.h>
 #include <Physics/VehicleWheelComponent.h>
-
-#include <NetworkPhysics/NetworkPhysicsSystem.h>
 
 #include <NetworkCore/Scene3D/Systems/NetworkTransformFromLocalToNetSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkTransformFromNetToLocalSystem.h>
@@ -153,7 +149,7 @@ void Battle::SetupTestGame()
         {
         case (PlayerKind::Id::SHOOTER_BOT):
         {
-            tags.insert({FastName("shooterbot"), FastName("taskbot")});
+            tags.insert({ FastName("shooterbot"), FastName("taskbot") });
             break;
         }
         case (PlayerKind::Id::RANDOM_BOT):
@@ -163,7 +159,7 @@ void Battle::SetupTestGame()
         }
         case (PlayerKind::Id::INVADER_BOT):
         {
-            tags.insert({FastName("invaderbot"), FastName("taskbot")});
+            tags.insert({ FastName("invaderbot"), FastName("taskbot") });
             break;
         }
         default:
@@ -172,16 +168,17 @@ void Battle::SetupTestGame()
     }
 
     battleScene = new Scene(tags);
+    battleScene->AddComponent(new DAVA::NetworkReplicationComponent(NetworkID::SCENE_ID));
 
     ScopedPtr<Camera> camera(new Camera());
     battleScene->AddCamera(camera);
     battleScene->SetCurrentCamera(camera);
 
-    *battleScene->GetSingletonComponent<BattleOptionsSingleComponent>() = *optionsSingleComp;
+    *battleScene->GetSingleComponent<BattleOptionsSingleComponent>() = *optionsSingleComp;
 
     NetworkTimeSingleComponent::SetFrequencyHz(static_cast<float32>(optionsSingleComp->options.freqHz));
 
-    battleScene->GetSingletonComponent<NetworkClientSingleComponent>()->SetClient(gameClient->GetUDPClientPtr());
+    battleScene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(gameClient->GetUDPClientPtr());
 
     battleScene->CreateSystemsByTags();
 

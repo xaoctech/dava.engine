@@ -11,10 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(AnimatedObject)
     .End();
 }
 
-AnimatedObject::AnimatedObject()
-//	: animationsStorage(0)
-{
-}
+AnimatedObject::AnimatedObject() = default;
 
 AnimatedObject::~AnimatedObject()
 {
@@ -31,31 +28,8 @@ bool AnimatedObject::IsAnimating(int32 track) const
     return GetEngineContext()->animationManager->IsAnimating(this, track);
 }
 
-Animation* AnimatedObject::FindPlayingAnimation(int32 track /*= -1*/)
+Animation* AnimatedObject::FindPlayingAnimation(int32 track /*= -1*/) const
 {
     return GetEngineContext()->animationManager->FindPlayingAnimation(this, track);
 }
 }
-
-/*
-void AnimatedObject::AddAnimation(Animation * animation)
-{
-	
-}
-void RemoveAnimation(Animation * animation);
-{
-	
-}*/
-/*virtual Animation * FindNextAnimationForTrack(int track)
-{
-
-}
-
-void Animation::Update()
-{
-	for (int k = 0; k < MAX_NUMBER_OF_TRACKS; ++k)
-	{
-		
-		
-	}
-}*/

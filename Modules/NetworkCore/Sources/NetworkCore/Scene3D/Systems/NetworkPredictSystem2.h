@@ -35,7 +35,7 @@ private:
     bool ConfirmComponentValues(Snapshot* clientSnapshot, Snapshot* entitySnapshot, NetworkID entityId, EntityMisprediction& misprediction);
 
     static const uint32 maxTTL = 32;
-    NetworkReplicationSingleComponent* replicationComponent = nullptr;
+    const NetworkReplicationSingleComponent* replicationComponent = nullptr;
     NetworkPredictionSingleComponent* predictionComponent = nullptr;
     SnapshotSingleComponent* snapshotSingleComponent = nullptr;
 
@@ -43,7 +43,6 @@ private:
     {
         uint32 ttl = maxTTL;
         uint32 lastExistanceFrameId = 0;
-        uint32 creationFrameId = 0;
     };
 
     UnorderedMap<Entity*, PredictedEntityInfo> predictedEntities;

@@ -30,14 +30,14 @@ static const float32 STUNNING_COOLDOWN_S = 5.f;
 }
 
 GameStunningSystem::GameStunningSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     stunnableGroup = scene->AquireComponentGroup<GameStunnableComponent, GameStunnableComponent, NetworkTransformComponent>();
 }
 
 void GameStunningSystem::ProcessFixed(float32 timeElapsed)
 {
-    CollisionSingleComponent* collSingleComp = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
+    CollisionSingleComponent* collSingleComp = GetScene()->GetSingleComponent<CollisionSingleComponent>();
     for (CollisionInfo& ci : collSingleComp->collisions)
     {
         GameStunningComponent* stunning1 = ci.first->GetComponent<GameStunningComponent>();

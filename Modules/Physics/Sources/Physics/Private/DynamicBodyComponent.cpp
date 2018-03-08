@@ -2,6 +2,7 @@
 #include "Physics/PhysicsModule.h"
 #include "Physics/Private/PhysicsMath.h"
 
+#include <Logger/Logger.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 
@@ -164,11 +165,6 @@ bool DynamicBodyComponent::GetIsKinematic() const
     return isKinematic;
 }
 
-bool DynamicBodyComponent::GetIsActive() const
-{
-    return isActive;
-}
-
 bool DynamicBodyComponent::IsCCDEnabled() const
 {
     return enableCCD;
@@ -204,27 +200,29 @@ void DynamicBodyComponent::UpdateLocalProperties()
 
     if (!isKinematic)
     {
-        actor->setLinearVelocity(PhysicsMath::Vector3ToPxVec3(linearVelocity));
-        actor->setAngularVelocity(PhysicsMath::Vector3ToPxVec3(angularVelocity));
+        actor->setLinearVelocity(PhysicsMath::Vector3ToPxVec3(linearVelocity), false);
+        actor->setAngularVelocity(PhysicsMath::Vector3ToPxVec3(angularVelocity), false);
     }
 
     actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, enableCCD);
+
     PhysicsComponent::UpdateLocalProperties();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(DynamicBodyComponent)
 {
-    ReflectionRegistrator<DynamicBodyComponent>::Begin()
+    ReflectionRegistrator<DynamicBodyComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
-    .Field("Linear damping", &DynamicBodyComponent::GetLinearDamping, &DynamicBodyComponent::SetLinearDamping)[M::Range(0, Any(), 1.0f), M::Group("Damping")]
-    .Field("Angular damping", &DynamicBodyComponent::GetAngularDamping, &DynamicBodyComponent::SetAngularDamping)[M::Range(0, Any(), 1.0f), M::Group("Damping")]
-    .Field("Max angular velocity", &DynamicBodyComponent::GetMaxAngularVelocity, &DynamicBodyComponent::SetMaxAngularVelocity)[M::Range(0, Any(), 1.0f)]
-    .Field("Lock flags", &DynamicBodyComponent::GetLockFlags, &DynamicBodyComponent::SetLockFlags)[M::FlagsT<DynamicBodyComponent::eLockFlags>()]
-    .Field("Position iterations count", &DynamicBodyComponent::GetMinPositionIters, &DynamicBodyComponent::SetMinPositionIters)[M::Range(1, 255, 1)]
-    .Field("Velocity iterations count", &DynamicBodyComponent::GetMinVelocityIters, &DynamicBodyComponent::SetMinVelocityIters)[M::Range(1, 255, 1)]
-    .Field("Linear velocity", &DynamicBodyComponent::GetLinearVelocity, &DynamicBodyComponent::SetLinearVelocity)[M::HiddenField()]
-    .Field("Angular velocity", &DynamicBodyComponent::GetAngularVelocity, &DynamicBodyComponent::SetAngularVelocity)[M::HiddenField()]
-    .Field("CCD", &DynamicBodyComponent::IsCCDEnabled, &DynamicBodyComponent::SetCCDEnabled)[M::DisplayName("CCD enabled")]
+    .Field("Linear damping", &DynamicBodyComponent::GetLinearDamping, &DynamicBodyComponent::SetLinearDamping)[M::Replicable(), M::Range(0, Any(), 1.0f), M::Group("Damping")]
+    .Field("Angular damping", &DynamicBodyComponent::GetAngularDamping, &DynamicBodyComponent::SetAngularDamping)[M::Replicable(), M::Range(0, Any(), 1.0f), M::Group("Damping")]
+    .Field("Max angular velocity", &DynamicBodyComponent::GetMaxAngularVelocity, &DynamicBodyComponent::SetMaxAngularVelocity)[M::Replicable(), M::Range(0, Any(), 1.0f)]
+    .Field("Lock flags", &DynamicBodyComponent::GetLockFlags, &DynamicBodyComponent::SetLockFlags)[/*M::Replicable(), */ M::FlagsT<DynamicBodyComponent::eLockFlags>()]
+    .Field("Position iterations count", &DynamicBodyComponent::GetMinPositionIters, &DynamicBodyComponent::SetMinPositionIters)[M::Replicable(), M::Range(1, 255, 1)]
+    .Field("Velocity iterations count", &DynamicBodyComponent::GetMinVelocityIters, &DynamicBodyComponent::SetMinVelocityIters)[M::Replicable(), M::Range(1, 255, 1)]
+    .Field("Linear velocity", &DynamicBodyComponent::GetLinearVelocity, &DynamicBodyComponent::SetLinearVelocity)[M::Replicable(), M::ComparePrecision(0.01f), M::HiddenField()]
+    .Field("Angular velocity", &DynamicBodyComponent::GetAngularVelocity, &DynamicBodyComponent::SetAngularVelocity)[M::Replicable(), M::ComparePrecision(0.01f), M::HiddenField()]
+    .Field("CCD", &DynamicBodyComponent::IsCCDEnabled, &DynamicBodyComponent::SetCCDEnabled)[M::Replicable(), M::DisplayName("CCD enabled")]
+    .Field("Wake counter", &DynamicBodyComponent::wakeCounter)[M::Replicable(), M::ComparePrecision(0.01f)]
     .End();
 }
 } // namespace DAVA

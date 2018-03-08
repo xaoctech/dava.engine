@@ -38,7 +38,7 @@ void ConvexHullShapeComponent::UpdateLocalProperties()
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ConvexHullShapeComponent)
 {
-    ReflectionRegistrator<ConvexHullShapeComponent>::Begin()
+    ReflectionRegistrator<ConvexHullShapeComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
     .End();
 }

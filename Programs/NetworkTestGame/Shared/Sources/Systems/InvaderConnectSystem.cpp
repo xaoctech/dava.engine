@@ -35,9 +35,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(InvaderConnectSystem)
 }
 
 InvaderConnectSystem::InvaderConnectSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
-    server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+    server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
     server->SubscribeOnConnect([this](const Responder& responder) {
         connectedResponders.push_back(&responder);
     });
@@ -52,10 +52,10 @@ void InvaderConnectSystem::Process(float32 timeElapsed)
     }
     connectedResponders.clear();
 
-    NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     if (nullptr != netGameModeComponent)
     {
-        GameModeSingleComponent* gameModeComponent = GetScene()->GetSingletonComponent<GameModeSingleComponent>();
+        GameModeSingleComponent* gameModeComponent = GetScene()->GetSingleComponent<GameModeSingleComponent>();
         if (!gameModeComponent->IsMapLoaded())
         {
             // Load map
@@ -72,22 +72,18 @@ void InvaderConnectSystem::Process(float32 timeElapsed)
 
 void InvaderConnectSystem::OnClientConnected(const Responder& responder)
 {
-    NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
     Logger::Debug("Token: %s, Player ID: %d", responder.GetToken().c_str(), playerID);
     Entity* playerEntity = netGameModeComp->GetPlayerEnity(playerID);
     if (playerEntity == nullptr)
     {
         Entity* invader = new Entity();
-        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-        replicationComponent->SetNetworkPlayerID(playerID);
-        replicationComponent->SetOwnerTeamID(responder.GetTeamID());
-        replicationComponent->SetEntityType(EntityType::VEHICLE); // Workaround for GameVisibilitySystem to work properly
-        invader->AddComponent(replicationComponent);
-        invader->AddComponent(new PlayerInvaderComponent());
+        PlayerInvaderComponent* invComp = new PlayerInvaderComponent();
+        invComp->playerId = playerID;
+
+        invader->AddComponent(invComp);
         GetScene()->AddNode(invader);
-        Logger::Debug("[GameServer] Create Invader %p:%d For Player ID : %d",
-                      invader, static_cast<uint32>(replicationComponent->GetNetworkID()), playerID);
 
         static bool hasCamera = false;
         if (!hasCamera)

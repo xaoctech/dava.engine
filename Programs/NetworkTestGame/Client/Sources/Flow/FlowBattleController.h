@@ -17,6 +17,8 @@ class UIJoypadComponent;
 }
 
 class FlowBattleService;
+class HealthComponent;
+class HealthMarkersController;
 
 class FlowBattleController : public DAVA::UIFlowController
 {
@@ -29,6 +31,7 @@ public:
     bool ProcessEvent(const DAVA::FastName& event, const DAVA::Vector<DAVA::Any>& params) override;
 
 private:
+    std::unique_ptr<HealthMarkersController> healthMarkers;
     FlowBattleService* battleService = nullptr;
     DAVA::Scene* battleScene = nullptr;
     DAVA::UIJoypadComponent* movementJoypad = nullptr;

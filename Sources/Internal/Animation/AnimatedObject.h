@@ -21,9 +21,6 @@ class AnimatedObject : public BaseObject
 {
     DAVA_VIRTUAL_REFLECTION(AnimatedObject, BaseObject);
 
-protected:
-    virtual ~AnimatedObject();
-
 public:
     AnimatedObject();
 
@@ -38,7 +35,6 @@ public:
 		\returns true if object is animating on the requested tracks
 	 */
     bool IsAnimating(int32 track = -1) const;
-    // TODO: void	Pause(int32 track = -1);
 
     /**
 		\brief Returns animation with PLAYING state
@@ -46,30 +42,9 @@ public:
 							are playing on different tracks, the function will return only one.
 		\returns animation, or 0 if no animations are playing
 	 */
-    Animation* FindPlayingAnimation(int32 track = -1);
+    Animation* FindPlayingAnimation(int32 track = -1) const;
 
-private:
-    //AnimationsStorage * animationsStorage;
-
-    /*	
-	\TODO optimization of animation subsystem
-	
-	Animation * activeAnimations; 
-	Animation * 
- 
- 
-	// each object support 4 tracks of animations
-	static const int32 MAX_NUMBER_OF_TRACKS = 4;
-	Animation * headAnimations[MAX_NUMBER_OF_TRACKS];
-	Animation * headAllAnimations;
-
-	Animation * FindLastAnimationForTrack(int track);
-	
-	void AddAnimation(Animation * animation);
-	void RemoveAnimation(Animation * animation);
-
-	void Update(float32 timeElapsed);
-	
-	friend class Animation;*/
+protected:
+    ~AnimatedObject() override;
 };
 }

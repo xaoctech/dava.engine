@@ -7,56 +7,75 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationComponent)
 {
-    ReflectionRegistrator<NetworkReplicationComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::Replicable(M::Privacy::PUBLIC)]
-    .ConstructorByPointer()
-    .Field("networkPlayerID", &NetworkReplicationComponent::GetNetworkPlayerID, &NetworkReplicationComponent::SetNetworkPlayerID)[M::Replicable()]
-    .Field("entityType", &NetworkReplicationComponent::GetEntityType, &NetworkReplicationComponent::SetEntityType)[M::Replicable()]
-    .Field("networkID", &NetworkReplicationComponent::GetNetworkID, &NetworkReplicationComponent::SetNetworkID)[M::Replicable()]
+    ReflectionRegistrator<NetworkReplicationComponent>::Begin()[M::CantBeCreatedManualyComponent()]
+    .Field("replicableMask", &NetworkReplicationComponent::replicableMask)[M::Replicable()]
     .End();
 }
 
-NetworkReplicationComponent::NetworkReplicationComponent()
+NetworkReplicationComponent::NetworkReplicationComponent(NetworkID nid)
+    : id(nid)
 {
+    DVASSERT(id.IsValid());
 }
 
 Component* NetworkReplicationComponent::Clone(Entity* toEntity)
 {
-    NetworkReplicationComponent* rc = new NetworkReplicationComponent();
+    NetworkReplicationComponent* rc = new NetworkReplicationComponent(id);
     rc->SetEntity(toEntity);
-    rc->SetNetworkID(GetNetworkID());
-    rc->SetNetworkPlayerID(GetNetworkPlayerID());
-    rc->SetOwnerTeamID(GetOwnerTeamID());
+    rc->id = id;
+    rc->replicableMask = replicableMask;
+    rc->replicationPrivacyMask = replicationPrivacyMask;
+
     return rc;
 }
 
 void NetworkReplicationComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
-    if (archive != nullptr)
-    {
-        DVASSERT(GetNetworkPlayerID() != 0);
-        archive->SetUInt32("nrc.networkPlayerID", GetNetworkPlayerID());
-    }
+
+    DVASSERT(false);
+    // TODO:
+    // ...
 }
 
 void NetworkReplicationComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
 
-    if (archive != nullptr)
+    DVASSERT(false);
+    // TODO:
+    // ...
+}
+
+NetworkID NetworkReplicationComponent::GetNetworkID() const
+{
+    return id;
+}
+
+NetworkPlayerID NetworkReplicationComponent::GetNetworkPlayerID() const
+{
+    DVASSERT(id.IsPlayerId());
+    return id.GetPlayerId();
+}
+
+const ComponentMask& NetworkReplicationComponent::GetReplicationMask() const
+{
+    return replicableMask;
+}
+
+const ComponentMask& NetworkReplicationComponent::GetReplicationPrivacyMask() const
+{
+    return replicationPrivacyMask;
+}
+
+void NetworkReplicationComponent::SetForReplication(const Type* componentType, M::Privacy privacy)
+{
+    DVASSERT(entity == nullptr, "You can't setup replicating when component is already belong to entity");
+
+    replicableMask.Set(componentType);
+    if (privacy > M::Privacy::PRIVATE)
     {
-        NetworkPlayerID playerID = archive->GetUInt32("nrc.networkPlayerID");
-        SetNetworkPlayerID(playerID);
+        replicationPrivacyMask.Set(componentType);
     }
-}
-
-void NetworkReplicationComponent::SetEntityType(EntityType entityType_)
-{
-    entityType = entityType_;
-}
-
-EntityType NetworkReplicationComponent::GetEntityType() const
-{
-    return entityType;
 }
 }

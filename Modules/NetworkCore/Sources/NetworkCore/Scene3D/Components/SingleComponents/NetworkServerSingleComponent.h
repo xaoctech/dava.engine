@@ -1,15 +1,15 @@
 #pragma once
 
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 
 namespace DAVA
 {
 class IServer;
 
-class NetworkServerSingleComponent : public SingletonComponent
+class NetworkServerSingleComponent : public SingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(NetworkServerSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkServerSingleComponent, SingleComponent);
 
     NetworkServerSingleComponent(IServer* server = nullptr);
     ~NetworkServerSingleComponent();
@@ -19,7 +19,5 @@ public:
 
 private:
     IServer* server;
-
-    void Clear() override;
 };
 }

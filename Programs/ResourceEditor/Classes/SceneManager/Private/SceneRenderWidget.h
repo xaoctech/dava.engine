@@ -46,6 +46,7 @@ public:
 
 private:
     void InitDavaUI();
+    void UninitDavaUI();
 
     void OnDataChanged(const DAVA::DataWrapper& wrapper, const DAVA::Vector<DAVA::Any>& fields) override;
     void OnRenderWidgetResized(DAVA::uint32 w, DAVA::uint32 h);

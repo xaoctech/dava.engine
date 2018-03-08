@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <NetworkCore/NetworkTypes.h>
 
 namespace DAVA
 {
-class NetworkReplicationSingleComponent : public SingletonComponent
+class NetworkReplicationSingleComponent : public SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(NetworkReplicationSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkReplicationSingleComponent, SingleComponent);
 
 public:
     static const uint8 MAX_ASSEMBLED_FRAMES = 32;
@@ -24,7 +24,5 @@ public:
 
     using FullyReceivedFrames = Set<uint32>;
     FullyReceivedFrames fullyReceivedFrames;
-
-    void Clear() override;
 };
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Entity/ComponentMask.h"
 #include "Entity/Private/FamilyRepository.h"
 
 namespace DAVA

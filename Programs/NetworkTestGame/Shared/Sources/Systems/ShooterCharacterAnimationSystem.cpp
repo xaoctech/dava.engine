@@ -244,7 +244,7 @@ void ShooterCharacterAnimationSystem::ProcessActions(DAVA::Vector2 moveDirection
     const static FastName WEAPON_MOTION_SHOOT_STATE_ID("shoot");
     const static FastName WEAPON_MOTION_SHOOT_MARKER("shoot");
 
-    MotionSingleComponent* msc = GetScene()->GetSingletonComponent<MotionSingleComponent>();
+    const MotionSingleComponent* msc = GetScene()->GetSingleComponentForRead<MotionSingleComponent>(this);
     if (d.waitReloadEnd)
     {
         MotionSingleComponent::AnimationInfo reloadAnimationInfo(d.characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_RELOAD_STATE_ID);

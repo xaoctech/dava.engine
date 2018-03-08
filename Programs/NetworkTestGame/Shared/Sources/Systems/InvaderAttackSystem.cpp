@@ -46,17 +46,17 @@ InvaderAttackSystem::InvaderAttackSystem(DAVA::Scene* scene)
 {
     using namespace InvaderAttackSystemDetail;
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
     uint32 mouseId = InputUtils::GetMouseDeviceId();
     uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
     actionsSingleComponent->CollectDigitalAction(FIRST_SHOOT, eInputElements::MOUSE_LBUTTON, mouseId);
     actionsSingleComponent->CollectDigitalAction(FIRST_SHOOT, eInputElements::KB_SPACE, keyboardId);
 
-    optionsComp = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+    optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
     if (!optionsComp->options.gameStatsLogPath.empty())
     {
-        statsComp = scene->GetSingletonComponent<StatsLoggingSingleComponent>();
+        statsComp = scene->GetSingleComponent<StatsLoggingSingleComponent>();
     }
 
     entityGroup = scene->AquireEntityGroup<PlayerInvaderComponent>();
@@ -183,10 +183,10 @@ Entity* InvaderAttackSystem::ShootInPast(const Entity* shooter, const Vector3& s
     NetworkReplicationComponent* replComp = shooter->GetComponent<NetworkReplicationComponent>();
     DVASSERT(replComp);
 
-    const FastName& token = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>()->GetToken(replComp->GetNetworkPlayerID());
+    const FastName& token = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>()->GetToken(replComp->GetNetworkPlayerID());
     DVASSERT(token.IsValid());
 
-    NetworkTimeSingleComponent* timeSingleComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* timeSingleComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     DVASSERT(timeSingleComp);
 
     int32 fdiff = timeSingleComp->GetClientViewDelay(token, clientFrameId);
@@ -219,7 +219,7 @@ void InvaderAttackSystem::LogStrike(const Entity* shooter, const Entity* victim,
 
     if (clientFrameID == 0)
     {
-        clientFrameID = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>()->GetFrameId();
+        clientFrameID = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>()->GetFrameId();
     }
 
     if (IsServer(GetScene()))

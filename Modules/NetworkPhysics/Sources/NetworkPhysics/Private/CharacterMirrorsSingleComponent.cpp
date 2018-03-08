@@ -56,9 +56,3 @@ const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& CharacterMirrorsSingleCo
 {
     return characterToMirror;
 }
-
-void CharacterMirrorsSingleComponent::Clear()
-{
-    characterToMirror.clear();
-    mirrorToCharacter.clear();
-}

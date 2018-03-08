@@ -78,10 +78,10 @@ class SCENARIOS:
 SCENARIO_NAMES = makeNames(SCENARIOS)
 
 
-def parseFile(fname, requiredView, strikes, damages):
-    # print 'reading %s ...' % fname
+def parseFile(path, requiredView, strikes, damages):
+    print 'reading %s ...' % path
     match = False
-    with open(os.path.join(os.path.split(os.path.realpath(__file__))[0], args.logs_dir, fname)) as f:
+    with open(path) as f:
         for logLine in f:
             words = logLine.strip().split(' ')
             frameID = int(words[4])
@@ -92,14 +92,14 @@ def parseFile(fname, requiredView, strikes, damages):
             targetRole, targetID = getattr(VIEWS, words[15], None), int(words[16])
 
             if view != requiredView:
-                assert not match, "'%s' wrong view: %s expected, %s gotten" % (fname, VIEW_NAMES[requiredView], VIEW_NAMES[view])
+                assert not match, "'%s' wrong view: %s expected, %s gotten" % (path, VIEW_NAMES[requiredView], VIEW_NAMES[view])
                 return False
 
             match = True
 
             if view != VIEWS.SERVER:
-                assert shooterRole == VIEWS.SHOOTER, "'%s': wrong shooter role: SHOOTER expected, %s gotten" % (fname, VIEW_NAMES[shooterRole])
-                assert targetRole == VIEWS.TARGET, "'%s': wrong target role: TARGET expected, %s gotten" % (fname, VIEW_NAMES[targetRole])
+                assert shooterRole == VIEWS.SHOOTER, "'%s': wrong shooter role: SHOOTER expected, %s gotten" % (path, VIEW_NAMES[shooterRole])
+                assert targetRole == VIEWS.TARGET, "'%s': wrong target role: TARGET expected, %s gotten" % (path, VIEW_NAMES[targetRole])
 
             # shooter client shares 'frameID' with server and 'sync' with other clients
             if view == VIEWS.SHOOTER:
@@ -120,8 +120,8 @@ def parseFile(fname, requiredView, strikes, damages):
 
             strikesViews = strikes.setdefault(sync, {})
             for (_, prevShooterID, prevTargetID, _) in strikesViews.itervalues():
-                assert prevShooterID == shooterID, "'%s': strike is not consistent: shooter id disagreement" % fname
-                assert prevTargetID == targetID, "'%s': strike is not consistent: target id disagreement" % fname
+                assert prevShooterID == shooterID, "'%s': strike is not consistent: shooter id disagreement" % path
+                assert prevTargetID == targetID, "'%s': strike is not consistent: target id disagreement" % path
 
             strikesViews[view] = (scenario, shooterID, targetID, fdiff)
 
@@ -129,6 +129,14 @@ def parseFile(fname, requiredView, strikes, damages):
 
 parseFile.syncToFrameID = {}
 parseFile.frameIDToSync = {}
+
+def expandPath(path):
+    if not os.path.isabs(path):
+        if path[0] == '~':
+            path = os.path.expanduser(path)
+        else:
+            path = os.path.join(os.path.split(os.path.abspath(__file__))[0], path)
+    return os.path.normpath(path)
 
 def analyzeLogs(args):
     # {
@@ -146,12 +154,12 @@ def analyzeLogs(args):
     looseDamages = {}
 
     # read log files in order corresponding to input propagation
-    logsDir = os.path.join(os.path.split(os.path.realpath(__file__))[0], args.logs_dir)
-    files = [f for f in os.listdir(logsDir) if f.endswith('.log')]
+    logsDir = args.logs_dir
+    files = [f for f in os.listdir(logsDir) if os.path.isfile(os.path.join(logsDir, f)) and f.endswith('.log')]
     missingViews = list(VIEWS.RANGE)
     for view in VIEWS.RANGE:
         for f in files:
-            if parseFile(f, view, coupledStrikes, looseDamages):
+            if parseFile(os.path.join(logsDir, f), view, coupledStrikes, looseDamages):
                 missingViews.remove(view)
                 files.remove(f)
 
@@ -250,7 +258,7 @@ if __name__ == '__main__':
     parser.add_argument('--logs-dir', help='path to directory with logs', type=str, default='logs')
     parser.add_argument('--ping-comp', help='ping compensation mechanic', type=str, default='REWIND_ENEMY')
     parser.add_argument('--max-deviation', help='accepted deviation in strikes count on client comparing to server, percent',
-                        type=float, default=5.0)
+                        type=float, default=50.0)
 
     args = parser.parse_args()
 

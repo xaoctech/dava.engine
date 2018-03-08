@@ -39,13 +39,15 @@ bool SnapshotSystemClient::NeedToBeTracked(Entity* entity)
     return SnapshotSystemBase::NeedToBeTracked(entity);
 }
 
-bool SnapshotSystemClient::NeedToBeTracked(Component* component)
+bool SnapshotSystemClient::NeedToBeTracked(Component* component, const NetworkReplicationComponent* nrc)
 {
     Entity* entity = component->GetEntity();
     if (entity != nullptr)
     {
+        const Type* componentType = component->GetType();
+
         NetworkPredictComponent* npc = entity->GetComponent<NetworkPredictComponent>();
-        return npc->IsPredictedComponent(ReflectedTypeDB::GetByPointer(component)->GetType());
+        return npc->GetPredictionMask().IsSet(componentType);
     }
 
     return false;
@@ -81,7 +83,7 @@ void SnapshotSystemClient::RegisterEntity(Entity* entity)
 
 void SnapshotSystemClient::RegisterComponent(Entity* entity, Component* component)
 {
-    const Type* compType = ReflectedTypeDB::GetByPointer(component)->GetType();
+    const Type* compType = component->GetType();
     if (compType->Is<NetworkPredictComponent>())
     {
         RegisterEntity(entity);
@@ -94,7 +96,7 @@ void SnapshotSystemClient::RegisterComponent(Entity* entity, Component* componen
 
 void SnapshotSystemClient::UnregisterComponent(Entity* entity, Component* component)
 {
-    const Type* compType = ReflectedTypeDB::GetByPointer(component)->GetType();
+    const Type* compType = component->GetType();
     if (compType->Is<NetworkPredictComponent>())
     {
         UnregisterEntity(entity);

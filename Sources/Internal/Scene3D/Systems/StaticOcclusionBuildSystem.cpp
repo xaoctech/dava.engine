@@ -275,7 +275,7 @@ void StaticOcclusionBuildSystem::SceneForceLod(int32 forceLodIndex)
 
 void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
 {
-    TransformSingleComponent* tsc = GetScene()->GetSingletonComponent<TransformSingleComponent>();
+    const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {

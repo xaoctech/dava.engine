@@ -191,4 +191,9 @@ bool DynamicMemoryFile::Truncate(uint64 size)
 
     return true;
 }
+
+bool DynamicMemoryFile::Flush()
+{
+    return true;
+}
 };

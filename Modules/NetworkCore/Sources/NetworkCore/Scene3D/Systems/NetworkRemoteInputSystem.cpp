@@ -63,7 +63,7 @@ NetworkRemoteInputSystem::NetworkRemoteInputSystem(Scene* scene)
     , numIncorrectInputsCurrent(0)
     , numHandledFrames(0)
 {
-    networkResimulationSingleComponent = scene->AquireSingleComponentForRead<NetworkResimulationSingleComponent>();
+    networkResimulationSingleComponent = scene->GetSingleComponentForRead<NetworkResimulationSingleComponent>(this);
 
     remoteInputGroup = scene->AquireComponentGroup<NetworkRemoteInputComponent, NetworkRemoteInputComponent>();
     remoteInputGroup->onComponentAdded->Connect(this, [this](NetworkRemoteInputComponent* c) { lastReplicatedFrameIds[c] = -1; });
@@ -152,7 +152,7 @@ float32 NetworkRemoteInputSystem::GetIncorrectServerFramesPercentage() const
 
 void NetworkRemoteInputSystem::TransferInputToComponents()
 {
-    NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    const NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
 
     uint32 currentFrameId = networkTimeSingleComponent->GetFrameId();
 
@@ -195,7 +195,7 @@ void NetworkRemoteInputSystem::TransferInputToComponents()
 
 void NetworkRemoteInputSystem::TransferInputFromComponentsAndCompare()
 {
-    NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    const NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
 
     if (!networkTimeSingleComponent->IsInitialized())
     {
@@ -357,7 +357,7 @@ void NetworkRemoteInputSystem::InsertActionsToSingleComponent(const Vector<FastN
     ActionsSingleComponent::Actions allActions;
     allActions.digitalActions = digitalActions;
     allActions.analogActions = analogActions;
-    AddActionsForClient(GetScene(), entity, std::move(allActions));
+    AddActionsForClient(this, entity, std::move(allActions));
 
     for (const FastName& action : digitalActions)
     {
@@ -452,11 +452,12 @@ int64 NetworkRemoteInputSystem::GetLastKnownFrameId(NetworkRemoteInputComponent*
     DVASSERT(networkID != NetworkID::INVALID);
 
     // Get frame on which this entity was updated from the server last time
-    NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingletonComponent<NetworkReplicationSingleComponent>();
+    const NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingleComponentForRead<NetworkReplicationSingleComponent>(this);
 
-    if (replicationSingleComponent->replicationInfo.find(networkID) != replicationSingleComponent->replicationInfo.end())
+    auto it = replicationSingleComponent->replicationInfo.find(networkID);
+    if (it != replicationSingleComponent->replicationInfo.end())
     {
-        return replicationSingleComponent->replicationInfo[networkID].frameIdServer;
+        return it->second.frameIdServer;
     }
     else
     {
@@ -532,10 +533,11 @@ bool NetworkRemoteInputSystem::GetIndexWithFrame(NetworkRemoteInputComponent* re
         NetworkID networkID = NetworkCoreUtils::GetEntityId(entity);
         DVASSERT(networkID != NetworkID::INVALID);
 
-        NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingletonComponent<NetworkReplicationSingleComponent>();
+        const NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingleComponentForRead<NetworkReplicationSingleComponent>(this);
 
-        DVASSERT(replicationSingleComponent->replicationInfo.find(networkID) != replicationSingleComponent->replicationInfo.end());
-        if (frameId <= replicationSingleComponent->replicationInfo[networkID].frameIdServer)
+        auto it = replicationSingleComponent->replicationInfo.find(networkID);
+        DVASSERT(it != replicationSingleComponent->replicationInfo.end());
+        if (frameId <= it->second.frameIdServer)
         {
             outIndex = tailIndex;
             return true;

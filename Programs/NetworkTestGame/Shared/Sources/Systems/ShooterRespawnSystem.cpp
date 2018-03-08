@@ -18,9 +18,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRespawnSystem)
 }
 
 ShooterRespawnSystem::ShooterRespawnSystem(DAVA::Scene* scene)
-    : DAVA::SceneSystem(scene, 0)
+    : DAVA::SceneSystem(scene, DAVA::ComponentMask())
     , healthComponents(scene->AquireComponentGroup<HealthComponent, HealthComponent>())
-    , healthComponentsPending(new DAVA::ComponentGroupOnAdd<HealthComponent>(healthComponents))
+    , healthComponentsPending(scene->AquireComponentGroupOnAdd(healthComponents, this))
 {
 }
 

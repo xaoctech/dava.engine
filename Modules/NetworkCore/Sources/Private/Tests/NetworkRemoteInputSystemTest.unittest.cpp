@@ -36,13 +36,13 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     class BaseContext
     {
     public:
-        BaseContext()
+        BaseContext(DAVA::NetworkPlayerID playerId)
         {
             using namespace DAVA;
 
             scene = new Scene(0);
 
-            actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+            actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
             actionsSingleComponent->AddAvailableDigitalAction(DIGITAL_ACTION_1);
             actionsSingleComponent->AddAvailableDigitalAction(DIGITAL_ACTION_2);
@@ -50,11 +50,11 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
             actionsSingleComponent->AddAvailableAnalogAction(ANALOG_ACTION_2, DAVA::AnalogPrecision::ANALOG_UINT16);
 
             // Start with UINT32_MAX so that next process starts with zero frame by incrementing this value
-            networkTimeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+            networkTimeSingleComponent = scene->GetSingleComponent<NetworkTimeSingleComponent>();
             networkTimeSingleComponent->SetFrameId(UINT32_MAX);
             networkTimeSingleComponent->SetIsInitialized(true);
 
-            networkReplicationSingleComponent = scene->GetSingletonComponent<NetworkReplicationSingleComponent>();
+            networkReplicationSingleComponent = scene->GetSingleComponent<NetworkReplicationSingleComponent>();
 
             remoteInputSystem = new DAVA::NetworkRemoteInputSystem(scene);
             scene->AddSystem(remoteInputSystem);
@@ -68,8 +68,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
             remoteInputComponent->AddActionToReplicate(ANALOG_ACTION_2);
             entity->AddComponent(remoteInputComponent);
 
-            replicationComponent = new NetworkReplicationComponent();
-            replicationComponent->SetNetworkID(NetworkID(1));
+            replicationComponent = new NetworkReplicationComponent(NetworkID::CreatePlayerActionId(playerId, 0, 0));
             entity->AddComponent(replicationComponent);
 
             scene->AddNode(entity);
@@ -88,7 +87,8 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
 
         virtual void EndFrame()
         {
-            actionsSingleComponent->Clear();
+            scene->ClearFixedProcessesSingleComponents();
+            scene->ClearAllProcessesSingleComponents();
         }
 
         BaseContext(const BaseContext&) = delete;
@@ -206,13 +206,13 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     class ServerContext : public BaseContext
     {
     public:
-        ServerContext()
-            : BaseContext()
+        ServerContext(DAVA::NetworkPlayerID playerId = 0)
+            : BaseContext(playerId)
         {
             using namespace DAVA;
 
             ServerMock server;
-            NetworkServerSingleComponent* serverSingleComponent = scene->GetSingletonComponent<NetworkServerSingleComponent>();
+            NetworkServerSingleComponent* serverSingleComponent = scene->GetSingleComponent<NetworkServerSingleComponent>();
             serverSingleComponent->SetServer(&server);
         }
 
@@ -227,17 +227,17 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     class ClientContext : public BaseContext
     {
     public:
-        ClientContext()
-            : BaseContext()
+        ClientContext(DAVA::NetworkPlayerID playerId = 0)
+            : BaseContext(0)
         {
             using namespace DAVA;
 
             ClientMock client;
-            NetworkClientSingleComponent* serverSingleComponent = scene->GetSingletonComponent<NetworkClientSingleComponent>();
+            NetworkClientSingleComponent* serverSingleComponent = scene->GetSingleComponent<NetworkClientSingleComponent>();
             serverSingleComponent->SetClient(&client);
 
-            NetworkGameModeSingleComponent* gameModeSingleComponent = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
-            gameModeSingleComponent->SetNetworkPlayerID(replicationComponent->GetNetworkPlayerID());
+            NetworkGameModeSingleComponent* gameModeSingleComponent = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
+            gameModeSingleComponent->SetNetworkPlayerID(playerId);
         }
 
         void ProcessFrame() override
@@ -337,12 +337,12 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         {
             for (const FastName& action : serverInput[i].digitalActions)
             {
-                AddDigitalActionForClient(server.scene, server.entity, action);
+                AddDigitalActionForClient(server.remoteInputSystem, server.entity, action);
             }
 
             for (size_t j = 0; j < serverInput[i].analogActions.size(); ++j)
             {
-                AddAnalogActionForClient(server.scene, server.entity, serverInput[i].analogActions[j], serverInput[i].analogActionsValues[j]);
+                AddAnalogActionForClient(server.remoteInputSystem, server.entity, serverInput[i].analogActions[j], serverInput[i].analogActionsValues[j]);
             }
 
             server.ProcessFrame();
@@ -409,12 +409,9 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     {
         using namespace DAVA;
 
-        ServerContext server;
-        ClientContext client;
-
         // Set network player id to 1 so that they represent entity which is not owned by a client
-        server.replicationComponent->SetNetworkPlayerID(1);
-        client.replicationComponent->SetNetworkPlayerID(1);
+        ServerContext server(1);
+        ClientContext client(1);
 
         // One frame - one action, no prediction
         {

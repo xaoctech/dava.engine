@@ -6,15 +6,11 @@
 namespace DAVA
 {
 Animation::Animation(AnimatedObject* _owner, float32 _animationTimeLength, Interpolation::Func _interpolationFunc, int32 _defaultState)
+    : owner(_owner)
+    , timeLength(_animationTimeLength)
+    , interpolationFunc(_interpolationFunc)
+    , state(_defaultState)
 {
-    tagId = 0;
-    owner = _owner;
-    timeLength = _animationTimeLength;
-    interpolationFunc = _interpolationFunc;
-    state = _defaultState;
-    next = 0;
-    repeatCount = 0;
-    timeMultiplier = 1.f;
     GetEngineContext()->animationManager->AddAnimation(this);
 }
 
@@ -32,18 +28,12 @@ void Animation::Reset()
 {
     time = 0.0f;
     normalizedTime = 0.0f;
-    next = 0;
+    next = nullptr;
 }
 
 void Animation::Start(int32 _groupId)
 {
-    //#ifdef ANIMATIONS_DEBUG
-    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
-    //	{
-    //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::Start 0x%x    for owner 0x%x", (int)this, (int)owner);
-    //	}
-    //#endif
-    //Logger::FrameworkDebug("Animation started: %d", _groupId);
+    DVASSERT((state & STATE_DELETED) == 0);
     Reset();
     groupId = _groupId;
 
@@ -51,32 +41,23 @@ void Animation::Start(int32 _groupId)
 
     if (!prevAnimation || (prevAnimation == this))
     {
-        //Logger::FrameworkDebug("real anim start");
         state |= STATE_IN_PROGRESS;
         OnStart();
     }
     else
     {
-        //Logger::FrameworkDebug("add to queue");
-        //#ifdef ANIMATIONS_DEBUG
-        //		if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
-        //		{
-        //			Logger::FrameworkDebug("ANIMATION LOGGER: Animation::Set animation 0x%x as next for 0x%x   for owner 0x%x", (int)this, (int)prevAnimation, (int)owner);
-        //		}
-        //#endif
         prevAnimation->next = this;
     }
 }
 
 void Animation::Stop()
 {
-    //Logger::FrameworkDebug("Animation stopped: %d", groupId);
     state &= ~STATE_IN_PROGRESS;
     state |= STATE_DELETE_ME;
     OnStop();
 }
 
-bool Animation::IsPlaying()
+bool Animation::IsPlaying() const
 {
     return (state & STATE_IN_PROGRESS);
 }
@@ -88,7 +69,7 @@ void Animation::Update(float32 timeElapsed)
         if (state & STATE_PAUSED)
             return;
 
-        if (state & STATE_REVERSE)
+        if (reverseMode)
         {
             time += timeElapsed * timeMultiplier;
 
@@ -149,30 +130,12 @@ void Animation::Update(float32 timeElapsed)
 
 void Animation::OnStart()
 {
-    //#ifdef ANIMATIONS_DEBUG
-    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
-    //	{
-    //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStart 0x%x    for owner 0x%x", (int)this, (int)owner);
-    //	}
-    //#endif
     PerformEvent(EVENT_ANIMATION_START);
 };
 
 void Animation::OnStop()
 {
-    //#ifdef ANIMATIONS_DEBUG
-    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
-    //	{
-    //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStop 0x%x    for owner 0x%x", (int)this, (int)owner);
-    //	}
-    //#endif
     PerformEvent(EVENT_ANIMATION_END);
-    //#ifdef ANIMATIONS_DEBUG
-    //	if(GetEngineContext()->animationManager->IsAnimationLoggerEnabled())
-    //	{
-    //		Logger::FrameworkDebug("ANIMATION LOGGER: Animation::OnStop DONE 0x%x    for owner 0x%x", (int)this, (int)owner);
-    //	}
-    //#endif
 };
 
 void Animation::OnCancel()
@@ -192,7 +155,7 @@ void Animation::Pause(bool _isPaused)
     }
 }
 
-bool Animation::IsPaused()
+bool Animation::IsPaused() const
 {
     return (0 != (state & STATE_PAUSED));
 }

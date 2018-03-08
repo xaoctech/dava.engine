@@ -12,7 +12,7 @@ using namespace DAVA;
 MainScreen::MainScreen(Scene* scene_)
     : scene(scene_)
 {
-    actionsSingleComponent = scene_->GetSingletonComponent<ActionsSingleComponent>();
+    actionsSingleComponent = scene_->GetSingleComponent<ActionsSingleComponent>();
 }
 
 void MainScreen::LoadResources()

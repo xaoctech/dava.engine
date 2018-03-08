@@ -1,7 +1,7 @@
 #include "UnitTests/UnitTests.h"
 #include "Scene3D/Scene.h"
 #include "Entity/SceneSystem.h"
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 using namespace DAVA;
@@ -10,7 +10,7 @@ class MySystem : public SceneSystem
 {
 public:
     MySystem(Scene* scene)
-        : SceneSystem(scene, 0)
+        : SceneSystem(scene, ComponentMask())
     {
     }
 
@@ -25,16 +25,14 @@ public:
     }
 };
 
-class MyComponent : public SingletonComponent
+class MyComponent : public SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION_IN_PLACE(MyComponent, SingletonComponent)
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(MyComponent, SingleComponent)
     {
         ReflectionRegistrator<MyComponent>::Begin()
         .ConstructorByPointer()
         .End();
     }
-
-    void Clear() override{};
 };
 
 DAVA_TESTCLASS (SceneTest)
@@ -69,7 +67,7 @@ DAVA_TESTCLASS (SceneTest)
         TEST_VERIFY(scene->GetSystem<MySystem>() == nullptr);
     }
 
-    DAVA_TEST (SingletonComponent)
+    DAVA_TEST (SingleComponent)
     {
         /*
         Scene* scene = new Scene();
@@ -80,13 +78,13 @@ DAVA_TESTCLASS (SceneTest)
 
         MyComponent* myComponent = new MyComponent();
 
-        TEST_VERIFY(scene->GetSingletonComponent<MyComponent>() == nullptr);
+        TEST_VERIFY(scene->GetSingleComponent<MyComponent>() == nullptr);
 
         scene->AddSingletonComponent(myComponent);
-        TEST_VERIFY(scene->GetSingletonComponent<MyComponent>() == myComponent);
+        TEST_VERIFY(scene->GetSingleComponent<MyComponent>() == myComponent);
 
         scene->RemoveSingletonComponent(myComponent);
-        TEST_VERIFY(scene->GetSingletonComponent<MyComponent>() == nullptr);
+        TEST_VERIFY(scene->GetSingleComponent<MyComponent>() == nullptr);
         */
     }
 };

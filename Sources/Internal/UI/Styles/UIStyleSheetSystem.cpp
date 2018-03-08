@@ -168,7 +168,7 @@ void UIStyleSheetSystem::DebugControl(UIControl* control, UIStyleSheetProcessDeb
 
 void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFromDirty, bool styleSheetListChanged, bool recursively, bool dryRun, UIStyleSheetProcessDebugData* debugData)
 {
-    UIControlPackageContext* packageContext = control->GetPackageContext();
+    RefPtr<UIControlPackageContext> packageContext = control->GetPackageContext();
     const UIStyleSheetPropertyDataBase* propertyDB = UIStyleSheetPropertyDataBase::Instance();
 
     if (control->IsStyleSheetDirty())
@@ -268,9 +268,9 @@ void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFr
 
     if (recursively)
     {
-        for (UIControl* child : control->GetChildren())
+        for (const auto& child : control->GetChildren())
         {
-            ProcessControlImpl(child, distanceFromDirty + 1, styleSheetListChanged, true, dryRun, debugData);
+            ProcessControlImpl(child.Get(), distanceFromDirty + 1, styleSheetListChanged, true, dryRun, debugData);
         }
     }
 }
@@ -343,9 +343,9 @@ void UIStyleSheetSystem::ProcessControlHierarhy(UIControl* control)
         ProcessControl(control, globalStyleSheetDirty);
     }
 
-    for (UIControl* child : control->GetChildren())
+    for (const auto& child : control->GetChildren())
     {
-        ProcessControlHierarhy(child);
+        ProcessControlHierarhy(child.Get());
     }
 }
 

@@ -504,13 +504,13 @@ UIControl* AutotestingSystemLua::FindControl(UIControl* srcControl, int32 index)
     {
         return nullptr;
     }
-    const List<UIControl*>& children = srcControl->GetChildren();
+    const auto& children = srcControl->GetChildren();
     int32 childIndex = 0;
-    for (List<UIControl *>::const_iterator it = children.begin(); it != children.end(); ++it, ++childIndex)
+    for (auto it = children.begin(); it != children.end(); ++it, ++childIndex)
     {
         if (childIndex == index)
         {
-            return (*it);
+            return it->Get();
         }
     }
     return nullptr;
@@ -522,10 +522,10 @@ UIControl* AutotestingSystemLua::FindControl(UIList* srcList, int32 index) const
     {
         return nullptr;
     }
-    const List<UIControl*>& cells = srcList->GetVisibleCells();
-    for (List<UIControl*>::const_iterator it = cells.begin(); it != cells.end(); ++it)
+    const auto& cells = srcList->GetVisibleCells();
+    for (auto it = cells.begin(); it != cells.end(); ++it)
     {
-        UIListCell* cell = dynamic_cast<UIListCell*>(*it);
+        UIListCell* cell = dynamic_cast<UIListCell*>(it->Get());
         if (cell && cell->GetIndex() == index && IsCenterInside(srcList, cell))
         {
             return cell;

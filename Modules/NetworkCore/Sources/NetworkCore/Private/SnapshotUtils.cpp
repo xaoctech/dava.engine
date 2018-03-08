@@ -100,7 +100,7 @@ bool SnapshotUtils::ApplySnapshot(Snapshot* snapshot, NetworkID entityId, Entity
         if (entityId == NetworkID::SCENE_ID)
         {
             DVASSERT(componentKey.index == 0);
-            dstComponent = dstEntity->GetScene()->GetSingletonComponent(dstComponentType);
+            dstComponent = dstEntity->GetScene()->GetSingleComponent(dstComponentType);
         }
         // regular component
         else

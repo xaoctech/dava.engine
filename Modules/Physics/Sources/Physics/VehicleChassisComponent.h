@@ -14,7 +14,6 @@ public:
     Vector3 GetCenterOfMassOffset() const;
     void SetCenterOfMassOffset(const Vector3& value);
 
-private:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 

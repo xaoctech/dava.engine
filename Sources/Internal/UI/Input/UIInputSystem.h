@@ -91,11 +91,11 @@ private:
 
     UIFocusSystem* focusSystem = nullptr;
 
-    UIControl* hovered = nullptr;
+    RefPtr<UIControl> hovered;
 
     Vector<UIEvent> touchEvents;
     UIControl* focusedControlWhenTouchBegan = nullptr;
     Vector2 positionOfTouchWhenTouchBegan;
-    UIControl* exclusiveInputLocker = nullptr;
+    RefPtr<UIControl> exclusiveInputLocker;
 };
 }

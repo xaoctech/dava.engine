@@ -4,14 +4,15 @@
 #include <Reflection/Reflection.h>
 #include <Scene3D/Entity.h>
 
+#include "NetworkCore/NetworkTypes.h"
+
 class PlayerCarComponent : public DAVA::Component
 {
-protected:
-    virtual ~PlayerCarComponent();
+    DAVA_VIRTUAL_REFLECTION(PlayerTankComponent, DAVA::Component);
 
 public:
-    DAVA_VIRTUAL_REFLECTION(PlayerTankComponent, DAVA::Component);
-    PlayerCarComponent();
-
+    PlayerCarComponent() = default;
     DAVA::Component* Clone(DAVA::Entity* toEntity) override;
+
+    DAVA::NetworkPlayerID playerId;
 };

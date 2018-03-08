@@ -20,9 +20,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ActionCollectSystem)
 }
 
 ActionCollectSystem::ActionCollectSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
-    actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    actionsSingleComponent = scene->GetSingleComponentForWrite<ActionsSingleComponent>(this);
 }
 
 void DAVA::ActionCollectSystem::ProcessFixed(DAVA::float32 timeElapsed)

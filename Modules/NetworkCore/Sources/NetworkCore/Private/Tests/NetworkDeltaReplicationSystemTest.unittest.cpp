@@ -233,7 +233,7 @@ struct CommonContext
     CommonContext()
     {
         scene = new Scene(0);
-        netTimeComp = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+        netTimeComp = scene->GetSingleComponent<NetworkTimeSingleComponent>();
     }
 
     virtual ~CommonContext()
@@ -250,8 +250,8 @@ struct ServerContext : public CommonContext
 {
     ServerContext()
     {
-        auto* netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
-        scene->GetSingletonComponent<NetworkServerSingleComponent>()->SetServer(&server);
+        auto* netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
+        scene->GetSingleComponent<NetworkServerSingleComponent>()->SetServer(&server);
 
         system = new DeltaReplicationSystemServerMock(scene);
         scene->AddSystem(system);
@@ -270,7 +270,7 @@ struct ServerContext : public CommonContext
 
     void SetEntitiesCount(uint32 entitiesCount)
     {
-        auto* netEntitiesComp = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+        auto* netEntitiesComp = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
         system->entities.clear();
         for (uint16 entityId = 1; entityId <= entitiesCount; ++entityId)
         {
@@ -278,8 +278,7 @@ struct ServerContext : public CommonContext
             entity->SetID(entityId);
             NetworkID networkID(entityId);
             netEntitiesComp->RegisterEntity(networkID, entity);
-            NetworkReplicationComponent* netReplComp = new NetworkReplicationComponent();
-            netReplComp->SetNetworkID(networkID);
+            NetworkReplicationComponent* netReplComp = new NetworkReplicationComponent(networkID);
             entity->AddComponent(netReplComp);
             system->entities.push_back(entityId);
             entities[networkID] = entity;
@@ -305,7 +304,7 @@ struct ClientContext : public CommonContext
 {
     ClientContext()
     {
-        scene->GetSingletonComponent<NetworkClientSingleComponent>()->SetClient(&client);
+        scene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(&client);
         system = new DeltaReplicationSystemClientMock(scene);
         scene->AddSystem(system);
     }

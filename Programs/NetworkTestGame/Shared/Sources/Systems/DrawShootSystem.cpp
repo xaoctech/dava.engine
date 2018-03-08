@@ -31,7 +31,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DrawShootSystem)
 }
 
 DrawShootSystem::DrawShootSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     stateGroup = scene->AquireComponentGroup<ShooterStateComponent, ShooterStateComponent, ShooterRoleComponent>();
     renderHelper = GetScene()->GetRenderSystem()->GetDebugDrawer();
@@ -53,7 +53,7 @@ void DrawShootSystem::Process(DAVA::float32 timeElapsed)
             Vector3 aimRayEnd;
             Entity* aimRayEndEntity;
             ShooterAimComponent* aimComponent = aimingEntity->GetComponent<ShooterAimComponent>();
-            GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE, aimRayOrigin, aimRayDirection, aimRayEnd, &aimRayEndEntity);
+            GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS, aimRayOrigin, aimRayDirection, aimRayEnd, &aimRayEndEntity);
 
             renderHelper->DrawLine(shootStart, aimRayEnd, Color::White);
         }

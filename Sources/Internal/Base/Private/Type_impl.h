@@ -215,6 +215,12 @@ inline bool Type::IsIntegral() const
     return flags.test(static_cast<size_t>(eTypeFlag::isIntegral));
 }
 
+inline bool Type::IsSigned() const
+{
+    return flags.test(static_cast<size_t>(eTypeFlag::isSigned));
+    ;
+}
+
 inline bool Type::IsFloatingPoint() const
 {
     return flags.test(static_cast<size_t>(eTypeFlag::isFloatingPoint));
@@ -302,6 +308,7 @@ Type* Type::Init()
     type.flags.set(isTrivial, std::is_trivial<T>::value);
     type.flags.set(isTriviallyCopyable, std::is_trivially_copyable<T>::value);
     type.flags.set(isIntegral, std::is_integral<T>::value);
+    type.flags.set(isSigned, std::is_signed<T>::value);
     type.flags.set(isFloatingPoint, std::is_floating_point<T>::value);
     type.flags.set(isEnum, std::is_enum<T>::value);
     type.flags.set(isAbstract, std::is_abstract<T>::value);

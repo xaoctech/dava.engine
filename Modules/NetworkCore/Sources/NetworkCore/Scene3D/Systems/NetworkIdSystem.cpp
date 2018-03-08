@@ -5,6 +5,7 @@
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 
+#include <Debug/DVAssert.h>
 #include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
@@ -19,23 +20,39 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkIdSystem)
 NetworkIdSystem::NetworkIdSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkReplicationComponent>())
 {
-    networkEntities = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    networkEntities = scene->GetSingleComponentForWrite<NetworkEntitiesSingleComponent>(this);
     networkEntities->RegisterEntity(NetworkID::SCENE_ID, scene);
+    isServer = IsServer(this);
 }
 
 void NetworkIdSystem::AddEntity(Entity* entity)
 {
     NetworkReplicationComponent* nrc = entity->GetComponent<NetworkReplicationComponent>();
-
-    if (nullptr != nrc)
+    if (nullptr != nrc && nrc->id != NetworkID::SCENE_ID)
     {
-        NetworkID id = nrc->GetNetworkID();
-        if (NetworkID::INVALID == id)
+        DVASSERT(nrc->id.IsValid());
+
+        if (nrc->id.IsStaticId())
         {
-            id = GenerateUniqueId(entity);
-            nrc->SetNetworkID(id);
+            // TODO:
+            // may be some asserts
+            // ...
         }
-        networkEntities->RegisterEntity(id, entity);
+        else if (nrc->id.IsPlayerOwnId())
+        {
+            if (!nrc->id.IsValid())
+            {
+                DVASSERT(isServer, "PlayerOwdId can be verified only on server side");
+            }
+        }
+        else
+        {
+            DVASSERT(nrc->id.IsPlayerActionId());
+            DVASSERT(nrc->id.GetPlayerId() > 0);
+            DVASSERT(nrc->id.GetPlayerActionFrameId() > 0);
+        }
+
+        networkEntities->RegisterEntity(nrc->id, entity);
     }
 }
 
@@ -51,70 +68,6 @@ void NetworkIdSystem::RemoveEntity(Entity* entity)
 
 void NetworkIdSystem::PrepareForRemove()
 {
-}
-
-bool NetworkIdSystem::IsGeneratedFromAction(NetworkID entityId)
-{
-    return ((static_cast<uint32>(entityId) & 0x80000000) > 0);
-}
-
-NetworkID NetworkIdSystem::GetEntityIdFromAction(FrameActionID frameActionId)
-{
-    return NetworkID(frameActionId.pureId | 0x80000000);
-}
-
-NetworkID NetworkIdSystem::GetEntityIdForStaticObject()
-{
-    static NetworkID staticObjectId = NetworkID::FIRST_STATIC_OBJ_ID;
-    return staticObjectId++;
-}
-
-bool NetworkIdSystem::IsEntityIdForStaticObject(NetworkID networkID)
-{
-    return networkID >= NetworkID::FIRST_STATIC_OBJ_ID && networkID < NetworkID::FIRST_SERVER_ID;
-}
-
-bool NetworkIdSystem::IsPredicted(Entity* entity, const Type* componentType)
-{
-    NetworkPredictComponent* npc = entity->GetComponent<NetworkPredictComponent>();
-    if (nullptr != npc)
-    {
-        return npc->IsPredictedComponent(componentType);
-    }
-    return false;
-}
-
-NetworkID NetworkIdSystem::GenerateUniqueId(Entity* entity)
-{
-    static NetworkID serverUniqueId = NetworkID::FIRST_SERVER_ID;
-    static const bool isServer = IsServer(this);
-
-    NetworkID ret = NetworkID::INVALID;
-
-    NetworkPredictComponent* npc = entity->GetComponent<NetworkPredictComponent>();
-    if (npc != nullptr)
-    {
-        FrameActionID frameActionId = npc->GetFrameActionID();
-
-        if (0 != frameActionId.pureId)
-        {
-            DVASSERT(0 == (frameActionId.pureId & 0x80000000));
-
-            ret = GetEntityIdFromAction(frameActionId);
-        }
-        else
-        {
-            DVASSERT(isServer && "frameActionId can be empty only on server side");
-        }
-    }
-
-    if (isServer && ret == NetworkID::INVALID)
-    {
-        ret = serverUniqueId;
-        ++serverUniqueId;
-    }
-
-    return ret;
 }
 
 } // namespace DAVA

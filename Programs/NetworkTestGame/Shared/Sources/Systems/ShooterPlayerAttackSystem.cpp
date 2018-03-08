@@ -28,6 +28,7 @@
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 #include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
@@ -61,7 +62,7 @@ ShooterPlayerAttackSystem::ShooterPlayerAttackSystem(DAVA::Scene* scene)
         mouseId = kb->GetId();
     }
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_ATTACK_BULLET);
     actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_INTERACT);
     actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET);
@@ -69,7 +70,7 @@ ShooterPlayerAttackSystem::ShooterPlayerAttackSystem(DAVA::Scene* scene)
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_BULLET, eInputElements::MOUSE_LBUTTON, mouseId, DigitalElementState::JustPressed());
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET, eInputElements::MOUSE_RBUTTON, mouseId, DigitalElementState::Pressed());
 
-    optionsComp = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+    optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
 
     entityGroup = scene->AquireEntityGroup<ShooterRoleComponent, ShooterStateComponent>();
 }
@@ -179,13 +180,14 @@ void ShooterPlayerAttackSystem::SpawnBullet(DAVA::Entity* player, DAVA::uint32 c
 
     uint32 playerId = playerNetworkReplicationComponent->GetNetworkPlayerID();
 
-    NetworkReplicationComponent* bulletNetworkReplicationComponent = new NetworkReplicationComponent();
-    bulletNetworkReplicationComponent->SetNetworkPlayerID(playerId);
+    NetworkID bulletId = NetworkID::CreatePlayerActionId(playerId, clientFrameId, 0);
+
+    NetworkReplicationComponent* bulletNetworkReplicationComponent = new NetworkReplicationComponent(bulletId);
     bullet->AddComponent(bulletNetworkReplicationComponent);
 
-    NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
-    networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
-    networkPredictComponent->SetFrameActionID(FrameActionID(clientFrameId, playerId, 0));
+    ComponentMask predictedComponents;
+    predictedComponents.Set<NetworkTransformComponent>();
+    NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictedComponents);
     bullet->AddComponent(networkPredictComponent);
 
     // TODO: a better way to position the bullet?
@@ -235,7 +237,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
     Vector3 aimRayDirection;
     Vector3 aimRayEnd;
     Entity* aimRayEndEntity;
-    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE, aimRayOrigin, aimRayDirection,
+    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS, aimRayOrigin, aimRayDirection,
                      aimRayEnd, &aimRayEndEntity);
 
     Entity* weaponBarrelEntity = aimingEntity->FindByName(SHOOTER_GUN_BARREL_ENTITY_NAME);
@@ -249,9 +251,11 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
 
         if (IsServer(GetScene()))
         {
-            NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+            NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
             DVASSERT(timeSingleComponent != nullptr);
             const uint32 frameId = timeSingleComponent->GetFrameId();
+
+            CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
 
             Entity* player = nullptr;
 
@@ -263,7 +267,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
                 NetworkReplicationComponent* replicationComponent = aimingEntity->GetComponent<NetworkReplicationComponent>();
                 DVASSERT(replicationComponent != nullptr);
 
-                const FastName& token = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>()->GetToken(replicationComponent->GetNetworkPlayerID());
+                const FastName& token = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>()->GetToken(replicationComponent->GetNetworkPlayerID());
                 DVASSERT(token.IsValid());
 
                 int32 fdiff = timeSingleComponent->GetClientViewDelay(token, clientFrameId);
@@ -277,7 +281,6 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
                 uint32 pastFrameId = clientFrameId == 0 ? frameId : clientFrameId - numFramesToRollBack;
 
                 physx::PxRaycastHit hit;
-                CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
                 QueryFilterCallback filterCallback(mirrorsSingleComponent->GetMirrorForCharacter(aimingEntity), RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
                 ComponentMask possibleComponents = ComponentUtils::MakeMask<CapsuleCharacterControllerComponent>() | ComponentUtils::MakeMask<DynamicBodyComponent>();
                 bool collision = NetworkPhysicsUtils::GetRaycastHitInPast(*aimingEntity->GetScene(), possibleComponents, shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, pastFrameId, &filterCallback, hit);
@@ -293,14 +296,14 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
             else
             {
                 physx::PxRaycastHit hit;
-                QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_SOURCE);
+                QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
                 bool collision = GetRaycastHit(*aimingEntity->GetScene(), shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
                 if (collision)
                 {
                     Component* component = static_cast<Component*>(hit.actor->userData);
-                    if (component->GetType()->Is<CapsuleCharacterControllerComponent>())
+                    if (component->GetType()->Is<DynamicBodyComponent>())
                     {
-                        player = component->GetEntity();
+                        player = mirrorsSingleComponent->GetCharacterFromMirror(component->GetEntity());
                     }
                 }
             }
@@ -345,26 +348,27 @@ void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::u
     {
         const NetworkReplicationComponent* shooterReplComp = aimingEntity->GetComponent<NetworkReplicationComponent>();
         NetworkPlayerID playerID = shooterReplComp->GetNetworkPlayerID();
-        FrameActionID shootActionId(clientFrameId, playerID, 1);
-        NetworkID entityId = NetworkIdSystem::GetEntityIdFromAction(shootActionId);
-        Entity* rocket = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>()->FindByID(entityId);
+        NetworkID entityId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, 1);
+        Entity* rocket = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>()->FindByID(entityId);
         if (!rocket)
         {
             rocket = new Entity;
             rocket->AddComponent(new NetworkTransformComponent());
 
-            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
-            networkPredictComponent->SetFrameActionID(shootActionId);
-            networkPredictComponent->AddPredictedComponent(Type::Instance<ShooterRocketComponent>());
-            networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
+            ComponentMask predictedComponentsMask;
+            predictedComponentsMask.Set<ShooterRocketComponent>();
+            predictedComponentsMask.Set<NetworkTransformComponent>();
+
+            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictedComponentsMask);
             rocket->AddComponent(networkPredictComponent);
 
             ShooterRocketComponent* rocketComp = new ShooterRocketComponent();
             rocketComp->shooterId = shooterReplComp->GetNetworkID();
             rocket->AddComponent(rocketComp);
 
-            NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent();
-            bulletReplComp->SetNetworkPlayerID(playerID);
+            NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent(entityId);
+            bulletReplComp->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+            bulletReplComp->SetForReplication<ShooterRocketComponent>(M::Privacy::PUBLIC);
             rocket->AddComponent(bulletReplComp);
 
             const Matrix4& weaponTrans = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform();

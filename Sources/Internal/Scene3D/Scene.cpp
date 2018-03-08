@@ -214,10 +214,12 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , sceneGlobalMaterial(0)
     , mainCamera(0)
     , drawCamera(0)
-    , entitiesManager(new EntitiesManager)
+    , entitiesManager(new EntitiesManager())
 {
     static uint32 idCounter = 0;
     sceneId = ++idCounter;
+
+    systemRemoved.Connect(entitiesManager, &EntitiesManager::OnSystemRemoved);
 
     renderSystem = new RenderSystem();
     eventSystem = new EventSystem();
@@ -453,6 +455,7 @@ Scene::~Scene()
 
     for (size_t k = 0; k < size; ++k)
     {
+        systemRemoved.Emit(systemsVector[k]);
         SafeDelete(systemsVector[k]);
     }
     systemsVector.clear();
@@ -460,6 +463,9 @@ Scene::~Scene()
 
     // Reinit with nullptrs
     InitLegacyPointers();
+
+    systemAdded.DisconnectAll();
+    systemRemoved.DisconnectAll();
 
     SafeRelease(mainCamera);
     SafeRelease(drawCamera);
@@ -470,11 +476,11 @@ Scene::~Scene()
     RemoveAllChildren();
     SafeRelease(sceneGlobalMaterial);
 
-    for (auto& pair : singletonComponents)
+    for (auto& pair : singleComponents)
     {
         SafeDelete(pair.second);
     }
-    singletonComponents.clear();
+    singleComponents.clear();
 
     systemsToProcess.clear();
     systemsToInput.clear();
@@ -483,6 +489,7 @@ Scene::~Scene()
 
     SafeDelete(eventSystem);
     SafeDelete(renderSystem);
+
     SafeDelete(entitiesManager);
 }
 
@@ -780,6 +787,8 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
                 system->ProcessFixed(fixedUpdate.constantTime);
                 entitiesManager->UpdateCaches();
             }
+
+            ClearFixedProcessesSingleComponents();
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
@@ -791,6 +800,9 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
                     system->ProcessFixed(fixedUpdate.constantTime);
                     entitiesManager->UpdateCaches();
                 }
+
+                ClearFixedProcessesSingleComponents();
+
                 if (pauseFixedUpdate)
                 {
                     break;
@@ -826,6 +838,8 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
             entitiesManager->UpdateCaches();
         }
     }
+
+    ClearAllProcessesSingleComponents();
 }
 
 void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
@@ -851,6 +865,7 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
         if (isPerformFixedProcessOnlyOnce)
         {
             ProcessFixedMethods();
+            ClearFixedProcessesSingleComponents();
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
@@ -858,10 +873,13 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
             while (fixedUpdate.accumulatedTime > 0)
             {
                 ProcessFixedMethods();
+                ClearFixedProcessesSingleComponents();
+
                 if (pauseFixedUpdate)
                 {
                     break;
                 }
+
                 fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
             }
             const float32 timeOverrun = fixedUpdate.fixedTime + fixedUpdate.accumulatedTime;
@@ -900,6 +918,8 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
             entitiesManager->UpdateCaches();
         }
     }
+
+    ClearAllProcessesSingleComponents();
 }
 
 void Scene::CreateSystemsByTags()
@@ -948,12 +968,32 @@ void Scene::CreateSystemsByTags()
     InitLegacyPointers();
 }
 
-void Scene::AddSingletonComponent(SingletonComponent* component, const Type* type)
+EntityGroupOnAdd* Scene::AquireEntityGroupOnAdd(EntityGroup* eg, SceneSystem* sceneSystem)
+{
+    return entitiesManager->AquireEntityGroupOnAdd(eg, sceneSystem);
+}
+
+void Scene::AddSingleComponent(SingleComponent* component, const Type* type)
 {
     DVASSERT(component != nullptr);
-    DVASSERT(singletonComponents.find(type) == singletonComponents.end());
+    DVASSERT(singleComponents.find(type) == singleComponents.end());
 
-    singletonComponents[type] = component;
+    singleComponents[type] = component;
+
+    // If it's a clearable single components, put it to according vector
+    ClearableSingleComponent* clearableSingleComponent = dynamic_cast<ClearableSingleComponent*>(component);
+    if (clearableSingleComponent != nullptr)
+    {
+        if (clearableSingleComponent->GetUsage() == ClearableSingleComponent::Usage::FixedProcesses)
+        {
+            clearableSingleComponentsFixed.push_back(clearableSingleComponent);
+        }
+        else
+        {
+            DVASSERT(clearableSingleComponent->GetUsage() == ClearableSingleComponent::Usage::AllProcesses);
+            clearableSingleComponentsAll.push_back(clearableSingleComponent);
+        }
+    }
 
     uint32 systemsCount = static_cast<uint32>(systemsVector.size());
     for (uint32 k = 0; k < systemsCount; ++k)
@@ -962,32 +1002,153 @@ void Scene::AddSingletonComponent(SingletonComponent* component, const Type* typ
     }
 }
 
-const SingletonComponent* Scene::AquireSingleComponentForRead(const Type* type)
+SingleComponent* Scene::GetSingleComponent(const Type* type)
 {
-    return AquireSingleComponentForWrite(type);
-}
+    SingleComponent* result = nullptr;
 
-SingletonComponent* Scene::AquireSingleComponentForWrite(const Type* type)
-{
-    SingletonComponent* result = nullptr;
-
-    auto it = singletonComponents.find(type);
-    if (it != singletonComponents.end())
+    auto it = singleComponents.find(type);
+    if (it != singleComponents.end())
     {
         result = it->second;
     }
     else
     {
-        result = static_cast<SingletonComponent*>(ComponentUtils::Create(type));
-        AddSingletonComponent(result, type);
+        result = static_cast<SingleComponent*>(ComponentUtils::Create(type));
+        AddSingleComponent(result, type);
     }
 
     return result;
 }
 
-SingletonComponent* Scene::GetSingletonComponent(const Type* type)
+const SingleComponent* Scene::GetSingleComponentForRead(const Type* type, const SceneSystem* user)
 {
-    return AquireSingleComponentForWrite(type);
+    DVASSERT(type != nullptr);
+    DVASSERT(user != nullptr);
+
+    const SingleComponent* singleComponent = GetSingleComponent(type);
+    HandleSingleComponentAccess(singleComponent, user, false);
+    return singleComponent;
+}
+
+SingleComponent* Scene::GetSingleComponentForWrite(const Type* type, const SceneSystem* user)
+{
+    DVASSERT(type != nullptr);
+    DVASSERT(user != nullptr);
+
+    SingleComponent* singleComponent = GetSingleComponent(type);
+    HandleSingleComponentAccess(singleComponent, user, true);
+    return singleComponent;
+}
+
+void Scene::HandleSingleComponentAccess(const SingleComponent* singleComponent, const SceneSystem* user, bool write)
+{
+#if defined(__DAVAENGINE_DEBUG__)
+    DVASSERT(singleComponent != nullptr);
+    DVASSERT(user != nullptr);
+
+    // We validate only clearable single components
+    const ClearableSingleComponent* clearableSingleComponent = dynamic_cast<const ClearableSingleComponent*>(singleComponent);
+    if (clearableSingleComponent != nullptr)
+    {
+        const Type* systemType = ReflectedTypeDB::GetByPointer(user)->GetType();
+        DVASSERT(systemType != nullptr);
+
+        const SystemManager* systemManager = GetEngineContext()->systemManager;
+        DVASSERT(systemManager != nullptr);
+
+        // Validate that non-fixed process system does not touch fixed-process single component
+        if (clearableSingleComponent->GetUsage() == ClearableSingleComponent::Usage::FixedProcesses && systemManager->SystemHasProcess(systemType))
+        {
+            DVASSERT(false, Format("Single component (%s), which is cleared after all fixed processes, is used by a system (%s) that has a non-fixed process method", singleComponent->GetType()->GetName(), systemType->GetName()).c_str());
+        }
+
+        // Remember which systems accesses this component for reading or writing to validate later
+        // We only keep topmost systems that read a single component,
+        // and last system that writers to a single component
+
+        const Type* singleComponentType = singleComponent->GetType();
+        DVASSERT(singleComponentType != nullptr);
+
+        uint32 systemIndex = systemManager->GetSystemIndex(systemType);
+
+        if (write)
+        {
+            auto writersIt = clearableSingleComponentsWriters.find(singleComponentType);
+            if (writersIt != clearableSingleComponentsWriters.end())
+            {
+                if (systemIndex > writersIt->second.systemIndex)
+                {
+                    writersIt->second.systemType = systemType;
+                    writersIt->second.systemIndex = systemIndex;
+
+                    pendingSingleComponentsUsageValidation = true;
+                }
+            }
+            else
+            {
+                clearableSingleComponentsWriters[singleComponentType] = SingleComponentAccessInfo{ systemIndex, systemType };
+
+                pendingSingleComponentsUsageValidation = true;
+            }
+        }
+        else
+        {
+            auto readersIt = clearableSingleComponentsReaders.find(singleComponentType);
+            if (readersIt != clearableSingleComponentsReaders.end())
+            {
+                if (systemIndex < readersIt->second.systemIndex)
+                {
+                    readersIt->second.systemType = systemType;
+                    readersIt->second.systemIndex = systemIndex;
+
+                    pendingSingleComponentsUsageValidation = true;
+                }
+            }
+            else
+            {
+                clearableSingleComponentsReaders[singleComponentType] = SingleComponentAccessInfo{ systemIndex, systemType };
+
+                pendingSingleComponentsUsageValidation = true;
+            }
+        }
+    }
+#endif
+}
+
+void Scene::ValidateSingleComponentsReadsWrites() const
+{
+#if defined(__DAVAENGINE_DEBUG__)
+    for (const auto& readerInfo : clearableSingleComponentsReaders)
+    {
+        auto writersIt = clearableSingleComponentsWriters.find(readerInfo.first);
+
+        // If we know both a writer and a reader, validate that first read happens after last write
+        if (writersIt != clearableSingleComponentsWriters.end())
+        {
+            DVASSERT(
+            readerInfo.second.systemIndex > writersIt->second.systemIndex,
+            Format("Detected read access by system `%s` to single component `%s` before last write to this component (which is performed by `%s`)",
+                   readerInfo.second.systemType->GetName(), readerInfo.first->GetName(), writersIt->second.systemType->GetName())
+            .c_str());
+        }
+    }
+#endif
+}
+
+void Scene::ClearFixedProcessesSingleComponents()
+{
+    for (ClearableSingleComponent* c : clearableSingleComponentsFixed)
+    {
+        c->Clear();
+    }
+}
+
+void Scene::ClearAllProcessesSingleComponents()
+{
+    for (ClearableSingleComponent* c : clearableSingleComponentsAll)
+    {
+        c->Clear();
+    }
 }
 
 Scene* Scene::GetScene()
@@ -1037,10 +1198,15 @@ void Scene::Update(float32 timeElapsed)
         ProcessManuallyAddedSystems(timeElapsed);
     }
 
-    GetSingletonComponent<ActionsSingleComponent>()->Clear();
-    GetSingletonComponent<TransformSingleComponent>()->Clear();
-
     sceneGlobalTime += timeElapsed;
+
+#if defined(__DAVAENGINE_DEBUG__)
+    if (pendingSingleComponentsUsageValidation)
+    {
+        ValidateSingleComponentsReadsWrites();
+        pendingSingleComponentsUsageValidation = false;
+    }
+#endif
 }
 
 void Scene::Draw()

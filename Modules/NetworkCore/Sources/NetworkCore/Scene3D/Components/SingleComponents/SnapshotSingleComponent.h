@@ -2,7 +2,7 @@
 
 #include "NetworkCore/Snapshot.h"
 #include "NetworkCore/SnapshotUtils.h"
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <Reflection/ReflectedMeta.h>
 
 namespace DAVA
@@ -12,10 +12,10 @@ namespace SnapshotSingleComponentDetails
 class ServerDiffCache;
 }
 
-class SnapshotSingleComponent : public SingletonComponent
+class SnapshotSingleComponent : public SingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(SnapshotSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(SnapshotSingleComponent, SingleComponent);
 
     using SnapshotHistory = Vector<Snapshot>;
 
@@ -64,7 +64,5 @@ public:
 
 private:
     std::unique_ptr<SnapshotSingleComponentDetails::ServerDiffCache> serverDiffCache;
-
-    void Clear() override;
 };
 } // namespace DAVA

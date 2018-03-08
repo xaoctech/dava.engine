@@ -27,10 +27,13 @@
 #include <Scene3D/Components/TransformInterpolationComponent.h>
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
 #include <Entity/ComponentUtils.h>
 
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkRemoteInputComponent.h>
@@ -48,10 +51,10 @@
 #include <Physics/VehicleWheelComponent.h>
 #include <Physics/VehicleChassisComponent.h>
 #include <Physics/BoxShapeComponent.h>
+#include <Physics/ConvexHullShapeComponent.h>
 #include <Physics/CapsuleShapeComponent.h>
 #include <Physics/MeshShapeComponent.h>
 
-#include <NetworkPhysics/NetworkDynamicBodyComponent.h>
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 
 #include <algorithm>
@@ -132,10 +135,28 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
 
     if (IsServer(GetScene()))
     {
-        NetworkTransformComponent* networkTransformComponent = new NetworkTransformComponent();
-        entity->AddComponent(networkTransformComponent);
+        ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
+        NetworkPlayerID playerId = roleComponent->playerID;
 
+        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(NetworkID::CreatePlayerOwnId(playerId));
+
+        replicationComponent->SetForReplication<ShooterRoleComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<NetworkPlayerComponent>(M::Privacy::PRIVATE);
+        replicationComponent->SetForReplication<NetworkInputComponent>(M::Privacy::PRIVATE);
+        replicationComponent->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<NetworkRemoteInputComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ShooterAimComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ShooterCarUserComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<HealthComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<GameStunnableComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ShootCooldownComponent>(M::Privacy::PRIVATE);
+        replicationComponent->SetForReplication<RocketSpawnComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ShooterStateComponent>(M::Privacy::PUBLIC);
+
+        entity->AddComponent(replicationComponent);
+        entity->AddComponent(new NetworkPlayerComponent());
         entity->AddComponent(new NetworkInputComponent());
+        entity->AddComponent(new NetworkTransformComponent());
 
         NetworkRemoteInputComponent* remoteInputComponent = new NetworkRemoteInputComponent();
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_MOVE_FORWARD);
@@ -144,18 +165,15 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_MOVE_RIGHT);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_ACCELERATE);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_ATTACK_BULLET);
+
         entity->AddComponent(remoteInputComponent);
 
-        ShooterAimComponent* aimComponent = new ShooterAimComponent();
-        entity->AddComponent(aimComponent);
-
+        entity->AddComponent(new ShooterAimComponent());
         entity->AddComponent(new ShooterCarUserComponent());
 
         HealthComponent* healthComponent = new HealthComponent();
         healthComponent->SetHealth(SHOOTER_CHARACTER_MAX_HEALTH);
         entity->AddComponent(healthComponent);
-
-        entity->AddComponent(new NetworkDynamicBodyComponent());
 
         entity->AddComponent(new GameStunnableComponent());
         entity->AddComponent(new ShootCooldownComponent());
@@ -185,16 +203,18 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     mirrorShapeComponent->SetTypeMaskToCollideWith(0);
 
     GetScene()->AddNode(mirror);
-    GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>()->AddMirrorForCharacter(entity, mirror);
+    GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>()->AddMirrorForCharacter(entity, mirror);
 
     if (!IsServer(GetScene()))
     {
         if (IsClientOwner(GetScene(), entity))
         {
-            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
-            networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
-            networkPredictComponent->AddPredictedComponent(Type::Instance<ShooterAimComponent>());
-            networkPredictComponent->AddPredictedComponent(Type::Instance<RocketSpawnComponent>());
+            ComponentMask predictionMask;
+            predictionMask.Set<NetworkTransformComponent>();
+            predictionMask.Set<ShooterAimComponent>();
+            predictionMask.Set<RocketSpawnComponent>();
+
+            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
             entity->AddComponent(networkPredictComponent);
 
             name = "My player";
@@ -262,85 +282,51 @@ void ShooterEntityFillSystem::FillCarEntity(DAVA::Entity* entity)
     SceneFileV2::eError sceneLoadResult = carModelScene->LoadScene(carModelScenePath);
     DVASSERT(sceneLoadResult == SceneFileV2::ERROR_NO_ERROR);
 
-    Entity* chassis = carModelScene->GetEntityByID(6)->Clone();
+    // Clone model parts into the entity
 
-    Entity* gun = carModelScene->GetEntityByID(7)->Clone();
-    entity->AddNode(gun);
+    Entity* carReference = carModelScene->GetEntityByID(2);
+    uint32 numWheels = carReference->GetComponentCount<VehicleWheelComponent>();
+
+    entity->AddComponent(carReference->GetComponent<RenderComponent>()->Clone(entity));
+    entity->AddComponent(carReference->GetComponent<SkeletonComponent>()->Clone(entity));
 
     if (IsServer(this))
     {
+        ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
+        NetworkPlayerID playerId = roleComponent->playerID;
+
+        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(NetworkID::CreatePlayerOwnId(playerId));
+        replicationComponent->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ShooterRoleComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<DynamicBodyComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<BoxShapeComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ConvexHullShapeComponent>(M::Privacy::PUBLIC);
+
+        entity->AddComponent(replicationComponent);
+
         TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
         NetworkTransformComponent* networkTransform = new NetworkTransformComponent();
         networkTransform->SetPosition(transformComponent->GetPosition());
         networkTransform->SetOrientation(transformComponent->GetRotation());
         entity->AddComponent(networkTransform);
 
-        VehicleCarComponent* carComponent = new VehicleCarComponent();
-        entity->AddComponent(carComponent);
-
-        DynamicBodyComponent* carDynamicBody = new DynamicBodyComponent();
-        entity->AddComponent(carDynamicBody);
-
-        transformComponent = chassis->GetComponent<TransformComponent>();
-        networkTransform = new NetworkTransformComponent();
-        networkTransform->SetPosition(transformComponent->GetPosition());
-        networkTransform->SetOrientation(transformComponent->GetRotation());
-        chassis->AddComponent(networkTransform);
-
-        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-        chassis->AddComponent(replicationComponent);
+        entity->AddComponent(carReference->GetComponent<DynamicBodyComponent>()->Clone(entity));
+        entity->AddComponent(carReference->GetComponent<VehicleCarComponent>()->Clone(entity));
+        entity->AddComponent(carReference->GetComponent<VehicleChassisComponent>()->Clone(entity));
+        entity->AddComponent(carReference->GetComponent<BoxShapeComponent>()->Clone(entity));
+        for (uint32 i = 0; i < numWheels; ++i)
+        {
+            entity->AddComponent(carReference->GetComponent<VehicleWheelComponent>(i)->Clone(entity));
+            entity->AddComponent(carReference->GetComponent<ConvexHullShapeComponent>(i)->Clone(entity));
+        }
 
         entity->AddComponent(new ObservableComponent());
         entity->AddComponent(new SimpleVisibilityShapeComponent());
-
-        entity->AddNode(chassis);
-
-        uint32 wheelIds[4]{ 3, 2, 4, 5 };
-        for (uint32 i = 0; i < COUNT_OF(wheelIds); ++i)
-        {
-            Entity* wheel = carModelScene->GetEntityByID(wheelIds[i])->Clone();
-
-            transformComponent = wheel->GetComponent<TransformComponent>();
-            networkTransform = new NetworkTransformComponent();
-            networkTransform->SetPosition(transformComponent->GetPosition());
-            networkTransform->SetOrientation(transformComponent->GetRotation());
-            wheel->AddComponent(networkTransform);
-
-            NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-            wheel->AddComponent(replicationComponent);
-
-            entity->AddNode(wheel);
-        }
     }
     else
     {
-        Entity* wheel = carModelScene->GetEntityByID(3)->Clone();
-        DVASSERT(entity->GetChildrenCount() == 6);
-
-        for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
-        {
-            Entity* child = entity->GetChild(i);
-            child->RemoveComponent<VehicleChassisComponent>();
-
-            if (child != gun)
-            {
-                // Chassis first, followed by the wheels
-                // Guaranteed by replication order
-                if (i == 0)
-                {
-                    child->AddComponent(chassis->GetComponent<RenderComponent>()->Clone(child));
-                    child->AddComponent(chassis->GetComponent<BoxShapeComponent>()->Clone(child));
-                }
-                else
-                {
-                    child->AddComponent(wheel->GetComponent<RenderComponent>()->Clone(child));
-                }
-            }
-        }
-
-        DynamicBodyComponent* carDynamicBody = new DynamicBodyComponent();
+        DynamicBodyComponent* carDynamicBody = entity->GetComponent<DynamicBodyComponent>();
         carDynamicBody->SetIsKinematic(true);
-        entity->AddComponent(carDynamicBody);
     }
 }
 

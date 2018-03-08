@@ -8,6 +8,8 @@
 #include <Math/Quaternion.h>
 
 #include "NetworkCore/NetworkTypes.h"
+#include "NetworkCore/Compression/BitsetCompressor.h"
+#include "NetworkCore/Compression/CompMaskCompressor.h"
 #include "NetworkCore/Compression/Compression.h"
 #include "NetworkCore/Compression/FloatCompressor.h"
 #include "NetworkCore/Compression/IntegralCompressor.h"
@@ -17,7 +19,6 @@
 #include "NetworkCore/Compression/StringCompressor.h"
 #include "NetworkCore/Compression/Vector2Compressor.h"
 #include "NetworkCore/Compression/Vector3Compressor.h"
-#include "NetworkCore/Compression/BitsetCompressor.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 
 namespace DAVA
@@ -45,7 +46,7 @@ void RegisterStandardTypeCompressors()
     RegisterTypeCompressor<String, StringCompressor>();
 
     RegisterTypeCompressor<NetworkID, NetworkIDCompressor>();
-    RegisterTypeCompressor<ComponentMask, BitsetCompressor<ComponentMask>>();
+    RegisterTypeCompressor<ComponentMask, CompMaskCompressor>();
 }
 
 uint32 GetTypeCompressorIndex()

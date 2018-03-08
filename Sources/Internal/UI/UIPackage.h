@@ -17,7 +17,7 @@ public:
 
     UIPackage();
 
-    const Vector<UIControl*>& GetPrototypes() const;
+    const Vector<RefPtr<UIControl>>& GetPrototypes() const;
     UIControl* GetPrototype(const String& name) const;
     UIControl* GetPrototype(const FastName& name) const;
     RefPtr<UIControl> ExtractPrototype(const String& name);
@@ -26,7 +26,7 @@ public:
     void AddPrototype(UIControl* prototype);
     void RemovePrototype(UIControl* control);
 
-    const Vector<UIControl*>& GetControls() const;
+    const Vector<RefPtr<UIControl>>& GetControls() const;
     UIControl* GetControl(const String& name) const;
     UIControl* GetControl(const FastName& name) const;
     RefPtr<UIControl> ExtractControl(const String& name);
@@ -89,9 +89,9 @@ protected:
     ~UIPackage();
 
 private:
-    Vector<UIControl*> prototypes;
-    Vector<UIControl*> controls;
+    Vector<RefPtr<UIControl>> prototypes;
+    Vector<RefPtr<UIControl>> controls;
 
-    UIControlPackageContext* controlPackageContext;
+    RefPtr<UIControlPackageContext> controlPackageContext;
 };
 }

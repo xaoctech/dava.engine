@@ -18,10 +18,11 @@ EntityFamily::EntityFamily(const Vector<Component*>& components)
     int32 size = static_cast<int32>(components.size());
     for (int32 i = size - 1; i >= 0; --i)
     {
-        uint32 runtimeId = cm->GetRuntimeComponentId(components[i]->GetType());
+        const Type* componentType = components[i]->GetType();
+        uint32 runtimeId = cm->GetRuntimeComponentId(componentType);
         componentsIndices[runtimeId] = i;
         componentsCount[runtimeId]++;
-        componentsMask.set(runtimeId);
+        componentsMask.Set(componentType);
     }
 }
 

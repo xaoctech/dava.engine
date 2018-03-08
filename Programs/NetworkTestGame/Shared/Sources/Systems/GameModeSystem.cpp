@@ -41,11 +41,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystem)
 }
 
 GameModeSystem::GameModeSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     if (IsServer(this))
     {
-        server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+        server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
         server->SubscribeOnConnect([this](const Responder& responder) {
             connectedResponders.push_back(&responder);
         });
@@ -61,8 +61,8 @@ void GameModeSystem::Process(float32 timeElapsed)
     }
     connectedResponders.clear();
 
-    NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
-    GameModeSingleComponent* gameModeComponent = GetScene()->GetSingletonComponent<GameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
+    GameModeSingleComponent* gameModeComponent = GetScene()->GetSingleComponent<GameModeSingleComponent>();
 
     if (!gameModeComponent->IsMapLoaded())
     {
@@ -91,21 +91,21 @@ void GameModeSystem::Process(float32 timeElapsed)
 
 void GameModeSystem::OnClientConnected(const Responder& responder)
 {
-    NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
     Logger::Debug("Token: %s, Player ID: %d", responder.GetToken().c_str(), playerID);
     Entity* playerEntity = netGameModeComp->GetPlayerEnity(playerID);
     if (playerEntity == nullptr)
     {
         Entity* tank = new Entity();
-        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-        replicationComponent->SetNetworkPlayerID(playerID);
-        replicationComponent->SetOwnerTeamID(responder.GetTeamID());
-        tank->AddComponent(replicationComponent);
 
-        tank->AddComponent(new PlayerTankComponent());
+        PlayerTankComponent* tankCreationComponent = new PlayerTankComponent();
+        tankCreationComponent->playerId = playerID;
+        tank->AddComponent(tankCreationComponent);
+
         GetScene()->AddNode(tank);
-        Logger::Debug("[GameServer] Create Tank %p:%u For Player ID : %d", tank, static_cast<uint32>(replicationComponent->GetNetworkID()), playerID);
+
+        Logger::Debug("[GameServer] Create Tank %p for Player ID : %d", tank, playerID);
 
         static bool hasCamera = false;
         if (!hasCamera)

@@ -212,7 +212,7 @@ bool UIInputSystem::IsAnyInputLockedByControl(const UIControl* control) const
 
 void UIInputSystem::SetExclusiveInputLocker(UIControl* locker, uint32 lockEventId)
 {
-    SafeRelease(exclusiveInputLocker);
+    exclusiveInputLocker = nullptr;
     if (locker != NULL)
     {
         for (Vector<UIEvent>::iterator it = touchEvents.begin(); it != touchEvents.end(); it++)
@@ -224,12 +224,12 @@ void UIInputSystem::SetExclusiveInputLocker(UIControl* locker, uint32 lockEventI
         }
     }
 
-    exclusiveInputLocker = SafeRetain(locker);
+    exclusiveInputLocker = locker;
 }
 
 UIControl* UIInputSystem::GetExclusiveInputLocker() const
 {
-    return exclusiveInputLocker;
+    return exclusiveInputLocker.Get();
 }
 
 void UIInputSystem::SetHoveredControl(UIControl* newHovered)
@@ -239,9 +239,8 @@ void UIInputSystem::SetHoveredControl(UIControl* newHovered)
         if (hovered)
         {
             hovered->SystemDidRemoveHovered();
-            hovered->Release();
         }
-        hovered = SafeRetain(newHovered);
+        hovered = newHovered;
         if (hovered)
         {
             hovered->SystemDidSetHovered();
@@ -251,7 +250,7 @@ void UIInputSystem::SetHoveredControl(UIControl* newHovered)
 
 UIControl* UIInputSystem::GetHoveredControl() const
 {
-    return hovered;
+    return hovered.Get();
 }
 
 UIControl* UIInputSystem::GetModalControl() const
@@ -511,10 +510,10 @@ UIControl* UIInputSystem::FindNearestToUserModalControl() const
 
 UIControl* UIInputSystem::FindNearestToUserModalControlImpl(UIControl* current) const
 {
-    const List<UIControl*>& children = current->GetChildren();
+    const auto& children = current->GetChildren();
     for (auto it = children.rbegin(); it != children.rend(); ++it)
     {
-        UIControl* result = FindNearestToUserModalControlImpl(*it);
+        UIControl* result = FindNearestToUserModalControlImpl(it->Get());
         if (result != nullptr)
         {
             return result;

@@ -12,6 +12,7 @@ namespace DAVA
 {
 EntitySnapshotReader::EntitySnapshotReader(BitReader& bitStream)
     : bstream(bitStream)
+    , rootEntityId(NetworkID::INVALID)
 {
 }
 
@@ -184,7 +185,7 @@ void EntitySnapshotReader::ReadComponents(NetworkID entityId, SnapshotEntity* en
             DVASSERT(param.componentParam.outComponent != nullptr);
 
             SnapshotComponent* component = &entity->components[componentKey];
-            component->Fill(param.componentParam.outComponent);
+            component->Fill(param.componentParam.outComponent, M::Privacy::PRIVATE);
 
             ReadFields(componentKey, component->fields);
         }

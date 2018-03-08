@@ -73,6 +73,15 @@ public:
     const Vector<SceneProcessInfo>& GetProcessMethods() const;
     const Vector<SceneProcessInfo>& GetFixedProcessMethods() const;
 
+    /** Return true if system has a fixed process. */
+    bool SystemHasFixedProcess(const Type* systemType) const;
+
+    /** Return true if system has a non-fixed process. */
+    bool SystemHasProcess(const Type* systemType) const;
+
+    /** Return 'index' of a system which is an integer that describes it's order among all fixed and non-fixed processes. */
+    uint32 GetSystemIndex(const Type* systemType) const;
+
     void RegisterAllDerivedSceneSystemsRecursively();
 
 private:

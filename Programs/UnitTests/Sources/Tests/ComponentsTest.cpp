@@ -86,9 +86,7 @@ void SingleComponentSystem::AddEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        uint32 runtimeId = cm->GetRuntimeComponentId(type);
-
-        if (GetRequiredComponents().test(runtimeId))
+        if (GetRequiredComponents().IsSet(type))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
             for (uint32 c = 0; c < componentsCount; ++c)
@@ -106,9 +104,7 @@ void SingleComponentSystem::RemoveEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        uint32 runtimeId = cm->GetRuntimeComponentId(type);
-
-        if (GetRequiredComponents().test(runtimeId))
+        if (GetRequiredComponents().IsSet(type))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
 
@@ -162,9 +158,7 @@ void MultiComponentSystem::AddEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        uint32 runtimeId = cm->GetRuntimeComponentId(type);
-
-        if (GetRequiredComponents().test(runtimeId))
+        if (GetRequiredComponents().IsSet(type))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
             for (uint32 c = 0; c < componentsCount; ++c)
@@ -182,9 +176,7 @@ void MultiComponentSystem::RemoveEntity(Entity* entity)
 
     for (const Type* type : registeredComponentsTypes)
     {
-        uint32 runtimeId = cm->GetRuntimeComponentId(type);
-
-        if (GetRequiredComponents().test(runtimeId))
+        if (GetRequiredComponents().IsSet(type))
         {
             uint32 componentsCount = entity->GetComponentCount(type);
 
@@ -230,20 +222,14 @@ uint32 MultiComponentSystem::GetComponentsCount() const
     return 0;
 }
 
-template <typename T>
-uint32 Index(T* t)
-{
-    ComponentManager* cm = GetEngineContext()->componentManager;
-    return cm->GetRuntimeComponentId(Type::Instance<T>());
-}
-
 #define FAKE_COMPONENT(X) \
 struct X : public Component { DAVA_VIRTUAL_REFLECTION(X, Component); Component* Clone(Entity* toEntity) override { return nullptr; } }; \
 DAVA_VIRTUAL_REFLECTION_IMPL(X) { ReflectionRegistrator<X>::Begin().ConstructorByPointer().End(); } \
 
 #define FAKE_COMPONENT_REG(X, NAME) \
 DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(X, NAME); \
-GetEngineContext()->componentManager->RegisterComponent<X>()
+GetEngineContext() \
+    ->componentManager->RegisterComponent<X>()
 
 FAKE_COMPONENT(Component1);
 FAKE_COMPONENT(Component2);
@@ -334,11 +320,11 @@ DAVA_TESTCLASS (ComponentsTest)
 
         TransformComponent* c = entity->GetComponent<TransformComponent>();
 
-        TEST_VERIFY(entity->GetAvailableComponentMask().test(Index(c)));
+        TEST_VERIFY(entity->GetAvailableComponentMask().IsSet(c->GetType()));
 
         entity->RemoveComponent<TransformComponent>();
 
-        TEST_VERIFY(entity->GetAvailableComponentMask().none());
+        TEST_VERIFY(!entity->GetAvailableComponentMask().IsAnySet());
 
         entity->AddComponent(new TransformComponent());
         entity->AddComponent(new LightComponent());
@@ -399,7 +385,7 @@ DAVA_TESTCLASS (ComponentsTest)
         {
             Component* c = entity->GetComponent(type);
             bool flagShouldBeSet = c != nullptr;
-            TEST_VERIFY(mask.test(cm->GetRuntimeComponentId(type)) == flagShouldBeSet);
+            TEST_VERIFY(mask.IsSet(type) == flagShouldBeSet);
         }
 
         entity->RemoveComponent<TransformComponent>();
@@ -427,8 +413,7 @@ DAVA_TESTCLASS (ComponentsTest)
         }
 
         mask = ComponentUtils::MakeMask();
-
-        TEST_VERIFY(mask.none());
+        TEST_VERIFY(!mask.IsAnySet());
 
         SafeRelease(entity); // Components will be released in Entity destructor
     }

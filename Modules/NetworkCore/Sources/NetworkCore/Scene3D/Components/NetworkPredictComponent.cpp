@@ -1,25 +1,30 @@
 #include "NetworkPredictComponent.h"
-#include "NetworkCore/NetworkCoreUtils.h"
-#include "NetworkCore/Snapshot.h"
 
-#include <Logger/Logger.h>
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectionRegistrator.h>
-
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictComponent)
 {
+    NetworkPredictComponent* (*ctorFn)() = []()
+    {
+        return new NetworkPredictComponent(ComponentMask());
+    };
+
     ReflectionRegistrator<NetworkPredictComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::Replicable(M::Privacy::PRIVATE)]
-    .ConstructorByPointer()
-    .Field("frameActionID", &NetworkPredictComponent::GetFrameActionIDSnap, &NetworkPredictComponent::SetFrameActionIDSnap)[M::Replicable()]
-    .Field("PredictedComponentMask", &NetworkPredictComponent::predictedComponentMask)[M::Replicable()]
+    .ConstructorByPointer(ctorFn)
+    .Field("predictionMask", &NetworkPredictComponent::predictionMask)[M::Replicable()]
     .End();
+}
+
+NetworkPredictComponent::NetworkPredictComponent(ComponentMask mask)
+    : predictionMask(std::move(mask))
+{
 }
 
 Component* NetworkPredictComponent::Clone(Entity* toEntity)
 {
-    NetworkPredictComponent* uc = new NetworkPredictComponent();
+    NetworkPredictComponent* uc = new NetworkPredictComponent(predictionMask);
     uc->SetEntity(toEntity);
 
     return uc;
@@ -28,15 +33,30 @@ Component* NetworkPredictComponent::Clone(Entity* toEntity)
 void NetworkPredictComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
+
+    DVASSERT(false);
+    // TODO:
+    // ...
 }
 
 void NetworkPredictComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Deserialize(archive, serializationContext);
+
+    DVASSERT(false);
+    // TODO:
+    // ...
 }
 
-bool NetworkPredictComponent::IsPredictedComponent(Component* component) const
+void NetworkPredictComponent::SetForPrediction(const Type* componentType)
 {
-    return IsPredictedComponent(ReflectedTypeDB::GetByPointer(component)->GetType());
+    DVASSERT(entity == nullptr, "You can't setup prediction when component is already belong to entity");
+    predictionMask.Set(componentType);
 }
+
+const ComponentMask& NetworkPredictComponent::GetPredictionMask() const
+{
+    return predictionMask;
+}
+
 } //namespace DAVA

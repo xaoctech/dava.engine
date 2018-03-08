@@ -47,15 +47,15 @@ void Layouter::CollectControls(UIControl* control, bool recursive)
 void Layouter::CollectControlChildren(UIControl* control, int32 parentIndex, int32 index, bool recursive)
 {
     int32 childIndex = static_cast<int32>(layoutData.size());
-    const List<UIControl*>& children = control->GetChildren();
+    const auto& children = control->GetChildren();
 
     int32 childrenCount = 0;
 
-    for (UIControl* child : children)
+    for (const auto& child : children)
     {
         if (child->GetComponentCount<UILayoutIsolationComponent>() == 0)
         {
-            layoutData.emplace_back(ControlLayoutData(child));
+            layoutData.emplace_back(ControlLayoutData(child.Get()));
             childrenCount++;
         }
     }
@@ -66,11 +66,11 @@ void Layouter::CollectControlChildren(UIControl* control, int32 parentIndex, int
 
     if (recursive)
     {
-        for (UIControl* child : children)
+        for (const auto& child : children)
         {
             if (child->GetComponentCount<UILayoutIsolationComponent>() == 0)
             {
-                CollectControlChildren(child, index, childIndex, recursive);
+                CollectControlChildren(child.Get(), index, childIndex, recursive);
                 childIndex++;
             }
         }

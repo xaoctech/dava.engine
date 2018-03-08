@@ -1,14 +1,16 @@
 #pragma once
 
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <NetworkCore/NetworkTypes.h>
 
 namespace DAVA
 {
-class NetworkDeltaSingleComponent : public SingletonComponent
+class NetworkDeltaSingleComponent : public ClearableSingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(NetworkDeltaSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkDeltaSingleComponent, ClearableSingleComponent);
+
+    NetworkDeltaSingleComponent();
 
     struct Delta
     {
@@ -34,6 +36,7 @@ public:
     using Deltas = Vector<Delta>;
     Deltas deltas;
 
+private:
     void Clear() override;
 };
 }

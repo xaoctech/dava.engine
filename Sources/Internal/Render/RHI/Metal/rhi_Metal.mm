@@ -267,6 +267,17 @@ void metal_Initialize(const InitParam& param)
     if (param.maxTextureCount)
         TextureMetal::Init(param.maxTextureCount);
 
+    if (param.maxSamplerStateCount)
+        SamplerStateMetal::Init(param.maxSamplerStateCount);
+    if (param.maxPipelineStateCount)
+        PipelineStateMetal::Init(param.maxPipelineStateCount);
+    if (param.maxDepthStencilStateCount)
+        DepthStencilStateMetal::Init(param.maxDepthStencilStateCount);
+    if (param.maxRenderPassCount)
+        RenderPassMetal::Init(param.maxRenderPassCount);
+    if (param.maxCommandBuffer)
+        CommandBufferMetal::Init(param.maxCommandBuffer);
+
     MutableDeviceCaps::Get().is32BitIndicesSupported = true;
     MutableDeviceCaps::Get().isFramebufferFetchSupported = true;
     MutableDeviceCaps::Get().isVertexTextureUnitsSupported = true;

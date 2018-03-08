@@ -83,7 +83,7 @@ BotTaskSystem::BotTaskSystem(Scene* scene)
 
 void BotTaskSystem::ProcessFixed(float32 timeElapsed)
 {
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     if (!netTimeComp->IsInitialized())
     {
         return;
@@ -94,7 +94,7 @@ void BotTaskSystem::ProcessFixed(float32 timeElapsed)
     taskStorage.DispatchTasks(timeElapsed);
 
     Scene* scene = GetScene();
-    ActionsSingleComponent* actSingleComp = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actSingleComp = scene->GetSingleComponent<ActionsSingleComponent>();
     int32 localPlayerId = actSingleComp->GetLocalPlayerId();
     if (localPlayerId)
     {
@@ -159,7 +159,6 @@ bool BotTaskSystem::GetShotParams(float& outYawCorrection, float& outDist, float
 
     return true;
 }
-
 
 void BotTaskSystem::ProcessTask(float32 timeElapsed, AttackTaskComponent* task)
 {
@@ -302,7 +301,7 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, WaitTaskComponent* task)
     }
     case WaitTaskComponent::Type::TIMESTAMP:
     {
-        const NetworkTimeSingleComponent* time = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+        const NetworkTimeSingleComponent* time = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
         float32 serverTime = time->GetUptimeMs() * 1000;
         if (serverTime >= task->time)
         {

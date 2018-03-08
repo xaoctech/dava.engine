@@ -4,6 +4,7 @@
 #include "Base/Any.h"
 #endif
 
+#include "Base/BaseTypes.h"
 #include "Base/UnordererMap.h"
 
 namespace DAVA
@@ -185,7 +186,7 @@ struct AnyCastHolder
 template <typename T>
 struct AnyCastImpl
 {
-    static const size_t maxIntegralOrEnumSize = std::numeric_limits<long long>::digits;
+    static const size_t maxIntegralOrEnumSize = std::numeric_limits<uint64>::digits;
     static const bool isIntegralOrEnum = (std::is_integral<T>::value || std::is_enum<T>::value) && (TypeDetails::TypeSize<T>::size <= maxIntegralOrEnumSize);
 
     static bool CanCast(const Any& any)
@@ -207,7 +208,7 @@ struct AnyCastImpl
         {
             return (*fn)(any);
         }
-        else if (isIntegralOrEnum && (from->IsIntegral() || from->IsEnum()))
+        else if (isIntegralOrEnum && (from->IsIntegral() || from->IsEnum()) && from->GetSize() <= maxIntegralOrEnumSize)
         {
             return CastIntegralOrEnum(any);
         }
@@ -239,9 +240,33 @@ struct AnyCastImpl
 
     inline static T CastIntegralOrEnum(const Any& any)
     {
-        char tmp[maxIntegralOrEnumSize] = { 0 };
+        // TODO:
+        // ...
 
-        ::memcpy(tmp, any.GetData(), any.GetType()->GetSize());
+        /*
+        const Type* from = any.GetType();
+        if (sizeof(T) <= from->GetSize())
+        {
+            if (std::is_signed<T>())
+            {
+                if(from->IsSigned())
+                { }
+                uint64 tmp = 0;
+                ::memcpy((void*)&tmp, any.GetData(), any.GetType()->GetSize());
+
+                tmp
+            }
+
+        }
+        else
+        {
+
+        }
+        */
+
+        uint64 tmp = 0;
+        ::memcpy((void*)&tmp, any.GetData(), any.GetType()->GetSize());
+
         T* tmpData = reinterpret_cast<T*>(&tmp);
 
         return *tmpData;

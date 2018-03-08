@@ -25,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkHealthCheckSystem)
 }
 
 NetworkHealthCheckSystem::NetworkHealthCheckSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
 }
 

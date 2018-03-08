@@ -223,11 +223,8 @@ void InitializeScene(DAVA::Scene& scene)
             TransformComponent* transformComponent = car->GetComponent<TransformComponent>();
             transformComponent->SetLocalTransform(GetRandomCarSpawnPosition(), Quaternion(0.0f, 0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f));
 
-            NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-            replicationComponent->SetEntityType(EntityType::VEHICLE); // Workaround for GameVisbilitySystem to work properly
-            car->AddComponent(replicationComponent);
-
             ShooterRoleComponent* roleComponent = new ShooterRoleComponent();
+            roleComponent->playerID = 0;
             roleComponent->SetRole(ShooterRoleComponent::Role::Car);
             car->AddComponent(roleComponent);
 
@@ -249,7 +246,7 @@ DAVA::Vector3 GetRandomPlayerSpawnPosition()
 
 DAVA::uint32 GetCharacterDefaultTypesToCollideWith(DAVA::Scene* scene)
 {
-    BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+    BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingleComponent<BattleOptionsSingleComponent>();
     DVASSERT(optionsSingleComponent != nullptr);
 
     if (optionsSingleComponent->collisionResolveMode == COLLISION_RESOLVE_MODE_REWIND_IN_PAST)

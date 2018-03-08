@@ -12,17 +12,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerCarComponent)
     .End();
 }
 
-PlayerCarComponent::PlayerCarComponent()
-{
-}
-
 Component* PlayerCarComponent::Clone(Entity* toEntity)
 {
     PlayerCarComponent* component = new PlayerCarComponent();
     component->SetEntity(toEntity);
     return component;
-}
-
-PlayerCarComponent::~PlayerCarComponent()
-{
 }

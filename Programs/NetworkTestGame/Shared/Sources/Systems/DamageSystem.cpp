@@ -26,14 +26,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DamageSystem)
 }
 
 DamageSystem::DamageSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
-    timeComp = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+    timeComp = scene->GetSingleComponent<NetworkTimeSingleComponent>();
 }
 
 void DamageSystem::ProcessFixed(DAVA::float32 timeElapsed)
 {
-    CollisionSingleComponent* collSingleComp = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
+    CollisionSingleComponent* collSingleComp = GetScene()->GetSingleComponent<CollisionSingleComponent>();
     DamageComponent* damage = nullptr;
     HealthComponent* health = nullptr;
     for (CollisionInfo& ci : collSingleComp->collisions)

@@ -126,7 +126,7 @@ void Snapshot::Clear()
     rootEntities.clear();
 }
 
-void SnapshotComponent::Fill(Component* component_)
+void SnapshotComponent::Fill(Component* component_, M::Privacy privacy)
 {
     fields.clear();
     component = component_;
@@ -138,11 +138,13 @@ void SnapshotComponent::Fill(Component* component_)
     DVASSERT(compRef.GetFieldsCaps().hasRangeAccess);
     DVASSERT(!compRef.GetFieldsCaps().hasDynamicStruct);
 
-    // 1. get component reflection and meta
     const Vector<ReflectedComponentField>& fieldsRef = SnapshotUtils::GetComponentFields(compRef);
 
+#if 0
+    // 1. get component reflection and meta
     const M::Replicable* compMeta = compRef.GetMeta<M::Replicable>();
     privacy = compMeta->privacy;
+#endif
 
     // 2. add each field into snapshot
     // and also add them for change-watching

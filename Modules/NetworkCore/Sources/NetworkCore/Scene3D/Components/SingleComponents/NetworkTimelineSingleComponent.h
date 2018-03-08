@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <Reflection/Reflection.h>
 
 namespace DAVA
 {
-class NetworkTimelineSingleComponent : public SingletonComponent
+class NetworkTimelineSingleComponent : public SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(NetworkTimelineSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkTimelineSingleComponent, SingleComponent);
 
 public:
     void SetClientJustPaused(bool value);
@@ -27,7 +27,5 @@ private:
     bool serverJustPaused = false;
     bool stepOver = false;
     int32 stepsCount = 0;
-
-    void Clear() override;
 };
 }

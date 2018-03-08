@@ -10,19 +10,18 @@
 #include "Visibility/ObservableComponent.h"
 #include "Visibility/SimpleVisibilityShapeComponent.h"
 
-#include "NetworkCore/NetworkCoreUtils.h"
-#include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
-#include "NetworkCore/Scene3D/Components/NetworkInputComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
-#include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
+#include <NetworkCore/NetworkCoreUtils.h>
+#include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
+#include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 
 #include <Debug/ProfilerCPU.h>
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
-#include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
-#include <Scene3D/Components/TransformComponent.h>
 
 using namespace DAVA;
 
@@ -48,7 +47,7 @@ ShootInputSystem::ShootInputSystem(Scene* scene)
     uint32 mouseId = InputUtils::GetMouseDeviceId();
     uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
 
-    actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
     actionsSingleComponent->CollectDigitalAction(FIRST_SHOOT, eInputElements::MOUSE_LBUTTON, mouseId);
     actionsSingleComponent->CollectDigitalAction(SECOND_SHOOT, eInputElements::MOUSE_RBUTTON, mouseId);
@@ -92,21 +91,27 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
         {
             const NetworkReplicationComponent* shooterReplComp = shooter->GetComponent<NetworkReplicationComponent>();
             NetworkPlayerID playerID = shooterReplComp->GetNetworkPlayerID();
-            FrameActionID shootActionId(clientFrameId, playerID, static_cast<uint32>(isFirstShoot));
+
             // on re-simulation bullet can be already in scene
             // so try to find it
-            NetworkID entityId = NetworkIdSystem::GetEntityIdFromAction(shootActionId);
-            Entity* bullet = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>()->FindByID(entityId);
+            NetworkID bulletId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, static_cast<uint32>(isFirstShoot));
+            Entity* bullet = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>()->FindByID(bulletId);
+
             if (!bullet)
             {
                 bullet = new Entity;
-                NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
+
+                NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent(bulletId);
+
+                ComponentMask predictionComponentMask;
                 if (isSecondShoot)
                 {
                     ExplosiveRocketComponent* rocketComp = new ExplosiveRocketComponent();
                     rocketComp->shooterId = shooterReplComp->GetNetworkID();
                     bullet->AddComponent(rocketComp);
-                    networkPredictComponent->AddPredictedComponent(Type::Instance<ExplosiveRocketComponent>());
+
+                    predictionComponentMask.Set<ExplosiveRocketComponent>();
+                    bulletReplComp->SetForReplication<ExplosiveRocketComponent>(M::Privacy::PUBLIC);
                 }
                 else
                 {
@@ -114,29 +119,32 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
                     shootComp->SetShootType(ShootComponent::ShootType::MAIN);
                     shootComp->SetShooter(shooter);
                     bullet->AddComponent(shootComp);
-                    networkPredictComponent->AddPredictedComponent(Type::Instance<ShootComponent>());
+
+                    predictionComponentMask.Set<ShootComponent>();
+                    bulletReplComp->SetForReplication<ShootComponent>(M::Privacy::PUBLIC);
                 }
 
-                NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent();
-                bulletReplComp->SetNetworkPlayerID(playerID);
-                bullet->AddComponent(bulletReplComp);
-                networkPredictComponent->SetFrameActionID(shootActionId);
+                predictionComponentMask.Set<NetworkTransformComponent>();
+
+                NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionComponentMask);
                 bullet->AddComponent(networkPredictComponent);
                 bullet->AddComponent(new NetworkTransformComponent());
 
-                if (IsServer(GetScene()))
+                if (IsServer(this))
                 {
                     bullet->AddComponent(new ObservableComponent());
                     bullet->AddComponent(new SimpleVisibilityShapeComponent());
                 }
 
-                networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
+                bulletReplComp->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+                bullet->AddComponent(bulletReplComp);
+
                 GetScene()->AddNode(bullet);
 
                 shootCooldownComponent->SetLastShootFrameId(clientFrameId);
             }
 
-            Logger::Debug("Vehicle:%u player:%d shoots with action: %u | Frame: %u", static_cast<uint32>(shooterReplComp->GetNetworkID()), playerID, shootActionId.pureId, clientFrameId);
+            Logger::Debug("Vehicle:%u player:%d shoots with action: %u | Frame: %u", shooterReplComp->GetNetworkID(), playerID, bulletId, clientFrameId);
         }
     }
 }

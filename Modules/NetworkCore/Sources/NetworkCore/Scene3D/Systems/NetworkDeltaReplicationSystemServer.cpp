@@ -41,7 +41,7 @@ NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* 
 {
     DVASSERT(IsServer(scene));
 
-    server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+    server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
 
     server->SubscribeOnReceive(PacketParams::DELTA_REPLICATION_CHANNEL_ID,
                                OnServerReceiveCb(this, &NetworkDeltaReplicationSystemServer::OnReceiveCallback));
@@ -49,9 +49,9 @@ NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* 
     server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkDeltaReplicationSystemServer::OnClientConnect));
     server->SubscribeOnDisconnect(OnServerDisconnectCb(this, &NetworkDeltaReplicationSystemServer::OnClientDisconnect));
 
-    snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
-    netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
-    timeComp = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+    snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
+    netGameModeComp = scene->GetSingleComponentForRead<NetworkGameModeSingleComponent>(this);
+    timeComp = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
 
     playerComponentGroup = scene->AquireComponentGroup<NetworkPlayerComponent, NetworkPlayerComponent, NetworkReplicationComponent>();
     for (NetworkPlayerComponent* c : playerComponentGroup->components)
@@ -265,7 +265,7 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Priva
         params.frameIdBase = range.baseFrameId;
         params.privacy = privacy;
         const size_t diffSize = CreateDiff(params);
-        if (NetworkIdSystem::IsEntityIdForStaticObject(netEntityId) && diffSize == 1 && *params.buff == EMPTY_DIFF)
+        if (netEntityId.IsStaticId() && diffSize == 1 && *params.buff == EMPTY_DIFF)
         { // static object has no changes
             return WriteResult::CONTINUE;
         }
@@ -400,11 +400,11 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
     }
 
     ResponderEnvironment env{ *responder, frameId, sequenceId, responderData.baseFrames, responderData.sentFrames };
-    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingletonComponent<NetworkStatisticsSingleComponent>();
+    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponent<NetworkStatisticsSingleComponent>();
     // prob. need bool flag inside NetworkStatisticsSingleComponent here
     //if (statsComp)
     {
-        uint64 tsKey = NetStatTimestamps::GetKey(frameId, playerId);
+        uint64 tsKey = NetStatTimestamps::GetKey(frameId - 1, playerId);
         env.pktHeader.timestamps = statsComp->RemoveTimestamps(tsKey);
         if (env.pktHeader.timestamps)
         {
@@ -481,7 +481,7 @@ void NetworkDeltaReplicationSystemServer::ProcessEntity(NetworkID netEntityId, M
 
 void NetworkDeltaReplicationSystemServer::CheckTrafficLimit(NetworkID netEntityId, uint32 diffSize)
 {
-    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>();
     Entity* entity = networkEntities->FindByID(netEntityId);
     if (entity)
     {
@@ -500,7 +500,7 @@ void NetworkDeltaReplicationSystemServer::CheckTrafficLimit(NetworkID netEntityI
             uint32 size = 0;
             if (entity == GetScene())
             {
-                for (auto& singleComp : GetScene()->singletonComponents)
+                for (auto& singleComp : GetScene()->singleComponents)
                 {
                     size += DumpComponent(ReflectedObject(singleComp.second), stream);
                 }

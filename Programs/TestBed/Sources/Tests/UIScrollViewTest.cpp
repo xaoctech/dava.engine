@@ -24,8 +24,8 @@ void UIScrollViewTest::LoadResources()
     UIControl* innerControl = FindByName("UIControl1");
     if (innerControl)
     {
-        innerControl->SetSprite("~res:/TestBed/Gfx/UI/HorizontalScroll", 0);
-        innerControl->GetBackground()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
+        innerControl->GetComponent<UIControlBackground>()->SetSprite("~res:/TestBed/Gfx/UI/HorizontalScroll", 0);
+        innerControl->GetComponent<UIControlBackground>()->SetDrawType(UIControlBackground::DRAW_SCALE_TO_RECT);
     }
 
     UIControl* control = FindByName("HorizontalScrollbar");

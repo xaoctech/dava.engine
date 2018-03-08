@@ -17,25 +17,32 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Time/SystemTimer.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
+{
+    ReflectionRegistrator<NetworkInputSystem>::Begin()[M::Tags("network", "input")]
+    .ConstructorByPointer<Scene*>()
+    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 18.0f)]
+    .End();
+}
+
 NetworkInputSystem::NetworkInputSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>())
 {
-    IServer* server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+    IServer* server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
 
     DVASSERT(server != nullptr);
 
     server->SubscribeOnReceive(PacketParams::INPUT_CHANNEL_ID, OnServerReceiveCb(this, &NetworkInputSystem::OnReceive));
     server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkInputSystem::OnConnect));
-
-    actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
 }
 
 void NetworkInputSystem::AddEntity(Entity* entity)
 {
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
     entitiesToBuffers.emplace(entity, NetworkInputBuffer(NetworkTimeSingleComponent::FrequencyHz, netTimeComp->GetFrameId()));
 }
 
@@ -47,13 +54,13 @@ void NetworkInputSystem::RemoveEntity(Entity* entity)
 void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkInputSystem::ProcessFixed");
-    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingletonComponent<NetworkStatisticsSingleComponent>();
+    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
     if (statsComp)
     {
         statsComp->UpdateFrameTimestamps();
     }
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
     for (auto& entityToBuffer : entitiesToBuffers)
     {
         Entity* entity = entityToBuffer.first;
@@ -92,7 +99,7 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
                 }
             }
 
-            AddActionsForClient(GetScene(), entity, std::move(actions));
+            AddActionsForClient(this, entity, std::move(actions));
         }
     }
 }
@@ -122,7 +129,7 @@ void NetworkInputSystem::OnConnect(const Responder& responder)
 void NetworkInputSystem::OnReceive(const Responder& responder, const uint8* data, size_t size)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkInputSystem::OnReceive");
-    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    const NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponentForRead<NetworkEntitiesSingleComponent>(this);
 
     using NetInputData = NetworkInputComponent::Data;
     const InputPacketHeader* header = reinterpret_cast<const InputPacketHeader*>(data);
@@ -149,7 +156,7 @@ void NetworkInputSystem::OnReceive(const Responder& responder, const uint8* data
         Logger::Error("Received the input for the unknown entity %d", header->entityId);
         return;
     }
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     uint32 frameId = netTimeComp->GetFrameId();
     netTimeComp->SetClientOutrunning(responder.GetToken(), header->frameId - frameId);
     entityIt->second.Update(inputData, header->frameId);
@@ -160,13 +167,13 @@ void NetworkInputSystem::OnReceive(const Responder& responder, const uint8* data
     }
     tokenIt->second.insert(entity);
 
-    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingletonComponent<NetworkStatisticsSingleComponent>();
+    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
     if (header->hasNetStat)
     {
         const NetStatTimestamps* netStatData = reinterpret_cast<const NetStatTimestamps*>(data + offset);
         std::unique_ptr<NetStatTimestamps> timestamps(new NetStatTimestamps(*netStatData));
         timestamps->server.recvFromNet = SystemTimer::GetMs();
-        const NetworkPlayerID playerID = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>()->GetNetworkPlayerID(responder.GetToken());
+        const NetworkPlayerID playerID = GetScene()->GetSingleComponentForRead<NetworkGameModeSingleComponent>(this)->GetNetworkPlayerID(responder.GetToken());
         uint64 tsKey = NetStatTimestamps::GetKey(header->frameId, playerID);
 
         statsComp->AddTimestamps(tsKey, std::move(timestamps));

@@ -50,8 +50,4 @@ int32 NetworkTimelineSingleComponent::GetStepsCount() const
 {
     return stepsCount;
 }
-
-void NetworkTimelineSingleComponent::Clear()
-{
-}
 }

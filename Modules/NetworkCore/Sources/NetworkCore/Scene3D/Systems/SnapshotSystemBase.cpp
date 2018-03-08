@@ -98,11 +98,13 @@ bool SnapshotSystemBase::FieldWatchPoint::Update()
 SnapshotSystemBase::SnapshotSystemBase(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkReplicationComponent>())
 {
+#if 0
     // create snapshot for scene single components
     // it will have pre-defined entityId == NId2Scene
     snapshot.entities[NetworkID::SCENE_ID].entity = nullptr;
+#endif
 
-    for (auto& sc : scene->singletonComponents)
+    for (auto& sc : scene->singleComponents)
     {
         RegisterSingleComponent(sc.second);
     }
@@ -110,8 +112,8 @@ SnapshotSystemBase::SnapshotSystemBase(Scene* scene)
     // used for NetworkID generation, that should be right in snapshot
     //DVASSERT(nullptr != scene->GetSystem<NetworkIdSystem>());
 
-    timeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
-    snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
+    timeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
 }
 
 SnapshotSystemBase::~SnapshotSystemBase()
@@ -190,12 +192,22 @@ void SnapshotSystemBase::UnregisterComponent(Entity* entity, Component* componen
 
 void SnapshotSystemBase::RegisterSingleComponent(Component* component)
 {
-    Watch(nullptr, component);
+    // TODO:
+    // This is temporary solution that scene has NetworkReplicationComponent and
+    // it should be reimplemented in some way later
+    bool hasReplicationComp = (GetScene()->GetComponent<NetworkReplicationComponent>() != nullptr);
+
+    DVASSERT(hasReplicationComp);
+
+    if (hasReplicationComp)
+    {
+        Watch(GetScene(), component);
+    }
 }
 
 void SnapshotSystemBase::UnregisterSingleComponent(Component* component)
 {
-    Unwatch(nullptr, component);
+    Unwatch(GetScene(), component);
 }
 
 void SnapshotSystemBase::PrepareForRemove()
@@ -213,10 +225,10 @@ bool SnapshotSystemBase::NeedToBeTracked(Entity* entity)
     return true;
 }
 
-bool SnapshotSystemBase::NeedToBeTracked(Component* component)
+bool SnapshotSystemBase::NeedToBeTracked(Component* component, const NetworkReplicationComponent* nrc)
 {
     DVASSERT(nullptr != component);
-
+#if 0
     const ReflectedType* compRefType = ReflectedTypeDB::GetByPointer(component);
 
     DVASSERT(nullptr != compRefType);
@@ -225,12 +237,21 @@ bool SnapshotSystemBase::NeedToBeTracked(Component* component)
 
     const M::Replicable* compReplicableMeta = compRefType->GetMeta<M::Replicable>();
     return (nullptr != compReplicableMeta) && (compReplicableMeta->privacy >= Metas::Privacy::PRIVATE);
+#else
+    DVASSERT(nrc != nullptr);
+    return nrc->GetReplicationMask().IsSet(component->GetType());
+#endif
 }
 
 SnapshotEntity* SnapshotSystemBase::GetSnapshotEntity(Entity* entity, GetBranchPolicy policy)
 {
     SnapshotEntity* ret = nullptr;
     NetworkID entityId = NetworkCoreUtils::GetEntityId(entity);
+
+    if (entityId.IsPlayerId())
+    {
+        DVASSERT(entityId.IsValid());
+    }
 
     ret = snapshot.FindEntity(entityId);
 
@@ -266,10 +287,15 @@ void SnapshotSystemBase::Watch(Entity* entity, Component* component)
 {
     // get appropriate entity snapshot
     SnapshotEntity* snapshotEntity = GetSnapshotEntity(entity, GetBranchPolicy::Create);
+    NetworkReplicationComponent* nrc = entity->GetComponent<NetworkReplicationComponent>();
 
-    if (NeedToBeTracked(component))
+    DVASSERT(nullptr != nrc);
+
+    if (NeedToBeTracked(component, nrc))
     {
-        uint32 componentId = ComponentUtils::GetRuntimeId(component->GetType());
+        const Type* componentType = component->GetType();
+
+        uint32 componentId = ComponentUtils::GetRuntimeId(componentType);
         uint32 componentIndex = GetComponentIndex(entity, component);
         SnapshotComponentKey componentKey(componentId, componentIndex);
 
@@ -277,10 +303,17 @@ void SnapshotSystemBase::Watch(Entity* entity, Component* component)
         auto it = snapshotEntity->components.find(componentKey);
         if (it == snapshotEntity->components.end())
         {
+            M::Privacy privacy = M::Privacy::PRIVATE;
+            if (nrc->GetReplicationPrivacyMask().IsSet(componentType))
+            {
+                privacy = M::Privacy::PUBLIC;
+            }
+
             // need to watch for new component
             // so create appropriate snapshot
             SnapshotComponent& snapshotComponent = snapshotEntity->components[componentKey];
-            snapshotComponent.Fill(component);
+            snapshotComponent.privacy = privacy;
+            snapshotComponent.Fill(component, privacy);
 
             // add component fields for watching
             {

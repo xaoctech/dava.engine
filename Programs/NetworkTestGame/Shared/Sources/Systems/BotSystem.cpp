@@ -24,11 +24,11 @@ static const float32 DEFAULT_CHANGE_KEY_CHANCE = 0.001f;
 }
 
 BotSystem::BotSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
     , randEngine(111) // every time seed with the same value
 
 {
-    actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 }
 
 const Vector<BotResponder>& BotSystem::GetBotResponders() const
@@ -51,16 +51,16 @@ void BotSystem::ProcessFixed(DAVA::float32 timeElapsed)
             actionsSingleComponent->AddDigitalAction(action, actionsSingleComponent->GetLocalPlayerId());
         }
     };
-    auto serverEmitInput = [scene](Scene* scene, Entity* entity, const Vector<FastName>& digitalActions)
+    auto serverEmitInput = [this](Entity* entity, const Vector<FastName>& digitalActions)
     {
         ActionsSingleComponent::Actions actions;
         actions.digitalActions = digitalActions;
-        AddActionsForClient(scene, entity, std::move(actions));
+        AddActionsForClient(this, entity, std::move(actions));
     };
     Vector<FastName> digitalActions;
     if (IsServer(this))
     {
-        NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
+        NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
         DVASSERT(netGameModeComp);
         for (BotResponder& responder : botResponders)
         {
@@ -81,7 +81,7 @@ void BotSystem::ProcessFixed(DAVA::float32 timeElapsed)
                 Entity* entity = netGameModeComp->GetPlayerEnity(netGameModeComp->GetNetworkPlayerID(token));
                 if (entity)
                 {
-                    serverEmitInput(GetScene(), entity, digitalActions);
+                    serverEmitInput(entity, digitalActions);
                 }
                 digitalActions.clear();
             }
@@ -114,13 +114,13 @@ void BotSystem::ProcessServer(DAVA::float32 timeElapsed)
     }
     Scene* scene = GetScene();
     Vector<FastName> digitalActions;
-    auto serverEmitInput = [scene](Scene* scene, Entity* entity, const Vector<FastName>& digitalActions)
+    auto serverEmitInput = [this](Entity* entity, const Vector<FastName>& digitalActions)
     {
         ActionsSingleComponent::Actions actions;
         actions.digitalActions = digitalActions;
-        AddActionsForClient(scene, entity, std::move(actions));
+        AddActionsForClient(this, entity, std::move(actions));
     };
-    NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
     for (BotResponder& responder : botResponders)
     {
         if (responder.startTimeout > 0)
@@ -140,7 +140,7 @@ void BotSystem::ProcessServer(DAVA::float32 timeElapsed)
             Entity* entity = netGameModeComp->GetPlayerEnity(netGameModeComp->GetNetworkPlayerID(token));
             if (entity)
             {
-                serverEmitInput(GetScene(), entity, digitalActions);
+                serverEmitInput(entity, digitalActions);
             }
             digitalActions.clear();
         }

@@ -37,7 +37,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsDebugDrawSystem)
 {
     ReflectionRegistrator<PhysicsDebugDrawSystem>::Begin()[M::Tags("base", "physics")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PhysicsDebugDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_PHYSICS, SP::Type::FIXED, 1.1f)]
+    .Method("ProcessFixed", &PhysicsDebugDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 100.1f)]
     .End();
 }
 
@@ -698,7 +698,7 @@ void PhysicsDebugDrawSystem::ProcessFixed(float32 timeElapsed)
         mapping.emplace(node.first->GetEntity(), node.second.ro);
     }
 
-    TransformSingleComponent* trSingle = GetScene()->GetSingletonComponent<TransformSingleComponent>();
+    const TransformSingleComponent* trSingle = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
     if (trSingle != nullptr)
     {
         for (auto& pair : trSingle->worldTransformChanged.map)

@@ -38,9 +38,9 @@ Component* VehicleChassisComponent::Clone(Entity* toEntity)
 
 DAVA_VIRTUAL_REFLECTION_IMPL(VehicleChassisComponent)
 {
-    ReflectionRegistrator<VehicleChassisComponent>::Begin()
+    ReflectionRegistrator<VehicleChassisComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
-    .Field("Center of mass offset", &VehicleChassisComponent::GetCenterOfMassOffset, &VehicleChassisComponent::SetCenterOfMassOffset)[M::Range(Any(), Any(), Vector3::Zero)]
+    .Field("Center of mass offset", &VehicleChassisComponent::GetCenterOfMassOffset, &VehicleChassisComponent::SetCenterOfMassOffset)[M::Replicable(), M::Range(Any(), Any(), Vector3::Zero)]
     .End();
 }
 }

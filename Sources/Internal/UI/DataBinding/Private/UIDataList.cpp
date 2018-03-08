@@ -315,10 +315,10 @@ void UIDataList::OnCellSelected(UIList* forList, UIListCell* selectedCell)
     {
         component->SetSelectedIndex(selectedCell->GetIndex());
         listSelectedIndex = selectedCell->GetIndex();
-        const List<UIControl*>& ls = forList->GetVisibleCells();
-        for (List<UIControl*>::const_iterator it = ls.begin(); it != ls.end(); ++it)
+        const auto& ls = forList->GetVisibleCells();
+        for (auto it = ls.begin(); it != ls.end(); ++it)
         {
-            UIListCell* c = DynamicTypeCheck<UIListCell*>(*it);
+            UIListCell* c = DynamicTypeCheck<UIListCell*>(it->Get());
             c->SetSelected(c->GetIndex() == component->GetSelectedIndex());
         }
     }

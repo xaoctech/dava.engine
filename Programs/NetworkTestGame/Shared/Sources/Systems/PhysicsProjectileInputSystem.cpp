@@ -45,7 +45,7 @@ PhysicsProjectileInputSystem::PhysicsProjectileInputSystem(Scene* scene)
     uint32 mouseId = InputUtils::GetMouseDeviceId();
     uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     entityGroup = scene->AquireEntityGroup<NetworkInputComponent>();
 
     actionsSingleComponent->CollectDigitalAction(FIRE_MISSILE, eInputElements::MOUSE_LBUTTON, mouseId);
@@ -111,16 +111,16 @@ void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vec
 
             projectileComponent->SetInitialPosition(projectileTransform->GetPosition());
 
-            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
-            networkPredictComponent->SetFrameActionID(FrameActionID(clientFrameId, playerID, (action == FIRE_MISSILE) ? 1 : 2));
-            projectile->AddComponent(networkPredictComponent);
+            ComponentMask predictionComponentMask;
 
+            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionComponentMask);
+            projectile->AddComponent(networkPredictComponent);
             projectile->AddComponent(new NetworkTransformComponent());
 
             BoxShapeComponent* boxShape = new BoxShapeComponent();
             boxShape->SetHalfSize(Vector3(0.3f, 2.0f, 0.3f));
             boxShape->SetTypeMaskToCollideWith(1);
-            boxShape->SetLocalPose(Matrix4::MakeTranslation(Vector3(0.0f, 3.12f, 1.7f)));
+            boxShape->SetLocalPosition(Vector3(0.0f, 3.12f, 1.7f));
             projectile->AddComponent(boxShape);
 
             DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
@@ -144,8 +144,8 @@ void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vec
 
             projectile->AddComponent(dynamicBody);
 
-            NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-            replicationComponent->SetNetworkPlayerID(playerID);
+            NetworkID projectileId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, (action == FIRE_MISSILE) ? 1 : 2);
+            NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(projectileId);
             projectile->AddComponent(replicationComponent);
 
             GetScene()->AddNode(projectile);

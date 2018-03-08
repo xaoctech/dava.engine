@@ -28,14 +28,13 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationSystem2)
 }
 
 NetworkReplicationSystem2::NetworkReplicationSystem2(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
-    networkEntities = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
-    networkReplicationSingleComponent = scene->GetSingletonComponent<NetworkReplicationSingleComponent>();
-    networkDeltaSingleComponent = scene->GetSingletonComponent<NetworkDeltaSingleComponent>();
-    snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
-    networkTimeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
-    networkClientSingleComponent = scene->GetSingletonComponent<NetworkClientSingleComponent>();
+    networkEntities = scene->GetSingleComponentForWrite<NetworkEntitiesSingleComponent>(this);
+    networkReplicationSingleComponent = scene->GetSingleComponentForWrite<NetworkReplicationSingleComponent>(this);
+    networkDeltaSingleComponent = scene->GetSingleComponentForWrite<NetworkDeltaSingleComponent>(this);
+    snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
+    networkTimeSingleComponent = scene->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
 }
 
 void NetworkReplicationSystem2::ProcessFixed(float32 timeElapsed)
@@ -236,9 +235,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
 
         if (nullptr == entity)
         {
-            NetworkReplicationComponent* netRepComp = new NetworkReplicationComponent();
-            netRepComp->SetNetworkID(entityId);
-
+            NetworkReplicationComponent* netRepComp = new NetworkReplicationComponent(entityId);
             entity = new Entity();
             entity->AddComponent(netRepComp);
 
@@ -330,7 +327,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
             if (entity == scene)
             {
                 // check if it isn't created yet
-                component = scene->GetSingletonComponent(componentType);
+                component = scene->GetSingleComponent(componentType);
             }
             // regular component
             else
@@ -373,7 +370,7 @@ void NetworkReplicationSystem2::ApplyDiffCallback(uint32 frameId, SnapshotApplyP
             if (entity == scene)
             {
                 DVASSERT(false, "Single components haven't be removed");
-                Component* component = scene->GetSingletonComponent(componentType);
+                Component* component = scene->GetSingleComponent(componentType);
             }
             // regular component
             else
@@ -438,7 +435,7 @@ void NetworkReplicationSystem2::ApplySnapshotWithoutPrediction(Entity* entity, S
             LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << componentKey << ", skip as already applied by add step\n");
             return false;
         }
-        else if (nullptr != npc && npc->IsPredictedComponent(component))
+        else if (nullptr != npc && npc->GetPredictionMask().IsSet(component->GetType()))
         {
             LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Component " << componentKey << ", skip as predicted\n");
             return false;

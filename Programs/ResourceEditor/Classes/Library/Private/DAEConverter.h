@@ -2,8 +2,9 @@
 
 #include "FileSystem/FilePath.h"
 
-namespace DAEConverter
+class DAEConverter final
 {
-bool Convert(const DAVA::FilePath& path);
-bool ConvertAnimations(const DAVA::FilePath& path);
-}
+public:
+    static bool Convert(const DAVA::FilePath& path);
+    static bool ConvertAnimations(const DAVA::FilePath& path);
+};

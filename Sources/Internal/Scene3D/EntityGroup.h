@@ -8,6 +8,7 @@ namespace DAVA
 {
 class Entity;
 class Component;
+class SceneSystem;
 
 class EntityGroup
 {
@@ -20,7 +21,7 @@ public:
 private:
     EntityGroup();
 
-    void MoveTo(EntityGroup& dest);
+    void MoveTo(EntityGroup& dest, bool clearAfterMove = false);
 
     HashVector<Entity> entities;
     Vector<Entity*> cachedAdded;
@@ -32,14 +33,22 @@ private:
 class EntityGroupOnAdd
 {
 public:
-    EntityGroupOnAdd(EntityGroup* group);
+    Vector<Entity*> entities;
     ~EntityGroupOnAdd();
 
-    Vector<Entity*> entities;
-
 private:
+    EntityGroupOnAdd() = default;
+    EntityGroupOnAdd(EntityGroup* group, SceneSystem* sceneSystem);
+
+    void MoveTo(EntityGroupOnAdd& dest, bool clearAfterMove = false);
+    void MergeTo(EntityGroupOnAdd& dest, bool uniqueOnly = false);
+
     void OnAdded(Entity* entity);
     void OnRemoved(Entity* entity);
+
     EntityGroup* group = nullptr;
+    SceneSystem* sceneSystem = nullptr;
+
+    friend class EntitiesManager;
 };
 }

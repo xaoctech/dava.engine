@@ -49,12 +49,9 @@
 
 #include "Systems/BotSystem.h"
 #include "Systems/DamageSystem.h"
-#include "Systems/Game01HelloWorld.h"
 #include "Systems/GameInputSystem.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
-#include "Systems/GameModeSystemCharacters.h"
-#include "Systems/GameModeSystemPhysics.h"
 #include "Systems/GameShowSystem.h"
 #include "Systems/GameStunningSystem.h"
 #include "Systems/InvaderAttackSystem.h"
@@ -100,10 +97,7 @@
 #include "Utils/StringUtils.h"
 
 const DAVA::Vector<DAVA::String> GameMode::idNames = {
-    "HELLO",
     "CARS",
-    "CHARACTERS",
-    "PHYSICS",
     "TANKS",
     "SHOOTER",
     "INVADERS"
@@ -172,12 +166,9 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DrawShootSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EnemyMovingSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExplosiveRocketSystem);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Game01HelloWorld);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameInputSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSystemCars);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSystemCharacters);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSystemPhysics);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameShowSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameStunningSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderAttackSystem);
@@ -190,6 +181,7 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsProjectileInputSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PhysicsProjectileSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PlayerEntitySystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PlayerStatsMonitoringSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PowerupSpawnSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PowerupSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterAimSystem);

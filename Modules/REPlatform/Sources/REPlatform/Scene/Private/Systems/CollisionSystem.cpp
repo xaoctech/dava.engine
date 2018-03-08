@@ -615,7 +615,7 @@ void SceneCollisionSystem::Process(float32 timeElapsed)
         return;
     }
 
-    TransformSingleComponent* tsc = GetScene()->GetSingletonComponent<TransformSingleComponent>();
+    const TransformSingleComponent* tsc = GetScene()->GetSingletonComponentForRead<TransformSingleComponent>(this);
     for (Entity* entity : tsc->localTransformChanged)
     {
         UpdateCollisionObject(Selectable(entity));

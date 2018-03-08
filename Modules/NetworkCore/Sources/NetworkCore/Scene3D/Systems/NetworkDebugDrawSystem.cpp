@@ -61,7 +61,7 @@ void NetworkDebugDrawSystem::RemoveEntity(Entity* entity)
 
 void NetworkDebugDrawSystem::Process(DAVA::float32 timeElapsed)
 {
-    NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingletonComponent<NetworkReplicationSingleComponent>();
+    const NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingleComponentForRead<NetworkReplicationSingleComponent>(this);
     //const NetworkReplicationSingleComponent::EntityToFrames& entityToFrames = replicationSingleComponent->receivedOnCurrentFrame;
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
 

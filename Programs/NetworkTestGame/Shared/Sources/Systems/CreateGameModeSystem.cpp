@@ -7,9 +7,6 @@
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
 
-#include "Systems/Game01HelloWorld.h"
-#include "Systems/GameModeSystemPhysics.h"
-#include "Systems/GameModeSystemCharacters.h"
 #include "Systems/GameModeSystemCars.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/PhysicsProjectileSystem.h"
@@ -39,15 +36,15 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CreateGameModeSystem)
 }
 
 CreateGameModeSystem::CreateGameModeSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     DVASSERT(IsClient(scene));
 }
 
 void CreateGameModeSystem::Process(DAVA::float32 timeElapsed)
 {
-    NetworkReplicationSingleComponent::EntityToInfo& entityToInfo = GetScene()->GetSingletonComponent<NetworkReplicationSingleComponent>()->replicationInfo;
-    BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingletonComponent<BattleOptionsSingleComponent>();
+    NetworkReplicationSingleComponent::EntityToInfo& entityToInfo = GetScene()->GetSingleComponent<NetworkReplicationSingleComponent>()->replicationInfo;
+    BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
     if (!isInit && entityToInfo.find(NetworkID::SCENE_ID) != entityToInfo.end())
     {
         CreateGameSystems(optionsComp->gameModeId);
@@ -82,15 +79,6 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
     bool isInvaderGm = false;
     switch (gameModeId)
     {
-    case GameMode::Id::HELLO:
-        // broken
-        break;
-    case GameMode::Id::CHARACTERS:
-        tags.insert(FastName("gm_characters"));
-        break;
-    case GameMode::Id::PHYSICS:
-        // broken
-        break;
     case GameMode::Id::CARS:
         tags.insert({ FastName("gm_cars") });
         break;
@@ -112,7 +100,10 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
     if (isShooterGm)
     {
         MarkerSystem* markerSystem = GetScene()->GetSystem<MarkerSystem>();
-        markerSystem->SetHealthParams(SHOOTER_CHARACTER_MAX_HEALTH, 0.02f);
+        if (markerSystem)
+        {
+            markerSystem->SetHealthParams(SHOOTER_CHARACTER_MAX_HEALTH, 0.02f);
+        }
 
         InitializeScene(*GetScene());
     }

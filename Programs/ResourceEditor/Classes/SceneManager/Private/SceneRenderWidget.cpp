@@ -7,6 +7,7 @@
 
 #include <TArc/Controls/SceneTabbar.h>
 
+#include <Base/RefPtrUtils.h>
 #include <Base/StaticSingleton.h>
 #include <Engine/EngineContext.h>
 #include <Engine/Qt/RenderWidget.h>
@@ -71,6 +72,7 @@ SceneRenderWidget::SceneRenderWidget(DAVA::ContextAccessor* accessor_, DAVA::Ren
 
 SceneRenderWidget::~SceneRenderWidget()
 {
+    UninitDavaUI();
     renderWidget->SetClientDelegate(nullptr);
 }
 
@@ -99,14 +101,14 @@ void SceneRenderWidget::OnDataChanged(const DAVA::DataWrapper& wrapper, const DA
     {
         if (dava3DView->GetParent() == nullptr)
         {
-            const DAVA::List<DAVA::UIControl*>& children = davaUIScreen->GetChildren();
+            const auto& children = davaUIScreen->GetChildren();
             if (children.empty())
             {
                 davaUIScreen->AddControl(dava3DView.Get());
             }
             else
             {
-                davaUIScreen->InsertChildBelow(dava3DView.Get(), children.front());
+                davaUIScreen->InsertChildBelow(dava3DView.Get(), children.front().Get());
             }
         }
 
@@ -128,12 +130,22 @@ void SceneRenderWidget::InitDavaUI()
     dava3DView->GetOrCreateComponent<DAVA::UIFocusComponent>();
     dava3DView->SetName(DAVA::FastName("Scene_Tab_3D_View"));
 
-    davaUIScreen = new DAVA::UIScreen();
+    davaUIScreen = DAVA::MakeRef<DAVA::UIScreen>();
 
     const DAVA::EngineContext* engineCtx = accessor->GetEngineContext();
 
     engineCtx->uiScreenManager->RegisterScreen(davaUIScreenID, davaUIScreen.Get());
     engineCtx->uiScreenManager->SetScreen(davaUIScreenID);
+}
+
+void SceneRenderWidget::UninitDavaUI()
+{
+    const DAVA::EngineContext* engineCtx = accessor->GetEngineContext();
+
+    engineCtx->uiScreenManager->ResetScreen();
+    engineCtx->uiScreenManager->UnregisterScreen(davaUIScreenID);
+
+    davaUIScreen = nullptr;
 }
 
 void SceneRenderWidget::OnRenderWidgetResized(DAVA::uint32 w, DAVA::uint32 h)

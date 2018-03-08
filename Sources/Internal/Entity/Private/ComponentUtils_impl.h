@@ -29,23 +29,10 @@ ComponentMask ComponentUtils::MakeMask(const Args*... args)
     for (const Type* type : { (args)... })
     {
         DVASSERT(type != nullptr);
-
-        uint32 runtimeId = componentManager->GetRuntimeComponentId(type);
-
-        if (runtimeId < mask.size())
-        {
-            DVASSERT(!mask.test(runtimeId), "Flag already set. Check arguments list.");
-
-            mask.set(runtimeId);
-        }
-        else
-        {
-            DVASSERT(runtimeId < mask.size());
-        }
+        mask.Set(type);
     }
 
-    DVASSERT(mask.any());
-
+    DVASSERT(mask.IsAnySet());
     return mask;
 }
 } // namespace DAVA

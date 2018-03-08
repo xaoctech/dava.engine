@@ -6,7 +6,7 @@
 #include "Base/BaseObject.h"
 #include "FileSystem/FilePath.h"
 
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_LINUX__)
 
 namespace DAVA
 {

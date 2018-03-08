@@ -3,6 +3,7 @@
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/TransformInterpolationComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
 
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -46,12 +47,10 @@
 #include <Physics/VehicleChassisComponent.h>
 #include <Physics/BoxShapeComponent.h>
 #include <Physics/MeshShapeComponent.h>
+#include <Physics/ConvexHullShapeComponent.h>
 #include <Physics/BoxCharacterControllerComponent.h>
 #include <Physics/CapsuleCharacterControllerComponent.h>
 #include <Physics/PhysicsUtils.h>
-
-#include <NetworkPhysics/NetworkDynamicBodyComponent.h>
-#include <NetworkPhysics/NetworkVehicleCarComponent.h>
 
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <Components/ShooterStateComponent.h>
@@ -76,18 +75,16 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerEntitySystem)
 {
     ReflectionRegistrator<PlayerEntitySystem>::Begin()[M::Tags("playerentity")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &PlayerEntitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1.0f)]
+    .Method("Process", &PlayerEntitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 24.0f)]
     .End();
 }
 
 PlayerEntitySystem::PlayerEntitySystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
+    , tanksSubscriber(scene->AquireEntityGroupOnAdd(scene->AquireEntityGroup<PlayerTankComponent>(), this))
+    , carsSubscriber(scene->AquireEntityGroupOnAdd(scene->AquireEntityGroup<PlayerCarComponent>(), this))
 {
-    optionsComp = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
-
-    tanksSubscriber.reset(new EntityGroupOnAdd(GetScene()->AquireEntityGroup<PlayerTankComponent>()));
-    carsSubscriber.reset(new EntityGroupOnAdd(GetScene()->AquireEntityGroup<PlayerCarComponent>()));
-    charsSubscriber.reset(new EntityGroupOnAdd(GetScene()->AquireEntityGroup<PlayerCharacterComponent>()));
+    optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
 }
 
 void PlayerEntitySystem::Process(DAVA::float32 timeElapsed)
@@ -103,31 +100,41 @@ void PlayerEntitySystem::Process(DAVA::float32 timeElapsed)
         FillCarPlayerEntity(e);
     }
     carsSubscriber->entities.clear();
-
-    for (Entity* e : charsSubscriber->entities)
-    {
-        FillCharacterPlayerEntity(e);
-    }
-    charsSubscriber->entities.clear();
 }
 
 void PlayerEntitySystem::FillTankPlayerEntity(DAVA::Entity* entity)
 {
+    PlayerTankComponent* ptc = entity->GetComponent<PlayerTankComponent>();
+    NetworkPlayerID playerId = ptc->playerId;
+
+    Logger::Debug("[PlayerEntitySystem::Process] %d tank factory, for player %d", entity->GetID(), playerId);
+
     String filePath("~res:/Sniper_2.sc2");
-    entity->SetName("Tank");
+    entity->SetName(Format("Tank %d", playerId).c_str());
 
     if (IsServer(this))
     {
-        Logger::Debug("[PlayerEntitySystem::Process] %d vehicle factory", entity->GetID());
-        entity->AddComponent(new NetworkInputComponent());
+        NetworkID tankId = NetworkID::CreatePlayerOwnId(playerId);
+        NetworkReplicationComponent* nrc = new NetworkReplicationComponent(tankId);
+
+        nrc->SetForReplication<NetworkPlayerComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<NetworkInputComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<NetworkRemoteInputComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<PlayerTankComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<HealthComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<ShootCooldownComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<GameStunnableComponent>(M::Privacy::PUBLIC);
 
         NetworkRemoteInputComponent* netRemoteInputComp = new NetworkRemoteInputComponent();
         if (optionsComp->isEnemyPredicted)
         {
             PlayerEntitySystemDetail::CollectRemoteMovingInput(netRemoteInputComp);
         }
-        entity->AddComponent(netRemoteInputComp);
 
+        entity->AddComponent(nrc);
+        entity->AddComponent(netRemoteInputComp);
+        entity->AddComponent(new NetworkInputComponent());
         entity->AddComponent(new ShootCooldownComponent());
         entity->AddComponent(new NetworkTransformComponent());
         entity->AddComponent(new NetworkPlayerComponent());
@@ -165,12 +172,15 @@ void PlayerEntitySystem::FillTankPlayerEntity(DAVA::Entity* entity)
 
         if (isClientOwner || optionsComp->isEnemyPredicted)
         {
-            NetworkPredictComponent* npc = new NetworkPredictComponent();
+            ComponentMask predictionMask;
+            predictionMask.Set<NetworkTransformComponent>();
+
             if (isClientOwner)
             {
-                npc->AddPredictedComponent(Type::Instance<ShootCooldownComponent>());
+                predictionMask.Set<ShootCooldownComponent>();
             }
-            npc->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
+
+            NetworkPredictComponent* npc = new NetworkPredictComponent(predictionMask);
             entity->AddComponent(npc);
         }
 
@@ -225,29 +235,50 @@ void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)
 
     // Clone model parts into the entity
 
-    uint32 wheelIds[4]{ 3, 2, 4, 5 };
+    Entity* carReference = carModelScene->GetEntityByID(2);
+    uint32 numWheels = carReference->GetComponentCount<VehicleWheelComponent>();
 
-    for (uint32 i = 0; i < COUNT_OF(wheelIds); ++i)
-    {
-        Entity* wheel = carModelScene->GetEntityByID(wheelIds[i])->Clone();
-        entity->AddNode(wheel);
-    }
-
-    Entity* chassis = carModelScene->GetEntityByID(6)->Clone();
-    entity->AddNode(chassis);
-
-    Entity* gun = carModelScene->GetEntityByID(7)->Clone();
-    entity->AddNode(gun);
+    entity->AddComponent(carReference->GetComponent<RenderComponent>()->Clone(entity));
+    entity->AddComponent(carReference->GetComponent<SkeletonComponent>()->Clone(entity));
 
     if (IsServer(this))
     {
+        PlayerCarComponent* pcc = entity->GetComponent<PlayerCarComponent>();
+        NetworkPlayerID playerID = pcc->playerId;
+
+        NetworkID carId = NetworkID::CreatePlayerOwnId(playerID);
+        NetworkReplicationComponent* nrc = new NetworkReplicationComponent(carId);
+
+        nrc->SetForReplication<NetworkPlayerComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<NetworkInputComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<NetworkRemoteInputComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<PlayerCarComponent>(M::Privacy::PUBLIC);
+        nrc->SetForReplication<DynamicBodyComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<BoxShapeComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<ConvexHullShapeComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<VehicleCarComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<VehicleWheelComponent>(M::Privacy::PRIVATE);
+        nrc->SetForReplication<VehicleChassisComponent>(M::Privacy::PRIVATE);
+
         NetworkRemoteInputComponent* netRemoteInputComp = new NetworkRemoteInputComponent();
         if (optionsComp->isEnemyPredicted)
         {
             PlayerEntitySystemDetail::CollectRemoteMovingInput(netRemoteInputComp);
         }
-        entity->AddComponent(netRemoteInputComp);
 
+        entity->AddComponent(carReference->GetComponent<DynamicBodyComponent>()->Clone(entity));
+        entity->AddComponent(carReference->GetComponent<VehicleCarComponent>()->Clone(entity));
+        entity->AddComponent(carReference->GetComponent<VehicleChassisComponent>()->Clone(entity));
+        entity->AddComponent(carReference->GetComponent<BoxShapeComponent>()->Clone(entity));
+        for (uint32 i = 0; i < numWheels; ++i)
+        {
+            entity->AddComponent(carReference->GetComponent<VehicleWheelComponent>(i)->Clone(entity));
+            entity->AddComponent(carReference->GetComponent<ConvexHullShapeComponent>(i)->Clone(entity));
+        }
+
+        entity->AddComponent(nrc);
+        entity->AddComponent(netRemoteInputComp);
         entity->AddComponent(new NetworkInputComponent());
         entity->AddComponent(new NetworkPlayerComponent());
 
@@ -256,15 +287,6 @@ void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)
         networkTransform->SetPosition(transformComponent->GetPosition());
         networkTransform->SetOrientation(transformComponent->GetRotation());
         entity->AddComponent(networkTransform);
-
-        VehicleCarComponent* carComponent = new VehicleCarComponent();
-        entity->AddComponent(carComponent);
-
-        DynamicBodyComponent* carDynamicBody = new DynamicBodyComponent();
-        entity->AddComponent(carDynamicBody);
-
-        entity->AddComponent(new NetworkDynamicBodyComponent());
-        entity->AddComponent(new NetworkVehicleCarComponent());
 
         entity->AddComponent(new ObserverComponent());
         entity->AddComponent(new ObservableComponent());
@@ -275,33 +297,21 @@ void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)
         const bool isClientOwner = IsClientOwner(this, entity);
         if (isClientOwner)
         {
-            VehicleCarComponent* carComponent = new VehicleCarComponent();
-            entity->AddComponent(carComponent);
-
-            DynamicBodyComponent* carDynamicBody = new DynamicBodyComponent();
-            entity->AddComponent(carDynamicBody);
-
             entity->SetName("MyCar");
-        }
-        else if (!optionsComp->isEnemyPredicted)
-        {
-            entity->RemoveComponent<VehicleCarComponent>();
-            entity->RemoveComponent<DynamicBodyComponent>();
-
-            for (int32 i = 0; i < entity->GetChildrenCount(); ++i)
-            {
-                Entity* child = entity->GetChild(i);
-                child->RemoveComponent<VehicleWheelComponent>();
-                child->RemoveComponent<VehicleChassisComponent>();
-                child->RemoveComponent<MeshShapeComponent>();
-                child->RemoveComponent<BoxShapeComponent>();
-            }
         }
 
         if (isClientOwner || optionsComp->isEnemyPredicted)
         {
-            NetworkPredictComponent* npc = new NetworkPredictComponent();
-            npc->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
+            ComponentMask predictionMask;
+            predictionMask.Set<NetworkTransformComponent>();
+            predictionMask.Set<DynamicBodyComponent>();
+            predictionMask.Set<BoxShapeComponent>();
+            predictionMask.Set<ConvexHullShapeComponent>();
+            predictionMask.Set<VehicleWheelComponent>();
+            predictionMask.Set<VehicleChassisComponent>();
+            predictionMask.Set<VehicleCarComponent>();
+
+            NetworkPredictComponent* npc = new NetworkPredictComponent(predictionMask);
             entity->AddComponent(npc);
         }
 
@@ -309,54 +319,6 @@ void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)
         debugDrawComponent->box = entity->GetWTMaximumBoundingBoxSlow();
         entity->AddComponent(debugDrawComponent);
     }
-}
-
-void PlayerEntitySystem::FillCharacterPlayerEntity(DAVA::Entity* entity)
-{
-    FilePath filePath("~res:/Sniper_2.sc2");
-    entity->SetName("Character");
-
-    if (IsServer(this))
-    {
-        entity->AddComponent(new NetworkInputComponent());
-        entity->AddComponent(new NetworkRemoteInputComponent());
-        entity->AddComponent(new NetworkTransformComponent());
-        entity->AddComponent(new NetworkPlayerComponent());
-
-        BoxCharacterControllerComponent* controller = new BoxCharacterControllerComponent();
-        controller->SetHalfHeight(0.75f);
-        controller->SetHalfForwardExtent(3.6f);
-        controller->SetHalfSideExtent(1.75f);
-        entity->AddComponent(controller);
-
-        entity->AddComponent(new ObserverComponent());
-        entity->AddComponent(new ObservableComponent());
-        entity->AddComponent(new SimpleVisibilityShapeComponent());
-    }
-    else if (IsClientOwner(this, entity))
-    {
-        entity->SetName("MyCharacter");
-
-        NetworkPredictComponent* npc = new NetworkPredictComponent();
-        npc->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
-        entity->AddComponent(npc);
-
-        filePath = "~res:/Sniper_1.sc2";
-
-        BoxCharacterControllerComponent* controller = new BoxCharacterControllerComponent();
-        controller->SetHalfHeight(0.75f);
-        controller->SetHalfForwardExtent(3.6f);
-        controller->SetHalfSideExtent(1.75f);
-        entity->AddComponent(controller);
-    }
-
-    entity->GetComponent<TransformComponent>()->SetLocalTransform(Vector3(0.0f, 0.0f, 15.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f));
-
-    ScopedPtr<Scene> model(new Scene());
-    SceneFileV2::eError ret = model->LoadScene(filePath);
-    DVASSERT(SceneFileV2::ERROR_NO_ERROR == ret);
-    Entity* tankModel = model->GetEntityByID(1)->Clone();
-    entity->AddNode(tankModel);
 }
 
 DAVA::Entity* PlayerEntitySystem::GetModel(const DAVA::String& pathname) const

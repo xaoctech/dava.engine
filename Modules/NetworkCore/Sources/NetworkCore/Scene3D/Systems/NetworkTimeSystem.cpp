@@ -60,25 +60,25 @@ static void SendUptime(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA
 }
 
 NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
-    : BaseSimulationSystem(scene, 0)
+    : BaseSimulationSystem(scene, ComponentMask())
     , fpsMeter(10.f)
 {
-    netTimeComp = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+    netTimeComp = scene->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
 
     scene->SetConstantUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
     scene->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
 
     if (IsClient(this))
     {
-        client = scene->GetSingletonComponent<NetworkClientSingleComponent>()->GetClient();
+        client = scene->GetSingleComponentForRead<NetworkClientSingleComponent>(this)->GetClient();
         client->SubscribeOnConnect(OnClientConnectCb(this, &NetworkTimeSystem::OnConnectClient));
         client->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
                                    OnClientReceiveCb(this, &NetworkTimeSystem::OnReceiveClient));
-        networkResimulationSingleComponent = scene->AquireSingleComponentForRead<NetworkResimulationSingleComponent>();
+        networkResimulationSingleComponent = scene->GetSingleComponentForRead<NetworkResimulationSingleComponent>(this);
     }
     else if (IsServer(this))
     {
-        IServer* server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+        IServer* server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkTimeSystem::OnConnectServer));
         server->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
                                    OnServerReceiveCb(this, &NetworkTimeSystem::OnReceiveServer));
@@ -120,7 +120,7 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
 {
     const TimeSyncHeader* timeSyncHeader = reinterpret_cast<const TimeSyncHeader*>(data);
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     netTimeComp->SetClientOutrunning(client->GetAuthToken(), timeSyncHeader->netDiff);
     netTimeComp->SetLastSyncDiff(timeSyncHeader->diff);
 
@@ -148,7 +148,7 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8*
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::OnReceiveServer");
     const TimeSyncHeader* inHeader = reinterpret_cast<const TimeSyncHeader*>(data);
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     uint32 lastClientFrameId = netTimeComp->GetLastClientFrameId(responder.GetToken());
     if (inHeader->frameId <= lastClientFrameId)
     { // is too late
@@ -252,7 +252,7 @@ void NetworkTimeSystem::ProcessFrameDiff(int32 diff)
         return;
     }
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     int32 adjustedFrames = netTimeComp->GetAdjustedFrames();
     bool sameDirection = (diff > 0) ^ (adjustedFrames < 0);
 

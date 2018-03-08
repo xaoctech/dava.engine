@@ -25,7 +25,7 @@ bool BaseScreen::SystemInput(DAVA::UIEvent* currentInput)
 
 void BaseScreen::LoadResources()
 {
-    GetBackground()->SetColor(DAVA::Color(0.f, 0.f, 0.f, 1.f));
+    GetComponent<DAVA::UIControlBackground>()->SetColor(DAVA::Color(0.f, 0.f, 0.f, 1.f));
     DVASSERT(!font);
     font = DAVA::FTFont::Create("~res:/SceneViewer/Fonts/korinna.ttf");
 }

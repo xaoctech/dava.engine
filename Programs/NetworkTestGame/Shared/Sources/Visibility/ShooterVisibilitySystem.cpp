@@ -79,7 +79,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterVisibilitySystem)
 }
 
 ShooterVisibilitySystem::ShooterVisibilitySystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
     , observerGroup(scene->AquireComponentGroup<ObserverComponent, ObserverComponent>())
     , characterObservableGroup(scene->AquireComponentGroup<ObservableComponent, ObservableComponent, ObservableIdComponent, CharacterVisibilityShapeComponent>())
     , simpleObservableGroup(scene->AquireComponentGroup<ObservableComponent, ObservableComponent, ObservableIdComponent, SimpleVisibilityShapeComponent>())

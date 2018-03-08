@@ -26,7 +26,7 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
 {
     bool isShown = true;
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(420.0f, 600.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(450.0f, 600.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
     if (ImGui::Begin("NetworkCore", &isShown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         if (ImGui::CollapsingHeader("Snapshot misprediction"))
@@ -38,7 +38,7 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
         {
             if (timeSingleComponent == nullptr)
             {
-                timeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
+                timeSingleComponent = scene->GetSingleComponent<NetworkTimeSingleComponent>();
             }
             uint32 frameId = timeSingleComponent->GetFrameId();
 
@@ -66,8 +66,17 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
 
             if (IsClient(scene))
             {
-                ImGui::InputFloat("frame speedup", &NetworkTimeSingleComponent::FrameSpeedupS, 0.001f, 0.01f);
-                ImGui::InputFloat("frame slowdown", &NetworkTimeSingleComponent::FrameSlowdownS, 0.00001f, 0.0001f);
+                if (client == nullptr)
+                {
+                    client = scene->GetSingleComponent<NetworkClientSingleComponent>()->GetClient();
+                }
+
+                float32 speedup = NetworkTimeSingleComponent::FrameSpeedupS;
+                float32 slowdown = NetworkTimeSingleComponent::FrameSlowdownS;
+                ImGui::InputFloat("frame speedup", &speedup, 0.0001f, 0.001f);
+                ImGui::InputFloat("frame slowdown", &slowdown, 0.0001f, 0.001f);
+                NetworkTimeSingleComponent::FrameSpeedupS = std::max(0.0001f, std::min(speedup, 1.0f));
+                NetworkTimeSingleComponent::FrameSlowdownS = std::max(0.0001f, std::min(slowdown, 1.0f));
 
                 ImGui::Columns(2, "", false);
                 int32 adjustedFrames = timeSingleComponent->GetAdjustedFrames();
@@ -81,21 +90,6 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
                                    "%d (%.4f s)", adjustedFrames, abs(adjustedFrames) * NetworkTimeSingleComponent::FrameDurationS);
                 ImGui::NextColumn();
                 ImGui::Columns(1);
-            }
-            else
-            {
-                ImGui::InputFloat("resync init (xRTT)", &NetworkTimeSingleComponent::UptimeInitFactor, 0.01f, 0.1f);
-                ImGui::InputFloat("resync delay (xRTT)", &NetworkTimeSingleComponent::UptimeDelayFactor, 0.1f, 1.0f);
-                ImGui::InputInt("artificial latency", &NetworkTimeSingleComponent::ArtificialLatency, 1, 10);
-                ImGui::InputFloat("loss factor", &NetworkTimeSingleComponent::LossFactor, 0.001f, 0.01f);
-            }
-
-            if (IsClient(scene))
-            {
-                if (client == nullptr)
-                {
-                    client = scene->GetSingletonComponent<NetworkClientSingleComponent>()->GetClient();
-                }
 
                 static float diffs[128] = { 0 };
                 int32 diff = timeSingleComponent->GetLastSyncDiff();
@@ -109,14 +103,19 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
             }
             else
             {
+                ImGui::InputFloat("resync init (xRTT)", &NetworkTimeSingleComponent::UptimeInitFactor, 0.01f, 0.1f);
+                ImGui::InputFloat("resync delay (xRTT)", &NetworkTimeSingleComponent::UptimeDelayFactor, 0.1f, 1.0f);
+                ImGui::InputInt("artificial latency", &NetworkTimeSingleComponent::ArtificialLatency, 1, 10);
+                ImGui::InputFloat("loss factor", &NetworkTimeSingleComponent::LossFactor, 0.001f, 0.01f);
+
                 if (server == nullptr)
                 {
-                    server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+                    server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
                 }
 
                 if (gameModeSingleComponent == nullptr)
                 {
-                    gameModeSingleComponent = scene->GetSingletonComponent<NetworkGameModeSingleComponent>();
+                    gameModeSingleComponent = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
                 }
 
                 static UnorderedMap<FastName, Vector<float>> rttsByToken;
@@ -124,34 +123,40 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
                 static UnorderedMap<FastName, Vector<float>> fdiffsByToken;
                 static UnorderedMap<FastName, Vector<float>> delaysByToken;
 
+                ImGui::Separator();
+
                 server->Foreach([this, frameId](const Responder& responder)
                                 {
-                                    ImGui::Separator();
                                     const FastName& token = responder.GetToken();
                                     NetworkPlayerID playerID = gameModeSingleComponent->GetNetworkPlayerID(token);
-                                    ImGui::Text("network player id %d", playerID);
 
-                                    uint32 rtt = responder.GetRtt();
-                                    PlotResponderHistory(rttsByToken, token, frameId, FastName("RTT"),
-                                                         rtt, FastName(Format("%d ms", rtt)), { 0.f, 100.f });
-
-                                    float32 packetLoss = responder.GetPacketLoss();
-                                    PlotResponderHistory(packetLossByToken, token, frameId, FastName("loss"),
-                                                         packetLoss, FastName(Format("%f %%", packetLoss * 100)), { 0.f, 100.f });
-
-                                    int32 resyncDelay = timeSingleComponent->GetResyncDelayUptime(token) - timeSingleComponent->GetUptimeMs();
-                                    if (resyncDelay > 0)
+                                    if (ImGui::TreeNode(Format("network player id %d", playerID).c_str()))
                                     {
-                                        ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.7f, 1.0f), "resync delay %d ms", resyncDelay);
+                                        uint32 rtt = responder.GetRtt();
+                                        PlotResponderHistory(rttsByToken, token, frameId, FastName("RTT"),
+                                                             rtt, FastName(Format("%d ms", rtt)), { 0.f, 100.f });
+
+                                        float32 packetLoss = responder.GetPacketLoss();
+                                        PlotResponderHistory(packetLossByToken, token, frameId, FastName("loss"),
+                                                             packetLoss, FastName(Format("%f %%", packetLoss * 100)), { 0.f, 100.f });
+
+                                        int32 resyncDelay = timeSingleComponent->GetResyncDelayUptime(token) - timeSingleComponent->GetUptimeMs();
+                                        if (resyncDelay > 0)
+                                        {
+                                            ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.7f, 1.0f),
+                                                               "resync delay %d ms", resyncDelay);
+                                        }
+
+                                        int32 fdiff = timeSingleComponent->GetClientOutrunning(token);
+                                        PlotResponderHistory(fdiffsByToken, token, frameId, FastName("fdiff"),
+                                                             fdiff, FastName(Format("%d", fdiff)), { -10.f, 20.f });
+
+                                        int32 delay = timeSingleComponent->GetClientViewDelay(token, frameId);
+                                        PlotResponderHistory(delaysByToken, token, frameId, FastName("delay"),
+                                                             delay, FastName(Format("%d", delay)), { -10.f, 20.f });
+
+                                        ImGui::TreePop();
                                     }
-
-                                    int32 fdiff = timeSingleComponent->GetClientOutrunning(token);
-                                    PlotResponderHistory(fdiffsByToken, token, frameId, FastName("fdiff"),
-                                                         fdiff, FastName(Format("%d", fdiff)), { -10.f, 20.f });
-
-                                    int32 delay = timeSingleComponent->GetClientViewDelay(token, frameId);
-                                    PlotResponderHistory(delaysByToken, token, frameId, FastName("delay"),
-                                                         delay, FastName(Format("%d", delay)), { -10.f, 20.f });
                                 });
             }
         }

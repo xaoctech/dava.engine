@@ -93,7 +93,8 @@ Entity* CreateCharacterMirror(CharacterControllerComponent* controllerComponent)
         CapsuleShapeComponent* capsuleShapeComponent = new CapsuleShapeComponent();
         capsuleShapeComponent->SetHalfHeight(scaleFactor * capsuleControllerComponent->GetHeight() * 0.5f);
         capsuleShapeComponent->SetRadius(scaleFactor * capsuleControllerComponent->GetRadius());
-        capsuleShapeComponent->SetLocalPose(Matrix4::MakeRotation(Vector3::UnitY, PI / 2.0f) * Matrix4::MakeTranslation(Vector3::UnitZ * (capsuleControllerComponent->GetContactOffset() + capsuleControllerComponent->GetRadius() + capsuleControllerComponent->GetHeight() * 0.5f)));
+        capsuleShapeComponent->SetLocalOrientation(Quaternion::MakeRotation(Matrix4::MakeRotation(Vector3::UnitY, PI / 2.0f)));
+        capsuleShapeComponent->SetLocalPosition(Vector3::UnitZ * (capsuleControllerComponent->GetContactOffset() + capsuleControllerComponent->GetRadius() + capsuleControllerComponent->GetHeight() * 0.5f));
         mirror->AddComponent(capsuleShapeComponent);
     }
     else if (controllerComponent->GetType()->Is<BoxCharacterControllerComponent>())
@@ -104,7 +105,8 @@ Entity* CreateCharacterMirror(CharacterControllerComponent* controllerComponent)
         boxShapeComponent->SetHalfSize(Vector3(scaleFactor * boxControllerComponent->GetHalfSideExtent(),
                                                scaleFactor * boxControllerComponent->GetHalfForwardExtent(),
                                                scaleFactor * boxControllerComponent->GetHalfHeight()));
-        boxShapeComponent->SetLocalPose(Matrix4::MakeRotation(Vector3::UnitY, PI / 2.0f) * Matrix4::MakeTranslation(Vector3::UnitZ * (controllerComponent->GetContactOffset() + boxControllerComponent->GetHalfHeight())));
+        boxShapeComponent->SetLocalOrientation(Quaternion::MakeRotation(Matrix4::MakeRotation(Vector3::UnitY, PI / 2.0f)));
+        boxShapeComponent->SetLocalPosition(Vector3::UnitZ * (controllerComponent->GetContactOffset() + boxControllerComponent->GetHalfHeight()));
         mirror->AddComponent(boxShapeComponent);
     }
     else

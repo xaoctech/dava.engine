@@ -38,7 +38,7 @@ MotionSystem::~MotionSystem()
 
 void MotionSystem::SetScene(Scene* scene)
 {
-    motionSingleComponent = scene->GetSingletonComponent<MotionSingleComponent>();
+    motionSingleComponent = scene->GetSingleComponentForWrite<MotionSingleComponent>(this);
 }
 
 void MotionSystem::AddEntity(Entity* entity)
@@ -135,8 +135,6 @@ void MotionSystem::Process(float32 timeElapsed)
             simpleMotion->Start();
         }
     }
-
-    motionSingleComponent->Clear();
 
     for (MotionComponent* component : activeComponents)
     {

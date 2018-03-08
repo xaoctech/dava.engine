@@ -13,6 +13,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CollisionSingleComponent)
     .End();
 }
 
+CollisionSingleComponent::CollisionSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::FixedProcesses)
+{
+}
+
 void CollisionSingleComponent::RemoveCollisionsWithEntity(Entity* entity)
 {
     collisions.erase(std::remove_if(collisions.begin(),

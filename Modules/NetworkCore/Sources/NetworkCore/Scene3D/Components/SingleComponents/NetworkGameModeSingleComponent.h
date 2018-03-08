@@ -3,17 +3,17 @@
 #include "Base/UnordererSet.h"
 #include "Base/Vector.h"
 #include "Base/FastName.h"
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 #include "Reflection/Reflection.h"
 #include <Base/FixedVector.h>
 #include <NetworkCore/NetworkTypes.h>
 
 namespace DAVA
 {
-class NetworkGameModeSingleComponent : public SingletonComponent
+class NetworkGameModeSingleComponent : public SingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(NetworkGameModeSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(NetworkGameModeSingleComponent, SingleComponent);
 
     void SetGameModeType(int32 gameModeType_);
     int32 GetGameModeType() const;
@@ -88,7 +88,5 @@ private:
 
     bool isLoaded = false;
     NetworkPlayerID networkPlayerID = 0;
-
-    void Clear() override;
 };
 }

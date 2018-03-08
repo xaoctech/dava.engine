@@ -218,7 +218,7 @@ void WayEditSystem::PerformRemoving(Entity* entityToRemove)
 
 void WayEditSystem::Process(float32 timeElapsed)
 {
-    TransformSingleComponent* tsc = GetScene()->GetSingletonComponent<TransformSingleComponent>();
+    const TransformSingleComponent* tsc = GetScene()->GetSingletonComponentForRead<TransformSingleComponent>(this);
     for (auto& pair : tsc->worldTransformChanged.map)
     {
         if (pair.first->GetComponentsCount(Type::Instance<WaypointComponent>()) > 0)

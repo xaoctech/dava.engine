@@ -122,7 +122,7 @@ void MotionComponent::SetDescriptorPath(const FilePath& path)
     Entity* entity = GetEntity();
     if (entity && entity->GetScene())
     {
-        entity->GetScene()->GetSingletonComponent<MotionSingleComponent>()->reloadDescriptor.emplace_back(this);
+        entity->GetScene()->GetSingleComponent<MotionSingleComponent>()->reloadDescriptor.emplace_back(this);
     }
 }
 

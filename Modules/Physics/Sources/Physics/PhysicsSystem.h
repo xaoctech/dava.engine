@@ -8,6 +8,7 @@
 #include <Base/BaseTypes.h>
 #include <Base/UnordererSet.h>
 #include <Scene3D/ComponentGroup.h>
+#include <Scene3D/Systems/BaseSimulationSystem.h>
 
 #include <physx/PxQueryReport.h>
 #include <physx/PxSimulationEventCallback.h>
@@ -43,7 +44,7 @@ class CharacterControllerComponent;
 class BoxCharacterControllerComponent;
 class CapsuleCharacterControllerComponent;
 
-class PhysicsSystem final : public SceneSystem
+class PhysicsSystem final : public BaseSimulationSystem
 {
 public:
     DAVA_VIRTUAL_REFLECTION(PhysicsSystem, SceneSystem);
@@ -74,6 +75,9 @@ public:
     PhysicsVehiclesSubsystem* GetVehiclesSystem();
 
     void SyncTransformToPhysx();
+
+    void ReSimulationStart() override;
+    void ReSimulationEnd() override;
 
 public:
     Signal<CharacterControllerComponent*> beforeCCTMove;
@@ -114,6 +118,14 @@ private:
     void ExecuteForEachPendingBody(Function<void(PhysicsComponent*)> func);
     void ExecuteForEachCCT(Function<void(CharacterControllerComponent*)> func);
     void ExecuteForEachPendingCCT(Function<void(CharacterControllerComponent*)> func);
+
+    PolygonGroup* CreatePolygonGroupFromJoint(Entity* entity, const FastName& jointName); // Create polygon group for part of the mesh associated with specific joint
+
+    void SyncShapeTransformsToJoints(); // Shape transform -> joint transform
+
+    void FreezeEverything();
+    void UnfreezeEverything();
+    void UnfreezeResimulatedBody(DynamicBodyComponent* body);
 
     void UpdateCCTFilterData(CharacterControllerComponent* cctComponent, uint32 typeMask, uint32 typeMaskToCollideWith);
 
@@ -179,16 +191,20 @@ private:
     EntityGroup* heightFieldAndRenderEntities;
 
     // New components which haven't been handled yet
-    std::unique_ptr<ComponentGroupOnAdd<StaticBodyComponent>> staticBodiesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<DynamicBodyComponent>> dynamicBodiesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<CollisionShapeComponent>> shapesPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<BoxCharacterControllerComponent>> boxCCTsPendingAdd;
-    std::unique_ptr<ComponentGroupOnAdd<CapsuleCharacterControllerComponent>> capsuleCCTsPendingAdd;
+    ComponentGroupOnAdd<StaticBodyComponent>* staticBodiesPendingAdd = nullptr;
+    ComponentGroupOnAdd<DynamicBodyComponent>* dynamicBodiesPendingAdd = nullptr;
+    ComponentGroupOnAdd<CollisionShapeComponent>* shapesPendingAdd = nullptr;
+    ComponentGroupOnAdd<BoxCharacterControllerComponent>* boxCCTsPendingAdd = nullptr;
+    ComponentGroupOnAdd<CapsuleCharacterControllerComponent>* capsuleCCTsPendingAdd = nullptr;
 
     // Set of entities whose render components are ready to be used for creating physx shape
     UnorderedSet<Entity*> readyRenderedEntities;
 
     // Contains all the entities which participate in physics simulation
     UnorderedSet<Entity*> physicsEntities;
+
+    Vector<Entity*> lastActiveEntities;
+
+    UnorderedMap<DynamicBodyComponent*, std::tuple<Vector3, Vector3>> frozenDynamicBodiesParams;
 };
 } // namespace DAVA

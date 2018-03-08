@@ -4,16 +4,18 @@
 #include "Base/FastName.h"
 #include "Base/Hash.h"
 #include "Base/UnordererSet.h"
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 
 namespace DAVA
 {
 class Entity;
 class MotionComponent;
-class MotionSingleComponent : public SingletonComponent
+class MotionSingleComponent : public ClearableSingleComponent
 {
 public:
-    DAVA_VIRTUAL_REFLECTION(MotionSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(MotionSingleComponent, ClearableSingleComponent);
+
+    MotionSingleComponent();
 
     struct AnimationInfo
     {
@@ -59,7 +61,9 @@ public:
     UnorderedSet<AnimationInfo, AnimationInfoHash> animationEnd;
     UnorderedSet<AnimationInfo, AnimationInfoHash> animationMarkerReached;
 
-    void Clear() override;
     void EntityRemoved(const Entity* entity);
+
+private:
+    void Clear() override;
 };
 }

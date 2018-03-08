@@ -41,7 +41,7 @@ void InvaderBehaviorSystem::ProcessFixed(float32 timeElapsed)
 {
     ProcessPendingAgents();
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     if (!netTimeComp->IsInitialized())
     {
         return;
@@ -69,7 +69,7 @@ void InvaderBehaviorSystem::ProcessFixed(float32 timeElapsed)
             InitPosition(agent);
             SetCurrentTask(agent, CreateInitialTask(agent));
         }
-        else if(currentTask->GetStatus() != BotTaskStatus::IN_PROGRESS)
+        else if (currentTask->GetStatus() != BotTaskStatus::IN_PROGRESS)
         {
             SetCurrentTask(agent, CreateNextTask(agent));
         }
@@ -162,7 +162,7 @@ bool InvaderBehaviorSystem::UpdateScenario(InvaderBehaviorComponent* actor, floa
     return false;
 }
 
-void InvaderBehaviorSystem::InitPosition(InvaderBehaviorComponent *actor)
+void InvaderBehaviorSystem::InitPosition(InvaderBehaviorComponent* actor)
 {
     float32 offsetX = 0.f;
     float32 offsetY = 0.f;
@@ -212,30 +212,30 @@ void InvaderBehaviorSystem::InitPosition(InvaderBehaviorComponent *actor)
     NetworkPlayerID playerID = replComp->GetNetworkPlayerID();
     Logger::Debug("[InvaderBehavior] Initializing %s invader position to (%.1f, %.1f)",
                   InvaderBehaviorComponent::roleNames[actor->role].c_str(), offsetX, offsetY);
-    GetScene()->GetSingletonComponent<ActionsSingleComponent>()->AddAnalogAction(FastName("TELEPORT"), normalizedPos, playerID);
+    GetScene()->GetSingleComponent<ActionsSingleComponent>()->AddAnalogAction(FastName("TELEPORT"), normalizedPos, playerID);
 }
 
-BotTaskComponent* InvaderBehaviorSystem::CreateInitialTask(InvaderBehaviorComponent *actor)
+BotTaskComponent* InvaderBehaviorSystem::CreateInitialTask(InvaderBehaviorComponent* actor)
 {
     using namespace InvaderBehaviorSystemDetails;
     return new WaitTaskComponent(WaitTaskComponent::Type::DELAY, DELAY_DURATION);
 }
 
-BotTaskComponent* InvaderBehaviorSystem::CreateNextTask(InvaderBehaviorComponent *actor)
+BotTaskComponent* InvaderBehaviorSystem::CreateNextTask(InvaderBehaviorComponent* actor)
 {
     InvaderBehaviorComponent* target = nullptr;
     if (actor->role == InvaderBehaviorComponent::Role::SHOOTER)
     {
-        for (InvaderBehaviorComponent* other: agents)
+        for (InvaderBehaviorComponent* other : agents)
         {
             if (other != actor && other->role == InvaderBehaviorComponent::Role::TARGET)
             {
                 HealthComponent* health = other->GetEntity()->GetComponent<HealthComponent>();
                 if (!health || health->GetHealth() == 0)
                 {
-                    continue;    
+                    continue;
                 }
-                
+
                 target = other;
                 break;
             }
@@ -350,7 +350,6 @@ BotTaskComponent* InvaderBehaviorSystem::CreateNextTask(InvaderBehaviorComponent
     // Observers and others having not received any task are just waiting, forever.
     return new WaitTaskComponent(WaitTaskComponent::Type::DELAY, FLOAT_MAX);
 }
-
 
 void InvaderBehaviorSystem::ClearCurrentTask(InvaderBehaviorComponent* agent)
 {

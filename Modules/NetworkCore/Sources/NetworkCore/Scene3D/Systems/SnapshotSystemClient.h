@@ -16,7 +16,7 @@ protected:
     bool isResimulation = false;
 
     bool NeedToBeTracked(Entity* entity) override;
-    bool NeedToBeTracked(Component* component) override;
+    bool NeedToBeTracked(Component* component, const NetworkReplicationComponent* nrc) override;
     void RegisterEntity(Entity* entity) override;
     void RegisterComponent(Entity* entity, Component* component) override;
     void UnregisterComponent(Entity* entity, Component* component) override;

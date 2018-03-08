@@ -36,7 +36,7 @@ void ShooterBehaviorSystem::ProcessFixed(float32 timeElapsed)
 {
     ProcessPendingAgents();
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     if (!netTimeComp->IsInitialized())
     {
         return;
@@ -69,7 +69,7 @@ void ShooterBehaviorSystem::ProcessPendingAgents()
     {
         // TODO: current solution don't support multiple actors
         DVASSERT(agent->isActor);
-        BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingletonComponent<BattleOptionsSingleComponent>();
+        BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
         uint32 seed = static_cast<uint32>(std::hash<std::string>{}(optionsComp->options.token.c_str()));
         localRandom.Seed(seed);
 
@@ -103,7 +103,7 @@ BotTaskComponent* ShooterBehaviorSystem::CreateInititalTask(ShooterBehaviorCompo
     Vector2 normalizedPos = GameInputSystemDetail::GetNormalizedTeleportPosition(pos);
     NetworkReplicationComponent* replComp = actor->GetEntity()->GetComponent<NetworkReplicationComponent>();
     NetworkPlayerID playerID = replComp->GetNetworkPlayerID();
-    GetScene()->GetSingletonComponent<ActionsSingleComponent>()->AddAnalogAction(FastName("TELEPORT"), normalizedPos, playerID);
+    GetScene()->GetSingleComponent<ActionsSingleComponent>()->AddAnalogAction(FastName("TELEPORT"), normalizedPos, playerID);
 
     float waitPeriod = localRandom.RandFloat32InBounds(40.f, 60.f);
     WaitTaskComponent* waitTask = new WaitTaskComponent(WaitTaskComponent::Type::DELAY, waitPeriod);

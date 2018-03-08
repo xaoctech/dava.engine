@@ -68,7 +68,8 @@ void PlaneShapeComponent::UpdateLocalProperties()
 {
     physx::PxPlane plane(PhysicsMath::Vector3ToPxVec3(point), PhysicsMath::Vector3ToPxVec3(normal));
     physx::PxTransform planeTransform = physx::PxTransformFromPlaneEquation(plane);
-    localPose = PhysicsMath::PxMat44ToMatrix4(physx::PxMat44(planeTransform));
+    localPosition = PhysicsMath::PxVec3ToVector3(planeTransform.p);
+    localOrientation = PhysicsMath::PxQuatToQuaternion(planeTransform.q);
     CollisionShapeComponent::UpdateLocalProperties();
 }
 

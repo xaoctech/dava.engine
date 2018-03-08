@@ -120,8 +120,9 @@ DAVA_TESTCLASS (SnapshotTest)
 
         testScene = new Scene();
         testScene->AddSystem(new NetworkIdSystem(testScene));
+        testScene->AddComponent(new NetworkReplicationComponent(NetworkID::SCENE_ID));
 
-        timeSingleComponent = testScene->GetSingletonComponent<NetworkTimeSingleComponent>();
+        timeSingleComponent = testScene->GetSingleComponent<NetworkTimeSingleComponent>();
 
         SnapshotSystemServer* ss = new SnapshotSystemServer(testScene);
         snapshot = &ss->snapshot;
@@ -136,13 +137,13 @@ DAVA_TESTCLASS (SnapshotTest)
 
     Entity* CreateEntity()
     {
-        static NetworkID staticId(1);
+        static uint32 staticId = 1;
 
         Entity* entity = new Entity();
-        entity->SetName(Format("entity-%u", static_cast<uint32>(staticId)).c_str());
+        entity->SetName(Format("entity-%u", staticId).c_str());
 
-        NetworkReplicationComponent* nrc = new NetworkReplicationComponent();
-        nrc->SetNetworkID(staticId++);
+        NetworkReplicationComponent* nrc = new NetworkReplicationComponent(NetworkID::CreateStaticId(staticId++));
+        nrc->SetForReplication<SnapshotTestDetails::TestComponent>(M::Privacy::PUBLIC);
         entity->AddComponent(nrc);
 
         SnapshotTestDetails::TestComponent* tc = new SnapshotTestDetails::TestComponent();
@@ -162,13 +163,14 @@ DAVA_TESTCLASS (SnapshotTest)
 
         TEST_VERIFY(entity == snapshot->entities[networkID].entity);
 
-        SnapshotComponent* sc = &snapshot->entities[networkID].components[SnapshotComponentKey(cid, 0)];
+        const SnapshotEntity& se = snapshot->entities[networkID];
+        const SnapshotComponent& sc = se.components.at(SnapshotComponentKey(cid, 0));
         SnapshotTestDetails::TestComponent* tc = entity->GetComponent<SnapshotTestDetails::TestComponent>();
 
-        TEST_VERIFY(sc->fields[0].value.Get<float32>() == tc->f);
-        TEST_VERIFY(sc->fields[1].value.Get<uint32>() == tc->u);
-        TEST_VERIFY(sc->fields[2].value.Get<Vector3>() == tc->v3);
-        TEST_VERIFY(sc->fields[3].value.Get<Matrix4>() == tc->m4);
+        TEST_VERIFY(sc.fields[0].value.Get<float32>() == tc->f);
+        TEST_VERIFY(sc.fields[1].value.Get<uint32>() == tc->u);
+        TEST_VERIFY(sc.fields[2].value.Get<Vector3>() == tc->v3);
+        TEST_VERIFY(sc.fields[3].value.Get<Matrix4>() == tc->m4);
 
         return true;
     }
@@ -297,7 +299,7 @@ DAVA_TESTCLASS (SnapshotTest)
 
     bool CheckSSCSnapshot(bool has, uint32 frameId)
     {
-        SnapshotSingleComponent* ssc = testScene->GetSingletonComponent<SnapshotSingleComponent>();
+        SnapshotSingleComponent* ssc = testScene->GetSingleComponent<SnapshotSingleComponent>();
         Snapshot* s = ssc->GetServerSnapshot(frameId);
 
         if (has)
@@ -321,7 +323,7 @@ DAVA_TESTCLASS (SnapshotTest)
 
     DAVA_TEST (SingleComponentCreateGet)
     {
-        SnapshotSingleComponent* ssc = testScene->GetSingletonComponent<SnapshotSingleComponent>();
+        SnapshotSingleComponent* ssc = testScene->GetSingleComponent<SnapshotSingleComponent>();
 
         TEST_VERIFY(CheckSSCSnapshot(false, 3));
 

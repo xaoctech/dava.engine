@@ -130,9 +130,8 @@ DAVA_TESTCLASS (UIControlTest)
         TEST_VERIFY(root->FindByPath("^") == nullptr);
         TEST_VERIFY(c1->FindByPath("^") == nullptr);
 
-        UIControlPackageContext* context = new UIControlPackageContext();
+        RefPtr<UIControlPackageContext> context = MakeRef<UIControlPackageContext>();
         root->SetPackageContext(context);
-        SafeRelease(context);
 
         TEST_VERIFY(root->FindByPath("^") == nullptr);
         TEST_VERIFY(c1->FindByPath("^") == root);

@@ -16,6 +16,7 @@
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
@@ -48,9 +49,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRocketSystem)
 ShooterRocketSystem::ShooterRocketSystem(Scene* scene)
     : DAVA::BaseSimulationSystem(scene, ComponentUtils::MakeMask<ShooterRocketComponent>())
     , entityGroup(scene->AquireEntityGroup<ShooterRocketComponent>())
-    , pendingEntities(entityGroup)
+    , pendingEntities(scene->AquireEntityGroupOnAdd(entityGroup, this))
 {
-    entitiesComp = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    entitiesComp = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
 }
 
 ShooterRocketSystem::~ShooterRocketSystem()
@@ -59,7 +60,7 @@ ShooterRocketSystem::~ShooterRocketSystem()
 
 void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 {
-    CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
     ShooterRocketComponent* rocketComp = rocket->GetComponent<ShooterRocketComponent>();
     const uint32 distance = rocketComp->GetDistance();
     if (destroyedEntities.find(rocket) != destroyedEntities.end())
@@ -104,7 +105,7 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
         }
 
         const NetworkPlayerID playerId = rocket->GetComponent<NetworkReplicationComponent>()->GetNetworkPlayerID();
-        const uint32 frameId = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>()->GetFrameId();
+        const uint32 frameId = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>()->GetFrameId();
 
         uint32 subRocketCount = 3;
         if (HAS_MISPREDICTION && IsServer(this))
@@ -114,12 +115,12 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 
         for (uint32 subRocketIdx = 0; subRocketIdx < subRocketCount; ++subRocketIdx)
         {
-            FrameActionID shootActionId(frameId, playerId, subRocketIdx);
-            NetworkID entityId = NetworkIdSystem::GetEntityIdFromAction(shootActionId);
-            Entity* subRocket = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>()->FindByID(entityId);
+            NetworkID rocketId = NetworkID::CreatePlayerActionId(playerId, frameId, subRocketIdx);
+            Entity* subRocket = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>()->FindByID(rocketId);
+
             if (!subRocket)
             {
-                subRocket = SpawnSubRocket(shooter, target, shootActionId);
+                subRocket = SpawnSubRocket(shooter, target, rocketId);
                 TransformComponent* subTrunsComp = subRocket->GetComponent<TransformComponent>();
                 float32 angle = (subRocketIdx - (subRocketCount / 2.f)) * DEG_TO_RAD * 45.f;
                 Quaternion subRotation = rotation * Quaternion::MakeRotation(Vector3::UnitZ, -angle);
@@ -169,11 +170,13 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 
 void ShooterRocketSystem::ProcessFixed(float32 timeElapsed)
 {
-    for (Entity* rocket : Vector<Entity*>(pendingEntities.entities))
+    DVASSERT(pendingEntities->entities.size() < 100);
+
+    for (Entity* rocket : Vector<Entity*>(pendingEntities->entities))
     {
         FillRocket(rocket);
     }
-    pendingEntities.entities.clear();
+    pendingEntities->entities.clear();
 
     for (Entity* rocket : entityGroup->GetEntities())
     {
@@ -190,28 +193,6 @@ void ShooterRocketSystem::ProcessFixed(float32 timeElapsed)
     }
 
     destroyedEntities.clear();
-}
-
-void ShooterRocketSystem::ReSimulationStart()
-{
-    pendingBackUp.entities = std::move(pendingEntities.entities);
-    pendingEntities.entities.clear();
-}
-
-void ShooterRocketSystem::ReSimulationEnd()
-{
-    auto& entities = pendingEntities.entities;
-
-    for (Entity* entity : pendingBackUp.entities)
-    {
-        bool notFound = std::find(entities.begin(), entities.end(), entity) == entities.end();
-        if (notFound)
-        {
-            entities.push_back(entity);
-        }
-    }
-
-    pendingBackUp.entities.clear();
 }
 
 Entity* ShooterRocketSystem::GetRocketModel()
@@ -264,10 +245,12 @@ void ShooterRocketSystem::FillRocket(Entity* rocket)
     rocket->AddComponent(dynamicBody);
     rocket->AddComponent(new DamageComponent());
 
-    rocket->AddComponent(new ObservableComponent());
-    rocket->AddComponent(new SimpleVisibilityShapeComponent());
-
-    if (!IsServer(this))
+    if (IsServer(this))
+    {
+        rocket->AddComponent(new ObservableComponent());
+        rocket->AddComponent(new SimpleVisibilityShapeComponent());
+    }
+    else
     {
         NetworkDebugDrawComponent* debugDrawComponent = new NetworkDebugDrawComponent();
         debugDrawComponent->box = rocketModel->GetWTMaximumBoundingBoxSlow();
@@ -283,7 +266,7 @@ void ShooterRocketSystem::FillRocket(Entity* rocket)
 
 const Entity* ShooterRocketSystem::GetTarget(Entity* rocket, Entity* shooter)
 {
-    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>();
     TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
     const Vector3& position = transComp->GetPosition();
     const NetworkPlayerID playerId = rocket->GetComponent<NetworkReplicationComponent>()->GetNetworkPlayerID();
@@ -319,9 +302,10 @@ const Entity* ShooterRocketSystem::GetTarget(Entity* rocket, Entity* shooter)
     return target;
 }
 
-Entity* ShooterRocketSystem::SpawnSubRocket(Entity* shooter, const Entity* target, const FrameActionID& shootActionId)
+Entity* ShooterRocketSystem::SpawnSubRocket(Entity* shooter, const Entity* target, NetworkID rocketId)
 {
     Entity* subRocket = new Entity;
+
     ShooterRocketComponent* subRocketComponent = new ShooterRocketComponent();
     subRocketComponent->SetStage(ShooterRocketComponent::Stage::DESTROYER);
     NetworkReplicationComponent* shooterReplicationComp = shooter->GetComponent<NetworkReplicationComponent>();
@@ -329,20 +313,20 @@ Entity* ShooterRocketSystem::SpawnSubRocket(Entity* shooter, const Entity* targe
     NetworkReplicationComponent* targetReplicationComp = target->GetComponent<NetworkReplicationComponent>();
     subRocketComponent->targetId = targetReplicationComp->GetNetworkID();
     subRocket->AddComponent(subRocketComponent);
-    NetworkReplicationComponent* replComp = new NetworkReplicationComponent();
-    const NetworkPlayerID playerId = shooterReplicationComp->GetNetworkPlayerID();
-    replComp->SetNetworkPlayerID(playerId);
+
+    NetworkTransformComponent* transfComp = new NetworkTransformComponent();
+    subRocket->AddComponent(transfComp);
+
+    NetworkReplicationComponent* replComp = new NetworkReplicationComponent(rocketId);
+    replComp->SetForReplication<ShooterRocketComponent>(M::Privacy::PUBLIC);
+    replComp->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
     subRocket->AddComponent(replComp);
 
-    NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent();
-    networkPredictComponent->AddPredictedComponent(Type::Instance<NetworkTransformComponent>());
-    networkPredictComponent->AddPredictedComponent(Type::Instance<ShooterRocketComponent>());
-    networkPredictComponent->SetFrameActionID(shootActionId);
+    ComponentMask predictionMask;
+    predictionMask.Set<NetworkTransformComponent>();
+    predictionMask.Set<ShooterRocketComponent>();
+    NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
     subRocket->AddComponent(networkPredictComponent);
-    subRocket->AddComponent(new NetworkTransformComponent());
-
-    subRocket->AddComponent(new ObservableComponent());
-    subRocket->AddComponent(new SimpleVisibilityShapeComponent());
 
     return subRocket;
 }

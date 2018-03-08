@@ -1,5 +1,6 @@
 #include "Scene3D/Private/EntitiesManager.h"
 
+#include "Debug/ProfilerCPU.h"
 #include "Scene3D/Entity.h"
 
 namespace DAVA
@@ -125,20 +126,45 @@ void EntitiesManager::RegisterComponent(Entity* entity, Component* component)
         {
             if (entity->GetComponentCount(componentType) == 1) //it's the 1st time entity is added to system
             {
-                uint32 count = entity->GetComponentCount();
-                for (uint32 i = 0; i < count; ++i)
+                // If it's a first component and entity finaly fits, we should check all components to add ones that fit required type
+                // But, if BaseOfTypeMatcher is used, there can be cases when GetComponentCount(componentType) is equal to one,
+                // but entity already has other components attached which are derived from their common base class.
+                // In this case, we already checked other components before, and only have to check current one.
+
+                // To check if entity matched the group before, remove current component type from the mask and check again
+                ComponentMask previousEntityCompMask = entityComponentMask;
+                previousEntityCompMask.Set(componentType, false);
+                bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, previousEntityCompMask);
+                bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
+                bool didFit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
+
+                if (!didFit)
                 {
-                    Component* c = entity->GetComponentByIndex(i);
-                    bool needAddComponent = pair.first.typeMatcher(trackedType, c->GetType());
+                    // If it's a first time entity matches the group, check other components
+                    uint32 count = entity->GetComponentCount();
+                    for (uint32 i = 0; i < count; ++i)
+                    {
+                        Component* c = entity->GetComponentByIndex(i);
+                        bool needAddComponent = pair.first.typeMatcher(trackedType, c->GetType());
+                        if (needAddComponent)
+                        {
+                            CacheComponentAdded(cg, c);
+                        }
+                    }
+                }
+                else
+                {
+                    // Otherwise, check only this one
+                    bool needAddComponent = pair.first.typeMatcher(trackedType, componentType);
                     if (needAddComponent)
                     {
-                        CacheComponentAdded(cg, c);
+                        CacheComponentAdded(cg, component);
                     }
                 }
             }
             else //extra component for already added entity
             {
-                bool needAddComponent = componentType == cg->trackedType;
+                bool needAddComponent = pair.first.typeMatcher(trackedType, componentType);
                 if (needAddComponent)
                 {
                     CacheComponentAdded(cg, component);
@@ -371,6 +397,20 @@ void EntitiesManager::UpdateCaches()
     UpdateComponentGroups();
 }
 
+EntityGroupOnAdd* EntitiesManager::AquireEntityGroupOnAdd(EntityGroup* eg, SceneSystem* sceneSystem)
+{
+    DVASSERT(!isInDetachedState);
+
+    DVASSERT(sceneSystem != nullptr && sceneSystem->GetScene() != nullptr);
+    DVASSERT(std::find_if(entityGroups.begin(), entityGroups.end(), [eg](const auto& p) { return &p.second == eg; }) != entityGroups.end());
+
+    EntityGroupOnAdd* ptr = new EntityGroupOnAdd(eg, sceneSystem);
+
+    entityGroupsOnAdd.emplace_back(ptr);
+
+    return ptr;
+}
+
 void EntitiesManager::SuppressSignals()
 {
     isSignalsSuppressed = true;
@@ -383,6 +423,8 @@ void EntitiesManager::AllowSignals()
 
 void EntitiesManager::DetachGroups()
 {
+    DAVA_PROFILER_CPU_SCOPE("EntitiesManager::DetachGroups");
+
     if (isInDetachedState)
     {
         DVASSERT(!isInDetachedState, "Recursive detach is not supported.");
@@ -395,13 +437,29 @@ void EntitiesManager::DetachGroups()
     DVASSERT(componentGroupsWithAdded.empty());
     DVASSERT(componentGroupsWithRemoved.empty());
 
+    const bool clearAfterMove = true;
+
+    for (auto& entityGroupOnAdd : entityGroupsOnAdd)
+    {
+        backUp.entityGroupsOnAdd.emplace_back(new EntityGroupOnAdd());
+
+        entityGroupOnAdd->MoveTo(*backUp.entityGroupsOnAdd.back(), clearAfterMove);
+    }
+
+    for (auto& componentGroupOnAdd : componentGroupsOnAdd)
+    {
+        backUp.componentGroupsOnAdd.emplace_back(componentGroupOnAdd->Create());
+
+        componentGroupOnAdd->MoveTo(backUp.componentGroupsOnAdd.back().get(), clearAfterMove);
+    }
+
     for (auto& entityGroup : entityGroups)
     {
         auto result = backUp.entityGroups.emplace(entityGroup.first, EntityGroup());
 
         DVASSERT(result.second);
 
-        entityGroup.second.MoveTo(result.first->second);
+        entityGroup.second.MoveTo(result.first->second, clearAfterMove);
     }
 
     for (auto& componentGroup : componentGroups)
@@ -410,7 +468,7 @@ void EntitiesManager::DetachGroups()
 
         DVASSERT(result.second);
 
-        componentGroup.second->MoveTo(result.first->second);
+        componentGroup.second->MoveTo(result.first->second, clearAfterMove);
     }
 
     UpdateCaches();
@@ -420,6 +478,8 @@ void EntitiesManager::DetachGroups()
 
 void EntitiesManager::RestoreGroups()
 {
+    DAVA_PROFILER_CPU_SCOPE("EntitiesManager::RestoreGroups");
+
     if (!isInDetachedState)
     {
         DVASSERT(isInDetachedState, "EntitiesManager is not in detached state.");
@@ -427,6 +487,24 @@ void EntitiesManager::RestoreGroups()
     }
 
     UpdateCaches();
+
+    DVASSERT(backUp.entityGroupsOnAdd.size() == entityGroupsOnAdd.size());
+
+    for (size_t i = 0; i < backUp.entityGroupsOnAdd.size(); ++i)
+    {
+        entityGroupsOnAdd[i]->MergeTo(*backUp.entityGroupsOnAdd[i]);
+        backUp.entityGroupsOnAdd[i]->MoveTo(*entityGroupsOnAdd[i]);
+    }
+    backUp.entityGroupsOnAdd.clear();
+
+    DVASSERT(backUp.componentGroupsOnAdd.size() == componentGroupsOnAdd.size());
+
+    for (size_t i = 0; i < backUp.componentGroupsOnAdd.size(); ++i)
+    {
+        componentGroupsOnAdd[i]->MergeTo(backUp.componentGroupsOnAdd[i].get());
+        backUp.componentGroupsOnAdd[i]->MoveTo(componentGroupsOnAdd[i].get());
+    }
+    backUp.componentGroupsOnAdd.clear();
 
     for (auto& p : backUp.entityGroups)
     {
@@ -444,7 +522,7 @@ void EntitiesManager::RestoreGroups()
 
         DVASSERT(it != componentGroups.end());
 
-        p.second->MoveTo(it->second, false);
+        p.second->MoveTo(it->second);
         SafeDelete(p.second);
     }
     backUp.componentGroups.clear();
@@ -493,6 +571,25 @@ void EntitiesManager::RestoreGroups()
     entitiesRemovedInDetachedState.clear();
     componentsAddedInDetachedState.clear();
     componentsRemovedInDetachedState.clear();
+}
+
+void EntitiesManager::OnSystemRemoved(SceneSystem* sceneSystem)
+{
+    auto CleanUp = [sceneSystem](auto& container)
+    {
+        auto it = std::remove_if(begin(container), end(container), [sceneSystem](const auto& x) { return x->sceneSystem == sceneSystem; });
+        container.erase(it, end(container));
+    };
+
+    DVASSERT((backUp.entityGroupsOnAdd.size() == entityGroupsOnAdd.size()) || backUp.entityGroupsOnAdd.empty());
+
+    CleanUp(entityGroupsOnAdd);
+    CleanUp(backUp.entityGroupsOnAdd);
+
+    DVASSERT((backUp.componentGroupsOnAdd.size() == componentGroupsOnAdd.size()) || backUp.componentGroupsOnAdd.empty());
+
+    CleanUp(componentGroupsOnAdd);
+    CleanUp(backUp.componentGroupsOnAdd);
 }
 
 bool EntitiesManager::ComponentGroupKey::operator==(const ComponentGroupKey& other) const

@@ -432,8 +432,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     QHBoxLayout* startTimeHBox = new QHBoxLayout;
     startTimeHBox->addWidget(new QLabel("startTime", this));
     startTimeSpin = new EventFilterDoubleSpinBox(this);
-    startTimeSpin->setMinimum(-std::numeric_limits<double>::infinity());
-    startTimeSpin->setMaximum(std::numeric_limits<double>::infinity());
+    startTimeSpin->setMinimum(-std::numeric_limits<double>::max());
+    startTimeSpin->setMaximum(std::numeric_limits<double>::max());
     startTimeHBox->addWidget(startTimeSpin);
     mainBox->addLayout(startTimeHBox);
     connect(startTimeSpin,
@@ -444,8 +444,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
     QHBoxLayout* endTimeHBox = new QHBoxLayout;
     endTimeHBox->addWidget(new QLabel("endTime", this));
     endTimeSpin = new EventFilterDoubleSpinBox(this);
-    endTimeSpin->setMinimum(-std::numeric_limits<double>::infinity());
-    endTimeSpin->setMaximum(std::numeric_limits<double>::infinity());
+    endTimeSpin->setMinimum(-std::numeric_limits<double>::max());
+    endTimeSpin->setMaximum(std::numeric_limits<double>::max());
     endTimeHBox->addWidget(endTimeSpin);
     mainBox->addLayout(endTimeHBox);
     connect(endTimeSpin,
@@ -463,8 +463,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     loopEndSpinLabel = new QLabel("loopEnd", this);
     loopEndSpin = new EventFilterDoubleSpinBox(this);
-    loopEndSpin->setMinimum(-std::numeric_limits<double>::infinity());
-    loopEndSpin->setMaximum(std::numeric_limits<double>::infinity());
+    loopEndSpin->setMinimum(-std::numeric_limits<double>::max());
+    loopEndSpin->setMaximum(std::numeric_limits<double>::max());
     loopHBox->addWidget(loopEndSpinLabel);
     loopHBox->addWidget(loopEndSpin);
     connect(loopEndSpin,
@@ -474,8 +474,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     loopVariationSpinLabel = new QLabel("loopVariation", this);
     loopVariationSpin = new EventFilterDoubleSpinBox(this);
-    loopVariationSpin->setMinimum(-std::numeric_limits<double>::infinity());
-    loopVariationSpin->setMaximum(std::numeric_limits<double>::infinity());
+    loopVariationSpin->setMinimum(-std::numeric_limits<double>::max());
+    loopVariationSpin->setMaximum(std::numeric_limits<double>::max());
     loopHBox->addWidget(loopVariationSpinLabel);
     loopHBox->addWidget(loopVariationSpin);
     connect(loopVariationSpin,
@@ -492,8 +492,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     deltaSpinLabel = new QLabel("delta", this);
     deltaSpin = new EventFilterDoubleSpinBox(this);
-    deltaSpin->setMinimum(-std::numeric_limits<double>::infinity());
-    deltaSpin->setMaximum(std::numeric_limits<double>::infinity());
+    deltaSpin->setMinimum(-std::numeric_limits<double>::max());
+    deltaSpin->setMaximum(std::numeric_limits<double>::max());
     deltaHBox->addWidget(deltaSpinLabel);
     deltaHBox->addWidget(deltaSpin);
     connect(deltaSpin,
@@ -503,8 +503,8 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget* parent)
 
     deltaVariationSpinLabel = new QLabel("deltaVariation", this);
     deltaVariationSpin = new EventFilterDoubleSpinBox(this);
-    deltaVariationSpin->setMinimum(-std::numeric_limits<double>::infinity());
-    deltaVariationSpin->setMaximum(std::numeric_limits<double>::infinity());
+    deltaVariationSpin->setMinimum(-std::numeric_limits<double>::max());
+    deltaVariationSpin->setMaximum(std::numeric_limits<double>::max());
     deltaHBox->addWidget(deltaVariationSpinLabel);
     deltaHBox->addWidget(deltaVariationSpin);
     connect(deltaVariationSpin,
@@ -1629,8 +1629,8 @@ void EmitterLayerWidget::CreateStripeLayoutWidget()
     stripeVertexSpawnStepSpin->setDecimals(4);
 
     stripeStartSizeSpin = new EventFilterDoubleSpinBox();
-    stripeStartSizeSpin->setMinimum(-100);
-    stripeStartSizeSpin->setMaximum(100);
+    stripeStartSizeSpin->setMinimum(-std::numeric_limits<double>::infinity());
+    stripeStartSizeSpin->setMaximum(std::numeric_limits<double>::infinity());
     stripeStartSizeSpin->setSingleStep(0.01);
     stripeStartSizeSpin->setDecimals(4);
     stripeLifetimeLabel = new QLabel("Edge lifetime:");

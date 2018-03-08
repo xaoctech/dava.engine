@@ -61,10 +61,10 @@ void ProcessUIControl(DAVA::UIControl* control)
         background->ReleaseDrawData();
     }
 
-    const List<UIControl*>& children = control->GetChildren();
-    for (UIControl* c : children)
+    const auto& children = control->GetChildren();
+    for (const auto& c : children)
     {
-        ProcessUIControl(c);
+        ProcessUIControl(c.Get());
     }
 }
 }

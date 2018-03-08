@@ -41,18 +41,32 @@ void Scene::RegisterSystemProcess(Return(Cls::*fp)(float32))
 }
 
 template <typename T>
-void Scene::AddSingletonComponent(T* component)
+void Scene::AddSingleComponent(T* component)
 {
-    static_assert(std::is_base_of<SingletonComponent, T>::value, "Have to be derived from SingletonComponent");
-    static_assert(!std::is_same<SingletonComponent, T>::value, "Have to be derived from SingletonComponent");
-    AddSingletonComponent(component, Type::Instance<T>());
+    static_assert(std::is_base_of<SingleComponent, T>::value, "Has to be derived from SingleComponent");
+    static_assert(!std::is_same<SingleComponent, T>::value, "Has to be derived from SingleComponent");
+    AddSingleComponent(component, Type::Instance<T>());
 }
 
 template <class T>
-T* Scene::GetSingletonComponent()
+T* Scene::GetSingleComponent()
 {
     const Type* type = Type::Instance<T>();
-    return static_cast<T*>(GetSingletonComponent(type));
+    return static_cast<T*>(GetSingleComponent(type));
+}
+
+template <class T>
+const T* Scene::GetSingleComponentForRead(const SceneSystem* user)
+{
+    const Type* type = Type::Instance<T>();
+    return static_cast<const T*>(GetSingleComponentForRead(type, user));
+}
+
+template <class T>
+T* Scene::GetSingleComponentForWrite(const SceneSystem* user)
+{
+    const Type* type = Type::Instance<T>();
+    return static_cast<T*>(GetSingleComponentForWrite(type, user));
 }
 
 int32 Scene::GetCameraCount()
@@ -84,17 +98,10 @@ ComponentGroup<T>* Scene::AquireComponentGroupWithMatcher()
     return entitiesManager->AquireComponentGroup<MaskMatcher, TypeMatcher, T, Args...>(this);
 }
 
-
 template <class T>
-T* Scene::AquireSingleComponentForWrite()
+ComponentGroupOnAdd<T>* Scene::AquireComponentGroupOnAdd(ComponentGroup<T>* cg, SceneSystem* sceneSystem)
 {
-    return DynamicTypeCheck<T*>(AquireSingleComponentForWrite(Type::Instance<T>()));
+    return entitiesManager->AquireComponentGroupOnAdd(cg, sceneSystem);
 }
 
-template <class T>
-const T* Scene::AquireSingleComponentForRead()
-{
-    return DynamicTypeCheck<const T*>(AquireSingleComponentForRead(Type::Instance<T>()));
-}
-
-}
+} // namespace DAVA

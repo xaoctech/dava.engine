@@ -24,9 +24,9 @@ Entity* GetEntityWithNetworkId(Scene* scene, NetworkID networkId);
 
 // TODO: --> move to NetworkInputUtils
 Vector<ActionsSingleComponent::Actions>& GetCollectedActionsForClient(Scene* scene, const Entity* clientEntity);
-void AddActionsForClient(Scene* scene, const Entity* clientEntity, ActionsSingleComponent::Actions&& actions);
-void AddDigitalActionForClient(Scene* scene, const Entity* clientEntity, const FastName& action);
-void AddAnalogActionForClient(Scene* scene, const Entity* clientEntity, const FastName& action, const Vector2& data);
+void AddActionsForClient(const SceneSystem* system, const Entity* clientEntity, ActionsSingleComponent::Actions&& actions);
+void AddDigitalActionForClient(const SceneSystem* system, const Entity* clientEntity, const FastName& action);
+void AddAnalogActionForClient(const SceneSystem* system, const Entity* clientEntity, const FastName& action, const Vector2& data);
 // <--
 
 struct NetworkCoreUtils

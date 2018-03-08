@@ -61,7 +61,7 @@ class EMSystem : public SceneSystem
 {
 public:
     EMSystem(Scene* scene)
-        : SceneSystem(scene, 0)
+        : SceneSystem(scene, ComponentMask())
     {
         entityGroup = scene->AquireEntityGroup<EMEntityComponent>();
         entityGroup->onEntityAdded->Connect(this, &EMSystem::OnEntityAdded);
@@ -146,7 +146,7 @@ class EMSystemAB : public SceneSystem
 {
 public:
     EMSystemAB(Scene* scene)
-        : SceneSystem(scene, 0)
+        : SceneSystem(scene, ComponentMask())
     {
         componentGroup = scene->AquireComponentGroup<EMComponentA, EMComponentA, EMComponentB>();
     }
@@ -161,11 +161,41 @@ public:
     ComponentGroup<EMComponentA>* componentGroup;
 };
 
+class EMPendingClearSystem : public SceneSystem
+{
+public:
+    EMPendingClearSystem(Scene* scene)
+        : SceneSystem(scene, ComponentMask())
+    {
+        entityGroup = scene->AquireEntityGroup<EMComponentA, EMComponentB>();
+        pending = scene->AquireEntityGroupOnAdd(entityGroup, this);
+    }
+
+    ~EMPendingClearSystem() = default;
+
+    void Process(float32) override
+    {
+        pending->entities.clear();
+    }
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMPendingClearSystem, SceneSystem)
+    {
+        ReflectionRegistrator<EMPendingClearSystem>::Begin()[M::Tags("EntitiesManagerDetachTest")]
+        .ConstructorByPointer<Scene*>()
+        .Method("Process", &EMPendingClearSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1337.42f)]
+        .End();
+    }
+
+    EntityGroup* entityGroup = nullptr;
+    EntityGroupOnAdd* pending = nullptr;
+};
+
 DAVA_TESTCLASS (EntitiesManagerTest)
 {
     EntitiesManagerTest()
     {
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMSystem);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMPendingClearSystem);
         GetEngineContext()->systemManager->RegisterAllDerivedSceneSystemsRecursively();
 
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMEntityComponent);
@@ -344,11 +374,34 @@ DAVA_TESTCLASS (EntitiesManagerTest)
 
     DAVA_TEST (DetachedState)
     {
-        Scene* scene = new Scene({ FastName("base") });
+        Scene* scene = new Scene({ FastName("EntitiesManagerDetachTest") });
         scene->CreateSystemsByTags();
 
         EntitiesManager* em = scene->GetEntitiesManager();
+        EMPendingClearSystem* system = scene->GetSystem<EMPendingClearSystem>();
+
         EntityGroup* eg = scene->AquireEntityGroup<EMComponentA, EMComponentB>();
+
+        Entity* e0 = new Entity();
+        SCOPE_EXIT
+        {
+            SafeRelease(e0);
+        };
+
+        e0->AddComponent(new EMComponentA());
+        e0->AddComponent(new EMComponentB());
+        scene->AddNode(e0);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 0);
+
+        TEST_VERIFY(system->pending->entities.size() == 1);
+
+        scene->Update(0.1f);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 1);
+        TEST_VERIFY(eg->GetEntities().Contains(e0));
+
+        TEST_VERIFY(system->pending->entities.size() == 0);
 
         Entity* e1 = new Entity();
         SCOPE_EXIT
@@ -356,22 +409,24 @@ DAVA_TESTCLASS (EntitiesManagerTest)
             SafeRelease(e1);
         };
 
-        TEST_VERIFY(eg->GetEntities().GetSize() == 0);
-
         e1->AddComponent(new EMComponentA());
         e1->AddComponent(new EMComponentB());
         scene->AddNode(e1);
-        scene->Update(0.1f);
+        em->UpdateCaches();
 
-        TEST_VERIFY(eg->GetEntities().GetSize() == 1);
+        TEST_VERIFY(system->pending->entities.size() == 1);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 2);
+        TEST_VERIFY(eg->GetEntities().Contains(e0));
         TEST_VERIFY(eg->GetEntities().Contains(e1));
-
-        size_t entitiesAddedCount = 0;
-        eg->onEntityAdded->Connect([& x = entitiesAddedCount](Entity*) { ++x; });
 
         em->DetachGroups();
 
+        TEST_VERIFY(system->pending->entities.size() == 0);
         TEST_VERIFY(eg->GetEntities().GetSize() == 0);
+
+        size_t entitiesAddedCount = 0;
+        eg->onEntityAdded->Connect([& x = entitiesAddedCount](Entity*) { ++x; });
 
         Entity* e2 = new Entity();
         SCOPE_EXIT
@@ -382,15 +437,21 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         e2->AddComponent(new EMComponentA());
         e2->AddComponent(new EMComponentB());
         scene->AddNode(e2);
+
+        TEST_VERIFY(system->pending->entities.size() == 1);
+
         scene->Update(0.1f);
 
+        TEST_VERIFY(system->pending->entities.size() == 0);
+
         TEST_VERIFY(eg->GetEntities().GetSize() == 1);
-        TEST_VERIFY(entitiesAddedCount == 1);
-        TEST_VERIFY(!eg->GetEntities().Contains(e1));
         TEST_VERIFY(eg->GetEntities().Contains(e2));
+        TEST_VERIFY(entitiesAddedCount == 1);
 
         em->RegisterDetachedEntity(e1);
         em->UpdateCaches();
+
+        TEST_VERIFY(system->pending->entities.size() == 0);
 
         TEST_VERIFY(eg->GetEntities().GetSize() == 2);
         TEST_VERIFY(entitiesAddedCount == 1);
@@ -406,7 +467,12 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         e3->AddComponent(new EMComponentA());
         e3->AddComponent(new EMComponentB());
         scene->AddNode(e3);
+
+        TEST_VERIFY(system->pending->entities.size() == 1);
+
         scene->Update(0.1f);
+
+        TEST_VERIFY(system->pending->entities.size() == 0);
 
         TEST_VERIFY(eg->GetEntities().GetSize() == 3);
         TEST_VERIFY(entitiesAddedCount == 2);
@@ -415,10 +481,13 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         TEST_VERIFY(eg->GetEntities().Contains(e3));
 
         em->RestoreGroups();
-        em->UpdateCaches();
 
-        TEST_VERIFY(eg->GetEntities().GetSize() == 3);
+        TEST_VERIFY(system->pending->entities.size() == 1);
+        TEST_VERIFY(system->pending->entities[0] == e1);
+
+        TEST_VERIFY(eg->GetEntities().GetSize() == 4);
         TEST_VERIFY(entitiesAddedCount == 2);
+        TEST_VERIFY(eg->GetEntities().Contains(e0));
         TEST_VERIFY(eg->GetEntities().Contains(e1));
         TEST_VERIFY(eg->GetEntities().Contains(e2));
         TEST_VERIFY(eg->GetEntities().Contains(e3));
@@ -434,8 +503,9 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         scene->AddNode(e4);
         scene->Update(0.1f);
 
-        TEST_VERIFY(eg->GetEntities().GetSize() == 4);
+        TEST_VERIFY(eg->GetEntities().GetSize() == 5);
         TEST_VERIFY(entitiesAddedCount == 3);
+        TEST_VERIFY(eg->GetEntities().Contains(e0));
         TEST_VERIFY(eg->GetEntities().Contains(e1));
         TEST_VERIFY(eg->GetEntities().Contains(e2));
         TEST_VERIFY(eg->GetEntities().Contains(e3));

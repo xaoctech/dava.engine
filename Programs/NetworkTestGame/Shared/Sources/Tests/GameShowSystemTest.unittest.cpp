@@ -25,7 +25,7 @@ DAVA_TESTCLASS (GameShowSystemTest)
         const uint8 ENTITIES_NUM = 3;
 
         ScopedPtr<Scene> scene(new Scene(0));
-        NetworkEntitiesSingleComponent* entitiesSingleComponent = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+        NetworkEntitiesSingleComponent* entitiesSingleComponent = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
 
         struct ClientMock : public IClient
         {
@@ -74,7 +74,7 @@ DAVA_TESTCLASS (GameShowSystemTest)
         };
 
         ClientMock client;
-        scene->GetSingletonComponent<NetworkClientSingleComponent>()->SetClient(&client);
+        scene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(&client);
 
         GameShowSystem* gameShowSystem = new GameShowSystem(scene);
         scene->AddSystem(gameShowSystem);
@@ -91,10 +91,7 @@ DAVA_TESTCLASS (GameShowSystemTest)
             Entity* entity = entities[playerID];
             entitiesSingleComponent->RegisterEntity(networkID, entity);
             TEST_VERIFY(entitiesSingleComponent->FindByID(networkID));
-            NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-            replicationComponent->SetNetworkPlayerID(playerID);
-            replicationComponent->SetNetworkID(networkID);
-            replicationComponent->SetOwnerTeamID(playerID % 2);
+            NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(NetworkID::CreatePlayerActionId(playerID, 0, 0));
             entity->AddComponent(replicationComponent);
             scene->AddNode(entity);
         }

@@ -36,7 +36,7 @@ void LodSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_LOD_SYSTEM);
 
-    TransformSingleComponent* tsc = GetScene()->GetSingletonComponent<TransformSingleComponent>();
+    const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
 
     for (auto& pair : tsc->worldTransformChanged.map)
     {

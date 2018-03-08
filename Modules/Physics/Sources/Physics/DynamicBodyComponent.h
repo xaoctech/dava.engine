@@ -50,8 +50,6 @@ public:
     void SetIsKinematic(bool value);
     bool GetIsKinematic() const;
 
-    bool GetIsActive() const;
-
     bool IsCCDEnabled() const;
     void SetCCDEnabled(bool isCCDEnabled);
 
@@ -63,8 +61,6 @@ protected:
     void UpdateLocalProperties() override;
 
 private:
-    friend class PhysicsSystem;
-
     float32 linearDamping = 0.05f;
     float32 angularDamping = 0.05f;
 
@@ -76,13 +72,15 @@ private:
     bool enableCCD = false;
 
     bool isKinematic = false;
-    bool isActive = false;
-
-    // Hidden
 
     Vector3 linearVelocity = Vector3::Zero;
     Vector3 angularVelocity = Vector3::Zero;
 
+    float32 wakeCounter = 0.0f;
+
     DAVA_VIRTUAL_REFLECTION(DynamicBodyComponent, PhysicsComponent);
+
+private:
+    friend class PhysicsSystem;
 };
 } // namespace DAVA

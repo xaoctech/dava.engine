@@ -22,21 +22,21 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimelineControlSystem)
 }
 
 NetworkTimelineControlSystem::NetworkTimelineControlSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     packetHeader.type = ServicePacketHeader::ServiceType::TIMELINE_CONTROL;
     packetHeader.value.timeline = ServicePacketHeader::TimelineControlType::PAUSE;
 
     if (IsServer(this))
     {
-        server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+        server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkTimelineControlSystem::OnConnectServer));
         server->SubscribeOnReceive(PacketParams::SERVICE_CHANNEL_ID,
                                    OnServerReceiveCb(this, &NetworkTimelineControlSystem::OnReceiveServer));
     }
     else if (IsClient(this))
     {
-        client = scene->GetSingletonComponent<NetworkClientSingleComponent>()->GetClient();
+        client = scene->GetSingleComponentForRead<NetworkClientSingleComponent>(this)->GetClient();
         client->SubscribeOnReceive(PacketParams::SERVICE_CHANNEL_ID,
                                    OnClientReceiveCb(this, &NetworkTimelineControlSystem::OnReceiveClient));
     }
@@ -45,7 +45,7 @@ NetworkTimelineControlSystem::NetworkTimelineControlSystem(Scene* scene)
         DVASSERT(false);
     }
 
-    netTimelineComp = scene->GetSingletonComponent<NetworkTimelineSingleComponent>();
+    netTimelineComp = scene->GetSingleComponentForWrite<NetworkTimelineSingleComponent>(this);
 }
 
 void NetworkTimelineControlSystem::Process(float32 timeElapsed)

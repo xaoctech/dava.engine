@@ -8,7 +8,7 @@
 #include "Math/Vector.h"
 #include "Math/Quaternion.h"
 #include "Reflection/Reflection.h"
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 
 namespace DAVA
 {
@@ -20,9 +20,9 @@ enum class AnalogPrecision
     ANALOG_FLOAT32 = 0
 };
 
-class ActionsSingleComponent : public SingletonComponent
+class ActionsSingleComponent : public ClearableSingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(ActionsSingleComponent, SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(ActionsSingleComponent, ClearableSingleComponent);
 
 public:
     static const int32 MAX_DIGITAL_SIZE = 64;
@@ -89,8 +89,6 @@ public:
     int32 GetDigitalActionNumericId(const FastName& actionId) const;
     const FastName& GetDigitalActionId(int32 actionNumericId) const;
 
-    void Clear() override;
-
     void SetLocalPlayerId(int32 playerId);
     int32 GetLocalPlayerId() const;
 
@@ -117,6 +115,9 @@ public:
     Vector<DigitalAction> collectedDigitalActions;
     Vector<AnalogAction> collectedAnalogActions;
     UnorderedMap<uint8, Vector<Actions>> playerIdsToActions;
+
+private:
+    void Clear() override;
 
 private:
     Vector<FastName> availableDigitalActions;

@@ -1,86 +1,78 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
-#include "Math/Vector.h"
 #include "Math/Quaternion.h"
 #include "NetworkCore/Private/NetworkSerialization.h"
 
 namespace DAVA
 {
+class NetworkIdSystem;
+
+using NetworkPlayerID = uint8;
 struct NetworkID
 {
+    SERIALIZABLE(fullValue);
+
     static const NetworkID INVALID;
     static const NetworkID SCENE_ID;
 
-    static const NetworkID FIRST_STATIC_OBJ_ID;
-    static const NetworkID FIRST_SERVER_ID;
+    NetworkID();
+    explicit NetworkID(uint32 value);
 
-    SERIALIZABLE(value);
+    bool IsValid() const;
+    bool IsStaticId() const;
+    bool IsPlayerOwnId() const;
+    bool IsPlayerActionId() const;
+    bool IsPlayerId() const;
 
-    NetworkID()
-        : value(~0)
-    {
-    }
+    NetworkPlayerID GetPlayerId() const;
+    uint32 GetPlayerActionFrameId() const;
+    uint32 GetPlayerActionId() const;
 
-    explicit NetworkID(uint32 networkID)
-        : value(networkID)
-    {
-    }
+    explicit operator uint32() const;
 
-    explicit operator uint32() const
-    {
-        return value;
-    }
+    bool operator==(const NetworkID& other) const;
+    bool operator!=(const NetworkID& other) const;
+    bool operator>=(const NetworkID& other) const;
+    bool operator<(const NetworkID& other) const;
+    bool operator>(const NetworkID& other) const;
 
-    bool operator==(const NetworkID& other) const
-    {
-        return value == other.value;
-    }
+    friend std::ostream& operator<<(std::ostream& stream, const NetworkID& id);
 
-    bool operator!=(const NetworkID& other) const
-    {
-        return value != other.value;
-    }
-
-    bool operator<(const NetworkID& other) const
-    {
-        return value < other.value;
-    }
-
-    bool operator>(const NetworkID& other) const
-    {
-        return value > other.value;
-    }
-
-    bool operator>=(const NetworkID& other) const
-    {
-        return value >= other.value;
-    }
-
-    NetworkID& operator++()
-    {
-        ++value;
-        return *this;
-    }
-
-    NetworkID operator++(int)
-    {
-        NetworkID tmp = *this;
-        ++*this;
-        return tmp;
-    }
-
-    friend std::ostream& operator<<(std::ostream& stream, const NetworkID& id)
-    {
-        stream << static_cast<uint32>(id);
-        return stream;
-    }
+    static NetworkID CreatePlayerActionId(NetworkPlayerID playerId_7bits, uint32 frameId_20bits, uint32 id_4bits);
+    static NetworkID CreatePlayerOwnId(NetworkPlayerID playerId_7bits);
+    static NetworkID CreateStaticId(uint32 id_30bits);
 
 private:
-    uint32 value;
+    union
+    {
+        uint32 fullValue;
+
+        struct
+        {
+            uint32 id : 30;
+            uint32 playerFlag : 1; // must be 0
+            uint32 actionFlag : 1; // must be 0
+        } staticValue;
+
+        struct
+        {
+            uint32 id : 23;
+            uint32 playerId : 7;
+            uint32 playerFlag : 1; // must be 1
+            uint32 actionFlag : 1; // must be 0
+        } playerValue;
+
+        struct
+        {
+            uint32 id : 4;
+            uint32 frameId : 20;
+            uint32 playerId : 7;
+            uint32 actionFlag : 1; // must be 1
+        } actionValue;
+    };
 };
 
-using NetworkPlayerID = uint8;
 constexpr int32 MAX_NETWORK_PLAYERS_COUNT = 128;
 constexpr int32 MAX_NETWORK_VISIBLE_ENTITIES_COUNT = 1024;
 
@@ -188,14 +180,5 @@ struct NetworkPackedQuaternion
 
 } //namespace DAVA
 
-namespace std
-{
-template <>
-struct hash<DAVA::NetworkID>
-{
-    size_t operator()(const DAVA::NetworkID& networkID) const
-    {
-        return static_cast<DAVA::uint32>(networkID);
-    }
-};
-}
+#define __Dava_Network_NetworkType__
+#include "NetworkCore/Private/NetworkTypes.hpp"

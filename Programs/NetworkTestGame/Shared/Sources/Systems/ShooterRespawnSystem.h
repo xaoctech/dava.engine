@@ -21,6 +21,6 @@ public:
     void PrepareForRemove() override;
 
 private:
-    DAVA::ComponentGroup<HealthComponent>* healthComponents;
-    std::unique_ptr<DAVA::ComponentGroupOnAdd<HealthComponent>> healthComponentsPending;
+    DAVA::ComponentGroup<HealthComponent>* healthComponents = nullptr;
+    DAVA::ComponentGroupOnAdd<HealthComponent>* healthComponentsPending = nullptr;
 };

@@ -32,9 +32,3 @@ DAVA::String StatsLoggingSingleComponent::PopMessage()
 
     return msg;
 }
-
-void StatsLoggingSingleComponent::Clear()
-{
-    LockGuard<Mutex> lock(mutex);
-    logDeque.clear();
-}

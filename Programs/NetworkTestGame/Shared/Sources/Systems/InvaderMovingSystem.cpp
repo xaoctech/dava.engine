@@ -58,7 +58,7 @@ InvaderMovingSystem::InvaderMovingSystem(Scene* scene)
 {
     using namespace InvaderMovingSystemDetail;
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
     uint32 keyboardId = InputUtils::GetKeyboardDeviceId();
     actionsSingleComponent->CollectDigitalAction(UP, eInputElements::KB_W, keyboardId);

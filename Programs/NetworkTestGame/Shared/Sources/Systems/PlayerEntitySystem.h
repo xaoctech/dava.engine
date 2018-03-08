@@ -26,7 +26,6 @@ public:
 private:
     void FillTankPlayerEntity(DAVA::Entity* entity);
     void FillCarPlayerEntity(DAVA::Entity* entity);
-    void FillCharacterPlayerEntity(DAVA::Entity* entity);
 
     DAVA::Entity* GetModel(const DAVA::String& pathname) const;
 
@@ -35,7 +34,6 @@ private:
 
     BattleOptionsSingleComponent* optionsComp = nullptr;
 
-    std::unique_ptr<DAVA::EntityGroupOnAdd> tanksSubscriber = nullptr;
-    std::unique_ptr<DAVA::EntityGroupOnAdd> carsSubscriber = nullptr;
-    std::unique_ptr<DAVA::EntityGroupOnAdd> charsSubscriber = nullptr;
+    DAVA::EntityGroupOnAdd* tanksSubscriber = nullptr;
+    DAVA::EntityGroupOnAdd* carsSubscriber = nullptr;
 };

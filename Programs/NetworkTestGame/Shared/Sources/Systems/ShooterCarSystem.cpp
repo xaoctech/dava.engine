@@ -54,10 +54,10 @@ ShooterCarSystem::ShooterCarSystem(DAVA::Scene* scene)
         kbId = kb->GetId();
     }
 
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_INTERACT, eInputElements::KB_E, kbId, DigitalElementState::JustPressed());
 
-    BattleOptionsSingleComponent* battleOptionsSingleComponent = scene->GetSingletonComponent<BattleOptionsSingleComponent>();
+    BattleOptionsSingleComponent* battleOptionsSingleComponent = scene->GetSingleComponent<BattleOptionsSingleComponent>();
 
     DVASSERT(battleOptionsSingleComponent->isSet);
 

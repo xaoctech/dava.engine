@@ -30,5 +30,5 @@ private:
     mutable DAVA::UnorderedMap<DAVA::String, DAVA::Entity*> modelCache;
     BattleOptionsSingleComponent* optionsComp = nullptr;
 
-    std::unique_ptr<DAVA::EntityGroupOnAdd> subscriber = nullptr;
+    DAVA::EntityGroupOnAdd* subscriber = nullptr;
 };

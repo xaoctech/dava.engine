@@ -11,10 +11,7 @@ class GameMode
 public:
     enum Id : DAVA::uint8
     {
-        HELLO = 0,
-        CARS,
-        CHARACTERS,
-        PHYSICS,
+        CARS = 0,
         TANKS,
         SHOOTER,
         INVADERS

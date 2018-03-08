@@ -31,10 +31,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkResimulationSystem)
 NetworkResimulationSystem::NetworkResimulationSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent, NetworkReplicationComponent>())
 {
-    networkTimeSingleComponent = scene->GetSingletonComponent<NetworkTimeSingleComponent>();
-    predictionSingleComponent = scene->GetSingletonComponent<NetworkPredictionSingleComponent>();
-    snapshotSingleComponent = scene->GetSingletonComponent<SnapshotSingleComponent>();
-    networkResimulationSingleComponent = scene->AquireSingleComponentForWrite<NetworkResimulationSingleComponent>();
+    networkTimeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    predictionSingleComponent = scene->GetSingleComponentForRead<NetworkPredictionSingleComponent>(this);
+    snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
+    networkResimulationSingleComponent = scene->GetSingleComponentForWrite<NetworkResimulationSingleComponent>(this);
 
     // Collect already added systems.
     for (SceneSystem* system : scene->GetSystems())
@@ -71,6 +71,14 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
         {
             resimulationFrameIdToEntities[p.second.frameId].push_back(p.first);
         }
+
+        const auto& methods = GetEngineContext()->systemManager->GetFixedProcessMethods();
+
+        const auto networkTransformFromNetToLocalSystemMethod = std::find_if(methods.begin(), methods.end(), [](const SystemManager::SceneProcessInfo& x) {
+            return x.systemType->Is<NetworkTransformFromNetToLocalSystem>();
+        });
+
+        DVASSERT(networkTransformFromNetToLocalSystemMethod != methods.end());
 
         // There are systems whose simulation results can be fetched with delay
         // E.g. physics system starts simulation at the end of a frame and fetches results at the beginning of the next frame
@@ -112,6 +120,8 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 
         entitiesManager->DetachGroups();
 
+        Logger::Info("Resimulation from frame %u to frame %u", resimulationStartFrameId, maxFrameId);
+
         for (uint32 frameId = resimulationStartFrameId; frameId < maxFrameId; ++frameId)
         {
             networkResimulationSingleComponent->SetResimulationFrameId(frameId);
@@ -141,14 +151,6 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
                 entitiesManager->UpdateCaches();
             }
 
-            const auto& methods = GetEngineContext()->systemManager->GetFixedProcessMethods();
-
-            auto networkTransformFromNetToLocalSystemMethod = std::find_if(methods.begin(), methods.end(), [](const SystemManager::SceneProcessInfo& x) {
-                return x.systemType->Is<NetworkTransformFromNetToLocalSystem>();
-            });
-
-            DVASSERT(networkTransformFromNetToLocalSystemMethod != methods.end());
-
             auto InvokeIfPartOfResimulation = [this, entitiesManager](const SystemManager::SceneProcessInfo& processInfo) {
                 auto it = resimulationSystems.find(processInfo.systemType);
                 if (it != resimulationSystems.end())
@@ -165,7 +167,12 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
                 InvokeIfPartOfResimulation(*method);
             }
 
-            GetScene()->AquireSingleComponentForWrite<ActionsSingleComponent>()->Clear();
+            GetScene()->ClearFixedProcessesSingleComponents();
+
+            GetScene()->GetSystem<TransformSystem>()->Process(0);
+            entitiesManager->UpdateCaches();
+
+            GetScene()->ClearAllProcessesSingleComponents();
 
             // Invoke resimulation systems processes from begin to the NetworkTransformFromNetToLocalSystem (excluding).
             for (auto method = methods.begin(); method != networkTransformFromNetToLocalSystemMethod; ++method)
@@ -175,9 +182,6 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 
             LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "##> Simulation is done for frame " << frameId << std::endl);
         }
-
-        GetScene()->GetSystem<TransformSystem>()->Process(0);
-        entitiesManager->UpdateCaches();
 
         /*
             Restore entities groups.

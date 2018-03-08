@@ -17,7 +17,10 @@
 #include <Engine/Engine.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
 #include <Logger/Logger.h>
+#include <DeviceManager/DeviceManager.h>
+#include <Input/Keyboard.h>
 
 #include <physx/PxActor.h>
 #include <physx/PxScene.h>
@@ -28,6 +31,8 @@
 #include <PxShared/foundation/PxAllocatorCallback.h>
 
 #include <algorithm>
+
+#define PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG(...) // Logger::Info(__VA_ARGS__)
 
 namespace DAVA
 {
@@ -518,6 +523,63 @@ void PhysicsVehiclesSubsystem::OnSimulationEnabled(bool enabled)
     }
 }
 
+void PhysicsVehiclesSubsystem::SaveSimulationParams(VehicleCarComponent* car)
+{
+    physx::PxVehicleDrive* pxVehicleDrive = car->GetPxVehicle();
+    physx::PxVehicleDriveNW* pxVehicleDriveNW = static_cast<physx::PxVehicleDriveNW*>(pxVehicleDrive);
+    if (pxVehicleDriveNW != nullptr)
+    {
+        car->engineSpeed = pxVehicleDriveNW->mDriveDynData.getEngineRotationSpeed();
+
+        for (uint32 i = 0; i < physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS; ++i)
+        {
+            car->analogInputStates[i] = pxVehicleDriveNW->mDriveDynData.getAnalogInput(i);
+        }
+
+        float32 jounces[4];
+        pxVehicleDriveNW->mWheelsDynData.getWheels4InternalJounces(&jounces[0]);
+
+        for (uint32 i = 0; i < 4; ++i)
+        {
+            VehicleWheelComponent* w = car->GetEntity()->GetComponent<VehicleWheelComponent>(i);
+
+            w->jounce = FLOAT_EQUAL_EPS(jounces[i], FLOAT_MAX, 100.0f) ? 0.0f : jounces[i];
+            pxVehicleDriveNW->mWheelsDynData.getWheelRotationSpeed(i, w->rotationSpeed, w->correctedRotationSpeed);
+            w->rotationAngle = pxVehicleDriveNW->mWheelsDynData.getWheelRotationAngle(i);
+        }
+    }
+}
+
+void PhysicsVehiclesSubsystem::RestoreSimulationParams(VehicleCarComponent* car)
+{
+    physx::PxVehicleDrive* pxVehicleDrive = car->GetPxVehicle();
+    physx::PxVehicleDriveNW* pxVehicleDriveNW = static_cast<physx::PxVehicleDriveNW*>(pxVehicleDrive);
+    if (pxVehicleDriveNW != nullptr)
+    {
+        pxVehicleDriveNW->mDriveDynData.setEngineRotationSpeed(car->engineSpeed);
+
+        for (uint32 i = 0; i < physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS; ++i)
+        {
+            pxVehicleDriveNW->mDriveDynData.setAnalogInput(i, car->analogInputStates[i]);
+        }
+
+        pxVehicleDriveNW->mDriveDynData.setCurrentGear(static_cast<physx::PxU32>(car->GetGear()));
+
+        float32 jounces[4];
+        for (uint32 i = 0; i < 4; ++i)
+        {
+            VehicleWheelComponent* w = car->GetEntity()->GetComponent<VehicleWheelComponent>(i);
+
+            jounces[i] = w->jounce;
+
+            pxVehicleDriveNW->mWheelsDynData.setWheelRotationSpeed(i, w->rotationSpeed, w->correctedRotationSpeed);
+            pxVehicleDriveNW->mWheelsDynData.setWheelRotationAngle(i, w->rotationAngle);
+        }
+
+        pxVehicleDriveNW->mWheelsDynData.setWheels4InternalJounces(&jounces[0]);
+    }
+}
+
 void PhysicsVehiclesSubsystem::SetupNonDrivableSurface(CollisionShapeComponent* surfaceShape) const
 {
     DVASSERT(surfaceShape != nullptr);
@@ -553,20 +615,7 @@ VehicleChassisComponent* PhysicsVehiclesSubsystem::GetChassis(VehicleComponent* 
     Entity* entity = vehicle->GetEntity();
     DVASSERT(entity != nullptr);
 
-    const int32 childrenCount = entity->GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; ++i)
-    {
-        Entity* child = entity->GetChild(i);
-        DVASSERT(child != nullptr);
-
-        VehicleChassisComponent* chassis = child->GetComponent<VehicleChassisComponent>();
-        if (chassis != nullptr)
-        {
-            return chassis;
-        }
-    }
-
-    return nullptr;
+    return entity->GetComponent<VehicleChassisComponent>();
 }
 
 Vector<VehicleWheelComponent*> PhysicsVehiclesSubsystem::GetWheels(VehicleComponent* vehicle) const
@@ -576,19 +625,17 @@ Vector<VehicleWheelComponent*> PhysicsVehiclesSubsystem::GetWheels(VehicleCompon
     Entity* entity = vehicle->GetEntity();
     DVASSERT(entity != nullptr);
 
+    const int32 wheelsCount = entity->GetComponentCount<VehicleWheelComponent>();
+
     Vector<VehicleWheelComponent*> wheels;
+    wheels.reserve(wheelsCount);
 
-    const int32 childrenCount = entity->GetChildrenCount();
-    for (int32 i = 0; i < childrenCount; ++i)
+    for (int32 i = 0; i < wheelsCount; ++i)
     {
-        Entity* child = entity->GetChild(i);
-        DVASSERT(child != nullptr);
+        VehicleWheelComponent* wheel = entity->GetComponent<VehicleWheelComponent>(i);
+        DVASSERT(wheel != nullptr);
 
-        VehicleWheelComponent* wheel = child->GetComponent<VehicleWheelComponent>();
-        if (wheel != nullptr)
-        {
-            wheels.push_back(wheel);
-        }
+        wheels.push_back(wheel);
     }
 
     return wheels;
@@ -632,14 +679,14 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
 
     // Check if entity has all components we need
 
-    VehicleChassisComponent* chassis = GetChassis(vehicleComponent);
-    if (chassis == nullptr)
+    DynamicBodyComponent* vehicleBodyComponent = vehicleEntity->GetComponent<DynamicBodyComponent>();
+    if (vehicleBodyComponent == nullptr)
     {
         return false;
     }
 
-    PhysicsComponent* vehiclePhysicsComponent = static_cast<PhysicsComponent*>(vehicleEntity->GetComponent<DynamicBodyComponent>());
-    if (vehiclePhysicsComponent == nullptr)
+    VehicleChassisComponent* chassis = GetChassis(vehicleComponent);
+    if (chassis == nullptr)
     {
         return false;
     }
@@ -651,15 +698,32 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         return false;
     }
 
-    // Chassis setup
-
-    Vector<CollisionShapeComponent*> chassisShapes = PhysicsUtils::GetShapeComponents(chassis->GetEntity());
-    if (chassisShapes.size() != 1)
+    Vector<CollisionShapeComponent*> vehicleShapes = PhysicsUtils::GetShapeComponents(vehicleEntity);
+    if (vehicleShapes.size() != wheelsCount + 1) // One shape for chassis and one for each wheel
     {
         return false;
     }
 
-    CollisionShapeComponent* chassisShape = chassisShapes[0];
+    for (uint32 i = 0; i < wheelsCount; ++i)
+    {
+        VehicleWheelComponent* wheel = wheels[i];
+        ConvexHullShapeComponent* wheelShape = vehicleEntity->GetComponent<ConvexHullShapeComponent>(i);
+
+        if (wheelShape->GetPxShape() == nullptr)
+        {
+            return false;
+        }
+    }
+
+    PxRigidActor* vehicleActor = vehicleBodyComponent->GetPxActor();
+    DVASSERT(vehicleActor != nullptr);
+
+    PxRigidDynamic* vehicleRigidActor = vehicleActor->is<PxRigidDynamic>();
+    DVASSERT(vehicleRigidActor != nullptr);
+
+    // Chassis setup
+
+    CollisionShapeComponent* chassisShape = vehicleEntity->GetComponent<BoxShapeComponent>();
     DVASSERT(chassisShape != nullptr);
 
     PxVehicleChassisData chassisData;
@@ -676,24 +740,13 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     chassisShape->SetTypeMask(CHASSIS_TYPE);
     chassisShape->SetTypeMaskToCollideWith(CHASSIS_TYPES_TO_COLLIDE_WITH);
 
-    // Wheels setup
-    PxActor* vehicleActor = vehiclePhysicsComponent->GetPxActor();
-    DVASSERT(vehicleActor != nullptr);
-    PxRigidDynamic* vehicleRigidActor = vehicleActor->is<PxRigidDynamic>();
-
     vehicleRigidActor->setMass(chassisData.mMass);
     vehicleRigidActor->setMassSpaceInertiaTensor(chassisData.mMOI);
     vehicleRigidActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
 
-    for (uint32 i = 0; i < wheelsCount; ++i)
-    {
-        VehicleWheelComponent* wheel = wheels[i];
-        Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
-        if (wheelShapes.size() != 1)
-        {
-            return false;
-        }
-    }
+    // Wheels setup
+
+    SkeletonComponent* skeletonComponent = vehicleEntity->GetComponent<SkeletonComponent>();
 
     PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(wheelsCount);
     PxVec3 wheelCenterActorOffsets[PX_MAX_NB_WHEELS];
@@ -703,12 +756,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
     for (uint32 i = 0; i < wheelsCount; ++i)
     {
         VehicleWheelComponent* wheel = wheels[i];
-
-        Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
-        DVASSERT(wheelShapes.size() == 1);
-
-        CollisionShapeComponent* wheelShape = wheelShapes[0];
-        DVASSERT(wheelShape != nullptr);
+        ConvexHullShapeComponent* wheelShape = vehicleEntity->GetComponent<ConvexHullShapeComponent>(i);
 
         PxShape* wheelShapePhysx = wheelShape->GetPxShape();
         DVASSERT(wheelShapePhysx != nullptr);
@@ -719,8 +767,13 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         wheelShape->SetTypeMask(WHEEL_TYPE);
         wheelShape->SetTypeMaskToCollideWith(WHEEL_TYPES_TO_COLLIDE_WITH);
 
-        Matrix4 wheelLocalTransform = wheelShape->GetEntity()->GetLocalTransform();
-        wheelCenterActorOffsets[i] = PhysicsMath::Vector3ToPxVec3(wheelLocalTransform.GetTranslationVector());
+        const FastName& jointName = wheelShape->GetJointName();
+        DVASSERT(jointName.IsValid() && jointName.size() > 0);
+
+        uint32 jointIndex = skeletonComponent->GetJointIndex(jointName);
+
+        Vector3 jointPosition = skeletonComponent->GetDefaultPose().GetJointTransform(jointIndex).GetPosition();
+        wheelCenterActorOffsets[i] = PhysicsMath::Vector3ToPxVec3(jointPosition);
 
         wheelsData[i].mMass = wheelShape->GetMass();
         wheelsData[i].mMOI = 0.5f * (wheel->GetRadius() * wheel->GetRadius()) * wheelsData[i].mMass; // Moment of inertia for a cylinder
@@ -746,45 +799,27 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         suspensionsData[i].mSprungMass = suspensionSprungMasses[i];
     }
 
-    // Create physx shapes to wheels mapping
-    // To handle different layouts among vehicle children (chassis-wheel0-wheel1 or wheel0-wheel1-chassis or even wheel0-chassis-wheel1 etc.)
-    PxI32 wheelShapeMapping[PX_MAX_NB_WHEELS];
-    uint32 wheelShapeMappingCurrentIndex = 0;
-    PxShape* actorShapes[PX_MAX_NB_WHEELS + 1];
-    uint32 actorShapesCount = vehicleRigidActor->getShapes(&actorShapes[0], PX_MAX_NB_WHEELS + 1);
-    for (uint32 i = 0; i < actorShapesCount; ++i)
-    {
-        PxShape* shape = actorShapes[i];
-        DVASSERT(shape != nullptr);
-
-        CollisionShapeComponent* collisionShape = CollisionShapeComponent::GetComponent(shape);
-        DVASSERT(collisionShape != nullptr);
-
-        if (collisionShape->GetEntity()->GetComponent<VehicleWheelComponent>() != nullptr)
-        {
-            wheelShapeMapping[wheelShapeMappingCurrentIndex] = i;
-            ++wheelShapeMappingCurrentIndex;
-        }
-    }
-
     PxVec3 suspensionDirection = pxScene->getGravity();
     suspensionDirection.normalize();
 
     PxVec3 wheelCentreCMOffsets[PX_MAX_NB_WHEELS];
     PxVec3 suspensionForceAppCMOffsets[PX_MAX_NB_WHEELS];
     PxVec3 tireForceAppCMOffsets[PX_MAX_NB_WHEELS];
+
+    PxShape* physxShapes[PX_MAX_NB_WHEELS + 1];
+    vehicleActor->getShapes(&physxShapes[0], PX_MAX_NB_WHEELS + 1, 0);
+
     for (uint32 i = 0; i < wheelsCount; ++i)
     {
-        VehicleWheelComponent* wheel = wheels[i];
+        ConvexHullShapeComponent* wheelShape = vehicleEntity->GetComponent<ConvexHullShapeComponent>(i);
 
-        Vector<CollisionShapeComponent*> wheelShapes = PhysicsUtils::GetShapeComponents(wheel->GetEntity());
-        DVASSERT(wheelShapes.size() == 1);
-
-        CollisionShapeComponent* wheelShape = wheelShapes[0];
-        DVASSERT(wheelShape != nullptr);
-
-        PxShape* wheelShapePhysx = wheelShape->GetPxShape();
-        DVASSERT(wheelShapePhysx != nullptr);
+        for (uint32 j = 0; j < vehicleShapes.size(); ++j)
+        {
+            if (physxShapes[j] == wheelShape->GetPxShape())
+            {
+                wheelsSimData->setWheelShapeMapping(i, j);
+            }
+        }
 
         suspensionTravelDirections[i] = suspensionDirection;
         wheelCentreCMOffsets[i] = wheelCenterActorOffsets[i] - chassisData.mCMOffset;
@@ -798,8 +833,7 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         wheelsSimData->setWheelCentreOffset(i, wheelCentreCMOffsets[i]);
         wheelsSimData->setSuspForceAppPointOffset(i, suspensionForceAppCMOffsets[i]);
         wheelsSimData->setTireForceAppPointOffset(i, tireForceAppCMOffsets[i]);
-        wheelsSimData->setSceneQueryFilterData(i, wheelShapePhysx->getQueryFilterData());
-        wheelsSimData->setWheelShapeMapping(i, wheelShapeMapping[i]);
+        wheelsSimData->setSceneQueryFilterData(i, PxFilterData(0, WHEEL_TYPE, WHEEL_TYPES_TO_COLLIDE_WITH, UNDRIVABLE_SURFACE_FILTER));
         wheelsSimData->setSubStepCount(1, 6, 2);
     }
 
@@ -866,12 +900,64 @@ void PhysicsVehiclesSubsystem::TryRecreateCarVehicle(VehicleCarComponent* vehicl
     DVASSERT(vehicleActor != nullptr);
     PxRigidDynamic* vehicleRigidActor = vehicleActor->is<PxRigidDynamic>();
 
+    // Debug log
+
+    VehicleChassisComponent* chassis = GetChassis(vehicleComponent);
+    DVASSERT(chassis != nullptr);
+
+    DynamicBodyComponent* vehicleBodyComponent = vehicleEntity->GetComponent<DynamicBodyComponent>();
+    DVASSERT(vehicleBodyComponent != nullptr);
+
+    PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("Creating car vehicle with params:");
+
+    PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("vehicleRigidActor->getMass() = %f", vehicleRigidActor->getMass());
+    PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("vehicleRigidActor->getMassSpaceInertiaTensor() = %f, %f, %f", vehicleRigidActor->getMassSpaceInertiaTensor().x, vehicleRigidActor->getMassSpaceInertiaTensor().y, vehicleRigidActor->getMassSpaceInertiaTensor().z);
+    PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("vehicleRigidActor->getCMassLocalPose() = %f, %f, %f; %f, %f, %f, %f", vehicleRigidActor->getCMassLocalPose().p.x, vehicleRigidActor->getCMassLocalPose().p.y, vehicleRigidActor->getCMassLocalPose().p.z, vehicleRigidActor->getCMassLocalPose().q.x, vehicleRigidActor->getCMassLocalPose().q.y, vehicleRigidActor->getCMassLocalPose().q.z, vehicleRigidActor->getCMassLocalPose().q.w);
+
+    for (uint32 i = 0; i < wheelsCount; ++i)
+    {
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mDampingRate = %f", i, wheelsSimData->getWheelData(i).mDampingRate);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mMass = %f", i, wheelsSimData->getWheelData(i).mMass);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mMaxBrakeTorque = %f", i, wheelsSimData->getWheelData(i).mMaxBrakeTorque);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mMaxHandBrakeTorque = %f", i, wheelsSimData->getWheelData(i).mMaxHandBrakeTorque);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mMaxSteer = %f", i, wheelsSimData->getWheelData(i).mMaxSteer);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mMOI = %f", i, wheelsSimData->getWheelData(i).mMOI);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mRadius = %f", i, wheelsSimData->getWheelData(i).mRadius);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mToeAngle = %f", i, wheelsSimData->getWheelData(i).mToeAngle);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mWidth = %f", i, wheelsSimData->getWheelData(i).mWidth);
+
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mCamberStiffnessPerUnitGravity = %f", i, wheelsSimData->getTireData(i).mCamberStiffnessPerUnitGravity);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mFrictionVsSlipGraph = %f", i, wheelsSimData->getTireData(i).mFrictionVsSlipGraph);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLatStiffX = %f", i, wheelsSimData->getTireData(i).mLatStiffX);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLatStiffY = %f", i, wheelsSimData->getTireData(i).mLatStiffY);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLongitudinalStiffnessPerUnitGravity = %f", i, wheelsSimData->getTireData(i).mLongitudinalStiffnessPerUnitGravity);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mCamberStiffnessPerUnitGravity = %u", i, wheelsSimData->getTireData(i).mType);
+
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtMaxCompression = %u", i, wheelsSimData->getSuspensionData(i).mCamberAtMaxCompression);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtMaxDroop = %u", i, wheelsSimData->getSuspensionData(i).mCamberAtMaxDroop);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtRest = %u", i, wheelsSimData->getSuspensionData(i).mCamberAtRest);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mMaxCompression = %u", i, wheelsSimData->getSuspensionData(i).mMaxCompression);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mMaxDroop = %u", i, wheelsSimData->getSuspensionData(i).mMaxDroop);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSpringDamperRate = %u", i, wheelsSimData->getSuspensionData(i).mSpringDamperRate);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSpringStrength = %u", i, wheelsSimData->getSuspensionData(i).mSpringStrength);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSprungMass = %u", i, wheelsSimData->getSuspensionData(i).mSprungMass);
+
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspTravelDirection(%u) = %f, %f, %f", i, wheelsSimData->getSuspTravelDirection(i).x, wheelsSimData->getSuspTravelDirection(i).y, wheelsSimData->getSuspTravelDirection(i).z);
+
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelCentreOffset(%u) = %f, %f, %f", i, wheelsSimData->getWheelCentreOffset(i).x, wheelsSimData->getWheelCentreOffset(i).y, wheelsSimData->getWheelCentreOffset(i).z);
+
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspForceAppPointOffset(%u) = %f, %f, %f", i, wheelsSimData->getSuspForceAppPointOffset(i).x, wheelsSimData->getSuspForceAppPointOffset(i).y, wheelsSimData->getSuspForceAppPointOffset(i).z);
+
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireForceAppPointOffset(%u) = %f, %f, %f", i, wheelsSimData->getTireForceAppPointOffset(i).x, wheelsSimData->getTireForceAppPointOffset(i).y, wheelsSimData->getTireForceAppPointOffset(i).z);
+    }
+
+    //
+
     vehDrive4W->setup(&PxGetPhysics(), vehicleRigidActor, *wheelsSimData, driveSimData, wheelsCount);
     vehicleComponent->vehicle = vehDrive4W;
 
     vehDrive4W->setToRestState();
     vehDrive4W->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
-
     wheelsSimData->free();
 }
 

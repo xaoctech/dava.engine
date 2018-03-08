@@ -122,7 +122,7 @@ void TransformComponent::ApplyLocalTransfomChanged()
     {
         if (nullptr != entity->GetScene())
         {
-            TransformSingleComponent* tsc = entity->GetScene()->GetSingletonComponent<TransformSingleComponent>();
+            TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
             if (nullptr != tsc)
             {
                 tsc->localTransformChanged.push_back(entity);
@@ -135,7 +135,7 @@ void TransformComponent::ApplyWorldTransfomChanged()
 {
     if (nullptr != entity && nullptr != entity->GetScene())
     {
-        TransformSingleComponent* tsc = entity->GetScene()->GetSingletonComponent<TransformSingleComponent>();
+        TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
         if (nullptr != tsc)
         {
             tsc->worldTransformChanged.Push(entity);
@@ -147,7 +147,7 @@ void TransformComponent::ApplyParentChanged()
 {
     if (nullptr != entity && nullptr != entity->GetScene())
     {
-        TransformSingleComponent* tsc = entity->GetScene()->GetSingletonComponent<TransformSingleComponent>();
+        TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
         if (nullptr != tsc)
         {
             tsc->transformParentChanged.push_back(entity);

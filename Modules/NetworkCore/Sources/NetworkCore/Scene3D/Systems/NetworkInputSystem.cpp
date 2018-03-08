@@ -2,19 +2,10 @@
 #include "NetworkTimeSystem.h"
 #include "NetworkCore/NetworkCoreUtils.h"
 
-#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 
 namespace DAVA
 {
-DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
-{
-    ReflectionRegistrator<NetworkInputSystem>::Begin()[M::Tags("network", "input")]
-    .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 18.0f)]
-    .End();
-}
-
 namespace NetworkInputSystemDetail
 {
 //bits
@@ -29,7 +20,7 @@ static const uint64 DUPLICATE_MASK = ~(1ull << 63);
 void NetworkInputSystem::PackDigitalActions(Scene* scene, uint64& packedActions, Entity* entity, const UnorderedSet<FastName>* filter)
 {
     using namespace NetworkInputSystemDetail;
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    const ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     const auto& allActions = GetCollectedActionsForClient(scene, entity);
     int32 count = 0;
     if (allActions.size() > 0)
@@ -54,7 +45,7 @@ void NetworkInputSystem::PackDigitalActions(Scene* scene, uint64& packedActions,
 Vector<FastName> NetworkInputSystem::UnpackDigitalActions(uint64 packedActions, Scene* scene)
 {
     using namespace NetworkInputSystemDetail;
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    const ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     Vector<FastName> result;
     int32 offset = DIGITAL_COUNT_OFFSET;
     int32 count = static_cast<int32>((packedActions >> offset) & DIGITAL_COUNT_MASK);
@@ -71,7 +62,7 @@ Vector<FastName> NetworkInputSystem::UnpackDigitalActions(uint64 packedActions, 
 uint64 NetworkInputSystem::PackAnalogActions(Scene* scene, uint64& packedActions, Entity* entity, const UnorderedSet<FastName>* filter)
 {
     using namespace NetworkInputSystemDetail;
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    const ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     const auto& availableAnalogActions = actionsSingleComponent->GetAvailableAnalogActions();
     const auto& allActions = GetCollectedActionsForClient(scene, entity);
     uint64 packedAnalogStates = 0;
@@ -127,7 +118,7 @@ AnalogActionsMap NetworkInputSystem::UnpackAnalogActions(uint64 packedActions,
 {
     using namespace NetworkInputSystemDetail;
     AnalogActionsMap result;
-    ActionsSingleComponent* actionsSingleComponent = scene->GetSingletonComponent<ActionsSingleComponent>();
+    const ActionsSingleComponent* actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
     const auto& availableAnalogActions = actionsSingleComponent->GetAvailableAnalogActions();
     const int32 bufferSize = 64;
     int32 offset = 0;

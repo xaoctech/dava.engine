@@ -41,7 +41,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCarAttackSystem)
 }
 
 ShooterCarAttackSystem::ShooterCarAttackSystem(DAVA::Scene* scene)
-    : DAVA::SceneSystem(scene, 0)
+    : DAVA::SceneSystem(scene, DAVA::ComponentMask())
     , ccts(scene->AquireComponentGroup<ShooterMirroredCharacterComponent, ShooterMirroredCharacterComponent>())
 {
 }
@@ -51,10 +51,10 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
     using namespace DAVA;
     using namespace ShooterCarAttackSystemDetail;
 
-    CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingletonComponent<CollisionSingleComponent>();
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
     DVASSERT(collisionSingleComponent != nullptr);
 
-    CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingletonComponent<CharacterMirrorsSingleComponent>();
+    CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
     DVASSERT(mirrorsSingleComponent != nullptr);
 
     static Vector<ShooterMirroredCharacterComponent*> pushedCctsToRemove;
@@ -113,7 +113,7 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
                 if (damage > 0)
                 {
                     HealthComponent* healthComponent = mirroredCctComponent->GetEntity()->GetComponent<HealthComponent>();
-                    const uint32 frameId = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>()->GetFrameId();
+                    const uint32 frameId = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>()->GetFrameId();
                     DVASSERT(healthComponent != nullptr);
 
                     healthComponent->DecHealth(damage, frameId);

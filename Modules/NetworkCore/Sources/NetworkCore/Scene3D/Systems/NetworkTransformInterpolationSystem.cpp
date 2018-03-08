@@ -20,9 +20,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTransformInterpolationSystem)
 }
 
 NetworkTransformInterpolationSystem::NetworkTransformInterpolationSystem(Scene* scene)
-    : BaseSimulationSystem(scene, 0)
+    : BaseSimulationSystem(scene, ComponentMask())
     , fixedInterpolationGroup(scene->AquireComponentGroup<TransformInterpolationComponent, TransformInterpolationComponent, NetworkPredictComponent>())
-    , fixedInterpolationPendingAdd(fixedInterpolationGroup)
+    , fixedInterpolationPendingAdd(scene->AquireComponentGroupOnAdd(fixedInterpolationGroup, this))
 {
 }
 
@@ -48,11 +48,11 @@ void NetworkTransformInterpolationSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTransformInterpolationSystem::ProcessFixed");
 
-    for (TransformInterpolationComponent* tic : fixedInterpolationPendingAdd.components)
+    for (TransformInterpolationComponent* tic : fixedInterpolationPendingAdd->components)
     {
         tic->state = (IsReSimulating() ? InterpolationState::DISABLED : InterpolationState::FIXED);
     }
-    fixedInterpolationPendingAdd.components.clear();
+    fixedInterpolationPendingAdd->components.clear();
 }
 
 } //namespace DAVA

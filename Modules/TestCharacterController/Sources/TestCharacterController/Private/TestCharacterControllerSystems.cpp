@@ -26,7 +26,7 @@
 namespace DAVA
 {
 TestCharacterControllerSystem::TestCharacterControllerSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     characterForward = Vector3::UnitX;
     cameraDirection = characterForward;
@@ -164,7 +164,7 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
     const static FastName WEAPON_SHOOT_MOTION_ID("shoot");
     const static FastName WEAPON_SHOOT_MARKER("shoot");
 
-    MotionSingleComponent* msc = GetScene()->GetSingletonComponent<MotionSingleComponent>();
+    const MotionSingleComponent* msc = GetScene()->GetSingleComponentForRead<MotionSingleComponent>(this);
     if (waitReloadEnd)
     {
         MotionSingleComponent::AnimationInfo reloadAnimationInfo(characterMotionComponent, WEAPON_MOTION_LAYER_ID, WEAPON_RELOAD_MOTION_ID);
@@ -292,7 +292,7 @@ void TestCharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& dire
 //////////////////////////////////////////////////////////////////////////
 
 TestCharacterMoveSystem::TestCharacterMoveSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
 }
@@ -320,7 +320,7 @@ void TestCharacterMoveSystem::Process(DAVA::float32 timeElapsed)
 //////////////////////////////////////////////////////////////////////////
 
 TestCharacterWeaponSystem::TestCharacterWeaponSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
 }
@@ -348,7 +348,7 @@ void TestCharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
 //////////////////////////////////////////////////////////////////////////
 
 TestCharacterCameraSystem::TestCharacterCameraSystem(DAVA::Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
     controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
 }

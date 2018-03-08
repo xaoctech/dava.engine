@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Entity/SingletonComponent.h"
+#include "Entity/SingleComponent.h"
 
 namespace DAVA
 {
 class Entity;
 }
 
-class GameModeSingleComponent : public DAVA::SingletonComponent
+class GameModeSingleComponent : public DAVA::SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(GameModeSingleComponent, DAVA::SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(GameModeSingleComponent, DAVA::SingleComponent);
 
 public:
     bool IsMapLoaded() const;
@@ -17,8 +17,6 @@ public:
 
     DAVA::Entity* GetPlayer() const;
     void SetPlayer(DAVA::Entity* entity);
-
-    void Clear() override;
 
 private:
     bool isMapLoaded = false;

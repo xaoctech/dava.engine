@@ -1,16 +1,16 @@
 #pragma once
 
 #include <Base/UnordererMap.h>
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 
 namespace DAVA
 {
 class Entity;
 }
 
-class CharacterMirrorsSingleComponent : public DAVA::SingletonComponent
+class CharacterMirrorsSingleComponent : public DAVA::SingleComponent
 {
-    DAVA_VIRTUAL_REFLECTION(CharacterMirrorsSingleComponent, DAVA::SingletonComponent);
+    DAVA_VIRTUAL_REFLECTION(CharacterMirrorsSingleComponent, DAVA::SingleComponent);
 
 public:
     void AddMirrorForCharacter(DAVA::Entity* character, DAVA::Entity* mirror);
@@ -18,7 +18,6 @@ public:
     DAVA::Entity* GetMirrorForCharacter(DAVA::Entity* character) const;
     DAVA::Entity* GetCharacterFromMirror(DAVA::Entity* entity) const;
     const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& GetCharacterToMirrorMap() const;
-    void Clear() override;
 
 private:
     DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*> characterToMirror;

@@ -42,7 +42,7 @@ void EnemyMovingSystem::ProcessFixed(float32 timeElapsed)
         DVASSERT(gameInputSystem);
     }
 
-    NetworkTimeSingleComponent* timeComp = GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* timeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     if (timeComp->IsInitialized())
     {
         for (Entity* entity : entityGroup->GetEntities())

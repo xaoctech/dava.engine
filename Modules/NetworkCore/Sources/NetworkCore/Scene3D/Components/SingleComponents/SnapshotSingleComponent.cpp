@@ -350,8 +350,4 @@ bool SnapshotSingleComponent::ApplyServerDiff(ApplyDiffParams& params, SnapshotA
     return (params.outDiffSize > 0);
 }
 
-void SnapshotSingleComponent::Clear()
-{
-}
-
 } // namespace DAVA

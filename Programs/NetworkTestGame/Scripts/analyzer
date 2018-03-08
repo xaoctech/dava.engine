@@ -5,7 +5,7 @@ pod=${1}
 cmd=${2:-start}
 dir=${3:-dev}
 secret=${4:-secret.tfvars}
-clients_num=${5:-32}
+clients_num=${5:-64}
 
 SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
@@ -38,12 +38,19 @@ if [ "${cmd}" == "stop" ]; then
         exit 1
     fi
 
+    total_count=0
     for host in ${hosts[@]}; do
         count=`ssh ${SSH_OPTS} ec2-user@${host} "ps auxc | grep Client | wc -l" 2>/dev/null`
-        if [ "${count}" -ne "${clients_num}" ]; then
-            (>&2 echo "[${host}]: Some clients crashed. Alive: ${count}/${clients_num}")
-            exit 1
-        fi
+        (>&1 echo "[${host}]: Alive clients: ${count}")
+        total_count=$((total_count + count))
+    done
+
+    if [ "${total_count}" -ne "${clients_num}" ]; then
+        (>&2 echo "Some clients crashed. Alive: ${total_count}/${clients_num}")
+        exit 1
+    fi
+
+    for host in ${hosts[@]}; do
         ssh ${SSH_OPTS} ec2-user@${host} << 'ENDSSH'
 grep -hs --exclude=analyzer_agent.py "Timestamps\|FPS\|\[send\]\|\[recv\]\|generalstat\|componentstat\|typestat" * | python analyzer_agent.py stop > analyzer_result.json
 ENDSSH

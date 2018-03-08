@@ -37,10 +37,10 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
                                             }
 
                                             const ComponentMask& entityComponentMask = e->GetAvailableComponentMask();
-                                            return (possibleComponents & entityComponentMask).any();
+                                            return (possibleComponents & entityComponentMask).IsAnySet();
                                         });
 
-    CharacterMirrorsSingleComponent* mirrorsSingleComponent = scene.GetSingletonComponent<CharacterMirrorsSingleComponent>();
+    CharacterMirrorsSingleComponent* mirrorsSingleComponent = scene.GetSingleComponent<CharacterMirrorsSingleComponent>();
 
     // Save current network transforms
 
@@ -70,7 +70,7 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
 
     // Roll back transforms
 
-    SnapshotSingleComponent* snapshotSingleComponent = scene.GetSingletonComponent<SnapshotSingleComponent>();
+    SnapshotSingleComponent* snapshotSingleComponent = scene.GetSingleComponent<SnapshotSingleComponent>();
     DVASSERT(snapshotSingleComponent != nullptr);
 
     Snapshot* snapshot = snapshotSingleComponent->GetServerSnapshot(frameId);

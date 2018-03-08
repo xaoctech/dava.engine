@@ -27,5 +27,5 @@ protected:
 
     void NextState(DAVA::Entity* bullet, ShootComponent* shootComponent, DAVA::float32 timeElapsed);
     DAVA::EntityGroup* entityGroup = nullptr;
-    DAVA::EntityGroupOnAdd pendingEntities;
+    DAVA::EntityGroupOnAdd* pendingEntities = nullptr;
 };

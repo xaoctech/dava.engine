@@ -23,6 +23,7 @@
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
 #include "Components/SingleComponents/GameModeSingleComponent.h"
@@ -50,7 +51,7 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
     ScopedPtr<Scene> environmentScene(new Scene());
     SceneFileV2::eError ret = environmentScene->LoadScene(environmentScenePath);
     DVASSERT(ret == SceneFileV2::eError::ERROR_NO_ERROR);
-    NetworkEntitiesSingleComponent* networkEntities = scene->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+    NetworkEntitiesSingleComponent* networkEntities = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
     Entity* sw = nullptr;
     for (int32 i = 0; i < environmentScene->GetChildrenCount(); ++i)
     {
@@ -59,8 +60,9 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
         SwitchComponent* switchComp = node->GetComponent<SwitchComponent>();
         if (switchComp != nullptr)
         {
-            NetworkReplicationComponent* netReplComp = new NetworkReplicationComponent();
-            netReplComp->SetNetworkID(NetworkIdSystem::GetEntityIdForStaticObject());
+            NetworkID switchId = NetworkID::CreateStaticId(node->GetID());
+
+            NetworkReplicationComponent* netReplComp = new NetworkReplicationComponent(switchId);
             node->AddComponent(netReplComp);
             networkEntities->RegisterEntity(netReplComp->GetNetworkID(), node);
         }
@@ -69,7 +71,7 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
     // Subscrive to new clients connections
     if (IsServer(this))
     {
-        server = scene->GetSingletonComponent<NetworkServerSingleComponent>()->GetServer();
+        server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
         server->SubscribeOnConnect([this](const Responder& responder) { connectedResponders.push_back(&responder); });
         countdown = 10.f;
     }
@@ -199,7 +201,7 @@ void GameModeSystemCars::OnClientConnected(const Responder& responder)
 {
     DVASSERT(server != nullptr);
 
-    NetworkGameModeSingleComponent* networkGameModeComponent = GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* networkGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     NetworkPlayerID playerID = networkGameModeComponent->GetNetworkPlayerID(responder.GetToken());
     Entity* playerEntity = networkGameModeComponent->GetPlayerEnity(playerID);
     if (playerEntity == nullptr)
@@ -209,13 +211,8 @@ void GameModeSystemCars::OnClientConnected(const Responder& responder)
 
         Entity* car = new Entity();
 
-        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent();
-        replicationComponent->SetNetworkPlayerID(playerID);
-        replicationComponent->SetOwnerTeamID(responder.GetTeamID());
-        replicationComponent->SetEntityType(EntityType::VEHICLE);
-        car->AddComponent(replicationComponent);
-
         PlayerCarComponent* carComponent = new PlayerCarComponent();
+        carComponent->playerId = playerID;
         car->AddComponent(carComponent);
 
         // Position the car slightly above the ground

@@ -2,9 +2,9 @@
 #include "FileSystem/FilePath.h"
 #include "Logger/Logger.h"
 
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_LINUX__)
 
-#if defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_LINUX__)
 #include <sys/wait.h>
 #include <unistd.h>
 #endif

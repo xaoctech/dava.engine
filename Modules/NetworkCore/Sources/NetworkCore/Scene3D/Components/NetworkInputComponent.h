@@ -59,6 +59,6 @@ private:
 
     Quaternion lastCamOrient;
 
-    static const uint8 MAX_HISTORY_SIZE = 32;
+    static const uint8 MAX_HISTORY_SIZE = 64;
 };
 }

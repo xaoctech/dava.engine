@@ -16,7 +16,7 @@ const float32 DISTANCE_LOG_TOLERANCE = 20.f;
 const FastName& GetToken(Entity* entity)
 {
     NetworkReplicationComponent* replComp = entity->GetComponent<NetworkReplicationComponent>();
-    NetworkGameModeSingleComponent* netGameModeComp = entity->GetScene()->GetSingletonComponent<NetworkGameModeSingleComponent>();
+    NetworkGameModeSingleComponent* netGameModeComp = entity->GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     return netGameModeComp->GetToken(replComp->GetNetworkPlayerID());
 }
 }
@@ -25,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerStatsMonitoringSystem)
 {
     ReflectionRegistrator<PlayerStatsMonitoringSystem>::Begin()[M::Tags("monitor_game_stats")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &PlayerStatsMonitoringSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 9.0f)]
+    .Method("Process", &PlayerStatsMonitoringSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 9.0f)]
     .End();
 }
 
@@ -36,7 +36,7 @@ PlayerStatsMonitoringSystem::PlayerStatsMonitoringSystem(Scene* scene)
                 ComponentUtils::MakeMask<TransformComponent>() |
                 ComponentUtils::MakeMask<NetworkReplicationComponent>())
 {
-    statsComp = scene->GetSingletonComponent<StatsLoggingSingleComponent>();
+    statsComp = scene->GetSingleComponent<StatsLoggingSingleComponent>();
     DVASSERT(statsComp);
 }
 
@@ -83,7 +83,7 @@ void PlayerStatsMonitoringSystem::ProcessAgent(AgentInfo& agent)
 
     Entity* entity = agent.entity;
     const char* tokenStr = agent.token.c_str();
-    NetworkTimeSingleComponent* timeComp = entity->GetScene()->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* timeComp = entity->GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
 
     uint8 curHealth = entity->GetComponent<HealthComponent>()->GetHealth();
     if (agent.lastHealthLogged != curHealth)

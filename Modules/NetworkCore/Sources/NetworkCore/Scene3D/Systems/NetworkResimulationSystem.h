@@ -31,8 +31,8 @@ private:
     UnorderedMap<const Type*, SceneSystem*> resimulationSystems;
     uint32 resimulationsCount = 0;
 
-    NetworkTimeSingleComponent* networkTimeSingleComponent = nullptr;
-    NetworkPredictionSingleComponent* predictionSingleComponent = nullptr;
+    const NetworkTimeSingleComponent* networkTimeSingleComponent = nullptr;
+    const NetworkPredictionSingleComponent* predictionSingleComponent = nullptr;
     SnapshotSingleComponent* snapshotSingleComponent = nullptr;
     NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
 };

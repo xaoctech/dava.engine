@@ -43,7 +43,7 @@ UIControlBackground::UIControlBackground()
     : color(Color::White)
     , lastDrawPos(0, 0)
     , drawColor(Color::White)
-    , material(SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL))
+    , material(RefPtr<NMaterial>::ConstructWithRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL))
 #if defined(LOCALIZATION_DEBUG)
     , lastDrawState(std::make_unique<SpriteDrawState>())
 #endif
@@ -69,7 +69,7 @@ UIControlBackground::UIControlBackground(const UIControlBackground& src)
     , contour(src.contour)
     , gradientMode(src.gradientMode)
     , drawColor(src.drawColor)
-    , material(SafeRetain(src.material))
+    , material(src.material)
 #if defined(LOCALIZATION_DEBUG)
     , lastDrawState(std::make_unique<SpriteDrawState>(*src.lastDrawState))
 #endif
@@ -84,7 +84,7 @@ UIControlBackground* UIControlBackground::Clone() const
 UIControlBackground::~UIControlBackground()
 {
     spr = nullptr;
-    SafeRelease(material);
+    material = nullptr;
     ReleaseDrawData();
 }
 
@@ -272,7 +272,7 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
 
     SpriteDrawState drawState;
 
-    drawState.SetMaterial(material);
+    drawState.SetMaterial(material.Get());
     if (spr != nullptr)
     {
         //drawState.SetShader(shader);
@@ -578,13 +578,12 @@ float32 UIControlBackground::GetTopBottomStretchCap() const
 
 void UIControlBackground::SetMaterial(NMaterial* _material)
 {
-    SafeRelease(material);
-    material = SafeRetain(_material);
+    material = _material;
 }
 
 inline NMaterial* UIControlBackground::GetMaterial() const
 {
-    return material;
+    return material.Get();
 }
 
 void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor2D>& batches)

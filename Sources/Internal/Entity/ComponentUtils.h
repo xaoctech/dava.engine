@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Base/Type.h"
-#include "Base/BaseTypes.h"
+#include "Entity/ComponentMask.h"
 #include "Entity/ComponentManager.h"
 
 namespace DAVA
 {
 class Component;
-
 /** Component class utils. (Only for scene components for the moment.) */
 class ComponentUtils
 {

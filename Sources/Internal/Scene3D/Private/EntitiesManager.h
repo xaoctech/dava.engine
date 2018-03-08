@@ -2,6 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Type.h"
+#include "Entity/SceneSystem.h"
 #include "Scene3D/ComponentGroup.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/EntityGroup.h"
@@ -70,6 +71,13 @@ public:
     template <class MaskMatcher, class TypeMatcher, class T, class... Args>
     ComponentGroup<T>* AquireComponentGroup(Entity* entity);
 
+    /* Life time of a group is handled by EntitiesManager. Group will be destroyed when `sceneSystem` is removed from Scene or Scene is destroyed. */
+    EntityGroupOnAdd* AquireEntityGroupOnAdd(EntityGroup* eg, SceneSystem* sceneSystem);
+
+    /* Life time of a group is handled by EntitiesManager. Group will be destroyed when `sceneSystem` is removed from Scene or Scene is destroyed. */
+    template <class T>
+    ComponentGroupOnAdd<T>* AquireComponentGroupOnAdd(ComponentGroup<T>* cg, SceneSystem* sceneSystem);
+
     /* Suppress signals. `onEntity(Added\Removed)`, `onComponent(Added\Removed)` signals will not be emitted when corresponding event happen. */
     void SuppressSignals();
 
@@ -87,12 +95,20 @@ public:
 
     bool IsInDetachedState();
 
+    void OnSystemRemoved(SceneSystem* sceneSystem);
+
 private:
+    Vector<std::unique_ptr<EntityGroupOnAdd>> entityGroupsOnAdd;
+    Vector<std::unique_ptr<ComponentGroupOnAddBase>> componentGroupsOnAdd;
+
     struct
     {
         UnorderedMap<EntityGroupKey, EntityGroup, EntityGroupKeyHasher> entityGroups;
         UnorderedMap<ComponentGroupKey, ComponentGroupBase*, ComponentGroupKeyHasher> componentGroups;
+        Vector<std::unique_ptr<EntityGroupOnAdd>> entityGroupsOnAdd;
+        Vector<std::unique_ptr<ComponentGroupOnAddBase>> componentGroupsOnAdd;
     } backUp;
+
     UnorderedSet<Entity*> entitiesAddedInDetachedState;
     UnorderedSet<Entity*> entitiesRemovedInDetachedState;
     UnorderedMap<Component*, Entity*> componentsAddedInDetachedState;
@@ -127,37 +143,37 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
         auto result = componentGroups.emplace(key, new ComponentGroup<T>());
         DVASSERT(result.second == true);
         base = result.first->second;
+
+        Function<void(Entity*)> recursiveRegister = [&](Entity* e)
+        {
+            bool needAdd = MaskMatcher::MatchMask(mask, e->GetAvailableComponentMask());
+            if (needAdd)
+            {
+                uint32 count = e->GetComponentCount();
+                for (uint32 i = 0; i < count; ++i)
+                {
+                    Component* c = e->GetComponentByIndex(i);
+                    bool needAddComponent = TypeMatcher::MatchType(base->trackedType, c->GetType());
+                    if (needAddComponent)
+                    {
+                        ComponentGroup<T>* group = static_cast<ComponentGroup<T>*>(base);
+                        group->components.Add(static_cast<T*>(c));
+                    }
+                }
+            }
+
+            for (Entity* child : e->children)
+            {
+                recursiveRegister(child);
+            }
+        };
+
+        recursiveRegister(entity);
     }
     else
     {
         base = it->second;
     }
-
-    Function<void(Entity*)> recursiveRegister = [&](Entity* e)
-    {
-        bool needAdd = MaskMatcher::MatchMask(mask, e->GetAvailableComponentMask());
-        if (needAdd)
-        {
-            uint32 count = e->GetComponentCount();
-            for (uint32 i = 0; i < count; ++i)
-            {
-                Component* c = e->GetComponentByIndex(i);
-                bool needAddComponent = TypeMatcher::MatchType(base->trackedType, c->GetType());
-                if (needAddComponent)
-                {
-                    ComponentGroup<T>* group = static_cast<ComponentGroup<T>*>(base);
-                    group->components.Add(static_cast<T*>(c));
-                }
-            }
-        }
-
-        for (Entity* child : e->children)
-        {
-            recursiveRegister(child);
-        }
-    };
-
-    recursiveRegister(entity);
 
     return static_cast<ComponentGroup<T>*>(base);
 }
@@ -165,6 +181,8 @@ ComponentGroup<T>* EntitiesManager::AquireComponentGroup(Entity* entity)
 template <class Matcher, class... Args>
 EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
 {
+    DVASSERT(!isInDetachedState);
+
     ComponentMask mask = ComponentUtils::MakeMask<Args...>();
 
     EntityGroupKey key{ mask, &Matcher::MatchMask };
@@ -202,4 +220,20 @@ EntityGroup* EntitiesManager::AquireEntityGroup(Entity* entity)
 
     return eg;
 }
+
+template <class T>
+ComponentGroupOnAdd<T>* EntitiesManager::AquireComponentGroupOnAdd(ComponentGroup<T>* cg, SceneSystem* sceneSystem)
+{
+    DVASSERT(!isInDetachedState);
+
+    DVASSERT(sceneSystem != nullptr && sceneSystem->GetScene() != nullptr);
+    DVASSERT(std::find_if(componentGroups.begin(), componentGroups.end(), [cgb = static_cast<ComponentGroupBase*>(cg)](const auto& p) { return p.second == cgb; }) != componentGroups.end());
+
+    ComponentGroupOnAdd<T>* ptr = new ComponentGroupOnAdd<T>(cg, sceneSystem);
+
+    componentGroupsOnAdd.emplace_back(ptr);
+
+    return ptr;
 }
+
+} // namespace DAVA

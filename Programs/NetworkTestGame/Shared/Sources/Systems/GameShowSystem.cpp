@@ -42,7 +42,7 @@ void GameShowSystem::Process(DAVA::float32 timeElapsed)
 {
     if (playerComponent)
     {
-        NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingletonComponent<NetworkEntitiesSingleComponent>();
+        NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>();
         for (auto& it : disclosureEntities)
         {
             it.second = false;

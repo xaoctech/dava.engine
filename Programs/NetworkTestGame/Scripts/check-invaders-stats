@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+ping_comp=${1}
+pod=${2}
+container=${3:-debug}
+dir=${4:-dev}
+secret=${5:-secret.tfvars}
+ssh_opts="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+logs_dir=./game_stats/invaders/
+
+kubectl cp ${pod}:debug/game-stats.log -c ${container} ${logs_dir}/game-stats.log
+
+hosts=(`aws/aws-ips ${dir} ${secret}`)
+for host in ${hosts[@]}; do
+	scp ${ssh_opts} ec2-user@${host}:game-stats-\*.log ${logs_dir}
+done
+
+python ./game_stats/invaders/analyze.py --ping-comp ${ping_comp} --logs-dir ${logs_dir}
+
+exit 0

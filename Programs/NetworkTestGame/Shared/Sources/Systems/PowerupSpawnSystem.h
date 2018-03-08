@@ -6,7 +6,7 @@
 #include <memory>
 
 #include <Entity/SceneSystem.h>
-#include <Entity/SingletonComponent.h>
+#include <Entity/SingleComponent.h>
 #include <Reflection/Reflection.h>
 #include <Base/ScopedPtr.h>
 

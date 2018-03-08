@@ -2,4 +2,8 @@
 
 namespace DAVA
 {
+ComponentGroupOnAddBase::ComponentGroupOnAddBase(SceneSystem* sceneSystem_)
+    : sceneSystem(sceneSystem_)
+{
+}
 }

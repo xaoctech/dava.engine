@@ -21,8 +21,8 @@ public:
     void ReSimulationEnd() override;
 
 private:
-    ComponentGroup<TransformInterpolationComponent>* fixedInterpolationGroup;
-    ComponentGroupOnAdd<TransformInterpolationComponent> fixedInterpolationPendingAdd;
+    ComponentGroup<TransformInterpolationComponent>* fixedInterpolationGroup = nullptr;
+    ComponentGroupOnAdd<TransformInterpolationComponent>* fixedInterpolationPendingAdd = nullptr;
 };
 
 } //namespace DAVA

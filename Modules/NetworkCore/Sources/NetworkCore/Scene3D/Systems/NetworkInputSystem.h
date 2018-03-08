@@ -43,6 +43,14 @@ public:
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
     void ProcessFixed(float32 timeElapsed) override;
+
+#if !defined(SERVER)
+    // This is workaround so that client input system worked at both beginning and the end of a frame
+    // It's required to fill action's clientFrameId field
+    // TODO: whole network input system should be discussed and refactored
+    void ProcessFixedClientBegin(float32 timeElapsed);
+#endif
+
     void PrepareForRemove() override{};
 
     NetworkInputSystem(Scene* scene);
@@ -63,7 +71,6 @@ public:
                                                 uint64 packedAnalogStates, Scene* scene);
 
 private:
-    ActionsSingleComponent* actionsSingleComponent = nullptr;
     static const uint8 DUPLICATE_INPUT_MARK = 0xFF;
     
 #ifdef SERVER

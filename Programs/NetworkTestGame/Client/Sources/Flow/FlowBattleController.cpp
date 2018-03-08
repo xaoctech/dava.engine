@@ -3,6 +3,7 @@
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 #include "GameClient.h"
 #include "Battle.h"
+#include "UI/HealthMarkersController.h"
 
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
@@ -96,7 +97,7 @@ void FlowBattleController::Activate(DAVA::UIFlowContext* context, DAVA::UIContro
     resimulationsCountTextComponent = resimulationsControl->GetOrCreateComponent<UITextComponent>();
     DVASSERT(resimulationsCountTextComponent);
 
-    BattleControls& controls = battleScene->GetSingletonComponent<BattleOptionsSingleComponent>()->controls;
+    BattleControls& controls = battleScene->GetSingleComponent<BattleOptionsSingleComponent>()->controls;
     controls.currentAim = view->FindByPath("HUD/CurrentAim");
     controls.interactControl = view->FindByPath("HUD/InteractControl");
     controls.finalAim = view->FindByPath("HUD/FinalAim");
@@ -106,11 +107,14 @@ void FlowBattleController::Activate(DAVA::UIFlowContext* context, DAVA::UIContro
     VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
     Size2i windowSize = vcs->GetVirtualScreenSize();
     controls.finalAim->SetPosition(Vector2(windowSize.dx / 2.0f, windowSize.dy / 2.0f));
+
+    // Markers
+    healthMarkers = std::make_unique<HealthMarkersController>(view->FindByPath("Markers"), view->FindByPath("Markers/MarkerProto"), battleScene);
 }
 
 void FlowBattleController::Deactivate(DAVA::UIFlowContext* context, DAVA::UIControl* view)
 {
-    BattleControls& controls = battleScene->GetSingletonComponent<BattleOptionsSingleComponent>()->controls;
+    BattleControls& controls = battleScene->GetSingleComponent<BattleOptionsSingleComponent>()->controls;
     controls.finalAim = nullptr;
     controls.currentAim = nullptr;
     controls.interactControl = nullptr;
@@ -134,7 +138,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
     if (!battleScene)
         return;
 
-    ActionsSingleComponent* actionsSingleComponent = battleScene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = battleScene->GetSingleComponent<ActionsSingleComponent>();
 
     Vector2 pos = movementJoypad->GetTransformedCoords();
     if (pos != Vector2::Zero)
@@ -146,7 +150,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
     GameClient* client = battleService->GetGameClient();
     DAVA::UDPClient& udpClient = client->GetUDPClient();
 
-    NetworkTimeSingleComponent* netTimeComp = battleScene->GetSingletonComponent<NetworkTimeSingleComponent>();
+    NetworkTimeSingleComponent* netTimeComp = battleScene->GetSingleComponent<NetworkTimeSingleComponent>();
     int32 frameDiff = netTimeComp->GetClientOutrunning(udpClient.GetAuthToken());
     float32 a = 2.f / (NetworkTimeSingleComponent::FrequencyHz + 1.f);
     diffAvg = a * frameDiff + (1.f - a) * diffAvg;
@@ -194,6 +198,8 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
     {
         pauseTextComponent->SetText("no");
     }
+
+    healthMarkers->Process();
 }
 
 bool FlowBattleController::ProcessEvent(const DAVA::FastName& event, const DAVA::Vector<DAVA::Any>& params)
@@ -206,7 +212,7 @@ bool FlowBattleController::ProcessEvent(const DAVA::FastName& event, const DAVA:
     static const FastName SERVER_PAUSE("SERVER_PAUSE");
     static const FastName STEP_OVER("STEP_OVER");
 
-    ActionsSingleComponent* actionsSingleComponent = battleScene->GetSingletonComponent<ActionsSingleComponent>();
+    ActionsSingleComponent* actionsSingleComponent = battleScene->GetSingleComponent<ActionsSingleComponent>();
 
     if (event == FIRST_SHOOT)
     {
@@ -220,7 +226,7 @@ bool FlowBattleController::ProcessEvent(const DAVA::FastName& event, const DAVA:
     }
     else if (event == CLIENT_PAUSE)
     {
-        NetworkTimelineSingleComponent* netTimelineComp = battleScene->GetSingletonComponent<NetworkTimelineSingleComponent>();
+        NetworkTimelineSingleComponent* netTimelineComp = battleScene->GetSingleComponent<NetworkTimelineSingleComponent>();
         if (netTimelineComp)
         {
             netTimelineComp->SetClientJustPaused(true);
@@ -229,7 +235,7 @@ bool FlowBattleController::ProcessEvent(const DAVA::FastName& event, const DAVA:
     }
     else if (event == SERVER_PAUSE)
     {
-        NetworkTimelineSingleComponent* netTimelineComp = battleScene->GetSingletonComponent<NetworkTimelineSingleComponent>();
+        NetworkTimelineSingleComponent* netTimelineComp = battleScene->GetSingleComponent<NetworkTimelineSingleComponent>();
         if (netTimelineComp)
         {
             netTimelineComp->SetServerJustPaused(true);
@@ -238,7 +244,7 @@ bool FlowBattleController::ProcessEvent(const DAVA::FastName& event, const DAVA:
     }
     else if (event == STEP_OVER)
     {
-        NetworkTimelineSingleComponent* netTimelineComp = battleScene->GetSingletonComponent<NetworkTimelineSingleComponent>();
+        NetworkTimelineSingleComponent* netTimelineComp = battleScene->GetSingleComponent<NetworkTimelineSingleComponent>();
         if (netTimelineComp)
         {
             netTimelineComp->SetStepOver(true);

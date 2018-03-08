@@ -3,6 +3,7 @@
 #include "Base/Array.h"
 #include "Math/Quaternion.h"
 #include "Physics/VehicleComponent.h"
+#include "Base/FixedVector.h"
 
 #include <physx/vehicle/PxVehicleSDK.h>
 #include <physx/vehicle/PxVehicleDriveNW.h>
@@ -23,12 +24,15 @@ public:
     void SetAnalogBrake(float32 value);
     float32 GetAnalogBrake() const;
 
-private:
-    void ResetInputData();
-
     Component* Clone(Entity* toEntity) override;
 
     DAVA_VIRTUAL_REFLECTION(VehicleCarComponent, VehicleComponent);
+
+    float32 engineSpeed;
+    std::array<float32, physx::PxVehicleDriveNWControl::eMAX_NB_DRIVENW_ANALOG_INPUTS> analogInputStates;
+
+private:
+    void ResetInputData();
 
 private:
     friend class PhysicsVehiclesSubsystem;

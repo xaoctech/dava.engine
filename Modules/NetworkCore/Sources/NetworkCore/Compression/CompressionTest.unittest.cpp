@@ -7,6 +7,7 @@
 #include <Base/FixedVector.h>
 #include <Base/String.h>
 #include <Base/TemplateHelpers.h>
+#include <Entity/ComponentMask.h>
 #include <Math/Matrix4.h>
 #include <Math/Quaternion.h>
 #include <Math/Vector.h>

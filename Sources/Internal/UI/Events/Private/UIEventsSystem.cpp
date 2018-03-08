@@ -123,12 +123,12 @@ bool UIEventsSystem::SendBroadcastEvent(UIControl* control, const FastName& even
     DVASSERT(GetScene());
 
     bool processed = false;
-    for (UIControl* sceneControl : control->GetChildren())
+    for (const auto& sceneControl : control->GetChildren())
     {
-        bool processedChild = ProcessEventOnContol(sceneControl, event, false);
+        bool processedChild = ProcessEventOnContol(sceneControl.Get(), event, false);
         if (!processedChild)
         {
-            SendBroadcastEvent(sceneControl, event);
+            SendBroadcastEvent(sceneControl.Get(), event);
         }
         processed = processed || processedChild;
     }

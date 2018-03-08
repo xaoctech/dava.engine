@@ -36,6 +36,7 @@ bool ActionsSingleComponent::AnalogActionInfo::operator==(const AnalogActionInfo
 }
 
 ActionsSingleComponent::ActionsSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::AllProcesses)
 {
     Clear();
 }

@@ -10,6 +10,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictionSingleComponent)
     .End();
 }
 
+NetworkPredictionSingleComponent::NetworkPredictionSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::FixedProcesses)
+{
+}
+
 void NetworkPredictionSingleComponent::Clear()
 {
     mispredictedEntities.clear();

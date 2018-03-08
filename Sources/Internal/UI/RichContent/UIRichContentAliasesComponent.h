@@ -29,7 +29,7 @@ class UIRichContentAliasesComponent : public UIComponent
     DECLARE_UI_COMPONENT(UIRichContentAliasesComponent);
 
 public:
-    using AliasesMap = UnorderedMap<String, String>;
+    using Aliases = Vector<std::pair<String, String>>;
 
     /** Default constructor. */
     UIRichContentAliasesComponent() = default;
@@ -41,9 +41,9 @@ public:
     UIRichContentAliasesComponent* Clone() const override;
 
     /** Set aliases for tags with attributes. */
-    void SetAliases(const AliasesMap& aliases);
+    void SetAliases(const Aliases& aliases);
     /** Return aliases for tags. */
-    const AliasesMap& GetAliases() const;
+    const Aliases& GetAliases() const;
 
     /** Set aliases for tags from specified string. */
     void SetAliasesFromString(const String& aliases);
@@ -59,7 +59,7 @@ protected:
     ~UIRichContentAliasesComponent() override = default;
 
 private:
-    AliasesMap aliases;
+    Aliases aliases;
     String aliasesAsString;
     bool modified = false;
 };
@@ -69,7 +69,7 @@ inline bool UIRichContentAliasesComponent::IsModified() const
     return modified;
 }
 
-inline const UIRichContentAliasesComponent::AliasesMap& UIRichContentAliasesComponent::GetAliases() const
+inline const UIRichContentAliasesComponent::Aliases& UIRichContentAliasesComponent::GetAliases() const
 {
     return aliases;
 }

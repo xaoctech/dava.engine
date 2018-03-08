@@ -118,21 +118,20 @@ NetworkDeltaReplicationSystemClient::NetworkDeltaReplicationSystemClient(Scene* 
 {
     DVASSERT(IsClient(scene));
 
-    client = scene->GetSingletonComponent<NetworkClientSingleComponent>()->GetClient();
+    client = scene->GetSingleComponentForRead<NetworkClientSingleComponent>(this)->GetClient();
 
     client->SubscribeOnReceive(PacketParams::DELTA_REPLICATION_CHANNEL_ID,
                                OnClientReceiveCb(this, &NetworkDeltaReplicationSystemClient::OnReceiveCallback));
 
-    replicationSingleComponent = scene->GetSingletonComponent<NetworkReplicationSingleComponent>();
-    deltaSingleComponent = scene->GetSingletonComponent<NetworkDeltaSingleComponent>();
-    statsComp = scene->GetSingletonComponent<NetworkStatisticsSingleComponent>();
+    replicationSingleComponent = scene->GetSingleComponentForWrite<NetworkReplicationSingleComponent>(this);
+    deltaSingleComponent = scene->GetSingleComponentForWrite<NetworkDeltaSingleComponent>(this);
+    statsComp = scene->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
 }
 
 void NetworkDeltaReplicationSystemClient::ProcessFixed(float32 timeElapsed)
 {
     ProcessAppliedPackets();
 
-    deltaSingleComponent->Clear();
     elasticBuffer.Reset();
 }
 

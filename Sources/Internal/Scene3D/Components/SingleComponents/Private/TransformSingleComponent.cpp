@@ -34,6 +34,11 @@ void RemoveEntitiesFromVector(Vector<Entity*>& vector, const Entity* entity)
 }
 }
 
+TransformSingleComponent::TransformSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::AllProcesses)
+{
+}
+
 void TransformSingleComponent::Clear()
 {
     localTransformChanged.clear();

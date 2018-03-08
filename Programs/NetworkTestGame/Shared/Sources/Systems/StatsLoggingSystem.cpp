@@ -15,12 +15,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(StatsLoggingSystem)
 }
 
 StatsLoggingSystem::StatsLoggingSystem(Scene* scene)
-    : SceneSystem(scene, 0)
+    : SceneSystem(scene, ComponentMask())
 {
-    BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingletonComponent<BattleOptionsSingleComponent>();
+    BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
     DVASSERT(!optionsComp->options.gameStatsLogPath.empty());
 
-    StatsLoggingSingleComponent* statsComp = GetScene()->GetSingletonComponent<StatsLoggingSingleComponent>();
+    StatsLoggingSingleComponent* statsComp = GetScene()->GetSingleComponent<StatsLoggingSingleComponent>();
     DVASSERT(statsComp);
 
     logThread = Thread::Create([this, optionsComp, statsComp] {

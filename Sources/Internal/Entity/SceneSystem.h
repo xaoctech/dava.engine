@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Entity/ComponentMask.h"
 #include "Scene3D/ComponentGroup.h"
 #include "Scene3D/EntityGroup.h"
 #include "Reflection/Reflection.h"

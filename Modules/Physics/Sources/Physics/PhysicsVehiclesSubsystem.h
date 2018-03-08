@@ -42,7 +42,7 @@ const uint32 CHASSIS_TYPES_TO_COLLIDE_WITH = GROUND_TYPE | WHEEL_TYPE | CHASSIS_
 
 class PhysicsVehiclesSubsystem final
 {
-    friend class PhysicsSystem; // For ProcessFixed and OnSimulationEnabled
+    friend class PhysicsSystem;
 
 public:
     PhysicsVehiclesSubsystem(Scene* scene, physx::PxScene* pxScene);
@@ -60,6 +60,8 @@ private:
 
     void ProcessFixed(float32 timeElapsed);
     void OnSimulationEnabled(bool enabled);
+    void SaveSimulationParams(VehicleCarComponent* car);
+    void RestoreSimulationParams(VehicleCarComponent* car);
 
     VehicleChassisComponent* GetChassis(VehicleComponent* vehicle) const;
     Vector<VehicleWheelComponent*> GetWheels(VehicleComponent* vehicle) const;

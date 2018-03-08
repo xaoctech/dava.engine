@@ -15,6 +15,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameCollisionSingleComponent)
 
 static const UnorderedSet<Entity*> EMPTY_SET = {};
 
+GameCollisionSingleComponent::GameCollisionSingleComponent()
+    : DAVA::ClearableSingleComponent(Usage::FixedProcesses)
+{
+}
+
 void GameCollisionSingleComponent::SetCollision(Entity* entity1, Entity* entity2)
 {
     DVASSERT(entity1 != entity2);

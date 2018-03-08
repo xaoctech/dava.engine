@@ -80,7 +80,7 @@ void UIEntityMarkerSystem::RegisterComponent(UIControl* control, UIComponent* co
         links.push_back(l);
 
         // Check children and add their markers manually
-        for (UIControl* child : control->GetChildren())
+        for (const auto& child : control->GetChildren())
         {
             UIEntityMarkerComponent* marker = child->GetComponent<UIEntityMarkerComponent>();
             if (marker)
@@ -225,9 +225,9 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
 
         if (container->IsSyncOrderEnabled() && !orderMap.empty())
         {
-            containerControl->SortChildren([&orderMap](UIControl* a, UIControl* b) {
-                auto itA = orderMap.find(a);
-                auto itB = orderMap.find(b);
+            containerControl->SortChildren([&orderMap](const RefPtr<UIControl>& a, const RefPtr<UIControl>& b) {
+                auto itA = orderMap.find(a.Get());
+                auto itB = orderMap.find(b.Get());
                 float32 valA = itA != orderMap.end() ? itA->second : 0.f;
                 float32 valB = itB != orderMap.end() ? itB->second : 0.f;
                 return valA < valB;
