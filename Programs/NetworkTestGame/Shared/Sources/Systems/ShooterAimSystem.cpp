@@ -142,7 +142,7 @@ void ShooterAimSystem::GenerateDeviceIndependentAimRotation() const
     DVASSERT(deviceManager != nullptr);
 
     Mouse* mouse = deviceManager->GetMouse();
-    if (mouse != nullptr)
+    if (mouse != nullptr && GetPrimaryWindow()->GetCursorCapture() == eCursorCapture::PINNING)
     {
         // Already delta since pinning is enabled
         AnalogElementState mouseDelta = mouse->GetPosition();

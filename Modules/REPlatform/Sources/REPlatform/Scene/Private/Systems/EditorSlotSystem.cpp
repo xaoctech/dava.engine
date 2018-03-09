@@ -172,7 +172,7 @@ void EditorSlotSystem::Process(float32 timeElapsed)
         pendingOnInitialize.clear();
     }
 
-    const TransformSingleComponent* tsc = GetScene()->GetSingletonComponentForRead<TransformSingleComponent>(this);
+    const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
     for (Entity* entity : tsc->localTransformChanged)
     {
         SlotComponent* slot = scene->slotSystem->LookUpSlot(entity);

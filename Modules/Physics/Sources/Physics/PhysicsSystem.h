@@ -203,7 +203,7 @@ private:
     // Contains all the entities which participate in physics simulation
     UnorderedSet<Entity*> physicsEntities;
 
-    Vector<Entity*> lastActiveEntities;
+    Vector<Entity*> previouslyActiveEntities;
 
     UnorderedMap<DynamicBodyComponent*, std::tuple<Vector3, Vector3>> frozenDynamicBodiesParams;
 };

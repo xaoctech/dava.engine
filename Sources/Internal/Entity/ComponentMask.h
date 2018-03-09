@@ -14,7 +14,7 @@ struct ComponentMask
 
     explicit ComponentMask(unsigned long long val);
 
-    void Reset();
+    void Reset(bool value = false);
 
     template <typename T>
     void Set(bool value = true);
@@ -56,9 +56,16 @@ inline ComponentMask::ComponentMask(unsigned long long val)
 {
 }
 
-inline void ComponentMask::Reset()
+inline void ComponentMask::Reset(bool value)
 {
-    bits.reset();
+    if (value)
+    {
+        bits.set();
+    }
+    else
+    {
+        bits.reset();
+    }
 }
 
 template <typename T>

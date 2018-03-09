@@ -24,7 +24,7 @@ void OwnersSignatureSystem::AddEntity(DAVA::Entity* entity)
 
 void OwnersSignatureSystem::Process(DAVA::float32 timeElapsed)
 {
-    DAVA::TransformSingleComponent* tsc = GetScene()->GetSingletonComponent<DAVA::TransformSingleComponent>();
+    const DAVA::TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<DAVA::TransformSingleComponent>(this);
     for (DAVA::Entity* entity : tsc->localTransformChanged)
     {
         UpdateOwner(entity);

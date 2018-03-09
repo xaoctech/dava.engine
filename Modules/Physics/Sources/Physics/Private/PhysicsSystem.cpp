@@ -337,6 +337,19 @@ bool IsPhysicsEntity(Entity& entity, Component& componentToBeRemoved)
     return false;
 }
 
+bool IsBodySleeping(PhysicsComponent* body)
+{
+    DVASSERT(body != nullptr);
+
+    if (body->GetType()->Is<DynamicBodyComponent*>())
+    {
+        DynamicBodyComponent* dynamicBody = static_cast<DynamicBodyComponent*>(body);
+        return dynamicBody->GetPxActor()->is<physx::PxRigidDynamic>()->isSleeping();
+    }
+
+    return false;
+}
+
 const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
 } // namespace
 
@@ -889,16 +902,18 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
         isFetched = physicsScene->fetchResults(waitForFetchFinish);
         if (isFetched == true)
         {
-            // TODO: do not fetch results twice
-            for (Entity* entity : lastActiveEntities)
+            for (Entity* entity : previouslyActiveEntities)
             {
+                // Only fetch results for previously active body if it's not active anymore
+                // Otherwise, it will be fetched in the loop below
+                // To avoid fetching results for the same entity twice
                 PhysicsComponent* physicsComponent = PhysicsUtils::GetBodyComponent(entity);
-                if (physicsComponent != nullptr)
+                if (physicsComponent != nullptr && PhysicsSystemDetail::IsBodySleeping(physicsComponent))
                 {
                     updateEntityFromPhysxResults(physicsComponent);
                 }
             }
-            lastActiveEntities.clear();
+            previouslyActiveEntities.clear();
 
             isSimulationRunning = false;
             physx::PxU32 actorsCount = 0;
@@ -918,7 +933,7 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
 
                     updateEntityFromPhysxResults(physicsComponent);
 
-                    lastActiveEntities.push_back(physicsComponent->GetEntity());
+                    previouslyActiveEntities.push_back(physicsComponent->GetEntity());
                 }
             }
         }

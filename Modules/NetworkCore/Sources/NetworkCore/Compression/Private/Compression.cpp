@@ -476,6 +476,8 @@ const float quaternionMaximum = 0.7071067811865476f; // 1 / sqrt(2)
 
 void CompressionUtils::CompressQuaternion(const Quaternion& q, const FracCompressionRecord* qRecord, BitWriter& writer)
 {
+    // If compression is disabled, do not use first three components of a quaternion to restore 4th
+
     auto maxComponentAt = std::max_element(std::begin(q.data), std::end(q.data), [](const float32 l, const float32 r) -> bool {
         return std::abs(l) < std::abs(r);
     });
@@ -504,7 +506,9 @@ void CompressionUtils::CompressQuaternion(const Quaternion& q, const FracCompres
     {
         for (uint32 i = 0, j = 0; i < 4; ++i)
         {
+#if !defined(COMPRESSION_DISABLED)
             if (i != maxComponentIndex)
+#endif
             {
                 writer.WriteBits(*reinterpret_cast<const uint32*>(&q.data[i]), 32);
                 j += 1;
@@ -525,6 +529,8 @@ void CompressionUtils::CompressQuaternion(const Quaternion& q, const FracCompres
 
 Quaternion CompressionUtils::DecompressQuaternion(const FracCompressionRecord* qRecord, BitReader& reader)
 {
+    // If compression is disabled, do not use first three components of a quaternion to restore 4th
+
     Quaternion q;
     float32 squaredSum = 0.f;
     const uint32 maxComponentIndex = reader.ReadBits(2);
@@ -545,6 +551,7 @@ Quaternion CompressionUtils::DecompressQuaternion(const FracCompressionRecord* q
     }
     else
     {
+#if !defined(COMPRESSION_DISABLED)
         for (uint32 i = 0; i < 3; ++i)
         {
             uint32 temp = reader.ReadBits(32);
@@ -553,12 +560,31 @@ Quaternion CompressionUtils::DecompressQuaternion(const FracCompressionRecord* q
             q.data[i + (i >= maxComponentIndex)] = v;
             squaredSum += v * v;
         }
+#else
+        for (uint32 i = 0; i < 4; ++i)
+        {
+            uint32 temp = reader.ReadBits(32);
+            float32 v = *reinterpret_cast<float32*>(&temp);
+
+            q.data[i] = v;
+            squaredSum += v * v;
+        }
+#endif
     }
 
-    q.data[maxComponentIndex] = std::sqrt(1.f - squaredSum);
-    if (maxComponentSign)
+#if !defined(COMPRESSION_DISABLED)
+    bool restoreFourthComponent = true;
+#else
+    bool restoreFourthComponent = (qRecord != nullptr);
+#endif
+
+    if (restoreFourthComponent)
     {
-        q.data[maxComponentIndex] = -q.data[maxComponentIndex];
+        q.data[maxComponentIndex] = std::sqrt(1.f - squaredSum);
+        if (maxComponentSign)
+        {
+            q.data[maxComponentIndex] = -q.data[maxComponentIndex];
+        }
     }
 
 #if defined(COMPRESSOR_DEBUG_ENABLED)

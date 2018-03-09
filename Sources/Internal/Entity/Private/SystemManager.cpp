@@ -269,9 +269,7 @@ uint32 SystemManager::GetSystemIndex(const Type* systemType) const
             return methodsToFixedProcess.size() + i;
         }
     }
-
-    DVASSERT(false);
-
+    
     return UINT32_MAX;
 }
 }

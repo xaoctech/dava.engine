@@ -181,19 +181,19 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
         {
             if (action == SHOOTER_ACTION_MOVE_FORWARD)
             {
-                offset.y += -SHOOTER_MOVEMENT_SPEED;
+                offset.y += -1.0f;
             }
             else if (action == SHOOTER_ACTION_MOVE_BACKWARD)
             {
-                offset.y += SHOOTER_MOVEMENT_SPEED;
+                offset.y += 1.0f;
             }
             else if (action == SHOOTER_ACTION_MOVE_LEFT)
             {
-                offset.x += SHOOTER_MOVEMENT_SPEED;
+                offset.x += 1.0f;
             }
             else if (action == SHOOTER_ACTION_MOVE_RIGHT)
             {
-                offset.x += -SHOOTER_MOVEMENT_SPEED;
+                offset.x += -1.0f;
             }
             else if (action == SHOOTER_ACTION_ACCELERATE)
             {
@@ -201,12 +201,17 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
             }
         }
 
-        if (accelerate)
+        if (offset.SquareLength() > 0.0f)
         {
-            offset *= 1.5f;
-        }
+            offset = Normalize(offset) * SHOOTER_MOVEMENT_SPEED;
 
-        MoveCharacter(entity, offset);
+            if (accelerate)
+            {
+                offset *= 1.5f;
+            }
+
+            MoveCharacter(entity, offset);
+        }
     }
 }
 

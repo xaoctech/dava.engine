@@ -118,7 +118,7 @@ private:
 
 inline void SelectionSystem::ResetSelectionComponentMask()
 {
-    componentMaskForSelection.set();
+    componentMaskForSelection.Reset(true);
 }
 
 inline const ComponentMask& SelectionSystem::GetSelectionComponentMask() const

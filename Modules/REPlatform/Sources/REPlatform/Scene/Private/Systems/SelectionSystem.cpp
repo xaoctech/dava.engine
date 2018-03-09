@@ -34,7 +34,7 @@ SelectionSystem::SelectionSystem(Scene* scene)
     collisionSystem = scene->GetSystem<SceneCollisionSystem>();
     hoodSystem = scene->GetSystem<HoodSystem>();
     modificationSystem = scene->GetSystem<EntityModificationSystem>();
-    componentMaskForSelection.set();
+    componentMaskForSelection.Reset(true);
 
     DVASSERT(collisionSystem != nullptr);
     DVASSERT(hoodSystem != nullptr);
@@ -138,7 +138,7 @@ void SelectionSystem::Process(float32 timeElapsed)
         return;
     }
 
-    const TransformSingleComponent* tsc = GetScene()->GetSingletonComponentForRead<TransformSingleComponent>(this);
+    const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
     for (Entity* entity : tsc->localTransformChanged)
     {
         if (currentSelection.ContainsObject(entity))
@@ -215,7 +215,7 @@ void SelectionSystem::ProcessSelectedGroup(const SelectableGroup::CollectionType
                 wasAdded = true;
             }
         }
-        else if ((componentMaskForSelection & entity->GetAvailableComponentMask()).any())
+        else if ((componentMaskForSelection & entity->GetAvailableComponentMask()).IsAnySet())
         {
             if (GetCamera(entity) != GetScene()->GetCurrentCamera())
             {
@@ -475,7 +475,7 @@ void SelectionSystem::PrepareForRemove()
 bool SelectionSystem::Input(UIEvent* event)
 {
     InputLockGuard guard(GetScene(), this);
-    if (guard.IsLockAcquired() == false || !selectionAllowed || componentMaskForSelection.none() || (event->mouseButton != eMouseButtons::LEFT))
+    if (guard.IsLockAcquired() == false || !selectionAllowed || !componentMaskForSelection.IsAnySet() || (event->mouseButton != eMouseButtons::LEFT))
     {
         return false;
     }
@@ -649,7 +649,7 @@ bool SelectionSystem::IsEntitySelectable(Entity* entity) const
 {
     if (!IsLocked() && (entity != nullptr))
     {
-        return ((componentMaskForSelection & entity->GetAvailableComponentMask()).any());
+        return ((componentMaskForSelection & entity->GetAvailableComponentMask()).IsAnySet());
     }
 
     return false;

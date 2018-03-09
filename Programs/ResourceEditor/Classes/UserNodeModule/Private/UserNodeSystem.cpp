@@ -296,7 +296,7 @@ void UserNodeSystem::UpdateTransformedEntities()
 {
     using namespace DAVA;
 
-    const TransformSingleComponent* trSingle = GetScene()->GetSingletonComponentForRead<TransformSingleComponent>(this);
+    const TransformSingleComponent* trSingle = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
     if (trSingle != nullptr)
     {
         RenderSystem* renderSystem = GetScene()->GetRenderSystem();
