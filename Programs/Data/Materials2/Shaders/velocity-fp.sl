@@ -45,7 +45,7 @@ fragment_out fp_main(fragment_in input)
     prevCoordNDCunjitter.xy += cameraProjJitterPrevCurr.xy;
 
     float2 thisCoordNDCunjitter = input.inPos.xy + cameraProjJitterPrevCurr.zw;
-    float2 vel = (prevCoordNDCunjitter.xy - thisCoordNDCunjitter.xy) * 0.5f;
+    float2 vel = (prevCoordNDCunjitter.xy - thisCoordNDCunjitter.xy) * ndcToUvMapping.xy;
 
     if (depthSample < 0.000001f)
         vel.xy = float2(0.0f, 0.0f);

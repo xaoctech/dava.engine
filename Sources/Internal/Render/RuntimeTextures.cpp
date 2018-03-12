@@ -72,7 +72,6 @@ void RuntimeTextures::Reset(Size2i screenDim)
     const static int32 REFRACTION_TEX_SIZE = 512;
     const static int32 PICKING_TEX_SIZE = 2048;
     const static int32 TEXTURE_GLOBAL_REFLECTION = 512;
-    const static int32 VELOCITY_BUFFER_SIZE = 2048;
 
     Size2i GBUFFER_TEX_SIZE;
 
@@ -86,6 +85,7 @@ void RuntimeTextures::Reset(Size2i screenDim)
     {
         GBUFFER_TEX_SIZE = Size2i(2048, 2048);
     }
+    Size2i VELOCITY_BUFFER_SIZE = GBUFFER_TEX_SIZE;
 
     runtimeTextureSizes[TEXTURE_REFLECTION] = Size2i(REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE);
     runtimeTextureSizes[TEXTURE_REFRACTION] = Size2i(REFRACTION_TEX_SIZE, REFRACTION_TEX_SIZE);
@@ -111,7 +111,7 @@ void RuntimeTextures::Reset(Size2i screenDim)
     int32 cascadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
     runtimeTextureSizes[TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER] = Size2i(SHADOW_CASCADE_SIZE, cascadesCount * SHADOW_CASCADE_SIZE);
 
-    runtimeTextureSizes[TEXTURE_VELOCITY] = Size2i(VELOCITY_BUFFER_SIZE, VELOCITY_BUFFER_SIZE);
+    runtimeTextureSizes[TEXTURE_VELOCITY] = Size2i(VELOCITY_BUFFER_SIZE.dx, VELOCITY_BUFFER_SIZE.dy);
 
     samplerDescriptors[TEXTURE_UVPICKING].addrU = rhi::TEXADDR_CLAMP;
     samplerDescriptors[TEXTURE_UVPICKING].addrV = rhi::TEXADDR_CLAMP;

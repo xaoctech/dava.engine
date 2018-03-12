@@ -43,8 +43,8 @@ vertex_out vp_main(vertex_in input)
     output.varTexCoord0 = (texPos * srcRectSize + srcRectOffset + centerPixelMapping) / srcTexSize;
 
 #if (ENABLE_TXAA)
-    float destTexSizeInv = 1.0f / destTexSize.x;
-    float centerPixelMappingMul = centerPixelMapping.x * destTexSizeInv;
+    float2 destTexSizeInv = 1.0f / destTexSize;
+    float2 centerPixelMappingMul = centerPixelMapping * destTexSizeInv;
     output.texClmp.xy = destRectOffset * destTexSizeInv + centerPixelMappingMul;
     output.texClmp.zw = (destRectSize + destRectOffset) * destTexSizeInv + centerPixelMappingMul;
 #endif

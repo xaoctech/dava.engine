@@ -27,7 +27,7 @@ fragment_out fp_main(fragment_in input)
     float4 currPosition = input.currPosition / input.currPosition.w;
     currPosition.xy += cameraProjJitterPrevCurr.zw;
 
-    float2 vel = (prevPosition.xy - currPosition.xy) * 0.5f;
+    float2 vel = (prevPosition.xy - currPosition.xy) * ndcToUvMapping.xy;
 
     output.color = float4(vel * input.scale, 0.0f, 0.0f);
     return output;

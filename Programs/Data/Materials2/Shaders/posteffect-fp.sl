@@ -100,15 +100,15 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
     float3 historySample = tex2D(history, historyUv).xyz;
     historySample = SRGBToLinear(historySample);
 
-    float3 s00 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, -texelOffset.x)).xyz;
-    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -texelOffset.x)).xyz;
-    float3 s02 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, -texelOffset.x)).xyz;
+    float3 s00 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, -texelOffset.y)).xyz;
+    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -texelOffset.y)).xyz;
+    float3 s02 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, -texelOffset.y)).xyz;
     float3 s10 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, 0)).xyz;
     float3 s11 = tex2D(hdrImage, texcoord + float2(0, 0)).xyz;
     float3 s12 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, 0)).xyz;
-    float3 s20 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, +texelOffset.x)).xyz;
-    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +texelOffset.x)).xyz;
-    float3 s22 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, +texelOffset.x)).xyz;
+    float3 s20 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, +texelOffset.y)).xyz;
+    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +texelOffset.y)).xyz;
+    float3 s22 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, +texelOffset.y)).xyz;
 
     s00 = HDRtoLDR(s00, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
     s01 = HDRtoLDR(s01, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);

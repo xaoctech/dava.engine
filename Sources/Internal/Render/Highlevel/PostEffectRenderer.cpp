@@ -37,12 +37,14 @@ public:
         blitMaterial->AddProperty(FastName("srcTexSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
         blitMaterial->AddFlag(FastName("TECH_COPY"), 1);
 
-        textureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER).dx;
-        invRtSize = 1.0f / static_cast<float32>(textureSize);
+        Size2i sizei = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+        textureSize = Vector2(static_cast<float32>(sizei.dx), static_cast<float32>(sizei.dy));
+        invRtSize.x = 1.0f / textureSize.x;
+        invRtSize.y = 1.0f / textureSize.y;
 
         Texture::FBODescriptor config;
-        config.width = textureSize;
-        config.height = textureSize;
+        config.width = sizei.dx;
+        config.height = sizei.dy;
         config.sampleCount = 1;
         config.textureType = rhi::TEXTURE_TYPE_2D;
         config.needDepth = false;
@@ -55,16 +57,13 @@ public:
 
     void Render(rhi::Handle dest, rhi::Viewport viewport)
     {
-        Texture* tmp = src;
-        src = dst;
-        dst = tmp;
+        std::swap(dst, src);
 
         QuadRenderer::Options options;
         options.srcRect = Rect2f(0.f, 0.f, float32(viewport.width), float32(viewport.height));
         options.dstRect = Rect2f(float32(viewport.x), float32(viewport.y), float32(viewport.width), float32(viewport.height));
 
-        float32 size = float32(textureSize);
-        options.srcTexSize = Vector2(size, size);
+        options.srcTexSize = textureSize;
         options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
 
         options.srcTexture = src->handle;
@@ -112,12 +111,12 @@ public:
         return dst;
     }
 
-    uint32 GetTextureSize() const
+    Vector2 GetTextureSize() const
     {
         return textureSize;
     }
 
-    float32 GetInvTextureSize() const
+    Vector2 GetInvTextureSize() const
     {
         return invRtSize;
     }
@@ -125,10 +124,10 @@ public:
 private:
     Texture* dst = nullptr;
     Texture* src = nullptr;
-    uint32 textureSize = 0;
+    Vector2 textureSize;
     NMaterial* blitMaterial = nullptr;
     QuadRenderer quad;
-    float32 invRtSize = -1.0f;
+    Vector2 invRtSize;
 };
 
 class HistogramRenderer : public HelperRenderer
@@ -742,16 +741,14 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     QuadRenderer::Options options;
     if (txaaEnabled && txaa != nullptr)
     {
-        float32 offset = txaa->GetInvTextureSize();
-        Vector2 texelOffset(offset, offset);
-        material->SetPropertyValue(FastName("texelOffset"), texelOffset.data);
+        material->SetPropertyValue(FastName("texelOffset"), txaa->GetInvTextureSize().data);
 
-        float32 dstSize = float32(txaa->GetTextureSize());
-        options.dstTexSize = Vector2(dstSize, dstSize);
-        options.srcRect = Rect2f(0.f, 0.f, float32(dstSize), float32(dstSize));
+        Vector2 dstSize = txaa->GetTextureSize();
+        options.dstTexSize = dstSize;
+        options.srcRect = Rect2f(0.f, 0.f, dstSize.x, dstSize.y);
 
         options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
-        options.dstRect = Rect2f(0.0f, 0.0f, float32(dstSize), float32(dstSize));
+        options.dstRect = Rect2f(0.0f, 0.0f, dstSize.x, dstSize.y);
         options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
         options.dstTexture = txaa->GetDst()->handle;
     }
