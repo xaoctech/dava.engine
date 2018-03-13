@@ -279,9 +279,14 @@ public:
     bool GetFileSize(const FilePath& path, uint64& size);
 
     /**
-     \brief Function check if specified path exists on file system
+     \brief Function check if specified path exists on file system (on Android also check in assets dir)
      */
     bool Exists(const FilePath& filePath) const;
+
+    /**
+    * \brief Search for file in android APK in assets folder
+    */
+    bool ExistsInAndroidAssets(const FilePath& path) const;
 
     /**
     \brief Copies one folder into another recursively

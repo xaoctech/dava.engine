@@ -22,12 +22,12 @@ void SpeedLoadImagesTest::LoadResources()
     BaseScreen::LoadResources();
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
-    font->SetSize(30);
 
     auto CreateButton = [font, this](const Rect& r, const WideString& str, const Message& m)
     {
         UIButton* button = new UIButton(r);
         button->SetStateFont(0xFF, font);
+        button->SetStateFontSize(0xFF, 30.f);
         button->SetStateFontColor(0xFF, Color::White);
         button->SetStateText(0xFF, str);
         button->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -44,6 +44,7 @@ void SpeedLoadImagesTest::LoadResources()
 
     resultText = new UIStaticText(Rect(10, 280, 700, 1400));
     resultText->SetFont(font);
+    resultText->SetFontSize(30.f);
     resultText->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
     UIControlBackground* resultTextBg = resultText->GetOrCreateComponent<UIControlBackground>();
     resultTextBg->SetColor(Color(0.0, 0.0, 0.0, 1.0));

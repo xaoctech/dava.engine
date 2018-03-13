@@ -61,6 +61,7 @@ void ReleasePerfQueryPool();
 
 namespace PipelineStateDX9
 {
+void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 unsigned VertexLayoutStride(Handle ps, uint32 stream);
 void SetToRHI(Handle ps, uint32 layoutUID);
@@ -93,23 +94,27 @@ unsigned NeedRestoreCount();
 
 namespace DepthStencilStateDX9
 {
+void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 void SetToRHI(Handle state);
 }
 
 namespace SamplerStateDX9
 {
+void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 void SetToRHI(Handle state);
 }
 
 namespace RenderPassDX9
 {
+void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 }
 
 namespace CommandBufferDX9
 {
+void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 }
 

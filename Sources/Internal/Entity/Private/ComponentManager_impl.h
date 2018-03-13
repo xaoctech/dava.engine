@@ -4,7 +4,7 @@
 
 namespace DAVA
 {
-template <class T>
+template <typename T>
 void ComponentManager::RegisterComponent()
 {
     static_assert(std::is_base_of<UIComponent, T>::value || std::is_base_of<Component, T>::value, "T should be derived from Component or UIComponent");
@@ -18,20 +18,20 @@ inline bool ComponentManager::IsRegisteredUIComponent(const Type* type) const
 {
     DVASSERT(type != nullptr);
 
-    return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(ComponentType::UI_COMPONENT)));
+    return ((type->GetUserData(runtimeIdUserDataIndex) != nullptr) && (type->GetUserData(componentTypeUserDataIndex) == Uint32ToVoidPtr(ComponentType::UI_COMPONENT)));
 }
 
 inline bool ComponentManager::IsRegisteredSceneComponent(const Type* type) const
 {
     DVASSERT(type != nullptr);
 
-    return ((type->GetUserData(runtimeTypeIndex) != nullptr) && (type->GetUserData(componentTypeIndex) == Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT)));
+    return ((type->GetUserData(runtimeIdUserDataIndex) != nullptr) && (type->GetUserData(componentTypeUserDataIndex) == Uint32ToVoidPtr(ComponentType::SCENE_COMPONENT)));
 }
 
-inline uint32 ComponentManager::GetRuntimeComponentIndex(const Type* type) const
+inline uint32 ComponentManager::GetRuntimeComponentId(const Type* type) const
 {
     DVASSERT(IsRegisteredUIComponent(type) || IsRegisteredSceneComponent(type));
-    return VoidPtrToUint32(type->GetUserData(runtimeTypeIndex)) - 1;
+    return VoidPtrToUint32(type->GetUserData(runtimeIdUserDataIndex)) - 1;
 }
 
 inline const Vector<const Type*>& ComponentManager::GetRegisteredUIComponents() const

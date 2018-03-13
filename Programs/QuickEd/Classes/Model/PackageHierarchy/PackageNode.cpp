@@ -203,6 +203,12 @@ void PackageNode::SetControlProperty(ControlNode* node, AbstractProperty* proper
     RefreshProperty(node, property);
 }
 
+void PackageNode::SetControlBindingProperty(ControlNode* node, AbstractProperty* property, const DAVA::String& newBinding, int32 bindingUpdateMode)
+{
+    node->GetRootProperty()->SetBindingProperty(property, newBinding, bindingUpdateMode);
+    RefreshProperty(node, property);
+}
+
 void PackageNode::ResetControlProperty(ControlNode* node, AbstractProperty* property)
 {
     if (property->IsOverriddenLocally())
@@ -215,10 +221,10 @@ void PackageNode::ResetControlProperty(ControlNode* node, AbstractProperty* prop
 
 void PackageNode::RefreshProperty(ControlNode* node, AbstractProperty* property)
 {
-    if (property->GetStylePropertyIndex() != -1)
-        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden());
-
     node->GetRootProperty()->RefreshProperty(property, AbstractProperty::REFRESH_DEFAULT_VALUE | AbstractProperty::REFRESH_LOCALIZATION | AbstractProperty::REFRESH_FONT);
+
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
 
     RefreshPropertiesInInstances(node, property);
 

@@ -36,7 +36,6 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
-#include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
 #include "Scene3D/Converters/SpeedTreeConverter.h"
 
 #include "Job/JobManager.h"
@@ -1042,54 +1041,6 @@ Entity* SceneFileV2::LoadLight(Scene* scene, KeyedArchive* archive)
     return lightEntity;
 }
 
-bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity* currentNode)
-{
-    for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
-    {
-        Entity* childNode = currentNode->GetChild(c);
-        bool dec = RemoveEmptySceneNodes(childNode);
-        if (dec)
-            c--;
-    }
-    if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(Entity)))
-    {
-        KeyedArchive* customProperties = GetCustomPropertiesArchieve(currentNode);
-        bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
-
-        uint32 componentCount = currentNode->GetComponentCount();
-
-        Component* tr = currentNode->GetComponent(Type::Instance<TransformComponent>());
-        Component* cp = currentNode->GetComponent(Type::Instance<CustomPropertiesComponent>());
-        if (((componentCount == 2) && (!cp || !tr)) ||
-            (componentCount > 2))
-        {
-            doNotRemove = true;
-        }
-
-        if (currentNode->GetName().find("dummy") != String::npos)
-        {
-            doNotRemove = true;
-        }
-
-        if (!doNotRemove)
-        {
-            Entity* parent = currentNode->GetParent();
-            if (parent)
-            {
-                if (header.version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
-                {
-                    return false;
-                }
-
-                parent->RemoveNode(currentNode);
-                removedNodeCount++;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
 {
     for (int32 c = 0; c < currentNode->GetChildrenCount(); ++c)
@@ -1338,7 +1289,6 @@ void SceneFileV2::OptimizeScene(Entity* rootNode)
     removedNodeCount = 0;
     rootNode->BakeTransforms();
 
-    RemoveEmptySceneNodes(rootNode);
     RemoveEmptyHierarchy(rootNode);
 
     if (header.version < SHADOW_VOLUME_SCENE_VERSION)

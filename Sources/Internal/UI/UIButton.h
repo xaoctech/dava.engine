@@ -1,10 +1,9 @@
-#ifndef __DAVAENGINE_UI_BUTTON_H__
-#define __DAVAENGINE_UI_BUTTON_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
+#include "Render/2D/TextBlock.h"
 #include "UI/UIControl.h"
 #include "UI/UIControlBackground.h"
-#include "Render/2D/TextBlock.h"
 
 namespace DAVA
 {
@@ -157,6 +156,14 @@ public:
     virtual void SetStateFont(int32 state, Font* font);
 
     /**
+     \brief Sets font size what will be used for draw of the requested states.
+        Method creates UIStaticText control for the state if this is neccesary.
+     \param[in] state state bit mask to set value for.
+     \param[in] size font's size used for text draw of the states.
+     */
+    virtual void SetStateFontSize(int32 state, float32 size);
+
+    /**
      \brief Sets the color of the font for particular state.
      \param[in] state state bit mask to set value for.
      \param[in] color font used for text draw of the states.
@@ -252,7 +259,8 @@ public:
      */
     virtual void CreateBackgroundForState(int32 state);
 
-    using UIControl::GetBackground; //need to avoid name hiding
+    UIControlBackground* GetBackground() const;
+    void SetBackground(UIControlBackground* newBg);
 
 protected:
     virtual ~UIButton();
@@ -260,16 +268,11 @@ protected:
 public:
     enum eButtonDrawState
     {
-        DRAW_STATE_UNPRESSED = 0
-        ,
-        DRAW_STATE_PRESSED_OUTSIDE
-        ,
-        DRAW_STATE_PRESSED_INSIDE
-        ,
-        DRAW_STATE_DISABLED
-        ,
-        DRAW_STATE_SELECTED
-        ,
+        DRAW_STATE_UNPRESSED = 0,
+        DRAW_STATE_PRESSED_OUTSIDE,
+        DRAW_STATE_PRESSED_INSIDE,
+        DRAW_STATE_DISABLED,
+        DRAW_STATE_SELECTED,
         DRAW_STATE_HOVERED
 
         ,
@@ -323,5 +326,3 @@ private:
 public:
 };
 };
-
-#endif // __DAVAENGINE_BUTTON_H__

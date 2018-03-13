@@ -87,6 +87,8 @@ public:
     */
     bool Truncate(uint64 size) override;
 
+    bool Flush() override;
+
 protected:
     uint64 currentPtr;
     Vector<uint8> data;

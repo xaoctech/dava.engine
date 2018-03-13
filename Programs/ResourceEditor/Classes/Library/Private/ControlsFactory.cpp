@@ -1,7 +1,6 @@
 #include "Classes/Library/Private/ControlsFactory.h"
 
-DAVA::Font* ControlsFactory::font12 = NULL;
-DAVA::Font* ControlsFactory::font20 = NULL;
+DAVA::Font* ControlsFactory::font = NULL;
 
 DAVA::UIButton* ControlsFactory::CreateButton(const DAVA::Rect& rect, const DAVA::WideString& buttonText, bool designers)
 {
@@ -12,7 +11,8 @@ DAVA::UIButton* ControlsFactory::CreateButton(const DAVA::Rect& rect, const DAVA
 
 void ControlsFactory::CustomizeButton(DAVA::UIButton* btn, const DAVA::WideString& buttonText, bool designers)
 {
-    DAVA::Font* font = GetFont12();
+    DAVA::Font* font = GetFont();
+    DAVA::float32 fontSize = GetFontNormalSize();
 
     btn->SetStateDrawType(DAVA::UIControl::STATE_NORMAL, DAVA::UIControlBackground::DRAW_FILL);
     btn->SetStateDrawType(DAVA::UIControl::STATE_PRESSED_INSIDE, DAVA::UIControlBackground::DRAW_FILL);
@@ -36,6 +36,11 @@ void ControlsFactory::CustomizeButton(DAVA::UIButton* btn, const DAVA::WideStrin
     btn->SetStateFont(DAVA::UIControl::STATE_NORMAL, font);
     btn->SetStateFont(DAVA::UIControl::STATE_SELECTED, font);
 
+    btn->SetStateFontSize(DAVA::UIControl::STATE_PRESSED_INSIDE, fontSize);
+    btn->SetStateFontSize(DAVA::UIControl::STATE_DISABLED, fontSize);
+    btn->SetStateFontSize(DAVA::UIControl::STATE_NORMAL, fontSize);
+    btn->SetStateFontSize(DAVA::UIControl::STATE_SELECTED, fontSize);
+
     btn->SetStateText(DAVA::UIControl::STATE_PRESSED_INSIDE, buttonText);
     btn->SetStateText(DAVA::UIControl::STATE_DISABLED, buttonText);
     btn->SetStateText(DAVA::UIControl::STATE_NORMAL, buttonText);
@@ -54,29 +59,28 @@ void ControlsFactory::CustomizeButton(DAVA::UIButton* btn, const DAVA::WideStrin
     AddBorder(btn);
 }
 
-DAVA::Font* ControlsFactory::GetFont12()
+DAVA::Font* ControlsFactory::GetFont()
 {
-    if (!font12)
+    if (!font)
     {
-        font12 = DAVA::FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-        font12->SetSize(12);
+        font = DAVA::FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
     }
-    return font12;
-}
-
-DAVA::Font* ControlsFactory::GetFont20()
-{
-    if (!font20)
-    {
-        font20 = DAVA::FTFont::Create("~res:/Fonts/MyriadPro-Regular.otf");
-        font20->SetSize(20);
-    }
-    return font12;
+    return font;
 }
 
 DAVA::Color ControlsFactory::GetColorError()
 {
     return DAVA::Color(1.0f, 0.0f, 0.0f, 0.8f);
+}
+
+DAVA::float32 ControlsFactory::GetFontNormalSize()
+{
+    return 12.f;
+}
+
+DAVA::float32 ControlsFactory::GetFontBigSize()
+{
+    return 20.f;
 }
 
 DAVA::UIControl* ControlsFactory::CreateLine(const DAVA::Rect& rect, DAVA::Color color)
@@ -147,6 +151,5 @@ void ControlsFactory::AddBorder(DAVA::UIControl* c)
 
 void ControlsFactory::ReleaseFonts()
 {
-    SafeRelease(font12);
-    SafeRelease(font20);
+    SafeRelease(font);
 }

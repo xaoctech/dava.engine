@@ -148,11 +148,10 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 
     const float32 headerHeight = 15.0f;
 
-    font->SetSize(8);
-
     UIStaticText* headerText = new UIStaticText(Rect(x, y, 250, headerHeight));
     headerText->SetTextColor(Color::White);
     headerText->SetFont(font);
+    headerText->SetFontSize(8.f);
     headerText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     headerText->SetUtf8Text(header);
     AddControl(headerText);
@@ -345,13 +344,13 @@ void InputSystemTest::CreateKeyboardUI(String header, float32 x, float32 y)
 void InputSystemTest::CreateMouseUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
-    font->SetSize(10);
 
     const float32 x = 530;
 
     mouseHeader = new UIStaticText(Rect(x, 20, 250, 15));
     mouseHeader->SetTextColor(Color::White);
     mouseHeader->SetFont(font);
+    mouseHeader->SetFontSize(10.f);
     mouseHeader->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     mouseHeader->SetUtf8Text("Mouse");
     AddControl(mouseHeader);
@@ -417,7 +416,6 @@ void InputSystemTest::CreateMouseUI()
 void InputSystemTest::CreateTouchUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
-    font->SetSize(12);
 
     float32 x = 20.0f;
     float32 y = 185.0f;
@@ -425,6 +423,7 @@ void InputSystemTest::CreateTouchUI()
     touchHeader = new UIStaticText(Rect(x, y, 250, 15));
     touchHeader->SetTextColor(Color::White);
     touchHeader->SetFont(font);
+    touchHeader->SetFontSize(12.f);
     touchHeader->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     touchHeader->SetUtf8Text("Touch");
     AddControl(touchHeader);
@@ -440,6 +439,7 @@ void InputSystemTest::CreateTouchUI()
 
         UIButton* touchClickButton = new UIButton(Rect(x, y, clickButtonSizeX, clickButtonSizeY));
         touchClickButton->SetStateFont(0xFF, font);
+        touchClickButton->SetStateFontSize(0xFF, 12.f);
         touchClickButton->SetStateFontColor(0xFF, Color::White);
         touchClickButton->GetOrCreateComponent<UIDebugRenderComponent>();
         touchClickButton->SetStateText(0xFF, ss.str());
@@ -448,6 +448,7 @@ void InputSystemTest::CreateTouchUI()
 
         UIButton* touchMoveButton = new UIButton(Rect(x, y + clickButtonSizeY + 1.0f, clickButtonSizeX, clickButtonSizeY * 2.0f));
         touchMoveButton->SetStateFont(0xFF, font);
+        touchMoveButton->SetStateFontSize(0xFF, 12.f);
         touchMoveButton->SetStateFontColor(0xFF, Color::White);
         touchMoveButton->GetOrCreateComponent<UIDebugRenderComponent>();
         touchMoveButton->SetStateText(0xFF, L"0\n0");
@@ -462,7 +463,6 @@ void InputSystemTest::CreateTouchUI()
 void InputSystemTest::CreateActionsUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
-    font->SetSize(9.0f);
 
     float32 y = 370.0f;
     const float32 yDelta = 30.0f;
@@ -472,6 +472,7 @@ void InputSystemTest::CreateActionsUI()
     UIStaticText* staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("Action 1 (W pressed):");
@@ -480,6 +481,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("0");
@@ -490,6 +492,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(270, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("not active");
@@ -504,6 +507,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("Action 2 (Space just pressed):");
@@ -512,6 +516,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("0");
@@ -522,6 +527,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(270, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("not active");
@@ -536,6 +542,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("Action 3 (Left Shift pressed, Space just pressed):");
@@ -544,6 +551,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("0");
@@ -554,6 +562,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(270, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("not active");
@@ -568,6 +577,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("Action 4 (Mouse Cursor):");
@@ -576,6 +586,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("0");
@@ -586,6 +597,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(270, y, 130, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("not active");
@@ -600,6 +612,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(10, y, 200, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("Action 5 (Mouse Cursor, Left Ctrl pressed, Mouse Left Button pressed):");
@@ -608,6 +621,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(215, y, 50, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_TOP);
     staticText->SetUtf8Text("0");
@@ -618,6 +632,7 @@ void InputSystemTest::CreateActionsUI()
     staticText = new UIStaticText(Rect(270, y, 130, 30));
     staticText->SetTextColor(Color::White);
     staticText->SetFont(font);
+    staticText->SetFontSize(9.f);
     staticText->SetMultiline(true);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     staticText->SetUtf8Text("not active");
@@ -633,7 +648,6 @@ void InputSystemTest::CreateActionsUI()
 void InputSystemTest::CreateInputListenerUI()
 {
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
-    font->SetSize(11.0f);
 
     const float32 x = 530.0f;
     float32 y = 370.0f;
@@ -641,6 +655,7 @@ void InputSystemTest::CreateInputListenerUI()
 
     inputListenerDigitalSingleWithoutModifiersButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalSingleWithoutModifiersButton->SetStateFont(0xFF, font);
+    inputListenerDigitalSingleWithoutModifiersButton->SetStateFontSize(0xFF, 11.f);
     inputListenerDigitalSingleWithoutModifiersButton->SetStateFontColor(0xFF, Color::White);
     inputListenerDigitalSingleWithoutModifiersButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerDigitalSingleWithoutModifiersButton->SetStateText(0xFF, L"Listen: digital single without modifiers");
@@ -651,6 +666,7 @@ void InputSystemTest::CreateInputListenerUI()
 
     inputListenerDigitalSingleWithModifiersButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalSingleWithModifiersButton->SetStateFont(0xFF, font);
+    inputListenerDigitalSingleWithModifiersButton->SetStateFontSize(0xFF, 11.f);
     inputListenerDigitalSingleWithModifiersButton->SetStateFontColor(0xFF, Color::White);
     inputListenerDigitalSingleWithModifiersButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerDigitalSingleWithModifiersButton->SetStateText(0xFF, L"Listen: digital single with modifiers");
@@ -661,6 +677,7 @@ void InputSystemTest::CreateInputListenerUI()
 
     inputListenerDigitalMultipleAnyButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerDigitalMultipleAnyButton->SetStateFont(0xFF, font);
+    inputListenerDigitalMultipleAnyButton->SetStateFontSize(0xFF, 11.f);
     inputListenerDigitalMultipleAnyButton->SetStateFontColor(0xFF, Color::White);
     inputListenerDigitalMultipleAnyButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerDigitalMultipleAnyButton->SetStateText(0xFF, L"Listen: digital multiple any");
@@ -671,6 +688,7 @@ void InputSystemTest::CreateInputListenerUI()
 
     inputListenerAnalogButton = new UIButton(Rect(x, y, 200, 30));
     inputListenerAnalogButton->SetStateFont(0xFF, font);
+    inputListenerAnalogButton->SetStateFontSize(0xFF, 11.f);
     inputListenerAnalogButton->SetStateFontColor(0xFF, Color::White);
     inputListenerAnalogButton->GetOrCreateComponent<UIDebugRenderComponent>();
     inputListenerAnalogButton->SetStateText(0xFF, L"Listen: analog");
@@ -682,6 +700,7 @@ void InputSystemTest::CreateInputListenerUI()
     inputListenerResultField = new UIStaticText(Rect(x, y, 200, 30));
     inputListenerResultField->SetTextColor(Color::White);
     inputListenerResultField->SetFont(font);
+    inputListenerResultField->SetFontSize(11.f);
     inputListenerResultField->SetMultiline(true);
     inputListenerResultField->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     inputListenerResultField->SetUtf8Text("Listened input will be shown here");
@@ -692,6 +711,7 @@ void InputSystemTest::CreateKeyboardUIButton(eInputElements key, WideString text
 {
     UIButton* button = new UIButton(Rect(*x, y, w, h));
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, 8.f);
     button->SetStateFontColor(0xFF, Color::White);
     button->SetStateText(0xFF, text);
     button->GetOrCreateComponent<UIDebugRenderComponent>();

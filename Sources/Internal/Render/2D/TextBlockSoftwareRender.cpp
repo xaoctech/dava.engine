@@ -114,7 +114,7 @@ void TextBlockSoftwareRender::Restore()
 
 Font::StringMetrics TextBlockSoftwareRender::DrawTextSL(const WideString& drawText, int32 x, int32 y, int32 w)
 {
-    Font::StringMetrics metrics = ftFont->DrawStringToBuffer(buf, x, y,
+    Font::StringMetrics metrics = ftFont->DrawStringToBuffer(textBlock->renderSize, buf, x, y,
                                                              -textBlock->cacheOx,
                                                              -textBlock->cacheOy,
                                                              0,
@@ -132,7 +132,7 @@ Font::StringMetrics TextBlockSoftwareRender::DrawTextML(const WideString& drawTe
     Font::StringMetrics metrics;
     if (textBlock->cacheUseJustify)
     {
-        metrics = ftFont->DrawStringToBuffer(buf, x, y,
+        metrics = ftFont->DrawStringToBuffer(textBlock->renderSize, buf, x, y,
                                              -textBlock->cacheOx + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
                                              -textBlock->cacheOy + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
                                              int32(std::ceil(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(w)))),
@@ -142,7 +142,7 @@ Font::StringMetrics TextBlockSoftwareRender::DrawTextML(const WideString& drawTe
     }
     else
     {
-        metrics = ftFont->DrawStringToBuffer(buf, x, y,
+        metrics = ftFont->DrawStringToBuffer(textBlock->renderSize, buf, x, y,
                                              -textBlock->cacheOx + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalX(float32(xOffset))),
                                              -textBlock->cacheOy + int32(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysicalY(float32(yOffset))),
                                              0,

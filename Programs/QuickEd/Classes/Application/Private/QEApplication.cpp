@@ -26,6 +26,7 @@
 #include <UI/Events/UIEventsSystem.h>
 #include <UI/Layouts/UILayoutSystem.h>
 #include <UI/RichContent/UIRichContentSystem.h>
+#include <UI/DataBinding/UIDataBindingSystem.h>
 #include <UI/Scroll/UIScrollBarLinkSystem.h>
 #include <UI/Script/UIScriptSystem.h>
 
@@ -98,6 +99,7 @@ void QEApplication::Init(const DAVA::EngineContext* engineContext)
     uiControlSystem->GetLayoutSystem()->SetAutoupdatesEnabled(true);
     uiControlSystem->GetSystem<UIScrollBarLinkSystem>()->SetRestoreLinks(true);
     uiControlSystem->GetSystem<UIRichContentSystem>()->SetEditorMode(true);
+    uiControlSystem->GetSystem<UIDataBindingSystem>()->SetEditorMode(true);
     uiControlSystem->GetSystem<UIScriptSystem>()->SetPauseProcessing(true);
 
     UIEventsSystem* eventsSystem = uiControlSystem->GetSystem<UIEventsSystem>();

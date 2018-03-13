@@ -42,8 +42,32 @@ public:
     {
         editor->setProperty("valueReseted", QVariant(value));
     }
+
+    static QString GetBindingExpression(QWidget* editor)
+    {
+        QVariant data = editor->property("bindingExpression");
+        return data.toString();
+    }
+
+    static bool HasBindingExpression(QWidget* editor)
+    {
+        QVariant data = editor->property("bindingExpression");
+        return data.type() == QVariant::String;
+    }
+
+    static void SetBindingExpression(QWidget* editor, QString expr)
+    {
+        editor->setProperty("bindingExpression", QVariant(expr));
+    }
+
+    static void ResetBindingExpression(QWidget* editor)
+    {
+        editor->setProperty("bindingExpression", QVariant());
+    }
+
 private slots:
     void resetClicked();
+    void bindClicked();
 
 protected:
     DAVA::ContextAccessor* accessor = nullptr;

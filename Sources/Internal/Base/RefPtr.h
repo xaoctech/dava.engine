@@ -33,11 +33,17 @@ public:
         SafeRelease(_ptr);
     }
 
-    RefPtr(const RefPtr<T>& rp)
+    RefPtr(const RefPtr& rp)
     {
         _ptr = rp._ptr;
 
         SafeRetain(_ptr);
+    }
+
+    RefPtr(RefPtr&& rp)
+        : _ptr(rp._ptr)
+    {
+        rp._ptr = nullptr;
     }
 
     template <class Other>
@@ -46,6 +52,13 @@ public:
         _ptr = rp.Get();
 
         SafeRetain(_ptr);
+    }
+
+    template <class Other>
+    RefPtr(RefPtr<Other>&& rp)
+        : _ptr(rp._ptr)
+    {
+        rp._ptr = nullptr;
     }
 
     static RefPtr<T> ConstructWithRetain(T* p)
@@ -62,19 +75,32 @@ public:
 
     bool Valid() const
     {
-        return _ptr != 0;
+        return _ptr != nullptr;
     }
 
     RefPtr& operator=(const RefPtr& rp)
     {
-        assign(rp);
+        Assign(rp);
+        return *this;
+    }
+
+    RefPtr& operator=(RefPtr&& rp)
+    {
+        Assign(std::move(rp));
         return *this;
     }
 
     template <class Other>
     RefPtr& operator=(const RefPtr<Other>& rp)
     {
-        assign(rp);
+        Assign(rp);
+        return *this;
+    }
+
+    template <class Other>
+    RefPtr& operator=(RefPtr<Other>&& rp)
+    {
+        Assign(std::move(rp));
         return *this;
     }
 
@@ -143,6 +169,11 @@ public:
         Set(new T(std::forward<Arg>(arg)...));
     }
 
+    void Swap(RefPtr& rp)
+    {
+        std::swap(_ptr, rp._ptr);
+    }
+
 private:
     class Tester
     {
@@ -162,15 +193,27 @@ private:
     T* _ptr = nullptr;
 
     template <class Other>
-    void assign(const RefPtr<Other>& rp)
+    friend class RefPtr;
+
+    template <class Other>
+    void Assign(const RefPtr<Other>& rp)
     {
-        if (_ptr == rp.Get())
+        if (_ptr == rp._ptr)
             return;
 
         T* tmp_ptr = _ptr;
         _ptr = rp.Get();
         SafeRetain(_ptr);
         SafeRelease(tmp_ptr);
+    }
+
+    template <class Other>
+    void Assign(RefPtr<Other>&& rp)
+    {
+        if (_ptr == rp._ptr)
+            return;
+
+        RefPtr(std::move(rp)).Swap(*this);
     }
 };
 
@@ -185,5 +228,14 @@ struct AnyCompare<RefPtr<T>>
     }
 };
 } // ns
+
+namespace std
+{
+template <class T>
+void swap(DAVA::RefPtr<T>& left, DAVA::RefPtr<T>& right) noexcept
+{
+    left.Swap(right);
+}
+}
 
 #endif // __DAVA_REF_PTR_H__

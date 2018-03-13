@@ -92,20 +92,19 @@ LoadingTest::LoadingTest(const TestParams& _testParams)
 
 void LoadingTest::LoadResources()
 {
-    ScopedPtr<Font> font12(FTFont::Create("~res:/Fonts/korinna.ttf"));
-    ScopedPtr<Font> font18(font12->Clone());
-    font12->SetSize(12.f);
-    font18->SetSize(18.f);
+    ScopedPtr<Font> font(FTFont::Create("~res:/Fonts/korinna.ttf"));
 
     loadingText = new UIStaticText();
-    loadingText->SetFont(font18);
+    loadingText->SetFont(font);
+    loadingText->SetFontSize(18.f);
     loadingText->SetTextColor(Color(0.f, 1.f, 0.f, 1.f));
     loadingText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
     loadingText->SetRect(DAVA::GetEngineContext()->uiControlSystem->vcs->GetFullScreenVirtualRect());
     AddControl(loadingText);
 
     testText = new UIStaticText();
-    testText->SetFont(font12);
+    testText->SetFont(font);
+    testText->SetFontSize(12.f);
     testText->SetTextColor(Color(0.f, 1.f, 0.f, 1.f));
     testText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
     testText->SetRect(Rect(10.f, 10.f, 150.f, 10.f));

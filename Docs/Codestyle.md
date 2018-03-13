@@ -81,7 +81,6 @@ The only exceptions are local(private) namespaces.
 ###### Local namespaces
 Local(private) namespaces (are used to hide implementation details) must use `Details` suffix, i.e. `MyUtilsDetails`. Local(private) namespaces are used instead of unnamed namespaces to avoid collisions in unity builds.
 
-
 #### Commented code
 Remove commented code, we have revision control system for history. 
 
@@ -99,11 +98,29 @@ Image * CreateImageFromMemory(...); //long descriptive function name in public i
 }
 ```
 
+Note that certain universally-known abbreviations are OK, such as 'i' for an iteration variable and 'T' for a template parameter.
+
 ```cpp
 for(int32 i = 0; i < width; ++i) //i is only used inside small loop
 {
     Read(i);
 }
+```
+
+```cpp
+template<typename T>
+void GetTypeInstance() { ... }
+```
+
+Don't use upper-case abbreviations.
+
+```cpp
+class DeviceImplMacOs;  // NOT DeviceImplMacOS
+class NetworkId;        // NOT NetworkID
+class Engine
+{
+    uint32 maxFps;      // NOT maxFPS
+};
 ```
 
 #### Classes, functions
@@ -139,6 +156,27 @@ MyObject::MyObject(const String& name_)
 {...}
 ```
 
+#### Static constants, enums
+Variables declared constexpr or const should be named with camel notation beginnig with upper-case. 
+
+```cpp
+static const int MaxWidth = 100;
+struct Date
+{
+    const int DaysInWeek = 7;
+};
+```
+
+The individual enumerators should be named like constants.
+```cpp
+enum Example 
+{
+    Left = 0,
+    Right,
+    LeftOrRight
+};
+```
+
 #### Function objects
 Function object is both function and variable. We just use the same naming rules as for variables: camel notation begin with lower-case.
 
@@ -146,17 +184,13 @@ Function object is both function and variable. We just use the same naming rules
 auto foo()[]{}
 ```
 
-#### Static constants, defines, enums.
+#### Macro
 All capitals with underscores.
 
 ```cpp
-static const int MAX_WIDTH = 100;
-enum FrustumPlane 
-{
-    LEFT = 0,
-    RIGHT
-};
+#ifdef DAVAENGINE
 #define HAS_SPECULAR
+#endif
 ```
 
 ## Types

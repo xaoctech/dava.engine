@@ -25,6 +25,7 @@
 #include <VisualScript/VisualScriptNode.h>
 #include <VisualScript/VisualScriptPin.h>
 #include <VisualScript/Nodes/VisualScriptEventNode.h>
+#include <VisualScript/Nodes/VisualScriptAnotherScriptNode.h>
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>

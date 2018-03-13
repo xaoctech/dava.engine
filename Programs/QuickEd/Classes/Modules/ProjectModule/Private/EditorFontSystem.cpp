@@ -20,32 +20,32 @@ EditorFontSystem::~EditorFontSystem()
     ClearAllFonts();
 }
 
-Font* EditorFontSystem::GetFont(const String& presetName, const String& locale) const
+const FontPreset& EditorFontSystem::GetFont(const String& presetName, const String& locale) const
 {
     auto fontsIt = localizedFonts.find(locale);
     if (fontsIt == localizedFonts.end())
     {
-        return nullptr;
+        return FontPreset::EMPTY;
     }
     const auto& fonts = fontsIt->second;
     auto it = fonts.find(presetName);
-    return it != fonts.end() ? it->second : nullptr;
+    return it != fonts.end() ? it->second : FontPreset::EMPTY;
 }
 
-void EditorFontSystem::SetFont(const String& presetName, const String& locale, Font* font)
+void EditorFontSystem::SetFont(const String& presetName, const String& locale, const FontPreset& fontPreset)
 {
-    if (nullptr == font)
+    if (!fontPreset.Valid())
     {
-        DVASSERT(false, "wrong argument: font = nullptr");
+        DVASSERT(false, "wrong argument: fontPreset isn't valid");
         return;
     }
-    auto fonstIt = localizedFonts.find(locale);
-    if (fonstIt == localizedFonts.end())
+    auto fontsIt = localizedFonts.find(locale);
+    if (fontsIt == localizedFonts.end())
     {
         DVASSERT(false, Format("wrong argument: locale = %s passed to this function not found", locale.c_str()).c_str());
         return;
     }
-    auto& fonts = fonstIt->second;
+    auto& fonts = fontsIt->second;
     auto it = fonts.find(presetName);
 
     if (it == fonts.end())
@@ -54,21 +54,18 @@ void EditorFontSystem::SetFont(const String& presetName, const String& locale, F
         return;
     }
 
-    auto oldFont = it->second;
-    DVASSERT(nullptr != oldFont);
-    oldFont->Release();
-    it->second = font;
-    it->second->Retain();
+    Font* oldFont = it->second.GetFontPtr();
+    DVASSERT(oldFont);
+    it->second = fontPreset;
     if (locale == currentFontLocale)
     {
         const EngineContext* engineContext = GetEngineContext();
         FontManager* fontManager = engineContext->fontManager;
         fontManager->UnregisterFont(oldFont);
-        fontManager->RegisterFont(font);
-        fontManager->SetFontName(font, presetName);
+        fontManager->RegisterFont(fontPreset.GetFontPtr());
+        fontManager->SetFontPreset(fontPreset, presetName);
         emit FontPresetChanged(presetName);
     }
-    font->Release();
 }
 
 void EditorFontSystem::LoadLocalizedFonts()
@@ -77,21 +74,21 @@ void EditorFontSystem::LoadLocalizedFonts()
     RefreshAvailableFontLocales();
     const EngineContext* engineContext = GetEngineContext();
     FontManager* fontManager = engineContext->fontManager;
-    fontManager->UnregisterFonts();
+    fontManager->UnregisterFontsPresets();
     for (auto& locale : availableFontLocales)
     {
         UIYamlLoader::LoadFonts(GetLocalizedFontsPath(locale.toStdString()));
-        for (auto& pair : fontManager->GetRegisteredFonts())
+        for (auto& pair : fontManager->GetFontPresetMap())
         {
-            localizedFonts[locale.toStdString()][pair.second] = SafeRetain(pair.first);
+            localizedFonts[locale.toStdString()][pair.first] = pair.second;
         }
-        fontManager->UnregisterFonts();
+        fontManager->UnregisterFontsPresets();
     }
     UIYamlLoader::LoadFonts(GetDefaultFontsPath());
-    for (auto& pair : fontManager->GetRegisteredFonts())
+    for (auto& pair : fontManager->GetFontPresetMap())
     {
-        defaultPresetNames.append(QString::fromStdString(pair.second));
-        localizedFonts[defaultFontLocale][pair.second] = SafeRetain(pair.first);
+        defaultPresetNames.append(QString::fromStdString(pair.first));
+        localizedFonts[defaultFontLocale][pair.first] = pair.second;
     }
     //now check that all font are correct
     for (auto& pair : localizedFonts[defaultFontLocale])
@@ -113,7 +110,7 @@ void EditorFontSystem::SaveLocalizedFonts()
     FileSystem* fileSystem = engineContext->fileSystem;
     for (auto& localizedFontsIt : localizedFonts)
     {
-        fontManager->RegisterFonts(localizedFontsIt.second);
+        fontManager->RegisterFontsPresets(localizedFontsIt.second);
         //load localized fonts into FontManager
         const FilePath& localizedFontsPath = GetLocalizedFontsPath(localizedFontsIt.first);
         if (!fileSystem->IsDirectory(localizedFontsPath.GetDirectory()))
@@ -142,25 +139,20 @@ void EditorFontSystem::RegisterCurrentLocaleFonts()
     currentFontLocale = availableFontLocales.contains(QString::fromStdString(locale)) ? locale : defaultFontLocale;
     auto it = localizedFonts.find(currentFontLocale);
     const auto& fonts = it != localizedFonts.end() ? it->second : localizedFonts.at(defaultFontLocale);
-    engineContext->fontManager->RegisterFonts(fonts);
+    engineContext->fontManager->RegisterFontsPresets(fonts);
     emit FontPresetChanged(String());
 }
 
-void EditorFontSystem::ClearFonts(Map<String, Font*>& fonts)
+void EditorFontSystem::ClearFonts(UnorderedMap<String, FontPreset>& fonts)
 {
-    for (auto& pair : fonts)
-    {
-        SafeRelease(pair.second);
-    }
     fonts.clear();
 }
 
-void EditorFontSystem::RemoveFont(Map<String, Font*>* fonts, const String& fontName)
+void EditorFontSystem::RemoveFont(UnorderedMap<String, FontPreset>* fonts, const String& fontName)
 {
     if (fonts->find(fontName) != fonts->end())
     {
         auto findOriginalIt = fonts->find(fontName);
-        SafeRelease(findOriginalIt->second);
         fonts->erase(findOriginalIt);
     }
 }
@@ -207,7 +199,7 @@ void EditorFontSystem::CreateNewPreset(const String& originalPresetName, const S
     for (auto& localizedFontsPairs : localizedFonts)
     {
         auto& fonts = localizedFontsPairs.second;
-        fonts[newPresetName] = fonts.at(presetName)->Clone();
+        fonts[newPresetName] = FontPreset(fonts.at(presetName));
     }
     defaultPresetNames.append(QString::fromStdString(newPresetName));
     defaultPresetNames.sort();

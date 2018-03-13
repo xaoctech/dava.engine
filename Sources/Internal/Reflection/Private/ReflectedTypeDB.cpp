@@ -55,7 +55,7 @@ const ReflectedType* ReflectedTypeDB::GetByPointer(const void* ptr, const Type* 
         return ReflectedTypeDBDetail::GetVirtualReflectedType(rb);
     }
 
-    return nullptr;
+    return GetByType(derefType);
 }
 
 const ReflectedType* ReflectedTypeDB::GetByType(const Type* type)

@@ -1,375 +1,378 @@
 variables:
-    startColor: ["Color", [0.031250, 1.000000, 0.047395, 1.000000]]
     finishColor: ["Color", [1.000000, 0.003906, 0.003906, 1.000000]]
+    startColor: ["Color", [0.031250, 1.000000, 0.047395, 1.000000]]
 nodes:
-    VisualScriptGetMemberNode7:
-        connections:
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode4"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode7"
-        -   out:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode1"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode7"
-        node:
-            fieldName: "X"
-            className: "Vector2"
-            position: [503.000000, 346.000000]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode7"
-    VisualScriptGetMemberNode6:
-        connections:
-        -   out:
-                pin: "result"
-                name: "VisualScriptFunctionNode4"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode6"
-        -   out:
-                pin: "object"
-                name: "VisualScriptSetMemberNode1"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode6"
-        node:
-            fieldName: "background"
-            className: "UIControl"
-            position: [914.591980, 149.080002]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode6"
-    VisualScriptGetVarNode2:
-        connections:
-        -   out:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode2"
-            in:
-                pin: "value"
-                name: "VisualScriptGetVarNode2"
-        node:
-            varPath: "startColor"
-            position: [1222.000000, 268.000000]
-        type: "VisualScriptGetVarNode"
-        name: "VisualScriptGetVarNode2"
-    VisualScriptSetMemberNode1:
-        connections:
-        -   out:
-                pin: "exit"
-                name: "VisualScriptFunctionNode4"
-            in:
-                pin: "exec"
-                name: "VisualScriptSetMemberNode1"
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode6"
-            in:
-                pin: "object"
-                name: "VisualScriptSetMemberNode1"
-        -   out:
-                pin: "result"
-                name: "VisualScriptFunctionNode2"
-            in:
-                pin: "set"
-                name: "VisualScriptSetMemberNode1"
-        node:
-            fieldName: "color"
-            defaults: {}
-            className: "Background"
-            position: [1784.063965, 102.639999]
-        type: "VisualScriptSetMemberNode"
-        name: "VisualScriptSetMemberNode1"
-    VisualScriptFunctionNode1:
-        connections:
-        -   out:
-                pin: "arg2"
-                name: "VisualScriptFunctionNode2"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode1"
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode7"
-            in:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode1"
-        -   out:
-                pin: "result"
-                name: "VisualScriptFunctionNode3"
-            in:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode1"
-        node:
-            functionName: "Div"
-            defaults: {}
-            className: "FloatMath"
-            position: [1057.000000, 583.000000]
-        type: "VisualScriptFunctionNode"
-        name: "VisualScriptFunctionNode1"
-    VisualScriptFunctionNode4:
-        connections:
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode5"
-            in:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode4"
-        -   out:
-                pin: "exec"
-                name: "VisualScriptSetMemberNode1"
-            in:
-                pin: "exit"
-                name: "VisualScriptFunctionNode4"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode1"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode4"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode4"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode4"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode6"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode4"
-        -   out:
-                pin: "event"
-                name: "VisualScriptEventNode1"
-            in:
-                pin: "exec"
-                name: "VisualScriptFunctionNode4"
-        node:
-            functionName: "FindByPath"
-            defaults:
-                arg1: "*"
-            className: "UIControl"
-            position: [-543.367981, 98.928001]
-        type: "VisualScriptFunctionNode"
-        name: "VisualScriptFunctionNode4"
-    VisualScriptFunctionNode3:
-        connections:
-        -   out:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode1"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode3"
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode2"
-            in:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode3"
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode8"
-            in:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode3"
-        node:
-            functionName: "Sub"
-            defaults: {}
-            className: "FloatMath"
-            position: [632.000000, 624.000000]
-        type: "VisualScriptFunctionNode"
-        name: "VisualScriptFunctionNode3"
-    VisualScriptGetMemberNode8:
-        connections:
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode1"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode8"
-        -   out:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode3"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode8"
-        node:
-            fieldName: "X"
-            className: "Vector2"
-            position: [371.000000, 672.000000]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode8"
-    VisualScriptGetMemberNode4:
-        connections:
-        -   out:
-                pin: "result"
-                name: "VisualScriptFunctionNode4"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode4"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode7"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode4"
-        node:
-            fieldName: "position"
-            className: "UIControl"
-            position: [237.000000, 347.000000]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode4"
-    VisualScriptGetMemberNode5:
-        connections:
-        -   out:
-                pin: "component"
-                name: "VisualScriptEventNode1"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode5"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode3"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode5"
-        -   out:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode4"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode5"
-        node:
-            fieldName: "control"
-            className: "UIComponent"
-            position: [-971.015991, 218.936005]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode5"
-    VisualScriptEventNode1:
-        connections:
-        -   out:
-                pin: "exec"
-                name: "VisualScriptFunctionNode4"
-            in:
-                pin: "event"
-                name: "VisualScriptEventNode1"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode5"
-            in:
-                pin: "component"
-                name: "VisualScriptEventNode1"
-        node:
-            eventName: "UIProcessEvent"
-            position: [-1358.943970, 98.928001]
-        type: "VisualScriptEventNode"
-        name: "VisualScriptEventNode1"
-    VisualScriptGetMemberNode3:
-        connections:
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode5"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode3"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode2"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode3"
-        node:
-            fieldName: "size"
-            className: "UIControl"
-            position: [65.351997, 565.815979]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode3"
-    VisualScriptGetVarNode1:
-        connections:
-        -   out:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode2"
-            in:
-                pin: "value"
-                name: "VisualScriptGetVarNode1"
-        node:
-            varPath: "finishColor"
-            position: [1230.000000, 353.000000]
-        type: "VisualScriptGetVarNode"
-        name: "VisualScriptGetVarNode1"
     VisualScriptGetMemberNode1:
         connections:
-        -   out:
+        -   in:
+                name: "VisualScriptGetMemberNode1"
                 pin: "object"
-                name: "VisualScriptGetMemberNode8"
-            in:
+            out:
+                name: "VisualScriptGetMemberNode4"
                 pin: "get"
+        -   in:
                 name: "VisualScriptGetMemberNode1"
-        -   out:
-                pin: "result"
-                name: "VisualScriptFunctionNode4"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode1"
-        node:
-            fieldName: "size"
-            className: "UIControl"
-            position: [63.768002, 672.367981]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode1"
-    VisualScriptFunctionNode2:
-        connections:
-        -   out:
-                pin: "set"
-                name: "VisualScriptSetMemberNode1"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode2"
-        -   out:
-                pin: "value"
-                name: "VisualScriptGetVarNode1"
-            in:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode2"
-        -   out:
-                pin: "result"
+                pin: "get"
+            out:
                 name: "VisualScriptFunctionNode1"
-            in:
-                pin: "arg2"
-                name: "VisualScriptFunctionNode2"
-        -   out:
-                pin: "value"
-                name: "VisualScriptGetVarNode2"
-            in:
                 pin: "arg0"
-                name: "VisualScriptFunctionNode2"
+        name: "VisualScriptGetMemberNode1"
         node:
-            functionName: "Lerp"
-            defaults: {}
-            className: "Color"
-            position: [1437.000000, 361.000000]
-        type: "VisualScriptFunctionNode"
-        name: "VisualScriptFunctionNode2"
-    VisualScriptGetMemberNode2:
-        connections:
-        -   out:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode3"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode2"
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode3"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode2"
-        node:
+            position: [503.000000, 346.000000]
             fieldName: "X"
             className: "Vector2"
-            position: [374.552002, 569.728027]
         type: "VisualScriptGetMemberNode"
+    VisualScriptGetMemberNode2:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode2"
+                pin: "get"
+            out:
+                name: "VisualScriptFunctionNode3"
+                pin: "arg0"
+        -   in:
+                name: "VisualScriptGetMemberNode2"
+                pin: "object"
+            out:
+                name: "VisualScriptGetMemberNode6"
+                pin: "get"
         name: "VisualScriptGetMemberNode2"
+        node:
+            position: [374.552002, 569.728027]
+            fieldName: "X"
+            className: "Vector2"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptGetVarNode1:
+        connections:
+        -   in:
+                name: "VisualScriptGetVarNode1"
+                pin: "value"
+            out:
+                name: "VisualScriptFunctionNode4"
+                pin: "arg0"
+        name: "VisualScriptGetVarNode1"
+        node:
+            position: [1222.000000, 268.000000]
+            varPath: "startColor"
+        type: "VisualScriptGetVarNode"
+    VisualScriptSetMemberNode1:
+        connections:
+        -   in:
+                name: "VisualScriptSetMemberNode1"
+                pin: "exec"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "exit"
+        -   in:
+                name: "VisualScriptSetMemberNode1"
+                pin: "set"
+            out:
+                name: "VisualScriptFunctionNode4"
+                pin: "result"
+        -   in:
+                name: "VisualScriptSetMemberNode1"
+                pin: "object"
+            out:
+                name: "VisualScriptFunctionNode5"
+                pin: "result"
+        name: "VisualScriptSetMemberNode1"
+        node:
+            position: [1784.063965, 102.639999]
+            fieldName: "color"
+            className: "Background"
+            defaults: {}
+        type: "VisualScriptSetMemberNode"
+    VisualScriptFunctionNode3:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode3"
+                pin: "arg0"
+            out:
+                name: "VisualScriptGetMemberNode2"
+                pin: "get"
+        -   in:
+                name: "VisualScriptFunctionNode3"
+                pin: "result"
+            out:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg1"
+        -   in:
+                name: "VisualScriptFunctionNode3"
+                pin: "arg1"
+            out:
+                name: "VisualScriptGetMemberNode3"
+                pin: "get"
+        name: "VisualScriptFunctionNode3"
+        node:
+            functionName: "Sub"
+            position: [632.000000, 624.000000]
+            className: "FloatMath"
+            defaults: {}
+        type: "VisualScriptFunctionNode"
+    VisualScriptFunctionNode1:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg0"
+            out:
+                name: "VisualScriptGetMemberNode1"
+                pin: "get"
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "result"
+            out:
+                name: "VisualScriptFunctionNode4"
+                pin: "arg2"
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg1"
+            out:
+                name: "VisualScriptFunctionNode3"
+                pin: "result"
+        name: "VisualScriptFunctionNode1"
+        node:
+            functionName: "Div"
+            position: [1057.000000, 583.000000]
+            className: "FloatMath"
+            defaults: {}
+        type: "VisualScriptFunctionNode"
+    VisualScriptGetMemberNode4:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode4"
+                pin: "get"
+            out:
+                name: "VisualScriptGetMemberNode1"
+                pin: "object"
+        -   in:
+                name: "VisualScriptGetMemberNode4"
+                pin: "object"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+        name: "VisualScriptGetMemberNode4"
+        node:
+            position: [237.000000, 347.000000]
+            fieldName: "position"
+            className: "UIControl"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptFunctionNode2:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "exit"
+            out:
+                name: "VisualScriptSetMemberNode1"
+                pin: "exec"
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+            out:
+                name: "VisualScriptGetMemberNode7"
+                pin: "object"
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+            out:
+                name: "VisualScriptGetMemberNode4"
+                pin: "object"
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+            out:
+                name: "VisualScriptFunctionNode5"
+                pin: "arg0"
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "arg0"
+            out:
+                name: "VisualScriptGetMemberNode5"
+                pin: "get"
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "exec"
+            out:
+                name: "VisualScriptEventNode1"
+                pin: "event"
+        name: "VisualScriptFunctionNode2"
+        node:
+            functionName: "FindByPath"
+            position: [-543.367981, 98.928001]
+            className: "UIControl"
+            defaults:
+                arg1: "*"
+        type: "VisualScriptFunctionNode"
+    VisualScriptGetMemberNode3:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode3"
+                pin: "object"
+            out:
+                name: "VisualScriptGetMemberNode7"
+                pin: "get"
+        -   in:
+                name: "VisualScriptGetMemberNode3"
+                pin: "get"
+            out:
+                name: "VisualScriptFunctionNode3"
+                pin: "arg1"
+        name: "VisualScriptGetMemberNode3"
+        node:
+            position: [371.000000, 672.000000]
+            fieldName: "X"
+            className: "Vector2"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptGetMemberNode5:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode5"
+                pin: "object"
+            out:
+                name: "VisualScriptEventNode1"
+                pin: "component"
+        -   in:
+                name: "VisualScriptGetMemberNode5"
+                pin: "get"
+            out:
+                name: "VisualScriptGetMemberNode6"
+                pin: "object"
+        -   in:
+                name: "VisualScriptGetMemberNode5"
+                pin: "get"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "arg0"
+        name: "VisualScriptGetMemberNode5"
+        node:
+            position: [-971.015991, 218.936005]
+            fieldName: "control"
+            className: "UIComponent"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptEventNode1:
+        connections:
+        -   in:
+                name: "VisualScriptEventNode1"
+                pin: "component"
+            out:
+                name: "VisualScriptGetMemberNode5"
+                pin: "object"
+        -   in:
+                name: "VisualScriptEventNode1"
+                pin: "event"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "exec"
+        name: "VisualScriptEventNode1"
+        node:
+            position: [-1358.943970, 98.928001]
+            eventName: "UIProcessEvent"
+        type: "VisualScriptEventNode"
+    VisualScriptGetMemberNode6:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode6"
+                pin: "get"
+            out:
+                name: "VisualScriptGetMemberNode2"
+                pin: "object"
+        -   in:
+                name: "VisualScriptGetMemberNode6"
+                pin: "object"
+            out:
+                name: "VisualScriptGetMemberNode5"
+                pin: "get"
+        name: "VisualScriptGetMemberNode6"
+        node:
+            position: [65.351997, 565.815979]
+            fieldName: "size"
+            className: "UIControl"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptGetVarNode2:
+        connections:
+        -   in:
+                name: "VisualScriptGetVarNode2"
+                pin: "value"
+            out:
+                name: "VisualScriptFunctionNode4"
+                pin: "arg1"
+        name: "VisualScriptGetVarNode2"
+        node:
+            position: [1230.000000, 353.000000]
+            varPath: "finishColor"
+        type: "VisualScriptGetVarNode"
+    VisualScriptGetMemberNode7:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode7"
+                pin: "object"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+        -   in:
+                name: "VisualScriptGetMemberNode7"
+                pin: "get"
+            out:
+                name: "VisualScriptGetMemberNode3"
+                pin: "object"
+        name: "VisualScriptGetMemberNode7"
+        node:
+            position: [63.768002, 672.367981]
+            fieldName: "size"
+            className: "UIControl"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptFunctionNode4:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode4"
+                pin: "arg0"
+            out:
+                name: "VisualScriptGetVarNode1"
+                pin: "value"
+        -   in:
+                name: "VisualScriptFunctionNode4"
+                pin: "result"
+            out:
+                name: "VisualScriptSetMemberNode1"
+                pin: "set"
+        -   in:
+                name: "VisualScriptFunctionNode4"
+                pin: "arg2"
+            out:
+                name: "VisualScriptFunctionNode1"
+                pin: "result"
+        -   in:
+                name: "VisualScriptFunctionNode4"
+                pin: "arg1"
+            out:
+                name: "VisualScriptGetVarNode2"
+                pin: "value"
+        name: "VisualScriptFunctionNode4"
+        node:
+            functionName: "Lerp"
+            position: [1437.000000, 361.000000]
+            className: "Color"
+            defaults: {}
+        type: "VisualScriptFunctionNode"
+    VisualScriptFunctionNode5:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode5"
+                pin: "result"
+            out:
+                name: "VisualScriptSetMemberNode1"
+                pin: "object"
+        -   in:
+                name: "VisualScriptFunctionNode5"
+                pin: "arg0"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+        name: "VisualScriptFunctionNode5"
+        node:
+            functionName: "GetComponentByName"
+            position: [684.288025, 181.440002]
+            className: "UIControl"
+            defaults:
+                arg1: "Background"
+                arg2: 0
+        type: "VisualScriptFunctionNode"

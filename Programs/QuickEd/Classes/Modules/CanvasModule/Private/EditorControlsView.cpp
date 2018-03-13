@@ -107,7 +107,7 @@ void GridControl::UpdateColorControlBackground()
 {
     PreviewWidgetSettings* settings = accessor->GetGlobalContext()->GetData<PreviewWidgetSettings>();
     DAVA::Color color = settings->backgroundColors[settings->backgroundColorIndex];
-    colorControl->GetBackground()->SetColor(color);
+    colorControl->GetComponent<UIControlBackground>()->SetColor(color);
 }
 
 void CalculateTotalRectImpl(UIControl* control, Rect& totalRect, Vector2& rootControlPosition, const UIGeometricData& gd)

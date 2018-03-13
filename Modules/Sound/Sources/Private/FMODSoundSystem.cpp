@@ -879,18 +879,27 @@ FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_OPENCALLBACK(const char* name, int unicode
 {
     File* file = File::Create(FilePath(name), File::OPEN | File::READ);
     if (!file)
+    {
+        Logger::Error("FMOD failed to open file: %s", name);
         return FMOD_ERR_FILE_NOTFOUND;
+    }
 
-    (*filesize) = static_cast<uint32>(file->GetSize());
-    (*handle) = file;
+    *filesize = static_cast<unsigned int>(file->GetSize());
+    *handle = file;
 
     return FMOD_OK;
 }
 
 FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_READCALLBACK(void* handle, void* buffer, unsigned int sizebytes, unsigned int* bytesread, void* userdata)
 {
-    File* file = static_cast<File*>(handle);
-    (*bytesread) = file->Read(buffer, sizebytes);
+    auto file = static_cast<File*>(handle);
+
+    *bytesread = file->Read(buffer, sizebytes);
+
+    if (*bytesread != sizebytes)
+    {
+        return FMOD_ERR_FILE_EOF;
+    }
 
     return FMOD_OK;
 }
@@ -898,9 +907,12 @@ FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_READCALLBACK(void* handle, void* buffer, u
 FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_SEEKCALLBACK(void* handle, unsigned int pos, void* userdata)
 {
     File* file = static_cast<File*>(handle);
-    file->Seek(pos, File::SEEK_FROM_START);
+    if (file->Seek(pos, File::SEEK_FROM_START))
+    {
+        return FMOD_OK;
+    }
 
-    return FMOD_OK;
+    return FMOD_ERR_FILE_COULDNOTSEEK;
 }
 
 FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_CLOSECALLBACK(void* handle, void* userdata)
@@ -910,4 +922,4 @@ FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_CLOSECALLBACK(void* handle, void* userdata
 
     return FMOD_OK;
 }
-};
+}

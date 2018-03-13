@@ -47,7 +47,7 @@ void MovieViewControl::Initialize(const Rect& rect)
         setVisible = movieViewJavaClass->GetMethod<void, jboolean>("setVisible");
         openMovie = movieViewJavaClass->GetMethod<void, jstring, jint>("openMovie");
         doAction = movieViewJavaClass->GetMethod<void, jint>("doAction");
-        isPlaying = movieViewJavaClass->GetMethod<jboolean>("isPlaying");
+        getState = movieViewJavaClass->GetMethod<jint>("getState");
         update = movieViewJavaClass->GetMethod<void>("update");
     }
     catch (const JNI::Exception& e)
@@ -146,13 +146,24 @@ void MovieViewControl::Resume()
     }
 }
 
-bool MovieViewControl::IsPlaying() const
+eMoviePlayingState MovieViewControl::GetState() const
 {
     if (javaMovieView != nullptr)
     {
-        return isPlaying(javaMovieView) == JNI_TRUE;
+        switch (getState(javaMovieView))
+        {
+        case 3:
+            return eMoviePlayingState::statePlaying;
+        case 2:
+            return eMoviePlayingState::statePaused;
+        case 1:
+            return eMoviePlayingState::stateLoading;
+        case 0:
+        default:
+            return eMoviePlayingState::stateStopped;
+        }
     }
-    return false;
+    return eMoviePlayingState::stateStopped;
 }
 
 void MovieViewControl::Update()

@@ -913,6 +913,10 @@ ResetRingBuffer()
 
 namespace PipelineStateMetal
 {
+void Init(uint32 maxCount)
+{
+    PipelineStateMetalPool::Reserve(maxCount);
+}
 void SetupDispatch(Dispatch* dispatch)
 {
     dispatch->impl_PipelineState_Create = &metal_PipelineState_Create;

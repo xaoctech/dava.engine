@@ -23,7 +23,6 @@ void UILoggingTest::LoadResources()
     BaseScreen::LoadResources();
 
     ScopedPtr<Font> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
-    font->SetSize(12);
 
     Rect btnRect(10.0f, 10.0f, 200.0f, 40.0f);
     switchButton.Set(CreateUIButton(font, btnRect, &UILoggingTest::OnSwitch));
@@ -49,6 +48,7 @@ UIButton* UILoggingTest::CreateUIButton(Font* font, const Rect& rect,
     UIButton* button = new UIButton(rect);
 
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, 12.f);
     button->SetStateFontColor(0xFF, Color::White);
     button->GetOrCreateComponent<UIDebugRenderComponent>();
     button->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, onClick));

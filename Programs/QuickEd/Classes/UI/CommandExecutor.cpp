@@ -4,6 +4,7 @@
 #include "Modules/ProjectModule/ProjectData.h"
 
 #include "QECommands/ChangePropertyValueCommand.h"
+#include "QECommands/ChangeBindingCommand.h"
 #include "QECommands/InsertControlCommand.h"
 #include "QECommands/RemoveControlCommand.h"
 #include "QECommands/InsertImportedPackageCommand.h"
@@ -277,6 +278,15 @@ void CommandExecutor::ChangeProperty(ControlNode* node, AbstractProperty* proper
     }
 }
 
+void CommandExecutor::ChangeBindingProperty(ControlNode* node, AbstractProperty* property, const DAVA::String& value, DAVA::int32 mode)
+{
+    if (!property->IsReadOnly())
+    {
+        DocumentData* documentData = GetDocumentData();
+        documentData->ExecCommand<ChangeBindingCommand>(node, property, value, mode);
+    }
+}
+
 void CommandExecutor::ResetProperty(ControlNode* node, AbstractProperty* property)
 {
     if (!property->IsReadOnly())
@@ -422,33 +432,21 @@ Vector<ControlNode*> CommandExecutor::InsertInstances(const DAVA::Vector<Control
 
 Vector<ControlNode*> CommandExecutor::CopyControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex)
 {
-    Vector<RefPtr<ControlNode>> nodesToCopy;
-    nodesToCopy.reserve(nodes.size());
-    for (ControlNode* node : nodes)
-    {
-        RefPtr<ControlNode> copy(node->Clone());
-        if (node->CanCopy() && dest->CanInsertControl(copy.Get(), destIndex))
-            nodesToCopy.push_back(copy);
-    }
-    Vector<ControlNode*> copiedNodes;
-    copiedNodes.reserve(nodesToCopy.size());
-    if (!nodesToCopy.empty())
-    {
-        DocumentData* data = GetDocumentData();
-        data->BeginBatch(Format("Copy Controls %s", CommandExecutorDetails::FormatNodeNames(nodes).c_str()), static_cast<uint32>(nodesToCopy.size()));
+    YamlPackageSerializer serializer;
+    serializer.SerializePackageNodes(dest->GetPackage(), nodes, {});
+    DAVA::String serializedControls = serializer.WriteToString();
+    DAVA::Set<PackageBaseNode*> pastedNodes = Paste(dest->GetPackage(), dest, destIndex, serializedControls);
 
-        int32 index = destIndex;
-        for (const RefPtr<ControlNode>& copy : nodesToCopy)
+    Vector<ControlNode*> result;
+    for (PackageBaseNode* node : pastedNodes)
+    {
+        ControlNode* control = dynamic_cast<ControlNode*>(node);
+        if (control)
         {
-            copiedNodes.push_back(copy.Get());
-            InsertControl(copy.Get(), dest, index);
-            index++;
+            result.push_back(control);
         }
-        nodesToCopy.clear();
-
-        data->EndBatch();
     }
-    return copiedNodes;
+    return result;
 }
 
 DAVA::Vector<ControlNode*> CommandExecutor::MoveControls(const DAVA::Vector<ControlNode*>& nodes, ControlsContainerNode* dest, DAVA::int32 destIndex) const
@@ -949,7 +947,7 @@ void CommandExecutor::AddComponentImpl(ControlNode* node, const Type* type, int3
 
     if (destSection == nullptr)
     {
-        ComponentPropertiesSection* section = new ComponentPropertiesSection(node->GetControl(), type, index, prototypeSection, prototypeSection ? AbstractProperty::CT_INHERIT : AbstractProperty::CT_COPY);
+        ComponentPropertiesSection* section = new ComponentPropertiesSection(node->GetControl(), type, index, prototypeSection);
         data->ExecCommand<AddComponentCommand>(node, section);
 
         for (ControlNode* instance : node->GetInstances())

@@ -3,6 +3,8 @@
 #include "ValidationProgress.h"
 #include <Base/Result.h>
 
+#include <TArc/Utils/ReflectedPairsVector.h>
+
 namespace DAVA
 {
 class Scene;
@@ -12,7 +14,7 @@ class ProjectManagerData;
 class SceneValidation
 {
 public:
-    SceneValidation(DAVA::ProjectManagerData* data);
+    SceneValidation(DAVA::ProjectManagerData* data, const DAVA::Vector<std::pair<DAVA::int32, DAVA::String>>& collisionTypes);
     /**
     For all parent models (i.e. models at which `scene` entities are referenced with "referenceToOwner" property)
     function checks whether local & world matrices are identity.
@@ -28,7 +30,7 @@ public:
        1. event names are equal
        2. event min,max distance are equal
        3. event properties are equal
-    c. Child effect entities should be equal. 
+    c. Child effect entities should be equal.
        Effects are considered to be equal when all corresponding effect entities have same names
     The progress and result of validating are available through `progress` variable
     */
@@ -55,4 +57,5 @@ public:
 
 private:
     DAVA::ProjectManagerData* projectManagerData = nullptr;
+    DAVA::Vector<std::pair<DAVA::int32, DAVA::String>> collisionTypes;
 };

@@ -1,13 +1,16 @@
 #include "UI/UITextField.h"
+#include "Engine/Engine.h"
+#include "FileSystem/FilePath.h"
 #include "Input/InputSystem.h"
+#include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Render/2D/Font.h"
+#include "Render/2D/FontManager.h"
+#include "Render/2D/FontPreset.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UITextFieldDelegate.h"
-#include "Render/2D/FontManager.h"
-#include "Utils/UTF8Utils.h"
-#include "Logger/Logger.h"
 #include "UI/Update/UIUpdateComponent.h"
-#include "Engine/Engine.h"
-#include "Reflection/ReflectionRegistrator.h"
+#include "Utils/UTF8Utils.h"
 
 #ifdef __DAVAENGINE_AUTOTESTING__
 #include "Autotesting/AutotestingSystem.h"
@@ -43,8 +46,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UITextField)
     ReflectionRegistrator<UITextField>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UITextField* o) { o->Release(); })
-    .Field("text", &UITextField::GetUtf8Text, &UITextField::SetUtf8Text)
+    .Field("text", &UITextField::GetUtf8Text, &UITextField::SetUtf8Text)[M::Bindable()]
     .Field("font", &UITextField::GetFontPresetName, &UITextField::SetFontByPresetName)
+    .Field("fontPath", &UITextField::GetFontPath, &UITextField::SetFontPath)
+    .Field("fontSize", &UITextField::GetFontSize, &UITextField::SetFontSize)
     .Field("textcolor", &UITextField::GetTextColor, &UITextField::SetTextColor) // TODO: camel style
     .Field("selectioncolor", &UITextField::GetSelectionColor, &UITextField::SetSelectionColor) // TODO: camel style
     .Field("shadowoffset", &UITextField::GetShadowOffset, &UITextField::SetShadowOffset) // TODO: camel style
@@ -98,8 +103,6 @@ void UITextField::SetupDefaults()
     SetIsPassword(false);
     SetTextColor(GetTextColor());
     SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
-
-    SetFontSize(26); //12 is default size for IOS
 
     SetText(L"");
     SetRenderToTexture(true);
@@ -222,6 +225,23 @@ void UITextField::SetFont(Font* font)
 #endif // !defined(DAVA_TEXTFIELD_USE_STB)
 }
 
+void UITextField::SetFontPath(const FilePath& fontPath)
+{
+#if defined(DAVA_TEXTFIELD_USE_STB)
+    textFieldImpl->SetFontPath(fontPath);
+#endif // !defined(DAVA_TEXTFIELD_USE_STB)
+}
+
+const FilePath& UITextField::GetFontPath() const
+{
+#if defined(DAVA_TEXTFIELD_USE_STB)
+    return textFieldImpl->GetFontPath();
+#else
+    static const FilePath EMPTY_PATH;
+    return EMPTY_PATH;
+#endif // !defined(DAVA_TEXTFIELD_USE_STB)
+}
+
 void UITextField::SetTextColor(const Color& fontColor)
 {
     textFieldImpl->SetTextColor(fontColor);
@@ -282,11 +302,6 @@ UITextFieldDelegate* UITextField::GetDelegate()
     return delegate;
 }
 
-void UITextField::SetSpriteAlign(int32 align)
-{
-    UIControl::SetSpriteAlign(align);
-}
-
 void UITextField::SetSize(const DAVA::Vector2& newSize)
 {
     UIControl::SetSize(newSize);
@@ -342,6 +357,15 @@ Font* UITextField::GetFont() const
     return textFieldImpl->GetFont();
 #else
     return nullptr;
+#endif
+}
+
+float32 UITextField::GetFontSize() const
+{
+#if defined(DAVA_TEXTFIELD_USE_STB)
+    return textFieldImpl->GetFontSize();
+#else
+    return 0.f;
 #endif
 }
 
@@ -662,29 +686,39 @@ void UITextField::OnInvisible()
     textFieldImpl->SetVisible(false);
 }
 
-String UITextField::GetFontPresetName() const
+const String& UITextField::GetFontPresetName() const
 {
-    String name;
-    Font* font = GetFont();
-    if (font != nullptr)
-    {
-        name = FontManager::Instance()->GetFontName(font);
-    }
-    return name;
+    return fontPresetName;
 }
 
 void UITextField::SetFontByPresetName(const String& presetName)
 {
-    Font* font = nullptr;
-    if (!presetName.empty())
+    if (fontPresetName != presetName)
     {
-        font = FontManager::Instance()->GetFont(presetName);
-    }
+#if defined(DAVA_TEXTFIELD_USE_STB)
+        textFieldImpl->SetFontName(presetName);
 
-    SetFont(font);
-    if (font)
-    {
-        SetFontSize(static_cast<float32>(font->GetFontHeight()));
+#else // for native text fields
+        FontPreset preset;
+        if (!presetName.empty())
+        {
+            preset = GetEngineContext()->fontManager->GetFontPreset(presetName);
+        }
+
+        if (preset.Valid())
+        {
+            // WORKAROUND: For compatibility with old version of font size setter
+            // we should use font height in pixels as font size in native fields.
+            uint32 height = preset.GetFont()->GetFontHeight(preset.GetSize());
+            textFieldImpl->SetFontSize(static_cast<float32>(height));
+        }
+        else
+        {
+            textFieldImpl->SetFontSize(preset.GetSize());
+        }
+#endif
+
+        fontPresetName = presetName;
     }
 }
 

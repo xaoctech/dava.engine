@@ -21,6 +21,7 @@ public:
     VariantType defaultValue;
     Vector<String> comboValues;
     Vector<Color> colorListValues;
+    Vector<std::pair<int32, String>> collisionTypeMapValues;
 };
 
 class EditorConfig
@@ -38,6 +39,7 @@ public:
         PT_STRING,
         PT_COMBOBOX,
         PT_COLOR_LIST,
+        PT_COLLISION_TYPE_MAP,
 
         PROPERTY_TYPES_COUNT
     };
@@ -47,6 +49,7 @@ public:
     const Vector<String>& GetProjectPropertyNames() const;
     const Vector<String>& GetComboPropertyValues(const String& nameStr) const;
     const Vector<Color>& GetColorPropertyValues(const String& nameStr) const;
+    const Vector<std::pair<int32, String>>& GetCollisionTypeMap(const String& nameStr) const;
 
     bool HasProperty(const String& propertyName) const;
     int32 GetPropertyValueType(const String& propertyName) const;
@@ -64,6 +67,6 @@ protected:
     Map<String, PropertyDescription*> properties;
     Vector<String> empty;
     Vector<Color> emptyColors;
+    Vector<std::pair<int32, String>> emptyCollisionTypeMap;
 };
-
 } // namespace DAVA

@@ -40,7 +40,7 @@ private:
 
     DAVA::FilePath folderWithDownloadedPacks;
     // quick and dirty way to test download on all platforms
-    DAVA::String urlToServerSuperpack = "http://by1-builddlc-01.corp.wargaming.local/DLC_Blitz/superpack_dx11.dvpk";
+    DAVA::String urlToServerSuperpack = "http://by1-smartdlc-01/mali.dvpk";
 
     DAVA::UIStaticText* textStatusOutput = nullptr;
     DAVA::UIButton* buttonLoadPack = nullptr;

@@ -49,6 +49,7 @@
 #include "Render/2D/TextBlock.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Render/2D/Systems/DynamicAtlasSystem.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/Image/ImageConverter.h"
 #include "Render/Renderer.h"
@@ -858,6 +859,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     context->versionInfo = new VersionInfo();
     context->renderSystem2D = new RenderSystem2D();
 
+    context->dynamicAtlasSystem = new DynamicAtlasSystem();
     context->uiControlSystem = new UIControlSystem();
 
     context->animationManager = new AnimationManager();
@@ -924,7 +926,7 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     {
         context->inputSystem = new InputSystem(engine);
         context->actionSystem = new ActionSystem();
-        context->uiScreenManager = new UIScreenManager();
+        context->uiScreenManager = new UIScreenManager(context->uiControlSystem);
         context->localNotificationController = new LocalNotificationController();
         context->debugOverlay = new DebugOverlay();
         
@@ -1006,13 +1008,18 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->pluginManager);
 
     SafeRelease(context->localNotificationController);
-    SafeRelease(context->uiScreenManager);
+    SafeDelete(context->uiScreenManager);
     if (context->uiControlSystem)
     {
         delete context->uiControlSystem; // Private destructor
         context->uiControlSystem = nullptr;
     }
-    SafeRelease(context->fontManager);
+    if (context->dynamicAtlasSystem)
+    {
+        delete context->dynamicAtlasSystem;
+        context->dynamicAtlasSystem = nullptr;
+    }
+    SafeDelete(context->fontManager);
     SafeDelete(context->animationManager);
     SafeRelease(context->renderSystem2D);
     SafeRelease(context->performanceSettings);

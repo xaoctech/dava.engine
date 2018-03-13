@@ -134,7 +134,7 @@ int32 UIStaticText::GetFittingOption() const
 
 void UIStaticText::SetFont(Font* _font)
 {
-    text->SetFont(_font);
+    text->SetFont(RefPtr<Font>::ConstructWithRetain(_font));
 }
 
 void UIStaticText::SetTextColor(const Color& color)
@@ -338,11 +338,12 @@ DAVA::Font* UIStaticText::GetFont() const
 
 DAVA::float32 UIStaticText::GetFontSize() const
 {
-    return GetTextBlock()->GetRenderSize();
+    return text->GetFontSize();
 }
+
 void UIStaticText::SetFontSize(float32 newSize)
 {
-    GetTextBlock()->SetRenderSize(newSize);
+    text->SetFontSize(newSize);
 }
 
 TextBlock* UIStaticText::GetTextBlock() const

@@ -73,18 +73,18 @@ void StaticTextTest::LoadResources()
     BaseScreen::LoadResources();
 
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
-    ScopedPtr<FTFont> bigFont(FTFont::Create("~res:/TestBed/Fonts/DejaVuSans.ttf"));
-    bigFont->SetSize(24.f);
 
     ScopedPtr<UIStaticText> label(new UIStaticText(Rect(20, 5, 400, 20)));
     label->SetFont(font);
+    label->SetFontSize(14.f);
     label->SetTextColor(Color::White);
     label->SetText(L"Preview:");
     label->SetTextAlign(ALIGN_LEFT);
     AddControl(label);
 
     previewText = new UIStaticText(Rect(20, 30, 400, 200));
-    previewText->SetFont(bigFont);
+    previewText->SetFont(font);
+    previewText->SetFontSize(24.f);
     previewText->SetTextColor(Color::White);
     previewText->SetText(L"");
     previewText->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -95,13 +95,15 @@ void StaticTextTest::LoadResources()
 
     label = new UIStaticText(Rect(20, 235, 400, 20));
     label->SetFont(font);
+    label->SetFontSize(14.f);
     label->SetTextColor(Color::White);
     label->SetText(L"Input:");
     label->SetTextAlign(ALIGN_LEFT);
     AddControl(label);
 
     inputText = new UITextField(Rect(20, 260, 400, 200));
-    inputText->SetFont(bigFont);
+    inputText->SetFont(font);
+    inputText->SetFontSize(24.f);
     inputText->SetTextColor(Color::White);
     inputText->SetText(L"");
     inputText->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -115,6 +117,7 @@ void StaticTextTest::LoadResources()
 
     debugLabel = new UIStaticText(Rect(20, 470, 400, 70));
     debugLabel->SetFont(font);
+    debugLabel->SetFontSize(14.f);
     debugLabel->SetTextColor(Color::White);
     debugLabel->SetText(L"TextBlock Debug:\n");
     debugLabel->SetTextAlign(ALIGN_LEFT);
@@ -123,6 +126,7 @@ void StaticTextTest::LoadResources()
 
     label = new UIStaticText(Rect(450, 5, 200, 20));
     label->SetFont(font);
+    label->SetFontSize(14.f);
     label->SetTextColor(Color::White);
     label->SetText(L"Aligns:");
     label->SetTextAlign(ALIGN_LEFT);
@@ -138,6 +142,7 @@ void StaticTextTest::LoadResources()
 
     label = new UIStaticText(Rect(450, 105, 200, 20));
     label->SetFont(font);
+    label->SetFontSize(14.f);
     label->SetTextColor(Color::White);
     label->SetText(L"Fitting:");
     label->SetTextAlign(ALIGN_LEFT);
@@ -151,6 +156,7 @@ void StaticTextTest::LoadResources()
 
     label = new UIStaticText(Rect(450, 205, 200, 20));
     label->SetFont(font);
+    label->SetFontSize(14.f);
     label->SetTextColor(Color::White);
     label->SetText(L"Required text size:");
     label->SetTextAlign(ALIGN_LEFT);
@@ -158,6 +164,7 @@ void StaticTextTest::LoadResources()
 
     requireTextSizeButton = new UIButton(Rect(450, 230, 100, 20));
     requireTextSizeButton->SetStateFont(0xFF, font);
+    requireTextSizeButton->SetStateFontSize(0xFF, 14.f);
     requireTextSizeButton->SetStateFontColor(0xFF, Color::White);
     requireTextSizeButton->SetStateText(0xFF, L"On / Off");
     requireTextSizeButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -166,6 +173,7 @@ void StaticTextTest::LoadResources()
 
     label = new UIStaticText(Rect(450, 255, 200, 20));
     label->SetFont(font);
+    label->SetFontSize(14.f);
     label->SetTextColor(Color::White);
     label->SetText(L"Multiline:");
     label->SetTextAlign(ALIGN_LEFT);
@@ -263,6 +271,7 @@ UIButton* StaticTextTest::CreateButton(const WideString& caption, const Rect& re
 {
     UIButton* button = new UIButton(rect);
     button->SetStateFont(0xFF, font);
+    button->SetStateFontSize(0xFF, 14.f);
     button->SetStateFontColor(0xFF, Color::White);
     button->SetStateText(0xFF, caption);
     button->GetOrCreateComponent<UIDebugRenderComponent>();

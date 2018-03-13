@@ -28,6 +28,7 @@ public:
     QColor GetHighligtedItemTextColor();
     QColor GetErrorColor();
 
+    eTheme GetTheme() const;
     void SetTheme(eTheme theme, QApplication* app);
 
 private:

@@ -140,7 +140,6 @@ public:
     eError GetError() const;
 
     void OptimizeScene(Entity* rootNode);
-    bool RemoveEmptySceneNodes(Entity* rootNode);
     bool RemoveEmptyHierarchy(Entity* currentNode);
     void RebuildTangentSpace(Entity* entity);
     void ConvertShadowVolumes(Entity* rootNode, NMaterial* shadowMaterialParent);

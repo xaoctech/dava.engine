@@ -88,15 +88,7 @@ UIList::~UIList()
     SafeRelease(scrollContainer);
     SafeRelease(scroll);
 
-    for (Map<String, Vector<UIListCell*>*>::iterator mit = cellStore.begin(); mit != cellStore.end(); mit++)
-    {
-        for (Vector<UIListCell*>::iterator it = mit->second->begin(); it != mit->second->end(); it++)
-        {
-            SafeRelease(*it);
-        }
-        delete mit->second;
-        mit->second = NULL;
-    }
+    ClearReusableCells();
 }
 
 void UIList::ScrollTo(float delta)
@@ -762,5 +754,26 @@ void UIList::OnViewPositionChanged(UIScrollBar* byScrollBar, float32 newPosition
 void UIList::ScrollToPosition(float32 position, float32 timeSec /*= 0.3f*/)
 {
     scroll->ScrollToPosition(-position);
+}
+
+void UIList::ImmediateClearCells()
+{
+    ClearReusableCells();
+    RemoveAllCells();
+    Refresh();
+}
+
+void UIList::ClearReusableCells()
+{
+    for (const std::pair<String, Vector<UIListCell*>*>& mit : cellStore)
+    {
+        for (UIListCell* cell : *(mit.second))
+        {
+            cell->cellStore = nullptr;
+            cell->Release();
+        }
+        delete mit.second;
+    }
+    cellStore.clear();
 }
 };

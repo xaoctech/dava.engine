@@ -17,11 +17,11 @@ public:
     void Redo() override;
     void Undo() override;
 
-    void ApplyProperty(ControlNode* node, AbstractProperty* property, const DAVA::Any& value);
-
     bool MergeWith(const DAVA::Command* command) override;
 
 private:
+    void ApplyProperty(ControlNode* node, AbstractProperty* property, const DAVA::Any& value);
+
     struct Item
     {
         Item(ControlNode* node, AbstractProperty* property, const DAVA::Any& newValue);
@@ -29,6 +29,9 @@ private:
         DAVA::RefPtr<AbstractProperty> property;
         DAVA::Any newValue;
         DAVA::Any oldValue;
+        DAVA::String oldBindingValue;
+        DAVA::int32 oldBindingMode = 0;
+        bool wasBound = false;
     };
     DAVA::Vector<Item> items;
 };

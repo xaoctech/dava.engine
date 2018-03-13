@@ -1,90 +1,99 @@
 #include "UI/UIScreenManager.h"
-#include "Base/BaseObject.h"
-#include "Engine/Engine.h"
 #include "Logger/Logger.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
 
 namespace DAVA
 {
-UIScreenManager::UIScreenManager()
+UIScreenManager::UIScreenManager(UIControlSystem* _uiControlSystem)
+    : uiControlSystem(_uiControlSystem)
 {
-    glControllerId = -1;
-    activeControllerId = -1;
-    activeScreenId = -1;
 }
 
 UIScreenManager::~UIScreenManager()
 {
-    Vector<Screen> releaseBuf;
-    for (Map<int, Screen>::const_iterator it = screens.begin(); it != screens.end(); it++)
+    for (auto it = screens.begin(); it != screens.end(); ++it)
     {
-        if (it->second.type == Screen::TYPE_SCREEN)
-        {
-            (static_cast<UIScreen*>(it->second.value))->UnloadGroup();
-            //			it->second.type == Screen::TYPE_NULL;
-            releaseBuf.push_back(it->second);
-        }
+        it->second->UnloadGroup();
     }
-    for (Vector<Screen>::const_iterator it = releaseBuf.begin(); it != releaseBuf.end(); it++)
-    {
-        (static_cast<UIScreen*>(it->value))->Release();
-    }
+
+    screens.clear();
 }
 
-void UIScreenManager::SetFirst(int screenId)
+void UIScreenManager::SetFirst(int32 screenId)
 {
-    DVASSERT(activeScreenId == -1 && "[UIScreenManager::SetFirst] called twice");
+    DVASSERT(activeScreenId == -1 && "[UIScreenManager::SetFirst] Called twice");
 
-    Screen& screen = screens[screenId];
-    if (screen.type == Screen::TYPE_SCREEN)
+    SetScreen(screenId);
+}
+
+void UIScreenManager::SetScreen(int32 screenId)
+{
+    auto it = screens.find(screenId);
+    if (it != screens.end())
     {
         activeScreenId = screenId;
-        GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value));
+        uiControlSystem->SetScreen(it->second.Get());
     }
     else
     {
-        Logger::Error("ScreenManager::SetFirst wrong type of screen");
-    }
-}
-
-void UIScreenManager::SetScreen(int screenId)
-{
-    Screen& screen = screens[screenId];
-    if (screen.type == Screen::TYPE_SCREEN)
-    {
-        activeScreenId = screenId;
-        GetEngineContext()->uiControlSystem->SetScreen(static_cast<UIScreen*>(screen.value));
+        Logger::Error("[ScreenManager::SetScreen] Wrong screen id(%d).", screenId);
     }
 }
 
 void UIScreenManager::ResetScreen()
 {
     activeScreenId = -1;
-    GetEngineContext()->uiControlSystem->Reset();
+    uiControlSystem->Reset();
 }
 
-void UIScreenManager::RegisterScreen(int screenId, UIScreen* screen)
+bool UIScreenManager::RegisterScreen(int32 screenId, UIScreen* screen)
 {
-    DVASSERT(screen != 0);
-    screens[screenId] = Screen(Screen::TYPE_SCREEN, SafeRetain(screen));
+    return RegisterScreen(screenId, RefPtr<UIScreen>::ConstructWithRetain(screen));
 }
 
-UIScreen* UIScreenManager::GetScreen(int screenId)
+bool UIScreenManager::RegisterScreen(int32 screenId, const RefPtr<UIScreen>& screen)
 {
-    Screen& screen = screens[screenId];
-    if (screen.type == Screen::TYPE_SCREEN)
+    DVASSERT(screen != nullptr);
+    auto it = screens.find(screenId);
+    if (it != screens.end())
     {
-        return static_cast<UIScreen*>(screen.value);
+        Logger::Error("[UIScreenManager::RegisterScreen] Screen id(%d) already registered.", screenId);
+        return false;
     }
-    return NULL;
+    screens[screenId] = screen;
+    return true;
 }
 
-UIScreen* UIScreenManager::GetScreen()
+bool UIScreenManager::UnregisterScreen(int32 screenId)
+{
+    auto it = screens.find(screenId);
+    if (it == screens.end())
+    {
+        Logger::Error("[UIScreenManager::UnregisterScreen] Screen id(%d) not registered.", screenId);
+        return false;
+    }
+    it->second->UnloadGroup();
+    screens.erase(it);
+    return true;
+}
+
+UIScreen* UIScreenManager::GetScreen(int32 screenId) const
+{
+    auto it = screens.find(screenId);
+    if (it != screens.end())
+    {
+        return it->second.Get();
+    }
+    return nullptr;
+}
+
+UIScreen* UIScreenManager::GetScreen() const
 {
     return GetScreen(activeScreenId);
 }
-int32 UIScreenManager::GetScreenId()
+
+int32 UIScreenManager::GetScreenId() const
 {
     return activeScreenId;
 }

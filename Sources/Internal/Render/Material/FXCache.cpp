@@ -371,7 +371,13 @@ const FXDescriptor& LoadFXFromOldTemplate(const FastName& fxName, UnorderedMap<F
     {
         UnorderedMap<FastName, int32> shaderDefines = defines;
         for (auto& templateDefine : pass.templateDefines)
-            shaderDefines[templateDefine.first] = templateDefine.second;
+        {
+            if (templateDefine.second == 0)
+                shaderDefines.erase(templateDefine.first);
+            else
+                shaderDefines[templateDefine.first] = templateDefine.second;
+        }
+
         if (pass.hasBlend)
         {
             if (shaderDefines.find(NMaterialFlagName::FLAG_BLENDING) == shaderDefines.end())

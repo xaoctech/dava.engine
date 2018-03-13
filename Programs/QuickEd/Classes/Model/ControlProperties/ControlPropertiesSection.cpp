@@ -10,7 +10,7 @@
 
 using namespace DAVA;
 
-ControlPropertiesSection::ControlPropertiesSection(const DAVA::String& name, DAVA::UIControl* control_, const DAVA::Type* type_, const Vector<Reflection::Field>& fields, const ControlPropertiesSection* sourceSection, eCloneType cloneType)
+ControlPropertiesSection::ControlPropertiesSection(const DAVA::String& name, DAVA::UIControl* control_, const DAVA::Type* type_, const Vector<Reflection::Field>& fields, const ControlPropertiesSection* prototypeProperty)
     : SectionProperty(name)
     , control(SafeRetain(control_))
     , type(type_)
@@ -25,8 +25,8 @@ ControlPropertiesSection::ControlPropertiesSection(const DAVA::String& name, DAV
         if (field.inheritFrom->GetType() == type)
         {
             String name = field.key.Cast<String>();
-            IntrospectionProperty* sourceProperty = nullptr == sourceSection ? nullptr : sourceSection->FindChildPropertyByName(name);
-            IntrospectionProperty* prop = IntrospectionProperty::Create(control, nullptr, name, field.ref, sourceProperty, cloneType);
+            IntrospectionProperty* sourceProperty = nullptr == prototypeProperty ? nullptr : prototypeProperty->FindChildPropertyByName(name);
+            IntrospectionProperty* prop = IntrospectionProperty::Create(control, nullptr, name, field.ref, sourceProperty);
             AddProperty(prop);
             SafeRelease(prop);
         }

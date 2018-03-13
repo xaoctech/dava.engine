@@ -270,6 +270,10 @@ void StaticPackageInformationBuilder::ProcessProperty(const DAVA::ReflectedStruc
     }
 }
 
+void StaticPackageInformationBuilder::ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode)
+{
+}
+
 DAVA::Any StaticPackageInformationBuilder::GetPropertyValue(const DAVA::ReflectedStructure::Field& field)
 {
     return DAVA::Any();

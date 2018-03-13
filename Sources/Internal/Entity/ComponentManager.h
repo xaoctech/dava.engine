@@ -18,10 +18,11 @@ namespace DAVA
     Base engine Components are registered automatically (if both reflection and permanent name are provided).
     Base engine UIComponents are registered in ReflectionDeclaration.cpp (for now).
 
-    After registration, Component/UIComponent can be created through Component/UIComponent::CreateByType(const Type* componentType).
+    After registration, Component/UIComponent can be created through ComponentUtils::Create/UIComponent::CreateByType(const Type* componentType).
 
-    Component/UIComponent registration also introduces 'componentRuntimeIndex' (just integer).
-    'componentRuntimeIndex' can be used for Component/UIComponents management along with its' Type. 'componentRuntimeIndex' is typically used for optimization (for example, indices in array). You cannot rely on its actual value between launches of the application.
+    Component/UIComponent registration also introduces 'runtimeComponentId' (just integer).
+    'runtimeComponentId' can be used for Component/UIComponents management along with its' Type. 'runtimeComponentId' is typically used for optimization (for example, indices in array).
+    You cannot rely on its actual value between launches of the application.
 */
 
 class UIComponent;
@@ -37,11 +38,11 @@ class ComponentManager
     friend class Private::EngineBackend; // For creation
 
 public:
-    /** Register new component of specified type 'T'. The behavior is undefined until 'T' is a Component/UIComponent subclass. */
+    /** Register new component of specified type 'T'. The behavior is undefined until 'T' is derived from Component/UIComponent. */
     template <typename T>
     void RegisterComponent();
 
-    /** Register new component of specified `Type`. The behavior is undefined until `Type` is derived Component/UIComponent. */
+    /** Register new component of specified `Type`. The behavior is undefined until `type` is derived from Component/UIComponent. */
     void RegisterComponent(const Type* type);
 
     /**
@@ -59,7 +60,7 @@ public:
     /** Return total number of registered UIComponents. */
     uint32 GetUIComponentsCount() const;
 
-    /** Return total number of registered Components. */
+    /** Return total number of registered Scene Components. */
     uint32 GetSceneComponentsCount() const;
 
     /** Check if specified 'type' was registered as UIComponent. */
@@ -68,22 +69,28 @@ public:
     /** Check if specified 'type' was registered as Scene Component. */
     bool IsRegisteredSceneComponent(const Type* type) const;
 
-    /** Return runtime index for specified 'type'. The behavior is undefined until 'type' is registered in ComponentManager. */
-    uint32 GetRuntimeComponentIndex(const Type* type) const;
+    /**
+        Return runtime id for specified component 'type'.
+        The behavior is undefined until 'type' is registered in ComponentManager.
+    */
+    uint32 GetRuntimeComponentId(const Type* type) const;
 
-    /** Return sorted index for specified 'type', based on permanent name. */
-    uint32 GetSortedComponentIndex(const Type* type);
+    /**
+        Return sorted (based on permanent name) runtime id for specified component 'type'.
+        The behavior is undefined until 'type' is registered in ComponentManager.
+    */
+    uint32 GetSortedComponentId(const Type* type);
 
     /** 
-        Return Type of Scene Component for specified component 'runtimeIndex'.
-        Return nullptr if component with 'runtimeIndex' was not registered in ComponentManager.
+        Return Type of Scene Component for specified component 'runtimeId'.
+        Return nullptr if component with 'runtimeId' was not registered in ComponentManager.
     */
-    const Type* GetSceneComponentType(uint32 runtimeIndex) const;
+    const Type* GetSceneComponentType(uint32 runtimeId) const;
 
-    /** Return const reference to sorted vector of registered UIComponents types. */
+    /** Return const reference to vector of registered UIComponents types. */
     const Vector<const Type*>& GetRegisteredUIComponents() const;
 
-    /** Return const reference to sorted vector of registered Scene Components types. */
+    /** Return const reference to vector of registered Scene Components types. */
     const Vector<const Type*>& GetRegisteredSceneComponents() const;
 
 private:
@@ -91,7 +98,7 @@ private:
 
     void PreregisterAllDerivedSceneComponentsRecursively();
     void CollectSceneComponentsRecursively(const Type* type, Vector<const Type*>& components);
-    void UpdateSortedVectors();
+    void UpdateSceneComponentsSortedVector(const Type* type);
 
     void* Uint32ToVoidPtr(uint32 value) const;
     uint32 VoidPtrToUint32(void* ptr) const;
@@ -101,13 +108,12 @@ private:
 
     uint32 runtimeSceneComponentsCount = 0;
     Vector<const Type*> registeredSceneComponents;
-    Vector<const Type*> sceneRuntimeIndexToType;
 
-    // TODO: Think of a better way for getting sorted index. There are too many containers.
-    Vector<uint32> sceneComponentsSortedByPermanentName;
+    // TODO: Think of a better way for getting sorted id. There are too many containers.
+    Vector<std::pair<uint32, uint32>> sceneComponentsSortedByPermanentName;
 
-    int32 runtimeTypeIndex = -1;
-    int32 componentTypeIndex = -1;
+    int32 runtimeIdUserDataIndex = -1;
+    int32 componentTypeUserDataIndex = -1;
 
     bool componentsWerePreregistered = false;
     uint32 crc32HashOfPreregisteredComponents;

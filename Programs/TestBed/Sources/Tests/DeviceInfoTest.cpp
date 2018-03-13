@@ -24,12 +24,12 @@ void DeviceInfoTest::LoadResources()
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
 
-    font->SetSize(20.0f);
     Size2i screenSize = GetEngineContext()->uiControlSystem->vcs->GetVirtualScreenSize();
     BaseScreen::LoadResources();
     info = new UIStaticText(Rect(0.f, 0.f, static_cast<float32>(screenSize.dx), static_cast<float32>(screenSize.dy)));
     info->SetTextColor(Color::White);
     info->SetFont(font);
+    info->SetFontSize(20.f);
     info->SetMultiline(true);
     info->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     AddControl(info);

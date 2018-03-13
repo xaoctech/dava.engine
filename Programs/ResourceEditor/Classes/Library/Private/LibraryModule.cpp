@@ -4,6 +4,7 @@
 #include "Classes/Library/Private/LibraryData.h"
 #include "Classes/Library/Private/LibraryWidget.h"
 #include "Classes/Library/Private/DAEConverter.h"
+#include "Classes/Library/Private/SceneImporter.h"
 
 #include <FBX/FBXImporter.h>
 
@@ -122,7 +123,14 @@ void LibraryModule::OnDAEConvertionRequested(const DAVA::FilePath& daePathname)
         waitDlgParams.needProgressBar = false;
         std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
-        DAEConverter::Convert(daePathname);
+        DAVA::FilePath scenePath = DAVA::FilePath::CreateWithNewExtension(daePathname, ".sc2");
+        SceneImporter importer(scenePath);
+        importer.AccumulateParams();
+        bool converted = DAEConverter::Convert(daePathname);
+        if (converted == true)
+        {
+            importer.RestoreParams();
+        }
     });
 }
 
@@ -152,7 +160,14 @@ void LibraryModule::OnFBXConvertionRequested(const DAVA::FilePath& fbxPathname)
         waitDlgParams.needProgressBar = false;
         std::unique_ptr<DAVA::WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
-        DAVA::FBXImporter::ConvertToSC2(fbxPathname, DAVA::FilePath::CreateWithNewExtension(fbxPathname, ".sc2"));
+        DAVA::FilePath scenePath = DAVA::FilePath::CreateWithNewExtension(fbxPathname, ".sc2");
+        SceneImporter importer(scenePath);
+        importer.AccumulateParams();
+        bool converted = DAVA::FBXImporter::ConvertToSC2(fbxPathname, scenePath);
+        if (converted == true)
+        {
+            importer.RestoreParams();
+        }
     });
 }
 

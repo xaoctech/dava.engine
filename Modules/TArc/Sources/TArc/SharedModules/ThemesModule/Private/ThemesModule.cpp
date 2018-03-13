@@ -40,6 +40,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ThemesSettings)
     .End();
 }
 
+ThemesSettings::eTheme ThemesSettings::GetTheme() const
+{
+    return theme;
+}
+
 void ThemesSettings::SetTheme(ThemesSettings::eTheme theme_, QApplication* app)
 {
     theme = theme_;

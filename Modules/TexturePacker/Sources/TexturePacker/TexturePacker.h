@@ -1,9 +1,9 @@
-#ifndef __DAVAENGINE_TEXTURE_PACKER_H__
-#define __DAVAENGINE_TEXTURE_PACKER_H__
+#pragma once
 
 #include "TextureCompression/TextureConverter.h"
-#include "TexturePacker/Spritesheet.h"
+#include "Math/RectanglePacker/Spritesheet.h"
 #include "TexturePacker/DefinitionFile.h"
+#include "Math/RectanglePacker/RectanglePacker.h"
 
 #include <Base/BaseTypes.h>
 #include <Functional/Function.h>
@@ -16,13 +16,6 @@ namespace DAVA
 class DefinitionFile;
 class ImageExt;
 class FilePath;
-
-struct SpriteItem
-{
-    DefinitionFile::Pointer defFile;
-    uint32 spriteWeight = 0;
-    uint32 frameIndex = 0;
-};
 
 class TexturePacker
 {
@@ -55,22 +48,15 @@ public:
     // pack one sprite and use several textures if more than one needed
     void PackToMultipleTextures(const FilePath& outputPath, const char* basename, const DefinitionFile::Collection& remainingList, const Vector<eGPUFamily>& forGPUs);
 
-    void SetUseOnlySquareTextures();
-    void SetMaxTextureSize(uint32 maxTextureSize);
     void SetConvertQuality(TextureConverter::eConvertQuality quality);
-    void SetAlgorithms(const Vector<PackingAlgorithm>& algorithms);
     void SetTexturePostfix(const String& postfix);
 
-    // set visible 1 pixel border for each texture
-    void SetTwoSideMargin(bool val = true)
-    {
-        useTwoSideMargin = val;
-    }
-    void SetTexturesMargin(uint32 margin)
-    {
-        texturesMargin = margin;
-    }
-
+    // Proxy setters
+    void SetUseOnlySquareTextures(bool value = true);
+    void SetMaxTextureSize(uint32 maxTextureSize);
+    void SetAlgorithms(const Vector<PackingAlgorithm>& algorithms);
+    void SetTwoSideMargin(bool val = true);
+    void SetTexturesMargin(uint32 margin);
     const Set<String>& GetErrors() const;
 
 private:
@@ -92,37 +78,48 @@ private:
 
     bool CheckFrameSize(const Size2i& spriteSize, const Size2i& frameSize);
 
-    Vector<SpriteItem> PrepareSpritesVector(const DefinitionFile::Collection& defList);
-    Vector<std::unique_ptr<SpritesheetLayout>> PackSprites(Vector<SpriteItem>& spritesToPack, const Vector<ImageExportKeys>& imageExportKeys);
-    void SaveResultSheets(const FilePath& outputPath, const char* basename, const DefinitionFile::Collection& defList, const Vector<std::unique_ptr<SpritesheetLayout>>& resultSheets, const Vector<ImageExportKeys>& imageExportKeys);
-
-    int32 TryToPack(SpritesheetLayout* sheet, Vector<SpriteItem>& tempSortVector, bool fullPackOnly);
+    std::unique_ptr<RectanglePacker::PackTask> CreatePackTask(const DefinitionFile::Collection& defList, const Vector<ImageExportKeys>& imageExportKeys);
+    void SaveResultSheets(const FilePath& outputPath, const char* basename, const RectanglePacker::PackResult& packResult, const Vector<ImageExportKeys>& imageExportKeys);
 
     bool WriteDefinition(const std::unique_ptr<SpritesheetLayout>& sheet, const FilePath& outputPath, const String& textureName, const DefinitionFile& defFile);
-    bool WriteMultipleDefinition(const Vector<std::unique_ptr<SpritesheetLayout>>& usedAtlases, const FilePath& outputPath, const char* textureBasename, const DefinitionFile& defFile);
+    bool WriteMultipleDefinition(const RectanglePacker::SpriteIndexedData& spriteIndexedData, const DefinitionFile& defFile, const FilePath& outputPath, const char* textureBasename);
     void WriteDefinitionString(FILE* fp, const Rect2i& writeRect, const Rect2i& originRect, int textureIndex, const String& frameName);
 
     void DrawToFinalImage(ImageExt& finalImage, ImageExt& drawedImage, const SpriteBoundsRect& drawRect, const Rect2i& frameRect);
 
     String MakeTextureName(const char* basename, uint32 textureIndex) const;
 
-    uint32 maxTextureSize;
-
-    bool onlySquareTextures;
     bool NeedSquareTextureForCompression(const Vector<ImageExportKeys>& keys);
 
     TextureConverter::eConvertQuality quality;
-
-    bool useTwoSideMargin;
-    uint32 texturesMargin;
-    Vector<PackingAlgorithm> packAlgorithms;
 
     String texturePostfix;
 
     Set<String> errors;
     void AddError(const String& errorMsg);
-};
+    void AddErrors(const Set<String>& errors_);
+
+    RectanglePacker rectanglePacker;
 };
 
-
-#endif // __DAVAENGINE_TEXTURE_PACKER_H__
+inline void TexturePacker::SetUseOnlySquareTextures(bool value)
+{
+    rectanglePacker.SetUseOnlySquareTextures(value);
+}
+inline void TexturePacker::SetMaxTextureSize(uint32 value)
+{
+    rectanglePacker.SetMaxTextureSize(value);
+}
+inline void TexturePacker::SetAlgorithms(const Vector<PackingAlgorithm>& value)
+{
+    rectanglePacker.SetAlgorithms(value);
+}
+inline void TexturePacker::SetTwoSideMargin(bool value)
+{
+    rectanglePacker.SetTwoSideMargin(value);
+}
+inline void TexturePacker::SetTexturesMargin(uint32 value)
+{
+    rectanglePacker.SetTexturesMargin(value);
+}
+};

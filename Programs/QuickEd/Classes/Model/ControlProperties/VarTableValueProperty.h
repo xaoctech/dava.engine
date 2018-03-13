@@ -5,7 +5,7 @@
 class VarTableValueProperty : public IntrospectionProperty
 {
 public:
-    VarTableValueProperty(DAVA::BaseObject* object, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType);
+    VarTableValueProperty(DAVA::BaseObject* object, const DAVA::String& name, const DAVA::Reflection& ref, const IntrospectionProperty* prototypeProperty);
     ~VarTableValueProperty() override;
 
     DAVA::Any GetDefaultLocalValue(const DAVA::String& propertyName);

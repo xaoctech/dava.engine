@@ -146,6 +146,8 @@ public:
 
     bool GetNeedRefresh();
 
+    void ImmediateClearCells();
+
 protected:
     void InitAfterYaml();
     virtual ~UIList();
@@ -165,6 +167,7 @@ protected:
 
     void RemoveCell(UIListCell* cell);
     void RemoveAllCells();
+    void ClearReusableCells();
 
     UIListDelegate* delegate;
     eListOrientation orientation;

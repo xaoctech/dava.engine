@@ -51,10 +51,11 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     lastSelectionTime = 0;
 
     Font* f = FTFont::Create(fontPath);
-    f->SetSize(static_cast<float32>(int32(cellH * 2.0f) / 3));
+    float32 fSize = static_cast<float32>(int32(cellH * 2.0f) / 3);
 
     title = new UIStaticText(Rect(border, halfBorder, size.x - border * 2.0f, cellH));
     title->SetFont(f);
+    title->SetFontSize(fSize);
     title->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
     title->SetTextColor(Color(1.f, 1.f, 1.f, 1.f));
     title->SetFittingOption(TextBlock::FITTING_REDUCE);
@@ -64,6 +65,7 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     workingPath = new UIStaticText(Rect(border, halfBorder + fileListView->size.y + fileListView->relativePosition.y, size.x - border * 2.0f, cellH));
     workingPath->SetTextColorInheritType(UIControlBackground::COLOR_IGNORE_PARENT);
     workingPath->SetFont(f);
+    workingPath->SetFontSize(fSize);
     workingPath->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
     workingPath->SetFittingOption(TextBlock::FITTING_REDUCE);
     workingPath->SetText(L"c:");
@@ -78,6 +80,7 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     positiveButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
     positiveButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     positiveButton->SetStateFont(UIControl::STATE_NORMAL, f);
+    positiveButton->SetStateFontSize(UIControl::STATE_NORMAL, fSize);
     positiveButton->SetStateText(UIControl::STATE_NORMAL, L"OK");
     positiveButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     positiveButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIFileSystemDialog::ButtonPressed));
@@ -91,6 +94,7 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     negativeButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
     negativeButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     negativeButton->SetStateFont(UIControl::STATE_NORMAL, f);
+    negativeButton->SetStateFontSize(UIControl::STATE_NORMAL, fSize);
     negativeButton->SetStateText(UIControl::STATE_NORMAL, L"Cancel");
     negativeButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     negativeButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIFileSystemDialog::ButtonPressed));
@@ -105,6 +109,7 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     historyBackwardButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
     historyBackwardButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     historyBackwardButton->SetStateFont(UIControl::STATE_NORMAL, f);
+    historyBackwardButton->SetStateFontSize(UIControl::STATE_NORMAL, fSize);
     historyBackwardButton->SetStateText(UIControl::STATE_NORMAL, L"<");
     historyBackwardButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     historyBackwardButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIFileSystemDialog::HistoryButtonPressed));
@@ -121,6 +126,7 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     historyForwardButton->SetStateDrawType(UIControl::STATE_DISABLED, UIControlBackground::DRAW_FILL);
     historyForwardButton->GetStateBackground(UIControl::STATE_DISABLED)->SetColor(Color(0.2f, 0.2f, 0.2f, 0.2f));
     historyForwardButton->SetStateFont(UIControl::STATE_NORMAL, f);
+    historyForwardButton->SetStateFontSize(UIControl::STATE_NORMAL, fSize);
     historyForwardButton->SetStateText(UIControl::STATE_NORMAL, L">");
     historyForwardButton->SetStateTextColorInheritType(UIControl::STATE_NORMAL, UIControlBackground::COLOR_IGNORE_PARENT);
     historyForwardButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &UIFileSystemDialog::HistoryButtonPressed));
@@ -135,6 +141,7 @@ UIFileSystemDialog::UIFileSystemDialog(const FilePath& _fontPath)
     textFieldBg->SetDrawType(UIControlBackground::DRAW_FILL);
     textFieldBg->SetColor(Color(0.25f, 0.25f, 0.25f, 0.25f));
     textField->SetFont(f);
+    textField->SetFontSize(fSize);
     textField->SetDelegate(this);
 
     SafeRelease(f);
@@ -461,8 +468,8 @@ UIListCell* UIFileSystemDialog::CellAtIndex(UIList* forList, int32 index)
         text->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
 
         Font* f = FTFont::Create(fontPath);
-        f->SetSize(static_cast<float32>(cellH) * 2 / 3);
         text->SetFont(f);
+        text->SetFontSize(static_cast<float32>(cellH) * 2 / 3);
         text->SetTextColor(Color(1.f, 1.f, 1.f, 1.f));
         SafeRelease(f);
         UIControlBackground* bg = c->GetOrCreateComponent<UIControlBackground>();

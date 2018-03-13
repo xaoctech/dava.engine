@@ -5,7 +5,7 @@
 #include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
-
+#include <REPlatform/Deprecated/EditorConfig.h>
 #include <TArc/Core/Deprecated.h>
 #include <QtTools/ConsoleWidget/LoggerOutputObject.h>
 
@@ -61,7 +61,10 @@ void SceneValidationDialog::Validate()
     DVASSERT(DAVA::Thread::IsMainThread());
 
     DAVA::ProjectManagerData* data = DAVA::Deprecated::GetDataNode<DAVA::ProjectManagerData>();
-    SceneValidation validation(data);
+    DVASSERT(data != nullptr);
+    const DAVA::EditorConfig* conf = data->GetEditorConfig();
+    DVASSERT(conf != nullptr);
+    SceneValidation validation(data, conf->GetCollisionTypeMap("CollisionType"));
 
     ui->validateButton->setEnabled(false);
 

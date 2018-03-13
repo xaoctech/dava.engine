@@ -5,12 +5,12 @@
 
 using namespace DAVA;
 
-VarTableValueProperty::VarTableValueProperty(DAVA::BaseObject* object, const String& name, const Reflection& ref, const IntrospectionProperty* sourceProperty, eCloneType copyType)
-    : IntrospectionProperty(object, nullptr, name, ref, sourceProperty, copyType)
+VarTableValueProperty::VarTableValueProperty(DAVA::BaseObject* object, const String& name, const Reflection& ref, const IntrospectionProperty* prototypeProperty)
+    : IntrospectionProperty(object, nullptr, name, ref, prototypeProperty)
 {
-    if (sourceProperty)
+    if (prototypeProperty)
     {
-        SetDefaultValue(sourceProperty->GetValue());
+        SetDefaultValue(prototypeProperty->GetValue());
     }
 }
 

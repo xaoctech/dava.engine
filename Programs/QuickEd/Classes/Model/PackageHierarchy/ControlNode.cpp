@@ -30,7 +30,7 @@ ControlNode::ControlNode(UIControl* control, bool recursively)
     , prototype(nullptr)
     , creationType(CREATED_FROM_CLASS)
 {
-    rootProperty = new RootProperty(this, nullptr, AbstractProperty::CT_COPY);
+    rootProperty = new RootProperty(this, nullptr);
 
     if (recursively)
     {
@@ -58,15 +58,13 @@ ControlNode::ControlNode(ControlNode* node, eCreationType _creationType)
     eCreationType childCreationType;
     if (creationType == CREATED_FROM_CLASS)
     {
-        prototype = SafeRetain(node->prototype);
-        rootProperty = new RootProperty(this, node->GetRootProperty(), RootProperty::CT_COPY);
-        childCreationType = CREATED_FROM_CLASS;
+        DVASSERT(false);
     }
     else
     {
         prototype = SafeRetain(node);
         prototype->AddControlToInstances(this);
-        rootProperty = new RootProperty(this, node->GetRootProperty(), RootProperty::CT_INHERIT);
+        rootProperty = new RootProperty(this, node->GetRootProperty());
         childCreationType = CREATED_FROM_PROTOTYPE_CHILD;
     }
 
@@ -75,6 +73,8 @@ ControlNode::ControlNode(ControlNode* node, eCreationType _creationType)
         ScopedPtr<ControlNode> childNode(new ControlNode(sourceChild, childCreationType));
         Add(childNode);
     }
+
+    rootProperty->Refresh(AbstractProperty::REFRESH_ALL);
 }
 
 ControlNode::~ControlNode()
@@ -111,11 +111,6 @@ ControlNode* ControlNode::CreateFromPrototype(ControlNode* sourceNode)
 ControlNode* ControlNode::CreateFromPrototypeChild(ControlNode* sourceNode)
 {
     return new ControlNode(sourceNode, CREATED_FROM_PROTOTYPE_CHILD);
-}
-
-ControlNode* ControlNode::Clone()
-{
-    return new ControlNode(this, CREATED_FROM_CLASS);
 }
 
 void ControlNode::Add(ControlNode* node)

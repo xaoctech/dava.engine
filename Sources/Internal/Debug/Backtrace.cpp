@@ -265,7 +265,7 @@ DAVA_NOINLINE size_t GetBacktrace(void** frames, size_t depth)
 
 DAVA_NOINLINE Vector<void*> GetBacktrace(size_t depth)
 {
-    const size_t DEFAULT_SKIP_COUNT = 2;
+    const size_t DEFAULT_SKIP_COUNT = 3;
     const size_t MAX_BACKTRACE_COUNT = 64;
     void* frames[MAX_BACKTRACE_COUNT];
 

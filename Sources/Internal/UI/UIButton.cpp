@@ -42,7 +42,7 @@ UIButton::UIButton(const Rect& rect)
     SetExclusiveInput(true, false);
     SetInputEnabled(true, false);
 
-    UIControl::SetBackground(GetActualBackgroundForState(GetState()));
+    SetBackground(GetActualBackgroundForState(GetState()));
 }
 
 UIButton::~UIButton()
@@ -263,6 +263,18 @@ void UIButton::SetStateFont(int32 state, Font* font)
     }
 }
 
+void UIButton::SetStateFontSize(int32 state, float32 size)
+{
+    for (int i = 0; i < DRAW_STATE_COUNT && state; i++)
+    {
+        if (state & 0x01)
+        {
+            GetOrCreateTextBlock(static_cast<eButtonDrawState>(i))->SetFontSize(size);
+        }
+        state >>= 1;
+    }
+}
+
 void UIButton::SetStateFontColor(int32 state, const Color& fontColor)
 {
     for (int i = 0; i < DRAW_STATE_COUNT && state; i++)
@@ -430,7 +442,7 @@ void UIButton::Update(float32 timeElapsed)
     {
         oldControlState = GetState();
         UpdateSelectedTextBlock();
-        UIControl::SetBackground(GetActualBackgroundForState(GetState()));
+        SetBackground(GetActualBackgroundForState(GetState()));
     }
 }
 
@@ -456,12 +468,17 @@ void UIButton::SetParentColor(const Color& parentColor)
 {
     UIControl::SetParentColor(parentColor);
     if (selectedTextBlock && GetBackground())
-        selectedTextBlock->SetParentColor(GetBackground()->GetDrawColor());
+        selectedTextBlock->SetParentColor(GetComponent<UIControlBackground>()->GetDrawColor());
 }
 
 UIControlBackground* UIButton::GetActualBackgroundForState(int32 state) const
 {
     return GetActualBackground(ControlStateToDrawState(state));
+}
+
+UIControlBackground* UIButton::GetBackground() const
+{
+    return GetComponent<UIControlBackground>();
 }
 
 UIStaticText* UIButton::GetActualTextBlockForState(int32 state) const
@@ -489,7 +506,24 @@ void UIButton::SetBackground(eButtonDrawState drawState, UIControlBackground* ne
     SafeRelease(stateBacks[drawState]);
     stateBacks[drawState] = newBackground;
 
-    UIControl::SetBackground(GetActualBackgroundForState(GetState()));
+    SetBackground(GetActualBackgroundForState(GetState()));
+}
+
+void UIButton::SetBackground(UIControlBackground* newBg)
+{
+    UIControlBackground* currentBg = GetComponent<UIControlBackground>();
+    if (currentBg != newBg)
+    {
+        if (currentBg != nullptr)
+        {
+            RemoveComponent(currentBg);
+        }
+
+        if (newBg != nullptr)
+        {
+            AddComponent(newBg);
+        }
+    }
 }
 
 UIControlBackground* UIButton::CreateDefaultBackground() const

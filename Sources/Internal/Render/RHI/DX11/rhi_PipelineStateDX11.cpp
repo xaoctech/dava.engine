@@ -581,6 +581,11 @@ static Handle dx11_PipelineState_CreateFragmentConstBuffer(Handle ps, uint32 buf
     return ps11->CreateConstBuffer(PROG_FRAGMENT, buf_i);
 }
 
+void PipelineStateDX11::Init(uint32 maxCount)
+{
+    PipelineStateDX11Pool::Reserve(maxCount);
+}
+
 void PipelineStateDX11::SetupDispatch(Dispatch* dispatch)
 {
     dispatch->impl_PipelineState_Create = &dx11_PipelineState_Create;

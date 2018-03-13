@@ -380,6 +380,7 @@ eColladaErrorCodes ColladaImporter::SaveSC2(ColladaScene* colladaScene, const Fi
         bool combinedSuccessfull = SceneUtils::CombineLods(scene);
         if (combinedSuccessfull)
         {
+            SceneUtils::RemoveEmptyEntities(scene);
             SceneFileV2::eError saveRes = scene->SaveScene(scenePath);
             if (saveRes > SceneFileV2::eError::ERROR_NO_ERROR)
             {

@@ -158,7 +158,12 @@ void TextFieldStbImpl::SetIsPassword(bool)
 
 void TextFieldStbImpl::SetFontSize(float32 size)
 {
-    // Size getting from the Font
+    staticText->SetFontSize(size);
+}
+
+float32 TextFieldStbImpl::GetFontSize() const
+{
+    return staticText->GetFontSize();
 }
 
 void TextFieldStbImpl::SetText(const WideString& newText)
@@ -325,7 +330,7 @@ WideString TextFieldStbImpl::GetText() const
 
 bool TextFieldStbImpl::IsCharAvaliable(WideString::value_type ch) const
 {
-    Font* f = GetFont();
+    Font* f = GetRealFont();
     if (f)
     {
         return ch == '\n' || f->IsCharAvaliable(static_cast<char16>(ch));
@@ -346,10 +351,27 @@ void TextFieldStbImpl::SetVisible(bool v)
 {
 }
 
+void TextFieldStbImpl::SetFontName(const String& presetName)
+{
+    DropLastCursorAndSelection();
+    staticText->SetFontName(presetName);
+}
+
 void TextFieldStbImpl::SetFont(Font* f)
 {
     DropLastCursorAndSelection();
-    staticText->SetFont(f);
+    staticText->SetFont(RefPtr<Font>::ConstructWithRetain(f));
+}
+
+void TextFieldStbImpl::SetFontPath(const FilePath& path)
+{
+    DropLastCursorAndSelection();
+    staticText->SetFontPath(path);
+}
+
+const FilePath& TextFieldStbImpl::GetFontPath() const
+{
+    return staticText->GetFontPath();
 }
 
 Font* TextFieldStbImpl::GetFont() const
@@ -647,7 +669,7 @@ void TextFieldStbImpl::UpdateCursor(uint32 cursorPos, bool insertMode)
     }
     else
     {
-        r.dy = GetFont() ? GetFont()->GetFontHeight() : 0.f;
+        r.dy = GetRealFont() ? GetRealFont()->GetFontHeight(GetRealFontSize()) : 0.f;
 
         int32 ctrlAlign = control->GetTextAlign();
         if (ctrlAlign & ALIGN_RIGHT)
@@ -828,5 +850,15 @@ TextBlock* TextFieldStbImpl::GetTextBlock() const
         }
     }
     return staticText->GetLink()->GetTextBlock();
+}
+
+Font* TextFieldStbImpl::GetRealFont() const
+{
+    return GetFont() ? GetFont() : GetTextBlock()->GetFont();
+}
+
+float32 TextFieldStbImpl::GetRealFontSize() const
+{
+    return !FLOAT_EQUAL(GetFontSize(), 0.f) ? GetFontSize() : GetTextBlock()->GetFontSize();
 }
 }

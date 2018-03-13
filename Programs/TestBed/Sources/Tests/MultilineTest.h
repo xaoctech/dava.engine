@@ -10,10 +10,6 @@ class UITextField;
 
 class TestBed;
 
-class TextDelegate1;
-class TextDelegate2;
-class TextDelegateMulti;
-
 class MultilineTest : public BaseScreen, public DAVA::UITextFieldDelegate
 {
 public:
@@ -38,8 +34,8 @@ private:
     DAVA::UITextField* textField2 = nullptr;
     DAVA::UITextField* textFieldMulti = nullptr;
 
-    TextDelegate1* textDelegate1 = nullptr;
-    TextDelegate2* textDelegate2 = nullptr;
+    DAVA::UITextFieldDelegate* textDelegate1 = nullptr;
+    DAVA::UITextFieldDelegate* textDelegate2 = nullptr;
 };
 
 #endif //__MULTILINETEST_TEST_H__

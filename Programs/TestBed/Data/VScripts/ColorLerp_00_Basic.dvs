@@ -1,163 +1,166 @@
 variables:
-    value: ["float32", 1.000000]
-    startColor: ["Color", [0.031250, 1.000000, 0.047395, 1.000000]]
     finishColor: ["Color", [1.000000, 0.003906, 0.003906, 1.000000]]
+    startColor: ["Color", [0.031250, 1.000000, 0.047395, 1.000000]]
+    value: ["float32", 1.000000]
 nodes:
-    VisualScriptSetMemberNode1:
-        connections:
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode1"
-            in:
-                pin: "object"
-                name: "VisualScriptSetMemberNode1"
-        -   out:
-                pin: "event"
-                name: "VisualScriptEventNode1"
-            in:
-                pin: "exec"
-                name: "VisualScriptSetMemberNode1"
-        -   out:
-                pin: "result"
-                name: "VisualScriptFunctionNode1"
-            in:
-                pin: "set"
-                name: "VisualScriptSetMemberNode1"
-        node:
-            fieldName: "color"
-            defaults: {}
-            className: "Background"
-            position: [1054.000000, 231.000000]
-        type: "VisualScriptSetMemberNode"
-        name: "VisualScriptSetMemberNode1"
-    VisualScriptEventNode1:
-        connections:
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode2"
-            in:
-                pin: "component"
-                name: "VisualScriptEventNode1"
-        -   out:
-                pin: "exec"
-                name: "VisualScriptSetMemberNode1"
-            in:
-                pin: "event"
-                name: "VisualScriptEventNode1"
-        node:
-            eventName: "UIProcessEvent"
-            position: [-14.000000, 222.000000]
-        type: "VisualScriptEventNode"
-        name: "VisualScriptEventNode1"
-    VisualScriptGetVarNode3:
-        connections:
-        -   out:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode1"
-            in:
-                pin: "value"
-                name: "VisualScriptGetVarNode3"
-        node:
-            varPath: "startColor"
-            position: [362.000000, 429.000000]
-        type: "VisualScriptGetVarNode"
-        name: "VisualScriptGetVarNode3"
-    VisualScriptGetMemberNode1:
-        connections:
-        -   out:
-                pin: "get"
-                name: "VisualScriptGetMemberNode2"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode1"
-        -   out:
-                pin: "object"
-                name: "VisualScriptSetMemberNode1"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode1"
-        node:
-            fieldName: "background"
-            className: "UIControl"
-            position: [619.000000, 316.000000]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode1"
-    VisualScriptGetMemberNode2:
-        connections:
-        -   out:
-                pin: "component"
-                name: "VisualScriptEventNode1"
-            in:
-                pin: "object"
-                name: "VisualScriptGetMemberNode2"
-        -   out:
-                pin: "object"
-                name: "VisualScriptGetMemberNode1"
-            in:
-                pin: "get"
-                name: "VisualScriptGetMemberNode2"
-        node:
-            fieldName: "control"
-            className: "UIComponent"
-            position: [328.000000, 316.000000]
-        type: "VisualScriptGetMemberNode"
-        name: "VisualScriptGetMemberNode2"
-    VisualScriptFunctionNode1:
-        connections:
-        -   out:
-                pin: "value"
-                name: "VisualScriptGetVarNode3"
-            in:
-                pin: "arg0"
-                name: "VisualScriptFunctionNode1"
-        -   out:
-                pin: "value"
-                name: "VisualScriptGetVarNode2"
-            in:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode1"
-        -   out:
-                pin: "set"
-                name: "VisualScriptSetMemberNode1"
-            in:
-                pin: "result"
-                name: "VisualScriptFunctionNode1"
-        -   out:
-                pin: "value"
-                name: "VisualScriptGetVarNode1"
-            in:
-                pin: "arg2"
-                name: "VisualScriptFunctionNode1"
-        node:
-            functionName: "Lerp"
-            defaults: {}
-            className: "Color"
-            position: [627.000000, 460.000000]
-        type: "VisualScriptFunctionNode"
-        name: "VisualScriptFunctionNode1"
     VisualScriptGetVarNode2:
         connections:
-        -   out:
-                pin: "arg1"
-                name: "VisualScriptFunctionNode1"
-            in:
-                pin: "value"
+        -   in:
                 name: "VisualScriptGetVarNode2"
-        node:
-            varPath: "finishColor"
-            position: [365.000000, 509.000000]
-        type: "VisualScriptGetVarNode"
+                pin: "value"
+            out:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg2"
         name: "VisualScriptGetVarNode2"
+        node:
+            position: [365.000000, 592.000000]
+            varPath: "value"
+        type: "VisualScriptGetVarNode"
+    VisualScriptSetMemberNode1:
+        connections:
+        -   in:
+                name: "VisualScriptSetMemberNode1"
+                pin: "object"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+        -   in:
+                name: "VisualScriptSetMemberNode1"
+                pin: "set"
+            out:
+                name: "VisualScriptFunctionNode1"
+                pin: "result"
+        -   in:
+                name: "VisualScriptSetMemberNode1"
+                pin: "exec"
+            out:
+                name: "VisualScriptEventNode1"
+                pin: "event"
+        name: "VisualScriptSetMemberNode1"
+        node:
+            position: [1215.000000, 224.000000]
+            fieldName: "color"
+            className: "Background"
+            defaults: {}
+        type: "VisualScriptSetMemberNode"
+    VisualScriptFunctionNode1:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg0"
+            out:
+                name: "VisualScriptGetVarNode1"
+                pin: "value"
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg2"
+            out:
+                name: "VisualScriptGetVarNode2"
+                pin: "value"
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "result"
+            out:
+                name: "VisualScriptSetMemberNode1"
+                pin: "set"
+        -   in:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg1"
+            out:
+                name: "VisualScriptGetVarNode3"
+                pin: "value"
+        name: "VisualScriptFunctionNode1"
+        node:
+            functionName: "Lerp"
+            position: [696.000000, 483.000000]
+            className: "Color"
+            defaults: {}
+        type: "VisualScriptFunctionNode"
+    VisualScriptEventNode1:
+        connections:
+        -   in:
+                name: "VisualScriptEventNode1"
+                pin: "component"
+            out:
+                name: "VisualScriptGetMemberNode1"
+                pin: "object"
+        -   in:
+                name: "VisualScriptEventNode1"
+                pin: "event"
+            out:
+                name: "VisualScriptSetMemberNode1"
+                pin: "exec"
+        name: "VisualScriptEventNode1"
+        node:
+            position: [-14.000000, 222.000000]
+            eventName: "UIProcessEvent"
+        type: "VisualScriptEventNode"
     VisualScriptGetVarNode1:
         connections:
-        -   out:
-                pin: "arg2"
-                name: "VisualScriptFunctionNode1"
-            in:
-                pin: "value"
+        -   in:
                 name: "VisualScriptGetVarNode1"
-        node:
-            varPath: "value"
-            position: [365.000000, 592.000000]
-        type: "VisualScriptGetVarNode"
+                pin: "value"
+            out:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg0"
         name: "VisualScriptGetVarNode1"
+        node:
+            position: [362.000000, 429.000000]
+            varPath: "startColor"
+        type: "VisualScriptGetVarNode"
+    VisualScriptGetMemberNode1:
+        connections:
+        -   in:
+                name: "VisualScriptGetMemberNode1"
+                pin: "object"
+            out:
+                name: "VisualScriptEventNode1"
+                pin: "component"
+        -   in:
+                name: "VisualScriptGetMemberNode1"
+                pin: "get"
+            out:
+                name: "VisualScriptFunctionNode2"
+                pin: "arg0"
+        name: "VisualScriptGetMemberNode1"
+        node:
+            position: [305.000000, 290.000000]
+            fieldName: "control"
+            className: "UIComponent"
+        type: "VisualScriptGetMemberNode"
+    VisualScriptFunctionNode2:
+        connections:
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "result"
+            out:
+                name: "VisualScriptSetMemberNode1"
+                pin: "object"
+        -   in:
+                name: "VisualScriptFunctionNode2"
+                pin: "arg0"
+            out:
+                name: "VisualScriptGetMemberNode1"
+                pin: "get"
+        name: "VisualScriptFunctionNode2"
+        node:
+            functionName: "GetComponentByName"
+            position: [608.000000, 290.000000]
+            className: "UIControl"
+            defaults:
+                arg1: "Background"
+                arg2: 0
+        type: "VisualScriptFunctionNode"
+    VisualScriptGetVarNode3:
+        connections:
+        -   in:
+                name: "VisualScriptGetVarNode3"
+                pin: "value"
+            out:
+                name: "VisualScriptFunctionNode1"
+                pin: "arg1"
+        name: "VisualScriptGetVarNode3"
+        node:
+            position: [365.000000, 509.000000]
+            varPath: "finishColor"
+        type: "VisualScriptGetVarNode"

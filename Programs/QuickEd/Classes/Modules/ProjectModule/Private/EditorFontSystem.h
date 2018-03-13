@@ -3,6 +3,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Render/2D/Font.h"
+#include "Render/2D/FontPreset.h"
 #include "FileSystem/FilePath.h"
 #include <QObject>
 #include <QStringList>
@@ -14,8 +15,8 @@ public:
     EditorFontSystem(QObject* parent = nullptr);
     ~EditorFontSystem();
     const char* GetDefaultFontLocale() const;
-    DAVA::Font* GetFont(const DAVA::String& presetName, const DAVA::String& locale) const;
-    void SetFont(const DAVA::String& presetName, const DAVA::String& locale, DAVA::Font* font);
+    const DAVA::FontPreset& GetFont(const DAVA::String& presetName, const DAVA::String& locale) const;
+    void SetFont(const DAVA::String& presetName, const DAVA::String& locale, const DAVA::FontPreset& fontPreset);
     const QStringList& GetAvailableFontLocales() const;
     const QStringList& GetDefaultPresetNames() const;
     void LoadLocalizedFonts();
@@ -33,12 +34,12 @@ public slots:
     void RegisterCurrentLocaleFonts();
 
 private:
-    void ClearFonts(DAVA::Map<DAVA::String, DAVA::Font*>& fonts);
-    void RemoveFont(DAVA::Map<DAVA::String, DAVA::Font*>* fonts, const DAVA::String& fontName);
+    void ClearFonts(DAVA::UnorderedMap<DAVA::String, DAVA::FontPreset>& fonts);
+    void RemoveFont(DAVA::UnorderedMap<DAVA::String, DAVA::FontPreset>* fonts, const DAVA::String& fontName);
     void RefreshAvailableFontLocales();
     DAVA::FilePath defaultFontsPath;
 
-    DAVA::Map<DAVA::String, DAVA::Map<DAVA::String, DAVA::Font*>> localizedFonts;
+    DAVA::UnorderedMap<DAVA::String, DAVA::UnorderedMap<DAVA::String, DAVA::FontPreset>> localizedFonts;
 
     QStringList availableFontLocales;
     QStringList defaultPresetNames;

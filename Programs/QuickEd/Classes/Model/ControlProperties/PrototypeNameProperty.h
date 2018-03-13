@@ -8,7 +8,7 @@ class ControlNode;
 class PrototypeNameProperty : public ValueProperty
 {
 public:
-    PrototypeNameProperty(ControlNode* aNode, const PrototypeNameProperty* sourceProperty, eCloneType cloneType);
+    PrototypeNameProperty(ControlNode* aNode, const PrototypeNameProperty* prototypeProperty);
 
 protected:
     virtual ~PrototypeNameProperty();

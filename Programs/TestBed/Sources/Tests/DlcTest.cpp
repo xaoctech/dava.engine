@@ -61,11 +61,10 @@ void DlcTest::LoadResources()
     options->LoadFromYamlFile(optionsPath);
 
     Font* font = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
-    Font* fontSmall = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
     DVASSERT(font);
 
-    font->SetSize(24.0f);
-    fontSmall->SetSize(14.0f);
+    float32 fontSize = 24.0f;
+    float32 smallFontSize = 14.0f;
 
     angle = 0;
     lastUpdateTime = 0;
@@ -94,7 +93,8 @@ void DlcTest::LoadResources()
 
     infoText = new UIStaticText(Rect(LEFT_COLUMN_X, LEFT_COLUMN_X, WIDTH, BUTTON_H * 5));
     infoText->SetTextColor(Color::White);
-    infoText->SetFont(fontSmall);
+    infoText->SetFont(font);
+    infoText->SetFontSize(smallFontSize);
     infoText->SetMultiline(true);
     infoText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     AddControl(infoText);
@@ -102,6 +102,7 @@ void DlcTest::LoadResources()
     UIStaticText* ver = new UIStaticText(Rect(LEFT_COLUMN_X, VERSION_LINE_Y, BUTTON_W, BUTTON_H));
     ver->SetTextColor(Color::White);
     ver->SetFont(font);
+    ver->SetFontSize(fontSize);
     ver->SetMultiline(false);
     ver->SetTextAlign(ALIGN_LEFT);
     ver->SetText(L"Game Version, GPU:");
@@ -115,6 +116,7 @@ void DlcTest::LoadResources()
     gameVersionIn->GetOrCreateComponent<UIFocusComponent>();
     gameVersionIn->SetDelegate(this);
     gameVersionIn->SetFont(font);
+    gameVersionIn->SetFontSize(fontSize);
     AddControl(gameVersionIn);
 
     gpuIn = new UITextField(Rect(LEFT_COLUMN_X + BUTTON_W * 2 + SPACE * 2, VERSION_LINE_Y, BUTTON_W, BUTTON_H));
@@ -123,12 +125,14 @@ void DlcTest::LoadResources()
     gpuIn->GetOrCreateComponent<UIFocusComponent>();
     gpuIn->SetDelegate(this);
     gpuIn->SetFont(font);
+    gpuIn->SetFontSize(fontSize);
     AddControl(gpuIn);
 
     //=========================
 
     UIButton* setDlInternalServerButton = new UIButton(Rect(LEFT_COLUMN_X, SERVER_Y, BUTTON_W, BUTTON_H));
     setDlInternalServerButton->SetStateFont(0xFF, font);
+    setDlInternalServerButton->SetStateFontSize(0xFF, fontSize);
     setDlInternalServerButton->SetStateFontColor(0xFF, Color::White);
     setDlInternalServerButton->SetStateText(0xFF, L"Set internal server");
     setDlInternalServerButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -138,6 +142,7 @@ void DlcTest::LoadResources()
 
     UIButton* setDlexternalServerButton = new UIButton(Rect(RIGHT_COLUMN_X, SERVER_Y, BUTTON_W, BUTTON_H));
     setDlexternalServerButton->SetStateFont(0xFF, font);
+    setDlexternalServerButton->SetStateFontSize(0xFF, fontSize);
     setDlexternalServerButton->SetStateFontColor(0xFF, Color::White);
     setDlexternalServerButton->SetStateText(0xFF, L"Set external server");
     setDlexternalServerButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -149,6 +154,7 @@ void DlcTest::LoadResources()
 
     UIButton* setDlSpeed = new UIButton(Rect(LEFT_COLUMN_X, SPEED_THREAD_Y, HALF_BUTTON_W, BUTTON_H));
     setDlSpeed->SetStateFont(0xFF, font);
+    setDlSpeed->SetStateFontSize(0xFF, fontSize);
     setDlSpeed->SetStateFontColor(0xFF, Color::White);
     setDlSpeed->SetStateText(0xFF, L"Set spd");
     setDlSpeed->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -170,6 +176,7 @@ void DlcTest::LoadResources()
 
     UIButton* decDlThreadsButton = new UIButton(Rect(RIGHT_COLUMN_X, SPEED_THREAD_Y, HALF_BUTTON_W, BUTTON_H));
     decDlThreadsButton->SetStateFont(0xFF, font);
+    decDlThreadsButton->SetStateFontSize(0xFF, fontSize);
     decDlThreadsButton->SetStateFontColor(0xFF, Color::White);
     decDlThreadsButton->SetStateText(0xFF, L"-1 thr");
     decDlThreadsButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -179,6 +186,7 @@ void DlcTest::LoadResources()
 
     UIButton* incDlThreadsButton = new UIButton(Rect(RIGHT_COLUMN_X + HALF_BUTTON_W + SPACE, SPEED_THREAD_Y, HALF_BUTTON_W, BUTTON_H));
     incDlThreadsButton->SetStateFont(0xFF, font);
+    incDlThreadsButton->SetStateFontSize(0xFF, fontSize);
     incDlThreadsButton->SetStateFontColor(0xFF, Color::White);
     incDlThreadsButton->SetStateText(0xFF, L"+1 thr");
     incDlThreadsButton->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -189,7 +197,8 @@ void DlcTest::LoadResources()
     //=========================
 
     staticText = new UIStaticText(Rect(LEFT_COLUMN_X, INFO_Y, WIDTH - 2 * BUTTON_H, BUTTON_H));
-    staticText->SetFont(fontSmall);
+    staticText->SetFont(font);
+    staticText->SetFontSize(smallFontSize);
     staticText->SetTextColor(Color::White);
     staticText->SetText(L"Press Start!");
     AddControl(staticText);
@@ -200,7 +209,8 @@ void DlcTest::LoadResources()
 
     progressStatistics = new UIStaticText(Rect(LEFT_COLUMN_X, INFO_Y + BUTTON_H + SPACE + SPACE, WIDTH - SPACE - BUTTON_H, SPACE));
     progressStatistics->SetText(L"0 / 0");
-    progressStatistics->SetFont(fontSmall);
+    progressStatistics->SetFont(font);
+    progressStatistics->SetFontSize(smallFontSize);
     progressStatistics->SetTextColor(Color::White);
     AddControl(progressStatistics);
 
@@ -213,6 +223,7 @@ void DlcTest::LoadResources()
 
     startButton = new UIButton(Rect(LEFT_COLUMN_X, START_CANCEL_Y, BUTTON_W, BUTTON_H));
     startButton->SetStateFont(0xFF, font);
+    startButton->SetStateFontSize(0xFF, fontSize);
     startButton->SetStateFontColor(0xFF, Color::White);
     startButton->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
     startButton->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
@@ -223,6 +234,7 @@ void DlcTest::LoadResources()
 
     cancelButton = new UIButton(Rect(RIGHT_COLUMN_X, START_CANCEL_Y, BUTTON_W, BUTTON_H));
     cancelButton->SetStateFont(0xFF, font);
+    cancelButton->SetStateFontSize(0xFF, fontSize);
     cancelButton->SetStateFontColor(0xFF, Color::White);
     cancelButton->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
     cancelButton->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
@@ -233,6 +245,7 @@ void DlcTest::LoadResources()
 
     clearButton = new UIButton(Rect(RIGHT_COLUMN_X, START_CANCEL_Y + BUTTON_H + SPACE, BUTTON_W, BUTTON_H));
     clearButton->SetStateFont(0xFF, font);
+    clearButton->SetStateFontSize(0xFF, fontSize);
     clearButton->SetStateFontColor(0xFF, Color::White);
     clearButton->SetStateFontColor(UIButton::STATE_DISABLED, Color(0.5f, 0.5f, 0.5f, 0.5f));
     clearButton->SetStateFontColor(UIButton::STATE_PRESSED_INSIDE, Color(0.0f, 1.0f, 0.0f, 1.0f));
@@ -250,7 +263,6 @@ void DlcTest::LoadResources()
     lastDLCState = DLC::DS_DONE;
 
     SafeRelease(font);
-    SafeRelease(fontSmall);
 }
 
 void DlcTest::UpdateInfoStr()

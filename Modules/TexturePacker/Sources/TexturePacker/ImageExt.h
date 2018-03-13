@@ -1,8 +1,7 @@
 #pragma once
 
-#include "TexturePacker/Spritesheet.h"
-
 #include <Base/BaseTypes.h>
+#include <Math/RectanglePacker/Spritesheet.h>
 #include <Render/Image/Image.h>
 
 namespace DAVA

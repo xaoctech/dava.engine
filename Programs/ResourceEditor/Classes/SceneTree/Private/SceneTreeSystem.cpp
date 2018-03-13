@@ -540,7 +540,7 @@ void SceneTreeSystem::ProcessCommand(const DAVA::RECommandNotificationObject& co
         DAVA::ParticleEmitterInstance* emitter = command->GetEmitterInstance();
 
         syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(DAVA::Selectable(DAVA::Any(emitter)));
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(component)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(entity)));
     });
 
     commandNotification.ForEach<DAVA::CommandLoadInnerParticleEmitterFromYaml>([&](const DAVA::CommandLoadInnerParticleEmitterFromYaml* command) {
@@ -549,20 +549,27 @@ void SceneTreeSystem::ProcessCommand(const DAVA::RECommandNotificationObject& co
         DAVA::Entity* entity = component->GetEntity();
 
         syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, emitter) + 1].push_back(DAVA::Selectable(DAVA::Any(emitter)));
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(component)));
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(entity)));
     });
 
     commandNotification.ForEach<DAVA::CommandReloadEmitters>([&](const DAVA::CommandReloadEmitters* command) {
         DAVA::ParticleEffectComponent* component = command->GetComponent();
         DAVA::Entity* entity = component->GetEntity();
 
-        for (DAVA::uint32 i = 0; i < component->GetEmittersCount(); ++i)
+        const DAVA::Vector<DAVA::ParticleEmitterInstance*>* redoEmitters = &command->GetRedoEmitters();
+        const DAVA::Vector<DAVA::ParticleEmitterInstance*>* undoEmitters = &command->GetUndoEmitters();
+
+        if (commandNotification.IsRedo() == false)
         {
-            DAVA::ParticleEmitterInstance* instance = component->GetEmitterInstance(i);
-            syncSnapshot.removedObjects[CalcEntityDepth(entity) + CalcParticleElementsDepth(component, instance) + 1].push_back(DAVA::Selectable(DAVA::Any(instance)));
+            std::swap(redoEmitters, undoEmitters);
         }
 
-        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(component)));
+        for (DAVA::ParticleEmitterInstance* emitter : (*undoEmitters))
+        {
+            syncSnapshot.removedObjects[CalcEntityDepth(entity) + 1].push_back(DAVA::Selectable(DAVA::Any(emitter)));
+        }
+
+        syncSnapshot.objectsToRefetch[CalcEntityDepth(entity)].push_back(DAVA::Selectable(DAVA::Any(entity)));
     });
 }
 

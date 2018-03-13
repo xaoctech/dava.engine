@@ -14,9 +14,10 @@ namespace DAVA
 	\brief AnimationManager is the heart of our animation systems. It does all groundwork. 
 	You do not need it at all and SDK do everything to process animations in background. 
 */
-class AnimationManager
+class AnimationManager final
 {
 public:
+    ~AnimationManager();
     /**
 		\brief Updates all animations in the system on current frame
 		This method is called from ApplicationCore::Update function. 
@@ -25,42 +26,37 @@ public:
 	 */
     void Update(float32 timeElapsed);
 
-    // void DebugRender();
     /**
 		\brief Dump animations state to console
 	 */
     void DumpState();
 
-    Animation* FindPlayingAnimation(AnimatedObject* owner, int32 _groupId);
+    Animation* FindPlayingAnimation(const AnimatedObject* owner, int32 _groupId) const;
 
     void StopAnimations();
     void PauseAnimations(bool isPaused, int32 tag = 0);
     void SetAnimationsMultiplier(float32 f, int32 tag = 0);
 
 private:
-    Animation* FindLastAnimation(AnimatedObject* owner, int32 _groupId);
+    Animation* FindLastAnimation(const AnimatedObject* owner, int32 _groupId) const;
     bool IsAnimating(const AnimatedObject* owner, int32 trackId) const;
 
     void AddAnimation(Animation* _animation);
     void AddAnimationInternal(Animation* animation);
 
-    void RemoveAnimation(Animation* _animation);
-    void RemoveAnimationInternal(Animation* animation);
+    void RemoveAnimation(const Animation* _animation);
+    void RemoveAnimationInternal(const Animation* animation);
 
-    bool HasActiveAnimations(AnimatedObject* owner) const;
+    bool HasActiveAnimations(const AnimatedObject* owner) const;
     /*
 	 Function remove all animations for given object from update and delete objects and their references
 	 */
-    void DeleteAnimations(AnimatedObject* _owner, int32 track = -1);
-    void DeleteAnimationInternal(AnimatedObject* owner, int32 track);
-    struct DeleteAnimationsData
-    {
-        AnimatedObject* owner;
-        int32 track;
-    };
+    void DeleteAnimations(const AnimatedObject* _owner, int32 track = -1);
+    void DeleteAnimationInternal(const AnimatedObject* owner, int32 track);
+    void DeleteAllFinishedAnimation();
 
-    Vector<Animation*> animations;
-    Vector<Animation*> releaseCandidates;
+    Vector<Animation*> registeredAnimations;
+    Vector<RefPtr<Animation>> animations;
 
     friend class Animation;
     friend class AnimatedObject;

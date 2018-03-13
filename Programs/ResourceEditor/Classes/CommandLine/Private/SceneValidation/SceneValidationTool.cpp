@@ -5,12 +5,15 @@
 #include <REPlatform/CommandLine/OptionName.h>
 #include <REPlatform/DataNodes/ProjectResources.h>
 #include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/Deprecated/EditorConfig.h>
+#include <REPlatform/Scene/Components/CollisionTypeComponent.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/Utils/ModuleCollection.h>
 
 #include <Base/BaseTypes.h>
 #include <Base/ScopedPtr.h>
+#include <Entity/ComponentManager.h>
 #include <Scene3D/Scene.h>
 #include <Utils/StringUtils.h>
 #include <FileSystem/File.h>
@@ -139,6 +142,13 @@ DAVA::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
 {
     using namespace DAVA;
 
+    ComponentManager* cm = GetEngineContext()->componentManager;
+    if (cm->IsRegisteredSceneComponent(Type::Instance<DAVA::CollisionTypeComponent>()) == false)
+    {
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DAVA::CollisionTypeComponent);
+        cm->RegisterComponent(Type::Instance<DAVA::CollisionTypeComponent>());
+    }
+
     Vector<FilePath> scenePathes;
     if (!scenesListPath.IsEmpty())
     {
@@ -155,7 +165,8 @@ DAVA::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
 
     for (const FilePath& scenePath : scenePathes)
     {
-        project.LoadProject(DAVA::ProjectManagerData::CreateProjectPathFromPath(scenePath));
+        const FilePath projectPath = ProjectManagerData::CreateProjectPathFromPath(scenePath);
+        project.LoadProject(projectPath);
 
         ScopedPtr<Scene> scene(new Scene);
         if (DAVA::SceneFileV2::ERROR_NO_ERROR == scene->LoadScene(scenePath))
@@ -164,8 +175,9 @@ DAVA::ConsoleModule::eFrameResult SceneValidationTool::OnFrameInternal()
 
             DAVA::ProjectManagerData* data = GetAccessor().GetGlobalContext()->GetData<DAVA::ProjectManagerData>();
             DVASSERT(data != nullptr);
-
-            SceneValidation validation(data);
+            const std::unique_ptr<EditorConfig> config = std::make_unique<EditorConfig>();
+            config->ParseConfig(projectPath + "EditorConfig.yaml");
+            SceneValidation validation(data, config->GetCollisionTypeMap("CollisionType"));
 
             if (validateMatrices)
             {

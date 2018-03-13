@@ -37,6 +37,7 @@ public:
     void SetRenderToTexture(bool);
     void SetIsPassword(bool);
     void SetFontSize(float32);
+    float32 GetFontSize() const;
     void SetText(const WideString& text);
     void UpdateRect(const Rect&);
     void SetAutoCapitalizationType(int32);
@@ -54,7 +55,10 @@ public:
     void SetInputEnabled(bool, bool hierarchic = true);
     void SetVisible(bool v);
     Font* GetFont() const;
+    void SetFontName(const String& presetName);
     void SetFont(Font* f);
+    void SetFontPath(const FilePath& path);
+    const FilePath& GetFontPath() const;
     void SetTextColor(const Color& c);
     void SetShadowOffset(const Vector2& v);
     void SetShadowColor(const Color& c);
@@ -96,6 +100,8 @@ private:
     void OnWindowDestroyed(Window* w);
 
     TextBlock* GetTextBlock() const;
+    Font* GetRealFont() const;
+    float32 GetRealFontSize() const;
 
     RefPtr<UITextComponent> staticText; // Component for displaying text
     UITextField* control = nullptr; // Weak link to parent text field

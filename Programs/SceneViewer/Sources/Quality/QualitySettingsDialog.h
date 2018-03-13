@@ -72,6 +72,7 @@ private:
 
     DAVA::float32 cellHeight = 0.f;
     DAVA::ScopedPtr<DAVA::Font> font = nullptr;
+    DAVA::float32 fontSize = 14.f;
 
     struct CellData
     {

@@ -52,8 +52,6 @@ void CreatePlaneLODCommand::Undo()
 
     //restore batches
     ro->RemoveRenderBatch(request->planeBatch);
-
-    DeleteTextureFiles();
 }
 
 Entity* CreatePlaneLODCommand::GetEntity() const
@@ -69,12 +67,6 @@ void CreatePlaneLODCommand::CreateTextureFiles()
     FileSystem::Instance()->CreateDirectory(folder, true);
     ImageSystem::Save(request->texturePath, request->planeImage);
     RETextureDescriptorUtils::CreateOrUpdateDescriptor(request->texturePath);
-}
-
-void CreatePlaneLODCommand::DeleteTextureFiles()
-{
-    FileSystem::Instance()->DeleteFile(request->texturePath);
-    FileSystem::Instance()->DeleteFile(TextureDescriptor::GetDescriptorPathname(request->texturePath));
 }
 
 RenderBatch* CreatePlaneLODCommand::GetRenderBatch() const

@@ -26,7 +26,8 @@ ScenePreviewDialog::ScenePreviewDialog()
     errorMessageBg->SetAlign(DAVA::ALIGN_HCENTER | DAVA::ALIGN_VCENTER);
     errorMessage->SetMultiline(true);
     errorMessage->SetTextColor(ControlsFactory::GetColorError());
-    errorMessage->SetFont(ControlsFactory::GetFont20());
+    errorMessage->SetFont(ControlsFactory::GetFont());
+    errorMessage->SetFontSize(ControlsFactory::GetFontBigSize());
 
     DAVA::ScopedPtr<DAVA::UIButton> button(ControlsFactory::CreateButton(DAVA::Rect(0, ControlsFactory::PREVIEW_PANEL_HEIGHT,
                                                                                     ControlsFactory::PREVIEW_PANEL_HEIGHT, ControlsFactory::BUTTON_HEIGHT),

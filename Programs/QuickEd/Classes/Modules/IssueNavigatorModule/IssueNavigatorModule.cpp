@@ -3,8 +3,10 @@
 #include "Classes/Modules/IssueNavigatorModule/IssueData.h"
 #include "Classes/Modules/IssueNavigatorModule/IssueNavigatorData.h"
 #include "Classes/Modules/IssueNavigatorModule/LayoutIssueHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/DataBindingIssueHandler.h"
 #include "Classes/Modules/IssueNavigatorModule/NamingIssuesHandler.h"
 #include "Classes/Modules/IssueNavigatorModule/EventsIssuesHandler.h"
+#include "Classes/Modules/IssueNavigatorModule/RichContentIssuesHandler.h"
 
 #include "Application/QEGlobal.h"
 
@@ -54,8 +56,10 @@ void IssueNavigatorModule::PostInit()
     std::unique_ptr<IssueNavigatorData> data = std::make_unique<IssueNavigatorData>();
     DAVA::int32 sectionId = 0;
     data->handlers.push_back(std::make_unique<LayoutIssueHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<DataBindingIssueHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
     data->handlers.push_back(std::make_unique<NamingIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
     data->handlers.push_back(std::make_unique<EventsIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
+    data->handlers.push_back(std::make_unique<RichContentIssuesHandler>(GetAccessor(), sectionId++, &data->indexGenerator));
 
     GetAccessor()->GetGlobalContext()->CreateData(std::move(data));
 }

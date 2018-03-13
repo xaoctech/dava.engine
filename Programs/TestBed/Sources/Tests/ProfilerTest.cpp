@@ -61,10 +61,7 @@ void ProfilerTest::LoadResources()
     AddControl(sceneView);
 
     textFont = FTFont::Create("~res:/TestBed/Fonts/korinna.ttf");
-    textFont->SetSize(20.f);
-
     dumpFont = FTFont::Create("~res:/TestBed/Fonts/DroidSansMono.ttf");
-    dumpFont->SetSize(10.f);
 
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 5.f, 400.f, 35.f), L"Start/Stop Global CPU-Profiler", Message(this, &ProfilerTest::OnGlobalCPUProfiler))));
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 45.f, 400.f, 35.f), L"Start/Stop Custom CPU-Profiler", Message(this, &ProfilerTest::OnCustomCPUProfiler))));
@@ -72,12 +69,12 @@ void ProfilerTest::LoadResources()
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 145.f, 400.f, 35.f), L"Overlay with Global CPU-Profiler", Message(this, &ProfilerTest::OnGlobalCPUProfilerOverlay))));
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 185.f, 400.f, 35.f), L"Overlay with Custom CPU-Profiler", Message(this, &ProfilerTest::OnCustomCPUProfilerOverlay))));
 
-    profilersText[0] = CreateStaticText(Rect(420.f, 5.f, 400.f, 35.f), L"Global CPU-Profilers Started", textFont, Color(0.f, 1.f, 0.f, 1.f));
-    profilersText[1] = CreateStaticText(Rect(420.f, 5.f, 400.f, 35.f), L"Global CPU-Profilers Stopped", textFont, Color(1.f, 0.f, 0.f, 1.f));
-    profilersText[2] = CreateStaticText(Rect(420.f, 45.f, 400.f, 35.f), L"Custom CPU-Profilers Started", textFont, Color(0.f, 1.f, 0.f, 1.f));
-    profilersText[3] = CreateStaticText(Rect(420.f, 45.f, 400.f, 35.f), L"Custom CPU-Profilers Stopped", textFont, Color(1.f, 0.f, 0.f, 1.f));
-    profilersText[4] = CreateStaticText(Rect(420.f, 85.f, 400.f, 35.f), L"GPU-Profilers Started", textFont, Color(0.f, 1.f, 0.f, 1.f));
-    profilersText[5] = CreateStaticText(Rect(420.f, 85.f, 400.f, 35.f), L"GPU-Profilers Stopped", textFont, Color(1.f, 0.f, 0.f, 1.f));
+    profilersText[0] = CreateStaticText(Rect(420.f, 5.f, 400.f, 35.f), L"Global CPU-Profilers Started", textFont, 20.f, Color(0.f, 1.f, 0.f, 1.f));
+    profilersText[1] = CreateStaticText(Rect(420.f, 5.f, 400.f, 35.f), L"Global CPU-Profilers Stopped", textFont, 20.f, Color(1.f, 0.f, 0.f, 1.f));
+    profilersText[2] = CreateStaticText(Rect(420.f, 45.f, 400.f, 35.f), L"Custom CPU-Profilers Started", textFont, 20.f, Color(0.f, 1.f, 0.f, 1.f));
+    profilersText[3] = CreateStaticText(Rect(420.f, 45.f, 400.f, 35.f), L"Custom CPU-Profilers Stopped", textFont, 20.f, Color(1.f, 0.f, 0.f, 1.f));
+    profilersText[4] = CreateStaticText(Rect(420.f, 85.f, 400.f, 35.f), L"GPU-Profilers Started", textFont, 20.f, Color(0.f, 1.f, 0.f, 1.f));
+    profilersText[5] = CreateStaticText(Rect(420.f, 85.f, 400.f, 35.f), L"GPU-Profilers Stopped", textFont, 20.f, Color(1.f, 0.f, 0.f, 1.f));
 
     for (int32 i = 0; i < 6; ++i)
     {
@@ -97,7 +94,7 @@ void ProfilerTest::LoadResources()
 
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 445.f, 400.f, 35.f), L"Dump JSON (Custom Profiler)", Message(this, &ProfilerTest::OnDumpJSON))));
     AddControl(ScopedPtr<UIButton>(CreateButton(Rect(5.f, 485.f, 400.f, 35.f), L"Dump JSON (Global CPU-GPU)", Message(this, &ProfilerTest::OnDumpGlobalCPUGPU))));
-    AddControl(ScopedPtr<UIStaticText>(CreateStaticText(Rect(5.f, 525.f, 400.f, 35.f), L"JSON path: \"" + UTF8Utils::EncodeToWideString(PROFILER_TEST_DUMP_JSON_PATH) + L"\"", textFont, Color::White)));
+    AddControl(ScopedPtr<UIStaticText>(CreateStaticText(Rect(5.f, 525.f, 400.f, 35.f), L"JSON path: \"" + UTF8Utils::EncodeToWideString(PROFILER_TEST_DUMP_JSON_PATH) + L"\"", textFont, 20.f, Color::White)));
 
     dumpScrollView = new UIScrollView();
     dumpScrollView->GetOrCreateComponent<UIDebugRenderComponent>();
@@ -108,7 +105,7 @@ void ProfilerTest::LoadResources()
     AddControl(dumpScrollView);
     dumpScrollView->Release();
 
-    dumpText = CreateStaticText(Rect(0.f, 0.f, 500.f, 400.f), L"Dump Text", dumpFont, Color(0.f, 1.f, 0.f, 1.f));
+    dumpText = CreateStaticText(Rect(0.f, 0.f, 500.f, 400.f), L"Dump Text", dumpFont, 10.f, Color(0.f, 1.f, 0.f, 1.f));
     dumpText->SetMultilineType(UIStaticText::MULTILINE_ENABLED);
     dumpText->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
     dumpText->GetOrCreateComponent<UISizePolicyComponent>()->SetVerticalPolicy(UISizePolicyComponent::eSizePolicy::PERCENT_OF_CONTENT);
@@ -149,6 +146,7 @@ UIButton* ProfilerTest::CreateButton(const Rect& rect, const WideString& text, c
     button->SetStateText(UIControl::STATE_NORMAL, text);
     button->SetStateTextAlign(UIControl::STATE_NORMAL, ALIGN_HCENTER | ALIGN_VCENTER);
     button->SetStateFont(UIControl::STATE_NORMAL, textFont);
+    button->SetStateFontSize(UIControl::STATE_NORMAL, 20.f);
     button->SetStateFontColor(UIControl::STATE_NORMAL, Color::White);
     button->SetStateFontColor(UIControl::STATE_PRESSED_INSIDE, Color(0.7f, 0.7f, 0.7f, 1.f));
     button->AddEvent(UIButton::EVENT_TOUCH_UP_INSIDE, msg);
@@ -157,13 +155,14 @@ UIButton* ProfilerTest::CreateButton(const Rect& rect, const WideString& text, c
     return button;
 }
 
-UIStaticText* ProfilerTest::CreateStaticText(const Rect& rect, const WideString& text, DAVA::Font* font, const DAVA::Color& color)
+UIStaticText* ProfilerTest::CreateStaticText(const Rect& rect, const WideString& text, DAVA::Font* font, float32 fontSize, const DAVA::Color& color)
 {
     DVASSERT(textFont);
 
     UIStaticText* staticText = new UIStaticText(rect);
     staticText->SetText(text);
     staticText->SetFont(font);
+    staticText->SetFontSize(fontSize);
     staticText->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
     staticText->SetTextColor(color);
     staticText->SetFittingOption(TextBlock::FITTING_REDUCE);

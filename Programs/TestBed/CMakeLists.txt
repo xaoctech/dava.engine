@@ -109,3 +109,7 @@ if (IOS)
     # Reason: on iOS on some circumstances memory deallocating operation bypasses memory manager
     set_xcode_property( ${PROJECT_NAME} STRIP_INSTALLED_PRODUCT NO )
 endif()
+
+dava_pre_build_step(NAME generate_local_meta_data
+                    COMMAND python ARGS ${CMAKE_CURRENT_LIST_DIR}/Scripts/build_local_meta.py
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})

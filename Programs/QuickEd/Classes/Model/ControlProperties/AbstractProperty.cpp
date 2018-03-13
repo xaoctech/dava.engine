@@ -103,6 +103,11 @@ Any AbstractProperty::GetValue() const
     return Any();
 }
 
+DAVA::Any AbstractProperty::GetSerializationValue() const
+{
+    return GetValue();
+}
+
 void AbstractProperty::SetValue(const Any& /*newValue*/)
 {
     // Do nothing by default
@@ -141,6 +146,41 @@ bool AbstractProperty::HasVirtualProperties() const
 bool AbstractProperty::IsVirtualProperty() const
 {
     return false;
+}
+
+bool AbstractProperty::IsBindable() const
+{
+    return false;
+}
+
+bool AbstractProperty::IsBound() const
+{
+    return false;
+}
+
+bool AbstractProperty::HasError() const
+{
+    return false;
+}
+
+String AbstractProperty::GetErrorString() const
+{
+    return "";
+}
+
+DAVA::int32 AbstractProperty::GetBindingUpdateMode() const
+{
+    return 0; // do nothing by default
+}
+
+DAVA::String AbstractProperty::GetBindingExpression() const
+{
+    return "";
+}
+
+void AbstractProperty::SetBindingExpression(const DAVA::String& expression, DAVA::int32 bindingUpdateMode)
+{
+    // do nothing by default
 }
 
 bool AbstractProperty::IsOverriddenLocally() const

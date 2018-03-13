@@ -3,19 +3,20 @@
 #include "REPlatform/Global/Constants.h"
 #include "REPlatform/Scene/Systems/EditorSceneSystem.h"
 
-#include <Base/BaseTypes.h>
-#include <Entity/Component.h>
+#include <Base/Type.h>
 #include <Entity/SceneSystem.h>
 #include <Functional/Function.h>
-#include <Math/Color.h>
-#include <Math/Matrix4.h>
+#include <Render/Highlevel/RenderBatch.h>
 
 namespace DAVA
 {
-class Scene;
-class RenderBatch;
+class Entity;
+
 class DebugDrawSystem : public SceneSystem, public EditorSceneSystem
 {
+    friend class SceneEditor2;
+    friend class EditorScene;
+
 public:
     static const float32 HANGING_OBJECTS_DEFAULT_HEIGHT;
 
@@ -30,9 +31,10 @@ public:
     void UnregisterComponent(Entity* entity, Component* component) override;
 
     void PrepareForRemove() override;
+    std::unique_ptr<Command> PrepareForSave(bool saveForGame) override;
 
-    void SetRequestedObjectType(ResourceEditor::eSceneObjectType objectType);
-    ResourceEditor::eSceneObjectType GetRequestedObjectType() const;
+    void SetCollisionType(int32 collisionType);
+    int32 GetCollisionType() const;
 
     void EnableHangingObjectsMode(bool enabled);
     bool HangingObjectsModeEnabled() const;
@@ -48,14 +50,17 @@ protected:
     void Draw() override;
 
 private:
+    void AddCollisionTypeComponent(Entity* entity) const;
+
     void DrawComponent(const Type* type, const Function<void(Entity*)>& func);
 
-    void DrawObjectBoxesByType(Entity* entity);
+    void DrawUndefinedCollisionTypeBoxes(Entity* entity) const;
+    void DrawCollisionTypeBox(Entity* entity) const;
     void DrawLightNode(Entity* entity, bool isSelected);
     void DrawSoundNode(Entity* entity);
     void DrawSelectedSoundNode(Entity* entity);
     void DrawHangingObjects(Entity* entity);
-    void DrawEntityBox(Entity* entity, const Color& color);
+    void DrawEntityBox(Entity* entity, const Color& color) const;
     void DrawSwitchesWithDifferentLods(Entity* entity);
     void DrawWindNode(Entity* entity);
     void DrawDebugOctTree(Entity* entity);
@@ -71,8 +76,8 @@ private:
     Vector3 GetLandscapePointAtCoordinates(const Vector2& centerXY) const;
     bool IsObjectHanging(Entity* entity) const;
 
-    Color objectTypeColor = Color::White;
-    ResourceEditor::eSceneObjectType objectType = ResourceEditor::ESOT_NONE;
+    Color collisionTypeColor = Color::White;
+    int32 collisionType = -1;
     bool hangingObjectsModeEnabled = false;
     bool switchesWithDifferentLodsEnabled = false;
 
