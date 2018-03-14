@@ -7,6 +7,9 @@
 #include "Concurrency/Mutex.h"
 #include "Concurrency/ConcurrentDeque.h"
 #include "Functional/Function.h"
+#include "FileSystem/FileWatcher.h"
+
+//#define TRACE_ASSET_REQUESTER
 
 namespace DAVA
 {
@@ -23,11 +26,14 @@ public:
 
     AssetManager();
     ~AssetManager();
-    void SetResourceRoot(String& path);
+    void AddResourceFolder(const String& path);
+    void RemoveResourceFolder(const String& path);
+    void SetResourceRoot(const String& path);
 
     void RegisterListener(AssetListener* listener, const Type* assetType);
-    void UnregisterListener(AssetListener* listener);
-    void UnregisterListener(const Asset<AssetBase>& asset, AssetListener* listener);
+    void RegisterListener(const Asset<AssetBase>& asset, AssetListener* listener);
+    void UnregisterListener(const AssetListener* listener);
+    void UnregisterListener(const Asset<AssetBase>& asset, const AssetListener* listener);
 
     void RegisterAssetLoader(std::unique_ptr<AbstractAssetLoader>&& loader);
 
@@ -50,17 +56,24 @@ public:
     AssetFileInfo GetAssetFileInfo(const Asset<AssetBase>& asset) const;
 
 private:
+    void OnFileEvent(const String& path, FileWatcher::eWatchEvent e);
     void Process();
-    Asset<AssetBase> GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener, bool reloadRequest);
+    void UnloadAsset(AssetBase* ptr);
+
     AbstractAssetLoader* GetAssetLoader(const Any& assetKey) const;
 
-    RefPtr<File> CreateAssetFile(const Any& assetKey, AbstractAssetLoader* loader, String& errorMsg) const;
+    RefPtr<File> CreateAssetFile(const Any& assetKey, AbstractAssetLoader* loader, String& errorMsg);
+    void CreateAsyncLoadingTask(const Asset<AssetBase>& asset, AbstractAssetLoader* loader, bool reloading);
+    void SyncLoadAsset(const Asset<AssetBase>& asset, AbstractAssetLoader* loader, bool reloading, String& errorMsg);
 
-    void UnloadAsset(AssetBase* ptr);
-    void NotifyLoaded(Asset<AssetBase> asset, bool reloaded);
-    void NotifyError(Asset<AssetBase> asset, bool reloaded, const String& msg);
+    void NotifyLoaded(const Asset<AssetBase>& asset);
+    void NotifyReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded);
+    void NotifyError(const Asset<AssetBase>& asset, bool reloaded, const String& msg);
     void NotifyUnloaded(AssetBase* asset);
-    void Notify(AssetBase* asset, const Function<void(AssetListener*)>& callback, bool notifyInstance = true);
+    void Notify(AssetBase* asset, bool notifyInstance, const Function<void(AssetListener*)>& callback);
+
+    void AddAssetFiles(const AssetBase* asset);
+    void RemoveAssetFiles(const AssetBase* asset);
 
     void LoadingThreadFn();
     void AsyncLoadingFinished(const std::weak_ptr<AssetBase>& asset, bool reloading, const String& errorMsg);
@@ -71,10 +84,16 @@ private:
     UnorderedMap<const Type*, AbstractAssetLoader*> assetTypeToLoader;
     UnorderedMap<const Type*, Vector<AssetListener*>> typeListeners;
 
+    UnorderedMap<String, UnorderedSet<Any>> assetFileMap;
+
     struct AssetNode
     {
         Vector<AssetListener*> listeners;
         std::weak_ptr<AssetBase> asset;
+        int32 instanceCount = 1;
+#if defined(TRACE_ASSET_REQUESTER)
+        Vector<String> backtrace;
+#endif
     };
 
     Mutex assetMapMutex;
@@ -111,11 +130,13 @@ private:
         String errorMsg;
     };
     Vector<LoadedAssetNode> loadedAssets;
-
-    Mutex unloadQueueMutex;
-    UnorderedMap<Any, AssetBase*> unloadAssets;
+    UnorderedSet<Any> reloadRequests;
+    UnorderedMap<Any, Asset<AssetBase>> toReloadAssets;
 
     Thread* loadingThread = nullptr;
+
+    FileWatcher fileWatcher;
+    String projectRoot;
 };
 } // namespace DAVA
 

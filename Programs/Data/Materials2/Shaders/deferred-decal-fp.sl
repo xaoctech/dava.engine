@@ -4,21 +4,20 @@
 #include "include/structures.h"
 #include "include/math.h"
 
-#define DECAL_GBUFFER           1
-#define DECAL_SNOW              2
-#define DECAL_WET               3
-#define DECAL_RAIN              4
-#define DECAL_GBUFFER_NORMAL    5
-#define DECAL_AO                6
+#define DECAL_GBUFFER 1
+#define DECAL_SNOW 2
+#define DECAL_WET 3
+#define DECAL_RAIN 4
+#define DECAL_GBUFFER_NORMAL 5
+#define DECAL_AO 6
 
 #ifndef DECAL_TYPE
 #define DECAL_TYPE DECAL_GBUFFER
 #endif
 
 #define MODIFY_COLOR ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_SNOW) || (DECAL_TYPE == DECAL_WET) || (DECAL_TYPE == DECAL_RAIN))
-#define MODIFY_NORMAL ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_GBUFFER_NORMAL) ||(DECAL_TYPE == DECAL_RAIN))
+#define MODIFY_NORMAL ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_GBUFFER_NORMAL) || (DECAL_TYPE == DECAL_RAIN))
 #define MODIFY_PARAMS ((DECAL_TYPE == DECAL_GBUFFER) || (DECAL_TYPE == DECAL_GBUFFER_NORMAL) || (DECAL_TYPE == DECAL_SNOW) || (DECAL_TYPE == DECAL_WET) || (DECAL_TYPE == DECAL_RAIN) || (DECAL_TYPE == DECAL_AO))
-
 
 fragment_in
 {
@@ -45,8 +44,7 @@ fragment_out
 #endif
 
 #if (DECAL_TYPE == DECAL_AO) //GFX_COMPLETE later add it to different decals
-    [material][instance] property float blendWidth = 0.2; 
-    [material][instance] property float aoScale = 0.0; 
+[material][instance] property float blendWidth = 0.2;
 #endif
 
 float3 ComputeWorldNormal(float2 normalSample, float3 tbnToWorld0, float3 tbnToWorld1, float3 tbnToWorld2)
@@ -91,7 +89,7 @@ fragment_out fp_main(fragment_in input)
     float4 inColor = tex2D(gBuffer0_copy, texPos);
     float4 inNormal = tex2D(gBuffer1_copy, texPos);
     float4 inParams = tex2D(gBuffer2_copy, texPos);
-    
+
     float4 baseColorSample = tex2D(albedo, uv);
     float4 normalMapSample = tex2D(normalmap, uv);
 
@@ -99,7 +97,7 @@ fragment_out fp_main(fragment_in input)
 
     float roughness = normalMapSample.z * roughnessScale;
     float metallness = normalMapSample.w * metallnessScale;
-    
+
     float3 resColor = baseColorSample.xyz * baseColorScale.xyz;
     output.color = float4(lerp(inColor.xyz, resColor, baseColorSample.w), inColor.w);
     output.normal = float4(lerp(inNormal.xyz, n * 0.5 + 0.5, baseColorSample.w), inNormal.w);
@@ -113,9 +111,8 @@ fragment_out fp_main(fragment_in input)
     float4 normalMapSample = tex2D(normalmap, uv);
     float3 n = ComputeWorldNormal(normalMapSample.xy, input.tbnToWorld0, input.tbnToWorld1, input.tbnToWorld2);
     float roughness = normalMapSample.z * roughnessScale;
-    
-    
-    output.color = inColor;//float4(lerp(inColor.xyz, n * 0.5 + 0.5, normalMapSample.w), inColor.w);
+
+    output.color = inColor; //float4(lerp(inColor.xyz, n * 0.5 + 0.5, normalMapSample.w), inColor.w);
     output.normal = float4(lerp(inNormal.xyz, n * 0.5 + 0.5, normalMapSample.w), inNormal.w);
     output.params = float4(lerp(inParams.x, roughness, normalMapSample.w), inParams.yzw); 
 
@@ -126,7 +123,7 @@ fragment_out fp_main(fragment_in input)
     float4 inParams = tex2D(gBuffer2_copy, texPos);
 
     float mask = tex2D(albedo, uv).a; // FP_A8
-    float4 normalMapSample = tex2D(normalmap, wp.xy * 2.0);    
+    float4 normalMapSample = tex2D(normalmap, wp.xy * 2.0);
     float3 microNormal = ComputeWorldNormal(normalMapSample.xy, input.tbnToWorld0, input.tbnToWorld1, input.tbnToWorld2);
     float sparkle_mask = pow(saturate(dot(microNormal, normalize(cameraPosition - wp.xyz))), 20.0);
     float slope_mask = pow(saturate(inNormal.z * 2.0 - 1.0), 0.4);
@@ -190,14 +187,13 @@ fragment_out fp_main(fragment_in input)
 #elif DECAL_TYPE == DECAL_AO
     float4 inColor = tex2D(gBuffer0_copy, texPos);
     float4 inNormal = tex2D(gBuffer1_copy, texPos);
-    float4 inParams = tex2D(gBuffer2_copy, texPos);    
+    float4 inParams = tex2D(gBuffer2_copy, texPos);
     float3 dist_to_edge = float3(1.0, 1.0, 1.0) - absDecalPos;
-	float edge_fade_out = min(min(min(dist_to_edge.x, dist_to_edge.y), dist_to_edge.z)/blendWidth, 1.0); 
-    
+    float edge_fade_out = min(min(min(dist_to_edge.x, dist_to_edge.y), dist_to_edge.z) / blendWidth, 1.0);
 
     output.color = inColor;
     output.normal = inNormal;
-    output.params = float4(inParams.xy, lerp(inParams.z, inParams.z*aoScale, edge_fade_out), inParams.w);
+    output.params = float4(inParams.xy, lerp(inParams.z, inParams.z * aoScale, edge_fade_out), inParams.w);
 #endif
 
     return output;

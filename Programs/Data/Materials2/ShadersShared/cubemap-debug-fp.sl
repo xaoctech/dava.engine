@@ -52,8 +52,9 @@ fragment_out fp_main(fragment_in input)
 #else
 
     float3 direction = WrapEquirectangularToDirection(input.varTexCoord0);
-    output.color = texCUBElod(environmentMap, direction, sampledLevel);
-    output.color.xyz = LinearTosRGB(output.color.xyz);
+    float3 color = DecodeRGBM(texCUBElod(environmentMap, direction, sampledLevel));
+    output.color.xyz = LinearTosRGB(color);
+    output.color.w = 1.0;
 
 #endif
 

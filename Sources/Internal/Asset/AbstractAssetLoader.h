@@ -37,14 +37,12 @@ public:
 
     virtual AssetBase* CreateAsset(const Any& assetKey) const = 0;
     virtual void DeleteAsset(AssetBase* asset) const = 0;
-    virtual void LoadAsset(Asset<AssetBase> asset, File* file, String& errorMessage) const = 0;
+    virtual void LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const = 0;
     virtual bool SaveAsset(Asset<AssetBase>, File* file, eSaveMode requestedMode) const = 0;
     virtual bool SaveAssetFromData(const Any& data, File* file, eSaveMode requestedMode) const = 0;
+    virtual Vector<String> GetDependsOnFiles(const AssetBase* asset) const = 0;
 
     virtual Vector<const Type*> GetAssetKeyTypes() const = 0;
     virtual Vector<const Type*> GetAssetTypes() const = 0;
-
-    virtual AssetFileInfo GetAdditionalLoadFileInfo(String& dependOnFilePath) const;
-    virtual Vector<String> GetAdditionalFileExtensionsDependOn() const;
 };
 } // namespace DAVA

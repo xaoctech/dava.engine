@@ -1,14 +1,17 @@
 #include "DeferredLightsRenderer.h"
-#include "Render/ShaderCache.h"
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/3D/MeshUtils.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/DynamicBufferAllocator.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
 #include "Render/Image/Image.h"
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -18,8 +21,8 @@ DeferredLightsRenderer::DeferredLightsRenderer(bool useFetch_)
     unityCube = MeshUtils::BuildAABox(Vector3(1.0f, 1.0f, 1.0f));
 
     rhi::DepthStencilState::Descriptor dsDescr;
-    dsDescr.depthTestEnabled = 0;
-    dsDescr.depthFunc = rhi::CMP_LESS;
+    dsDescr.depthTestEnabled = 1;
+    dsDescr.depthFunc = rhi::CMP_GREATEREQUAL;
     dsDescr.depthWriteEnabled = 0;
 
     rhi::VertexLayout deferredLightLayout;
@@ -40,8 +43,16 @@ DeferredLightsRenderer::DeferredLightsRenderer(bool useFetch_)
     deferredLightsPacket.vertexLayoutUID = rhi::VertexLayout::UniqueId(deferredLightLayout);
     deferredLightsPacket.startIndex = 0;
     deferredLightsPacket.depthStencilState = rhi::AcquireDepthStencilState(dsDescr);
-    //deferredLightsPacket.cullMode = rhi::CULL_CW;
+    deferredLightsPacket.cullMode = rhi::CULL_CCW;
     InvalidateMaterials();
+
+    listener.onReloaded = [this](const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset) {
+        if (deferredLightsShader == originalAsset)
+        {
+            deferredLightsShader = std::dynamic_pointer_cast<ShaderDescriptor>(reloadedAsset);
+            UpdatePacketParams();
+        }
+    };
 }
 
 DeferredLightsRenderer::~DeferredLightsRenderer()
@@ -55,10 +66,16 @@ void DeferredLightsRenderer::InvalidateMaterials()
     if (useFetch)
         flags[NMaterialFlagName::FLAG_USE_FRAMEBUFFER_FETCH] = 1;
 
-    deferredLightsShader = ShaderDescriptorCache::GetShaderDescriptor(FastName("~res:/Materials2/Shaders/deferred-light"), flags);
+    ShaderAssetLoader::Key key(FastName("~res:/Materials2/Shaders/deferred-light"), flags);
+    deferredLightsShader = GetEngineContext()->assetManager->GetAsset<ShaderDescriptor>(key, AssetManager::SYNC);
     if (!deferredLightsShader->IsValid())
         return;
 
+    UpdatePacketParams();
+}
+
+void DeferredLightsRenderer::UpdatePacketParams()
+{
     deferredLightsPacket.renderPipelineState = deferredLightsShader->GetPiplineState();
     deferredLightsPacket.vertexConstCount = static_cast<uint32>(deferredLightsShader->GetVertexConstBuffersCount());
     deferredLightsPacket.fragmentConstCount = static_cast<uint32>(deferredLightsShader->GetFragmentConstBuffersCount());

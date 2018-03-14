@@ -6,7 +6,7 @@
 #include "Render/Highlevel/ShadowVolumeRenderLayer.h"
 #include "Render/Highlevel/PostEffectRenderer.h"
 #include "Render/Highlevel/ReflectionRenderer.h"
-#include "Render/ShaderCache.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -20,7 +20,7 @@
 
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
-
+#include "Particles/ParticlesRandom.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 namespace DAVA
@@ -97,6 +97,9 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
     bool invertProjection = rhi::IsInvertedProjectionRequired(passConfig.IsRenderTargetPass(), passConfig.IsCubeRenderTargetPass());
     passConfig.invertCulling = invertProjection ? 1 : 0;
 
+    Vector2 offset = enableFrameJittering ? GetCurrentFrameJitterOffset() : Vector2::Zero;
+    mainCamera->SetProjectionJitterOffset(offset);
+
     drawCamera->SetupDynamicParameters(invertProjection, passConfig.usesReverseDepth, externalClipPlane);
 
     if (mainCamera != drawCamera)
@@ -122,14 +125,14 @@ void RenderPass::PrepareVisibilityArrays(Camera* camera, RenderSystem* renderSys
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PASS_PREPARE_ARRAYS)
 
+    visibilityArray.Clear();
     uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
     if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
         currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
-
-    visibilityArray.Clear();
     renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, currVisibilityCriteria);
 
     ClearLayersArrays();
+
     PrepareLayersArrays(visibilityArray.geometryArray, camera);
 }
 
@@ -163,7 +166,7 @@ void RenderPass::DrawLayers(Camera* camera, uint32 drawLayersMask)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PASS_DRAW_LAYERS)
 
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
 
     //per pass viewport bindings
     viewportSize = Vector2(viewport.dx, viewport.dy);
@@ -229,6 +232,13 @@ void RenderPass::ValidateMultisampledTextures(const rhi::RenderPassConfig& confi
 
         multisampledTexture = Texture::CreateFBO(multisampledDescription);
     }
+}
+
+Vector2 RenderPass::GetCurrentFrameJitterOffset() const
+{
+    Size2i size = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+    Vector2 currOffset = ParticlesRandom::SobolSequenceV2Prebult(Engine::Instance()->GetGlobalFrameIndex());
+    return Vector2(currOffset.x / float32(size.dx), currOffset.y / float32(size.dy)) * 2.0f;
 }
 
 bool RenderPass::BeginRenderPass(const rhi::RenderPassConfig& config)

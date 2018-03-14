@@ -38,6 +38,11 @@ RescalePass::RescalePass()
     rescaleMaterial->SetFXName(NMaterialName::RESCALE_QUAD);
 }
 
+RescalePass::~RescalePass()
+{
+    SafeRelease(rescaleMaterial);
+}
+
 void RescalePass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask /* = 0xFFFFFFFF */)
 {
     DAVA_PROFILER_GPU_RENDER_PASS(passConfig, ProfilerGPUMarkerName::RESCALE_PASS);

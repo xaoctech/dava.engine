@@ -6,6 +6,7 @@
 #include "Animation/AnimatedObject.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderBatch.h"
+#include "render/Highlevel/VisibilityQuadTree.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 

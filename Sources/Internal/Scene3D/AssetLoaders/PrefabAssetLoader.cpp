@@ -76,7 +76,7 @@ void PrefabAssetLoader::DeleteAsset(AssetBase* asset) const
     delete asset;
 }
 
-void PrefabAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, String& errorMessage) const
+void PrefabAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
 {
     using namespace PrefabAssetLoaderDetail;
 
@@ -162,6 +162,14 @@ bool PrefabAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode
     }
 
     return PrefabAssetLoaderDetail::SaveImpl(entities, file, &serializationContext);
+}
+
+Vector<String> PrefabAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
+{
+    const Any& assetKey = asset->GetKey();
+    DVASSERT(assetKey.CanGet<PathKey>());
+    const PathKey& key = assetKey.Get<PathKey>();
+    return Vector<String>{ key.path.GetAbsolutePathname() };
 }
 
 Vector<const Type*> PrefabAssetLoader::GetAssetKeyTypes() const

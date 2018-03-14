@@ -2,15 +2,16 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFile/VersionInfo.h"
 
+#include "Asset/AssetManager.h"
 #include "Base/Any.h"
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/YamlParser.h"
+#include "Render/Highlevel/RenderPassNames.h"
 #include "Render/Material/Material.h"
 #include "Render/Material/NMaterial.h"
-#include "Asset/AssetManager.h"
-#include "Engine/EngineContext.h"
 
 #define MATERIAL_ASSET_YAML_SERIALIZATION 1
 
@@ -52,7 +53,7 @@ void MaterialAssetLoader::DeleteAsset(AssetBase* asset) const
     delete asset;
 }
 
-void MaterialAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, String& errorMessage) const
+void MaterialAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
 {
     Asset<Material> materialAsset = std::dynamic_pointer_cast<Material>(asset);
     SerializationContext serializationContext;
@@ -73,6 +74,7 @@ void MaterialAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, String& 
 
     materialAsset->material = new NMaterial();
     materialAsset->material->Load(archive, &serializationContext);
+    materialAsset->material->PreBuildMaterial(PASS_FORWARD);
 
     if (archive->IsKeyExists("parentPath"))
     {
@@ -113,6 +115,15 @@ bool MaterialAssetLoader::SaveAsset(Asset<AssetBase> asset, File* file, eSaveMod
 bool MaterialAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode requestedMode) const
 {
     return false;
+}
+
+Vector<String> MaterialAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
+{
+    const Any& assetKey = asset->GetKey();
+    DVASSERT(assetKey.CanGet<PathKey>());
+    const PathKey& key = assetKey.Get<PathKey>();
+
+    return Vector<String>{ key.path.GetAbsolutePathname() };
 }
 
 Vector<const Type*> MaterialAssetLoader::GetAssetKeyTypes() const

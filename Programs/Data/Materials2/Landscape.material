@@ -1,81 +1,63 @@
 RenderTechnique:
     Layers: ["OpaqueRenderLayer"]
+    RenderState:
+        cullMode: "FACE_BACK"
+        depthFunc: "CMP_LESS"
+        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
     RenderPassPicking:
         Name: "PickingPass"
         Shader: "~res:/Materials2/Shaders/landscape/landscape"
         UniqueDefines: ["LANDSCAPE_PICKING_UV"]
-        RenderState:
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials2/Shaders/landscape/landscape"
-        UniqueDefines: []
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
     RenderPassLDR:
         Name: "LDRForwardPass"
         Shader: "~res:/Materials2/ShadersLDR/landscape/landscape"
-        UniqueDefines: []
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
     RenderPassReflections:
         Name: "IBReflectionPass"
         Shader: "~res:/Materials2/Shaders/landscape/landscape"
         UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
     RenderPassReflectionsLDR:
         Name: "LDRIBReflectionPass"
         Shader: "~res:/Materials2/ShadersLDR/landscape/landscape"
         UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
     RenderPassWithCombine:
         Name: "ForwardPassWithCombine"
         Shader: "~res:/Materials2/Shaders/landscape/landscape"
-        UniqueDefines: ["FOWARD_WITH_COMBINE"]
-        RenderState:
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
     RenderPassShadow:
         Name: "ShadowCascadePass"
         Shader: "~res:/Materials2/Shaders/landscape/shadowmap-write-landscape"
-        UniqueDefines: []
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LEQUAL"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED"            
     RenderPassDeferred:
         Name: "gBufferPass"
         Shader: "~res:/Materials2/Shaders/landscape/landscape-deferred"
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+        RenderState:   
+            state: "STATE_STENCIL_TEST"
+            stencil:
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"
     RenderPassDeferredFetch:
         Name: "gBufferFetchPass"
         Shader: "~res:/Materials2/Shaders/landscape/landscape-deferred"
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+        RenderState: 
+            state: "STATE_STENCIL_TEST"
+            stencil:
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"

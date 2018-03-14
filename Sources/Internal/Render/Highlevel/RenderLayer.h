@@ -4,6 +4,7 @@
 #include "Base/FastName.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Highlevel/RenderBatchArray.h"
+#include "Render/RHI/rhi_Public.h"
 
 namespace DAVA
 {

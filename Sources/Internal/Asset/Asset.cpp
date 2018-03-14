@@ -9,6 +9,11 @@ AssetBase::AssetBase(const Any& assetKey_)
 {
 }
 
+const DAVA::Any& AssetBase::GetKey() const
+{
+    return assetKey;
+}
+
 AssetBase::eState AssetBase::GetState() const
 {
     return state.Get();

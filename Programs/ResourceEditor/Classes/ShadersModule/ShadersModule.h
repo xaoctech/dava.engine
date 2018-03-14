@@ -11,6 +11,9 @@
 
 class ShadersModule : public DAVA::ClientModule
 {
+public:
+    static void InitDevShaders();
+
 protected:
     void PostInit() override;
 

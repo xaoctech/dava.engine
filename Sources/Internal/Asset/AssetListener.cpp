@@ -8,14 +8,22 @@ namespace DAVA
 {
 AssetListener::~AssetListener()
 {
-    GetEngineContext()->assetManager->UnregisterListener(this);
+    //GetEngineContext()->assetManager->UnregisterListener(this);
 }
 
-void SimpleAssetListener::OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded)
+void SimpleAssetListener::OnAssetLoaded(const Asset<AssetBase>& asset)
 {
     if (onLoaded != nullptr)
     {
-        onLoaded(asset, reloaded);
+        onLoaded(asset);
+    }
+}
+
+void SimpleAssetListener::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset)
+{
+    if (onReloaded != nullptr)
+    {
+        onReloaded(originalAsset, reloadedAsset);
     }
 }
 

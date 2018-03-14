@@ -65,6 +65,7 @@ public:
 
     template <typename T>
     bool CanBeCastedTo() const;
+    bool CanBeCastedTo(const Type*) const;
 
     template <typename T>
     T* Cast() const;
@@ -96,14 +97,7 @@ private:
 template <typename T>
 bool Selectable::CanBeCastedTo() const
 {
-    if (ContainsObject() == false)
-    {
-        return false;
-    }
-    DVASSERT(object.GetType()->IsPointer());
-    const ReflectedType* t = GetValueReflectedType(object);
-    DVASSERT(t != nullptr);
-    return TypeInheritance::CanCast(t->GetType()->Pointer(), Type::Instance<T*>());
+    return CanBeCastedTo(Type::Instance<T*>());
 }
 
 template <typename T>

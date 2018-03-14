@@ -216,6 +216,46 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
             const char* entryName = (progType == PROG_VERTEX) ? "vp_main" : "fp_main";
             sl::PruneTree(ast, entryName);
 
+            if (progType == PROG_FRAGMENT)
+            {
+                uint32 maxRenderTarget = 0;
+                sl::HLSLStruct* fragment_out = ast->FindGlobalStruct("fragment_out");
+                if (fragment_out != nullptr)
+                {
+                    for (sl::HLSLStructField* field = fragment_out->field; field != nullptr; field = field->nextField)
+                    {
+                        if ((field->semantic != nullptr) && (strlen(field->semantic) >= 9))
+                        {
+                            uint32 semanticStringLength = uint32(strlen(field->semantic));
+                            char semanticIndexChar = (semanticStringLength == 9) ? '0' : field->semantic[semanticStringLength - 1];
+                            if ((semanticIndexChar >= '0') && (semanticIndexChar <= '0' + MAX_RENDER_TARGET_COUNT))
+                            {
+                                uint32 index = semanticIndexChar - 48;
+                                maxRenderTarget = std::max(maxRenderTarget, index);
+                            }
+                            else
+                            {
+                                PrintSource(src.data(), static_cast<uint32>(src.size()));
+                                DAVA::Logger::Error("Fragment output %s contains invalid semantic: %s", field->name, field->semantic);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            PrintSource(src.data(), static_cast<uint32>(src.size()));
+                            DAVA::Logger::Error("Fragment output %s does not include SV_TARGER semantic", field->name);
+                            return false;
+                        }
+                    }
+                }
+
+                if (maxRenderTarget + 1 >= rhi::DeviceCaps().maxSimultaneousRT)
+                {
+                    DAVA::Logger::Error("Fragment shader uses more render targets than current implementation supports.");
+                    return false;
+                }
+            }
+
             // some sanity checks
             bool hasReturn = false;
 
@@ -234,7 +274,6 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
             else
             {
                 PrintSource(src.data(), static_cast<uint32>(src.size()));
-                sl::HLSLFunction* entryFunction = ast->FindFunction(entryName);
                 DAVA::Logger::Error("Missing entry-point function '%s'", entryName);
                 return false;
             }
@@ -745,11 +784,15 @@ void ShaderSource::InlineFunctions()
 
 bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
 {
-    struct
-    prop_t
+    struct prop_t
     {
-        sl::HLSLDeclaration* decl;
-        sl::HLSLStatement* prev_statement;
+        sl::HLSLDeclaration* decl = nullptr;
+        sl::HLSLStatement* prev_statement = nullptr;
+        prop_t(sl::HLSLDeclaration* d, sl::HLSLStatement* p)
+            : decl(d)
+            , prev_statement(p)
+        {
+        }
     };
 
     std::vector<prop_t> prop_decl;
@@ -763,7 +806,7 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
     // find properties/samplers
     {
         sl::HLSLStatement* statement = ast->GetRoot()->statement;
-        sl::HLSLStatement* pstatement = NULL;
+        sl::HLSLStatement* pstatement = nullptr;
         unsigned sampler_reg = 0;
 
         while (statement)
@@ -976,12 +1019,7 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                         }
                     }
 
-                    prop_t pp;
-
-                    pp.decl = decl;
-                    pp.prev_statement = pstatement;
-
-                    prop_decl.push_back(pp);
+                    prop_decl.emplace_back(decl, pstatement);
                 }
 
                 if (decl->type.baseType == sl::HLSLBaseType_Sampler2D
@@ -1286,10 +1324,17 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
         for (unsigned i = 0; i != cbuf_decl.size() - 1; ++i)
             cbuf_decl[i]->nextStatement = cbuf_decl[i + 1];
 
-        prop_decl[0].prev_statement->nextStatement = cbuf_decl[0];
+        if (prop_decl[0].prev_statement != nullptr)
+        {
+            prop_decl[0].prev_statement->nextStatement = cbuf_decl[0];
+        }
+        else
+        {
+            ast->GetRoot()->statement = cbuf_decl[0];
+        }
         cbuf_decl[cbuf_decl.size() - 1]->nextStatement = prop_decl[0].decl;
 
-        #define DO_FLOAT4_CAST 1
+        #define DO_FLOAT4_CAST 0
 
         DVASSERT(property.size() == prop_decl.size());
         for (unsigned i = 0; i != property.size(); ++i)
@@ -1298,42 +1343,39 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
             {
             case rhi::ShaderProp::TYPE_FLOAT4:
             {
-                if (!property[i].isBigArray)
-                {
-                    sl::HLSLArrayAccess* arr_access = ast->AddNode<sl::HLSLArrayAccess>(prop_decl[i].decl->fileName, prop_decl[i].decl->line);
-                    sl::HLSLLiteralExpression* idx = ast->AddNode<sl::HLSLLiteralExpression>(prop_decl[0].decl->fileName, prop_decl[0].decl->line);
-                    sl::HLSLIdentifierExpression* arr = ast->AddNode<sl::HLSLIdentifierExpression>(prop_decl[0].decl->fileName, prop_decl[0].decl->line);
-                    char buf_name[128];
+                char buf_name[128] = {};
+                Snprintf(buf_name, sizeof(buf_name), "%cP_Buffer%u", btype, property[i].bufferindex);
 
-                    Snprintf(buf_name, sizeof(buf_name), "%cP_Buffer%u", btype, property[i].bufferindex);
+                if (property[i].isBigArray)
+                {
+                    prop_decl[i].decl->registerName = ast->AddString(buf_name);
+                }
+                else
+                {
+                    sl::HLSLIdentifierExpression* arr = ast->AddNode<sl::HLSLIdentifierExpression>(prop_decl[0].decl->fileName, prop_decl[0].decl->line);
                     arr->name = ast->AddString(buf_name);
                     arr->global = true;
 
+                    sl::HLSLLiteralExpression* idx = ast->AddNode<sl::HLSLLiteralExpression>(prop_decl[0].decl->fileName, prop_decl[0].decl->line);
                     idx->type = sl::HLSLBaseType_Int;
                     idx->iValue = property[i].bufferReg;
 
+                    sl::HLSLArrayAccess* arr_access = ast->AddNode<sl::HLSLArrayAccess>(prop_decl[i].decl->fileName, prop_decl[i].decl->line);
+                    arr_access->expressionType.baseType = sl::HLSLBaseType_Float4;
                     arr_access->array = arr;
                     arr_access->index = idx;
-                    
-                    #if DO_FLOAT4_CAST
+
+                #if DO_FLOAT4_CAST
                     sl::HLSLCastingExpression* cast_expr = ast->AddNode<sl::HLSLCastingExpression>(prop_decl[i].decl->fileName, prop_decl[i].decl->line);
                     cast_expr->type.baseType = sl::HLSLBaseType_Float4;
                     cast_expr->expressionType.baseType = sl::HLSLBaseType_Float4;
                     cast_expr->expression = arr_access;
-
                     prop_decl[i].decl->assignment = cast_expr;
-                    prop_decl[i].decl->type.flags |= sl::HLSLTypeFlag_Static | sl::HLSLTypeFlag_Property;
-                    #else
+                #else
                     prop_decl[i].decl->assignment = arr_access;
-                    prop_decl[i].decl->type.flags |= sl::HLSLTypeFlag_Static | sl::HLSLTypeFlag_Property;
-                    #endif
-                }
-                else
-                {
-                    char buf_name[128];
+                #endif
 
-                    Snprintf(buf_name, sizeof(buf_name), "%cP_Buffer%u", btype, property[i].bufferindex);
-                    prop_decl[i].decl->registerName = ast->AddString(buf_name);
+                    prop_decl[i].decl->type.flags |= sl::HLSLTypeFlag_Static | sl::HLSLTypeFlag_Property;
                 }
             }
             break;
@@ -1379,10 +1421,11 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                 idx->type = sl::HLSLBaseType_Int;
                 idx->iValue = property[i].bufferReg;
 
+                arr_access->expressionType.baseType = sl::HLSLBaseType_Float4;
                 arr_access->array = arr;
                 arr_access->index = idx;
 
-                #if DO_FLOAT4_CAST
+            #if DO_FLOAT4_CAST
                 sl::HLSLCastingExpression* cast_expr = ast->AddNode<sl::HLSLCastingExpression>(prop_decl[i].decl->fileName, prop_decl[i].decl->line);
                 cast_expr->expression = arr_access;
                 cast_expr->type.baseType = sl::HLSLBaseType_Float4;
@@ -1391,18 +1434,17 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
 
                 prop_decl[i].decl->assignment = member_access;
                 prop_decl[i].decl->type.flags |= sl::HLSLTypeFlag_Static | sl::HLSLTypeFlag_Property;
-                #else
+            #else
                 prop_decl[i].decl->assignment = member_access;
                 prop_decl[i].decl->type.flags |= sl::HLSLTypeFlag_Static | sl::HLSLTypeFlag_Property;
-                #endif
+            #endif
             }
             break;
 
             case rhi::ShaderProp::TYPE_FLOAT4X4:
             {
                 sl::HLSLConstructorExpression* ctor = ast->AddNode<sl::HLSLConstructorExpression>(prop_decl[i].decl->fileName, prop_decl[i].decl->line);
-                sl::HLSLArrayAccess* arr_access[4];
-                sl::HLSLCastingExpression* cast_expr[4];
+                sl::HLSLArrayAccess* arr_access[4] = {};
 
                 ctor->type.baseType = sl::HLSLBaseType_Float4x4;
                 ctor->expressionType.baseType = sl::HLSLBaseType_Float4x4;
@@ -1421,11 +1463,13 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                     idx->type = sl::HLSLBaseType_Int;
                     idx->iValue = property[i].bufferReg + k;
 
+                    arr_access[k]->expressionType.baseType = sl::HLSLBaseType_Float4;
                     arr_access[k]->array = arr;
                     arr_access[k]->index = idx;
                 }
 
-                #if DO_FLOAT4_CAST
+            #if DO_FLOAT4_CAST
+                sl::HLSLCastingExpression* cast_expr[4] = {};
                 for (unsigned k = 0; k != 4; ++k)
                 {
                     cast_expr[k] = ast->AddNode<sl::HLSLCastingExpression>(prop_decl[i].decl->fileName, prop_decl[i].decl->line);
@@ -1433,29 +1477,24 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                     cast_expr[k]->type.baseType = sl::HLSLBaseType_Float4;
                     cast_expr[k]->expressionType.baseType = sl::HLSLBaseType_Float4;
                 }
-
                 ctor->argument = cast_expr[0];
                 for (unsigned k = 0; k != 4 - 1; ++k)
                     cast_expr[k]->nextExpression = cast_expr[k + 1];
-                #else
+            #else
                 ctor->argument = arr_access[0];
                 for (unsigned k = 0; k != 4 - 1; ++k)
                     arr_access[k]->nextExpression = arr_access[k + 1];
-                #endif
+            #endif
 
                 prop_decl[i].decl->assignment = ctor;
                 prop_decl[i].decl->type.flags |= sl::HLSLTypeFlag_Static | sl::HLSLTypeFlag_Property;
             }
             break;
+
             default:
+                DVASSERT(!"Should not be here");
                 break; // to shut up goddamn warning
             }
-
-            //GFX_COMPLETE not the best idea - array might also be hidden as well - check different APIs
-            /*if (property[i].isBigArray)
-            {
-                prop_decl[i].decl->hidden = true;
-                 }*/
         }
     }
 
@@ -1977,6 +2016,11 @@ uint32 ShaderSource::ConstBufferSize(uint32 bufIndex) const
 ShaderProp::Source ShaderSource::ConstBufferSource(uint32 bufIndex) const
 {
     return buf[bufIndex].source;
+}
+
+const FastName& ShaderSource::ConstBufferTag(uint32 bufIndex) const
+{
+    return buf[bufIndex].tag;
 }
 
 //------------------------------------------------------------------------------

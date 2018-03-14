@@ -2,6 +2,7 @@
 
 #include "Base/Any.h"
 #include "Asset/Asset.h"
+#include "Asset/AssetListener.h"
 
 #include "Reflection/Reflection.h"
 
@@ -28,6 +29,7 @@ protected:
     //runtime
     Asset<Material> parentAsset = nullptr;
     NMaterial* material = nullptr;
+    SimpleAssetListener listener;
 
     DAVA_VIRTUAL_REFLECTION(Material, AssetBase);
 };

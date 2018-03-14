@@ -5,6 +5,7 @@
 #include "Engine/Engine.h"
 #include "FileSystem/FilePath.h"
 #include "Render/Material/Material.h"
+#include "Render/Material/FXAsset.h"
 #include "Render/Material/NMaterial.h"
 #include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 
@@ -33,7 +34,7 @@ FilePath ImportMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexI
     {
         const char* materialName = "UNNAMED";
 
-        NMaterial* material = new NMaterial(NMaterial::TYPE_COMMON);
+        NMaterial* material = new NMaterial(FXDescriptor::TYPE_COMMON);
         material->SetFXName(NMaterialName::FORWARD_PBS);
 
         if (maxVertexInfluence > 0)

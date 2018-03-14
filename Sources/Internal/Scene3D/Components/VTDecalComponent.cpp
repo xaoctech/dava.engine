@@ -6,6 +6,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Scene3D/Components/SingleComponents/VTSingleComponent.h"
+#include "Render/Material/FXAsset.h"
 
 namespace DAVA
 {
@@ -13,17 +14,17 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VTDecalComponent)
 {
     ReflectionRegistrator<VTDecalComponent>::Begin()
     .ConstructorByPointer()
-    .Field("material", &VTDecalComponent::GetMaterial, &VTDecalComponent::SetMaterial)[M::MaterialType(NMaterial::eType::TYPE_DECAL_VT), M::DisplayName("Material")]
+    .Field("material", &VTDecalComponent::GetMaterial, &VTDecalComponent::SetMaterial)[M::MaterialType(FXDescriptor::eType::TYPE_DECAL_VT), M::DisplayName("Material")]
     .Field("DecalSize", &VTDecalComponent::GetLocalSize, &VTDecalComponent::SetLocalSize)[M::DisplayName("Decal Size")]
     .Field("sortingOffset", &VTDecalComponent::GetSortingOffset, &VTDecalComponent::SetSortingOffset)[M::Range(0, 15, 1), M::DisplayName("Sorting")]
     .Field("splineSegmentationDistance", &VTDecalComponent::GetSegmentationDistance, &VTDecalComponent::SetSegmentationDistance)[M::DisplayName("Segmentation distance (meters between slices)")]
-    .Field("splineTiling", &VTDecalComponent::GetSplineTiling, &VTDecalComponent::SetSplineTiling)[M::DisplayName("Spline U size (meters in texture)")]
+    .Field("splineTextureDistance", &VTDecalComponent::GetSplineTextureDistance, &VTDecalComponent::SetSplineTextureDistance)[M::DisplayName("Spline U size (meters in texture)")]
     //for debug
     .Field("WireframeMode", [](VTDecalComponent* comp) { return comp->GetRenderObject()->GetWireframe(); },
            [](VTDecalComponent* comp, bool value) {
-		comp->GetRenderObject()->SetWireframe(value); 
-		if (comp->GetEntity() && comp->GetEntity()->GetScene())
-			comp->GetEntity()->GetScene()->GetSingletonComponent<VTSingleComponent>()->vtDecalChanged.push_back(comp->GetEntity()); }
+            comp->GetRenderObject()->SetWireframe(value); 
+            if (comp->GetEntity() && comp->GetEntity()->GetScene())
+            comp->GetEntity()->GetScene()->GetSingletonComponent<VTSingleComponent>()->vtDecalChanged.push_back(comp->GetEntity()); }
            )[M::DisplayName("Wireframe Mode")]
     .End();
 }
@@ -53,7 +54,7 @@ Component* VTDecalComponent::Clone(Entity* toEntity)
     newComponent->decalSize = decalSize;
     newComponent->material = material;
     newComponent->splineSegmentationDistance = splineSegmentationDistance;
-    newComponent->splineTiling = splineTiling;
+    newComponent->splineTextureDistance = splineTextureDistance;
     return newComponent;
 }
 void VTDecalComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -63,7 +64,7 @@ void VTDecalComponent::Serialize(KeyedArchive* archive, SerializationContext* se
     {
         archive->SetVector3("vtdecal.decalSize", decalSize);
         archive->SetFloat("vtdecal.splinesegmentation", splineSegmentationDistance);
-        archive->SetFloat("vtdecal.splineTiling", splineTiling);
+        archive->SetFloat("vtdecal.splineTextureDistance", splineTextureDistance);
         if (material)
         {
             uint64 matKey = material->GetNodeID();
@@ -77,7 +78,8 @@ void VTDecalComponent::Deserialize(KeyedArchive* archive, SerializationContext* 
     {
         decalSize = archive->GetVector3("vtdecal.decalSize", Vector3(1.0f, 1.0f, 1.0f));
         splineSegmentationDistance = archive->GetFloat("vtdecal.splinesegmentation", 0.5f);
-        splineTiling = archive->GetFloat("vtdecal.splineTiling", 1.0f);
+        splineTextureDistance = 1.0f / archive->GetFloat("vtdecal.splineTiling", 1.0f); //GFX_COMPLETE - load old spline
+        splineTextureDistance = archive->GetFloat("vtdecal.splineTextureDistance", splineTextureDistance);
         int64 matKey = archive->GetUInt64("vtdecal.material");
         material = static_cast<NMaterial*>(serializationContext->GetDataBlock(matKey));
     }
@@ -144,14 +146,14 @@ float32 VTDecalComponent::GetSegmentationDistance() const
     return splineSegmentationDistance;
 }
 
-void VTDecalComponent::SetSplineTiling(float32 tiling)
+void VTDecalComponent::SetSplineTextureDistance(float32 tiling)
 {
-    splineTiling = tiling;
+    splineTextureDistance = tiling;
     if (entity && entity->GetScene())
         entity->GetScene()->GetSingletonComponent<VTSingleComponent>()->vtSplineChanged.push_back(entity);
 }
-float32 VTDecalComponent::GetSplineTiling() const
+float32 VTDecalComponent::GetSplineTextureDistance() const
 {
-    return splineTiling;
+    return splineTextureDistance;
 }
 }

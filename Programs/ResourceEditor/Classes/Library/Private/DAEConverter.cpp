@@ -26,7 +26,7 @@ bool Convert(const DAVA::FilePath& daePath)
             scene.ConstructInplace();
 
             DAVA::PrefabAssetLoader::PathKey key(etalonScenePath);
-            DAVA::Asset<DAVA::Prefab> prefabAsset = DAVA::GetEngineContext()->assetManager->GetAsset<DAVA::Prefab>(key, false);
+            DAVA::Asset<DAVA::Prefab> prefabAsset = DAVA::GetEngineContext()->assetManager->GetAsset<DAVA::Prefab>(key, DAVA::AssetManager::SYNC);
             scene->ConstructFromPrefab(prefabAsset);
 
             AccumulateImportParams(scene, etalonScenePath, importParams.get());

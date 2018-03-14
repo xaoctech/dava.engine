@@ -518,7 +518,9 @@ bool SetConst(Handle cb, uint32 constIndex, uint32 constSubIndex, const float* d
 void Delete(Handle cb)
 {
     if (cb != InvalidHandle)
+    {
         (*_Impl.impl_ConstBuffer_Delete)(cb);
+    }
 }
 
 } // namespace ConstBuffer

@@ -15,7 +15,6 @@ namespace DAVA
 {
 namespace
 {
-const static int32 SHADOW_CASCADE_SIZE = 2048;
 const FastName RUNTIME_TEXTURE_NAMES[RuntimeTextures::RUNTIME_TEXTURES_COUNT] =
 {
   FastName("unknownTexture"),
@@ -36,6 +35,7 @@ const FastName RUNTIME_TEXTURE_NAMES[RuntimeTextures::RUNTIME_TEXTURES_COUNT] =
   FastName("noiseTexture64x64"),
   FastName("directionalShadowMap"),
   FastName("scaledLDR"),
+  FastName("velocityBuffer")
 };
 
 const static PixelFormat REFLECTION_PIXEL_FORMAT = PixelFormat::FORMAT_RGB565;
@@ -44,6 +44,8 @@ const static PixelFormat PICKING_PIXEL_FORMAT = PixelFormat::FORMAT_RGBA32F;
 const static PixelFormat SHADOWMAP_PIXEL_FORMAT = PixelFormat::FORMAT_R16F;
 const static PixelFormat GBUFFER_PIXEL_FORMAT = PixelFormat::FORMAT_RGBA8888;
 const static PixelFormat LDR_PIXEL_FORMAT = PixelFormat::FORMAT_RGBA8888;
+const static PixelFormat VELOCITY_PIXEL_FORMAT = PixelFormat::FORMAT_RG16F;
+const static int32 SHADOW_CASCADE_SIZE = 1024;
 
 static uint64 RuntimeTexturesInvalidateCallback = 0;
 }
@@ -66,11 +68,12 @@ RuntimeTextures::~RuntimeTextures()
 
 void RuntimeTextures::Reset(Size2i screenDim)
 {
-    //GFX_COMPLETE not affected by screen dim for now, later ensure gbuffer is enough
+    // GFX_COMPLETE not affected by screen dim for now, later ensure gbuffer is enough
     const static int32 REFLECTION_TEX_SIZE = 512;
     const static int32 REFRACTION_TEX_SIZE = 512;
     const static int32 PICKING_TEX_SIZE = 2048;
     const static int32 TEXTURE_GLOBAL_REFLECTION = 512;
+    const static int32 VELOCITY_BUFFER_SIZE = 2048;
 
     Size2i GBUFFER_TEX_SIZE;
 
@@ -108,6 +111,8 @@ void RuntimeTextures::Reset(Size2i screenDim)
 
     int32 cascadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
     runtimeTextureSizes[TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER] = Size2i(SHADOW_CASCADE_SIZE, cascadesCount * SHADOW_CASCADE_SIZE);
+
+    runtimeTextureSizes[TEXTURE_VELOCITY] = Size2i(VELOCITY_BUFFER_SIZE, VELOCITY_BUFFER_SIZE);
 
     samplerDescriptors[TEXTURE_UVPICKING].addrU = rhi::TEXADDR_CLAMP;
     samplerDescriptors[TEXTURE_UVPICKING].addrV = rhi::TEXADDR_CLAMP;
@@ -263,6 +268,21 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         break;
     }
 
+    case RuntimeTextures::TEXTURE_VELOCITY:
+    {
+        descriptor.cpuAccessRead = false;
+        descriptor.cpuAccessWrite = false;
+        descriptor.autoGenMipmaps = false;
+        descriptor.isRenderTarget = true;
+        descriptor.needRestore = false;
+        descriptor.memoryless = false;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
+        descriptor.format = rhi::TEXTURE_FORMAT_RG16F;
+        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
+        runtimeTexturesFormat[semantic] = VELOCITY_PIXEL_FORMAT;
+        break;
+    }
+
     case RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER:
     {
         descriptor.cpuAccessRead = false;
@@ -272,7 +292,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         descriptor.needRestore = false;
         descriptor.memoryless = false;
         descriptor.type = rhi::TEXTURE_TYPE_2D;
-        descriptor.format = rhi::TEXTURE_FORMAT_D32F;
+        descriptor.format = rhi::TEXTURE_FORMAT_D24S8;
         runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
         runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_INVALID;
         break;

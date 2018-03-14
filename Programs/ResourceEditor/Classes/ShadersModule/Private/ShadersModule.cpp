@@ -13,6 +13,9 @@
 #include <TArc/WindowSubSystem/QtAction.h>
 #include <TArc/Utils/ModuleCollection.h>
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <FileSystem/FilePath.h>
 #include <Functional/Function.h>
 #include <Logger/Logger.h>
@@ -21,7 +24,6 @@
 #include <Render/Highlevel/RenderSystem.h>
 #include <Render/Material/NMaterial.h>
 #include <Render/Material/NMaterialManager.h>
-#include <Render/ShaderCache.h>
 #include <Scene3D/Systems/FoliageSystem.h>
 #include <Scene3D/Systems/ParticleEffectDebugDrawSystem.h>
 
@@ -63,11 +65,20 @@ void ShadersModule::PostInit()
     RegisterOperation(DAVA::ReloadShaders.ID, this, &ShadersModule::ReloadShaders);
 }
 
+void ShadersModule::InitDevShaders()
+{
+#if defined(LOCAL_FRAMEWORK_SOURCE_PATH)
+    DAVA::GetEngineContext()->assetManager->AddResourceFolder(ShadersModuleDetail::GetDevMaterialsPath().GetAbsolutePathname());
+    DAVA::FilePath::AddResourcesFolder(ShadersModuleDetail::GetDevMaterialsPath());
+#endif
+}
+
 void ShadersModule::ReloadShaders()
 {
     using namespace DAVA;
 
-    ShaderDescriptorCache::ReloadShaders();
+    //GFX_COMPLETE we have auto shaders reloading. Do we still need this function?
+    // ShaderDescriptorCache::ReloadShaders();
     NMaterialManager::Instance().InvalidateMaterials(); //GFX_COMPLETE
 
     GetAccessor()->ForEachContext([](DAVA::DataContext& ctx) {

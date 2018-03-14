@@ -116,6 +116,8 @@ void SetupDispatch(Dispatch* dispatch);
 
 struct GLCommand
 {
+    using Function = void (*)(void*);
+
     enum Func
     {
         NOP,
@@ -178,6 +180,8 @@ struct GLCommand
         VALIDATE_PROGRAM,
         GET_CURRENT_PROGRAM_PTR,
         SET_CURRENT_PROGRAM_PTR,
+
+        INVOKE_FUNCTION,
     };
 
     Func func;

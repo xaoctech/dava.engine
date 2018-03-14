@@ -42,6 +42,9 @@ public:
     template <typename T>
     bool ContainsObjectsOfType() const;
 
+    template <typename T>
+    bool ContainsOnlyObjectsOfType() const;
+
     /*
 	 * TODO : hide this function, recalculate box when needed
 	 */
@@ -192,13 +195,13 @@ inline SelectableGroup::ConstEnumerator<T> SelectableGroup::ObjectsOfType() cons
 template <typename T>
 bool SelectableGroup::ContainsObjectsOfType() const
 {
-    for (const auto& obj : objects)
-    {
-        if (obj.CanBeCastedTo<T>())
-            return true;
-    }
+    return std::any_of(objects.begin(), objects.end(), [](const Selectable& obj) { return obj.CanBeCastedTo<T>(); });
+}
 
-    return false;
+template <typename T>
+bool SelectableGroup::ContainsOnlyObjectsOfType() const
+{
+    return std::all_of(objects.begin(), objects.end(), [](const Selectable& obj) { return obj.CanBeCastedTo<T>(); });
 }
 
 /*

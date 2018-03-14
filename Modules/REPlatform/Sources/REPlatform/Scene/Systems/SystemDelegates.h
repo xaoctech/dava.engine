@@ -27,6 +27,7 @@ public:
 };
 
 class SelectableGroup;
+class Selectable;
 class StructureSystemDelegate
 {
 public:
@@ -56,6 +57,10 @@ public:
         return true;
     }
     virtual bool AllowChangeSelectionReplacingCurrent(const SelectableGroup& currentSelection, const SelectableGroup& newSelection)
+    {
+        return true;
+    }
+    virtual bool AllowAddToSelection(const Selectable& itemToAdd)
     {
         return true;
     }

@@ -1,76 +1,62 @@
 RenderTechnique:
     Layers: ["OpaqueRenderLayer"]
-    RenderPass:
+    UniqueDefines: ["VERTEX_BAKED_AO"]
+    Shader: "~res:/Materials2/Shaders/materials"
+    RenderState:            
+        depthFunc: "CMP_LESS"
+        cullMode: "FACE_BACK"
+        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
+    RenderPass0:
         Name: "ForwardPass"
-        Shader: "~res:/Materials2/Shaders/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO"]
-        RenderState:            
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
-    RenderPassLDR:
+    RenderPass1:
         Name: "LDRForwardPass"
         Shader: "~res:/Materials2/ShadersLDR/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO"]
-        RenderState:            
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
-    RenderPassWithCombine:
+    RenderPass2:
         Name: "ForwardPassWithCombine"
-        Shader: "~res:/Materials2/Shaders/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO", "FOWARD_WITH_COMBINE"]
-        RenderState:
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
-    RenderPassShadowCascade:
+        UniqueDefines: ["FOWARD_WITH_COMBINE"]
+    RenderPass3:
         Name: "ShadowCascadePass"
-        Shader: "~res:/Materials2/Shaders/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO", "WRITE_SHADOW_MAP"]
-        RenderState:            
-            depthFunc: "CMP_LEQUAL"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED"            
-    RenderPassShadowCubemap:
+        UniqueDefines: ["WRITE_SHADOW_MAP"]
+    RenderPass4:
         Name: "PointLightShadowPass"
-        Shader: "~res:/Materials2/Shaders/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO", "WRITE_SHADOW_MAP", "WRITE_TO_CUBEMAP"]
-        RenderState:
-            depthFunc: "CMP_LEQUAL"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED"            
-    RenderPassReflections:
+        UniqueDefines: ["WRITE_SHADOW_MAP", "WRITE_TO_CUBEMAP"]
+    RenderPass5:
         Name: "IBReflectionPass"
-        Shader: "~res:/Materials2/Shaders/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO", "IB_REFLECTIONS_PREPARE"]
-        RenderState:            
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
-    RenderPassReflectionsLDR:
+        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+    RenderPass6:
         Name: "LDRIBReflectionPass"
         Shader: "~res:/Materials2/ShadersLDR/materials"
-        UniqueDefines: ["VERTEX_BAKED_AO", "IB_REFLECTIONS_PREPARE"]
-        RenderState:            
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"            
-    RenderPassDeferred:
+        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+    RenderPass7:
         Name: "gBufferPass"
         Shader: "~res:/Materials2/Shaders/deferred-pbs"        
-        UniqueDefines: ["VERTEX_BAKED_AO"]
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
-    RenderPassDeferredFetch:
+        RenderState:
+            state: "STATE_STENCIL_TEST"
+            stencil:
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"
+    RenderPass8:
         Name: "gBufferFetchPass"
         Shader: "~res:/Materials2/Shaders/deferred-pbs"        
-        RenderState:            
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            UniqueDefines: ["VERTEX_BAKED_AO", "USE_FRAMEBUFFER_FETCH"]
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+        RenderState:
+            state: "STATE_STENCIL_TEST"
+            stencil:
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"

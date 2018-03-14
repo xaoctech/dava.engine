@@ -11,6 +11,7 @@
 #include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <Render/Material/FXAsset.h>
 #include <Render/Material/NMaterial.h>
 #include <Base/Result.h>
 
@@ -128,7 +129,7 @@ std::unique_ptr<Command> AssignMaterialProducer::CreateCommand(const std::shared
 
         if (materialType != nullptr && materialType->type != material->GetMaterialType())
         {
-            const EnumMap* enumMap = GlobalEnumMap<DAVA::NMaterial::eType>::Instance();
+            const EnumMap* enumMap = GlobalEnumMap<DAVA::FXDescriptor::eType>::Instance();
             notificationParams.message.message = DAVA::Format("Selected material has invalid type (%s). %s is needed",
                                                               enumMap->ToString(material->GetMaterialType()), enumMap->ToString(materialType->type));
             showNotification = true;

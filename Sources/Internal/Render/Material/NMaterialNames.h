@@ -78,6 +78,8 @@ public:
 
     static const FastName GBUFFER_RESOLVE;
 
+    static const FastName VELOCITY;
+
     static const FastName RESCALE_QUAD;
 
     static const FastName TEXTURE_BLIT;
@@ -237,7 +239,7 @@ public:
     static const FastName FLAG_VERTEX_BLEND_TEXTURES;
     static const FastName FLAG_VERTEX_BLEND_4_TEXTURES;
 
-    static const FastName FLAG_ALBEDO_MODIFIER_BLEND_MODE;
+    static const FastName FLAG_ALBEDO_TINT_BLEND_MODE;
 
     static const FastName FLAG_FLOWMAP_SKY;
     static const FastName FLAG_PARTICLES_FLOWMAP;
@@ -281,6 +283,7 @@ public:
     static const FastName FLAG_TEXTURE_COUNT;
 
     static const FastName FLAG_TRANSMITTANCE;
+    static const FastName FLAG_RGBM_INPUT;
 
     static const FastName FLAG_TEST_OCCLUSION;
 

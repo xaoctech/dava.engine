@@ -26,7 +26,7 @@ public:
 
     AssetBase* CreateAsset(const Any& assetKey) const override;
     void DeleteAsset(AssetBase* asset) const override;
-    void LoadAsset(Asset<AssetBase> asset, File* file, String& errorMessage) const override;
+    void LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const override;
     bool SaveAsset(Asset<AssetBase> asset, File* file, eSaveMode requestedMode) const override;
 
     // Supported data types
@@ -34,6 +34,8 @@ public:
     // Entity*
     // Scene*
     bool SaveAssetFromData(const Any& data, File* file, eSaveMode requestedMode) const override;
+
+    Vector<String> GetDependsOnFiles(const AssetBase* asset) const override;
 
     Vector<const Type*> GetAssetKeyTypes() const override;
     Vector<const Type*> GetAssetTypes() const override;

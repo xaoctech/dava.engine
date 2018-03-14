@@ -26,6 +26,7 @@ static const FastName PASS_VT_BLEND("VTBlendPass");
 static const FastName PASS_VT_DECORATION("VTDecorationPass");
 static const FastName PASS_RESCALE("RescalePass"); //later it would be converted to some AA part
 static const FastName PASS_FORWARD_LDR("LDRForwardPass");
+static const FastName PASS_VELOCITY("VelocityPass");
 
 } // ns
 

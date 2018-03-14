@@ -1,18 +1,19 @@
-#ifndef __DAVAENGINE_NMATERIAL_H__
-#define __DAVAENGINE_NMATERIAL_H__
+#pragma once
 
 #include <memory>
 #include "NMaterialNames.h"
 #include "NMaterialStateDynamicFlagsInsp.h"
 #include "NMaterialStateDynamicPropertiesInsp.h"
 #include "NMaterialStateDynamicTexturesInsp.h"
-#include "Render/Shader.h"
+#include "Render/Shader/ShaderDescriptor.h"
+#include "Render/Material/FXAsset.h"
 #include "Scene3D/DataNode.h"
 
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectedMeta.h"
 
 #include "MemoryManager/MemoryProfiler.h"
+#include "Asset/AssetListener.h"
 
 namespace DAVA
 {
@@ -62,7 +63,7 @@ struct MaterialConfig
 class RenderVariantInstance
 {
     friend class NMaterial;
-    ShaderDescriptor* shader = nullptr;
+    Asset<ShaderDescriptor> shader = nullptr;
 
     rhi::HDepthStencilState depthState;
     rhi::HSamplerState samplerState;
@@ -95,7 +96,7 @@ class RenderVariantInstance
     ~RenderVariantInstance();
 };
 
-class NMaterial : public DataNode
+class NMaterial : public DataNode, public AssetListener
 {
     // this classed need access to be able to generate
     // dynamic introspection for NMaterial class
@@ -108,30 +109,15 @@ class NMaterial : public DataNode
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_NMATERIAL)
 
 public:
-    enum eType : uint32
-    {
-        TYPE_LEGACY = 0,
-
-        TYPE_GLOBAL,
-        TYPE_COMMON,
-        TYPE_PARTICLE,
-        TYPE_LANDSCAPE,
-        TYPE_SKY,
-        TYPE_DECAL,
-        TYPE_DECAL_VT,
-
-        TYPE_COUNT
-    };
-
-    NMaterial(eType type = TYPE_LEGACY);
+    NMaterial(FXDescriptor::eType type = FXDescriptor::TYPE_LEGACY);
     ~NMaterial();
 
     void Load(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Save(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    NMaterial* Clone(eType newType = TYPE_COUNT);
+    NMaterial* Clone(FXDescriptor::eType newType = FXDescriptor::TYPE_COUNT);
 
-    eType GetMaterialType() const;
+    FXDescriptor::eType GetMaterialType() const;
 
     void SetFXName(const FastName& fxName);
     bool HasLocalFXName() const;
@@ -227,6 +213,14 @@ public:
         USER_FLAG_ALPHATEST = 1 << 1,
     };
 
+    // AssetListener
+    void OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset) override;
+
+    Asset<FXAsset> GetFXAsset() const
+    {
+        return fxAsset;
+    }
+
 private:
     void LoadOldNMaterial(KeyedArchive* archive, SerializationContext* serializationContext);
     void SaveConfigToArchive(uint32 configId, KeyedArchive* archive, SerializationContext* serializationContext, bool forceNameSaving);
@@ -265,7 +259,7 @@ private:
     // config time
     FastName materialName;
     FastName qualityGroup;
-    eType materialType = TYPE_LEGACY;
+    FXDescriptor::eType materialType = FXDescriptor::TYPE_LEGACY;
 
     Vector<MaterialConfig> materialConfigs;
 
@@ -274,6 +268,8 @@ private:
     Vector<NMaterial*> children;
 
     uint32 currentConfig = 0;
+
+    Asset<FXAsset> fxAsset;
 
     FastName activeVariantName;
     RenderVariantInstance* activeVariantInstance = nullptr;
@@ -291,7 +287,7 @@ private:
 public:
     INTROSPECTION(NMaterial,
                   PROPERTY("materialName", "Material name", GetMaterialName, SetMaterialName, I_VIEW | I_EDIT)
-                  PROPERTY("materialType", InspDesc("Material Type", GlobalEnumMap<NMaterial::eType>::Instance()), GetMaterialTypeInsp, SetMaterialTypeInsp, I_VIEW)
+                  PROPERTY("materialType", InspDesc("Material Type", GlobalEnumMap<FXDescriptor::eType>::Instance()), GetMaterialTypeInsp, SetMaterialTypeInsp, I_VIEW)
                   PROPERTY("configName", "Config name", GetCurrentConfigName, SetCurrentConfigName, I_VIEW | I_EDIT)
                   PROPERTY("configId", "Current config", GetCurrentConfigIndex, SetCurrentConfigIndex, I_VIEW | I_EDIT)
                   PROPERTY("fxName", "FX Name", GetLocalFXName, SetFXName, I_VIEW | I_EDIT)
@@ -307,12 +303,12 @@ namespace Metas
 {
 struct MaterialType
 {
-    MaterialType(NMaterial::eType type_)
+    MaterialType(FXDescriptor::eType type_)
         : type(type_)
     {
     }
 
-    NMaterial::eType type;
+    FXDescriptor::eType type;
 };
 }
 
@@ -375,5 +371,3 @@ inline MaterialConfig& NMaterial::GetMutableConfig(uint32 index)
     return materialConfigs[index];
 }
 };
-
-#endif // __DAVAENGINE_MATERIAL_H__

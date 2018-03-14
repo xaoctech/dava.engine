@@ -304,7 +304,9 @@ struct ConvertA16toRGBA8888
 {
     inline void operator()(const uint16* input, uint32* output)
     {
+        static float32 convertFactor = static_cast<float32>(std::numeric_limits<uint8>::max()) / static_cast<float32>(std::numeric_limits<uint16>::max());
         uint32 pixel = *input;
+        pixel = static_cast<uint32>(std::floor(pixel * convertFactor + 0.5));
         *output = (0xFF << 24) | (pixel << 16) | (pixel << 8) | pixel;
     }
 };
@@ -471,21 +473,6 @@ struct ConvertBGRA32323232toRGBA32323232
 uint32 ChannelFloatToInt(float32 ch);
 float32 ChannelIntToFloat(uint32 ch);
 
-struct ConvertRGBA32FtoRGBM8888
-{
-    inline void operator()(const RGBA32F* input, uint32* output)
-    {
-        float max = Max(Max(input->r, 1e-6f), Max(input->g, input->b));
-        max = ceilf((max / 8.0f) * 255.0f) / 255.0f;
-
-        uint8 m = static_cast<uint8>(max * 255.0f);
-        uint8 r = static_cast<uint8>((input->r / (max * 8.0f)) * 255.0f);
-        uint8 g = static_cast<uint8>((input->g / (max * 8.0f)) * 255.0f);
-        uint8 b = static_cast<uint8>((input->b / (max * 8.0f)) * 255.0f);
-        *output = (m << 24) | (b << 16) | (g << 8) | r;
-    }
-};
-
 struct ConvertRGBA32FtoRGBA8888
 {
     inline void operator()(const RGBA32F* input, uint32* output)
@@ -513,6 +500,98 @@ struct ConvertRGBA8888toRGBA32F
         output->g = ChannelIntToFloat(g);
         output->b = ChannelIntToFloat(b);
         output->a = ChannelIntToFloat(a);
+    }
+};
+
+struct RGBM
+{
+    static inline Vector4 Read(const uint32* inPtr)
+    {
+        const RGBA8888* input = reinterpret_cast<const RGBA8888*>(inPtr);
+        float m = ChannelIntToFloat(input->a) * static_cast<float>(RGBM_ENCODING_RANGE);
+        float r = ChannelIntToFloat(input->r) * m;
+        float g = ChannelIntToFloat(input->g) * m;
+        float b = ChannelIntToFloat(input->b) * m;
+        return Vector4(r, g, b, 1.0f);
+    }
+
+    static inline void ConvertAndWrite(const Vector4& c, uint32* outPtr)
+    {
+        float r = c.x / static_cast<float>(RGBM_ENCODING_RANGE);
+        float g = c.y / static_cast<float>(RGBM_ENCODING_RANGE);
+        float b = c.z / static_cast<float>(RGBM_ENCODING_RANGE);
+        float m = std::max({ r, g, b, 1.0e-6f });
+        m = std::ceil(m * 255.0f) / 255.0f;
+
+        RGBA8888* output = reinterpret_cast<RGBA8888*>(outPtr);
+        output->r = ChannelFloatToInt(r / m);
+        output->g = ChannelFloatToInt(g / m);
+        output->b = ChannelFloatToInt(b / m);
+        output->a = ChannelFloatToInt(m);
+    }
+};
+
+struct ConvertRGBMtoRGBA8888
+{
+    inline void operator()(const uint32* inPtr, uint32* outPtr)
+    {
+        Vector4 color = RGBM::Read(inPtr);
+
+        RGBA8888* output = reinterpret_cast<RGBA8888*>(outPtr);
+        output->r = ChannelFloatToInt(color.x);
+        output->g = ChannelFloatToInt(color.y);
+        output->b = ChannelFloatToInt(color.z);
+        output->a = 255;
+    }
+};
+
+struct ConvertRGBA32FtoRGBM
+{
+    inline void operator()(const Vector4* inPtr, uint32* outPtr)
+    {
+        RGBM::ConvertAndWrite(*inPtr, outPtr);
+    }
+};
+
+struct ConvertRGBA16FtoRGBM
+{
+    inline void operator()(const uint64* inPtr, uint32* outPtr)
+    {
+        uint16 r = static_cast<uint16>(((*inPtr) & 0x000000000000FFFF) >> 00);
+        uint16 g = static_cast<uint16>(((*inPtr) & 0x00000000FFFF0000) >> 16);
+        uint16 b = static_cast<uint16>(((*inPtr) & 0x0000FFFF00000000) >> 32);
+
+        Vector4 color;
+        color.x = Float16Compressor::Decompress(r);
+        color.y = Float16Compressor::Decompress(g);
+        color.z = Float16Compressor::Decompress(b);
+        const Vector4* input = reinterpret_cast<const Vector4*>(inPtr);
+        RGBM::ConvertAndWrite((*input), outPtr);
+    }
+};
+
+struct ConvertRGBA8888toRGBM
+{
+    inline void ConvertAndWrite(const Vector4& c, uint32* outPtr)
+    {
+        float r = c.x / static_cast<float>(RGBM_ENCODING_RANGE);
+        float g = c.y / static_cast<float>(RGBM_ENCODING_RANGE);
+        float b = c.z / static_cast<float>(RGBM_ENCODING_RANGE);
+        float m = std::max({ r, g, b, 1.0e-6f });
+        m = std::ceil(m * 255.0f) / 255.0f;
+
+        RGBA8888* output = reinterpret_cast<RGBA8888*>(outPtr);
+        output->r = ChannelFloatToInt(r / m);
+        output->g = ChannelFloatToInt(g / m);
+        output->b = ChannelFloatToInt(b / m);
+        output->a = ChannelFloatToInt(m);
+    }
+
+    inline void operator()(const uint32* inPtr, uint32* outPtr)
+    {
+        const RGBA8888* input = reinterpret_cast<const RGBA8888*>(inPtr);
+        Vector4 color(ChannelIntToFloat(input->r), ChannelIntToFloat(input->g), ChannelIntToFloat(input->b), 1.0f);
+        ConvertAndWrite(color, outPtr);
     }
 };
 
@@ -740,6 +819,26 @@ struct UnpackRGBA32F
         g = input->g;
         b = input->b;
         a = input->a;
+    }
+};
+
+struct PackRGBM
+{
+    inline void operator()(float32& r, float32& g, float32& b, float32& a, uint32* out)
+    {
+        RGBM::ConvertAndWrite(Vector4(r, g, b, a), out);
+    }
+};
+
+struct UnpackRGBM
+{
+    inline void operator()(const uint32* input, float32& r, float32& g, float32& b, float32& a)
+    {
+        Vector4 color = RGBM::Read(input);
+        r = color.x;
+        g = color.y;
+        b = color.z;
+        a = color.w;
     }
 };
 

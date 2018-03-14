@@ -27,6 +27,7 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/LandscapeSubdivision.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
+#include "Render/Shader/ShaderDescriptor.h"
 
 namespace DAVA
 {
@@ -525,23 +526,23 @@ bool SceneFileConverter::CompareMaterialLocalProps(NMaterial* material, NMateria
     return true;
 }
 
-NMaterial::eType SceneFileConverter::GetMaterialType(NMaterial* material)
+FXDescriptor::eType SceneFileConverter::GetMaterialType(NMaterial* material)
 {
     DVASSERT(material != nullptr);
 
-    static const UnorderedMap<FastName, NMaterial::eType> MATERIAL_TYPE_MAP = {
-        { NMaterialName::LANDSCAPE, NMaterial::TYPE_LANDSCAPE },
-        { NMaterialName::TILE_MASK, NMaterial::TYPE_LANDSCAPE },
+    static const UnorderedMap<FastName, FXDescriptor::eType> MATERIAL_TYPE_MAP = {
+        { NMaterialName::LANDSCAPE, FXDescriptor::TYPE_LANDSCAPE },
+        { NMaterialName::TILE_MASK, FXDescriptor::TYPE_LANDSCAPE },
 
-        { NMaterialName::FORWARD_PBS, NMaterial::TYPE_COMMON },
-        { NMaterialName::FORWARD_PBS_TRANSMITTANCE, NMaterial::TYPE_COMMON },
-        { NMaterialName::FORWARD_PBS_VERTEX_AO, NMaterial::TYPE_COMMON },
-        { NMaterialName::FORWARD_PBS_SPEEDTREE_TRANSMITTANCE, NMaterial::TYPE_COMMON },
-        { NMaterialName::FORWARD_PBS_MULTITEXTURED, NMaterial::TYPE_COMMON },
-        { NMaterialName::FORWARD_PBS_DETAIL_NORMAL, NMaterial::TYPE_COMMON },
+        { NMaterialName::FORWARD_PBS, FXDescriptor::TYPE_COMMON },
+        { NMaterialName::FORWARD_PBS_TRANSMITTANCE, FXDescriptor::TYPE_COMMON },
+        { NMaterialName::FORWARD_PBS_VERTEX_AO, FXDescriptor::TYPE_COMMON },
+        { NMaterialName::FORWARD_PBS_SPEEDTREE_TRANSMITTANCE, FXDescriptor::TYPE_COMMON },
+        { NMaterialName::FORWARD_PBS_MULTITEXTURED, FXDescriptor::TYPE_COMMON },
+        { NMaterialName::FORWARD_PBS_DETAIL_NORMAL, FXDescriptor::TYPE_COMMON },
     };
 
-    if (material->GetMaterialType() == NMaterial::TYPE_LEGACY)
+    if (material->GetMaterialType() == FXDescriptor::TYPE_LEGACY)
     {
         const FastName& fxName = material->GetEffectiveFXName();
         if (!fxName.empty())
@@ -551,10 +552,10 @@ NMaterial::eType SceneFileConverter::GetMaterialType(NMaterial* material)
                 return found->second;
 
             if (strstr(fxName.c_str(), "deferreddecal"))
-                return NMaterial::TYPE_DECAL;
+                return FXDescriptor::TYPE_DECAL;
 
             if (strstr(fxName.c_str(), "vt-decal"))
-                return NMaterial::TYPE_DECAL_VT;
+                return FXDescriptor::TYPE_DECAL_VT;
         }
     }
 

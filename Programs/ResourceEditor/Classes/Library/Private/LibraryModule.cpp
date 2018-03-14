@@ -176,7 +176,7 @@ void LibraryModule::OnDoubleClicked(const DAVA::FilePath& scenePathname)
     HidePreview();
 
     DAVA::GeneralSettings* settings = GetAccessor()->GetGlobalContext()->GetData<DAVA::GeneralSettings>();
-    if (scenePathname.IsEqualToExtension(".sc2"))
+    if (scenePathname.IsEqualToExtension(".sc2") || scenePathname.IsEqualToExtension(".prefab"))
     {
         OnEditSceneRequested(scenePathname);
     }

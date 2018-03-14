@@ -3,6 +3,8 @@
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/RhiUtils.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Render/2D/Systems/RenderSystem2D.h"
 #include "Engine/Engine.h"
 #include "Engine/Window.h"
 #include "Math/MathHelpers.h"
@@ -20,6 +22,113 @@ public:
     virtual void InitResources(const Size2i& newSize, const PostEffectRenderer::Settings& settings){};
     virtual void DestroyResources(){};
     virtual void InvalidateMaterials(){};
+};
+
+class TXAARenderer : public HelperRenderer
+{
+public:
+    TXAARenderer()
+    {
+        blitMaterial = new NMaterial();
+        blitMaterial->SetFXName(FastName("~res:/Materials2/PostEffect.material"));
+
+        blitMaterial->AddProperty(FastName("srcRectOffset"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
+        blitMaterial->AddProperty(FastName("srcRectSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
+        blitMaterial->AddProperty(FastName("srcTexSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
+        blitMaterial->AddFlag(FastName("TECH_COPY"), 1);
+
+        textureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER).dx;
+        invRtSize = 1.0f / static_cast<float32>(textureSize);
+
+        Texture::FBODescriptor config;
+        config.width = textureSize;
+        config.height = textureSize;
+        config.sampleCount = 1;
+        config.textureType = rhi::TEXTURE_TYPE_2D;
+        config.needDepth = false;
+        config.needPixelReadback = false;
+        config.ensurePowerOf2 = false;
+        config.format = PixelFormat::FORMAT_RGBA8888;
+        dst = Texture::CreateFBO(config);
+        src = Texture::CreateFBO(config);
+    }
+
+    void Render(rhi::Handle dest, rhi::Viewport viewport)
+    {
+        Texture* tmp = src;
+        src = dst;
+        dst = tmp;
+
+        QuadRenderer::Options options;
+        options.srcRect = Rect2f(0.f, 0.f, float32(viewport.width), float32(viewport.height));
+        options.dstRect = Rect2f(float32(viewport.x), float32(viewport.y), float32(viewport.width), float32(viewport.height));
+
+        float32 size = float32(textureSize);
+        options.srcTexSize = Vector2(size, size);
+        options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
+
+        options.srcTexture = src->handle;
+        options.dstTexture = dest;
+
+        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        options.material = blitMaterial;
+        options.renderPassPriority = -1;
+        options.renderPassName = "BlitTXAA";
+        quad.Render(options);
+
+        //options.srcRect = Rect2f(0.f, 0.f, size, size);
+        //options.dstRect = { 5.0f, 5.0f, 128.0f, 128.0f };
+        //quad.Render(options);
+
+        //options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
+        //options.dstRect = { 133.0f, 5.0f, 128.0f, 128.0f };
+        //quad.Render(options);
+
+        //options.srcRect = Rect2f(0.f, 0.f, 2048.0f, 2048.0f);
+        //options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
+        //options.dstRect = { 5.0f, 5.0f, 256.0f, 256.0f };
+        //quad.Render(options);
+    }
+
+    void ReleaseResources()
+    {
+        SafeRelease(dst);
+        SafeRelease(src);
+    }
+
+    ~TXAARenderer()
+    {
+        ReleaseResources();
+        SafeRelease(blitMaterial);
+    }
+
+    Texture* GetSrc() const
+    {
+        return src;
+    }
+
+    Texture* GetDst() const
+    {
+        return dst;
+    }
+
+    uint32 GetTextureSize() const
+    {
+        return textureSize;
+    }
+
+    float32 GetInvTextureSize() const
+    {
+        return invRtSize;
+    }
+
+private:
+    Texture* dst = nullptr;
+    Texture* src = nullptr;
+    uint32 textureSize = 0;
+    NMaterial* blitMaterial = nullptr;
+    QuadRenderer quad;
+    float32 invRtSize = -1.0f;
 };
 
 class HistogramRenderer : public HelperRenderer
@@ -210,6 +319,7 @@ PostEffectRenderer::PostEffectRenderer()
 {
     for (HelperRenderer*& r : renderers)
         r = nullptr;
+    renderers[RendererType::TXAA] = new TXAARenderer();
 
     // renderers[RendererType::HISTOGRAM] = new HistogramRenderer();
     // renderers[RendererType::BLOOM] = new BloomRenderer;
@@ -242,19 +352,23 @@ PostEffectRenderer::PostEffectRenderer()
         materials[i]->AddProperty(FastName("srcRectOffset"), defaultTexOffset.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
         materials[i]->AddProperty(FastName("srcRectSize"), defaultTexSize.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
         materials[i]->AddProperty(FastName("srcTexSize"), defaultTexSize.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        materials[i]->AddProperty(FastName("destTexSize"), defaultTexSize.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
+
+        materials[i]->AddProperty(FastName("destRectOffset"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
+        materials[i]->AddProperty(FastName("destRectSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
+        materials[i]->AddProperty(FastName("destTexSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
 
         float32 float1{ 1.f };
         Vector2 float2{ 0.f, 1.f };
         Vector3 float3{ 0.f, 1.f, 2.f };
+        materials[i]->AddFlag(FastName("ENABLE_TXAA"), 0);
         if (i == MaterialType::COMBINE)
         {
             materials[i]->AddProperty(FastName("lightMeterMaskWeight"), &float1, rhi::ShaderProp::Type::TYPE_FLOAT1);
             materials[i]->AddFlag(FastName("COMBINE_INPLACE"), 0);
-            materials[i]->AddFlag(FastName("ADVANCED_TONE_MAPPING"), 0);
             materials[i]->AddFlag(FastName("ENABLE_COLOR_GRADING"), 0);
             materials[i]->AddFlag(FastName("DISPLAY_HEAT_MAP"), 0);
             materials[i]->AddFlag(FastName("DISPLAY_LIGHT_METER_MASK"), 0);
+            materials[i]->AddProperty(FastName("texelOffset"), float2.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
         }
         else if ((i == MaterialType::LUMINANCE_HISTORY) || (i == MaterialType::LUMINANCE_COMBINED))
         {
@@ -331,6 +445,11 @@ PostEffectRenderer::PostEffectRenderer()
 PostEffectRenderer::~PostEffectRenderer()
 {
     DestroyResources(true);
+
+    for (NMaterial* mat : materials)
+    {
+        SafeRelease(mat);
+    }
 
     for (HelperRenderer* r : renderers)
         SafeDelete(r);
@@ -607,23 +726,48 @@ void PostEffectRenderer::GetHistogram()
 
 void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
 {
+    bool txaaEnabled =
+    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
+    (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
+
     BloomRenderer* bloomRenderer = static_cast<BloomRenderer*>(renderers[RendererType::BLOOM]);
     rhi::HTexture bloomTexture = (bloomRenderer != nullptr) ? bloomRenderer->blurChain[0].blur.handle : rhi::HTexture();
-    rhi::HTexture lumTexture = debugRenderer.disableAdaptation ? allRenderer.averageColorArray.back() : (mode == CombineMode::Separate ? allRenderer.luminanceHistory : allRenderer.luminanceTexture);
+    rhi::HTexture lumTexture = (mode == CombineMode::Separate) ? allRenderer.luminanceHistory : allRenderer.luminanceTexture;
+
+    TXAARenderer* txaa = static_cast<TXAARenderer*>(renderers[RendererType::TXAA]);
 
     NMaterial* material = materials[MaterialType::COMBINE];
+    material->SetPropertyValue(FastName("lightMeterMaskWeight"), &settings.lightMeterTableWeight);
     material->SetFlag(FastName("COMBINE_INPLACE"), static_cast<uint32>(mode));
-    material->SetFlag(FastName("ADVANCED_TONE_MAPPING"), settings.enableToneMapping ? 1 : 0);
     material->SetFlag(FastName("ENABLE_COLOR_GRADING"), settings.enableColorGrading ? 1 : 0);
     material->SetFlag(FastName("DISPLAY_HEAT_MAP"), settings.enableHeatMap ? 1 : 0);
     material->SetFlag(FastName("DISPLAY_LIGHT_METER_MASK"), debugRenderer.drawLightMeterMask ? 1 : 0);
-    material->SetPropertyValue(FastName("lightMeterMaskWeight"), &settings.lightMeterTableWeight);
+    material->SetFlag(FastName("ENABLE_TXAA"), txaaEnabled);
 
     QuadRenderer::Options options;
-    options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
-    options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
+    if (txaaEnabled && txaa != nullptr)
+    {
+        float32 offset = txaa->GetInvTextureSize();
+        Vector2 texelOffset(offset, offset);
+        material->SetPropertyValue(FastName("texelOffset"), texelOffset.data);
+
+        float32 dstSize = float32(txaa->GetTextureSize());
+        options.dstTexSize = Vector2(dstSize, dstSize);
+        options.srcRect = Rect2f(0.f, 0.f, float32(dstSize), float32(dstSize));
+
+        options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
+        options.dstRect = Rect2f(0.0f, 0.0f, float32(dstSize), float32(dstSize));
+        options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
+        options.dstTexture = txaa->GetDst()->handle;
+    }
+    else
+    {
+        options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
+        options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
+        options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
+        options.dstTexture = frameContext.destination;
+    }
     options.srcTexSize = Vector2(float32(hdrTargetSize.dx), float32(hdrTargetSize.dy));
-    options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
     options.samplerState = linearSamplerState;
 
     if (mode != CombineMode::Separate)
@@ -658,18 +802,26 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     }
     else
     {
-        uint32 textureIndex = 0;
         RhiUtils::FragmentTextureSet fragmentTextures;
-        fragmentTextures[textureIndex++] = hdrRenderer.hdrTarget;
-        if (settings.enableColorGrading)
-            fragmentTextures[textureIndex++] = settings.colorGradingTable->handle;
-        if (settings.enableHeatMap)
-            fragmentTextures[textureIndex++] = settings.heatmapTable->handle;
-        fragmentTextures[textureIndex++] = settings.lightMeterTable->handle;
+        {
+            uint32 textureIndex = 0;
+            fragmentTextures[textureIndex++] = hdrRenderer.hdrTarget;
 
+            if (txaaEnabled && (txaa != nullptr))
+            {
+                fragmentTextures[textureIndex++] = txaa->GetSrc()->handle;
+                fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
+            }
+
+            if (settings.enableColorGrading)
+                fragmentTextures[textureIndex++] = settings.colorGradingTable->handle;
+
+            if (settings.enableHeatMap)
+                fragmentTextures[textureIndex++] = settings.heatmapTable->handle;
+
+            fragmentTextures[textureIndex++] = settings.lightMeterTable->handle;
+        }
         options.renderPassName = "Combine";
-
-        options.dstTexture = frameContext.destination;
         options.loadAction = rhi::LoadAction::LOADACTION_CLEAR;
         options.material = material;
         options.textureSet = RhiUtils::TextureSet({ lumTexture }, fragmentTextures);
@@ -716,6 +868,8 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     {
         hdrRenderer.debugPickerIndex = 0;
     }
+    if (txaa != nullptr && txaaEnabled)
+        txaa->Render(frameContext.destination, frameContext.viewport);
 }
 
 void PostEffectRenderer::BuildDebugPickerLuminance()

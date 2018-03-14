@@ -98,5 +98,6 @@ const char* LANDSCAPE_PAGE_UPDATE = "LandscapePageUpdate";
 const char* LANDSCAPE_PAGE_UPDATE_VT_DECALS = "LandscapePageUpdateVTDecals";
 const char* DEBUG_DRAW = "DebugDraw";
 const char* RESCALE_PASS = "Rescale";
+const char* VELOCITY_PASS = "VelocityPass";
 };
 }; //ns DAVA

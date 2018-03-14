@@ -34,8 +34,10 @@
 
 #include <Base/Introspection.h>
 #include <Functional/Function.h>
+#include <Render/Material/FXAsset.h>
 #include <Render/Texture.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
+#include <Utils/StringFormat.h>
 
 #include <QAction>
 #include <QBoxLayout>
@@ -51,7 +53,6 @@
 #include <QScrollBar>
 #include <QTextStream>
 #include <QVariant>
-#include "Utils/StringFormat.h"
 
 namespace UIName
 {
@@ -462,7 +463,7 @@ private:
 
         // fill material group, only for material type
         const DAVA::InspMember* groupMember = info->Member(DAVA::FastName("qualityGroup"));
-        if ((nullptr != groupMember) && (globalMaterial != material) && (material->GetMaterialType() != DAVA::NMaterial::TYPE_GLOBAL))
+        if ((nullptr != groupMember) && (globalMaterial != material) && (material->GetMaterialType() != DAVA::FXDescriptor::TYPE_GLOBAL))
         {
             QtPropertyDataInspMember* group = new QtPropertyDataInspMember(UIName::Group, material, groupMember);
             baseRoot->MergeChild(std::unique_ptr<QtPropertyData>(group));
@@ -795,12 +796,12 @@ void MaterialEditor::initActions()
     addMaterialButton->setPopupMode(QToolButton::InstantPopup);
     QObject::connect(addMaterialButton, SIGNAL(triggered(QAction*)), this, SLOT(onAddMaterial(QAction*)));
 
-    for (DAVA::int32 t = 0; t < DAVA::int32(DAVA::NMaterial::TYPE_COUNT); ++t)
+    for (DAVA::int32 t = 0; t < DAVA::int32(DAVA::FXDescriptor::TYPE_COUNT); ++t)
     {
-        if (t == DAVA::int32(DAVA::NMaterial::TYPE_LEGACY))
+        if (t == DAVA::int32(DAVA::FXDescriptor::TYPE_LEGACY))
             continue;
 
-        QAction* action = new QAction(QString(GlobalEnumMap<DAVA::NMaterial::eType>::Instance()->ToString(t)), this);
+        QAction* action = new QAction(QString(GlobalEnumMap<DAVA::FXDescriptor::eType>::Instance()->ToString(t)), this);
         action->setData(t);
         addMaterialButton->addAction(action);
     }
@@ -1153,7 +1154,7 @@ void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
                     ui->templateButton->setIcon(DAVA::SharedIcon(":/QtIcons/cplus.png"));
                 }
 
-                const bool isTypeGlobal = material->GetMaterialType() == DAVA::NMaterial::TYPE_GLOBAL || (parentMaterial != nullptr && parentMaterial == globalMaterial);
+                const bool isTypeGlobal = material->GetMaterialType() == DAVA::FXDescriptor::TYPE_GLOBAL || (parentMaterial != nullptr && parentMaterial == globalMaterial);
 
                 ui->templateButton->setIcon(hasLocalFxName ? DAVA::SharedIcon(":/QtIcons/cminus.png") : DAVA::SharedIcon(":/QtIcons/cplus.png"));
                 ui->templateButton->setEnabled(!isTypeGlobal);
@@ -1569,7 +1570,7 @@ void MaterialEditor::removeInvalidTexture()
 
 void MaterialEditor::onAddMaterial(QAction* action)
 {
-    DAVA::NMaterial::eType type = DAVA::NMaterial::eType(action->data().toInt());
+    DAVA::FXDescriptor::eType type = DAVA::FXDescriptor::eType(action->data().toInt());
 
     DAVA::ScopedPtr<DAVA::NMaterial> material(new DAVA::NMaterial(type));
     material->SetMaterialName(DAVA::FastName("New material"));
@@ -1593,7 +1594,7 @@ void MaterialEditor::onRemoveMaterial()
     for (DAVA::uint32 i = 0; i < count; ++i)
     {
         DAVA::NMaterial* material = curMaterials[i];
-        DVASSERT(material->GetMaterialType() != DAVA::NMaterial::TYPE_LEGACY);
+        DVASSERT(material->GetMaterialType() != DAVA::FXDescriptor::TYPE_LEGACY);
         DVASSERT(material->GetChildren().size() == 0);
 
         activeScene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::MaterialRemoveCommand(material)));
@@ -1643,7 +1644,7 @@ void MaterialEditor::UpdateToolbar()
     {
         removeEnabled &= activeScene->GetSystem<DAVA::EditorMaterialSystem>()->GetMaterialOwners(material).empty(); //not assigned
         removeEnabled &= (material->GetChildren().size() == 0); //hasn't children
-        removeEnabled &= (material->GetMaterialType() != DAVA::NMaterial::TYPE_LEGACY); //non-legacy
+        removeEnabled &= (material->GetMaterialType() != DAVA::FXDescriptor::TYPE_LEGACY); //non-legacy
 
         if (!removeEnabled)
             break;

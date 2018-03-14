@@ -59,6 +59,7 @@ public slots:
     void sceneActivated(DAVA::SceneEditor2* scene);
     void sceneDeactivated(DAVA::SceneEditor2* scene);
     void OnCommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
+    void OnConvertToRGBM();
 
 private:
     void OnSelectionChanged(const DAVA::Any& selection);

@@ -4,6 +4,7 @@
 #include "Reflection/Reflection.h"
 #include "Entity/Component.h"
 #include "Render/Highlevel/MeshLODDescriptor.h"
+#include "Asset/AssetListener.h"
 
 namespace DAVA
 {
@@ -28,11 +29,13 @@ public:
 
 protected:
     void RebuildMesh();
+    void OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset);
 
     Vector<MeshLODDescriptor> meshLODDescriptors;
 
     //runtime
     Mesh* mesh = nullptr;
+    SimpleAssetListener listener;
 
     DAVA_VIRTUAL_REFLECTION(MeshComponent, Component);
 };

@@ -2,19 +2,23 @@
 #include "Render/RHI/rhi_ShaderCache.h"
 #include "Render/RHI/Common/dbg_StatSet.h"
 #include "Render/RHI/Common/rhi_Private.h"
-#include "Render/ShaderCache.h"
-#include "Render/Material/FXCache.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/PixelFormatDescriptor.h"
 #include "Render/Image/Image.h"
 #include "Render/Texture.h"
+#include "Render/Shader/ShaderAssetLoader.h"
+#include "Render/Material/FXAssetLoader.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/LockGuard.h"
 #include "Platform/DeviceInfo.h"
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerOverlay.h"
 #include "VisibilityQueryResults.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -24,6 +28,7 @@ bool initialized = false;
 rhi::Api api;
 int32 desiredFPS = 60;
 RenderFlow currentRenderFlow = RenderFlow::HDRDeferred;
+Set<RenderFlow> allowedRenderFlows;
 
 RenderOptions renderOptions;
 DynamicBindings dynamicBindings;
@@ -95,7 +100,10 @@ void Initialize(rhi::Api _api, rhi::InitParam& params)
 
     rhi::Initialize(api, params);
     rhi::ShaderCache::Initialize();
-    ShaderDescriptorCache::Initialize();
+
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    assetManager->RegisterAssetLoader(std::make_unique<ShaderAssetLoader>());
+    ShaderAssetListener::Instance()->Init();
 
     runtimeFlags.SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, 8);
     runtimeFlags.SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, MAX_SHADOW_CASCADES);
@@ -110,7 +118,7 @@ void Initialize(rhi::Api _api, rhi::InitParam& params)
     // ShaderDescriptorCache::GetShaderDescriptor(FastName("~res:/Materials2/Shaders/landscape/decoration-deferred"), HashMap<FastName, int32>(1));
     // ShaderDescriptorCache::GetShaderDescriptor(FastName("~res:/Materials2/Shaders/materials"), flags);
 
-    FXCache::Initialize();
+    assetManager->RegisterAssetLoader(std::make_unique<FXAssetLoader>());
     PixelFormatDescriptor::SetHardwareSupportedFormats();
 
     resetParams.width = params.width;
@@ -140,8 +148,7 @@ void Uninitialize()
     DVASSERT(RendererDetails::initialized);
 
     VisibilityQueryResults::Cleanup();
-    FXCache::Uninitialize();
-    ShaderDescriptorCache::Uninitialize();
+    ShaderAssetListener::Instance()->Shoutdown();
     rhi::ShaderCache::Unitialize();
     rhi::Uninitialize();
     RendererDetails::initialized = false;
@@ -191,16 +198,35 @@ bool IsVSyncEnabled()
 
 bool IsRenderFlowSupported(RenderFlow flow)
 {
-    bool supported = (flow == RenderFlow::HDRDeferred) || (flow == RenderFlow::HDRForward) || (flow == RenderFlow::LDRForward);
-    if (rhi::DeviceCaps().isFramebufferFetchSupported)
+    switch (flow)
     {
-        supported = supported || (flow == RenderFlow::TileBasedHDRDeferred) || (flow == RenderFlow::TileBasedHDRForward);
+    case RenderFlow::Undefined:
+        return false;
+
+    case RenderFlow::LDRForward:
+    case RenderFlow::HDRForward:
+        return true;
+
+    case RenderFlow::HDRDeferred:
+        return (rhi::DeviceCaps().maxSimultaneousRT >= 4);
+
+    case RenderFlow::TileBasedHDRForward:
+        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxSimultaneousRT >= 2);
+
+    case RenderFlow::TileBasedHDRDeferred:
+        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxSimultaneousRT >= 4);
+
+    default:
+        DVASSERT(0, "Invalid RenderFlow");
+        return false;
     }
-    return supported;
 }
 
 void SetRenderFlow(RenderFlow flow)
 {
+    // allow at least current render flow
+    RendererDetails::allowedRenderFlows.insert(flow);
+
     if (RendererDetails::currentRenderFlow == flow)
         return;
 
@@ -215,6 +241,16 @@ void SetRenderFlow(RenderFlow flow)
 RenderFlow GetCurrentRenderFlow()
 {
     return RendererDetails::currentRenderFlow;
+}
+
+bool IsRenderFlowAllowed(RenderFlow flow)
+{
+    return IsRenderFlowSupported(flow) && (RendererDetails::allowedRenderFlows.count(flow) > 0);
+}
+
+void SetAllowedRenderFlows(const Set<RenderFlow>& flows)
+{
+    RendererDetails::allowedRenderFlows = flows;
 }
 
 RenderOptions* GetOptions()

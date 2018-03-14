@@ -4,6 +4,10 @@
 #include "include/structures.h"
 #include "include/math.h"
 
+#if (ALBEDO_TINT_BLEND_MODE != 0)
+uniform sampler2D albedoTint;
+#endif
+
 fragment_in
 {
     float4 uv : TEXCOORD0;
@@ -40,6 +44,14 @@ fragment_out fp_main(fragment_in input)
     baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * input.vertexColor.xyz, input.vertexColor.a);
 #elif (VERTEX_COLOR == VERTEX_COLOR_SOFT_LIGHT)
     baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, input.vertexColor.xyz), input.vertexColor.a);
+#endif
+
+#if (ALBEDO_TINT_BLEND_MODE == 1)
+    float4 albedoTintSample = tex2D(albedoTint, input.uv.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoTintSample.xyz, albedoTintSample.w);
+#elif (ALBEDO_TINT_BLEND_MODE == 2)
+    float4 albedoTintSample = tex2D(albedoTint, input.uv.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoTintSample.xyz), albedoTintSample.w);
 #endif
 
     float4 normalMapSample = tex2D(normalmap, input.uv.xy);
@@ -82,6 +94,7 @@ fragment_out fp_main(fragment_in input)
 
     fragment_out output;
     output.color = float4(baseColorSample.xyz * baseColorScale.xyz, 1.0 /* UNUSED!!! UNUSED!!! UNUSED!!! */);
+
     output.normal = float4(n * 0.5 + 0.5, flags);
     output.params = float4(roughness, metallness, saturate((ambientOcclusion + aoBias) * aoScale), directionalLightStaticShadow);
     output.depth = input.projectedPosition.z / input.projectedPosition.w * ndcToZMapping.x + ndcToZMapping.y;

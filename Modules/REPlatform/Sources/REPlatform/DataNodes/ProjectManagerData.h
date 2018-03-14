@@ -5,6 +5,7 @@
 
 #include <FileSystem/FilePath.h>
 #include <Render/Material/NMaterial.h>
+#include <Render/Material/FXAsset.h>
 
 class ProjectManagerModule;
 namespace DAVA
@@ -17,7 +18,7 @@ struct MaterialTemplateInfo
     String name;
     String path;
     Vector<String> qualities;
-    NMaterial::eType materialType = NMaterial::TYPE_COUNT;
+    FXDescriptor::eType materialType = FXDescriptor::TYPE_COUNT;
 };
 
 class ProjectManagerData : public TArcDataNode

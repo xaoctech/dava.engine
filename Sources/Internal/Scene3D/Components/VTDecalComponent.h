@@ -40,8 +40,8 @@ public:
     void SetSegmentationDistance(float32 distance);
     float32 GetSegmentationDistance() const;
 
-    void SetSplineTiling(float32 tiling);
-    float32 GetSplineTiling() const;
+    void SetSplineTextureDistance(float32 tiling);
+    float32 GetSplineTextureDistance() const;
 
     void SetRenderObject(DecalRenderObject* renderObject);
     DecalRenderObject* GetRenderObject() const;
@@ -52,7 +52,7 @@ private:
     RefPtr<NMaterial> material;
 
     float32 splineSegmentationDistance = 0.5f; //2 slices per meter
-    float32 splineTiling = 1.0; //
+    float32 splineTextureDistance = 1.0; //
 
     DecalRenderObject* renderObject = nullptr;
 

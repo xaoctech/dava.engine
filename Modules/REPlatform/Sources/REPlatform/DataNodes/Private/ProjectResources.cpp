@@ -8,6 +8,7 @@
 #include <FileSystem/FileSystem.h>
 #include <FileSystem/YamlNode.h>
 #include <FileSystem/YamlParser.h>
+#include <Render/Material/FXAsset.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <Sound/SoundSystem.h>
 
@@ -65,9 +66,9 @@ void LoadMaterialTemplatesInfo(Vector<MaterialTemplateInfo>& templates)
                 {
                     const String& typeName = rootNode->GetItemKeyName(i);
                     DAVA::int32 typeValue = -1;
-                    if (GlobalEnumMap<DAVA::NMaterial::eType>::Instance()->ToValue(typeName.c_str(), typeValue))
+                    if (GlobalEnumMap<DAVA::FXDescriptor::eType>::Instance()->ToValue(typeName.c_str(), typeValue))
                     {
-                        DAVA::NMaterial::eType materialType = DAVA::NMaterial::eType(typeValue);
+                        DAVA::FXDescriptor::eType materialType = DAVA::FXDescriptor::eType(typeValue);
 
                         for (uint32 t = 0; t < typeNode->GetCount(); ++t)
                         {

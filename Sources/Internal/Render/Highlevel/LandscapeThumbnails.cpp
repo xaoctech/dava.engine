@@ -1,7 +1,7 @@
 #include "Render/Highlevel/LandscapeThumbnails.h"
 #include "Concurrency/LockGuard.h"
 #include "Render/Renderer.h"
-#include "Render/ShaderCache.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderPassNames.h"
 
@@ -155,7 +155,7 @@ RequestID Create(Landscape* landscape, LandscapeThumbnails::Callback handler)
 
     const Matrix4* identityMatrix = &Matrix4::IDENTITY;
     Vector3 nullVector(0.0f, 0.0f, 0.0f);
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, identityMatrix, reinterpret_cast<pointer_size>(identityMatrix));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEW, identityMatrix, reinterpret_cast<pointer_size>(identityMatrix));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJ, identityMatrix, reinterpret_cast<pointer_size>(identityMatrix));

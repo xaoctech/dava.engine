@@ -12,7 +12,7 @@ vertex_in
     float3 binormal : BINORMAL;
     float2 texCoord0 : TEXCOORD0;
 
-#if (USE_BAKED_LIGHTING)
+#if (USE_BAKED_LIGHTING || ALBEDO_TINT_BLEND_MODE != 0)
     float2 texCoord1 : TEXCOORD1;
 #endif
 
@@ -142,8 +142,10 @@ vertex_out vp_main(vertex_in input)
 
 #if (USE_BAKED_LIGHTING)
     output.uv = float4(texCoordScale * input.texCoord0, shadowaoUV.xy + shadowaoUV.zw * input.texCoord1);
+#elif (ALBEDO_TINT_BLEND_MODE)
+	output.uv = float4(texCoordScale * input.texCoord0, input.texCoord1 * uvScale + uvOffset);
 #else
-    output.uv = float4(texCoordScale * input.texCoord0, 0.0, 0.0);
+    output.uv = float4(input.texCoord0, 0.0, 0.0);
 #endif
 
 #if (VERTEX_BAKED_AO)

@@ -215,7 +215,7 @@ SceneFileV2::eError SceneEditor2::LoadScene(const FilePath& path)
 
 SceneFileV2::eError SceneEditor2::LoadAsPrefab(const FilePath& path)
 {
-    Asset<Prefab> prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(path), false);
+    Asset<Prefab> prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(path), AssetManager::SYNC);
 
     if (prefab != nullptr)
     {

@@ -6,7 +6,7 @@
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Lod/LodComponent.h>
 #include <Utils/StringFormat.h>
-#include <Render/Shader.h>
+#include <Render/Shader/ShaderDescriptor.h>
 #include <Render/Material/NMaterialNames.h>
 
 namespace DAEConverter

@@ -15,6 +15,7 @@
 #include <TArc/Core/Deprecated.h>
 #include <TArc/Utils/Utils.h>
 #include <Scene3D/Scene.h>
+#include <Render/Material/FXAsset.h>
 
 MaterialModel::MaterialModel(QObject* parent)
     : QStandardItemModel(parent)
@@ -273,7 +274,7 @@ void MaterialModel::Sync()
         {
             if (!it.second)
             {
-                bool dragEnabled = (it.first != globalMaterial) || (it.first->GetMaterialType() != DAVA::NMaterial::TYPE_GLOBAL);
+                bool dragEnabled = (it.first != globalMaterial) || (it.first->GetMaterialType() != DAVA::FXDescriptor::TYPE_GLOBAL);
                 bool dropEnabled = true;
 
                 MaterialItem* newItem = new MaterialItem(it.first, dropEnabled, dragEnabled);
@@ -499,7 +500,7 @@ bool MaterialModel::dropCanBeAccepted(const QMimeData* data, Qt::DropAction acti
         if (material == targetMaterial)
             return false;
 
-        if (targetMaterial->GetMaterialType() != DAVA::NMaterial::TYPE_GLOBAL &&
+        if (targetMaterial->GetMaterialType() != DAVA::FXDescriptor::TYPE_GLOBAL &&
             targetMaterial->GetMaterialType() != material->GetMaterialType())
         {
             return false;

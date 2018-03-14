@@ -73,7 +73,7 @@ struct RenderDeviceCaps
     uint32 maxAnisotropy = 1;
     uint32 maxSamples = 1;
     uint32 maxTextureSize = 2048;
-    uint32 maxSimultaneousRT = MAX_RENDER_TARGET_COUNT; //GFX_COMPLETE - now overriden only with dx9
+    uint32 maxSimultaneousRT = MAX_RENDER_TARGET_COUNT; // GFX_COMPLETE - now overriden only with dx9 and GL
     uint32 maxFPS = 60; // DEPRECATED. Will be removed, use DeviceManager::DisplayInfo::maxFps;
 
     char deviceDescription[128];
@@ -108,6 +108,9 @@ struct RenderDeviceCaps
 
         case AntialiasingType::MSAA_4X:
             return (maxSamples >= 4);
+
+        case AntialiasingType::TEMPORAL_REPROJECTION:
+            return true; /* does not depend on device caps */
 
         default:
             return true;

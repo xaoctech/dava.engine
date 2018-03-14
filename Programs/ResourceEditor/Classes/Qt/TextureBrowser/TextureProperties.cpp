@@ -224,7 +224,7 @@ void TextureProperties::ReloadEnumFormats()
     enumFormats.UnregistelAll();
 
     bool isSquareTexture = origImageSize.width() == origImageSize.height();
-    bool isFloatTexture = (curTextureDescriptor != nullptr) && DAVA::PixelFormatDescriptor::IsFloatPixelFormat(curTextureDescriptor->format);
+    bool isFloatTexture = (curTextureDescriptor != nullptr) && DAVA::PixelFormatDescriptor::IsHDRPixelFormat(curTextureDescriptor->format);
 
     const DAVA::Map<DAVA::PixelFormat, DAVA::ImageFormat>& availableFormats = DAVA::GPUFamilyDescriptor::GetAvailableFormatsForGpu(curGPU);
     DAVA::PixelFormat currentFormat = curTextureDescriptor->GetPixelFormatForGPU(curGPU);
@@ -247,12 +247,15 @@ void TextureProperties::ReloadEnumFormats()
                 continue;
 
             // allow converting only float <-> float formats
-            if (!DAVA::PixelFormatDescriptor::IsFloatPixelFormat(pxFormat))
+            if (!DAVA::PixelFormatDescriptor::IsHDRPixelFormat(pxFormat))
                 continue;
 
-            // disable non 32f formats for dxt compression (since external tool does not support conversion to 16F)
-            if ((pxFormat != DAVA::FORMAT_RGBA32F) && ((curGPU == DAVA::GPU_DX11) || (curGPU == DAVA::GPU_TEGRA) || (curGPU == DAVA::GPU_ADRENO)))
-                continue;
+            if ((curGPU == DAVA::GPU_DX11) || (curGPU == DAVA::GPU_TEGRA) || (curGPU == DAVA::GPU_ADRENO))
+            {
+                // disable certain formats for dxt compression (since external tool does not support conversion to 16F)
+                if ((pxFormat != DAVA::FORMAT_RGBA32F) && (pxFormat != DAVA::FORMAT_RGBM))
+                    continue;
+            }
         }
 
         enumFormats.Register(nextFormat.first, globalFormats->ToString(nextFormat.first));

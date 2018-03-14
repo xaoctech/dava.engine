@@ -111,6 +111,12 @@ void QuadRenderer::Render(const QuadRenderer::Options& options)
         if (options.material->HasLocalProperty(FastName("srcTexSize")))
             options.material->SetPropertyValue(FastName("srcTexSize"), options.srcTexSize.data);
 
+        if (options.material->HasLocalProperty(FastName("destRectOffset")))
+            options.material->SetPropertyValue(FastName("destRectOffset"), options.dstRect.GetPosition().data);
+
+        if (options.material->HasLocalProperty(FastName("destRectSize")))
+            options.material->SetPropertyValue(FastName("destRectSize"), options.dstRect.GetSize().data);
+
         if (options.material->HasLocalProperty(FastName("destTexSize")))
             options.material->SetPropertyValue(FastName("destTexSize"), options.dstTexSize.data);
 

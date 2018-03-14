@@ -3,7 +3,6 @@
 #include "Engine/Engine.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Texture.h"
-#include "Render/Shader.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/YamlNode.h"
 #include "Concurrency/LockGuard.h"

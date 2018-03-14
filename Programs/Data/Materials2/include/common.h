@@ -24,12 +24,6 @@
 #ensuredefined TECH_COPY 0
 #ensuredefined TECH_RESET_LUMINANCE_HISTORY 0
 #ensuredefined TECH_COMBINE_FORWARD_INPLACE 0
-#ensuredefined SPECULAR_CONVOLUTION 0
-#ensuredefined DIFFUSE_CONVOLUTION 0
-#ensuredefined DIFFUSE_SPHERICAL_HARMONICS 0
-#ensuredefined INTEGRATE_BRDF_LOOKUP 0
-#ensuredefined DOWNSAMPLING 0
-#ensuredefined CONVOLUTION_PASS 0
 #ensuredefined TRANSMITTANCE 0
 #ensuredefined IB_REFLECTIONS_PREPARE 0
 #ensuredefined WRITE_SHADOW_MAP 0
@@ -71,7 +65,6 @@
 #ensuredefined FOWARD_WITH_COMBINE 0
 #ensuredefined TECH_COMBINED_LUMINANCE 0
 
-#ensuredefined ADVANCED_TONE_MAPPING 0
 #ensuredefined ENABLE_COLOR_GRADING 0
 #ensuredefined DISPLAY_HEAT_MAP 0
 #ensuredefined DISPLAY_LIGHT_METER_MASK 0
@@ -97,14 +90,15 @@
 #ensuredefined VERTEX_BLEND_TEXTURES 0
 #ensuredefined VERTEX_BLEND_4_TEXTURES 0
 
-#ensuredefined ALBEDO_MODIFIER_BLEND_MODE 0
+#ensuredefined ALBEDO_TINT_BLEND_MODE 0
 
 #ensuredefined NORMAL_BLEND_MODE 0
 #ensuredefined USE_DETAIL_NORMAL_AO 0
 
+#ensuredefined ENABLE_TXAA 0
+
 #ensuredefined USE_DFG_APPROXIMATION 0
 
-#ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0

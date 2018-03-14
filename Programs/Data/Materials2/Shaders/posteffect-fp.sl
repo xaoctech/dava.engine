@@ -2,6 +2,7 @@
 #include "include/shading-options.h"
 #include "include/all-input.h"
 #include "include/math.h"
+#include "include/hdr.h"
 
 fragment_in
 {
@@ -9,8 +10,13 @@ fragment_in
     float4 texCoordTop : TEXCOORD1;
     float4 texCoordBottom : TEXCOORD2;
     float2 uniformTexCoords : TEXCOORD3;
+
 #if (TECH_COMBINE || TECH_BLOOM_THRESHOLD)
     float luminanceHistoryValue : COLOR0;
+#endif
+
+#if (ENABLE_TXAA)
+    float4 texClmp : TEXCOORD5;
 #endif
 };
 
@@ -35,6 +41,15 @@ fragment_out
 
 #if (COMBINE_INPLACE == 0)
 uniform sampler2D hdrImage;
+
+#if (ENABLE_TXAA)
+uniform sampler2D history;
+uniform sampler2D velocity;
+[material][a] property float2 destRectOffset;
+[material][a] property float2 destRectSize;
+[material][a] property float2 destTexSize;
+#endif
+
 #endif
 #if (ENABLE_COLOR_GRADING)
 uniform sampler2D colorGradingTable;
@@ -42,15 +57,16 @@ uniform sampler2D colorGradingTable;
 #if (DISPLAY_HEAT_MAP)
 uniform sampler2D heatmapTable;
 #endif
+
 uniform sampler2D lightMeterTable;
 
 #else
 
 uniform sampler2D tex0;
 
-    #if (TECH_INIT_LUMINANCE)
+#if (TECH_INIT_LUMINANCE)
 uniform sampler2D lightMeterTable;
-    #endif
+#endif
 
 #endif
 
@@ -75,6 +91,63 @@ uniform sampler2D tex1;
 
 #if TECH_COMBINE
 
+#if (ENABLE_TXAA)
+float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texClmp)
+{
+    float2 velocitySample = tex2D(velocity, texcoord).xy;
+
+    float2 historyUv = texcoord + velocitySample;
+    float3 historySample = tex2D(history, historyUv).xyz;
+    historySample = SRGBToLinear(historySample);
+
+    float3 s00 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, -texelOffset.x)).xyz;
+    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -texelOffset.x)).xyz;
+    float3 s02 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, -texelOffset.x)).xyz;
+    float3 s10 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, 0)).xyz;
+    float3 s11 = tex2D(hdrImage, texcoord + float2(0, 0)).xyz;
+    float3 s12 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, 0)).xyz;
+    float3 s20 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, +texelOffset.x)).xyz;
+    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +texelOffset.x)).xyz;
+    float3 s22 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, +texelOffset.x)).xyz;
+
+    s00 = HDRtoLDR(s00, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s01 = HDRtoLDR(s01, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s02 = HDRtoLDR(s02, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s10 = HDRtoLDR(s10, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s11 = HDRtoLDR(s11, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s12 = HDRtoLDR(s12, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s20 = HDRtoLDR(s20, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s21 = HDRtoLDR(s21, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s22 = HDRtoLDR(s22, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+
+    float3 minSample = min(s00, min(min(min(s01, s02), min(s10, s11)), min(min(s12, s20), min(s21, s22))));
+    float3 maxSample = max(s00, max(max(max(s01, s02), max(s10, s11)), max(max(s12, s20), max(s21, s22))));
+    float3 average = 1.0 / 9.0 * (s00 + s01 + s02 + s10 + s11 + s12 + s20 + s21 + s22);
+    minSample = RGBToYCoCg(minSample);
+    maxSample = RGBToYCoCg(maxSample);
+    historySample = RGBToYCoCg(historySample);
+    historySample = clamp(historySample, minSample, maxSample);
+    float3 currentSample = RGBToYCoCg(s11);
+
+    float weightMin = 0.15;
+    float weightMax = 0.1;
+    float lumDifference = abs(currentSample.y - historySample.y) / max(currentSample.y, max(historySample.y, 0.2));
+    float weight = 1.0 - lumDifference;
+    float weightSquared = weight * weight;
+    weight = lerp(weightMin, weightMax, weightSquared);
+
+    if (!all(equal(clamp(historyUv, texClmp.xy, texClmp.zw), historyUv)))
+        weight = 1.0f;
+
+    float3 temporal = lerp(historySample, currentSample, weight);
+
+    float3 temporalToRGB = YCoCgToRGB(temporal);
+
+    temporalToRGB = LDRtoHDR(temporalToRGB, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    return temporalToRGB;
+}
+#endif // ENABLE_TXAA
+
 fragment_out fp_main(fragment_in input)
 {
 #if (COMBINE_INPLACE == 1)
@@ -82,9 +155,9 @@ fragment_out fp_main(fragment_in input)
 #elif (COMBINE_INPLACE == 2)
     float3 hdr = FramebufferFetch(4).xyz;
 #else
-
     float3 hdr = tex2D(hdrImage, input.varTexCoord0).xyz;
-    #if (DISPLAY_HEAT_MAP)
+
+#if (DISPLAY_HEAT_MAP)
     {
         float2 ts = 1.0 / viewportSize;
         hdr += tex2D(hdrImage, input.varTexCoord0 + float2(-ts.x, -ts.y)).xyz;
@@ -96,42 +169,22 @@ fragment_out fp_main(fragment_in input)
         hdr += tex2D(hdrImage, input.varTexCoord0 + float2(0.0, +ts.y)).xyz;
         hdr += tex2D(hdrImage, input.varTexCoord0 + float2(+ts.x, +ts.y)).xyz;
         hdr *= 1.0 / 9.0;
-    } 
-    #endif
+    }
+    float3 ldr = HDRtoLDR(hdr, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, input.luminanceHistoryValue);
+    ldr = LinearTosRGB(ldr);
+    float ldrLuminance = dot(ldr, float3(0.2126, 0.7152, 0.0722));
+#endif
+
 #endif
 
     float3 originalColor = hdr;
 
-    float gain = input.luminanceHistoryValue / cameraTargetLuminance;
-    float lumMin = gain * cameraDynamicRange.x;
-    float lumMax = gain * cameraDynamicRange.y;
-    hdr = (hdr - lumMin) / (lumMax - lumMin);
-
-#if (DISPLAY_HEAT_MAP)
-    float hdrlum = dot(hdr, float3(0.2126, 0.7152, 0.0722));
-    float4 heatSample = tex2D(heatmapTable, float2(hdrlum, 0.5));
+#if ENABLE_TXAA
+    hdr = ApplyTemporalAA(input.varTexCoord0, input.luminanceHistoryValue, input.texClmp);
 #endif
 
-    {
-    #if (ADVANCED_TONE_MAPPING)
-        hdr = LinearTosRGB(hdr);
-        float3x3 ACESInputMat = float3x3(float3(0.59719, 0.07600, 0.02840), float3(0.35458, 0.90834, 0.13383), float3(0.04823, 0.01566, 0.83777));
-        float3x3 ACESOutputMat = float3x3(float3(1.60475, -0.10208, -0.00327), float3(-0.53108, 1.10813, -0.07276), float3(-0.07367, -0.00605, 1.07602));
-        float a = 0.0245786;
-        float b = 0.000090537;
-        float c = 0.983729;
-        float d = 0.4329510;
-        float e = 0.238081;
-        hdr = mul(hdr, ACESInputMat);
-        hdr = (hdr * (hdr + a) - b) / (hdr * (c * hdr + d) + e);
-        hdr = mul(hdr, ACESOutputMat);
-    #else
-        hdr = 1.0 - exp(-hdr);
-        hdr = LinearTosRGB(hdr);
-    #endif
-
-        hdr = saturate(hdr);
-    }
+    hdr = HDRtoLDR(hdr, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, input.luminanceHistoryValue);
+    hdr = LinearTosRGB(hdr);
 
 #if ((VIEW_MODE & VIEW_BY_COMPONENT_BIT) || (VIEW_MODE & VIEW_TEXTURE_MIP_LEVEL_BIT))
     {
@@ -159,7 +212,7 @@ fragment_out fp_main(fragment_in input)
     fragment_out output;
 
 #if (DISPLAY_HEAT_MAP)
-    output.color = heatSample;
+    output.color = tex2D(heatmapTable, float2(ldrLuminance, 0.5));
 #else
     output.color = float4(hdr, 1.0);
 #endif
@@ -380,6 +433,6 @@ fragment_out fp_main(fragment_in input)
 
 #else
 
-    #error Invalid technique
+#error Invalid technique
 
 #endif

@@ -2,6 +2,7 @@
 
 #include "REPlatform/DataNodes/SelectableGroup.h"
 #include "REPlatform/Scene/Systems/EditorSceneSystem.h"
+#include "REPlatform/Scene/Systems/SystemDelegates.h"
 
 #include <Entity/SceneSystem.h>
 #include <Render/RenderHelper.h>
@@ -12,7 +13,9 @@ namespace DAVA
 {
 class SplineEditorDrawComponent;
 
-class SplineEditorSystem : public SceneSystem, public EditorSceneSystem
+class SplineEditorSystem : public SceneSystem,
+                           public EditorSceneSystem,
+                           public SelectionSystemDelegate
 {
 public:
     SplineEditorSystem(Scene* scene);
@@ -30,9 +33,15 @@ public:
     // EditorSceneSystem
     void PrepareForRemove() override;
 
+    // SelectionSystemDelegate
+    bool AllowAddToSelection(const Selectable& itemToAdd) override;
+
     const UnorderedSet<SplineEditorDrawComponent*>& GetSplineDrawComponents() const;
     SplineEditorDrawComponent* GetSplineDrawByPoint(SplineComponent::SplinePoint* point) const;
     SplineComponent* GetSplineByPoint(SplineComponent::SplinePoint* point) const;
+
+    void AddPointByShiftAndClick();
+    void ChangePointValueByWheel(UIEvent* event, bool shiftPressed);
 
 private:
     void Draw() override;

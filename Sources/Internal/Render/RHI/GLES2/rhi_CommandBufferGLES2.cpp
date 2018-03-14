@@ -1502,6 +1502,14 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
         }
         break;
 
+        case GLCommand::INVOKE_FUNCTION:
+        {
+            GLCommand::Function* func = reinterpret_cast<GLCommand::Function*>(arg[0]);
+            void* context = reinterpret_cast<void*>(arg[1]);
+            (*func)(context);
+        }
+        break;
+
         case GLCommand::GEN_BUFFERS:
         {
             GL_CALL(glGenBuffers(GLsizei(arg[0]), reinterpret_cast<GLuint*>(arg[1])));

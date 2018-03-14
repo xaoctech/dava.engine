@@ -8,6 +8,12 @@
 #include "include/atmosphere.h"
 #include "include/resolve.h"
 
+#ensuredefined TEST_DEFINE 0
+
+#if (ALBEDO_TINT_BLEND_MODE != 0)
+uniform sampler2D albedoTint;
+#endif
+
 fragment_out
 {
 #if (FOWARD_WITH_COMBINE)
@@ -62,6 +68,14 @@ fragment_out fp_main(fragment_in input)
     baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, input.vertexColor.xyz), input.vertexColor.a);
 #endif
 
+#if (ALBEDO_TINT_BLEND_MODE == 1)
+    float4 albedoTintSample = tex2D(albedoTint, input.varTexCoord.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoTintSample.xyz, albedoTintSample.w);
+#elif (ALBEDO_TINT_BLEND_MODE == 2)
+    float4 albedoTintSample = tex2D(albedoTint, input.varTexCoord.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoTintSample.xyz), albedoTintSample.w);
+#endif
+
     float bakedAo = max(albedoMinAOValue, baseColorSample.w);
     float4 normalMapSample = tex2D(normalmap, input.varTexCoord.xy);
 
@@ -77,5 +91,8 @@ fragment_out fp_main(fragment_in input)
 
 #endif
 
+#if (TEST_DEFINE == 1)
+    output.color = float4(1.0, 0.0, 0.0, 1.0);
+#endif
     return output;
 }

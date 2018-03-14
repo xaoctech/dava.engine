@@ -1,6 +1,6 @@
 #include "REPlatform/Scene/Private/Systems/VisibilityCheckRenderer.h"
 
-#include <Render/ShaderCache.h>
+#include <Render/Shader/ShaderAssetLoader.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <UI/UIControlSystem.h>
@@ -201,7 +201,7 @@ bool VisibilityCheckRenderer::ShouldRenderBatch(RenderBatch* batch)
 
 void VisibilityCheckRenderer::CollectRenderBatches(RenderSystem* renderSystem, Camera* fromCamera, Vector<RenderBatch*>& batches)
 {
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     fromCamera->SetupDynamicParameters(false, false);
 
     RenderHierarchy::ClipResult renderObjects;
@@ -312,7 +312,7 @@ void VisibilityCheckRenderer::RenderVisibilityToTexture(RenderSystem* renderSyst
     visibilityConfig.colorBuffer[0].texture = renderTarget->handle;
     visibilityConfig.depthStencilBuffer.texture = renderTarget->handleDepthStencil;
 
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     fromCamera->SetupDynamicParameters(false, false);
 
     RenderPassScope pass(visibilityConfig);

@@ -54,15 +54,17 @@ UnorderedMap<PixelFormat, PixelFormatDescriptor, std::hash<uint8>> PixelFormatDe
     { FORMAT_BGR888, { FORMAT_BGR888, FastName("BGR888"), 24, TEXTURE_FORMAT_INVALID, false, false, Size2i(1, 1) } },
 #endif
 
-    { FORMAT_R16F, { FORMAT_R16F, FastName("R16F"), 16, rhi::TextureFormat::TEXTURE_FORMAT_R16F, false, false, Size2i(1, 1) } },
-    { FORMAT_RG16F, { FORMAT_RG16F, FastName("RG16F"), 32, rhi::TextureFormat::TEXTURE_FORMAT_RG16F, false, false, Size2i(1, 1) } },
-    { FORMAT_RGBA16F, { FORMAT_RGBA16F, FastName("RGBA16F"), 64, rhi::TextureFormat::TEXTURE_FORMAT_RGBA16F, false, false, Size2i(1, 1) } },
+    { FORMAT_R16F, { FORMAT_R16F, FastName("R16F"), 16, rhi::TEXTURE_FORMAT_R16F, false, false, Size2i(1, 1) } },
+    { FORMAT_RG16F, { FORMAT_RG16F, FastName("RG16F"), 32, rhi::TEXTURE_FORMAT_RG16F, false, false, Size2i(1, 1) } },
+    { FORMAT_RGBA16F, { FORMAT_RGBA16F, FastName("RGBA16F"), 64, rhi::TEXTURE_FORMAT_RGBA16F, false, false, Size2i(1, 1) } },
 
-    { FORMAT_R32F, { FORMAT_R32F, FastName("R32F"), 32, rhi::TextureFormat::TEXTURE_FORMAT_R32F, false, false, Size2i(1, 1) } },
-    { FORMAT_RG32F, { FORMAT_RG32F, FastName("RG32F"), 64, rhi::TextureFormat::TEXTURE_FORMAT_RG32F, false, false, Size2i(1, 1) } },
-    { FORMAT_RGBA32F, { FORMAT_RGBA32F, FastName("RGBA32F"), 128, rhi::TextureFormat::TEXTURE_FORMAT_RGBA32F, false, false, Size2i(1, 1) } },
+    { FORMAT_R32F, { FORMAT_R32F, FastName("R32F"), 32, rhi::TEXTURE_FORMAT_R32F, false, false, Size2i(1, 1) } },
+    { FORMAT_RG32F, { FORMAT_RG32F, FastName("RG32F"), 64, rhi::TEXTURE_FORMAT_RG32F, false, false, Size2i(1, 1) } },
+    { FORMAT_RGBA32F, { FORMAT_RGBA32F, FastName("RGBA32F"), 128, rhi::TEXTURE_FORMAT_RGBA32F, false, false, Size2i(1, 1) } },
 
-    { FORMAT_R11G11B10F, { FORMAT_R11G11B10F, FastName("R11G11B10F"), 32, rhi::TextureFormat::TEXTURE_FORMAT_R11G11B10F, false, false, Size2i(1, 1) } },
+    { FORMAT_R11G11B10F, { FORMAT_R11G11B10F, FastName("R11G11B10F"), 32, rhi::TEXTURE_FORMAT_R11G11B10F, false, false, Size2i(1, 1) } },
+
+    { FORMAT_RGBM, { FORMAT_RGBM, FastName("RGBM"), 32, rhi::TEXTURE_FORMAT_R8G8B8A8, false, false, Size2i(1, 1) } },
 };
 
 const PixelFormatDescriptor& PixelFormatDescriptor::GetPixelFormatDescriptor(const PixelFormat format)
@@ -119,15 +121,21 @@ bool PixelFormatDescriptor::IsFormatSizeByteDivisible(PixelFormat format)
     return (descriptor.pixelSize % 8 == 0 && descriptor.blockSize == Size2i(1, 1));
 }
 
-bool PixelFormatDescriptor::IsFloatPixelFormat(PixelFormat fmt)
+bool PixelFormatDescriptor::IsHDRPixelFormat(PixelFormat fmt)
 {
-    return (fmt == PixelFormat::FORMAT_R16F) || (fmt == PixelFormat::FORMAT_R32F) ||
+    return IsHDRPackedPixelFormat(fmt) ||
+    (fmt == PixelFormat::FORMAT_R16F) || (fmt == PixelFormat::FORMAT_R32F) ||
     (fmt == PixelFormat::FORMAT_RG16F) || (fmt == PixelFormat::FORMAT_RG32F) ||
     (fmt == PixelFormat::FORMAT_RGB16F) || (fmt == PixelFormat::FORMAT_RGB32F) ||
     (fmt == PixelFormat::FORMAT_RGBA16F) || (fmt == PixelFormat::FORMAT_RGBA32F);
 }
 
-void PixelFormatDescriptor::GetFloatFormatInfo(uint32 width, PixelFormat format, uint32& channels, uint32& channelSize, uint32& pitch)
+bool PixelFormatDescriptor::IsHDRPackedPixelFormat(PixelFormat fmt)
+{
+    return (fmt == PixelFormat::FORMAT_R11G11B10F) || (fmt == PixelFormat::FORMAT_RGBM);
+}
+
+void PixelFormatDescriptor::GetHDRFormatInfo(uint32 width, PixelFormat format, uint32& channels, uint32& channelSize, uint32& pitch)
 {
     static const DAVA::Map<DAVA::PixelFormat, std::pair<uint32, uint32>> mapping =
     {
@@ -139,9 +147,10 @@ void PixelFormatDescriptor::GetFloatFormatInfo(uint32 width, PixelFormat format,
       { FORMAT_RGB32F, { 3, 4 } },
       { FORMAT_RGBA16F, { 4, 2 } },
       { FORMAT_RGBA32F, { 4, 4 } },
+      { FORMAT_RGBM, { 4, 1 } },
     };
     auto i = mapping.find(format);
-    DVASSERT(i != mapping.end(), "Unsupported input format supplied to GetFloatFormatInfo");
+    DVASSERT(i != mapping.end(), "Unsupported input format supplied to GetHDRFormatInfo");
     channels = i->second.first;
     channelSize = i->second.second;
     pitch = ImageUtils::GetPitchInBytes(width, format);

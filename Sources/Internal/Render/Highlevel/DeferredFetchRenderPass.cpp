@@ -1,5 +1,4 @@
 #include "HDRDeferredFetchPass.h"
-#include "Render/ShaderCache.h"
 #include "Render/Highlevel/PostEffectRenderer.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/Highlevel/ReflectionRenderer.h"

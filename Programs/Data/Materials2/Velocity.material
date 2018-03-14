@@ -1,0 +1,4 @@
+RenderTechnique:
+    Passes:
+        VelocityPass:
+            Shader: "~res:/Materials2/Shaders/velocity"

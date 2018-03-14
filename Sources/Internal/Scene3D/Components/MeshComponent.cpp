@@ -20,16 +20,36 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MeshComponent)
 MeshComponent::MeshComponent()
 {
     mesh = new Mesh();
+    listener.onReloaded = MakeFunction(this, &MeshComponent::OnAssetReloaded);
 }
 
 MeshComponent::~MeshComponent()
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    assetManager->UnregisterListener(&listener);
     SafeRelease(mesh);
 }
 
 void MeshComponent::SetMeshDescriptor(const Vector<MeshLODDescriptor>& desc)
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        assetManager->UnregisterListener(descr.geometryAsset, &listener);
+        for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        {
+            assetManager->UnregisterListener(batchDescr.materialAsset, &listener);
+        }
+    }
     meshLODDescriptors = desc;
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        assetManager->RegisterListener(descr.geometryAsset, &listener);
+        for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        {
+            assetManager->RegisterListener(batchDescr.materialAsset, &listener);
+        }
+    }
     RebuildMesh();
 }
 
@@ -82,4 +102,28 @@ void MeshComponent::RebuildMesh()
         mesh->RemoveFlag(RenderObject::eFlags::CUSTOM_PREPARE_TO_RENDER);
 }
 
+void MeshComponent::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset)
+{
+    Asset<Material> material = std::dynamic_pointer_cast<Material>(reloadedAsset);
+    Asset<Geometry> geometry = std::dynamic_pointer_cast<Geometry>(reloadedAsset);
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        if (geometry != nullptr && descr.geometryAsset == originalAsset)
+        {
+            descr.geometryAsset = geometry;
+        }
+
+        if (material != nullptr)
+        {
+            for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+            {
+                if (batchDescr.materialAsset == originalAsset)
+                {
+                    batchDescr.materialAsset = material;
+                }
+            }
+        }
+    }
+    RebuildMesh();
+}
 }

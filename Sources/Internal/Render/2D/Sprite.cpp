@@ -12,7 +12,6 @@
 #include "Render/Image/ImageConvert.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/RenderHelper.h"
-#include "Render/Shader.h"
 #include "Render/TextureDescriptor.h"
 #include "Time/SystemTimer.h"
 #include "UI/UIControlSystem.h"

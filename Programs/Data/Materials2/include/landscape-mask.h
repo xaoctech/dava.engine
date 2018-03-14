@@ -1,4 +1,5 @@
 [material][a] property float4 landCursorPosition = float4(0.0, 0.0, 1.0, 1.0);
+[material][a] property float3 landCursorColor = float4(0.5, 0.5, 1.0);
 [material][a] property float2 cursorRotation = 0.0;
 [material][a] property float invertFactor = 0.0;
 

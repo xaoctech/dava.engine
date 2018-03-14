@@ -1,6 +1,6 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/NMaterialStateDynamicTexturesInsp.h"
-#include "Render/Material/FXCache.h"
+#include "Render/Material/FXAsset.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 namespace DAVA
@@ -20,17 +20,17 @@ NMaterialStateDynamicTexturesInsp::~NMaterialStateDynamicTexturesInsp()
 
 void NMaterialStateDynamicTexturesInsp::FindMaterialTexturesRecursive(NMaterial* material, Set<FastName>& ret, bool parents) const
 {
-    auto fxName = material->GetEffectiveFXName();
-    if (fxName.IsValid())
+    Asset<FXAsset> asset = material->GetFXAsset();
+    if (asset != nullptr)
     {
         UnorderedMap<FastName, int32> flags;
         material->CollectMaterialFlags(flags);
 
         // shader data
-        FXDescriptor fxDescriptor = FXCache::GetFXDescriptor(fxName, flags, QualitySettingsSystem::Instance()->GetCurMaterialQuality(material->qualityGroup));
-        for (auto& descriptor : fxDescriptor.renderPassDescriptors)
+        const Vector<RenderPassDescriptor>& renderPassDescriptors = asset->GetPassDescriptors();
+        for (auto& descriptor : renderPassDescriptors)
         {
-            if (!descriptor.shader->IsValid())
+            if ((descriptor.shader == nullptr) || !descriptor.shader->IsValid())
                 continue;
 
             const rhi::ShaderSamplerList& fragmentSamplers = descriptor.shader->GetFragmentSamplerList();

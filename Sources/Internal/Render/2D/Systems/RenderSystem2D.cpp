@@ -9,7 +9,7 @@
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Renderer.h"
-#include "Render/ShaderCache.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/VisibilityQueryResults.h"
 
 #include "Time/SystemTimer.h"
@@ -142,6 +142,11 @@ RenderSystem2D::~RenderSystem2D()
     SafeRelease(DEFAULT_2D_TEXTURE_GRAYSCALE_MATERIAL);
     SafeRelease(DEFAULT_2D_FILL_ALPHA_MATERIAL);
     SafeRelease(DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL);
+
+    for (int32 i = 0; i < GRADIENT_BLEND_MODE_COUNT; i++)
+    {
+        SafeRelease(DEFAULT_COMPOSIT_MATERIAL[i]);
+    }
 }
 
 void RenderSystem2D::BeginFrame()
@@ -272,7 +277,7 @@ void RenderSystem2D::BeginRenderTargetPass(const RenderTargetPassDescriptor& des
     rhi::BeginRenderPass(passTargetHandle);
     rhi::BeginPacketList(currentPacketListHandle);
 
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     Setup2DMatrices();
 }
 
@@ -288,7 +293,7 @@ void RenderSystem2D::EndRenderTargetPass()
     currentPacketListHandle = packetList2DHandle;
 
     UpdateVirtualToPhysicalMatrix(virtualToPhysicalTransformEnabledDefaultValue);
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     Setup2DMatrices();
 }
 

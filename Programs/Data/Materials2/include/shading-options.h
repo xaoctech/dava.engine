@@ -19,8 +19,9 @@
 
 #ensuredefined ENABLE_ATMOSPHERE_SCATTERING 1
 
-#ensuredefined RGB_ENCODING_MAX_RANGE 2048.0
 #ensuredefined ROUGHNESS_ENCODING_MAX_RANGE 4.0
+
+#ensuredefined RGBM_ENCODING_RANGE 5.0
 
 /*
  * View mode manipulation

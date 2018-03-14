@@ -17,6 +17,10 @@ vertex_out
 #if (TECH_COMBINE || TECH_BLOOM_THRESHOLD)
     float luminanceHistoryValue : COLOR0;
 #endif
+
+#if (ENABLE_TXAA)
+    float4 texClmp : TEXCOORD4;
+#endif
 };
 
 #if (TECH_COMBINE || TECH_BLOOM_THRESHOLD)
@@ -26,6 +30,9 @@ uniform sampler2D luminanceHistoryTexture;
 [material][a] property float2 srcRectOffset;
 [material][a] property float2 srcRectSize;
 [material][a] property float2 srcTexSize;
+[material][a] property float2 destRectOffset;
+[material][a] property float2 destRectSize;
+[material][a] property float2 destTexSize;
 
 vertex_out vp_main(vertex_in input)
 {
@@ -34,6 +41,14 @@ vertex_out vp_main(vertex_in input)
     float2 texPos = input.position.xy * ndcToUvMapping.xy + ndcToUvMapping.zw;
     output.uniformTexCoords = texPos;
     output.varTexCoord0 = (texPos * srcRectSize + srcRectOffset + centerPixelMapping) / srcTexSize;
+
+#if (ENABLE_TXAA)
+    float destTexSizeInv = 1.0f / destTexSize;
+    float centerPixelMappingMul = centerPixelMapping * destTexSizeInv;
+    output.texClmp.xy = destRectOffset * destTexSizeInv + centerPixelMappingMul;
+    output.texClmp.zw = (destRectSize + destRectOffset) * destTexSizeInv + centerPixelMappingMul;
+#endif
+
     output.position = float4(input.position.xy, 1.0, 1.0);
 
     float2 offset = 0.5 / srcTexSize;

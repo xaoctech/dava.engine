@@ -392,6 +392,9 @@ void EngineBackend::OnEngineCleanup()
     if (ImGui::IsInitialized())
         ImGui::Uninitialize();
 
+    if (Renderer::IsInitialized())
+        Renderer::Uninitialize();
+
     DestroySubsystems();
 
     for (Window* w : dyingWindows)
@@ -400,9 +403,6 @@ void EngineBackend::OnEngineCleanup()
     }
     dyingWindows.clear();
     primaryWindow = nullptr;
-
-    if (Renderer::IsInitialized())
-        Renderer::Uninitialize();
 
     SafeDelete(context);
     SafeDelete(dispatcher);

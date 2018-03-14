@@ -23,6 +23,7 @@
 #include <libproc.h>
 #include <libgen.h>
 #include <unistd.h>
+#include <CoreServices/CoreServices.h>
 #elif defined(__DAVAENGINE_IPHONE__)
 #include <copyfile.h>
 #include <libgen.h>
@@ -414,6 +415,56 @@ FilePath FileSystem::GetTempDirectoryPath() const
         const char* tmp = std::getenv(envName);
         if (tmp != nullptr)
         {
+#if defined(__DAVAENGINE_MACOS__)
+            // On macos TEMP path by default contain a symlink as a part of path.
+            // This code try to resolve it.
+            CFStringRef path = CFStringCreateWithFileSystemRepresentation(0, tmp);
+            if (path != nullptr)
+            {
+                SCOPE_EXIT
+                {
+                    CFRelease(path);
+                };
+
+                CFURLRef url = CFURLCreateWithFileSystemPath(0, path, kCFURLPOSIXPathStyle, TRUE);
+                if (url != nullptr)
+                {
+                    SCOPE_EXIT
+                    {
+                        CFRelease(url);
+                    };
+
+                    CFDataRef bookmarkData = CFURLCreateBookmarkData(0, url, kCFURLBookmarkCreationSuitableForBookmarkFile, NULL, NULL, NULL);
+                    if (bookmarkData != nullptr)
+                    {
+                        SCOPE_EXIT
+                        {
+                            CFRelease(bookmarkData);
+                        };
+
+                        CFURLBookmarkResolutionOptions options = kCFBookmarkResolutionWithoutUIMask | kCFBookmarkResolutionWithoutMountingMask;
+                        CFURLRef resolvedUrl = CFURLCreateByResolvingBookmarkData(0, bookmarkData, options, NULL, NULL, NULL, NULL);
+                        if (resolvedUrl != nullptr)
+                        {
+                            CFStringRef cfstr(CFURLCopyFileSystemPath(resolvedUrl, kCFURLPOSIXPathStyle));
+                            SCOPE_EXIT
+                            {
+                                CFRelease(resolvedUrl);
+                                CFRelease(cfstr);
+                            };
+
+                            CFIndex bufLen = CFStringGetMaximumSizeForEncoding(CFStringGetLength(cfstr), kCFStringEncodingUTF8) + 1;
+
+                            Vector<char> buffer;
+                            buffer.resize(bufLen, 0);
+                            CFStringGetCString(cfstr, buffer.data(), bufLen, kCFStringEncodingUTF8);
+
+                            return FilePath(buffer.data());
+                        }
+                    }
+                }
+            }
+#endif
             return FilePath(tmp);
         }
     }

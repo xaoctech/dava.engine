@@ -1,5 +1,4 @@
 #include "HDRDeferredPass.h"
-#include "Render/ShaderCache.h"
 #include "Render/ServiceTextures.h"
 #include "Render/Highlevel/PostEffectRenderer.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
@@ -16,6 +15,8 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/RhiUtils.h"
+#include "Render/Highlevel/VelocityPass.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
@@ -51,6 +52,7 @@ class HDRDeferredPass::GBufferResolvePass : public RenderPass
 {
 public:
     GBufferResolvePass();
+    ~GBufferResolvePass();
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
 
     void InvalidateMaterials() override;
@@ -264,6 +266,12 @@ HDRDeferredPass::GBufferResolvePass::GBufferResolvePass()
     deferredLightsRenderer = new DeferredLightsRenderer();
 }
 
+HDRDeferredPass::GBufferResolvePass::~GBufferResolvePass()
+{
+    SafeDelete(deferredLightsRenderer);
+    SafeRelease(screenResolveMaterial);
+}
+
 void HDRDeferredPass::GBufferResolvePass::InvalidateMaterials()
 {
     screenResolveMaterial->InvalidateRenderVariants();
@@ -289,7 +297,7 @@ void HDRDeferredPass::GBufferResolvePass::Draw(RenderSystem* renderSystem, uint3
     }
 
     // from DrawLayers
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     SetupCameraParams(mainCamera, drawCamera);
 
     if (BeginRenderPass(passConfig))
@@ -397,6 +405,8 @@ HDRDeferredPass::HDRDeferredPass()
     gBufferResolvePass->GetPassConfig().depthStencilBuffer.loadAction = rhi::LOADACTION_CLEAR;
     gBufferResolvePass->GetPassConfig().depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
     gBufferResolvePass->GetPassConfig().usesReverseDepth = passConfig.usesReverseDepth;
+
+    velocityPass = new VelocityPass();
 }
 
 void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
@@ -417,8 +427,15 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 
     //draw to g-buffer
     gBufferPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D;
+    gBufferPass->SetEnableFrameJittering(enableFrameJittering);
     gBufferPass->SetViewport(viewport);
     gBufferPass->Draw(renderSystem);
+
+    // velocity  pass
+    velocityPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1;
+    velocityPass->SetEnableFrameJittering(enableFrameJittering);
+    velocityPass->SetViewport(viewport);
+    velocityPass->Draw(renderSystem);
 
     //deferred decals
     deferredDecalPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1; //right after
@@ -430,10 +447,10 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     gBufferResolvePass->SetViewport(viewport);
     gBufferResolvePass->SetRenderTargetProperties(renderTargetProperties.width, renderTargetProperties.height, renderTargetProperties.format);
     gBufferResolvePass->GetPassConfig().colorBuffer[0] = passConfig.colorBuffer[0];
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[0] = 1;
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[1] = 0;
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[2] = 0;
-    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[3] = 1;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[0] = 0.25f;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[1] = 1.0f;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[2] = 1.0f;
+    gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[3] = 1.0f;
     gBufferResolvePass->GetPassConfig().depthStencilBuffer = passConfig.depthStencilBuffer;
 
     gBufferResolvePass->Draw(renderSystem);
@@ -483,6 +500,8 @@ HDRDeferredPass::~HDRDeferredPass()
 {
     SafeDelete(gBufferPass);
     SafeDelete(gBufferResolvePass);
+    SafeDelete(velocityPass);
+    SafeDelete(deferredDecalPass);
 }
 
 void HDRDeferredPass::DebugDumpGBuffers()

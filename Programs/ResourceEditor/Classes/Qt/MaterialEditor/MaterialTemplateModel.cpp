@@ -1,7 +1,5 @@
 #include "MaterialTemplateModel.h"
 
-#include <Render/Material/FXCache.h>
-
 MaterialTemplateModel::MaterialTemplateModel(QObject* parent)
     : QSortFilterProxyModel(parent)
 {
@@ -11,7 +9,7 @@ MaterialTemplateModel::~MaterialTemplateModel()
 {
 }
 
-void MaterialTemplateModel::SetSelectedMaterialType(DAVA::NMaterial::eType type)
+void MaterialTemplateModel::SetSelectedMaterialType(DAVA::FXDescriptor::eType type)
 {
     selectedMaterialType = type;
 
@@ -28,5 +26,5 @@ bool MaterialTemplateModel::filterAcceptsRow(int source_row, QModelIndex const& 
     if (!validType)
         return false;
 
-    return (DAVA::NMaterial::eType(materialType) == selectedMaterialType);
+    return (DAVA::FXDescriptor::eType(materialType) == selectedMaterialType);
 }

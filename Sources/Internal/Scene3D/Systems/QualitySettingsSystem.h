@@ -3,12 +3,14 @@
 #include "Base/StaticSingleton.h"
 #include "Math/Vector.h"
 #include "Scene3D/Systems/ParticlesQualitySettings.h"
+#include "Render/RenderBase.h"
 #include "Render/Renderer.h"
 
 namespace DAVA
 {
 enum QualityGroup : uint32
 {
+    RenderFlowType,
     Anisotropy,
     Textures,
     Shadow,
@@ -74,6 +76,11 @@ struct QualityGroupValueClass<QualityGroup::Scattering>
 {
     using ValueClass = ScatteringQuality;
 };
+template <>
+struct QualityGroupValueClass<QualityGroup::RenderFlowType>
+{
+    using ValueClass = RenderFlow;
+};
 
 struct MaterialQuality
 {
@@ -129,6 +136,12 @@ public:
 
     template <QualityGroup group>
     typename QualityGroupValueClass<group>::ValueClass GetCurrentQualityValue() const;
+
+    template <QualityGroup group>
+    typename QualityGroupValueClass<group>::ValueClass GetQualityValue(const FastName&) const;
+
+    template <QualityGroup group>
+    void SetCurrentQualityValue(const typename QualityGroupValueClass<group>::ValueClass& value);
 
     // materials quality
     size_t GetMaterialQualityGroupCount() const;
@@ -190,7 +203,7 @@ private:
     {
         FastName groupName;
         FastName currentValue;
-        Map<FastName, Any, FastName::LexicographicalComparator> values;
+        Vector<std::pair<FastName, Any>> values;
     };
     QualityGroupHolder qualityGroups[uint32(QualityGroup::Count)];
 
@@ -265,8 +278,34 @@ template <QualityGroup group>
 inline typename QualityGroupValueClass<group>::ValueClass QualitySettingsSystem::GetCurrentQualityValue() const
 {
     const FastName& currentValue = GetCurrentQualityForGroup(group);
-    Any value = qualityGroups[group].values.at(currentValue);
-    DVASSERT(value.CanGet<typename QualityGroupValueClass<group>::ValueClass>());
-    return value.Get<typename QualityGroupValueClass<group>::ValueClass>();
+    return GetQualityValue<group>(currentValue);
+}
+
+template <QualityGroup group>
+inline typename QualityGroupValueClass<group>::ValueClass QualitySettingsSystem::GetQualityValue(const FastName& name) const
+{
+    auto i = std::find_if(qualityGroups[group].values.begin(), qualityGroups[group].values.end(), [&name](const auto& p) {
+        return (p.first == name);
+    });
+    DVASSERT(i != qualityGroups[group].values.end());
+
+    DVASSERT(i->second.CanGet<typename QualityGroupValueClass<group>::ValueClass>());
+    return i->second.Get<typename QualityGroupValueClass<group>::ValueClass>();
+}
+
+template <QualityGroup group>
+void QualitySettingsSystem::SetCurrentQualityValue(const typename QualityGroupValueClass<group>::ValueClass& value)
+{
+    bool qualityFound = false;
+    for (const auto& p : qualityGroups[group].values)
+    {
+        if (p.second == value)
+        {
+            qualityFound = true;
+            qualityGroups[group].currentValue = p.first;
+            break;
+        }
+    }
+    DVASSERT(qualityFound, "Unable to find quality for provided value");
 }
 }

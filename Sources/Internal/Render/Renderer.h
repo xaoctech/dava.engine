@@ -32,7 +32,9 @@ void SetVSyncEnabled(bool enable);
 bool IsVSyncEnabled();
 
 bool IsRenderFlowSupported(RenderFlow flow);
+bool IsRenderFlowAllowed(RenderFlow flow);
 void SetRenderFlow(RenderFlow flow);
+void SetAllowedRenderFlows(const Set<RenderFlow>& flows);
 RenderFlow GetCurrentRenderFlow();
 
 //frame management

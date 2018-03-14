@@ -69,6 +69,7 @@ const FastName NMaterialName::LANDSCAPE_BRUSH = FastName("~res:/Materials2/Lands
 const FastName NMaterialName::WATER_ALL_QUALITIES = FastName("~res:/Materials/WaterAllQualities.material");
 
 const FastName NMaterialName::GBUFFER_RESOLVE = FastName("~res:/Materials2/GbufferResolve.material");
+const FastName NMaterialName::VELOCITY = FastName("~res:/Materials2/Velocity.material");
 const FastName NMaterialName::RESCALE_QUAD = FastName("~res:/Materials2/rescale.material");
 const FastName NMaterialName::TEXTURE_BLIT = FastName("~res:/Materials2/TextureBlit.material");
 const FastName NMaterialName::VT_COMBINE_BLEND = FastName("~res:/Materials2/vt-decal.combine.blend.material");
@@ -194,6 +195,7 @@ const FastName NMaterialFlagName::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterialFlagName::FLAG_FLATALBEDO = FastName("FLATALBEDO");
 
 const FastName NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT = FastName("BLEND_LANDSCAPE_HEIGHT");
+const FastName NMaterialFlagName::FLAG_RGBM_INPUT = FastName("RGBM_INPUT");
 
 const FastName NMaterialFlagName::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterialFlagName::FLAG_SPECULAR = FastName("SPECULAR");
@@ -216,7 +218,7 @@ const FastName NMaterialFlagName::FLAG_ALBEDO_ALPHA_MASK = FastName("ALBEDO_ALPH
 const FastName NMaterialFlagName::FLAG_VERTEX_BLEND_TEXTURES = FastName("VERTEX_BLEND_TEXTURES");
 const FastName NMaterialFlagName::FLAG_VERTEX_BLEND_4_TEXTURES = FastName("VERTEX_BLEND_4_TEXTURES");
 
-const FastName NMaterialFlagName::FLAG_ALBEDO_MODIFIER_BLEND_MODE = FastName("ALBEDO_MODIFIER_BLEND_MODE");
+const FastName NMaterialFlagName::FLAG_ALBEDO_TINT_BLEND_MODE = FastName("ALBEDO_TINT_BLEND_MODE");
 
 const FastName NMaterialFlagName::FLAG_FLOWMAP_SKY = FastName("FLOWMAP_SKY");
 const FastName NMaterialFlagName::FLAG_PARTICLES_FLOWMAP = FastName("PARTICLES_FLOWMAP");

@@ -13,6 +13,7 @@ class RescalePass : public RenderPass
 {
 public:
     RescalePass();
+    ~RescalePass();
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
     void InvalidateMaterials() override;
 

@@ -3,7 +3,6 @@
 #include "Render/Image/Image.h"
 #include "Engine/Engine.h"
 #include "Functional/Function.h"
-#include "Math/HalfFloat.h"
 
 namespace DAVA
 {
@@ -209,6 +208,30 @@ bool ConvertImageDirect(PixelFormat inFormat, PixelFormat outFormat,
         convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
         return true;
     }
+    else if (inFormat == FORMAT_RGBA8888 && outFormat == FORMAT_RGBM)
+    {
+        ConvertDirect<uint32, uint32, ConvertRGBA8888toRGBM> convert;
+        convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+        return true;
+    }
+    else if (inFormat == FORMAT_RGBM && outFormat == FORMAT_RGBA8888)
+    {
+        ConvertDirect<uint32, uint32, ConvertRGBMtoRGBA8888> convert;
+        convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+        return true;
+    }
+    else if (inFormat == FORMAT_RGBA32F && outFormat == FORMAT_RGBM)
+    {
+        ConvertDirect<Vector4, uint32, ConvertRGBA32FtoRGBM> convert;
+        convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+        return true;
+    }
+    else if (inFormat == FORMAT_RGBA16F && outFormat == FORMAT_RGBM)
+    {
+        ConvertDirect<uint64 /* 4 x uint16*/, uint32, ConvertRGBA16FtoRGBM> convert;
+        convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+        return true;
+    }
     else
     {
         Logger::FrameworkDebug("Unsupported image conversion from format %d to %d", inFormat, outFormat);
@@ -387,6 +410,11 @@ bool DownscaleTwiceBillinear(PixelFormat inFormat, PixelFormat outFormat,
         ConvertDownscaleTwiceBillinear<R16F, R16F, float32, UnpackR16F, PackR16F> convert;
         convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
     }
+    else if ((inFormat == FORMAT_RGBM) && (outFormat == FORMAT_RGBM))
+    {
+        ConvertDownscaleTwiceBillinear<uint32, uint32, float32, UnpackRGBM, PackRGBM> convert;
+        convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+    }
     else
     {
         Logger::Error("Downscale from %s to %s is not implemented", PixelFormatDescriptor::GetPixelFormatString(inFormat), PixelFormatDescriptor::GetPixelFormatString(outFormat));
@@ -482,22 +510,72 @@ inline void WriteHalfFloat(uint8* ptr, float32 value)
     *(reinterpret_cast<uint16_t*>(ptr)) = Float16Compressor::Compress(value);
 }
 
-inline void ConvertFloatPixel(uint32 inChannels, uint32 inSize, uint32 outChannels, uint32 outSize, uint8* inData, uint8* outData)
+inline Vector4 ReadFloatPixel(PixelFormat inFormat, uint32 inChannels, uint32 inChannelSize, uint8* inData)
 {
-    auto readFunction = (inSize == 4) ? &ReadFloatDirect : &ReadHalfFloat;
-    auto writeFunction = (outSize == 4) ? &WriteFloatDirect : &WriteHalfFloat;
+    Vector4 result(0.0f, 0.0f, 0.0f, 0.0f);
 
-    float32 in[4] = {};
-    for (uint32 c = 0; c < inChannels; ++c)
-        in[c] = readFunction(inData + c * inSize);
+    switch (inFormat)
+    {
+    case PixelFormat::FORMAT_R32F:
+    case PixelFormat::FORMAT_RG32F:
+    case PixelFormat::FORMAT_RGBA32F:
+    {
+        for (uint32 c = 0; c < inChannels; ++c)
+            result.data[c] = ReadFloatDirect(inData + c * inChannelSize);
+        break;
+    }
+    case PixelFormat::FORMAT_R16F:
+    case PixelFormat::FORMAT_RG16F:
+    case PixelFormat::FORMAT_RGBA16F:
+    {
+        for (uint32 c = 0; c < inChannels; ++c)
+            result.data[c] = ReadHalfFloat(inData + c * inChannelSize);
+        break;
+    }
+    case PixelFormat::FORMAT_RGBM:
+    {
+        result = RGBM::Read(reinterpret_cast<const uint32*>(inData));
+        break;
+    }
+    default:
+        DVASSERT(!"Invalid float pixel format provided");
+    }
+    return result;
+}
 
-    for (uint32 c = 0; c < outChannels; ++c)
-        writeFunction(outData + c * outSize, in[c]);
+inline void WriteFloatPixel(const Vector4& value, PixelFormat outFormat, uint32 outChannels, uint32 outChannelSize, uint8* outData)
+{
+    switch (outFormat)
+    {
+    case PixelFormat::FORMAT_R32F:
+    case PixelFormat::FORMAT_RG32F:
+    case PixelFormat::FORMAT_RGBA32F:
+    {
+        for (uint32 c = 0; c < outChannels; ++c)
+            WriteFloatDirect(outData + c * outChannelSize, value.data[c]);
+        break;
+    }
+    case PixelFormat::FORMAT_R16F:
+    case PixelFormat::FORMAT_RG16F:
+    case PixelFormat::FORMAT_RGBA16F:
+    {
+        for (uint32 c = 0; c < outChannels; ++c)
+            WriteHalfFloat(outData + c * outChannelSize, value.data[c]);
+        break;
+    }
+    case PixelFormat::FORMAT_RGBM:
+    {
+        ConvertRGBA8888toRGBM().ConvertAndWrite(value, reinterpret_cast<uint32*>(outData));
+        break;
+    }
+    default:
+        DVASSERT(!"Invalid float pixel format provided");
+    }
 }
 
 bool ConvertFloatFormats(uint32 width, uint32 height, PixelFormat inFormat, PixelFormat outFormat, void* inData, void* outData)
 {
-    if (!PixelFormatDescriptor::IsFloatPixelFormat(inFormat) || !PixelFormatDescriptor::IsFloatPixelFormat(outFormat))
+    if (!PixelFormatDescriptor::IsHDRPixelFormat(inFormat) || !PixelFormatDescriptor::IsHDRPixelFormat(outFormat))
     {
         Logger::Error("Formats being converted are not compatible");
         return false;
@@ -506,26 +584,14 @@ bool ConvertFloatFormats(uint32 width, uint32 height, PixelFormat inFormat, Pixe
     uint32 inChannels = 0;
     uint32 inSize = 0;
     uint32 inPitch = 0;
-    PixelFormatDescriptor::GetFloatFormatInfo(width, inFormat, inChannels, inSize, inPitch);
+    PixelFormatDescriptor::GetHDRFormatInfo(width, inFormat, inChannels, inSize, inPitch);
     DVASSERT(inChannels <= 4);
-
-    if ((inSize != 2) && (inSize != 4))
-    {
-        Logger::Error("Invalid channel size for the input float texture format");
-        return false;
-    }
 
     uint32 outChannels = 0;
     uint32 outSize = 0;
     uint32 outPitch = 0;
-    PixelFormatDescriptor::GetFloatFormatInfo(width, outFormat, outChannels, outSize, outPitch);
+    PixelFormatDescriptor::GetHDRFormatInfo(width, outFormat, outChannels, outSize, outPitch);
     DVASSERT(outChannels <= 4);
-
-    if ((outSize != 2) && (outSize != 4))
-    {
-        Logger::Error("Invalid channel size for the otuput float texture format");
-        return false;
-    }
 
     uint8* inPtr = reinterpret_cast<uint8*>(inData);
     uint8* outPtr = reinterpret_cast<uint8*>(outData);
@@ -535,8 +601,10 @@ bool ConvertFloatFormats(uint32 width, uint32 height, PixelFormat inFormat, Pixe
         uint8* outRowPtr = outPtr + y * outPitch;
         for (uint32 x = 0; x < width; ++x)
         {
-            ConvertFloatPixel(inChannels, inSize, outChannels, outSize, inRowPtr, outRowPtr);
+            Vector4 value = ReadFloatPixel(inFormat, inChannels, inSize, inRowPtr);
             inRowPtr += inSize * inChannels;
+
+            WriteFloatPixel(value, outFormat, outChannels, outSize, outRowPtr);
             outRowPtr += outSize * outChannels;
         }
     }

@@ -15,6 +15,7 @@ private:
     void PostInit() override;
 
     void OnSelectionChanged(const DAVA::Any& selection);
+    void OnDeleteSelectedPoints();
 
 private:
     DAVA::QtConnections connections;

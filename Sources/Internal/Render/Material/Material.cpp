@@ -11,10 +11,18 @@ namespace DAVA
 Material::Material(const Any& assetKey)
     : AssetBase(assetKey)
 {
+    listener.onReloaded = [this](const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded) {
+        DVASSERT(original == parentAsset);
+        parentAsset = std::dynamic_pointer_cast<Material>(reloaded);
+    };
 }
 
 Material::~Material()
 {
+    if (parentAsset != nullptr)
+    {
+        GetEngineContext()->assetManager->UnregisterListener(parentAsset, &listener);
+    }
     SafeRelease(material);
 }
 
@@ -35,10 +43,24 @@ NMaterial* Material::GetMaterial() const
 void Material::SetParentPath(const FilePath& path)
 {
     parentPath = path;
-    parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(parentPath), AssetManager::SYNC);
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    if (parentAsset != nullptr)
+    {
+        assetManager->UnregisterListener(parentAsset, &listener);
+    }
 
-    if (material != nullptr && parentAsset != nullptr)
+    parentAsset.reset();
+
+    if (parentPath.IsEmpty() == false)
+    {
+        parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(parentPath), AssetManager::SYNC, &listener);
+        DVASSERT(parentAsset != nullptr);
+    }
+
+    if (material != nullptr && parentAsset != nullptr && parentAsset->GetMaterial() != nullptr)
+    {
         material->SetParent(parentAsset->GetMaterial());
+    }
 }
 
 const FilePath& Material::GetParentPath() const

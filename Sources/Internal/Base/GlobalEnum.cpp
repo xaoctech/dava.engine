@@ -70,6 +70,8 @@ ENUM_DECLARE(DAVA::PixelFormat)
     ENUM_ADD_DESCR(DAVA::FORMAT_RG32F, "RG32F");
     ENUM_ADD_DESCR(DAVA::FORMAT_RGB32F, "RGB32F");
     ENUM_ADD_DESCR(DAVA::FORMAT_RGBA32F, "RGBA32F");
+    ENUM_ADD_DESCR(DAVA::FORMAT_R11G11B10F, "R11G11B10F");
+    ENUM_ADD_DESCR(DAVA::FORMAT_RGBM, "RGBM");
     ENUM_ADD_DESCR(DAVA::FORMAT_DXT1, "DXT1");
     ENUM_ADD_DESCR(DAVA::FORMAT_DXT1A, "DXT1A");
     ENUM_ADD_DESCR(DAVA::FORMAT_DXT3, "DXT3");
@@ -419,20 +421,18 @@ ENUM_DECLARE(DAVA::ReflectionProbe::ProbeType)
     ENUM_ADD_DESCR(DAVA::ReflectionProbe::ProbeType::GLOBAL_STATIC, "Global Prerendered");
 }
 
-ENUM_DECLARE(DAVA::NMaterial::eType)
-{
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_GLOBAL, "Global");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_COMMON, "Common");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_PARTICLE, "Particle");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_LANDSCAPE, "Landscape");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_SKY, "Sky");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_DECAL, "Decal");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_DECAL_VT, "VTDecal");
-    ENUM_ADD_DESCR(DAVA::NMaterial::TYPE_LEGACY, "Legacy");
-}
 ENUM_DECLARE(DAVA::GeoDecalManager::Mapping)
 {
     ENUM_ADD_DESCR(DAVA::GeoDecalManager::Mapping::PLANAR, "Planar");
     ENUM_ADD_DESCR(DAVA::GeoDecalManager::Mapping::SPHERICAL, "Spherical");
     ENUM_ADD_DESCR(DAVA::GeoDecalManager::Mapping::CYLINDRICAL, "Cylindrical");
+}
+
+ENUM_DECLARE(DAVA::RenderFlow)
+{
+    ENUM_ADD_DESCR(DAVA::RenderFlow::LDRForward, "LDRForward");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::HDRForward, "HDRForward");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::HDRDeferred, "HDRDeferred");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::TileBasedHDRDeferred, "TileBasedHDRDeferred");
+    ENUM_ADD_DESCR(DAVA::RenderFlow::TileBasedHDRForward, "TileBasedHDRForward");
 }

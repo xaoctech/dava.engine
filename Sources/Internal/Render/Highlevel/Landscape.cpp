@@ -24,8 +24,6 @@
 #include "Render/RenderHelper.h"
 #include "Render/Texture.h"
 #include "Render/Renderer.h"
-#include "Render/Shader.h"
-#include "Render/ShaderCache.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"

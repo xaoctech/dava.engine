@@ -5,6 +5,7 @@
 #include "FileSystem/FilePath.h"
 #include "Render/Material/Material.h"
 #include "Render/Material/NMaterial.h"
+#include "Render/Material/FXAsset.h"
 
 namespace DAVA
 {
@@ -31,6 +32,6 @@ protected:
     static void RemoveRedundantProps(NMaterial* material, bool removeUVScaleOffset);
     static void CopyMaterialLocalProps(NMaterial* from, NMaterial* to);
     static bool CompareMaterialLocalProps(NMaterial* material, NMaterial* referenceMaterial);
-    static NMaterial::eType GetMaterialType(NMaterial* material);
+    static FXDescriptor::eType GetMaterialType(NMaterial* material);
 };
 };

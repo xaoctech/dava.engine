@@ -2,7 +2,7 @@
 
 #include "Render/RHI/rhi_Type.h"
 #include "Render/RHI/rhi_Public.h"
-#include "Render/ShaderCache.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerGPU.h"
@@ -68,7 +68,7 @@ void ParticleDebugRenderPass::DrawBatches(Camera* camera)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PASS_DRAW_LAYERS)
 
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
 
     //per pass viewport bindings
     viewportSize = Vector2(viewport.dx, viewport.dy);

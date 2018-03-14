@@ -144,7 +144,7 @@ vertex_out vp_main(vertex_in input)
 #if (USE_BAKED_LIGHTING)
     output.uv = float4(texCoordScale * input.texCoord0, shadowaoUV.xy + shadowaoUV.zw * input.texCoord1);
 #else
-    output.uv = float4(texCoordScale * input.texCoord0, 0.0, 0.0);
+    output.uv = float4(input.texCoord0, 0.0, 0.0);
 #endif
 
 #if (VERTEX_BAKED_AO)

@@ -45,7 +45,10 @@ public:
     IMPL_LIGHT_PROXY(float32, AORadius);
     IMPL_LIGHT_PROXY(FilePath, EnvironmentMap);
     IMPL_LIGHT_PROXY(float, ColorTemperature);
-    IMPL_LIGHT_PROXY(Vector4, ShadowCascadesIntervals);
+    IMPL_LIGHT_PROXY(float, ShadowCascadesIntervals1);
+    IMPL_LIGHT_PROXY(Vector2, ShadowCascadesIntervals2);
+    IMPL_LIGHT_PROXY(Vector3, ShadowCascadesIntervals3);
+    IMPL_LIGHT_PROXY(Vector4, ShadowCascadesIntervals4);
     IMPL_LIGHT_PROXY(Vector2, ShadowFilterRadius);
     IMPL_LIGHT_PROXY(Vector2, ShadowWriteBias);
     IMPL_LIGHT_PROXY(bool, DebugDrawShadowMapEnabled);

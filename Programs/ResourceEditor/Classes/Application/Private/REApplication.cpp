@@ -3,6 +3,7 @@
 #include "Classes/Application/ReflectionExtensions.h"
 #include "Classes/Application/REModule.h"
 
+#include "Classes/ShadersModule/ShadersModule.h"
 #include "Classes/Beast/BeastCommandLineTool.h"
 #include "Classes/Project/ProjectManagerModule.h"
 #include "Classes/SceneManager/SceneManagerModule.h"
@@ -113,6 +114,15 @@ void REApplication::CreateModules(DAVA::Core* tarcCore) const
     appOptions->SetInt32("renderer", REApplicationDetail::Convert(renderBackend));
     appOptions->SetBool("qt_platform_render_in_thread", rhiThreadedMode);
 
+    if (!isConsoleMode)
+    {
+        DAVA::PropertiesItem item = accessor->CreatePropertiesNode("renderFlow");
+        DAVA::RenderFlow renderFlow = item.Get("renderFlow", DAVA::RenderFlow::HDRDeferred);
+        DAVA::QualitySettingsSystem::Instance()->SetCurrentQualityValue<DAVA::QualityGroup::RenderFlowType>(renderFlow);
+        DAVA::Renderer::SetAllowedRenderFlows({ DAVA::RenderFlow::LDRForward, DAVA::RenderFlow::HDRForward, DAVA::RenderFlow::HDRDeferred });
+        DAVA::Renderer::SetRenderFlow(renderFlow);
+    }
+
     renderBackEndListener.reset(new DAVA::FieldBinder(accessor));
     DAVA::FieldDescriptor descr;
     descr.type = DAVA::ReflectedTypeDB::Get<DAVA::GeneralSettings>();
@@ -196,12 +206,13 @@ void REApplication::Init(DAVA::Core* tarcCore)
 {
     tarcCore->InitPluginManager("ResourceEditor", DAVA::GetEngineContext()->fileSystem->GetPluginDirectory().GetAbsolutePathname());
     BaseApplication::Init(tarcCore);
+
+    ShadersModule::InitDevShaders();
 }
 
 void REApplication::Cleanup()
 {
     DAVA::VisibilityCheckSystem::ReleaseCubemapRenderTargets();
-
     cmdLine.clear();
 }
 
@@ -288,7 +299,7 @@ DAVA::KeyedArchive* REApplication::CreateOptions() const
     appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     appOptions->SetInt32("max_index_buffer_count", 16384);
     appOptions->SetInt32("max_vertex_buffer_count", 16384);
-    appOptions->SetInt32("max_const_buffer_count", 32767);
+    appOptions->SetInt32("max_const_buffer_count", 65534);
     appOptions->SetInt32("max_texture_count", 2048);
     appOptions->SetInt32("max_perf_query_count", 16384);
 

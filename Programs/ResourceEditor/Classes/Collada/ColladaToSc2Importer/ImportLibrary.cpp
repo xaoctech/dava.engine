@@ -16,6 +16,7 @@
 #include <Render/Image/ImageSystem.h>
 #include <Render/Material/NMaterial.h>
 #include <Render/Material/NMaterialNames.h>
+#include <Render/Material/FXAsset.h>
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/AnimationData.h>
 #include <Scene3D/Components/AnimationComponent.h>
@@ -222,7 +223,7 @@ NMaterial* ImportLibrary::GetOrCreateMaterialParent(ColladaMaterial* colladaMate
     NMaterial* davaMaterialParent = materialParents[materialUniqueKey];
     if (nullptr == davaMaterialParent)
     {
-        davaMaterialParent = new NMaterial(NMaterial::TYPE_COMMON);
+        davaMaterialParent = new NMaterial(FXDescriptor::TYPE_COMMON);
         davaMaterialParent->SetMaterialName(parentMaterialName);
         davaMaterialParent->SetFXName(parentMaterialTemplate);
 

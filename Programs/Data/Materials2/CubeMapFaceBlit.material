@@ -1,15 +1,1 @@
-RenderTechnique:
-    Layers: ["OpaqueRenderLayer"]
-    RenderPass:
-        Name: "ForwardPass"
-        Shader: "~res:/Materials2/ShadersShared/cubemap-face-blit"
-        UniqueDefines: []
-        RenderState:
-            alphaFunc: "CMP_ALWAYS"
-            alphaFuncCmpValue: 0.0000
-            blendDest: "BLEND_ZERO"
-            blendSrc: "BLEND_ONE"
-            cullMode: "FACE_BACK"
-            depthFunc: "CMP_LESS"
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+ForwardPassShader: "~res:/Materials2/ShadersShared/cubemap-face-blit"

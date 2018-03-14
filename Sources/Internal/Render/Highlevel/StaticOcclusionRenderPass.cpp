@@ -1,7 +1,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/Image/Image.h"
 #include "Render/Renderer.h"
-#include "Render/ShaderCache.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/Highlevel/StaticOcclusionRenderPass.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/StaticOcclusion.h"
@@ -130,7 +130,7 @@ void StaticOcclusionRenderPass::DrawOcclusionFrame(RenderSystem* renderSystem, C
     terrainBatches.clear();
     meshRenderBatches.clear();
 
-    ShaderDescriptorCache::ClearDynamicBindigs();
+    ShaderAssetListener::Instance()->ClearDynamicBindigs();
     SetupCameraParams(occlusionCamera, occlusionCamera);
     PrepareVisibilityArrays(occlusionCamera, renderSystem);
 

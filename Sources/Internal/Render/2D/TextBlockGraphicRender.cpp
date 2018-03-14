@@ -4,7 +4,6 @@
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Renderer.h"
-#include "Render/ShaderCache.h"
 #include "UI/UIControlSystem.h"
 
 namespace DAVA

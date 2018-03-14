@@ -27,7 +27,6 @@
 #include "Render/Highlevel/Light.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/TextureDescriptor.h"
-#include "Render/ShaderCache.h"
 #include "Utils/Utils.h"
 #include "Logger/Logger.h"
 #include "Debug/ProfilerGPU.h"
@@ -74,6 +73,7 @@ RenderSystem::~RenderSystem()
 
     SafeDelete(rescalePass);
     SafeDelete(pickingRenderPass);
+    SafeDelete(activeRenderPass);
 }
 
 void RenderSystem::RenderPermanent(RenderObject* renderObject)
@@ -175,7 +175,7 @@ void RenderSystem::RegisterMaterial(NMaterial* material)
 
     // set globalMaterial to be parent for top material
     NMaterial* topParent = material->GetTopLevelParent();
-    if (topParent != globalMaterial && topParent->GetMaterialType() == NMaterial::TYPE_LEGACY)
+    if (topParent != globalMaterial && topParent->GetMaterialType() == FXDescriptor::TYPE_LEGACY)
     {
         topParent->SetParent(globalMaterial);
     }
@@ -216,7 +216,7 @@ void RenderSystem::SetGlobalMaterial(NMaterial* newGlobalMaterial)
     for (DataNode* dataNode : dataNodes)
     {
         NMaterial* batchMaterial = dynamic_cast<NMaterial*>(dataNode);
-        if (batchMaterial && batchMaterial->GetMaterialType() == NMaterial::TYPE_LEGACY)
+        if (batchMaterial && batchMaterial->GetMaterialType() == FXDescriptor::TYPE_LEGACY)
         {
             NMaterial* topMaterial = batchMaterial;
             while (topMaterial->GetParent() && topMaterial->GetParent() != globalMaterial && topMaterial->GetParent() != newGlobalMaterial)
@@ -526,10 +526,15 @@ void RenderSystem::ConfigureActivePass()
 
 void RenderSystem::Render()
 {
+    bool taaEnabled =
+    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
+    (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
+
     ConfigureActivePass();
     lightShadowSystem.Render(this);
 
     reflectionRenderer->Draw(mainCamera);
+    activeRenderPass->SetEnableFrameJittering(taaEnabled);
     activeRenderPass->Draw(this);
 
     if (renderConfig.shouldRenderPickingPass == true)

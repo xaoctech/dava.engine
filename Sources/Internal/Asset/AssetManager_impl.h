@@ -24,4 +24,4 @@ Asset<AssetType> AssetManager::CreateAsset(const Any& assetKey)
     Asset<AssetBase> asset = CreateAsset(assetKey);
     return std::dynamic_pointer_cast<AssetType>(asset);
 }
-}
+} // namespace DAVA

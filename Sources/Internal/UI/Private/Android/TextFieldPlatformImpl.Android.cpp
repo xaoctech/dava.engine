@@ -13,6 +13,7 @@
 #include "UI/Focus/FocusHelpers.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
 extern "C"

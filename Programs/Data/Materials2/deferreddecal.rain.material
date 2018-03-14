@@ -9,9 +9,9 @@ RenderTechnique:
         UniquePins:
             - ["DECAL_TYPE", 4]
         RenderState:
-            alphaFunc: "CMP_ALWAYS"            
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"
+            depthFunc: "CMP_GEQUAL"
+            cullMode: "FACE_FRONT"
+            state: "STATE_DEPTH_TEST | STATE_CULL"
     RenderPassDeferredFetch:
         Name: "gBufferFetchPass"
         Layer: "DeferredDecals"
@@ -20,6 +20,6 @@ RenderTechnique:
         UniquePins:
             - ["DECAL_TYPE", 4]
         RenderState:
-            alphaFunc: "CMP_ALWAYS"            
-            fillMode: "FILLMODE_SOLID"
-            state: "STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE"
+            depthFunc: "CMP_GEQUAL"
+            cullMode: "FACE_FRONT"
+            state: "STATE_DEPTH_TEST | STATE_CULL"

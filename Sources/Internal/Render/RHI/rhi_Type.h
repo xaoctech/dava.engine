@@ -104,6 +104,7 @@ enum class AntialiasingType : DAVA::uint32
     NONE,
     MSAA_2X,
     MSAA_4X,
+    TEMPORAL_REPROJECTION,
 };
 
 inline DAVA::uint32 TextureSampleCountForAAType(AntialiasingType type)

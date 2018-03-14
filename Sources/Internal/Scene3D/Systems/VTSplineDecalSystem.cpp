@@ -97,7 +97,7 @@ void VTSplineDecalSystem::RebuildDecalGeometryData(VTDecalComponent* decalCompon
     Vector<VTDecalPageRenderer::VTDecalVertex> vertexData;
     vertexData.reserve(resSlicesCount * 3);
 
-    float32 uTiling = decalComponent->GetSplineTiling();
+    float32 uTiling = 1.0f / decalComponent->GetSplineTextureDistance();
 
     int32 curSlice = 0;
     float32 currUCoord = 0.0f;

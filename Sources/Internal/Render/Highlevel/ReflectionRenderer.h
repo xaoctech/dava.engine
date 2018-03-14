@@ -80,7 +80,7 @@ private:
     void UpdateProbeMaterialBindings(ReflectionProbe* probe);
 
     void EnumerateMaterials(Set<NMaterial*>& materials);
-    Texture* CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format = PixelFormat::FORMAT_RGBA16F);
+    Texture* CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format);
 
     void RenderReflectionProbe(ReflectionProbe* probe);
     void DrawDebugInfo();

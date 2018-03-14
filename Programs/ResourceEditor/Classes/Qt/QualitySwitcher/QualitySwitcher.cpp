@@ -28,11 +28,7 @@
 #include <QVBoxLayout>
 
 QualitySwitcher* QualitySwitcher::switcherDialog = nullptr;
-const QString AnisotropyComboName = "AnisotropyCombo";
-const QString MultiSamplingComboName = "MSAACombo";
-const QString ShadowComboName = "ShadowCombo";
-const QString RenderFlowComboName = "RenderFlowCombo";
-const QString ApplyButtonName = "ApplyButton";
+QString ApplyButtonName = "ApplyButton";
 
 QualitySwitcher::QualitySwitcher()
     : QDialog(DAVA::Deprecated::GetUI()->GetWindow(DAVA::mainWindowKey), Qt::Dialog | Qt::WindowStaysOnTopHint) //https://bugreports.qt.io/browse/QTBUG-34767
@@ -42,6 +38,8 @@ QualitySwitcher::QualitySwitcher()
     const int spacing = 5;
     const int minColumnW = 150;
     int currentRow = 1;
+
+    QualitySettingsSystem* qs = QualitySettingsSystem::Instance();
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     QGroupBox* generalGroup = new QGroupBox(this);
@@ -55,32 +53,11 @@ QualitySwitcher::QualitySwitcher()
     generalGroup->setTitle("General");
     generalGroup->setLayout(generalLayout);
 
-    {
-        QLabel* labRenderFlow = new QLabel("Render Flow:", generalGroup);
-        generalLayout->addWidget(labRenderFlow, currentRow, 0);
-
-        QComboBox* comboFlow = new QComboBox(generalGroup);
-        comboFlow->addItem("LDR Forward", QVariant(int(RenderFlow::LDRForward)));
-        comboFlow->addItem("HDR Forward", QVariant(int(RenderFlow::HDRForward)));
-        comboFlow->addItem("HDR Deferred", QVariant(int(RenderFlow::HDRDeferred)));
-        if (rhi::DeviceCaps().isFramebufferFetchSupported)
-        {
-            comboFlow->addItem("Tile Based HDR Forward", QVariant(int(RenderFlow::TileBasedHDRForward)));
-            comboFlow->addItem("Tiled Based HDR Deferred", QVariant(int(RenderFlow::TileBasedHDRDeferred)));
-        }
-        comboFlow->setObjectName(RenderFlowComboName);
-        comboFlow->setCurrentIndex(static_cast<int>(Renderer::GetCurrentRenderFlow()) - 1);
-        generalLayout->addWidget(comboFlow, currentRow, 1);
-        QObject::connect(comboFlow, SIGNAL(activated(int)), this, SLOT(OnSetSettingsDirty(int)));
-
-        ++currentRow;
-    }
-
-    for (DAVA::uint32 i = 0; i < DAVA::QualityGroup::Count; ++i)
+    for (uint32 i = 0; i < QualityGroup::Count; ++i)
     {
         QualityGroup group = static_cast<QualityGroup>(i);
-        const FastName& qualityGroupName = QualitySettingsSystem::Instance()->GetQualityGroupName(group);
-        const Vector<FastName>& qualityGroupValues = QualitySettingsSystem::Instance()->GetAvailableQualitiesForGroup(group);
+        const FastName& qualityGroupName = qs->GetQualityGroupName(group);
+        const Vector<FastName>& qualityGroupValues = qs->GetAvailableQualitiesForGroup(group);
 
         if (!qualityGroupValues.empty())
         {
@@ -91,13 +68,20 @@ QualitySwitcher::QualitySwitcher()
             combo->setObjectName(qualityGroupName.c_str());
             generalLayout->addWidget(combo, currentRow, 1);
 
-            FastName currentQuality = QualitySettingsSystem::Instance()->GetCurrentQualityForGroup(group);
-            for (const FastName& i : qualityGroupValues)
+            FastName currentQuality = qs->GetCurrentQualityForGroup(group);
+
+            for (const FastName& val : qualityGroupValues)
             {
-                combo->addItem(i.c_str());
-                if (currentQuality == i)
+                bool isValidValue = (i == QualityGroup::RenderFlowType) ?
+                Renderer::IsRenderFlowAllowed(qs->GetQualityValue<QualityGroup::RenderFlowType>(val)) :
+                true;
+
+                if (isValidValue)
                 {
-                    combo->setCurrentIndex(combo->count() - 1);
+                    combo->addItem(val.c_str());
+
+                    if (currentQuality == val)
+                        combo->setCurrentIndex(combo->count() - 1);
                 }
             }
 
@@ -240,13 +224,6 @@ void QualitySwitcher::ApplySettings()
                 changedQualities[group] = true;
             }
         }
-
-        QComboBox* combo = findChild<QComboBox*>(RenderFlowComboName);
-        if (combo != nullptr)
-        {
-            RenderFlow currentFlow = static_cast<RenderFlow>(combo->currentData().toInt());
-            Renderer::SetRenderFlow(currentFlow);
-        }
     }
 
     // options
@@ -269,12 +246,23 @@ void QualitySwitcher::ApplySettings()
         }
     }
 
-    if (changedQualities[DAVA::QualityGroup::Shadow])
+    if (changedQualities[QualityGroup::RenderFlowType])
     {
-        DAVA::ShadowQuality shadowQuality = DAVA::QualitySettingsSystem::Instance()->GetCurrentQualityValue<DAVA::QualityGroup::Shadow>();
-        DAVA::Renderer::GetRuntimeFlags().SetFlag(DAVA::RuntimeFlags::Flag::SHADOW_CASCADES, shadowQuality.cascadesCount);
-        DAVA::Renderer::GetRuntimeFlags().SetFlag(DAVA::RuntimeFlags::Flag::SHADOW_PCF, shadowQuality.enablePCF ? 1 : 0);
-        DAVA::Renderer::GetRuntimeTextures().InvalidateTexture(DAVA::RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
+        RenderFlow currentFlow = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::RenderFlowType>();
+
+        ContextAccessor* accessor = Deprecated::GetAccessor();
+        PropertiesItem item = accessor->CreatePropertiesNode("renderFlow");
+        item.Set("renderFlow", currentFlow);
+
+        Renderer::SetRenderFlow(currentFlow);
+    }
+
+    if (changedQualities[QualityGroup::Shadow])
+    {
+        ShadowQuality shadowQuality = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Shadow>();
+        Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, std::min(uint32(MAX_SHADOW_CASCADES), shadowQuality.cascadesCount));
+        Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_PCF, shadowQuality.enablePCF ? 1 : 0);
+        Renderer::GetRuntimeTextures().InvalidateTexture(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
         materialSettingsChanged = true;
     }
 

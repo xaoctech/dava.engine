@@ -39,7 +39,7 @@ void GeometryAssetLoader::DeleteAsset(AssetBase* asset) const
     delete asset;
 }
 
-void GeometryAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, String& errorMessage) const
+void GeometryAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
 {
     Asset<Geometry> geometry = std::dynamic_pointer_cast<Geometry>(asset);
     DVASSERT(geometry != nullptr);
@@ -84,6 +84,14 @@ bool GeometryAssetLoader::SaveAsset(Asset<AssetBase> asset, File* file, eSaveMod
 bool GeometryAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode requestedMode) const
 {
     return false;
+}
+
+Vector<String> GeometryAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
+{
+    const Any& assetKey = asset->GetKey();
+    DVASSERT(assetKey.CanGet<PathKey>());
+    const PathKey& key = assetKey.Get<PathKey>();
+    return Vector<String>{ key.path.GetAbsolutePathname() };
 }
 
 Vector<const Type*> GeometryAssetLoader::GetAssetKeyTypes() const

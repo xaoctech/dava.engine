@@ -4,6 +4,7 @@
 #include <QSortFilterProxyModel>
 
 #include <Render/Material/NMaterial.h>
+#include <Render/Material/FXAsset.h>
 
 class MaterialTemplateModel
 : public QSortFilterProxyModel
@@ -14,12 +15,12 @@ public:
     MaterialTemplateModel(QObject* parent = NULL);
     ~MaterialTemplateModel();
 
-    void SetSelectedMaterialType(DAVA::NMaterial::eType type);
+    void SetSelectedMaterialType(DAVA::FXDescriptor::eType type);
 
 private:
     bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override;
 
-    DAVA::NMaterial::eType selectedMaterialType = DAVA::NMaterial::TYPE_COUNT;
+    DAVA::FXDescriptor::eType selectedMaterialType = DAVA::FXDescriptor::TYPE_COUNT;
 };
 
 

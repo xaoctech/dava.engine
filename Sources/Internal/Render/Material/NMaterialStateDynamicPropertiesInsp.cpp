@@ -1,5 +1,5 @@
 #include "Render/Material/NMaterial.h"
-#include "Render/Material/FXCache.h"
+#include "Render/Material/FXAsset.h"
 #include "Render/Material/NMaterialStateDynamicPropertiesInsp.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
@@ -29,14 +29,13 @@ void NMaterialStateDynamicPropertiesInsp::FindMaterialPropertiesRecursive(NMater
     material->CollectMaterialFlags(flags);
 
     // shader data
-    auto fxName = material->GetEffectiveFXName();
-    if (fxName.IsValid())
+    Asset<FXAsset> fxAsset = material->GetFXAsset();
+    if (fxAsset != nullptr)
     {
-        auto qualityGroup = QualitySettingsSystem::Instance()->GetCurMaterialQuality(material->qualityGroup);
-        FXDescriptor fxDescriptor = FXCache::GetFXDescriptor(fxName, flags, qualityGroup);
-        for (auto& descriptor : fxDescriptor.renderPassDescriptors)
+        const Vector<RenderPassDescriptor>& renderPassDescriptors = fxAsset->GetPassDescriptors();
+        for (const RenderPassDescriptor& descriptor : renderPassDescriptors)
         {
-            if (!descriptor.shader->IsValid())
+            if ((descriptor.shader == nullptr) || !descriptor.shader->IsValid())
                 continue;
 
             for (const auto& buff : descriptor.shader->GetConstBufferDescriptors())

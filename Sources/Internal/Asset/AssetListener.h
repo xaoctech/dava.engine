@@ -9,9 +9,18 @@ class AssetListener
 {
 public:
     virtual ~AssetListener();
-    virtual void OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded) = 0;
-    virtual void OnAssetError(const Asset<AssetBase>& asset, bool reloaded, const String& msg) = 0;
-    virtual void OnAssetUnloaded(const AssetBase* asset) = 0;
+    virtual void OnAssetLoaded(const Asset<AssetBase>& /*asset*/)
+    {
+    }
+    virtual void OnAssetReloaded(const Asset<AssetBase>& /*originalAsset*/, const Asset<AssetBase>& /*reloadedAsset*/)
+    {
+    }
+    virtual void OnAssetError(const Asset<AssetBase>& /*asset*/, bool reloaded, const String& /*msg*/)
+    {
+    }
+    virtual void OnAssetUnloaded(const AssetBase* /*asset*/)
+    {
+    }
 
 private:
     friend class AssetManager;
@@ -21,11 +30,13 @@ private:
 class SimpleAssetListener : public AssetListener
 {
 public:
-    void OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded) override;
+    void OnAssetLoaded(const Asset<AssetBase>& asset) override;
+    void OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset) override;
     void OnAssetError(const Asset<AssetBase>& asset, bool reloaded, const String& msg) override;
     void OnAssetUnloaded(const AssetBase* asset) override;
 
-    Function<void(const Asset<AssetBase>&, bool)> onLoaded;
+    Function<void(const Asset<AssetBase>&)> onLoaded;
+    Function<void(const Asset<AssetBase>&, const Asset<AssetBase>&)> onReloaded;
     Function<void(const Asset<AssetBase>&, bool, const String&)> onError;
     Function<void(const AssetBase*)> onUnloaded;
 };

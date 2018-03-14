@@ -2,6 +2,7 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Render/Material/FXAsset.h"
 
 namespace DAVA
 {
@@ -9,7 +10,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DecalComponent)
 {
     ReflectionRegistrator<DecalComponent>::Begin()
     .ConstructorByPointer()
-    .Field("material", &DecalComponent::GetMaterial, &DecalComponent::SetMaterial)[M::MaterialType(NMaterial::eType::TYPE_DECAL), M::DisplayName("Material")]
+    .Field("material", &DecalComponent::GetMaterial, &DecalComponent::SetMaterial)[M::MaterialType(FXDescriptor::eType::TYPE_DECAL), M::DisplayName("Material")]
     .Field("DecalSize", &DecalComponent::GetLocalSize, &DecalComponent::SetLocalSize)[M::DisplayName("Decal Size")]
     .Field("sortingOffset", &DecalComponent::GetSortingOffset, &DecalComponent::SetSortingOffset)[M::Range(0, 15, 1), M::DisplayName("Sorting")]
     .End();

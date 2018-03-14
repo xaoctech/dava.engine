@@ -7,16 +7,26 @@
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "Render/Material/NMaterialNames.h"
+#include "Render/Material/FXAssetLoader.h"
 #include "Render/Highlevel/Landscape.h"
-#include "Render/Material/FXCache.h"
-#include "Render/Shader.h"
 #include "Render/Texture.h"
 
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/YamlParser.h"
 
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+
+#include "Debug/Backtrace.h"
+
 #include "Logger/Logger.h"
+#include "FXAssetLoader.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+
+#define TRACE_MATERIAL_REBUILDS 0
 
 namespace DAVA
 {
@@ -137,7 +147,7 @@ MaterialConfig::~MaterialConfig()
     Clear();
 }
 
-NMaterial::NMaterial(eType type)
+NMaterial::NMaterial(FXDescriptor::eType type)
     : materialConfigs(1) //at least one config to emulate regular work
     , materialType(type)
     , renderVariants(4)
@@ -148,6 +158,7 @@ NMaterial::NMaterial(eType type)
 
 NMaterial::~NMaterial()
 {
+    GetEngineContext()->assetManager->UnregisterListener(this);
     NMaterialManager::Instance().UnregisterMaterial(this);
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
@@ -251,7 +262,7 @@ uint32 NMaterial::GetRequiredVertexFormat()
     uint32 res = 0;
     for (auto& variant : renderVariants)
     {
-        bool shaderValid = (nullptr != variant.second) && (variant.second->shader->IsValid());
+        bool shaderValid = (variant.second != nullptr) && (variant.second->shader != nullptr) && (variant.second->shader->IsValid());
         // DVASSERT(shaderValid, "Shader is invalid. Check log for details.");
 
         if (shaderValid)
@@ -339,14 +350,14 @@ const UnorderedMap<FastName, MaterialTextureInfo*>& NMaterial::GetLocalTextures(
     return GetCurrentConfig().localTextures;
 }
 
-NMaterial::eType NMaterial::GetMaterialType() const
+FXDescriptor::eType NMaterial::GetMaterialType() const
 {
     return materialType;
 }
 
 void NMaterial::SetFXName(const FastName& fx)
 {
-    DVASSERT(materialType != TYPE_GLOBAL || !fx.IsValid());
+    DVASSERT(materialType != FXDescriptor::TYPE_GLOBAL || !fx.IsValid());
 
     GetMutableCurrentConfig().fxName = fx;
     InvalidateRenderVariants();
@@ -569,8 +580,11 @@ void NMaterial::SetFlag(const FastName& flagName, int32 value)
 
     DVASSERT(config.localFlags.find(flagName) != config.localFlags.end());
 
-    config.localFlags[flagName] = value;
-    InvalidateRenderVariants();
+    if (config.localFlags[flagName] != value)
+    {
+        config.localFlags[flagName] = value;
+        InvalidateRenderVariants();
+    }
 }
 
 int32 NMaterial::GetEffectiveFlagValue(const FastName& flagName)
@@ -689,8 +703,11 @@ void NMaterial::SetCurrentConfigName(const FastName& newName)
 void NMaterial::SetCurrentConfigIndex(uint32 index)
 {
     DVASSERT(index < materialConfigs.size());
-    currentConfig = index;
-    InvalidateRenderVariants();
+    if (currentConfig != index)
+    {
+        currentConfig = index;
+        InvalidateRenderVariants();
+    }
 }
 
 void NMaterial::SetConfigName(uint32 index, const FastName& name)
@@ -781,6 +798,14 @@ void NMaterial::ClearLocalBuffers()
 
 void NMaterial::InvalidateBufferBindings()
 {
+#if TRACE_MATERIAL_REBUILDS
+    if (!needRebuildBindings)
+    {
+        Logger::Info("InvalidateBufferBindings , material %s pointer %p", materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+    }
+#endif
+
     ClearLocalBuffers(); //RHI_COMPLETE - as local buffers can have binding for this property now just clear them all, later rethink to erase just buffers containing this property
     needRebuildBindings = true;
     for (auto& child : children)
@@ -797,6 +822,14 @@ void NMaterial::InvalidateTextureBindings()
 
 void NMaterial::InvalidateRenderVariants()
 {
+#if TRACE_MATERIAL_REBUILDS
+    if (!needRebuildVariants)
+    {
+        Logger::Info("InvalidateRenderVariants , material %s pointer %p", materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+    }
+#endif
+
     // release existing descriptor?
     ClearLocalBuffers(); // to avoid using incorrect buffers in certain situations (e.g chaning parent)
     needRebuildVariants = true;
@@ -809,7 +842,9 @@ void NMaterial::PreCacheFX()
     UnorderedMap<FastName, int32> flags(16);
     CollectMaterialFlags(flags);
     NMaterialManager::Instance().MergeGlobalFlags(flags);
-    FXCache::GetFXDescriptor(GetEffectiveFXName(), flags, QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()));
+
+    FXAssetLoader::Key key(GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
+    GetEngineContext()->assetManager->GetAsset<FXAsset>(key, AssetManager::SYNC);
 }
 
 void NMaterial::PreCacheFXWithFlags(const UnorderedMap<FastName, int32>& extraFlags, const FastName& extraFxName)
@@ -824,7 +859,9 @@ void NMaterial::PreCacheFXWithFlags(const UnorderedMap<FastName, int32>& extraFl
         else
             flags[it.first] = it.second;
     }
-    FXCache::GetFXDescriptor(extraFxName.IsValid() ? extraFxName : GetEffectiveFXName(), flags, QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()));
+
+    FXAssetLoader::Key key(extraFxName.IsValid() ? extraFxName : GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
+    GetEngineContext()->assetManager->GetAsset<FXAsset>(key, AssetManager::SYNC);
 }
 
 void NMaterial::PreCacheFXVariations(const Vector<FastName>& fxNames, const Vector<FastName>& flags)
@@ -845,16 +882,41 @@ void NMaterial::PreCacheFXVariations(const Vector<FastName>& fxNames, const Vect
     }
 }
 
+void NMaterial::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset)
+{
+    if (fxAsset == originalAsset)
+    {
+        fxAsset = std::dynamic_pointer_cast<FXAsset>(reloadedAsset);
+        InvalidateRenderVariants();
+    }
+    else
+    {
+        for (auto& variant : renderVariants)
+        {
+            if (variant.second->shader == originalAsset)
+            {
+                InvalidateRenderVariants();
+                return;
+            }
+        }
+    }
+}
+
 void NMaterial::RebuildRenderVariants()
 {
     InvalidateBufferBindings();
+    AssetManager* assetManager = GetEngineContext()->assetManager;
 
     UnorderedMap<FastName, int32> flags(16);
     CollectMaterialFlags(flags);
     NMaterialManager::Instance().MergeGlobalFlags(flags);
-    const FXDescriptor& fxDescr = FXCache::GetFXDescriptor(GetEffectiveFXName(), flags, QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()));
 
-    if (fxDescr.renderPassDescriptors.size() == 0)
+    FXAssetLoader::Key fxKey(GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
+    fxAsset = assetManager->GetAsset<FXAsset>(fxKey, AssetManager::SYNC, this);
+
+    const Vector<RenderPassDescriptor>& renderPassDescriptors = fxAsset->GetPassDescriptors();
+
+    if (renderPassDescriptors.size() == 0)
     {
         // dragon: because I'm fucking sick and tired of Render2D-init crashing (when I don't even need it)
         return;
@@ -869,7 +931,7 @@ void NMaterial::RebuildRenderVariants()
     }
     renderVariants.clear();
 
-    for (auto& variantDescr : fxDescr.renderPassDescriptors)
+    for (auto& variantDescr : renderPassDescriptors)
     {
         RenderVariantInstance* variant = new RenderVariantInstance();
         variant->renderLayer = variantDescr.renderLayer;
@@ -880,11 +942,19 @@ void NMaterial::RebuildRenderVariants()
         variant->alphablend = variantDescr.hasBlend;
         variant->alphatest = (variantDescr.templateDefines.count(FastName("ALPHATEST")) != 0);
         renderVariants[variantDescr.passName] = variant;
+        assetManager->RegisterListener(variant->shader, this);
     }
 
     activeVariantName = FastName();
     activeVariantInstance = nullptr;
     needRebuildVariants = false;
+#if TRACE_MATERIAL_REBUILDS
+    if (!needRebuildBindings)
+    {
+        Logger::Info("RebuildRenderVariants , material %s pointer %p", materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+    }
+#endif
     needRebuildBindings = true;
     needRebuildTextures = true;
 }
@@ -921,9 +991,10 @@ void NMaterial::RebuildBindings()
     for (auto& variant : renderVariants)
     {
         RenderVariantInstance* currRenderVariant = variant.second;
-        ShaderDescriptor* currShader = currRenderVariant->shader;
-        if (!currShader->IsValid()) //cant build for empty shader
+        Asset<ShaderDescriptor> currShader = (currRenderVariant != nullptr) ? currRenderVariant->shader : nullptr;
+        if ((currShader == nullptr) || (currShader->IsValid() == false))
             continue;
+
         currRenderVariant->vertexConstBuffers.resize(currShader->GetVertexConstBuffersCount());
         currRenderVariant->fragmentConstBuffers.resize(currShader->GetFragmentConstBuffersCount());
 
@@ -1034,8 +1105,8 @@ void NMaterial::RebuildTextureBindings()
         rhi::ReleaseTextureSet(currRenderVariant->textureSet);
         rhi::ReleaseSamplerState(currRenderVariant->samplerState);
 
-        ShaderDescriptor* currShader = currRenderVariant->shader;
-        if (!currShader->IsValid()) //cant build for empty shader
+        Asset<ShaderDescriptor> currShader = (currRenderVariant != nullptr) ? currRenderVariant->shader : nullptr;
+        if ((currShader == nullptr) || (currShader->IsValid() == false))
             continue;
 
         rhi::TextureSetDescriptor textureDescr;
@@ -1177,17 +1248,25 @@ bool NMaterial::PreBuildMaterial(const FastName& passName)
         Logger::Info("Used passes: %s", buffer);
     }
     // */
-
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
     //shader rebuild first - as it sets needRebuildBindings and needRebuildTextures
     if (needRebuildVariants)
         RebuildRenderVariants();
     if (needRebuildBindings)
+    {
+#if TRACE_MATERIAL_REBUILDS
+        static int pbc = 0;
+        pbc++;
+        Logger::Info("Rebuilding Bindings %d for pass %s , material %s pointer %p", pbc, passName.c_str(), materialName.IsValid() ? materialName.c_str() : "", this);
+        Logger::Info("call stack: \n %s", Debug::GetBacktraceString(20).c_str());
+#endif
         RebuildBindings();
+    }
+
     if (needRebuildTextures)
         RebuildTextureBindings();
 
-    bool res = (activeVariantInstance != nullptr) && (activeVariantInstance->shader->IsValid());
+    bool res = (activeVariantInstance != nullptr) && (activeVariantInstance->shader != nullptr) && (activeVariantInstance->shader->IsValid());
     if (activeVariantName != passName)
     {
         auto it = renderVariants.find(passName); // [passName];
@@ -1196,7 +1275,7 @@ bool NMaterial::PreBuildMaterial(const FastName& passName)
             activeVariantName = passName;
             activeVariantInstance = it->second;
 
-            res = (activeVariantInstance->shader->IsValid());
+            res = (activeVariantInstance->shader != nullptr) && (activeVariantInstance->shader->IsValid());
         }
         else
         {
@@ -1208,11 +1287,11 @@ bool NMaterial::PreBuildMaterial(const FastName& passName)
     return res;
 }
 
-NMaterial* NMaterial::Clone(eType newType)
+NMaterial* NMaterial::Clone(FXDescriptor::eType newType)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    eType type = (newType == TYPE_COUNT) ? GetMaterialType() : newType;
+    FXDescriptor::eType type = (newType == FXDescriptor::TYPE_COUNT) ? GetMaterialType() : newType;
     NMaterial* clonedMaterial = new NMaterial(type);
     clonedMaterial->materialName = materialName;
     clonedMaterial->qualityGroup = qualityGroup;
@@ -1416,7 +1495,7 @@ void NMaterial::Load(KeyedArchive* archive, SerializationContext* serializationC
 
     if (archive->IsKeyExists(NMaterialSerializationKey::MaterialType))
     {
-        materialType = eType(archive->GetUInt32(NMaterialSerializationKey::MaterialType, uint32(TYPE_LEGACY)));
+        materialType = FXDescriptor::eType(archive->GetUInt32(NMaterialSerializationKey::MaterialType, uint32(FXDescriptor::TYPE_LEGACY)));
     }
 
     if (archive->IsKeyExists(NMaterialSerializationKey::MaterialKey))

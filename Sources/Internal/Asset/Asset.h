@@ -23,6 +23,8 @@ public:
     AssetBase(const Any& assetKey);
     virtual ~AssetBase() = default;
 
+    const Any& GetKey() const;
+
     eState GetState() const;
 
 private:

@@ -11,24 +11,26 @@
 #include <REPlatform/DataNodes/SpritesPackerModule.h>
 #include <REPlatform/Deprecated/EditorConfig.h>
 #include <REPlatform/Global/Constants.h>
+#include <REPlatform/Global/GlobalOperations.h>
 
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/QtAction.h>
 
-#include <Scene3D/Systems/QualitySettingsSystem.h>
-#include <Reflection/Reflection.h>
-#include <Reflection/ReflectedObject.h>
-#include <Engine/EngineContext.h>
-#include <FileSystem/YamlParser.h>
-#include <FileSystem/YamlNode.h>
-#include <FileSystem/KeyedArchive.h>
-#include <FileSystem/FileSystem.h>
+#include <Asset/AssetManager.h>
+#include <Base/FastName.h>
 #include <Base/Result.h>
-#include "Reflection/ReflectedTypeDB.h"
-#include "Base/FastName.h"
-#include "REPlatform/Global/GlobalOperations.h"
-#include "Debug/DVAssert.h"
+#include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <FileSystem/FileSystem.h>
+#include <FileSystem/KeyedArchive.h>
+#include <FileSystem/YamlNode.h>
+#include <FileSystem/YamlParser.h>
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/ReflectedTypeDB.h>
+#include <Reflection/Reflection.h>
+#include <Scene3D/Systems/QualitySettingsSystem.h>
 
 namespace ProjectManagerDetails
 {
@@ -257,6 +259,7 @@ void ProjectManagerModule::OpenProjectImpl(const DAVA::FilePath& incomePath)
     DAVA::FileSystem* fileSystem = engineCtx->fileSystem;
 
     projectResources->LoadProject(incomePath);
+    DAVA::GetEngineContext()->assetManager->SetResourceRoot(incomePath.GetAbsolutePathname());
     DAVA::PropertiesItem propsItem = GetAccessor()->CreatePropertiesNode(ProjectManagerDetails::PROPERTIES_KEY);
 
     DAVA::FilePath editorConfigPath = data->GetProjectPath() + "EditorConfig.yaml";
@@ -302,6 +305,7 @@ bool ProjectManagerModule::CloseProject()
             return false;
         }
 
+        DAVA::GetEngineContext()->assetManager->SetResourceRoot(DAVA::String());
         projectResources->UnloadProject();
 
         DAVA::PropertiesItem propsItem = GetAccessor()->CreatePropertiesNode(ProjectManagerDetails::PROPERTIES_KEY);
