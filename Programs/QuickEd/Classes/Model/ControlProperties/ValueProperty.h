@@ -36,6 +36,8 @@ public:
     void ResetValue() override;
     bool IsOverridden() const override;
     bool IsOverriddenLocally() const override;
+    bool IsForceOverride() const;
+    void SetForceOverride(bool forceOverride);
 
     virtual const DAVA::Type* GetSubValueType(DAVA::int32 index) const;
     virtual DAVA::Any GetSubValue(DAVA::int32 index) const;
@@ -57,14 +59,15 @@ protected:
 private:
     const DAVA::Type* GetValueTypeComponent(DAVA::int32 index) const;
     DAVA::Any GetValueComponent(const DAVA::Any& value, DAVA::int32 index) const;
+    bool IsEqual(const DAVA::Any& v1, const DAVA::Any& v2) const;
 
-private:
     DAVA::String name;
     const DAVA::Type* valueType = nullptr;
     DAVA::Any defaultValue;
     DAVA::Vector<DAVA::RefPtr<AbstractProperty>> children;
     DAVA::int32 stylePropertyIndex = -1;
     bool overridden = false;
+    bool forceOverride = false;
     const ValueProperty* prototypeProperty = nullptr; // weak
 };
 

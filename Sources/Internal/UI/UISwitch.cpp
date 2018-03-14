@@ -17,7 +17,7 @@ static float32 dragAnchorX = UISWITCH_ANCHOR_UNDEFINED;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UISwitch)
 {
-    ReflectionRegistrator<UISwitch>::Begin()
+    ReflectionRegistrator<UISwitch>::Begin()[M::DisplayName("Switch")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISwitch* o) { o->Release(); })
     .Field("isLeftSelected", &UISwitch::GetIsLeftSelected, &UISwitch::SetIsLeftSelected)[M::Bindable()]

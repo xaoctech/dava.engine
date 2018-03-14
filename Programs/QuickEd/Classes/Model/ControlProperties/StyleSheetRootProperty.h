@@ -8,7 +8,8 @@
 
 #include "UI/Styles/UIStyleSheetSelectorChain.h"
 
-class PropertyListener;
+#include <Functional/Signal.h>
+
 class ValueProperty;
 
 class StyleSheetNode;
@@ -57,9 +58,6 @@ public:
     const DAVA::Type* GetValueType() const override;
     ePropertyType GetType() const override;
 
-    void AddListener(PropertyListener* listener);
-    void RemoveListener(PropertyListener* listener);
-
     void SetProperty(AbstractProperty* property, const DAVA::Any& newValue);
     bool CanAddProperty(DAVA::uint32 propertyIndex) const;
     bool CanRemoveProperty(DAVA::uint32 propertyIndex) const;
@@ -85,6 +83,16 @@ public:
 
     DAVA::UIStyleSheetPropertyTable* GetStyleSheetPropertyTable() const;
 
+    DAVA::Signal<AbstractProperty*> propertyChanged;
+    DAVA::Signal<StyleSheetPropertiesSection*, StyleSheetProperty*, DAVA::int32> stylePropertyWillBeAdded;
+    DAVA::Signal<StyleSheetPropertiesSection*, StyleSheetProperty*, DAVA::int32> stylePropertyWasAdded;
+    DAVA::Signal<StyleSheetPropertiesSection*, StyleSheetProperty*, DAVA::int32> stylePropertyWillBeRemoved;
+    DAVA::Signal<StyleSheetPropertiesSection*, StyleSheetProperty*, DAVA::int32> stylePropertyWasRemoved;
+    DAVA::Signal<StyleSheetSelectorsSection*, StyleSheetSelectorProperty*, DAVA::int32> styleSelectorWillBeAdded;
+    DAVA::Signal<StyleSheetSelectorsSection*, StyleSheetSelectorProperty*, DAVA::int32> styleSelectorWasAdded;
+    DAVA::Signal<StyleSheetSelectorsSection*, StyleSheetSelectorProperty*, DAVA::int32> styleSelectorWillBeRemoved;
+    DAVA::Signal<StyleSheetSelectorsSection*, StyleSheetSelectorProperty*, DAVA::int32> styleSelectorWasRemoved;
+
 private:
     void UpdateStyleSheetPropertyTable();
 
@@ -98,7 +106,6 @@ private:
 
 private:
     StyleSheetNode* styleSheet = nullptr;
-    DAVA::Vector<PropertyListener*> listeners;
 
     StyleSheetSelectorsSection* selectors = nullptr;
     StyleSheetPropertiesSection* propertiesSection = nullptr;

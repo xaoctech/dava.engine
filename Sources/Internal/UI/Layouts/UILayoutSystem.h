@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
 #include "Base/Token.h"
+#include "Functional/Signal.h"
 #include "Math/Rect.h"
 #include "UI/UISystem.h"
 
@@ -13,7 +14,7 @@ namespace DAVA
 class UIControl;
 class UIScreen;
 class UIScreenTransition;
-class UILayoutSystemListener;
+class LayoutFormula;
 
 class UILayoutSystem : public UISystem
 {
@@ -43,10 +44,11 @@ public:
     void SetDirty();
     void CheckDirty();
 
-    void AddListener(UILayoutSystemListener* listener);
-    void RemoveListener(UILayoutSystemListener* listener);
-
     void ManualApplyLayout(UIControl* control); //DON'T USE IT!
+
+    Signal<UIControl*> controlLayouted;
+    Signal<UIControl*, Vector2::eAxis, const LayoutFormula*> formulaProcessed;
+    Signal<UIControl*, Vector2::eAxis, const LayoutFormula*> formulaRemoved;
 
 protected:
     void Process(float32 elapsedTime) override;
@@ -75,8 +77,6 @@ private:
     std::unique_ptr<class Layouter> sharedLayouter;
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIControl> popupContainer;
-
-    Vector<UILayoutSystemListener*> listeners;
 
     Token visibleFrameChangedToken;
     Token virtualSizeChangedToken;

@@ -18,6 +18,7 @@ class StyleSheetProperty;
 class StyleSheetSelectorProperty;
 class PackageListener;
 class AbstractProperty;
+class ValueProperty;
 class ComponentPropertiesSection;
 
 namespace DAVA
@@ -66,6 +67,7 @@ public:
     void SetControlProperty(ControlNode* node, AbstractProperty* property, const DAVA::Any& newValue);
     void SetControlBindingProperty(ControlNode* node, AbstractProperty* property, const DAVA::String& newBinding, DAVA::int32 bindingUpdateMode);
     void ResetControlProperty(ControlNode* node, AbstractProperty* property);
+    void SetControlPropertyForceOverride(ControlNode* node, ValueProperty* property, bool forceOverriden);
 
     void RefreshProperty(ControlNode* node, AbstractProperty* property);
 

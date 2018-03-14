@@ -4,7 +4,7 @@
 #include "Classes/Utils/PackageListenerProxy.h"
 
 #include <Base/BaseTypes.h>
-#include <UI/Layouts/UILayoutSystemListener.h>
+#include <Math/Vector.h>
 
 #include <QPointer>
 
@@ -18,16 +18,15 @@ class LayoutFormula;
 
 class IndexGenerator;
 
-class LayoutIssueHandler : public IssueHandler, DAVA::UILayoutSystemListener, PackageListener
+class LayoutIssueHandler : public IssueHandler, PackageListener
 {
 public:
     LayoutIssueHandler(DAVA::ContextAccessor* accessor, DAVA::int32 sectionId, IndexGenerator* indexGenerator);
     ~LayoutIssueHandler() override;
 
 private:
-    // UILayoutSystemListener
-    void OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula) override;
-    void OnFormulaRemoved(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula) override;
+    void OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula);
+    void OnFormulaRemoved(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula);
 
     // PackageListener
     void ControlPropertyWasChanged(ControlNode* node, AbstractProperty* property) override;

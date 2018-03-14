@@ -27,10 +27,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIWebView)
 {
-    ReflectionRegistrator<UIWebView>::Begin()
+    ReflectionRegistrator<UIWebView>::Begin()[M::DisplayName("Web View")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIWebView* o) { o->Release(); })
-    .Field("dataDetectorTypes", &UIWebView::GetDataDetectorTypes, &UIWebView::SetDataDetectorTypes)[M::EnumT<eDataDetectorType>()]
+    .Field("dataDetectorTypes", &UIWebView::GetDataDetectorTypes, &UIWebView::SetDataDetectorTypes)[M::EnumT<eDataDetectorType>(), M::DisplayName("Data Detector Type")]
     .End();
 }
 

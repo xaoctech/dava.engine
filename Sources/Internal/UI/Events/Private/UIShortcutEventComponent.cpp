@@ -10,10 +10,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIShortcutEventComponent)
 {
-    ReflectionRegistrator<UIShortcutEventComponent>::Begin()
+    ReflectionRegistrator<UIShortcutEventComponent>::Begin()[M::DisplayName("Shortcut Event"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIShortcutEventComponent* o) { o->Release(); })
-    .Field("shortcuts", &UIShortcutEventComponent::GetShortcutsAsString, &UIShortcutEventComponent::SetShortcutsFromString)
+    .Field("shortcuts", &UIShortcutEventComponent::GetShortcutsAsString, &UIShortcutEventComponent::SetShortcutsFromString)[M::DisplayName("Shortcuts")]
     .End();
 }
 

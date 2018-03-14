@@ -120,8 +120,6 @@ RefPtr<SoundEvent> UISoundSystem::GetEvent(const FastName& eventName)
 
         soundEvents[eventName] = event;
 
-        event->SetVolume(volume);
-
         return event;
     }
     else

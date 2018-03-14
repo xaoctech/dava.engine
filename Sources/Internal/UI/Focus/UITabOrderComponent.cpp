@@ -7,10 +7,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UITabOrderComponent)
 {
-    ReflectionRegistrator<UITabOrderComponent>::Begin()
+    ReflectionRegistrator<UITabOrderComponent>::Begin()[M::DisplayName("Tab Order"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UITabOrderComponent* o) { o->Release(); })
-    .Field("tab", &UITabOrderComponent::GetTabOrder, &UITabOrderComponent::SetTabOrder)
+    .Field("tab", &UITabOrderComponent::GetTabOrder, &UITabOrderComponent::SetTabOrder)[M::DisplayName("Tab Order")]
     .End();
 }
 IMPLEMENT_UI_COMPONENT(UITabOrderComponent);

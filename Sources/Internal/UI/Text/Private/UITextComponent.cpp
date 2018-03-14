@@ -25,23 +25,23 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UITextComponent)
 {
-    ReflectionRegistrator<UITextComponent>::Begin()
+    ReflectionRegistrator<UITextComponent>::Begin()[M::DisplayName("Text"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UITextComponent* o) { o->Release(); })
-    .Field("text", &UITextComponent::GetText, &UITextComponent::SetText)[M::Bindable()]
-    .Field("fontName", &UITextComponent::GetFontName, &UITextComponent::SetFontName)
-    .Field("fontPath", &UITextComponent::GetFontPath, &UITextComponent::SetFontPath)
-    .Field("fontSize", &UITextComponent::GetFontSize, &UITextComponent::SetFontSize)
-    .Field("color", &UITextComponent::GetColor, &UITextComponent::SetColor)
-    .Field("colorInheritType", &UITextComponent::GetColorInheritType, &UITextComponent::SetColorInheritType)[M::EnumT<UIControlBackground::eColorInheritType>()]
-    .Field("perPixelAccuracyType", &UITextComponent::GetPerPixelAccuracyType, &UITextComponent::SetPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>()]
-    .Field("shadowOffset", &UITextComponent::GetShadowOffset, &UITextComponent::SetShadowOffset)
-    .Field("shadowColor", &UITextComponent::GetShadowColor, &UITextComponent::SetShadowColor)
-    .Field("multiline", &UITextComponent::GetMultiline, &UITextComponent::SetMultiline)[M::EnumT<eTextMultiline>()]
-    .Field("fitting", &UITextComponent::GetFitting, &UITextComponent::SetFitting)[M::EnumT<eTextFitting>()]
-    .Field("align", &UITextComponent::GetAlign, &UITextComponent::SetAlign)[M::FlagsT<eAlign>()]
-    .Field("useRtlAlign", &UITextComponent::GetUseRtlAlign, &UITextComponent::SetUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>()]
-    .Field("forceBiDiSupport", &UITextComponent::IsForceBiDiSupportEnabled, &UITextComponent::SetForceBiDiSupportEnabled)
+    .Field("text", &UITextComponent::GetText, &UITextComponent::SetText)[M::DisplayName("Text"), M::Bindable()]
+    .Field("fontName", &UITextComponent::GetFontName, &UITextComponent::SetFontName)[M::DisplayName("Font Preset")]
+    .Field("fontPath", &UITextComponent::GetFontPath, &UITextComponent::SetFontPath)[M::DisplayName("Font Path")]
+    .Field("fontSize", &UITextComponent::GetFontSize, &UITextComponent::SetFontSize)[M::DisplayName("Font Size")]
+    .Field("color", &UITextComponent::GetColor, &UITextComponent::SetColor)[M::DisplayName("Color")]
+    .Field("colorInheritType", &UITextComponent::GetColorInheritType, &UITextComponent::SetColorInheritType)[M::EnumT<UIControlBackground::eColorInheritType>(), M::DisplayName("Color Inherit")]
+    .Field("perPixelAccuracyType", &UITextComponent::GetPerPixelAccuracyType, &UITextComponent::SetPerPixelAccuracyType)[M::EnumT<UIControlBackground::ePerPixelAccuracyType>(), M::DisplayName("PPA")]
+    .Field("shadowOffset", &UITextComponent::GetShadowOffset, &UITextComponent::SetShadowOffset)[M::DisplayName("Shadow Offset")]
+    .Field("shadowColor", &UITextComponent::GetShadowColor, &UITextComponent::SetShadowColor)[M::DisplayName("Shadow Color")]
+    .Field("multiline", &UITextComponent::GetMultiline, &UITextComponent::SetMultiline)[M::EnumT<eTextMultiline>(), M::DisplayName("Multiline")]
+    .Field("fitting", &UITextComponent::GetFitting, &UITextComponent::SetFitting)[M::EnumT<eTextFitting>(), M::DisplayName("Fitting")]
+    .Field("align", &UITextComponent::GetAlign, &UITextComponent::SetAlign)[M::FlagsT<eAlign>(), M::DisplayName("Align")]
+    .Field("useRtlAlign", &UITextComponent::GetUseRtlAlign, &UITextComponent::SetUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>(), M::DisplayName("Use RTL")]
+    .Field("forceBiDiSupport", &UITextComponent::IsForceBiDiSupportEnabled, &UITextComponent::SetForceBiDiSupportEnabled)[M::DisplayName("Force BiDi")]
     .End();
 }
 

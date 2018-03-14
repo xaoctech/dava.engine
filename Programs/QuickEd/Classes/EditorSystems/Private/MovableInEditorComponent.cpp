@@ -7,7 +7,7 @@
 
 DAVA_VIRTUAL_REFLECTION_IMPL(MovableInEditorComponent)
 {
-    DAVA::ReflectionRegistrator<MovableInEditorComponent>::Begin()
+    DAVA::ReflectionRegistrator<MovableInEditorComponent>::Begin()[DAVA::M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](MovableInEditorComponent* o) { o->Release(); })
     .End();

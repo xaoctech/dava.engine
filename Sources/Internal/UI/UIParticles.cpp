@@ -15,12 +15,12 @@ Camera* UIParticles::defaultCamera = nullptr;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIParticles)
 {
-    ReflectionRegistrator<UIParticles>::Begin()
+    ReflectionRegistrator<UIParticles>::Begin()[M::DisplayName("Particles")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIParticles* o) { o->Release(); })
-    .Field("effectPath", &UIParticles::GetEffectPath, &UIParticles::SetEffectPath)
-    .Field("autoStart", &UIParticles::IsAutostart, &UIParticles::SetAutostart)
-    .Field("startDelay", &UIParticles::GetStartDelay, &UIParticles::SetStartDelay)
+    .Field("effectPath", &UIParticles::GetEffectPath, &UIParticles::SetEffectPath)[M::DisplayName("Effect Path")]
+    .Field("autoStart", &UIParticles::IsAutostart, &UIParticles::SetAutostart)[M::DisplayName("Auto Start")]
+    .Field("startDelay", &UIParticles::GetStartDelay, &UIParticles::SetStartDelay)[M::DisplayName("Start Delay")]
     .End();
 }
 

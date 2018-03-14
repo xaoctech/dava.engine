@@ -14,7 +14,6 @@
 #include "UI/Layouts/UIFlowLayoutComponent.h"
 #include "UI/Layouts/UILayoutIsolationComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
-#include "UI/Layouts/UILayoutSystemListener.h"
 #include "UI/Layouts/UILinearLayoutComponent.h"
 #include "UI/Layouts/UISizePolicyComponent.h"
 #include "UI/Text/UITextComponent.h"
@@ -30,23 +29,16 @@ UILayoutSystem::UILayoutSystem()
     : sharedLayouter(std::make_unique<Layouter>())
 {
     sharedLayouter->onFormulaProcessed = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
-        for (UILayoutSystemListener* listener : listeners)
-        {
-            listener->OnFormulaProcessed(control, axis, formula);
-        }
+        formulaProcessed.Emit(control, axis, formula);
     };
 
     sharedLayouter->onFormulaRemoved = [this](UIControl* control, Vector2::eAxis axis, const LayoutFormula* formula) {
-        for (UILayoutSystemListener* listener : listeners)
-        {
-            listener->OnFormulaRemoved(control, axis, formula);
-        }
+        formulaRemoved.Emit(control, axis, formula);
     };
 }
 
 UILayoutSystem::~UILayoutSystem()
 {
-    DVASSERT(listeners.empty());
 }
 
 void UILayoutSystem::RegisterSystem()
@@ -120,10 +112,7 @@ void UILayoutSystem::UnregisterControl(UIControl* control)
             if (formula != nullptr)
             {
                 formula->MarkChanges();
-                for (UILayoutSystemListener* listener : listeners)
-                {
-                    listener->OnFormulaRemoved(control, static_cast<Vector2::eAxis>(axis), formula);
-                }
+                formulaRemoved.Emit(control, static_cast<Vector2::eAxis>(axis), formula);
             }
         }
     }
@@ -139,10 +128,7 @@ void UILayoutSystem::UnregisterComponent(UIControl* control, UIComponent* compon
             LayoutFormula* formula = sizePolicyComponent->GetFormula(axis);
             if (formula != nullptr)
             {
-                for (UILayoutSystemListener* listener : listeners)
-                {
-                    listener->OnFormulaRemoved(control, static_cast<Vector2::eAxis>(axis), formula);
-                }
+                formulaRemoved.Emit(control, static_cast<Vector2::eAxis>(axis), formula);
             }
         }
     }
@@ -241,20 +227,13 @@ void UILayoutSystem::ProcessControl(UIControl* control)
         UIControl* container = FindNotDependentOnChildrenControl(control);
         sharedLayouter->ApplyLayout(container);
 
-        for (UILayoutSystemListener* listener : listeners)
-        {
-            listener->OnControlLayouted(container);
-        }
+        controlLayouted.Emit(container);
     }
     else if (positionDirty && HaveToLayoutAfterReposition(control))
     {
         UIControl* container = control->GetParent();
         sharedLayouter->ApplyLayoutNonRecursive(container);
-
-        for (UILayoutSystemListener* listener : listeners)
-        {
-            listener->OnControlLayouted(container);
-        }
+        controlLayouted.Emit(container);
     }
 }
 
@@ -286,32 +265,6 @@ bool UILayoutSystem::IsAutoupdatesEnabled() const
 void UILayoutSystem::SetAutoupdatesEnabled(bool enabled)
 {
     autoupdatesEnabled = enabled;
-}
-
-void UILayoutSystem::AddListener(UILayoutSystemListener* listener)
-{
-    auto it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it == listeners.end())
-    {
-        listeners.push_back(listener);
-    }
-    else
-    {
-        DVASSERT(false);
-    }
-}
-
-void UILayoutSystem::RemoveListener(UILayoutSystemListener* listener)
-{
-    auto it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it != listeners.end())
-    {
-        listeners.erase(it);
-    }
-    else
-    {
-        DVASSERT(false);
-    }
 }
 
 UIControl* UILayoutSystem::FindNotDependentOnChildrenControl(UIControl* control) const

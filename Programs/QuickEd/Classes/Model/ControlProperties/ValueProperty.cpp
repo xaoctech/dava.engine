@@ -110,7 +110,7 @@ const DAVA::Type* ValueProperty::GetValueType() const
 
 void ValueProperty::SetValue(const Any& newValue)
 {
-    overridden = true;
+    overridden = forceOverride || !IsEqual(defaultValue, newValue);
     ApplyValue(newValue);
 }
 
@@ -131,6 +131,7 @@ void ValueProperty::SetDefaultValue(const Any& newValue)
 
 void ValueProperty::ResetValue()
 {
+    forceOverride = false;
     overridden = false;
     ApplyValue(defaultValue);
 }
@@ -147,6 +148,17 @@ bool ValueProperty::IsOverridden() const
 bool ValueProperty::IsOverriddenLocally() const
 {
     return overridden;
+}
+
+bool ValueProperty::IsForceOverride() const
+{
+    return forceOverride;
+}
+
+void ValueProperty::SetForceOverride(bool forceOverride_)
+{
+    forceOverride = forceOverride_;
+    overridden = forceOverride || !IsEqual(defaultValue, GetValue());
 }
 
 const Type* ValueProperty::GetSubValueType(int32 index) const
@@ -382,4 +394,24 @@ Any ValueProperty::GetValueComponent(const Any& value, int32 index) const
 
     DVASSERT(false);
     return Any();
+}
+
+bool ValueProperty::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2) const
+{
+    if (v1 == v2)
+    {
+        return true;
+    }
+
+    if (v1.IsEmpty() || v2.IsEmpty())
+    {
+        return false;
+    }
+
+    if ((v1.GetType()->IsEnum() || v1.CanGet<int32>()) && (v2.GetType()->IsEnum() || v2.CanGet<int32>()))
+    {
+        return v1.Cast<int32>() == v2.Cast<int32>();
+    }
+
+    return false;
 }

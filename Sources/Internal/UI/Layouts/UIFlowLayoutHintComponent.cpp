@@ -10,14 +10,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutHintComponent)
 {
-    ReflectionRegistrator<UIFlowLayoutHintComponent>::Begin()
+    ReflectionRegistrator<UIFlowLayoutHintComponent>::Begin()[M::DisplayName("Flow Layout Hint"), M::Group("Layout")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowLayoutHintComponent* o) { o->Release(); })
-    .Field("newLineBeforeThis", &UIFlowLayoutHintComponent::IsNewLineBeforeThis, &UIFlowLayoutHintComponent::SetNewLineBeforeThis)
-    .Field("newLineAfterThis", &UIFlowLayoutHintComponent::IsNewLineAfterThis, &UIFlowLayoutHintComponent::SetNewLineAfterThis)
-    .Field("stickItemBeforeThis", &UIFlowLayoutHintComponent::IsStickItemBeforeThis, &UIFlowLayoutHintComponent::SetStickItemBeforeThis)
-    .Field("stickItemAfterThis", &UIFlowLayoutHintComponent::IsStickItemAfterThis, &UIFlowLayoutHintComponent::SetStickItemAfterThis)
-    .Field("contentDirection", &UIFlowLayoutHintComponent::GetContentDirection, &UIFlowLayoutHintComponent::SetContentDirection)[M::EnumT<BiDiHelper::Direction>()]
+    .Field("newLineBeforeThis", &UIFlowLayoutHintComponent::IsNewLineBeforeThis, &UIFlowLayoutHintComponent::SetNewLineBeforeThis)[M::DisplayName("New Line Before This")]
+    .Field("newLineAfterThis", &UIFlowLayoutHintComponent::IsNewLineAfterThis, &UIFlowLayoutHintComponent::SetNewLineAfterThis)[M::DisplayName("New Line After This")]
+    .Field("stickItemBeforeThis", &UIFlowLayoutHintComponent::IsStickItemBeforeThis, &UIFlowLayoutHintComponent::SetStickItemBeforeThis)[M::DisplayName("Stick Item Before This")]
+    .Field("stickItemAfterThis", &UIFlowLayoutHintComponent::IsStickItemAfterThis, &UIFlowLayoutHintComponent::SetStickItemAfterThis)[M::DisplayName("Stick Item After This")]
+    .Field("contentDirection", &UIFlowLayoutHintComponent::GetContentDirection, &UIFlowLayoutHintComponent::SetContentDirection)[M::EnumT<BiDiHelper::Direction>(), M::DisplayName("Content Direction")]
     .End();
 }
 

@@ -9,6 +9,7 @@
 #include <TArc/Utils/QtConnections.h>
 
 #include <QMainWindow>
+#include <QTranslator>
 
 namespace Ui
 {
@@ -74,6 +75,8 @@ private:
     DAVA::QtDelayedExecutor delayedExecutor;
     DAVA::ContextAccessor* accessor = nullptr;
     DAVA::QtConnections connections;
+
+    QTranslator translator;
 
     ProjectView* projectView = nullptr;
 };

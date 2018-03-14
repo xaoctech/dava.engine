@@ -32,6 +32,7 @@ NameProperty::NameProperty(ControlNode* controlNode_, const NameProperty* protot
         name = FastName("");
     }
 
+    SetDefaultValue(FastName(""));
     value = name;
     if (UIControlHelpers::IsControlNameValid(name))
     {

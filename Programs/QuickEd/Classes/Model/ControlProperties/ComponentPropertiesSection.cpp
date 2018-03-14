@@ -4,6 +4,7 @@
 #include "PropertyVisitor.h"
 
 #include <UI/UIControl.h>
+#include <UI/Components/UIComponentUtils.h>
 #include <UI/Layouts/UILayoutIsolationComponent.h>
 #include <UI/Layouts/UILayoutSourceRectComponent.h>
 #include <UI/Scene3D/UISceneComponent.h>
@@ -35,6 +36,7 @@ ComponentPropertiesSection::ComponentPropertiesSection(DAVA::UIControl* control_
     }
     DVASSERT(component);
 
+    name = GetComponentName();
     RefreshName();
 
     Reflection componentRef = Reflection::Create(&component);
@@ -59,12 +61,6 @@ ComponentPropertiesSection::~ComponentPropertiesSection()
     prototypeSection = nullptr; // weak
 }
 
-bool ComponentPropertiesSection::IsHiddenComponent(const Type* type)
-{
-    const ReflectedType* rtype = ReflectedTypeDB::GetByType(type);
-    return GetReflectedTypeMeta<DAVA::M::HiddenField>(rtype) != nullptr;
-}
-
 UIComponent* ComponentPropertiesSection::GetComponent() const
 {
     return component;
@@ -73,6 +69,11 @@ UIComponent* ComponentPropertiesSection::GetComponent() const
 const DAVA::Type* ComponentPropertiesSection::GetComponentType() const
 {
     return component->GetType();
+}
+
+const DAVA::String& ComponentPropertiesSection::GetDisplayName() const
+{
+    return displayName;
 }
 
 void ComponentPropertiesSection::AttachPrototypeSection(ComponentPropertiesSection* section)
@@ -214,7 +215,7 @@ String ComponentPropertiesSection::GetComponentName() const
 
 void ComponentPropertiesSection::RefreshName()
 {
-    name = GetComponentName();
-    if (UIComponent::IsMultiple(component->GetType()))
-        name += Format(" [%d]", index);
+    displayName = UIComponentUtils::GetDisplayName(component->GetType());
+    if (UIComponentUtils::IsMultiple(component->GetType()))
+        displayName += Format(" [%d]", index);
 }

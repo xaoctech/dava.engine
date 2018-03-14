@@ -7,15 +7,15 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIInputEventComponent)
 {
-    ReflectionRegistrator<UIInputEventComponent>::Begin()
+    ReflectionRegistrator<UIInputEventComponent>::Begin()[M::DisplayName("Input Event"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIInputEventComponent* o) { o->Release(); })
-    .Field("onTouchDown", &UIInputEventComponent::GetOnTouchDownEvent, &UIInputEventComponent::SetOnTouchDownEvent)
-    .Field("onTouchUpInside", &UIInputEventComponent::GetOnTouchUpInsideEvent, &UIInputEventComponent::SetOnTouchUpInsideEvent)
-    .Field("onTouchUpOutside", &UIInputEventComponent::GetOnTouchUpOutsideEvent, &UIInputEventComponent::SetOnTouchUpOutsideEvent)
-    .Field("onValueChanged", &UIInputEventComponent::GetOnValueChangedEvent, &UIInputEventComponent::SetOnValueChangedEvent)
-    .Field("onHoverSet", &UIInputEventComponent::GetOnHoverSetEvent, &UIInputEventComponent::SetOnHoverSetEvent)
-    .Field("onHoverRemoved", &UIInputEventComponent::GetOnHoverRemovedEvent, &UIInputEventComponent::SetOnHoverRemovedEvent)
+    .Field("onTouchDown", &UIInputEventComponent::GetOnTouchDownEvent, &UIInputEventComponent::SetOnTouchDownEvent)[M::DisplayName("Touch Down")]
+    .Field("onTouchUpInside", &UIInputEventComponent::GetOnTouchUpInsideEvent, &UIInputEventComponent::SetOnTouchUpInsideEvent)[M::DisplayName("Touch Up Inside")]
+    .Field("onTouchUpOutside", &UIInputEventComponent::GetOnTouchUpOutsideEvent, &UIInputEventComponent::SetOnTouchUpOutsideEvent)[M::DisplayName("Touch Up Outside")]
+    .Field("onValueChanged", &UIInputEventComponent::GetOnValueChangedEvent, &UIInputEventComponent::SetOnValueChangedEvent)[M::DisplayName("Value Changed")]
+    .Field("onHoverSet", &UIInputEventComponent::GetOnHoverSetEvent, &UIInputEventComponent::SetOnHoverSetEvent)[M::DisplayName("Hover Start")]
+    .Field("onHoverRemoved", &UIInputEventComponent::GetOnHoverRemovedEvent, &UIInputEventComponent::SetOnHoverRemovedEvent)[M::DisplayName("Hover End")]
     .End();
 }
 

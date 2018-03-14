@@ -7,10 +7,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIModalInputComponent)
 {
-    ReflectionRegistrator<UIModalInputComponent>::Begin()
+    ReflectionRegistrator<UIModalInputComponent>::Begin()[M::DisplayName("Modal Input"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIModalInputComponent* o) { o->Release(); })
-    .Field("enabled", &UIModalInputComponent::IsEnabled, &UIModalInputComponent::SetEnabled)
+    .Field("enabled", &UIModalInputComponent::IsEnabled, &UIModalInputComponent::SetEnabled)[M::DisplayName("Enabled")]
     .End();
 }
 

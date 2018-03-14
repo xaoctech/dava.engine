@@ -19,9 +19,11 @@ protected:
 
 public:
     void Accept(PropertyVisitor* visitor) override;
+    const DAVA::String& GetDisplayName() const override;
 
 private:
     DAVA::UIControl* control;
+    DAVA::String displayName;
 };
 
 #endif // __UI_EDITOR_CONTROL_PROPERTIES_SECTION_H__

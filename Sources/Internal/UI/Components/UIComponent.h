@@ -19,7 +19,6 @@ public:
 
     static UIComponent* CreateByType(const Type* componentType);
     static RefPtr<UIComponent> SafeCreateByType(const Type* componentType);
-    static bool IsMultiple(const Type* componentType);
 
     void SetControl(UIControl* _control);
     UIControl* GetControl() const;

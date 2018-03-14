@@ -22,10 +22,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowTransitionComponent)
 {
-    ReflectionRegistrator<UIFlowTransitionComponent>::Begin()
+    ReflectionRegistrator<UIFlowTransitionComponent>::Begin()[M::DisplayName("Flow Transition")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowTransitionComponent* c) { SafeRelease(c); })
-    .Field("transitions", &UIFlowTransitionComponent::GetTransitionMapAsString, &UIFlowTransitionComponent::SetTransitionMapFromString)
+    .Field("transitions", &UIFlowTransitionComponent::GetTransitionMapAsString, &UIFlowTransitionComponent::SetTransitionMapFromString)[M::DisplayName("Transitions")]
     .End();
 }
 

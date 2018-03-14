@@ -5,6 +5,7 @@
 #include <Reflection/ReflectedTypeDB.h>
 
 #include <UI/Components/UIComponent.h>
+#include <UI/Components/UIComponentUtils.h>
 
 template <typename Component, typename T>
 class FieldHolder
@@ -20,7 +21,7 @@ public:
         using namespace DAVA;
 
         const Type* componentType = Type::Instance<Component>();
-        DVASSERT(UIComponent::IsMultiple(componentType) == false);
+        DVASSERT(UIComponentUtils::IsMultiple(componentType) == false);
         Any value = control->GetComponentPropertyValue(componentType, 0, *field);
         if (value.CanCast<T>())
         {

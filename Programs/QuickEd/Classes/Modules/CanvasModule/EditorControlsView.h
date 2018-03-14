@@ -8,7 +8,6 @@
 
 #include <Reflection/Reflection.h>
 
-#include <UI/Layouts/UILayoutSystemListener.h>
 #include <Math/Color.h>
 #include <Base/BaseTypes.h>
 
@@ -21,7 +20,7 @@ namespace DAVA
 class FieldBinder;
 }
 
-class EditorControlsView final : public BaseEditorSystem, PackageListener, DAVA::UILayoutSystemListener
+class EditorControlsView final : public BaseEditorSystem, PackageListener
 {
 public:
     EditorControlsView(DAVA::UIControl* canvas, DAVA::ContextAccessor* accessor);
@@ -47,8 +46,7 @@ private:
 
     void PlaceControlsOnCanvas();
 
-    // UILayoutSystemListener
-    void OnControlLayouted(DAVA::UIControl* control) override;
+    void OnControlLayouted(DAVA::UIControl* control);
 
     void RecalculateBackgroundPropertiesForGrids(DAVA::UIControl* control);
     SortedControlNodeSet GetDisplayedControls() const;
