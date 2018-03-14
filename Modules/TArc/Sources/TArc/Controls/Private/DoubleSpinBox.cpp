@@ -21,14 +21,21 @@ void DoubleSpinBox::UpdateControl(const ControlDescriptor& changedFields)
 {
     if (changedFields.IsChanged(Fields::Accuracy))
     {
-        Reflection r = model.GetField(changedFields.GetName(Fields::Accuracy));
-        DVASSERT(r.IsValid());
-        Any value = r.GetValue();
-        if (value.CanGet<M::FloatNumberAccuracy*>())
+        int dec = GetFieldValue<int32>(Fields::Accuracy, -1);
+        if (dec == -1)
         {
-            setDecimals(value.Get<M::FloatNumberAccuracy*>()->accuracy);
+            M::FloatNumberAccuracy* accuracyMeta = GetFieldValue<M::FloatNumberAccuracy*>(Fields::Accuracy, nullptr);
+            if (accuracyMeta == nullptr)
+            {
+                dec = accuracyMeta->accuracy;
+            }
+            else
+            {
+                dec = decimals();
+            }
         }
-        setDecimals(r.GetValue().Cast<int>());
+
+        setDecimals(dec);
     }
     else if (changedFields.IsChanged(Fields::Value))
     {

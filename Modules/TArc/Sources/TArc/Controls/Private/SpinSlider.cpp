@@ -62,6 +62,7 @@ void SpinSlider::SetupControl(const Params& params, const Reflection& model)
     spinParams.fields[DoubleSpinBox::Fields::Value] = descr.GetName(SpinSlider::Fields::SpinValue);
     spinParams.fields[DoubleSpinBox::Fields::Range] = descr.GetName(SpinSlider::Fields::SpinRange);
     spinParams.fields[DoubleSpinBox::Fields::IsEnabled] = descr.GetName(SpinSlider::Fields::Enabled);
+    spinParams.fields[DoubleSpinBox::Fields::Accuracy].BindConstValue(2);
     spin = new DoubleSpinBox(spinParams, params.accessor, model, this);
 
     Slider::Params sliderParams(params.accessor, params.ui, params.wndKey);

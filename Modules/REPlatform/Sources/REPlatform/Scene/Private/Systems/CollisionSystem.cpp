@@ -1120,8 +1120,8 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             if (objType == RenderObject::TYPE_BILLBOARD)
             {
                 const AABBox3& box = renderObject->GetBoundingBox();
-                Matrix4 transform = Matrix4::MakeTranslation(box.GetCenter());
-                result = CreateBox(createCollision, true, transform, toVec3Fn(box.GetSize().x), queryData, userData);
+                Matrix4 transform = entity->GetWorldTransform();
+                result = CreateBox(createCollision, true, transform, toVec3Fn(box.GetSize().x * 0.5f), queryData, userData);
             }
             else if ((objType != RenderObject::TYPE_SPRITE) && (objType != RenderObject::TYPE_VEGETATION))
             {
