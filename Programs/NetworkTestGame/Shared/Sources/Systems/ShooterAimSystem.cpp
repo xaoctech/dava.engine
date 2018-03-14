@@ -24,9 +24,9 @@
 #include <UI/Joypad/UIJoypadComponent.h>
 #include <Debug/ProfilerCPU.h>
 
-#include <Physics/Private/PhysicsMath.h>
-#include <Physics/PhysicsUtils.h>
-#include <Physics/StaticBodyComponent.h>
+#include <Physics/Core/Private/PhysicsMath.h>
+#include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Core/StaticBodyComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
 #include <NetworkCore/NetworkCoreUtils.h>
 

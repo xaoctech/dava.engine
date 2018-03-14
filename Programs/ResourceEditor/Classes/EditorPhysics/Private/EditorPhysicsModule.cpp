@@ -20,13 +20,13 @@
 #include <TArc/Controls/ComboBox.h>
 
 #include <Physics/PhysicsModule.h>
-#include <Physics/VehicleWheelComponent.h>
-#include <Physics/VehicleChassisComponent.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/VehicleTankComponent.h>
-#include <Physics/ConvexHullShapeComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
+#include <Physics/Vehicles/VehicleWheelComponent.h>
+#include <Physics/Vehicles/VehicleChassisComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Vehicles/VehicleTankComponent.h>
+#include <Physics/Core/ConvexHullShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
 
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/RenderComponent.h>

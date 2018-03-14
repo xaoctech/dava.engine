@@ -14,7 +14,7 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
-#include <Physics/DynamicBodyComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
 #include <physx/PxQueryFiltering.h>
 #include <physx/PxQueryReport.h>
 #include <physx/PxRigidActor.h>

@@ -710,6 +710,7 @@ void FMODSoundSystem::SetAllGroupsVolume(float32 volume)
 
 void FMODSoundSystem::SetGroupVolume(const FastName& groupName, float32 volume)
 {
+    bool groupFound = false;
     LockGuard<Mutex> lock(soundGroupsMutex);
 
     for (size_t i = 0; i < soundGroups.size(); ++i)
@@ -717,6 +718,7 @@ void FMODSoundSystem::SetGroupVolume(const FastName& groupName, float32 volume)
         SoundGroup& group = soundGroups[i];
         if (group.name == groupName)
         {
+            groupFound = true;
             group.volume = volume;
             for (auto& x : group.events)
             {
@@ -725,6 +727,13 @@ void FMODSoundSystem::SetGroupVolume(const FastName& groupName, float32 volume)
 
             break;
         }
+    }
+    if (!groupFound)
+    {
+        SoundGroup group;
+        group.name = groupName;
+        group.volume = volume;
+        soundGroups.push_back(group);
     }
 }
 
@@ -768,6 +777,7 @@ void FMODSoundSystem::SetGroupSpeed(const FastName& groupName, float32 speed)
 {
     DVASSERT(speed >= 0.0f);
 
+    bool groupFound = false;
     LockGuard<Mutex> lock(soundGroupsMutex);
 
     for (size_t i = 0; i < soundGroups.size(); ++i)
@@ -775,6 +785,7 @@ void FMODSoundSystem::SetGroupSpeed(const FastName& groupName, float32 speed)
         SoundGroup& group = soundGroups[i];
         if (group.name == groupName)
         {
+            groupFound = true;
             group.speed = speed;
             for (auto& x : group.events)
             {
@@ -783,6 +794,13 @@ void FMODSoundSystem::SetGroupSpeed(const FastName& groupName, float32 speed)
 
             break;
         }
+    }
+    if (!groupFound)
+    {
+        SoundGroup group;
+        group.name = groupName;
+        group.speed = speed;
+        soundGroups.push_back(group);
     }
 }
 
@@ -835,7 +853,7 @@ void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent* event)
 {
     soundGroupsMutex.Lock();
 
-    for (size_t i = 0; i < soundGroups.size();)
+    for (size_t i = 0; i < soundGroups.size(); ++i)
     {
         Vector<SoundEvent*>& events = soundGroups[i].events;
         for (size_t k = 0, eventsSize = events.size(); k < eventsSize; k++)
@@ -845,15 +863,6 @@ void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent* event)
                 RemoveExchangingWithLast(events, k);
                 break;
             }
-        }
-
-        if (events.empty())
-        {
-            RemoveExchangingWithLast(soundGroups, i);
-        }
-        else
-        {
-            ++i;
         }
     }
 

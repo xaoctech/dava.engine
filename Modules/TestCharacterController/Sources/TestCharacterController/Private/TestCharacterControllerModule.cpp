@@ -13,7 +13,7 @@
 #include <Scene3D/Systems/TransformSystem.h>
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 #include <Physics/PhysicsSystem.h>
 #endif
 

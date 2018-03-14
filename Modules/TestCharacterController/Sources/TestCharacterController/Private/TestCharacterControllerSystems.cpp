@@ -19,8 +19,8 @@
 #include <Utils/Utils.h>
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/PhysicsUtils.h>
-#include <Physics/CharacterControllerComponent.h>
+#include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Controllers/CharacterControllerComponent.h>
 #endif
 
 namespace DAVA

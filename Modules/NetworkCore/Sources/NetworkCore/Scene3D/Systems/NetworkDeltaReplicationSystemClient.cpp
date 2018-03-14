@@ -25,7 +25,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemClient)
 {
     ReflectionRegistrator<NetworkDeltaReplicationSystemClient>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkDeltaReplicationSystemClient::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.0f)]
+    .Method("ProcessFixed", &NetworkDeltaReplicationSystemClient::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.0f)]
     .End();
 }
 
@@ -130,18 +130,17 @@ NetworkDeltaReplicationSystemClient::NetworkDeltaReplicationSystemClient(Scene* 
 
 void NetworkDeltaReplicationSystemClient::ProcessFixed(float32 timeElapsed)
 {
+    ProcessReceivedPackets();
     ProcessAppliedPackets();
-
     elasticBuffer.Reset();
 }
-
-void NetworkDeltaReplicationSystemClient::OnReceiveCallback(const uint8* data, size_t pktSize, uint8, uint32)
+void NetworkDeltaReplicationSystemClient::ProcessReceivedPackets()
 {
-    if (pktSize > 0)
+    NetworkDeltaSingleComponent::Deltas& deltas = deltaSingleComponent->deltas;
+    for (const auto& packet : recvPackets)
     {
-        NetworkDeltaSingleComponent::Deltas& deltas = deltaSingleComponent->deltas;
         PacketHeader pktHeader;
-        uint32 size = pktHeader.Load(data);
+        uint32 size = pktHeader.Load(packet.data());
         const uint32 frameId = pktHeader.frameId;
 
         if (pktHeader.timestamps)
@@ -167,14 +166,14 @@ void NetworkDeltaReplicationSystemClient::OnReceiveCallback(const uint8* data, s
 
         EntityHeader entHeader;
         const uint32 entHeaderSize = entHeader.GetSize();
-        while (size + entHeaderSize <= pktSize)
+        while (size + entHeaderSize <= packet.size())
         {
-            size += entHeader.Load(data + size);
-            DVASSERT(size <= pktSize);
+            size += entHeader.Load(packet.data() + size);
+            DVASSERT(size <= packet.size());
             const uint32 baseFrameId = (entHeader.frameOffset > 0) ? frameId - entHeader.frameOffset : 0;
-            const uint8* buff = data + size;
+            const uint8* buff = packet.data() + size;
 
-            const size_t tailSize = pktSize - size;
+            const size_t tailSize = packet.size() - size;
             size_t diffSize = SnapshotUtils::GetSnapshotDiffSize(buff, tailSize);
             if (!diffSize)
             {
@@ -209,6 +208,17 @@ void NetworkDeltaReplicationSystemClient::OnReceiveCallback(const uint8* data, s
             sequenceToCounter[sequenceId] = numberOfEntities;
         }
     }
+    recvPackets.clear();
+}
+
+void NetworkDeltaReplicationSystemClient::OnReceiveCallback(const uint8* data, size_t pktSize, uint8, uint32)
+{
+    if (pktSize > 0)
+    {
+        Vector<uint8> packet(pktSize);
+        Memcpy(packet.data(), data, pktSize);
+        recvPackets.push_back(std::move(packet));
+    }
 }
 
 void NetworkDeltaReplicationSystemClient::ProcessAppliedPackets()
@@ -216,7 +226,7 @@ void NetworkDeltaReplicationSystemClient::ProcessAppliedPackets()
     NetworkDeltaSingleComponent::Deltas& deltas = deltaSingleComponent->deltas;
     for (NetworkDeltaSingleComponent::Delta& delta : deltas)
     {
-        DVASSERT(delta.status != NetworkDeltaSingleComponent::Delta::Status::PENDING);
+        //DVASSERT(delta.status != NetworkDeltaSingleComponent::Delta::Status::PENDING);
         if (delta.status == NetworkDeltaSingleComponent::Delta::Status::APPLIED)
         {
             if (delta.sequenceId)

@@ -90,7 +90,7 @@
 #endif
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/WASDPhysicsControllerSystem.h>
+#include <Physics/Controllers/WASDPhysicsControllerSystem.h>
 #include <Physics/PhysicsSystem.h>
 #include <Physics/CollisionSingleComponent.h>
 #endif

@@ -14,8 +14,8 @@
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 
-#include <Physics/ConvexHullShapeComponent.h>
-#include <Physics/StaticBodyComponent.h>
+#include <Physics/Core/ConvexHullShapeComponent.h>
+#include <Physics/Core/StaticBodyComponent.h>
 
 using namespace DAVA;
 

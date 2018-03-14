@@ -1425,6 +1425,12 @@ void DLCManagerImpl::StartDelayedRequests()
     }
 
     initState = InitState::Ready;
+
+    if (GetInitStatus() == InitStatus::FinishedWithLocalMeta)
+    {
+        FireNetworkReady(true);
+    }
+
     log << "initState: " << ToString(initState) << std::endl;
 
     const size_t numDownloaded = count(begin(scanFileReady), end(scanFileReady), true);

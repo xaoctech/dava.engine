@@ -33,9 +33,10 @@
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/Private/PhysicsMath.h>
-#include <Physics/DynamicBodyComponent.h>
+#include <Physics/Core/CollisionShapeComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/Private/PhysicsMath.h>
+#include <Physics/Core/DynamicBodyComponent.h>
 #include <Debug/ProfilerCPU.h>
 
 #include <physx/PxRigidActor.h>
@@ -217,7 +218,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
 
     ShootCooldownComponent* shootCooldownComponent = aimingEntity->GetComponent<ShootCooldownComponent>();
 
-    // There can be no cooldown component if aimingEntity is from another player since this component is private
+    // There can be no cooldown bodyComponent if aimingEntity is from another player since this bodyComponent is private
     // Ignore this since on client this function just draws a ray for debugging purposes. On server it will work correctly
     if (shootCooldownComponent != nullptr)
     {
@@ -237,7 +238,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
     Vector3 aimRayDirection;
     Vector3 aimRayEnd;
     Entity* aimRayEndEntity;
-    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS, aimRayOrigin, aimRayDirection,
+    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_CONTROLLER, aimRayOrigin, aimRayDirection,
                      aimRayEnd, &aimRayEndEntity);
 
     Entity* weaponBarrelEntity = aimingEntity->FindByName(SHOOTER_GUN_BARREL_ENTITY_NAME);
@@ -255,12 +256,16 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
             DVASSERT(timeSingleComponent != nullptr);
             const uint32 frameId = timeSingleComponent->GetFrameId();
 
-            CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
-
             Entity* player = nullptr;
+            uint32 damage = 0;
+
+            physx::PxRaycastHit hit;
+            bool collision = false;
 
             if (optionsComp->isEnemyRewound)
             {
+                // Hit in past
+
                 PhysicsSystem* physics = GetScene()->GetSystem<PhysicsSystem>();
                 DVASSERT(physics != nullptr);
 
@@ -280,40 +285,35 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
                 uint32 numFramesToRollBack = std::min(10, fdiff);
                 uint32 pastFrameId = clientFrameId == 0 ? frameId : clientFrameId - numFramesToRollBack;
 
-                physx::PxRaycastHit hit;
-                QueryFilterCallback filterCallback(mirrorsSingleComponent->GetMirrorForCharacter(aimingEntity), RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
+                QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
                 ComponentMask possibleComponents = ComponentUtils::MakeMask<CapsuleCharacterControllerComponent>() | ComponentUtils::MakeMask<DynamicBodyComponent>();
-                bool collision = NetworkPhysicsUtils::GetRaycastHitInPast(*aimingEntity->GetScene(), possibleComponents, shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, pastFrameId, &filterCallback, hit);
-                if (collision)
-                {
-                    Component* component = static_cast<Component*>(hit.actor->userData);
-                    if (component->GetType()->Is<DynamicBodyComponent>())
-                    {
-                        player = mirrorsSingleComponent->GetCharacterFromMirror(component->GetEntity());
-                    }
-                }
+                collision = NetworkPhysicsUtils::GetRaycastHitInPast(*aimingEntity->GetScene(), possibleComponents, shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, pastFrameId, &filterCallback, hit);
             }
             else
             {
-                physx::PxRaycastHit hit;
+                // Hit in present
+
                 QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
-                bool collision = GetRaycastHit(*aimingEntity->GetScene(), shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
-                if (collision)
-                {
-                    Component* component = static_cast<Component*>(hit.actor->userData);
-                    if (component->GetType()->Is<DynamicBodyComponent>())
-                    {
-                        player = mirrorsSingleComponent->GetCharacterFromMirror(component->GetEntity());
-                    }
-                }
+                collision = GetRaycastHit(*aimingEntity->GetScene(), shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
             }
 
-            if (player != nullptr)
+            if (collision)
             {
-                HealthComponent* healthComponent = player->GetComponent<HealthComponent>();
-                DVASSERT(healthComponent);
+                Component* bodyComponent = static_cast<Component*>(hit.actor->userData);
+                if (bodyComponent->GetType()->Is<DynamicBodyComponent>())
+                {
+                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit.shape);
+                    if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
+                    {
+                        player = bodyComponent->GetEntity();
+                        damage = GetBodyPartDamage(shapeComponent->GetJointName());
 
-                healthComponent->DecHealth(1, frameId);
+                        HealthComponent* healthComponent = player->GetComponent<HealthComponent>();
+                        DVASSERT(healthComponent);
+
+                        healthComponent->DecHealth(damage, frameId);
+                    }
+                }
             }
         }
     }
@@ -327,7 +327,7 @@ void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::u
 
     ShootCooldownComponent* shootCooldownComponent = aimingEntity->GetComponent<ShootCooldownComponent>();
 
-    // There can be no cooldown component if aimingEntity is from another player since this component is private
+    // There can be no cooldown bodyComponent if aimingEntity is from another player since this bodyComponent is private
     // Ignore this since on client this function just draws a ray for debugging purposes. On server it will work correctly
     if (shootCooldownComponent != nullptr)
     {

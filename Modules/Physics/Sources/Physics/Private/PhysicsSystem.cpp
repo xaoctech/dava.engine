@@ -1,24 +1,24 @@
-#include "Physics/BoxCharacterControllerComponent.h"
-#include "Physics/BoxShapeComponent.h"
-#include "Physics/CapsuleCharacterControllerComponent.h"
-#include "Physics/CapsuleShapeComponent.h"
-#include "Physics/CollisionShapeComponent.h"
+#include "Physics/Controllers/BoxCharacterControllerComponent.h"
+#include "Physics/Core/BoxShapeComponent.h"
+#include "Physics/Controllers/CapsuleCharacterControllerComponent.h"
+#include "Physics/Core/CapsuleShapeComponent.h"
+#include "Physics/Core/CollisionShapeComponent.h"
 #include "Physics/CollisionSingleComponent.h"
-#include "Physics/ConvexHullShapeComponent.h"
-#include "Physics/HeightFieldShapeComponent.h"
-#include "Physics/MeshShapeComponent.h"
-#include "Physics/PhysicsComponent.h"
+#include "Physics/Core/ConvexHullShapeComponent.h"
+#include "Physics/Core/HeightFieldShapeComponent.h"
+#include "Physics/Core/MeshShapeComponent.h"
+#include "Physics/Core/PhysicsComponent.h"
 #include "Physics/PhysicsConfigs.h"
 #include "Physics/PhysicsGeometryCache.h"
 #include "Physics/PhysicsModule.h"
 #include "Physics/PhysicsSystem.h"
-#include "Physics/PhysicsUtils.h"
-#include "Physics/PhysicsVehiclesSubsystem.h"
-#include "Physics/PlaneShapeComponent.h"
-#include "Physics/Private/PhysicsMath.h"
-#include "Physics/SphereShapeComponent.h"
-#include "Physics/VehicleCarComponent.h"
-#include "Physics/VehicleTankComponent.h"
+#include "Physics/Core/PhysicsUtils.h"
+#include "Physics/Vehicles/PhysicsVehiclesSubsystem.h"
+#include "Physics/Core/PlaneShapeComponent.h"
+#include "Physics/Core/Private/PhysicsMath.h"
+#include "Physics/Core/SphereShapeComponent.h"
+#include "Physics/Vehicles/VehicleCarComponent.h"
+#include "Physics/Vehicles/VehicleTankComponent.h"
 
 #include <Base/Type.h>
 #include <Debug/ProfilerCPU.h>
@@ -755,7 +755,10 @@ void PhysicsSystem::ProcessFixedSimulate(float32 timeElapsed)
                 DVASSERT(body != nullptr);
                 if (frozenDynamicBodiesParams.count(body) == 0)
                 {
-                    body->GetPxActor()->is<physx::PxRigidDynamic>()->setWakeCounter(body->wakeCounter);
+                    if (!body->GetIsKinematic())
+                    {
+                        body->GetPxActor()->is<physx::PxRigidDynamic>()->setWakeCounter(body->wakeCounter);
+                    }
                 }
             }
         }
@@ -922,7 +925,9 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
             for (physx::PxU32 i = 0; i < actorsCount; ++i)
             {
                 physx::PxActor* actor = actors[i];
+
                 Component* baseComponent = reinterpret_cast<Component*>(actor->userData);
+                DVASSERT(baseComponent != nullptr);
 
                 // When character controller is created, actor is created by physx implicitly
                 // In this case there is no PhysicsComponent attached to this entity, only CharacterControllerComponent. We ignore those
@@ -1232,37 +1237,35 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
     // If passed entity is nested, then check for shapes and update their local positions
     if (isRootEntity)
     {
-        // Update actor
+        CharacterControllerComponent* controller = PhysicsUtils::GetCharacterControllerComponent(entity);
         PhysicsComponent* bodyComponent = PhysicsUtils::GetBodyComponent(entity);
+
+        // Update actor
         if (bodyComponent != nullptr)
         {
             updateBodyComponent(entity, bodyComponent);
         }
 
         // Update CCT if there is no body
-        if (bodyComponent == nullptr)
+        if (controller != nullptr)
         {
-            CharacterControllerComponent* controller = PhysicsUtils::GetCharacterControllerComponent(entity);
+            TransformComponent* transform = entity->GetComponent<TransformComponent>();
+            physx::PxController* pxController = controller->controller;
             if (controller != nullptr)
             {
-                TransformComponent* transform = entity->GetComponent<TransformComponent>();
-                physx::PxController* pxController = controller->controller;
-                if (controller != nullptr)
+                Vector3 currentPosition = PhysicsMath::PxExtendedVec3ToVector3(pxController->getFootPosition());
+                Vector3 newPosition = transform->GetPosition();
+
+                if (!FLOAT_EQUAL(currentPosition.x, newPosition.x) ||
+                    !FLOAT_EQUAL(currentPosition.y, newPosition.y) ||
+                    !FLOAT_EQUAL(currentPosition.z, newPosition.z))
                 {
-                    Vector3 currentPosition = PhysicsMath::PxExtendedVec3ToVector3(pxController->getFootPosition());
-                    Vector3 newPosition = transform->GetPosition();
+                    pxController->setFootPosition(PhysicsMath::Vector3ToPxExtendedVec3(newPosition));
 
-                    if (!FLOAT_EQUAL(currentPosition.x, newPosition.x) ||
-                        !FLOAT_EQUAL(currentPosition.y, newPosition.y) ||
-                        !FLOAT_EQUAL(currentPosition.z, newPosition.z))
-                    {
-                        pxController->setFootPosition(PhysicsMath::Vector3ToPxExtendedVec3(newPosition));
-
-                        physx::PxShape* cctShape = nullptr;
-                        pxController->getActor()->getShapes(&cctShape, 1, 0);
-                        DVASSERT(cctShape != nullptr);
-                        teleportedCcts.insert({ controller, cctShape->getSimulationFilterData() });
-                    }
+                    physx::PxShape* cctShape = nullptr;
+                    pxController->getActor()->getShapes(&cctShape, 1, 0);
+                    DVASSERT(cctShape != nullptr);
+                    teleportedCcts.insert({ controller, cctShape->getSimulationFilterData() });
                 }
             }
         }
@@ -1980,18 +1983,29 @@ PolygonGroup* PhysicsSystem::CreatePolygonGroupFromJoint(Entity* entity, const F
 
 void PhysicsSystem::SyncShapeTransformsToJoints()
 {
-    // physx shape -> skeleton joint
+    // TODO: optimize
+    // No need to traverse all shapes every time
     for (CollisionShapeComponent* shape : shapes->components)
     {
         const FastName& jointName = shape->GetJointName();
-        if (jointName.IsValid() && jointName.size() > 0)
+        if (shape->GetEntity() != nullptr && jointName.IsValid() && jointName.size() > 0)
         {
             SkeletonComponent* skeletonComponent = shape->GetEntity()->GetComponent<SkeletonComponent>();
             if (skeletonComponent != nullptr)
             {
                 uint32 index = skeletonComponent->GetJointIndex(jointName);
-                skeletonComponent->SetJointPosition(index, shape->GetLocalPosition());
-                skeletonComponent->SetJointOrientation(index, shape->GetLocalOrientation());
+
+                if (shape->GetJointSyncDirection() == CollisionShapeComponent::JointSyncDirection::FromPhysics)
+                {
+                    skeletonComponent->SetJointPosition(index, shape->GetLocalPosition());
+                    skeletonComponent->SetJointOrientation(index, shape->GetLocalOrientation());
+                }
+                else
+                {
+                    const JointTransform& jointTransform = skeletonComponent->GetJointObjectSpaceTransform(index);
+                    shape->SetLocalPosition(jointTransform.GetPosition() + jointTransform.GetOrientation().ApplyToVectorFast(shape->GetJointOffset()));
+                    shape->SetLocalOrientation(jointTransform.GetOrientation());
+                }
             }
         }
     }

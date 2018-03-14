@@ -25,7 +25,7 @@
 #include <TArc/Utils/QtDelayedExecutor.h>
 #include <TArc/Testing/GMockInclude.h>
 
-#include <Physics/CharacterControllerComponent.h>
+#include <Physics/Controllers/CharacterControllerComponent.h>
 
 #include <Base/Any.h>
 #include <FileSystem/FilePath.h>

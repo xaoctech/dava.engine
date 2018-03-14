@@ -8,7 +8,7 @@
 #include <NetworkCore/SnapshotUtils.h>
 
 #include <Physics/PhysicsSystem.h>
-#include <Physics/PhysicsUtils.h>
+#include <Physics/Core/PhysicsUtils.h>
 
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 
@@ -40,8 +40,6 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
                                             return (possibleComponents & entityComponentMask).IsAnySet();
                                         });
 
-    CharacterMirrorsSingleComponent* mirrorsSingleComponent = scene.GetSingleComponent<CharacterMirrorsSingleComponent>();
-
     // Save current network transforms
 
     struct Transform
@@ -54,13 +52,6 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
     for (Entity* e : dynamics)
     {
         DVASSERT(e != nullptr);
-
-        Entity* mirror = mirrorsSingleComponent->GetMirrorForCharacter(e);
-        if (mirror)
-        {
-            // no need to restore mirrors
-            continue;
-        }
 
         TransformComponent* transformComponent = e->GetComponent<TransformComponent>();
         DVASSERT(transformComponent != nullptr);
@@ -96,8 +87,7 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
             return false;
         }
 
-        Entity* mirror = mirrorsSingleComponent->GetMirrorForCharacter(e);
-        TransformComponent* transformComponent = mirror ? mirror->GetComponent<TransformComponent>() : e->GetComponent<TransformComponent>();
+        TransformComponent* transformComponent = e->GetComponent<TransformComponent>();
         DVASSERT(transformComponent != nullptr);
 
         transformComponent->SetLocalTransform(
@@ -134,13 +124,6 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
 
     for (Entity* e : dynamics)
     {
-        Entity* mirror = mirrorsSingleComponent->GetMirrorForCharacter(e);
-        if (mirror)
-        {
-            // no need to restore mirrors
-            continue;
-        }
-
         NetworkTransformComponent* networkTransformComponent = e->GetComponent<NetworkTransformComponent>();
         DVASSERT(networkTransformComponent != nullptr);
 

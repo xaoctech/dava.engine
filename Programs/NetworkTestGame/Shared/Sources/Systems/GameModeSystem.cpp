@@ -25,8 +25,8 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
 
 #include <algorithm>
 

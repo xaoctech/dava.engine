@@ -19,7 +19,7 @@
 
 #include <Physics/PhysicsGeometryCache.h>
 #include <Physics/PhysicsModule.h>
-#include <Physics/Private/PhysicsMath.h>
+#include <Physics/Core/Private/PhysicsMath.h>
 
 #include <Base/AlignedAllocator.h>
 #include <Engine/Engine.h>
@@ -551,14 +551,13 @@ Landscape* SceneCollisionSystem::GetCurrentLandscape() const
 
 void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object, bool forceRecreate)
 {
-    bool shouldBeRecreated = false;
+    bool shouldBeRecreated = forceRecreate;
     UnorderedSet<Any, AnyPointerHasher, AnyPointerEqual> childObjects;
     EnumerateObjectHierarchy(object, false, [&](const Any& child, physx::PxRigidActor*, bool recreate) {
         shouldBeRecreated |= recreate;
         childObjects.insert(child);
     });
 
-    shouldBeRecreated |= forceRecreate;
     if (shouldBeRecreated == false)
     {
         objectsToUpdateTransform.insert(object.GetContainedObject());
@@ -566,9 +565,16 @@ void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object, bool 
         return;
     }
 
+    bool processAsEntity = false;
     if (object.CanBeCastedTo<Entity>())
     {
-        auto entity = object.AsEntity();
+        Entity* entity = object.AsEntity();
+        processAsEntity = (GetLandscape(entity) == nullptr); // we should rebuild full collision object for landscape object
+    }
+
+    if (processAsEntity)
+    {
+        Entity* entity = object.AsEntity();
         RemoveEntity(entity);
         AddEntity(entity);
     }

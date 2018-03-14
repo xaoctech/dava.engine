@@ -18,9 +18,9 @@
 #include "Components/HealthComponent.h"
 #include "Components/SpeedModifierComponent.h"
 
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/PhysicsUtils.h>
-#include <Physics/CharacterControllerComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Controllers/CharacterControllerComponent.h>
 
 #include <Reflection/ReflectionRegistrator.h>
 

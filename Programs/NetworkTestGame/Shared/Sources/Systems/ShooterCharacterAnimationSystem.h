@@ -31,7 +31,6 @@ private:
 
         DAVA::Entity* characterEntity = nullptr;
 
-        DAVA::Entity* characterMeshEntity = nullptr;
         DAVA::Entity* weaponEntity = nullptr;
         DAVA::Entity* shootEffect = nullptr;
         DAVA::MotionComponent* characterMotionComponent = nullptr;

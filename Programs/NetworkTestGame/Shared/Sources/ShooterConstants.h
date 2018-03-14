@@ -36,9 +36,7 @@ static const DAVA::uint32 SHOOTER_STATIC_COLLISION_TYPE = 1 << 3;
 static const DAVA::uint32 SHOOTER_CHARACTER_COLLISION_TYPE = 1 << 4;
 static const DAVA::uint32 SHOOTER_PROJECTILE_COLLISION_TYPE = 1 << 5;
 static const DAVA::uint32 SHOOTER_GRENADE_COLLISION_TYPE = 1 << 6;
-static const DAVA::uint32 SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE = 1 << 7;
-static const DAVA::uint32 SHOOTER_CCT_COLLIDE_WITH_MASK_DEFAULT = UINT32_MAX ^ (SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE);
-static const DAVA::uint32 SHOOTER_CCT_COLLIDE_WITH_MASK_IGNORE_OTHER_CCTS = UINT32_MAX ^ (SHOOTER_CHARACTER_COLLISION_TYPE | SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE);
+static const DAVA::uint32 SHOOTER_CCT_COLLIDE_WITH_MASK = UINT32_MAX;
 
 // Scene & models constants
 static const DAVA::FastName SHOOTER_GUN_BARREL_ENTITY_NAME = DAVA::FastName("shot_auto"); // Name of child entity in weapon model which is used to retrieve position of a gun barrel for raycasting etc.

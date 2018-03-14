@@ -8,13 +8,14 @@
 
 #include <Physics/PhysicsSystem.h>
 #include <Physics/CollisionSingleComponent.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/VehicleChassisComponent.h>
-#include <Physics/VehicleWheelComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/CapsuleShapeComponent.h>
-#include <Physics/CharacterControllerComponent.h>
-#include <Physics/PhysicsUtils.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Vehicles/VehicleChassisComponent.h>
+#include <Physics/Vehicles/VehicleWheelComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/CapsuleShapeComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/PhysicsUtils.h>
+
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 
@@ -42,7 +43,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCarAttackSystem)
 
 ShooterCarAttackSystem::ShooterCarAttackSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene, DAVA::ComponentMask())
-    , ccts(scene->AquireComponentGroup<ShooterMirroredCharacterComponent, ShooterMirroredCharacterComponent>())
+    , ccts(scene->AquireComponentGroup<DAVA::CapsuleCharacterControllerComponent, DAVA::CapsuleCharacterControllerComponent>())
 {
 }
 
@@ -54,46 +55,44 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
     const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
     DVASSERT(collisionSingleComponent != nullptr);
 
-    CharacterMirrorsSingleComponent* mirrorsSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
-    DVASSERT(mirrorsSingleComponent != nullptr);
+    static Vector<CapsuleCharacterControllerComponent*> pushedCctsToRemove;
 
-    static Vector<ShooterMirroredCharacterComponent*> pushedCctsToRemove;
-
-    for (ShooterMirroredCharacterComponent* mirroredCctComponent : ccts->components)
+    for (auto& kvp : pushedCcts)
     {
-        Entity* cctMirror = mirrorsSingleComponent->GetMirrorForCharacter(mirroredCctComponent->GetEntity());
-        DVASSERT(cctMirror != nullptr);
+        CapsuleCharacterControllerComponent* cct = kvp.first;
+        if (cct->IsGrounded())
+        {
+            cct->SetMovementMode(CharacterControllerComponent::MovementMode::Walking);
+            pushedCctsToRemove.push_back(cct);
+        }
+    }
 
-        DynamicBodyComponent* cctMirrorBodyComponent = cctMirror->GetComponent<DynamicBodyComponent>();
+    for (CapsuleCharacterControllerComponent* pushedCctToRemove : pushedCctsToRemove)
+    {
+        pushedCcts.erase(pushedCctToRemove);
+    }
+    pushedCctsToRemove.clear();
+
+    for (auto& kvp : pushedCcts)
+    {
+        CapsuleCharacterControllerComponent* cct = kvp.first;
+        Vector3& velocity = kvp.second;
+
+        velocity.z -= 9.81f * dt;
+        cct->Move(velocity * dt);
+    }
+
+    for (CapsuleCharacterControllerComponent* cctComponent : ccts->components)
+    {
+        Entity* cctEntity = cctComponent->GetEntity();
+        DVASSERT(cctEntity != nullptr);
+
+        DynamicBodyComponent* cctMirrorBodyComponent = cctEntity->GetComponent<DynamicBodyComponent>();
         DVASSERT(cctMirrorBodyComponent != nullptr);
 
-        CapsuleShapeComponent* cctMirrorShapeComponent = cctMirror->GetComponent<CapsuleShapeComponent>();
-        DVASSERT(cctMirrorShapeComponent != nullptr);
-
-        CharacterControllerComponent* cctComponent = PhysicsUtils::GetCharacterControllerComponent(mirroredCctComponent->GetEntity());
-        if (cctComponent == nullptr)
+        if (pushedCcts.find(cctComponent) == pushedCcts.end())
         {
-            continue;
-        }
-
-        if (pushedCcts.find(mirroredCctComponent) != pushedCcts.end())
-        {
-            if (cctMirrorBodyComponent->GetLinearVelocity().Length() < 1.0f)
-            {
-                cctMirrorBodyComponent->SetIsKinematic(true);
-                cctMirrorShapeComponent->SetTypeMask(SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE);
-                cctMirrorShapeComponent->SetTypeMaskToCollideWith(0);
-                cctComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Walking);
-                cctComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-                cctComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
-                mirroredCctComponent->SetMirrorIsMaster(false);
-
-                pushedCctsToRemove.push_back(mirroredCctComponent);
-            }
-        }
-        else
-        {
-            Vector<CollisionInfo> collisions = collisionSingleComponent->GetCollisionsWithEntity(mirroredCctComponent->GetEntity());
+            Vector<CollisionInfo> collisions = collisionSingleComponent->GetCollisionsWithEntity(cctEntity);
             if (collisions.size() > 0)
             {
                 float32 impulseMagnitude = 0.0f;
@@ -112,7 +111,7 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
 
                 if (damage > 0)
                 {
-                    HealthComponent* healthComponent = mirroredCctComponent->GetEntity()->GetComponent<HealthComponent>();
+                    HealthComponent* healthComponent = cctComponent->GetEntity()->GetComponent<HealthComponent>();
                     const uint32 frameId = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>()->GetFrameId();
                     DVASSERT(healthComponent != nullptr);
 
@@ -120,42 +119,26 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
 
                     if (healthComponent->GetHealth() > 0)
                     {
-                        Entity* carPart = IsCar(collisions[0].first) ? collisions[0].first : collisions[0].second;
-                        DVASSERT(carPart != nullptr);
-
                         Vector3 normal = collisions[0].points[0].normal;
-                        normal.z = 0.5f;
-                        normal.Normalize();
-
-                        Vector3 force = normal * 15000.0f * static_cast<float32>(damage);
-                        if (carPart == collisions[0].first)
+                        if (damage >= 2)
                         {
-                            force.x *= -1.0f;
-                            force.y *= -1.0f;
+                            normal.z = 0.75f;
+                            normal.Normalize();
                         }
 
-                        cctMirrorBodyComponent->SetIsKinematic(false);
-                        cctMirrorShapeComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-                        cctMirrorShapeComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
+                        Vector3 velocity = normal * static_cast<float32>(damage) * 2.0f;
+                        if (IsCar(collisions[0].first))
+                        {
+                            velocity.x *= -1.0f;
+                            velocity.y *= -1.0f;
+                        }
+
                         cctComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Flying);
-                        cctComponent->SetTypeMask(0);
-                        cctComponent->SetTypeMaskToCollideWith(0);
-                        mirroredCctComponent->SetMirrorIsMaster(true);
-
-                        GetScene()->GetSystem<PhysicsSystem>()->AddForce(cctMirrorBodyComponent, force, physx::PxForceMode::eFORCE);
-
-                        pushedCcts.insert(mirroredCctComponent);
+                        pushedCcts[cctComponent] = velocity;
                     }
                 }
             }
         }
-
-        for (ShooterMirroredCharacterComponent* pushedCctToRemove : pushedCctsToRemove)
-        {
-            pushedCcts.erase(pushedCctToRemove);
-        }
-
-        pushedCctsToRemove.clear();
     }
 }
 

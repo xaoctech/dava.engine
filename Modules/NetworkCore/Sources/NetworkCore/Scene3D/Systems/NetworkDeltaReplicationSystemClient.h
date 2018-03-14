@@ -48,6 +48,7 @@ public:
     void OnReceiveCallback(const uint8* data, size_t size, uint8, uint32);
 
 private:
+    void ProcessReceivedPackets();
     void ProcessAppliedPackets();
 
     IClient* client;
@@ -66,6 +67,7 @@ private:
     };
 
     UnorderedMap<uint32, UnreliableFragments> frameToFragments;
+    Vector<Vector<uint8>> recvPackets;
 };
 
 } //namespace DAVA

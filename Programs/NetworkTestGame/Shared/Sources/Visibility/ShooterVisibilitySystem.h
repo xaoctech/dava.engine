@@ -7,7 +7,7 @@
 #include "NetworkCore/NetworkTypes.h"
 #include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
-#include "Physics/HeightFieldShapeComponent.h"
+#include "Physics/Core/HeightFieldShapeComponent.h"
 
 #include "Entity/SceneSystem.h"
 #include "Scene3D/EntityGroup.h"

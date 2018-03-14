@@ -4,22 +4,22 @@
 #include "Engine/Engine.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/StaticBodyComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
-#include <Physics/CapsuleShapeComponent.h>
-#include <Physics/SphereShapeComponent.h>
-#include <Physics/PlaneShapeComponent.h>
-#include "Physics/ConvexHullShapeComponent.h"
-#include <Physics/MeshShapeComponent.h>
-#include <Physics/HeightFieldShapeComponent.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/VehicleTankComponent.h>
-#include <Physics/VehicleChassisComponent.h>
-#include <Physics/VehicleWheelComponent.h>
-#include <Physics/BoxCharacterControllerComponent.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/WASDPhysicsControllerComponent.h>
+#include <Physics/Core/StaticBodyComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
+#include <Physics/Core/CapsuleShapeComponent.h>
+#include <Physics/Core/SphereShapeComponent.h>
+#include <Physics/Core/PlaneShapeComponent.h>
+#include "Physics/Core/ConvexHullShapeComponent.h"
+#include <Physics/Core/MeshShapeComponent.h>
+#include <Physics/Core/HeightFieldShapeComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Vehicles/VehicleTankComponent.h>
+#include <Physics/Vehicles/VehicleChassisComponent.h>
+#include <Physics/Vehicles/VehicleWheelComponent.h>
+#include <Physics/Controllers/BoxCharacterControllerComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Controllers/WASDPhysicsControllerComponent.h>
 #endif
 
 using namespace DAVA;

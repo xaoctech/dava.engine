@@ -60,6 +60,8 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
         statsComp->UpdateFrameTimestamps();
     }
 
+    ProcessReceivedInputData();
+
     const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
     for (auto& entityToBuffer : entitiesToBuffers)
     {
@@ -126,62 +128,74 @@ void NetworkInputSystem::OnConnect(const Responder& responder)
     }
 }
 
+void NetworkInputSystem::ProcessReceivedInputData()
+{
+    const NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponentForRead<NetworkEntitiesSingleComponent>(this);
+    using NetInput = NetworkInputComponent::Data;
+
+    for (const auto& inputData : recvInputData)
+    {
+        const InputPacketHeader* header = reinterpret_cast<const InputPacketHeader*>(inputData.data.data());
+        uint32 offset = INPUT_PACKET_HEADER_SIZE;
+        Vector<NetInput> input;
+
+        for (uint32 i = 0; i < header->framesCount; ++i)
+        {
+            if (i > 0 && inputData.data[offset] == DUPLICATE_INPUT_MARK)
+            {
+                input.push_back(input.back());
+                offset += 1;
+                continue;
+            }
+            const NetInput* netInput = reinterpret_cast<const NetInput*>(inputData.data.data() + offset);
+            input.push_back(*netInput);
+            offset += sizeof(NetInput);
+        }
+
+        Entity* entity = networkEntities->FindByID(header->entityId);
+        auto entityIt = entitiesToBuffers.find(entity);
+        if (entityIt == entitiesToBuffers.end())
+        {
+            Logger::Error("Received the input for the unknown entity %d", header->entityId);
+            return;
+        }
+        NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
+        uint32 frameId = netTimeComp->GetFrameId();
+        netTimeComp->SetClientOutrunning(inputData.token, header->frameId - frameId);
+        entityIt->second.Update(input, header->frameId);
+        auto tokenIt = tokensToEntities.find(inputData.token);
+        if (tokenIt == tokensToEntities.end())
+        {
+            tokenIt = tokensToEntities.emplace(inputData.token, UnorderedSet<Entity*>()).first;
+        }
+        tokenIt->second.insert(entity);
+
+        NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
+        if (header->hasNetStat)
+        {
+            const NetStatTimestamps* netStatData = reinterpret_cast<const NetStatTimestamps*>(inputData.data.data() + offset);
+            std::unique_ptr<NetStatTimestamps> timestamps(new NetStatTimestamps(*netStatData));
+            timestamps->server.recvFromNet = SystemTimer::GetMs();
+            const NetworkPlayerID playerID = GetScene()->GetSingleComponentForRead<NetworkGameModeSingleComponent>(this)->GetNetworkPlayerID(inputData.token);
+            uint64 tsKey = NetStatTimestamps::GetKey(header->frameId, playerID);
+
+            statsComp->AddTimestamps(tsKey, std::move(timestamps));
+        }
+
+        // statistics
+        int16 frameDiff = header->frameId - frameId;
+        statsComp->FlushFrameOffsetMeasurement(frameId, frameDiff);
+    }
+    recvInputData.clear();
+}
+
 void NetworkInputSystem::OnReceive(const Responder& responder, const uint8* data, size_t size)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkInputSystem::OnReceive");
-    const NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponentForRead<NetworkEntitiesSingleComponent>(this);
 
-    using NetInputData = NetworkInputComponent::Data;
-    const InputPacketHeader* header = reinterpret_cast<const InputPacketHeader*>(data);
-    uint32 offset = INPUT_PACKET_HEADER_SIZE;
-    Vector<NetInputData> inputData;
-
-    for (uint32 i = 0; i < header->framesCount; ++i)
-    {
-        if (i > 0 && data[offset] == DUPLICATE_INPUT_MARK)
-        {
-            inputData.push_back(inputData.back());
-            offset += 1;
-            continue;
-        }
-        const NetInputData* netInputData = reinterpret_cast<const NetInputData*>(data + offset);
-        inputData.push_back(*netInputData);
-        offset += sizeof(NetInputData);
-    }
-
-    Entity* entity = networkEntities->FindByID(header->entityId);
-    auto entityIt = entitiesToBuffers.find(entity);
-    if (entityIt == entitiesToBuffers.end())
-    {
-        Logger::Error("Received the input for the unknown entity %d", header->entityId);
-        return;
-    }
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
-    uint32 frameId = netTimeComp->GetFrameId();
-    netTimeComp->SetClientOutrunning(responder.GetToken(), header->frameId - frameId);
-    entityIt->second.Update(inputData, header->frameId);
-    auto tokenIt = tokensToEntities.find(responder.GetToken());
-    if (tokenIt == tokensToEntities.end())
-    {
-        tokenIt = tokensToEntities.emplace(responder.GetToken(), UnorderedSet<Entity*>()).first;
-    }
-    tokenIt->second.insert(entity);
-
-    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
-    if (header->hasNetStat)
-    {
-        const NetStatTimestamps* netStatData = reinterpret_cast<const NetStatTimestamps*>(data + offset);
-        std::unique_ptr<NetStatTimestamps> timestamps(new NetStatTimestamps(*netStatData));
-        timestamps->server.recvFromNet = SystemTimer::GetMs();
-        const NetworkPlayerID playerID = GetScene()->GetSingleComponentForRead<NetworkGameModeSingleComponent>(this)->GetNetworkPlayerID(responder.GetToken());
-        uint64 tsKey = NetStatTimestamps::GetKey(header->frameId, playerID);
-
-        statsComp->AddTimestamps(tsKey, std::move(timestamps));
-    }
-
-    // statistics
-    int16 frameDiff = header->frameId - frameId;
-    statsComp->FlushFrameOffsetMeasurement(frameId, frameDiff);
+    RecvInputData inputData{ responder.GetToken(), Vector<uint8>(size) };
+    Memcpy(inputData.data.data(), data, size);
+    recvInputData.push_back(std::move(inputData));
 }
 }
 #endif

@@ -10,7 +10,6 @@
 #include "Components/HealthComponent.h"
 #include "Components/GameStunnableComponent.h"
 #include "Components/ShootCooldownComponent.h"
-#include "Components/ShooterMirroredCharacterComponent.h"
 #include "Components/RocketSpawnComponent.h"
 #include "Components/ShooterStateComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
@@ -41,21 +40,19 @@
 #include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/PhysicsUtils.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/VehicleWheelComponent.h>
-#include <Physics/VehicleChassisComponent.h>
-#include <Physics/BoxShapeComponent.h>
-#include <Physics/ConvexHullShapeComponent.h>
-#include <Physics/CapsuleShapeComponent.h>
-#include <Physics/MeshShapeComponent.h>
-
-#include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
+#include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Vehicles/VehicleWheelComponent.h>
+#include <Physics/Vehicles/VehicleChassisComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
+#include <Physics/Core/ConvexHullShapeComponent.h>
+#include <Physics/Core/CapsuleShapeComponent.h>
+#include <Physics/Core/MeshShapeComponent.h>
 
 #include <algorithm>
 
@@ -130,7 +127,7 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
     controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
     controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-    controllerComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
+    controllerComponent->SetTypeMaskToCollideWith(SHOOTER_CCT_COLLIDE_WITH_MASK);
     entity->AddComponent(controllerComponent);
 
     if (IsServer(GetScene()))
@@ -181,30 +178,6 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         entity->AddComponent(new ShooterStateComponent());
     }
 
-    // Mirror
-
-    entity->AddComponent(new ShooterMirroredCharacterComponent());
-
-    Entity* mirror = PhysicsUtils::CreateCharacterMirror(controllerComponent);
-    DVASSERT(mirror != nullptr);
-
-    DynamicBodyComponent* mirrorBodyComponent = mirror->GetComponent<DynamicBodyComponent>();
-    DVASSERT(mirrorBodyComponent != nullptr);
-
-    mirrorBodyComponent->SetLinearDamping(0.5f);
-    mirrorBodyComponent->SetLockFlags(static_cast<DynamicBodyComponent::eLockFlags>(DynamicBodyComponent::eLockFlags::AngularX | DynamicBodyComponent::eLockFlags::AngularY | DynamicBodyComponent::eLockFlags::AngularZ));
-
-    CapsuleShapeComponent* mirrorShapeComponent = mirror->GetComponent<CapsuleShapeComponent>();
-    DVASSERT(mirrorShapeComponent != nullptr);
-
-    mirrorShapeComponent->SetOverrideMass(true);
-    mirrorShapeComponent->SetMass(120.0f);
-    mirrorShapeComponent->SetTypeMask(SHOOTER_CHARACTER_MIRROR_COLLISION_TYPE);
-    mirrorShapeComponent->SetTypeMaskToCollideWith(0);
-
-    GetScene()->AddNode(mirror);
-    GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>()->AddMirrorForCharacter(entity, mirror);
-
     if (!IsServer(GetScene()))
     {
         if (IsClientOwner(GetScene(), entity))
@@ -244,10 +217,16 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     MotionComponent* motionComponent = new MotionComponent();
     motionComponent->SetDescriptorPath("~res:/TestCharacterControllerModule/character/character_motion.yaml");
 
-    ScopedPtr<Entity> characterEntity(characterSourceEntity->Clone());
-    characterEntity->SetName("Character");
-    characterEntity->AddComponent(motionComponent);
-    entity->AddNode(characterEntity);
+    for (uint32 i = 0; i < characterSourceEntity->GetComponentCount<BoxShapeComponent>(); ++i)
+    {
+        entity->AddComponent(characterSourceEntity->GetComponent<BoxShapeComponent>(i)->Clone(entity));
+    }
+    entity->AddComponent(characterSourceEntity->GetComponent<DynamicBodyComponent>()->Clone(entity));
+    entity->AddComponent(characterSourceEntity->GetComponent<RenderComponent>()->Clone(entity));
+    entity->AddComponent(characterSourceEntity->GetComponent<SkeletonComponent>()->Clone(entity));
+    entity->AddComponent(motionComponent);
+
+    entity->AddNode(characterSourceEntity->FindByName("Marker")->Clone());
 
     ScopedPtr<Scene> weaponScene(new Scene());
     weaponScene->LoadScene("~res:/TestCharacterControllerModule/character/weapon_mesh.sc2");
@@ -256,12 +235,12 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
 
     ScopedPtr<Entity> weaponEntity(weaponSourceEntity->Clone());
     weaponEntity->SetName("Weapon");
-    characterEntity->AddNode(weaponEntity);
+    entity->AddNode(weaponEntity);
 
     if (IsClient(this))
     {
         NetworkDebugDrawComponent* debugDrawComponent = new NetworkDebugDrawComponent();
-        debugDrawComponent->box = characterEntity->GetWTMaximumBoundingBoxSlow();
+        debugDrawComponent->box = entity->GetWTMaximumBoundingBoxSlow();
         entity->AddComponent(debugDrawComponent);
     }
 }

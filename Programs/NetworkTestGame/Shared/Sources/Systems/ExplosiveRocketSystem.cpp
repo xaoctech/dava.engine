@@ -31,8 +31,8 @@
 
 #include <Physics/PhysicsSystem.h>
 #include <Physics/CollisionSingleComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
 
 #include <Render/Highlevel/RenderObject.h>
 

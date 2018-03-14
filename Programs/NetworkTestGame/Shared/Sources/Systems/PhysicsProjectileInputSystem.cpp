@@ -18,8 +18,8 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/NetworkCoreUtils.h>
 
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
 
 using namespace DAVA;
 

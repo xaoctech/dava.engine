@@ -15,8 +15,8 @@
 
 #include <NetworkCore/NetworkCoreUtils.h>
 
-#include <Physics/MeshShapeComponent.h>
-#include <Physics/StaticBodyComponent.h>
+#include <Physics/Core/MeshShapeComponent.h>
+#include <Physics/Core/StaticBodyComponent.h>
 #include <Physics/CollisionSingleComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PowerupSystem)

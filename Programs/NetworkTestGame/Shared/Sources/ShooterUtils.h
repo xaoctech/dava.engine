@@ -61,4 +61,4 @@ void InitializeScene(DAVA::Scene& scene);
 // Get random spawn position for placing a player
 DAVA::Vector3 GetRandomPlayerSpawnPosition();
 
-DAVA::uint32 GetCharacterDefaultTypesToCollideWith(DAVA::Scene* scene);
+DAVA::uint32 GetBodyPartDamage(const DAVA::FastName& jointName);

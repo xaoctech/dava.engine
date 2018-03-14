@@ -127,7 +127,6 @@ bool ShooterCharacterAnimationSystem::SetCharacterEntity(DAVA::Entity* entity, d
 {
     using namespace DAVA;
 
-    d.characterMeshEntity = nullptr;
     d.weaponEntity = nullptr;
     d.shootEffect = nullptr;
 
@@ -140,8 +139,7 @@ bool ShooterCharacterAnimationSystem::SetCharacterEntity(DAVA::Entity* entity, d
     if (entity != nullptr)
     {
         d.characterEntity = SafeRetain(entity);
-        d.characterMeshEntity = entity->FindByName("Character");
-        if (d.characterMeshEntity == nullptr)
+        if (d.characterEntity == nullptr)
         {
             return false;
         }
@@ -150,7 +148,7 @@ bool ShooterCharacterAnimationSystem::SetCharacterEntity(DAVA::Entity* entity, d
         if (d.weaponEntity != nullptr)
             d.shootEffect = d.weaponEntity->FindByName("shot_auto");
 
-        d.characterSkeleton = GetSkeletonComponent(d.characterMeshEntity);
+        d.characterSkeleton = GetSkeletonComponent(d.characterEntity);
         if (d.characterSkeleton == nullptr)
         {
             return false;
@@ -165,7 +163,7 @@ bool ShooterCharacterAnimationSystem::SetCharacterEntity(DAVA::Entity* entity, d
         DVASSERT(d.headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
         DVASSERT(d.weaponPointJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
 
-        d.characterMotionComponent = GetMotionComponent(d.characterMeshEntity);
+        d.characterMotionComponent = GetMotionComponent(d.characterEntity);
     }
 
     return true;

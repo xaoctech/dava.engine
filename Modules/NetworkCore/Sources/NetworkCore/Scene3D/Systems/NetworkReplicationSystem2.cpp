@@ -23,7 +23,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationSystem2)
 {
     ReflectionRegistrator<NetworkReplicationSystem2>::Begin()[M::Tags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkReplicationSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.0f)]
+    .Method("ProcessFixed", &NetworkReplicationSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.0f)]
     .End();
 }
 

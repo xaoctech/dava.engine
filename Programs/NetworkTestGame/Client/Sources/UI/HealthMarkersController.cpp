@@ -88,7 +88,7 @@ void HealthMarkersController::CustomStrategy(DAVA::UIControl* ctrl, DAVA::UIEnti
 {
     using namespace DAVA;
     Entity* markerEntity = emc->GetTargetEntity();
-    Entity* healthEntity = markerEntity->GetParent()->GetParent();
+    Entity* healthEntity = markerEntity->GetParent();
     HealthComponent* healthComponent = healthEntity->GetComponent<HealthComponent>();
     if (healthComponent)
     {

@@ -28,8 +28,8 @@
 #include <NetworkCore/Scene3D/Components/NetworkTrafficLimitComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/BoxShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/CameraComponent.h>
 
@@ -70,7 +70,7 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
         NetworkPlayerID playerId = invComponent->playerId;
         NetworkID invaderId = NetworkID::CreatePlayerOwnId(playerId);
 
-        Logger::Debug("[InvaderEntityFillSystem] Create Invader %u For Player ID : %d", invaderId, playerId);
+        Logger::Debug("[InvaderEntityFillSystem] Create Invader %u For Player ID : %d", static_cast<uint32>(invaderId), playerId);
 
         NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(invaderId);
         replicationComponent->SetForReplication<PlayerInvaderComponent>(M::Privacy::PUBLIC);

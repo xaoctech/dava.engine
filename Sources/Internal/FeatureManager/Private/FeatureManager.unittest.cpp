@@ -1,4 +1,4 @@
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_LINUX__)
+#if 0
 
 #include <UnitTests/UnitTests.h>
 

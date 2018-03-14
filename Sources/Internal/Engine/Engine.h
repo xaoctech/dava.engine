@@ -134,6 +134,25 @@ void RunOnUIThread(const Function<void()>& task);
         return engine.Run(); // Run game loop
     }
     \endcode
+
+    Application can be finished in two ways:
+    1. user or system quits application or closes primary window which leads to application exit
+    2. application decides to quit and calls `Engine::QuitAsync`
+
+    User can finish application by using system shortcuts (Alt+F4, Cmd+Q, etc) or mouse click on system button which closes window,
+    or by swiping application from task manager on mobile devices.
+
+    Generally when application exits termination signals are emitted in the following sequence:
+    1. `Engine::windowDestroyed`, not emitted when application runs in console mode
+    2. `Engine::gameLoopStopped`
+    3. `Engine::cleanup`
+
+    Note that all those termination signals may **not** be emitted on some platforms when user decides to quit application.
+    Such a behavior is applied for systems which do not notify application about termination (mobile platforms,
+    also Universal Windows Platform for desktops). In such cases signal `Engine::suspended` can be used as notification
+    that `application may terminate soon`.
+
+    Termination signal sequence specified above is guaranteed when application exits through `Engine::QuitAsync` call.
 */
 class Engine final
 {

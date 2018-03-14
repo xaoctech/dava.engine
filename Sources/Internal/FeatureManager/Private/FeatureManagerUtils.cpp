@@ -31,7 +31,6 @@ void FeatureManagerUtils::ShutdownLocalFeatureServer()
         SafeDelete(procStart);
     }
 }
-#endif
 
 void FeatureManagerUtils::DownloadConfig()
 {
@@ -52,4 +51,5 @@ void FeatureManagerUtils::DownloadConfig()
     const DLCDownloader::TaskStatus& status = downloader->GetTaskStatus(task);
     DVASSERT(status.error.errorHappened == false);
 }
+#endif
 }

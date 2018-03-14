@@ -50,7 +50,7 @@ public:
     bool isEnemyPredicted;
     bool isEnemyRewound;
     bool compareInputs;
-    COLLISION_RESOLVE_MODE collisionResolveMode = COLLISION_RESOLVE_MODE_REWIND_IN_PAST;
+    COLLISION_RESOLVE_MODE collisionResolveMode = COLLISION_RESOLVE_MODE_NONE;
 
     bool isSet = false;
 };

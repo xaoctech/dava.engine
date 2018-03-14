@@ -21,11 +21,11 @@
 #include <NetworkCore/SnapshotUtils.h>
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/PhysicsUtils.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/CollisionShapeComponent.h>
-#include <Physics/Private/PhysicsMath.h>
+#include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/CollisionShapeComponent.h>
+#include <Physics/Core/Private/PhysicsMath.h>
 
 #include <physx/PxRigidActor.h>
 
@@ -41,30 +41,41 @@ physx::PxQueryHitType::Enum QueryFilterCallback::preFilter(const physx::PxFilter
 {
     using namespace DAVA;
 
-    Component* component = static_cast<Component*>(actor->userData);
-    DVASSERT(component != nullptr);
+    Component* actorComponent = static_cast<Component*>(actor->userData);
+    DVASSERT(actorComponent != nullptr);
 
-    Entity* entity = component->GetEntity();
+    Entity* entity = actorComponent->GetEntity();
     DVASSERT(entity != nullptr);
-
-    bool block = true;
-
-    if ((filter & RaycastFilter::IGNORE_CONTROLLER) == RaycastFilter::IGNORE_CONTROLLER)
-    {
-        block &= (entity->GetComponent<CapsuleCharacterControllerComponent>() == nullptr);
-    }
 
     if ((filter & RaycastFilter::IGNORE_SOURCE) == RaycastFilter::IGNORE_SOURCE)
     {
         DVASSERT(source != nullptr);
-        block &= (entity != source);
-    }
-    if ((filter & RaycastFilter::IGNORE_DYNAMICS) == RaycastFilter::IGNORE_DYNAMICS)
-    {
-        block &= (entity->GetComponent<DynamicBodyComponent>() == nullptr);
+        if (entity == source)
+        {
+            return physx::PxQueryHitType::eNONE;
+        }
     }
 
-    return block ? physx::PxQueryHitType::eBLOCK : physx::PxQueryHitType::eNONE;
+    Component* collisionShapeComponent = static_cast<Component*>(shape->userData);
+    if (collisionShapeComponent != nullptr && !collisionShapeComponent->GetType()->Is<CapsuleCharacterControllerComponent>())
+    {
+        DVASSERT(actorComponent->GetType()->Is<DynamicBodyComponent>() || actorComponent->GetType()->Is<StaticBodyComponent>());
+        if ((filter & RaycastFilter::IGNORE_DYNAMICS) == RaycastFilter::IGNORE_DYNAMICS && actorComponent->GetType()->Is<DynamicBodyComponent>())
+        {
+            return physx::PxQueryHitType::eNONE;
+        }
+    }
+    else
+    {
+        // CCT
+        DVASSERT(actorComponent->GetType()->Is<CapsuleCharacterControllerComponent>());
+        if ((filter & RaycastFilter::IGNORE_CONTROLLER) == RaycastFilter::IGNORE_CONTROLLER)
+        {
+            return physx::PxQueryHitType::eNONE;
+        }
+    }
+
+    return physx::PxQueryHitType::eBLOCK;
 }
 
 physx::PxQueryHitType::Enum QueryFilterCallback::postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit)
@@ -244,28 +255,24 @@ DAVA::Vector3 GetRandomPlayerSpawnPosition()
     return Vector3(x, y, 18.0f);
 }
 
-DAVA::uint32 GetCharacterDefaultTypesToCollideWith(DAVA::Scene* scene)
+DAVA::uint32 GetBodyPartDamage(const DAVA::FastName& jointName)
 {
-    BattleOptionsSingleComponent* optionsSingleComponent = scene->GetSingleComponent<BattleOptionsSingleComponent>();
-    DVASSERT(optionsSingleComponent != nullptr);
+    using namespace DAVA;
 
-    if (optionsSingleComponent->collisionResolveMode == COLLISION_RESOLVE_MODE_REWIND_IN_PAST)
+    if (jointName == FastName("node-Head")) // Head
     {
-        return SHOOTER_CCT_COLLIDE_WITH_MASK_IGNORE_OTHER_CCTS;
+        return 4;
     }
-    else if (optionsSingleComponent->collisionResolveMode == COLLISION_RESOLVE_MODE_SERVER_COLLISIONS)
+    else if (jointName == FastName("node-Spine2")) // Chest
     {
-        if (IsServer(scene))
-        {
-            return SHOOTER_CCT_COLLIDE_WITH_MASK_DEFAULT;
-        }
-        else
-        {
-            return SHOOTER_CCT_COLLIDE_WITH_MASK_IGNORE_OTHER_CCTS;
-        }
+        return 3;
     }
-    else
+    else if (jointName == FastName("node-RightToeBase") || jointName == FastName("node-LeftToeBase")) // Feet
     {
-        return SHOOTER_CCT_COLLIDE_WITH_MASK_DEFAULT;
+        return 1;
+    }
+    else // Legs / arms
+    {
+        return 2;
     }
 }

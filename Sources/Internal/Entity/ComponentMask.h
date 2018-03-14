@@ -7,7 +7,7 @@ namespace DAVA
 {
 struct ComponentMask
 {
-    using Bits = Bitset<128>;
+    using Bits = Bitset<256>;
 
     ComponentMask() = default;
     ~ComponentMask() = default;

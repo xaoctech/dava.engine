@@ -144,7 +144,7 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
                 shootCooldownComponent->SetLastShootFrameId(clientFrameId);
             }
 
-            Logger::Debug("Vehicle:%u player:%d shoots with action: %u | Frame: %u", shooterReplComp->GetNetworkID(), playerID, bulletId, clientFrameId);
+            Logger::Debug("Vehicle:%u player:%d shoots with action: %u | Frame: %u", static_cast<uint32>(shooterReplComp->GetNetworkID()), playerID, static_cast<uint32>(bulletId), clientFrameId);
         }
     }
 }

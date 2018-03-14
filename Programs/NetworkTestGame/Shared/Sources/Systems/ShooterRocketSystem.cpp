@@ -30,10 +30,10 @@
 #include "Visibility/ObservableComponent.h"
 #include "Visibility/SimpleVisibilityShapeComponent.h"
 
-#include <Physics/BoxShapeComponent.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 #include <Physics/CollisionSingleComponent.h>
-#include <Physics/DynamicBodyComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/PhysicsSystem.h>
 
 using namespace DAVA;

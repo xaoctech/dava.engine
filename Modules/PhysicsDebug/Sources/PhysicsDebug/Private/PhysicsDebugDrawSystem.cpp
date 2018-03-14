@@ -1,7 +1,7 @@
 #include "PhysicsDebug/PhysicsDebugDrawSystem.h"
 
-#include <Physics/CollisionShapeComponent.h>
-#include <Physics/Private/PhysicsMath.h>
+#include <Physics/Core/CollisionShapeComponent.h>
+#include <Physics/Core/Private/PhysicsMath.h>
 #include <Physics/PhysicsModule.h>
 
 #include <Entity/Component.h>
@@ -17,6 +17,7 @@
 #include <Render/3D/PolygonGroup.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Math/Color.h>
+#include <Debug/ProfilerCPU.h>
 
 #include <physx/PxRigidBody.h>
 #include <physx/PxShape.h>
@@ -640,6 +641,8 @@ void PhysicsDebugDrawSystem::PrepareForRemove()
 
 void PhysicsDebugDrawSystem::ProcessFixed(float32 timeElapsed)
 {
+    DAVA_PROFILER_CPU_SCOPE("PhysicsDebugDrawSystem::ProcessFixed");
+
     using namespace PhysicsDebugDrawSystemDetail;
     auto iter = pendingComponents.begin();
     while (iter != pendingComponents.end())

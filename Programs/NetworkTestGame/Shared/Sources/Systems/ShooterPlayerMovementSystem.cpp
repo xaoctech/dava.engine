@@ -2,7 +2,6 @@
 #include "Components/ShooterRoleComponent.h"
 #include "Components/ShooterAimComponent.h"
 #include "Components/ShooterCarUserComponent.h"
-#include "Components/ShooterMirroredCharacterComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
@@ -32,12 +31,12 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 
 #include <Physics/PhysicsSystem.h>
-#include <Physics/PhysicsUtils.h>
-#include <Physics/StaticBodyComponent.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/CharacterControllerComponent.h>
-#include <Physics/CapsuleShapeComponent.h>
-#include <Physics/Private/PhysicsMath.h>
+#include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Core/StaticBodyComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/CapsuleShapeComponent.h>
+#include <Physics/Core/Private/PhysicsMath.h>
 
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 
@@ -72,7 +71,7 @@ ShooterMovementSystem::ShooterMovementSystem(DAVA::Scene* scene)
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ACCELERATE, eInputElements::KB_LSHIFT, keyboardId);
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_ANALOG_MOVE, AnalogPrecision::ANALOG_UINT16);
 
-    entityGroup = scene->AquireEntityGroup<ShooterRoleComponent, DAVA::NetworkInputComponent>();
+    entityGroup = scene->AquireEntityGroup<ShooterAimComponent>();
 }
 
 void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
@@ -100,7 +99,7 @@ void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
 
     for (Entity* entity : entityGroup->GetEntities())
     {
-        if (entity->GetComponent<ShooterRoleComponent>()->GetRole() != ShooterRoleComponent::Role::Player)
+        if (!IsServer(this) && !IsClientOwner(this, entity))
         {
             continue;
         }
@@ -316,13 +315,8 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
     NetworkReplicationSingleComponent* replicationSingleComponent = GetScene()->GetSingleComponent<NetworkReplicationSingleComponent>();
     DVASSERT(replicationSingleComponent != nullptr);
 
-    CharacterMirrorsSingleComponent* mirrorSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
-    DVASSERT(mirrorSingleComponent != nullptr);
-
-    const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& characterToMirrorMap = mirrorSingleComponent->GetCharacterToMirrorMap();
-
     // If there are less than two players, no need to do anything
-    if (characterToMirrorMap.size() < 2)
+    if (entityGroup->GetEntities().GetSize() < 2)
     {
         return;
     }
@@ -330,34 +324,19 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
     NetworkReplicationComponent* movingPlayerReplicationComponent = controllerComponent->GetEntity()->GetComponent<NetworkReplicationComponent>();
     DVASSERT(movingPlayerReplicationComponent != nullptr);
 
-    for (auto& pair : characterToMirrorMap)
+    for (Entity* cct : entityGroup->GetEntities())
     {
-        Entity* cct = pair.first;
-        DVASSERT(cct != nullptr);
-
-        Entity* mirror = pair.second;
-        DVASSERT(mirror != nullptr);
-
-        ShooterMirroredCharacterComponent* mirroredCctComponent = cct->GetComponent<ShooterMirroredCharacterComponent>();
-        DVASSERT(mirroredCctComponent != nullptr);
-
-        if (mirroredCctComponent->GetMirrorIsMaster())
-        {
-            return;
-        }
-
         // If it's not the player we're going to move
         if (cct != controllerComponent->GetEntity())
         {
-            // Make the other player's mirror to collide with players
-            CapsuleShapeComponent* capsuleShape = mirror->GetComponent<CapsuleShapeComponent>();
-            DVASSERT(capsuleShape != nullptr);
-            uint32 mask = capsuleShape->GetTypeMaskToCollideWith();
-            mask |= SHOOTER_CHARACTER_COLLISION_TYPE;
-            capsuleShape->SetTypeMaskToCollideWith(mask);
-
             NetworkReplicationComponent* enemyReplicationComponent = cct->GetComponent<NetworkReplicationComponent>();
             DVASSERT(enemyReplicationComponent != nullptr);
+
+            CapsuleCharacterControllerComponent* cctComponent = cct->GetComponent<CapsuleCharacterControllerComponent>();
+            if (cctComponent == nullptr)
+            {
+                continue;
+            }
 
             if (IsServer(GetScene()))
             {
@@ -366,8 +345,7 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
                 const FastName& movingPlayerToken = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>()->GetToken(movingPlayerReplicationComponent->GetNetworkPlayerID());
                 DVASSERT(movingPlayerToken.IsValid());
 
-                int32 fdiff = timeSingleComponent->GetClientViewDelay(movingPlayerToken,
-                                                                      lastClientFrameId);
+                int32 fdiff = timeSingleComponent->GetClientViewDelay(movingPlayerToken, lastClientFrameId);
                 if (fdiff < 0)
                 {
                     return;
@@ -388,7 +366,8 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
                     return;
                 }
 
-                mirror->GetComponent<DynamicBodyComponent>()->GetPxActor()->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), physx::PxQuat(0.0f, 0.0f, 0.0f, 1.0f)));
+                TransformComponent* transform = cct->GetComponent<TransformComponent>();
+                cctComponent->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), PhysicsMath::QuaternionToPxQuat(transform->GetRotation())));
             }
             else
             {
@@ -451,12 +430,8 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
                         return;
                     }
 
-                    mirror->GetComponent<DynamicBodyComponent>()->GetPxActor()->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), physx::PxQuat(0.0f, 0.0f, 0.0f, 1.0f)));
-                }
-                else
-                {
-                    TransformComponent* cctTransformComponent = cct->GetComponent<TransformComponent>();
-                    mirror->GetComponent<DynamicBodyComponent>()->GetPxActor()->setGlobalPose(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(cctTransformComponent->GetPosition()), physx::PxQuat(0.0f, 0.0f, 0.0f, 1.0f)));
+                    TransformComponent* transform = cct->GetComponent<TransformComponent>();
+                    cctComponent->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), PhysicsMath::QuaternionToPxQuat(transform->GetRotation())));
                 }
             }
         }
@@ -469,35 +444,17 @@ void ShooterMovementSystem::AfterCharacterMove(DAVA::CharacterControllerComponen
 
     // Collisions in the past implementation
 
-    CharacterMirrorsSingleComponent* mirrorSingleComponent = GetScene()->GetSingleComponent<CharacterMirrorsSingleComponent>();
-    DVASSERT(mirrorSingleComponent != nullptr);
-
-    const DAVA::UnorderedMap<DAVA::Entity*, DAVA::Entity*>& characterToMirrorMap = mirrorSingleComponent->GetCharacterToMirrorMap();
-
-    for (auto& pair : characterToMirrorMap)
+    if (entityGroup->GetEntities().GetSize() < 2)
     {
-        Entity* cct = pair.first;
-        DVASSERT(cct != nullptr);
+        return;
+    }
 
-        Entity* mirror = pair.second;
-        DVASSERT(mirror != nullptr);
-
-        ShooterMirroredCharacterComponent* mirroredCctComponent = cct->GetComponent<ShooterMirroredCharacterComponent>();
-        DVASSERT(mirroredCctComponent != nullptr);
-
-        if (mirroredCctComponent->GetMirrorIsMaster())
-        {
-            return;
-        }
-
+    for (Entity* cct : entityGroup->GetEntities())
+    {
         if (cct != controllerComponent->GetEntity())
         {
-            // Disable mirror's collisions with players
-            CapsuleShapeComponent* capsuleShape = mirror->GetComponent<CapsuleShapeComponent>();
-            DVASSERT(capsuleShape != nullptr);
-            uint32 mask = capsuleShape->GetTypeMaskToCollideWith();
-            mask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
-            capsuleShape->SetTypeMaskToCollideWith(mask);
+            TransformComponent* transform = cct->GetComponent<TransformComponent>();
+            cct->GetComponent<CapsuleCharacterControllerComponent>()->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(transform->GetPosition()), PhysicsMath::QuaternionToPxQuat(transform->GetRotation())));
         }
     }
 }
@@ -509,7 +466,7 @@ void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vect
     if (offset != Vector3::Zero)
     {
         CharacterControllerComponent* characterControllerComponent = PhysicsUtils::GetCharacterControllerComponent(player);
-        if (characterControllerComponent != nullptr)
+        if (characterControllerComponent != nullptr && characterControllerComponent->IsGrounded())
         {
             TransformComponent* transformComponent = player->GetComponent<TransformComponent>();
             characterControllerComponent->Move(transformComponent->GetRotation().ApplyToVectorFast(offset));

@@ -58,14 +58,14 @@
 #include <NetworkCore/Scene3D/Systems/NetworkDebugPredictDrawSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkDebugDrawSystem.h>
 
-#include <Physics/BoxShapeComponent.h>
-#include <Physics/ConvexHullShapeComponent.h>
-#include <Physics/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
+#include <Physics/Core/ConvexHullShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/VehicleChassisComponent.h>
-#include <Physics/VehicleTankComponent.h>
-#include <Physics/VehicleWheelComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Vehicles/VehicleChassisComponent.h>
+#include <Physics/Vehicles/VehicleTankComponent.h>
+#include <Physics/Vehicles/VehicleWheelComponent.h>
 
 #include <NetworkCore/Scene3D/Systems/NetworkTransformFromLocalToNetSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkTransformFromNetToLocalSystem.h>

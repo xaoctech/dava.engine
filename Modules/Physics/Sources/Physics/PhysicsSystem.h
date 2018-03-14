@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Physics/DynamicBodyComponent.h"
-#include "Physics/StaticBodyComponent.h"
+#include "Physics/Core/DynamicBodyComponent.h"
+#include "Physics/Core/StaticBodyComponent.h"
 
 #include <Entity/SceneSystem.h>
 #include <Math/Vector.h>

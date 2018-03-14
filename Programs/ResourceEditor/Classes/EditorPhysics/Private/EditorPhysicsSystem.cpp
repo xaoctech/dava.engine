@@ -2,9 +2,9 @@
 
 #include <Physics/PhysicsModule.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/StaticBodyComponent.h>
-#include <Physics/SphereShapeComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/StaticBodyComponent.h>
+#include <Physics/Core/SphereShapeComponent.h>
 
 #include <Engine/Engine.h>
 #include <Scene3D/Entity.h>

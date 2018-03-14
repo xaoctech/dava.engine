@@ -22,10 +22,10 @@
 #include <Utils/StringFormat.h>
 #include <Debug/ProfilerCPU.h>
 
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/Private/PhysicsMath.h>
-#include <Physics/PhysicsUtils.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/Private/PhysicsMath.h>
+#include <Physics/Core/PhysicsUtils.h>
 
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
@@ -447,7 +447,7 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
         controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
         controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
         controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-        controllerComponent->SetTypeMaskToCollideWith(GetCharacterDefaultTypesToCollideWith(GetScene()));
+        controllerComponent->SetTypeMaskToCollideWith(SHOOTER_CCT_COLLIDE_WITH_MASK);
         player->AddComponent(controllerComponent);
     }
 }

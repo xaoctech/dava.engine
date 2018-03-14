@@ -31,8 +31,8 @@
 
 #include <functional>
 #include "Scene3D/Components/RenderComponent.h"
-#include <Physics/StaticBodyComponent.h>
-#include <Physics/MeshShapeComponent.h>
+#include <Physics/Core/StaticBodyComponent.h>
+#include <Physics/Core/MeshShapeComponent.h>
 
 namespace DAVA
 {

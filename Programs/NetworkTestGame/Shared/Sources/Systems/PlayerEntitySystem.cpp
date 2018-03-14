@@ -41,16 +41,16 @@
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
 #include <Physics/PhysicsSystem.h>
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/VehicleCarComponent.h>
-#include <Physics/VehicleWheelComponent.h>
-#include <Physics/VehicleChassisComponent.h>
-#include <Physics/BoxShapeComponent.h>
-#include <Physics/MeshShapeComponent.h>
-#include <Physics/ConvexHullShapeComponent.h>
-#include <Physics/BoxCharacterControllerComponent.h>
-#include <Physics/CapsuleCharacterControllerComponent.h>
-#include <Physics/PhysicsUtils.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
+#include <Physics/Vehicles/VehicleWheelComponent.h>
+#include <Physics/Vehicles/VehicleChassisComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
+#include <Physics/Core/MeshShapeComponent.h>
+#include <Physics/Core/ConvexHullShapeComponent.h>
+#include <Physics/Controllers/BoxCharacterControllerComponent.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/Core/PhysicsUtils.h>
 
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <Components/ShooterStateComponent.h>

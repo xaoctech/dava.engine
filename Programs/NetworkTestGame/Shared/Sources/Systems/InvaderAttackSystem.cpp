@@ -16,7 +16,7 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkReplicationSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
-#include <Physics/DynamicBodyComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/PhysicsSystem.h>
 #include <physx/PxQueryFiltering.h>
 #include <physx/PxQueryReport.h>

@@ -2,6 +2,7 @@
 
 #include <Reflection/ReflectionRegistrator.h>
 
+#include "Components/ExplosionEffectComponent.h"
 #include "Components/ShootCooldownComponent.h"
 #include "Components/ShootComponent.h"
 #include "Components/GameStunningComponent.h"
@@ -17,7 +18,6 @@
 #include "Components/ShooterAimComponent.h"
 #include "Components/ShooterProjectileComponent.h"
 #include "Components/ShooterCarUserComponent.h"
-#include "Components/ShooterMirroredCharacterComponent.h"
 #include "Components/PowerupComponent.h"
 #include "Components/PowerupCatcherComponent.h"
 #include "Components/ExplosiveRocketComponent.h"
@@ -49,6 +49,7 @@
 
 #include "Systems/BotSystem.h"
 #include "Systems/DamageSystem.h"
+#include "Systems/ExplosionEffectSystem.h"
 #include "Systems/GameInputSystem.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
@@ -71,7 +72,6 @@
 #include "Systems/ShooterAimSystem.h"
 #include "Systems/ShooterCharacterAnimationSystem.h"
 #include "Systems/ShooterEntityFillSystem.h"
-#include "Systems/ShooterMirroredCharacterSystem.h"
 #include "Systems/ShooterPlayerAttackSystem.h"
 #include "Systems/ShooterPlayerConnectSystem.h"
 #include "Systems/ShooterPlayerMovementSystem.h"
@@ -111,6 +111,7 @@ void RegisterGameComponents()
 
     // Components
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DamageComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExplosionEffectComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExplosiveRocketComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameStunnableComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameStunningComponent);
@@ -127,7 +128,6 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShootCooldownComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterAimComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterCarUserComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterMirroredCharacterComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterProjectileComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterRocketComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterRoleComponent);
@@ -165,6 +165,7 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DamageSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DrawShootSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EnemyMovingSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExplosionEffectSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExplosiveRocketSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameInputSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSystem);
@@ -190,7 +191,6 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterCarSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterCharacterAnimationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterEntityFillSystem);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterMirroredCharacterSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterMovementSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterPlayerAttackSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterPlayerConnectSystem);

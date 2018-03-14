@@ -1,7 +1,7 @@
 #include "GameModeSystemCars.h"
 
-#include <Physics/DynamicBodyComponent.h>
-#include <Physics/VehicleCarComponent.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Vehicles/VehicleCarComponent.h>
 
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
