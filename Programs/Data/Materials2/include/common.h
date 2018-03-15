@@ -59,8 +59,6 @@
 #ensuredefined COPY_GBUFFER_2 0
 #ensuredefined COPY_GBUFFER_3 0
 
-#ensuredefined EQUIRECTANGULAR_ENVIRONMENT_TEXTURE 0
-
 #ensuredefined COMBINE_INPLACE 0
 #ensuredefined FOWARD_WITH_COMBINE 0
 #ensuredefined TECH_COMBINED_LUMINANCE 0
@@ -96,8 +94,6 @@
 #ensuredefined USE_DETAIL_NORMAL_AO 0
 
 #ensuredefined ENABLE_TXAA 0
-
-#ensuredefined USE_DFG_APPROXIMATION 0
 
 #ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0

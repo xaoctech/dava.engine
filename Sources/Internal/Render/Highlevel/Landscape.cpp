@@ -2876,7 +2876,8 @@ void Landscape::RebuildDecoration()
                     decorationBatches[layerIndex][levelIndex].itemsCount += variationItemCount;
             }
 
-            if (!geometryData.empty() && !indexData.empty())
+            uint8 layerMask = decoration->GetLayerMask(layerIndex);
+            if (!geometryData.empty() && !indexData.empty() && layerMask != 0u)
             {
                 rhi::VertexBuffer::Descriptor vbufferDesc;
                 vbufferDesc.initialData = geometryData.data();
@@ -2902,7 +2903,6 @@ void Landscape::RebuildDecoration()
                     Vector4(1.f, 1.f, 0.f, 1.f)
                 };
 
-                uint8 layerMask = decoration->GetLayerMask(layerIndex);
                 Vector4 layerMaskProperty = Vector4(
                 ((layerMask & DecorationData::LAYER_MASK_CHANNEL_R) ? 1.f : 0.f),
                 ((layerMask & DecorationData::LAYER_MASK_CHANNEL_G) ? 1.f : 0.f),

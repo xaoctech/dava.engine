@@ -8,6 +8,8 @@ namespace DAVA
 class ISimulationSystem
 {
 public:
+    virtual ~ISimulationSystem(){};
+
     virtual const ComponentMask& GetResimulationComponents() const = 0;
     virtual void ReSimulationStart(Entity* entity, uint32 frameId) = 0;
     virtual void Simulate(Entity* entity) = 0;

@@ -21,7 +21,6 @@ private:
     Matrix4 previousVP;
     Vector4 prevCurrJitter;
 
-    bool debugDraw = true;
     NMaterial* velocityMaterial = nullptr;
     Texture* rt = nullptr;
 

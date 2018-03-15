@@ -138,8 +138,9 @@ vertex_out vp_main(vertex_in input)
 #if (WRITE_SHADOW_MAP)
 
     float4 worldPosition = mul(float4(inputPosition, 1.0), worldMatrix);
-    output.position = mul(worldPosition, viewProjMatrix);
+
     output.varTexCoord = float4(input.texCoord0, 0.0, 0.0 /* lightmap not used in shadow write */);
+    output.position = mul(worldPosition, viewProjMatrix);
 
 #else
 

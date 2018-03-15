@@ -1067,7 +1067,14 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
             GL_CALL(glDrawBuffers(colorCount, b));
 
             if (colorCount == 0)
-                GL_CALL(glReadBuffer(GL_NONE));
+            {
+#ifdef __DAVAENGINE_ANDROID__
+                if (glReadBuffer)
+#endif
+                {
+                    GL_CALL(glReadBuffer(GL_NONE));
+                }
+            }
         }
 
         int status = 0;

@@ -125,7 +125,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     Renderer::SetDesiredFPS(60);
 
     QualityPreferences::LoadFromSettings(data.settings);
-    
+
     viewSceneScreen = new ViewSceneScreen(data);
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
     performanceResultsScreen = new PerformanceResultsScreen(data);
@@ -257,12 +257,16 @@ DAVA::KeyedArchive* CreateOptions()
     appOptions->SetInt32("max_command_buffer_count", 16 * 1024);
     appOptions->SetInt32("max_packet_list_count", 16 * 1024);
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__)
 
     appOptions->SetInt32("renderer", rhi::RHI_METAL);
-    // appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     appOptions->SetInt32("rhi_threaded_frame_count", 2);
     appOptions->SetBool("iPhone_autodetectScreenScaleFactor", true);
+
+#elif defined(__DAVAENGINE_ANDROID__)
+
+    appOptions->SetInt32("renderer", rhi::RHI_GLES2);
+    appOptions->SetInt32("rhi_threaded_frame_count", 2);
 
 #elif defined(__DAVAENGINE_WIN_UAP__)
 

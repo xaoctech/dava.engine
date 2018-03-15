@@ -3,6 +3,7 @@
 #include "UI/Private/Android/WebViewControl.Android.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 

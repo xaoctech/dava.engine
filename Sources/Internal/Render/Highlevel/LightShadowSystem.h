@@ -43,7 +43,7 @@ public:
 private:
     void ProcessDirectionalLight(RenderSystem* rs, Light* light);
     void BuildCascades(Light* sourceLight, Camera* viewCamera, const AABBox3& worldBox);
-    void CreateFrustumPointsFromCascadeInterval(float intervalBegin, float intervalEnd, const Matrix4& invViewProj, Vector3* worldPoints);
+    void CreateFrustumPointsFromCascadeInterval(float intervalBegin, float intervalEnd, Camera* camera, Vector3* worldPoints);
 
     void ProcessPointLight(RenderSystem* rs, Light* light);
     void ProcessPointLights(RenderSystem* rs, const Vector<Light*> pointLights);
@@ -70,6 +70,10 @@ private:
         Vector3 direction = Vector3(0.0f, -1.0f, 0.0f);
         Vector3 up = Vector3(0.0f, 0.0f, 1.0f);
         Vector2 depthBias = Vector2(0.0f, 0.0f);
+        Vector4 cameraProjection = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+        Vector4 cascadeIntervals = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+        Vector4 cascadeSizes = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+        Vector4 unitsPerTexel = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
         // Only debug stuff goes below
         Matrix4 worldViewProj;
         Array<FrustumPoints, 4> frustums;

@@ -2,7 +2,8 @@
 #include "UtilsAndroid.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
-
+namespace DAVA
+{
 JniUtils::JniUtils()
     : jniUtils("com/dava/engine/Utils")
 {
@@ -41,28 +42,28 @@ String JniUtils::GenerateGUID()
     return result;
 }
 
-void DAVA::DisableSleepTimer()
+void DisableSleepTimer()
 {
     JniUtils jniUtils;
     jniUtils.DisableSleepTimer();
 }
 
-void DAVA::EnableSleepTimer()
+void EnableSleepTimer()
 {
     JniUtils jniUtils;
     jniUtils.EnableSleepTimer();
 }
 
-void DAVA::OpenURL(const String& url)
+void OpenURL(const String& url)
 {
     JniUtils jniUtils;
     jniUtils.OpenURL(url);
 }
 
-String DAVA::GenerateGUID()
+String GenerateGUID()
 {
     JniUtils jniUtils;
     return jniUtils.GenerateGUID();
 }
-
+}
 #endif //#if defined(__DAVAENGINE_ANDROID__)

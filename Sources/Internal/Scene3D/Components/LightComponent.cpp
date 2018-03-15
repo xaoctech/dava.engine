@@ -32,8 +32,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LightComponent)
     IMPL_LIGHT_PROXY(ShadowCascadesIntervals4)
     IMPL_LIGHT_PROXY(ShadowFilterRadius)
     IMPL_LIGHT_PROXY(ShadowWriteBias)
-    IMPL_LIGHT_PROXY(DebugDrawShadowMapEnabled)
-    IMPL_LIGHT_PROXY(DebugDrawFrustumsEnabled)
+    IMPL_LIGHT_PROXY_NAME(DebugDrawShadowMapEnabled, "View Shadow Map")
+    IMPL_LIGHT_PROXY_NAME(DebugDrawFrustumsEnabled, "Draw Cascades")
     IMPL_LIGHT_PROXY_NAME(AutoColor, "Auto Sun Color")
     .End();
 }

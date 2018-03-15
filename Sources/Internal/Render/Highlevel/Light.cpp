@@ -414,6 +414,8 @@ Vector4 Light::GetShadowCascadesIntervals() const
     Vector4 result;
     switch (Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES))
     {
+    case 0:
+        break;
     case 1:
         result = Vector4(shadowCascadesIntervals1, 0.0f, 0.0f, 0.0f);
         break;
@@ -447,5 +449,31 @@ void Light::SetShadowCascadesIntervals(const Vector4& values)
     shadowCascadesIntervals4.z = values.z;
 
     shadowCascadesIntervals4.w = values.w;
+}
+
+void Light::RecalcBoundingBox()
+{
+    if ((GetLightType() == Light::eType::TYPE_POINT) || (GetLightType() == Light::eType::TYPE_SPOT))
+    {
+        RenderObject::RecalcBoundingBox();
+    }
+    else
+    {
+        bbox = AABBox3(Vector3::Zero, 1.0f);
+        worldBBox = bbox;
+    }
+}
+
+void Light::RecalculateWorldBoundingBox()
+{
+    if ((GetLightType() == Light::eType::TYPE_POINT) || (GetLightType() == Light::eType::TYPE_SPOT))
+    {
+        RenderObject::RecalculateWorldBoundingBox();
+    }
+    else
+    {
+        bbox = AABBox3(Vector3::Zero, 1.0f);
+        worldBBox = bbox;
+    }
 }
 };

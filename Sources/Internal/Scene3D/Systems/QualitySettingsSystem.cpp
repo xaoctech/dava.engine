@@ -50,9 +50,10 @@ QualitySettingsSystem::QualitySettingsSystem()
     static_assert(MAX_SHADOW_CASCADES == 4, "Max shadow cascades should be 4");
 
     qualityGroups[QualityGroup::Shadow].groupName = FastName("Shadows");
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Off"), ShadowQuality(0, 0));
     qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Poor"), ShadowQuality(1, 0));
     qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Low"), ShadowQuality(1, 4));
-    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Medium"), ShadowQuality(2, 8));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Medium"), ShadowQuality(2, 4));
     qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("High"), ShadowQuality(3, 8));
     qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Ultra"), ShadowQuality(4, 8));
     qualityGroups[QualityGroup::Shadow].currentValue = qualityGroups[QualityGroup::Shadow].values.rbegin()->first;

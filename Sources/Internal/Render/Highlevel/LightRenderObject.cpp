@@ -121,4 +121,30 @@ void LightRenderObject::PrepareToRender(Camera* camera)
     material->SetPropertyValue(NMaterialParamName::ENVIRONMENT_COLOR_PROPERTY, sourceLight->GetColor().color);
     renderBatch->SetMaterial(material);
 }
-};
+
+void LightRenderObject::RecalcBoundingBox()
+{
+    if ((sourceLight != nullptr) && ((sourceLight->GetLightType() == Light::eType::TYPE_POINT) || (sourceLight->GetLightType() == Light::eType::TYPE_SPOT)))
+    {
+        RenderObject::RecalcBoundingBox();
+    }
+    else
+    {
+        bbox = AABBox3(Vector3::Zero, 1.0f);
+        worldBBox = bbox;
+    }
+}
+
+void LightRenderObject::RecalculateWorldBoundingBox()
+{
+    if ((sourceLight != nullptr) && ((sourceLight->GetLightType() == Light::eType::TYPE_POINT) || (sourceLight->GetLightType() == Light::eType::TYPE_SPOT)))
+    {
+        RenderObject::RecalculateWorldBoundingBox();
+    }
+    else
+    {
+        bbox = AABBox3(Vector3::Zero, 1.0f);
+        worldBBox = bbox;
+    }
+}
+}

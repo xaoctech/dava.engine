@@ -320,9 +320,9 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
         DAVA::Logger::Debug("failed to create tex%s %ux%u fmt=%i", (texDesc.isRenderTarget) ? "-rt" : "", texDesc.width, texDesc.height, int(texDesc.format));
         success = false;
     }
-    
+
     [desc release];
-    
+
     tex->need_restoring = texDesc.needRestore;
     tex->creationDesc = texDesc;
 

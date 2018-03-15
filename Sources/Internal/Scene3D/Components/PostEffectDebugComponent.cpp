@@ -21,6 +21,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PostEffectDebugComponent)
     .Field("drawBloom", &PostEffectDebugComponent::GetDrawBloom, &PostEffectDebugComponent::SetDrawBloom)[M::DisplayName("Draw Bloom")]
     .Field("debugRectOffset", &PostEffectDebugComponent::GetDebugRectOffset, &PostEffectDebugComponent::SetDebugRectOffset)[M::DisplayName("Debug Rect Offset")]
     .Field("debugRectSize", &PostEffectDebugComponent::GetDebugRectSize, &PostEffectDebugComponent::SetDebugRectSize)[M::DisplayName("Debug Rect Size")]
+    .Field("taaSampleIndex", &PostEffectDebugComponent::GetTAASampleIndex, &PostEffectDebugComponent::SetTAASampleIndex)[M::DisplayName("TAA Sample Index")]
     .End();
 }
 
@@ -173,5 +174,15 @@ void PostEffectDebugComponent::SetLightMeterMaskEnabled(bool value)
 {
     drawLightMeterMask = value;
     GlobalEventSystem::Instance()->Event(this, EventSystem::POSTEFFECT_DEBUG_CHANGED);
+}
+
+int32 PostEffectDebugComponent::GetTAASampleIndex() const
+{
+    return Renderer::GetOptions()->GetOptionValue(RenderOptions::TAA_SAMPLE_INDEX);
+}
+
+void PostEffectDebugComponent::SetTAASampleIndex(int32 value)
+{
+    Renderer::GetOptions()->SetOptionValue(RenderOptions::TAA_SAMPLE_INDEX, value);
 }
 };

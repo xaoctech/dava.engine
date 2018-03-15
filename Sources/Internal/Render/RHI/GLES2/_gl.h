@@ -83,6 +83,9 @@ typedef void(GL_APIENTRY* PFNGLQUERYCOUNTEREXTPROC)(GLuint id, GLenum target);
 typedef void(GL_APIENTRY* PFNGLGETQUERYOBJECTUIVEXTPROC)(GLuint id, GLenum pname, GLuint* params);
 typedef void(GL_APIENTRY* PFNGLGETQUERYOBJECTUI64VEXTPROC)(GLuint id, GLenum pname, GLuint64* params);
 
+typedef void(GL_APIENTRY* PFNGLREADBUFFERPROC)(GLenum mode);
+typedef void(GL_APIENTRY* PFNGLDRAWBUFFERSPROC)(GLsizei n, const GLenum* bufs);
+
 // GL_KHR_debug
 typedef void(GL_APIENTRY* GLDEBUGPROCKHR)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 typedef void(GL_APIENTRY* PFNGL_DEBUGMESSAGECONTROLKHRPROC)(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
@@ -103,6 +106,9 @@ extern PFNGLENDQUERYEXTPROC glEndQuery;
 extern PFNGLQUERYCOUNTEREXTPROC glQueryCounter;
 extern PFNGLGETQUERYOBJECTUIVEXTPROC glGetQueryObjectuiv;
 extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64v;
+
+extern PFNGLREADBUFFERPROC glReadBuffer;
+extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 
 #endif
 
@@ -214,6 +220,22 @@ extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64v;
 #define GL_BGRA GL_BGRA_EXT
 #endif
 
+#if !defined(GL_RGB10_A2)
+#define GL_RGB10_A2 0x8059
+#endif
+
+#if !defined(GL_R11F_G11F_B10F)
+#define GL_R11F_G11F_B10F 0x8C3A
+#endif
+
+#if !defined(GL_DEPTH_COMPONENT32F)
+#define GL_DEPTH_COMPONENT32F 0x8CAC
+#endif
+
+#if !defined(GL_UNSIGNED_INT_2_10_10_10_REV)
+#define GL_UNSIGNED_INT_2_10_10_10_REV 0x8368
+#endif
+
 #if !defined(GL_DEPTH24_STENCIL8)
 #define GL_DEPTH24_STENCIL8 GL_DEPTH24_STENCIL8_OES
 #endif
@@ -322,6 +344,44 @@ extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64v;
     #endif
 #endif
 
+
+#if !defined(GL_COMPARE_REF_TO_TEXTURE)
+#define GL_COMPARE_REF_TO_TEXTURE 0x884E
+#endif
+
+#if !defined(GL_TEXTURE_COMPARE_FUNC)
+#define GL_TEXTURE_COMPARE_FUNC 0x884D
+#endif
+
+#if !defined(GL_TEXTURE_COMPARE_MODE)
+#define GL_TEXTURE_COMPARE_MODE 0x884C
+#endif
+
+#if !defined(GL_COLOR_ATTACHMENT0)
+#define GL_COLOR_ATTACHMENT0 0x8CE0
+#endif
+
+#if !defined(GL_COLOR_ATTACHMENT1)
+#define GL_COLOR_ATTACHMENT1 0x8CE1
+#endif
+
+#if !defined(GL_COLOR_ATTACHMENT2)
+#define GL_COLOR_ATTACHMENT2 0x8CE2
+#endif
+
+#if !defined(GL_COLOR_ATTACHMENT3)
+#define GL_COLOR_ATTACHMENT3 0x8CE3
+#endif
+
+#if !defined(GL_COLOR_ATTACHMENT4)
+#define GL_COLOR_ATTACHMENT4 0x8CE4
+#endif
+
+#if !defined(GL_COLOR_ATTACHMENT5)
+#define GL_COLOR_ATTACHMENT5 0x8CE5
+#endif
+
+
 #if !defined(GL_READ_FRAMEBUFFER)
     #define GL_READ_FRAMEBUFFER 0x8CA8
 #endif
@@ -352,6 +412,10 @@ extern PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64v;
 
 #if !defined(GL_MAX_SAMPLES)
 #define GL_MAX_SAMPLES 0x8D57
+#endif
+
+#if !defined(GL_TEXTURE_MAX_LEVEL)
+#define GL_TEXTURE_MAX_LEVEL 0x813D
 #endif
 
 #if !defined(GL_DEBUG_OUTPUT) && defined(GL_DEBUG_OUTPUT_KHR)

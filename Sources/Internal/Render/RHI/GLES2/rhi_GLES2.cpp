@@ -39,7 +39,7 @@ bool _GLES2_UseUserProvidedIndices = false;
 bool _GLES2_TimeStampQuerySupported = false;
 volatile bool _GLES2_ValidateNeonCalleeSavedRegisters = false;
 
-typedef void (*PFNGLCLIPCONTROLPROC_T)(GLenum origin, GLenum depth);
+typedef void(GLAPIENTRY* PFNGLCLIPCONTROLPROC_T)(GLenum, GLenum);
 PFNGLCLIPCONTROLPROC_T impl_glClipControl = nullptr;
 
 #if defined(__DAVAENGINE_ANDROID__) && defined(__DAVAENGINE_ARM_7__)
@@ -276,6 +276,9 @@ static void gles_check_GL_extensions()
             GET_GL_FUNC(glGetQueryObjectuiv, "EXT");
             GET_GL_FUNC(glQueryCounter, "EXT");
             GET_GL_FUNC(glGetQueryObjectui64v, "EXT");
+
+            GET_GL_FUNC(glReadBuffer, "NV");
+            GET_GL_FUNC(glDrawBuffers, "EXT");
 #endif
         }
         else

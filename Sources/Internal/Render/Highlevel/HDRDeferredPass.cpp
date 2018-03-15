@@ -306,7 +306,6 @@ void HDRDeferredPass::GBufferResolvePass::Draw(RenderSystem* renderSystem, uint3
         screenResolveMaterial->AddTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);
     }
 
-    // from DrawLayers
     ShaderDescriptorCache::ClearDynamicBindigs();
     SetupCameraParams(mainCamera, drawCamera);
 
@@ -459,6 +458,7 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     //deferred decals
     deferredDecalPass->GetPassConfig().priority = passConfig.priority + PRIORITY_SERVICE_3D - 1; //right after
     deferredDecalPass->SetViewport(viewport);
+    deferredDecalPass->SetEnableFrameJittering(enableFrameJittering);
     deferredDecalPass->DrawVisibilityArray(renderSystem, visibilityArray);
 
     //resolve g-buffer
@@ -471,7 +471,7 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[2] = 1.0f;
     gBufferResolvePass->GetPassConfig().colorBuffer[0].clearColor[3] = 1.0f;
     gBufferResolvePass->GetPassConfig().depthStencilBuffer = passConfig.depthStencilBuffer;
-
+    gBufferResolvePass->SetEnableFrameJittering(enableFrameJittering);
     gBufferResolvePass->Draw(renderSystem);
 
     //GFX_COMPLETE - right now forward stuff requires post effect

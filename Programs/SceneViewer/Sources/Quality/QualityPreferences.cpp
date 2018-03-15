@@ -32,14 +32,14 @@ void LoadFromSettings(Settings& appSettings)
                 {
                     Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
                 }
-                
+
                 if (group == QualityGroup::Shadow)
                 {
                     ShadowQuality shadowQuality = qs->GetCurrentQualityValue<QualityGroup::Shadow>();
                     Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, std::min(uint32(MAX_SHADOW_CASCADES), shadowQuality.cascadesCount));
                     Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_PCF, shadowQuality.PCFsamples);
                 }
-                
+
                 if (group == QualityGroup::Scattering)
                 {
                     ScatteringQuality scatteringQuality = qs->GetCurrentQualityValue<QualityGroup::Scattering>();
@@ -109,7 +109,7 @@ void LoadFromSettings(Settings& appSettings)
                 }
             }
         }
-        
+
         DAVA::Renderer::GetRuntimeTextures().Reset(DAVA::Size2i(1, 1));
     }
 }
@@ -154,13 +154,12 @@ void SaveToSettings(Settings& appSettings)
 
     appSettings.SetQualitySettings(archive);
 }
-    
+
 void ReloadShaders()
 {
     DAVA::ShaderDescriptorCache::ReloadShaders();
     DAVA::NMaterialManager::Instance().InvalidateMaterials();
-    
+
     DAVA::Renderer::GetRuntimeTextures().Reset(DAVA::Size2i(1, 1));
 }
-    
 }

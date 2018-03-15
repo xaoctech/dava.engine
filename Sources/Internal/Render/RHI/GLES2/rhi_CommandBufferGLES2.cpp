@@ -682,7 +682,7 @@ void CommandBufferGLES2_t::Execute()
                         bool hasStencil = TextureGLES2::GetFormat(passCfg.depthStencilBuffer.texture) == TEXTURE_FORMAT_D24S8;
                         float clearDepthValue = passCfg.usesReverseDepth ? (1.0f - passCfg.depthStencilBuffer.clearDepth) : passCfg.depthStencilBuffer.clearDepth;
                         
-                    #if defined(__DAVAENGINE_IPHONE__)
+                    #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
                         GL_CALL(glClearDepthf(clearDepthValue));
                     #else
                         GL_CALL(glClearDepth(clearDepthValue));
@@ -1652,7 +1652,12 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
         case GLCommand::READ_BUFFER:
         {
-            GL_CALL(glReadBuffer(GLenum(arg[0])));
+#ifdef __DAVAENGINE_ANDROID__
+            if (glReadBuffer)
+#endif
+            {
+                GL_CALL(glReadBuffer(GLenum(arg[0])));
+            }
             cmd->status = 0;
         }
         break;

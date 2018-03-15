@@ -5,7 +5,6 @@ namespace DAVA
 Bitstream::Bitstream(void* bitstreamPointer, uint32 bitstreamLength)
     : head(static_cast<uint32*>(bitstreamPointer))
     , tail(static_cast<uint32*>(bitstreamPointer))
-    , length(bitstreamLength)
     , bufferA(head[0])
     , bufferB(head[1])
 {

@@ -257,7 +257,12 @@ void RenderPass::ValidateMultisampledTextures(const rhi::RenderPassConfig& confi
 Vector2 RenderPass::GetCurrentFrameJitterOffset() const
 {
     Size2i size = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
-    Vector2 currOffset = ParticlesRandom::SobolSequenceV2Prebult(Engine::Instance()->GetGlobalFrameIndex());
+
+    int32 taaSampleIndex = Renderer::GetOptions()->GetOptionValue(RenderOptions::TAA_SAMPLE_INDEX);
+    if (taaSampleIndex == -1)
+        taaSampleIndex = Engine::Instance()->GetGlobalFrameIndex();
+
+    Vector2 currOffset = ParticlesRandom::SobolSequenceV2Prebult(uint32(taaSampleIndex));
     return Vector2(currOffset.x / float32(size.dx), currOffset.y / float32(size.dy)) * 2.0f;
 }
 

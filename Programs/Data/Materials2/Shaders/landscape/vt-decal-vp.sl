@@ -27,7 +27,7 @@ vertex_out vp_main(vertex_in input)
     float2 pagePosition = (inPosition - vtPageInfo.xy) / vtPageInfo.zw;
 
     output.position = float4(pagePosition * 2.0 - float2(1.0, 1.0), 0.0, 1.0);
-    output.uv.xy = input.uv;
+    output.uv.xy = input.uv.xy;
     output.uv.zw = pagePosition;
     output.value = input.uv.z;
     output.basis = float4(input.tangents.x * vtBasis.xy + input.tangents.y * vtBasis.zw, input.tangents.z * vtBasis.xy + input.tangents.w * vtBasis.zw);

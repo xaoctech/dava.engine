@@ -7,7 +7,7 @@ bakedAo *= input.vertexBakedAO;
 #endif
 
 #if (USE_BAKED_LIGHTING)
-float2 bakedShadowAOSample = tex2D(shadowaotexture, input.varTexCoord.zw).xy;
+float2 bakedShadowAOSample = tex2D(shadowaotexture, input.varTexCoord.zw* uvScale + uvOffset).xy;
 float2 staticShadowUV = input.varTexCoord.zw;
 
 #if (VIEW_MODE & VIEW_LIGHTMAP_CANVAS_BIT)

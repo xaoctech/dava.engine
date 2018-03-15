@@ -116,6 +116,9 @@ public:
 
     bool IsLocal() const;
 
+    void RecalcBoundingBox() override;
+    void RecalculateWorldBoundingBox() override;
+
 private:
     DAVA_DEPRECATED(void SetAmbientColor(const Color& color));
     DAVA_DEPRECATED(const Color& GetAmbientColor() const);

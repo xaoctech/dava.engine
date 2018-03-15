@@ -301,22 +301,23 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     {
         int32 cascadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
         runtimeTextureSizes[TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER] = Size2i(SHADOW_CASCADE_SIZE, cascadesCount * SHADOW_CASCADE_SIZE);
-
-        descriptor.autoGenMipmaps = false;
-        descriptor.isRenderTarget = true;
-        descriptor.needRestore = false;
-        descriptor.cpuAccessRead = false;
-        descriptor.cpuAccessWrite = false;
-        descriptor.type = rhi::TEXTURE_TYPE_2D;
-        descriptor.format = rhi::TEXTURE_FORMAT_D32F;
-        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
-        runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_INVALID;
-
+        if (cascadesCount > 0)
+        {
+            descriptor.autoGenMipmaps = false;
+            descriptor.isRenderTarget = true;
+            descriptor.needRestore = false;
+            descriptor.cpuAccessRead = false;
+            descriptor.cpuAccessWrite = false;
+            descriptor.type = rhi::TEXTURE_TYPE_2D;
+            descriptor.format = rhi::TEXTURE_FORMAT_D32F;
+            runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
+            runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_INVALID;
+        }
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
-        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_NEAREST;
-        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_NEAREST;
+        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_LINEAR;
+        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_LINEAR;
         samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
         samplerDescriptors[semantic].anisotropyLevel = 1;
         samplerDescriptors[semantic].comparisonEnabled = true;
@@ -443,8 +444,6 @@ rhi::SamplerState::Descriptor::Sampler RuntimeTextures::GetRuntimeTextureSampler
 
 Size2i RuntimeTextures::GetRuntimeTextureSize(eRuntimeTextureSemantic semantic)
 {
-    DVASSERT(runtimeTextureSizes[semantic].dx > 0);
-    DVASSERT(runtimeTextureSizes[semantic].dy > 0);
     return runtimeTextureSizes[semantic];
 }
 

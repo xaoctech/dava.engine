@@ -9,8 +9,8 @@
 namespace DAVA
 {
 // TODO : make this depend on API
-const float32 nearClipPlane = -1.0f;
-const float32 farClipPlane = 1.0f;
+const float nearClipPlane = -1.0f;
+const float farClipPlane = 1.0f;
 
 /*
  * CubemapCameraSetup
@@ -61,10 +61,12 @@ struct LightShadowSystem::ShadowCascadePass : public RenderPass
         Rect viewport;
         RefPtr<Camera> camera;
         Vector2 biasScale = Vector2(0.0f, 0.0f);
+        bool hasValidFrustum = true;
     };
     Vector<Config> configs;
     Vector4* shadowMapParameters = nullptr;
     uint32 cascadesCount = 0;
+    uint32 activeCascades = 0;
 };
 
 struct LightShadowSystem::PointLightShadowPass : public RenderPass
@@ -252,94 +254,115 @@ void LightShadowSystem::ProcessDirectionalLight(RenderSystem* renderSystem, Ligh
 
 void LightShadowSystem::BuildCascades(Light* sourceLight, Camera* viewCamera, const AABBox3& worldBox)
 {
+    const Matrix4& viewProjection = viewCamera->GetProjectionMatrix();
+    Vector4 proj = Vector4(viewProjection._data[3][0], viewProjection._data[3][1], viewProjection._data[3][2], viewProjection._data[3][3]);
+
     const int32 cacadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
     const Size2i smSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
     const float shadowmapSizeWidth = static_cast<float>(smSize.dx);
     Vector4 cascadeIntervals = sourceLight->GetShadowCascadesIntervals();
 
-    shadowCascadesPass->shadowMapParameters = &shadowMapParameters;
+    bool cascadeSizesValid = ((proj == directionalLight.cameraProjection) && (cascadeIntervals == directionalLight.cascadeIntervals));
+    directionalLight.cameraProjection = proj;
+    directionalLight.cascadeIntervals = cascadeIntervals;
+
     shadowCascadesPass->cascadesCount = cacadesCount;
+    shadowCascadesPass->shadowMapParameters = &shadowMapParameters;
 
-    Matrix4 invViewProj;
-    viewCamera->PrepareDynamicParameters(rhi::IsInvertedProjectionRequired(true, false), directionalLight.reverseZEnabled);
-    viewCamera->GetViewProjMatrix(false, directionalLight.reverseZEnabled).GetInverse(invViewProj);
-
+    directionalLight.position = Vector3::Zero;
     directionalLight.direction = sourceLight->GetDirection();
     directionalLight.up = std::abs(directionalLight.direction.z) < 0.99f ? Vector3(0.0f, 0.0f, 1.0f) : Vector3(0.0f, -1.0f, 0.0f);
-    directionalLight.viewMatrix.BuildLookAtMatrix(Vector3(0.0f, 0.0f, 0.0f), directionalLight.direction, directionalLight.up);
+    directionalLight.viewMatrix.BuildLookAtMatrix(directionalLight.position, directionalLight.position + directionalLight.direction, directionalLight.up);
 
     Vector3 worldCorners[8];
     worldBox.GetCorners(worldCorners);
 
-    Vector3 minExtent(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-    Vector3 maxExtent = -minExtent;
+    Vector3 globalMinExtent(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    Vector3 globalMaxExtent = -globalMinExtent;
     for (const Vector3& corner : worldCorners)
     {
         Vector3 t = corner * directionalLight.viewMatrix;
-        minExtent.x = std::min(minExtent.x, t.x);
-        minExtent.y = std::min(minExtent.y, t.y);
-        minExtent.z = std::min(minExtent.z, t.z);
-        maxExtent.x = std::max(maxExtent.x, t.x);
-        maxExtent.y = std::max(maxExtent.y, t.y);
-        maxExtent.z = std::max(maxExtent.z, t.z);
+        globalMinExtent.x = std::min(globalMinExtent.x, t.x);
+        globalMinExtent.y = std::min(globalMinExtent.y, t.y);
+        globalMinExtent.z = std::min(globalMinExtent.z, t.z);
+        globalMaxExtent.x = std::max(globalMaxExtent.x, t.x);
+        globalMaxExtent.y = std::max(globalMaxExtent.y, t.y);
+        globalMaxExtent.z = std::max(globalMaxExtent.z, t.z);
     }
 
-    float zNear = -maxExtent.z;
-    float zFar = -minExtent.z;
+    float sceneZNear = -globalMaxExtent.z;
+    float sceneZFar = -globalMinExtent.z;
+    float projectionFlip = rhi::DeviceCaps().isUpperLeftRTOrigin ? -1.0f : 1.0f;
+    float projectionScale = 1.0f / static_cast<float>(cacadesCount);
+    float projectionZScale = rhi::DeviceCaps().isZeroBaseClipRange ? 1.0f : 0.5f;
+    float projectionZBias = rhi::DeviceCaps().isZeroBaseClipRange ? 0.0f : 0.5f;
 
     bool revZ = directionalLight.reverseZEnabled;
     bool zeroClip = rhi::DeviceCaps().isZeroBaseClipRange;
+    bool invertProjetion = rhi::IsInvertedProjectionRequired(true, false);
+
     Matrix4 worldProjection = Matrix4::IDENTITY;
-    worldProjection.BuildOrtho(minExtent.x, maxExtent.x, minExtent.y, maxExtent.y, zNear, zFar, revZ || zeroClip, revZ);
+    worldProjection.BuildOrtho(globalMaxExtent.x, globalMaxExtent.x, globalMinExtent.y, globalMinExtent.y, sceneZNear, sceneZFar, revZ || zeroClip, revZ);
     directionalLight.worldViewProj = directionalLight.viewMatrix * worldProjection;
 
     float intervalBegin = 0.0f;
     for (uint32 cascadeIndex = 0; cascadeIndex < shadowCascadesPass->cascadesCount; ++cascadeIndex)
     {
-        CreateFrustumPointsFromCascadeInterval(intervalBegin, cascadeIntervals.data[cascadeIndex], invViewProj, directionalLight.frustums[cascadeIndex]);
+        float intervalEnd = cascadeIntervals.data[cascadeIndex];
+        CreateFrustumPointsFromCascadeInterval(intervalBegin, intervalEnd, viewCamera, directionalLight.frustums[cascadeIndex]);
 
-        Vector3 minExtent = Vector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-        Vector3 maxExtent = -minExtent;
+        Vector3 localMinExtent = Vector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+        Vector3 localMaxExtent = -localMinExtent;
         for (const Vector3& fp : directionalLight.frustums[cascadeIndex])
         {
             Vector3 t = fp * directionalLight.viewMatrix;
-            minExtent.x = std::min(minExtent.x, t.x);
-            minExtent.y = std::min(minExtent.y, t.y);
-            minExtent.z = std::min(minExtent.z, t.z);
-            maxExtent.x = std::max(maxExtent.x, t.x);
-            maxExtent.y = std::max(maxExtent.y, t.y);
-            maxExtent.z = std::max(maxExtent.z, t.z);
+            localMinExtent.x = std::min(localMinExtent.x, t.x);
+            localMinExtent.y = std::min(localMinExtent.y, t.y);
+            localMinExtent.z = std::min(localMinExtent.z, t.z);
+            localMaxExtent.x = std::max(localMaxExtent.x, t.x);
+            localMaxExtent.y = std::max(localMaxExtent.y, t.y);
+            localMaxExtent.z = std::max(localMaxExtent.z, t.z);
         }
+
+        float cascadeZNear = -localMaxExtent.z;
+        float cascadeZFar = -localMinExtent.z;
+        float zNear = sceneZNear;
+        float zFar = std::min(sceneZFar, cascadeZFar);
+        shadowCascadesPass->configs[cascadeIndex].hasValidFrustum = (zFar - zNear) >= 0.0f;
 
         /*
          * Snap to shadow map size to avoid jittering
+         * rebuild cascade sizes only when required to avoid floating point precission issues
          */
-        float32 diagonal = (directionalLight.frustums[cascadeIndex][0] - directionalLight.frustums[cascadeIndex][6]).Length();
-        Vector3 borderOffset = 0.5f * (Vector3(diagonal, diagonal, diagonal) - (maxExtent - minExtent));
-        maxExtent += borderOffset;
-        minExtent -= borderOffset;
-        float32 unitsPerTexel = diagonal / shadowmapSizeWidth;
-        minExtent.x = std::floor(minExtent.x / unitsPerTexel) * unitsPerTexel;
-        minExtent.y = std::floor(minExtent.y / unitsPerTexel) * unitsPerTexel;
-        maxExtent.x = std::floor(maxExtent.x / unitsPerTexel) * unitsPerTexel;
-        maxExtent.y = std::floor(maxExtent.y / unitsPerTexel) * unitsPerTexel;
+        if (cascadeSizesValid == false)
+        {
+            float sz = (directionalLight.frustums[cascadeIndex][0] - directionalLight.frustums[cascadeIndex][6]).Length();
+            float tx = sz / shadowmapSizeWidth;
+            directionalLight.unitsPerTexel.data[cascadeIndex] = tx;
+            directionalLight.cascadeSizes.data[cascadeIndex] = std::floor(sz / tx + 0.5f) * tx;
+        }
+
+        localMinExtent.x = std::floor(localMinExtent.x / directionalLight.unitsPerTexel.data[cascadeIndex] + 0.5f) * directionalLight.unitsPerTexel.data[cascadeIndex];
+        localMinExtent.y = std::floor(localMinExtent.y / directionalLight.unitsPerTexel.data[cascadeIndex] + 0.5f) * directionalLight.unitsPerTexel.data[cascadeIndex];
+        localMaxExtent.x = localMinExtent.x + directionalLight.cascadeSizes.data[cascadeIndex];
+        localMaxExtent.y = localMinExtent.y + directionalLight.cascadeSizes.data[cascadeIndex];
         // */
 
         shadowCascadesPass->configs[cascadeIndex].biasScale = directionalLight.depthBias;
-        shadowCascadesPass->configs[cascadeIndex].camera->SetPosition(directionalLight.position);
-        shadowCascadesPass->configs[cascadeIndex].camera->SetDirection(directionalLight.direction);
-        shadowCascadesPass->configs[cascadeIndex].camera->SetUp(directionalLight.up);
-        shadowCascadesPass->configs[cascadeIndex].camera->Setup(minExtent.x, maxExtent.x, minExtent.y, maxExtent.y, zNear, zFar);
-        shadowCascadesPass->configs[cascadeIndex].camera->PrepareDynamicParameters(rhi::IsInvertedProjectionRequired(true, false), false);
 
-        float flip = rhi::DeviceCaps().isUpperLeftRTOrigin ? -1.0f : 1.0f;
-        float scale = 1.0f / static_cast<float>(cacadesCount);
-        float zScale = rhi::DeviceCaps().isZeroBaseClipRange ? 1.0f : 0.5f;
-        float zBias = rhi::DeviceCaps().isZeroBaseClipRange ? 0.0f : 0.5f;
+        Camera* camera = shadowCascadesPass->configs[cascadeIndex].camera.Get();
+        camera->SetIsOrtho(true);
+        camera->SetPosition(directionalLight.position);
+        camera->SetDirection(directionalLight.direction);
+        camera->SetUp(directionalLight.up);
+        camera->SetZNear(zNear);
+        camera->SetZFar(zFar);
+        camera->Setup(localMinExtent.x, localMaxExtent.x, localMinExtent.y, localMaxExtent.y, zNear, zFar);
+        camera->PrepareDynamicParameters(invertProjetion, false);
 
-        Matrix4 projectionMatrix = shadowCascadesPass->configs[cascadeIndex].camera->GetProjectionMatrix();
-        projectionMatrix *= Matrix4::MakeScale(Vector3(0.5f, 0.5f * scale * flip, zScale));
-        projectionMatrix *= Matrix4::MakeTranslation(Vector3(0.5f, 0.5f * scale + scale * static_cast<float>(cascadeIndex), zBias));
+        Matrix4 projectionMatrix = camera->GetProjectionMatrix();
+        projectionMatrix *= Matrix4::MakeScale(Vector3(0.5f, 0.5f * projectionScale * projectionFlip, projectionZScale));
+        projectionMatrix *= Matrix4::MakeTranslation(Vector3(0.5f, 0.5f * projectionScale + projectionScale * static_cast<float>(cascadeIndex), projectionZBias));
 
         directionalShadowMapProjectionScale[cascadeIndex].x = projectionMatrix._data[0][0];
         directionalShadowMapProjectionScale[cascadeIndex].y = projectionMatrix._data[1][1];
@@ -350,90 +373,38 @@ void LightShadowSystem::BuildCascades(Light* sourceLight, Camera* viewCamera, co
         directionalShadowMapProjectionOffset[cascadeIndex].z = projectionMatrix._data[3][2];
         directionalShadowMapProjectionOffset[cascadeIndex].w = 0.0f;
 
-        if (cascadeIndex > 0)
-        {
-            intervalBegin = cascadeIntervals.data[cascadeIndex - 1];
-        }
+        intervalBegin = intervalEnd;
     }
 }
 
-void LightShadowSystem::CreateFrustumPointsFromCascadeInterval(float intervalBegin, float intervalEnd, const Matrix4& invViewProj, Vector3* worldPoints)
+void LightShadowSystem::CreateFrustumPointsFromCascadeInterval(float intervalBegin, float intervalEnd, Camera* camera, Vector3* worldPoints)
 {
-    Vector4 nearPlaneCenter = Vector4(0.0f, 0.0f, nearClipPlane, 1.0f) * invViewProj;
-    nearPlaneCenter /= nearPlaneCenter.w;
+    Vector3 origin = camera->GetPosition();
+    const Matrix4& m = camera->GetMatrix();
 
-    Vector4 farPlaneCenter = Vector4(0.0f, 0.0f, farClipPlane, 1.0f) * invViewProj;
-    farPlaneCenter /= farPlaneCenter.w;
+    Vector3 side = Vector3(m._data[0][0], m._data[1][0], m._data[2][0]);
+    Vector3 up = Vector3(m._data[0][1], m._data[1][1], m._data[2][1]);
+    Vector3 dir = Vector3(-m._data[0][2], -m._data[1][2], -m._data[2][2]);
 
-    Vector3 origin = nearPlaneCenter.GetVector3();
-    Vector3 direction = (farPlaneCenter - nearPlaneCenter).GetVector3();
-    direction.Normalize();
+    float fovRadians = camera->GetFOV() * PI / 180.0f;
+    float halfFovTangent = std::tan(fovRadians / 2.0f);
 
-    Plane nearPlane(direction, origin + direction * intervalBegin);
-    Plane farPlane(direction, origin + direction * intervalEnd);
+    Vector3 aBegin = side * intervalBegin * halfFovTangent;
+    Vector3 bBegin = up * intervalBegin * halfFovTangent / camera->GetAspect();
+    Vector3 cBegin = dir * intervalBegin;
 
-    float nearDistance = 0.0f;
-    float farDistance = 0.0f;
-    {
-        Vector4 nearLeftBottom = Vector4(-1.0f, -1.0f, nearClipPlane, 1.0f) * invViewProj;
-        Vector4 farLeftBottom = Vector4(-1.0f, -1.0f, farClipPlane, 1.0f) * invViewProj;
-        farLeftBottom /= farLeftBottom.w;
-        nearLeftBottom /= nearLeftBottom.w;
-        Vector3 lb = (farLeftBottom - nearLeftBottom).GetVector3();
-        lb.Normalize();
+    Vector3 aEnd = side * intervalEnd * halfFovTangent;
+    Vector3 bEnd = up * intervalEnd * halfFovTangent / camera->GetAspect();
+    Vector3 cEnd = dir * intervalEnd;
 
-        nearDistance = 0.0f;
-        farDistance = 0.0f;
-        nearPlane.IntersectByRay(nearLeftBottom.GetVector3(), lb, nearDistance);
-        farPlane.IntersectByRay(nearLeftBottom.GetVector3(), lb, farDistance);
-        worldPoints[0] = nearLeftBottom.GetVector3() + nearDistance * lb;
-        worldPoints[4] = nearLeftBottom.GetVector3() + farDistance * lb;
-    }
-    {
-        Vector4 nearLeftTop = Vector4(-1.0f, 1.0f, nearClipPlane, 1.0f) * invViewProj;
-        Vector4 farLeftTop = Vector4(-1.0f, 1.0f, farClipPlane, 1.0f) * invViewProj;
-        farLeftTop /= farLeftTop.w;
-        nearLeftTop /= nearLeftTop.w;
-        Vector3 lt = (farLeftTop - nearLeftTop).GetVector3();
-        lt.Normalize();
-
-        nearDistance = 0.0f;
-        farDistance = 0.0f;
-        nearPlane.IntersectByRay(nearLeftTop.GetVector3(), lt, nearDistance);
-        farPlane.IntersectByRay(nearLeftTop.GetVector3(), lt, farDistance);
-        worldPoints[1] = (nearLeftTop.GetVector3() + nearDistance * lt);
-        worldPoints[5] = (nearLeftTop.GetVector3() + farDistance * lt);
-    }
-    {
-        Vector4 nearRightTop = Vector4(1.0f, 1.0f, nearClipPlane, 1.0f) * invViewProj;
-        Vector4 farRightTop = Vector4(1.0f, 1.0f, farClipPlane, 1.0f) * invViewProj;
-        farRightTop /= farRightTop.w;
-        nearRightTop /= nearRightTop.w;
-        Vector3 rt = (farRightTop - nearRightTop).GetVector3();
-        rt.Normalize();
-
-        nearDistance = 0.0f;
-        farDistance = 0.0f;
-        nearPlane.IntersectByRay(nearRightTop.GetVector3(), rt, nearDistance);
-        farPlane.IntersectByRay(nearRightTop.GetVector3(), rt, farDistance);
-        worldPoints[2] = (nearRightTop.GetVector3() + nearDistance * rt);
-        worldPoints[6] = (nearRightTop.GetVector3() + farDistance * rt);
-    }
-    {
-        Vector4 nearRightBottom = Vector4(1.0f, -1.0f, nearClipPlane, 1.0f) * invViewProj;
-        Vector4 farRightBottom = Vector4(1.0f, -1.0f, farClipPlane, 1.0f) * invViewProj;
-        farRightBottom /= farRightBottom.w;
-        nearRightBottom /= nearRightBottom.w;
-        Vector3 rb = (farRightBottom / farRightBottom.w - nearRightBottom / nearRightBottom.w).GetVector3();
-        rb.Normalize();
-
-        nearDistance = 0.0f;
-        farDistance = 0.0f;
-        nearPlane.IntersectByRay(nearRightBottom.GetVector3(), rb, nearDistance);
-        farPlane.IntersectByRay(nearRightBottom.GetVector3(), rb, farDistance);
-        worldPoints[3] = (nearRightBottom.GetVector3() + nearDistance * rb);
-        worldPoints[7] = (nearRightBottom.GetVector3() + farDistance * rb);
-    }
+    worldPoints[0] = origin - aBegin - bBegin + cBegin;
+    worldPoints[1] = origin - aBegin + bBegin + cBegin;
+    worldPoints[2] = origin + aBegin + bBegin + cBegin;
+    worldPoints[3] = origin + aBegin - bBegin + cBegin;
+    worldPoints[4] = origin - aEnd - bEnd + cEnd;
+    worldPoints[5] = origin - aEnd + bEnd + cEnd;
+    worldPoints[6] = origin + aEnd + bEnd + cEnd;
+    worldPoints[7] = origin + aEnd - bEnd + cEnd;
 }
 
 /*********************************************************************************************
@@ -509,6 +480,8 @@ void LightShadowSystem::DrawDebug(RenderSystem* renderSystem)
 {
     if (directionalLight.drawCascades)
     {
+        const int32 cacadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
+
         static const Color cascadeColors[] =
         {
           Color(1.0f, 0.0f, 0.0f, 1.0f),
@@ -521,12 +494,12 @@ void LightShadowSystem::DrawDebug(RenderSystem* renderSystem)
         directionalLight.worldViewProj.GetInverse(invViewProj);
         DrawFrustum(invViewProj, renderSystem, Color(1.0f, 1.0f, 0.0f, 1.0f));
 
-        for (FrustumPoints& fp : directionalLight.frustums)
-            DrawBox(fp, renderSystem, Color::White);
-
-        uint32 index = 0;
-        for (const ShadowCascadePass::Config& config : shadowCascadesPass->configs)
-            DrawCameraFrustum(config.camera.Get(), renderSystem, cascadeColors[index++]);
+        for (int32 i = 0; i < cacadesCount; ++i)
+        {
+            const ShadowCascadePass::Config& config = shadowCascadesPass->configs[i];
+            DrawBox(directionalLight.frustums[i], renderSystem, Color::White);
+            DrawCameraFrustum(config.camera.Get(), renderSystem, cascadeColors[i]);
+        }
     }
 
     if (directionalLight.drawShadowMap)
@@ -652,7 +625,7 @@ void LightShadowSystem::ShadowCascadePass::Configure()
         float viewportW = static_cast<float>(shadowmapSize.dx);
         float viewportH = static_cast<float>(shadowmapSize.dy / cacadesCount);
         float viewportY = viewportH * static_cast<float>(i);
-        configs[i].viewport = Rect(static_cast<float>(viewportX), static_cast<float>(viewportY), static_cast<float32>(viewportW), static_cast<float32>(viewportH));
+        configs[i].viewport = Rect(static_cast<float>(viewportX), static_cast<float>(viewportY), static_cast<float>(viewportW), static_cast<float>(viewportH));
         configs[i].camera->SetValidZInterval(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
     }
     passConfig.depthStencilBuffer.texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
@@ -660,6 +633,7 @@ void LightShadowSystem::ShadowCascadePass::Configure()
     passConfig.depthBias = configs.front().biasScale.x;
     passConfig.depthSlopeScale = configs.front().biasScale.y;
     SetRenderTargetProperties(shadowmapSize.dx, shadowmapSize.dy, Renderer::GetRuntimeTextures().GetRuntimeTextureFormat(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_PARAMS, shadowMapParameters->data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 }
 
 void LightShadowSystem::ShadowCascadePass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
@@ -668,27 +642,28 @@ void LightShadowSystem::ShadowCascadePass::Draw(RenderSystem* renderSystem, uint
 
     Configure();
 
-    if (BeginRenderPass(passConfig))
+    if ((cascadesCount > 0) && BeginRenderPass(passConfig))
     {
         for (uint32 i = 0; i < cascadesCount; ++i)
         {
-            Camera* camera = configs[i].camera.Get();
-            const Rect& vp = configs[i].viewport;
-            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_PARAMS, shadowMapParameters->data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+            const Config& config = configs[i];
+            if (config.hasValidFrustum == false)
+                continue;
+
+            ClearLayersArrays();
+            visibilityArray.Clear();
 
             for (RenderLayer* layer : renderLayers)
             {
+                const Rect& vp = config.viewport;
                 rhi::Viewport rvp(static_cast<uint32>(vp.x), static_cast<uint32>(vp.y), static_cast<uint32>(vp.dx), static_cast<uint32>(vp.dy));
                 layer->SetViewportOverride(true, rvp);
             }
 
-            ClearLayersArrays();
-            visibilityArray.Clear();
+            Camera* camera = config.camera.Get();
             renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_SHADOW_CASTER);
-
             PrepareRenderObjectsToRender(visibilityArray.geometryArray, camera);
             PrepareLayersArrays(visibilityArray.geometryArray, camera);
-
             SetupCameraParams(camera, camera, nullptr);
             DrawLayers(camera, drawLayersMask);
         }
@@ -722,8 +697,8 @@ LightShadowSystem::PointLightShadowPass::PointLightShadowPass()
 
     viewport.x = 0;
     viewport.y = 0;
-    viewport.dx = static_cast<float32>(shadowmapSize.dx);
-    viewport.dy = static_cast<float32>(shadowmapSize.dy);
+    viewport.dx = static_cast<float>(shadowmapSize.dx);
+    viewport.dy = static_cast<float>(shadowmapSize.dy);
     SetViewport(viewport);
 
     SetRenderTargetProperties(shadowmapSize.dx, shadowmapSize.dy, Renderer::GetRuntimeTextures().GetDynamicTextureFormat(RuntimeTextures::TEXTURE_POINT_SHADOW_MAP));

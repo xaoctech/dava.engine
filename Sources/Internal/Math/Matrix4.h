@@ -268,8 +268,8 @@ inline void Matrix4::BuildPerspective(float32 l, float32 r, float32 b, float32 t
 
     if (zeroBaseClipRange)
     {
-        data[10] = reversePlanes ? (n / (f - n)) : (-f / (f - n));
-        data[14] = reversePlanes ? (f * n / (f - n)) : (-f * n / (f - n));
+        data[10] = reversePlanes ? 0 : (-f / (f - n));
+        data[14] = reversePlanes ? n : (-f * n / (f - n));
     }
     else
     {

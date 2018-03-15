@@ -43,6 +43,9 @@ PFNGLQUERYCOUNTEREXTPROC glQueryCounter = nullptr;
 PFNGLGETQUERYOBJECTUIVEXTPROC glGetQueryObjectuiv = nullptr;
 PFNGLGETQUERYOBJECTUI64VEXTPROC glGetQueryObjectui64v = nullptr;
 
+PFNGLREADBUFFERPROC glReadBuffer = nullptr;
+PFNGLDRAWBUFFERSPROC glDrawBuffers = nullptr;
+
 static const EGLint contextAttribs[] = {
     EGL_CONTEXT_CLIENT_VERSION, 2,
     EGL_NONE

@@ -359,7 +359,7 @@ void QualitySettingsDialog::ApplyQualitySettings()
     {
         Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
     }
-    
+
     if (qualityGroupChanged[QualityGroup::Shadow])
     {
         ShadowQuality shadowQuality = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Shadow>();
@@ -368,19 +368,19 @@ void QualitySettingsDialog::ApplyQualitySettings()
         Renderer::GetRuntimeTextures().InvalidateTexture(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
         materialSettingsChanged = true;
     }
-    
+
     if (qualityGroupChanged[QualityGroup::Scattering])
     {
         ScatteringQuality scatteringQuality = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Scattering>();
         Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, scatteringQuality.scatteringSamples);
         materialSettingsChanged = true;
     }
-    
-    if(materialSettingsChanged)
+
+    if (materialSettingsChanged)
     {
         QualityPreferences::ReloadShaders();
     }
-    
+
     if (qualityChanged || optionsChanged)
     {
         ApplyMaterialQuality();

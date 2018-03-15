@@ -69,17 +69,29 @@ RenderOptions::RenderOptions()
     options[DEBUG_DRAW_RICH_ITEMS] = false;
 
     options[DEBUG_DRAW_PARTICLES] = false;
+
+    options[TAA_SAMPLE_INDEX] = -1;
 }
 
-bool RenderOptions::IsOptionEnabled(RenderOption option)
+void RenderOptions::SetOptionValue(RenderOption option, int32 value)
+{
+    options[option] = value;
+    NotifyObservers();
+}
+
+int32 RenderOptions::GetOptionValue(RenderOption option)
 {
     return options[option];
 }
 
+bool RenderOptions::IsOptionEnabled(RenderOption option)
+{
+    return GetOptionValue(option) != 0;
+}
+
 void RenderOptions::SetOption(RenderOption option, bool value)
 {
-    options[option] = value;
-    NotifyObservers();
+    SetOptionValue(option, value ? 1 : 0);
 }
 
 FastName RenderOptions::GetOptionName(RenderOption option)

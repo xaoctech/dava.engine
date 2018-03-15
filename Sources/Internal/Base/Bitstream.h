@@ -47,7 +47,6 @@ private:
     uint32* head = nullptr;
     uint32* tail = nullptr;
     uint32 position = 0;
-    uint32 length = 0;
     uint32 bufferA = 0; // Read Buffer [0]
     uint32 bufferB = 0; // Read Buffer [1]
     uint32 writeBuffer = 0; // Write Buffer

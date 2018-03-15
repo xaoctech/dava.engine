@@ -20,7 +20,7 @@ fragment_out fp_main(fragment_in input)
 #if (SHOW_DISTANCE)
     output.color = exp(-0.01 * sampledValue);
 #else
-    output.color = pow(sampledValue, 16.0);
+    output.color = sampledValue * sampledValue;
 #endif
     return output;
 }

@@ -249,7 +249,7 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
                     }
                 }
 
-                if (maxRenderTarget + 1 >= rhi::DeviceCaps().maxSimultaneousRT)
+                if (maxRenderTarget + 1 > rhi::DeviceCaps().maxSimultaneousRT)
                 {
                     DAVA::Logger::Error("Fragment shader uses more render targets than current implementation supports.");
                     return false;

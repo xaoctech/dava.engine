@@ -185,8 +185,6 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* 
     bool usesSinCos = tree->GetContainsString("sincos");
     
     
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    
 #if defined(__DAVAENGINE_IPHONE__)
     writer.WriteLine(0, "#version 100");
     writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
@@ -197,10 +195,18 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* 
     writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
     writer.WriteLine(0, "#define shadow2D shadow2DEXT");
     writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
-#endif
+
+#elif defined(__DAVAENGINE_ANDROID__)
+    writer.WriteLine(0, "#version 100");
+    writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
+    writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
+    writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
+    writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
+    writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+    writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
 
     writer.WriteLine(0, "precision highp float;");
-    
+
 #else
 
 #if defined(__DAVAENGINE_MACOS__)

@@ -47,8 +47,8 @@ UnorderedMap<PixelFormat, PixelFormatDescriptor, std::hash<uint8>> PixelFormatDe
     { FORMAT_EAC_RG11_SIGNED, { FORMAT_EAC_RG11_SIGNED, FastName("EAC_RG11_SIGNED"), 8, rhi::TEXTURE_FORMAT_EAC_R11G11_SIGNED, false, true, Size2i(4, 4) } },
 
     { FORMAT_ETC2_RGB, { FORMAT_ETC2_RGB, FastName("ETC2_RGB"), 4, rhi::TEXTURE_FORMAT_ETC2_R8G8B8, false, true, Size2i(4, 4) } },
-    { FORMAT_ETC2_RGBA, { FORMAT_ETC2_RGBA, FastName("ETC2_RGBA"), 4, rhi::TEXTURE_FORMAT_ETC2_R8G8B8A8, false, true, Size2i(4, 4) } },
-    { FORMAT_ETC2_RGB_A1, { FORMAT_ETC2_RGB_A1, FastName("ETC2_RGB_A1"), 4, rhi::TEXTURE_FORMAT_ETC2_R8G8B8A1, false, true, Size2i(4, 4) } },
+    { FORMAT_ETC2_RGBA, { FORMAT_ETC2_RGBA, FastName("ETC2_RGBA"), 8, rhi::TEXTURE_FORMAT_ETC2_R8G8B8A8, false, true, Size2i(4, 4) } },
+    { FORMAT_ETC2_RGB_A1, { FORMAT_ETC2_RGB_A1, FastName("ETC2_RGB_A1"), 8, rhi::TEXTURE_FORMAT_ETC2_R8G8B8A1, false, true, Size2i(4, 4) } },
 
 #if defined(__DAVAENGINE_WIN32__)
     { FORMAT_BGR888, { FORMAT_BGR888, FastName("BGR888"), 24, TEXTURE_FORMAT_INVALID, false, false, Size2i(1, 1) } },
@@ -170,6 +170,6 @@ bool PixelFormatDescriptor::IsAtcFormat(PixelFormat format)
 
 bool PixelFormatDescriptor::IsPVRFormat(PixelFormat format)
 {
-    return (format == FORMAT_PVR2 || format == FORMAT_PVR4 || format == FORMAT_ETC1);
+    return (format == FORMAT_PVR2 || format == FORMAT_PVR4 || format == FORMAT_ETC1 || format == FORMAT_ETC2_RGBA);
 }
 }

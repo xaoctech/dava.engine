@@ -19,6 +19,8 @@ namespace DAVA
 class HelperRenderer
 {
 public:
+    virtual ~HelperRenderer(){};
+
     virtual void InitResources(const Size2i& newSize, const PostEffectRenderer::Settings& settings){};
     virtual void DestroyResources(){};
     virtual void InvalidateMaterials(){};
@@ -818,8 +820,15 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
         options.material = material;
         options.textureSet = RhiUtils::TextureSet({ lumTexture }, fragmentTextures);
         options.renderPassPriority = 4;
-        
-        float32 cv = 1.f;
+
+        bool invertProjection = (options.dstTexture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
+        float32 cv = invertProjection ? 1.0f : -1.0f;
+
+        if (rhi::HostApi() == rhi::RHI_METAL) //GFX_COMPLETE fix projection flip for all back-ends
+        {
+            cv = 1.f;
+        }
+
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &cv, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
         quadRenderer.Render(options);
