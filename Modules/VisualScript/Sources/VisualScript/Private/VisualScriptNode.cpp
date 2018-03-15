@@ -1,13 +1,13 @@
-#include "Engine/Engine.h"
-#include "VisualScript/VisualScript.h"
 #include "VisualScript/VisualScriptNode.h"
-#include "VisualScript/VisualScriptPin.h"
-#include "Reflection/Reflection.h"
-#include "Reflection/ReflectionRegistrator.h"
-#include "Reflection/ReflectedType.h"
-#include "Reflection/ReflectedStructure.h"
+#include "Engine/Engine.h"
 #include "FileSystem/YamlNode.h"
 #include "Job/JobManager.h"
+#include "Reflection/ReflectedStructure.h"
+#include "Reflection/ReflectedType.h"
+#include "Reflection/Reflection.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "VisualScript/VisualScript.h"
+#include "VisualScript/VisualScriptPin.h"
 
 #include <locale>
 
@@ -66,21 +66,6 @@ VisualScriptNode::~VisualScriptNode()
             delete pin;
         }
     }
-}
-
-void VisualScriptNode::SetReflection(const Reflection& ref_)
-{
-    ref = ref_;
-}
-
-void VisualScriptNode::SetFunction(const AnyFn& function_)
-{
-    function = function_;
-}
-
-const AnyFn& VisualScriptNode::GetFunction() const
-{
-    return function;
 }
 
 void VisualScriptNode::SetType(eType type_)
@@ -196,11 +181,6 @@ VisualScriptPin* VisualScriptNode::GetExecOutputPin(uint32 index) const
     return execOutPins[index];
 }
 
-Reflection& VisualScriptNode::GetReflection()
-{
-    return ref;
-}
-
 const Vector<VisualScriptPin*>& VisualScriptNode::GetDataInputPins() const
 {
     return dataInputPins;
@@ -219,16 +199,6 @@ const Vector<VisualScriptPin*>& VisualScriptNode::GetExecInputPins() const
 const Vector<VisualScriptPin*>& VisualScriptNode::GetExecOutputPins() const
 {
     return execOutPins;
-}
-
-void VisualScriptNode::SetLastExecutionFrame(uint32 lastExecutionFrame_)
-{
-    lastExecutionFrame = lastExecutionFrame_;
-}
-
-uint32 VisualScriptNode::GetLastExecutionFrame() const
-{
-    return lastExecutionFrame;
 }
 
 void VisualScriptNode::SetScript(VisualScript* script_)
@@ -256,11 +226,6 @@ Set<std::pair<VisualScriptPin*, VisualScriptPin*>> VisualScriptNode::GetAllConne
         }
     }
     return connections;
-}
-
-Result VisualScriptNode::GetCompileResult() const
-{
-    return Result();
 }
 
 void VisualScriptNode::Save(YamlNode* node) const
@@ -298,7 +263,6 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
         {
             const YamlNode* valNode = defsNode->Get(inPin->GetName().c_str());
             const Type* inPinType = inPin->GetType();
-            // DVASSERT(inPinType);
             if (valNode && inPinType)
             {
                 inPin->SetDefaultValue(valNode->AsAny(inPinType->Decay() ? inPinType->Decay() : inPinType));

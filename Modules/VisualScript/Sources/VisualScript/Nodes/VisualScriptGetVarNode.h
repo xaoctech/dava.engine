@@ -19,12 +19,15 @@ public:
     void SetVarPath(const FastName& varPath);
     const FastName& GetVarPath() const;
 
-    void BindReflection(const Reflection& ref) override;
+    void BindReflection(const Reflection& ref);
+    const Reflection& GetReflection() const;
+
     void Save(YamlNode* node) const override;
     void Load(const YamlNode* node) override;
 
 private:
     FastName varPath;
+    Reflection reflection;
     VisualScriptPin* outValuePin = nullptr;
 };
 }

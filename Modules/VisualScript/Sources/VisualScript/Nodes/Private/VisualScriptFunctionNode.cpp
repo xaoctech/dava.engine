@@ -3,6 +3,7 @@
 #include "VisualScript/VisualScriptPin.h"
 #include <FileSystem/YamlNode.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Utils/StringFormat.h>
 
 namespace DAVA
 {
@@ -46,47 +47,47 @@ const FastName& VisualScriptFunctionNode::GetFunctionName() const
     return functionName;
 }
 
+const AnyFn& VisualScriptFunctionNode::GetFunction() const
+{
+    return function;
+}
+
 void VisualScriptFunctionNode::InitPins()
 {
     if (className.IsValid() && functionName.IsValid())
     {
-        String nodeName = className.c_str();
-        nodeName += String("::") + functionName.c_str();
-        name = FastName(nodeName);
+        String nodeName = Format("%s::%s", className.c_str(), functionName.c_str());
+        SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
-        AnyFn function = type->GetStructure()->GetMethod(functionName);
-        if (function.IsValid() == false)
+        AnyFn func = type->GetStructure()->GetMethod(functionName);
+        if (func.IsValid())
+        {
+            function = func;
+
+            if (!function.IsConst() && !function.IsStatic())
+            {
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
+            }
+
+            uint32 index = 0;
+            for (auto type : function.GetInvokeParams().argsType)
+            {
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName(Format("arg%d", index++)), type, VisualScriptPin::DEFAULT_PARAM));
+            }
+
+            const Type* returnType = function.GetInvokeParams().retType;
+            if (returnType != Type::Instance<void>())
+            {
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("result"), returnType));
+            }
+        }
+        else
         {
             Logger::Error("Failed to find function %s in class %s", functionName.c_str(), className.c_str());
         }
-        InitNodeWithAnyFn(function);
     }
-}
-
-void VisualScriptFunctionNode::InitNodeWithAnyFn(const AnyFn& function)
-{
-    if (!function.IsConst() && !function.IsStatic())
-        RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-
-    auto& functionTypes = function.GetInvokeParams().argsType;
-    uint32 index = 0;
-
-    for (auto type : functionTypes)
-    {
-        RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName(Format("arg%d", index++)), type, VisualScriptPin::DEFAULT_PARAM));
-    }
-
-    if (!function.IsConst() && !function.IsStatic())
-        RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
-
-    const Type* returnType = function.GetInvokeParams().retType;
-    if (returnType != Type::Instance<void>())
-    {
-        RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("result"), returnType));
-    }
-
-    SetFunction(function);
 }
 
 void VisualScriptFunctionNode::Save(YamlNode* node) const

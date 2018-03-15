@@ -10,14 +10,14 @@
 #include "VisualScript/Nodes/VisualScriptSetVarNode.h"
 #include "VisualScript/Nodes/VisualScriptWhileNode.h"
 #include "VisualScript/VisualScript.h"
-#include "VisualScript/VisualScriptPin.h"
 #include "VisualScript/VisualScriptNode.h"
+#include "VisualScript/VisualScriptPin.h"
 
 #include <Math/Color.h>
 
-#include <iomanip>
 #include <algorithm>
 #include <cstring>
+#include <iomanip>
 
 namespace DAVA
 {
@@ -29,14 +29,14 @@ namespace DAVA
 
 /*
      Example of generated code
- 
- 
+
+
      int ExecutionNode_X()
      {
          int arg0 = sum(data.intValue0, data.intValue1);
          bool condition
          if (
- 
+
      }
  */
 
@@ -56,7 +56,7 @@ const PrintersTable valuePrinters =
   { Type::Instance<size_t>(), [](std::ostringstream& out, const Any& any) { out << any.Get<size_t>(); } },
   { Type::Instance<Vector2>(), [](std::ostringstream& out, const Any& any) { Vector2 v = any.Get<Vector2>(); out << Format("Vector2(%.3f, %.3f)", v.x, v.y); } },
   { Type::Instance<bool>(), [](std::ostringstream& out, const Any& any) { out << any.Get<bool>(); } },
-  { Type::Instance<Color>(), [](std::ostringstream& out, const Any& any) { Color c = any.Get<Color>();  out  << Format("Color(%.3f, %.3f, %.3f, %.3f)", c.r, c.g, c.b, c.a); } },
+  { Type::Instance<Color>(), [](std::ostringstream& out, const Any& any) { Color c = any.Get<Color>(); out << Format("Color(%.3f, %.3f, %.3f, %.3f)", c.r, c.g, c.b, c.a); } },
   { Type::Instance<void>(), [](std::ostringstream& out, const Any& any) { out << "???"; } }
 };
 
@@ -89,8 +89,7 @@ static std::pair<PrinterFn, PrinterFn> GetPrinterFns(const Type* type)
     }
     else
     {
-        ret.second = [](std::ostringstream& out, const Any&)
-        {
+        ret.second = [](std::ostringstream& out, const Any&) {
             out << "__null__";
         };
     }
@@ -122,22 +121,28 @@ void VisualScriptExecutor::ExecuteGetVarNode(VisualScriptGetVarNode* node, Visua
 
 void VisualScriptExecutor::ExecuteSetVarNode(VisualScriptSetVarNode* node, VisualScriptPin* entryPin)
 {
+    // Setter
     if (entryPin == node->GetExecInputPin(0))
     {
         Any setValue = node->GetDataInputPin(0)->GetValue();
         node->GetReflection().SetValueWithCast(setValue);
-        Logger::Debug("Set Var: %s <= %s", node->GetVarPath().c_str(), DumpAny(setValue).c_str());
+        Logger::Debug("Set Var (setter): %s => %s", DumpAny(setValue).c_str(), node->GetVarPath().c_str());
     }
 
-    Any result = node->GetReflection().GetValue();
-    node->GetDataOutputPin(0)->SetValue(result);
-    Logger::Debug("Get Var: %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
+    // Getter
+    {
+        Any result = node->GetReflection().GetValue();
+        node->GetDataOutputPin(0)->SetValue(result);
+        Logger::Debug("Set Var (getter): %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
+    }
 
     if (node->GetExecOutputPins().size() == 1)
     {
         VisualScriptPin* execInPin = node->GetExecOutputPins()[0]->GetConnectedTo();
         if (execInPin)
+        {
             PushInstruction(execInPin);
+        }
     }
 }
 
@@ -145,33 +150,20 @@ void VisualScriptExecutor::ExecuteGetMemberNode(VisualScriptGetMemberNode* node,
 {
     const ValueWrapper* vw = node->GetValueWrapper();
     if (!vw)
+    {
         return;
+    }
 
     Any object = node->GetDataInputPin(0)->GetValue();
-    DVASSERT(object.GetType());
-    if (object.GetType()->IsPointer())
+    const Type* objType = object.GetType();
+    const ReflectedType* objRefType = ReflectedTypeDB::GetByType(objType->IsPointer() ? objType->Deref() : objType);
+    if (objRefType)
     {
-        const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType()->Deref());
-        if (objType)
-        {
-            ReflectedObject refObj(object.Cast<void*>(), objType);
+        ReflectedObject refObj(object.Cast<void*>(), objRefType);
 
-            Any result = vw->GetValue(refObj);
-            node->GetDataOutputPin(0)->SetValue(result);
-            Logger::Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
-        }
-    }
-    else
-    {
-        const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType());
-        if (objType)
-        {
-            ReflectedObject refObj(const_cast<void*>(object.GetData()), objType);
-
-            Any result = vw->GetValue(refObj);
-            node->GetDataOutputPin(0)->SetValue(result);
-            Logger::Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
-        }
+        Any result = vw->GetValue(refObj);
+        node->GetDataOutputPin(0)->SetValue(result);
+        Logger::Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
     }
 }
 
@@ -179,60 +171,38 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
 {
     const ValueWrapper* vw = node->GetValueWrapper();
     if (!vw)
+    {
         return;
+    }
 
+    // Setter
     if (entryPin == node->GetExecInputPin(0))
     {
         Any object = node->GetDataInputPin(0)->GetValue();
-        if (object.GetType()->IsPointer())
+        const Type* objType = object.GetType();
+        const ReflectedType* objRefType = ReflectedTypeDB::GetByType(objType->IsPointer() ? objType->Deref() : objType);
+        if (objRefType)
         {
-            const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType()->Deref());
-            if (objType)
-            {
-                ReflectedObject refObj(object.Cast<void*>(), objType);
+            ReflectedObject refObj(object.Cast<void*>(), objRefType);
 
-                Any value = node->GetDataInputPin(1)->GetValue();
-                vw->SetValueWithCast(refObj, value);
-                Logger::Debug("Set Member: %s::%s <= %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(value).c_str());
-            }
-        }
-        else
-        {
-            const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType());
-            if (objType)
-            {
-                ReflectedObject refObj(const_cast<void*>(object.GetData()), objType);
-
-                Any value = node->GetDataInputPin(1)->GetValue();
-                vw->SetValueWithCast(refObj, value);
-                Logger::Debug("Set Member: %s::%s <= %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(value).c_str());
-            }
+            Any value = node->GetDataInputPin(1)->GetValue();
+            vw->SetValueWithCast(refObj, value);
+            Logger::Debug("Set Member (setter): %s => %s::%s", DumpAny(value).c_str(), node->GetClassName().c_str(), node->GetFieldName().c_str());
         }
     }
 
-    Any object = node->GetDataInputPin(0)->GetValue();
-    if (object.GetType()->IsPointer())
+    // Getter
     {
-        const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType()->Deref());
-        if (objType)
+        Any object = node->GetDataInputPin(0)->GetValue();
+        const Type* objType = object.GetType();
+        const ReflectedType* objRefType = ReflectedTypeDB::GetByType(objType->IsPointer() ? objType->Deref() : objType);
+        if (objRefType)
         {
-            ReflectedObject refObj(object.Cast<void*>(), objType);
+            ReflectedObject refObj(object.Cast<void*>(), objRefType);
 
             Any result = vw->GetValue(refObj);
             node->GetDataOutputPin(0)->SetValue(result);
-            Logger::Debug("Set Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
-        }
-    }
-    else
-    {
-        const ReflectedType* objType = ReflectedTypeDB::GetByType(object.GetType());
-        if (objType)
-        {
-            ReflectedObject refObj(const_cast<void*>(object.GetData()), objType);
-
-            Any result = vw->GetValue(refObj);
-            node->GetDataOutputPin(0)->SetValue(result);
-            Logger::Debug("Set Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
+            Logger::Debug("Set Member (getter): %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
         }
     }
 

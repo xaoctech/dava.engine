@@ -50,26 +50,17 @@ public:
     VisualScriptNode();
     virtual ~VisualScriptNode();
 
-    void SetReflection(const Reflection& ref_);
-    Reflection& GetReflection();
-
-    virtual void BindReflection(const Reflection& ref){};
-
-    void SetFunction(const AnyFn& func);
-    const AnyFn& GetFunction() const;
-
     void SetType(eType type);
     eType GetType() const;
-
     const FastName& GetTypeName();
 
     void SetName(const FastName& name);
     const FastName& GetName() const;
 
     VisualScriptPin* RegisterPin(VisualScriptPin* pin);
-    VisualScriptPin* GetPinByName(const FastName& pinName);
     void UnregisterPin(VisualScriptPin* pin);
 
+    VisualScriptPin* GetPinByName(const FastName& pinName);
     VisualScriptPin* GetDataInputPin(uint32 index) const;
     VisualScriptPin* GetDataOutputPin(uint32 index) const;
     VisualScriptPin* GetExecInputPin(uint32 index) const;
@@ -81,35 +72,26 @@ public:
     const Vector<VisualScriptPin*>& GetDataOutputPins() const;
     const Vector<VisualScriptPin*>& GetExecInputPins() const;
     const Vector<VisualScriptPin*>& GetExecOutputPins() const;
-
-    void SetLastExecutionFrame(uint32 lastExecutionFrame_);
-    uint32 GetLastExecutionFrame() const;
+    Set<std::pair<VisualScriptPin*, VisualScriptPin*>> GetAllConnections() const;
 
     void SetScript(VisualScript* script);
     VisualScript* GetScript() const;
 
-    Set<std::pair<VisualScriptPin*, VisualScriptPin*>> GetAllConnections() const;
-
     virtual void Save(YamlNode* node) const;
     virtual void Load(const YamlNode* node);
-
-    Result GetCompileResult() const;
 
 protected:
     void SaveDefaults(YamlNode* node) const;
     void LoadDefaults(const YamlNode* node);
 
     eType type = NONE;
+    VisualScript* script = nullptr;
     FastName name;
-    AnyFn function;
-    Reflection ref; // Check what to do with that?
-    VisualScript* script;
 
     Vector<VisualScriptPin*> dataInputPins;
     Vector<VisualScriptPin*> dataOutputPins;
     Vector<VisualScriptPin*> execInPins;
     Vector<VisualScriptPin*> execOutPins;
-    uint32 lastExecutionFrame = 0;
 
     Vector<VisualScriptPin*> allInputPins;
     Vector<VisualScriptPin*> allOutputPins;

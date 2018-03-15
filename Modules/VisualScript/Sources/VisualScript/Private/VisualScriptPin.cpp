@@ -1,5 +1,5 @@
-#include "VisualScript/VisualScript.h"
 #include "VisualScript/VisualScriptPin.h"
+#include "VisualScript/VisualScript.h"
 #include "VisualScript/VisualScriptNode.h"
 
 #include "Reflection/ReflectionRegistrator.h"
@@ -68,9 +68,9 @@ VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnectDataPinsOutputToIn
     if (outputPin->type->Pointer() && TypeInheritance::CanCast(outputPin->type->Pointer(), inputPin->type))
         return CAN_CONNECT_WITH_CAST;
 
-#define CHECK_CAST(from, to) \
+#define CHECK_CAST(from, to)                                                                     \
     if ((outputPin->type == Type::Instance<from>()) && (inputPin->type == Type::Instance<to>())) \
-        return CAN_CONNECT_WITH_CAST; \
+        return CAN_CONNECT_WITH_CAST;                                                            \
     if ((outputPin->type == Type::Instance<to>()) && (inputPin->type == Type::Instance<from>())) \
         return CAN_CONNECT_WITH_CAST;
 

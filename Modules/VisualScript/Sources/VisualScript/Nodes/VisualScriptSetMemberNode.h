@@ -22,19 +22,16 @@ public:
 
     void SetFieldName(const FastName& fieldName);
     const FastName& GetFieldName() const;
+    const ValueWrapper* GetValueWrapper() const;
 
     void Save(YamlNode* node) const override;
     void Load(const YamlNode* node) override;
 
-    const ValueWrapper* GetValueWrapper() const;
-
-public:
+private:
     void InitPins();
-    void InitNodeWithValueWrapper(const ValueWrapper* wrapper);
 
     FastName className;
     FastName fieldName;
-
     const ValueWrapper* valueWrapper = nullptr;
 };
 }

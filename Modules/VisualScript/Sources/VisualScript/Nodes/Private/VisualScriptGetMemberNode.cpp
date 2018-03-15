@@ -4,8 +4,8 @@
 #include <FileSystem/YamlNode.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Reflection/ReflectionRegistrator.h>
-
-#include <locale>
+#include <Utils/StringFormat.h>
+#include <Utils/StringUtils.h>
 
 namespace DAVA
 {
@@ -74,12 +74,8 @@ void VisualScriptGetMemberNode::InitPins()
 {
     if (className.IsValid() && fieldName.IsValid())
     {
-        String fName = fieldName.c_str();
-        {
-            fName[0] = std::toupper(fName[0], std::locale());
-        }
-        String nodeName = className.c_str() + String("::Get") + fName;
-        name = FastName(nodeName);
+        String nodeName = Format("%s::Get%s", className.c_str(), StringUtils::CapitalizeFirst(fieldName.c_str()).c_str());
+        SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
         const ReflectedStructure* rs = type->GetStructure();
@@ -92,21 +88,20 @@ void VisualScriptGetMemberNode::InitPins()
                 break;
             }
         }
-        if (!vw)
+        if (vw)
+        {
+            valueWrapper = vw;
+
+            const Type* classType = ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType();
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("object"), classType));
+
+            const Type* memberType = valueWrapper->GetType(ReflectedObject());
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), memberType));
+        }
+        else
         {
             Logger::Error("Failed to find value wrapper for %s in class %s", fieldName.c_str(), className.c_str());
         }
-        InitNodeWithValueWrapper(vw);
     }
-}
-
-void VisualScriptGetMemberNode::InitNodeWithValueWrapper(const ValueWrapper* wrapper)
-{
-    valueWrapper = wrapper;
-
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("object"), ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType()));
-
-    const Type* mType = valueWrapper->GetType(ReflectedObject());
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), mType));
 }
 }

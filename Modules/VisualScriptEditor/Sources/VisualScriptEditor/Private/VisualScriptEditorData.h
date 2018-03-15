@@ -33,7 +33,7 @@ public:
 
     VisualScriptFlowScene* flowScene = nullptr;
     VisualScriptFlowView* flowView = nullptr;
-    VisualScriptEditorReflectionHolder reflectionHolder;
+    VisualScriptEditorReflectionHolder* reflectionHolder = nullptr;
 
     FilePath scriptPath;
 };
@@ -51,7 +51,7 @@ public:
     {
         if (activeDescriptor != nullptr)
         {
-            return Reflection::Create(ReflectedObject(&activeDescriptor->reflectionHolder));
+            return Reflection::Create(ReflectedObject(activeDescriptor->reflectionHolder));
         }
 
         static VisualScriptEditorReflectionHolder reflectionHolder;
@@ -61,8 +61,8 @@ public:
     DAVA_VIRTUAL_REFLECTION(VisualScriptEditorData, TArcDataNode);
 };
 
-template <>
-bool AnyCompare<VisualScriptEditorReflectionHolder>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<VisualScriptEditorReflectionHolder>;
+//template <>
+//bool AnyCompare<VisualScriptEditorReflectionHolder>::IsEqual(const Any& v1, const Any& v2);
+//extern template struct AnyCompare<VisualScriptEditorReflectionHolder>;
 
 } //DAVA

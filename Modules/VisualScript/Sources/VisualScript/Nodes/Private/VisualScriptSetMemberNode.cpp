@@ -4,8 +4,8 @@
 #include <FileSystem/YamlNode.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Reflection/ReflectionRegistrator.h>
-
-#include <locale>
+#include <Utils/StringFormat.h>
+#include <Utils/StringUtils.h>
 
 namespace DAVA
 {
@@ -76,12 +76,8 @@ void VisualScriptSetMemberNode::InitPins()
 {
     if (className.IsValid() && fieldName.IsValid())
     {
-        String fName = fieldName.c_str();
-        {
-            fName[0] = std::toupper(fName[0], std::locale());
-        }
-        String nodeName = className.c_str() + String("::Set") + fName;
-        name = FastName(nodeName);
+        String nodeName = Format("%s::Set%s", className.c_str(), StringUtils::CapitalizeFirst(fieldName.c_str()).c_str());
+        SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
         const ReflectedStructure* rs = type->GetStructure();
@@ -94,25 +90,26 @@ void VisualScriptSetMemberNode::InitPins()
                 break;
             }
         }
-        if (!vw)
+
+        if (vw)
+        {
+            valueWrapper = vw;
+
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
+
+            const Type* classType = ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType();
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("object"), classType));
+
+            const Type* memberType = valueWrapper->GetType(ReflectedObject());
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("set"), memberType, VisualScriptPin::DEFAULT_PARAM));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), memberType));
+        }
+        else
         {
             Logger::Error("Failed to find value wrapper for %s in class %s", fieldName.c_str(), className.c_str());
         }
-        InitNodeWithValueWrapper(vw);
     }
 }
 
-void VisualScriptSetMemberNode::InitNodeWithValueWrapper(const ValueWrapper* wrapper)
-{
-    valueWrapper = wrapper;
-
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
-
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("object"), ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType()));
-
-    const Type* mType = valueWrapper->GetType(ReflectedObject());
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("set"), mType, VisualScriptPin::DEFAULT_PARAM));
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), mType));
-}
 }

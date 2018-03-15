@@ -1,5 +1,5 @@
-#include "DAVAEngine.h"
 #include "StringUtils.h"
+#include "DAVAEngine.h"
 #include "Utils/UTF8Utils.h"
 
 #include "unibreak/linebreak.h"
@@ -68,6 +68,26 @@ void ReplaceAll(WideString& string, const WideString& search, const WideString& 
         string.replace(pos, oldSubStringLength, replacement);
         pos += 1;
     }
+}
+
+String CapitalizeFirst(const char8* string, const std::locale& locale)
+{
+    return CapitalizeFirst(String(string), locale);
+}
+
+WideString CapitalizeFirst(const char16* string, const std::locale& locale)
+{
+    return CapitalizeFirst(WideString(string), locale);
+}
+
+String CapitalizeWords(const char8* string, const std::locale& locale)
+{
+    return CapitalizeWords(String(string), locale);
+}
+
+WideString CapitalizeWords(const char16* string, const std::locale& locale)
+{
+    return CapitalizeWords(WideString(string), locale);
 }
 }
 }

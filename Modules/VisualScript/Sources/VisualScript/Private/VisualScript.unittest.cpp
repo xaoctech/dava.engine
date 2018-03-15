@@ -330,16 +330,14 @@ DAVA_TESTCLASS (VisualScriptTest)
     {
         VisualScriptTestData data;
 
-        {
-        };
+        {};
     };
 
     DAVA_TEST (VisualScriptWhileTest)
     {
         VisualScriptTestData data;
 
-        {
-        };
+        {};
     };
 };
 };

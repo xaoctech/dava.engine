@@ -14,12 +14,10 @@ class VisualScriptAnotherScriptNode : public VisualScriptNode
 
 public:
     VisualScriptAnotherScriptNode();
-    ~VisualScriptAnotherScriptNode() override;
+    ~VisualScriptAnotherScriptNode() override = default;
 
     void SetScriptFilepath(const FilePath& scriptFilepath_);
     const FilePath& GetScriptFilepath() const;
-
-    void BindReflection(const Reflection& ref_) override;
 
     void Save(YamlNode* node) const override;
     void Load(const YamlNode* node) override;
@@ -29,6 +27,5 @@ protected:
     std::unique_ptr<VisualScript> anotherScript;
 
     void CompleteScriptLoad();
-    //void AssetLoadedCallback(VisualScript* script);
 };
 }

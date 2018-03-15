@@ -3,6 +3,8 @@
 #include "VisualScript/VisualScriptPin.h"
 #include <FileSystem/YamlNode.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Utils/StringFormat.h>
+#include <Utils/StringUtils.h>
 
 namespace DAVA
 {
@@ -38,7 +40,7 @@ void VisualScriptSetVarNode::SetVarPath(const DAVA::FastName& varPath_)
 {
     varPath = varPath_;
 
-    String newName = String("Set ") + varPath.c_str();
+    String newName = Format("Set%s", StringUtils::CapitalizeFirst(varPath.c_str()).c_str());
     SetName(FastName(newName));
 }
 
@@ -47,14 +49,19 @@ const FastName& VisualScriptSetVarNode::GetVarPath() const
     return varPath;
 }
 
-void VisualScriptSetVarNode::BindReflection(const Reflection& ref_)
+void VisualScriptSetVarNode::BindReflection(const Reflection& ref)
 {
-    Reflection fieldReflection = ref_.GetField(varPath);
-    const Type* type = fieldReflection.GetValue().GetType();
-    ref = fieldReflection;
+    reflection = ref.GetField(varPath);
+    DVASSERT(reflection.IsValid());
 
+    const Type* type = reflection.GetValue().GetType();
     varInPin->SetType(type);
     varOutPin->SetType(type);
+}
+
+const Reflection& VisualScriptSetVarNode::GetReflection() const
+{
+    return reflection;
 }
 
 void VisualScriptSetVarNode::Save(YamlNode* node) const

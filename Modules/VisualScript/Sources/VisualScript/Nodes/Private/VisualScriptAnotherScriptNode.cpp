@@ -21,10 +21,6 @@ VisualScriptAnotherScriptNode::VisualScriptAnotherScriptNode()
     SetType(SCRIPT);
 }
 
-VisualScriptAnotherScriptNode::~VisualScriptAnotherScriptNode()
-{
-}
-
 void VisualScriptAnotherScriptNode::SetScriptFilepath(const FilePath& scriptFilepath_)
 {
     if (scriptFilepath != scriptFilepath_)
@@ -36,8 +32,11 @@ void VisualScriptAnotherScriptNode::SetScriptFilepath(const FilePath& scriptFile
         anotherScript->Load(scriptFilepath);
         anotherScript->Compile();
 
-        //anotherScript = GetEngineContext()->assetManager->LoadAsset<VisualScript>(scriptFilepath, MakeFunction(this, &VisualScriptAnotherScriptNode::AssetLoadedCallback), false);
-        //GetEngineContext()->jobManager->WaitWorkerJobs();
+        // anotherScript = GetEngineContext()->assetManager->LoadAsset<VisualScript>(scriptFilepath, [this](Asset<AssetBase> asset){
+        //     DVASSERT(asset == anotherScript);
+        //     CompleteScriptLoading();
+        // }, false);
+        // GetEngineContext()->jobManager->WaitWorkerJobs();
 
         CompleteScriptLoad();
     }
@@ -47,12 +46,6 @@ const FilePath& VisualScriptAnotherScriptNode::GetScriptFilepath() const
 {
     return scriptFilepath;
 }
-
-//void VisualScriptAnotherScriptNode::AssetLoadedCallback(Asset<AssetBase> asset)
-//{
-//    DVASSERT(asset == anotherScript);
-//    CompleteScriptLoading();
-//}
 
 void VisualScriptAnotherScriptNode::Save(YamlNode* node) const
 {
@@ -110,7 +103,7 @@ void VisualScriptAnotherScriptNode::CompleteScriptLoad()
         We copy it's original pins to our node. After that we setup serialization owner. It means that
         when owner will serialize this script, all connections connected to that internal nodes, will be
         treated as connections to this AnotherScriptNode.
-     
+
         Execution of nodes work automatically because during compilation phase, script compiles as it has
         all nodes included to itself.
      */
@@ -135,7 +128,4 @@ void VisualScriptAnotherScriptNode::CompleteScriptLoad()
     }
 }
 
-void VisualScriptAnotherScriptNode::BindReflection(const Reflection& reflection)
-{
-}
 }

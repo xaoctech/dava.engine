@@ -62,11 +62,12 @@ void SetStyle()
 
 void DeleteScript(ScriptDescriptor& descriptor)
 {
-    descriptor.reflectionHolder.reflectedModels.clear();
+    descriptor.reflectionHolder->reflectedModels.clear();
     descriptor.flowScene->clearScene();
 
     delete descriptor.flowView;
     delete descriptor.flowScene;
+    delete descriptor.reflectionHolder;
 
     if (descriptor.isScriptOwner == true)
     {
@@ -322,6 +323,7 @@ void VisualScriptEditorDialog::NewScriptImpl(const FilePath& scriptPath)
 
     ScriptDescriptor& descriptor = *allScripts.rbegin();
     descriptor.script = new VisualScript();
+    descriptor.reflectionHolder = new VisualScriptEditorReflectionHolder();
     descriptor.isScriptOwner = true;
 
     descriptor.scriptPath = scriptPath;
@@ -335,7 +337,7 @@ void VisualScriptEditorDialog::NewScriptImpl(const FilePath& scriptPath)
         tabName = QString::fromStdString(scriptPath.GetFilename());
     }
 
-    Vector<Reflection>& reflectedDataModels = descriptor.reflectionHolder.reflectedModels;
+    Vector<Reflection>& reflectedDataModels = descriptor.reflectionHolder->reflectedModels;
     Reflection scriptReflection = Reflection::Create(ReflectedObject(descriptor.script));
     reflectedDataModels.push_back(scriptReflection.GetField(FastName("dataRegistry")));
 

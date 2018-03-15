@@ -215,8 +215,7 @@ bool ContainsIgnoreCase(const StringType& string, const StringType& toFind,
     using CharType = typename StringType::value_type;
     auto findIt = std::search(std::begin(string), std::end(string),
                               std::begin(toFind), std::end(toFind),
-                              [&locale](CharType char1, CharType char2)
-                              {
+                              [&locale](CharType char1, CharType char2) {
                                   return std::toupper(char1, locale) == std::toupper(char2, locale);
                               });
     if (findIt != std::end(string))
@@ -278,6 +277,56 @@ StringType ToUpperCase(const StringType& string,
                    });
     return ret;
 }
+
+/** Capitalize first character in specified string. */
+template <typename StringType>
+StringType CapitalizeFirst(const StringType& string,
+                           const std::locale& locale = std::locale())
+{
+    StringType result(string);
+    if (!result.empty())
+    {
+        result[0] = std::toupper(result[0], locale);
+    }
+    return result;
+}
+
+/** Capitalize first character in specified string. */
+String CapitalizeFirst(const char8* string,
+                       const std::locale& locale = std::locale());
+
+/** Capitalize first character in specified string. */
+WideString CapitalizeFirst(const char16* string,
+                           const std::locale& locale = std::locale());
+
+/** Capitalize words in specified string. */
+template <typename StringType>
+StringType CapitalizeWords(const StringType& string,
+                           const std::locale& locale = std::locale())
+{
+    StringType result(string);
+    bool needUpper = true; // Capitalize first letter
+    for (auto& ch : result)
+    {
+        if (IsWhitespace(ch))
+        {
+            needUpper = true;
+        }
+        else if (needUpper)
+        {
+            ch = std::toupper(ch, locale);
+        }
+    }
+    return result;
+}
+
+/** Capitalize words in specified string. */
+String CapitalizeWords(const char8* string,
+                       const std::locale& locale = std::locale());
+
+/** Capitalize words in specified string. */
+WideString CapitalizeWords(const char16* string,
+                           const std::locale& locale = std::locale());
 
 } // end namespace StringUtils
 } // end namespace DAVA

@@ -14,10 +14,10 @@ public:
     VisualScriptEventNode();
     ~VisualScriptEventNode() override = default;
 
-    void SetEventName(const FastName& eventName_);
+    void SetEventName(const FastName& eventName);
     const FastName& GetEventName() const;
 
-    void BindReflection(const Reflection& ref_) override;
+    void BindReflection(const Reflection& ref);
 
     void Save(YamlNode* node) const override;
     void Load(const YamlNode* node) override;

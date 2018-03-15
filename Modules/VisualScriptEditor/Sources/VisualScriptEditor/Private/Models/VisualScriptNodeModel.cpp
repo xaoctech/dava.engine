@@ -650,7 +650,8 @@ QtNodes::NodeValidationState VisualScriptNodeModel::validationState() const
 {
     if (visualScriptNode != nullptr)
     {
-        Result res = visualScriptNode->GetCompileResult();
+        //Result res = visualScriptNode->GetCompileResult();
+        Result res;
         switch (res.type)
         {
         case Result::RESULT_SUCCESS:
@@ -669,7 +670,8 @@ QString VisualScriptNodeModel::validationMessage() const
 {
     if (visualScriptNode != nullptr)
     {
-        Result res = visualScriptNode->GetCompileResult();
+        //Result res = visualScriptNode->GetCompileResult();
+        Result res;
         return QString::fromStdString(res.message);
     }
 

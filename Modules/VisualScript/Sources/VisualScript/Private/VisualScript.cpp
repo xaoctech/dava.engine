@@ -1,5 +1,8 @@
 #include "VisualScript/VisualScript.h"
 #include "VisualScript/Nodes/VisualScriptEventNode.h"
+#include "VisualScript/Nodes/VisualScriptGetVarNode.h"
+#include "VisualScript/Nodes/VisualScriptSetVarNode.h"
+#include "VisualScript/Nodes/VisualScriptFunctionNode.h"
 #include "VisualScript/VisualScriptPin.h"
 #include "VisualScript/VisualScriptEvents.h"
 
@@ -258,16 +261,14 @@ void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filep
 
     // Create nodes
     YamlNode* rootNode = parser->GetRootNode();
-    const YamlNode* nodes = rootNode->Get("nodes");
 
+    const YamlNode* nodes = rootNode->Get("nodes");
     for (uint32 k = 0; k < nodes->GetCount(); ++k)
     {
         const YamlNode* node = nodes->Get(k);
 
         const YamlNode* nodeName = node->Get("name");
         const YamlNode* nodeType = node->Get("type");
-
-        // Logger::Debug("Create %d: %s %s", k, nodeName->AsString().c_str(), nodeType->AsString().c_str());
 
         const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(nodeType->AsString());
         VisualScriptNode* createdNode = script->CreateNodeWithoutAdd(reflectedType);
@@ -308,6 +309,7 @@ void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filep
         }
     }
 
+    // Variables
     const YamlNode* variables = rootNode->Get("variables");
     for (uint32 k = 0; k < variables->GetCount(); ++k)
     {
@@ -338,19 +340,30 @@ void VisualScript::Compile()
     eventNodes.clear();
     for (auto node : nodes)
     {
-        if (node->GetType() == VisualScriptNode::EVENT)
+        switch (node->GetType())
         {
-            /*
-                 Event node reflection is binded before event execution.
-             */
-
+        case VisualScriptNode::EVENT:
+        {
             VisualScriptEventNode* eventNode = static_cast<VisualScriptEventNode*>(node);
             const FastName& eventName = eventNode->GetEventName();
             eventNodes.emplace(eventName, eventNode);
+            break;
         }
-        else
+        case VisualScriptNode::GET_VAR:
         {
-            node->BindReflection(variablesReflection);
+            VisualScriptGetVarNode* varNode = static_cast<VisualScriptGetVarNode*>(node);
+            varNode->BindReflection(variablesReflection);
+            break;
+        }
+        case VisualScriptNode::SET_VAR:
+        {
+            VisualScriptSetVarNode* varNode = static_cast<VisualScriptSetVarNode*>(node);
+            varNode->BindReflection(variablesReflection);
+            break;
+        }
+        default:
+            // Skip
+            break;
         }
     }
 
