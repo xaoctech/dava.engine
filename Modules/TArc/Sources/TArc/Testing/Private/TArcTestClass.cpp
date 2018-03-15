@@ -81,6 +81,7 @@ TArcTestClass::~TArcTestClass()
 
     FilePath prevDocPath = documentsPath;
     Core* c = core.release();
+    c->OnTestClassShoutdown();
     c->syncSignal.DisconnectAll();
     c->SetInvokeListener(nullptr);
     mockInvoker.reset();

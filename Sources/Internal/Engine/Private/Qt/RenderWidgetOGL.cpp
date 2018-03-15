@@ -97,7 +97,7 @@ private:
         }
 
         QSurface* surface = nullptr;
-        QOpenGLContext* context = nullptr;
+        QPointer<QOpenGLContext> context;
     };
 
     ContextNode davaContext;

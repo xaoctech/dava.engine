@@ -11,8 +11,6 @@ Do not use tabs in your code.
 There is no limitation for line of text in your code. 
 Try to meet your code 120 characters per line. This will help to easy look at your code in side-by-side mode. 
 
-
-
 ## Header Files
 
 #### Header guard
@@ -54,7 +52,6 @@ All of a project's header files should be listed as descendants of the project's
 ```
 
 ## Scoping
-
 
 #### Namespaces
 Intendation is not used inside namespaces
@@ -252,6 +249,78 @@ and
 Map<FastName, SmartPointer<ObjectType>> map;
 auto iter = map.begin();
 ```
+
+## Comments
+
+Remember: comments are very important, but the best code is self-documenting. Giving sensible names to types and variables is much better than using obscure names that you must then explain through comments.
+
+#### Comment Style
+We use doxygen commenting-style for public definitions (e.g. `.h` files) with some with custom exceptions:
+ - All comment should be written in "Desing by Contract" style. See [en.wiki](https://en.wikipedia.org/wiki/Design_by_contract) or [ru.wiki](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BA%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5) for more info.
+ - Use `/** */` syntax for overal public class or function description.
+ - Use `//!` syntax for public variable or enum description.
+ - Avoid `\brief`, `\param` or `\return` doxygen keyworlds.
+
+Note that `/** */` syntax has single-line or multi-line style:
+```cpp
+/** Single line comment **/
+void foo(); 
+
+/**
+Multiple 
+lines
+comment
+*/
+void boo();
+```
+
+Also you can use either the `//` or the `/* */` syntax in private implementation (e.g. `.cpp` or `Private/.h` files). 
+
+Please, be consistent with how you comment and what style you use where.
+
+#### File Comments
+- We don't use any licence headers.
+- Public `.h` files have to be well commented.
+- Do not duplicate comments in both the `.h` and the `.cpp`.
+
+#### Class Comments
+Every public class declaration should have an accompanying comment that describes what it is for and how it should be used. 
+
+The class comment should provide the reader with enough information to know how and when to use the class, as well as any additional considerations necessary to correctly use the class. 
+
+The class comment is often a good place for a small example code snippet demonstrating a simple and focused usage of the class.
+
+```cpp
+/** 
+    The class Any is a type-safe container for single value of any type.
+    Stored value is always copied into internal storage. Implementations is encouraged to 
+    avoid dynamic allocations for small objects, but such an optimization may only
+    be applied to types for which std::is_nothrow_move_constructible returns true.
+
+    Any can be copied.
+    - Internal storage with trivial value will also be copied.
+    - Internal storage with complex type will be shared the same way as `std::shared_ptr` do.
+
+    Typical usage:
+    void foo()
+    {
+        Any a;
+        a.Set(int(1));
+        std::count << a.Get<int>(); // prints "1"
+    }
+*/
+class Any final
+{
+    // ...
+};
+```
+
+When class is separated on inteface definition and implementation (e.g. `.h` and `.cpp` files), comments describing the use of the class should go together with its interface definition; comments about the class operation and implementation should be inside class's methods implementation.
+
+
+
+#### Function Comments
+Declaration comments describe use of the function (when it is non-obvious); comments at the definition of a function describe operation.
 
 ## Unittests
 Unittests files should be named 'MyClass.unittest' and placed along with .cpp files with tested code.

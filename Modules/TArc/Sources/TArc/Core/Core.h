@@ -94,6 +94,7 @@ private:
     void OnLoopStopped();
     void OnFrame(float32 delta);
     void OnWindowCreated(Window* w);
+    void OnTestClassShoutdown();
     bool HasControllerModule() const;
     void SetInvokeListener(OperationInvoker* proxyInvoker);
     Signal<> syncSignal;
