@@ -7,11 +7,11 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieEventComponent)
 {
-    ReflectionRegistrator<UIMovieEventComponent>::Begin()
+    ReflectionRegistrator<UIMovieEventComponent>::Begin()[M::DisplayName("Movie Event"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieEventComponent* o) { o->Release(); })
-    .Field("onStart", &UIMovieEventComponent::GetStartEvent, &UIMovieEventComponent::SetStartEvent)
-    .Field("onStop", &UIMovieEventComponent::GetStopEvent, &UIMovieEventComponent::SetStopEvent)
+    .Field("onStart", &UIMovieEventComponent::GetStartEvent, &UIMovieEventComponent::SetStartEvent)[M::DisplayName("Start")]
+    .Field("onStop", &UIMovieEventComponent::GetStopEvent, &UIMovieEventComponent::SetStopEvent)[M::DisplayName("Stop")]
     .End();
 }
 

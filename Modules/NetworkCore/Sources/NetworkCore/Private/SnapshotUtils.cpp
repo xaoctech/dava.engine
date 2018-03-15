@@ -55,6 +55,7 @@ const Vector<ReflectedComponentField>& SnapshotUtils::GetComponentFields(Reflect
             ReflectedComponentField f;
             f.key = fields[i].key;
             f.replicable = replicable;
+            f.observable = fields[i].ref.GetMeta<M::Observable>();
             f.precision = compressor->GetComparePrecision(fields[i].ref.meta);
 #if defined(COMPRESSION_DISABLED)
             f.deltaPrecision = defaultDeltaPrecision;

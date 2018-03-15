@@ -330,7 +330,14 @@ void SnapshotSystemBase::Watch(Entity* entity, Component* component)
                     DVASSERT(it != snapshotEntity->components.end());
 
                     SnapshotField* snapField = &it->second.fields[i];
-                    watchPoints.emplace_back(snapField, entity, componentKey, compObj, compField);
+                    if (compField->observable == nullptr)
+                    {
+                        watchPoints.emplace_back(snapField, entity, componentKey, compObj, compField);
+                    }
+                    else
+                    {
+                        compField->observable->SetData(component, snapField);
+                    }
                 }
             }
         }

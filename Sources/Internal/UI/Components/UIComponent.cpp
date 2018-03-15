@@ -49,28 +49,6 @@ RefPtr<UIComponent> UIComponent::SafeCreateByType(const Type* componentType)
     return RefPtr<UIComponent>(CreateByType(componentType));
 }
 
-bool UIComponent::IsMultiple(const Type* componentType)
-{
-    if (componentType == nullptr)
-    {
-        return false;
-    }
-
-    const ReflectedType* refType = ReflectedTypeDB::GetByType(componentType);
-    if (refType == nullptr)
-    {
-        return false;
-    }
-
-    const ReflectedStructure* structure = refType->GetStructure();
-    if (structure == nullptr || structure->meta == nullptr)
-    {
-        return false;
-    }
-
-    return structure->meta->GetMeta<M::Multiple>() != nullptr;
-}
-
 RefPtr<UIComponent> UIComponent::SafeClone() const
 {
     return RefPtr<UIComponent>(Clone());

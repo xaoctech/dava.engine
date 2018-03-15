@@ -346,7 +346,7 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::ContextAcc
     canvas->AddControl(controlsCanvas.Get());
     controlsCanvas->SetName(FastName("controls_canvas"));
 
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->controlLayouted.Connect(this, &EditorControlsView::OnControlLayouted);
 
     Engine::Instance()->beginFrame.Connect(this, &EditorControlsView::PlaceControlsOnCanvas);
     Engine::Instance()->gameLoopStopped.Connect(this, &EditorControlsView::OnGameLoopStopped);
@@ -663,7 +663,6 @@ SortedControlNodeSet EditorControlsView::GetDisplayedControls() const
 void EditorControlsView::OnGameLoopStopped()
 {
     using namespace DAVA;
-
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->controlLayouted.Disconnect(this);
     Engine::Instance()->beginFrame.Disconnect(this);
 }

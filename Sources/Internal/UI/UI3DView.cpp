@@ -18,12 +18,12 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UI3DView)
 {
-    ReflectionRegistrator<UI3DView>::Begin()
+    ReflectionRegistrator<UI3DView>::Begin()[M::DisplayName("3D View")]
     .ConstructorByPointer()
     .DestructorByPointer([](UI3DView* o) { o->Release(); })
-    .Field("drawToFrameBuffer", &UI3DView::GetDrawToFrameBuffer, &UI3DView::SetDrawToFrameBuffer)
-    .Field("frameBufferScaleFactor", &UI3DView::GetFrameBufferScaleFactor, &UI3DView::SetFrameBufferScaleFactor)
-    .Field("scene", &UI3DView::GetScene, &UI3DView::SetScene)
+    .Field("drawToFrameBuffer", &UI3DView::GetDrawToFrameBuffer, &UI3DView::SetDrawToFrameBuffer)[M::DisplayName("Draw To Frame Buffer")]
+    .Field("frameBufferScaleFactor", &UI3DView::GetFrameBufferScaleFactor, &UI3DView::SetFrameBufferScaleFactor)[M::DisplayName("Frame Buffer Scale Factor")]
+    .Field("scene", &UI3DView::GetScene, &UI3DView::SetScene)[M::DisplayName("Scene")]
     .End();
 }
 

@@ -10,12 +10,12 @@ static const FastName UIJOYPAD_STICK_NAME("stick");
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIJoypad)
 {
-    ReflectionRegistrator<UIJoypad>::Begin()
+    ReflectionRegistrator<UIJoypad>::Begin()[M::DisplayName("Joypad")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIJoypad* o) { o->Release(); })
-    .Field("deadAreaSize", &UIJoypad::GetDeadAreaSize, &UIJoypad::SetDeadAreaSize)
-    .Field("digitalSense", &UIJoypad::GetDigitalSense, &UIJoypad::SetDigitalSense)
-    .Field("analogPosition", &UIJoypad::GetAnalogPosition, nullptr)[M::HiddenField()]
+    .Field("deadAreaSize", &UIJoypad::GetDeadAreaSize, &UIJoypad::SetDeadAreaSize)[M::DisplayName("Dead Area Size")]
+    .Field("digitalSense", &UIJoypad::GetDigitalSense, &UIJoypad::SetDigitalSense)[M::DisplayName("Digital Sense")]
+    .Field("analogPosition", &UIJoypad::GetAnalogPosition, nullptr)[M::HiddenField(), M::DisplayName("Analog Position")]
     .End();
 }
 

@@ -20,10 +20,10 @@ protected:
     virtual ~ComponentPropertiesSection();
 
 public:
-    static bool IsHiddenComponent(const DAVA::Type* type);
-
     DAVA::UIComponent* GetComponent() const;
     const DAVA::Type* GetComponentType() const;
+
+    const DAVA::String& GetDisplayName() const override;
 
     void AttachPrototypeSection(ComponentPropertiesSection* section);
     void DetachPrototypeSection(ComponentPropertiesSection* section);
@@ -51,6 +51,7 @@ private:
     const ComponentPropertiesSection* prototypeSection;
 
     bool componentWasCreated = false;
+    DAVA::String displayName;
 };
 
 #endif // __QUICKED_COMPONENT_PROPERTIES_SECTION_H__

@@ -7,6 +7,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Logger/Logger.h>
@@ -32,6 +33,8 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
 {
     if (IsServer(this))
     {
+        netConnectionsComp = scene->GetSingleComponentForRead<NetworkConnectionsSingleComponent>(this);
+        DVASSERT(netConnectionsComp);
         server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnTokenConfirmation(OnServerTokenConfirmationCb(this, &NetworkGameModeSystem::OnTokenConfirmationServer));
         server->SubscribeOnDisconnect(OnServerDisconnectCb(this, &NetworkGameModeSystem::OnDisconnectServer));
@@ -47,7 +50,7 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
         DVASSERT(false);
     }
 
-    netGameModeComp = scene->GetSingleComponentForWrite<NetworkGameModeSingleComponent>(this);
+    netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
     actionSingleComponent = scene->GetSingleComponentForWrite<ActionsSingleComponent>(this);
 }
 
@@ -67,11 +70,6 @@ void NetworkGameModeSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkGameModeSystem::Process");
 
-    if (server)
-    {
-        netGameModeComp->ClearConnectedTokens();
-        netGameModeComp->ClearLoadedTokens();
-    }
     if (client)
     {
         if (netGameModeComp->IsLoaded())
@@ -97,7 +95,6 @@ void NetworkGameModeSystem::OnTokenConfirmationServer(const Responder& responder
 #endif
     if (isValidToken)
     {
-        netGameModeComp->AddConnectedToken(token);
         server->SetValidToken(token);
         NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
         GameModePacketHeader header;
@@ -122,6 +119,8 @@ void NetworkGameModeSystem::OnReceiveServer(const Responder& responder, const ui
     const GameModePacketHeader* header = reinterpret_cast<const GameModePacketHeader*>(data);
     if (header->isLoaded)
     {
+        const auto& connectedTokens = netConnectionsComp->GetConnectedTokens();
+        DVASSERT(connectedTokens.find(responder.GetToken()) != connectedTokens.end());
         netGameModeComp->AddReadyToken(responder.GetToken());
     }
 }

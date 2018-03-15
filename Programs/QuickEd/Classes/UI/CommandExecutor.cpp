@@ -43,6 +43,7 @@
 #include <TArc/WindowSubSystem/UI.h>
 
 #include <FileSystem/YamlParser.h>
+#include <UI/Components/UIComponentUtils.h>
 #include <UI/UIControl.h>
 #include <UI/UIPackageLoader.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>
@@ -311,7 +312,7 @@ void CommandExecutor::AddComponent(ControlNode* node, const Type* componentType)
 
 void CommandExecutor::RemoveComponent(ControlNode* node, const Type* componentType, DAVA::uint32 componentIndex)
 {
-    if (node->GetRootProperty()->CanRemoveComponent(componentType))
+    if (node->GetRootProperty()->CanRemoveComponent(componentType, componentIndex))
     {
         ComponentPropertiesSection* section = node->GetRootProperty()->FindComponentPropertiesSection(componentType, componentIndex);
         if (section)
@@ -936,7 +937,7 @@ void CommandExecutor::AddComponentImpl(ControlNode* node, const Type* type, int3
     ComponentPropertiesSection* destSection = nullptr;
     DocumentData* data = GetDocumentData();
 
-    if (!UIComponent::IsMultiple(type))
+    if (!UIComponentUtils::IsMultiple(type))
     {
         destSection = node->GetRootProperty()->FindComponentPropertiesSection(type, index);
         if (destSection)

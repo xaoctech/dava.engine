@@ -6,6 +6,7 @@
 #include "Debug/DVAssert.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Scene3D/Var.h"
 
 namespace DAVA
 {
@@ -26,7 +27,7 @@ public:
 
 private:
     int32 oldSwitchIndex;
-    int32 newSwitchIndex;
+    Var<int32> newSwitchIndex;
 
     friend class SwitchSystem;
     DAVA_VIRTUAL_REFLECTION(SwitchComponent, Component);

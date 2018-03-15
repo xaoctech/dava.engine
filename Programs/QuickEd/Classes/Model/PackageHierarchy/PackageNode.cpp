@@ -219,12 +219,15 @@ void PackageNode::ResetControlProperty(ControlNode* node, AbstractProperty* prop
     }
 }
 
+void PackageNode::SetControlPropertyForceOverride(ControlNode* node, ValueProperty* property, bool forceOverriden)
+{
+    node->GetRootProperty()->SetPropertyForceOverride(property, forceOverriden);
+    RefreshProperty(node, property);
+}
+
 void PackageNode::RefreshProperty(ControlNode* node, AbstractProperty* property)
 {
     node->GetRootProperty()->RefreshProperty(property, AbstractProperty::REFRESH_DEFAULT_VALUE | AbstractProperty::REFRESH_LOCALIZATION | AbstractProperty::REFRESH_FONT);
-
-    if (property->GetStylePropertyIndex() != -1)
-        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
 
     RefreshPropertiesInInstances(node, property);
 

@@ -24,6 +24,7 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
 
 #include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/Core/BoxShapeComponent.h>
@@ -43,57 +44,49 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystem)
 GameModeSystem::GameModeSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
-    if (IsServer(this))
-    {
-        server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
-        server->SubscribeOnConnect([this](const Responder& responder) {
-            connectedResponders.push_back(&responder);
-        });
-    }
+    netConnectionsComp = scene->GetSingleComponent<NetworkConnectionsSingleComponent>();
+    netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
+    gameModeComp = scene->GetSingleComponent<GameModeSingleComponent>();
 }
 
 void GameModeSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameModeSystem::Process");
-    for (const Responder* responder : connectedResponders)
+    for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
     {
-        OnClientConnected(*responder);
+        OnClientConnected(justConnectedToken);
     }
-    connectedResponders.clear();
 
-    NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
-    GameModeSingleComponent* gameModeComponent = GetScene()->GetSingleComponent<GameModeSingleComponent>();
-
-    if (!gameModeComponent->IsMapLoaded())
+    if (!gameModeComp->IsMapLoaded())
     {
         // Load map
-        const FastName& mapName = netGameModeComponent->GetMapName();
+        const FastName& mapName = netGameModeComp->GetMapName();
         if (mapName.IsValid())
         {
-            gameModeComponent->SetIsMapLoaded(true);
-            netGameModeComponent->SetIsLoaded(true);
+            gameModeComp->SetIsMapLoaded(true);
+            netGameModeComp->SetIsLoaded(true);
             Logger::Debug("Map is loaded: %s", mapName.c_str());
         }
     }
 
-    switch (netGameModeComponent->GetGameModeType())
+    switch (netGameModeComp->GetGameModeType())
     {
     case GameModeSystem::WAITING:
-        ProcessWaitingGameMode(netGameModeComponent);
+        ProcessWaitingGameMode();
         break;
     case GameModeSystem::BATTLE:
-        ProcessBattleGameMode(netGameModeComponent);
+        ProcessBattleGameMode();
         break;
     default:
         break;
     };
 }
 
-void GameModeSystem::OnClientConnected(const Responder& responder)
+void GameModeSystem::OnClientConnected(const FastName& token)
 {
     NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
-    NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
-    Logger::Debug("Token: %s, Player ID: %d", responder.GetToken().c_str(), playerID);
+    NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
+    Logger::Debug("Token: %s, Player ID: %d", token.c_str(), playerID);
     Entity* playerEntity = netGameModeComp->GetPlayerEnity(playerID);
     if (playerEntity == nullptr)
     {
@@ -125,15 +118,15 @@ void GameModeSystem::OnClientConnected(const Responder& responder)
     }
 }
 
-void GameModeSystem::ProcessWaitingGameMode(NetworkGameModeSingleComponent* netGameModeComponent)
+void GameModeSystem::ProcessWaitingGameMode()
 {
-    if (server && netGameModeComponent->GetTokenCount() > 0)
+    if (IsServer(this) && netGameModeComp->GetTokenCount() > 0)
     {
-        netGameModeComponent->SetGameModeType(GameModeSystem::BATTLE);
+        netGameModeComp->SetGameModeType(GameModeSystem::BATTLE);
     }
 }
 
-void GameModeSystem::ProcessBattleGameMode(NetworkGameModeSingleComponent* netGameModeComponent)
+void GameModeSystem::ProcessBattleGameMode()
 {
     //if (!GetScene()->GetSystem<PowerupSpawnSystem>())
     //{

@@ -32,6 +32,17 @@ ControlPropertiesSection::ControlPropertiesSection(const DAVA::String& name, DAV
             SafeRelease(prop);
         }
     }
+
+    const ReflectedType* refType = ReflectedTypeDB::GetByType(type);
+    const ReflectedStructure* structure = refType->GetStructure();
+    if (structure && structure->meta)
+    {
+        displayName = structure->meta->GetMeta<M::DisplayName>()->displayName;
+    }
+    else
+    {
+        displayName = refType->GetPermanentName();
+    }
 }
 
 ControlPropertiesSection::~ControlPropertiesSection()
@@ -42,4 +53,9 @@ ControlPropertiesSection::~ControlPropertiesSection()
 void ControlPropertiesSection::Accept(PropertyVisitor* visitor)
 {
     visitor->VisitControlSection(this);
+}
+
+const DAVA::String& ControlPropertiesSection::GetDisplayName() const
+{
+    return displayName;
 }

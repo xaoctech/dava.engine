@@ -288,6 +288,50 @@ public:
     mutable Privacy privacy;
 };
 
+class BaseObservableImpl
+{
+public:
+    virtual void SetData(const Any& obj, const Any& data) = 0;
+    virtual ~BaseObservableImpl()
+    {
+    }
+};
+
+template <typename T, typename C>
+class ObservableImpl : public BaseObservableImpl
+{
+public:
+    ObservableImpl(T C::*ptr)
+        : var(ptr)
+    {
+    }
+    void SetData(const Any& obj, const Any& data) override
+    {
+        C* realObj = obj.Cast<C*>();
+        (realObj->*var).SetData(data);
+    }
+
+private:
+    T C::*var;
+};
+
+class Observable
+{
+public:
+    template <typename T, typename C>
+    Observable(T C::*ptr)
+        : impl(new ObservableImpl<T, C>(ptr))
+    {
+    }
+    void SetData(const Any& obj, const Any& data) const
+    {
+        impl->SetData(obj, data);
+    }
+
+private:
+    std::unique_ptr<BaseObservableImpl> impl;
+};
+
 /** Indicate that color's components should be edited as int*/
 class IntColor
 {

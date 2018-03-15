@@ -64,6 +64,7 @@ struct ReflectedComponentField
     Any key;
     const ValueWrapper* valueWrapper = nullptr;
     const M::Replicable* replicable = nullptr;
+    const M::Observable* observable = nullptr;
     uint32 compressionScheme = 0;
     float32 precision = 0.f;
     float32 deltaPrecision = 0.f;

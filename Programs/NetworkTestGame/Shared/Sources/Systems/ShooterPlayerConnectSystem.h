@@ -8,6 +8,7 @@
 namespace DAVA
 {
 class Scene;
+class NetworkConnectionsSingleComponent;
 }
 
 // Responsible for listening to new connections and creating entities with player role,
@@ -18,13 +19,10 @@ public:
     DAVA_VIRTUAL_REFLECTION(ShooterPlayerConnectSystem, DAVA::SceneSystem);
 
     ShooterPlayerConnectSystem(DAVA::Scene* scene);
-    void OnPlayerConnected(const DAVA::Responder& responder);
     void ProcessFixed(DAVA::float32 dt) override;
     void PrepareForRemove() override;
 
 private:
-    void AddPlayerToScene(const DAVA::Responder& responder);
-
-private:
-    DAVA::Vector<const DAVA::Responder*> newPlayers; // List of players connected since last Process call
+    void AddPlayerToScene(const DAVA::FastName& token);
+    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
 };

@@ -10,10 +10,12 @@
 
 namespace DAVA
 {
-class NetworkGameModeSingleComponent : public SingleComponent
+class NetworkGameModeSingleComponent : public ClearableSingleComponent
 {
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkGameModeSingleComponent, SingleComponent);
+
+    NetworkGameModeSingleComponent();
 
     void SetGameModeType(int32 gameModeType_);
     int32 GetGameModeType() const;
@@ -24,21 +26,14 @@ public:
     void SetIsLoaded(bool value);
     bool IsLoaded() const;
 
-    // server usage
-    void AddConnectedToken(const FastName& token);
     void RemoveConnectedToken(const FastName& token);
 
     void AddReadyToken(const FastName& token);
 
     const UnorderedSet<FastName>& GetValidTokens() const;
-    const UnorderedSet<FastName>& GetPresentTokens() const;
     const UnorderedSet<FastName>& GetReadyTokens() const;
 
-    const Vector<FastName>& GetConnectedTokens() const;
-    void ClearConnectedTokens();
-
     const Vector<FastName>& GetLoadedTokens() const;
-    void ClearLoadedTokens();
 
     void AddValidToken(const FastName& token);
     NetworkPlayerID GetNextNetworkPlayerID();
@@ -69,13 +64,9 @@ private:
 
     // server can accept these tokens
     UnorderedSet<FastName> validTokens;
-    // connected tokens to the server
-    UnorderedSet<FastName> presentTokens;
     // server accepted these tokens
     UnorderedSet<FastName> readyTokens;
 
-    // new connected tokens
-    Vector<FastName> connectedTokens;
     // tokens which finished loading process
     Vector<FastName> loadedTokens;
 
@@ -88,5 +79,7 @@ private:
 
     bool isLoaded = false;
     NetworkPlayerID networkPlayerID = 0;
+
+    void Clear() override;
 };
 }

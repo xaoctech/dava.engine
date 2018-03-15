@@ -11,13 +11,13 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SwitchComponent)
 {
     ReflectionRegistrator<SwitchComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
-    .Field("newSwitchIndex", &SwitchComponent::GetSwitchIndex, &SwitchComponent::SetSwitchIndex)[M::DisplayName("Switch index"), M::Replicable()]
+    .Field("newSwitchIndex", &SwitchComponent::GetSwitchIndex, &SwitchComponent::SetSwitchIndex)[M::DisplayName("Switch index"), M::Replicable(), M::Observable(&SwitchComponent::newSwitchIndex)]
     .End();
 }
 
 SwitchComponent::SwitchComponent()
     : oldSwitchIndex(-1)
-    , newSwitchIndex(0)
+    , newSwitchIndex(this, 0)
 {
 }
 

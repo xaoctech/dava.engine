@@ -7,14 +7,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowViewComponent)
 {
-    ReflectionRegistrator<UIFlowViewComponent>::Begin()
+    ReflectionRegistrator<UIFlowViewComponent>::Begin()[M::DisplayName("Flow View")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowViewComponent* c) { SafeRelease(c); })
-    .Field("viewYaml", &UIFlowViewComponent::GetViewYaml, &UIFlowViewComponent::SetViewYaml)
-    .Field("controlName", &UIFlowViewComponent::GetControlName, &UIFlowViewComponent::SetControlName)
-    .Field("containerPath", &UIFlowViewComponent::GetContainerPath, &UIFlowViewComponent::SetContainerPath)
-    .Field("modelName", &UIFlowViewComponent::GetModelName, &UIFlowViewComponent::SetModelName)
-    .Field("modelScope", &UIFlowViewComponent::GetModelScope, &UIFlowViewComponent::SetModelScope)
+    .Field("viewYaml", &UIFlowViewComponent::GetViewYaml, &UIFlowViewComponent::SetViewYaml)[M::DisplayName("View YAML")]
+    .Field("controlName", &UIFlowViewComponent::GetControlName, &UIFlowViewComponent::SetControlName)[M::DisplayName("Control Name")]
+    .Field("containerPath", &UIFlowViewComponent::GetContainerPath, &UIFlowViewComponent::SetContainerPath)[M::DisplayName("Container Path")]
+    .Field("modelName", &UIFlowViewComponent::GetModelName, &UIFlowViewComponent::SetModelName)[M::DisplayName("Model Name")]
+    .Field("modelScope", &UIFlowViewComponent::GetModelScope, &UIFlowViewComponent::SetModelScope)[M::DisplayName("Model Scope")]
     .End();
 }
 

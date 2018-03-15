@@ -19,18 +19,18 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISpineComponent)
 {
-    ReflectionRegistrator<UISpineComponent>::Begin()[M::DisplayName("Spine")]
+    ReflectionRegistrator<UISpineComponent>::Begin()[M::DisplayName("Spine"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISpineComponent* c) { SafeRelease(c); })
-    .Field("skeletonPath", &UISpineComponent::GetSkeletonPath, &UISpineComponent::SetSkeletonPath)
-    .Field("atlasPath", &UISpineComponent::GetAtlasPath, &UISpineComponent::SetAtlasPath)
-    .Field("animationName", &UISpineComponent::GetAnimationName, &UISpineComponent::SetAnimationName) // Connect select to animationsNames
-    .Field("animationsNames", &UISpineComponent::GetAnimationsNames, &UISpineComponent::SetAnimationsNames)[M::ReadOnly()]
-    .Field("animationState", &UISpineComponent::GetAnimationState, &UISpineComponent::SetAnimationState)[M::EnumT<UISpineComponent::AnimationState>()]
-    .Field("skinName", &UISpineComponent::GetSkinName, &UISpineComponent::SetSkinName) // Connect select to skinsNames
-    .Field("skinsNames", &UISpineComponent::GetSkinsNames, &UISpineComponent::SetSkinsNames)[M::ReadOnly()]
-    .Field("timeScale", &UISpineComponent::GetTimeScale, &UISpineComponent::SetTimeScale)
-    .Field("loopedPlayback", &UISpineComponent::IsLoopedPlayback, &UISpineComponent::SetLoopedPlayback)
+    .Field("skeletonPath", &UISpineComponent::GetSkeletonPath, &UISpineComponent::SetSkeletonPath)[M::DisplayName("Skeleton")]
+    .Field("atlasPath", &UISpineComponent::GetAtlasPath, &UISpineComponent::SetAtlasPath)[M::DisplayName("Atlas")]
+    .Field("animationName", &UISpineComponent::GetAnimationName, &UISpineComponent::SetAnimationName)[M::DisplayName("Animation")] // Connect select to animationsNames
+    .Field("animationsNames", &UISpineComponent::GetAnimationsNames, &UISpineComponent::SetAnimationsNames)[M::ReadOnly(), M::DisplayName("Animations")]
+    .Field("animationState", &UISpineComponent::GetAnimationState, &UISpineComponent::SetAnimationState)[M::EnumT<UISpineComponent::AnimationState>(), M::DisplayName("State")]
+    .Field("skinName", &UISpineComponent::GetSkinName, &UISpineComponent::SetSkinName)[M::DisplayName("Skin")] // Connect select to skinsNames
+    .Field("skinsNames", &UISpineComponent::GetSkinsNames, &UISpineComponent::SetSkinsNames)[M::ReadOnly(), M::DisplayName("Skins")]
+    .Field("timeScale", &UISpineComponent::GetTimeScale, &UISpineComponent::SetTimeScale)[M::DisplayName("Time Scale")]
+    .Field("loopedPlayback", &UISpineComponent::IsLoopedPlayback, &UISpineComponent::SetLoopedPlayback)[M::DisplayName("Looped")]
     .End();
 }
 IMPLEMENT_UI_COMPONENT(UISpineComponent);

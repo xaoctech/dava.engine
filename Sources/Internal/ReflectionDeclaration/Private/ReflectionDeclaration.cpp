@@ -41,6 +41,7 @@
 #include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/ObservableVarsSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Scene3D/Lod/LodSystem.h"
@@ -52,7 +53,6 @@
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/BaseSimulationSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
-#include "Scene3D/Systems/DiffMonitoringSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/FoliageSystem.h"
 #include "Scene3D/Systems/GeoDecalSystem.h"
@@ -356,6 +356,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ActionsSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MotionSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TransformSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ObservableVarsSingleComponent);
 
     // Systems
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BaseSimulationSystem);
@@ -365,9 +366,6 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ActionUpdateSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(AnimationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DebugRenderSystem);
-#ifdef DIFF_MONITORING_ENABLED
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DiffMonitoringSystem);
-#endif
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(FoliageSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GeoDecalSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LandscapeSystem);

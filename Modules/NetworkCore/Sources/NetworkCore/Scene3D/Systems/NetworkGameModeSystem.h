@@ -11,6 +11,7 @@ class Scene;
 class ActionsSingleComponent;
 
 class NetworkGameModeSingleComponent;
+class NetworkConnectionsSingleComponent;
 
 class NetworkGameModeSystem : public SceneSystem
 {
@@ -35,6 +36,7 @@ private:
     IClient* client = nullptr;
 
     NetworkGameModeSingleComponent* netGameModeComp = nullptr;
+    const NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
     ActionsSingleComponent* actionSingleComponent = nullptr;
 };
 }

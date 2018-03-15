@@ -9,11 +9,11 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISoundValueFilterComponent)
 {
-    ReflectionRegistrator<UISoundValueFilterComponent>::Begin()
+    ReflectionRegistrator<UISoundValueFilterComponent>::Begin()[M::DisplayName("Sound Value Filter")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISoundValueFilterComponent* c) { SafeRelease(c); })
-    .Field("step", &UISoundValueFilterComponent::GetStep, &UISoundValueFilterComponent::SetStep)
-    .Field("deadZone", &UISoundValueFilterComponent::GetDeadZone, &UISoundValueFilterComponent::SetDeadZone)
+    .Field("step", &UISoundValueFilterComponent::GetStep, &UISoundValueFilterComponent::SetStep)[M::DisplayName("Step")]
+    .Field("deadZone", &UISoundValueFilterComponent::GetDeadZone, &UISoundValueFilterComponent::SetDeadZone)[M::DisplayName("Dead Zone")]
     .End();
 }
 

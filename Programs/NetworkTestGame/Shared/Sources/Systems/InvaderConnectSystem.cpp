@@ -25,6 +25,7 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(InvaderConnectSystem)
 {
@@ -37,20 +38,23 @@ DAVA_VIRTUAL_REFLECTION_IMPL(InvaderConnectSystem)
 InvaderConnectSystem::InvaderConnectSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
-    server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
-    server->SubscribeOnConnect([this](const Responder& responder) {
-        connectedResponders.push_back(&responder);
-    });
+    if (IsServer(this))
+    {
+        netConnectionsComp = scene->GetSingleComponent<NetworkConnectionsSingleComponent>();
+        DVASSERT(netConnectionsComp);
+    }
 }
 
 void InvaderConnectSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameModeSystem::Process");
-    for (const Responder* responder : connectedResponders)
+    if (IsServer(this))
     {
-        OnClientConnected(*responder);
+        for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
+        {
+            OnClientConnected(justConnectedToken);
+        }
     }
-    connectedResponders.clear();
 
     NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     if (nullptr != netGameModeComponent)
@@ -70,11 +74,11 @@ void InvaderConnectSystem::Process(float32 timeElapsed)
     }
 }
 
-void InvaderConnectSystem::OnClientConnected(const Responder& responder)
+void InvaderConnectSystem::OnClientConnected(const FastName& token)
 {
     NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
-    NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(responder.GetToken());
-    Logger::Debug("Token: %s, Player ID: %d", responder.GetToken().c_str(), playerID);
+    NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
+    Logger::Debug("Token: %s, Player ID: %d", token.c_str(), playerID);
     Entity* playerEntity = netGameModeComp->GetPlayerEnity(playerID);
     if (playerEntity == nullptr)
     {

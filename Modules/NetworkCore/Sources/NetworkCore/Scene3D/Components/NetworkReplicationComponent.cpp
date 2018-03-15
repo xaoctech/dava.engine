@@ -54,8 +54,12 @@ NetworkID NetworkReplicationComponent::GetNetworkID() const
 
 NetworkPlayerID NetworkReplicationComponent::GetNetworkPlayerID() const
 {
-    DVASSERT(id.IsPlayerId());
-    return id.GetPlayerId();
+    DVASSERT(id.IsPlayerId() || id.IsStaticId());
+    if (id.IsPlayerId())
+    {
+        return id.GetPlayerId();
+    }
+    return 0;
 }
 
 const ComponentMask& NetworkReplicationComponent::GetReplicationMask() const

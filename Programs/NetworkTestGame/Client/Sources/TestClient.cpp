@@ -5,6 +5,7 @@
 #include "GameClient.h"
 #include "Flow/FlowBattleController.h"
 #include "Flow/FlowBattleService.h"
+#include "Flow/FlowDebugOverlayService.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
 #include <Base/FastName.h>
@@ -141,6 +142,7 @@ TestClient::TestClient(DAVA::Engine& engine, DAVA::KeyedArchive* clientOptions)
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(FlowBattleController);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(FlowBattleService);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(FlowDebugOverlayService);
 
     engine.gameLoopStarted.Connect(this, &TestClient::OnLoopStarted);
     engine.windowCreated.Connect(this, &TestClient::OnWindowCreated);

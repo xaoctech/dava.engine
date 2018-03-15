@@ -7,11 +7,11 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowControllerComponent)
 {
-    ReflectionRegistrator<UIFlowControllerComponent>::Begin()
+    ReflectionRegistrator<UIFlowControllerComponent>::Begin()[M::DisplayName("Flow Controller")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowControllerComponent* c) { SafeRelease(c); })
-    .Field("reflectionTypeName", &UIFlowControllerComponent::GetReflectionTypeName, &UIFlowControllerComponent::SetReflectionTypeName)
-    .Field("luaScriptPath", &UIFlowControllerComponent::GetLuaScriptPath, &UIFlowControllerComponent::SetLuaScriptPath)
+    .Field("reflectionTypeName", &UIFlowControllerComponent::GetReflectionTypeName, &UIFlowControllerComponent::SetReflectionTypeName)[M::DisplayName("Type Name")]
+    .Field("luaScriptPath", &UIFlowControllerComponent::GetLuaScriptPath, &UIFlowControllerComponent::SetLuaScriptPath)[M::DisplayName("Lua Script")]
     .End();
 }
 

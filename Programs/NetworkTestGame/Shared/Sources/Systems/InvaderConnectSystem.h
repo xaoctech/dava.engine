@@ -11,6 +11,7 @@ class Scene;
 class Entity;
 class NetworkGameModeSingleComponent;
 class Camera;
+class NetworkConnectionsSingleComponent;
 }
 
 class InvaderConnectSystem : public DAVA::SceneSystem
@@ -21,10 +22,9 @@ public:
     explicit InvaderConnectSystem(DAVA::Scene* scene);
     void Process(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
-    void OnClientConnected(const DAVA::Responder& responder);
+    void OnClientConnected(const DAVA::FastName& token);
 
 private:
     DAVA::Camera* camera = nullptr;
-    DAVA::IServer* server;
-    DAVA::Vector<const DAVA::Responder*> connectedResponders;
+    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
 };

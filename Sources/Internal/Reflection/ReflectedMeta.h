@@ -283,6 +283,7 @@ using Multiple = Meta<Metas::Multiple>;
 
 using Privacy = Metas::Privacy;
 using Replicable = Meta<Metas::Replicable>;
+using Observable = Meta<Metas::Observable>;
 
 //// Network packing meta ////////////////////////////////////////////////
 using QuaternionNetPacking = Meta<Metas::QuaternionNetPacking>;

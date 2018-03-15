@@ -1,7 +1,10 @@
 #include "NetworkGameModeSingleComponent.h"
+#include "NetworkConnectionsSingleComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
+#include "Scene3D/Scene.h"
 #include "Logger/Logger.h"
+#include "NetworkCore/NetworkCoreUtils.h"
 
 namespace DAVA
 {
@@ -15,6 +18,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkGameModeSingleComponent)
     //    .Field("RawData", &NetworkGameModeSingleComponent::GetRawData, &NetworkGameModeSingleComponent::SetRawData)[M::Replicable()]
     .Field("MapName", &NetworkGameModeSingleComponent::GetMapName, &NetworkGameModeSingleComponent::SetMapName)[M::Replicable()]
     .End();
+}
+
+NetworkGameModeSingleComponent::NetworkGameModeSingleComponent()
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::AllProcesses)
+{
 }
 
 void NetworkGameModeSingleComponent::SetGameModeType(int32 gameModeType_)
@@ -37,29 +45,17 @@ FixedVector<uint8>& NetworkGameModeSingleComponent::GetRawData()
     return rawData;
 }
 
-void NetworkGameModeSingleComponent::AddConnectedToken(const FastName& token)
-{
-    presentTokens.insert(token);
-    connectedTokens.push_back(token);
-}
-
 void NetworkGameModeSingleComponent::RemoveConnectedToken(const FastName& token)
 {
-    presentTokens.erase(token);
     readyTokens.erase(token);
     SetTokenCount(static_cast<uint8>(readyTokens.size()));
 }
 
 void NetworkGameModeSingleComponent::AddReadyToken(const FastName& token)
 {
-    if (presentTokens.find(token) != presentTokens.end())
-    {
-        readyTokens.insert(token);
-        loadedTokens.push_back(token);
-        SetTokenCount(static_cast<uint8>(readyTokens.size()));
-        return;
-    }
-    DVASSERT(false);
+    readyTokens.insert(token);
+    loadedTokens.push_back(token);
+    SetTokenCount(static_cast<uint8>(readyTokens.size()));
 }
 
 const UnorderedSet<FastName>& NetworkGameModeSingleComponent::GetValidTokens() const
@@ -67,24 +63,9 @@ const UnorderedSet<FastName>& NetworkGameModeSingleComponent::GetValidTokens() c
     return validTokens;
 }
 
-const UnorderedSet<FastName>& NetworkGameModeSingleComponent::GetPresentTokens() const
-{
-    return presentTokens;
-}
-
 const UnorderedSet<FastName>& NetworkGameModeSingleComponent::GetReadyTokens() const
 {
     return readyTokens;
-}
-
-const Vector<FastName>& NetworkGameModeSingleComponent::GetConnectedTokens() const
-{
-    return connectedTokens;
-}
-
-void NetworkGameModeSingleComponent::ClearConnectedTokens()
-{
-    connectedTokens.clear();
 }
 
 const Vector<FastName>& NetworkGameModeSingleComponent::GetLoadedTokens() const
@@ -92,7 +73,7 @@ const Vector<FastName>& NetworkGameModeSingleComponent::GetLoadedTokens() const
     return loadedTokens;
 }
 
-void NetworkGameModeSingleComponent::ClearLoadedTokens()
+void NetworkGameModeSingleComponent::Clear()
 {
     loadedTokens.clear();
 }

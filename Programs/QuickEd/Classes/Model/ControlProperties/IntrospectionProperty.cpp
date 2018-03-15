@@ -193,6 +193,16 @@ const EnumMap* IntrospectionProperty::GetEnumMap() const
     return nullptr;
 }
 
+const DAVA::String& IntrospectionProperty::GetDisplayName() const
+{
+    const M::DisplayName* displayName = reflection.GetMeta<M::DisplayName>();
+    if (displayName)
+    {
+        return displayName->displayName;
+    }
+    return GetName();
+}
+
 Any IntrospectionProperty::GetValue() const
 {
     return reflection.GetValue();

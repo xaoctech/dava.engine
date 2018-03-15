@@ -7,10 +7,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UICustomUpdateDeltaComponent)
 {
-    ReflectionRegistrator<UICustomUpdateDeltaComponent>::Begin()
+    ReflectionRegistrator<UICustomUpdateDeltaComponent>::Begin()[M::DisplayName("Custom Update Delta")]
     .ConstructorByPointer()
     .DestructorByPointer([](UICustomUpdateDeltaComponent* c) { SafeRelease(c); })
-    .Field("delta", &UICustomUpdateDeltaComponent::GetDelta, &UICustomUpdateDeltaComponent::SetDelta)
+    .Field("delta", &UICustomUpdateDeltaComponent::GetDelta, &UICustomUpdateDeltaComponent::SetDelta)[M::DisplayName("Delta")]
     .End();
 }
 

@@ -60,7 +60,6 @@ class SlotSystem;
 class TransformSingleComponent;
 class ActionsSingleComponent;
 class ActionCollectSystem;
-class DiffMonitoringSystem;
 class MotionSingleComponent;
 class PhysicsSystem;
 class CollisionSingleComponent;
@@ -201,7 +200,6 @@ public:
     SlotSystem* slotSystem = nullptr;
     ActionCollectSystem* actionCollectSystem;
     GeoDecalSystem* geoDecalSystem = nullptr;
-    DiffMonitoringSystem* diffMonitoringSystem = nullptr;
     PhysicsSystem* physicsSystem = nullptr;
 
     /** Get singleton component. Never return nullptr. */

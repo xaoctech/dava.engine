@@ -17,17 +17,17 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIAnchorSafeAreaComponent)
 {
-    ReflectionRegistrator<UIAnchorSafeAreaComponent>::Begin()
+    ReflectionRegistrator<UIAnchorSafeAreaComponent>::Begin()[M::DisplayName("Anchor Safe Area"), M::Group("Layout")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIAnchorSafeAreaComponent* o) { o->Release(); })
-    .Field("leftSafeInset", &UIAnchorSafeAreaComponent::GetLeftInset, &UIAnchorSafeAreaComponent::SetLeftInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
-    .Field("leftInsetCorrection", &UIAnchorSafeAreaComponent::GetLeftInsetCorrection, &UIAnchorSafeAreaComponent::SetLeftInsetCorrection)
-    .Field("topSafeInset", &UIAnchorSafeAreaComponent::GetTopInset, &UIAnchorSafeAreaComponent::SetTopInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
-    .Field("topInsetCorrection", &UIAnchorSafeAreaComponent::GetTopInsetCorrection, &UIAnchorSafeAreaComponent::SetTopInsetCorrection)
-    .Field("rightSafeInset", &UIAnchorSafeAreaComponent::GetRightInset, &UIAnchorSafeAreaComponent::SetRightInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
-    .Field("rightInsetCorrection", &UIAnchorSafeAreaComponent::GetRightInsetCorrection, &UIAnchorSafeAreaComponent::SetRightInsetCorrection)
-    .Field("bottomSafeInset", &UIAnchorSafeAreaComponent::GetBottomInset, &UIAnchorSafeAreaComponent::SetBottomInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>()]
-    .Field("bottomInsetCorrection", &UIAnchorSafeAreaComponent::GetBottomInsetCorrection, &UIAnchorSafeAreaComponent::SetBottomInsetCorrection)
+    .Field("leftSafeInset", &UIAnchorSafeAreaComponent::GetLeftInset, &UIAnchorSafeAreaComponent::SetLeftInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>(), M::DisplayName("Left Inset")]
+    .Field("leftInsetCorrection", &UIAnchorSafeAreaComponent::GetLeftInsetCorrection, &UIAnchorSafeAreaComponent::SetLeftInsetCorrection)[M::DisplayName("Left Inset Correction")]
+    .Field("topSafeInset", &UIAnchorSafeAreaComponent::GetTopInset, &UIAnchorSafeAreaComponent::SetTopInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>(), M::DisplayName("Top Inset")]
+    .Field("topInsetCorrection", &UIAnchorSafeAreaComponent::GetTopInsetCorrection, &UIAnchorSafeAreaComponent::SetTopInsetCorrection)[M::DisplayName("Top Inset Correction")]
+    .Field("rightSafeInset", &UIAnchorSafeAreaComponent::GetRightInset, &UIAnchorSafeAreaComponent::SetRightInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>(), M::DisplayName("Right Inset")]
+    .Field("rightInsetCorrection", &UIAnchorSafeAreaComponent::GetRightInsetCorrection, &UIAnchorSafeAreaComponent::SetRightInsetCorrection)[M::DisplayName("Right Inset Correction")]
+    .Field("bottomSafeInset", &UIAnchorSafeAreaComponent::GetBottomInset, &UIAnchorSafeAreaComponent::SetBottomInset)[M::EnumT<UIAnchorSafeAreaComponent::eInsetType>(), M::DisplayName("Bottom Inset")]
+    .Field("bottomInsetCorrection", &UIAnchorSafeAreaComponent::GetBottomInsetCorrection, &UIAnchorSafeAreaComponent::SetBottomInsetCorrection)[M::DisplayName("Bottom Inset Correction")]
     .End();
 }
 

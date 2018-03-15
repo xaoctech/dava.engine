@@ -7,10 +7,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIUpdateComponent)
 {
-    ReflectionRegistrator<UIUpdateComponent>::Begin()
+    ReflectionRegistrator<UIUpdateComponent>::Begin()[M::DisplayName("Update")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIUpdateComponent* c) { SafeRelease(c); })
-    .Field("updateInvisible", &UIUpdateComponent::GetUpdateInvisible, &UIUpdateComponent::SetUpdateInvisible)
+    .Field("updateInvisible", &UIUpdateComponent::GetUpdateInvisible, &UIUpdateComponent::SetUpdateInvisible)[M::DisplayName("Update Invisible")]
     .End();
 }
 

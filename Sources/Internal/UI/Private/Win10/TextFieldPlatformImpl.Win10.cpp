@@ -346,12 +346,15 @@ void TextFieldPlatformImpl::SetTextUseRtlAlign(bool useRtlAlign)
 
 void TextFieldPlatformImpl::SetFontSize(float32 virtualFontSize)
 {
-    VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
-    properties.fontSize = vcs->ConvertVirtualToInputX(virtualFontSize);
-    properties.virtualFontSize = virtualFontSize;
-    properties.fontSizeChanged = true;
-    properties.fontSizeAssigned = true;
-    properties.anyPropertyChanged = true;
+    if (virtualFontSize > 0.f) // Font size must be greater than 0
+    {
+        VirtualCoordinatesSystem* vcs = window->GetUIControlSystem()->vcs;
+        properties.fontSize = vcs->ConvertVirtualToInputX(virtualFontSize);
+        properties.virtualFontSize = virtualFontSize;
+        properties.fontSizeChanged = true;
+        properties.fontSizeAssigned = true;
+        properties.anyPropertyChanged = true;
+    }
 }
 
 void TextFieldPlatformImpl::SetDelegate(UITextFieldDelegate* textFieldDelegate_)

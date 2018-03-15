@@ -51,7 +51,6 @@
 #include <NetworkCore/Scene3D/Systems/NetworkRemoteInputSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkHealthCheckSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
-#include <Scene3D/Systems/DiffMonitoringSystem.h>
 #include <Scene3D/Systems/Controller/WASDControllerSystem.h>
 #include <Scene3D/Systems/Controller/RotationControllerSystem.h>
 #include <UI/UIControlSystem.h>
@@ -621,7 +620,7 @@ void TestServer::AddServerBots(NetworkGameModeSingleComponent* netGameModeComp, 
 #ifndef NDEBUG
         AddTokenToGame(netGameModeComp, botResponder.GetToken());
 #endif
-        gameModeSystem->OnClientConnected(botResponder);
+        gameModeSystem->OnClientConnected(botResponder.GetToken());
     }
 }
 

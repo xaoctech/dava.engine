@@ -17,6 +17,7 @@ namespace DAVA
 {
 class NetworkGameModeSingleComponent;
 class NetworkTimeSingleComponent;
+class NetworkConnectionsSingleComponent;
 
 class NetworkDeltaReplicationSystemServer : public NetworkDeltaReplicationSystemBase
 {
@@ -28,9 +29,7 @@ public:
 
     void RemoveEntity(Entity* entity) override;
     void ProcessFixed(float32 timeElapsed) override;
-    void OnReceiveCallback(const Responder& responder, const uint8* data, size_t size);
-    void OnClientConnect(const Responder& responder);
-    void OnClientDisconnect(const FastName& token);
+    void OnReceive(const FastName& token, const Vector<uint8>& data);
 
 protected:
     virtual size_t CreateDiff(SnapshotSingleComponent::CreateDiffParams& params);
@@ -105,10 +104,13 @@ private:
         EntityToBaseFrames baseFrames;
         SeqToSentFrames sentFrames;
         RemovedEntityToPrivacy removedEntities;
-        const Responder* responder = nullptr;
+        FastName token;
         NetworkPlayerComponent* playerComponent = nullptr;
         SequenceId maxSeq = 0;
     };
+
+    void OnClientConnect(const FastName& token);
+    void OnClientDisconnect(const FastName& token);
 
     void OnPlayerComponentAdded(NetworkPlayerComponent* component);
     void OnPlayerComponentRemoved(NetworkPlayerComponent* component);
@@ -134,6 +136,7 @@ private:
     const NetworkGameModeSingleComponent* netGameModeComp;
     const NetworkTimeSingleComponent* timeComp;
     ComponentGroup<NetworkPlayerComponent>* playerComponentGroup;
+    const NetworkConnectionsSingleComponent* netConnectionsComp;
 };
 
 } //namespace DAVA

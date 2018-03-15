@@ -11,6 +11,7 @@ namespace DAVA
 class Scene;
 class Entity;
 class CameraComponent;
+class NetworkConnectionsSingleComponent;
 }
 
 class GameModeSystemCars final : public DAVA::SceneSystem
@@ -24,15 +25,14 @@ public:
     void PrepareForRemove() override;
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
-    void OnClientConnected(const DAVA::Responder& responder);
+    void OnClientConnected(const DAVA::FastName& token);
 
 private:
-    DAVA::IServer* server;
-    DAVA::Vector<const DAVA::Responder*> connectedResponders;
 
     DAVA::UnorderedSet<DAVA::Entity*> cars;
     DAVA::UnorderedSet<DAVA::Entity*> switches;
     DAVA::float32 countdown = 0.f;
     DAVA::Entity* focusedCar;
     DAVA::CameraComponent* cameraComponent;
+    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
 };

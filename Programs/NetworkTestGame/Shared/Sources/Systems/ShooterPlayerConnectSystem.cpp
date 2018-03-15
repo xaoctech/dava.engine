@@ -14,6 +14,7 @@
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
 {
@@ -27,41 +28,30 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
 ShooterPlayerConnectSystem::ShooterPlayerConnectSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentMask())
 {
-    DAVA::IServer* server = scene->GetSingleComponent<DAVA::NetworkServerSingleComponent>()->GetServer();
-
-    DVASSERT(server != nullptr);
-
-    server->SubscribeOnConnect(DAVA::MakeFunction(this, &ShooterPlayerConnectSystem::OnPlayerConnected));
-}
-
-void ShooterPlayerConnectSystem::OnPlayerConnected(const DAVA::Responder& responder)
-{
-    newPlayers.push_back(&responder);
+    netConnectionsComp = scene->GetSingleComponent<DAVA::NetworkConnectionsSingleComponent>();
+    DVASSERT(netConnectionsComp);
 }
 
 void ShooterPlayerConnectSystem::ProcessFixed(DAVA::float32 dt)
 {
-    for (const DAVA::Responder* player : newPlayers)
+    for (const DAVA::FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
     {
-        DVASSERT(player != nullptr);
-        AddPlayerToScene(*player);
+        AddPlayerToScene(justConnectedToken);
     }
-
-    newPlayers.clear();
 }
 
 void ShooterPlayerConnectSystem::PrepareForRemove()
 {
 }
 
-void ShooterPlayerConnectSystem::AddPlayerToScene(const DAVA::Responder& responder)
+void ShooterPlayerConnectSystem::AddPlayerToScene(const DAVA::FastName& token)
 {
     // This system only creates replication & role components, ShooterEntityFillSystem is responsible for the rest
 
     using namespace DAVA;
 
     NetworkGameModeSingleComponent* networkGameModeSingleComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
-    NetworkPlayerID playerId = networkGameModeSingleComponent->GetNetworkPlayerID(responder.GetToken());
+    NetworkPlayerID playerId = networkGameModeSingleComponent->GetNetworkPlayerID(token);
     Entity* playerEntity = networkGameModeSingleComponent->GetPlayerEnity(playerId);
     if (playerEntity == nullptr)
     {

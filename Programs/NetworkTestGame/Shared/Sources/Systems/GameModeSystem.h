@@ -9,9 +9,12 @@ namespace DAVA
 {
 class Scene;
 class Entity;
+class NetworkConnectionsSingleComponent;
 class NetworkGameModeSingleComponent;
 class Camera;
 }
+
+class GameModeSingleComponent;
 
 class GameModeSystem : public DAVA::SceneSystem
 {
@@ -27,14 +30,15 @@ public:
     GameModeSystem(DAVA::Scene* scene);
     void Process(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
-    void OnClientConnected(const DAVA::Responder& responder);
+    void OnClientConnected(const DAVA::FastName& token);
 
 private:
-    void ProcessWaitingGameMode(DAVA::NetworkGameModeSingleComponent* netGameModeComponent);
-    void ProcessBattleGameMode(DAVA::NetworkGameModeSingleComponent* netGameModeComponent);
+    void ProcessWaitingGameMode();
+    void ProcessBattleGameMode();
     void TuneComponentPrivacy();
 
     DAVA::Camera* camera = nullptr;
-    DAVA::IServer* server;
-    DAVA::Vector<const DAVA::Responder*> connectedResponders;
+    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
+    DAVA::NetworkGameModeSingleComponent* netGameModeComp = nullptr;
+    GameModeSingleComponent* gameModeComp = nullptr;
 };

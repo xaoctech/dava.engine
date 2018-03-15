@@ -63,6 +63,7 @@
 #include "Tests/UIJoypadSystemTest.h"
 #include "Tests/TexturesLoadingTest.h"
 #include "Tests/OnLowMemorySignalTest.h"
+#include "Tests/FileWatcherTest.h"
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
 #endif
@@ -399,6 +400,7 @@ void TestBed::OnError()
 
 void TestBed::RegisterTests()
 {
+    new FileWatcherTest(*this);
     new OnLowMemorySignalTest(*this);
     new CoreV2Test(*this);
     new DeviceManagerTest(*this);

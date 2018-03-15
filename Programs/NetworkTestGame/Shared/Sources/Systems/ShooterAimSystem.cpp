@@ -158,22 +158,18 @@ void ShooterAimSystem::GenerateDeviceIndependentAimRotation() const
     TouchScreen* touchScreen = deviceManager->GetTouchScreen();
     if (touchScreen != nullptr)
     {
-        static uint32 touchId = UINT32_MAX;
+        uint32 touchId = UINT32_MAX;
 
-        // If we're not rotating with touch, get touch id we should use
-        if (touchId == UINT32_MAX)
+        if (movementJoypad->IsActive())
         {
-            if (movementJoypad->IsActive())
-            {
-                uint32 activeTouchId = movementJoypad->GetActiveTouchId() - 1;
-                DVASSERT(activeTouchId < 10);
+            uint32 activeTouchId = movementJoypad->GetActiveTouchId() - 1;
+            DVASSERT(activeTouchId < 10);
 
-                touchId = (activeTouchId > 0) ? 0 : 1;
-            }
-            else
-            {
-                touchId = 0;
-            }
+            touchId = (activeTouchId > 0) ? 0 : 1;
+        }
+        else
+        {
+            touchId = 0;
         }
 
         // If it's inactive, skip

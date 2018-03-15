@@ -9,6 +9,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkStatisticsSingleComponent.h"
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkInputSystem.h"
 
 #include <Debug/ProfilerCPU.h>
@@ -32,12 +33,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
 NetworkInputSystem::NetworkInputSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>())
 {
-    IServer* server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
-
-    DVASSERT(server != nullptr);
-
-    server->SubscribeOnReceive(PacketParams::INPUT_CHANNEL_ID, OnServerReceiveCb(this, &NetworkInputSystem::OnReceive));
-    server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkInputSystem::OnConnect));
+    netConnectionsComp = scene->GetSingleComponentForRead<NetworkConnectionsSingleComponent>(this);
+    DVASSERT(netConnectionsComp);
 }
 
 void NetworkInputSystem::AddEntity(Entity* entity)
@@ -58,6 +55,11 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
     if (statsComp)
     {
         statsComp->UpdateFrameTimestamps();
+    }
+
+    for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
+    {
+        OnConnect(justConnectedToken);
     }
 
     ProcessReceivedInputData();
@@ -106,9 +108,9 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
     }
 }
 
-void NetworkInputSystem::OnConnect(const Responder& responder)
+void NetworkInputSystem::OnConnect(const FastName& token)
 {
-    auto tokenIt = tokensToEntities.find(responder.GetToken());
+    auto tokenIt = tokensToEntities.find(token);
     if (tokenIt != tokensToEntities.end())
     {
         UnorderedSet<Entity*>& entities = tokenIt->second;
@@ -133,6 +135,7 @@ void NetworkInputSystem::ProcessReceivedInputData()
     const NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponentForRead<NetworkEntitiesSingleComponent>(this);
     using NetInput = NetworkInputComponent::Data;
 
+    const auto& recvInputData = netConnectionsComp->GetRecvPackets(PacketParams::INPUT_CHANNEL_ID);
     for (const auto& inputData : recvInputData)
     {
         const InputPacketHeader* header = reinterpret_cast<const InputPacketHeader*>(inputData.data.data());
@@ -186,16 +189,7 @@ void NetworkInputSystem::ProcessReceivedInputData()
         int16 frameDiff = header->frameId - frameId;
         statsComp->FlushFrameOffsetMeasurement(frameId, frameDiff);
     }
-    recvInputData.clear();
 }
 
-void NetworkInputSystem::OnReceive(const Responder& responder, const uint8* data, size_t size)
-{
-    DAVA_PROFILER_CPU_SCOPE("NetworkInputSystem::OnReceive");
-
-    RecvInputData inputData{ responder.GetToken(), Vector<uint8>(size) };
-    Memcpy(inputData.data.data(), data, size);
-    recvInputData.push_back(std::move(inputData));
-}
 }
 #endif

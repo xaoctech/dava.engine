@@ -12,13 +12,13 @@ static const FastName UISCROLL_VIEW_CONTAINER_NAME("scrollContainerControl");
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollView)
 {
-    ReflectionRegistrator<UIScrollView>::Begin()
+    ReflectionRegistrator<UIScrollView>::Begin()[M::DisplayName("Scroll View")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIScrollView* o) { o->Release(); })
-    .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)
-    .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)
-    .Field("returnSpeed", &UIScrollView::GetReturnSpeed, &UIScrollView::SetReturnSpeed)
-    .Field("scrollSpeed", &UIScrollView::GetScrollSpeed, &UIScrollView::SetScrollSpeed)
+    .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)[M::DisplayName("Auto Update")]
+    .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)[M::DisplayName("Center Content")]
+    .Field("returnSpeed", &UIScrollView::GetReturnSpeed, &UIScrollView::SetReturnSpeed)[M::DisplayName("Return Speed")]
+    .Field("scrollSpeed", &UIScrollView::GetScrollSpeed, &UIScrollView::SetScrollSpeed)[M::DisplayName("Scroll Speed")]
     .End();
 }
 

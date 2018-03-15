@@ -20,13 +20,13 @@ static const int32 INVALID_INDEX = -1;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIList)
 {
-    ReflectionRegistrator<UIList>::Begin()
+    ReflectionRegistrator<UIList>::Begin()[M::DisplayName("List")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIList* o) { o->Release(); })
-    .Field("orientation", &UIList::GetOrientation, &UIList::SetOrientation)[M::EnumT<eListOrientation>()]
-    .Field("slowDownTime", &UIList::GetSlowDownTime, &UIList::SetSlowDownTime)
-    .Field("borderMoveModifer", &UIList::GetBorderMoveModifer, &UIList::SetBorderMoveModifer)
-    .Field("touchHoldDelta", &UIList::GetTouchHoldDelta, &UIList::SetTouchHoldDelta)
+    .Field("orientation", &UIList::GetOrientation, &UIList::SetOrientation)[M::EnumT<eListOrientation>(), M::DisplayName("Orientation")]
+    .Field("slowDownTime", &UIList::GetSlowDownTime, &UIList::SetSlowDownTime)[M::DisplayName("Slow Down Time")]
+    .Field("borderMoveModifer", &UIList::GetBorderMoveModifer, &UIList::SetBorderMoveModifer)[M::DisplayName("Border Move Modifier")]
+    .Field("touchHoldDelta", &UIList::GetTouchHoldDelta, &UIList::SetTouchHoldDelta)[M::DisplayName("Touch Hold Delta")]
     .End();
 }
 

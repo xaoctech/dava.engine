@@ -50,6 +50,9 @@ MainWindow::MainWindow(DAVA::ContextAccessor* accessor_, DAVA::UI* tarcUi, DAVA:
     connect(projectView, &ProjectView::ProjectChanged, ui->propertiesWidget, &PropertiesWidget::SetProject);
 
     qApp->installEventFilter(this);
+
+    translator.load(":/quicked_en");
+    qApp->installTranslator(&translator);
 }
 
 MainWindow::~MainWindow() = default;

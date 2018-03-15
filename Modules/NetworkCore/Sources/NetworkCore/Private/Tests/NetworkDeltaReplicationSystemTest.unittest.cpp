@@ -126,8 +126,8 @@ public:
     };
     bool Send(const uint8* data_, size_t size_, const PacketParams& param) const override
     {
-        data = data_;
-        size = size_;
+        data.resize(size_);
+        Memcpy(data.data(), data_, size_);
         return true;
     };
 
@@ -149,8 +149,7 @@ public:
         return 0.f;
     }
 
-    mutable const uint8* data = nullptr;
-    mutable size_t size = 0;
+    mutable Vector<uint8> data;
 
 private:
     FastName token;
@@ -314,7 +313,7 @@ struct ClientContext : public CommonContext
 
     void SendTo(ServerContext& serverCtx)
     {
-        serverCtx.system->OnReceiveCallback(serverCtx.server.responder, client.data, client.size);
+        serverCtx.system->OnReceive(serverCtx.server.responder.GetToken(), client.data);
     }
 };
 
@@ -333,7 +332,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
         const auto SimulateDataTransmission = [&]()
         {
             clientCtx.system->OnReceiveCallback(serverCtx.server.responder.data, serverCtx.server.responder.size, 0, 0);
-            serverCtx.system->OnReceiveCallback(serverCtx.server.responder, clientCtx.client.data, clientCtx.client.size);
+            serverCtx.system->OnReceive(serverCtx.server.responder.GetToken(), clientCtx.client.data);
         };
 
         Info& serverInfo = serverCtx.system->info;
@@ -350,7 +349,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(clientCtx.client.size > 0);
+            TEST_VERIFY(!clientCtx.client.data.empty());
             clientCtx.SendTo(serverCtx);
 
             TEST_VERIFY(clientInfo[networkID].value == replicatedValue);
@@ -375,7 +374,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverInfo[networkID].value = replicatedValue;
             serverCtx.system->ProcessFixed(TICK);
             TEST_VERIFY(serverCtx.server.responder.size > 0);
-            clientCtx.client.size = 0;
+            clientCtx.client.data.clear();
             if (frameId % 2)
             {
                 serverCtx.SendTo(clientCtx);
@@ -414,7 +413,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(clientCtx.client.size > 0);
+            TEST_VERIFY(!clientCtx.client.data.empty());
             clientCtx.SendTo(serverCtx);
 
             for (uint32 entityId = 1; entityId <= ENTITY_NUM; ++entityId)
@@ -459,7 +458,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(clientCtx.client.size > 0);
+            TEST_VERIFY(!clientCtx.client.data.empty());
             clientCtx.SendTo(serverCtx);
 
             for (uint32 entityId = 1; entityId <= ENTITY_NUM; ++entityId)
@@ -498,7 +497,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(clientCtx.client.size > 0);
+            TEST_VERIFY(!clientCtx.client.data.empty());
             clientCtx.SendTo(serverCtx);
 
             const EntityInfo& eInfno = clientInfo[networkID];
@@ -603,7 +602,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(clientCtx.client.size > 0);
+            TEST_VERIFY(!clientCtx.client.data.empty());
             clientCtx.SendTo(serverCtx);
 
             for (uint32 entityId = 1; entityId <= ENTITY_NUM; ++entityId)
@@ -669,7 +668,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(clientCtx.client.size > 0);
+            TEST_VERIFY(!clientCtx.client.data.empty());
             if (frameId < FRAME_FOR_REMOVE || isReconnected)
             {
                 clientCtx.SendTo(serverCtx);

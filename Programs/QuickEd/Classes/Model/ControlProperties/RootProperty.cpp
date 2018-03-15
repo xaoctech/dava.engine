@@ -5,7 +5,6 @@
 #include "ControlPropertiesSection.h"
 #include "ComponentPropertiesSection.h"
 
-#include "PropertyListener.h"
 #include "ValueProperty.h"
 
 #include "NameProperty.h"
@@ -16,6 +15,7 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 
 #include <UI/UIControl.h>
+#include <UI/Components/UIComponentUtils.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Entity/ComponentManager.h>
 #include <Engine/Engine.h>
@@ -74,8 +74,6 @@ RootProperty::~RootProperty()
         section->Release();
     }
     componentProperties.clear();
-
-    listeners.clear();
 }
 
 uint32 RootProperty::GetCount() const
@@ -132,7 +130,7 @@ bool RootProperty::CanAddComponent(const DAVA::Type* componentType) const
     if (IsReadOnly())
         return false;
 
-    if (UIComponent::IsMultiple(componentType))
+    if (UIComponentUtils::IsMultiple(componentType))
         return true;
 
     if (FindComponentPropertiesSection(componentType, 0) == nullptr)
@@ -141,9 +139,14 @@ bool RootProperty::CanAddComponent(const DAVA::Type* componentType) const
     return false;
 }
 
-bool RootProperty::CanRemoveComponent(const DAVA::Type* componentType) const
+bool RootProperty::CanRemoveComponent(const DAVA::Type* componentType, DAVA::uint32 index) const
 {
-    return !IsReadOnly() && FindComponentPropertiesSection(componentType, 0) != nullptr; // TODO
+    if (IsReadOnly())
+    {
+        return false;
+    }
+    ComponentPropertiesSection* section = FindComponentPropertiesSection(componentType, index);
+    return section != nullptr && section->GetFlags() & AbstractProperty::EF_CAN_REMOVE && !section->IsReadOnly();
 }
 
 const Vector<ComponentPropertiesSection*>& RootProperty::GetComponents() const
@@ -199,21 +202,19 @@ ComponentPropertiesSection* RootProperty::AddComponentPropertiesSection(const DA
 void RootProperty::AddComponentPropertiesSection(ComponentPropertiesSection* section)
 {
     const DAVA::Type* componentType = section->GetComponentType();
-    if (UIComponent::IsMultiple(componentType) || FindComponentPropertiesSection(componentType, 0) == nullptr)
+    if (UIComponentUtils::IsMultiple(componentType) || FindComponentPropertiesSection(componentType, 0) == nullptr)
     {
         int32 index = GetComponentAbsIndex(componentType, section->GetComponentIndex());
 
         int32 globalIndex = GetIndexOfCompoentPropertiesSection(section);
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWillBeAdded(this, section, globalIndex);
+        componentPropertiesWillBeAdded.Emit(this, section, globalIndex);
 
         componentProperties.insert(componentProperties.begin() + index, SafeRetain(section));
         DVASSERT(section->GetParent() == nullptr);
         section->SetParent(this);
         section->InstallComponent();
 
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWasAdded(this, section, globalIndex);
+        componentPropertiesWasAdded.Emit(this, section, globalIndex);
 
         RefreshComponentIndices();
     }
@@ -239,8 +240,7 @@ void RootProperty::RemoveComponentPropertiesSection(ComponentPropertiesSection* 
     if (FindComponentPropertiesSection(componentType, section->GetComponentIndex()) == section)
     {
         int index = GetIndexOfCompoentPropertiesSection(section);
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWillBeRemoved(this, section, index);
+        componentPropertiesWillBeRemoved.Emit(this, section, index);
 
         auto it = std::find(componentProperties.begin(), componentProperties.end(), section);
         if (it != componentProperties.end())
@@ -253,8 +253,7 @@ void RootProperty::RemoveComponentPropertiesSection(ComponentPropertiesSection* 
             section->Release();
         }
 
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWasRemoved(this, section, index);
+        componentPropertiesWasRemoved.Emit(this, section, index);
 
         RefreshComponentIndices();
     }
@@ -274,62 +273,51 @@ void RootProperty::DetachPrototypeComponent(ComponentPropertiesSection* section,
     section->DetachPrototypeSection(prototypeSection);
 }
 
-void RootProperty::AddListener(PropertyListener* listener)
-{
-    listeners.push_back(listener);
-}
-
-void RootProperty::RemoveListener(PropertyListener* listener)
-{
-    auto it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it != listeners.end())
-    {
-        listeners.erase(it);
-    }
-    else
-    {
-        DVASSERT(false);
-    }
-}
-
 void RootProperty::SetProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetValue(newValue);
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::SetBindingProperty(AbstractProperty* property, const DAVA::String& newValue, int32 bindingUpdateMode)
 {
     property->SetBindingExpression(newValue, bindingUpdateMode);
-
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::SetDefaultProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetDefaultValue(newValue);
-
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::ResetProperty(AbstractProperty* property)
 {
     property->ResetValue();
+    propertyChanged.Emit(property);
+}
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+void RootProperty::SetPropertyForceOverride(ValueProperty* property, bool forceOverride)
+{
+    property->SetForceOverride(forceOverride);
+
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
+
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::RefreshProperty(AbstractProperty* property, DAVA::int32 refreshFlags)
 {
     property->Refresh(refreshFlags);
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
+
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::Refresh(DAVA::int32 refreshFlags)
@@ -457,7 +445,6 @@ void RootProperty::RefreshComponentIndices()
     {
         section->RefreshIndex();
 
-        for (PropertyListener* listener : listeners)
-            listener->PropertyChanged(section);
+        propertyChanged.Emit(section);
     }
 }

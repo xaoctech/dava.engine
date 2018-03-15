@@ -76,7 +76,6 @@
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
-#include "Scene3D/Systems/DiffMonitoringSystem.h"
 #include "Sound/SoundSystem.h"
 #include "Time/SystemTimer.h"
 #include "UI/UIEvent.h"
@@ -425,11 +424,6 @@ void Scene::CreateSystems()
         AddSystem(new GeoDecalSystem(this));
     }
 
-    if (SCENE_SYSTEM_DIFF_MONITORING_FLAG & systemsMask)
-    {
-        //AddSystem(new DiffMonitoringSystem(this, nullptr, nullptr));
-    }
-
     if (DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES))
     {
         AddSystem(new ParticleEffectDebugDrawSystem(this));
@@ -696,7 +690,6 @@ void Scene::InitLegacyPointers()
     speedTreeUpdateSystem = GetSystem<SpeedTreeUpdateSystem>();
     windSystem = GetSystem<WindSystem>();
     waveSystem = GetSystem<WaveSystem>();
-    //diffMonitoringSystem = GetSystem<DiffMonitoringSystem>();
     staticOcclusionDebugDrawSystem = GetSystem<StaticOcclusionDebugDrawSystem>();
     particleEffectDebugDrawSystem = GetSystem<ParticleEffectDebugDrawSystem>();
     geoDecalSystem = GetSystem<GeoDecalSystem>();

@@ -112,13 +112,15 @@ void TextFieldPlatformImpl::SetTextColor(const DAVA::Color& color)
 
 void TextFieldPlatformImpl::SetFontSize(float size)
 {
-    float scaledSize = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInputX(size);
+    if (size > 0.f) // Font size must be greater than 0
+    {
+        float scaledSize = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInputX(size);
+        UIView* view = bridge->textFieldHolder->textCtrl;
+        UIFont* font = [UIFont systemFontOfSize:scaledSize];
+        [view setValue:font forKey:@"font"];
 
-    UIView* view = bridge->textFieldHolder->textCtrl;
-    UIFont* font = [UIFont systemFontOfSize:scaledSize];
-    [view setValue:font forKey:@"font"];
-
-    isNeedToUpdateTexture = true;
+        isNeedToUpdateTexture = true;
+    }
 }
 
 void TextFieldPlatformImpl::SetTextAlign(DAVA::int32 align)

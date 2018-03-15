@@ -25,17 +25,17 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowStateComponent)
 {
-    ReflectionRegistrator<UIFlowStateComponent>::Begin()
+    ReflectionRegistrator<UIFlowStateComponent>::Begin()[M::DisplayName("Flow State")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowStateComponent* c) { SafeRelease(c); })
-    .Field("stateType", &UIFlowStateComponent::GetStateType, &UIFlowStateComponent::SetStateType)[M::EnumT<StateType>()]
-    .Field("historyType", &UIFlowStateComponent::GetHistoryType, &UIFlowStateComponent::SetHistoryType)[M::EnumT<HistoryType>()]
-    .Field("services", &UIFlowStateComponent::GetServicesAsString, &UIFlowStateComponent::SetServicesFromString)
-    .Field("activateEvents", &UIFlowStateComponent::GetActivateEventsAsString, &UIFlowStateComponent::SetActivateEventsFromString)
-    .Field("deactivateEvents", &UIFlowStateComponent::GetDeactivateEventsAsString, &UIFlowStateComponent::SetDeactivateEventsFromString)
-    .Field("effectOut", &UIFlowStateComponent::GetEffectOut, &UIFlowStateComponent::SetEffectOut)[M::EnumT<UIFlowTransitionEffectConfig::Effect>()]
-    .Field("effectIn", &UIFlowStateComponent::GetEffectIn, &UIFlowStateComponent::SetEffectIn)[M::EnumT<UIFlowTransitionEffectConfig::Effect>()]
-    .Field("effectDuration", &UIFlowStateComponent::GetEffectDuration, &UIFlowStateComponent::SetEffectDuration)
+    .Field("stateType", &UIFlowStateComponent::GetStateType, &UIFlowStateComponent::SetStateType)[M::EnumT<StateType>(), M::DisplayName("State")]
+    .Field("historyType", &UIFlowStateComponent::GetHistoryType, &UIFlowStateComponent::SetHistoryType)[M::EnumT<HistoryType>(), M::DisplayName("History")]
+    .Field("services", &UIFlowStateComponent::GetServicesAsString, &UIFlowStateComponent::SetServicesFromString)[M::DisplayName("Services")]
+    .Field("activateEvents", &UIFlowStateComponent::GetActivateEventsAsString, &UIFlowStateComponent::SetActivateEventsFromString)[M::DisplayName("Activate Events")]
+    .Field("deactivateEvents", &UIFlowStateComponent::GetDeactivateEventsAsString, &UIFlowStateComponent::SetDeactivateEventsFromString)[M::DisplayName("Deactivate Events")]
+    .Field("effectOut", &UIFlowStateComponent::GetEffectOut, &UIFlowStateComponent::SetEffectOut)[M::EnumT<UIFlowTransitionEffectConfig::Effect>(), M::DisplayName("Effect Out")]
+    .Field("effectIn", &UIFlowStateComponent::GetEffectIn, &UIFlowStateComponent::SetEffectIn)[M::EnumT<UIFlowTransitionEffectConfig::Effect>(), M::DisplayName("Effect In")]
+    .Field("effectDuration", &UIFlowStateComponent::GetEffectDuration, &UIFlowStateComponent::SetEffectDuration)[M::DisplayName("Effect Duration")]
     .End();
 }
 

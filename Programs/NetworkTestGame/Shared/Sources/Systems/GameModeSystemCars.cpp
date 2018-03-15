@@ -17,6 +17,8 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 #include "Scene3D/Components/CameraComponent.h"
+#include "Visibility/ObservableComponent.h"
+#include "Visibility/SimpleVisibilityShapeComponent.h"
 #include "NetworkCore/NetworkCoreUtils.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
@@ -24,6 +26,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
 #include "Components/SingleComponents/GameModeSingleComponent.h"
@@ -56,24 +59,27 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
     for (int32 i = 0; i < environmentScene->GetChildrenCount(); ++i)
     {
         Entity* node = environmentScene->GetChild(i);
-        scene->AddNode(node);
         SwitchComponent* switchComp = node->GetComponent<SwitchComponent>();
         if (switchComp != nullptr)
         {
             NetworkID switchId = NetworkID::CreateStaticId(node->GetID());
 
             NetworkReplicationComponent* netReplComp = new NetworkReplicationComponent(switchId);
+            netReplComp->SetForReplication(switchComp->GetType(), M::Privacy::PUBLIC);
             node->AddComponent(netReplComp);
+            node->AddComponent(new SimpleVisibilityShapeComponent());
+            node->AddComponent(new ObservableComponent());
             networkEntities->RegisterEntity(netReplComp->GetNetworkID(), node);
         }
+        scene->AddNode(node);
     }
 
     // Subscrive to new clients connections
     if (IsServer(this))
     {
-        server = scene->GetSingleComponent<NetworkServerSingleComponent>()->GetServer();
-        server->SubscribeOnConnect([this](const Responder& responder) { connectedResponders.push_back(&responder); });
-        countdown = 10.f;
+        netConnectionsComp = scene->GetSingleComponent<NetworkConnectionsSingleComponent>();
+        DVASSERT(netConnectionsComp);
+        countdown = 2.f;
     }
 
     // Setup capturing cursor if we're in windowed mode for camera rotation
@@ -114,11 +120,13 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
 void GameModeSystemCars::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameModeSystemCars::Process");
-    for (const Responder* responder : connectedResponders)
+    if (IsServer(this))
     {
-        OnClientConnected(*responder);
+        for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
+        {
+            OnClientConnected(justConnectedToken);
+        }
     }
-    connectedResponders.clear();
 
     if (countdown > 0.f)
     {
@@ -135,7 +143,7 @@ void GameModeSystemCars::Process(float32 timeElapsed)
                     switchComp->SetSwitchIndex(index);
                 }
             }
-            countdown = 10.f;
+            countdown = 2.f;
         }
     }
 
@@ -179,8 +187,7 @@ void GameModeSystemCars::AddEntity(DAVA::Entity* entity)
     cars.insert(entity);
     if (focusedCar == nullptr)
     {
-        if ((server != nullptr) ||
-            (server == nullptr && IsClientOwner(GetScene(), entity)))
+        if (IsServer(this) || IsClientOwner(GetScene(), entity))
         {
             focusedCar = entity;
         }
@@ -197,12 +204,10 @@ void GameModeSystemCars::RemoveEntity(DAVA::Entity* entity)
     }
 }
 
-void GameModeSystemCars::OnClientConnected(const Responder& responder)
+void GameModeSystemCars::OnClientConnected(const FastName& token)
 {
-    DVASSERT(server != nullptr);
-
     NetworkGameModeSingleComponent* networkGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
-    NetworkPlayerID playerID = networkGameModeComponent->GetNetworkPlayerID(responder.GetToken());
+    NetworkPlayerID playerID = networkGameModeComponent->GetNetworkPlayerID(token);
     Entity* playerEntity = networkGameModeComponent->GetPlayerEnity(playerID);
     if (playerEntity == nullptr)
     {
