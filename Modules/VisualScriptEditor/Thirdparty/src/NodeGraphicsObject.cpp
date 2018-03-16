@@ -235,7 +235,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
                     _scene.deleteConnection(*connections.begin()->second);
                 }
 
-                PortKind portKind = _node.nodeDataModel()->GetPortKind(portToCheck, portIndex);
+                PortKind portKind = _node.nodeDataModel()->portKind(portToCheck, portIndex);
 
                 // todo add to FlowScene
                 auto connection = _scene.createConnection(portToCheck,

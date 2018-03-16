@@ -428,7 +428,7 @@ unsigned int VisualScriptNodeModel::nPorts(QtNodes::PortType portType) const
     return 0;
 }
 
-QtNodes::PortKind VisualScriptNodeModel::GetPortKind(QtNodes::PortType portType, QtNodes::PortIndex portIndex) const
+QtNodes::PortKind VisualScriptNodeModel::portKind(QtNodes::PortType portType, QtNodes::PortIndex portIndex) const
 {
     VisualScriptPin* pin = GetPin(portType, portIndex);
     return GetPortKind(pin);
@@ -490,7 +490,7 @@ QtNodes::NodeDataModel::ConnectionPolicy VisualScriptNodeModel::connectionPolicy
     return QtNodes::NodeDataModel::connectionPolicy(portType, portIndex);
 }
 
-void VisualScriptNodeModel::DisconnectInData(QtNodes::PortIndex portIndexIn, std::shared_ptr<QtNodes::NodeData> outNodeData)
+void VisualScriptNodeModel::disconnectInData(std::shared_ptr<QtNodes::NodeData> outNodeData, QtNodes::PortIndex portIndexIn)
 {
     VisualScriptPin* pin = GetPin(QtNodes::PortType::In, portIndexIn);
     DVASSERT(pin != nullptr);
@@ -538,19 +538,19 @@ void VisualScriptNodeModel::setInData(std::shared_ptr<QtNodes::NodeData> data, Q
     }
 }
 
-int VisualScriptNodeModel::canSetInData(QtNodes::PortIndex inPortIndex, std::shared_ptr<QtNodes::NodeData> data) const
+bool VisualScriptNodeModel::canSetInData(std::shared_ptr<QtNodes::NodeData> dataNode, QtNodes::PortIndex portIndex) const
 {
-    VisualScriptPin* inPin = GetPin(QtNodes::PortType::In, inPortIndex);
+    VisualScriptPin* inPin = GetPin(QtNodes::PortType::In, portIndex);
     DVASSERT(inPin != nullptr);
 
-    std::shared_ptr<NodePinData> newData = std::dynamic_pointer_cast<NodePinData>(data);
+    std::shared_ptr<NodePinData> newData = std::dynamic_pointer_cast<NodePinData>(dataNode);
     if (newData)
     {
         VisualScriptPin* outPin = newData->GetPin();
-        return VisualScriptPin::CanConnect(inPin, outPin);
+        return VisualScriptPin::CanConnect(inPin, outPin) != VisualScriptPin::CANNOT_CONNECT;
     }
 
-    return VisualScriptPin::CANNOT_CONNECT;
+    return false;
 }
 
 QWidget* VisualScriptNodeModel::embeddedWidget()
@@ -592,12 +592,12 @@ std::unique_ptr<QtNodes::NodeDataModel> VisualScriptNodeModel::clone() const
     //    return std::unique_ptr<QtNodes::NodeDataModel>();
 }
 
-void VisualScriptNodeModel::SetCategory(const QString& category_)
+void VisualScriptNodeModel::setCategory(const QString& category_)
 {
     category = category_;
 }
 
-void VisualScriptNodeModel::SetEntryHeight(unsigned int height)
+void VisualScriptNodeModel::setEntryHeight(unsigned int height)
 {
     if (containerWidget != nullptr)
     {
@@ -630,7 +630,7 @@ void VisualScriptNodeModel::SetEntryHeight(unsigned int height)
     }
 }
 
-void VisualScriptNodeModel::SetSpacing(unsigned int spacing)
+void VisualScriptNodeModel::setSpacing(unsigned int spacing)
 {
     if (containerWidget != nullptr)
     {

@@ -170,7 +170,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     if (node)
     {
         node->reactToPossibleConnection(state.requiredPort(),
-                                        _connection.dataType(),
+                                        _connection.dataType(oppositePort(state.requiredPort())),
                                         event->scenePos());
     }
 
@@ -210,7 +210,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     }
     else if (_connection.connectionState().requiresPort())
     {
-        NodeDataType dataType = _connection.dataType();
+        NodeDataType dataType = _connection.dataType(oppositePort(_connection.connectionState().requiredPort()));
         bool requestMenu = dataType.hasData && (_connection.conState == Connection::eConState::IS_CONNECTING);
 
         if (requestMenu)

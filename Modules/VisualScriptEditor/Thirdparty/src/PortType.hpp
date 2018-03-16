@@ -13,25 +13,23 @@ namespace QtNodes
 enum class PortType
 {
   None = -1,
-    
+
   In = 0,
   Out,
-    
+
   Count
 };
 
 enum class PortKind
 {
-    None = -1,
-    
-    Data = 0,
-    Execution,
-    
-    Count
+  None = -1,
+
+  Data = 0,
+  Execution,
+
+   Count
 };
 
-    
-    
 static const size_t PortTypeCount = static_cast<size_t>(PortType::Count);
 static const int INVALID = -1;
 
@@ -84,9 +82,9 @@ oppositePort(PortType port)
 
   return result;
 }
-    
-inline 
-QString 
+
+inline
+QString
 PortPreffix(PortType port)
 {
     if(port == PortType::In)
@@ -97,19 +95,19 @@ PortPreffix(PortType port)
     {
         return "out_";
     }
-    
+
     return "";
 }
-    
-inline 
-size_t 
+
+inline
+size_t
 PortToIndex(PortType port)
 {
     return static_cast<size_t>(port);
 }
 
-inline 
-PortType 
+inline
+PortType
 IndexToPort(size_t port)
 {
     return static_cast<PortType>(port);

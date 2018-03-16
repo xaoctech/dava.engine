@@ -57,87 +57,41 @@ canConnect(PortIndex& portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
 
     // 4) Connection type equals node port type, or there is a registered type conversion that can translate between the two
 
-    //    auto connectionDataType = _connection->dataType();
-    //    PortKind connectionPortKind = _connection->portKind();
+    auto const connectionDataType = _connection->dataType(oppositePort(requiredPort));
 
-    //========
-    Node* inNode = nullptr;
-    Node* outNode = nullptr;
+    auto const& modelTarget = _node->nodeDataModel();
+    auto const candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
 
-    PortIndex inIndex = 0;
-    PortIndex outIndex = 0;
-
-    if (requiredPort == PortType::In)
+    if (connectionDataType.id != candidateNodeDataType.id)
     {
-        inNode = _node;
-        inIndex = portIndex;
+        // First check types connection on model level
 
-        outNode = _connection->getNode(PortType::Out);
-        outIndex = _connection->getPortIndex(PortType::Out);
-    }
-    else if (requiredPort == PortType::Out)
-    {
-        inNode = _connection->getNode(PortType::In);
-        inIndex = _connection->getPortIndex(PortType::In);
+        NodeDataModel* inDataModel = modelTarget;
+        NodeDataModel* outDataModel = _connection->getNode(oppositePort(requiredPort))->nodeDataModel();
+        PortIndex inIndex = portIndex;
+        PortIndex outIndex = _connection->getPortIndex(oppositePort(requiredPort));
 
-        outNode = _node;
-        outIndex = portIndex;
-    }
+        if (requiredPort == PortType::Out) // Need swap in/out data
+        {
+            std::swap(inDataModel, outDataModel);
+            std::swap(inIndex, outIndex);
+        }
 
-    NodeDataModel* inDataModel = inNode->nodeDataModel();
-    NodeDataModel* outDataModel = outNode->nodeDataModel();
+        std::shared_ptr<NodeData> outData = outDataModel->outData(outIndex);
+        bool const canConnect = inDataModel->canSetInData(outData, inIndex);
 
-    std::shared_ptr<NodeData> outData = outDataModel->outData(outIndex);
-    int canConnect = inDataModel->canSetInData(inIndex, outData);
-
-    //    enum eCanConnectResult
-    //    {
-    //        CANNOT_CONNECT = 0,
-    //        CAN_CONNECT = 1,
-    //        CAN_CONNECT_WITH_CAST = 2,
-    //    };
-
-    if (canConnect == 1)
-    {
-        return true;
-    }
-    else if (canConnect == 2)
-    {
-        //        converterModel = create converter model
-        //        typeConversionNeeded == true;
-
-        return true;
-        //should add type Caster
+        // In second try find registered type conversion
+        if (!canConnect)
+        {
+            if (requiredPort == PortType::In)
+            {
+                return typeConversionNeeded = (converterModel = _scene->registry().getTypeConverter(connectionDataType.id, candidateNodeDataType.id)) != nullptr;
+            }
+            return typeConversionNeeded = (converterModel = _scene->registry().getTypeConverter(candidateNodeDataType.id, connectionDataType.id)) != nullptr;
+        }
     }
 
-    return false;
-
-    //========
-
-    //    auto const& modelTarget = _node->nodeDataModel();
-    //    modelTarget->dataType(requiredPort, portIndex);
-    //
-    //    PortKind portKind = modelTarget->GetPortKind(requiredPort, portIndex);
-    //    NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
-    //
-    //    if (portKind != connectionPortKind)
-    //    { // cannot connect different types of connections
-    //        return false;
-    //    }
-    //
-    //    ///AAAA
-    //
-    //    ///AAAA
-    //
-    //    if (connectionDataType.id != candidateNodeDataType.id)
-    //    {
-    //        if (requiredPort == PortType::In)
-    //        {
-    //            return typeConversionNeeded = (converterModel = _scene->registry().getTypeConverter(connectionDataType.id, candidateNodeDataType.id)) != nullptr;
-    //        }
-    //        return typeConversionNeeded = (converterModel = _scene->registry().getTypeConverter(candidateNodeDataType.id, connectionDataType.id)) != nullptr;
-    //    }
-    //    return true;
+    return true;
 }
 
 bool
@@ -165,8 +119,8 @@ tryConnect() const
         auto outNode = _connection->getNode(connectedPort);
         auto outNodePortIndex = _connection->getPortIndex(connectedPort);
 
-        PortKind outNodePortKind = _connection->getPortKind(connectedPort);
-        PortKind sourceNodePortKind = _node->nodeDataModel()->GetPortKind(requiredPort, portIndex);
+        PortKind outNodePortKind = _connection->portKind(connectedPort);
+        PortKind sourceNodePortKind = _node->nodeDataModel()->portKind(requiredPort, portIndex);
         Q_ASSERT(outNodePortKind == sourceNodePortKind);
 
         //Creating the converter node
@@ -204,7 +158,7 @@ tryConnect() const
 
     // 3) Assign Connection to empty port in NodeState
     // The port is not longer required after this function
-    PortKind portKind = _node->nodeDataModel()->GetPortKind(requiredPort, portIndex);
+    PortKind portKind = _node->nodeDataModel()->portKind(requiredPort, portIndex);
     _connection->setNodeToPort(*_node, requiredPort, portIndex, portKind);
 
     // 4) Adjust Connection geometry

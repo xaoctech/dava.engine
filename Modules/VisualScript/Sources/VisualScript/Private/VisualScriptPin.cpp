@@ -42,7 +42,9 @@ VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnect(VisualScriptPin* 
     }
 
     if (inputPin->IsDataPin() && outputPin->IsDataPin())
+    {
         return CanConnectDataPinsOutputToInput(outputPin, inputPin);
+    }
     else if (inputPin->IsExecutionPin() && outputPin->IsExecutionPin())
     {
         return CAN_CONNECT;

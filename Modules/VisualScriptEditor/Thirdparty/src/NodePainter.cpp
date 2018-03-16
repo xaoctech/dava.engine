@@ -130,7 +130,6 @@ drawConnectionPoints(QPainter* painter,
             auto const& dataType = model->dataType(portType, static_cast<PortIndex>(i));
 
             bool canConnect = (state.getEntries(portType)[i].empty() ||
-                               //                               (portType == PortType::Out &&
                                (model->connectionPolicy(portType, static_cast<PortIndex>(i)) == NodeDataModel::ConnectionPolicy::Many)
                                );
 
@@ -180,7 +179,7 @@ drawConnectionPoints(QPainter* painter,
             }
 
             double radius = reducedDiameter * r;
-            PortKind portKind = model->GetPortKind(portType, static_cast<PortIndex>(i));
+            PortKind portKind = model->portKind(portType, static_cast<PortIndex>(i));
             if (portKind == PortKind::Data)
             {
                 painter->drawEllipse(p, radius, radius);

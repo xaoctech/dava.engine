@@ -68,13 +68,13 @@ boundingRect() const
 void NodeGeometry::setEntryHeight(unsigned int h)
 {
     _entryHeight = h;
-    _dataModel->SetEntryHeight(_entryHeight);
+    _dataModel->setEntryHeight(_entryHeight);
 }
 
 void NodeGeometry::setSpacing(unsigned int s)
 {
     _spacing = s;
-    _dataModel->SetSpacing(_spacing);
+    _dataModel->setSpacing(_spacing);
 }
 
 void
@@ -83,8 +83,8 @@ recalculateSize() const
 {
     _entryHeight = _fontMetrics.height();
 
-    _dataModel->SetEntryHeight(_entryHeight);
-    _dataModel->SetSpacing(_spacing);
+    _dataModel->setEntryHeight(_entryHeight);
+    _dataModel->setSpacing(_spacing);
 
     {
         unsigned int maxNumOfEntries = std::max(_nSinks, _nSources);

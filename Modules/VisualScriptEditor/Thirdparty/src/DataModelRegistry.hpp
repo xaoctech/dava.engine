@@ -64,12 +64,11 @@ public:
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
                   "Must pass a subclass of NodeDataModel to registerModel");
 
-      uniqueModel->SetCategory(category); //should be before name
+    uniqueModel->setCategory(category); //should be before name
     QString const name = uniqueModel->name();
 
     if (_registeredModels.count(name) == 0)
     {
-        
       _registeredModels[name] = std::move(uniqueModel);
       _categories.insert(category);
       _registeredModelsCategory[name] = category;

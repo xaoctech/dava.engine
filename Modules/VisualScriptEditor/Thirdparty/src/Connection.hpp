@@ -112,17 +112,14 @@ public:
   PortIndex
   getPortIndex(PortType portType) const;
   
-  PortKind
-  getPortKind(PortType portType) const;
-
   void
   clearNode(PortType portType);
 
   NodeDataType
-  dataType() const;
+  dataType(PortType portType) const;
   
   QtNodes::PortKind
-  portKind() const;
+  portKind(PortType portType) const;
 
 public: // data propagation
 
@@ -145,12 +142,6 @@ private:
     };
     
     std::array<PortDescription, PortTypeCount> ports;
-    
-//  Node* _outNode = nullptr;
-//  Node* _inNode  = nullptr;
-//
-//  PortIndex _outPortIndex;
-//  PortIndex _inPortIndex;
 
 private:
 

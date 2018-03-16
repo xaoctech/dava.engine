@@ -43,8 +43,8 @@ public:
   virtual QString
   caption() const = 0;
 
-    virtual QColor
-    captionColor() const = 0;
+  virtual QColor
+  captionColor() const = 0;
 
   /// It is possible to hide caption in GUI
   virtual bool
@@ -53,7 +53,7 @@ public:
   /// Port caption is used in GUI to label individual ports
   virtual QString
   portCaption(PortType, PortIndex) const { return QString(); }
-    
+
   /// It is possible to hide port caption in GUI
   virtual bool
   portCaptionVisible(PortType, PortIndex) const { return false; }
@@ -63,7 +63,7 @@ public:
 
   virtual QString
   portHint(PortType, PortIndex) const { return QString(); }
-    
+
   /// Name makes this model unique
   virtual QString
   name() const = 0;
@@ -72,8 +72,8 @@ public:
   virtual std::unique_ptr<NodeDataModel>
   clone() const = 0;
 
-    virtual void
-    SetCategory(const QString& category) = 0;
+  virtual void
+  setCategory(const QString& category) = 0;
 
 public:
 
@@ -85,9 +85,9 @@ public:
   virtual
   unsigned int nPorts(PortType portType) const = 0;
 
-    virtual 
-    PortKind 
-    GetPortKind(PortType portType, PortIndex portIndex) const = 0;
+  virtual
+  PortKind
+  portKind(PortType portType, PortIndex portIndex) const = 0;
 
   virtual
   NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
@@ -100,18 +100,10 @@ public:
     Many,
   };
 
-//  virtual
-//  ConnectionPolicy
-//  portOutConnectionPolicy(PortIndex) const
-//  {
-//    return ConnectionPolicy::Many;
-//  }
-
   virtual
   ConnectionPolicy
   connectionPolicy(PortType portType, PortIndex portIndex) const;
 
-    
   NodeStyle const&
   nodeStyle() const;
 
@@ -126,17 +118,19 @@ public:
   setInData(std::shared_ptr<NodeData> nodeData,
             PortIndex port) = 0;
 
-    virtual int canSetInData(PortIndex inPort, std::shared_ptr<NodeData> nodeData) const = 0;
-    
+  virtual
+  bool
+  canSetInData(std::shared_ptr<NodeData> nodeData,
+               PortIndex port) const = 0;
+
   virtual
   std::shared_ptr<NodeData>
   outData(PortIndex port) = 0;
 
-    virtual
-    void
-    DisconnectInData(PortIndex portIndexIn, std::shared_ptr<NodeData> outNodeData) = 0;
+  virtual
+  void
+  disconnectInData(std::shared_ptr<NodeData> nodeData, PortIndex portIndex) = 0;
 
-    
   virtual
   QWidget *
   embeddedWidget() = 0;
@@ -144,6 +138,14 @@ public:
   virtual
   bool
   resizable() const { return false; }
+
+  virtual
+  void
+  setEntryHeight(unsigned int height) = 0;
+
+  virtual
+  void
+  setSpacing(unsigned int spacing) = 0;
 
   virtual
   NodeValidationState
@@ -155,9 +157,7 @@ public:
 
   virtual
   NodePainterDelegate* painterDelegate() const { return nullptr; }
-    
-    virtual void SetEntryHeight(unsigned int height) = 0;
-    virtual void SetSpacing(unsigned int spacing) = 0;
+
 
 signals:
 

@@ -35,8 +35,6 @@ Connection(PortType portType,
            PortIndex portIndex,
            PortKind portKind)
     : _id(QUuid::createUuid())
-    //    , _outPortIndex(INVALID)
-    //    , _inPortIndex(INVALID)
     , _connectionState()
 {
     setNodeToPort(node, portType, portIndex, portKind);
@@ -54,17 +52,8 @@ Connection(Node& nodeIn,
            PortIndex portIndexOut,
            PortKind portKindOut)
     : _id(QUuid::createUuid())
-    //    , _outNode(&nodeOut)
-    //    , _inNode(&nodeIn)
-    //    , _outPortIndex(portIndexOut)
-    //    , _inPortIndex(portIndexIn)
     , _connectionState()
 {
-    //    ports[QtNodes::PortType::In].node = &nodeIn;
-    //    ports[QtNodes::PortType::In].index = portIndexIn;
-    //    ports[QtNodes::PortType::Out].node = &nodeOut;
-    //    ports[QtNodes::PortType::Out].index = portIndexOut;
-
     setNodeToPort(nodeIn, PortType::In, portIndexIn, portKindIn);
     setNodeToPort(nodeOut, PortType::Out, portIndexOut, portKindOut);
 
@@ -85,16 +74,6 @@ Connection::
             port.node->nodeGraphicsObject().update();
         }
     }
-
-    //    if (_inNode)
-    //    {
-    //        _inNode->nodeGraphicsObject().update();
-    //    }
-
-    //    if (_outNode)
-    //    {
-    //        _outNode->nodeGraphicsObject().update();
-    //    }
 }
 
 QJsonObject
@@ -115,22 +94,6 @@ save() const
         }
     }
 
-    //    if (_inNode && _outNode)
-    //    {
-    //        connectionJson["in_id"] = _inNode->id().toString();
-    //        connectionJson["in_index"] = _inPortIndex;
-    //
-    //        connectionJson["out_id"] = _outNode->id().toString();
-    //        connectionJson["out_index"] = _outPortIndex;
-    //
-    //        connectionJson["execin_id"] = _outNode->id().toString();
-    //        connectionJson["out_index"] = _outPortIndex;
-    //
-    //        connectionJson["out_id"] = _outNode->id().toString();
-    //        connectionJson["out_index"] = _outPortIndex;
-    //
-    //    }
-
     return connectionJson;
 }
 
@@ -150,24 +113,6 @@ setRequiredPort(PortType dragging)
     Q_ASSERT(dragging != PortType::None && dragging != PortType::Count);
     ports[PortToIndex(dragging)].node = nullptr;
     ports[PortToIndex(dragging)].index = INVALID;
-
-    //
-    //    switch (dragging)
-    //    {
-    //    case PortType::Out:
-    //
-    //        _outNode = nullptr;
-    //        _outPortIndex = INVALID;
-    //        break;
-    //
-    //    case PortType::In:
-    //        _inNode = nullptr;
-    //        _inPortIndex = INVALID;
-    //        break;
-    //
-    //    default:
-    //        break;
-    //    }
 }
 
 PortType
@@ -217,34 +162,6 @@ getPortIndex(PortType portType) const
 {
     Q_ASSERT(portType != PortType::None && portType != PortType::Count);
     return ports[PortToIndex(portType)].index;
-
-    //
-    //
-    //
-    //    switch (portType)
-    //    {
-    //    case PortType::In:
-    //        result = _inPortIndex;
-    //        break;
-    //
-    //    case PortType::Out:
-    //        result = _outPortIndex;
-    //
-    //        break;
-    //
-    //    default:
-    //        break;
-    //    }
-    //
-    //    return result;
-}
-
-QtNodes::PortKind
-Connection::
-getPortKind(PortType portType) const
-{
-    Q_ASSERT(portType != PortType::None && portType != PortType::Count);
-    return ports[PortToIndex(portType)].kind;
 }
 
 void
@@ -258,15 +175,6 @@ setNodeToPort(Node& node,
     ports[PortToIndex(portType)].node = &node;
     ports[PortToIndex(portType)].index = portIndex;
     ports[PortToIndex(portType)].kind = portKind;
-
-    //    auto& nodeWeak = getNode(portType);
-    //
-    //    nodeWeak = &node;
-    //
-    //    if (portType == PortType::Out)
-    //        _outPortIndex = portIndex;
-    //    else
-    //        _inPortIndex = portIndex;
 
     _connectionState.setNoRequiredPort();
 
@@ -284,12 +192,6 @@ removeFromNodes() const
             ports[index].node->nodeState().eraseConnection(IndexToPort(index), ports[index].index, id());
         }
     }
-
-    //    if (_inNode)
-    //        _inNode->nodeState().eraseConnection(PortType::In, _inPortIndex, id());
-    //
-    //    if (_outNode)
-    //        _outNode->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
 }
 
 ConnectionGraphicsObject&
@@ -333,22 +235,6 @@ getNode(PortType portType) const
 {
     Q_ASSERT(portType != PortType::None && portType != PortType::Count);
     return ports[PortToIndex(portType)].node;
-
-    //    switch (portType)
-    //    {
-    //    case PortType::In:
-    //        return _inNode;
-    //        break;
-    //
-    //    case PortType::Out:
-    //        return _outNode;
-    //        break;
-    //
-    //    default:
-    //        // not possible
-    //        break;
-    //    }
-    //return nullptr;
 }
 
 Node*&
@@ -357,22 +243,6 @@ getNode(PortType portType)
 {
     Q_ASSERT(portType != PortType::None && portType != PortType::Count);
     return ports[PortToIndex(portType)].node;
-
-    //    switch (portType)
-    //    {
-    //    case PortType::In:
-    //        return _inNode;
-    //        break;
-    //
-    //    case PortType::Out:
-    //        return _outNode;
-    //        break;
-    //
-    //    default:
-    //        // not possible
-    //        break;
-    //    }
-    //    Q_UNREACHABLE();
 }
 
 void
@@ -382,67 +252,32 @@ clearNode(PortType portType)
     Q_ASSERT(portType != PortType::None && portType != PortType::Count);
     ports[PortToIndex(portType)].node = nullptr;
     ports[PortToIndex(portType)].index = INVALID;
+    ports[PortToIndex(portType)].kind = PortKind::None;
 
     conState = eConState::IS_DISCONNECTING;
-
-    //    getNode(portType) = nullptr;
-    //
-    //    if (portType == PortType::In)
-    //        _inPortIndex = INVALID;
-    //    else
-    //        _outPortIndex = INVALID;
 }
 
 NodeDataType
 Connection::
-dataType() const
+dataType(PortType portType) const
 {
-    for (size_t pi = 0; pi < PortTypeCount; ++pi)
+    Q_ASSERT(portType > PortType::None && portType < PortType::Count);
+    const PortDescription& pDesc = ports[PortToIndex(portType)];
+    if (pDesc.node != nullptr)
     {
-        if (ports[pi].node != nullptr)
-        {
-            auto const& model = ports[pi].node->nodeDataModel();
-            return model->dataType(IndexToPort(pi), ports[pi].index);
-        }
+        auto const& model = pDesc.node->nodeDataModel();
+        return model->dataType(portType, pDesc.index);
     }
-
-    //    Node* validNode = nullptr;
-    //    PortIndex index = INVALID;
-    //    PortType portType = PortType::None;
-
-    //    if ((validNode = _inNode))
-    //    {
-    //        index = _inPortIndex;
-    //        portType = PortType::In;
-    //    }
-    //    else if ((validNode = _outNode))
-    //    {
-    //        index = _outPortIndex;
-    //        portType = PortType::Out;
-    //    }
-
-    //    if (validNode)
-    //    {
-    //        auto const& model = validNode->nodeDataModel();
-    //
-    //        return model->dataType(portType, index);
-    //    }
-
+    return NodeDataType();
     Q_UNREACHABLE();
 }
 
 QtNodes::PortKind
 Connection::
-portKind() const
+portKind(PortType portType) const
 {
-    for (size_t pi = 0; pi < PortTypeCount; ++pi)
-    {
-        if (ports[pi].node != nullptr)
-        {
-            return ports[pi].kind;
-        }
-    }
-    Q_UNREACHABLE();
+    Q_ASSERT(portType != PortType::None && portType != PortType::Count);
+    return ports[PortToIndex(portType)].kind;
 }
 
 void
@@ -454,11 +289,6 @@ propagateData(std::shared_ptr<NodeData> nodeData) const
     {
         ports[portType].node->propagateData(nodeData, ports[portType].index);
     }
-
-    //    if (_inNode)
-    //    {
-    //        _inNode->propagateData(nodeData, _inPortIndex);
-    //    }
 }
 
 void
@@ -479,7 +309,7 @@ propagateEmptyData() const
     QtNodes::NodeDataModel* outModel = getModel(PortToIndex(PortType::Out));
     if (inModel != nullptr && outModel != nullptr)
     {
-        inModel->DisconnectInData(ports[PortToIndex(PortType::In)].index, outModel->outData(ports[PortToIndex(PortType::Out)].index));
+        inModel->disconnectInData(outModel->outData(ports[PortToIndex(PortType::Out)].index), ports[PortToIndex(PortType::In)].index);
     }
 
     std::shared_ptr<NodeData> emptyData;

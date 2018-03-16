@@ -70,6 +70,9 @@ ConnectionPainter::
 paint(QPainter* painter,
       Connection const& connection)
 {
+    static int const rightCastPointStart = 270 * 16;
+    static int const castPointLength = 180 * 16;
+
     auto const& connectionStyle =
     StyleCollection::connectionStyle();
 
@@ -77,11 +80,12 @@ paint(QPainter* painter,
     QColor hoverColor = connectionStyle.hoveredColor();
     QColor selectedColor = connectionStyle.selectedColor();
 
-    auto dataType = connection.dataType();
+    auto const dataTypeOut = connection.dataType(PortType::Out);
+    auto const dataTypeIn = connection.dataType(PortType::In);
 
-    if (connectionStyle.useDataDefinedColors())
+    if (connectionStyle.useDataDefinedColors() && !dataTypeOut.id.isEmpty())
     {
-        normalColor = connectionStyle.normalColor(dataType.id, dataType.hasData);
+        normalColor = connectionStyle.normalColor(dataTypeOut.id, dataTypeOut.hasData);
         hoverColor = normalColor.lighter(200);
         selectedColor = normalColor.darker(200);
     }
@@ -91,6 +95,8 @@ paint(QPainter* painter,
 
     ConnectionState const& state =
     connection.connectionState();
+
+    bool const sameTypes = state.requiresPort() || (dataTypeOut.id == dataTypeIn.id);
 
     double const lineWidth = connectionStyle.lineWidth();
     double const pointDiameter = connectionStyle.pointDiameter();
@@ -125,6 +131,8 @@ paint(QPainter* painter,
 #endif
 
     auto cubic = cubicPath(geom);
+    auto center = cubic.pointAtPercent(0.5);
+    auto castPointRect = QRectF(center.x() - 10, center.y() - 10, 20, 20);
 
     bool const hovered = geom.hovered();
 
@@ -146,8 +154,11 @@ paint(QPainter* painter,
         painter->setBrush(Qt::NoBrush);
 
         // cubic spline
-
         painter->drawPath(cubic);
+        if (!sameTypes)
+        {
+            painter->drawEllipse(castPointRect);
+        }
     }
 
     // draw normal line
@@ -173,6 +184,28 @@ paint(QPainter* painter,
 
         // cubic spline
         painter->drawPath(cubic);
+
+        if (!sameTypes)
+        {
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(p.color());
+
+            // Draw out port type
+            painter->drawEllipse(castPointRect);
+
+            if (connectionStyle.useDataDefinedColors() && !dataTypeIn.id.isEmpty())
+            {
+                normalColor = connectionStyle.normalColor(dataTypeIn.id, dataTypeIn.hasData);
+                selectedColor = normalColor.darker(200);
+                if (selected)
+                    painter->setBrush(selectedColor);
+                else
+                    painter->setBrush(normalColor);
+
+                // Draw in port type
+                painter->drawPie(castPointRect, rightCastPointStart, castPointLength);
+            }
+        }
     }
 
     QPointF const& source = geom.source();
@@ -181,6 +214,7 @@ paint(QPainter* painter,
     painter->setPen(connectionStyle.constructionColor());
     painter->setBrush(connectionStyle.constructionColor());
     double const pointRadius = pointDiameter / 2.0;
+
     painter->drawEllipse(source, pointRadius, pointRadius);
     painter->drawEllipse(sink, pointRadius, pointRadius);
 }

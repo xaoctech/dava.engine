@@ -13,8 +13,8 @@ struct NodeDataType
   QString name;
   QString prettyName;
   bool hasData = false;
-    
-    const void *source = nullptr;
+
+  const void *source = nullptr;
 };
 
 /// Class represents data transferred between nodes.
