@@ -26,6 +26,8 @@ private:
 
 std::unique_ptr<TextureLoadingGuard> CreateTextureGuard(const Vector<eGPUFamily>& newLoadingOrder);
 
+bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, uint8 color, const String& tag = "");
+
 void CreateTestFolder(const FilePath& folder);
 void ClearTestFolder(const FilePath& folder);
 
