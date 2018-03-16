@@ -1,14 +1,11 @@
-// #ensuredefined SHADOW_CASCADES          4.0
-// #ensuredefined SHADOW_PCF               1
-
 /*
  * Directional light implementation
  */
-float SampleShadow(float4 lightSpaceCoords, float4 projectionScale, float4 projectionOffset, ShadowParameters sp)
+float SampleShadow(float3 lightSpaceCoords, float3 projectionScale, float3 projectionOffset, ShadowParameters sp)
 {
     float shadow = 0.0;
 
-#if (SHADOW_PCF)
+#if (SHADOW_PCF > 0)
     float3 poissonDistribution[8];
     poissonDistribution[0] = float3(+0.95581, -0.18159, sp.filterRadius.y * 0.0 / 7.0);
     poissonDistribution[1] = float3(+0.50147, -0.35807, sp.filterRadius.y * 1.0 / 7.0);
@@ -29,28 +26,57 @@ float SampleShadow(float4 lightSpaceCoords, float4 projectionScale, float4 proje
     {
         lightSpaceCoords.z = originalZ + poissonDistribution[i].z;
 
-        float4 projectedCoords = lightSpaceCoords * projectionScale + projectionOffset;
+        float3 projectedCoords = lightSpaceCoords * projectionScale + projectionOffset;
         projectedCoords.x += dot(poissonDistribution[i].xy, r0);
         projectedCoords.y += dot(poissonDistribution[i].xy, r1);
 
-        shadow += FP_SHADOW(tex2Dcmp(directionalShadowMap, projectedCoords.xyz));
+        shadow += FP_SHADOW(tex2Dcmp(directionalShadowMap, projectedCoords));
     }
     shadow *= 1.0 / float(SHADOW_PCF);
 
 #else
 
-    float4 projectedCoords = lightSpaceCoords * projectionScale + projectionOffset;
-    shadow = FP_SHADOW(tex2Dcmp(directionalShadowMap, projectedCoords.xyz));
+    float3 projectedCoords = lightSpaceCoords * projectionScale + projectionOffset;
+    shadow = FP_SHADOW(tex2Dcmp(directionalShadowMap, projectedCoords));
 
 #endif
 
     return shadow;
 }
 
-float SampleDirectionalShadow(float4 lightViewSpaceCoords, ShadowParameters ds)
+float ComputeCascadesBlendValue(float3 lvs, float3 scale, float3 offset)
 {
-    float edgeBlendSize = 0.03125; /* blend edge size, equals to 32 pixels for 1024 shadow map */
+    float blendSize = 0.25;
 
+    float left = (0.0 - offset.x) / scale.x;
+    float right = (1.0 - offset.x) / scale.x;
+    float bottom = (1.0 - offset.y) / scale.y;
+    float top = (0.0 - offset.y) / scale.y;
+    float near = (1.0 - offset.z) / scale.z;
+    float far = (0.0 - offset.z) / scale.z;
+
+    float cx = 0.5 * (left + right);
+    float dx = 0.5 * (right - left);
+    float sx = max(0.0, abs(lvs.x - cx) - (dx - blendSize));
+
+    float cy = 0.5 * (top + bottom);
+    float dy = 0.5 * (top - bottom);
+    float sy = max(0.0, abs(lvs.y - cy) - (dy - blendSize));
+
+    float cz = 0.5 * (far + near);
+    float dz = 0.5 * (far - near);
+    float sz = max(0.0, abs(lvs.z - cz) - (dz - blendSize));
+
+    return max(sx, max(sy, sz)) / blendSize;
+}
+
+float JitterBlend(float blendAmount, float normalizedNoiseValue)
+{
+    return float(blendAmount > normalizedNoiseValue);
+}
+
+float SampleDirectionalShadow(float3 lightViewSpaceCoords, ShadowParameters ds)
+{
     float shadow = 1.0;
     float outBlendAmount = 1.0;
 
@@ -59,18 +85,19 @@ float SampleDirectionalShadow(float4 lightViewSpaceCoords, ShadowParameters ds)
     shadow = 1.0;
 
 #elif (SHADOW_CASCADES > 1.0)
-    int cascade = -1;
-    float4 allCascadeCoords[4];
-    allCascadeCoords[0] = lightViewSpaceCoords * ds.cascadesProjectionScale[0] + ds.cascadesProjectionOffset[0];
-    allCascadeCoords[1] = lightViewSpaceCoords * ds.cascadesProjectionScale[1] + ds.cascadesProjectionOffset[1];
-    allCascadeCoords[2] = lightViewSpaceCoords * ds.cascadesProjectionScale[2] + ds.cascadesProjectionOffset[2];
-    allCascadeCoords[3] = lightViewSpaceCoords * ds.cascadesProjectionScale[3] + ds.cascadesProjectionOffset[3];
-    {
-        float3 c0 = allCascadeCoords[0].xyz;
-        float3 c1 = allCascadeCoords[1].xyz;
-        float3 c2 = allCascadeCoords[2].xyz;
-        float3 c3 = allCascadeCoords[3].xyz;
+    float3 c0 = lightViewSpaceCoords * ds.cascadesProjectionScale[0] + ds.cascadesProjectionOffset[0];
+    float3 c1 = lightViewSpaceCoords * ds.cascadesProjectionScale[1] + ds.cascadesProjectionOffset[1];
+#if (SHADOW_CASCADES > 2.0)
+    float3 c2 = lightViewSpaceCoords * ds.cascadesProjectionScale[2] + ds.cascadesProjectionOffset[2];
+#if (SHADOW_CASCADES > 3.0)
+    float3 c3 = lightViewSpaceCoords * ds.cascadesProjectionScale[3] + ds.cascadesProjectionOffset[3];
+#endif
+#endif
 
+    int cascade = -1;
+    int nextCascade = -1;
+    float4 selectedCascadeCoords;
+    {
         float3 minCoord = float3(ds.filterRadius.xx / ds.shadowMapSize.x, ndcToZMapping.x * 2.0 - 2.0); /* 0.5 on GL -> -1.0, 1.0 on other API -> 0.0 */
         float3 maxCoord = float3(1.0 - minCoord.x, 1.0 / float(SHADOW_CASCADES) - minCoord.y, 1.0);
 
@@ -81,55 +108,53 @@ float SampleDirectionalShadow(float4 lightViewSpaceCoords, ShadowParameters ds)
         if (all(equal(clamp(c0, minCoord, maxCoord), c0)))
         {
             cascade = 0;
+            nextCascade = 1;
+            selectedCascadeCoords = float4(c0, 0.0);
         }
         else if (all(equal(clamp(c1, minCoord, maxCoord), c1)))
         {
             cascade = 1;
+            nextCascade = 2;
+            selectedCascadeCoords = float4(c1, 0.0);
         }
-#if (SHADOW_CASCADES > 2.0)
+    #if (SHADOW_CASCADES > 2.0)
         else if (all(equal(clamp(c2, minCoord, maxCoord), c2)))
         {
             cascade = 2;
+            nextCascade = 3;
+            selectedCascadeCoords = float4(c2, 0.0);
         }
-#if (SHADOW_CASCADES > 3.0)
+    #if (SHADOW_CASCADES > 3.0)
         else if (all(equal(clamp(c3, minCoord, maxCoord), c3)))
         {
             cascade = 3;
+            nextCascade = 3;
+            selectedCascadeCoords = float4(c3, 1.0);
         }
-#endif
-#endif
+    #endif
+    #endif
     }
 
     if (cascade >= 0)
     {
-        float2 cascadeCoords = allCascadeCoords[cascade];
-        float2 internalCoords = float2(cascadeCoords.x, cascadeCoords.y * SHADOW_CASCADES - floor(cascadeCoords.y * SHADOW_CASCADES));
+        float cascadesBlend;
+        cascadesBlend = ComputeCascadesBlendValue(lightViewSpaceCoords, ds.cascadesProjectionScale[cascade], ds.cascadesProjectionOffset[cascade]);
 
-        float nextCascade = float(cascade) + 1.0;
-        float lastCascadeIndex = float(SHADOW_CASCADES) - 1.0;
-        float samplingIntermediateCascade = step(nextCascade, lastCascadeIndex);
-
-        float blendPos = 0.5 - max(abs(internalCoords.x - 0.5), abs(internalCoords.y - 0.5));
-        float blendAmount = 1.0 - saturate(blendPos / edgeBlendSize - 0.25);
-        float blendJitter = float(blendAmount * blendAmount > ds.rotationKernel.x * 0.5 + 0.5);
-        float blend = blendJitter * samplingIntermediateCascade;
-
-        int nextCascadeIndex = int(min(nextCascade, lastCascadeIndex));
-        float4 cascadeProjectionScale = lerp(ds.cascadesProjectionScale[cascade], ds.cascadesProjectionScale[nextCascadeIndex], blend);
-        float4 cascadeProjectionOffset = lerp(ds.cascadesProjectionOffset[cascade], ds.cascadesProjectionOffset[nextCascadeIndex], blend);
+        float jitteredCascadesBlend = JitterBlend(cascadesBlend, ds.rotationKernel.x * 0.5 + 0.5);
+        float3 cascadeProjectionScale = lerp(ds.cascadesProjectionScale[cascade], ds.cascadesProjectionScale[nextCascade], jitteredCascadesBlend);
+        float3 cascadeProjectionOffset = lerp(ds.cascadesProjectionOffset[cascade], ds.cascadesProjectionOffset[nextCascade], jitteredCascadesBlend);
         shadow = SampleShadow(lightViewSpaceCoords, cascadeProjectionScale, cascadeProjectionOffset, ds);
-
-        outBlendAmount = blendAmount * (1.0 - samplingIntermediateCascade);
+        outBlendAmount = cascadesBlend * selectedCascadeCoords.w;
     }
 
 #else /* (SHADOW_CASCADES == 1.0) */
 
-    shadow = SampleShadow(lightViewSpaceCoords, ds.cascadesProjectionScale[0], ds.cascadesProjectionOffset[0], ds);
+    float3 cascadeScale = ds.cascadesProjectionScale[0];
+    float3 cascadeOffset = ds.cascadesProjectionOffset[0];
+    shadow = SampleShadow(lightViewSpaceCoords, cascadeScale, cascadeOffset, ds);
     {
-        float4 internalCoords = lightViewSpaceCoords * ds.cascadesProjectionScale[0] + ds.cascadesProjectionOffset[0];
-        float blendPos = 0.5 - max(abs(internalCoords.x - 0.5), abs(internalCoords.y - 0.5));
-        outBlendAmount = 1.0 - saturate(blendPos / edgeBlendSize - 0.25);
-        outBlendAmount = saturate(outBlendAmount + step(1.0, internalCoords.z));
+        float3 selectedCascadeCoords = lightViewSpaceCoords * cascadeScale + cascadeOffset;
+        outBlendAmount = ComputeCascadesBlendValue(lightViewSpaceCoords, cascadeScale, cascadeOffset);
     }
 
 #endif

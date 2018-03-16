@@ -39,8 +39,14 @@ bool _GLES2_UseUserProvidedIndices = false;
 bool _GLES2_TimeStampQuerySupported = false;
 volatile bool _GLES2_ValidateNeonCalleeSavedRegisters = false;
 
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+void impl_glClipControl(unsigned int, unsigned int)
+{
+} //stub for linker
+#else
 typedef void(GLAPIENTRY* PFNGLCLIPCONTROLPROC_T)(GLenum, GLenum);
 PFNGLCLIPCONTROLPROC_T impl_glClipControl = nullptr;
+#endif
 
 #if defined(__DAVAENGINE_ANDROID__) && defined(__DAVAENGINE_ARM_7__)
 volatile GLCallRegisters gl_call_registers;
@@ -338,7 +344,12 @@ static void gles_check_GL_extensions()
         impl_glClipControl = &glClipControl;
         
 #endif
+        
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+        MutableDeviceCaps::Get().isReverseDepthSupported = false;
+#else
         MutableDeviceCaps::Get().isReverseDepthSupported = (impl_glClipControl != nullptr);
+#endif
     }
 
 #ifdef __DAVAENGINE_WIN32__

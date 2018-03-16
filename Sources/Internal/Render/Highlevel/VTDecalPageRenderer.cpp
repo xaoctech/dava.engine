@@ -80,6 +80,7 @@ bool VTDecalPageRenderer::RenderPage(const PageRenderParams& params)
     //GFX_COMPLETE for now we assume decoration is only suppressed by decals - no intermediate blend is required - MUL blending will be ok
     bool useBlendTarget = (decalCount > 1) && (params.component == LandscapePageRenderer::eLandscapeComponent::COMPONENT_TERRAIN);
 
+    //useBlendTarget = false;
     //setup pass
     rhi::RenderPassConfig passConfig;
     passConfig.name = ProfilerGPUMarkerName::LANDSCAPE_PAGE_UPDATE_VT_DECALS;
@@ -236,6 +237,8 @@ void VTDecalPageRenderer::BlitSource(const PageRenderParams& params)
     {
         blitMaterial = new NMaterial();
         blitMaterial->SetFXName(NMaterialName::TEXTURE_BLIT);
+        if (Renderer::GetAPI() == rhi::RHI_METAL)
+            blitMaterial->AddFlag(FastName("FLIP_Y"), 1);
         blitMaterial->AddFlag(NMaterialFlagName::FLAG_TEXTURE_COUNT, static_cast<int32>(params.pageSrc.size()));
     }
 
@@ -266,6 +269,8 @@ void VTDecalPageRenderer::BlitSourceWithTerrainTargets(const PageRenderParams& p
     {
         blendTerrainMaterial = new NMaterial();
         blendTerrainMaterial->SetFXName(NMaterialName::VT_COMBINE_BLEND);
+        if (Renderer::GetAPI() == rhi::RHI_METAL)
+            blendTerrainMaterial->AddFlag(FastName("FLIP_Y"), 1);
         blendTerrainMaterial->AddTexture(FastName("blendedAlbedo"), blendTargetsTerrain[0].Get());
         blendTerrainMaterial->AddTexture(FastName("blendedNormal"), blendTargetsTerrain[1].Get());
         blendTerrainMaterial->AddTexture(FastName("blendedHeight"), blendTargetsTerrain[2].Get()); //GFX_COMPLETE switch it of in case we dont use microtesselation

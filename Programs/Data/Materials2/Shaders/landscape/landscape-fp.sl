@@ -166,8 +166,11 @@ fragment_out fp_main(fragment_in input)
     float4 randomSample = tex2D(noiseTexture64x64, screenSpaceCoords * viewportSize / 64.0) * 2.0 - 1.0;
 
     ShadowParameters shadow;
-    shadow.cascadesProjectionScale = directionalShadowMapProjectionScale;
-    shadow.cascadesProjectionOffset = directionalShadowMapProjectionOffset;
+    for (int i = 0; i < SHADOW_CASCADES; ++i)
+    {
+        shadow.cascadesProjectionScale[i] = directionalShadowMapProjectionScale[i].xyz;
+        shadow.cascadesProjectionOffset[i] = directionalShadowMapProjectionOffset[i].xyz;
+    }
     shadow.rotationKernel = randomSample.xy;
     shadow.filterRadius = shadowMapParameters.xy;
     shadow.shadowMapSize = shadowMapParameters.zw;

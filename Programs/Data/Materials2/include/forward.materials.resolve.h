@@ -68,12 +68,17 @@ resolve.environmentDiffuseSample += sphericalHarmonics[8].xyz * (0.546274 * (dif
 #endif
 
 float2 screenSpaceCoords = input.projectedPosition.xy / input.projectedPosition.w * ndcToUvMapping.xy + ndcToUvMapping.zw;
+float2 noiseSample = tex2D(noiseTexture64x64, screenSpaceCoords* viewportSize / 64.0).xy * 2.0 - 1.0;
+
 ShadowParameters shadow;
-shadow.cascadesProjectionScale = directionalShadowMapProjectionScale;
-shadow.cascadesProjectionOffset = directionalShadowMapProjectionOffset;
-shadow.rotationKernel = tex2D(noiseTexture64x64, screenSpaceCoords* viewportSize / 64.0).xy * 2.0 - 1.0;
+shadow.rotationKernel = noiseSample;
 shadow.filterRadius = shadowMapParameters.xy;
 shadow.shadowMapSize = shadowMapParameters.zw;
+for (int i = 0; i < SHADOW_CASCADES; ++i)
+{
+    shadow.cascadesProjectionScale[i] = directionalShadowMapProjectionScale[i].xyz;
+    shadow.cascadesProjectionOffset[i] = directionalShadowMapProjectionOffset[i].xyz;
+}
 
 float3 result = ResolveFinalColor(resolve, surface, shadow);
 

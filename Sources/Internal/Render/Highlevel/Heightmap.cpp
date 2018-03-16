@@ -45,15 +45,7 @@ bool Heightmap::BuildFromImage(const DAVA::Image* image)
 
     if (FORMAT_A16 == heightImage->format)
     {
-        uint16* dstData = data;
-        uint16* srcData = reinterpret_cast<uint16*>(heightImage->data);
-        for (int32 i = size * size - 1; i >= 0; --i)
-        {
-            uint16 packed = *srcData++;
-            uint16 unpacked = ((packed & 0xFF) << 8) | ((packed & 0xFF00) >> 8);
-
-            *dstData++ = unpacked;
-        }
+        Memcpy(data, heightImage->data, size * size * sizeof(uint16));
     }
     else if (FORMAT_A8 == heightImage->format)
     {
@@ -78,17 +70,8 @@ bool Heightmap::BuildFromImage(const DAVA::Image* image)
 void Heightmap::SaveToImage(const FilePath& filename)
 {
     Image* image = Image::Create(size, size, FORMAT_A16);
-
-    uint16* unpackedBytes = new uint16[size * size];
-    for (int32 k = 0; k < size * size; ++k)
-    {
-        unpackedBytes[k] = ((data[k] & 0xFF) << 8) | ((data[k] & 0xFF00) >> 8);
-    }
-
-    Memcpy(image->data, unpackedBytes, size * size * sizeof(uint16));
+    Memcpy(image->data, data, size * size * sizeof(uint16));
     image->FlipVertical();
-
-    SafeDeleteArray(unpackedBytes);
 
     ImageSystem::Save(filename, image, image->format);
     SafeRelease(image);

@@ -367,7 +367,7 @@ void LightShadowSystem::BuildCascades(Light* sourceLight, Camera* viewCamera, co
         directionalShadowMapProjectionScale[cascadeIndex].x = projectionMatrix._data[0][0];
         directionalShadowMapProjectionScale[cascadeIndex].y = projectionMatrix._data[1][1];
         directionalShadowMapProjectionScale[cascadeIndex].z = projectionMatrix._data[2][2];
-        directionalShadowMapProjectionScale[cascadeIndex].w = 1.0;
+        directionalShadowMapProjectionScale[cascadeIndex].w = 1.0f;
         directionalShadowMapProjectionOffset[cascadeIndex].x = projectionMatrix._data[3][0];
         directionalShadowMapProjectionOffset[cascadeIndex].y = projectionMatrix._data[3][1];
         directionalShadowMapProjectionOffset[cascadeIndex].z = projectionMatrix._data[3][2];
