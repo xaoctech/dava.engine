@@ -3,13 +3,7 @@ variables:
     var2: ["String", "15.75"]
 nodes:
     VisualScriptGetVarNode1:
-        connections:
-        -   in:
-                name: "VisualScriptGetVarNode1"
-                pin: "value"
-            out:
-                name: "VisualScriptSetVarNode1"
-                pin: "set"
+        connections: []
         name: "VisualScriptGetVarNode1"
         node:
             position: [135.000000, 355.000000]
@@ -19,21 +13,16 @@ nodes:
         connections:
         -   in:
                 name: "VisualScriptSetVarNode1"
-                pin: "set"
-            out:
-                name: "VisualScriptGetVarNode1"
-                pin: "value"
-        -   in:
-                name: "VisualScriptSetVarNode1"
                 pin: "exec"
             out:
                 name: "VisualScriptEventNode1"
                 pin: "event"
         name: "VisualScriptSetVarNode1"
         node:
-            position: [411.000000, 259.000000]
+            position: [418.000000, 262.000000]
             varPath: "var1"
-            defaults: {}
+            defaults:
+                set: ["float32", 10.500000]
         type: "VisualScriptSetVarNode"
     VisualScriptEventNode1:
         connections:

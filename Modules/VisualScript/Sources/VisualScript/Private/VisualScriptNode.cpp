@@ -247,7 +247,22 @@ void VisualScriptNode::SaveDefaults(YamlNode* node) const
         {
             if (!inPin->GetDefaultValue().IsEmpty())
             {
-                defsNode->Add(inPin->GetName().c_str(), defsNode->CreateNodeFromAny(inPin->GetDefaultValue()));
+                const Any& value = inPin->GetDefaultValue();
+
+                const Type* type = inPin->GetType(); // First get type from pin
+                if (type == nullptr) // Otherwise get type from default value
+                {
+                    type = value.GetType();
+                }
+
+                const ReflectedType* refType = ReflectedTypeDB::GetByType(type);
+                DVASSERT(refType->GetPermanentName() != "");
+
+                YamlNode* valNode = YamlNode::CreateArrayNode();
+                valNode->Add(refType->GetPermanentName());
+                valNode->Add(YamlNode::CreateNodeFromAny(value));
+
+                defsNode->Add(inPin->GetName().c_str(), valNode);
             }
         }
         node->Add("defaults", defsNode);
@@ -262,10 +277,35 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
         for (VisualScriptPin* inPin : GetDataInputPins())
         {
             const YamlNode* valNode = defsNode->Get(inPin->GetName().c_str());
-            const Type* inPinType = inPin->GetType();
-            if (valNode && inPinType)
+            if (valNode)
             {
-                inPin->SetDefaultValue(valNode->AsAny(inPinType->Decay() ? inPinType->Decay() : inPinType));
+                if (valNode->GetType() == YamlNode::eType::TYPE_STRING) // Legacy loader
+                {
+                    const Type* inPinType = inPin->GetType();
+                    if (inPinType)
+                    {
+                        inPin->SetDefaultValue(valNode->AsAny(inPinType->Decay() ? inPinType->Decay() : inPinType));
+                    }
+                }
+                else if (valNode->GetType() == YamlNode::eType::TYPE_ARRAY)
+                {
+                    DVASSERT(valNode->GetCount() == 2);
+
+                    const String typeName = valNode->Get(0)->AsString();
+                    DVASSERT(typeName != "");
+                    const ReflectedType* refType = ReflectedTypeDB::GetByPermanentName(typeName);
+                    DVASSERT(refType);
+                    const Type* type = refType->GetType();
+
+                    const Type* inPinType = inPin->GetType();
+                    if (inPinType)
+                    {
+                        // TODO: check type here or check cast between types
+                        DVASSERT(inPinType == type);
+                    }
+
+                    inPin->SetDefaultValue(valNode->Get(1)->AsAny(type));
+                }
             }
         }
     }
