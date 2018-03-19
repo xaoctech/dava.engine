@@ -944,6 +944,14 @@ uint32 SetToRHI(Handle ps, uint32 layoutUID, const MTLPixelFormat* color_fmt, un
         {
             rp_desc.colorAttachments[t] = psm->baseDescriptor.colorAttachments[t];
             rp_desc.colorAttachments[t].pixelFormat = color_fmt[t];
+            rp_desc.colorAttachments[t].blendingEnabled = psm->baseDescriptor.colorAttachments[0].blendingEnabled;
+            if (rp_desc.colorAttachments[t].blendingEnabled)
+            {
+                rp_desc.colorAttachments[t].sourceRGBBlendFactor = psm->baseDescriptor.colorAttachments[0].sourceRGBBlendFactor;
+                rp_desc.colorAttachments[t].sourceAlphaBlendFactor = psm->baseDescriptor.colorAttachments[0].sourceAlphaBlendFactor;
+                rp_desc.colorAttachments[t].destinationRGBBlendFactor = psm->baseDescriptor.colorAttachments[0].destinationRGBBlendFactor;
+                rp_desc.colorAttachments[t].destinationAlphaBlendFactor = psm->baseDescriptor.colorAttachments[0].destinationAlphaBlendFactor;
+            }
         }
 
         rp_desc.sampleCount = sampleCount;

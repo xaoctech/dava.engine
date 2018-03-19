@@ -967,7 +967,7 @@ void Landscape::AddPatchToRender(const LandscapeSubdivision::SubdivisionPatch* s
         AddPatchToRender(subdivPatch->children[2]);
         AddPatchToRender(subdivPatch->children[3]);
     }
-    else
+    else // if (drawLandscapeGeometry) TODO : deal with it
     {
         if (renderMode == RENDERMODE_NO_INSTANCING)
             DrawPatchNoInstancing(subdivPatch);
@@ -1602,17 +1602,19 @@ void Landscape::DrawLandscapeInstancing()
             decorationPageManager->RejectRequests();
         }
 
-        InstanceDataBuffer* instanceDataBuffer = GetInstanceBuffer(currentTerminatedPatches * INSTANCE_DATA_SIZE);
-        renderBatchArray[0].renderBatch->instanceCount = currentTerminatedPatches;
-        renderBatchArray[0].renderBatch->instanceBuffer = instanceDataBuffer->buffer;
-        activeRenderBatchArray.emplace_back(renderBatchArray[0].renderBatch);
+        // if (drawLandscapeGeometry) TODO : deal with it
+        {
+            InstanceDataBuffer* instanceDataBuffer = GetInstanceBuffer(currentTerminatedPatches * INSTANCE_DATA_SIZE);
+            renderBatchArray[0].renderBatch->instanceCount = currentTerminatedPatches;
+            renderBatchArray[0].renderBatch->instanceBuffer = instanceDataBuffer->buffer;
+            activeRenderBatchArray.emplace_back(renderBatchArray[0].renderBatch);
 
-        instanceDataPtr = static_cast<uint8*>(rhi::MapVertexBuffer(instanceDataBuffer->buffer, 0, currentTerminatedPatches * INSTANCE_DATA_SIZE));
+            instanceDataPtr = static_cast<uint8*>(rhi::MapVertexBuffer(instanceDataBuffer->buffer, 0, currentTerminatedPatches * INSTANCE_DATA_SIZE));
+            AddPatchToRender(currentSubdivisionRoot);
+            rhi::UnmapVertexBuffer(instanceDataBuffer->buffer);
 
-        AddPatchToRender(currentSubdivisionRoot);
-
-        rhi::UnmapVertexBuffer(instanceDataBuffer->buffer);
-        instanceDataPtr = nullptr;
+            instanceDataPtr = nullptr;
+        }
 
         //////////////////////////////////////////////////////////////////////////
         //#decoration
@@ -1673,10 +1675,12 @@ void Landscape::DrawLandscapeInstancing()
 
         //////////////////////////////////////////////////////////////////////////
 
-        renderStats.landscapeTriangles = activeRenderBatchArray[0]->indexCount * activeRenderBatchArray[0]->instanceCount / 3;
-        renderStats.landscapePatches = activeRenderBatchArray[0]->instanceCount;
-
-        activeRenderBatchArray[0]->perfQueryMarker = ProfilerGPUMarkerName::LANDSCAPE;
+        // if (drawLandscapeGeometry) TODO : deal with it
+        {
+            renderStats.landscapeTriangles = activeRenderBatchArray[0]->indexCount * activeRenderBatchArray[0]->instanceCount / 3;
+            renderStats.landscapePatches = activeRenderBatchArray[0]->instanceCount;
+            activeRenderBatchArray[0]->perfQueryMarker = ProfilerGPUMarkerName::LANDSCAPE;
+        }
     }
 }
 

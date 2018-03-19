@@ -194,6 +194,9 @@ public:
     void SetTexture(eLandscapeTexture textureSemantic, int32 index, Texture* texture);
 
     void SetPageUpdateLocked(bool locked);
+    bool GetPageUpdateLocked() const;
+
+    void SetDrawLandscapeGeometryEnabled(bool enabled);
 
 protected:
     void AddPatchToRender(const LandscapeSubdivision::SubdivisionPatch* subdivPatch);
@@ -311,6 +314,7 @@ protected:
     bool debugDrawDecorationLevels = false;
     bool debugDisableDecoration = false;
     bool lockPagesUpdate = false;
+    bool drawLandscapeGeometry = true;
 
     void DebugDraw2D(Window*);
 
@@ -553,5 +557,15 @@ inline const Landscape::LansdcapeRenderStats& Landscape::GetRenderStats() const
 inline void Landscape::SetPageUpdateLocked(bool locked)
 {
     lockPagesUpdate = locked;
+}
+
+inline bool Landscape::GetPageUpdateLocked() const
+{
+    return lockPagesUpdate;
+}
+
+inline void Landscape::SetDrawLandscapeGeometryEnabled(bool enabled)
+{
+    drawLandscapeGeometry = enabled;
 }
 }

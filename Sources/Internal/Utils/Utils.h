@@ -90,6 +90,22 @@ bool FindAndRemoveExchangingWithLast(Vector<T>& array, const T& object)
 }
 
 template <class T>
+uint32 FindAndRemoveExchangingWithLastIndex(Vector<T>& array, const T& object)
+{
+    size_t size = array.size();
+    for (size_t k = 0; k < size; ++k)
+    {
+        if (array[k] == object)
+        {
+            array[k] = array[size - 1];
+            array.pop_back();
+            return k;
+        }
+    }
+    return static_cast<uint32>(-1);
+}
+
+template <class T>
 void RemoveExchangingWithLast(Vector<T>& array, size_t index)
 {
     array[index] = array[array.size() - 1];

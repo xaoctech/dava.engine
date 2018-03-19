@@ -103,7 +103,7 @@ fragment_out fp_main(fragment_in input)
     shadow.shadowMapSize = shadowMapParameters.zw;
 
     float3 result = ResolveFinalColor(resolve, surface, shadow);
-    
+
     fragment_out output;
     output.color = float4(result, 1.0);
     return output;

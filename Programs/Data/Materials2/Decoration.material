@@ -14,6 +14,10 @@ RenderTechnique:
     RenderPass2:
         Name: "ForwardPassWithCombine"
         UniqueDefines: ["FOWARD_WITH_COMBINE"]
+    RenderPassShadows:
+        Name: "ShadowCascadePass"
+        SupportedRenderFlows: ["all"]
+        UniqueDefines: ["WRITE_SHADOW_MAP"]
     RenderPass3:
         Name: "gBufferPass"
         Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"

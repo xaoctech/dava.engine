@@ -158,7 +158,7 @@ void VisibilityOctTree::RemoveRenderObject(RenderObject* renderObject)
         voxelIndex--;
     }
 
-    uint32 index = FindAndRemoveExchangingWithLast(roIndices, renderObject);
+    uint32 index = FindAndRemoveExchangingWithLastIndex(roIndices, renderObject);
     roIndices[index]->SetTreeNodeIndex(index);
     DVASSERT(index != static_cast<uint32>(-1));
 }

@@ -141,15 +141,9 @@ vertex_out vp_main(vertex_in input)
     float3 vx_position = position * decoration * decorScale + pivotObjectSpace;
 
     output.position = mul(float4(vx_position.x, vx_position.y, vx_position.z, 1.0), worldViewProjMatrix);
-    output.projectedPosition = output.position;
 
     output.varTexCoord.xy = input.texCoord0.xy;
     output.varTexCoord.zw = float2(relativePosition.x, 1.0 - relativePosition.y);
-    
-#if VERTEX_COLOR
-    float4 albedoSample = tex2Dlod(decorationcolortexture, float2(relativePosition.x, 1.0 - relativePosition.y), 0.0);
-    output.vertexColor = float4(albedoSample.rgb, tintValue);
-#endif
 
     float4 worldSpacePosition = mul(float4(vx_position.xyz, 1.0), worldMatrix);
     float3 toCamera = cameraPosition - worldSpacePosition.xyz;
@@ -165,14 +159,22 @@ vertex_out vp_main(vertex_in input)
     worldBinormal *= normalsScale;
 #endif
 
+#if (WRITE_SHADOW_MAP == 0)
+    #if VERTEX_COLOR
+    {
+        float4 albedoSample = tex2Dlod(decorationcolortexture, float2(relativePosition.x, 1.0 - relativePosition.y), 0.0);
+        output.vertexColor = float4(albedoSample.rgb, tintValue);
+    }
+    #endif
+    output.projectedPosition = output.position;
     output.varToCamera.xyz = toCamera;
     output.varToCamera.w = 1.0;
-
     output.tangentToFinal0 = float3(worldTangent.x, worldBinormal.x, worldNormal.x);
     output.tangentToFinal1 = float3(worldTangent.y, worldBinormal.y, worldNormal.y);
     output.tangentToFinal2 = float3(worldTangent.z, worldBinormal.z, worldNormal.z);
     output.shadowTexCoord = mul(worldSpacePosition, shadowView);
     output.worldPosition = worldSpacePosition;
+#endif
 
     return output;
 }

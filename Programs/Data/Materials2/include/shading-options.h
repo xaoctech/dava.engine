@@ -21,7 +21,6 @@
 #ensuredefined POINT_LIGHTS_BUFFER_SIZE 20
 #ensuredefined POINT_LIGHT_SIZE 0.01
 
-
 /*
  * View mode manipulation
  */

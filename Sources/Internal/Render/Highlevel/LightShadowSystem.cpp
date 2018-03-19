@@ -4,6 +4,7 @@
 #include "Render/DynamicBindings.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Debug/ProfilerGPU.h"
 
 namespace DAVA
@@ -642,6 +643,8 @@ void LightShadowSystem::ShadowCascadePass::Draw(RenderSystem* renderSystem, uint
 
     Configure();
 
+    Vector<std::pair<Landscape*, bool>> landscapes;
+
     if ((cascadesCount > 0) && BeginRenderPass(passConfig))
     {
         for (uint32 i = 0; i < cascadesCount; ++i)
@@ -662,10 +665,34 @@ void LightShadowSystem::ShadowCascadePass::Draw(RenderSystem* renderSystem, uint
 
             Camera* camera = config.camera.Get();
             renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_SHADOW_CASTER);
-            PrepareRenderObjectsToRender(visibilityArray.geometryArray, camera);
+
+            landscapes.clear();
+            for (RenderObject* obj : visibilityArray.geometryArray)
+            {
+                if (obj->GetType() == RenderObject::eType::TYPE_LANDSCAPE)
+                {
+                    Landscape* landscape = static_cast<Landscape*>(obj);
+                    bool wasLocked = landscape->GetPageUpdateLocked();
+                    landscape->SetPageUpdateLocked(true);
+                    landscape->SetDrawLandscapeGeometryEnabled(false);
+                    landscape->PrepareToRender(renderSystem->GetMainCamera());
+                    landscapes.emplace_back(landscape, wasLocked);
+                }
+                else if (obj->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
+                {
+                    obj->PrepareToRender(camera);
+                }
+            }
+
             PrepareLayersArrays(visibilityArray.geometryArray, camera);
             SetupCameraParams(camera, camera, nullptr);
             DrawLayers(camera, drawLayersMask);
+
+            for (auto& p : landscapes)
+            {
+                p.first->SetPageUpdateLocked(p.second);
+                p.first->SetDrawLandscapeGeometryEnabled(true);
+            }
         }
 
         EndRenderPass();
