@@ -7,7 +7,7 @@
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/TransformInterpolationComponent.h"
+#include "Scene3D/Components/TransformInterpolatedComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
@@ -86,7 +86,7 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
         TransformComponent* tc = entity->GetComponent<TransformComponent>();
         if (nullptr != tc->parentMatrix)
         {
-            Matrix4 transform = GetWorldTransform(tc, updateDone);
+            Matrix4 transform = GetWorldTransform(tc, &updateDone);
             const Matrix4& parentTransform = *tc->parentMatrix;
 
             AnimationComponent* animation = entity->GetComponent<AnimationComponent>();
@@ -127,23 +127,26 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
     return updateDone;
 }
 
-Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool& isFinal) const
+Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool* isFinal) const
 {
     DVASSERT(interpolationMode >= EngineSettings::INTERPOLATION_OFF && interpolationMode <= EngineSettings::INTERPOLATION_CUBIC);
-    TransformInterpolationComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolationComponent>();
-    if (tic)
-    {
-        if (tic->immediately)
-        {
-            tic->immediately = false;
-            tic->done = true;
-        }
+    DVASSERT(nullptr != isFinal);
 
+    TransformInterpolatedComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolatedComponent>();
+    if (tic && tic->isActual)
+    {
+        *isFinal = false;
+        tic->isActual = false;
+        return Matrix4(tic->translation, tic->rotation, tc->GetScale());
+
+        /*
         if (!tic->done)
         {
             if (tic->state == InterpolationState::FIXED)
             {
-                const float32 fx = GetScene()->GetTimeOverrunInterpolatedFactor();
+                DVASSERT(false);
+                //const float32 fx = GetScene()->GetTimeOverrunInterpolatedFactor();
+                const float32 fx = 0;
                 const Vector3& position = Lerp(tic->prevPosition, tic->curPosition, fx);
                 const Vector3& scale = Lerp(tic->prevScale, tic->curScale, fx);
                 Quaternion rotation = tic->prevRotation;
@@ -202,65 +205,11 @@ Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool& isFinal
                 return Matrix4(tic->curPosition, tic->curRotation, tic->curScale);
             }
         }
+        */
     }
 
-    isFinal = true;
+    *isFinal = true;
     return Matrix4(tc->position, tc->rotation, tc->scale);
-    /*
-    if (nullptr != tic && interpolationType > 0)
-    {
-        if (tic->immidiately)
-        {
-            tic->immidiately = false;
-            tic->ResetTime();
-
-            finished = true;
-        }
-        else if (tic->time > 0 && tic->elapsed < tic->time)
-        {
-            float s = 1.0f;
-
-            tic->elapsed += timeElapsed;
-            if (interpolationType == 1)
-            {
-                // see on-line plot to understand following formula
-                // when speed = 0.5f
-                // https://www.desmos.com/calculator/zer40yomns
-                //
-                float32 x = 9 * tic->elapsed / tic->time;
-                s = tic->speed - std::log10(1 + x) * tic->speed;
-            }
-            else
-            {
-                float32 x = tic->elapsed / tic->time;
-                s = 0.2f + std::sin(x * 3.14f) * 0.2f;
-            }
-
-            tc->intermediateTransform.position = Lerp(tc->intermediateTransform.position, tc->localTransform.position, s);
-            tc->intermediateTransform.scale = Lerp(tc->intermediateTransform.scale, tc->localTransform.scale, s);
-            tc->intermediateTransform.rotation.Slerp(tc->intermediateTransform.rotation, tc->localTransform.rotation, s);
-        }
-        else
-        {
-            tic->elapsed = 0;
-            finished = true;
-        }
-    }
-    else
-    {
-        finished = true;
-    }
-
-    if (finished)
-    {
-        tc->position = tc->localTransform.position;
-        tc->scale = tc->localTransform.scale;
-        tc->rotation = tc->localTransform.rotation;
-    }
-
-    interpolationFinished = finished;
-    return Matrix4(tc->intermediateTransform.position, tc->intermediateTransform.rotation, tc->intermediateTransform.scale);
-    */
 }
 
 void TransformSystem::EntityNeedUpdate(Entity* entity)

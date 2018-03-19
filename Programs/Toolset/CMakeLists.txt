@@ -78,7 +78,6 @@ add_tool_package     ( ImageUnpacker    PLATFORMS MACOS WIN )
 
 add_tool_package     ( TexConverter     PLATFORMS MACOS WIN )
 
-add_tool_package     ( TexDependency    PLATFORMS MACOS WIN )
 
 if (NOT DEPLOY OR CACHE_CLIENT)    
     add_tool_package ( AssetCacheClient PLATFORMS MACOS WIN )

@@ -6,15 +6,14 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/ComponentHelpers.h"
-
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/TransformInterpolationComponent.h"
 #include "Utils/Random.h"
 
 #include <NetworkCore/Snapshot.h>
 #include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkMovementComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 
@@ -141,6 +140,13 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
             Quaternion rotation = srcTransComp->GetRotation();
             Vector3 translation = srcTransComp->GetPosition();
 
+            if (!IsServer(this))
+            {
+                rotation.x += 0.5f;
+                rotation.y -= 0.5f;
+                rotation.Normalize();
+            }
+
             // translation += rotation.ApplyToVectorFast(Vector3(0.f, 5.f, 0.f));
             transComp->SetLocalTransform(translation, rotation, srcTransComp->GetScale());
         }
@@ -173,10 +179,7 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
             debugDrawComponent->box = bulletModel->GetWTMaximumBoundingBoxSlow();
             bullet->AddComponent(debugDrawComponent);
 
-            TransformInterpolationComponent* tic = new TransformInterpolationComponent();
-            tic->time = 1.0f;
-            tic->ApplyImmediately();
-            bullet->AddComponent(tic);
+            bullet->AddComponent(new NetworkMovementComponent());
         }
     }
 
@@ -212,9 +215,13 @@ Entity* ShootSystem::GetBulletModel() const
     if (nullptr == bulletModel)
     {
         ScopedPtr<Scene> model(new Scene(0));
-        SceneFileV2::eError err = model->LoadScene("~res:/Sniper_2.sc2");
+
+        SceneFileV2::eError err = model->LoadScene("~res:/Rocket.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
-        bulletModel = model->GetEntityByID(1)->GetChild(1)->Clone();
+        bulletModel = model->GetEntityByID(1)->Clone();
+
+        TransformComponent* tc = bulletModel->GetComponent<TransformComponent>();
+        tc->SetLocalTransform(tc->GetPosition(), tc->GetRotation(), Vector3(1.2f, 0.7f, 1.2f));
     }
 
     return bulletModel->Clone();

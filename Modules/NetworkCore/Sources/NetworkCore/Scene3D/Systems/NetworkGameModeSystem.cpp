@@ -7,7 +7,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Logger/Logger.h>
@@ -33,7 +33,7 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
 {
     if (IsServer(this))
     {
-        netConnectionsComp = scene->GetSingleComponentForRead<NetworkConnectionsSingleComponent>(this);
+        netConnectionsComp = scene->GetSingleComponentForRead<NetworkServerConnectionsSingleComponent>(this);
         DVASSERT(netConnectionsComp);
         server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnTokenConfirmation(OnServerTokenConfirmationCb(this, &NetworkGameModeSystem::OnTokenConfirmationServer));

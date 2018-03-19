@@ -33,7 +33,7 @@ static bool IsServerSynced(const Responder& responder, uint32 serverFrameId, uin
 {
     const uint32 losses = static_cast<uint32>(std::round(responder.GetPacketLoss() / NetworkTimeSingleComponent::LossFactor));
     diff = static_cast<int32>(clientFrameId - serverFrameId) - losses - NetworkTimeSingleComponent::ArtificialLatency;
-    return std::abs(diff) <= static_cast<int32>(NetworkTimeSingleComponent::FrequencyHz / 2);
+    return std::abs(diff) <= std::max(static_cast<int32>(NetworkTimeSingleComponent::FrameFrequencyHz / 2), NetworkTimeSingleComponent::ArtificialLatency);
 }
 
 static int8 GetNetDiff(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA::Responder& responder)
@@ -64,8 +64,6 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     , fpsMeter(10.f)
 {
     netTimeComp = scene->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
-
-    scene->SetConstantUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
     scene->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
 
     if (IsClient(this))
@@ -131,6 +129,9 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
         netTimeComp->SetUptimeMs(timeSyncHeader->uptimeMs);
         netTimeComp->SetFrameId(timeSyncHeader->uptimeMs / NetworkTimeSingleComponent::FrameDurationMs);
         netTimeComp->SetIsInitialized(true);
+        
+        netTimeComp->SetNumTimeSyncs(netTimeComp->GetNumTimeSyncs() + 1);
+        
         break;
     }
     case TimeSyncHeader::Type::DIFF:
@@ -201,20 +202,20 @@ void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
         int32 adjustedFrames = netTimeComp->GetAdjustedFrames();
         if (adjustedFrames == 0)
         {
-            GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
+            GetScene()->SetFixedUpdateAdjustment(0);
         }
         else
         {
             if (adjustedFrames > 0)
             {
                 // client is ahead of server - slowing down
-                GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS + NetworkTimeSingleComponent::FrameSlowdownS);
+                GetScene()->SetFixedUpdateAdjustment(NetworkTimeSingleComponent::FrameSlowdownS);
                 netTimeComp->SetAdjustedFrames(adjustedFrames - 1);
             }
             if (adjustedFrames < 0)
             {
                 // client is behind server - speeding up
-                GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS - NetworkTimeSingleComponent::FrameSpeedupS);
+                GetScene()->SetFixedUpdateAdjustment(-NetworkTimeSingleComponent::FrameSpeedupS);
                 netTimeComp->SetAdjustedFrames(adjustedFrames + 1);
             }
         }

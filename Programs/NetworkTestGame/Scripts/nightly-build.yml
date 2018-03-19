@@ -29,7 +29,7 @@ spec:
           mountPath: /debug
         ports:
         - containerPort: 9000
-        args: ["--game", "shooter", "--compare_inputs", "--health-check-host", "localhost", "--health-check-port", "5050"]
+        args: ["--game", "shooter", "--health-check-host", "localhost", "--health-check-port", "5050"]
       - name: healthz
         image: docker-registry.k8s/healthz:4
         env:
@@ -79,7 +79,7 @@ spec:
           mountPath: /debug
         ports:
         - containerPort: 9000
-        args: ["--game", "cars", "--compare_inputs", "--health-check-host", "localhost", "--health-check-port", "5050"]
+        args: ["--game", "cars", "--health-check-host", "localhost", "--health-check-port", "5050"]
       - name: healthz
         image: docker-registry.k8s/healthz:4
         volumeMounts:
@@ -121,7 +121,7 @@ spec:
           mountPath: /debug
         ports:
         - containerPort: 9000
-        args: ["--game", "default", "--compare_inputs", "--health-check-host", "localhost", "--health-check-port", "5050"]
+        args: ["--game", "default", "--health-check-host", "localhost", "--health-check-port", "5050"]
       - name: healthz
         image: docker-registry.k8s/healthz:4
         volumeMounts:

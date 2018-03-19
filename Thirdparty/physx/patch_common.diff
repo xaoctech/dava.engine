@@ -1,8 +1,9 @@
-PATCHED: Define DISABLE_CUDA_PHYSX added into PxPreprocessor.h to disable CUDA. Enable __STDC_LIMIT_MACROS in PxSimpleTypes.h for Android. Added methods for accessing private member required for sync over a network.
+PATCHED: Define DISABLE_CUDA_PHYSX added into PxPreprocessor.h to disable CUDA. Enable __STDC_LIMIT_MACROS in PxSimpleTypes.h for Android. Added methods for accessing private member required for sync over a network. Removed quaternion renormalization to improve resimulations.
+
 
 diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Include/vehicle/PxVehicleWheels.h ./PhysX-3.4-master/PhysX_3.4/Include/vehicle/PxVehicleWheels.h
---- ./PhysX-3.4-master_original/PhysX_3.4/Include/vehicle/PxVehicleWheels.h	2017-12-11 17:57:28.493062600 +0300
-+++ ./PhysX-3.4-master/PhysX_3.4/Include/vehicle/PxVehicleWheels.h	2017-12-12 11:44:27.992591400 +0300
+--- ./PhysX-3.4-master_original/PhysX_3.4/Include/vehicle/PxVehicleWheels.h	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Include/vehicle/PxVehicleWheels.h	2018-03-18 17:34:47.000000000 +0300
 @@ -548,6 +548,10 @@
  	PxVehicleWheelsDynData(){}
  	~PxVehicleWheelsDynData(){}
@@ -29,9 +30,49 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Include/vehicle/PxVehicleWheels.h
  	
  	/**
  	\brief Set the wheel rotation angle (radians) about the rolling axis of the specified wheel.
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysX/src/NpRigidDynamic.cpp ./PhysX-3.4-master/PhysX_3.4/Source/PhysX/src/NpRigidDynamic.cpp
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysX/src/NpRigidDynamic.cpp	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/PhysX/src/NpRigidDynamic.cpp	2018-03-18 17:37:34.000000000 +0300
+@@ -78,10 +78,8 @@
+ 	if(scene)
+ 		updateDynamicSceneQueryShapes(mShapeManager, scene->getSceneQueryManagerFast());
+ 
+-	const PxTransform newPose = pose.getNormalized();	//AM: added to fix 1461 where users read and write orientations for no reason.
+-	
+ 	Scb::Body& b = getScbBodyFast();
+-	const PxTransform body2World = newPose * b.getBody2Actor();
++	const PxTransform body2World = pose * b.getBody2Actor();
+ 	b.setBody2World(body2World, false);
+ 
+ 	// invalidate the pruning structure if the actor bounds changed
+@@ -157,11 +155,9 @@
+ 	PX_CHECK_AND_RETURN(pose.isSane(), "PxRigidDynamic::setCMassLocalPose pose is not valid.");
+ 	NP_WRITE_CHECK(NpActor::getOwnerScene(*this));
+ 
+-	const PxTransform p = pose.getNormalized();
+-
+ 	const PxTransform oldBody2Actor = getScbBodyFast().getBody2Actor();
+ 
+-	NpRigidDynamicT::setCMassLocalPoseInternal(p);
++	NpRigidDynamicT::setCMassLocalPoseInternal(pose);
+ 
+ 	Scb::Body& b = getScbBodyFast();
+ 	if(b.getFlags() & PxRigidBodyFlag::eKINEMATIC)
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysX/src/NpShape.cpp ./PhysX-3.4-master/PhysX_3.4/Source/PhysX/src/NpShape.cpp
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysX/src/NpShape.cpp	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/PhysX/src/NpShape.cpp	2018-03-18 17:35:53.000000000 +0300
+@@ -346,7 +346,7 @@
+ 	PX_CHECK_AND_RETURN(isWritable(), "PxShape::setLocalPose: shared shapes attached to actors are not writable.");
+ 	NP_WRITE_CHECK(getOwnerScene());
+ 
+-	mShape.setShape2Actor(newShape2Actor.getNormalized());
++	mShape.setShape2Actor(newShape2Actor);
+ 
+ 	updateSQ("PxShape::setLocalPose: Shape is a part of pruning structure, pruning structure is now invalid!");
+ }
 diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp ./PhysX-3.4-master/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp
---- ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp	2017-12-11 17:57:50.087744200 +0300
-+++ ./PhysX-3.4-master/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp	2017-12-12 11:45:46.745424900 +0300
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/PhysXVehicle/src/PxVehicleWheels.cpp	2018-03-18 17:34:47.000000000 +0300
 @@ -517,6 +517,30 @@
  	return true;
  }
@@ -94,8 +135,8 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/PhysXVehicle/src/PxVehicle
  {
  	PX_CHECK_AND_RETURN(wheelIdx < mNbActiveWheels, "PxVehicleWheelsDynData::setWheelRotationAngle - Illegal wheel");
 diff -ur ./PhysX-3.4-master_original/PxShared/include/foundation/PxPreprocessor.h ./PhysX-3.4-master/PxShared/include/foundation/PxPreprocessor.h
---- ./PhysX-3.4-master_original/PxShared/include/foundation/PxPreprocessor.h	2017-12-11 17:57:53.955683600 +0300
-+++ ./PhysX-3.4-master/PxShared/include/foundation/PxPreprocessor.h	2017-12-12 11:43:28.806563900 +0300
+--- ./PhysX-3.4-master_original/PxShared/include/foundation/PxPreprocessor.h	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PxShared/include/foundation/PxPreprocessor.h	2018-03-18 17:34:47.000000000 +0300
 @@ -30,6 +30,8 @@
  #ifndef PXFOUNDATION_PXPREPROCESSOR_H
  #define PXFOUNDATION_PXPREPROCESSOR_H
@@ -106,8 +147,8 @@ diff -ur ./PhysX-3.4-master_original/PxShared/include/foundation/PxPreprocessor.
  #if !defined(PX_GENERATE_META_DATA)
  #include <ciso646>  
 diff -ur ./PhysX-3.4-master_original/PxShared/include/foundation/PxSimpleTypes.h ./PhysX-3.4-master/PxShared/include/foundation/PxSimpleTypes.h
---- ./PhysX-3.4-master_original/PxShared/include/foundation/PxSimpleTypes.h	2017-12-11 17:57:53.986662500 +0300
-+++ ./PhysX-3.4-master/PxShared/include/foundation/PxSimpleTypes.h	2017-12-12 11:43:28.806563900 +0300
+--- ./PhysX-3.4-master_original/PxShared/include/foundation/PxSimpleTypes.h	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PxShared/include/foundation/PxSimpleTypes.h	2018-03-18 17:34:47.000000000 +0300
 @@ -44,9 +44,11 @@
  // header
  #endif

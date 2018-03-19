@@ -167,12 +167,6 @@ TestServer::TestServer(Engine& engine, GameMode::Id gameModeId, uint16 port, uin
         lossFactor = std::stof(lossFactorStr);
     }
 
-    String freqHzStr = CommandLineParser::GetCommandParam("--hz");
-    if (!freqHzStr.empty())
-    {
-        freqHz = std::stoi(freqHzStr);
-    }
-
     healthCheckHost = CommandLineParser::GetCommandParam("--health-check-host");
     if (!healthCheckHost.empty())
     {
@@ -476,7 +470,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     optionsSingleComponent->options.gameStatsLogPath = gameStatsLogPath;
     optionsSingleComponent->isEnemyPredicted = CommandLineParser::CommandIsFound("--predict_enemy");
     optionsSingleComponent->isEnemyRewound = CommandLineParser::CommandIsFound("--rewind_enemy");
-    optionsSingleComponent->compareInputs = CommandLineParser::CommandIsFound("--compare_inputs");
+    optionsSingleComponent->compareInputs = !CommandLineParser::CommandIsFound("--no-compare-inputs");
     optionsSingleComponent->isSet = true;
 
     String resolveCollisionString = CommandLineParser::GetCommandParam("--resolve-collisions");
@@ -493,10 +487,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
         optionsSingleComponent->collisionResolveMode = COLLISION_RESOLVE_MODE_NONE;
     }
 
-    NetworkTimeSingleComponent::SetFrequencyHz(static_cast<float32>(freqHz));
-
     scene->GetSingleComponent<NetworkServerSingleComponent>()->SetServer(&gameServer.GetUDPServer());
-
     scene->CreateSystemsByTags();
 
     if (scene->GetSystem<PhysicsSystem>() != nullptr)

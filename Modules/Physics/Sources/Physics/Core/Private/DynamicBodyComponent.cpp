@@ -224,9 +224,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(DynamicBodyComponent)
     .Field("Velocity iterations count", &DynamicBodyComponent::GetMinVelocityIters, &DynamicBodyComponent::SetMinVelocityIters)[M::Replicable(), M::Range(1, 255, 1)]
     .Field("CCD", &DynamicBodyComponent::IsCCDEnabled, &DynamicBodyComponent::SetCCDEnabled)[M::Replicable(), M::DisplayName("CCD enabled")]
     .Field("Is kinematic", &DynamicBodyComponent::GetIsKinematic, &DynamicBodyComponent::SetIsKinematic)
-    .Field("Linear velocity", &DynamicBodyComponent::GetLinearVelocity, &DynamicBodyComponent::SetLinearVelocity)[M::Replicable(), M::ComparePrecision(0.01f), M::HiddenField()]
-    .Field("Angular velocity", &DynamicBodyComponent::GetAngularVelocity, &DynamicBodyComponent::SetAngularVelocity)[M::Replicable(), M::ComparePrecision(0.01f), M::HiddenField()]
-    .Field("Wake counter", &DynamicBodyComponent::wakeCounter)[M::Replicable(), M::ComparePrecision(0.01f), M::HiddenField()]
+    .Field("Linear velocity", &DynamicBodyComponent::GetLinearVelocity, &DynamicBodyComponent::SetLinearVelocity)[M::Replicable(), M::ComparePrecision(0.1f), M::HiddenField()]
+    .Field("Angular velocity", &DynamicBodyComponent::GetAngularVelocity, &DynamicBodyComponent::SetAngularVelocity)[M::Replicable(), M::ComparePrecision(0.1f), M::HiddenField()]
+    .Field("Wake counter", &DynamicBodyComponent::wakeCounter)[M::Replicable(), M::ComparePrecision(0.1f), M::HiddenField()]
     .End();
 }
 } // namespace DAVA

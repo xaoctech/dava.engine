@@ -61,6 +61,7 @@ NetworkRemoteInputSystem::NetworkRemoteInputSystem(Scene* scene)
     , numIncorrectInputs()
     , numIncorrectInputsIndex(0)
     , numIncorrectInputsCurrent(0)
+    , numIncorrectInputsTotal(0)
     , numHandledFrames(0)
 {
     networkResimulationSingleComponent = scene->GetSingleComponentForRead<NetworkResimulationSingleComponent>(this);
@@ -145,9 +146,14 @@ bool NetworkRemoteInputSystem::GetFullInputComparisonFlag() const
 
 float32 NetworkRemoteInputSystem::GetIncorrectServerFramesPercentage() const
 {
-    // total number of incorrect frames / (number of seconds * 60 fps)
+    // total number of incorrect frames / (number of seconds * fps)
     return std::accumulate(numIncorrectInputs.begin(), numIncorrectInputs.end(), 0) /
-    static_cast<float32>(numIncorrectInputs.size() * NetworkTimeSingleComponent::FrequencyHz);
+    static_cast<float32>(numIncorrectInputs.size() * NetworkTimeSingleComponent::FrameFrequencyHz);
+}
+    
+uint32 NetworkRemoteInputSystem::GetIncorrectServerFramesNumber() const
+{
+    return numIncorrectInputsTotal;
 }
 
 void NetworkRemoteInputSystem::TransferInputToComponents()
@@ -383,9 +389,9 @@ void NetworkRemoteInputSystem::CompareRemoteToLocalInput(NetworkRemoteInputCompo
     NetworkInputComponent* localInputComponent = entity->GetComponent<NetworkInputComponent>();
     DVASSERT(localInputComponent != nullptr);
 
-    if (numHandledFrames >= NetworkTimeSingleComponent::FrequencyHz)
+    if (numHandledFrames >= NetworkTimeSingleComponent::FrameFrequencyHz)
     {
-        numHandledFrames -= NetworkTimeSingleComponent::FrequencyHz;
+        numHandledFrames -= NetworkTimeSingleComponent::FrameFrequencyHz;
 
         // Dump information for last 60 frames
 
@@ -436,6 +442,7 @@ void NetworkRemoteInputSystem::CompareRemoteToLocalInput(NetworkRemoteInputCompo
                 REMOTE_INPUT_SYSTEM_DEBUG_LOG("Remote input does not match local one for frame %d. Local actions: [%llu, %llu], remote actions: [%llu, %llu]", frame, data.actions, data.analogStates, remoteInputComponent->triggeredActions[indexForFrame], remoteInputComponent->triggeredAnalogActionsValues[indexForFrame]);
 
                 ++numIncorrectInputsCurrent;
+                ++numIncorrectInputsTotal;
             }
 
             ++numHandledFrames;
@@ -537,7 +544,10 @@ bool NetworkRemoteInputSystem::GetIndexWithFrame(NetworkRemoteInputComponent* re
 
         auto it = replicationSingleComponent->replicationInfo.find(networkID);
         DVASSERT(it != replicationSingleComponent->replicationInfo.end());
-        if (frameId <= it->second.frameIdServer)
+        
+        // Use < instead of <=, because input from frame N will only be replicated in RemoteInputComponent on frame N + 1
+        // (since snapshot system at the beginning of a frame)
+        if (frameId < it->second.frameIdServer)
         {
             outIndex = tailIndex;
             return true;

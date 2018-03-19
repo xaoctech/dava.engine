@@ -7,7 +7,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
 #include "NetworkCore/Snapshot.h"
 #include <NetworkCore/NetworkCoreUtils.h>
@@ -44,7 +44,7 @@ NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* 
 
     server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
 
-    netConnectionsComp = scene->GetSingleComponentForRead<NetworkConnectionsSingleComponent>(this);
+    netConnectionsComp = scene->GetSingleComponentForRead<NetworkServerConnectionsSingleComponent>(this);
 
     snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
     netGameModeComp = scene->GetSingleComponentForRead<NetworkGameModeSingleComponent>(this);

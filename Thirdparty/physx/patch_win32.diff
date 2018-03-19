@@ -1,6 +1,6 @@
 diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc12win32/PhysX.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc12win32/PhysX.vcxproj
 --- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc12win32/PhysX.vcxproj	2017-04-25 14:02:08.000000000 +0300
-+++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc12win32/PhysX.vcxproj	2017-08-25 18:40:17.377924700 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc12win32/PhysX.vcxproj	2018-03-19 12:24:37.000000000 +0300
 @@ -86,8 +86,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -47,7 +47,7 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc12win32/PhysX.v
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
 diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc12win64/PhysX.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc12win64/PhysX.vcxproj
 --- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc12win64/PhysX.vcxproj	2017-04-25 14:02:08.000000000 +0300
-+++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc12win64/PhysX.vcxproj	2017-08-25 18:40:41.234138700 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc12win64/PhysX.vcxproj	2018-03-19 12:24:37.000000000 +0300
 @@ -85,8 +85,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -92,9 +92,213 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc12win64/PhysX.v
  			<OutputFile>$(OutDir)PhysX3_x64.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevel.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevel.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevel.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevel.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/headers;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../GeomUtils/src;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/include/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/headers;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../GeomUtils/src;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/include/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/headers;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../GeomUtils/src;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/include/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelAABB.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelAABB.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelAABB.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelAABB.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../Common/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelAABB/src;./../../GpuBroadPhase/include;./../../GpuBroadPhase/src;./../../LowLevelAABB/windows/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../Common/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelAABB/src;./../../GpuBroadPhase/include;./../../GpuBroadPhase/src;./../../LowLevelAABB/windows/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../Common/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelAABB/src;./../../GpuBroadPhase/include;./../../GpuBroadPhase/src;./../../LowLevelAABB/windows/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelCloth.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelCloth.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelCloth.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelCloth.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../Common/src;./../../LowLevelCloth/include;./../../LowLevelCloth/src;./../../../../PxShared/src/NvSimd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../Common/src;./../../LowLevelCloth/include;./../../LowLevelCloth/src;./../../../../PxShared/src/NvSimd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../Common/src;./../../LowLevelCloth/include;./../../LowLevelCloth/src;./../../../../PxShared/src/NvSimd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelDynamics.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelDynamics.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelDynamics.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelDynamics.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/src/contact;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelDynamics/include/windows;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/src/contact;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelDynamics/include/windows;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/src/contact;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelDynamics/include/windows;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelParticles.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelParticles.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/LowLevelParticles.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/LowLevelParticles.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src;./../../LowLevelParticles/include;./../../LowLevelParticles/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../GeomUtils/src;./../../GeomUtils/src/convex;./../../GeomUtils/src/hf;./../../GeomUtils/src/mesh;./../../GeomUtils/headers;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src;./../../LowLevelParticles/include;./../../LowLevelParticles/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../GeomUtils/src;./../../GeomUtils/src/convex;./../../GeomUtils/src/hf;./../../GeomUtils/src/mesh;./../../GeomUtils/headers;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src;./../../LowLevelParticles/include;./../../LowLevelParticles/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../GeomUtils/src;./../../GeomUtils/src/convex;./../../GeomUtils/src/hf;./../../GeomUtils/src/mesh;./../../GeomUtils/headers;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysX.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysX.vcxproj
 --- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysX.vcxproj	2017-04-25 14:02:08.000000000 +0300
-+++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysX.vcxproj	2017-08-25 18:41:03.561255800 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysX.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -71,7 +71,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
 @@ -86,8 +86,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -106,6 +310,15 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysX.v
  			<OutputFile>$(OutDir)PhysX3DEBUG_x86.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+@@ -118,7 +118,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../Include/gpu;./../../PhysXGpu/include;./../../PhysX/src/device;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelParticles/include;./../../PhysX/src;./../../PhysX/src/buffering;./../../PhysX/src/particles;./../../PhysX/src/cloth;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../SceneQuery/include;./../../PhysXMetaData/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 @@ -132,8 +132,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -117,6 +330,15 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysX.v
  			<OutputFile>$(OutDir)PhysX3CHECKED_x86.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+@@ -164,7 +164,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../Include/gpu;./../../PhysXGpu/include;./../../PhysX/src/device;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelParticles/include;./../../PhysX/src;./../../PhysX/src/buffering;./../../PhysX/src/particles;./../../PhysX/src/cloth;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../SceneQuery/include;./../../PhysXMetaData/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 @@ -178,8 +178,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -128,6 +350,15 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysX.v
  			<OutputFile>$(OutDir)PhysX3PROFILE_x86.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+@@ -210,7 +210,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../Include/gpu;./../../PhysXGpu/include;./../../PhysX/src/device;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelParticles/include;./../../PhysX/src;./../../PhysX/src/buffering;./../../PhysX/src/particles;./../../PhysX/src/cloth;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../SceneQuery/include;./../../PhysXMetaData/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 @@ -224,8 +224,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -139,9 +370,486 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysX.v
  			<OutputFile>$(OutDir)PhysX3_x86.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXCharacterKinematic.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXCharacterKinematic.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXCharacterKinematic.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXCharacterKinematic.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -71,7 +71,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -118,7 +118,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/characterkinematic;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include;./../../GeomUtils/headers;./../../Common/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -164,7 +164,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/characterkinematic;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include;./../../GeomUtils/headers;./../../Common/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -210,7 +210,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/characterkinematic;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include;./../../GeomUtils/headers;./../../Common/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXCommon.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXCommon.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXCommon.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXCommon.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -71,7 +71,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -118,7 +118,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/include;./../../PhysXProfile/src;./../../PhysXGpu/include;./../../../Include/geometry;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../../Include/GeomUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -164,7 +164,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/include;./../../PhysXProfile/src;./../../PhysXGpu/include;./../../../Include/geometry;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../../Include/GeomUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -210,7 +210,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/include;./../../PhysXProfile/src;./../../PhysXGpu/include;./../../../Include/geometry;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../../Include/GeomUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXCooking.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXCooking.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXCooking.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXCooking.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -71,7 +71,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -118,7 +118,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/cloth;./../../../Include/cooking;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../PhysXExtensions/src;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -164,7 +164,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/cloth;./../../../Include/cooking;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../PhysXExtensions/src;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -210,7 +210,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/cloth;./../../../Include/cooking;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../PhysXExtensions/src;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXExtensions.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXExtensions.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXExtensions.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXExtensions.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/cooking;./../../../Include/extensions;./../../../Include/vehicle;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../PhysXMetaData/core/include;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXExtensions/src/serialization/Binary;./../../PhysXExtensions/src/serialization/File;./../../PvdSDK/src;./../../PhysX/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/cooking;./../../../Include/extensions;./../../../Include/vehicle;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../PhysXMetaData/core/include;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXExtensions/src/serialization/Binary;./../../PhysXExtensions/src/serialization/File;./../../PvdSDK/src;./../../PhysX/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/cooking;./../../../Include/extensions;./../../../Include/vehicle;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../PhysXMetaData/core/include;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXExtensions/src/serialization/Binary;./../../PhysXExtensions/src/serialization/File;./../../PvdSDK/src;./../../PhysX/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXVehicle.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXVehicle.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/PhysXVehicle.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/PhysXVehicle.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/vehicle;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include/cloth;./../../../Include;./../../../Include/pvd;./../../../Include/physxprofilesdk;./../../Common/src;./../../PhysXVehicle/src;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXMetaData/core/include;./../../PhysXVehicle/src/PhysXMetaData/include;./../../PvdSDK/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/vehicle;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include/cloth;./../../../Include;./../../../Include/pvd;./../../../Include/physxprofilesdk;./../../Common/src;./../../PhysXVehicle/src;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXMetaData/core/include;./../../PhysXVehicle/src/PhysXMetaData/include;./../../PvdSDK/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/vehicle;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include/cloth;./../../../Include;./../../../Include/pvd;./../../../Include/physxprofilesdk;./../../Common/src;./../../PhysXVehicle/src;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXMetaData/core/include;./../../PhysXVehicle/src/PhysXMetaData/include;./../../PvdSDK/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/SceneQuery.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/SceneQuery.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/SceneQuery.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/SceneQuery.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SceneQuery/include;./../../SimulationController/include;./../../LowLevel/API/include;./../../PhysX/src;./../../PhysX/src/buffering;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SceneQuery/include;./../../SimulationController/include;./../../LowLevel/API/include;./../../PhysX/src;./../../PhysX/src/buffering;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SceneQuery/include;./../../SimulationController/include;./../../LowLevel/API/include;./../../PhysX/src;./../../PhysX/src/buffering;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/SimulationController.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/SimulationController.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win32/SimulationController.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win32/SimulationController.vcxproj	2018-03-19 12:51:05.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -113,7 +113,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../SimulationController/src/cloth;./../../LowLevel/windows/include;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevelCloth/include;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelParticles/include;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -155,7 +155,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../SimulationController/src/cloth;./../../LowLevel/windows/include;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevelCloth/include;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelParticles/include;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -198,7 +198,7 @@
+ 			<EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../SimulationController/src/cloth;./../../LowLevel/windows/include;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevelCloth/include;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelParticles/include;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevel.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevel.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevel.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevel.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/headers;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../GeomUtils/src;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/include/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/headers;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../GeomUtils/src;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/include/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/headers;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../GeomUtils/src;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/include/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelAABB.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelAABB.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelAABB.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelAABB.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../Common/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelAABB/src;./../../GpuBroadPhase/include;./../../GpuBroadPhase/src;./../../LowLevelAABB/windows/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../Common/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelAABB/src;./../../GpuBroadPhase/include;./../../GpuBroadPhase/src;./../../LowLevelAABB/windows/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../Common/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelAABB/src;./../../GpuBroadPhase/include;./../../GpuBroadPhase/src;./../../LowLevelAABB/windows/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelCloth.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelCloth.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelCloth.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelCloth.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../Common/src;./../../LowLevelCloth/include;./../../LowLevelCloth/src;./../../../../PxShared/src/NvSimd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../Common/src;./../../LowLevelCloth/include;./../../LowLevelCloth/src;./../../../../PxShared/src/NvSimd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../Common/src;./../../LowLevelCloth/include;./../../LowLevelCloth/src;./../../../../PxShared/src/NvSimd/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelDynamics.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelDynamics.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelDynamics.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelDynamics.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/src/contact;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelDynamics/include/windows;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/src/contact;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelDynamics/include/windows;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include;./../../../Include/GeomUtils;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/src;./../../PhysXProfile/include;./../../GeomUtils/src/contact;./../../LowLevel/API/include;./../../LowLevel/common/include;./../../LowLevel/common/include/pipeline;./../../LowLevel/common/include/pipeline/windows;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/software/include;./../../LowLevel/software/include/windows;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelDynamics/include/windows;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelParticles.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelParticles.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/LowLevelParticles.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/LowLevelParticles.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src;./../../LowLevelParticles/include;./../../LowLevelParticles/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../GeomUtils/src;./../../GeomUtils/src/convex;./../../GeomUtils/src/hf;./../../GeomUtils/src/mesh;./../../GeomUtils/headers;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src;./../../LowLevelParticles/include;./../../LowLevelParticles/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../GeomUtils/src;./../../GeomUtils/src/convex;./../../GeomUtils/src/hf;./../../GeomUtils/src/mesh;./../../GeomUtils/headers;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../Common/src;./../../LowLevelParticles/include;./../../LowLevelParticles/src;./../../LowLevel/API/include;./../../LowLevel/common/include/utils;./../../GeomUtils/src;./../../GeomUtils/src/convex;./../../GeomUtils/src/hf;./../../GeomUtils/src/mesh;./../../GeomUtils/headers;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysX.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysX.vcxproj
 --- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysX.vcxproj	2017-04-25 14:02:08.000000000 +0300
-+++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysX.vcxproj	2017-08-25 18:41:24.353741300 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysX.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
 @@ -85,8 +85,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -153,6 +861,15 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysX.v
  			<OutputFile>$(OutDir)PhysX3DEBUG_x64.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+@@ -116,7 +116,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../Include/gpu;./../../PhysXGpu/include;./../../PhysX/src/device;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelParticles/include;./../../PhysX/src;./../../PhysX/src/buffering;./../../PhysX/src/particles;./../../PhysX/src/cloth;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../SceneQuery/include;./../../PhysXMetaData/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 @@ -130,8 +130,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -164,6 +881,15 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysX.v
  			<OutputFile>$(OutDir)PhysX3CHECKED_x64.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+@@ -161,7 +161,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../Include/gpu;./../../PhysXGpu/include;./../../PhysX/src/device;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelParticles/include;./../../PhysX/src;./../../PhysX/src/buffering;./../../PhysX/src/particles;./../../PhysX/src/cloth;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../SceneQuery/include;./../../PhysXMetaData/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 @@ -175,8 +175,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -175,6 +901,15 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysX.v
  			<OutputFile>$(OutDir)PhysX3PROFILE_x64.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+@@ -206,7 +206,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../Include/gpu;./../../PhysXGpu/include;./../../PhysX/src/device;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/pipeline;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelDynamics/src;./../../LowLevelParticles/include;./../../PhysX/src;./../../PhysX/src/buffering;./../../PhysX/src/particles;./../../PhysX/src/cloth;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../SceneQuery/include;./../../PhysXMetaData/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 @@ -220,8 +220,8 @@
  			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
  		</ClCompile>
@@ -186,3 +921,277 @@ diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysX.v
  			<OutputFile>$(OutDir)PhysX3_x64.dll</OutputFile>
  			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
  			<ProgramDatabaseFile>$(TargetDir)\$(TargetName).pdb</ProgramDatabaseFile>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXCharacterKinematic.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXCharacterKinematic.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXCharacterKinematic.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXCharacterKinematic.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -116,7 +116,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/characterkinematic;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include;./../../GeomUtils/headers;./../../Common/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -161,7 +161,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/characterkinematic;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include;./../../GeomUtils/headers;./../../Common/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -206,7 +206,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/characterkinematic;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include;./../../GeomUtils/headers;./../../Common/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXCommon.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXCommon.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXCommon.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXCommon.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -116,7 +116,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/include;./../../PhysXProfile/src;./../../PhysXGpu/include;./../../../Include/geometry;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../../Include/GeomUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -161,7 +161,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/include;./../../PhysXProfile/src;./../../PhysXGpu/include;./../../../Include/geometry;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../../Include/GeomUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -206,7 +206,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../../../Externals/nvToolsExt/1/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../PhysXProfile/include;./../../PhysXProfile/src;./../../PhysXGpu/include;./../../../Include/geometry;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../../Include/GeomUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXCooking.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXCooking.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXCooking.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXCooking.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -70,7 +70,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -116,7 +116,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/cloth;./../../../Include/cooking;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../PhysXExtensions/src;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -161,7 +161,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/cloth;./../../../Include/cooking;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../PhysXExtensions/src;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -206,7 +206,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/cloth;./../../../Include/cooking;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../PhysXCooking/src;./../../PhysXCooking/src/mesh;./../../PhysXCooking/src/convex;./../../PhysXExtensions/src;./../../PhysXGpu/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXExtensions.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXExtensions.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXExtensions.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXExtensions.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/cooking;./../../../Include/extensions;./../../../Include/vehicle;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../PhysXMetaData/core/include;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXExtensions/src/serialization/Binary;./../../PhysXExtensions/src/serialization/File;./../../PvdSDK/src;./../../PhysX/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/cooking;./../../../Include/extensions;./../../../Include/vehicle;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../PhysXMetaData/core/include;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXExtensions/src/serialization/Binary;./../../PhysXExtensions/src/serialization/File;./../../PvdSDK/src;./../../PhysX/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/cooking;./../../../Include/extensions;./../../../Include/vehicle;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../PhysXMetaData/core/include;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXExtensions/src/serialization/Binary;./../../PhysXExtensions/src/serialization/File;./../../PvdSDK/src;./../../PhysX/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXVehicle.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXVehicle.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/PhysXVehicle.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/PhysXVehicle.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/vehicle;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include/cloth;./../../../Include;./../../../Include/pvd;./../../../Include/physxprofilesdk;./../../Common/src;./../../PhysXVehicle/src;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXMetaData/core/include;./../../PhysXVehicle/src/PhysXMetaData/include;./../../PvdSDK/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/vehicle;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include/cloth;./../../../Include;./../../../Include/pvd;./../../../Include/physxprofilesdk;./../../Common/src;./../../PhysXVehicle/src;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXMetaData/core/include;./../../PhysXVehicle/src/PhysXMetaData/include;./../../PvdSDK/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/vehicle;./../../../Include/common;./../../../Include/geometry;./../../../Include/extensions;./../../../Include/cloth;./../../../Include;./../../../Include/pvd;./../../../Include/physxprofilesdk;./../../Common/src;./../../PhysXVehicle/src;./../../PhysXMetaData/extensions/include;./../../PhysXExtensions/src/serialization/Xml;./../../PhysXMetaData/core/include;./../../PhysXVehicle/src/PhysXMetaData/include;./../../PvdSDK/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/SceneQuery.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/SceneQuery.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/SceneQuery.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/SceneQuery.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SceneQuery/include;./../../SimulationController/include;./../../LowLevel/API/include;./../../PhysX/src;./../../PhysX/src/buffering;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SceneQuery/include;./../../SimulationController/include;./../../LowLevel/API/include;./../../PhysX/src;./../../PhysX/src/buffering;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../../Externals/nvToolsExt/1/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SceneQuery/include;./../../SimulationController/include;./../../LowLevel/API/include;./../../PhysX/src;./../../PhysX/src/buffering;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+diff -ur ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/SimulationController.vcxproj ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/SimulationController.vcxproj
+--- ./PhysX-3.4-master_original/PhysX_3.4/Source/compiler/vc14win64/SimulationController.vcxproj	2017-04-25 14:02:08.000000000 +0300
++++ ./PhysX-3.4-master/PhysX_3.4/Source/compiler/vc14win64/SimulationController.vcxproj	2018-03-19 12:51:19.000000000 +0300
+@@ -69,7 +69,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Disabled</Optimization>
+@@ -111,7 +111,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../SimulationController/src/cloth;./../../LowLevel/windows/include;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevelCloth/include;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelParticles/include;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -152,7 +152,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../SimulationController/src/cloth;./../../LowLevel/windows/include;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevelCloth/include;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelParticles/include;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+@@ -194,7 +194,7 @@
+ 			<StringPooling>true</StringPooling>
+ 			<RuntimeTypeInfo>false</RuntimeTypeInfo>
+ 			<BufferSecurityCheck>false</BufferSecurityCheck>
+-			<FloatingPointModel>Fast</FloatingPointModel>
++			<FloatingPointModel>Strict</FloatingPointModel>
+ 			<AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4435 /wd4577 /wd4464 /d2Zi+</AdditionalOptions>
+ 			<Optimization>Full</Optimization>
+ 			<AdditionalIncludeDirectories>./../../PhysXGpu/include;./../../Common/include;./../../../../PxShared/include;./../../../../PxShared/src/foundation/include;./../../../../PxShared/src/fastxml/include;./../../../../PxShared/src/pvd/include;./../../../Include/common;./../../../Include/geometry;./../../../Include/GeomUtils;./../../../Include/pvd;./../../../Include/particles;./../../../Include/cloth;./../../../Include;./../../Common/src;./../../Common/src/windows;./../../GeomUtils/headers;./../../GeomUtils/src;./../../GeomUtils/src/contact;./../../GeomUtils/src/common;./../../GeomUtils/src/convex;./../../GeomUtils/src/distance;./../../GeomUtils/src/sweep;./../../GeomUtils/src/gjk;./../../GeomUtils/src/intersection;./../../GeomUtils/src/mesh;./../../GeomUtils/src/hf;./../../GeomUtils/src/pcm;./../../GeomUtils/src/ccd;./../../SimulationController/include;./../../SimulationController/src;./../../SimulationController/src/particles;./../../SimulationController/src/cloth;./../../LowLevel/windows/include;./../../LowLevel/API/include;./../../LowLevel/software/include;./../../LowLevel/common/include/math;./../../LowLevel/common/include/utils;./../../LowLevel/common/include/collision;./../../LowLevel/common/include/pipeline;./../../LowLevelCloth/include;./../../LowLevelAABB/include;./../../LowLevelDynamics/include;./../../LowLevelParticles/include;./../../../../Externals/nvToolsExt/1/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+Only in ./PhysX-3.4-master/PhysX_3.4/Source/compiler/xcode_osx64: build

@@ -11,7 +11,7 @@ namespace DAVA
 class Scene;
 class Entity;
 class CameraComponent;
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
 }
 
 class GameModeSystemCars final : public DAVA::SceneSystem
@@ -34,5 +34,5 @@ private:
     DAVA::float32 countdown = 0.f;
     DAVA::Entity* focusedCar;
     DAVA::CameraComponent* cameraComponent;
-    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
+    DAVA::NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
 };

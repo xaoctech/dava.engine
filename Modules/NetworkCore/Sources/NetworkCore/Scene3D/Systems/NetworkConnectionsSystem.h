@@ -1,11 +1,10 @@
 #pragma once
 
 #include "Entity/SceneSystem.h"
-#include "NetworkCore/UDPTransport/UDPServer.h"
 
 namespace DAVA
 {
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
 
 class NetworkConnectionsSystem : public SceneSystem
 {
@@ -15,9 +14,5 @@ public:
     NetworkConnectionsSystem(Scene* scene);
 
     void PrepareForRemove() override{};
-
-private:
-    IServer* server;
-    NetworkConnectionsSingleComponent* networkConnections;
 };
 }

@@ -30,7 +30,7 @@
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/TransformInterpolationComponent.h"
+#include "Scene3D/Components/TransformInterpolatedComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/WaveComponent.h"
@@ -339,7 +339,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SwitchComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TextComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TransformComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TransformInterpolationComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TransformInterpolatedComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UpdatableComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VisibilityCheckComponent);

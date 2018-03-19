@@ -86,7 +86,12 @@ void FlowBattleController::Activate(DAVA::UIFlowContext* context, DAVA::UIContro
     DVASSERT(pauseControl);
     pauseTextComponent = pauseControl->GetOrCreateComponent<UITextComponent>();
     DVASSERT(pauseTextComponent);
-
+    
+    UIControl* timeSyncsControl = view->FindByPath("HUD/InfoPanel/*/TimeSyncsText");
+    DVASSERT(timeSyncsControl);
+    timeSyncsTextComponent = timeSyncsControl->GetOrCreateComponent<UITextComponent>();
+    DVASSERT(timeSyncsTextComponent);
+    
     UIControl* incorrectInputControl = view->FindByPath("HUD/InfoPanel/*/IncorrectInputText");
     DVASSERT(incorrectInputControl);
     incorrectInputTextComponent = incorrectInputControl->GetOrCreateComponent<UITextComponent>();
@@ -127,6 +132,9 @@ void FlowBattleController::Deactivate(DAVA::UIFlowContext* context, DAVA::UICont
     frameTextComponent = nullptr;
     diffTextComponent = nullptr;
     pauseTextComponent = nullptr;
+    timeSyncsTextComponent = nullptr;
+    incorrectInputTextComponent = nullptr;
+    resimulationsCountTextComponent = nullptr;
 }
 
 void FlowBattleController::Process(DAVA::float32 frameDelta)
@@ -152,7 +160,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
 
     NetworkTimeSingleComponent* netTimeComp = battleScene->GetSingleComponent<NetworkTimeSingleComponent>();
     int32 frameDiff = netTimeComp->GetClientOutrunning(udpClient.GetAuthToken());
-    float32 a = 2.f / (NetworkTimeSingleComponent::FrequencyHz + 1.f);
+    float32 a = 2.f / (NetworkTimeSingleComponent::FrameFrequencyHz + 1.f);
     diffAvg = a * frameDiff + (1.f - a) * diffAvg;
 
     if (udpClient.IsConnected())
@@ -162,13 +170,12 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
         diffTextComponent->SetText(std::to_string(static_cast<int32>(std::round(diffAvg) + halfRtt)));
         pingTextComponent->SetText(std::to_string(udpClient.GetPing()));
         lossTextComponent->SetText(std::to_string(udpClient.GetPacketLoss() * 100.f));
-
+        timeSyncsTextComponent->SetText(std::to_string(netTimeComp->GetNumTimeSyncs()));
+        
         NetworkRemoteInputSystem* remoteInputSystem = battleScene->GetSystem<NetworkRemoteInputSystem>();
         if (remoteInputSystem && remoteInputSystem->GetFullInputComparisonFlag())
         {
-            std::stringstream ss;
-            ss << std::setprecision(3) << remoteInputSystem->GetIncorrectServerFramesPercentage() * 100.0f << "%";
-            incorrectInputTextComponent->SetText(ss.str());
+            incorrectInputTextComponent->SetText(std::to_string(remoteInputSystem->GetIncorrectServerFramesNumber()));
         }
         else
         {
@@ -187,6 +194,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
         diffTextComponent->SetText("undefined");
         pingTextComponent->SetText("not connected");
         lossTextComponent->SetText("not connected");
+        timeSyncsTextComponent->SetText("not connected");
         incorrectInputTextComponent->SetText("not connected");
     }
 

@@ -290,7 +290,10 @@ public:
     void SetMainRenderTarget(rhi::HTexture color, rhi::HTexture depthStencil, rhi::LoadAction colorLoadAction, const Color& clearColor);
 
     void SetFixedUpdateTime(float32 time);
-    void SetConstantUpdateTime(float32 time);
+    void SetFixedUpdateAdjustment(float32 time);
+
+    float32 GetFixedUpdateTime() const;
+    float32 GetFixedUpdateOverlap() const;
 
     void SetPerformFixedProcessOnlyOnce(bool isPerformFixedProcessOnlyOnce);
 
@@ -311,8 +314,6 @@ public:
     ComponentGroup<T>* AquireComponentGroupWithMatcher();
     template <class T>
     ComponentGroupOnAdd<T>* AquireComponentGroupOnAdd(ComponentGroup<T>* cg, SceneSystem* sceneSystem);
-
-    float32 GetTimeOverrunInterpolatedFactor() const;
 
     const Vector<SceneSystem*>& GetSystems() const;
 
@@ -342,14 +343,13 @@ protected:
 
     struct FixedUpdate
     {
-        float32 constantTime = 1.f / 60.f;
         float32 fixedTime = 1.f / 60.f;
+        float32 adjustment = 0.f;
         float32 accumulatedTime = 0.f;
+        float32 overlap = 0.f;
+        bool paused = false;
+        bool onlyOnce = false;
     } fixedUpdate;
-    bool pauseFixedUpdate = false;
-
-    bool isPerformFixedProcessOnlyOnce = false;
-    float32 timeOverrunInterpolatedFactor = 0.f;
 
     friend class Entity;
     DAVA_VIRTUAL_REFLECTION(Scene, Entity);

@@ -1,11 +1,11 @@
+#if 0
 #include "NetworkTransformInterpolationSystem.h"
-
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TransformComponent.h>
-#include <Scene3D/Components/TransformInterpolationComponent.h>
+#include <Scene3D/Components/TransformInterpolatedComponent.h>
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -56,3 +56,4 @@ void NetworkTransformInterpolationSystem::ProcessFixed(float32 timeElapsed)
 }
 
 } //namespace DAVA
+#endif

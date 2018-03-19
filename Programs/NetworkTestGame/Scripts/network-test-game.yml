@@ -22,7 +22,7 @@ spec:
       mountPath: /debug
     ports:
     - containerPort: 9000
-    args: ["--health-check-host", "localhost", "--health-check-port", "5050"CUSTOM_OPTIONS]
+    args: ["--no-compare-inputs", "--health-check-host", "localhost", "--health-check-port", "5050"CUSTOM_OPTIONS]
     securityContext:
       privileged: true
   - name: debug

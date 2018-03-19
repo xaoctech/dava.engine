@@ -60,12 +60,6 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     {
         port = std::stoi(portStr);
     }
-    String freqHzStr = CommandLineParser::GetCommandParam("--hz");
-    uint32 freqHz = 60;
-    if (!freqHzStr.empty())
-    {
-        freqHz = std::stoi(freqHzStr);
-    }
 
     String playerKindStr = CommandLineParser::GetCommandParam("--bot");
     PlayerKind playerKind(playerKindStr);
@@ -128,7 +122,6 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     clientOptions->SetFastName("token", token);
     clientOptions->SetBool("isProfile", isProfile);
     clientOptions->SetBool("isDebug", isDebug);
-    clientOptions->SetUInt32("freqHz", freqHz);
     clientOptions->SetString("gameStatsLogPath", gameStatsLogPath);
     TestClient app(e, clientOptions);
     return e.Run();

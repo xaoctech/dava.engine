@@ -24,7 +24,7 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
-#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h>
 
 #include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/Core/BoxShapeComponent.h>
@@ -44,7 +44,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystem)
 GameModeSystem::GameModeSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
-    netConnectionsComp = scene->GetSingleComponent<NetworkConnectionsSingleComponent>();
+    netConnectionsComp = scene->GetSingleComponent<NetworkServerConnectionsSingleComponent>();
     netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
     gameModeComp = scene->GetSingleComponent<GameModeSingleComponent>();
 }

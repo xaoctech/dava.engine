@@ -12,6 +12,7 @@ class IClient;
 class NetworkReplicationSingleComponent;
 class NetworkDeltaSingleComponent;
 class NetworkStatisticsSingleComponent;
+class NetworkClientConnectionSingleComponent;
 
 class ElasticBuffer
 {
@@ -45,16 +46,17 @@ public:
 
     NetworkDeltaReplicationSystemClient(Scene* scene);
     void ProcessFixed(float32 timeElapsed) override;
-    void OnReceiveCallback(const uint8* data, size_t size, uint8, uint32);
+    void OnReceive(const Vector<uint8>& packet);
 
 private:
-    void ProcessReceivedPackets();
     void ProcessAppliedPackets();
 
     IClient* client;
+
     NetworkReplicationSingleComponent* replicationSingleComponent;
     NetworkDeltaSingleComponent* deltaSingleComponent;
     NetworkStatisticsSingleComponent* statsComp;
+    const NetworkClientConnectionSingleComponent* netConnectionComp;
 
     ElasticBuffer elasticBuffer;
     UnorderedMap<SequenceId, uint32> sequenceToCounter;
@@ -67,7 +69,6 @@ private:
     };
 
     UnorderedMap<uint32, UnreliableFragments> frameToFragments;
-    Vector<Vector<uint8>> recvPackets;
 };
 
 } //namespace DAVA

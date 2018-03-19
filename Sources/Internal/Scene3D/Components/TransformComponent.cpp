@@ -1,5 +1,5 @@
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/TransformInterpolationComponent.h"
+#include "Scene3D/Components/TransformInterpolatedComponent.h"
 
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
@@ -35,7 +35,6 @@ Component* TransformComponent::Clone(Entity* toEntity)
 void TransformComponent::SetLocalTransform(const Matrix4& transform)
 {
     transform.Decomposition(position, scale, rotation);
-    BeginInterpolation();
     ApplyLocalTransfomChanged();
 }
 
@@ -44,7 +43,6 @@ void TransformComponent::SetLocalTransform(const Vector3& position, const Quater
     this->position = position;
     this->rotation = rotation;
     this->scale = scale;
-    BeginInterpolation();
     ApplyLocalTransfomChanged();
 }
 
@@ -99,15 +97,6 @@ void TransformComponent::Deserialize(KeyedArchive* archive, SerializationContext
     }
 
     Component::Deserialize(archive, sceneFile);
-}
-
-void TransformComponent::BeginInterpolation()
-{
-    TransformInterpolationComponent* tic = GetEntity()->GetComponent<TransformInterpolationComponent>();
-    if (tic)
-    {
-        tic->SetNewTransform(position, rotation, scale);
-    }
 }
 
 void TransformComponent::ApplyLocalTransfomChanged()

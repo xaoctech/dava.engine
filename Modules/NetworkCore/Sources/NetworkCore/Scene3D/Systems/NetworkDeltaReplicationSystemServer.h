@@ -17,7 +17,7 @@ namespace DAVA
 {
 class NetworkGameModeSingleComponent;
 class NetworkTimeSingleComponent;
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
 
 class NetworkDeltaReplicationSystemServer : public NetworkDeltaReplicationSystemBase
 {
@@ -136,7 +136,7 @@ private:
     const NetworkGameModeSingleComponent* netGameModeComp;
     const NetworkTimeSingleComponent* timeComp;
     ComponentGroup<NetworkPlayerComponent>* playerComponentGroup;
-    const NetworkConnectionsSingleComponent* netConnectionsComp;
+    const NetworkServerConnectionsSingleComponent* netConnectionsComp;
 };
 
 } //namespace DAVA

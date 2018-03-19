@@ -56,6 +56,8 @@
 
 #include <functional>
 
+// #include <../../../NetworkCore/Sources/NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
+
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsSystem)
@@ -106,7 +108,7 @@ void LogVehicleCar(VehicleCarComponent* carComponent, String const& header)
             ss << Format("Shape %d local position: (%.10e, %.10e, %.10e), local rotation: (%.10e, %.10e, %.10e, %.10e)", i, shape->getLocalPose().p.x, shape->getLocalPose().p.y, shape->getLocalPose().p.z, shape->getLocalPose().q.x, shape->getLocalPose().q.y, shape->getLocalPose().q.z, shape->getLocalPose().q.w) << "\n";
 
             CollisionShapeComponent* shapeComponent = static_cast<CollisionShapeComponent*>(shape->userData);
-            ss << Format("Shap component %d local position: (%.10e, %.10e, %.10e), local rotation: (%.10e, %.10e, %.10e, %.10e)", i, shapeComponent->GetLocalPosition().x, shapeComponent->GetLocalPosition().y, shapeComponent->GetLocalPosition().z, shapeComponent->GetLocalOrientation().x, shapeComponent->GetLocalOrientation().y, shapeComponent->GetLocalOrientation().z, shapeComponent->GetLocalOrientation().w) << "\n";
+            ss << Format("Shape component %d local position: (%.10e, %.10e, %.10e), local rotation: (%.10e, %.10e, %.10e, %.10e)", i, shapeComponent->GetLocalPosition().x, shapeComponent->GetLocalPosition().y, shapeComponent->GetLocalPosition().z, shapeComponent->GetLocalOrientation().x, shapeComponent->GetLocalOrientation().y, shapeComponent->GetLocalOrientation().z, shapeComponent->GetLocalOrientation().w) << "\n";
         }
     }
 
@@ -155,7 +157,7 @@ void LogVehicleCar(VehicleCarComponent* carComponent, String const& header)
     ss << Format("Actor is sleeping: %d", static_cast<uint32>(actor->isSleeping())) << "\n";
     ss << Format("Actor's wake counter: %f, sleep threshold: %f", actor->getWakeCounter(), actor->getSleepThreshold()) << "\n";
 
-    ss << Format("===========================");
+    ss << "===========================";
 
     Logger::Info(ss.str().c_str());
 }

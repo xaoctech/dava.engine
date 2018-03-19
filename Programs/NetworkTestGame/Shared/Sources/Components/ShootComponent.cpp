@@ -5,7 +5,7 @@
 using namespace DAVA;
 
 const uint32 ShootComponent::MAX_DISTANCE = 100;
-const float32 ShootComponent::MOVE_SPEED = 100.f;
+const float32 ShootComponent::MOVE_SPEED = 70.f;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShootComponent)
 {

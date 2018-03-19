@@ -154,7 +154,7 @@ void NetworkPredictSystem2::ProcessFixed(float32 timeElapsed)
                             if (findIt != fullyReceivedFrames.end())
                             {
                                 // such entity will be deleted
-                                waitConfirmation = false;
+                                //waitConfirmation = false;
                             }
                         }
                     }

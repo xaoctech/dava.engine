@@ -38,7 +38,6 @@ protected:
     void SetParent(Entity* node);
     void SetWorldTransform(const Matrix4& transform);
 
-    void BeginInterpolation();
     void ApplyLocalTransfomChanged();
     void ApplyWorldTransfomChanged();
     void ApplyParentChanged();

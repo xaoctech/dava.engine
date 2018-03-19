@@ -58,12 +58,13 @@ public:
     // client view delay in frames
     void SetClientViewDelay(const FastName& token, uint32 frameID, int32 diff);
     int32 GetClientViewDelay(const FastName& token, uint32 frameID) const;
-
-    static void SetFrequencyHz(float32 freqHz);
+    
+    void SetNumTimeSyncs(uint32 value);
+    uint32 GetNumTimeSyncs() const;
 
     virtual ~NetworkTimeSingleComponent(){};
 
-    static uint32 FrequencyHz;
+    static uint32 FrameFrequencyHz;
     static float32 FrameDurationS;
     static uint32 FrameDurationMs;
     static uint32 FrameDurationUs;
@@ -84,6 +85,7 @@ private:
     int32 adjustedFrames = 0;
     int32 lastSyncDiff = 0;
     float32 fps = 0.f;
+    uint32 numTimeSyncs = 0;
 
     UnorderedMap<FastName, uint32> resyncDelayUptime;
     UnorderedMap<FastName, uint32> lastClientFrameId;

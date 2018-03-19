@@ -59,8 +59,8 @@ Component* VehicleCarComponent::Clone(Entity* toEntity)
 DAVA_VIRTUAL_REFLECTION_IMPL(VehicleCarComponent)
 {
     ReflectionRegistrator<VehicleCarComponent>::Begin()
-    .Field("Engine speed", &VehicleCarComponent::engineSpeed)[M::Replicable(), M::ComparePrecision(0.01f), M::Range(0.0f, Any(), 0.0f)]
-    .Field("Analog input states", &VehicleCarComponent::analogInputStates)[M::Replicable(), M::ComparePrecision(0.01f)]
+    .Field("Engine speed", &VehicleCarComponent::engineSpeed)[M::Replicable(), M::ComparePrecision(0.1f), M::Range(0.0f, Any(), 0.0f)]
+    .Field("Analog input states", &VehicleCarComponent::analogInputStates)[M::Replicable(), M::ComparePrecision(0.1f)]
     .ConstructorByPointer()
     .End();
 }

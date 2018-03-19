@@ -8,7 +8,7 @@
 namespace DAVA
 {
 class Scene;
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
 }
 
 // Responsible for listening to new connections and creating entities with player role,
@@ -24,5 +24,5 @@ public:
 
 private:
     void AddPlayerToScene(const DAVA::FastName& token);
-    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
+    DAVA::NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
 };

@@ -4,10 +4,10 @@
 
 namespace DAVA
 {
-uint32 NetworkTimeSingleComponent::FrequencyHz = 60;
-float32 NetworkTimeSingleComponent::FrameDurationS = 1.f / 60.f;
-uint32 NetworkTimeSingleComponent::FrameDurationMs = 1000 / 60;
-uint32 NetworkTimeSingleComponent::FrameDurationUs = 1000000 / 60;
+uint32 NetworkTimeSingleComponent::FrameFrequencyHz = 50;
+float32 NetworkTimeSingleComponent::FrameDurationS = 1.f / static_cast<float32>(NetworkTimeSingleComponent::FrameFrequencyHz);
+uint32 NetworkTimeSingleComponent::FrameDurationMs = 1000 / NetworkTimeSingleComponent::FrameFrequencyHz;
+uint32 NetworkTimeSingleComponent::FrameDurationUs = 1000000 / NetworkTimeSingleComponent::FrameFrequencyHz;
 float32 NetworkTimeSingleComponent::FrameSpeedupS = 0.001f;
 float32 NetworkTimeSingleComponent::FrameSlowdownS = 0.001f;
 float32 NetworkTimeSingleComponent::UptimeInitFactor = 0.5f;
@@ -165,12 +165,13 @@ int32 NetworkTimeSingleComponent::GetClientViewDelay(const FastName& token, uint
     }
     return diff;
 }
-
-void NetworkTimeSingleComponent::SetFrequencyHz(float32 freqHz)
+void NetworkTimeSingleComponent::SetNumTimeSyncs(uint32 value)
 {
-    FrequencyHz = static_cast<uint32>(freqHz);
-    FrameDurationS = 1.f / freqHz;
-    FrameDurationMs = 1000 / FrequencyHz;
-    FrameDurationUs = 1000000 / FrequencyHz;
+    numTimeSyncs = value;
+}
+
+uint32 NetworkTimeSingleComponent::GetNumTimeSyncs() const
+{
+    return numTimeSyncs;
 }
 }

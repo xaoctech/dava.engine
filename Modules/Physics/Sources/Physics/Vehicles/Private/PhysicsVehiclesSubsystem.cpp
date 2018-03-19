@@ -927,20 +927,21 @@ void PhysicsVehiclesSubsystem::TryRecreateCarVehicle(VehicleCarComponent* vehicl
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mWidth = %f", i, wheelsSimData->getWheelData(i).mWidth);
 
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mCamberStiffnessPerUnitGravity = %f", i, wheelsSimData->getTireData(i).mCamberStiffnessPerUnitGravity);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mFrictionVsSlipGraph = %f", i, wheelsSimData->getTireData(i).mFrictionVsSlipGraph);
+        
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mFrictionVsSlipGraph = [%f, %f, %f, %f, %f, %f]", i, wheelsSimData->getTireData(i).mFrictionVsSlipGraph[0][0], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[0][1], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[1][0], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[1][1], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[2][0], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[2][1]);
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLatStiffX = %f", i, wheelsSimData->getTireData(i).mLatStiffX);
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLatStiffY = %f", i, wheelsSimData->getTireData(i).mLatStiffY);
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLongitudinalStiffnessPerUnitGravity = %f", i, wheelsSimData->getTireData(i).mLongitudinalStiffnessPerUnitGravity);
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mCamberStiffnessPerUnitGravity = %u", i, wheelsSimData->getTireData(i).mType);
 
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtMaxCompression = %u", i, wheelsSimData->getSuspensionData(i).mCamberAtMaxCompression);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtMaxDroop = %u", i, wheelsSimData->getSuspensionData(i).mCamberAtMaxDroop);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtRest = %u", i, wheelsSimData->getSuspensionData(i).mCamberAtRest);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mMaxCompression = %u", i, wheelsSimData->getSuspensionData(i).mMaxCompression);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mMaxDroop = %u", i, wheelsSimData->getSuspensionData(i).mMaxDroop);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSpringDamperRate = %u", i, wheelsSimData->getSuspensionData(i).mSpringDamperRate);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSpringStrength = %u", i, wheelsSimData->getSuspensionData(i).mSpringStrength);
-        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSprungMass = %u", i, wheelsSimData->getSuspensionData(i).mSprungMass);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtMaxCompression = %f", i, wheelsSimData->getSuspensionData(i).mCamberAtMaxCompression);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtMaxDroop = %f", i, wheelsSimData->getSuspensionData(i).mCamberAtMaxDroop);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mCamberAtRest = %f", i, wheelsSimData->getSuspensionData(i).mCamberAtRest);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mMaxCompression = %f", i, wheelsSimData->getSuspensionData(i).mMaxCompression);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mMaxDroop = %f", i, wheelsSimData->getSuspensionData(i).mMaxDroop);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSpringDamperRate = %f", i, wheelsSimData->getSuspensionData(i).mSpringDamperRate);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSpringStrength = %f", i, wheelsSimData->getSuspensionData(i).mSpringStrength);
+        PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspensionData(%u).mSprungMass = %f", i, wheelsSimData->getSuspensionData(i).mSprungMass);
 
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getSuspTravelDirection(%u) = %f, %f, %f", i, wheelsSimData->getSuspTravelDirection(i).x, wheelsSimData->getSuspTravelDirection(i).y, wheelsSimData->getSuspTravelDirection(i).z);
 

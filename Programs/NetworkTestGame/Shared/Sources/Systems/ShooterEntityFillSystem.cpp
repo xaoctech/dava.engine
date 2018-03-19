@@ -23,7 +23,6 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TransformComponent.h>
-#include <Scene3D/Components/TransformInterpolationComponent.h>
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/SkeletonComponent.h>
@@ -39,6 +38,7 @@
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkMovementComponent.h>
 
 #include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 #include <Physics/Core/DynamicBodyComponent.h>
@@ -197,11 +197,9 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
             // No need for gravity for replicated CCTs
             controllerComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Flying);
             name = "Enemy player";
-
-            TransformInterpolationComponent* tic = new TransformInterpolationComponent();
-            tic->time = 2.0f;
-            entity->AddComponent(tic);
         }
+
+        //entity->AddComponent(new NetworkMovementComponent());
     }
 
     entity->SetName(name.c_str());

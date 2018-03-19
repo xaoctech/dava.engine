@@ -323,7 +323,6 @@ float32 CompressionUtils::GetComparePrecisionFromMeta(const ReflectedMeta* meta,
         }
     }
 
-    DVASSERT(0.f <= precision && precision < 1.f);
     return precision;
 }
 

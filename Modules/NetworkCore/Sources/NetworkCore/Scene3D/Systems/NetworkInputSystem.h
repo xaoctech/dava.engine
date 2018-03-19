@@ -34,7 +34,8 @@ namespace DAVA
 {
 class Entity;
 class ActionsSingleComponent;
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
+class NetworkClientConnectionSingleComponent;
 
 class NetworkInputSystem : public SceneSystem
 {
@@ -61,7 +62,6 @@ public:
     void ProcessReceivedInputData();
 #else
     void SendLastBuckets();
-    void OnConnect();
 #endif
 
     static void PackDigitalActions(Scene* scene, uint64& packedActions, Entity* entity = nullptr, const UnorderedSet<FastName>* filter = nullptr);
@@ -78,10 +78,11 @@ private:
     using NetworkInputBuffer = NetworkBuffer<NetworkInputComponent::Data>;
     UnorderedMap<Entity*, NetworkInputBuffer> entitiesToBuffers;
     UnorderedMap<FastName, UnorderedSet<Entity*>> tokensToEntities;
-    const NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
+    const NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
 #else
     UnorderedSet<Entity*> entities;
     IClient* client;
+    const NetworkClientConnectionSingleComponent* netConnectionsComp = nullptr;
 #endif
 };
 }

@@ -11,7 +11,7 @@ class Scene;
 class Entity;
 class NetworkGameModeSingleComponent;
 class Camera;
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
 }
 
 class InvaderConnectSystem : public DAVA::SceneSystem
@@ -26,5 +26,5 @@ public:
 
 private:
     DAVA::Camera* camera = nullptr;
-    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
+    DAVA::NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
 };

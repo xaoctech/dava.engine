@@ -38,8 +38,11 @@ public:
     /** Return `true` if input comparison is enabled. */
     bool GetFullInputComparisonFlag() const;
 
-    /** Return percentage of frames for last 10 seconds that have been processed on a server with input data which does not match client's */
+    /** Return percentage of frames for last 10 seconds that have been processed on a server with input data which does not match client's. */
     float32 GetIncorrectServerFramesPercentage() const;
+    
+    /** Return percentage of frames that have been processed on a server with input data which does not match client's. */
+    uint32 GetIncorrectServerFramesNumber() const;
 
 private:
     void TransferInputToComponents();
@@ -69,6 +72,7 @@ private:
     uint32 numNotComparedFrames; // Number of frames that couldn't be compared. For debugging purposes only
     uint32 numIncorrectInputsIndex; // Current index in `numIncorrectInputs` ring buffer
     uint32 numIncorrectInputsCurrent; // Accumulator for number of incorrect frames during the second
+    uint32 numIncorrectInputsTotal; // Total amount of frames with incorrect input
     uint32 numHandledFrames; // Number of frames compared in `CompareRemoteToLocalInput`
 };
 }

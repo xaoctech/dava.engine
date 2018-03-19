@@ -10,6 +10,7 @@
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkTrafficLimitComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
+#include "NetworkCore/Scene3D/Components/NetworkMovementComponent.h"
 
 #include "NetworkCore/Scene3D/Systems/NetworkDebugDrawSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDebugPredictDrawSystem.h"
@@ -34,6 +35,7 @@
 #include "NetworkCore/Scene3D/Systems/NetworkHealthCheckSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkTransformInterpolationSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkConnectionsSystem.h"
+#include "NetworkCore/Scene3D/Systems/NetworkMovementSystem.h"
 
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
@@ -47,7 +49,8 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimelineSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientConnectionSingleComponent.h"
 
 #include "NetworkCore/Private/NetworkCoreDebugOverlay.h"
 #include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h"
@@ -77,6 +80,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkReplicationComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTrafficLimitComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkMovementComponent);
 
     // SingleComponents
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkClientSingleComponent);
@@ -91,7 +95,8 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimelineSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimeSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSingleComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkConnectionsSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkServerConnectionsSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkClientConnectionSingleComponent);
 
     // Systems
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugDrawSystem);
@@ -112,7 +117,8 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimeSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformFromLocalToNetSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformFromNetToLocalSystem);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformInterpolationSystem);
+    //DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformInterpolationSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkMovementSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemBase);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemClient);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemServer);

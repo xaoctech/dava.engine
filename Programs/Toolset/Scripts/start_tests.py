@@ -30,7 +30,6 @@ class TestsRunner():
                                     ,'QuickEd'                  : [ ['--selftest'],               '' ]
                                     ,'ResourceArchiver'         : [ ['--selftest'],               'console' ]
                                     ,'TexConverter'             : [ ['--selftest', '--teamcity'], 'console' ]
-                                    ,'TexDependency'            : [ ['--selftest', '--teamcity'], 'console' ]
                                   }
                                     
         self.prjNameBase        = 'UnitTests'

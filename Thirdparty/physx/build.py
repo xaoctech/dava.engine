@@ -116,7 +116,7 @@ def _build_win32(working_directory_path, root_project_path):
 
 def _build_macos(working_directory_path, root_project_path):
     source_folder_path = _download_and_extract(working_directory_path)
-    _patch_sources('patch_common.diff', '', working_directory_path)
+    _patch_sources('patch_common.diff', 'patch_macos.diff', working_directory_path)
     project_path = os.path.join(source_folder_path, 'PhysX_3.4', 'Source', 'compiler', 'xcode_osx64', 'PhysX.xcodeproj')
 
     build_utils.build_xcode_alltargets(project_path, 'debug')

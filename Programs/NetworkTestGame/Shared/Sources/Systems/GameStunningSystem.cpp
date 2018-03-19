@@ -59,7 +59,7 @@ void GameStunningSystem::ProcessFixed(float32 timeElapsed)
     {
         if (c->IsStunned())
         {
-            c->SetCooldown(std::max(0.f, c->GetCooldown() - NetworkTimeSingleComponent::FrameDurationS));
+            c->SetCooldown(std::max(0.f, c->GetCooldown() - timeElapsed));
         }
     }
 }

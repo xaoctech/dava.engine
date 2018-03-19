@@ -1,5 +1,5 @@
 #include "NetworkGameModeSingleComponent.h"
-#include "NetworkConnectionsSingleComponent.h"
+#include "NetworkServerConnectionsSingleComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 #include "Scene3D/Scene.h"

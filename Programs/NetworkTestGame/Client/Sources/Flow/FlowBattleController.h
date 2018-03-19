@@ -40,6 +40,7 @@ private:
     DAVA::UITextComponent* frameTextComponent = nullptr;
     DAVA::UITextComponent* diffTextComponent = nullptr;
     DAVA::UITextComponent* pauseTextComponent = nullptr;
+    DAVA::UITextComponent* timeSyncsTextComponent = nullptr;
     DAVA::UITextComponent* incorrectInputTextComponent = nullptr;
     DAVA::UITextComponent* resimulationsCountTextComponent = nullptr;
     DAVA::float32 diffAvg = 0.f;

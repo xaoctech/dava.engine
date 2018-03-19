@@ -176,10 +176,7 @@ void Battle::SetupTestGame()
 
     *battleScene->GetSingleComponent<BattleOptionsSingleComponent>() = *optionsSingleComp;
 
-    NetworkTimeSingleComponent::SetFrequencyHz(static_cast<float32>(optionsSingleComp->options.freqHz));
-
     battleScene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(gameClient->GetUDPClientPtr());
-
     battleScene->CreateSystemsByTags();
 
     if (battleScene->GetSystem<PhysicsSystem>() != nullptr)

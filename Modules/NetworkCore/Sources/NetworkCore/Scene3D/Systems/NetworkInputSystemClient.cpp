@@ -6,6 +6,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkStatisticsSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientConnectionSingleComponent.h"
 #include "NetworkInputSystem.h"
 #include "NetworkTimeSystem.h"
 
@@ -77,8 +78,8 @@ NetworkInputSystem::NetworkInputSystem(Scene* scene)
 {
     client = scene->GetSingleComponentForRead<NetworkClientSingleComponent>(this)->GetClient();
     DVASSERT(client != nullptr);
-
-    client->SubscribeOnConnect(OnClientConnectCb(this, &NetworkInputSystem::OnConnect));
+    netConnectionsComp = scene->GetSingleComponentForRead<NetworkClientConnectionSingleComponent>(this);
+    DVASSERT(netConnectionsComp);
 }
 
 void NetworkInputSystem::AddEntity(Entity* entity)
@@ -114,11 +115,21 @@ void NetworkInputSystem::ProcessFixedClientBegin(float32 timeElapsed)
 
 void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
 {
+    if (netConnectionsComp->IsJustConnected())
+    {
+        for (Entity* entity : entities)
+        {
+            NetworkInputComponent* netInputComp = entity->GetComponent<NetworkInputComponent>();
+            netInputComp->ModifyHistory().Clear();
+        }
+    }
+
     const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
     if (!netTimeComp->IsInitialized())
     {
         return;
     }
+
     /*
         On client here we assign client frames to actions.
      */
@@ -228,14 +239,6 @@ void NetworkInputSystem::SendLastBuckets()
     }
 }
 
-void NetworkInputSystem::OnConnect()
-{
-    for (Entity* entity : entities)
-    {
-        NetworkInputComponent* netInputComp = entity->GetComponent<NetworkInputComponent>();
-        netInputComp->ModifyHistory().Clear();
-    }
-}
 };
 
 #endif

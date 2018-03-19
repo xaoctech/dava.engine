@@ -51,7 +51,6 @@ private:
     DAVA::String gameStatsLogPath;
     bool enableVisibilityLods = false;
     DAVA::float32 lossFactor = 0.05f; // every 5% increase bucket size
-    DAVA::uint32 freqHz = 60;
     DAVA::String healthCheckHost;
     DAVA::uint16 healthCheckPort = 5050;
 

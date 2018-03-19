@@ -26,7 +26,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
-#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
 #include "Components/SingleComponents/GameModeSingleComponent.h"
@@ -77,7 +77,7 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
     // Subscrive to new clients connections
     if (IsServer(this))
     {
-        netConnectionsComp = scene->GetSingleComponent<NetworkConnectionsSingleComponent>();
+        netConnectionsComp = scene->GetSingleComponent<NetworkServerConnectionsSingleComponent>();
         DVASSERT(netConnectionsComp);
         countdown = 2.f;
     }

@@ -1,7 +1,7 @@
 #include "PlayerEntitySystem.h"
 
 #include <Scene3D/Components/TransformComponent.h>
-#include <Scene3D/Components/TransformInterpolationComponent.h>
+#include <Scene3D/Components/TransformInterpolatedComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/SkeletonComponent.h>
 
@@ -24,6 +24,7 @@
 #include <NetworkCore/Scene3D/Components/NetworkRemoteInputComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTrafficLimitComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkMovementComponent.h>
 
 #include "Components/ShootCooldownComponent.h"
 #include "Components/PlayerTankComponent.h"
@@ -184,9 +185,7 @@ void PlayerEntitySystem::FillTankPlayerEntity(DAVA::Entity* entity)
             entity->AddComponent(npc);
         }
 
-        TransformInterpolationComponent* tic = new TransformInterpolationComponent();
-        tic->time = 2.0f;
-        entity->AddComponent(tic);
+        entity->AddComponent(new NetworkMovementComponent());
     }
 
     Entity* tankModel = GetModel(filePath);

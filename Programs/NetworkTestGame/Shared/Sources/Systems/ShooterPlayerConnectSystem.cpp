@@ -14,7 +14,7 @@
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
-#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
 {
@@ -28,7 +28,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
 ShooterPlayerConnectSystem::ShooterPlayerConnectSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentMask())
 {
-    netConnectionsComp = scene->GetSingleComponent<DAVA::NetworkConnectionsSingleComponent>();
+    netConnectionsComp = scene->GetSingleComponent<DAVA::NetworkServerConnectionsSingleComponent>();
     DVASSERT(netConnectionsComp);
 }
 

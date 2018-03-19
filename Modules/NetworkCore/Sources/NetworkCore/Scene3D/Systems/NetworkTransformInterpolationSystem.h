@@ -1,4 +1,5 @@
 #pragma once
+#if 0
 
 #include <Base/BaseTypes.h>
 #include <Scene3D/ComponentGroup.h>
@@ -26,3 +27,5 @@ private:
 };
 
 } //namespace DAVA
+
+#endif

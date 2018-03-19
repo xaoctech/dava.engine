@@ -9,7 +9,7 @@ namespace DAVA
 {
 class Scene;
 class Entity;
-class NetworkConnectionsSingleComponent;
+class NetworkServerConnectionsSingleComponent;
 class NetworkGameModeSingleComponent;
 class Camera;
 }
@@ -38,7 +38,7 @@ private:
     void TuneComponentPrivacy();
 
     DAVA::Camera* camera = nullptr;
-    DAVA::NetworkConnectionsSingleComponent* netConnectionsComp = nullptr;
+    DAVA::NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
     DAVA::NetworkGameModeSingleComponent* netGameModeComp = nullptr;
     GameModeSingleComponent* gameModeComp = nullptr;
 };

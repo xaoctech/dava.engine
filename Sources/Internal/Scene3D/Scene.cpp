@@ -275,14 +275,24 @@ void Scene::SetFixedUpdateTime(float32 time)
     fixedUpdate.fixedTime = time;
 }
 
-void Scene::SetConstantUpdateTime(float32 time)
+void Scene::SetFixedUpdateAdjustment(float32 time)
 {
-    fixedUpdate.constantTime = time;
+    fixedUpdate.adjustment = time;
+}
+
+float32 Scene::GetFixedUpdateTime() const
+{
+    return fixedUpdate.fixedTime;
+}
+
+float32 Scene::GetFixedUpdateOverlap() const
+{
+    return fixedUpdate.overlap;
 }
 
 void Scene::SetPerformFixedProcessOnlyOnce(bool isPerformFixedProcessOnlyOnce_)
 {
-    isPerformFixedProcessOnlyOnce = isPerformFixedProcessOnlyOnce_;
+    fixedUpdate.onlyOnce = isPerformFixedProcessOnlyOnce_;
 }
 
 rhi::RenderPassConfig& Scene::GetMainPassConfig()
@@ -642,7 +652,7 @@ void Scene::RemoveTag(FastName tag)
 
 bool Scene::HasTag(FastName tag) const
 {
-    return (tags.find(tag) == tags.end());
+    return (tags.find(tag) != tags.end());
 }
 
 bool Scene::RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system)
@@ -771,40 +781,47 @@ void Scene::CreateSystemsToMethods(const Vector<SystemManager::SceneProcessInfo>
 
 void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
 {
-    if (!pauseFixedUpdate)
+    if (!fixedUpdate.paused)
     {
-        if (isPerformFixedProcessOnlyOnce)
+        if (fixedUpdate.onlyOnce)
         {
             for (SceneSystem* system : systemsToFixedProcess)
             {
-                system->ProcessFixed(fixedUpdate.constantTime);
+                system->ProcessFixed(fixedUpdate.fixedTime);
                 entitiesManager->UpdateCaches();
             }
 
             ClearFixedProcessesSingleComponents();
+
+            fixedUpdate.overlap = 1.0f;
+            fixedUpdate.accumulatedTime = 0.0f;
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
+            size_t fuCount = 0;
+
             fixedUpdate.accumulatedTime += timeElapsed;
             while (fixedUpdate.accumulatedTime > 0)
             {
                 for (SceneSystem* system : systemsToFixedProcess)
                 {
-                    system->ProcessFixed(fixedUpdate.constantTime);
+                    system->ProcessFixed(fixedUpdate.fixedTime);
                     entitiesManager->UpdateCaches();
                 }
 
                 ClearFixedProcessesSingleComponents();
 
-                if (pauseFixedUpdate)
+                if (fixedUpdate.paused)
                 {
                     break;
                 }
 
-                fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
+                fixedUpdate.accumulatedTime -= (fixedUpdate.fixedTime + fixedUpdate.adjustment);
+                fuCount++;
             }
-            const float32 timeOverrun = fixedUpdate.fixedTime + fixedUpdate.accumulatedTime;
-            timeOverrunInterpolatedFactor = timeOverrun / fixedUpdate.fixedTime;
+
+            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.adjustment + fixedUpdate.accumulatedTime) / (fixedUpdate.fixedTime + fixedUpdate.adjustment);
+            //Logger::Info("FixedUpdate call count = %u, overlap = %f", fuCount, fixedUpdate.overlap);
         }
     }
 
@@ -841,7 +858,7 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
 
     SystemManager* sm = GetEngineContext()->systemManager;
 
-    if (!pauseFixedUpdate)
+    if (!fixedUpdate.paused)
     {
         auto ProcessFixedMethods = [this, sm]() {
             for (const auto& p : sm->GetFixedProcessMethods())
@@ -849,34 +866,41 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
                 auto it = systemsMap.find(p.systemType);
                 if (it != systemsMap.end())
                 {
-                    p.method->InvokeWithCast(it->second, fixedUpdate.constantTime);
+                    p.method->InvokeWithCast(it->second, fixedUpdate.fixedTime);
                     entitiesManager->UpdateCaches();
                 }
             }
         };
 
-        if (isPerformFixedProcessOnlyOnce)
+        if (fixedUpdate.onlyOnce)
         {
             ProcessFixedMethods();
             ClearFixedProcessesSingleComponents();
+
+            fixedUpdate.overlap = 1.0f;
+            fixedUpdate.accumulatedTime = 0.0f;
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
+            size_t fuCount = 0;
+
             fixedUpdate.accumulatedTime += timeElapsed;
             while (fixedUpdate.accumulatedTime > 0)
             {
                 ProcessFixedMethods();
                 ClearFixedProcessesSingleComponents();
 
-                if (pauseFixedUpdate)
+                if (fixedUpdate.paused)
                 {
                     break;
                 }
 
-                fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
+                fixedUpdate.accumulatedTime -= (fixedUpdate.fixedTime + fixedUpdate.adjustment);
+                fuCount++;
             }
-            const float32 timeOverrun = fixedUpdate.fixedTime + fixedUpdate.accumulatedTime;
-            timeOverrunInterpolatedFactor = timeOverrun / fixedUpdate.fixedTime;
+
+            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.adjustment + fixedUpdate.accumulatedTime) / (fixedUpdate.fixedTime + fixedUpdate.adjustment);
+            //Logger::Info("FixedUpdate call count = %u, adjustment = %f, overlap = %f", fuCount, fixedUpdate.adjustment, fixedUpdate.overlap);
         }
     }
 
@@ -1486,22 +1510,17 @@ void Scene::Deactivate()
 
 void Scene::PauseFixedUpdate()
 {
-    pauseFixedUpdate = true;
+    fixedUpdate.paused = true;
 }
 
 void Scene::UnpauseFixedUpdate()
 {
-    pauseFixedUpdate = false;
+    fixedUpdate.paused = false;
 }
 
 bool Scene::IsFixedUpdatePaused() const
 {
-    return pauseFixedUpdate;
-}
-
-float32 Scene::GetTimeOverrunInterpolatedFactor() const
-{
-    return timeOverrunInterpolatedFactor;
+    return fixedUpdate.paused;
 }
 
 const Vector<SceneSystem*>& Scene::GetSystems() const

@@ -30,8 +30,8 @@ class UDPResponderMock : public Responder
 public:
     void Send(const uint8* data_, size_t size_, const PacketParams& param) const override
     {
-        data = data_;
-        size = size_;
+        data.resize(size_);
+        Memcpy(data.data(), data_, size_);
     };
     uint32 GetRtt() const override
     {
@@ -66,8 +66,7 @@ public:
         return false;
     };
 
-    mutable const uint8* data = nullptr;
-    mutable size_t size = 0;
+    mutable Vector<uint8> data;
 
     NetworkPlayerID ID = 1;
 
@@ -319,7 +318,7 @@ struct ClientContext : public CommonContext
 
 void ServerContext::SendTo(ClientContext& clientCtx)
 {
-    clientCtx.system->OnReceiveCallback(server.responder.data, server.responder.size, 0, 0);
+    clientCtx.system->OnReceive(server.responder.data);
 }
 
 DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
@@ -331,7 +330,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
 
         const auto SimulateDataTransmission = [&]()
         {
-            clientCtx.system->OnReceiveCallback(serverCtx.server.responder.data, serverCtx.server.responder.size, 0, 0);
+            clientCtx.system->OnReceive(serverCtx.server.responder.data);
             serverCtx.system->OnReceive(serverCtx.server.responder.GetToken(), clientCtx.client.data);
         };
 
@@ -345,7 +344,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.netTimeComp->SetFrameId(frameId);
             serverInfo[networkID].value = replicatedValue;
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
@@ -373,7 +372,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.netTimeComp->SetFrameId(frameId);
             serverInfo[networkID].value = replicatedValue;
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             clientCtx.client.data.clear();
             if (frameId % 2)
             {
@@ -409,7 +408,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             }
 
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
@@ -454,7 +453,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             }
 
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
@@ -493,7 +492,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             serverCtx.netTimeComp->SetFrameId(frameId);
 
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
@@ -598,7 +597,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             }
 
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);
@@ -664,7 +663,7 @@ DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
             }
 
             serverCtx.system->ProcessFixed(TICK);
-            TEST_VERIFY(serverCtx.server.responder.size > 0);
+            TEST_VERIFY(!serverCtx.server.responder.data.empty());
             serverCtx.SendTo(clientCtx);
 
             clientCtx.system->ProcessFixed(TICK);

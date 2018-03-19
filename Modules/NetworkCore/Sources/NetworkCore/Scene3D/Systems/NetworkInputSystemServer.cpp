@@ -9,7 +9,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkStatisticsSingleComponent.h"
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h>
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkConnectionsSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkInputSystem.h"
 
 #include <Debug/ProfilerCPU.h>
@@ -33,14 +33,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
 NetworkInputSystem::NetworkInputSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkInputComponent>())
 {
-    netConnectionsComp = scene->GetSingleComponentForRead<NetworkConnectionsSingleComponent>(this);
+    netConnectionsComp = scene->GetSingleComponentForRead<NetworkServerConnectionsSingleComponent>(this);
     DVASSERT(netConnectionsComp);
 }
 
 void NetworkInputSystem::AddEntity(Entity* entity)
 {
     const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
-    entitiesToBuffers.emplace(entity, NetworkInputBuffer(NetworkTimeSingleComponent::FrequencyHz, netTimeComp->GetFrameId()));
+    entitiesToBuffers.emplace(entity, NetworkInputBuffer(NetworkTimeSingleComponent::FrameFrequencyHz, netTimeComp->GetFrameId()));
 }
 
 void NetworkInputSystem::RemoveEntity(Entity* entity)
@@ -190,6 +190,5 @@ void NetworkInputSystem::ProcessReceivedInputData()
         statsComp->FlushFrameOffsetMeasurement(frameId, frameDiff);
     }
 }
-
 }
 #endif
