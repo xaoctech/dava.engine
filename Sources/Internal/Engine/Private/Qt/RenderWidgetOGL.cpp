@@ -14,6 +14,7 @@
 #include <QQuickWindow>
 #include <QOpenGLContext>
 #include <QOpenGLFramebufferObject>
+#include <QPointer>
 
 namespace DAVA
 {

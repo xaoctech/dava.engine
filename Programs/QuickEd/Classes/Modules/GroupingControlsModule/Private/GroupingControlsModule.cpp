@@ -1,5 +1,6 @@
 #include "Modules/GroupingControlsModule/GroupingControlsModule.h"
 #include "Model/ControlProperties/RootProperty.h"
+#include "Model/ControlProperties/ValueProperty.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "QECommands/ChangePropertyValueCommand.h"
 #include "UI/CommandExecutor.h"
@@ -167,10 +168,12 @@ void GroupingControlsModule::DoGroup()
     commandExecutor.InsertControl(newGroupControl, parent, parent->GetCount());
     commandExecutor.MoveControls(selectedControlNodes, newGroupControl, 0);
 
-    AbstractProperty* postionProperty = newGroupControl->GetRootProperty()->FindPropertyByName("position");
+    AbstractProperty* positionProperty = newGroupControl->GetRootProperty()->FindPropertyByName("position");
     AbstractProperty* sizeProperty = newGroupControl->GetRootProperty()->FindPropertyByName("size");
-    newGroupControl->GetRootProperty()->SetProperty(postionProperty, Any(newGroupControl->GetControl()->GetPosition()));
+    newGroupControl->GetRootProperty()->SetProperty(positionProperty, Any(newGroupControl->GetControl()->GetPosition()));
+    newGroupControl->GetRootProperty()->SetPropertyForceOverride(static_cast<ValueProperty*>(positionProperty), true);
     newGroupControl->GetRootProperty()->SetProperty(sizeProperty, Any(newGroupControl->GetControl()->GetSize()));
+    newGroupControl->GetRootProperty()->SetPropertyForceOverride(static_cast<ValueProperty*>(sizeProperty), true);
 
     data->EndBatch();
 
