@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ExplosiveRocketComponent)
     ReflectionRegistrator<ExplosiveRocketComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
     .Field("Distance", &ExplosiveRocketComponent::distance)[M::Replicable()]
-    .Field("Stage", &ExplosiveRocketComponent::stage)[M::Replicable()]
+    .Field("Stage", &ExplosiveRocketComponent::GetStage, &ExplosiveRocketComponent::SetStage)[M::Replicable()]
     .Field("Shooter", &ExplosiveRocketComponent::shooterId)[M::Replicable(M::Privacy::PRIVATE)]
     .Field("Traget", &ExplosiveRocketComponent::targetId)[M::Replicable(M::Privacy::PRIVATE)]
     .End();
@@ -45,13 +45,13 @@ void ExplosiveRocketComponent::Deserialize(KeyedArchive* archive, SerializationC
     Component::Deserialize(archive, serializationContext);
 }
 
-ExplosiveRocketComponent::Stage ExplosiveRocketComponent::GetStage() const
+uint8 ExplosiveRocketComponent::GetStage() const
 {
-    return stage;
+    return static_cast<uint8>(stage);
 }
-void ExplosiveRocketComponent::SetStage(Stage stage_)
+void ExplosiveRocketComponent::SetStage(uint8 stage_)
 {
-    stage = stage_;
+    stage = static_cast<Stage>(stage_);
 }
 
 uint32 ExplosiveRocketComponent::GetDistance() const

@@ -32,8 +32,8 @@ public:
     void Deserialize(DAVA::KeyedArchive* archive,
                      DAVA::SerializationContext* serializationContext) override;
 
-    Stage GetStage() const;
-    void SetStage(Stage stage);
+    DAVA::uint8 GetStage() const;
+    void SetStage(DAVA::uint8 stage);
 
     DAVA::uint32 GetDistance() const;
     void SetDistance(DAVA::uint32 distance_);

@@ -1,6 +1,7 @@
 #include "Classes/CommandLine/ResourceDependencyTool.h"
 
 #include <REPlatform/CommandLine/SceneConsoleHelper.h>
+#include <REPlatform/CommandLine/CommandLineModuleTestUtils.h>
 
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
 #include <TArc/Testing/TArcUnitTests.h>

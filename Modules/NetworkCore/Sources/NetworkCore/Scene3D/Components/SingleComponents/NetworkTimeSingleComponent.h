@@ -58,7 +58,7 @@ public:
     // client view delay in frames
     void SetClientViewDelay(const FastName& token, uint32 frameID, int32 diff);
     int32 GetClientViewDelay(const FastName& token, uint32 frameID) const;
-    
+
     void SetNumTimeSyncs(uint32 value);
     uint32 GetNumTimeSyncs() const;
 

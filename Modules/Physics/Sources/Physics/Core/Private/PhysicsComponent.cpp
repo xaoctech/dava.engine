@@ -111,7 +111,7 @@ void PhysicsComponent::ReleasePxActor()
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsComponent)
 {
     ReflectionRegistrator<PhysicsComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
-    .Field("Body flags", &PhysicsComponent::GetBodyFlags, &PhysicsComponent::SetBodyFlags)[/*M::Replicable(), */ M::FlagsT<PhysicsComponent::eBodyFlags>()]
+    .Field("BodyFlags", &PhysicsComponent::GetBodyFlags, &PhysicsComponent::SetBodyFlags)[M::Replicable(), M::FlagsT<PhysicsComponent::eBodyFlags>()]
     .End();
 }
 

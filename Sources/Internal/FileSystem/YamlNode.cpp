@@ -568,6 +568,8 @@ Any YamlNode::AsAny(const ReflectedStructure::Field* field) const
 
     if (type == Type::Instance<bool>())
         return Any(AsBool());
+    else if (type == Type::Instance<uint8>())
+        return Any(AsUInt32());
     else if (type == Type::Instance<int32>())
         return Any(AsInt32());
     else if (type == Type::Instance<uint32>())

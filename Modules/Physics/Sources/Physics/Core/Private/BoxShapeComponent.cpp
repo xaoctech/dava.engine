@@ -70,7 +70,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BoxShapeComponent)
 {
     ReflectionRegistrator<BoxShapeComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
-    .Field("Half size", &BoxShapeComponent::GetHalfSize, &BoxShapeComponent::SetHalfSize)[M::Replicable(), M::Range(Vector3(0.00001f, 0.00001f, 0.00001f), Any(), Vector3(1.0f, 1.0f, 1.0f))]
+    .Field("HalfSize", &BoxShapeComponent::GetHalfSize, &BoxShapeComponent::SetHalfSize)[M::Replicable(), M::Range(Vector3(0.00001f, 0.00001f, 0.00001f), Any(), Vector3(1.0f, 1.0f, 1.0f))]
     .End();
 }
 

@@ -146,8 +146,7 @@ int DAVAMain(Vector<String> cmdline)
 }
 
 TestServer::TestServer(Engine& engine, GameMode::Id gameModeId, uint16 port, uint8 clientsNumber)
-    : engine(engine)
-    , gameModeId(gameModeId)
+    : gameModeId(gameModeId)
     , gameServer(HOST, port, clientsNumber)
 {
     profilePath = CommandLineParser::GetCommandParam("--profile");

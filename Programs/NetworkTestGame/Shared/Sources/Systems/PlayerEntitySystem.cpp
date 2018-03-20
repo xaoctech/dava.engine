@@ -203,24 +203,21 @@ void PlayerEntitySystem::FillTankPlayerEntity(DAVA::Entity* entity)
         }
     }
 
+    BoxShapeComponent* boxShape = new BoxShapeComponent();
+    const AABBox3 bbox = tankModel->GetWTMaximumBoundingBoxSlow();
+    boxShape->SetHalfSize(bbox.GetSize() / 2.0);
+    boxShape->SetTypeMask(1);
+    boxShape->SetTypeMaskToCollideWith(2);
+    boxShape->SetOverrideMass(true);
+    boxShape->SetMass(10000.f);
+    entity->AddComponent(boxShape);
+
+    DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
+    dynamicBody->SetBodyFlags(PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
+    entity->AddComponent(dynamicBody);
+
     entity->AddNode(tankModel);
     tankModel->Release();
-
-    if (IsServer(this))
-    {
-        BoxShapeComponent* boxShape = new BoxShapeComponent();
-        const AABBox3 bbox = tankModel->GetWTMaximumBoundingBoxSlow();
-        boxShape->SetHalfSize(bbox.GetSize() / 2.0);
-        boxShape->SetTypeMask(1);
-        boxShape->SetTypeMaskToCollideWith(2);
-        boxShape->SetOverrideMass(true);
-        boxShape->SetMass(10000.f);
-        entity->AddComponent(boxShape);
-
-        DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
-        dynamicBody->SetBodyFlags(PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
-        entity->AddComponent(dynamicBody);
-    }
 }
 
 void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)

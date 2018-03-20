@@ -124,67 +124,6 @@ void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA
 
 void ShootSystem::ProcessFixed(float32 timeElapsed)
 {
-    for (Entity* bullet : pendingEntities->entities)
-    {
-        ShootComponent* shootComponent = bullet->GetComponent<ShootComponent>();
-        Entity* bulletModel = GetBulletModel();
-        bullet->AddNode(bulletModel);
-        bulletModel->Release();
-        bullet->SetName("Bullet");
-
-        const Entity* shooter = shootComponent->GetShooter();
-        if (shooter)
-        {
-            const TransformComponent* srcTransComp = shooter->GetComponent<TransformComponent>();
-            TransformComponent* transComp = bullet->GetComponent<TransformComponent>();
-            Quaternion rotation = srcTransComp->GetRotation();
-            Vector3 translation = srcTransComp->GetPosition();
-
-            if (!IsServer(this))
-            {
-                rotation.x += 0.5f;
-                rotation.y -= 0.5f;
-                rotation.Normalize();
-            }
-
-            // translation += rotation.ApplyToVectorFast(Vector3(0.f, 5.f, 0.f));
-            transComp->SetLocalTransform(translation, rotation, srcTransComp->GetScale());
-        }
-
-        if (IsServer(this))
-        {
-            if (shootComponent->GetShootType() & ShootComponent::ShootType::MAIN)
-            {
-                bullet->AddComponent(new DamageComponent());
-            }
-            if (shootComponent->GetShootType() & ShootComponent::ShootType::STUN)
-            {
-                bullet->AddComponent(new GameStunningComponent());
-            }
-
-            BoxShapeComponent* boxShape = new BoxShapeComponent();
-            const AABBox3 bbox = bulletModel->GetWTMaximumBoundingBoxSlow();
-            boxShape->SetHalfSize(bbox.GetSize() / 2.0);
-            boxShape->SetOverrideMass(true);
-            boxShape->SetMass(0.0001f);
-            bullet->AddComponent(boxShape);
-
-            DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
-            dynamicBody->SetBodyFlags(PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
-            bullet->AddComponent(dynamicBody);
-        }
-        else
-        {
-            NetworkDebugDrawComponent* debugDrawComponent = new NetworkDebugDrawComponent();
-            debugDrawComponent->box = bulletModel->GetWTMaximumBoundingBoxSlow();
-            bullet->AddComponent(debugDrawComponent);
-
-            bullet->AddComponent(new NetworkMovementComponent());
-        }
-    }
-
-    pendingEntities->entities.clear();
-
     Vector<Entity*> destroyedBullets;
     for (Entity* bullet : entityGroup->GetEntities())
     {
@@ -208,21 +147,4 @@ void ShootSystem::ProcessFixed(float32 timeElapsed)
         // SERVER_COMPLETE
         //SafeRelease(destroyedBullet);
     }
-}
-
-Entity* ShootSystem::GetBulletModel() const
-{
-    if (nullptr == bulletModel)
-    {
-        ScopedPtr<Scene> model(new Scene(0));
-
-        SceneFileV2::eError err = model->LoadScene("~res:/Rocket.sc2");
-        DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
-        bulletModel = model->GetEntityByID(1)->Clone();
-
-        TransformComponent* tc = bulletModel->GetComponent<TransformComponent>();
-        tc->SetLocalTransform(tc->GetPosition(), tc->GetRotation(), Vector3(1.2f, 0.7f, 1.2f));
-    }
-
-    return bulletModel->Clone();
 }

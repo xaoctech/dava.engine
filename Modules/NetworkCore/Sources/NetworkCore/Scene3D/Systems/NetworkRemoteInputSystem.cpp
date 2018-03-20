@@ -150,7 +150,7 @@ float32 NetworkRemoteInputSystem::GetIncorrectServerFramesPercentage() const
     return std::accumulate(numIncorrectInputs.begin(), numIncorrectInputs.end(), 0) /
     static_cast<float32>(numIncorrectInputs.size() * NetworkTimeSingleComponent::FrameFrequencyHz);
 }
-    
+
 uint32 NetworkRemoteInputSystem::GetIncorrectServerFramesNumber() const
 {
     return numIncorrectInputsTotal;
@@ -544,7 +544,7 @@ bool NetworkRemoteInputSystem::GetIndexWithFrame(NetworkRemoteInputComponent* re
 
         auto it = replicationSingleComponent->replicationInfo.find(networkID);
         DVASSERT(it != replicationSingleComponent->replicationInfo.end());
-        
+
         // Use < instead of <=, because input from frame N will only be replicated in RemoteInputComponent on frame N + 1
         // (since snapshot system at the beginning of a frame)
         if (frameId < it->second.frameIdServer)

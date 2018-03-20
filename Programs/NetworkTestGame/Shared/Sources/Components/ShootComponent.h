@@ -45,14 +45,10 @@ public:
     DAVA::uint32 GetShootType() const;
     void SetShootType(DAVA::uint32 shootTypeMask);
 
-    DAVA::Entity* GetShooter() const;
-    void SetShooter(DAVA::Entity* shooter);
-
     DAVA_VIRTUAL_REFLECTION(ShootComponent, Component);
 
 protected:
     ShootPhase phase = ShootPhase::BURN;
     DAVA::uint32 distance = 0;
-    DAVA::uint32 shootTypeMask = 0;
-    DAVA::Entity* shooter = nullptr;
+    DAVA::uint32 shootTypeMask = ShootType::MAIN;
 };

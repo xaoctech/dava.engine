@@ -22,9 +22,6 @@ public:
     void PrepareForRemove() override{};
 
 protected:
-    mutable DAVA::Entity* bulletModel = nullptr;
-    DAVA::Entity* GetBulletModel() const;
-
     void NextState(DAVA::Entity* bullet, ShootComponent* shootComponent, DAVA::float32 timeElapsed);
     DAVA::EntityGroup* entityGroup = nullptr;
     DAVA::EntityGroupOnAdd* pendingEntities = nullptr;

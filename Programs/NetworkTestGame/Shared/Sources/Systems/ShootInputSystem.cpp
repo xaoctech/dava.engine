@@ -14,9 +14,16 @@
 #include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
 #include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkFactoryComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
+
+#include <NetworkCore/NetworkFactoryUtils.h>
+#include <Physics/Core/DynamicBodyComponent.h>
+#include <Physics/Core/BoxShapeComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 #include <Debug/ProfilerCPU.h>
 #include <Logger/Logger.h>
@@ -99,48 +106,52 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
 
             if (!bullet)
             {
-                bullet = new Entity;
-
-                NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent(bulletId);
-
-                ComponentMask predictionComponentMask;
                 if (isSecondShoot)
                 {
+                    bullet = new Entity;
+
+                    NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent(bulletId);
+
                     ExplosiveRocketComponent* rocketComp = new ExplosiveRocketComponent();
                     rocketComp->shooterId = shooterReplComp->GetNetworkID();
                     bullet->AddComponent(rocketComp);
 
+                    ComponentMask predictionComponentMask;
                     predictionComponentMask.Set<ExplosiveRocketComponent>();
                     bulletReplComp->SetForReplication<ExplosiveRocketComponent>(M::Privacy::PUBLIC);
+
+                    predictionComponentMask.Set<NetworkTransformComponent>();
+                    NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionComponentMask);
+                    bullet->AddComponent(networkPredictComponent);
+                    bullet->AddComponent(new NetworkTransformComponent());
+
+                    if (IsServer(this))
+                    {
+                        bullet->AddComponent(new ObservableComponent());
+                        bullet->AddComponent(new SimpleVisibilityShapeComponent());
+                    }
+
+                    bulletReplComp->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+                    bullet->AddComponent(bulletReplComp);
                 }
                 else
                 {
-                    ShootComponent* shootComp = new ShootComponent();
-                    shootComp->SetShootType(ShootComponent::ShootType::MAIN);
-                    shootComp->SetShooter(shooter);
-                    bullet->AddComponent(shootComp);
+                    NetworkFactoryComponent* factoryComponent = CreateFactoryEntity("Bullet", bulletId);
+                    bullet = factoryComponent->GetEntity();
+                    const TransformComponent* src = shooter->GetComponent<TransformComponent>();
+                    factoryComponent->SetInitialTransform(src->GetPosition(), src->GetRotation());
+                    factoryComponent->OverrideField("DynamicBodyComponent/BodyFlags",
+                                                    PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
 
-                    predictionComponentMask.Set<ShootComponent>();
-                    bulletReplComp->SetForReplication<ShootComponent>(M::Privacy::PUBLIC);
+                    SETUP_AFTER_INIT(factoryComponent, BoxShapeComponent, c)
+                    {
+                        Entity* rocketModel = c->GetEntity()->FindByName("Model");
+                        const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
+                        c->SetHalfSize(bbox.GetSize() / 2.0);
+                    };
                 }
-
-                predictionComponentMask.Set<NetworkTransformComponent>();
-
-                NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionComponentMask);
-                bullet->AddComponent(networkPredictComponent);
-                bullet->AddComponent(new NetworkTransformComponent());
-
-                if (IsServer(this))
-                {
-                    bullet->AddComponent(new ObservableComponent());
-                    bullet->AddComponent(new SimpleVisibilityShapeComponent());
-                }
-
-                bulletReplComp->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
-                bullet->AddComponent(bulletReplComp);
 
                 GetScene()->AddNode(bullet);
-
                 shootCooldownComponent->SetLastShootFrameId(clientFrameId);
             }
 

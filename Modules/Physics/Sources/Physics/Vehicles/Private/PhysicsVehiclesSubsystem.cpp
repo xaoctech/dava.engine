@@ -927,7 +927,7 @@ void PhysicsVehiclesSubsystem::TryRecreateCarVehicle(VehicleCarComponent* vehicl
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getWheelData(%u).mWidth = %f", i, wheelsSimData->getWheelData(i).mWidth);
 
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mCamberStiffnessPerUnitGravity = %f", i, wheelsSimData->getTireData(i).mCamberStiffnessPerUnitGravity);
-        
+
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mFrictionVsSlipGraph = [%f, %f, %f, %f, %f, %f]", i, wheelsSimData->getTireData(i).mFrictionVsSlipGraph[0][0], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[0][1], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[1][0], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[1][1], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[2][0], wheelsSimData->getTireData(i).mFrictionVsSlipGraph[2][1]);
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLatStiffX = %f", i, wheelsSimData->getTireData(i).mLatStiffX);
         PHYSICS_VEHICLES_SYSTEM_DEBUG_LOG("\twheelsSimData->.getTireData(%u).mLatStiffY = %f", i, wheelsSimData->getTireData(i).mLatStiffY);

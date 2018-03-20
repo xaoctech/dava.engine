@@ -11,6 +11,7 @@
 #include "NetworkCore/Scene3D/Components/NetworkTrafficLimitComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkTransformComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkMovementComponent.h"
+#include "NetworkCore/Scene3D/Components/NetworkFactoryComponent.h"
 
 #include "NetworkCore/Scene3D/Systems/NetworkDebugDrawSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDebugPredictDrawSystem.h"
@@ -35,6 +36,7 @@
 #include "NetworkCore/Scene3D/Systems/NetworkHealthCheckSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkTransformInterpolationSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkConnectionsSystem.h"
+#include "NetworkCore/Scene3D/Systems/NetworkFactorySystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkMovementSystem.h"
 
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
@@ -97,6 +99,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkServerConnectionsSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkClientConnectionSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkFactoryComponent);
 
     // Systems
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugDrawSystem);
@@ -123,6 +126,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemClient);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemServer);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkConnectionsSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkFactorySystem);
 
     RegisterStandardTypeCompressors();
     netDebugOverlay.reset(new NetworkCoreDebugOverlayItem());

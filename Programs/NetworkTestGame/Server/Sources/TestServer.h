@@ -36,7 +36,6 @@ public:
     void OnUpdate(DAVA::float32 frameDelta);
 
 private:
-    DAVA::Engine& engine;
     DAVA::ScopedPtr<DAVA::Scene> scene;
     DAVA::UnorderedSet<DAVA::FastName> tags;
     MainScreen* mainScreen = nullptr;

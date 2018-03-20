@@ -40,7 +40,7 @@ public:
 
     /** Return percentage of frames for last 10 seconds that have been processed on a server with input data which does not match client's. */
     float32 GetIncorrectServerFramesPercentage() const;
-    
+
     /** Return percentage of frames that have been processed on a server with input data which does not match client's. */
     uint32 GetIncorrectServerFramesNumber() const;
 

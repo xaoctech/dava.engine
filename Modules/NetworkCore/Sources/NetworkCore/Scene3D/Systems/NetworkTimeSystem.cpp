@@ -129,9 +129,9 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
         netTimeComp->SetUptimeMs(timeSyncHeader->uptimeMs);
         netTimeComp->SetFrameId(timeSyncHeader->uptimeMs / NetworkTimeSingleComponent::FrameDurationMs);
         netTimeComp->SetIsInitialized(true);
-        
+
         netTimeComp->SetNumTimeSyncs(netTimeComp->GetNumTimeSyncs() + 1);
-        
+
         break;
     }
     case TimeSyncHeader::Type::DIFF:

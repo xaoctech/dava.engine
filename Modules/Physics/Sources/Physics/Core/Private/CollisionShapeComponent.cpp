@@ -382,7 +382,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(CollisionShapeComponent)
     .Field("material", &CollisionShapeComponent::GetMaterialName, &CollisionShapeComponent::SetMaterialName)[M::Replicable(), M::DisplayName("Material name")]
     .Field("Local position", &CollisionShapeComponent::GetLocalPosition, &CollisionShapeComponent::SetLocalPosition)[M::Replicable(), M::ComparePrecision(0.01f)]
     .Field("Local orientation", &CollisionShapeComponent::GetLocalOrientation, &CollisionShapeComponent::SetLocalOrientation)[M::Replicable(), M::ComparePrecision(0.01f)]
-    .Field("Override mass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)[M::Replicable()]
+    .Field("OverrideMass", &CollisionShapeComponent::GetOverrideMass, &CollisionShapeComponent::SetOverrideMass)[M::Replicable()]
     .Field("Mass", &CollisionShapeComponent::GetMass, &CollisionShapeComponent::SetMass)[M::Replicable()]
     .Field("Type", &CollisionShapeComponent::GetTypeMask, &CollisionShapeComponent::SetTypeMask)[M::Replicable()]
     .Field("Types to collide with", &CollisionShapeComponent::GetTypeMaskToCollideWith, &CollisionShapeComponent::SetTypeMaskToCollideWith)[M::Replicable()]

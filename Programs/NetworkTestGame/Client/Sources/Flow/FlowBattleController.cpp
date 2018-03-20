@@ -86,12 +86,12 @@ void FlowBattleController::Activate(DAVA::UIFlowContext* context, DAVA::UIContro
     DVASSERT(pauseControl);
     pauseTextComponent = pauseControl->GetOrCreateComponent<UITextComponent>();
     DVASSERT(pauseTextComponent);
-    
+
     UIControl* timeSyncsControl = view->FindByPath("HUD/InfoPanel/*/TimeSyncsText");
     DVASSERT(timeSyncsControl);
     timeSyncsTextComponent = timeSyncsControl->GetOrCreateComponent<UITextComponent>();
     DVASSERT(timeSyncsTextComponent);
-    
+
     UIControl* incorrectInputControl = view->FindByPath("HUD/InfoPanel/*/IncorrectInputText");
     DVASSERT(incorrectInputControl);
     incorrectInputTextComponent = incorrectInputControl->GetOrCreateComponent<UITextComponent>();
@@ -171,7 +171,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
         pingTextComponent->SetText(std::to_string(udpClient.GetPing()));
         lossTextComponent->SetText(std::to_string(udpClient.GetPacketLoss() * 100.f));
         timeSyncsTextComponent->SetText(std::to_string(netTimeComp->GetNumTimeSyncs()));
-        
+
         NetworkRemoteInputSystem* remoteInputSystem = battleScene->GetSystem<NetworkRemoteInputSystem>();
         if (remoteInputSystem && remoteInputSystem->GetFullInputComparisonFlag())
         {

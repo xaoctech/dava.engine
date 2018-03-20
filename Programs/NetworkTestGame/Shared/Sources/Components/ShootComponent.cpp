@@ -67,13 +67,3 @@ void ShootComponent::SetShootType(DAVA::uint32 shootTypeMask_)
 {
     shootTypeMask = shootTypeMask_;
 }
-
-DAVA::Entity* ShootComponent::GetShooter() const
-{
-    return shooter;
-}
-
-void ShootComponent::SetShooter(DAVA::Entity* shooter_)
-{
-    shooter = shooter_;
-}
