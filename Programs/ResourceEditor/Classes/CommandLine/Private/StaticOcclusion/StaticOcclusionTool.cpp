@@ -106,7 +106,6 @@ DAVA::ConsoleModule::eFrameResult StaticOcclusionTool::OnFrameInternal()
             const DAVA::float32* waterDataPtr = defWaterClearColor.color;
 
             DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_SHADOW_COLOR, shadowDataPtr, reinterpret_cast<DAVA::pointer_size>(shadowDataPtr));
-            DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_WATER_CLEAR_COLOR, waterDataPtr, reinterpret_cast<DAVA::pointer_size>(waterDataPtr));
             DAVA::Renderer::GetDynamicBindings().SetDynamicParam(DAVA::DynamicBindings::PARAM_GLOBAL_TIME, &sceneGlobalTime, reinterpret_cast<DAVA::pointer_size>(&sceneGlobalTime));
 
             DAVA::Renderer::BeginFrame();

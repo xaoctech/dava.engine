@@ -39,6 +39,7 @@ void SpeedTreeObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
     SkinnedMesh::BindDynamicParameters(camera, batch);
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WIND, wind.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PREV_WIND, prevWind.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_FLEXIBILITY, flexibility.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 }
 

@@ -124,6 +124,8 @@ public:
 
     virtual void RecalcBoundingBox();
 
+    virtual void UpdatePreviousState();
+
     inline uint32 GetRenderBatchCount() const;
     inline RenderBatch* GetRenderBatch(uint32 batchIndex) const;
     inline RenderBatch* GetRenderBatch(uint32 batchIndex, int32& lodIndex, int32& switchIndex) const;
@@ -167,8 +169,7 @@ public:
     inline const Matrix4* GetWorldTransformPtr() const;
     inline void SetInverseTransform(const Matrix4& _inverseWorldTransform);
     inline const Matrix4& GetInverseWorldTransform() const;
-    void SetPrevWorldTransformPtr(const Matrix4* _prevWorldTransform);
-    const Matrix4* GetPrevWorldTransform() const;
+    const Matrix4& GetPrevWorldTransform() const;
 
     inline eType GetType() const
     {
@@ -315,7 +316,7 @@ protected:
 
     RenderSystem* renderSystem = nullptr;
     const Matrix4* worldTransform = nullptr; // temporary - this should me moved directly to matrix uniforms
-    const Matrix4* prevWorldTransform = nullptr; // GFX_COMPLETE we need this matrix only for velocity buffer. There are not too many moving objects in level actually so we just wasting memory.
+    Matrix4 prevWorldTransform; // GFX_COMPLETE we need this matrix only for velocity buffer. There are not too many moving objects in level actually so we just wasting memory.
     Matrix4 inverseWorldTransform;
     FastName ownerDebugInfo;
     AABBox3 bbox;
@@ -396,14 +397,7 @@ inline const Matrix4* RenderObject::GetWorldTransformPtr() const
     return worldTransform;
 }
 
-inline void RenderObject::SetPrevWorldTransformPtr(const Matrix4* _prevWorldTransform)
-{
-    if (prevWorldTransform == _prevWorldTransform)
-        return;
-    prevWorldTransform = _prevWorldTransform;
-}
-
-inline const Matrix4* RenderObject::GetPrevWorldTransform() const
+inline const Matrix4& RenderObject::GetPrevWorldTransform() const
 {
     return prevWorldTransform;
 }

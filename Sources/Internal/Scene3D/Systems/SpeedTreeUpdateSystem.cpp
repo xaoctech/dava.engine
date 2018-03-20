@@ -150,8 +150,11 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
             wind = Vector3(1.0f, 0.0f, 0.0f);
         }
 
-        static_cast<SpeedTreeObject*>(renderObject)->wind = Vector4(wind, windForce);
-        static_cast<SpeedTreeObject*>(renderObject)->flexibility = Vector4(treeComponent->GetLeavesFlexibility() / (0.5f * PI), 0.0f, 0.0f, 0.0f);
+        SpeedTreeObject* speedTreeObject = static_cast<SpeedTreeObject*>(renderObject);
+        speedTreeObject->prevWind = speedTreeObject->wind;
+        speedTreeObject->wind = Vector4(wind, windForce);
+        float32 prevFlexibility = speedTreeObject->flexibility.x;
+        speedTreeObject->flexibility = Vector4(treeComponent->GetLeavesFlexibility() / (0.5f * PI), prevFlexibility, 0.0f, 0.0f);
 
         const Vector<SpeedTreeComponent::Bone>& treeBones = treeComponent->GetBones();
         if (treeBones.empty() == false)

@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_DYNAMIC_BINDINGS_H__
-#define __DAVAENGINE_DYNAMIC_BINDINGS_H__
+#pragma once
 
 #include "Math/Color.h"
 #include "Math/Matrix4.h"
@@ -12,33 +11,42 @@ namespace DAVA
 class DynamicBindings
 {
 public:
+    // Warning! If your new semantic can cause update of other semantic or vice versa, put the new semantic before DEPENDENT_SEMANTIC_END.
     enum eUniformSemantic
     {
         UNKNOWN_SEMANTIC = 0,
 
         PARAM_WORLD,
-        PARAM_WORLD_PREVIOUS,
         PARAM_INV_WORLD,
+        PARAM_WORLD_VIEW_OBJECT_CENTER,
+        PARAM_WORLD_VIEW_PROJ,
+        PARAM_INV_WORLD_VIEW_PROJ,
+        PARAM_WORLD_VIEW_INV_TRANSPOSE, //NORMAL, // NORMAL MATRIX
         PARAM_WORLD_INV_TRANSPOSE,
+        PARAM_WORLD_SCALE,
+
         PARAM_VIEW,
         PARAM_INV_VIEW,
-        PARAM_PROJ,
-        PARAM_INV_PROJ,
-
         PARAM_WORLD_VIEW,
         PARAM_INV_WORLD_VIEW,
-        PARAM_WORLD_VIEW_INV_TRANSPOSE, //NORMAL, // NORMAL MATRIX
 
         PARAM_VIEW_PROJ,
         PARAM_INV_VIEW_PROJ,
 
+        PARAM_PROJ,
+        PARAM_INV_PROJ,
+
+        PARAM_LOCAL_BOUNDING_BOX,
+        PARAM_BOUNDING_BOX_SIZE,
+
+        PARAM_PROJECTION_FLIPPED,
+
+        DEPENDENT_SEMANTIC_END, // End of dependent semantics!!!!!!
+
+        PARAM_PREV_WORLD,
         PARAM_PREV_VIEW_PROJ,
 
-        PARAM_WORLD_VIEW_PROJ,
-        PARAM_INV_WORLD_VIEW_PROJ,
-
-        PARAM_GLOBAL_TIME,
-        PARAM_WORLD_SCALE,
+        PARAM_GLOBAL_TIME, // Vector2. x - current time. y - previous time.
 
         PARAM_CAMERA_POS,
         PARAM_CAMERA_DIR,
@@ -47,12 +55,10 @@ public:
         PARAM_LIGHT0_POSITION,
         PARAM_LIGHT0_COLOR,
 
-        PARAM_LOCAL_BOUNDING_BOX,
-        PARAM_WORLD_VIEW_OBJECT_CENTER,
-        PARAM_BOUNDING_BOX_SIZE,
-
         PARAM_JOINT_POSITIONS,
         PARAM_JOINT_QUATERNIONS,
+        PARAM_PREV_JOINT_POSITIONS,
+        PARAM_PREV_JOINT_QUATERNIONS,
         PARAM_JOINTS_COUNT, //it will not be bound into shader, but will be used to bind joints
 
         PARAM_VIEWPORT_SIZE,
@@ -63,11 +69,9 @@ public:
         PARAM_LANDSCAPE_HEIGHTMAP_SIZE_POW2,
 
         PARAM_SHADOW_COLOR,
-        PARAM_WATER_CLEAR_COLOR,
 
         PARAM_SHADOW_VIEW,
         PARAM_SHADOW_PARAMETERS,
-        PARAM_Z_NEAR_FAR,
 
         /*
          * Shadowmapping-v2 bindings
@@ -84,12 +88,12 @@ public:
         LOCAL_PROBE_CAPTURE_WORLD_TO_LOCAL_MATRIX,
 
         PARAM_WIND,
-        PARAM_FLEXIBILITY,
+        PARAM_PREV_WIND,
+        PARAM_FLEXIBILITY, // Vector2. x - current flex, y - previous.
 
-        PARAM_PROJECTION_FLIPPED,
         PARAM_RENDER_TARGET_SIZE,
 
-        PARAM_FOG_VALUES /* distance scale, turbidity, anisotropy, unused */,
+        PARAM_FOG_VALUES, /* distance scale, turbidity, anisotropy, unused */
 
         PARAM_GLOBAL_DIFFUSE_SPHERICAL_HARMONICS,
 
@@ -209,4 +213,3 @@ inline void DynamicBindings::ClearDynamicTextures()
         h = rhi::HTexture();
 }
 }
-#endif

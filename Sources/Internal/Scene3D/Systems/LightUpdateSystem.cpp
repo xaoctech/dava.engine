@@ -62,11 +62,9 @@ void LightUpdateSystem::Process(float32 timeElapsed)
 void LightUpdateSystem::RecalcLight(Entity* entity)
 {
     const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-    const Matrix4* prevWorldTransformPointer = entity->GetComponent<TransformComponent>()->GetPrevWorldTransformPtr();
     Light* light = entity->GetComponent<LightComponent>()->GetLightObject();
     light->SetPositionDirectionFromMatrix(*worldTransformPointer);
     light->SetWorldTransformPtr(worldTransformPointer);
-    light->SetPrevWorldTransformPtr(prevWorldTransformPointer);
     if (light->GetLightType() == Light::TYPE_DIRECTIONAL)
     {
         light->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);

@@ -40,7 +40,7 @@ protected:
 private:
     Vector4 wind;
     Vector4 flexibility;
-    Vector4 null;
+    Vector4 prevWind;
 
     const Matrix4* invWorldTransform = nullptr;
 

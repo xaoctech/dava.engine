@@ -537,9 +537,7 @@ void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const Uno
     {
         TransformComponent* transformComponent = root->GetComponent<TransformComponent>();
         const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
-        const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
         roIter->second->SetWorldTransformPtr(worldTransformPointer);
-        roIter->second->SetPrevWorldTransformPtr(prevWorldTransformPointer);
         scene->renderSystem->MarkForUpdate(roIter->second);
     }
 
@@ -664,9 +662,7 @@ void PhysicsDebugDrawSystem::ProcessFixed(float32 timeElapsed)
                 Entity* entity = (*iter)->GetEntity();
                 TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
                 const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
-                const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
                 ro->SetWorldTransformPtr(worldTransformPointer);
-                ro->SetWorldTransformPtr(prevWorldTransformPointer);
                 GetScene()->GetRenderSystem()->RenderPermanent(ro);
             }
 

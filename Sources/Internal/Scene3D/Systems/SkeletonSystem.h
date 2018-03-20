@@ -38,6 +38,8 @@ private:
 
     void UpdateTestSkeletons(float32 timeElapsed);
 
+    SkinnedMesh* GetSkinnedMesh(const Entity* entity) const;
+
     Vector<Entity*> entities;
 };
 

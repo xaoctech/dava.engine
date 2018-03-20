@@ -48,9 +48,12 @@ public:
     const JointTargets& GetJointTargets(RenderBatch* batch);
     const JointTargetsData& GetJointTargetsData(RenderBatch* batch);
 
+    void UpdatePreviousState() override;
+
 protected:
     UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index
     Vector<std::pair<JointTargets, JointTargetsData>> jointTargetsData;
+    Vector<std::pair<JointTargets, JointTargetsData>> prevJointTargetsData;
 };
 
 inline void SkinnedMesh::SetBoundingBox(const AABBox3& box)

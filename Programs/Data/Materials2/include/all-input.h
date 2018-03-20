@@ -1,15 +1,14 @@
 [auto][global] property float cameraTargetLuminance;
 [auto][global] property float distantDepthValue;
-[auto][global] property float flexibility;
 [auto][global] property float globalLuminanceScale;
-[auto][global] property float globalTime;
 [auto][global] property float projectionFlipped;
 [auto][global] property float2 cameraDynamicRange;
+[auto][global] property float2 flexibility;
+[auto][global] property float2 globalTime; // x - current time. y - previous time.
 [auto][global] property float2 pointLightFaceSize;
 [auto][global] property float2 renderTargetSize;
 [auto][global] property float2 viewportOffset;
 [auto][global] property float2 viewportSize;
-[auto][global] property float2 z_near_far;
 [auto][global] property float3 cameraDirection;
 [auto][global] property float3 cameraPosition;
 [auto][global] property float3 cameraUp;
@@ -21,6 +20,7 @@
 [auto][global] property float4 lightingParameters = float4(0.0, 0.0, 0.0, 0.0); /* (x: unused; y: point lights count; z: unused; w: unused )*/
 [auto][global] property float4 shadowMapParameters; /* PCF filter radius, cascades blend size, filter size for transmittance, empty */
 [auto][global] property float4 wind;
+[auto][global] property float4 prevWind;
 [auto][global] property float4x4 directionalShadowMapProjectionOffset;
 [auto][global] property float4x4 directionalShadowMapProjectionScale;
 [auto][global] property float4x4 invProjMatrix;

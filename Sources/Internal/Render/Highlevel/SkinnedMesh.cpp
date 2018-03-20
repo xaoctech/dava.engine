@@ -84,10 +84,15 @@ void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
     if (found != jointTargetsDataMap.end())
     {
         const JointTargetsData& data = jointTargetsData[found->second].second;
+        const JointTargetsData& prevData = prevJointTargetsData[found->second].second;
 
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_JOINTS_COUNT, &data.jointsDataCount, reinterpret_cast<pointer_size>(&data.jointsDataCount));
+
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_JOINT_POSITIONS, data.positions.data(), reinterpret_cast<pointer_size>(data.positions.data()));
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_JOINT_QUATERNIONS, data.quaternions.data(), reinterpret_cast<pointer_size>(data.quaternions.data()));
+
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PREV_JOINT_POSITIONS, prevData.positions.data(), reinterpret_cast<pointer_size>(prevData.positions.data()));
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PREV_JOINT_QUATERNIONS, prevData.quaternions.data(), reinterpret_cast<pointer_size>(prevData.quaternions.data()));
     }
 
     RenderObject::BindDynamicParameters(camera, batch);
@@ -95,10 +100,10 @@ void SkinnedMesh::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 
 void SkinnedMesh::UpdateJointTransforms(const Vector<JointTransform>& finalTransforms)
 {
-    for (auto& jointsData : jointTargetsData)
+    for (uint32 i = 0; i < jointTargetsData.size(); ++i)
     {
-        const JointTargets& targets = jointsData.first;
-        JointTargetsData& data = jointsData.second;
+        const JointTargets& targets = jointTargetsData[i].first;
+        JointTargetsData& data = jointTargetsData[i].second;
 
         for (uint32 j = 0; j < data.jointsDataCount; ++j)
         {
@@ -128,12 +133,18 @@ void SkinnedMesh::SetJointTargets(RenderBatch* batch, const JointTargets& target
     {
         uint32 dataIndex = uint32(jointTargetsData.size());
         jointTargetsData.emplace_back();
+        prevJointTargetsData.emplace_back();
 
         uint32 targetsCount = uint32(targets.size());
         jointTargetsData.back().first = targets;
         jointTargetsData.back().second.positions.resize(targetsCount);
         jointTargetsData.back().second.quaternions.resize(targetsCount);
         jointTargetsData.back().second.jointsDataCount = targetsCount;
+
+        prevJointTargetsData.back().first = targets;
+        prevJointTargetsData.back().second.positions.resize(targetsCount);
+        prevJointTargetsData.back().second.quaternions.resize(targetsCount);
+        prevJointTargetsData.back().second.jointsDataCount = targetsCount;
 
         jointTargetsDataMap[batch] = dataIndex;
     }
@@ -160,5 +171,26 @@ const SkinnedMesh::JointTargetsData& SkinnedMesh::GetJointTargetsData(RenderBatc
 
     static const JointTargetsData emptyJointTargetsData = JointTargetsData();
     return emptyJointTargetsData;
+}
+
+void SkinnedMesh::UpdatePreviousState()
+{
+    for (uint32 i = 0; i < jointTargetsData.size(); ++i)
+    {
+        DVASSERT(jointTargetsData.size() == prevJointTargetsData.size());
+
+        JointTargetsData& data = jointTargetsData[i].second;
+        JointTargetsData& prevData = prevJointTargetsData[i].second;
+
+        for (uint32 j = 0; j < data.jointsDataCount; ++j)
+        {
+            DVASSERT(prevData.positions.size() == data.positions.size());
+            DVASSERT(prevData.quaternions.size() == data.quaternions.size());
+
+            prevData.positions[j] = data.positions[j];
+            prevData.quaternions[j] = data.quaternions[j];
+        }
+    }
+    RenderObject::UpdatePreviousState();
 }
 }

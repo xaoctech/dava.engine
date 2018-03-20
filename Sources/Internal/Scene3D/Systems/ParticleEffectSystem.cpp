@@ -311,9 +311,7 @@ void ParticleEffectSystem::AddToActive(ParticleEffectComponent* effect)
         {
             TransformComponent* transformComponent = effect->GetEntity()->GetComponent<TransformComponent>();
             const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
-            const Matrix4* prevWorldTransformPointer = transformComponent->GetPrevWorldTransformPtr();
             effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
-            effect->effectRenderObject->SetPrevWorldTransformPtr(prevWorldTransformPointer);
             Vector3 pos = worldTransformPointer->GetTranslationVector();
             effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
             scene->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);

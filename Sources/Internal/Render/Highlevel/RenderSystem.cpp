@@ -586,7 +586,10 @@ void RenderSystem::Render()
 #endif
 
     for (RenderObject* ro : velocityUpdatedObjects)
+    {
+        ro->UpdatePreviousState();
         ro->RemoveFlag(RenderObject::VELOCITY_UPDATE);
+    }
     velocityUpdatedObjects.clear();
 }
 

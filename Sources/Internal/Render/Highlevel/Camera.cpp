@@ -518,10 +518,7 @@ void Camera::SetupDynamicParameters(bool invertProjection, bool invertZ, Vector4
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_CAMERA_DIR, &direction, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_CAMERA_UP, &up, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
-    z_near_far.x = znear;
-    z_near_far.y = zfar;
     float32 projectionFlipped = invertProjection ? -1.0f : 1.0f;
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_Z_NEAR_FAR, &z_near_far, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &projectionFlipped, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 }
 

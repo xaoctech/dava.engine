@@ -95,11 +95,9 @@ void SkeletonSystem::Process(float32 timeElapsed)
             if (component->startJoint != SkeletonComponent::INVALID_JOINT_INDEX)
             {
                 UpdateJointTransforms(component);
-                RenderObject* ro = GetRenderObject(entities[i]);
-                if (ro != nullptr && ((ro->GetType() == RenderObject::TYPE_SKINNED_MESH) || (ro->GetType() == RenderObject::TYPE_SPEED_TREE)))
-                {
-                    UpdateSkinnedMesh(component, static_cast<SkinnedMesh*>(ro));
-                }
+                SkinnedMesh* mesh = GetSkinnedMesh(entities[i]);
+                if (mesh != nullptr)
+                    UpdateSkinnedMesh(component, static_cast<SkinnedMesh*>(mesh));
             }
         }
     }
@@ -291,5 +289,13 @@ void SkeletonSystem::UpdateTestSkeletons(float32 timeElapsed)
             }
         }
     }
+}
+
+SkinnedMesh* SkeletonSystem::GetSkinnedMesh(const Entity* entity) const
+{
+    RenderObject* ro = GetRenderObject(entity);
+    if (ro != nullptr && ((ro->GetType() == RenderObject::TYPE_SKINNED_MESH) || (ro->GetType() == RenderObject::TYPE_SPEED_TREE)))
+        return static_cast<SkinnedMesh*>(ro);
+    return nullptr;
 }
 }

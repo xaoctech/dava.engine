@@ -65,7 +65,7 @@ vertex_out vp_main(vertex_in input)
     float3 billboardOffset = inputPosition.xyz - position.xyz;
 
     // rotate billboards
-    float billboardAngle = flexibility * wind.w * (1.0 + 0.5 * sin(globalTime * (billboardOffset.x + billboardOffset.y + billboardOffset.z)));
+    float billboardAngle = flexibility.x * wind.w * (1.0 + 0.5 * sin(globalTime.x * (billboardOffset.x + billboardOffset.y + billboardOffset.z)));
     float sinAngle = sin(billboardAngle);
     float cosAngle = cos(billboardAngle);
     float3 billboardOffsetRotated;
@@ -85,7 +85,7 @@ vertex_out vp_main(vertex_in input)
     // rotate leafs
     float3 axis = normalize(float3(-wind.y, wind.x, 0.0)); //cross product with up-vector(0.0, 0.0, 1.0);
     float3 offset = inputPosition - input.pivot.xyz;
-    float angle = flexibility * wind.w * (1.0 + 0.5 * sin(globalTime * (offset.x + offset.y + offset.z)));
+    float angle = flexibility.x * wind.w * (1.0 + 0.5 * sin(globalTime.x * (offset.x + offset.y + offset.z)));
     inputPosition = rotateVertex(position, input.pivot.xyz, axis, angle);
     inputPosition += mul(float4(billboardOffsetRotated * worldScale, 0.0), invWorldViewMatrix).xyz;
 #endif

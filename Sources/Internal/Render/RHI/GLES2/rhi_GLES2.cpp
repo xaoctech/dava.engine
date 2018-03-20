@@ -39,7 +39,7 @@ bool _GLES2_UseUserProvidedIndices = false;
 bool _GLES2_TimeStampQuerySupported = false;
 volatile bool _GLES2_ValidateNeonCalleeSavedRegisters = false;
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__)
 void impl_glClipControl(unsigned int, unsigned int)
 {
 } //stub for linker
@@ -345,7 +345,7 @@ static void gles_check_GL_extensions()
         
 #endif
         
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__)
         MutableDeviceCaps::Get().isReverseDepthSupported = false;
 #else
         MutableDeviceCaps::Get().isReverseDepthSupported = (impl_glClipControl != nullptr);

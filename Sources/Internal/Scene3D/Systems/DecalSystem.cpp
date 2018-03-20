@@ -32,12 +32,10 @@ void DecalSystem::Process(float32 timeElapsed)
 
                 // Update new transform pointer, and mark that transform is changed
                 const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
-                const Matrix4* prevWorldTransformPointer = GetTransformComponent(entity)->GetPrevWorldTransformPtr();
                 RenderObject* object = decalComponent->renderObject;
                 if (NULL != object)
                 {
                     object->SetWorldTransformPtr(worldTransformPointer);
-                    object->SetPrevWorldTransformPtr(prevWorldTransformPointer);
                     entity->GetScene()->renderSystem->MarkForUpdate(object);
                 }
             }
@@ -66,9 +64,7 @@ void DecalSystem::AddEntity(Entity* entity)
         component->renderObject = new DecalRenderObject();
 
         const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
-        const Matrix4* prevWorldTransformPointer = GetTransformComponent(entity)->GetPrevWorldTransformPtr();
         component->renderObject->SetWorldTransformPtr(worldTransformPointer);
-        component->renderObject->SetPrevWorldTransformPtr(prevWorldTransformPointer);
         component->renderObject->SetMaterial(component->material.Get());
         component->renderObject->SetDecalSize(component->decalSize);
         component->renderObject->SetSortingOffset(component->sortingOffset);

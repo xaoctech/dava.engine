@@ -12,7 +12,7 @@ inline int32 Scene::GetCameraCount()
 
 inline float Scene::GetGlobalTime() const
 {
-    return sceneGlobalTime;
+    return sceneGlobalTime.x;
 }
 
 template <class T>

@@ -295,7 +295,7 @@ protected:
     bool RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system);
 
     uint32 maxEntityIDCounter;
-    float32 sceneGlobalTime = 0.f;
+    Vector2 sceneGlobalTime;
 
     Vector<Camera*> cameras;
 

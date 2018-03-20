@@ -27,8 +27,6 @@ public:
     const Matrix4& GetWorldTransform() const;
     const Matrix4* GetWorldTransformPtr() const;
 
-    const Matrix4* GetPrevWorldTransformPtr() const;
-
     void SetLocalTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
     void SetLocalTransform(const Matrix4& transform);
 
@@ -51,7 +49,6 @@ private:
     Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
 
     Matrix4 worldMatrix = Matrix4::IDENTITY;
-    Matrix4 prevWorldMatrix = Matrix4::IDENTITY; // GFX_COMPLETE we need this matrix only for velocity buffer. There are not too many moving objects in level actually so we just wasting memory.
     const Matrix4* parentMatrix = nullptr;
     Entity* parent = nullptr;
 };
@@ -64,11 +61,6 @@ inline const Matrix4& TransformComponent::GetWorldTransform() const
 inline const Matrix4* TransformComponent::GetWorldTransformPtr() const
 {
     return &worldMatrix;
-}
-
-inline const Matrix4* TransformComponent::GetPrevWorldTransformPtr() const
-{
-    return &prevWorldMatrix;
 }
 
 inline const Vector3& TransformComponent::GetPosition() const
