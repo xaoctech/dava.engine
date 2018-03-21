@@ -1,51 +1,51 @@
 variables:
     result: ["float32", 20.000000]
 nodes:
-    VisualScriptAnotherScriptNode1:
-        connections:
-        -   in:
-                name: "VisualScriptAnotherScriptNode1"
-                pin: "res0"
-            out:
-                name: "VisualScriptSetVarNode1"
-                pin: "set"
-        name: "VisualScriptAnotherScriptNode1"
-        node:
-            position: [266.359985, 413.679993]
-            scriptName: "E:/work/ws1/dava.framework/Programs/TestBed/Data/VScripts/SumConst.dvs"
-            defaults:
-                arg0: 10.000000
-        type: "VisualScriptAnotherScriptNode"
-    VisualScriptEventNode1:
-        connections:
-        -   in:
-                name: "VisualScriptEventNode1"
-                pin: "event"
-            out:
-                name: "VisualScriptSetVarNode1"
-                pin: "exec"
-        name: "VisualScriptEventNode1"
-        node:
-            position: [342.000000, 213.000000]
-            eventName: "ButtonClickEvent"
-        type: "VisualScriptEventNode"
     VisualScriptSetVarNode1:
         connections:
-        -   in:
-                name: "VisualScriptSetVarNode1"
-                pin: "set"
-            out:
-                name: "VisualScriptAnotherScriptNode1"
+        -   out:
                 pin: "res0"
-        -   in:
+                name: "VisualScriptAnotherScriptNode1"
+            in:
+                pin: "set"
                 name: "VisualScriptSetVarNode1"
-                pin: "exec"
-            out:
-                name: "VisualScriptEventNode1"
+        -   out:
                 pin: "event"
-        name: "VisualScriptSetVarNode1"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode1"
         node:
-            position: [630.000000, 263.000000]
-            varPath: "result"
             defaults: {}
+            varPath: "result"
+            position: [630.000000, 263.000000]
         type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode1"
+    VisualScriptEventNode1:
+        connections:
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+        node:
+            eventName: "ButtonClickEvent"
+            position: [342.000000, 213.000000]
+        type: "VisualScriptEventNode"
+        name: "VisualScriptEventNode1"
+    VisualScriptAnotherScriptNode1:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "res0"
+                name: "VisualScriptAnotherScriptNode1"
+        node:
+            defaults:
+                arg0: ["float32", 10.000000]
+            scriptName: "~res:/VScripts/SumConst.dvs"
+            position: [266.359985, 413.679993]
+        type: "VisualScriptAnotherScriptNode"
+        name: "VisualScriptAnotherScriptNode1"

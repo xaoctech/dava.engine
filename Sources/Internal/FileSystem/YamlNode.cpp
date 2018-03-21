@@ -1121,18 +1121,19 @@ bool YamlNode::InitStringFromAny(const Any& any)
 {
     DVASSERT(GetType() == TYPE_STRING);
 
-    //String string = AnySerializer::AnyToString(any); // TODO: AnySerializer
     if (any.CanCast<String>())
     {
         String string = any.Cast<String>();
+
         eStringRepresentation representation = SR_PLAIN_REPRESENTATION;
         const Type* type = any.GetType();
-
         if (type == Type::Instance<FastName>() ||
             type == Type::Instance<String>() ||
             type == Type::Instance<WideString>() ||
             type == Type::Instance<FilePath>())
+        {
             representation = SR_DOUBLE_QUOTED_REPRESENTATION;
+        }
 
         InternalSetString(string, representation);
         return true;

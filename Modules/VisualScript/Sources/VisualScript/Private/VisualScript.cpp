@@ -117,103 +117,100 @@ void VisualScript::RemoveNode(VisualScriptNode* node)
 
 void VisualScript::Save(const FilePath& filepath)
 {
-    /*
-        TODO: Strange behaviour ?? why we do not save empty script
-     */
-    if (nodes.empty() == true)
-    {
-        return;
-    }
-
-    Map<VisualScriptNode*, String> uniqueNames;
-
-    int32 uniqueTypeIndices[VisualScriptNode::TYPE_COUNT];
-    for (uint32 k = 0; k < VisualScriptNode::TYPE_COUNT; ++k)
-        uniqueTypeIndices[k] = 1;
-
-    for (auto& node : nodes)
-    {
-        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPointer(node);
-
-        String name = Format("%s%d", reflectedType->GetPermanentName().c_str(), uniqueTypeIndices[node->GetType()]++);
-        uniqueNames.emplace(node, name);
-    }
-
-    VisualScriptNode* node = nodes[0];
-    Reflection ref = Reflection::Create(node);
-    const Type* type = ref.GetValueType();
-
-    uint32 uniqueIndex = 1;
-
     ScopedPtr<YamlNode> rootNode(YamlNode::CreateMapNode());
+
+    // Store nodes and connections
     YamlNode* yAllNodes = YamlNode::CreateMapNode();
     rootNode->Add("nodes", yAllNodes);
-    for (auto& node : nodes)
+    if (!nodes.empty())
     {
-        auto connections = node->GetAllConnections();
+        Map<VisualScriptNode*, String> uniqueNames;
 
-        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPointer(node);
+        int32 uniqueTypeIndices[VisualScriptNode::TYPE_COUNT];
+        for (uint32 k = 0; k < VisualScriptNode::TYPE_COUNT; ++k)
+            uniqueTypeIndices[k] = 1;
 
-        Logger::Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), type->GetDemangledName().c_str(), reflectedType->GetPermanentName().c_str());
-
-        YamlNode* yNode = YamlNode::CreateMapNode();
-        yAllNodes->Add(uniqueNames[node].c_str(), yNode);
-
-        yNode->Add("name", uniqueNames[node].c_str());
-
-        DVASSERT(reflectedType != nullptr);
-        DVASSERT(reflectedType->GetPermanentName() != "");
-
-        yNode->Add("type", reflectedType->GetPermanentName().c_str());
-
-        YamlNode* yNodeInternal = YamlNode::CreateMapNode();
-        node->Save(yNodeInternal);
-        yNode->Add("node", yNodeInternal);
-
-        auto yConnectionsNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
-        yNode->Add("connections", yConnectionsNode);
-        for (const auto& connection : connections)
+        for (auto& node : nodes)
         {
-            VisualScriptPin* pinIn = connection.first;
-            VisualScriptPin* pinOut = connection.second;
-            VisualScriptNode* otherNode = pinOut->GetSerializationOwner();
+            const ReflectedType* reflectedType = ReflectedTypeDB::GetByPointer(node);
 
-            Logger::Debug("%s.%s -> %s.%s", uniqueNames[node].c_str(),
-                          pinIn->GetName().c_str(),
-                          uniqueNames[otherNode].c_str(),
-                          pinOut->GetName().c_str());
-
-            auto yOneConnectionNode = YamlNode::CreateMapNode();
-            yConnectionsNode->Add(yOneConnectionNode);
-            auto yInConnectionNode = YamlNode::CreateMapNode();
-            auto yOutConnectionNode = YamlNode::CreateMapNode();
-            yOneConnectionNode->Add("in", yInConnectionNode);
-            yOneConnectionNode->Add("out", yOutConnectionNode);
-            yInConnectionNode->Add("name", uniqueNames[node].c_str());
-            yInConnectionNode->Add("pin", pinIn->GetName().c_str());
-            yOutConnectionNode->Add("name", uniqueNames[otherNode].c_str());
-            yOutConnectionNode->Add("pin", pinOut->GetName().c_str());
+            String name = Format("%s%d", reflectedType->GetPermanentName().c_str(), uniqueTypeIndices[node->GetType()]++);
+            uniqueNames.emplace(node, name);
         }
-        uniqueIndex++;
-    };
 
-    YamlNode* yVariables = YamlNode::CreateMapNode();
-    rootNode->Add("variables", yVariables);
+        VisualScriptNode* node = nodes[0];
+        Reflection ref = Reflection::Create(node);
+        const Type* type = ref.GetValueType();
+
+        uint32 uniqueIndex = 1;
+
+        for (auto& node : nodes)
+        {
+            auto connections = node->GetAllConnections();
+
+            const ReflectedType* reflectedType = ReflectedTypeDB::GetByPointer(node);
+
+            Logger::Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), type->GetDemangledName().c_str(), reflectedType->GetPermanentName().c_str());
+
+            YamlNode* yNode = YamlNode::CreateMapNode();
+            yAllNodes->Add(uniqueNames[node].c_str(), yNode);
+
+            yNode->Add("name", uniqueNames[node].c_str());
+
+            DVASSERT(reflectedType != nullptr);
+            DVASSERT(reflectedType->GetPermanentName() != "");
+
+            yNode->Add("type", reflectedType->GetPermanentName().c_str());
+
+            YamlNode* yNodeInternal = YamlNode::CreateMapNode();
+            node->Save(yNodeInternal);
+            yNode->Add("node", yNodeInternal);
+
+            auto yConnectionsNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+            yNode->Add("connections", yConnectionsNode);
+            for (const auto& connection : connections)
+            {
+                VisualScriptPin* pinIn = connection.first;
+                VisualScriptPin* pinOut = connection.second;
+                VisualScriptNode* otherNode = pinOut->GetSerializationOwner();
+
+                Logger::Debug("%s.%s -> %s.%s", uniqueNames[node].c_str(),
+                              pinIn->GetName().c_str(),
+                              uniqueNames[otherNode].c_str(),
+                              pinOut->GetName().c_str());
+
+                auto yOneConnectionNode = YamlNode::CreateMapNode();
+                yConnectionsNode->Add(yOneConnectionNode);
+                auto yInConnectionNode = YamlNode::CreateMapNode();
+                auto yOutConnectionNode = YamlNode::CreateMapNode();
+                yOneConnectionNode->Add("in", yInConnectionNode);
+                yOneConnectionNode->Add("out", yOutConnectionNode);
+                yInConnectionNode->Add("name", uniqueNames[node].c_str());
+                yInConnectionNode->Add("pin", pinIn->GetName().c_str());
+                yOutConnectionNode->Add("name", uniqueNames[otherNode].c_str());
+                yOutConnectionNode->Add("pin", pinOut->GetName().c_str());
+            }
+            uniqueIndex++;
+        };
+    }
+
+    // Store variables
+    YamlNode* variablesNode = YamlNode::CreateMapNode();
+    rootNode->Add("variables", variablesNode);
     for (auto it : dataRegistry)
     {
         const FastName& name = it.first;
         const Any& value = it.second;
         const Type* type = value.GetType();
         const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);
-
-        YamlNode* yVar = YamlNode::CreateArrayNode();
-        YamlNode* yVarData = YamlNode::CreateNodeFromAny(value);
-
         DVASSERT(reflType->GetPermanentName() != "");
 
-        yVar->Add(reflType->GetPermanentName());
-        yVar->Add(yVarData);
-        yVariables->Add(name.c_str(), yVar);
+        YamlNode* varNode = YamlNode::CreateArrayNode();
+        YamlNode* varDataNode = YamlNode::CreateNodeFromAny(value);
+
+        varNode->Add(reflType->GetPermanentName());
+        varNode->Add(varDataNode);
+        variablesNode->Add(name.c_str(), varNode);
     }
 
     YamlEmitter::SaveToYamlFile(filepath, rootNode);

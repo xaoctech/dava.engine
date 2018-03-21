@@ -254,6 +254,14 @@ void VisualScriptNode::SaveDefaults(YamlNode* node) const
                 {
                     type = value.GetType();
                 }
+                if (type->IsReference())
+                {
+                    type = type->Deref();
+                }
+                if (type->IsConst())
+                {
+                    type = type->Decay();
+                }
 
                 const ReflectedType* refType = ReflectedTypeDB::GetByType(type);
                 DVASSERT(refType->GetPermanentName() != "");
@@ -300,6 +308,15 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
                     const Type* inPinType = inPin->GetType();
                     if (inPinType)
                     {
+                        if (inPinType->IsReference())
+                        {
+                            inPinType = inPinType->Deref();
+                        }
+                        if (inPinType->IsConst())
+                        {
+                            inPinType = inPinType->Decay();
+                        }
+
                         // TODO: check type here or check cast between types
                         DVASSERT(inPinType == type);
                     }

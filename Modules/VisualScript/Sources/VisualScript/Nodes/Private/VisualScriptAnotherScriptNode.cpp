@@ -50,7 +50,7 @@ const FilePath& VisualScriptAnotherScriptNode::GetScriptFilepath() const
 void VisualScriptAnotherScriptNode::Save(YamlNode* node) const
 {
     VisualScriptNode::Save(node);
-    node->Add("scriptName", scriptFilepath.GetAbsolutePathname());
+    node->Add("scriptName", scriptFilepath.GetFrameworkPath());
     SaveDefaults(node);
 }
 
@@ -127,5 +127,4 @@ void VisualScriptAnotherScriptNode::CompleteScriptLoad()
         pin->SetSerializationOwner(this);
     }
 }
-
 }
