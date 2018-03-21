@@ -513,7 +513,7 @@ void PostEffectRenderer::GetAverageLuminance()
     DownsampleLuminance(allRenderer.averageColorArray.front(), baseSize);
 }
 
-void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority)
+void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcSize, const Size2i& srcTextureSize, int32 deltaPriority)
 {
     if (settings.resetHistory)
     {
@@ -549,7 +549,7 @@ void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, co
         if (i == 1)
         {
             options.srcTexture = srcTexture;
-            options.srcRect = Rect2f(0.f, 0.f, float32(srcTextureSize.dx), float32(srcTextureSize.dy));
+            options.srcRect = Rect2f(0.f, 0.f, float32(srcSize.dx), float32(srcSize.dy));
             options.srcTexSize = Vector2(float32(srcTextureSize.dx), float32(srcTextureSize.dy));
         }
         else
@@ -824,9 +824,14 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
         bool invertProjection = (options.dstTexture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
         float32 cv = invertProjection ? 1.0f : -1.0f;
 
-        if (rhi::HostApi() == rhi::RHI_METAL) //GFX_COMPLETE fix projection flip for all back-ends
+        //GFX_COMPLETE fix projection flip for all back-ends
+        if (rhi::HostApi() == rhi::RHI_METAL)
         {
-            cv = 1.f;
+            RenderFlow flow = Renderer::GetCurrentRenderFlow();
+            bool halfRes = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D);
+
+            if ((flow != RenderFlow::TileBasedHDRDeferred) || (flow == RenderFlow::TileBasedHDRDeferred && !halfRes))
+                cv = 1.f;
         }
 
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &cv, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);

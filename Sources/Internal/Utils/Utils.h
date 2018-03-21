@@ -99,7 +99,7 @@ uint32 FindAndRemoveExchangingWithLastIndex(Vector<T>& array, const T& object)
         {
             array[k] = array[size - 1];
             array.pop_back();
-            return k;
+            return uint32(k);
         }
     }
     return static_cast<uint32>(-1);

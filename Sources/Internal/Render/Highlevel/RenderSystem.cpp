@@ -436,8 +436,8 @@ void RenderSystem::ConfigureActivePass()
     if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D))
     {
         renderConfig.rescale = true;
-        renderConfig.scaledViewport.dx = renderConfig.viewport.dx * 0.5f;
-        renderConfig.scaledViewport.dy = renderConfig.viewport.dy * 0.5f;
+        renderConfig.scaledViewport.dx = floorf(renderConfig.viewport.dx * 0.5f + 0.5f);
+        renderConfig.scaledViewport.dy = floorf(renderConfig.viewport.dy * 0.5f + 0.5f);
     }
     else
     {
@@ -445,7 +445,7 @@ void RenderSystem::ConfigureActivePass()
         renderConfig.scaledViewport.dy = renderConfig.viewport.dy;
     }
 
-    renderConfig.rescale = QualitySettingsSystem::Instance()->GetForceRescale();
+    renderConfig.rescale |= QualitySettingsSystem::Instance()->GetForceRescale();
 
     if (Renderer::GetCurrentRenderFlow() != currentRenderFlow)
     {
@@ -511,7 +511,8 @@ void RenderSystem::ConfigureActivePass()
 
     if (renderConfig.rescale)
     {
-        config.colorBuffer[0].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SCALED_LDR);
+        uint32 ldrBuffer = (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred) ? 5u : 0u;
+        config.colorBuffer[ldrBuffer].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SCALED_LDR);
         config.depthStencilBuffer.texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
         activeRenderPass->SetViewport(renderConfig.scaledViewport);
     }

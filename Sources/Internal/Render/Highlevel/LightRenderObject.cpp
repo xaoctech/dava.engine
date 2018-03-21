@@ -80,6 +80,7 @@ void LightRenderObject::SetLight(Light* light)
     else if (sourceLight->GetLightType() == Light::eType::TYPE_ENVIRONMENT_IMAGE)
     {
         ScopedPtr<Texture> texture(Texture::CreateFromFile(sourceLight->GetEnvironmentMap()));
+        texture->maxAnisotropyLevel = 1;
         int32 isCubeMap = texture->GetDescriptor()->IsCubeMap() ? 1 : 0;
 
         material->SetFlag(NMaterialFlagName_FLAG_ATMOSPHERE, 0);

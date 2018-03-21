@@ -95,7 +95,7 @@ public:
     void ResetHistory();
     void Combine(CombineMode mode, rhi::HPacketList pl = rhi::HPacketList());
     void DownsampleLuminance(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority = 0);
-    void DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority = 0);
+    void DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcSize, const Size2i& srcTextureSize, int32 deltaPriority = 0);
     void Debug();
 
 private:

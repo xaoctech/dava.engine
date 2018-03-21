@@ -533,8 +533,8 @@ void Landscape::AllocateGeometryData()
     uint32 minSubdivLevelSize = (renderMode == RENDERMODE_NO_INSTANCING) ? heightmapSize / RENDER_PARCEL_SIZE_QUADS : 0;
     uint32 minSubdivLevel = uint32(HighestBitIndex(minSubdivLevelSize));
 
-    heightmapSizef = float32(heightmapSize);
-    heightmapSizePow2f = float32(uint32(HighestBitIndex(heightmapSize)));
+    heightmapSizeProperty.x = float32(heightmapSize);
+    heightmapSizeProperty.y = float32(uint32(HighestBitIndex(heightmapSize)));
     heightmapMaxBaseLod = FastLog2(heightmap->Size() / PATCH_SIZE_QUADS) + 1;
 
     subdivision->BuildSubdivision(heightmap, bbox, PATCH_SIZE_QUADS);
@@ -636,12 +636,12 @@ void Landscape::CreateTextures()
 
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        heightTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
+        heightTexture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NEAREST);
         normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
     }
     else
     {
-        heightTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+        heightTexture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
         normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
     }
 
@@ -1124,7 +1124,7 @@ int16 Landscape::AllocateParcelVertexBuffer(uint32 quadX, uint32 quadY, uint32 q
             VertexNoInstancing* vertex = reinterpret_cast<VertexNoInstancing*>(&landscapeVertices[index * vertexSize]);
             vertex->position = heightmap->GetPoint(x, y, bbox);
 
-            Vector2 texCoord = Vector2(x / heightmapSizef, 1.0f - y / heightmapSizef);
+            Vector2 texCoord = Vector2(x / heightmapSizeProperty.x, 1.0f - y / heightmapSizeProperty.x);
             vertex->texCoord = texCoord;
 
             if (isRequireNormal)
@@ -1777,8 +1777,7 @@ void Landscape::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 
     if (heightmap)
     {
-        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE_POW2, &heightmapSizePow2f, pointer_size(&heightmapSizePow2f));
-        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE, &heightmapSizef, pointer_size(&heightmapSizef));
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_HEIGHTMAP_SIZE, heightmapSizeProperty.data, pointer_size(heightmapSizeProperty.data));
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_TESSELLATION_HEIGHT, &tessellationHeight, pointer_size(&tessellationHeight));
     }
 }

@@ -26,9 +26,9 @@ VTDecalManager::VTSpaceBox VTDecalManager::GetVTSpaceBox(Vector2 min, Vector2 ma
 }
 void VTDecalManager::AddDecal(DecalRenderObject* ro)
 {
-    ro->SetTreeNodeIndex(decals.size());
+    ro->SetTreeNodeIndex(uint16(decals.size()));
     decals.push_back(ro);
-    testedDecals.Resize(decals.size());
+    testedDecals.Resize(uint32(decals.size()));
     if (worldInitialized)
     {
         InvalidateVTPages(ro->GetWorldBoundingBox());

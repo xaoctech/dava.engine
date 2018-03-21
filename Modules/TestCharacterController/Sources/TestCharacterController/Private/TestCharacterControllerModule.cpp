@@ -8,6 +8,7 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Systems/MotionSystem.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
@@ -53,6 +54,7 @@ void TestCharacterControllerModule::CheckCharacterResources()
             ScopedPtr<Entity> characterMeshEntity(characterSourceEntity->Clone());
             characterMeshEntity->SetName("Character");
             characterMeshEntity->AddComponent(new MotionComponent());
+            characterMeshEntity->GetComponent<RenderComponent>()->GetRenderObject()->AddFlag(RenderObject::VISIBLE_SHADOW_CASTER);
             GetMotionComponent(characterMeshEntity)->SetDescriptorPath("~res:/TestCharacterControllerModule/character/character_motion.yaml");
             testCharacterEntity->AddNode(characterMeshEntity);
 

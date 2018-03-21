@@ -562,6 +562,7 @@ void ReflectionRenderer::RetrieveUpdatedSphericalHarmonics()
             i->probe->SetSphericalHarmonics(reinterpret_cast<Vector4*>(ptr));
             rhi::UnmapTexture(i->targetTexture);
             rhi::DeleteTexture(i->targetTexture);
+            SafeRelease(i->probe);
             i = shUpdateQueue.erase(i);
         }
         else

@@ -65,6 +65,8 @@ uint32 TextureStride(TextureFormat format, Size2i size, uint32 level)
         return width * 4 * sizeof(uint32);
     case TEXTURE_FORMAT_A16R16G16B16:
         return width * 4 * sizeof(uint16);
+    case TEXTURE_FORMAT_R16G16:
+        return width * 2 * sizeof(uint16);
 
     case TEXTURE_FORMAT_R16F:
         return width * sizeof(float32) / 2;
@@ -115,6 +117,10 @@ uint32 TextureSize(TextureFormat format, uint32 width, uint32 height, uint32 lev
 
     case TEXTURE_FORMAT_R4G4B4A4:
         sz = ext.dx * ext.dy * sizeof(uint16);
+        break;
+
+    case TEXTURE_FORMAT_R16G16:
+        sz = ext.dx * ext.dy * sizeof(uint16) * 2;
         break;
 
     case TEXTURE_FORMAT_A16R16G16B16:

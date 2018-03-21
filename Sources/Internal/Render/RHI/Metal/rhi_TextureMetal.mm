@@ -85,6 +85,10 @@ static MTLPixelFormat MetalTextureFormat(TextureFormat format)
         return MTLPixelFormatB5G6R5Unorm;
     case TEXTURE_FORMAT_R4G4B4A4:
         return MTLPixelFormatABGR4Unorm;
+    case TEXTURE_FORMAT_R16G16:
+        return MTLPixelFormatRG16Unorm;
+    case TEXTURE_FORMAT_A16R16G16B16:
+        return MTLPixelFormatRGBA16Unorm;
     case TEXTURE_FORMAT_R8:
         return MTLPixelFormatA8Unorm;
     case TEXTURE_FORMAT_PVRTC_4BPP_RGBA:

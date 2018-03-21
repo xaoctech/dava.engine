@@ -65,8 +65,7 @@ void InitDynamicParamNames()
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_RCP_VIEWPORT_SIZE] = FastName("rcpViewportSize");
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_VIEWPORT_OFFSET] = FastName("viewportOffset");
 
-        DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE] = FastName("heightmapSize");
-        DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE_POW2] = FastName("heightmapSizePow2");
+        DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_HEIGHTMAP_SIZE] = FastName("heightmapSize");
 
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_SHADOW_COLOR] = FastName("shadowColor");
 

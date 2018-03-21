@@ -135,7 +135,8 @@ void HDRDeferredFetchPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMas
     }
 
     rhi::HTexture luminanceTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
-    postEffectRenderer->DownsampleLuminanceInplace(luminanceTexture, Size2i(passConfig.viewport.width, passConfig.viewport.height), -3);
+    const Size2i& luminanceTextureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_GBUFFER_3);
+    postEffectRenderer->DownsampleLuminanceInplace(luminanceTexture, Size2i(deferredPassConfig.viewport.width, deferredPassConfig.viewport.height), luminanceTextureSize, -3);
 }
 
 void HDRDeferredFetchPass::UpdateScreenResolveData(RenderSystem* renderSystem)
@@ -200,9 +201,12 @@ void HDRDeferredFetchPass::PreparePassConfig(rhi::HTexture colorTarget)
     // per frame reconfiguration
     {
         deferredPassConfig.colorBuffer[4].texture = colorTarget;
-        deferredPassConfig.colorBuffer[5].texture = rhi::InvalidHandle;
+        deferredPassConfig.colorBuffer[5].texture = GetPassConfig().colorBuffer[5].texture;
         forwardStuffPassConfig.colorBuffer[0].texture = colorTarget;
-        SetViewport(Rect(0.0, 0.0, viewport.dx, viewport.dy));
+        deferredPassConfig.viewport.x = uint32(viewport.x);
+        deferredPassConfig.viewport.y = uint32(viewport.y);
+        deferredPassConfig.viewport.width = uint32(viewport.dx);
+        deferredPassConfig.viewport.height = uint32(viewport.dy);
     }
 
     forwardStuffPassConfig.usesReverseDepth = GetPassConfig().usesReverseDepth;

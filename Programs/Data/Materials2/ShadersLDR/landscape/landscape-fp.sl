@@ -128,7 +128,7 @@ fragment_out fp_main(fragment_in input)
     resolve.ambientOcclusion = saSample.y;
     resolve.directionalLightDirection = lightPosition0.xyz;
     resolve.directionalLightViewSpaceCoords = input.shadowTexCoord;
-    resolve.directionalLightColor = lightColor0.xyz / globalLuminanceScale;
+    resolve.directionalLightColor = lightColor0.xyz / GLOBAL_LUMINANCE_SCALE;
     resolve.directionalLightStaticShadow = SampleStaticShadow(saSample.x, input.texCoord1.xy, lightmapSize) * normalmapSample.w;
     resolve.worldPosition = input.worldPosition;
     resolve.fogParameters = fogParameters.xyz;

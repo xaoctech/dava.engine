@@ -40,7 +40,7 @@ public:
         GetBackground()->SetColor(Color(0.65f, 0.65f, 0.65f, OPACITY));
         GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 
-        float32 leftColumnWidth = 170.f;
+        float32 leftColumnWidth = 85.f;
 
         leftColumnText = new UIStaticText(Rect(0.f, 0.f, leftColumnWidth, 0.f));
         leftColumnText->SetFont(font);

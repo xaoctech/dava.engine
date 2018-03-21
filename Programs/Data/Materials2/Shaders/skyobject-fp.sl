@@ -31,7 +31,7 @@ fragment_out fp_main(fragment_in input)
     sampledColor.xyz = DecodeRGBM(sampledColor);
 #endif
 
-    float3 value = sampledColor.xyz * environmentColor.xyz / globalLuminanceScale;
+    float3 value = sampledColor.xyz * environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
 
     fragment_out output;
     output.color = float4(value, 1.0);

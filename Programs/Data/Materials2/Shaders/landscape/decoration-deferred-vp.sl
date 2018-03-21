@@ -1,6 +1,8 @@
 #include "include/common.h"
 #include "include/shading-options.h"
+#include "include/all-input.h"
 #include "include/math.h"
+#include "include/heightmap.h"
 
 vertex_in
 {
@@ -34,26 +36,13 @@ vertex_out
 #endif
 };
 
-uniform sampler2D heightmap;
 uniform sampler2D decorationtexture;
-
-#if ORIENT_ON_LANDSCAPE
-uniform sampler2D tangentmap;
-#endif
 
 #if VERTEX_COLOR
 uniform sampler2D decorationcolortexture;
 #endif
 
-#if FLIP_BACKFACE_NORMALS
-[auto][a] property float4x4 worldMatrix;
-[auto][a] property float3 cameraPosition;
-#endif
-
-[auto][a] property float4x4 worldViewProjMatrix;
-[auto][a] property float4x4 worldInvTransposeMatrix;
 [auto][a] property float3 boundingBoxSize;
-[auto][a] property float heightmapSize;
 
 [material][instance] property float4 decorationmask = float4(0, 0, 0, 0);
 
@@ -104,8 +93,11 @@ vertex_out vp_main(vertex_in input)
         
 #if ORIENT_ON_LANDSCAPE
     {
-        float4 tangentmapSample = tex2Dlod(tangentmap, float2(relativePosition + 0.5 / heightmapSize), 0.0);
-        float2 nxy = tangentmapSample.xy;
+    #if LANDSCAPE_LOD_MORPHING
+        float2 nxy = SampleTangent8888Accurate(relativePosition);
+    #else
+        float2 nxy = SampleTangent4444(relativePosition);
+    #endif
 
         nxy = 2.0 * nxy - 1.0;
         nxy *= orientvalue;
@@ -119,19 +111,13 @@ vertex_out vp_main(vertex_in input)
 #endif
 
 #if LANDSCAPE_LOD_MORPHING
-
-    float4 heightmapSample = tex2Dlod(heightmap, float2(relativePosition + 0.5 / heightmapSize), 0.0);
-    float height = dot(heightmapSample.xy, float2(0.0038910506, 0.9961089494));
-
+    float height = SampleHeight8888Accurate(relativePosition);
 #else
-
-    float4 heightmapSample = tex2Dlod(heightmap, float2(relativePosition + 0.5 / heightmapSize), 0.0);
-    float height = dot(heightmapSample, float4(0.0002288853, 0.0036621653, 0.0585946441, 0.9375143053));
-    
+    float height = SampleHeight4444(relativePosition);
 #endif
 
     float2 decorTexCoord = input.decorPageCoords.xy + pivot * input.decorPageCoords.zw;
-    float decoration = dot(tex2Dlod(decorationtexture, decorTexCoord + 0.5 / 2048.0, 0.0), decorationmask);
+    float decoration = dot(tex2Dlod(decorationtexture, decorTexCoord, 0.0), decorationmask);
 
     float3 pivotObjectSpace = float3(relativePosition - 0.5, height) * boundingBoxSize;
     float3 vx_position = position * decoration * decorScale + pivotObjectSpace;

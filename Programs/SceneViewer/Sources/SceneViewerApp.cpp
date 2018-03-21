@@ -82,7 +82,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     const Size2i& physicalSize = GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
     data.screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
 
-    const Size2f windowSize = { 1024.f, 1024.f / data.screenAspect };
+    const Size2f windowSize = { 1024.f, floorf(1024.f / data.screenAspect + 0.5f) };
 
     const char* api = "";
 

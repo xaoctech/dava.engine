@@ -105,6 +105,7 @@ static bool gles2_TextureFormatSupported(TextureFormat format, ProgType)
         supported = DXT_Supported;
         break;
 
+    case TEXTURE_FORMAT_R16G16:
     case TEXTURE_FORMAT_A16R16G16B16:
     case TEXTURE_FORMAT_A32R32G32B32:
         supported = Short_Int_Supported;
@@ -832,6 +833,14 @@ bool GetGLTextureFormat(rhi::TextureFormat rhiFormat, GLint* internalFormat, GLi
         *internalFormat = GL_RGB;
         *format = GL_RGB;
         *type = GL_UNSIGNED_SHORT_5_6_5;
+        *compressed = false;
+        success = true;
+        break;
+
+    case TEXTURE_FORMAT_R16G16:
+        *internalFormat = GL_RG;
+        *format = GL_RG;
+        *type = GL_UNSIGNED_SHORT;
         *compressed = false;
         success = true;
         break;

@@ -57,8 +57,8 @@ float G_Smith(float cosThetaI, float cosThetaO, float squaredRoughness)
 
 float G_Smith_CombinedWithBRDF(float cosThetaI, float cosThetaO, float squaredRoughness)
 {
-    float t1 = squaredRoughness / (cosThetaI * cosThetaI);
-    float t2 = squaredRoughness / (cosThetaO * cosThetaO);
+    float t1 = squaredRoughness / (cosThetaI * cosThetaI + 0.00001);
+    float t2 = squaredRoughness / (cosThetaO * cosThetaO + 0.00001);
     float G1 = 1.0 / (1.0 + sqrt(1.0 - squaredRoughness + t1));
     float G2 = 1.0 / (1.0 + sqrt(1.0 - squaredRoughness + t2));
     return G1 * G2 / cosThetaI;
@@ -228,20 +228,16 @@ float3 GetSpecularDominantDirection(float3 nrm, float3 ref, float roughness)
 
 float PhaseFunctionRayleigh(float cosTheta)
 {
-    return (3.0 / 4.0) * (1.0 + cosTheta * cosTheta) / (4.0 * _PI);
+    return (3.0 / 4.0) * (1.0 + cosTheta * cosTheta);
 }
 
 float PhaseFunctionHenyeyGreenstein(float cosTheta, float g)
 {
-    float t1 = 3.0 * (1.0 - g * g) / 2.0 * (2.0 + g * g);
-    float t2 = (1.0 + cosTheta * cosTheta) / pow(abs(1.0 + g * g - 2.0 * g * cosTheta), 3.0 / 2.0);
-    return t1 * t2 / (4.0 * _PI);
-}
-
-float PhaseFunctionSchlick(float angleCosine, float g)
-{
-    float t = 1.0 + g * angleCosine;
-    return (1.0 - g * g) / (4.0 * _PI * t * t);
+    float a1 = 3.0 * (1.0 - g * g);
+    float a2 = 2.0 * (2.0 + g * g);
+    float b1 = 1.0 + cosTheta * cosTheta;
+    float b2 = pow(1.0 + g * g - 2.0 * g * cosTheta, 3.0 / 2.0);
+    return (a1 / a2) * (b1 / b2);
 }
 
 float2 ScatteringPhaseFunctions(float3 view, float3 light, float anisotropy)

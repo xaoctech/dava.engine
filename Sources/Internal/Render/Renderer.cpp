@@ -98,7 +98,7 @@ void Initialize(rhi::Api _api, rhi::InitParam& params)
     rhi::ShaderCache::Initialize();
     ShaderDescriptorCache::Initialize();
 
-    runtimeFlags.SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, 8);
+    runtimeFlags.SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, 16); // should be overriden by quality settings at startup
     runtimeFlags.SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, MAX_SHADOW_CASCADES);
     runtimeFlags.SetFlag(RuntimeFlags::Flag::SHADOW_PCF, 8);
 

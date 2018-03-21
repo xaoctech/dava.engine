@@ -25,15 +25,20 @@ fragment_out fp_main(fragment_in input)
 
 #elif (DIFFUSE_SPHERICAL_HARMONICS)
 
+    int index = int(clamp(input.varTexCoord0.x * 4.5 + 4.0, 0.0, 8.0));
+
     SphericalHarmonics conv = ConvoluteSphericalHarmonics(0.0);
-
-    float isNegative = step(input.varTexCoord0.x, 0.0);
-    float isPositive = step(0.0, input.varTexCoord0.x);
-    float absoluteIndex = floor(abs(input.varTexCoord0.x) * 10.0);
-    float t = 0.5 * (isNegative * (8.0 - absoluteIndex) + isPositive * (8.0 + absoluteIndex) + 1.0);
-    int index = int(t);
-
-    output.color = conv.sh[index];
+    float3 sh[9];
+    sh[0] = conv.sh0;
+    sh[1] = conv.sh1;
+    sh[2] = conv.sh2;
+    sh[3] = conv.sh3;
+    sh[4] = conv.sh4;
+    sh[5] = conv.sh5;
+    sh[6] = conv.sh6;
+    sh[7] = conv.sh7;
+    sh[8] = conv.sh8;
+    output.color = float4(sh[index], 1.0);
 
 #else
 

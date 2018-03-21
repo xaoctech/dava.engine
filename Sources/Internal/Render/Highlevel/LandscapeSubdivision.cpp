@@ -299,7 +299,8 @@ const LandscapeSubdivision::SubdivisionPatch* LandscapeSubdivision::PrepareSubdi
 {
     cameraPos = camera->GetPosition();
 
-    frustum->Build((*worldTransform) * camera->GetViewProjMatrix(false, camera->GetReverseZEnabled()), rhi::DeviceCaps().isZeroBaseClipRange);
+    bool zeroClip = rhi::DeviceCaps().isZeroBaseClipRange || camera->GetReverseZEnabled();
+    frustum->Build((*worldTransform) * camera->GetViewProjMatrix(false, camera->GetReverseZEnabled()), zeroClip, camera->GetReverseZEnabled());
 
     float32 fovLerp = Clamp((camera->GetFOV() - metrics.zoomFov) / (metrics.normalFov - metrics.zoomFov), 0.f, 1.f);
     maxHeightError = metrics.zoomMaxHeightError + (metrics.normalMaxHeightError - metrics.zoomMaxHeightError) * fovLerp;

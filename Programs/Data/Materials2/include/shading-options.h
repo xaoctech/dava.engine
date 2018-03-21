@@ -10,6 +10,8 @@
 
 #ensuredefined RGBM_ENCODING_RANGE 5.0
 
+#ensuredefined GLOBAL_LUMINANCE_SCALE 25000.0 /* should be synchronized with cpp code */
+
 /* 
  * Values below does not really affect anything now
  */

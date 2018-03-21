@@ -293,8 +293,7 @@ protected:
     NMaterial* landscapeMaterial = nullptr;
     NMaterial* decorationMaterial = nullptr;
 
-    float32 heightmapSizef = 0.f;
-    float32 heightmapSizePow2f = 0.f;
+    Vector2 heightmapSizeProperty;
     uint32 heightmapMaxBaseLod = 0;
     uint32 maxTexturingLevel = 10;
     uint32 tessellationLevelCount = 3;

@@ -1346,7 +1346,7 @@ void VegetationRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* 
 
     if (heightmap != nullptr)
     {
-        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE, &heightmapSize, pointer_size(&heightmapSize));
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_HEIGHTMAP_SIZE, &heightmapSize, pointer_size(&heightmapSize));
     }
 }
 

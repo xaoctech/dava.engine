@@ -499,7 +499,8 @@ void Camera::PrepareDynamicParameters(bool invertProjection, bool invertZ, Vecto
 
     if (currentFrustum)
     {
-        currentFrustum->Build(viewProjMatrix, rhi::DeviceCaps().isZeroBaseClipRange);
+        bool zeroClip = GetReverseZEnabled() || rhi::DeviceCaps().isZeroBaseClipRange;
+        currentFrustum->Build(viewProjMatrix, zeroClip, GetReverseZEnabled());
     }
 }
 

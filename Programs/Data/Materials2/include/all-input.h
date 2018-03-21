@@ -1,6 +1,5 @@
 [auto][global] property float cameraTargetLuminance;
 [auto][global] property float distantDepthValue;
-[auto][global] property float globalLuminanceScale;
 [auto][global] property float projectionFlipped;
 [auto][global] property float2 cameraDynamicRange;
 [auto][global] property float2 flexibility;
@@ -9,6 +8,7 @@
 [auto][global] property float2 renderTargetSize;
 [auto][global] property float2 viewportOffset;
 [auto][global] property float2 viewportSize;
+[auto][global] property float2 heightmapSize;
 [auto][global] property float3 cameraDirection;
 [auto][global] property float3 cameraPosition;
 [auto][global] property float3 cameraUp;
@@ -36,6 +36,7 @@
 [auto][global] property float4x4 worldInvTransposeMatrix;
 [auto][global] property float4x4 worldMatrix;
 [auto][global] property float4x4 worldViewMatrix;
+[auto][global] property float4x4 worldViewProjMatrix;
 
 [auto][pl] property float4 pointLights[POINT_LIGHTS_BUFFER_SIZE] : "bigarray"; /* (xyz: position, w: linear attenuation), (xyz: color, w: exponential attenuation) */
 [auto][sh] property float4 sphericalHarmonics[9] : "bigarray";
@@ -94,6 +95,8 @@ uniform sampler2D normalmap;
 uniform sampler2D pointShadowMap;
 uniform sampler2D shadowaotexture;
 uniform sampler2D toolTexture;
+uniform sampler2D heightmap;
+uniform sampler2D tangentmap;
 uniform sampler2DShadow directionalShadowMap;
 uniform samplerCUBE globalReflection;
 uniform samplerCUBE localReflection;

@@ -53,7 +53,8 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
         float3 specular = F * (D * G * T);
 
         float NdotL = lerp(directionalBrdf.NdotL, 1.0, 0.5 * surfaceParameters.transmittance);
-        float diffuse = (NdotL + PhaseFunctionSchlick(directionalBrdf.LdotV, 0.625) * surfaceParameters.transmittance) * invMetallness / _PI;
+        float phase = PhaseFunctionHenyeyGreenstein(directionalBrdf.LdotV, -0.625) / (4.0 * _PI);
+        float diffuse = (NdotL + phase * surfaceParameters.transmittance) * invMetallness / _PI;
         
     #if (DIFFUSE_BURLEY)
         diffuse *= BurleyDiffuse(NdotL, directionalBrdf.NdotV, directionalBrdf.LdotH, surfaceParameters.roughness);
@@ -112,18 +113,15 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
     
 #if (ATMOSPHERE_SCATTERING_SAMPLES)
     {
-        float lightIntensity = dot(input.directionalLightColor, float3(0.2126, 0.7152, 0.0722));
         float3 viewDirection = -input.v;
         float3 lightDirection = input.directionalLightDirection;
-        float3 planetPosition = float3(0.0, 0.0, EARTH_RADIUS);
-        float3 pOrigin = planetPosition + input.cameraPosition;
-        float3 pTarget = pOrigin + input.v * input.vLength * fogParameters.x;
+        float3 origin = float3(0.0, 0.0, EARTH_RADIUS);
         float2 ph = ScatteringPhaseFunctions(viewDirection, lightDirection, fogParameters.z);
-
-        float3 inScattering = InScattering(pOrigin, pTarget, lightDirection, ph, fogParameters.y);
-        float3 outScattering = OutScattering(pOrigin, pTarget, lightDirection, ph, fogParameters.y);
-
-        result = result * outScattering + inScattering * lightIntensity;
+        float3 target = origin + viewDirection * input.vLength * fogParameters.x;
+        float3 sunLuminance = dot(input.directionalLightColor, float3(0.2126, 0.7152, 0.0722));
+        float3 inScattering = InScattering(origin, target, lightDirection, ph, fogParameters.y);
+        float3 extinction = Extinction(target, origin, lightDirection, ph, fogParameters.y);
+        result = result * extinction + sunLuminance * inScattering;
     }
 #endif
     

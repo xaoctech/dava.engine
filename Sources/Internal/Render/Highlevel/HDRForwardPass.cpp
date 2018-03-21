@@ -81,7 +81,8 @@ void HDRForwardPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 
     if (inplaceCombine)
     {
-        postEffectRenderer->DownsampleLuminanceInplace(luminanceTexture, Size2i(passConfig.viewport.width, passConfig.viewport.height), -3);
+        Size2i luminanceTextureSize = Size2i(passConfig.viewport.width, passConfig.viewport.height);
+        postEffectRenderer->DownsampleLuminanceInplace(luminanceTexture, luminanceTextureSize, luminanceTextureSize, -3);
     }
 
     passConfig = originalPassConfig;

@@ -123,9 +123,13 @@ inline bool Plane::IntersectByRay(const Vector3& from, const Vector3& to, float3
 
 inline void Plane::Normalize()
 {
-    float invLen = 1.0f / n.Length();
-    n *= invLen;
-    d *= invLen;
+    float nl = n.SquareLength();
+    if (nl > std::numeric_limits<float>::epsilon())
+    {
+        nl = 1.0f / std::sqrt(nl);
+        n *= nl;
+        d *= nl;
+    }
 }
 
 inline Vector3 Plane3Intersection(const Plane& plane1, const Plane& plane2, const Plane& plane3)

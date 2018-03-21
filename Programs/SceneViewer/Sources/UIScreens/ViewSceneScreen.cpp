@@ -361,6 +361,11 @@ void ViewSceneScreen::SetCameraAtCenter(DAVA::Camera* camera)
     cameraTarget = DAVA::Vector3(2.592f, 2.366f, 0.986f);
     // */
 
+    //*/ Promisedland scene
+    cameraPos = DAVA::Vector3(15.509925f, 1442.003174f, 173.488235f);
+    cameraTarget = DAVA::Vector3(18.437426f, 1451.497192f, 172.325546f);
+    // */
+
     camera->SetPosition(cameraPos);
     camera->SetTarget(cameraTarget);
 }

@@ -17,7 +17,7 @@ uniform sampler2D environmentMap;
 
 fragment_out fp_main(fragment_in input)
 {
-    float3 value = environmentColor.xyz / globalLuminanceScale;
+    float3 value = environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
     value *= tex2D(environmentMap, input.varTexCoord0).xyz;
 
 #if (!IB_REFLECTIONS_PREPARE)

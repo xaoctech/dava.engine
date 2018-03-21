@@ -67,6 +67,18 @@ void RescalePass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask /* = 0x
         //GFX_COMPLETE as binding in BeginRenderPass is trash - everything should be set up before
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_RENDER_TARGET_SIZE, scaledRtDimensions.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
+        //GFX_COMPLETE fix projection flip for all back-ends
+        if (rhi::HostApi() == rhi::RHI_METAL)
+        {
+            bool invertProjection = (passConfig.colorBuffer[0].texture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
+            float32 cv = invertProjection ? 1.0f : -1.0f;
+
+            if (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred)
+                cv = -1.f;
+
+            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &cv, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+        }
+
         if (rescaleMaterial->PreBuildMaterial(PASS_RESCALE))
         {
             rescaleMaterial->BindParams(rescalePacket);

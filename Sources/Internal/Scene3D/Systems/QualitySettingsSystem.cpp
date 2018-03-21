@@ -85,7 +85,7 @@ QualitySettingsSystem::QualitySettingsSystem()
     qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Low"), ScatteringQuality(8));
     qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("High"), ScatteringQuality(16));
     qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Ultra"), ScatteringQuality(32));
-    qualityGroups[QualityGroup::Scattering].currentValue = qualityGroups[QualityGroup::Scattering].values.begin()->first;
+    qualityGroups[QualityGroup::Scattering].currentValue = FastName("High");
 
     Load("~res:/quality.yaml");
 

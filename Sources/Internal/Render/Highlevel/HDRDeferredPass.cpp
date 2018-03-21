@@ -437,6 +437,7 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     passConfig.depthStencilBuffer.loadAction = rhi::LOADACTION_LOAD;
     passConfig.depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
 
+    SetupCameraParams(mainCamera, drawCamera);
     Clip(mainCamera, renderSystem);
     PrepareRenderObjectsToRender(visibilityArray.geometryArray, mainCamera);
 
@@ -480,7 +481,6 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
         for (Landscape* landscape : renderSystem->GetLandscapes())
             landscape->SetPageUpdateLocked(true);
 
-        SetupCameraParams(mainCamera, drawCamera);
         PrepareVisibilityArrays(mainCamera, renderSystem);
         //draw forward stuff
         passConfig.colorBuffer[0].loadAction = rhi::LOADACTION_LOAD;

@@ -94,6 +94,11 @@ void UI3DView::Draw(const UIGeometricData& geometricData)
     else
         viewportRc = viewportRect;
 
+    viewportRc.x = floorf(viewportRc.x);
+    viewportRc.y = floorf(viewportRc.y);
+    viewportRc.dx = floorf(viewportRc.dx + 0.5f);
+    viewportRc.dy = floorf(viewportRc.dy + 0.5f);
+
     uint32 priority = currentTarget.priority;
 
     uint32 targetWidth = 0;
