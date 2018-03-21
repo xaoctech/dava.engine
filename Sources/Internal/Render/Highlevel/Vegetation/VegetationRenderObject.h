@@ -240,7 +240,7 @@ private:
 
     VegetationGeometry* vegetationGeometry;
 
-    Texture* heightmapTexture;
+    Asset<Texture> heightmapTexture;
 
     float32 cameraBias;
 
@@ -437,7 +437,7 @@ inline void VegetationRenderObject::SetPerturbation(const Vector3& point, const 
         props->SetFloat(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE.c_str(), maxPerturbationDistance);
         props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
 
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props);
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props, nullptr);
 
         SafeRelease(props);
     }
@@ -467,7 +467,7 @@ inline void VegetationRenderObject::SetPerturbationPoint(const Vector3& point)
         KeyedArchive* props = new KeyedArchive();
         props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
 
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props);
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props, nullptr);
 
         SafeRelease(props);
     }

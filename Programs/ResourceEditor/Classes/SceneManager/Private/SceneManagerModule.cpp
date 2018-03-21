@@ -49,9 +49,10 @@
 #include <Reflection/Reflection.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Render/Renderer.h>
+#include <Render/TextureAssetLoader.h>
+#include <Scene3D/Converters/SceneFileConverter.h>
 #include <Scene3D/Level.h>
 #include <Scene3D/Systems/StreamingSystem.h>
-#include <Scene3D/Converters/SceneFileConverter.h>
 
 #include <QActionGroup>
 #include <QList>
@@ -70,7 +71,7 @@ public:
     std::unique_ptr<SignalsAccumulator> signalsAccumulator;
     DAVA::eGPUFamily GetCurrentTexturesGPU() const
     {
-        return DAVA::Texture::GetPrimaryGPUForLoading();
+        return DAVA::GetEngineContext()->assetManager->GetAssetLoader<DAVA::TextureAssetLoader>()->GetPrimaryGPUForLoading();
     }
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneManagerGlobalData, DAVA::TArcDataNode)
@@ -97,7 +98,7 @@ void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)
     DAVA::Renderer::SetDesiredFPS(60);
 
     DAVA::eGPUFamily family = GetAccessor()->GetGlobalContext()->GetData<DAVA::CommonInternalSettings>()->textureViewGPU;
-    DAVA::Texture::SetGPULoadingOrder({ family });
+    DAVA::GetEngineContext()->assetManager->GetAssetLoader<DAVA::TextureAssetLoader>()->SetGPULoadingOrder({ family });
 
     QtMainWindow* wnd = qobject_cast<QtMainWindow*>(GetUI()->GetWindow(DAVA::mainWindowKey));
     if (wnd != nullptr)
@@ -723,12 +724,6 @@ void SceneManagerModule::CreateModuleActions(DAVA::UI* ui)
         }
 
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/reloadtextures.png"), QString(""));
-        connections.AddConnection(action, &QAction::triggered, [this]()
-                                  {
-                                      ReloadAllTextures(DAVA::Texture::GetPrimaryGPUForLoading());
-                                  },
-                                  Qt::QueuedConnection);
-
         FieldDescriptor sceneFieldDescr;
         sceneFieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
         sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
@@ -1217,7 +1212,8 @@ void SceneManagerModule::ExportScene()
             scene->Export(exportingParams);
         }
 
-        ReloadAllTextures(DAVA::Texture::GetPrimaryGPUForLoading());
+        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+        ReloadAllTextures(loader->GetPrimaryGPUForLoading());
     }
 }
 
@@ -1239,9 +1235,10 @@ void SceneManagerModule::CloseAllScenes(bool needSavingReqiest)
     }
 }
 
-void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
+void SceneManagerModule::ReloadTextures(const DAVA::Vector<DAVA::Asset<DAVA::Texture>>& textures)
 {
-    using namespace DAVA;
+    // GFX_COMPLETE
+    /*using namespace DAVA;
 
     CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
 
@@ -1267,7 +1264,11 @@ void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
         waitHandle = GetUI()->ShowWaitDialog(DAVA::mainWindowKey, params);
     }
 
-    for (DAVA::Texture* tex : textures)
+    DAVA::AssetManager* assetManager = GetEngineContext()->assetManager;
+    DAVA::TextureAssetLoader* loader = assetManager->GetAssetLoader<DAVA::TextureAssetLoader>();
+    loader->SetGPULoadingOrder({ gpuFormat });
+
+    for (DAVA::Asset<DAVA::Texture> tex : textures)
     {
         DAVA::TextureDescriptor* descriptor = tex->GetDescriptor();
 
@@ -1279,7 +1280,7 @@ void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
             waitHandle->SetProgressValue(progress++);
         }
 
-        tex->ReloadAs(gpuFormat);
+        assetManager->ReloadAsset(tex->GetKey());
         TextureCache::Instance()->clearOriginal(descriptor);
         TextureCache::Instance()->clearThumbnail(descriptor);
 
@@ -1290,12 +1291,13 @@ void SceneManagerModule::ReloadTextures(DAVA::Vector<DAVA::Texture*> textures)
         }
 
         TextureBrowser::Instance()->UpdateTexture(tex);
-    }
+    }*/
 }
 
 void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 {
-    using namespace DAVA;
+    // GFX_COMPLETE
+    /*using namespace DAVA;
     if (SaveTileMaskInAllScenes())
     {
         CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
@@ -1342,11 +1344,6 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
             TextureCache::Instance()->ClearCache();
         }
 
-        for (DAVA::NMaterial* m : allSceneMaterials)
-        {
-            m->InvalidateTextureBindings();
-        }
-
         accessor->ForEachContext([](DataContext& ctx)
                                  {
                                      SceneData* data = ctx.GetData<SceneData>();
@@ -1355,7 +1352,7 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 
         DAVA::Sprite::ReloadSprites(gpu);
         RestartParticles();
-    }
+    }*/
 }
 
 void SceneManagerModule::OnProjectPathChanged(const DAVA::Any& projectPath)

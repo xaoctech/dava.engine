@@ -1,11 +1,15 @@
 #include "REPlatform/Scene/Systems/LandscapeProxy.h"
 #include "REPlatform/Scene/Utils/Utils.h"
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Image/Image.h>
 #include <Render/Image/ImageSystem.h>
 #include <Render/Material/NMaterial.h>
 #include <Render/RHI/rhi_Type.h>
+#include <Render/Texture.h>
 
 namespace DAVA
 {
@@ -50,13 +54,7 @@ LandscapeProxy::~LandscapeProxy()
     for (auto& imageCopy : tilemaskImageCopies)
         SafeRelease(imageCopy);
 
-    for (auto& tilemaskDrawTex : tilemaskDrawTextures)
-    {
-        SafeRelease(tilemaskDrawTex[TILEMASK_TEXTURE_SOURCE]);
-        SafeRelease(tilemaskDrawTex[TILEMASK_TEXTURE_DESTINATION]);
-    }
-
-    SafeRelease(cursorTexture);
+    tilemaskDrawTextures.clear();
 }
 
 void LandscapeProxy::RestoreResources()
@@ -104,7 +102,7 @@ const AABBox3& LandscapeProxy::GetLandscapeBoundingBox()
     return baseLandscape->GetBoundingBox();
 }
 
-Texture* LandscapeProxy::GetLandscapeTexture(uint32 layerIndex, const FastName& level)
+Asset<Texture> LandscapeProxy::GetLandscapeTexture(uint32 layerIndex, const FastName& level)
 {
     return baseLandscape->GetPageMaterials(layerIndex, 0)->GetEffectiveTexture(level);
 }
@@ -135,7 +133,7 @@ void LandscapeProxy::SetLandscapeTileColor(uint32 layerIndex, const FastName& le
     }
 }
 
-void LandscapeProxy::SetToolTexture(Texture* texture, bool mixColors)
+void LandscapeProxy::SetToolTexture(const Asset<Texture>& texture, bool mixColors)
 {
     if (texture)
     {
@@ -166,12 +164,11 @@ void LandscapeProxy::CursorDisable()
     landscapeEditorMaterial->SetFlag(LANSDCAPE_FLAG_CURSOR, 0);
 }
 
-void LandscapeProxy::SetCursorTexture(Texture* texture)
+void LandscapeProxy::SetCursorTexture(const Asset<Texture>& texture)
 {
     if (cursorTexture != texture)
     {
-        SafeRelease(cursorTexture);
-        cursorTexture = SafeRetain(texture);
+        cursorTexture = texture;
     }
 
     landscapeEditorMaterial->SetTexture(LANDSCAPE_TEXTURE_CURSOR, texture);
@@ -243,28 +240,33 @@ Image* LandscapeProxy::GetTilemaskImageCopy(uint32 layerIndex)
 
 void LandscapeProxy::InitTilemaskDrawTextures()
 {
-    auto updateTexture = [](Texture*& texture, uint32 texSize) {
-        if (texture != nullptr && texture->GetWidth() != texSize)
+    auto updateTexture = [](Asset<Texture>& texture, uint32 texSize) {
+        if (texture != nullptr && texture->width != texSize)
         {
-            SafeRelease(texture);
+            texture.reset();
         }
 
         if (texture == nullptr)
         {
-            texture = Texture::CreateFBO(texSize, texSize, FORMAT_RGBA8888, rhi::TEXTURE_TYPE_2D);
+            Texture::RenderTargetTextureKey key;
+            key.width = texSize;
+            key.height = texSize;
+            key.format = FORMAT_RGBA8888;
+            key.isDepth = false;
+            texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
     };
 
     for (uint32 i = 0; i < tilemaskDrawTextures.size(); ++i)
     {
-        uint32 texSize = static_cast<uint32>(GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->GetWidth());
+        uint32 texSize = static_cast<uint32>(GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->width);
 
         updateTexture(tilemaskDrawTextures[i][TILEMASK_TEXTURE_SOURCE], texSize);
         updateTexture(tilemaskDrawTextures[i][TILEMASK_TEXTURE_DESTINATION], texSize);
     }
 }
 
-Texture* LandscapeProxy::GetTilemaskDrawTexture(uint32 layerIndex, int32 number)
+Asset<Texture> LandscapeProxy::GetTilemaskDrawTexture(uint32 layerIndex, int32 number)
 {
     if (number >= 0 && number < TILEMASK_TEXTURE_COUNT)
     {
@@ -283,9 +285,7 @@ void LandscapeProxy::SwapTilemaskDrawTextures()
 {
     for (auto& tileMaskDrawTex : tilemaskDrawTextures)
     {
-        Texture* temp = tileMaskDrawTex[TILEMASK_TEXTURE_SOURCE];
-        tileMaskDrawTex[TILEMASK_TEXTURE_SOURCE] = tileMaskDrawTex[TILEMASK_TEXTURE_DESTINATION];
-        tileMaskDrawTex[TILEMASK_TEXTURE_DESTINATION] = temp;
+        std::swap(tileMaskDrawTex[TILEMASK_TEXTURE_SOURCE], tileMaskDrawTex[TILEMASK_TEXTURE_DESTINATION]);
     }
 }
 

@@ -3,13 +3,17 @@
 
 #include <TArc/Core/Deprecated.h>
 
-#include <Scene3D/SceneFile/SerializationContext.h>
-#include <Scene3D/SceneFile/VersionInfo.h>
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <FileSystem/FilePath.h>
+#include <FileSystem/KeyedArchive.h>
+#include <Functional/Function.h>
 #include <Render/Material/NMaterial.h>
 #include <Render/Shader/ShaderDescriptor.h>
-#include <FileSystem/KeyedArchive.h>
-#include <FileSystem/FilePath.h>
-#include <Functional/Function.h>
+#include <Render/Texture.h>
+#include <Scene3D/SceneFile/SerializationContext.h>
+#include <Scene3D/SceneFile/VersionInfo.h>
 
 namespace DAVA
 {
@@ -170,10 +174,13 @@ void UpdateMaterialTexturesFromPreset(NMaterial* material, KeyedArchive* content
         ClearContent(MakeFunction(material, &NMaterial::GetLocalTextures), MakeFunction(material, &NMaterial::RemoveTexture));
     }
 
-    const auto& texturesMap = content->GetArchieveData();
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+
+    const KeyedArchive::UnderlyingMap& texturesMap = content->GetArchieveData();
     for (const auto& tm : texturesMap)
     {
-        ScopedPtr<Texture> texture(Texture::CreateFromFile(scenePath + tm.second->AsString()));
+        Texture::PathKey key(scenePath + tm.second->AsString());
+        Asset<Texture> texture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
         FastName textureName(tm.first);
         if (material->HasLocalTexture(textureName))
@@ -189,11 +196,13 @@ void UpdateMaterialTexturesFromPreset(NMaterial* material, KeyedArchive* content
 
 void UpdateMaterialTexturesFromPreset(MaterialConfig& config, KeyedArchive* content, const FilePath& scenePath)
 {
-    const auto& texturesMap = content->GetArchieveData();
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    const KeyedArchive::UnderlyingMap& texturesMap = content->GetArchieveData();
     for (const auto& tm : texturesMap)
     {
         MaterialTextureInfo* texInfo = new MaterialTextureInfo();
-        texInfo->texture = Texture::CreateFromFile(scenePath + tm.second->AsString());
+        Texture::PathKey key(scenePath + tm.second->AsString());
+        texInfo->texture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         texInfo->path = texInfo->texture->GetPathname();
         config.localTextures[FastName(tm.first)] = texInfo;
     }
@@ -357,7 +366,6 @@ void LoadMaterialPreset(KeyedArchive* archive, NMaterial* material, const Serial
                             // remove old textures
                             for (auto& texInfo : config.localTextures)
                             {
-                                SafeRelease(texInfo.second->texture);
                                 SafeDelete(texInfo.second);
                             }
                             config.localTextures.clear();
@@ -367,7 +375,7 @@ void LoadMaterialPreset(KeyedArchive* archive, NMaterial* material, const Serial
                             {
                                 MaterialTextureInfo* texInfo = new MaterialTextureInfo();
                                 texInfo->path = tex.second->path;
-                                texInfo->texture = SafeRetain(tex.second->texture);
+                                texInfo->texture = tex.second->texture;
                                 config.localTextures[tex.first] = texInfo;
                             }
                         }

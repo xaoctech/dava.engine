@@ -90,4 +90,9 @@ void FXAsset::SetFXDescriptor(FXDescriptor&& descriptor_)
     }
 }
 
+template <>
+bool AnyCompare<FXAsset::Key>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<FXAsset::Key>().fxKey == v2.Get<FXAsset::Key>().fxKey;
+}
 } // namespace DAVA

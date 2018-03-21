@@ -16,7 +16,8 @@ public:
     /**
         Return true if texture descriptor file was created
     */
-    static bool CreateDescriptor(const DAVA::FilePath& imagePath);
+    static bool CreateDescriptor(const FilePath& imagePath);
+    static bool CreateDescriptor(const FilePath& imagePath, std::unique_ptr<TextureDescriptor>& descriptor, bool descriptorChanged);
 
     /**
         Return true if texture descriptor file for cubemap faces was created

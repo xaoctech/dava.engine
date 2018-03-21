@@ -22,7 +22,6 @@
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/NMaterialNames.h"
-#include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
 
 #define FBX_IMPORT_AUTO_BUILD_TANGENT_SPACE 1
 
@@ -180,7 +179,7 @@ void ImportMeshToEntity(FbxNode* fbxNode, Entity* entity)
 
         FilePath geometryAssetPath = currentAssetsFolder + fbxNode->GetName() + ".geo";
         AssetManager* assetManager = GetEngineContext()->assetManager;
-        Asset<Geometry> geometryAsset = assetManager->CreateAsset<Geometry>(GeometryAssetLoader::PathKey(geometryAssetPath));
+        Asset<Geometry> geometryAsset = assetManager->CreateAsset<Geometry>(Geometry::PathKey(geometryAssetPath));
 
         MeshLODDescriptor meshDescriptor;
         meshDescriptor.geometryAsset = geometryAsset;

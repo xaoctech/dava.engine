@@ -468,12 +468,13 @@ void DeveloperTools::OnReloadLandscapeDependencies()
 
     for (NMaterial* material : materialsToReload)
     {
-        for (auto& it : material->GetLocalTextures())
+        // GFX_COMPLETE
+        /*for (auto& it : material->GetLocalTextures())
         {
-            Texture* texture = it.second->texture;
+            Asset<Texture> texture = it.second->texture;
             if (texture != nullptr && texture->GetPathname().Exists())
                 texture->Reload();
-        }
+        }*/
     }
 
     for (Landscape* landscape : currentScene->landscapeSystem->GetLandscapeObjects())

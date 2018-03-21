@@ -53,7 +53,7 @@ void Material::SetParentPath(const FilePath& path)
 
     if (parentPath.IsEmpty() == false)
     {
-        parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(parentPath), AssetManager::SYNC, &listener);
+        parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(PathKey(parentPath), AssetManager::SYNC, &listener);
         DVASSERT(parentAsset != nullptr);
     }
 
@@ -72,5 +72,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Material)
 {
     ReflectionRegistrator<Material>::Begin()
     .End();
+}
+
+template <>
+bool AnyCompare<Material::PathKey>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<Material::PathKey>().path == v2.Get<Material::PathKey>().path;
 }
 };

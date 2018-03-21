@@ -258,7 +258,7 @@ void SceneValidator::ValidateMaterials(Scene* scene)
         NMaterialTextureName::TEXTURE_DECALTEXTURE,
     };
 
-    Map<Texture*, String> texturesMap;
+    Map<Asset<Texture>, String> texturesMap;
     auto endItMaterials = materials.end();
     for (auto it = materials.begin(); it != endItMaterials; ++it)
     {
@@ -277,7 +277,7 @@ void SceneValidator::ValidateMaterials(Scene* scene)
         {
             if ((*it)->HasLocalTexture(textureName))
             {
-                Texture* tex = (*it)->GetLocalTexture(textureName);
+                Asset<Texture> tex = (*it)->GetLocalTexture(textureName);
                 if ((*it)->GetParent())
                 {
                     texturesMap[tex] = Format("Material: %s (parent - %s). Texture %s.", (*it)->GetMaterialName().c_str(), (*it)->GetParent()->GetMaterialName().c_str(), textureName.c_str());
@@ -369,13 +369,13 @@ void SceneValidator::ValidateLandscapeTexture(Landscape* landscape, const FastNa
     {
         for (uint32 j = 0; j < landscape->GetPageMaterialCount(i); ++j)
         {
-            Texture* texture = landscape->GetPageMaterials(i, j)->GetEffectiveTexture(texLevel);
+            Asset<Texture> texture = landscape->GetPageMaterials(i, j)->GetEffectiveTexture(texLevel);
             if (texture)
             {
                 FilePath landTexName = landscape->GetPageMaterials(i, j)->GetEffectiveTexture(texLevel)->GetPathname();
                 if (!IsTextureDescriptorPath(landTexName) && landTexName.GetAbsolutePathname().size() > 0)
                 {
-                    texture->SetPathname(TextureDescriptor::GetDescriptorPathname(landTexName));
+                    texture->texDescriptor->OverridePathName(TextureDescriptor::GetDescriptorPathname(landTexName));
                 }
 
                 ValidateTexture(texture, Format("Landscape. %s", texLevel.c_str()));
@@ -408,7 +408,7 @@ bool SceneValidator::NodeRemovingDisabled(Entity* node)
     return (customProperties && customProperties->IsKeyExists(ResourceEditor::EDITOR_DO_NOT_REMOVE));
 }
 
-void SceneValidator::ValidateTexture(Texture* texture, const String& validatedObjectName)
+void SceneValidator::ValidateTexture(const Asset<Texture>& texture, const String& validatedObjectName)
 {
     if (nullptr == texture)
     {
@@ -440,7 +440,7 @@ void SceneValidator::ValidateTexture(Texture* texture, const String& validatedOb
         return;
     }
 
-    if (!IsPowerOf2(texture->GetWidth()) || !IsPowerOf2(texture->GetHeight()))
+    if (!IsPowerOf2(texture->width) || !IsPowerOf2(texture->height))
     {
         PushLogMessage(nullptr, "Texture %s has now power of two dimensions. Scene: %s", textureInfo.c_str(), sceneName.c_str());
     }

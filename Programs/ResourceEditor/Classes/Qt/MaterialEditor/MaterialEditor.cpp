@@ -416,15 +416,6 @@ private:
                     break;
                 }
             }
-
-            if (buttonAlreadyExists == false)
-            {
-                QtPropertyToolButton* button = data->AddButton();
-                button->setObjectName(QStringLiteral("reloadTexture"));
-                button->setIcon(DAVA::SharedIcon(":/QtIcons/reloadtextures.png"));
-                button->setIconSize(QSize(14, 14));
-                QObject::connect(button, &QAbstractButton::clicked, editor, &MaterialEditor::OnReloadTexture);
-            }
         }
 
         for (int i = 0; i < data->ChildCount(); ++i)
@@ -1085,9 +1076,9 @@ void MaterialEditor::showEvent(QShowEvent* event)
 
 void MaterialEditor::closeEvent(QCloseEvent* event)
 {
+    QDialog::closeEvent(event);
     UpdateContent(activeScene);
     RefreshMaterialProperties();
-    QDialog::closeEvent(event);
 }
 
 void MaterialEditor::FillTemplates(const QList<DAVA::NMaterial*>& materials)
@@ -1273,27 +1264,6 @@ void MaterialEditor::OnAddRemoveButton()
 
             data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
             PropertiesBuilder(this).UpdateAddRemoveButtonState(data);
-        }
-    }
-}
-
-void MaterialEditor::OnReloadTexture()
-{
-    QtPropertyToolButton* btn = dynamic_cast<QtPropertyToolButton*>(QObject::sender());
-    if (nullptr != btn)
-    {
-        QtPropertyDataInspDynamic* data = static_cast<QtPropertyDataInspDynamic*>(btn->GetPropertyData());
-        if (nullptr != data)
-        {
-            DAVA::VariantType value = data->dynamicInfo->MemberValueGet(data->ddata, data->name);
-            DAVA::FilePath path = value.AsFilePath();
-            DAVA::Texture* texture = DAVA::Texture::Get(path);
-            if (texture != nullptr)
-            {
-                DAVA::Vector<DAVA::Texture*> reloadTextures;
-                reloadTextures.push_back(texture);
-                DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
-            }
         }
     }
 }

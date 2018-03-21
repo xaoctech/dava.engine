@@ -47,10 +47,11 @@ public:
 
     void PreRenderScene(RenderSystem* renderSystem, Camera* camera);
 
-    void RenderToCubemapFromPoint(RenderSystem* renderSystem, const Vector3& point, Texture* cubemapTarget);
+    void RenderToCubemapFromPoint(RenderSystem* renderSystem, const Vector3& point, const Asset<Texture>& cubemapTarget,
+                                  const Asset<Texture>& depthTarget);
 
     void RenderVisibilityToTexture(RenderSystem* renderSystem, Camera* batchesCamera,
-                                   Camera* drawCamera, Texture* cubemap, const VisbilityPoint& vp);
+                                   Camera* drawCamera, Asset<Texture> cubemap, const VisbilityPoint& vp);
 
     void RenderCurrentOverlayTexture(RenderSystem* renderSystem, Camera* camera);
     void RenderProgress(float, const Color&);
@@ -72,7 +73,7 @@ private:
 
     void CollectRenderBatches(RenderSystem* renderSystem, Camera* fromCamera, Vector<RenderBatch*>& batches);
 
-    void UpdateVisibilityMaterialProperties(Texture* cubemapTexture, const VisbilityPoint& vp);
+    void UpdateVisibilityMaterialProperties(Asset<Texture> cubemapTexture, const VisbilityPoint& vp);
 
     void RenderToDistanceMapFromCamera(RenderSystem* renderSystem, Camera* fromCamera);
     void RenderWithReprojection(RenderSystem* renderSystem, Camera* fromCamera);
@@ -94,10 +95,13 @@ private:
     rhi::RenderPassConfig reprojectionConfig;
     rhi::RenderPassConfig distanceMapConfig;
     Matrix4 fixedFrameMatrix;
-    Texture* renderTarget = nullptr;
-    Texture* distanceRenderTarget = nullptr;
-    Texture* fixedFrame = nullptr;
-    Texture* reprojectionTexture = nullptr;
+    Asset<Texture> renderTarget;
+    Asset<Texture> renderTargetDepth;
+    Asset<Texture> distanceRenderTarget;
+    Asset<Texture> distanceRenderTargetDepth;
+    Asset<Texture> fixedFrame;
+    Asset<Texture> reprojectionTexture;
+    Asset<Texture> reprojectionTextureDepth;
     Vector3 fixedFrameCameraPosition;
     float frameCompleteness = 0.0f;
     bool frameFixed = false;

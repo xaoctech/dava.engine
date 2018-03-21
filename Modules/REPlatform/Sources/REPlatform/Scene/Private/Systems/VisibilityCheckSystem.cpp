@@ -26,17 +26,29 @@ namespace VCSInternal
 {
 static const uint32 CUBEMAPS_POOL_SIZE = 1;
 static const uint32 CUBEMAP_SIZE = 2048;
-static Array<Texture*, CUBEMAPS_POOL_SIZE> cubemapPool;
+static Array<std::pair<Asset<Texture>, Asset<Texture>>, CUBEMAPS_POOL_SIZE> cubemapPool;
 
-Texture* CubemapRenderTargetAtIndex(uint32 index)
+std::pair<Asset<Texture>, Asset<Texture>> CubemapRenderTargetAtIndex(uint32 index)
 {
     DVASSERT(index < CUBEMAPS_POOL_SIZE);
-    if (cubemapPool[index] == nullptr)
+    if (cubemapPool[index].first == nullptr)
     {
         const PixelFormatDescriptor& pfd = PixelFormatDescriptor::GetPixelFormatDescriptor(VisibilityCheckRenderer::TEXTURE_FORMAT);
         DVASSERT(rhi::TextureFormatSupported(pfd.format, rhi::PROG_FRAGMENT));
-        cubemapPool[index] = Texture::CreateFBO(CUBEMAP_SIZE, CUBEMAP_SIZE, VisibilityCheckRenderer::TEXTURE_FORMAT, true, rhi::TEXTURE_TYPE_CUBE);
-        cubemapPool[index]->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
+        Texture::RenderTargetTextureKey key;
+        key.width = CUBEMAP_SIZE;
+        key.height = CUBEMAP_SIZE;
+        key.format = VisibilityCheckRenderer::TEXTURE_FORMAT;
+        key.isDepth = false;
+        key.textureType = rhi::TEXTURE_TYPE_CUBE;
+
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+
+        cubemapPool[index].first = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+        cubemapPool[index].first->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
+
+        key.isDepth = true;
+        cubemapPool[index].second = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     }
     return cubemapPool[index];
 }
@@ -65,9 +77,10 @@ Camera* VisibilityCheckSystem::GetRenderCamera() const
 
 void VisibilityCheckSystem::ReleaseCubemapRenderTargets()
 {
-    for (auto& cb : VCSInternal::cubemapPool)
+    for (std::pair<Asset<Texture>, Asset<Texture>>& cb : VCSInternal::cubemapPool)
     {
-        SafeRelease(cb);
+        cb.first.reset();
+        cb.second.reset();
     }
 }
 
@@ -239,9 +252,9 @@ void VisibilityCheckSystem::Draw()
     {
         uint32 pointIndex = controlPointIndices[currentPointIndex];
         const auto& point = controlPoints[pointIndex];
-        auto cubemap = VCSInternal::CubemapRenderTargetAtIndex(cm);
-        renderer.RenderToCubemapFromPoint(rs, point.point, cubemap);
-        renderer.RenderVisibilityToTexture(rs, GetRenderCamera(), GetFinalGatherCamera(), cubemap, point);
+        std::pair<Asset<Texture>, Asset<Texture>> cubemap = VCSInternal::CubemapRenderTargetAtIndex(cm);
+        renderer.RenderToCubemapFromPoint(rs, point.point, cubemap.first, cubemap.second);
+        renderer.RenderVisibilityToTexture(rs, GetRenderCamera(), GetFinalGatherCamera(), cubemap.first, point);
     }
 
     if (shouldFixFrame && (currentPointIndex == controlPoints.size()) && (previousPointIndex < controlPoints.size()))
@@ -266,9 +279,11 @@ void VisibilityCheckSystem::Draw()
 
     if (enableDebug)
     {
-        Texture* cubemap = VCSInternal::CubemapRenderTargetAtIndex(0);
-        if (cubemap)
-            RenderSystem2D::Instance()->DrawTexture(cubemap, debugMaterial, Color::White, Rect(2.0f, 2.0f, float32(stateCache.viewportSize.dx) - 4.f, 512.f));
+        std::pair<Asset<Texture>, Asset<Texture>> cubemap = VCSInternal::CubemapRenderTargetAtIndex(0);
+        if (cubemap.first)
+        {
+            RenderSystem2D::Instance()->DrawTexture(cubemap.first, debugMaterial, Color::White, Rect(2.0f, 2.0f, float32(stateCache.viewportSize.dx) - 4.f, 512.f));
+        }
 
         if (renderer.renderTarget)
             RenderSystem2D::Instance()->DrawTexture(renderer.renderTarget, RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, Color::White, Rect(2.f, 516.f, 256.f, 256.f));

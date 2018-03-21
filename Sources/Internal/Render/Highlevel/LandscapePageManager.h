@@ -9,7 +9,6 @@
 namespace DAVA
 {
 class NMaterial;
-class Texture;
 class LandscapeSubdivision;
 class RenderSystem;
 class VTDecalPageRenderer;

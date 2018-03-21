@@ -15,6 +15,7 @@
 #include <REPlatform/Scene/Utils/ImageTools.h>
 
 #include <Render/PixelFormatDescriptor.h>
+#include <Render/Texture.h>
 
 #include <QComboBox>
 #include <QLabel>
@@ -315,7 +316,7 @@ void TilemaskEditorPanel::UpdateTileTextures()
         DAVA::NMaterial* material = landscape->GetPageMaterials(i, 0);
         for (DAVA::uint32 i = 0; i < sizeof(tileTextures) / sizeof(tileTextures[0]); ++i)
         {
-            DAVA::Texture* texture = material->GetEffectiveTexture(tileTextures[i]);
+            DAVA::Asset<DAVA::Texture> texture = material->GetEffectiveTexture(tileTextures[i]);
             if (texture)
             {
                 DAVA::FilePath texturepath = texture->GetDescriptor()->GetSourceTexturePathname();

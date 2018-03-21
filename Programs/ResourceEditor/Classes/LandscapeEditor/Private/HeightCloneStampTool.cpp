@@ -11,11 +11,15 @@
 #include <TArc/Controls/Slider.h>
 #include <TArc/WindowSubsystem/UI.h>
 
+#include <Asset/AssetManager.h>
 #include <Base/GlobalEnum.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Input/InputElements.h>
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderPassNames.h>
+#include <Render/Texture.h>
 #include <UI/UIEvent.h>
 
 namespace HeightCloneStampToolDetail
@@ -100,17 +104,18 @@ void HeightCloneStampTool::Activate(const DAVA::PropertiesItem& settings)
 {
     BaseHeightEditTool::Activate(settings);
 
-    DAVA::RefPtr<DAVA::Texture> heightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
-    DAVA::Texture::FBODescriptor descr;
+    DAVA::Asset<DAVA::Texture> heightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
+
+    DAVA::Texture::RenderTargetTextureKey descr;
     descr.height = heightTexture->width;
     descr.width = heightTexture->width;
     descr.format = DAVA::FORMAT_RGBA8888;
     descr.mipLevelsCount = 1;
-    descr.needDepth = false;
+    descr.isDepth = false;
     descr.needPixelReadback = false;
     descr.textureType = rhi::TEXTURE_TYPE_2D;
 
-    coverTexture = DAVA::Texture::CreateFBO(descr);
+    coverTexture = DAVA::GetEngineContext()->assetManager->GetAsset<DAVA::Texture>(descr, DAVA::AssetManager::SYNC);
     coverTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     coverTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
 
@@ -127,10 +132,10 @@ void HeightCloneStampTool::Activate(const DAVA::PropertiesItem& settings)
     coverTextureGenerateMaterial->AddProperty(DAVA::FastName("landCursorPosition"), pos.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
     coverTextureGenerateMaterial->AddProperty(DAVA::FastName("cursorRotation"), rotation.data, rhi::ShaderProp::TYPE_FLOAT2, 1);
     coverTextureGenerateMaterial->AddProperty(DAVA::FastName("invertFactor"), &invFactor, rhi::ShaderProp::TYPE_FLOAT1, 1);
-    coverTextureGenerateMaterial->AddTexture(DAVA::FastName("landCursorTexture"), GetCursorTexture().Get());
+    coverTextureGenerateMaterial->AddTexture(DAVA::FastName("landCursorTexture"), GetCursorTexture());
 }
 
-DAVA::RefPtr<DAVA::Texture> HeightCloneStampTool::GetCustomCoverTexture() const
+DAVA::Asset<DAVA::Texture> HeightCloneStampTool::GetCustomCoverTexture() const
 {
     return coverTexture;
 }
@@ -156,7 +161,7 @@ void HeightCloneStampTool::Process(DAVA::float32 delta)
     info.renderTarget = coverTexture;
     info.textureLevel = 0;
     coverTextureGenerateMaterial->SetPropertyValue(DAVA::FastName("landCursorPosition"), clonePos.data);
-    coverTextureGenerateMaterial->SetTexture(DAVA::FastName("landCursorTexture"), GetCursorTexture().Get());
+    coverTextureGenerateMaterial->SetTexture(DAVA::FastName("landCursorTexture"), GetCursorTexture());
     if (coverTextureGenerateMaterial->PreBuildMaterial(DAVA::PASS_FORWARD) == false)
     {
         return;
@@ -188,7 +193,7 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightC
 
     InitTextures();
     {
-        DAVA::RefPtr<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
+        DAVA::Asset<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
         DAVA::Vector4 params;
         params.x = 0.0;
         params.y = 0.0;
@@ -199,8 +204,8 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightC
         descr.phaseMaterial.Set(new DAVA::NMaterial());
         descr.phaseMaterial->SetFXName(DAVA::NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(DAVA::FastName("HEIGHT_CLONE"), 1);
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture1"), srcHeightTexture.Get());
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture.Get());
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture1"), srcHeightTexture);
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture);
         descr.phaseMaterial->AddProperty(DAVA::FastName("params"), params.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
         descr.renderTarget = floatTexture;
 
@@ -227,7 +232,7 @@ void HeightCloneStampTool::PrepareBrushPhase(BrushPhaseDescriptor& phase) const
 
 void HeightCloneStampTool::Deactivate(DAVA::PropertiesItem& settings)
 {
-    coverTexture = DAVA::RefPtr<DAVA::Texture>();
+    coverTexture.reset();
     coverTextureGenerateMaterial = DAVA::RefPtr<DAVA::NMaterial>();
     BaseHeightEditTool::Deactivate(settings);
 }

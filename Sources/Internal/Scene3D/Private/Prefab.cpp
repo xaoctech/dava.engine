@@ -64,4 +64,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Prefab)
     ReflectionRegistrator<Prefab>::Begin()
     .End();
 }
+
+template <>
+bool AnyCompare<Prefab::PathKey>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<Prefab::PathKey>().path == v2.Get<Prefab::PathKey>().path;
+}
 };

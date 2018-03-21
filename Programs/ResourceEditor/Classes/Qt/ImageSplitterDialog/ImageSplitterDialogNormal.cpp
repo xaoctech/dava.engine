@@ -84,13 +84,6 @@ void ImageSplitterDialogNormal::SaveAndReloadNormal(const DAVA::FilePath& pathna
 {
     DAVA::ScopedPtr<DAVA::Image> mergedImage(CreateMergedImage(imageArreas[first]->GetImage(), imageArreas[second]->GetImage()));
     DAVA::SaveImageToFile(mergedImage, pathname);
-
-    auto texture = DAVA::Texture::Get(DAVA::TextureDescriptor::GetDescriptorPathname(pathname));
-    if (texture)
-    {
-        texture->Reload();
-        texture->Release();
-    }
 }
 
 DAVA::Image* ImageSplitterDialogNormal::CreateMergedImage(DAVA::Image* firstImage, DAVA::Image* secondImage)

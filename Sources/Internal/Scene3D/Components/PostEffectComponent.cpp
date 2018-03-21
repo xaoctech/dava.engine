@@ -67,7 +67,7 @@ void PostEffectComponent::GetDataNodes(Set<DataNode*>& dataNodes)
     }
 }
 
-void PostEffectComponent::SetColorGradingTexture(Texture* texture)
+void PostEffectComponent::SetColorGradingTexture(const Asset<Texture>& texture)
 {
     static const FastName COLOR_GRADING = FastName("COLOR_GRADING");
     if (material->HasLocalTexture(COLOR_GRADING))
@@ -80,7 +80,7 @@ void PostEffectComponent::SetColorGradingTexture(Texture* texture)
     }
 }
 
-void PostEffectComponent::SetHeatmapTexture(Texture* texture)
+void PostEffectComponent::SetHeatmapTexture(const Asset<Texture>& texture)
 {
     static const FastName HEAT_MAP = FastName("HEAT_MAP");
     if (material->HasLocalTexture(HEAT_MAP))
@@ -93,7 +93,7 @@ void PostEffectComponent::SetHeatmapTexture(Texture* texture)
     }
 }
 
-void PostEffectComponent::SetLightMeterTexture(Texture* texture)
+void PostEffectComponent::SetLightMeterTexture(const Asset<Texture>& texture)
 {
     static const FastName LIGHT_METER_TEXTURE = FastName("LIGHT_METER_TEXTURE");
     if (material->HasLocalTexture(LIGHT_METER_TEXTURE))

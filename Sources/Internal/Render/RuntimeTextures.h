@@ -47,6 +47,7 @@ public:
     RuntimeTextures();
     ~RuntimeTextures();
 
+    void Teardown();
     static RuntimeTextures::eRuntimeTextureSemantic GetRuntimeTextureSemanticByName(const FastName& name);
 
     void Reset(Size2i screenDim);
@@ -69,6 +70,6 @@ private:
     rhi::SamplerState::Descriptor::Sampler samplerDescriptors[RUNTIME_TEXTURES_COUNT]{};
     Size2i runtimeTextureSizes[RUNTIME_TEXTURES_COUNT]{};
     PixelFormat runtimeTexturesFormat[RUNTIME_TEXTURES_COUNT]{};
-    Texture* pinkTexture[2]{};
+    Asset<Texture> pinkTexture[2]{};
 };
 }

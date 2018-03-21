@@ -552,25 +552,6 @@ void SceneTreeModule::PostInit()
         MakeActionKeyBindable(removeSelectionAction, removeSelectionInfo);
         ui->AddAction(DAVA::mainWindowKey, actionsPlacementInfo, removeSelectionAction);
 
-        QtAction* reloadSelectedTextures = new QtAction(accessor, SharedIcon(":/QtIcons/reloadtextures.png"), QStringLiteral("Reload textures in selected Entities"));
-        reloadSelectedTextures->SetStateUpdationFunction(QtAction::Enabled, selectionDescr, [](const Any& v) {
-            if (v.IsEmpty())
-            {
-                return false;
-            }
-
-            DVASSERT(v.CanGet<SelectableGroup>());
-            const SelectableGroup& selection = v.Get<SelectableGroup>();
-            return selection.GetSize() > 0;
-        });
-
-        KeyBindableActionInfo reloadSelectedTexturesInfo;
-        reloadSelectedTexturesInfo.blockName = sceneTreeBlockName;
-        MakeActionKeyBindable(reloadSelectedTextures, reloadSelectedTexturesInfo);
-        ui->AddAction(DAVA::mainWindowKey, actionsPlacementInfo, reloadSelectedTextures);
-
-        connections.AddConnection(reloadSelectedTextures, &QAction::triggered, DAVA::MakeFunction(this, &SceneTreeModule::ReloadTexturesInSelected));
-
         toolBar->addAction(addEntityAction);
         QToolButton* addEntityButton = qobject_cast<QToolButton*>(toolBar->widgetForAction(addEntityAction));
         DVASSERT(addEntityButton != nullptr);
@@ -578,7 +559,6 @@ void SceneTreeModule::PostInit()
         toolBar->addAction(removeSelectionAction);
         toolBar->addAction(expandAction);
         toolBar->addAction(collapseAction);
-        toolBar->addAction(reloadSelectedTextures);
         widgetLayout->addWidget(toolBar);
     }
 
@@ -653,7 +633,6 @@ void SceneTreeModule::PostInit()
     ui->AddControlView(DAVA::mainWindowKey, panelKey, sceneTreeWidget);
 
     RegisterOperation(SetSceneTreeFilter.ID, this, &SceneTreeModule::OnFilterChanged);
-    RegisterOperation(ReloadTexturesInSelectedOperation.ID, this, &SceneTreeModule::ReloadTexturesInSelected);
 }
 
 QAbstractItemModel* SceneTreeModule::GetDataModel() const
@@ -1059,32 +1038,6 @@ void SceneTreeModule::SetExpandedIndexList(const DAVA::Set<QPersistentModelIndex
     selectionData->SetSelection(newSelectionGroup);
 
     data->expandedIndexList = expandedIndexList;
-}
-
-void SceneTreeModule::ReloadTexturesInSelected()
-{
-    DAVA::SelectionData* selectionData = GetAccessor()->GetActiveContext()->GetData<DAVA::SelectionData>();
-    const DAVA::SelectableGroup& selection = selectionData->GetSelection();
-
-    DAVA::Vector<DAVA::Texture*> reloadTextures;
-    for (auto selectEntity : selection.ObjectsOfType<DAVA::Entity>())
-    {
-        DAVA::SceneHelper::TextureCollector collector;
-        DAVA::SceneHelper::EnumerateEntityTextures(selectEntity->GetScene(), selectEntity, collector);
-        DAVA::TexturesMap& textures = collector.GetTextures();
-
-        for (auto& tex : textures)
-        {
-            auto found = std::find(reloadTextures.begin(), reloadTextures.end(), tex.second);
-
-            if (found == reloadTextures.end())
-            {
-                reloadTextures.push_back(tex.second);
-            }
-        }
-    }
-
-    InvokeOperation(DAVA::ReloadTextures.ID, reloadTextures);
 }
 
 const DAVA::Vector<DAVA::SceneTreeFilterBase*>& SceneTreeModule::GetFiltersChain() const

@@ -9,7 +9,7 @@
 #include "Functional/Function.h"
 #include "FileSystem/FileWatcher.h"
 
-//#define TRACE_ASSET_REQUESTER
+#define TRACE_ASSET_REQUESTER
 
 namespace DAVA
 {
@@ -49,11 +49,20 @@ public:
     Asset<AssetType> CreateAsset(const Any& assetKey);
     Asset<AssetBase> CreateAsset(const Any& assetKey);
 
+    template <typename AssetType>
+    Asset<AssetType> FindLoadOrCreate(const Any& assetKey);
+    Asset<AssetBase> FindLoadOrCreate(const Any& assetKey);
+
+    bool ExistsOnDisk(const Any& assetKey);
+
     bool SaveAssetFromData(const Any& saveInfo, const Any& assetKey, AbstractAssetLoader::eSaveMode saveMode = AbstractAssetLoader::eSaveMode::MODE_BIN);
     bool SaveAsset(const Asset<AssetBase>& asset, AbstractAssetLoader::eSaveMode saveMode = AbstractAssetLoader::eSaveMode::MODE_BIN);
     void ReloadAsset(const Any& assetKey);
 
     AssetFileInfo GetAssetFileInfo(const Asset<AssetBase>& asset) const;
+
+    template <typename T>
+    T* GetAssetLoader() const;
 
 private:
     void OnFileEvent(const String& path, FileWatcher::eWatchEvent e);
@@ -81,7 +90,7 @@ private:
     struct AssetDeleter;
 
     UnorderedMap<const Type*, AbstractAssetLoader*> keyTypeToLoader;
-    UnorderedMap<const Type*, AbstractAssetLoader*> assetTypeToLoader;
+    UnorderedMap<const Type*, AbstractAssetLoader*> loaderTypeToLoader;
     UnorderedMap<const Type*, Vector<AssetListener*>> typeListeners;
 
     UnorderedMap<String, UnorderedSet<Any>> assetFileMap;

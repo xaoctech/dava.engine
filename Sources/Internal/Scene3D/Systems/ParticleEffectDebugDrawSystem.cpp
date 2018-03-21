@@ -6,8 +6,12 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Render/Renderer.h"
 #include "Render/Highlevel/RenderSystem.h"
+#include "Render/Texture.h"
 
 #include "Scene3D/Scene.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -70,8 +74,6 @@ ParticleEffectDebugDrawSystem::~ParticleEffectDebugDrawSystem()
 
     SafeRelease(quadMaterial);
     SafeRelease(quadHeatMaterial);
-
-    SafeRelease(heatTexture);
 
     Renderer::GetSignals().needRestoreResources.Disconnect(this);
 }
@@ -137,17 +139,14 @@ void ParticleEffectDebugDrawSystem::GenerateQuadMaterials()
     }
 }
 
-DAVA::Texture* ParticleEffectDebugDrawSystem::GenerateHeatTexture() const
+Asset<Texture> ParticleEffectDebugDrawSystem::GenerateHeatTexture() const
 {
-    unsigned char* data = new unsigned char[heatmapDataSize];
+    std::shared_ptr<uint8[]> buffer(new uint8[heatmapDataSize]);
 
-    GenerateHeatTextureData(data, heatmapDataSize, heatmapWidth);
+    GenerateHeatTextureData(buffer.get(), heatmapDataSize, heatmapWidth);
 
-    Texture* texture = Texture::CreateFromData(FORMAT_RGBA8888, data, heatmapWidth, heatmapHeight, false);
-
-    delete[] data;
-
-    return texture;
+    Texture::UniqueTextureKey key(FORMAT_RGBA8888, heatmapWidth, heatmapHeight, false, buffer);
+    return GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 }
 
 DAVA::Vector4 ParticleEffectDebugDrawSystem::LerpColors(float normalizedWidth) const

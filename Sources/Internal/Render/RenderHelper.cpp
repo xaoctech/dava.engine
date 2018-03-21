@@ -98,12 +98,6 @@ RenderHelper::RenderHelper()
     Clear();
 }
 
-void RenderHelper::InvalidateMaterials()
-{
-    for (NMaterial*& material : materials)
-        material->InvalidateRenderVariants();
-}
-
 RenderHelper::~RenderHelper()
 {
     for (int32 i = 0; i < DRAW_TYPE_COUNT; ++i)

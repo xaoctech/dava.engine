@@ -453,7 +453,8 @@ void SceneValidation::ValidateTexturesRelevance(DAVA::Scene* scene, ValidationPr
 
     SceneHelper::TextureCollector collector;
     SceneHelper::EnumerateSceneTextures(scene, collector);
-    DAVA::TexturesMap& texturesMap = collector.GetTextures();
+    // GFX_COMPLETE
+    /*DAVA::TexturesMap& texturesMap = collector.GetTextures();
 
     for (const std::pair<DAVA::FilePath, DAVA::Texture*>& entry : texturesMap)
     {
@@ -471,7 +472,7 @@ void SceneValidation::ValidateTexturesRelevance(DAVA::Scene* scene, ValidationPr
                 }
             }
         }
-    }
+    }*/
 
     validationProgress.Finished();
 }

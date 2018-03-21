@@ -52,7 +52,7 @@ const uint32 readbackTextureSize = 8;
 class EditedLandscapeSetupGuard : public Command
 {
 public:
-    EditedLandscapeSetupGuard(Scene* scene_, Landscape* landscape_, BaseLandscapeTool* tool_, RefPtr<Texture> cursor_)
+    EditedLandscapeSetupGuard(Scene* scene_, Landscape* landscape_, BaseLandscapeTool* tool_, Asset<Texture> cursor_)
         : scene(scene_)
         , landscape(landscape_)
         , tool(tool_)
@@ -76,8 +76,8 @@ public:
         DVASSERT(material->HasLocalFlag(cursorFlagName) == false);
         material->AddFlag(cursorFlagName, 1);
 
-        RefPtr<Texture> coverTexture = tool->GetCustomCoverTexture();
-        if (coverTexture.Get() != nullptr)
+        Asset<Texture> coverTexture = tool->GetCustomCoverTexture();
+        if (coverTexture != nullptr)
         {
             FastName coverFlagName(COVER_FLAG_NAME);
             DVASSERT(material->HasLocalFlag(coverFlagName) == false);
@@ -85,14 +85,14 @@ public:
 
             FastName coverTextureSlotName(TextureRenderBrushApplicant::COVER_TEXTURE_SLOT_NAME);
             DVASSERT(material->HasLocalTexture(coverTextureSlotName) == false);
-            material->AddTexture(coverTextureSlotName, coverTexture.Get());
+            material->AddTexture(coverTextureSlotName, coverTexture);
         }
 
         Color c(0.5f, 0.5f, 1.0f, 1.0f);
         material->AddProperty(FastName("landCursorColor"), c.color, rhi::ShaderProp::TYPE_FLOAT3);
         FastName cursorTextureSlotName(TextureRenderBrushApplicant::CURSOR_TEXTURE_SLOT_NAME);
         DVASSERT(material->HasLocalTexture(cursorTextureSlotName) == false);
-        material->AddTexture(cursorTextureSlotName, cursor.Get());
+        material->AddTexture(cursorTextureSlotName, cursor);
 
         FastName cursorPositionPropName(TextureRenderBrushApplicant::CURSOR_POS_PROP_NAME);
         DVASSERT(material->HasLocalProperty(cursorPositionPropName) == false);
@@ -147,13 +147,13 @@ private:
     Scene* scene = nullptr;
     Landscape* landscape = nullptr;
     BaseLandscapeTool* tool = nullptr;
-    RefPtr<Texture> cursor;
+    Asset<Texture> cursor;
 };
 
 class InvertEditedLandscapeSetupGuard : public EditedLandscapeSetupGuard
 {
 public:
-    InvertEditedLandscapeSetupGuard(Scene* scene, Landscape* landscape, BaseLandscapeTool* tool, RefPtr<Texture> cursor)
+    InvertEditedLandscapeSetupGuard(Scene* scene, Landscape* landscape, BaseLandscapeTool* tool, Asset<Texture> cursor)
         : EditedLandscapeSetupGuard(scene, landscape, tool, cursor)
     {
     }
@@ -262,12 +262,12 @@ LandscapeEditorSystemV2::LandscapeEditorSystemV2(Scene* scene)
     Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_UVPICKING);
     DVASSERT(Renderer::GetRuntimeTextures().GetRuntimeTextureFormat(RuntimeTextures::TEXTURE_UVPICKING) == FORMAT_RGBA32F);
 
-    Texture::FBODescriptor descriptor;
+    Texture::RenderTargetTextureKey descriptor;
     descriptor.format = FORMAT_RGBA32F;
     descriptor.height = LandscapeEditorSystemV2Details::readbackTextureSize;
     descriptor.width = LandscapeEditorSystemV2Details::readbackTextureSize;
     descriptor.mipLevelsCount = 1;
-    descriptor.needDepth = false;
+    descriptor.isDepth = false;
     descriptor.needPixelReadback = true;
     descriptor.textureType = rhi::TEXTURE_TYPE_2D;
     pickReadBackTextures.reset(new ReadBackRingArray(descriptor, 4));
@@ -333,14 +333,14 @@ void LandscapeEditorSystemV2::Process(float32 delta)
         // check if cursor texture changed
         Color cursorColor = activeTool->GetCursorColor();
         landscapeMaterial->SetPropertyValue(FastName("landCursorColor"), cursorColor.color);
-        RefPtr<Texture> cursorTexture = activeTool->GetCursorTexture();
-        if (cursorTexture.Get() != nullptr && currentCursorTexture != cursorTexture)
+        Asset<Texture> cursorTexture = activeTool->GetCursorTexture();
+        if (cursorTexture != nullptr && currentCursorTexture != cursorTexture)
         {
             currentCursorTexture = cursorTexture;
 
             FastName cursorTextureSlotName(TextureRenderBrushApplicant::CURSOR_TEXTURE_SLOT_NAME);
             DVASSERT(landscapeMaterial->HasLocalTexture(cursorTextureSlotName) == true);
-            landscapeMaterial->SetTexture(cursorTextureSlotName, currentCursorTexture.Get());
+            landscapeMaterial->SetTexture(cursorTextureSlotName, currentCursorTexture);
         }
     }
 
@@ -485,7 +485,7 @@ bool LandscapeEditorSystemV2::ActivateTool(BaseLandscapeTool* tool)
     brushApplicant = activeTool->GetBrushApplicant();
 
     currentCursorTexture = activeTool->GetCursorTexture();
-    if (currentCursorTexture.Get() == nullptr)
+    if (currentCursorTexture == nullptr)
     {
         currentCursorTexture = CreateSingleMipTexture(FilePath("~res:/ResourceEditor/LandscapeEditor/Tools/cursor/cursor.png"));
     }
@@ -529,7 +529,7 @@ void LandscapeEditorSystemV2::DeactivateTool()
 
     RestoreTextureOverrides();
 
-    currentCursorTexture = RefPtr<Texture>();
+    currentCursorTexture.reset();
     overrideMapping.clear();
     DVASSERT(propsCreatorFn != nullptr);
     toolInputController->Reset();
@@ -562,7 +562,7 @@ int32 LandscapeEditorSystemV2::GetLandscapeTextureCount(Landscape::eLandscapeTex
     return editedLandscape->GetTextureCount(textureSemantic);
 }
 
-RefPtr<Texture> LandscapeEditorSystemV2::GetOriginalLandscapeTexture(Landscape::eLandscapeTexture textureSemantic, int32 index) const
+Asset<Texture> LandscapeEditorSystemV2::GetOriginalLandscapeTexture(Landscape::eLandscapeTexture textureSemantic, int32 index) const
 {
     DVASSERT(editedLandscape != nullptr);
     RTMappingKey key;
@@ -575,18 +575,18 @@ RefPtr<Texture> LandscapeEditorSystemV2::GetOriginalLandscapeTexture(Landscape::
         return iter->second;
     }
 
-    return RefPtr<Texture>::ConstructWithRetain(editedLandscape->GetTexture(textureSemantic, index));
+    return editedLandscape->GetTexture(textureSemantic, index);
 }
 
-void LandscapeEditorSystemV2::SetOverrideTexture(Landscape::eLandscapeTexture textureSemantic, int32 index, RefPtr<Texture> texture)
+void LandscapeEditorSystemV2::SetOverrideTexture(Landscape::eLandscapeTexture textureSemantic, int32 index, Asset<Texture> texture)
 {
     RTMappingKey key;
     key.semantic = textureSemantic;
     key.index = index;
     DVASSERT(overrideMapping.count(key) == 0);
 
-    RefPtr<Texture> sourceTexture = RefPtr<Texture>::ConstructWithRetain(editedLandscape->GetTexture(textureSemantic, index));
-    editedLandscape->SetTexture(textureSemantic, index, texture.Get());
+    Asset<Texture> sourceTexture = editedLandscape->GetTexture(textureSemantic, index);
+    editedLandscape->SetTexture(textureSemantic, index, texture);
     overrideMapping.emplace(key, sourceTexture);
 }
 
@@ -599,19 +599,19 @@ Landscape* LandscapeEditorSystemV2::GetEditedLandscape() const
 void LandscapeEditorSystemV2::UpdateHeightmap(Landscape* landscape, const Vector<uint16>& data, const Rect2i& rect)
 {
     using namespace DAVA;
-    Map<RTMappingKey, RefPtr<Texture>> overrideTargetMapping;
+    Map<RTMappingKey, Asset<Texture>> overrideTargetMapping;
     for (const auto& node : overrideMapping)
     {
-        RefPtr<Texture> textureOverride = RefPtr<Texture>::ConstructWithRetain(editedLandscape->GetTexture(node.first.semantic, node.first.index));
+        Asset<Texture> textureOverride = editedLandscape->GetTexture(node.first.semantic, node.first.index);
         overrideTargetMapping.emplace(node.first, textureOverride);
-        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second.Get());
+        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second);
     }
 
     landscape->UpdateHeightmap(data, rect);
 
     for (const auto& node : overrideTargetMapping)
     {
-        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second.Get());
+        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second);
     }
 }
 
@@ -735,11 +735,11 @@ void LandscapeEditorSystemV2::StoreSnapshots()
     brushApplicant->StoreSnapshots();
 }
 
-void LandscapeEditorSystemV2::ReadPickTexture(RefPtr<Texture> texture)
+void LandscapeEditorSystemV2::ReadPickTexture(const Asset<Texture>& texture)
 {
     using namespace LandscapeEditorSystemV2Details;
 
-    RefPtr<Image> image(texture->CreateImageFromMemory());
+    RefPtr<Image> image(texture->CreateImageFromRegion());
     DVASSERT(image->width == LandscapeEditorSystemV2Details::readbackTextureSize);
     DVASSERT(image->height == LandscapeEditorSystemV2Details::readbackTextureSize);
     DVASSERT(image->GetPixelFormat() == FORMAT_RGBA32F);
@@ -767,19 +767,19 @@ void LandscapeEditorSystemV2::CreateDiffCommand()
     operationRect.y = Saturate(1.0 - operationRect.y - operationRect.dy);
     std::unique_ptr<Command> command = brushApplicant->CreateDiffCommand(operationRect);
 
-    Map<RTMappingKey, RefPtr<Texture>> overrideTargetMapping;
+    Map<RTMappingKey, Asset<Texture>> overrideTargetMapping;
     for (const auto& node : overrideMapping)
     {
-        RefPtr<Texture> textureOverride = RefPtr<Texture>::ConstructWithRetain(editedLandscape->GetTexture(node.first.semantic, node.first.index));
+        Asset<Texture> textureOverride = editedLandscape->GetTexture(node.first.semantic, node.first.index);
         overrideTargetMapping.emplace(node.first, textureOverride);
-        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second.Get());
+        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second);
     }
 
     static_cast<SceneEditor2*>(GetScene())->Exec(std::move(command));
 
     for (const auto& node : overrideTargetMapping)
     {
-        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second.Get());
+        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second);
     }
 }
 
@@ -788,7 +788,7 @@ void LandscapeEditorSystemV2::RestoreTextureOverrides()
     DVASSERT(editedLandscape != nullptr);
     for (const auto& node : overrideMapping)
     {
-        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second.Get());
+        editedLandscape->SetTexture(node.first.semantic, node.first.index, node.second);
     }
 }
 

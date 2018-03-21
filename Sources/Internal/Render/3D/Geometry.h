@@ -6,12 +6,23 @@
 #include "Render/3D/PolygonGroup.h"
 #include "Asset/Asset.h"
 #include "Reflection/Reflection.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
 class Geometry : public AssetBase
 {
 public:
+    struct PathKey
+    {
+        PathKey() = default;
+        PathKey(const FilePath& filepath)
+            : path(filepath)
+        {
+        }
+        FilePath path;
+    };
+
     Geometry(const Any& assetKey);
     ~Geometry();
 
@@ -25,4 +36,8 @@ protected:
 
     DAVA_VIRTUAL_REFLECTION(Geometry, AssetBase);
 };
+
+template <>
+bool AnyCompare<Geometry::PathKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Geometry::PathKey>;
 };

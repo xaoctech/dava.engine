@@ -4,6 +4,10 @@
 #include "Reflection/ReflectedMeta.h"
 #include "Render/Material/NMaterialNames.h"
 #include "FileSystem/FileSystem.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -110,7 +114,8 @@ void GeoDecalComponent::ConfigChanged()
 
     if (FileSystem::Instance()->Exists(config.albedo))
     {
-        ScopedPtr<Texture> albedoTexture(Texture::CreateFromFile(config.albedo));
+        Texture::PathKey key(config.albedo);
+        Asset<Texture> albedoTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         if (dataNodeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_ALBEDO))
             dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, albedoTexture);
         else
@@ -119,7 +124,8 @@ void GeoDecalComponent::ConfigChanged()
 
     if (FileSystem::Instance()->Exists(config.normal))
     {
-        ScopedPtr<Texture> normalTexture(Texture::CreateFromFile(config.normal));
+        Texture::PathKey key(config.normal);
+        Asset<Texture> normalTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         if (dataNodeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_NORMAL))
             dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, normalTexture);
         else
@@ -128,7 +134,8 @@ void GeoDecalComponent::ConfigChanged()
 
     if (FileSystem::Instance()->Exists(config.specular))
     {
-        ScopedPtr<Texture> specularTexture(Texture::CreateFromFile(config.specular));
+        Texture::PathKey key(config.specular);
+        Asset<Texture> specularTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         if (dataNodeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_SPECULAR))
             dataNodeMaterial->SetTexture(NMaterialTextureName::TEXTURE_SPECULAR, specularTexture);
         else

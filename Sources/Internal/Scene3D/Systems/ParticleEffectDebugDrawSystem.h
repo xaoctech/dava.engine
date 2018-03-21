@@ -4,6 +4,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "Math/Vector.h"
+#include "Asset/Asset.h"
 
 namespace DAVA
 {
@@ -37,7 +38,7 @@ public:
     void GenerateDebugMaterials();
     void GenerateQuadMaterials();
 
-    Texture* GenerateHeatTexture() const;
+    Asset<Texture> GenerateHeatTexture() const;
     Vector4 LerpColors(float normalizedWidth) const;
 
     inline eParticleDebugDrawMode GetDrawMode() const;
@@ -45,8 +46,6 @@ public:
 
     inline bool GetIsDrawOnlySected() const;
     inline void SetIsDrawOnlySelected(bool showOnlySelected);
-
-    inline const Vector<NMaterial*>* const GetMaterials() const;
 
     void SetSelectedParticles(UnorderedSet<RenderObject*> selectedParticles);
     void SetAlphaThreshold(float32 threshold);
@@ -81,7 +80,7 @@ private:
     NMaterial* quadMaterial = nullptr;
     NMaterial* quadHeatMaterial = nullptr;
 
-    Texture* heatTexture = nullptr;
+    Asset<Texture> heatTexture = nullptr;
 
     Vector<NMaterial*> materials;
 };
@@ -104,10 +103,5 @@ bool ParticleEffectDebugDrawSystem::GetIsDrawOnlySected() const
 void ParticleEffectDebugDrawSystem::SetIsDrawOnlySelected(bool enable)
 {
     isDrawOnlySelected = enable;
-}
-
-const Vector<NMaterial*>* const ParticleEffectDebugDrawSystem::GetMaterials() const
-{
-    return &materials;
 }
 }

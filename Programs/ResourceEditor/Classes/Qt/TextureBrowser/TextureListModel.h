@@ -38,8 +38,8 @@ public:
     void dataReady(const DAVA::TextureDescriptor* descriptor);
 
     QModelIndex getIndex(const DAVA::TextureDescriptor* texture);
-    DAVA::Texture* getTexture(const QModelIndex& index) const;
-    DAVA::Texture* getTexture(const DAVA::TextureDescriptor* descriptor) const;
+    DAVA::Asset<DAVA::Texture> getTexture(const QModelIndex& index) const;
+    DAVA::Asset<DAVA::Texture> getTexture(const DAVA::TextureDescriptor* descriptor) const;
     DAVA::TextureDescriptor* getDescriptor(const QModelIndex& index) const;
 
     bool isHighlited(const QModelIndex& index) const;
@@ -48,7 +48,7 @@ private:
     QVector<DAVA::TextureDescriptor*> textureDescriptorsAll;
     QVector<DAVA::TextureDescriptor*> textureDescriptorsFiltredSorted;
     QVector<DAVA::TextureDescriptor*> textureDescriptorsHighlight;
-    QMap<const DAVA::TextureDescriptor*, DAVA::Texture*> texturesAll;
+    QMap<const DAVA::TextureDescriptor*, DAVA::Asset<DAVA::Texture>> texturesAll;
 
     TextureListSortMode curSortMode;
     QString curFilter;

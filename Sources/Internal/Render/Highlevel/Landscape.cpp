@@ -469,9 +469,6 @@ void Landscape::ReleaseGeometryData()
     for (Image* img : normalTextureData)
         img->Release();
     normalTextureData.clear();
-
-    SafeRelease(heightTexture);
-    SafeRelease(normalTexture);
 }
 
 void Landscape::BuildLandscapeFromHeightmapImage(const FilePath& heightmapPathname, const AABBox3& _box)
@@ -640,11 +637,27 @@ void Landscape::CreateTextures()
     CreateTextureData();
     UpdateTextureData(Rect2i(0, 0, heightmap->Size(), heightmap->Size()));
 
-    heightTexture = Texture::CreateFromData(heightTextureData);
+    Vector<RefPtr<Image>> heightImages;
+    heightImages.reserve(heightTextureData.size());
+    for (Image* img : heightTextureData)
+    {
+        heightImages.push_back(RefPtr<Image>::ConstructWithRetain(img));
+    }
+
+    Texture::UniqueTextureKey heightKey(std::move(heightImages));
+    heightTexture = GetEngineContext()->assetManager->GetAsset<Texture>(heightKey, AssetManager::SYNC);
     heightTexture->texDescriptor->pathname = "memoryfile_landscape_height";
     heightTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
 
-    normalTexture = Texture::CreateFromData(normalTextureData);
+    Vector<RefPtr<Image>> normalImages;
+    heightImages.reserve(normalTextureData.size());
+    for (Image* img : normalTextureData)
+    {
+        normalImages.push_back(RefPtr<Image>::ConstructWithRetain(img));
+    }
+
+    Texture::UniqueTextureKey normalKey(std::move(normalImages));
+    normalTexture = GetEngineContext()->assetManager->GetAsset<Texture>(normalKey, AssetManager::SYNC);
     normalTexture->texDescriptor->pathname = "memoryfile_landscape_normal";
     normalTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
 
@@ -2514,9 +2527,9 @@ int32 Landscape::GetTextureCount(eLandscapeTexture textureSemantic) const
     return result;
 }
 
-DAVA::Texture* Landscape::GetTexture(eLandscapeTexture textureSemantic, int32 index) const
+Asset<Texture> Landscape::GetTexture(eLandscapeTexture textureSemantic, int32 index) const
 {
-    DAVA::Texture* result = nullptr;
+    Asset<Texture> result;
     switch (textureSemantic)
     {
     case DAVA::Landscape::HEIGHTMAP_TEXTURE:
@@ -2537,20 +2550,18 @@ DAVA::Texture* Landscape::GetTexture(eLandscapeTexture textureSemantic, int32 in
     return result;
 }
 
-void Landscape::SetTexture(eLandscapeTexture textureSemantic, int32 index, Texture* texture)
+void Landscape::SetTexture(eLandscapeTexture textureSemantic, int32 index, Asset<Texture> texture)
 {
     switch (textureSemantic)
     {
     case DAVA::Landscape::HEIGHTMAP_TEXTURE:
         DVASSERT(index == 0);
-        DAVA::SafeRelease(heightTexture);
-        heightTexture = DAVA::SafeRetain(texture);
+        heightTexture = texture;
         landscapeRuntimeMaterial->SetTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightTexture);
         break;
     case DAVA::Landscape::TANGENT_TEXTURE:
         DVASSERT(index == 0);
-        DAVA::SafeRelease(normalTexture);
-        normalTexture = DAVA::SafeRetain(texture);
+        normalTexture = texture;
         landscapeRuntimeMaterial->SetTexture(NMaterialTextureName::TEXTURE_TANGENTMAP, normalTexture);
     case DAVA::Landscape::TILEMASK_TEXTURE:
         // TODO implement this

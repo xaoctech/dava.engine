@@ -3,6 +3,7 @@
 
 #include "Render/2D/Font.h"
 #include "Render/Renderer.h"
+#include "Asset/AssetListener.h"
 
 namespace DAVA
 {
@@ -12,7 +13,7 @@ namespace DAVA
 
 class GraphicInternalFont;
 
-class GraphicFont : public Font
+class GraphicFont : public Font, private AssetListener
 {
 public:
     class GraphicFontVertex
@@ -59,7 +60,7 @@ public:
     /**
      \brief Get font texture
      */
-    Texture* GetTexture() const;
+    Asset<Texture> GetTexture() const;
 
     /**
      \brief Tests if two fonts are the same.
@@ -83,6 +84,8 @@ public:
 
     float32 GetSpread() const;
 
+    void OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded) override;
+
 protected:
     // Get the raw hash string (identical for identical fonts).
     virtual String GetRawHashString();
@@ -92,10 +95,10 @@ private:
     bool LoadTexture(const FilePath& path);
 
     GraphicInternalFont* fontInternal;
-    Texture* texture;
+    Asset<Texture> texture;
 };
 
-inline Texture* GraphicFont::GetTexture() const
+inline Asset<Texture> GraphicFont::GetTexture() const
 {
     return texture;
 }

@@ -10,6 +10,7 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Material/NMaterial.h>
 #include <Base/BaseTypes.h>
+#include <Asset/Asset.h>
 
 namespace DAVA
 {
@@ -81,14 +82,14 @@ public:
     };
     virtual QWidget* CreateEditorWidget(const WidgetParams& params) = 0;
     // Texture that will be drawn over landscape. Can be nullptr.
-    virtual RefPtr<Texture> GetCustomCoverTexture() const
+    virtual Asset<Texture> GetCustomCoverTexture() const
     {
-        return RefPtr<Texture>();
+        return Asset<Texture>();
     }
     // Texture with cursor shape. That texture will be drawn around cursor with size get from GetBrushSize.
-    virtual RefPtr<Texture> GetCursorTexture() const
+    virtual Asset<Texture> GetCursorTexture() const
     {
-        return RefPtr<Texture>();
+        return Asset<Texture>();
     }
 
     virtual Color GetCursorColor() const

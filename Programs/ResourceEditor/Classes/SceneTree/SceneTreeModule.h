@@ -53,8 +53,6 @@ private:
     const DAVA::Set<QPersistentModelIndex>& GetExpandedIndexList() const;
     void SetExpandedIndexList(const DAVA::Set<QPersistentModelIndex>& expandedIndexList);
 
-    void ReloadTexturesInSelected();
-
     // Filtration
     const DAVA::Vector<DAVA::SceneTreeFilterBase*>& GetFiltersChain() const;
     void AddFilterToChain(const DAVA::Any& filterTypeKey);

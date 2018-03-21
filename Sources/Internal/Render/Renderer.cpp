@@ -2,7 +2,6 @@
 #include "Render/RHI/rhi_ShaderCache.h"
 #include "Render/RHI/Common/dbg_StatSet.h"
 #include "Render/RHI/Common/rhi_Private.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/PixelFormatDescriptor.h"
@@ -10,6 +9,7 @@
 #include "Render/Texture.h"
 #include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/Material/FXAssetLoader.h"
+#include "Render/TextureAssetLoader.h"
 #include "Concurrency/Mutex.h"
 #include "Concurrency/LockGuard.h"
 #include "Platform/DeviceInfo.h"
@@ -139,7 +139,9 @@ void Initialize(rhi::Api _api, rhi::InitParam& params)
     }
 #endif //android
 
-    Texture::SetGPULoadingOrder(gpuLoadingOrder);
+    std::unique_ptr<TextureAssetLoader> textureAssetLoader(new TextureAssetLoader());
+    textureAssetLoader->SetGPULoadingOrder(gpuLoadingOrder);
+    assetManager->RegisterAssetLoader(std::move(textureAssetLoader));
     Logger::Info("MAX FPS: %d", rhi::DeviceCaps().maxFPS);
 }
 
@@ -147,6 +149,7 @@ void Uninitialize()
 {
     DVASSERT(RendererDetails::initialized);
 
+    GetRuntimeTextures().Teardown();
     VisibilityQueryResults::Cleanup();
     ShaderAssetListener::Instance()->Shoutdown();
     rhi::ShaderCache::Unitialize();

@@ -614,17 +614,4 @@ rhi::RenderPassConfig& RenderSystem::GetMainPassConfig()
 {
     return activeRenderPass->GetPassConfig();
 }
-
-void RenderSystem::InvalidateMaterials()
-{
-    // GFX_COMPLETE  - later think about generic mechanism to invalidate materials on shaders reload
-    debugDrawer->InvalidateMaterials();
-    postEffectRenderer->InvalidateMaterials();
-    cubemapRenderer->InvalidateMaterials();
-    reflectionRenderer->InvalidateMaterials();
-    lightShadowSystem.InvalidateMaterials();
-
-    if (rescalePass)
-        rescalePass->InvalidateMaterials();
-}
 }

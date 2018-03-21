@@ -38,7 +38,7 @@ struct TextureExport
         ExtractMetallness
     };
 
-    DAVA::Texture* sourceTexture = nullptr;
+    DAVA::Asset<DAVA::Texture> sourceTexture;
     DAVA::FilePath originalFilePath;
     DAVA::String destinationFilePath;
     Option option = Option::ExportAsIs;
@@ -99,13 +99,13 @@ public:
     bool MaterialIsValidForExport(DAVA::NMaterial* material);
 
     void CollectMaterialTextures(MitsubaExporterDetail::MaterialExport& material);
-    bool AddAlbedoTextureToExport(DAVA::Texture*, DAVA::Vector<DAVA::String>& textureIds);
-    bool AddNormalTextureToExport(DAVA::Texture*, DAVA::Vector<DAVA::String>& textureIds);
+    bool AddAlbedoTextureToExport(const DAVA::Asset<DAVA::Texture>&, DAVA::Vector<DAVA::String>& textureIds);
+    bool AddNormalTextureToExport(const DAVA::Asset<DAVA::Texture>&, DAVA::Vector<DAVA::String>& textureIds);
 };
 
 const bool ExportParametersFromMaterials = false;
 static const DAVA::String FileExtension = ".xml";
-void LandscapeThumbnailCallback(DAVA::String fileName, DAVA::Landscape* landscape, DAVA::Texture* landscapeTexture);
+void LandscapeThumbnailCallback(DAVA::String fileName, DAVA::Landscape* landscape, DAVA::Asset<DAVA::Texture> landscapeTexture);
 }
 
 void MitsubaExporter::PostInit()
@@ -539,8 +539,8 @@ void MitsubaExporterDetail::Exporter::CollectMaterialTextures(MitsubaExporterDet
         return;
     }
 
-    DAVA::Texture* albedoTexture = material.material->GetEffectiveTexture(DAVA::FastName(mitsuba::kAlbedo.c_str()));
-    DAVA::Texture* normalTexture = material.material->GetEffectiveTexture(DAVA::FastName(mitsuba::kNormalMap.c_str()));
+    DAVA::Asset<DAVA::Texture> albedoTexture = material.material->GetEffectiveTexture(DAVA::FastName(mitsuba::kAlbedo.c_str()));
+    DAVA::Asset<DAVA::Texture> normalTexture = material.material->GetEffectiveTexture(DAVA::FastName(mitsuba::kNormalMap.c_str()));
 
     DAVA::Vector<DAVA::String> textureIds;
     if (AddAlbedoTextureToExport(albedoTexture, textureIds))
@@ -559,7 +559,7 @@ void MitsubaExporterDetail::Exporter::CollectMaterialTextures(MitsubaExporterDet
     }
 }
 
-bool MitsubaExporterDetail::Exporter::AddAlbedoTextureToExport(DAVA::Texture* texture, DAVA::Vector<DAVA::String>& textureIds)
+bool MitsubaExporterDetail::Exporter::AddAlbedoTextureToExport(const DAVA::Asset<DAVA::Texture>& texture, DAVA::Vector<DAVA::String>& textureIds)
 {
     if (texture == nullptr)
         return false;
@@ -584,7 +584,7 @@ bool MitsubaExporterDetail::Exporter::AddAlbedoTextureToExport(DAVA::Texture* te
     return true;
 }
 
-bool MitsubaExporterDetail::Exporter::AddNormalTextureToExport(DAVA::Texture* texture, DAVA::Vector<DAVA::String>& textureIds)
+bool MitsubaExporterDetail::Exporter::AddNormalTextureToExport(const DAVA::Asset<DAVA::Texture>& texture, DAVA::Vector<DAVA::String>& textureIds)
 {
     if (texture == nullptr)
         return false;
@@ -847,9 +847,9 @@ void MitsubaExporterDetail::Exporter::ExportMaterial(const DAVA::String& name, M
     }
 }
 
-void MitsubaExporterDetail::LandscapeThumbnailCallback(DAVA::String fileName, DAVA::Landscape* landscape, DAVA::Texture* landscapeTexture)
+void MitsubaExporterDetail::LandscapeThumbnailCallback(DAVA::String fileName, DAVA::Landscape* landscape, DAVA::Asset<DAVA::Texture> landscapeTexture)
 {
-    DAVA::ScopedPtr<DAVA::Image> image(landscapeTexture->CreateImageFromMemory());
+    DAVA::ScopedPtr<DAVA::Image> image(landscapeTexture->CreateImageFromRegion());
     DAVA::ImageSystem::Save(fileName, image);
 }
 

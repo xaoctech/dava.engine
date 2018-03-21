@@ -11,6 +11,9 @@
 #include "Render/Texture.h"
 #include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/Landscape.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -23,8 +26,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LightmapDataComponent)
 
 LightmapDataComponent::~LightmapDataComponent()
 {
-    for (auto& it : lightmapData)
-        SafeRelease(it.second.lightmapTexture);
 }
 
 Component* LightmapDataComponent::Clone(Entity* toEntity)
@@ -32,10 +33,6 @@ Component* LightmapDataComponent::Clone(Entity* toEntity)
     LightmapDataComponent* component = new LightmapDataComponent();
     component->SetEntity(toEntity);
     component->lightmapData = lightmapData;
-
-    for (auto& it : component->lightmapData)
-        SafeRetain(it.second.lightmapTexture);
-
     return component;
 }
 
@@ -69,7 +66,12 @@ void LightmapDataComponent::Deserialize(KeyedArchive* archive, SerializationCont
 
             data.lightmapPath = serializationContext->GetScenePath() + archive->GetString(Format("lightmapPath%u", d));
             data.uvOffsetScale = archive->GetVector4(Format("uv%u", d));
-            data.lightmapTexture = Texture::PureCreate(data.lightmapPath);
+            AssetManager* assetManager = GetEngineContext()->assetManager;
+            Texture::PathKey key(data.lightmapPath);
+            if (assetManager->ExistsOnDisk(key) == true)
+            {
+                data.lightmapTexture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+            }
         }
     }
 }
@@ -77,28 +79,22 @@ void LightmapDataComponent::Deserialize(KeyedArchive* archive, SerializationCont
 void LightmapDataComponent::SetLightmapData(const FastName& id, const Vector4& uv, const FilePath& lightmapPath)
 {
     LightmapData& data = lightmapData[id];
-    SafeRelease(data.lightmapTexture);
 
     data.lightmapPath = lightmapPath;
-    data.lightmapTexture = Texture::PureCreate(lightmapPath);
+    data.lightmapTexture.reset();
     data.uvOffsetScale = uv;
+
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    Texture::PathKey key(data.lightmapPath);
+    if (assetManager->ExistsOnDisk(key) == true)
+    {
+        data.lightmapTexture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+    }
 }
 
 void LightmapDataComponent::RemoveLightmapData()
 {
-    for (auto& it : lightmapData)
-        SafeRelease(it.second.lightmapTexture);
     lightmapData.clear();
-}
-
-void LightmapDataComponent::ReloadLightmaps()
-{
-    for (auto& it : lightmapData)
-    {
-        Texture* texture = it.second.lightmapTexture;
-        if (texture != nullptr)
-            texture->Reload();
-    }
 }
 
 void LightmapDataComponent::RebuildIDs()

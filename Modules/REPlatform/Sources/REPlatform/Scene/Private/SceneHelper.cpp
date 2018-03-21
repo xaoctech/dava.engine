@@ -46,7 +46,7 @@ void TextureCollector::Apply(NMaterial* material)
     for (auto const& matTex : materialTextures)
     {
         const FilePath& texturePath = matTex->path;
-        Texture* texture = matTex->texture;
+        Asset<Texture> texture = matTex->texture;
 
         if (texturePath.IsEmpty() || !validator.IsPathCorrectForProject(texturePath))
         {
@@ -62,7 +62,7 @@ void TextureCollector::Apply(NMaterial* material)
     }
 }
 
-TexturesMap& TextureCollector::GetTextures()
+const Map<FilePath, Asset<Texture>>& TextureCollector::GetTextures()
 {
     return textureMap;
 }
@@ -116,7 +116,7 @@ void EnumerateEntityTextures(Scene* forScene, Entity* forNode, TextureCollector&
     }
 }
 
-int32 EnumerateModifiedTextures(Scene* forScene, Map<Texture*, Vector<eGPUFamily>>& textures)
+int32 EnumerateModifiedTextures(Scene* forScene, Map<Asset<Texture>, Vector<eGPUFamily>>& textures)
 {
     int32 retValue = 0;
     textures.clear();
@@ -125,7 +125,7 @@ int32 EnumerateModifiedTextures(Scene* forScene, Map<Texture*, Vector<eGPUFamily
 
     for (auto& it : collector.GetTextures())
     {
-        Texture* texture = it.second;
+        Asset<Texture> texture = it.second;
         if (nullptr == texture)
         {
             continue;

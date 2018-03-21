@@ -6,9 +6,17 @@
 #include <Render/Image/Image.h>
 #include <Render/Image/ImageSystem.h>
 #include <Render/Texture.h>
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 
 #include <spine/spine.h>
 #include <spine/extension.h>
+
+namespace SpineImplDetails
+{
+DAVA::UnorderedMap<void*, DAVA::Asset<DAVA::Texture>> spineTextures;
+} // namespace SpineImplDetails
 
 void _spAtlasPage_createTexture(spAtlasPage* self, const char* path_)
 {
@@ -32,18 +40,24 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path_)
         }
     }
 
-    Texture* texture = nullptr;
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+
+    Asset<Texture> texture;
     if (path.GetExtension() == ".tex")
     {
-        // Try open atlas as Texture
-        texture = Texture::PureCreate(path);
+        Texture::PathKey key(path);
+        if (assetManager->ExistsOnDisk(key) == true)
+        {
+            // Try open atlas as Texture
+            texture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+        }
     }
     else if (path.GetExtension() == ".txt")
     {
         // Try open atlas as Sprite
         Sprite* s = Sprite::Create(path);
         DVASSERT(s, "Create sprite failure!");
-        texture = SafeRetain(s->GetTexture());
+        texture = s->GetTexture();
         SafeRelease(s);
     }
     else
@@ -54,7 +68,15 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path_)
         DVASSERT(images.size() > 0 && images[0] != nullptr, "Failed to load image!");
         if (images.size() > 0 && images[0] != nullptr)
         {
-            texture = Texture::CreateFromData(images[0], 0);
+            Vector<RefPtr<Image>> refImages;
+            refImages.reserve(images.size());
+            for (Image* img : images)
+            {
+                refImages.push_back(RefPtr<Image>::ConstructWithRetain(img));
+            }
+
+            Texture::UniqueTextureKey key(std::move(refImages));
+            texture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
         for (Image* image : images)
         {
@@ -63,9 +85,17 @@ void _spAtlasPage_createTexture(spAtlasPage* self, const char* path_)
     }
 
     DVASSERT(texture, "Failed to create texture!");
-    self->rendererObject = texture;
-    self->width = texture ? texture->GetWidth() : 0;
-    self->height = texture ? texture->GetHeight() : 0;
+    if (texture != nullptr)
+    {
+        SpineImplDetails::spineTextures.emplace(texture.get(), texture);
+        self->rendererObject = texture.get();
+    }
+    else
+    {
+        self->rendererObject = nullptr;
+    }
+    self->width = texture ? texture->width : 0;
+    self->height = texture ? texture->height : 0;
 }
 
 void _spAtlasPage_disposeTexture(spAtlasPage* self)
@@ -73,7 +103,10 @@ void _spAtlasPage_disposeTexture(spAtlasPage* self)
     using namespace DAVA;
     if (self->rendererObject)
     {
-        static_cast<Texture*>(self->rendererObject)->Release();
+        auto iter = SpineImplDetails::spineTextures.find(self->rendererObject);
+        DVASSERT(iter != SpineImplDetails::spineTextures.end());
+
+        SpineImplDetails::spineTextures.erase(iter);
         self->rendererObject = nullptr;
     }
 }

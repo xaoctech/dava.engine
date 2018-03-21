@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Base/Map.h>
 #include <FileSystem/FilePath.h>
 #include <Render/Texture.h>
 
@@ -26,12 +27,12 @@ public:
     TextureCollector(uint32 options = Default);
 
     void Apply(NMaterial* material);
-    TexturesMap& GetTextures();
+    const Map<FilePath, Asset<Texture>>& GetTextures();
 
 private:
     bool includeNullTextures = true;
     bool onlyActiveTextures = false;
-    TexturesMap textureMap;
+    Map<FilePath, Asset<Texture>> textureMap;
 };
 
 void EnumerateSceneTextures(Scene* forScene, TextureCollector& collector);
@@ -42,7 +43,7 @@ void EnumerateMaterials(Entity* forNode, Set<NMaterial*>& materials);
 
 // enumerates only materials from render batches
 void EnumerateMaterialInstances(Entity* forNode, Set<NMaterial*>& materials);
-int32 EnumerateModifiedTextures(Scene* forScene, Map<Texture*, Vector<eGPUFamily>>& textures);
+int32 EnumerateModifiedTextures(Scene* forScene, Map<Asset<Texture>, Vector<eGPUFamily>>& textures);
 Entity* CloneEntityWithMaterials(Entity* fromNode);
 
 void BuildMaterialList(Entity* forNode, Set<NMaterial*>& materialList, bool includeRuntime = true);

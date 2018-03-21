@@ -38,6 +38,13 @@ HeightNoiseTool::HeightNoiseTool(DAVA::LandscapeEditorSystemV2* system)
     noiseTexture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
 }
 
+HeightNoiseTool::~HeightNoiseTool()
+{
+    noiseTexture.reset();
+    int x = 0;
+    x++;
+}
+
 void HeightNoiseTool::Activate(const DAVA::PropertiesItem& settings)
 {
     BaseHeightEditTool::Activate(settings);
@@ -82,7 +89,7 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightN
 
     InitTextures();
     {
-        DAVA::RefPtr<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
+        DAVA::Asset<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
 
         DAVA::Vector4 params = GetParams();
         DAVA::Vector4 random = GetRandom();
@@ -93,8 +100,8 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightN
         descr.phaseMaterial.Set(new DAVA::NMaterial());
         descr.phaseMaterial->SetFXName(DAVA::NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(DAVA::FastName("HEIGHT_NOISE"), 1);
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture.Get());
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture1"), noiseTexture.Get());
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture);
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture1"), noiseTexture);
         descr.phaseMaterial->AddProperty(DAVA::FastName("params"), params.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
         descr.phaseMaterial->AddProperty(DAVA::FastName("random"), random.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
         descr.renderTarget = floatTexture;

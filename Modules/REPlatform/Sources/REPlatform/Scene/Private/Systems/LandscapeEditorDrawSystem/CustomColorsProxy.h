@@ -16,7 +16,7 @@ protected:
 public:
     CustomColorsProxy(int32 size);
 
-    Texture* GetTexture();
+    const Asset<Texture>& GetTexture();
     void UpdateRect(const Rect& rect);
 
     void ResetTargetChanged();
@@ -37,7 +37,7 @@ public:
     NMaterial* GetBrushMaterial() const;
 
 protected:
-    Texture* customColorsRenderTarget;
+    Asset<Texture> customColorsRenderTarget;
     Rect changedRect;
     bool spriteChanged;
     bool textureLoaded;

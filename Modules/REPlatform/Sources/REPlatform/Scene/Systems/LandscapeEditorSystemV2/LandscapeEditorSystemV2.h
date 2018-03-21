@@ -46,8 +46,8 @@ public:
     void PrepareForEdit(Landscape* landscape);
 
     int32 GetLandscapeTextureCount(Landscape::eLandscapeTexture textureSemantic) const;
-    RefPtr<Texture> GetOriginalLandscapeTexture(Landscape::eLandscapeTexture textureSemantic, int32 index) const;
-    void SetOverrideTexture(Landscape::eLandscapeTexture textureSemantic, int32 index, RefPtr<Texture> texture);
+    Asset<Texture> GetOriginalLandscapeTexture(Landscape::eLandscapeTexture textureSemantic, int32 index) const;
+    void SetOverrideTexture(Landscape::eLandscapeTexture textureSemantic, int32 index, Asset<Texture> texture);
 
     Landscape* GetEditedLandscape() const;
 
@@ -73,14 +73,14 @@ private:
     void CreateDiffCommand();
     void RestoreTextureOverrides();
 
-    void ReadPickTexture(RefPtr<Texture> texture);
+    void ReadPickTexture(const Asset<Texture>& texture);
 
     void OnMouseLeaveRenderWidget();
     void OnMouseEnterRenderWidget();
 
     bool isMouseInRenderWidget = false;
 
-    RefPtr<Texture> currentCursorTexture;
+    Asset<Texture> currentCursorTexture;
 
     // operation state flags
     bool operationBeginRequested = false;
@@ -116,12 +116,12 @@ private:
             return index < key.index;
         }
     };
-    Map<RTMappingKey, RefPtr<Texture>> overrideMapping;
+    Map<RTMappingKey, Asset<Texture>> overrideMapping;
 
     struct BlitWaitingNode
     {
         Token callbackToken;
-        Vector<RefPtr<Texture>> texCopies;
+        Vector<Asset<Texture>> texCopies;
     };
     Map<rhi::HSyncObject, BlitWaitingNode> texturesThatWaitingBlit;
 

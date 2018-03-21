@@ -12,6 +12,7 @@
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Render/Material/Material.h"
 #include "Render/Material/NMaterial.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #define MATERIAL_ASSET_YAML_SERIALIZATION 1
 
@@ -21,7 +22,7 @@ namespace MaterialAssetLoaderDetail
 {
 size_t PathKeyHash(const Any& v)
 {
-    const MaterialAssetLoader::PathKey& key = v.Get<MaterialAssetLoader::PathKey>();
+    const Material::PathKey& key = v.Get<Material::PathKey>();
     std::hash<String> hashFn;
     return hashFn(key.path.GetAbsolutePathname());
 }
@@ -29,13 +30,13 @@ size_t PathKeyHash(const Any& v)
 
 MaterialAssetLoader::MaterialAssetLoader()
 {
-    AnyHash<MaterialAssetLoader::PathKey>::Register(&MaterialAssetLoaderDetail::PathKeyHash);
+    AnyHash<Material::PathKey>::Register(&MaterialAssetLoaderDetail::PathKeyHash);
 }
 
 AssetFileInfo MaterialAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
-    DVASSERT(assetKey.CanGet<PathKey>());
-    const PathKey& key = assetKey.Get<PathKey>();
+    DVASSERT(assetKey.CanGet<Material::PathKey>());
+    const Material::PathKey& key = assetKey.Get<Material::PathKey>();
     AssetFileInfo info;
     info.fileName = key.path.GetAbsolutePathname();
 
@@ -79,7 +80,7 @@ void MaterialAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool rel
     if (archive->IsKeyExists("parentPath"))
     {
         materialAsset->parentPath = serializationContext.GetScenePath() + archive->GetString("parentPath");
-        materialAsset->parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(PathKey(materialAsset->parentPath), AssetManager::SYNC);
+        materialAsset->parentAsset = GetEngineContext()->assetManager->GetAsset<Material>(Material::PathKey(materialAsset->parentPath), AssetManager::SYNC);
 
         materialAsset->material->SetParent(materialAsset->parentAsset->GetMaterial());
     }
@@ -120,25 +121,18 @@ bool MaterialAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMo
 Vector<String> MaterialAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
     const Any& assetKey = asset->GetKey();
-    DVASSERT(assetKey.CanGet<PathKey>());
-    const PathKey& key = assetKey.Get<PathKey>();
+    DVASSERT(assetKey.CanGet<Material::PathKey>());
+    const Material::PathKey& key = assetKey.Get<Material::PathKey>();
 
     return Vector<String>{ key.path.GetAbsolutePathname() };
 }
 
 Vector<const Type*> MaterialAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<PathKey>() };
+    return Vector<const Type*>{ Type::Instance<Material::PathKey>() };
 }
 
-Vector<const Type*> MaterialAssetLoader::GetAssetTypes() const
+DAVA_VIRTUAL_REFLECTION_IMPL(MaterialAssetLoader)
 {
-    return Vector<const Type*>{ Type::Instance<Material>() };
-}
-
-template <>
-bool AnyCompare<MaterialAssetLoader::PathKey>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<MaterialAssetLoader::PathKey>().path == v2.Get<MaterialAssetLoader::PathKey>().path;
 }
 } // namespace DAVA

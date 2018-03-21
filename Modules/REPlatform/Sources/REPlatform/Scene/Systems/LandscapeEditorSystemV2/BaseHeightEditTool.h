@@ -7,8 +7,11 @@
 
 #include <TArc/DataProcessing/PropertiesHolder.h>
 
+#include <Asset/Asset.h>
+
 namespace DAVA
 {
+class Texture;
 class BrushWidgetBuilder;
 class BaseHeightEditTool : public BaseTextureRenderLandscapeTool
 {
@@ -19,8 +22,8 @@ public:
     BrushInputController* GetInputController() const override;
     BaseBrushApplicant* GetBrushApplicant() const override;
     BaseLandscapeTool::ButtonInfo GetButtonInfo() const override;
-    RefPtr<Texture> GetCustomCoverTexture() const override;
-    RefPtr<Texture> GetCursorTexture() const override;
+    Asset<Texture> GetCustomCoverTexture() const override;
+    Asset<Texture> GetCursorTexture() const override;
     Vector2 GetBrushSize() const override;
     float32 GetBrushRotation() const override;
     void Deactivate(PropertiesItem& settings) override;
@@ -41,18 +44,18 @@ protected:
 
     // Create FBO texture. Format = R32F. PixelReadback = true. Size == landscape's height texture.size
     // Also function push render pass that copy height from landscape's height texture in to created texture
-    RefPtr<Texture> CreateFloatHeightTexture();
+    Asset<Texture> CreateFloatHeightTexture();
     // Create FBO texture. Format = landscape's height texture.format. PixelReadback = true. Size == landscape's height texture.size
     // Copy original height texture into created as is
-    RefPtr<Texture> CreateHeightTextureCopy();
+    Asset<Texture> CreateHeightTextureCopy();
     // Create FBO texture. Format = landscape's normal texture.format. PixelReadback = true. Size == landscape's normal texture.size
     // Copy original normal texture into created as is
-    RefPtr<Texture> CreateNormalTextureCopy();
+    Asset<Texture> CreateNormalTextureCopy();
 
     // Copy accurate height of point into float texture. Target value range [0.0, 1.0]
-    void CopyHeightTextureToFloat(RefPtr<Texture> heightTexture, RefPtr<Texture> target);
+    void CopyHeightTextureToFloat(Asset<Texture> heightTexture, Asset<Texture> target);
     // Copy all mip levels of source texture into corresponding mip level of target as is
-    void CopyTextureWithMips(RefPtr<Texture> source, RefPtr<Texture> target);
+    void CopyTextureWithMips(Asset<Texture> source, Asset<Texture> target);
 
     const String& GetBrushPath() const;
     void SetBrushPath(const String& brushPath);
@@ -70,15 +73,15 @@ protected:
     ButtonInfo buttonInfo;
 
     String cursorPath;
-    RefPtr<Texture> cursorTexture;
+    Asset<Texture> cursorTexture;
 
     RefPtr<NMaterial> blitConvertMaterial;
     TextureBlitter blitter;
 
-    RefPtr<Texture> morphTexture;
-    RefPtr<Texture> normalMap;
-    RefPtr<Texture> floatTexture;
-    RefPtr<Texture> heightSnapshot;
+    Asset<Texture> morphTexture;
+    Asset<Texture> normalMap;
+    Asset<Texture> floatTexture;
+    Asset<Texture> heightSnapshot;
 
     float32 brushSize = 0.25f;
     float32 strength = 0.05f;

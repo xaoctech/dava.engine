@@ -8,7 +8,7 @@ public:
     HeightCloneStampTool(DAVA::LandscapeEditorSystemV2* system);
 
     void Activate(const DAVA::PropertiesItem& settings) override;
-    DAVA::RefPtr<DAVA::Texture> GetCustomCoverTexture() const override;
+    DAVA::Asset<DAVA::Texture> GetCustomCoverTexture() const override;
     QWidget* CreateEditorWidget(const BaseLandscapeTool::WidgetParams& params) override;
     void Process(DAVA::float32 delta) override;
     DAVA::Vector<BrushPhaseDescriptor> CreateBrushPhases() override;
@@ -16,7 +16,7 @@ public:
     void Deactivate(DAVA::PropertiesItem& settings) override;
 
 private:
-    DAVA::RefPtr<DAVA::Texture> coverTexture;
+    DAVA::Asset<DAVA::Texture> coverTexture;
     DAVA::RefPtr<DAVA::NMaterial> coverTextureGenerateMaterial;
 
     DAVA_VIRTUAL_REFLECTION(HeightCloneStampTool, BaseHeightEditTool);

@@ -1,6 +1,6 @@
-#ifndef __DAVAENGINE_IMPORT_LIBRARY_H
-#define __DAVAENGINE_IMPORT_LIBRARY_H
+#pragma once
 
+#include "Asset/Asset.h"
 #include "Base/FastName.h"
 
 namespace DAVA
@@ -11,6 +11,7 @@ class ColladaPolygonGroupInstance;
 class AnimationData;
 class ColladaMaterial;
 class SceneNodeAnimation;
+class Texture;
 
 class ImportLibrary
 {
@@ -22,7 +23,7 @@ public:
     AnimationData* GetOrCreateAnimation(SceneNodeAnimation* colladaSceneNode);
 
 private:
-    Texture* GetTextureForPath(const FilePath& imagePath) const;
+    Asset<Texture> GetTextureForPath(const FilePath& imagePath) const;
     void InitPolygon(PolygonGroup* davaPolygon, uint32 vertexFormat, Vector<ColladaVertex>& vertices) const;
     bool GetTextureTypeAndPathFromCollada(ColladaMaterial* material, FastName& type, FilePath& path) const;
     FilePath GetNormalMapTexturePath(const FilePath& originalTexturePath) const;
@@ -40,5 +41,3 @@ inline void ImportLibrary::FlipTexCoords(Vector2& v) const
     v.y = 1.0f - v.y;
 }
 }
-
-#endif //IMPORT_LIBRARY_H

@@ -1,11 +1,11 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/Image/Image.h"
 #include "Render/Renderer.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/Highlevel/StaticOcclusionRenderPass.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/StaticOcclusion.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 #include "Utils/StringFormat.h"
 
 namespace DAVA

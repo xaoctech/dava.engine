@@ -21,7 +21,7 @@ public:
     struct BrushPhaseDescriptor
     {
         int32 internalId = std::numeric_limits<int32>::min();
-        RefPtr<Texture> renderTarget;
+        Asset<Texture> renderTarget;
         uint32 renderTargetLevel = 0;
         RefPtr<NMaterial> phaseMaterial;
         FastName passName;

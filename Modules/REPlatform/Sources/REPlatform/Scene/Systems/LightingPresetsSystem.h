@@ -49,17 +49,17 @@ private:
     void ReflectionComponentRemoved(Entity* entity, ReflectionComponent* refl);
     void PosteffectComponentAdded(Entity* entity, PostEffectComponent* posteffect);
     void PosteffectComponentRemoved(Entity* entity, PostEffectComponent* posteffect);
-    void SaveCubemap(Texture* src, const FilePath& path, const FilePath& originalTexturePath);
-    void SaveTexture(Texture* src, const FilePath& path, const FilePath& originalTexturePath);
+    void SaveCubemap(const Asset<Texture>& src, const FilePath& path, const FilePath& originalTexturePath);
+    void SaveTexture(const Asset<Texture>& src, const FilePath& path, const FilePath& originalTexturePath);
     void FindLights(LightComponent*& sceneSunLight, LightComponent*& sceneSky, LightComponent*& sceneSkyUniformColor);
 
     static void SaveDescriptor(FilePath path, PixelFormat format, uint8 cubefaceFlags = 0, bool isCubemap = false);
 
     template <typename T>
-    void CopyTexture(Texture* src, Texture* dst, Array<T, 4> vertData, NMaterial* material, uint32 layout);
+    void CopyTexture(const Asset<Texture>& src, const Asset<Texture>& dst, Array<T, 4> vertData, NMaterial* material, uint32 layout);
 
-    PixelFormat GetTextureFormat(Texture* src);
-    Texture::FBODescriptor CreateFBODescriptor(PixelFormat format, uint32 width, uint32 height);
+    PixelFormat GetTextureFormat(const Asset<Texture>& src);
+    Texture::RenderTargetTextureKey CreateFBODescriptor(PixelFormat format, uint32 width, uint32 height);
 
     void RemoveEntityFromScene(Entity* entity);
 

@@ -14,38 +14,51 @@ uint32 ReverseBits(uint32 bits);
 Vector2 HammersleySample(uint32 sampleIndex, uint32 sampleCount);
 }
 
-Texture* ServiceTextures::CreateHammersleySet(uint32 count)
-{
-    Vector<Vector2> data(count);
-    for (uint32 i = 0; i < count; ++i)
-        data[i] = ServiceTextureDetails::HammersleySample(i, count);
-
-    Texture* texture = Texture::CreateFromData(FORMAT_RG32F, reinterpret_cast<uint8*>(data.data()), count, 1, false);
-    texture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
-    texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
-    return texture;
-}
-
-Texture* ServiceTextures::CreateHammersleySet(std::array<uint32, 4> sizes)
+Asset<Texture> ServiceTextures::CreateHammersleySet(std::array<uint32, 4> sizes)
 {
     uint32 height = static_cast<uint32>(sizes.size());
     uint32 width = *std::max_element(sizes.begin(), sizes.end());
+    std::shared_ptr<uint8[]> buffer(new uint8[sizeof(Vector2) * width * height]);
 
-    Vector<Vector2> data(width * height);
+    Vector2* data = reinterpret_cast<Vector2*>(buffer.get());
+
     for (uint32 y = 0; y < height; ++y)
+    {
         for (uint32 x = 0; x < width; ++x)
         {
             if (x < sizes[y])
                 data[y * width + x] = ServiceTextureDetails::HammersleySample(x, sizes[y]);
         }
+    }
 
-    Texture* texture = Texture::CreateFromData(FORMAT_RG32F, reinterpret_cast<uint8*>(data.data()), width, height, false);
+    Texture::UniqueTextureKey key(FORMAT_RG32F, width, height, false, buffer);
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     texture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
     texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     return texture;
 }
 
-Texture* ServiceTextures::GenerateNoiseTexture(uint32 width, uint32 height)
+rhi::HTexture ServiceTextures::CreateHammersleySet(uint32 count)
+{
+    Vector<Vector2> data(count);
+    for (uint32 i = 0; i < count; ++i)
+    {
+        data[i] = ServiceTextureDetails::HammersleySample(i, count);
+    }
+
+    rhi::Texture::Descriptor descriptor;
+    descriptor.autoGenMipmaps = false;
+    descriptor.isRenderTarget = false;
+    descriptor.width = count;
+    descriptor.height = 1;
+    descriptor.type = rhi::TEXTURE_TYPE_2D;
+    descriptor.format = PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RG32F).format;
+    descriptor.levelCount = 1;
+    descriptor.initialData[0] = reinterpret_cast<uint8*>(data.data());
+    return rhi::CreateTexture(descriptor);
+}
+
+rhi::HTexture ServiceTextures::GenerateNoiseTexture(uint32 width, uint32 height)
 {
     uint32 count = width * height;
     Vector<uint32> data(count);
@@ -60,31 +73,42 @@ Texture* ServiceTextures::GenerateNoiseTexture(uint32 width, uint32 height)
         uint32 a = rand() % 255;
         data[i] = r | (g << 8) | (b << 16) | (a << 24);
     }
-    return Texture::CreateFromData(FORMAT_RGBA8888, reinterpret_cast<uint8*>(data.data()), width, height, false);
+
+    rhi::Texture::Descriptor descriptor;
+    descriptor.autoGenMipmaps = false;
+    descriptor.isRenderTarget = false;
+    descriptor.width = width;
+    descriptor.height = height;
+    descriptor.type = rhi::TEXTURE_TYPE_2D;
+    descriptor.format = PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RGBA8888).format;
+    descriptor.levelCount = 1;
+    descriptor.initialData[0] = data.data();
+    return rhi::CreateTexture(descriptor);
 }
 
-Texture* ServiceTextures::GenerateSplitSumApproximationLookupTexture(uint32 width, uint32 height)
+rhi::HTexture ServiceTextures::GenerateSplitSumApproximationLookupTexture(uint32 width, uint32 height)
 {
-    PixelFormat textureFormat = PixelFormat::FORMAT_RGBA8888;
-    Texture::FBODescriptor fboConfig;
-    fboConfig.ensurePowerOf2 = false;
-    fboConfig.format = textureFormat;
-    fboConfig.width = width;
-    fboConfig.height = height;
-    fboConfig.needDepth = false;
-    fboConfig.needPixelReadback = true;
-    fboConfig.mipLevelsCount = 1;
-    fboConfig.sampleCount = 1;
-    fboConfig.textureType = rhi::TextureType::TEXTURE_TYPE_2D;
-    Texture* result = Texture::CreateFBO(fboConfig);
-    result->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
-    result->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+    rhi::Texture::Descriptor descriptor;
+    descriptor.width = width;
+    descriptor.height = height;
+    descriptor.autoGenMipmaps = false;
+    descriptor.isRenderTarget = true;
+    descriptor.needRestore = false;
+    descriptor.cpuAccessWrite = false;
+    descriptor.type = rhi::TEXTURE_TYPE_2D;
+    descriptor.format = PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RGBA8888).format;
+    ;
+    descriptor.sampleCount = 1;
+    descriptor.levelCount = 1;
+    descriptor.cpuAccessRead = true;
+
+    rhi::HTexture result = rhi::CreateTexture(descriptor);
 
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetFXName(FastName("~res:/Materials2/CubemapConvolution.material"));
 
     material->PreBuildMaterial(FastName("IntegrateBRDFLookup"));
-    QuadRenderer().Render("GenerateSplitSum", material, rhi::Viewport(0, 0, width, height), result->handle, rhi::TextureFace::TEXTURE_FACE_NONE, 0, rhi::LOADACTION_CLEAR, +50);
+    QuadRenderer().Render("GenerateSplitSum", material, rhi::Viewport(0, 0, width, height), result, rhi::TextureFace::TEXTURE_FACE_NONE, 0, rhi::LOADACTION_CLEAR, +50);
     /*
     Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [result, width, height, textureFormat](rhi::HSyncObject obj) {
         void* data = rhi::MapTexture(result->handle);

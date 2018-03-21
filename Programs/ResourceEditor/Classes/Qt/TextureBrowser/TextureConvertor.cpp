@@ -115,6 +115,7 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor* descriptor, DA
 
 int TextureConvertor::Reconvert(DAVA::Scene* scene, eTextureConvertMode convertMode)
 {
+    using namespace DAVA;
     int ret = 0;
 
     if (NULL != scene)
@@ -122,13 +123,13 @@ int TextureConvertor::Reconvert(DAVA::Scene* scene, eTextureConvertMode convertM
         // get list of all scenes textures
         DAVA::SceneHelper::TextureCollector collector;
         DAVA::SceneHelper::EnumerateSceneTextures(scene, collector);
-        DAVA::TexturesMap& allTextures = collector.GetTextures();
+        Map<FilePath, Asset<Texture>> allTextures = collector.GetTextures();
 
         // add jobs to convert every texture
         if (allTextures.size() > 0)
         {
-            DAVA::TexturesMap::iterator begin = allTextures.begin();
-            DAVA::TexturesMap::iterator end = allTextures.end();
+            auto begin = allTextures.begin();
+            auto end = allTextures.end();
 
             for (; begin != end; begin++)
             {

@@ -1,8 +1,8 @@
-#ifndef __DAVAENGINE_NMATERIALSTATEDYNAMICTEXTURESINSP_NAMES_H__
-#define __DAVAENGINE_NMATERIALSTATEDYNAMICTEXTURESINSP_NAMES_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/Introspection.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -24,10 +24,5 @@ public:
 
 private:
     void FindMaterialTexturesRecursive(NMaterial* state, Set<FastName>& ret, bool parents) const;
-
-private:
-    Texture* defaultTexture = nullptr;
 };
 };
-
-#endif /* defined(__DAVAENGINE_NMATERIALSTATEDYNAMICTEXTURESINSP_NAMES_H__) */

@@ -50,7 +50,7 @@ public:
     static QColor gpuColor_DX11;
     static QColor errorColor;
 
-    void UpdateTexture(DAVA::Texture* texture);
+    void UpdateTexture(const DAVA::Asset<DAVA::Texture>& texture);
 
 protected:
     void closeEvent(QCloseEvent* e) override;
@@ -84,7 +84,7 @@ private:
     DAVA::SceneEditor2* curScene = nullptr;
     DAVA::eGPUFamily curTextureView;
 
-    DAVA::Texture* curTexture;
+    DAVA::Asset<DAVA::Texture> curTexture;
     DAVA::TextureDescriptor* curDescriptor;
 
     void setScene(DAVA::SceneEditor2* scene);
@@ -100,7 +100,7 @@ private:
 
     void resetTextureInfo();
 
-    void setTexture(DAVA::Texture* texture, DAVA::TextureDescriptor* descriptor);
+    void setTexture(const DAVA::Asset<DAVA::Texture>& texture, DAVA::TextureDescriptor* descriptor);
     void setTextureView(DAVA::eGPUFamily view, eTextureConvertMode convertMode);
     eTextureConvertMode getConvertMode(eTextureConvertMode convertMode = CONVERT_NOT_EXISTENT) const;
 
@@ -111,11 +111,11 @@ private:
     void updateInfoConverted();
     void updatePropertiesWarning();
 
-    void reloadTextureToScene(DAVA::Texture* texture, const DAVA::TextureDescriptor* descriptor, DAVA::eGPUFamily gpu);
+    void reloadTextureToScene(const DAVA::Asset<DAVA::Texture>& texture, const DAVA::TextureDescriptor* descriptor, DAVA::eGPUFamily gpu);
 
     void ConvertMultipleTextures(eTextureConvertMode convertMode);
 
-    void UpdateSceneMaterialsWithTexture(DAVA::Texture* texture);
+    void UpdateSceneMaterialsWithTexture(const DAVA::Asset<DAVA::Texture>& texture);
 
 private slots:
     void textureListViewImages(bool checked);

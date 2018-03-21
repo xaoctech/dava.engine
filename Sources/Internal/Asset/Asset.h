@@ -31,6 +31,7 @@ private:
     DAVA_VIRTUAL_REFLECTION(AssetBase);
 
     friend class AssetManager;
+    friend class AbstractAssetLoader;
     Atomic<eState> state;
     Any assetKey;
 };

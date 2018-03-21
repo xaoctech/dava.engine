@@ -2,9 +2,13 @@
 #include "REPlatform/Scene/SceneHelper.h"
 #include "REPlatform/Scene/Utils/RETextureDescriptorUtils.h"
 
+#include <Asset/AssetManager.h>
 #include <Debug/DVAssert.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Render/Texture.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Image/ImageSystem.h>
 #include <Render/Material/NMaterial.h>
@@ -26,7 +30,8 @@ void CreatePlaneLODCommand::Redo()
 {
     CreateTextureFiles();
 
-    ScopedPtr<Texture> fileTexture(Texture::CreateFromFile(request->texturePath));
+    Texture::PathKey key(request->texturePath);
+    Asset<Texture> fileTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     NMaterial* material = request->planeBatch->GetMaterial();
     if (material != nullptr)
     {
@@ -38,7 +43,6 @@ void CreatePlaneLODCommand::Redo()
         {
             material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, fileTexture);
         }
-        fileTexture->Reload();
     }
 
     Entity* entity = GetEntity();

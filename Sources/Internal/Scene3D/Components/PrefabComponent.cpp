@@ -4,7 +4,6 @@
 #include "FileSystem/FilePath.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
 
 namespace DAVA
 {
@@ -22,6 +21,7 @@ PrefabComponent::PrefabComponent()
 
 PrefabComponent::~PrefabComponent()
 {
+    GetEngineContext()->assetManager->UnregisterListener(this);
 }
 
 Component* PrefabComponent::Clone(Entity* toEntity)
@@ -47,15 +47,17 @@ void PrefabComponent::Deserialize(KeyedArchive* archive, SerializationContext* s
 
     String relativePath = archive->GetString("relPath");
     filepath = serializationContext->GetScenePath() + relativePath;
-    PrefabAssetLoader::PathKey key(filepath);
+    Prefab::PathKey key(filepath);
 
-    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, AssetManager::SYNC);
+    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(key, AssetManager::SYNC, this);
 }
 
 void PrefabComponent::SetFilepath(const FilePath& path)
 {
     filepath = path;
-    prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(filepath), AssetManager::SYNC);
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    assetManager->UnregisterListener(prefab, this);
+    prefab = assetManager->GetAsset<Prefab>(Prefab::PathKey(filepath), AssetManager::SYNC, this);
 }
 
 const FilePath& PrefabComponent::GetFilepath() const
@@ -66,5 +68,11 @@ const FilePath& PrefabComponent::GetFilepath() const
 const Asset<Prefab>& PrefabComponent::GetPrefab() const
 {
     return prefab;
+}
+
+void PrefabComponent::OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded)
+{
+    DVASSERT(original == prefab);
+    prefab = std::static_pointer_cast<Prefab>(reloaded);
 }
 }

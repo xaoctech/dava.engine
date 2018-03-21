@@ -26,21 +26,20 @@ TextBlockSoftwareRender::TextBlockSoftwareRender(TextBlock* textBlock)
 TextBlockSoftwareRender::~TextBlockSoftwareRender()
 {
     Renderer::GetSignals().needRestoreResources.Disconnect(this);
-    SafeRelease(currentTexture);
 }
 
 TextBlockRender* TextBlockSoftwareRender::Clone()
 {
     TextBlockSoftwareRender* result = new TextBlockSoftwareRender(textBlock);
     result->sprite = SafeRetain(sprite);
-    result->currentTexture = SafeRetain(currentTexture);
+    result->currentTexture = currentTexture;
     return result;
 }
 
 void TextBlockSoftwareRender::Prepare()
 {
     TextBlockRender::Prepare();
-    SafeRelease(currentTexture);
+    currentTexture.reset();
 
     if (textBlock->visualText.empty())
     {
@@ -79,8 +78,8 @@ void TextBlockSoftwareRender::Prepare()
     textOffsetBR.y = 0;
 #endif
 
-    Vector<uint8> buffer(width * height, 0);
-    buf = reinterpret_cast<int8*>(buffer.data());
+    std::shared_ptr<uint8[]> buffer(new uint8[width * height]);
+    buf = reinterpret_cast<int8*>(buffer.get());
     DrawText();
     buf = nullptr;
 
@@ -94,7 +93,9 @@ void TextBlockSoftwareRender::Prepare()
         addInfo = UTF8Utils::EncodeToUTF8(textBlock->multilineStrings[0].c_str());
     }
 
-    currentTexture = Texture::CreateTextFromData(FORMAT_A8, buffer.data(), width, height, false, addInfo.c_str());
+    Texture::UniqueTextureKey key(FORMAT_A8, width, height, false, buffer);
+    currentTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+    currentTexture->SetDebugInfo(addInfo);
     currentTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     currentTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
 

@@ -13,8 +13,11 @@
 #include "REPlatform/Global/Constants.h"
 #include "REPlatform/Global/StringConstants.h"
 
+#include <Asset/AssetManager.h>
 #include <Base/Any.h>
 #include <Debug/DVAssert.h>
+#include <Engine/EngineContext.h>
+#include <Render/Texture.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 
 namespace DAVA
@@ -163,7 +166,7 @@ void LandscapeEditorDrawSystem::DisableCursor()
     landscapeProxy->CursorDisable();
 }
 
-void LandscapeEditorDrawSystem::SetCursorTexture(Texture* cursorTexture)
+void LandscapeEditorDrawSystem::SetCursorTexture(const Asset<Texture>& cursorTexture)
 {
     landscapeProxy->SetCursorTexture(cursorTexture);
 }
@@ -230,10 +233,10 @@ void LandscapeEditorDrawSystem::UpdateBaseLandscapeHeightmap()
 float32 LandscapeEditorDrawSystem::GetTextureSize(uint32 layerIndex, const FastName& level)
 {
     float32 size = 0.f;
-    Texture* texture = baseLandscape->GetPageMaterials(layerIndex, 0)->GetEffectiveTexture(level);
+    Asset<Texture> texture = baseLandscape->GetPageMaterials(layerIndex, 0)->GetEffectiveTexture(level);
     if (texture)
     {
-        size = static_cast<float32>(texture->GetWidth());
+        size = static_cast<float32>(texture->width);
     }
     return size;
 }
@@ -503,10 +506,10 @@ bool LandscapeEditorDrawSystem::SaveTileMaskTexture()
     bool shouldRestore = false;
     for (uint32 i = 0; i < GetLayerCount(); ++i)
     {
-        Texture* texture = GetTileMaskTexture(i);
+        Asset<Texture> texture = GetTileMaskTexture(i);
         if (texture != nullptr)
         {
-            Image* image = texture->CreateImageFromMemory();
+            Image* image = texture->CreateImageFromRegion();
 
             if (image)
             {
@@ -529,21 +532,21 @@ void LandscapeEditorDrawSystem::ResetTileMaskTextures()
         return;
     }
 
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     for (uint32 i = 0; i < GetLayerCount(); ++i)
     {
         if (i < uint32(sourceTilemaskPath.size()))
         {
-            ScopedPtr<Texture> texture(Texture::CreateFromFile(sourceTilemaskPath[i]));
-            if (texture)
-            {
-                texture->Reload();
-                SetTileMaskTexture(i, texture);
-            }
+            Texture::PathKey key(sourceTilemaskPath[i]);
+            Asset<Texture> texture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+            // GFX_COMPLETE - WTF???
+            //texture->Reload();
+            SetTileMaskTexture(i, texture);
         }
     }
 }
 
-void LandscapeEditorDrawSystem::SetTileMaskTexture(uint32 layerIndex, Texture* texture)
+void LandscapeEditorDrawSystem::SetTileMaskTexture(uint32 layerIndex, const Asset<Texture>& texture)
 {
     if (baseLandscape == nullptr)
     {
@@ -568,7 +571,7 @@ void LandscapeEditorDrawSystem::SetTileMaskTexture(uint32 layerIndex, Texture* t
     }
 }
 
-Texture* LandscapeEditorDrawSystem::GetTileMaskTexture(uint32 layerIndex)
+Asset<Texture> LandscapeEditorDrawSystem::GetTileMaskTexture(uint32 layerIndex)
 {
     if (baseLandscape != nullptr)
     {
@@ -594,14 +597,14 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape
 
     for (uint32 i = 0; i < landscapeProxy->GetLayersCount(); ++i)
     {
-        Texture* tileMask = landscapeProxy->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK);
+        Asset<Texture> tileMask = landscapeProxy->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK);
         if (tileMask == nullptr || tileMask->IsPinkPlaceholder())
         {
             return LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSENT;
         }
     }
 
-    Texture* texColor = baseLandscape->GetPageMaterials(0, 0)->GetEffectiveTexture(Landscape::TEXTURE_COLOR);
+    Asset<Texture> texColor = baseLandscape->GetPageMaterials(0, 0)->GetEffectiveTexture(Landscape::TEXTURE_COLOR);
     if ((texColor == nullptr || texColor->IsPinkPlaceholder()))
     {
         return LANDSCAPE_EDITOR_SYSTEM_COLOR_TEXTURE_ABSENT;

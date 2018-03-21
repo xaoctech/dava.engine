@@ -155,7 +155,6 @@ VegetationRenderObject::~VegetationRenderObject()
     SafeDelete(vegetationGeometry);
 
     SafeRelease(heightmap);
-    SafeRelease(heightmapTexture);
     Renderer::GetSignals().needRestoreResources.Disconnect(this);
 }
 
@@ -677,28 +676,26 @@ bool VegetationRenderObject::CellByDistanceCompareFunction(const AbstractQuadTre
 
 void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap)
 {
-    SafeRelease(heightmapTexture);
+    heightmapTexture.reset();
 
     if (IsDataLoadNeeded())
     {
         uint32 hmSize = uint32(heightmap->Size());
         DVASSERT(IsPowerOf2(hmSize));
 
-        Texture* tx = Texture::CreateFromData(FORMAT_RGBA4444, reinterpret_cast<uint8*>(heightMap->Data()), hmSize, hmSize, false);
-        tx->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
-        tx->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+        uint32 bytesCount = sizeof(uint16) * hmSize * hmSize;
+        std::shared_ptr<uint8[]> texData(new uint8[bytesCount]);
+        memcmp(heightMap->Data(), texData.get(), bytesCount);
 
-        heightmapTexture = SafeRetain(tx);
+        Texture::UniqueTextureKey key(FORMAT_RGBA4444, hmSize, hmSize, false, texData);
+        heightmapTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+        heightmapTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+        heightmapTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
 
         if (vegetationGeometry != NULL)
         {
-            ScopedPtr<KeyedArchive> props(new KeyedArchive());
-            props->SetUInt64(NMaterialTextureName::TEXTURE_HEIGHTMAP.c_str(), uint64(heightmapTexture));
-
-            vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props);
+            vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), nullptr, heightmapTexture);
         }
-
-        SafeRelease(tx);
     }
 }
 
@@ -872,13 +869,12 @@ void VegetationRenderObject::CreateRenderData()
 #endif
 
     ScopedPtr<KeyedArchive> props(new KeyedArchive());
-    props->SetUInt64(NMaterialTextureName::TEXTURE_HEIGHTMAP.c_str(), uint64(heightmapTexture));
     props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE.c_str(), perturbationForce);
     props->SetFloat(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE.c_str(), maxPerturbationDistance);
     props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
     props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str(), lightmapTexturePath.GetStringValue());
 
-    vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props);
+    vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props, heightmapTexture);
 
     rhi::VertexLayout vertexLayout;
     vertexLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
@@ -1357,7 +1353,7 @@ void VegetationRenderObject::RebuildCustomGeometry()
         ScopedPtr<KeyedArchive> props(new KeyedArchive());
         props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str(), lightmapTexturePath.GetStringValue());
 
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props);
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData->GetMaterial(), props, nullptr);
     }
 }
 

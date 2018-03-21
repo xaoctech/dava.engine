@@ -32,8 +32,6 @@ public:
     void SetLightmapData(const FastName& id, const Vector4& uv, const FilePath& lightmapPath);
     void RemoveLightmapData();
 
-    void ReloadLightmaps();
-
     void RebuildIDs();
 
     const FastName& GetLightmapID(BaseObject* object);
@@ -48,7 +46,7 @@ protected:
         Vector4 uvOffsetScale;
         FilePath lightmapPath;
 
-        Texture* lightmapTexture = nullptr;
+        Asset<Texture> lightmapTexture;
     };
 
     UnorderedMap<FastName, LightmapData> lightmapData;

@@ -7,6 +7,7 @@
 #include <Functional/Function.h>
 #include <Logger/Logger.h>
 #include <Render/Image/ImageSystem.h>
+#include <Render/TextureDescriptorUtils.h>
 
 namespace DAVA
 {
@@ -51,7 +52,7 @@ bool CreateOrUpdateDescriptor(const FilePath& texturePath, const KeyedArchive* p
     bool descriptorChanged = false;
     std::unique_ptr<TextureDescriptor> descriptor;
 
-    if (!Texture::CreateDescriptor(texturePath, descriptor, descriptorChanged))
+    if (!DAVA::TextureDescriptorUtils::CreateDescriptor(texturePath, descriptor, descriptorChanged))
         return false;
 
     if (preset != nullptr && Preset::ApplyTexturePreset(descriptor.get(), preset))

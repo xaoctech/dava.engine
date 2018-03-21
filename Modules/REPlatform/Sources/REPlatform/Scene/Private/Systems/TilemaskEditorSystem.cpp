@@ -95,9 +95,6 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 TilemaskEditorSystem::~TilemaskEditorSystem()
 {
     SafeRelease(editorMaterial);
-
-    SafeRelease(toolImageTexture);
-    SafeRelease(toolTexture);
 }
 
 LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditing()
@@ -126,10 +123,10 @@ LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditi
         return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURE_ABSENT;
     }
 
-    uint32 texSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(0, Landscape::TEXTURE_TILEMASK)->GetWidth();
+    uint32 texSize = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(0, Landscape::TEXTURE_TILEMASK)->width;
     for (uint32 i = 1; i < drawSystem->GetLandscapeProxy()->GetLayersCount(); ++i)
     {
-        uint32 layerWidth = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->GetWidth();
+        uint32 layerWidth = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->width;
         if (texSize != layerWidth)
             return LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_TILEMASK_TEXTURES_DIMENSIONS_DOES_NOT_MATCH;
     }
@@ -161,8 +158,8 @@ LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::EnableLandscapeEditi
 
     for (uint32 i = 0; i < drawSystem->GetLandscapeProxy()->GetLayersCount(); ++i)
     {
-        Texture* srcSprite = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
-        Texture* dstSprite = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_DESTINATION);
+        Asset<Texture> srcSprite = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
+        Asset<Texture> dstSprite = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_DESTINATION);
 
         srcSprite->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
         dstSprite->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
@@ -201,8 +198,6 @@ bool TilemaskEditorSystem::DisableLandscapeEdititing()
     for (uint32 i = 0; i < drawSystem->GetLandscapeProxy()->GetLayersCount(); ++i)
         editorMaterial->RemoveTexture(TilemaskEditorSystemDetails::srcTexturesNames[i]);
 
-    SafeRelease(landscapeTilemaskTexture);
-
     drawSystem->GetBaseLandscape()->SetPagesUpdatePerFrame(16u);
 
     enabled = false;
@@ -229,9 +224,9 @@ void TilemaskEditorSystem::Process(float32 timeElapsed)
             RenderSystem2D::RenderTargetPassDescriptor desc;
             desc.priority = PRIORITY_SERVICE_2D;
             desc.colorAttachment = toolTexture->handle;
-            desc.depthAttachment = toolTexture->handleDepthStencil;
-            desc.width = toolTexture->GetWidth();
-            desc.height = toolTexture->GetHeight();
+            desc.depthAttachment = rhi::HTexture();
+            desc.width = toolTexture->width;
+            desc.height = toolTexture->height;
             desc.transformVirtualToPhysical = false;
             RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
             RenderSystem2D::Instance()->DrawTexture(toolImageTexture, RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL, Color::White, toolRect);
@@ -404,10 +399,10 @@ void TilemaskEditorSystem::UpdateBrushTool()
     if (drawingType == TILEMASK_DRAW_COPY_PASTE && (copyPasteFrom == Vector2(-1.f, -1.f)))
         return;
 
-    Vector<Texture*> dstTexs;
+    Vector<Asset<Texture>> dstTexs;
     for (uint32 i = 0; i < drawSystem->GetLandscapeProxy()->GetLayersCount(); ++i)
     {
-        Texture* srcTexture = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
+        Asset<Texture> srcTexture = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
         editorMaterial->SetTexture(TilemaskEditorSystemDetails::srcTexturesNames[i], srcTexture);
         dstTexs.push_back(drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_DESTINATION));
     }
@@ -422,8 +417,8 @@ void TilemaskEditorSystem::UpdateBrushTool()
         Memset(passConf.colorBuffer[i].clearColor, 0, 4 * sizeof(float32));
     }
     passConf.priority = PRIORITY_SERVICE_2D;
-    passConf.viewport.width = dstTexs[0]->GetWidth();
-    passConf.viewport.height = dstTexs[0]->GetHeight();
+    passConf.viewport.width = dstTexs[0]->width;
+    passConf.viewport.height = dstTexs[0]->height;
 
     editorMaterial->PreBuildMaterial(TILEMASK_EDITOR_MATERIAL_PASS);
     editorMaterial->BindParams(quadPacket);
@@ -438,7 +433,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 
     if (rhi::DeviceCaps().isCenterPixelMapping)
     {
-        const float32 pixelOffset = 1.f / dstTexs[0]->GetWidth();
+        const float32 pixelOffset = 1.f / dstTexs[0]->width;
         for (uint32 i = 0; i < 4; ++i)
         {
             quadVertices[i].position.x -= pixelOffset;
@@ -479,10 +474,10 @@ void TilemaskEditorSystem::UpdateBrushTool()
     drawSystem->GetLandscapeProxy()->SwapTilemaskDrawTextures();
 
     Rect rect = GetUpdatedRect();
-    rect.x /= toolTexture->GetWidth();
-    rect.dx /= toolTexture->GetWidth();
-    rect.y /= toolTexture->GetHeight();
-    rect.dy /= toolTexture->GetHeight();
+    rect.x /= toolTexture->width;
+    rect.dx /= toolTexture->width;
+    rect.y /= toolTexture->height;
+    rect.dy /= toolTexture->height;
     rect.y = 1.f - (rect.y + rect.dy);
 
     drawSystem->GetBaseLandscape()->InvalidatePages(rect);
@@ -490,8 +485,6 @@ void TilemaskEditorSystem::UpdateBrushTool()
 
 void TilemaskEditorSystem::UpdateToolImage()
 {
-    SafeRelease(toolImageTexture);
-
     Vector<Image*> images;
     ImageSystem::Load(toolImagePath, images);
     if (images.size())
@@ -499,13 +492,14 @@ void TilemaskEditorSystem::UpdateToolImage()
         DVASSERT(images.size() == 1);
         DVASSERT(images[0]->GetPixelFormat() == FORMAT_RGBA8888);
 
-        ScopedPtr<Image> toolImage(Image::Create(curToolSize, curToolSize, FORMAT_RGBA8888));
+        RefPtr<Image> toolImage(Image::Create(curToolSize, curToolSize, FORMAT_RGBA8888));
         ImageConvert::ResizeRGBA8Billinear(reinterpret_cast<uint32*>(images[0]->data), images[0]->GetWidth(), images[0]->GetHeight(),
                                            reinterpret_cast<uint32*>(toolImage->data), curToolSize, curToolSize);
 
         SafeRelease(images[0]);
 
-        toolImageTexture = Texture::CreateFromData(toolImage, false);
+        Texture::UniqueTextureKey key(toolImage, false);
+        toolImageTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     }
 }
 
@@ -537,12 +531,12 @@ void TilemaskEditorSystem::CreateMaskTexture()
 {
     for (uint32 i = 0; i < drawSystem->GetLandscapeProxy()->GetLayersCount(); ++i)
     {
-        Texture* tilemask = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK);
-        Texture* srcTexture = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
+        Asset<Texture> tilemask = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK);
+        Asset<Texture> srcTexture = drawSystem->GetLandscapeProxy()->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
 
         if (tilemask != srcTexture)
         {
-            landscapeTilemaskTexture = SafeRetain(tilemask);
+            landscapeTilemaskTexture = tilemask;
 
             Rect destRect(0.0f, 0.0f, landscapeTilemaskTexture->width, landscapeTilemaskTexture->height);
             Rect sourceRect(0.0f, 0.0f, 1.0f, 1.0f);
@@ -550,9 +544,9 @@ void TilemaskEditorSystem::CreateMaskTexture()
             RenderSystem2D::RenderTargetPassDescriptor desc;
             desc.priority = PRIORITY_SERVICE_2D;
             desc.colorAttachment = srcTexture->handle;
-            desc.depthAttachment = srcTexture->handleDepthStencil;
-            desc.width = srcTexture->GetWidth();
-            desc.height = srcTexture->GetHeight();
+            desc.depthAttachment = rhi::HTexture();
+            desc.width = srcTexture->width;
+            desc.height = srcTexture->height;
             desc.transformVirtualToPhysical = false;
             desc.clearTarget = true;
 
@@ -620,14 +614,20 @@ void TilemaskEditorSystem::InitSprites()
 {
     // GFX_COMPLETE
     int32 texSize = static_cast<int32>(drawSystem->GetTextureSize(0, textureLevel));
-    if (toolTexture != nullptr && texSize != toolTexture->GetWidth())
+    if (toolTexture != nullptr && texSize != toolTexture->width)
     {
-        SafeRelease(toolTexture);
+        toolTexture.reset();
     }
 
     if (toolTexture == nullptr)
     {
-        toolTexture = Texture::CreateFBO(texSize, texSize, FORMAT_RGBA8888 /*, Texture::DEPTH_NONE*/);
+        Texture::RenderTargetTextureKey key;
+        key.width = texSize;
+        key.height = texSize;
+        key.format = FORMAT_RGBA8888;
+        key.isDepth = false;
+
+        toolTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     }
 
     drawSystem->GetLandscapeProxy()->InitTilemaskDrawTextures();

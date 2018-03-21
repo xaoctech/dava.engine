@@ -1,13 +1,17 @@
 #include "Render/Highlevel/SpriteObject.h"
 #include "Render/Renderer.h"
 #include "Render/Material/NMaterialNames.h"
+#include "Render/Texture.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
 SpriteObject::SpriteObject()
 {
-    ScopedPtr<Texture> pink(Texture::CreatePink());
-    ScopedPtr<Sprite> localSprite(Sprite::CreateFromTexture(pink, 0, 0, static_cast<float32>(pink->GetWidth()), static_cast<float32>(pink->GetHeight())));
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    Asset<Texture> pink = assetManager->GetAsset<Texture>(Texture::MakePinkKey(), AssetManager::SYNC);
+    ScopedPtr<Sprite> localSprite(Sprite::CreateFromTexture(pink, 0, 0, static_cast<float32>(pink->width), static_cast<float32>(pink->height)));
     Init(localSprite, 0, Vector2(1.0f, 1.0f), Vector2(0.0f, 0.0f));
     RegisterRestoreCallback();
 }

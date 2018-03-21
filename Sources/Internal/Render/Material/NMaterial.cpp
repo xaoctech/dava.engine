@@ -7,7 +7,6 @@
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "Render/Material/NMaterialNames.h"
-#include "Render/Material/FXAssetLoader.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Texture.h"
 
@@ -22,7 +21,6 @@
 #include "Debug/Backtrace.h"
 
 #include "Logger/Logger.h"
-#include "FXAssetLoader.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 
@@ -111,7 +109,7 @@ MaterialConfig& MaterialConfig::operator=(const MaterialConfig& config)
     {
         MaterialTextureInfo* texInfo = new MaterialTextureInfo();
         texInfo->path = tex.second->path;
-        texInfo->texture = SafeRetain(tex.second->texture);
+        texInfo->texture = tex.second->texture;
         localTextures[tex.first] = texInfo;
     }
 
@@ -136,7 +134,6 @@ void MaterialConfig::Clear()
     localProperties.clear();
     for (auto& texInfo : localTextures)
     {
-        SafeRelease(texInfo.second->texture);
         SafeDelete(texInfo.second);
     }
     localTextures.clear();
@@ -297,7 +294,7 @@ NMaterialProperty* NMaterial::GetMaterialProperty(const FastName& propName)
     return res;
 }
 
-Texture* NMaterial::GetEffectiveTexture(const FastName& slotName)
+Asset<Texture> NMaterial::GetEffectiveTexture(const FastName& slotName)
 {
     MaterialTextureInfo* localInfo = NMaterialDetail::GetValuePtr(GetCurrentConfig().localTextures, slotName);
 
@@ -305,7 +302,8 @@ Texture* NMaterial::GetEffectiveTexture(const FastName& slotName)
     {
         if (localInfo->texture == nullptr)
         {
-            localInfo->texture = Texture::CreateFromFile(localInfo->path, slotName);
+            Texture::PathKey key(localInfo->path);
+            localInfo->texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC, this);
         }
         return localInfo->texture;
     }
@@ -331,7 +329,7 @@ void NMaterial::CollectActiveLocalTextures(Set<MaterialTextureInfo*>& collection
     CollectConfigTextures(GetCurrentConfig(), collection);
 }
 
-bool NMaterial::ContainsTexture(Texture* texture) const
+bool NMaterial::ContainsTexture(const Asset<Texture>& texture) const
 {
     for (const auto& config : materialConfigs)
     {
@@ -487,16 +485,19 @@ const DAVA::UnorderedMap<DAVA::FastName, NMaterialProperty*>& NMaterial::GetLoca
     return GetCurrentConfig().localProperties;
 }
 
-void NMaterial::AddTexture(const FastName& slotName, Texture* texture)
+void NMaterial::AddTexture(const FastName& slotName, const Asset<Texture>& texture)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+
+    AssetManager* assetManager = GetEngineContext()->assetManager;
 
     MaterialConfig& config = GetMutableCurrentConfig();
 
     DVASSERT(NMaterialDetail::GetValuePtr(config.localTextures, slotName) == nullptr);
 
     MaterialTextureInfo* texInfo = new MaterialTextureInfo();
-    texInfo->texture = SafeRetain(texture);
+    assetManager->RegisterListener(texture, this);
+    texInfo->texture = texture;
     texInfo->path = texture->GetPathname();
     config.localTextures[slotName] = texInfo;
     InvalidateTextureBindings();
@@ -504,19 +505,22 @@ void NMaterial::AddTexture(const FastName& slotName, Texture* texture)
 
 void NMaterial::RemoveTexture(const FastName& slotName)
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+
     MaterialConfig& config = GetMutableCurrentConfig();
     MaterialTextureInfo* texInfo = NMaterialDetail::GetValuePtr(config.localTextures, slotName);
 
     DVASSERT(texInfo != nullptr);
 
     config.localTextures.erase(slotName);
-    SafeRelease(texInfo->texture);
+    assetManager->UnregisterListener(texInfo->texture, this);
     SafeDelete(texInfo);
     InvalidateTextureBindings();
 }
 
-void NMaterial::SetTexture(const FastName& slotName, Texture* texture)
+void NMaterial::SetTexture(const FastName& slotName, const Asset<Texture>& texture)
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     MaterialTextureInfo* texInfo = NMaterialDetail::GetValuePtr(GetCurrentConfig().localTextures, slotName);
 
     DVASSERT(texture != nullptr); //use RemoveTexture to remove texture!
@@ -524,8 +528,8 @@ void NMaterial::SetTexture(const FastName& slotName, Texture* texture)
 
     if (texInfo->texture != texture)
     {
-        SafeRelease(texInfo->texture);
-        texInfo->texture = SafeRetain(texture);
+        assetManager->UnregisterListener(texInfo->texture, this);
+        assetManager->RegisterListener(texture, this);
         texInfo->path = texture->GetPathname();
     }
 
@@ -538,7 +542,7 @@ bool NMaterial::HasLocalTexture(const FastName& slotName)
     return config.localTextures.find(slotName) != config.localTextures.end();
 }
 
-Texture* NMaterial::GetLocalTexture(const FastName& slotName)
+Asset<Texture> NMaterial::GetLocalTexture(const FastName& slotName)
 {
     DVASSERT(HasLocalTexture(slotName));
 
@@ -546,7 +550,8 @@ Texture* NMaterial::GetLocalTexture(const FastName& slotName)
 
     if (texInfo->texture == nullptr)
     {
-        texInfo->texture = Texture::CreateFromFile(texInfo->path);
+        Texture::PathKey key(texInfo->path);
+        texInfo->texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     }
 
     return texInfo->texture;
@@ -719,7 +724,9 @@ void NMaterial::ReleaseConfigTextures(uint32 index)
 {
     MaterialConfig& config = GetMutableCurrentConfig();
     for (auto& tex : config.localTextures)
-        SafeRelease(tex.second->texture);
+    {
+        tex.second->texture.reset();
+    }
 
     if (index == currentConfig)
         InvalidateTextureBindings();
@@ -843,7 +850,7 @@ void NMaterial::PreCacheFX()
     CollectMaterialFlags(flags);
     NMaterialManager::Instance().MergeGlobalFlags(flags);
 
-    FXAssetLoader::Key key(GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
+    FXAsset::Key key(GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
     GetEngineContext()->assetManager->GetAsset<FXAsset>(key, AssetManager::SYNC);
 }
 
@@ -860,7 +867,7 @@ void NMaterial::PreCacheFXWithFlags(const UnorderedMap<FastName, int32>& extraFl
             flags[it.first] = it.second;
     }
 
-    FXAssetLoader::Key key(extraFxName.IsValid() ? extraFxName : GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
+    FXAsset::Key key(extraFxName.IsValid() ? extraFxName : GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
     GetEngineContext()->assetManager->GetAsset<FXAsset>(key, AssetManager::SYNC);
 }
 
@@ -891,6 +898,22 @@ void NMaterial::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Ass
     }
     else
     {
+        Asset<Texture> texture = std::dynamic_pointer_cast<Texture>(reloadedAsset);
+        if (texture != nullptr)
+        {
+            for (size_t i = 0; i < materialConfigs.size(); ++i)
+            {
+                MaterialConfig& config = materialConfigs[i];
+                for (auto& node : config.localTextures)
+                {
+                    if (node.second->texture == originalAsset)
+                    {
+                        node.second->texture = texture;
+                    }
+                }
+            }
+            RebuildTextureBindings();
+        }
         for (auto& variant : renderVariants)
         {
             if (variant.second->shader == originalAsset)
@@ -911,7 +934,7 @@ void NMaterial::RebuildRenderVariants()
     CollectMaterialFlags(flags);
     NMaterialManager::Instance().MergeGlobalFlags(flags);
 
-    FXAssetLoader::Key fxKey(GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
+    FXAsset::Key fxKey(GetEffectiveFXName(), QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetQualityGroup()), std::move(flags));
     fxAsset = assetManager->GetAsset<FXAsset>(fxKey, AssetManager::SYNC, this);
 
     const Vector<RenderPassDescriptor>& renderPassDescriptors = fxAsset->GetPassDescriptors();
@@ -1128,7 +1151,7 @@ void NMaterial::RebuildTextureBindings()
             RuntimeTextures::eRuntimeTextureSemantic textureSemantic = RuntimeTextures::GetRuntimeTextureSemanticByName(fragmentSamplerList[i].uid);
             if (textureSemantic == RuntimeTextures::TEXTURE_STATIC)
             {
-                Texture* tex = GetEffectiveTexture(fragmentSamplerList[i].uid);
+                Asset<Texture> tex = GetEffectiveTexture(fragmentSamplerList[i].uid);
 
                 if ((tex != nullptr) && (tex->textureType != fragmentSamplerList[i].type))
                     Logger::Warning("Invalid texture type (%d, required %d) assigned to slot %s", static_cast<int32>(tex->textureType), static_cast<int32>(fragmentSamplerList[i].type), fragmentSamplerList[i].uid.c_str());
@@ -1188,7 +1211,7 @@ void NMaterial::RebuildTextureBindings()
             RuntimeTextures::eRuntimeTextureSemantic textureSemantic = RuntimeTextures::GetRuntimeTextureSemanticByName(vertexSamplerList[i].uid);
             if (textureSemantic == RuntimeTextures::TEXTURE_STATIC)
             {
-                Texture* tex = GetEffectiveTexture(vertexSamplerList[i].uid);
+                Asset<Texture> tex = GetEffectiveTexture(vertexSamplerList[i].uid);
 
                 if ((tex != nullptr) && (tex->textureType != vertexSamplerList[i].type))
                     Logger::Warning("Invalid texture type (%d, required %d) assigned to slot %s", static_cast<int32>(tex->textureType), static_cast<int32>(vertexSamplerList[i].type), vertexSamplerList[i].uid.c_str());

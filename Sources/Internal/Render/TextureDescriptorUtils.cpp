@@ -40,6 +40,51 @@ bool TextureDescriptorUtils::CreateDescriptor(const DAVA::FilePath& imagePath)
     return true;
 }
 
+bool TextureDescriptorUtils::CreateDescriptor(const FilePath& imagePath, std::unique_ptr<TextureDescriptor>& descriptor, bool descriptorChanged)
+{
+    const String sourceExtension = imagePath.GetExtension();
+    const ImageFormat sourceFormat = ImageSystem::GetImageFormatForExtension(sourceExtension);
+
+    if (sourceFormat == IMAGE_FORMAT_UNKNOWN || false == TextureDescriptor::IsSupportedSourceFormat(sourceFormat))
+    {
+        return false;
+    }
+
+    ImageInfo info = ImageSystem::GetImageInfo(imagePath);
+    FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(imagePath);
+
+    if (FileSystem::Instance()->Exists(descriptorPath))
+    {
+        descriptor.reset(TextureDescriptor::CreateFromFile(descriptorPath));
+    }
+
+    if (descriptor.get() == nullptr)
+    {
+        descriptor.reset(new TextureDescriptor());
+        descriptor->pathname = descriptorPath;
+        descriptor->dataSettings.sourceFileFormat = sourceFormat;
+        descriptor->dataSettings.sourceFileExtension = sourceExtension;
+        descriptor->compression[eGPUFamily::GPU_ORIGIN].imageFormat = sourceFormat;
+        descriptor->compression[eGPUFamily::GPU_ORIGIN].format = info.format;
+        descriptorChanged = true;
+    }
+    else if (sourceFormat != descriptor->dataSettings.sourceFileFormat)
+    {
+        descriptor->dataSettings.sourceFileFormat = sourceFormat;
+        descriptor->dataSettings.sourceFileExtension = sourceExtension;
+        descriptor->compression[eGPUFamily::GPU_ORIGIN].imageFormat = sourceFormat;
+        descriptor->compression[eGPUFamily::GPU_ORIGIN].format = info.format;
+        descriptorChanged = true;
+    }
+
+    if (descriptorChanged)
+    {
+        descriptor->Save(descriptorPath);
+    }
+
+    return true;
+}
+
 bool TextureDescriptorUtils::CreateDescriptorCube(const DAVA::FilePath& texturePath, const DAVA::Vector<DAVA::FilePath>& imagePathes)
 {
     if (static_cast<uint32>(imagePathes.size()) != Texture::CUBE_FACE_COUNT)

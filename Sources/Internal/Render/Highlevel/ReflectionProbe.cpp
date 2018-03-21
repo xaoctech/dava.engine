@@ -48,4 +48,10 @@ void ReflectionProbe::SetSphericalHarmonics(const Vector4 sh[9])
     }
     // */
 }
+
+void ReflectionProbe::OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded)
+{
+    DVASSERT(original == currentTexture);
+    currentTexture = std::static_pointer_cast<Texture>(reloaded);
+}
 };

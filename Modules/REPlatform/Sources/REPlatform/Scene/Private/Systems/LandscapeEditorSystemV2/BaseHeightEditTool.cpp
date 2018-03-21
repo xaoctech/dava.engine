@@ -15,6 +15,10 @@
 #include <FileSystem/FileList.h>
 #include <Render/Highlevel/RenderPassNames.h>
 #include <Render/Highlevel/Landscape.h>
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -75,12 +79,12 @@ BaseLandscapeTool::ButtonInfo BaseHeightEditTool::GetButtonInfo() const
     return buttonInfo;
 }
 
-RefPtr<Texture> BaseHeightEditTool::GetCustomCoverTexture() const
+Asset<Texture> BaseHeightEditTool::GetCustomCoverTexture() const
 {
-    return RefPtr<Texture>();
+    return Asset<Texture>();
 }
 
-RefPtr<Texture> BaseHeightEditTool::GetCursorTexture() const
+Asset<Texture> BaseHeightEditTool::GetCursorTexture() const
 {
     return cursorTexture;
 }
@@ -144,10 +148,10 @@ float32 BaseHeightEditTool::GetBrushRotation() const
 void BaseHeightEditTool::Deactivate(PropertiesItem& settings)
 {
     brushApplicant.reset();
-    cursorTexture = RefPtr<Texture>();
-    morphTexture = RefPtr<Texture>();
-    floatTexture = RefPtr<Texture>();
-    heightSnapshot = RefPtr<Texture>();
+    cursorTexture.reset();
+    morphTexture.reset();
+    floatTexture.reset();
+    heightSnapshot.reset();
 
     PropertiesItem toolSettings = settings.CreateSubHolder("BaseHeightEditTool");
 
@@ -173,22 +177,22 @@ void BaseHeightEditTool::Deactivate(PropertiesItem& settings)
 
 void BaseHeightEditTool::StoreSnapshots()
 {
-    RefPtr<Texture> heightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
-    if (heightSnapshot.Get() == nullptr)
+    Asset<Texture> heightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
+    if (heightSnapshot == nullptr)
     {
-        Texture::FBODescriptor descr;
+        Texture::RenderTargetTextureKey descr;
         descr.format = FORMAT_RGBA8888;
         descr.height = heightTexture->height;
         descr.width = heightTexture->width;
         descr.mipLevelsCount = 1;
-        descr.needDepth = false;
+        descr.isDepth = false;
         descr.needPixelReadback = true;
         descr.textureType = rhi::TEXTURE_TYPE_2D;
-        heightSnapshot.Set(Texture::CreateFBO(descr));
+        heightSnapshot = GetEngineContext()->assetManager->GetAsset<Texture>(descr, AssetManager::SYNC);
     }
 
     blitConvertMaterial->AddFlag(FastName("COPY_TEXTURE_LOD"), 1);
-    blitConvertMaterial->AddTexture(FastName("texture0"), heightTexture.Get());
+    blitConvertMaterial->AddTexture(FastName("texture0"), heightTexture);
     float32 lodLevel = 0;
     blitConvertMaterial->AddProperty(FastName("lodLevel"), &lodLevel, rhi::ShaderProp::TYPE_FLOAT1, 1);
 
@@ -314,27 +318,27 @@ void BaseHeightEditTool::OnCommandExecuted(const RECommandNotificationObject& no
 {
     if (notif.MatchCommandTypes<ModifyHeightmapCommandV2>())
     {
-        RefPtr<Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
+        Asset<Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
         CopyHeightTextureToFloat(srcHeightTexture, floatTexture);
         CopyTextureWithMips(srcHeightTexture, morphTexture);
         CopyTextureWithMips(system->GetOriginalLandscapeTexture(Landscape::TANGENT_TEXTURE, 0), normalMap);
     }
 }
 
-RefPtr<Texture> BaseHeightEditTool::CreateFloatHeightTexture()
+Asset<Texture> BaseHeightEditTool::CreateFloatHeightTexture()
 {
-    RefPtr<Texture> heightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
-    RefPtr<Texture> result;
+    Asset<Texture> heightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
 
-    Texture::FBODescriptor descr;
+    Texture::RenderTargetTextureKey descr;
     descr.format = FORMAT_R32F;
     descr.height = heightTexture->height;
     descr.width = heightTexture->width;
     descr.mipLevelsCount = 1;
-    descr.needDepth = false;
+    descr.isDepth = false;
     descr.needPixelReadback = true;
     descr.textureType = rhi::TEXTURE_TYPE_2D;
-    result.Set(Texture::CreateFBO(descr));
+    Asset<Texture> result = GetEngineContext()->assetManager->GetAsset<Texture>(descr, AssetManager::SYNC);
+
     result->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
     result->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     result->maxAnisotropyLevel = 1;
@@ -343,20 +347,19 @@ RefPtr<Texture> BaseHeightEditTool::CreateFloatHeightTexture()
     return result;
 }
 
-RefPtr<Texture> BaseHeightEditTool::CreateHeightTextureCopy()
+Asset<Texture> BaseHeightEditTool::CreateHeightTextureCopy()
 {
-    RefPtr<Texture> heightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
-    RefPtr<Texture> result;
+    Asset<Texture> heightTexture = system->GetOriginalLandscapeTexture(Landscape::HEIGHTMAP_TEXTURE, 0);
 
-    Texture::FBODescriptor descr;
+    Texture::RenderTargetTextureKey descr;
     descr.format = heightTexture->GetFormat();
     descr.height = heightTexture->height;
     descr.width = heightTexture->width;
     descr.mipLevelsCount = heightTexture->GetMipLevelsCount();
-    descr.needDepth = false;
+    descr.isDepth = false;
     descr.needPixelReadback = true;
     descr.textureType = rhi::TEXTURE_TYPE_2D;
-    result.Set(Texture::CreateFBO(descr));
+    Asset<Texture> result = GetEngineContext()->assetManager->GetAsset<Texture>(descr, AssetManager::SYNC);
     result->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
     result->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     result->maxAnisotropyLevel = 1;
@@ -365,20 +368,19 @@ RefPtr<Texture> BaseHeightEditTool::CreateHeightTextureCopy()
     return result;
 }
 
-RefPtr<Texture> BaseHeightEditTool::CreateNormalTextureCopy()
+Asset<Texture> BaseHeightEditTool::CreateNormalTextureCopy()
 {
-    RefPtr<Texture> sourceNormalMap = system->GetOriginalLandscapeTexture(Landscape::TANGENT_TEXTURE, 0);
-    RefPtr<Texture> result;
+    Asset<Texture> sourceNormalMap = system->GetOriginalLandscapeTexture(Landscape::TANGENT_TEXTURE, 0);
 
-    Texture::FBODescriptor descr;
+    Texture::RenderTargetTextureKey descr;
     descr.format = sourceNormalMap->GetFormat();
     descr.height = sourceNormalMap->height;
     descr.width = sourceNormalMap->width;
     descr.mipLevelsCount = sourceNormalMap->GetMipLevelsCount();
-    descr.needDepth = false;
+    descr.isDepth = false;
     descr.needPixelReadback = true;
     descr.textureType = rhi::TEXTURE_TYPE_2D;
-    result.Set(Texture::CreateFBO(descr));
+    Asset<Texture> result = GetEngineContext()->assetManager->GetAsset<Texture>(descr, AssetManager::SYNC);
     result->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
     result->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     result->maxAnisotropyLevel = 1;
@@ -397,7 +399,7 @@ void BaseHeightEditTool::CreateBasePhases(Vector<BrushPhaseDescriptor>& phases) 
         descr.phaseMaterial.Set(new NMaterial());
         descr.phaseMaterial->SetFXName(NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(FastName("R32F_TO_MORPH"), 1);
-        descr.phaseMaterial->AddTexture(FastName("texture0"), floatTexture.Get());
+        descr.phaseMaterial->AddTexture(FastName("texture0"), floatTexture);
 
         float32 mipTextureSize = floatTexture->width >> mip;
         descr.phaseMaterial->AddProperty(FastName("mipTextureSize"), &mipTextureSize, rhi::ShaderProp::TYPE_FLOAT1, 1);
@@ -417,7 +419,7 @@ void BaseHeightEditTool::CreateBasePhases(Vector<BrushPhaseDescriptor>& phases) 
         descr.phaseMaterial.Set(new NMaterial());
         descr.phaseMaterial->SetFXName(NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(FastName("GENERATE_TANGENT_MAP"), 1);
-        descr.phaseMaterial->AddTexture(FastName("texture1"), morphTexture.Get());
+        descr.phaseMaterial->AddTexture(FastName("texture1"), morphTexture);
 
         float32 floatTextureSize = static_cast<float32>(floatTexture->width);
         descr.phaseMaterial->AddProperty(FastName("floatTextureSize"), &floatTextureSize, rhi::ShaderProp::TYPE_FLOAT1, 1);
@@ -432,10 +434,10 @@ void BaseHeightEditTool::CreateBasePhases(Vector<BrushPhaseDescriptor>& phases) 
     }
 }
 
-void BaseHeightEditTool::CopyHeightTextureToFloat(RefPtr<Texture> heightTexture, RefPtr<Texture> target)
+void BaseHeightEditTool::CopyHeightTextureToFloat(Asset<Texture> heightTexture, Asset<Texture> target)
 {
     blitConvertMaterial->AddFlag(FastName("MORPH_TO_R32F"), 1);
-    blitConvertMaterial->AddTexture(FastName("texture0"), heightTexture.Get());
+    blitConvertMaterial->AddTexture(FastName("texture0"), heightTexture);
     if (blitConvertMaterial->PreBuildMaterial(PASS_FORWARD) == true)
     {
         TextureBlitter::TargetInfo info;
@@ -446,10 +448,10 @@ void BaseHeightEditTool::CopyHeightTextureToFloat(RefPtr<Texture> heightTexture,
     blitConvertMaterial->RemoveFlag(FastName("MORPH_TO_R32F"));
 }
 
-void BaseHeightEditTool::CopyTextureWithMips(RefPtr<Texture> source, RefPtr<Texture> target)
+void BaseHeightEditTool::CopyTextureWithMips(Asset<Texture> source, Asset<Texture> target)
 {
     blitConvertMaterial->AddFlag(FastName("COPY_TEXTURE_LOD"), 1);
-    blitConvertMaterial->AddTexture(FastName("texture0"), source.Get());
+    blitConvertMaterial->AddTexture(FastName("texture0"), source);
     float32 lodLevel = 0;
     blitConvertMaterial->AddProperty(FastName("lodLevel"), &lodLevel, rhi::ShaderProp::TYPE_FLOAT1, 1);
 

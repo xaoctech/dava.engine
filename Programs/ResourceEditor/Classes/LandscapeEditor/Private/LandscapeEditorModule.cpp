@@ -74,6 +74,7 @@ void LandscapeEditorModule::OnContextDeleted(DAVA::DataContext* context)
     DAVA::Scene* scene = data->GetScene().Get();
     DAVA::LandscapeEditorSystemV2* system = scene->GetSystem<DAVA::LandscapeEditorSystemV2>();
     scene->RemoveSystem(system);
+    DAVA::SafeDelete(system);
 
     MassObjectCreationSystem* massObjSystem = scene->GetSystem<MassObjectCreationSystem>();
     scene->RemoveSystem(massObjSystem);

@@ -25,8 +25,8 @@ public:
 
     struct PageRenderParams
     {
-        Vector<Texture*> pageSrc;
-        Vector<Texture*> pageDst;
+        Vector<Asset<Texture>> pageSrc;
+        Vector<Asset<Texture>> pageDst;
         Vector2 relativeCoord0;
         Vector2 relativeCoord1;
         AABBox3 pageBBox;

@@ -17,7 +17,7 @@ void BaseBrushApplicant::SetInvertionFactor(float32 invertionFactor_)
     invertionFactor = invertionFactor_;
 }
 
-void BaseBrushApplicant::SetCursorTexture(RefPtr<Texture> texture)
+void BaseBrushApplicant::SetCursorTexture(Asset<Texture> texture)
 {
     cursorTexture = texture;
 }

@@ -49,9 +49,9 @@ QVariant TextureListModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-DAVA::Texture* TextureListModel::getTexture(const QModelIndex& index) const
+DAVA::Asset<DAVA::Texture> TextureListModel::getTexture(const QModelIndex& index) const
 {
-    DAVA::Texture* ret = NULL;
+    DAVA::Asset<DAVA::Texture> ret = NULL;
     DAVA::TextureDescriptor* desc = getDescriptor(index);
 
     if (index.isValid() && texturesAll.contains(desc))
@@ -62,9 +62,9 @@ DAVA::Texture* TextureListModel::getTexture(const QModelIndex& index) const
     return ret;
 }
 
-DAVA::Texture* TextureListModel::getTexture(const DAVA::TextureDescriptor* descriptor) const
+DAVA::Asset<DAVA::Texture> TextureListModel::getTexture(const DAVA::TextureDescriptor* descriptor) const
 {
-    DAVA::Texture* ret = NULL;
+    DAVA::Asset<DAVA::Texture> ret = NULL;
 
     if (texturesAll.contains(descriptor))
     {
@@ -143,23 +143,24 @@ void TextureListModel::setSortMode(TextureListModel::TextureListSortMode sortMod
 
 void TextureListModel::setScene(DAVA::SceneEditor2* scene)
 {
+    using namespace DAVA;
     beginResetModel();
 
     clear();
 
     activeScene = scene;
 
-    DAVA::SceneHelper::TextureCollector collector;
-    DAVA::SceneHelper::EnumerateSceneTextures(scene, collector);
-    DAVA::TexturesMap& texturesInNode = collector.GetTextures();
+    SceneHelper::TextureCollector collector;
+    SceneHelper::EnumerateSceneTextures(scene, collector);
+    const Map<FilePath, Asset<Texture>>& texturesInNode = collector.GetTextures();
 
-    for (DAVA::TexturesMap::iterator t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
+    for (auto t = texturesInNode.begin(); t != texturesInNode.end(); ++t)
     {
-        DAVA::TextureDescriptor* descriptor = t->second->texDescriptor;
-        if (NULL != descriptor && DAVA::FileSystem::Instance()->Exists(descriptor->pathname))
+        TextureDescriptor* descriptor = t->second->texDescriptor;
+        if (NULL != descriptor && FileSystem::Instance()->Exists(descriptor->pathname))
         {
             textureDescriptorsAll.push_back(descriptor);
-            texturesAll[descriptor] = SafeRetain(t->second);
+            texturesAll[descriptor] = t->second;
         }
     }
 
@@ -167,8 +168,8 @@ void TextureListModel::setScene(DAVA::SceneEditor2* scene)
 
     endResetModel();
 
-    DAVA::SelectableGroup selection;
-    DAVA::SelectionData* data = DAVA::Deprecated::GetActiveDataNode<DAVA::SelectionData>();
+    SelectableGroup selection;
+    SelectionData* data = Deprecated::GetActiveDataNode<SelectionData>();
     if (data != nullptr)
     {
         selection = data->GetSelection();
@@ -178,22 +179,23 @@ void TextureListModel::setScene(DAVA::SceneEditor2* scene)
 
 void TextureListModel::setHighlight(const DAVA::SelectableGroup& selection)
 {
+    using namespace DAVA;
     beginResetModel();
 
     textureDescriptorsHighlight.clear();
 
-    DAVA::SceneHelper::TextureCollector collector;
-    for (DAVA::Entity* entity : selection.ObjectsOfType<DAVA::Entity>())
+    SceneHelper::TextureCollector collector;
+    for (Entity* entity : selection.ObjectsOfType<Entity>())
     {
-        DAVA::SceneHelper::EnumerateEntityTextures(activeScene, entity, collector);
+        SceneHelper::EnumerateEntityTextures(activeScene, entity, collector);
     }
-    DAVA::TexturesMap& nodeTextures = collector.GetTextures();
+    const Map<FilePath, Asset<Texture>>& nodeTextures = collector.GetTextures();
 
-    const DAVA::uint32 descriptorsCount = static_cast<const DAVA::uint32>(textureDescriptorsAll.size());
+    const uint32 descriptorsCount = static_cast<const uint32>(textureDescriptorsAll.size());
     for (const auto& nTex : nodeTextures)
     {
-        const DAVA::FilePath& path = nTex.first;
-        for (DAVA::uint32 d = 0; d < descriptorsCount; ++d)
+        const FilePath& path = nTex.first;
+        for (uint32 d = 0; d < descriptorsCount; ++d)
         {
             if (textureDescriptorsAll[d]->pathname == path)
             {
@@ -212,15 +214,7 @@ void TextureListModel::setHighlight(const DAVA::SelectableGroup& selection)
 
 void TextureListModel::clear()
 {
-    activeScene = NULL;
-
-    QMapIterator<const DAVA::TextureDescriptor*, DAVA::Texture*> it(texturesAll);
-    while (it.hasNext())
-    {
-        it.next();
-        it.value()->Release();
-    }
-
+    activeScene = nullptr;
     texturesAll.clear();
     textureDescriptorsHighlight.clear();
     textureDescriptorsFiltredSorted.clear();
@@ -284,16 +278,16 @@ bool SortFnByFileSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA:
 
 bool SortFnByImageSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-    DAVA::Texture* tx1 = model->getTexture(t1);
-    DAVA::Texture* tx2 = model->getTexture(t2);
+    DAVA::Asset<DAVA::Texture> tx1 = model->getTexture(t1);
+    DAVA::Asset<DAVA::Texture> tx2 = model->getTexture(t2);
 
     return (tx1->width * tx1->height) < (tx2->width * tx2->height);
 }
 
 bool SortFnByDataSize::operator()(const DAVA::TextureDescriptor* t1, const DAVA::TextureDescriptor* t2)
 {
-    DAVA::Texture* tx1 = model->getTexture(t1);
-    DAVA::Texture* tx2 = model->getTexture(t2);
+    DAVA::Asset<DAVA::Texture> tx1 = model->getTexture(t1);
+    DAVA::Asset<DAVA::Texture> tx2 = model->getTexture(t2);
 
     DAVA::PixelFormat f1 = tx1->GetFormat();
     DAVA::PixelFormat f2 = tx2->GetFormat();

@@ -26,8 +26,12 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/SharedModules/ThemesModule/ThemesModule.h>
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Render/TextureDescriptor.h>
+#include <Render/TextureAssetLoader.h>
 #include <Render/Texture.h>
 #include <Render/Material/NMaterialNames.h>
 #include <Render/VisibilityQueryResults.h>
@@ -375,7 +379,7 @@ void SceneInfo::RefreshLODInfoForSelection()
     }
 }
 
-DAVA::uint32 SceneInfo::CalculateTextureSize(const DAVA::TexturesMap& textures)
+DAVA::uint32 SceneInfo::CalculateTextureSize(const DAVA::Map<DAVA::FilePath, DAVA::Asset<DAVA::Texture>>& textures)
 {
     using namespace DAVA;
     ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
@@ -387,11 +391,11 @@ DAVA::uint32 SceneInfo::CalculateTextureSize(const DAVA::TexturesMap& textures)
     CommonInternalSettings* settings = Deprecated::GetGlobalContext()->GetData<DAVA::CommonInternalSettings>();
     eGPUFamily requestedGPU = settings->textureViewGPU;
 
-    TexturesMap::const_iterator endIt = textures.end();
-    for (TexturesMap::const_iterator it = textures.begin(); it != endIt; ++it)
+    auto endIt = textures.end();
+    for (auto it = textures.begin(); it != endIt; ++it)
     {
         FilePath pathname = it->first;
-        Texture* tex = it->second;
+        Asset<Texture> tex = it->second;
         DVASSERT(tex);
 
         if (tex->IsPinkPlaceholder())
@@ -405,9 +409,9 @@ DAVA::uint32 SceneInfo::CalculateTextureSize(const DAVA::TexturesMap& textures)
             continue;
         }
 
-        auto baseMipmap = tex->GetBaseMipMap();
+        uint32 baseMipmap = TextureAssetLoader::GetBaseMipMap();
 
-        auto descriptor = tex->GetDescriptor();
+        TextureDescriptor* descriptor = tex->GetDescriptor();
         eGPUFamily gpu = descriptor->IsCompressedFile() ? descriptor->gpu : requestedGPU;
         textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), gpu, baseMipmap);
     }
@@ -490,7 +494,7 @@ void SceneInfo::ProcessParticleSprite(DAVA::Sprite* sprite, DAVA::Set<DAVA::Spri
 
     for (int32 fr = 0; fr < sprite->GetFrameCount(); ++fr)
     {
-        Texture* tex = sprite->GetTexture(fr);
+        Asset<Texture> tex = sprite->GetTexture(fr);
         CollectTexture(particleTextures, tex->GetPathname(), tex);
     }
 }
@@ -527,11 +531,12 @@ DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entit
     return triangles;
 }
 
-void SceneInfo::CollectTexture(DAVA::TexturesMap& textures, const DAVA::FilePath& name, DAVA::Texture* tex)
+void SceneInfo::CollectTexture(DAVA::Map<DAVA::FilePath, DAVA::Asset<DAVA::Texture>>& textures,
+                               const DAVA::FilePath& name, DAVA::Asset<DAVA::Texture> tex)
 {
     if (!name.IsEmpty() && tex)
     {
-        textures[FILEPATH_MAP_KEY(name)] = tex;
+        textures[name.GetAbsolutePathname()] = tex;
     }
 }
 

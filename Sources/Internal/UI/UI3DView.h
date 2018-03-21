@@ -1,10 +1,10 @@
-#ifndef __DAVAENGINE_UI_3D_VIEW__
-#define __DAVAENGINE_UI_3D_VIEW__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
 #include "Render/RenderBase.h"
 #include "Render/RHI/rhi_Type.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -14,7 +14,6 @@ namespace DAVA
  */
 
 class Scene;
-class Texture;
 class UI3DView : public UIControl
 {
     DAVA_VIRTUAL_REFLECTION(UI3DView, UIControl);
@@ -69,7 +68,8 @@ private:
     float32 fbScaleFactor;
     Vector2 fbRenderSize;
     Vector2 fbTexSize = Vector2(0.f, 0.f);
-    Texture* frameBuffer = nullptr;
+    Asset<Texture> colorFrameBuffer;
+    Asset<Texture> depthFrameBuffer;
 
     int32 basePriority = PRIORITY_MAIN_3D;
 
@@ -100,5 +100,3 @@ inline void UI3DView::SetBasePriority(int32 priority)
     basePriority = priority;
 }
 };
-
-#endif

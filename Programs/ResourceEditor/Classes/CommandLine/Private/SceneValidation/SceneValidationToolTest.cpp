@@ -167,9 +167,9 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
         {
             SceneHelper::TextureCollector collector;
             SceneHelper::EnumerateSceneTextures(scene, collector);
-            TexturesMap& texturesMap = collector.GetTextures();
+            const Map<FilePath, Asset<Texture>>& texturesMap = collector.GetTextures();
 
-            for (const std::pair<FilePath, Texture*>& entry : texturesMap)
+            for (const std::pair<FilePath, Asset<Texture>>& entry : texturesMap)
             {
                 DAVA::TextureDescriptor* descriptor = entry.second->texDescriptor;
                 if (nullptr != descriptor && DAVA::FileSystem::Instance()->Exists(descriptor->pathname))

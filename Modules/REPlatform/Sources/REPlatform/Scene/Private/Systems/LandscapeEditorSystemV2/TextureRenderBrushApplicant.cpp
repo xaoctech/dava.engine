@@ -40,14 +40,14 @@ void TextureRenderBrushApplicant::ApplyBrush(Scene* scene, const Rect& applyRect
             descr.phaseMaterial->AddProperty(cursorPositionPropName, cursorUV.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
             descr.phaseMaterial->AddProperty(cursorRotationPropName, cursorRotarion.data, rhi::ShaderProp::TYPE_FLOAT2, 1);
             descr.phaseMaterial->AddProperty(invertionPropName, &invertionFactor, rhi::ShaderProp::TYPE_FLOAT1, 1);
-            descr.phaseMaterial->AddTexture(cursorTextureSlotName, cursorTexture.Get());
+            descr.phaseMaterial->AddTexture(cursorTextureSlotName, cursorTexture);
         }
         else
         {
             descr.phaseMaterial->SetPropertyValue(cursorPositionPropName, cursorUV.data);
             descr.phaseMaterial->SetPropertyValue(cursorRotationPropName, cursorRotarion.data);
             descr.phaseMaterial->SetPropertyValue(invertionPropName, &invertionFactor);
-            descr.phaseMaterial->SetTexture(cursorTextureSlotName, cursorTexture.Get());
+            descr.phaseMaterial->SetTexture(cursorTextureSlotName, cursorTexture);
         }
 
         tool->PrepareBrushPhase(descr);

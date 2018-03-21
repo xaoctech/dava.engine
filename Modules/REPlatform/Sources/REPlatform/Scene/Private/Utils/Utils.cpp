@@ -64,11 +64,11 @@ void SaveSpriteToFile(Sprite* sprite, const FilePath& path)
     }
 }
 
-void SaveTextureToFile(Texture* texture, const FilePath& path)
+void SaveTextureToFile(const Asset<Texture>& texture, const FilePath& path)
 {
     if (texture)
     {
-        Image* img = texture->CreateImageFromMemory();
+        Image* img = texture->CreateImageFromRegion();
         SaveImageToFile(img, path);
         img->Release();
     }
@@ -79,13 +79,14 @@ void SaveImageToFile(Image* image, const FilePath& path)
     ImageSystem::Save(path, image);
 }
 
-Texture* CreateSingleMipTexture(const FilePath& imagePath)
+Asset<Texture> CreateSingleMipTexture(const FilePath& imagePath)
 {
-    ScopedPtr<Image> image(ImageSystem::LoadSingleMip(imagePath));
+    RefPtr<Image> image(ImageSystem::LoadSingleMip(imagePath));
 
-    Texture* result = Texture::CreateFromData(image, false);
+    Texture::UniqueTextureKey key(image, false);
+    Asset<Texture> result = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     String baseName = imagePath.GetFilename();
-    result->SetPathname(Format("memoryfile_%s_%p", baseName.c_str(), result));
+    result->texDescriptor->OverridePathName(Format("memoryfile_%s_%p", baseName.c_str(), result));
 
     return result;
 }

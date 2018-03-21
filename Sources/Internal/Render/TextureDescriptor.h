@@ -126,9 +126,6 @@ public:
 
     void SetDefaultValues();
 
-    void SetQualityGroup(const FastName& group);
-    const FastName& GetQualityGroup() const;
-
     bool Load(const FilePath& filePathname); //may be protected?
 
     void Save() const;

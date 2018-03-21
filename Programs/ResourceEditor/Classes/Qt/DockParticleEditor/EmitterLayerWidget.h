@@ -89,13 +89,20 @@ protected slots:
     void OnSpriteUpdateTimerExpired();
 
 private:
+    struct TextureStackNode
+    {
+        rhi::HSyncObject syncObject;
+        DAVA::Asset<DAVA::Texture> texture;
+        DAVA::Asset<DAVA::Texture> depth;
+    };
+
     void InitWidget(QWidget*);
     void UpdateTooltip(QLineEdit* label);
     void UpdateLayerSprite();
     void UpdateFlowmapSprite();
     void UpdateNoiseSprite();
     void UpdateAlphaRemapSprite();
-    void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack);
+    void UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<TextureStackNode>& textureStack);
     void CreateFlowmapLayoutWidget();
     void CreateNoiseLayoutWidget();
     void CreateStripeLayoutWidget();
@@ -128,10 +135,10 @@ private:
     DAVA::ParticleLayer* layer = nullptr;
 
     QTimer* spriteUpdateTimer = nullptr;
-    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> spriteUpdateTexturesStack;
-    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> flowSpriteUpdateTexturesStack;
-    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> noiseSpriteUpdateTexturesStack;
-    DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>> alphaRemapSpriteUpdateTexturesStack;
+    DAVA::Stack<TextureStackNode> spriteUpdateTexturesStack;
+    DAVA::Stack<TextureStackNode> flowSpriteUpdateTexturesStack;
+    DAVA::Stack<TextureStackNode> noiseSpriteUpdateTexturesStack;
+    DAVA::Stack<TextureStackNode> alphaRemapSpriteUpdateTexturesStack;
 
     QVBoxLayout* mainBox = nullptr;
     QVBoxLayout* pivotPointLayout = nullptr;

@@ -162,7 +162,7 @@ void MaterialItem::requestPreview()
 
     isPreviewRequested = true;
 
-    DAVA::Texture* albedoTexture = material->GetEffectiveTexture(DAVA::NMaterialTextureName::TEXTURE_ALBEDO);
+    DAVA::Asset<DAVA::Texture> albedoTexture = material->GetEffectiveTexture(DAVA::NMaterialTextureName::TEXTURE_ALBEDO);
     if (albedoTexture != nullptr)
     {
         DAVA::TextureDescriptor* descriptor = albedoTexture->GetDescriptor();

@@ -40,7 +40,7 @@ private:
 
 struct MaterialTextureInfo
 {
-    Texture* texture = nullptr;
+    Asset<Texture> texture;
     FilePath path;
 };
 
@@ -148,16 +148,16 @@ public:
     const UnorderedMap<FastName, NMaterialProperty*>& GetLocalProperties() const;
 
     // textures
-    void AddTexture(const FastName& slotName, Texture* texture);
+    void AddTexture(const FastName& slotName, const Asset<Texture>& texture);
     void RemoveTexture(const FastName& slotName);
-    void SetTexture(const FastName& slotName, Texture* texture);
+    void SetTexture(const FastName& slotName, const Asset<Texture>& texture);
     bool HasLocalTexture(const FastName& slotName);
-    Texture* GetLocalTexture(const FastName& slotName);
-    Texture* GetEffectiveTexture(const FastName& slotName);
+    Asset<Texture> GetLocalTexture(const FastName& slotName);
+    Asset<Texture> GetEffectiveTexture(const FastName& slotName);
 
     void CollectLocalTextures(Set<MaterialTextureInfo*>& collection) const;
     void CollectActiveLocalTextures(Set<MaterialTextureInfo*>& collection) const;
-    bool ContainsTexture(Texture* texture) const;
+    bool ContainsTexture(const Asset<Texture>& texture) const;
     const UnorderedMap<FastName, MaterialTextureInfo*>& GetLocalTextures() const;
 
     // flags

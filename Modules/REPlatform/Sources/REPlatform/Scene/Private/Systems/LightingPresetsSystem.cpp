@@ -170,7 +170,8 @@ void LightingPresetsSystem::SavePreset(const FilePath& path)
     auto saveTexture = [&path, this](const FilePath& p) {
         if (p.IsEmpty() == false)
         {
-            ScopedPtr<Texture> tex(Texture::CreateFromFile(p));
+            Texture::PathKey key(p);
+            Asset<Texture> tex = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
             SaveTexture(tex, path, p);
         }
     };
@@ -190,12 +191,14 @@ void LightingPresetsSystem::SavePreset(const FilePath& path)
     LightComponent* sceneSkyUniformColor = nullptr;
 
     FindLights(sceneSunLight, sceneSky, sceneSkyUniformColor);
-    Texture* srcTexture = nullptr;
+    Asset<Texture> srcTexture;
     FilePath envMapPath;
     if (sceneSky != nullptr && !sceneSky->GetEnvironmentMap().IsEmpty())
     {
         envMapPath = sceneSky->GetEnvironmentMap();
-        srcTexture = Texture::CreateFromFile(sceneSky->GetEnvironmentMap());
+
+        Texture::PathKey key(sceneSky->GetEnvironmentMap());
+        srcTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         if (!srcTexture->GetDescriptor()->IsCubeMap())
             SaveTexture(srcTexture, path, envMapPath);
         else
@@ -204,7 +207,6 @@ void LightingPresetsSystem::SavePreset(const FilePath& path)
     else if (sceneLightProbe != nullptr && sceneSkyUniformColor == nullptr)
     {
         srcTexture = sceneLightProbe->GetReflectionProbe()->GetCurrentTexture();
-        srcTexture->Retain();
         envMapPath = Format("cubeFromProbe%u.dds", rhi::Handle(srcTexture->handle));
         SaveCubemap(srcTexture, path, envMapPath);
     }
@@ -217,7 +219,6 @@ void LightingPresetsSystem::SavePreset(const FilePath& path)
         sceneSkyUniformColor->SaveToYaml(path, rootYamlNode, FilePath());
     YamlEmitter::SaveToYamlFile(path, rootYamlNode);
 
-    SafeRelease(srcTexture);
     SafeRelease(rootYamlNode);
     SafeRelease(yamlNode);
 }
@@ -384,12 +385,12 @@ void LightingPresetsSystem::PosteffectComponentRemoved(Entity* entity, PostEffec
         scenePosteffect = nullptr;
 }
 
-void LightingPresetsSystem::SaveCubemap(Texture* src, const FilePath& path, const FilePath& originalTexturePath)
+void LightingPresetsSystem::SaveCubemap(const Asset<Texture>& src, const FilePath& path, const FilePath& originalTexturePath)
 {
     PixelFormat format = GetTextureFormat(src);
-    Texture::FBODescriptor fboCfg = CreateFBODescriptor(format, src->GetWidth(), src->GetHeight());
+    Texture::RenderTargetTextureKey fboCfg = CreateFBODescriptor(format, src->width, src->height);
 
-    Vector<Texture*> cubemapFacesTextures;
+    Vector<Asset<Texture>> cubemapFacesTextures;
 
     NMaterial* blitMaterial = new NMaterial();
     blitMaterial->SetFXName(NMaterialName::CUBE_FACE_BLIT);
@@ -404,9 +405,11 @@ void LightingPresetsSystem::SaveCubemap(Texture* src, const FilePath& path, cons
     blitQuadLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
     blitQuadLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 3);
     uint32 layout = rhi::VertexLayout::UniqueId(blitQuadLayout);
+
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     for (uint32 face = 0; face < Texture::CUBE_FACE_COUNT; ++face)
     {
-        cubemapFacesTextures.push_back(Texture::CreateFBO(fboCfg));
+        cubemapFacesTextures.push_back(assetManager->GetAsset<Texture>(fboCfg, AssetManager::SYNC));
 
         Vector3 offset(0.0f, 0.0f, 0.0f); // GFX_COMPLETE
         // Deal with half-pixel offset on DX9
@@ -457,19 +460,16 @@ void LightingPresetsSystem::SaveCubemap(Texture* src, const FilePath& path, cons
                                        for (auto im : mipmapImages)
                                            SafeRelease(im);
                                        mipmapImages.clear();
-                                       for (auto texture : cubemapFacesTextures)
-                                           texture->Release();
-
                                        SaveDescriptor(origPath, format, origDescr.dataSettings.cubefaceFlags, true);
                                    });
 }
 
-void LightingPresetsSystem::SaveTexture(Texture* src, const FilePath& path, const FilePath& originalTexturePath)
+void LightingPresetsSystem::SaveTexture(const Asset<Texture>& src, const FilePath& path, const FilePath& originalTexturePath)
 {
     PixelFormat pformat = GetTextureFormat(src);
 
-    Texture::FBODescriptor fboCfg = CreateFBODescriptor(pformat, src->GetWidth(), src->GetHeight());
-    Texture* fboTexture = Texture::CreateFBO(fboCfg);
+    Texture::RenderTargetTextureKey fboCfg = CreateFBODescriptor(pformat, src->width, src->height);
+    Asset<Texture> fboTexture = GetEngineContext()->assetManager->GetAsset<Texture>(fboCfg, AssetManager::SYNC);
 
     NMaterial* blitMaterial = new NMaterial();
     blitMaterial->SetFXName(NMaterialName::TEXTURE_BLIT);
@@ -495,13 +495,12 @@ void LightingPresetsSystem::SaveTexture(Texture* src, const FilePath& path, cons
 
     Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [fboTexture, originalTexturePath, path, pformat](rhi::HSyncObject)
                                    {
-                                       Image* image = fboTexture->CreateImageFromMemory();
+                                       Image* image = fboTexture->CreateImageFromRegion();
                                        FilePath dirPath = path.GetDirectory();
                                        FilePath tmp = originalTexturePath;
                                        tmp.ReplaceExtension(".dds");
                                        dirPath += tmp.GetFilename();
                                        ImageSystem::Save(dirPath, image, fboTexture->GetFormat());
-                                       fboTexture->Release();
                                        SafeRelease(image);
 
                                        SaveDescriptor(dirPath, pformat);
@@ -551,22 +550,22 @@ void LightingPresetsSystem::SaveDescriptor(FilePath path, PixelFormat format, ui
     descriptor.Save(path);
 }
 
-PixelFormat LightingPresetsSystem::GetTextureFormat(Texture* src)
+PixelFormat LightingPresetsSystem::GetTextureFormat(const Asset<Texture>& src)
 {
     if (src->GetFormat() == PixelFormat::FORMAT_RGBA8888)
         return PixelFormat::FORMAT_RGBA32F;
     return PixelFormat::FORMAT_RGBA32F;
 }
 
-Texture::FBODescriptor LightingPresetsSystem::CreateFBODescriptor(PixelFormat format, uint32 width, uint32 height)
+Texture::RenderTargetTextureKey LightingPresetsSystem::CreateFBODescriptor(PixelFormat format, uint32 width, uint32 height)
 {
-    Texture::FBODescriptor fboCfg;
+    Texture::RenderTargetTextureKey fboCfg;
     fboCfg.width = width;
     fboCfg.height = height;
     fboCfg.sampleCount = 1;
     fboCfg.textureType = rhi::TEXTURE_TYPE_2D;
     fboCfg.format = format;
-    fboCfg.needDepth = false;
+    fboCfg.isDepth = false;
     fboCfg.needPixelReadback = true;
     fboCfg.mipLevelsCount = 1;
     return fboCfg;
@@ -579,7 +578,7 @@ void LightingPresetsSystem::RemoveEntityFromScene(Entity* entity)
 }
 
 template <typename T>
-void LightingPresetsSystem::CopyTexture(Texture* src, Texture* dst, Array<T, 4> vertData, NMaterial* material, uint32 layout)
+void LightingPresetsSystem::CopyTexture(const Asset<Texture>& src, const Asset<Texture>& dst, Array<T, 4> vertData, NMaterial* material, uint32 layout)
 {
     rhi::RenderPassConfig passConfig;
     passConfig.name = "Blit";

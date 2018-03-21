@@ -1,7 +1,11 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/NMaterialStateDynamicTexturesInsp.h"
 #include "Render/Material/FXAsset.h"
+#include "Render/Texture.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -10,12 +14,10 @@ namespace DAVA
 
 NMaterialStateDynamicTexturesInsp::NMaterialStateDynamicTexturesInsp()
 {
-    defaultTexture = Texture::CreatePink();
 }
 
 NMaterialStateDynamicTexturesInsp::~NMaterialStateDynamicTexturesInsp()
 {
-    SafeRelease(defaultTexture);
 }
 
 void NMaterialStateDynamicTexturesInsp::FindMaterialTexturesRecursive(NMaterial* material, Set<FastName>& ret, bool parents) const
@@ -135,7 +137,7 @@ VariantType NMaterialStateDynamicTexturesInsp::MemberValueGet(const DynamicData&
 
     if (std::find(textures->begin(), textures->end(), textureName) != textures->end())
     {
-        Texture* tex = material->GetEffectiveTexture(textureName);
+        Asset<Texture> tex = material->GetEffectiveTexture(textureName);
         if (nullptr != tex)
         {
             ret.SetFilePath(tex->GetPathname());
@@ -170,17 +172,15 @@ void NMaterialStateDynamicTexturesInsp::MemberValueSet(const DynamicData& ddata,
         }
         else
         {
-            ScopedPtr<Texture> texture;
+            Asset<Texture> texture;
 
             FilePath texPath = value.AsFilePath();
+            Texture::PathKey key(texPath);
             if (texPath == FilePath())
             {
-                texture = SafeRetain(defaultTexture);
+                key = Texture::MakePinkKey();
             }
-            else
-            {
-                texture = Texture::CreateFromFile(texPath);
-            }
+            texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
             if (material->HasLocalTexture(textureName))
             {

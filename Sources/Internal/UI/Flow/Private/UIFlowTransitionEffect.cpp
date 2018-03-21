@@ -35,14 +35,14 @@ void UIFlowTransitionEffect::Stop()
 
 void UIFlowTransitionEffect::MakePrevShot(UIRenderSystem* renderSystem, UIControl* ctrl)
 {
-    RefPtr<Texture> tex = renderSystem->GetScreenshoter()->MakeScreenshot(ctrl, PixelFormat::FORMAT_RGBA8888, true, true);
-    prevShot = Sprite::CreateFromTexture(tex.Get(), 0, 0, ctrl->GetSize().dx, ctrl->GetSize().dy, false);
+    Asset<Texture> tex = renderSystem->GetScreenshoter()->MakeScreenshot(ctrl, PixelFormat::FORMAT_RGBA8888, true, true);
+    prevShot = Sprite::CreateFromTexture(tex, 0, 0, ctrl->GetSize().dx, ctrl->GetSize().dy, false);
 }
 
 void UIFlowTransitionEffect::MakeNextShot(UIRenderSystem* renderSystem, UIControl* ctrl)
 {
-    RefPtr<Texture> tex = renderSystem->GetScreenshoter()->MakeScreenshot(ctrl, PixelFormat::FORMAT_RGBA8888, true, true);
-    nextShot = Sprite::CreateFromTexture(tex.Get(), 0, 0, ctrl->GetSize().dx, ctrl->GetSize().dy, false);
+    Asset<Texture> tex = renderSystem->GetScreenshoter()->MakeScreenshot(ctrl, PixelFormat::FORMAT_RGBA8888, true, true);
+    nextShot = Sprite::CreateFromTexture(tex, 0, 0, ctrl->GetSize().dx, ctrl->GetSize().dy, false);
 }
 
 void UIFlowTransitionEffect::Process(float32 delta)

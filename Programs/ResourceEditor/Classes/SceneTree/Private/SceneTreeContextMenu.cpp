@@ -315,12 +315,6 @@ void EntityContextMenu::FillActions(QMenu& menu)
                     }
                 }
             }
-
-            if (hasTextures == true)
-            {
-                Connect(menu.addAction(DAVA::SharedIcon(":/QtIcons/reloadtextures.png"), QStringLiteral("Reload Textures")),
-                        DAVA::MakeFunction(this, &EntityContextMenu::ReloadTexturesInSelected));
-            }
         }
 
         // particle effect
@@ -505,11 +499,6 @@ void EntityContextMenu::ReloadModelAs()
             selectionData->SetSelection(newSelection);
         }
     }
-}
-
-void EntityContextMenu::ReloadTexturesInSelected()
-{
-    invoker->Invoke(ReloadTexturesInSelectedOperation.ID);
 }
 
 void EntityContextMenu::AddEmitter()
@@ -1021,4 +1010,3 @@ std::unique_ptr<BaseContextMenu> CreateSceneTreeContextMenu(DAVA::SceneEditor2* 
 }
 
 IMPL_OPERATION_ID(SetSceneTreeFilter);
-IMPL_OPERATION_ID(ReloadTexturesInSelectedOperation);

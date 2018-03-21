@@ -17,6 +17,10 @@
 #include <QFile>
 #include <QGraphicsWidget>
 #include <QHBoxLayout>
+#include "Render/Texture.h"
+#include "Asset/AssetManager.h"
+#include "Engine/EngineContext.h"
+#include "Engine/Engine.h"
 
 namespace EmitterLayerWidgetDetails
 {
@@ -986,53 +990,49 @@ void EmitterLayerWidget::OnLodsChanged()
 
 void EmitterLayerWidget::OnSpriteUpdateTimerExpired()
 {
-    if (spriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().first))
+    if (spriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(spriteUpdateTexturesStack.top().syncObject))
     {
-        DAVA::ScopedPtr<DAVA::Image> image(spriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        DAVA::ScopedPtr<DAVA::Image> image(spriteUpdateTexturesStack.top().texture->CreateImageFromRegion());
         spriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!spriteUpdateTexturesStack.empty())
         {
-            SafeRelease(spriteUpdateTexturesStack.top().second);
             spriteUpdateTexturesStack.pop();
         }
 
         spriteUpdateTimer->stop();
     }
-    if (flowSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(flowSpriteUpdateTexturesStack.top().first))
+    if (flowSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(flowSpriteUpdateTexturesStack.top().syncObject))
     {
-        DAVA::ScopedPtr<DAVA::Image> image(flowSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        DAVA::ScopedPtr<DAVA::Image> image(flowSpriteUpdateTexturesStack.top().texture->CreateImageFromRegion());
         flowSpriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!flowSpriteUpdateTexturesStack.empty())
         {
-            SafeRelease(flowSpriteUpdateTexturesStack.top().second);
             flowSpriteUpdateTexturesStack.pop();
         }
 
         spriteUpdateTimer->stop();
     }
-    if (noiseSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(noiseSpriteUpdateTexturesStack.top().first))
+    if (noiseSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(noiseSpriteUpdateTexturesStack.top().syncObject))
     {
-        DAVA::ScopedPtr<DAVA::Image> image(noiseSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        DAVA::ScopedPtr<DAVA::Image> image(noiseSpriteUpdateTexturesStack.top().texture->CreateImageFromRegion());
         noiseSpriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!noiseSpriteUpdateTexturesStack.empty())
         {
-            SafeRelease(noiseSpriteUpdateTexturesStack.top().second);
             noiseSpriteUpdateTexturesStack.pop();
         }
 
         spriteUpdateTimer->stop();
     }
-    if (alphaRemapSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(alphaRemapSpriteUpdateTexturesStack.top().first))
+    if (alphaRemapSpriteUpdateTexturesStack.size() > 0 && rhi::SyncObjectSignaled(alphaRemapSpriteUpdateTexturesStack.top().syncObject))
     {
-        DAVA::ScopedPtr<DAVA::Image> image(alphaRemapSpriteUpdateTexturesStack.top().second->CreateImageFromMemory());
+        DAVA::ScopedPtr<DAVA::Image> image(alphaRemapSpriteUpdateTexturesStack.top().texture->CreateImageFromRegion());
         alphaRemapSpriteLabel->setPixmap(QPixmap::fromImage(DAVA::ImageTools::FromDavaImage(image)));
 
         while (!alphaRemapSpriteUpdateTexturesStack.empty())
         {
-            SafeRelease(alphaRemapSpriteUpdateTexturesStack.top().second);
             alphaRemapSpriteUpdateTexturesStack.pop();
         }
 
@@ -1369,16 +1369,26 @@ void EmitterLayerWidget::UpdateAlphaRemapSprite()
     UpdateEditorTexture(layer->alphaRemapSprite, layer->alphaRemapPath, alphaRemapSpritePathLabel, alphaRemapSpriteLabel, alphaRemapSpriteUpdateTexturesStack);
 }
 
-void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<std::pair<rhi::HSyncObject, DAVA::Texture*>>& textureStack)
+void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePath& filePath, QLineEdit* pathLabel, QLabel* spriteLabel, DAVA::Stack<TextureStackNode>& textureStack)
 {
     if (sprite && !filePath.IsEmpty())
     {
+        DAVA::Texture::RenderTargetTextureKey key;
+        key.width = SPRITE_SIZE;
+        key.height = SPRITE_SIZE;
+        key.format = DAVA::FORMAT_RGBA8888;
+        key.isDepth = false;
+
+        DAVA::AssetManager* assetManager = DAVA::GetEngineContext()->assetManager;
+        DAVA::Asset<DAVA::Texture> dstTex = assetManager->GetAsset<DAVA::Texture>(key, DAVA::AssetManager::SYNC);
+        key.isDepth = true;
+        DAVA::Asset<DAVA::Texture> dstTexDepth = assetManager->GetAsset<DAVA::Texture>(key, DAVA::AssetManager::SYNC);
+
         DAVA::RenderSystem2D::RenderTargetPassDescriptor desc;
-        DAVA::Texture* dstTex = DAVA::Texture::CreateFBO(SPRITE_SIZE, SPRITE_SIZE, DAVA::FORMAT_RGBA8888);
         desc.colorAttachment = dstTex->handle;
-        desc.depthAttachment = dstTex->handleDepthStencil;
-        desc.width = dstTex->GetWidth();
-        desc.height = dstTex->GetHeight();
+        desc.depthAttachment = dstTexDepth->handle;
+        desc.width = dstTex->width;
+        desc.height = dstTex->height;
         desc.clearTarget = true;
         desc.transformVirtualToPhysical = false;
         desc.clearColor = DAVA::Color::Clear;
@@ -1389,7 +1399,11 @@ void EmitterLayerWidget::UpdateEditorTexture(DAVA::Sprite* sprite, DAVA::FilePat
             DAVA::RenderSystem2D::Instance()->Draw(sprite, &drawState, DAVA::Color::White);
         }
         DAVA::RenderSystem2D::Instance()->EndRenderTargetPass();
-        textureStack.push({ rhi::GetCurrentFrameSyncObject(), dstTex });
+        TextureStackNode node;
+        node.syncObject = rhi::GetCurrentFrameSyncObject();
+        node.texture = dstTex;
+        node.depth = dstTexDepth;
+        textureStack.push(node);
         spriteUpdateTimer->start(0);
 
         QString path = QString::fromStdString(filePath.GetAbsolutePathname());

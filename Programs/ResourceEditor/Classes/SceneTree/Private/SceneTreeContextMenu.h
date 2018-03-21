@@ -84,7 +84,6 @@ private:
     void EditModel();
     void ReloadModel();
     void ReloadModelAs();
-    void ReloadTexturesInSelected();
 
     void AddEmitter();
     void SaveEffectEmitters();
@@ -183,6 +182,5 @@ protected:
 };
 
 DECLARE_OPERATION_ID(SetSceneTreeFilter);
-DECLARE_OPERATION_ID(ReloadTexturesInSelectedOperation);
 
 std::unique_ptr<BaseContextMenu> CreateSceneTreeContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);

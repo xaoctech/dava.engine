@@ -72,7 +72,7 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightR
         descr.phaseMaterial.Set(new DAVA::NMaterial());
         descr.phaseMaterial->SetFXName(DAVA::NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(DAVA::FastName("HEIGHTMAP_LOWER_RISE"), 1);
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture.Get());
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture);
         descr.phaseMaterial->AddProperty(DAVA::FastName("params"), params.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
         descr.renderTarget = floatTexture;
 

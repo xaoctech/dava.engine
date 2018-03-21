@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Asset/Asset.h>
 #include <Base/BaseTypes.h>
 #include <Base/TypeHolders.h>
 #include <Concurrency/Atomic.h>
@@ -21,7 +22,7 @@ struct Request : public RefCounter
     LodComponent* lodComponent = nullptr;
     RenderBatch* planeBatch = nullptr;
     Image* planeImage = nullptr;
-    Texture* targetTexture = nullptr;
+    Asset<Texture> targetTexture = nullptr;
     int32 fromLodLayer = 0;
     int32 newLodIndex = 0;
     uint32 textureSize = 0;

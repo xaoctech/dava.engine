@@ -2,7 +2,6 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Render/Renderer.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/Shader/ShaderDescriptor.h"
 
 #include "Asset/AssetManager.h"
@@ -15,7 +14,9 @@
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlParser.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Utils/Utils.h"
+#include "../Shader/ShaderAssetLoader.h"
 
 namespace DAVA
 {
@@ -23,7 +24,7 @@ namespace FXAssetLoaderDetail
 {
 size_t KeyHash(const Any& v)
 {
-    const FXAssetLoader::Key& key = v.Get<FXAssetLoader::Key>();
+    const FXAsset::Key& key = v.Get<FXAsset::Key>();
     return key.fxKeyHash;
 }
 
@@ -285,12 +286,12 @@ void ValidatePassRenderFlows(RenderPassDescriptor& passDescriptor, const FastNam
 
 FXAssetLoader::FXAssetLoader()
 {
-    AnyHash<FXAssetLoader::Key>::Register(&FXAssetLoaderDetail::KeyHash);
+    AnyHash<FXAsset::Key>::Register(&FXAssetLoaderDetail::KeyHash);
 }
 
 AssetFileInfo FXAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
-    const Key& k = assetKey.Get<Key>();
+    const FXAsset::Key& k = assetKey.Get<FXAsset::Key>();
     AssetFileInfo info;
     info.fileName = k.fxName.c_str();
     info.inMemoryAsset = true;
@@ -298,9 +299,15 @@ AssetFileInfo FXAssetLoader::GetAssetFileInfo(const Any& assetKey) const
     return info;
 }
 
+bool FXAssetLoader::ExistsOnDisk(const Any& assetKey) const
+{
+    AssetFileInfo info = GetAssetFileInfo(assetKey);
+    return GetEngineContext()->fileSystem->IsFile(FilePath(info.fileName));
+}
+
 AssetBase* FXAssetLoader::CreateAsset(const Any& assetKey) const
 {
-    DVASSERT(assetKey.CanGet<Key>() == true);
+    DVASSERT(assetKey.CanGet<FXAsset::Key>() == true);
 
     return new FXAsset(assetKey);
 }
@@ -313,7 +320,7 @@ void FXAssetLoader::DeleteAsset(AssetBase* asset) const
 void FXAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
 {
     Asset<FXAsset> fxAsset = std::dynamic_pointer_cast<FXAsset>(asset);
-    const Key& key = asset->GetKey().Get<Key>();
+    const FXAsset::Key& key = asset->GetKey().Get<FXAsset::Key>();
 
     FXDescriptor target = LoadOldTemplate(key.fxName, key.quality, reloading, errorMessage); //we copy it to new fxdescr as single template can be compiled to many descriptors
     if (errorMessage.empty() == false)
@@ -349,7 +356,7 @@ void FXAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading
                 shaderDefines.erase(NMaterialFlagName::FLAG_BLENDING);
             }
 
-            ShaderAssetLoader::Key shaderKey(pass.shaderFileName, shaderDefines);
+            ShaderDescriptor::Key shaderKey(pass.shaderFileName, shaderDefines);
             pass.shader = GetEngineContext()->assetManager->GetAsset<ShaderDescriptor>(shaderKey, AssetManager::SYNC);
             pass.depthStencilState = rhi::AcquireDepthStencilState(pass.depthStateDescriptor);
         }
@@ -370,18 +377,13 @@ bool FXAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode req
 
 Vector<String> FXAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
-    const Key& k = asset->GetKey().Get<Key>();
+    const FXAsset::Key& k = asset->GetKey().Get<FXAsset::Key>();
     return Vector<String>{ FilePath(k.fxName.c_str()).GetAbsolutePathname() };
 }
 
 Vector<const Type*> FXAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<Key>() };
-}
-
-Vector<const Type*> FXAssetLoader::GetAssetTypes() const
-{
-    return Vector<const Type*>{ Type::Instance<FXDescriptor>() };
+    return Vector<const Type*>{ Type::Instance<FXAsset::Key>() };
 }
 
 FXDescriptor FXAssetLoader::LoadOldTemplate(FastName fxName, FastName quality, bool reloading, String& errorMsg) const
@@ -574,7 +576,7 @@ void FXAssetLoader::InitDefaultFx()
     defaultPass.renderLayer = RENDER_LAYER_OPAQUE_ID;
     defaultPass.shaderFileName = FastName("~res:/Materials/Shaders/Default/materials");
 
-    ShaderAssetLoader::Key shaderKey(defaultPass.shaderFileName, defFlags);
+    ShaderDescriptor::Key shaderKey(defaultPass.shaderFileName, defFlags);
     defaultPass.shader = GetEngineContext()->assetManager->GetAsset<ShaderDescriptor>(shaderKey, AssetManager::SYNC);
     defaultPass.templateDefines[FastName("MATERIAL_TEXTURE")] = 1;
 
@@ -582,7 +584,11 @@ void FXAssetLoader::InitDefaultFx()
     defaultFx.renderPassDescriptors.push_back(defaultPass);
 }
 
-FXAssetLoader::Key::Key(const FastName& fxName_, const FastName& quality_, UnorderedMap<FastName, int32>&& inputDefines)
+DAVA_VIRTUAL_REFLECTION_IMPL(FXAssetLoader)
+{
+}
+
+FXAsset::Key::Key(const FastName& fxName_, const FastName& quality_, UnorderedMap<FastName, int32>&& inputDefines)
     : fxName(fxName_)
     , quality(quality_)
     , defines(std::move(inputDefines))
@@ -600,11 +606,5 @@ FXAssetLoader::Key::Key(const FastName& fxName_, const FastName& quality_, Unord
     {
         HashCombine(fxKeyHash, v);
     }
-}
-
-template <>
-bool AnyCompare<FXAssetLoader::Key>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<FXAssetLoader::Key>().fxKey == v2.Get<FXAssetLoader::Key>().fxKey;
 }
 } // namespace DAVA

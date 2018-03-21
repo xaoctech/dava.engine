@@ -39,4 +39,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Geometry)
     ReflectionRegistrator<Geometry>::Begin()
     .End();
 }
+
+template <>
+bool AnyCompare<Geometry::PathKey>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<Geometry::PathKey>().path == v2.Get<Geometry::PathKey>().path;
+}
 };

@@ -8,27 +8,17 @@
 #include "FileSystem/File.h"
 #include "Base/BaseTypes.h"
 #include "Base/Any.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
-class FXAssetLoader : public AbstractAssetLoader
+class FXAssetLoader final : public AbstractAssetLoader
 {
 public:
-    struct Key
-    {
-        Key() = default;
-        Key(const FastName& fxName, const FastName& quality, UnorderedMap<FastName, int32>&& inputDefines);
-
-        FastName fxName;
-        FastName quality;
-        UnorderedMap<FastName, int32> defines;
-        Vector<size_t> fxKey;
-        size_t fxKeyHash;
-    };
-
     FXAssetLoader();
 
     AssetFileInfo GetAssetFileInfo(const Any& assetKey) const override;
+    bool ExistsOnDisk(const Any& assetKey) const override;
 
     AssetBase* CreateAsset(const Any& assetKey) const override;
     void DeleteAsset(AssetBase* asset) const override;
@@ -38,7 +28,6 @@ public:
     Vector<String> GetDependsOnFiles(const AssetBase* asset) const override;
 
     Vector<const Type*> GetAssetKeyTypes() const override;
-    Vector<const Type*> GetAssetTypes() const override;
 
 private:
     FXDescriptor LoadOldTemplate(FastName fxName, FastName quality, bool reloading, String& errorMsg) const;
@@ -49,9 +38,7 @@ private:
     Mutex fxCacheMutex;
     Map<std::pair<FastName, FastName>, FXDescriptor> oldTemplateMap;
     FXDescriptor defaultFx;
-};
 
-template <>
-bool AnyCompare<FXAssetLoader::Key>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<FXAssetLoader::Key>;
+    DAVA_VIRTUAL_REFLECTION(FXAssetLoader, AbstractAssetLoader);
+};
 } // namespace DAVA

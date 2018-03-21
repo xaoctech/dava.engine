@@ -7,6 +7,8 @@
 #include "FileSystem/YamlNode.h"
 #include "Concurrency/LockGuard.h"
 #include "UI/UIControlSystem.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 #define NOT_DEF_CHAR 0xffff
 
@@ -204,7 +206,7 @@ GraphicFont::GraphicFont()
 GraphicFont::~GraphicFont()
 {
     SafeRelease(fontInternal);
-    SafeRelease(texture);
+    GetEngineContext()->assetManager->UnregisterListener(texture, this);
 }
 
 GraphicFont* GraphicFont::Create(const FilePath& descriptorPath, const FilePath& texturePath)
@@ -252,7 +254,7 @@ Font* GraphicFont::Clone() const
     GraphicFont* graphicFont = new GraphicFont();
     graphicFont->fontInternal = SafeRetain(fontInternal);
     graphicFont->size = size;
-    graphicFont->texture = SafeRetain(texture);
+    graphicFont->texture = texture;
     return graphicFont;
 }
 
@@ -422,6 +424,14 @@ float32 GraphicFont::GetSpread() const
     return 0.25f / (fontInternal->spread * GetSizeScale());
 }
 
+void GraphicFont::OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded)
+{
+    if (texture == original)
+    {
+        texture = std::static_pointer_cast<Texture>(reloaded);
+    }
+}
+
 float32 GraphicFont::GetSizeScale() const
 {
     return size / fontInternal->baseSize;
@@ -431,7 +441,8 @@ bool GraphicFont::LoadTexture(const FilePath& path)
 {
     DVASSERT(texture == NULL);
 
-    texture = Texture::CreateFromFile(path);
+    Texture::PathKey key(path);
+    texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC, this);
     if (!texture)
     {
         return false;

@@ -7,9 +7,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/Prefab.h"
 #include "Scene3D/Scene.h"
-#include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
-#include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
-#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/PrefabComponent.h"
@@ -64,12 +61,12 @@ void SceneFileConverter::ConvertSceneToLevelFormat(Scene* scene, const FilePath&
             props->DeleteKey("editor.referenceToOwner");
 
             FilePath prefabPath = FilePath::CreateWithNewExtension(ownerPath, ".prefab");
-            PrefabAssetLoader::PathKey assetKey(prefabPath);
+            Prefab::PathKey assetKey(prefabPath);
 
             Matrix4 prefabLocalTransform = child->GetLocalTransform();
 
-            Asset<Prefab> prefab = assetManager->FindAsset<Prefab>(assetKey);
-            if (prefab == nullptr)
+            Asset<Prefab> prefab = assetManager->FindLoadOrCreate<Prefab>(assetKey);
+            if (prefab->GetState() == AssetBase::EMPTY)
             {
                 FileSystem::Instance()->CreateDirectory(prefabPath.GetDirectory(), true);
 
@@ -81,7 +78,7 @@ void SceneFileConverter::ConvertSceneToLevelFormat(Scene* scene, const FilePath&
                 assetManager->SaveAsset(prefab);
             }
 
-            Entity* prefabEntity = new Entity();
+            ScopedPtr<Entity> prefabEntity(new Entity());
             PrefabComponent* prefabComponent = new PrefabComponent();
             prefabComponent->SetFilepath(prefabPath);
             prefabEntity->AddComponent(prefabComponent);
@@ -145,7 +142,7 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
     if (lodCount == 0)
     {
         lodDescriptors[0].geometryPath = assetsPath + Format("%s.geo", entity->GetName().c_str());
-        lodDescriptors[0].geometryAsset = assetManager->CreateAsset<Geometry>(GeometryAssetLoader::PathKey(lodDescriptors[0].geometryPath));
+        lodDescriptors[0].geometryAsset = assetManager->FindLoadOrCreate<Geometry>(Geometry::PathKey(lodDescriptors[0].geometryPath));
     }
     else
     {
@@ -153,7 +150,7 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
         {
             lodDescriptors[l].lodIndex = l;
             lodDescriptors[l].geometryPath = assetsPath + Format("%s_lod%d.geo", entity->GetName().c_str(), l);
-            lodDescriptors[l].geometryAsset = assetManager->CreateAsset<Geometry>(GeometryAssetLoader::PathKey(lodDescriptors[l].geometryPath));
+            lodDescriptors[l].geometryAsset = assetManager->FindLoadOrCreate<Geometry>(Geometry::PathKey(lodDescriptors[l].geometryPath));
         }
     }
 
@@ -164,6 +161,7 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
     lightmapComponent->SetParamsCount(mesh->GetRenderBatchCount());
 
     int32 lodIndex = -1, switchIndex = -1;
+    Vector<uint32> lodBatchesCount(Max(1, lodCount));
     for (uint32 b = 0; b < batchCount; ++b)
     {
         RenderBatch* batch = mesh->GetRenderBatch(b, lodIndex, switchIndex);
@@ -186,17 +184,19 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
 
         Asset<Material> materialAsset = CreateMaterialAsset(material, assetsPath);
 
-        MeshLODDescriptor& lodDesc = lodDescriptors[Max(0, lodIndex)];
+        uint32 realLodIndex = Max(0, lodIndex);
+        MeshLODDescriptor& lodDesc = lodDescriptors[realLodIndex];
 
         MeshBatchDescriptor batchDesc;
         batchDesc.switchIndex = switchIndex;
-
         batchDesc.materialAsset = materialAsset;
         batchDesc.materialPath = FilePath(GetEngineContext()->assetManager->GetAssetFileInfo(materialAsset).fileName);
-
-        batchDesc.geometryIndex = lodDesc.geometryAsset->GetPolygonGroupCount();
-        lodDesc.geometryAsset->AddPolygonGroup(batch->GetPolygonGroup());
-
+        batchDesc.geometryIndex = lodBatchesCount[realLodIndex]++;
+        if (lodDesc.geometryAsset->GetState() == AssetBase::EMPTY)
+        {
+            lodDesc.geometryAsset->AddPolygonGroup(batch->GetPolygonGroup());
+        }
+        DVASSERT(batchDesc.geometryIndex < lodDesc.geometryAsset->GetPolygonGroupCount());
         batchDesc.jointTargets = mesh->GetJointTargets(batch);
 
         lodDesc.batchDescriptors.emplace_back(batchDesc);
@@ -204,7 +204,10 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
 
     for (const MeshLODDescriptor& desc : lodDescriptors)
     {
-        assetManager->SaveAsset(desc.geometryAsset);
+        if (desc.geometryAsset->GetState() == AssetBase::EMPTY)
+        {
+            assetManager->SaveAsset(desc.geometryAsset);
+        }
     }
 
     if (mesh->GetType() == RenderObject::TYPE_SPEED_TREE)
@@ -294,7 +297,7 @@ bool SceneFileConverter::ConvertLandscape(Landscape* landscape, Entity* entity, 
     LightmapDataComponent* lightmapDataComponent = new LightmapDataComponent();
     entity->AddComponent(lightmapDataComponent);
 
-    Texture* lightmapTexture = landscape->GetLandscapeMaterial()->GetEffectiveTexture(SceneFileConverterDetails::TEXTURE_SHADOW_AO);
+    Asset<Texture> lightmapTexture = landscape->GetLandscapeMaterial()->GetEffectiveTexture(SceneFileConverterDetails::TEXTURE_SHADOW_AO);
     if (lightmapTexture != nullptr && lightmapTexture->GetPathname().Exists())
     {
         lightmapDataComponent->RebuildIDs();
@@ -316,7 +319,7 @@ FilePath SceneFileConverter::ConvertDecoration(const FilePath& decorationPath)
             SceneFileConverter::ConvertRenderComponentsRecursive(scene, decorationPath.GetDirectory());
 
             prefabPath = FilePath::CreateWithNewExtension(decorationPath, ".prefab");
-            PrefabAssetLoader::PathKey assetKey(prefabPath);
+            Prefab::PathKey assetKey(prefabPath);
             AssetManager* assetManager = GetEngineContext()->assetManager;
             Asset<Prefab> decorationPrefab = assetManager->FindAsset<Prefab>(assetKey);
             if (decorationPrefab == nullptr)
@@ -389,10 +392,12 @@ Asset<Material> SceneFileConverter::CreateMaterialAsset(NMaterial* material, con
         materialFileName += String(materialHierarchyCopy.back()->GetMaterialName().c_str());
 
         FilePath materialPath = pathRoot + materialFileName + ".mat";
-        Asset<Material> materialAsset = assetManager->FindAsset<Material>(MaterialAssetLoader::PathKey(materialPath));
-        if (materialAsset == nullptr)
+        Material::PathKey materialKey(materialPath);
+        Asset<Material> materialAsset = assetManager->FindLoadOrCreate<Material>(materialKey);
+
+        if (materialAsset->GetState() == AssetBase::EMPTY)
         {
-            materialAsset = assetManager->CreateAsset<Material>(MaterialAssetLoader::PathKey(materialPath));
+            materialAsset = assetManager->CreateAsset<Material>(Material::PathKey(materialPath));
 
             NMaterial* materialCopy = materialHierarchyCopy.back();
             materialAsset->SetMaterial(materialCopy);

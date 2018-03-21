@@ -8,6 +8,9 @@
 #include "LightRenderObject.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Highlevel/Light.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -35,7 +38,9 @@ LightRenderObject::LightRenderObject()
     backgroundMaterial->AddFlag(NMaterialFlagName_FLAG_EQUIRECTANGULAR_ENVIRONMENT_TEXTURE, 0);
     backgroundMaterial->AddProperty(NMaterialParamName::ENVIRONMENT_COLOR_PROPERTY, Color::White.color, rhi::ShaderProp::Type::TYPE_FLOAT4);
     backgroundMaterial->AddProperty(NMaterialParamName_LIGHT_DIRECTION, lightDirection.data, rhi::ShaderProp::Type::TYPE_FLOAT4);
-    backgroundMaterial->AddTexture(NMaterialTextureName::TEXTURE_ENVIRONMENT_MAP, Texture::CreatePink());
+
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(Texture::MakePinkKey(), AssetManager::SYNC);
+    backgroundMaterial->AddTexture(NMaterialTextureName::TEXTURE_ENVIRONMENT_MAP, texture);
 
     sunDiskMaterial->AddProperty(NMaterialParamName_LIGHT_DIRECTION, lightDirection.data, rhi::ShaderProp::Type::TYPE_FLOAT4);
     sunDiskMaterial->AddProperty(NMaterialParamName::ENVIRONMENT_COLOR_PROPERTY, Color::White.color, rhi::ShaderProp::Type::TYPE_FLOAT4);
@@ -79,7 +84,8 @@ void LightRenderObject::SetLight(Light* light)
     }
     else if (sourceLight->GetLightType() == Light::eType::TYPE_ENVIRONMENT_IMAGE)
     {
-        ScopedPtr<Texture> texture(Texture::CreateFromFile(sourceLight->GetEnvironmentMap()));
+        Texture::PathKey key(sourceLight->GetEnvironmentMap());
+        Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         int32 isCubeMap = texture->GetDescriptor()->IsCubeMap() ? 1 : 0;
 
         material->SetFlag(NMaterialFlagName_FLAG_ATMOSPHERE, 0);

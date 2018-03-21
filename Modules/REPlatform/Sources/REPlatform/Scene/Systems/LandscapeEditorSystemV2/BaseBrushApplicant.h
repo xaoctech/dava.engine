@@ -18,7 +18,7 @@ public:
     void SetCursorUV(const Vector4& uv);
     void SetRotation(const Vector2& rotation);
     void SetInvertionFactor(float32 invertionFactor);
-    void SetCursorTexture(RefPtr<Texture> texture);
+    void SetCursorTexture(Asset<Texture> texture);
 
     virtual void StoreSnapshots() = 0;
     virtual void ApplyBrush(Scene* scene, const Rect& applyRect) = 0;
@@ -32,6 +32,6 @@ protected:
     Vector4 cursorUV;
     Vector2 cursorRotarion;
     float32 invertionFactor = 0.0f;
-    RefPtr<Texture> cursorTexture;
+    Asset<Texture> cursorTexture;
 };
 } // namespace DAVA

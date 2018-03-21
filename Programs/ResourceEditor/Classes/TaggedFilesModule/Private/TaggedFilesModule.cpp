@@ -38,22 +38,23 @@ DAVA::Vector<DAVA::FilePath> CollectTaggedTextures(DAVA::ContextAccessor* access
 
         SceneHelper::TextureCollector collector;
         SceneHelper::EnumerateSceneTextures(scene, collector);
-        TexturesMap& collectedTextures = collector.GetTextures();
+        // GFX_COMPLETE
+        //TexturesMap& collectedTextures = collector.GetTextures();
 
-        const Vector<String>& tags = editorConfig->GetComboPropertyValues("Tags");
-        taggedTextures.reserve(tags.size() * collectedTextures.size());
-        for (const std::pair<FilePath, Texture*>& pair : collectedTextures)
-        { // find textures with tags only
-            for (const String& tag : tags)
-            {
-                FilePath path = pair.first;
-                path.ReplaceBasename(path.GetBasename() + tag);
-                if (fs->Exists(path) == true)
-                {
-                    taggedTextures.push_back(path);
-                }
-            }
-        }
+        //const Vector<String>& tags = editorConfig->GetComboPropertyValues("Tags");
+        //taggedTextures.reserve(tags.size() * collectedTextures.size());
+        //for (const std::pair<FilePath, Texture*>& pair : collectedTextures)
+        //{ // find textures with tags only
+        //    for (const String& tag : tags)
+        //    {
+        //        FilePath path = pair.first;
+        //        path.ReplaceBasename(path.GetBasename() + tag);
+        //        if (fs->Exists(path) == true)
+        //        {
+        //            taggedTextures.push_back(path);
+        //        }
+        //    }
+        //}
     }
 
     return taggedTextures;

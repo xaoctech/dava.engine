@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "Render/RHI/rhi_Public.h"
+#include "Render/Texture.h"
 
 namespace rhi
 {
@@ -11,7 +12,6 @@ struct Packet;
 
 namespace DAVA
 {
-class Texture;
 class NMaterial;
 class VirtualTexture
 {
@@ -37,12 +37,12 @@ public:
     VirtualTexture(const Descriptor& descriptor);
     ~VirtualTexture();
 
-    Texture* GetLayerTexture(uint32 layer) const;
-    Texture* GetIntermediateSourceBuffer(uint32 intermediateBufferLayer) const;
-    Texture* GetIntermediateDestinationBuffer(uint32 intermediateBufferLayer) const;
+    Asset<Texture> GetLayerTexture(uint32 layer) const;
+    Asset<Texture> GetIntermediateSourceBuffer(uint32 intermediateBufferLayer) const;
+    Asset<Texture> GetIntermediateDestinationBuffer(uint32 intermediateBufferLayer) const;
 
-    Vector<Texture*> GetIntermediateSourceBuffers() const;
-    Vector<Texture*> GetIntermediateDestinationBuffers() const;
+    Vector<Asset<Texture>> GetIntermediateSourceBuffers() const;
+    Vector<Asset<Texture>> GetIntermediateDestinationBuffers() const;
 
     void SwapIntermediateBuffers();
     void BlitIntermediateBuffer(int32 pageID);
@@ -65,15 +65,15 @@ public:
 protected:
     struct
     {
-        Vector<Texture*> src;
-        Vector<Texture*> dst;
+        Vector<Asset<Texture>> src;
+        Vector<Asset<Texture>> dst;
         uint32 size;
     } intermediateBuffers;
 
     NMaterial* blitMaterial = nullptr;
     rhi::Packet blitPacket;
 
-    Vector<Texture*> virtualTextureLayers;
+    Vector<Asset<Texture>> virtualTextureLayers;
 
     Vector<PageInfo> pages;
     Vector<int32> availablePages;

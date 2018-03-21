@@ -13,6 +13,16 @@ class FilePath;
 class Material : public AssetBase
 {
 public:
+    struct PathKey
+    {
+        PathKey() = default;
+        PathKey(const FilePath& filepath)
+            : path(filepath)
+        {
+        }
+        FilePath path;
+    };
+
     Material(const Any& assetKey);
     ~Material();
 
@@ -33,4 +43,8 @@ protected:
 
     DAVA_VIRTUAL_REFLECTION(Material, AssetBase);
 };
+
+template <>
+bool AnyCompare<Material::PathKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Material::PathKey>;
 };

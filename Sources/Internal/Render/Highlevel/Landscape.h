@@ -189,8 +189,8 @@ public:
     void SetRenderSystem(RenderSystem* renderSystem) override;
 
     int32 GetTextureCount(eLandscapeTexture textureSemantic) const;
-    Texture* GetTexture(eLandscapeTexture textureSemantic, int32 index) const;
-    void SetTexture(eLandscapeTexture textureSemantic, int32 index, Texture* texture);
+    Asset<Texture> GetTexture(eLandscapeTexture textureSemantic, int32 index) const;
+    void SetTexture(eLandscapeTexture textureSemantic, int32 index, Asset<Texture> texture);
 
     void SetPageUpdateLocked(bool locked);
 
@@ -402,8 +402,8 @@ protected:
 
     InstanceDataBuffer* GetInstanceBuffer(uint32 bufferSize);
 
-    Texture* heightTexture = nullptr;
-    Texture* normalTexture = nullptr;
+    Asset<Texture> heightTexture = nullptr;
+    Asset<Texture> normalTexture = nullptr;
     bool floatHeightTexture = false;
 
     Vector<Image*> heightTextureData;

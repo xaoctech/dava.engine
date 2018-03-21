@@ -11,6 +11,9 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Render/RhiUtils.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -48,10 +51,20 @@ void VTDecalPageRenderer::SetVTDecalManager(VTDecalManager* manager)
 
 void VTDecalPageRenderer::InitTerrainBlendTargets(const PageRenderParams& params)
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     //GFX_COMPLETE - packing data
-    blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
-    blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
-    blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
+
+    auto createFBO = [&]() {
+        Texture::RenderTargetTextureKey key;
+        key.width = params.pageSize;
+        key.height = params.pageSize;
+        key.format = FORMAT_RGBA8888;
+        blendTargetsTerrain.push_back(assetManager->GetAsset<Texture>(key, AssetManager::SYNC));
+    };
+
+    createFBO();
+    createFBO();
+    createFBO();
     blendTargetTerrainSize = params.pageSize;
 }
 
@@ -267,9 +280,9 @@ void VTDecalPageRenderer::BlitSourceWithTerrainTargets(const PageRenderParams& p
     {
         blendTerrainMaterial = new NMaterial();
         blendTerrainMaterial->SetFXName(NMaterialName::VT_COMBINE_BLEND);
-        blendTerrainMaterial->AddTexture(FastName("blendedAlbedo"), blendTargetsTerrain[0].Get());
-        blendTerrainMaterial->AddTexture(FastName("blendedNormal"), blendTargetsTerrain[1].Get());
-        blendTerrainMaterial->AddTexture(FastName("blendedHeight"), blendTargetsTerrain[2].Get()); //GFX_COMPLETE switch it of in case we dont use microtesselation
+        blendTerrainMaterial->AddTexture(FastName("blendedAlbedo"), blendTargetsTerrain[0]);
+        blendTerrainMaterial->AddTexture(FastName("blendedNormal"), blendTargetsTerrain[1]);
+        blendTerrainMaterial->AddTexture(FastName("blendedHeight"), blendTargetsTerrain[2]); //GFX_COMPLETE switch it of in case we dont use microtesselation
     }
 
     if (!blendTerrainMaterial->PreBuildMaterial(PASS_VT))

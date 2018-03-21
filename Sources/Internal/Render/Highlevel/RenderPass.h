@@ -5,6 +5,7 @@
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/QuadRenderer.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -68,8 +69,9 @@ protected:
     rhi::HPacketList packetList;
     rhi::HRenderPass renderPass;
 
-    Texture::FBODescriptor multisampledDescription;
-    Texture* multisampledTexture = nullptr;
+    Texture::RenderTargetTextureKey multisampledDescription;
+    Asset<Texture> multisampledTexture;
+    Asset<Texture> multisampledDepthTexture;
     RenderTargetProperites renderTargetProperties;
     float currentDistantDepthValue = 1.0f;
 

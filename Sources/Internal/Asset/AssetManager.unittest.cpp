@@ -11,8 +11,6 @@
 #include <Render/3D/Geometry.h>
 #include <Render/Material/Material.h>
 #include <Render/Material/NMaterial.h>
-#include <Scene3D/AssetLoaders/GeometryAssetLoader.h>
-#include <Scene3D/AssetLoaders/MaterialAssetLoader.h>
 #include <Time/SystemTimer.h>
 
 namespace AssetManagerTestsDetail
@@ -137,7 +135,7 @@ protected:
 
         for (int32 i = 0; i < material.size(); ++i)
         {
-            MaterialAssetLoader::PathKey matKey(material[i]);
+            Material::PathKey matKey(material[i]);
             Asset<Material> asset = assetManager->CreateAsset<Material>(matKey);
             ScopedPtr<NMaterial> nmat(new NMaterial());
             nmat->SetFXName(NMaterialName::VERTEXLIT_OPAQUE);
@@ -156,7 +154,7 @@ protected:
 
         for (int32 i = 0; i < material.size(); ++i)
         {
-            MaterialAssetLoader::PathKey matKey(material[i]);
+            Material::PathKey matKey(material[i]);
             TEST_VERIFY(assetManager->FindAsset<Material>(matKey) == nullptr);
         }
     }
@@ -171,7 +169,7 @@ protected:
     void RunImpl() override
     {
         RegisterListener(&listener);
-        MaterialAssetLoader::PathKey key(material[0]);
+        Material::PathKey key(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
         {
             Asset<Material> matAsset = assetManager->GetAsset<Material>(key, AssetManager::SYNC, &listener);
@@ -188,7 +186,7 @@ protected:
 
         // error notify test
         {
-            Asset<Material> matAsset = assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(workDir + "failed.mat"), AssetManager::SYNC, &listener);
+            Asset<Material> matAsset = assetManager->GetAsset<Material>(Material::PathKey(workDir + "failed.mat"), AssetManager::SYNC, &listener);
             TEST_VERIFY(matAsset != nullptr);
             TEST_VERIFY(matAsset->GetState() == AssetBase::ERROR);
             TEST_VERIFY(listener.results.size() == 1);
@@ -210,7 +208,7 @@ protected:
         RegisterListener(&listener1);
         RegisterListener(&listener2);
 
-        MaterialAssetLoader::PathKey key(material[0]);
+        Material::PathKey key(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
 
         {
@@ -242,7 +240,7 @@ protected:
     {
         RegisterListener(&typeListener);
         RegisterListener(&instanceListener);
-        MaterialAssetLoader::PathKey key(material[0]);
+        Material::PathKey key(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
         assetManager->RegisterListener(&typeListener, Type::Instance<Material>());
 
@@ -299,8 +297,8 @@ protected:
         RegisterListener(&typeListener);
         RegisterListener(&instanceListener);
         RegisterListener(&commonListener);
-        GeometryAssetLoader::PathKey geoKey(geomPath);
-        MaterialAssetLoader::PathKey matKey(material[0]);
+        Geometry::PathKey geoKey(geomPath);
+        Material::PathKey matKey(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
         assetManager->RegisterListener(&typeListener, Type::Instance<Material>());
         assetManager->RegisterListener(&commonListener, nullptr);
@@ -372,7 +370,7 @@ public:
     void RunImpl() override
     {
         RegisterListener(&instanceListener);
-        MaterialAssetLoader::PathKey matKey(material[0]);
+        Material::PathKey matKey(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
 
         asset = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC, &instanceListener);
@@ -398,7 +396,7 @@ class SyncAfterAsyncLoadT : public BaseTest
 public:
     void RunImpl() override
     {
-        MaterialAssetLoader::PathKey matKey(material[0]);
+        Material::PathKey matKey(material[0]);
         AssetManager* assetManager = GetEngineContext()->assetManager;
 
         Asset<Material> asset = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC);
@@ -423,12 +421,12 @@ public:
         assets.resize(material.size());
         for (int32 i = 0; i < material.size() - 1; ++i)
         {
-            MaterialAssetLoader::PathKey matKey(material[i]);
+            Material::PathKey matKey(material[i]);
             assets[i] = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC);
             TEST_VERIFY(assets[i]->GetState() == AssetBase::QUEUED);
         }
 
-        MaterialAssetLoader::PathKey matKey(material[material.size() - 1]);
+        Material::PathKey matKey(material[material.size() - 1]);
         assets[material.size() - 1] = assetManager->GetAsset<Material>(matKey, AssetManager::ASYNC);
         TEST_VERIFY(assets[material.size() - 1]->GetState() == AssetBase::QUEUED);
 
@@ -466,7 +464,7 @@ public:
 
         for (int32 i = 0; i < material.size(); ++i)
         {
-            MaterialAssetLoader::PathKey matKey(material[i]);
+            Material::PathKey matKey(material[i]);
             Asset<AssetBase> asset = assetManager->GetAsset(matKey, AssetManager::ASYNC);
             TEST_VERIFY(asset->GetState() == AssetBase::QUEUED);
         }
@@ -523,13 +521,13 @@ DAVA_TESTCLASS (AssetManagerTests)
         fs->DeleteDirectory(workDir);
     }
 
-    bool TestComplete(const String& testName) const override
+    bool TestComplete(const DAVA::String& testName) const override
     {
         DVASSERT(test != nullptr);
         return test->IsCompleted();
     }
 
-    void TearDown(const String& testName) override
+    void TearDown(const DAVA::String& testName) override
     {
         DVASSERT(test != nullptr);
         delete test;

@@ -36,7 +36,9 @@ protected:
     void CreateRenderTargets();
     void ReleaseRenderTargets();
     Sprite* renderTargetPrevScreen = nullptr;
+    Asset<Texture> depthTargetPrevScreen;
     Sprite* renderTargetNextScreen = nullptr;
+    Asset<Texture> depthTargetNextScreen;
 
     Interpolation::Func interpolationFunc;
     float32 currentTime = 0.0f;

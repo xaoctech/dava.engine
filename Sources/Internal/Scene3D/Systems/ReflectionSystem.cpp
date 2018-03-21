@@ -3,10 +3,14 @@
 #include "Entity/ComponentUtils.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Highlevel/ReflectionRenderer.h"
+#include "Render/Texture.h"
 #include "Scene3D/Components/ReflectionComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Logger/Logger.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 #define UPDATE_PROBES_EACH_FRAME 0
 #define UPDATE_PROBES_PERIODICALLY 1
@@ -72,14 +76,17 @@ void ReflectionSystem::UpdateAndRegisterProbe(ReflectionComponent* component, Re
 
     if (probe->IsStaticProbe())
     {
-        ScopedPtr<Texture> image;
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        Asset<Texture> image;
         if (!component->GetReflectionsMap().IsEmpty() && FileSystem::Instance()->Exists(component->GetReflectionsMap()))
         {
-            image.reset(Texture::CreateFromFile(component->GetReflectionsMap()));
+            Texture::PathKey key(component->GetReflectionsMap());
+            image = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
         else
         {
-            image.reset(Texture::CreatePink(rhi::TextureType::TEXTURE_TYPE_CUBE));
+            Texture::PathKey key(Texture::MakePinkKey(rhi::TEXTURE_TYPE_CUBE));
+            image = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
         probe->SetCurrentTexture(image);
         probe->SetSphericalHarmonics(component->GetSphericalHarmonics());

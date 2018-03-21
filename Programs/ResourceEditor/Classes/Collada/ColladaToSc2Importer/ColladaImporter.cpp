@@ -25,7 +25,6 @@
 #include <Scene3D/Converters/SceneFileConverter.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Prefab.h>
-#include <Scene3D/AssetLoaders/PrefabAssetLoader.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneUtils.h>
 #include <Utils/CRC32.h>
@@ -384,7 +383,7 @@ eColladaErrorCodes ColladaImporter::SavePrefab(ColladaScene* colladaScene, const
             RemoveEmptyHierarchy(scene);
 
             SceneFileConverter::ConvertSceneToLevelFormat(scene, scenePath.GetDirectory());
-            PrefabAssetLoader::PathKey key(FilePath::CreateWithNewExtension(scenePath, ".prefab"));
+            Prefab::PathKey key(FilePath::CreateWithNewExtension(scenePath, ".prefab"));
             if (GetEngineContext()->assetManager->SaveAssetFromData(scene, key) == false)
             {
                 convertRes = eColladaErrorCodes::COLLADA_ERROR;

@@ -254,16 +254,6 @@ void TextureDescriptor::SetDefaultValues()
     isCompressedFile = false;
 }
 
-void TextureDescriptor::SetQualityGroup(const FastName& group)
-{
-    qualityGroup = group;
-}
-
-const FastName& TextureDescriptor::GetQualityGroup() const
-{
-    return qualityGroup;
-}
-
 bool TextureDescriptor::IsCompressedTextureActual(eGPUFamily forGPU) const
 {
     const Compression* compressionForGPU = GetCompressionParams(forGPU);

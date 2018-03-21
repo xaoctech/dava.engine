@@ -4,6 +4,7 @@
 #include "Render/Highlevel/DeferredDecalRenderer.h"
 #include "Render/Highlevel/DeferredLightsRenderer.h"
 #include "Render/Material/NMaterial.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -24,7 +25,7 @@ private:
     void UpdateScreenResolveData(RenderSystem* renderSystem);
 
 private:
-    ScopedPtr<Texture> defaultCubemap;
+    Asset<Texture> defaultCubemap;
     DeferredLightsRenderer* deferredLightsRenderer = nullptr;
     DeferredDecalRenderer* deferredDecalRenderer = nullptr;
 

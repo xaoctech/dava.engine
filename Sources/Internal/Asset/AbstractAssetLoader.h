@@ -4,6 +4,7 @@
 #include "Base/Any.h"
 
 #include "Asset/Asset.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
@@ -23,7 +24,7 @@ struct AssetFileInfo
     }
 };
 
-class AbstractAssetLoader
+class AbstractAssetLoader : public ReflectionBase
 {
 public:
     enum eSaveMode
@@ -34,6 +35,7 @@ public:
     virtual ~AbstractAssetLoader() = default;
 
     virtual AssetFileInfo GetAssetFileInfo(const Any& assetKey) const = 0;
+    virtual bool ExistsOnDisk(const Any& assetKey) const;
 
     virtual AssetBase* CreateAsset(const Any& assetKey) const = 0;
     virtual void DeleteAsset(AssetBase* asset) const = 0;
@@ -43,6 +45,10 @@ public:
     virtual Vector<String> GetDependsOnFiles(const AssetBase* asset) const = 0;
 
     virtual Vector<const Type*> GetAssetKeyTypes() const = 0;
-    virtual Vector<const Type*> GetAssetTypes() const = 0;
+
+protected:
+    void MofidyAssetKey(Asset<AssetBase> asset, Any&& newKey) const;
+
+    DAVA_VIRTUAL_REFLECTION(AbstractAssetLoader, ReflectionBase);
 };
 } // namespace DAVA

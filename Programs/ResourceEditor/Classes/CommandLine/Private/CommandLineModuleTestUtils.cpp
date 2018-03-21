@@ -3,12 +3,14 @@
 #include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 #include <REPlatform/Scene/Systems/BeastSystem.h>
 
+#include <Asset/AssetManager.h>
 #include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <FileSystem/FilePath.h>
 #include <FileSystem/FileSystem.h>
+#include <FileSystem/YamlEmitter.h>
 #include <FileSystem/YamlNode.h>
 #include <FileSystem/YamlParser.h>
-#include <FileSystem/YamlEmitter.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Highlevel/Mesh.h>
@@ -16,18 +18,20 @@
 #include <Render/Image/Image.h>
 #include <Render/Image/ImageSystem.h>
 #include <Render/Material/NMaterial.h>
-#include <Scene3D/Lod/LodComponent.h>
-#include <Scene3D/Components/CustomPropertiesComponent.h>
+#include <Render/Texture.h>
+#include <Render/TextureAssetLoader.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/LightComponent.h>
-#include <Scene3D/Components/StaticOcclusionComponent.h>
-#include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Components/StaticOcclusionComponent.h>
+#include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/TextComponent.h>
-#include <Scene3D/Components/Waypoint/WaypointComponent.h>
 #include <Scene3D/Components/Waypoint/EdgeComponent.h>
+#include <Scene3D/Components/Waypoint/WaypointComponent.h>
+#include <Scene3D/Lod/LodComponent.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Random.h>
 #include <Utils/StringFormat.h>
@@ -174,7 +178,8 @@ Entity* CreateLandscapeEnity(const FilePath& scenePathname)
         textuePathname.ReplaceFilename(fileName);
         CreateTextureFiles(textuePathname, 2048u, 2048u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
 
-        ScopedPtr<Texture> texture(Texture::CreateFromFile(textuePathname));
+        Texture::PathKey key(textuePathname);
+        Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         material->AddTexture(slotName, texture);
     };
 
@@ -249,7 +254,9 @@ Entity* CreateVegetationEntity(const FilePath& scenePathname)
         FilePath texturePathname = scenePathname;
         texturePathname.ReplaceFilename("vegetation.texture.tex");
         CreateTextureFiles(texturePathname, 128, 128u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
-        ScopedPtr<Texture> vegetationTexture(Texture::CreateFromFile(texturePathname));
+
+        Texture::PathKey key(texturePathname);
+        Asset<Texture> vegetationTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
         for (uint32 i = 0; i < VEGETATION_ENTITY_LAYER_NAMES.size(); ++i)
         {
@@ -383,13 +390,15 @@ class TextureLoadingGuard::Impl final
 public:
     Impl(const DAVA::Vector<DAVA::eGPUFamily>& newLoadingOrder)
     {
-        gpuLoadingOrder = DAVA::Texture::GetGPULoadingOrder();
-        DAVA::Texture::SetGPULoadingOrder(newLoadingOrder);
+        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+        gpuLoadingOrder = loader->GetGPULoadingOrder();
+        loader->SetGPULoadingOrder(newLoadingOrder);
     }
 
     ~Impl()
     {
-        DAVA::Texture::SetGPULoadingOrder(gpuLoadingOrder);
+        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+        loader->SetGPULoadingOrder(gpuLoadingOrder);
     }
 
 private:
@@ -435,7 +444,8 @@ void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& 
     texturePath.ReplaceFilename(fileName);
     Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, color, tag);
 
-    ScopedPtr<Texture> texture(Texture::CreateFromFile(texturePath));
+    Texture::PathKey key(texturePath);
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     material->AddTexture(slotName, texture);
 }
 

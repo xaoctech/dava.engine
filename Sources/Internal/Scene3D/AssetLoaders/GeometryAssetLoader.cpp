@@ -1,6 +1,7 @@
 #include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
 #include "Render/3D/Geometry.h"
 #include "Base/Any.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -8,20 +9,20 @@ namespace GeometryAssetLoaderDetail
 {
 size_t PathKeyHash(const Any& v)
 {
-    const GeometryAssetLoader::PathKey& key = v.Get<GeometryAssetLoader::PathKey>();
+    const Geometry::PathKey& key = v.Get<Geometry::PathKey>();
     std::hash<String> hashFn;
     return hashFn(key.path.GetAbsolutePathname());
 }
 } // namespace GeometryAssetLoaderDetail
 GeometryAssetLoader::GeometryAssetLoader()
 {
-    AnyHash<GeometryAssetLoader::PathKey>::Register(&GeometryAssetLoaderDetail::PathKeyHash);
+    AnyHash<Geometry::PathKey>::Register(&GeometryAssetLoaderDetail::PathKeyHash);
 }
 
 AssetFileInfo GeometryAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
-    DVASSERT(assetKey.CanGet<PathKey>());
-    const PathKey& key = assetKey.Get<PathKey>();
+    DVASSERT(assetKey.CanGet<Geometry::PathKey>());
+    const Geometry::PathKey& key = assetKey.Get<Geometry::PathKey>();
     AssetFileInfo info;
     info.fileName = key.path.GetAbsolutePathname();
 
@@ -89,25 +90,17 @@ bool GeometryAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMo
 Vector<String> GeometryAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
     const Any& assetKey = asset->GetKey();
-    DVASSERT(assetKey.CanGet<PathKey>());
-    const PathKey& key = assetKey.Get<PathKey>();
+    DVASSERT(assetKey.CanGet<Geometry::PathKey>());
+    const Geometry::PathKey& key = assetKey.Get<Geometry::PathKey>();
     return Vector<String>{ key.path.GetAbsolutePathname() };
 }
 
 Vector<const Type*> GeometryAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<PathKey>() };
+    return Vector<const Type*>{ Type::Instance<Geometry::PathKey>() };
 }
 
-Vector<const Type*> GeometryAssetLoader::GetAssetTypes() const
+DAVA_VIRTUAL_REFLECTION_IMPL(GeometryAssetLoader)
 {
-    return Vector<const Type*>{ Type::Instance<Geometry>() };
 }
-
-template <>
-bool AnyCompare<GeometryAssetLoader::PathKey>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<GeometryAssetLoader::PathKey>().path == v2.Get<GeometryAssetLoader::PathKey>().path;
-}
-
 } // namespace DAVA

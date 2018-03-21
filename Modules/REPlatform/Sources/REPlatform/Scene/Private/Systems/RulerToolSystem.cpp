@@ -45,7 +45,7 @@ LandscapeEditorDrawSystem::eErrorType RulerToolSystem::EnableLandscapeEditing()
     Scene* scene = GetScene();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
 
-    Texture* rulerToolTexture = drawSystem->GetRulerToolProxy()->GetTexture();
+    Asset<Texture> rulerToolTexture = drawSystem->GetRulerToolProxy()->GetTexture();
     drawSystem->GetLandscapeProxy()->SetToolTexture(rulerToolTexture, false);
     landscapeSize = drawSystem->GetHeightmapProxy()->GetHeightmap()->Size();
 
@@ -253,14 +253,14 @@ void RulerToolSystem::DrawPoints()
         return;
     }
 
-    Texture* targetTexture = drawSystem->GetRulerToolProxy()->GetTexture();
+    Asset<Texture> targetTexture = drawSystem->GetRulerToolProxy()->GetTexture();
 
     RenderSystem2D::RenderTargetPassDescriptor desc;
     desc.priority = DAVA::PRIORITY_SERVICE_2D;
     desc.colorAttachment = targetTexture->handle;
-    desc.depthAttachment = targetTexture->handleDepthStencil;
-    desc.width = targetTexture->GetWidth();
-    desc.height = targetTexture->GetHeight();
+    desc.depthAttachment = rhi::HTexture();
+    desc.width = targetTexture->width;
+    desc.height = targetTexture->height;
     desc.transformVirtualToPhysical = false;
     RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
 
@@ -288,7 +288,7 @@ void RulerToolSystem::DrawPoints()
         const Vector3 landSize = boundingBox.max - boundingBox.min;
         Vector2 offsetPoint = Vector2(boundingBox.min.x, boundingBox.min.y);
 
-        float32 koef = static_cast<float32>(targetTexture->GetWidth()) / landSize.x;
+        float32 koef = static_cast<float32>(targetTexture->width) / landSize.x;
 
         Vector2 startPoint = points[0];
         for (uint32 i = 1; i < pointsCount; ++i)

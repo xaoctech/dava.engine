@@ -2,6 +2,7 @@
 
 #include "Render/2D/TextBlockRender.h"
 #include "Render/2D/FTFont.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -35,7 +36,7 @@ private:
 private:
     int8* buf = nullptr;
     FTFont* ftFont = nullptr;
-    Texture* currentTexture = nullptr;
+    Asset<Texture> currentTexture;
 
 #if defined(LOCALIZATION_DEBUG)
     Vector2 textOffsetTL;

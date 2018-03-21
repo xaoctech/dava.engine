@@ -27,7 +27,7 @@ public:
     DAVA::BrushInputController* GetInputController() const override;
     DAVA::BaseBrushApplicant* GetBrushApplicant() const override;
     QWidget* CreateEditorWidget(const WidgetParams& params) override;
-    DAVA::RefPtr<DAVA::Texture> GetCursorTexture() const override;
+    DAVA::Asset<DAVA::Texture> GetCursorTexture() const override;
     DAVA::Color GetCursorColor() const override;
     DAVA::Vector2 GetBrushSize() const override;
     DAVA::float32 GetBrushRotation() const override;
@@ -109,7 +109,7 @@ private:
     eMode mode = MODE_SPAWN;
     CreationParams params;
 
-    DAVA::RefPtr<DAVA::Texture> cursorTexture;
+    DAVA::Asset<DAVA::Texture> cursorTexture;
     std::unique_ptr<DAVA::KeyboardInputController> inputController;
     std::unique_ptr<DAVA::BaseBrushApplicant> applicant;
 

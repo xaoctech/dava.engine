@@ -25,6 +25,13 @@ public:
         return signal.Connect<Obj, Cls>(obj, fn, group);
     }
 
+    template <typename Obj, typename Fn>
+    inline Token Connect(Obj* obj, const Fn& fn, Signal<>::Group group = Signal<>::Group::Medium)
+    {
+        LockGuard<Mutex> guard(mutex);
+        return signal.Connect<Obj, Fn>(obj, fn, group);
+    }
+
     template <typename Fn>
     inline Token Connect(const Fn& fn, Signal<>::Group group = Signal<>::Group::Medium)
     {

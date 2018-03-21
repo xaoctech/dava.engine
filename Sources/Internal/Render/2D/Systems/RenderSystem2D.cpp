@@ -9,8 +9,8 @@
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Renderer.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/VisibilityQueryResults.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 #include "Time/SystemTimer.h"
 
@@ -231,14 +231,18 @@ void RenderSystem2D::SetMainTargetDescriptor(const RenderSystem2D::RenderTargetP
     mainTargetDescriptor = descriptor;
 }
 
-void RenderSystem2D::BeginRenderTargetPass(Texture* target, bool needClear /* = true */, const Color& clearColor /* = Color::Clear */, int32 priority /* = PRIORITY_SERVICE_2D */)
+void RenderSystem2D::BeginRenderTargetPass(const Asset<Texture>& target, const Asset<Texture>& depthStencil, bool needClear /* = true */, const Color& clearColor /* = Color::Clear */, int32 priority /* = PRIORITY_SERVICE_2D */)
 {
+    DVASSERT(target != nullptr);
     RenderTargetPassDescriptor desc;
     desc.colorAttachment = target->handle;
-    desc.depthAttachment = target->handleDepthStencil;
+    if (depthStencil != nullptr)
+    {
+        desc.depthAttachment = depthStencil->handle;
+    }
     desc.format = target->GetFormat();
-    desc.width = target->GetWidth();
-    desc.height = target->GetHeight();
+    desc.width = target->width;
+    desc.height = target->height;
     desc.clearColor = clearColor;
     desc.priority = priority;
     desc.clearTarget = needClear;
@@ -1017,7 +1021,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
         spriteClippedTexCoords.clear();
         spriteClippedTexCoords.reserve(sprite->clipPolygon->GetPointCount());
 
-        Texture* t = sprite->GetTexture(frame);
+        Asset<Texture> t = sprite->GetTexture(frame);
 
         Vector2 virtualTexSize = Vector2(float32(t->width), float32(t->height));
         if (GetActiveTargetDescriptor().transformVirtualToPhysical)
@@ -1751,7 +1755,7 @@ void RenderSystem2D::DrawPolygonTransformed(const Polygon2& polygon, bool closed
     DrawPolygon(copyPoly, closed, color);
 }
 
-void RenderSystem2D::DrawTextureWithoutAdjustingRects(Texture* texture, NMaterial* material, const Color& color,
+void RenderSystem2D::DrawTextureWithoutAdjustingRects(const Asset<Texture>& texture, NMaterial* material, const Color& color,
                                                       const Rect& destRect, const Rect& srcRect)
 {
     spriteTempVertices[0] = spriteTempVertices[4] = destRect.x; //x1
@@ -1782,7 +1786,7 @@ void RenderSystem2D::DrawTextureWithoutAdjustingRects(Texture* texture, NMateria
     PushBatch(batch);
 }
 
-void RenderSystem2D::DrawTexture(Texture* texture, NMaterial* material, const Color& color, const Rect& _dstRect /* = Rect(0.f, 0.f, -1.f, -1.f) */, const Rect& _srcRect /* = Rect(0.f, 0.f, -1.f, -1.f) */)
+void RenderSystem2D::DrawTexture(const Asset<Texture>& texture, NMaterial* material, const Color& color, const Rect& _dstRect /* = Rect(0.f, 0.f, -1.f, -1.f) */, const Rect& _srcRect /* = Rect(0.f, 0.f, -1.f, -1.f) */)
 {
     Rect destRect(_dstRect);
     const RenderTargetPassDescriptor& descr = GetActiveTargetDescriptor();
@@ -1809,15 +1813,15 @@ void RenderSystem2D::DrawTexture(Texture* texture, NMaterial* material, const Co
 
 void TiledDrawData::GenerateTileData()
 {
-    Texture* texture = sprite->GetTexture(frame);
+    Asset<Texture> texture = sprite->GetTexture(frame);
 
     Vector<Vector3> cellsWidth;
     GenerateAxisData(size.x, sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH),
-                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualX(float32(texture->GetWidth()), sprite->GetResourceSizeIndex()), stretchCap.x, cellsWidth);
+                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualX(float32(texture->width), sprite->GetResourceSizeIndex()), stretchCap.x, cellsWidth);
 
     Vector<Vector3> cellsHeight;
     GenerateAxisData(size.y, sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT),
-                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualY(float32(texture->GetHeight()), sprite->GetResourceSizeIndex()), stretchCap.y, cellsHeight);
+                     GetEngineContext()->uiControlSystem->vcs->ConvertResourceToVirtualY(float32(texture->height), sprite->GetResourceSizeIndex()), stretchCap.y, cellsHeight);
 
     uint32 vertexLimitPerUnit = MAX_VERTICES - (MAX_VERTICES % 4); // Round for 4 vertexes
     uint32 indexLimitPerUnit = vertexLimitPerUnit / 4 * 6;
@@ -2062,8 +2066,8 @@ void StretchDrawData::GenerateStretchData()
         xyPos.y = offsetInTex.y + (size.y - spriteSize.y) * 0.5f;
     }
 
-    const Texture* texture = sprite->GetTexture(frame);
-    const Vector2 textureSize(float32(texture->GetWidth()), float32(texture->GetHeight()));
+    const Asset<Texture> texture = sprite->GetTexture(frame);
+    const Vector2 textureSize(float32(texture->width), float32(texture->height));
 
     const Vector2 uvPos(sprite->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE) / textureSize.x,
                         sprite->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE) / textureSize.y);

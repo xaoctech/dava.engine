@@ -13,6 +13,7 @@
 #include "Scene3D/Scene.h"
 #include "Render/Material/Material.h"
 #include "Render/3D/Geometry.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -44,7 +45,7 @@ bool SaveImpl(const Vector<Entity*> entities, File* file, SerializationContext* 
 }
 size_t PathKeyHash(const Any& v)
 {
-    const PrefabAssetLoader::PathKey& key = v.Get<PrefabAssetLoader::PathKey>();
+    const Prefab::PathKey& key = v.Get<Prefab::PathKey>();
     std::hash<String> hashFn;
     return hashFn(key.path.GetAbsolutePathname());
 }
@@ -52,13 +53,13 @@ size_t PathKeyHash(const Any& v)
 
 PrefabAssetLoader::PrefabAssetLoader()
 {
-    AnyHash<PrefabAssetLoader::PathKey>::Register(&PrefabAssetLoaderDetail::PathKeyHash);
+    AnyHash<Prefab::PathKey>::Register(&PrefabAssetLoaderDetail::PathKeyHash);
 }
 
 AssetFileInfo PrefabAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
-    DVASSERT(assetKey.CanGet<PathKey>());
-    const PathKey& key = assetKey.Get<PathKey>();
+    DVASSERT(assetKey.CanGet<Prefab::PathKey>());
+    const Prefab::PathKey& key = assetKey.Get<Prefab::PathKey>();
     AssetFileInfo info;
     info.fileName = key.path.GetAbsolutePathname();
 
@@ -167,24 +168,17 @@ bool PrefabAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode
 Vector<String> PrefabAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
     const Any& assetKey = asset->GetKey();
-    DVASSERT(assetKey.CanGet<PathKey>());
-    const PathKey& key = assetKey.Get<PathKey>();
+    DVASSERT(assetKey.CanGet<Prefab::PathKey>());
+    const Prefab::PathKey& key = assetKey.Get<Prefab::PathKey>();
     return Vector<String>{ key.path.GetAbsolutePathname() };
 }
 
 Vector<const Type*> PrefabAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<PathKey>() };
+    return Vector<const Type*>{ Type::Instance<Prefab::PathKey>() };
 }
 
-Vector<const Type*> PrefabAssetLoader::GetAssetTypes() const
+DAVA_VIRTUAL_REFLECTION_IMPL(PrefabAssetLoader)
 {
-    return Vector<const Type*>{ Type::Instance<Prefab>() };
-}
-
-template <>
-bool AnyCompare<PrefabAssetLoader::PathKey>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<PrefabAssetLoader::PathKey>().path == v2.Get<PrefabAssetLoader::PathKey>().path;
 }
 } // namespace DAVA

@@ -5,6 +5,9 @@
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Reflection/Reflection.h"
 #include "FileSystem/FileSystem.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -536,19 +539,24 @@ bool GeoDecalManager::BuildDecal(const DecalBuildInfo& info, const DecalConfig& 
         material->AddFlag(NMaterialFlagName::FLAG_TILED_DECAL_MASK, 0);
     }
 
-    ScopedPtr<Texture> geoDecalTexture(Texture::CreateFromFile(config.albedo));
+    Texture::PathKey albedoKey(config.albedo);
+    Asset<Texture> geoDecalTexture = GetEngineContext()->assetManager->GetAsset<Texture>(albedoKey, AssetManager::SYNC);
     material->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, geoDecalTexture);
 
     if (info.useCustomNormal)
     {
-        ScopedPtr<Texture> customNormal(Texture::CreateFromFile(config.normal));
+        Texture::PathKey customNormalKey(config.normal);
+        Asset<Texture> customNormal = GetEngineContext()->assetManager->GetAsset<Texture>(customNormalKey, AssetManager::SYNC);
         material->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, customNormal);
     }
 
     if (info.useCustomSpecular)
     {
         static const float exactlyOne = 1.0f;
-        ScopedPtr<Texture> customSpecular(Texture::CreateFromFile(config.specular));
+
+        Texture::PathKey customSpecularKey(config.specular);
+        Asset<Texture> customSpecular = GetEngineContext()->assetManager->GetAsset<Texture>(customSpecularKey, AssetManager::SYNC);
+
         material->AddTexture(NMaterialTextureName::TEXTURE_SPECULAR, customSpecular);
         material->AddFlag(NMaterialFlagName::FLAG_GEO_DECAL_SPECULAR, 1);
         material->AddProperty(NMaterialParamName::PARAM_SPECULAR_SCALE, &exactlyOne, rhi::ShaderProp::TYPE_FLOAT1);

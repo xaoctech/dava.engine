@@ -30,7 +30,7 @@ protected:
     FilePath cursorPathName;
     Vector2 cursorPosition;
     Vector2 prevCursorPos;
-    Texture* cursorTexture = nullptr;
+    Asset<Texture> cursorTexture;
     float32 cursorSize = 0.0f;
     float32 landscapeSize = 0.0f;
     bool isIntersectsLandscape = false;

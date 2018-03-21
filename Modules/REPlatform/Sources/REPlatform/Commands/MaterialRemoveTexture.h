@@ -21,7 +21,7 @@ public:
 
 private:
     NMaterial* material = nullptr;
-    Texture* texture = nullptr;
+    Asset<Texture> texture;
     FastName textureSlot;
 
     DAVA_VIRTUAL_REFLECTION(MaterialRemoveTexture, RECommand);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Asset/Asset.h>
 #include <Base/BaseObject.h>
 #include <Base/BaseTypes.h>
 #include <Base/FastName.h>
@@ -52,17 +53,17 @@ public:
     void SetMode(LandscapeProxy::eLandscapeMode mode);
 
     const AABBox3& GetLandscapeBoundingBox();
-    Texture* GetLandscapeTexture(uint32 layerIndex, const FastName& level);
+    Asset<Texture> GetLandscapeTexture(uint32 layerIndex, const FastName& level);
     Color GetLandscapeTileColor(uint32 layerIndex, const FastName& level);
     void SetLandscapeTileColor(uint32 layerIndex, const FastName& level, const Color& color);
 
-    void SetToolTexture(Texture* texture, bool mixColors);
+    void SetToolTexture(const Asset<Texture>& texture, bool mixColors);
 
     void SetHeightmap(Heightmap* heightmap);
 
     void CursorEnable();
     void CursorDisable();
-    void SetCursorTexture(Texture* texture);
+    void SetCursorTexture(const Asset<Texture>& texture);
     void SetCursorSize(float32 size);
     void SetCursorPosition(const Vector2& position);
 
@@ -77,7 +78,7 @@ public:
     Image* GetTilemaskImageCopy(uint32 layerIndex);
 
     void InitTilemaskDrawTextures();
-    Texture* GetTilemaskDrawTexture(uint32 layerIndex, int32 number);
+    Asset<Texture> GetTilemaskDrawTexture(uint32 layerIndex, int32 number);
     uint32 GetTilemaskDrawTexturesCount() const;
     void SwapTilemaskDrawTextures();
 
@@ -101,7 +102,7 @@ protected:
     };
 
     Vector<Image*> tilemaskImageCopies;
-    Vector<Array<Texture*, TILEMASK_TEXTURE_COUNT>> tilemaskDrawTextures;
+    Vector<Array<Asset<Texture>, TILEMASK_TEXTURE_COUNT>> tilemaskDrawTextures;
 
     int32 tilemaskWasChanged = 0;
 
@@ -111,6 +112,6 @@ protected:
 
     eLandscapeMode mode = MODE_ORIGINAL_LANDSCAPE;
 
-    Texture* cursorTexture = nullptr;
+    Asset<Texture> cursorTexture;
 };
 } // namespace DAVA

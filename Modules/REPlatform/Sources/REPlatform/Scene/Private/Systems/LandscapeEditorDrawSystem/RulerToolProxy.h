@@ -15,10 +15,10 @@ public:
     RulerToolProxy(int32 size);
 
     int32 GetSize();
-    Texture* GetTexture();
+    const Asset<Texture>& GetTexture() const;
 
 protected:
-    Texture* rulerToolTexture;
+    Asset<Texture> rulerToolTexture;
     int32 size;
     bool spriteChanged;
 };

@@ -13,12 +13,16 @@
 #include "Utils/StringFormat.h"
 #include "Math/Gaussian.h"
 #include "Logger/Logger.h"
+#include "Asset/AssetManager.h"
+#include "Engine/EngineContext.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
 class HelperRenderer
 {
 public:
+    virtual ~HelperRenderer() = default;
     virtual void InitResources(const Size2i& newSize, const PostEffectRenderer::Settings& settings){};
     virtual void DestroyResources(){};
     virtual void InvalidateMaterials(){};
@@ -40,24 +44,24 @@ public:
         textureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER).dx;
         invRtSize = 1.0f / static_cast<float32>(textureSize);
 
-        Texture::FBODescriptor config;
+        Texture::RenderTargetTextureKey config;
         config.width = textureSize;
         config.height = textureSize;
         config.sampleCount = 1;
         config.textureType = rhi::TEXTURE_TYPE_2D;
-        config.needDepth = false;
+        config.isDepth = false;
         config.needPixelReadback = false;
         config.ensurePowerOf2 = false;
         config.format = PixelFormat::FORMAT_RGBA8888;
-        dst = Texture::CreateFBO(config);
-        src = Texture::CreateFBO(config);
+
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        dst = assetManager->GetAsset<Texture>(config, AssetManager::SYNC);
+        src = assetManager->GetAsset<Texture>(config, AssetManager::SYNC);
     }
 
     void Render(rhi::Handle dest, rhi::Viewport viewport)
     {
-        Texture* tmp = src;
-        src = dst;
-        dst = tmp;
+        std::swap(src, dst);
 
         QuadRenderer::Options options;
         options.srcRect = Rect2f(0.f, 0.f, float32(viewport.width), float32(viewport.height));
@@ -92,8 +96,8 @@ public:
 
     void ReleaseResources()
     {
-        SafeRelease(dst);
-        SafeRelease(src);
+        src.reset();
+        dst.reset();
     }
 
     ~TXAARenderer()
@@ -102,12 +106,12 @@ public:
         SafeRelease(blitMaterial);
     }
 
-    Texture* GetSrc() const
+    Asset<Texture> GetSrc() const
     {
         return src;
     }
 
-    Texture* GetDst() const
+    Asset<Texture> GetDst() const
     {
         return dst;
     }
@@ -123,8 +127,8 @@ public:
     }
 
 private:
-    Texture* dst = nullptr;
-    Texture* src = nullptr;
+    Asset<Texture> dst;
+    Asset<Texture> src;
     uint32 textureSize = 0;
     NMaterial* blitMaterial = nullptr;
     QuadRenderer quad;
@@ -414,9 +418,10 @@ PostEffectRenderer::PostEffectRenderer()
         Engine::Instance()->PrimaryWindow()->sizeChanged.Connect(this, &PostEffectRenderer::OnWindowSizeChanged);
     }
 
-    settings.colorGradingTable = Texture::CreateFromFile("~res:/Textures/colorgrading.png");
-    settings.heatmapTable = Texture::CreateFromFile("~res:/Textures/heatmap.png");
-    settings.lightMeterTable = Texture::CreateFromFile("~res:/Textures/lightmeter.png");
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    settings.colorGradingTable = assetManager->GetAsset<Texture>(Texture::PathKey("~res:/Textures/colorgrading.png"), AssetManager::SYNC);
+    settings.heatmapTable = assetManager->GetAsset<Texture>(Texture::PathKey("~res:/Textures/heatmap.png"), AssetManager::SYNC);
+    settings.lightMeterTable = assetManager->GetAsset<Texture>(Texture::PathKey("~res:/Textures/lightmeter.png"), AssetManager::SYNC);
 
     rhi::SamplerState::Descriptor linearDesc;
     for (uint32 i = 0; i < rhi::MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT; ++i)

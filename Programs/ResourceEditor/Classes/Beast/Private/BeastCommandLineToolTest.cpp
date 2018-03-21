@@ -8,12 +8,16 @@
 #include <TArc/Testing/ConsoleModuleTestExecution.h>
 #include <TArc/Testing/TArcUnitTests.h>
 
+#include <Asset/AssetManager.h>
 #include <Base/BaseTypes.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Material/NMaterial.h>
+#include <Render/TextureAssetLoader.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFileV2.h>
@@ -91,8 +95,10 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
     {
         using namespace DAVA;
 
-        gpuLoadingOrder = DAVA::Texture::GetGPULoadingOrder();
-        Texture::SetGPULoadingOrder({ eGPUFamily::GPU_ORIGIN });
+        DAVA::TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<DAVA::TextureAssetLoader>();
+
+        gpuLoadingOrder = loader->GetGPULoadingOrder();
+        loader->SetGPULoadingOrder({ eGPUFamily::GPU_ORIGIN });
 
         CommandLineModuleTestUtils::CreateProjectInfrastructure(BCLTestDetail::projectStr);
         CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(BCLTestDetail::scenePathnameStr, BCLTestDetail::projectStr);
@@ -127,7 +133,8 @@ DAVA_TARC_TESTCLASS(BeastCommandLineToolTest)
 
             TestScene();
             CommandLineModuleTestUtils::ClearTestFolder(BCLTestDetail::projectStr);
-            DAVA::Texture::SetGPULoadingOrder(gpuLoadingOrder);
+            DAVA::TextureAssetLoader* loader = DAVA::GetEngineContext()->assetManager->GetAssetLoader<DAVA::TextureAssetLoader>();
+            loader->SetGPULoadingOrder(gpuLoadingOrder);
         }
 
         return testCompleted;

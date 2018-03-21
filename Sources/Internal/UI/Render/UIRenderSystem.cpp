@@ -6,6 +6,7 @@
 #include "Render/2D/TextBlock.h"
 #include "Render/2D/TextBlockSoftwareRender.h"
 #include "Render/Renderer.h"
+#include "Render/Texture.h"
 #include "UI/Render/UIClipContentComponent.h"
 #include "UI/Render/UIDebugRenderComponent.h"
 #include "UI/Scene3D/UISceneComponent.h"
@@ -318,7 +319,7 @@ static void PrepareSprite(const UITextSystemLink* link)
         shadowBg->SetSprite(sprite, 0);
         textBg->SetSprite(sprite, 0);
 
-        Texture* tex = sprite->GetTexture();
+        Asset<Texture> tex = sprite->GetTexture();
         if (tex && tex->GetFormat() == FORMAT_A8)
         {
             textBg->SetMaterial(RenderSystem2D::DEFAULT_2D_TEXTURE_ALPHA8_MATERIAL);

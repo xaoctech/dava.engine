@@ -3,7 +3,6 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/LandscapeSubdivision.h"
 #include "Scene3D/Components/LandscapeComponent.h"
-#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 
 namespace DAVA
 {
@@ -145,7 +144,7 @@ uint32 LandscapeComponent::GetLayersCount() const
 
 void LandscapeComponent::SetPageMaterialPath(uint32 layer, uint32 lod, const FilePath& path)
 {
-    layersPageMaterials[layer][lod] = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), AssetManager::SYNC);
+    layersPageMaterials[layer][lod] = GetEngineContext()->assetManager->GetAsset<Material>(Material::PathKey(path), AssetManager::SYNC);
     DVASSERT(layersPageMaterials[layer][lod] != nullptr);
     if (layersPageMaterials[layer][lod] != nullptr)
         landscape->SetPageMaterial(layer, lod, layersPageMaterials[layer][lod]->GetMaterial());
@@ -170,7 +169,7 @@ const FilePath& LandscapeComponent::GetHeighmapPath() const
 
 void LandscapeComponent::SetLandscapeMaterialPath(const FilePath& path)
 {
-    landscapeMaterial = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(path), AssetManager::SYNC);
+    landscapeMaterial = GetEngineContext()->assetManager->GetAsset<Material>(Material::PathKey(path), AssetManager::SYNC);
     DVASSERT(landscapeMaterial != nullptr);
     if (landscapeMaterial != nullptr)
         landscape->SetLandscapeMaterial(landscapeMaterial->GetMaterial());

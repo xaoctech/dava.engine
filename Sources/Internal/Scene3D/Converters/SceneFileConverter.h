@@ -10,6 +10,7 @@
 namespace DAVA
 {
 class Mesh;
+class Geometry;
 class Scene;
 class Entity;
 class FilePath;

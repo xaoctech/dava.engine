@@ -4,7 +4,7 @@
 
 namespace DAVA
 {
-ReadBackRingArray::ReadBackRingArray(const Texture::FBODescriptor& descriptor_, uint32 initialSize)
+ReadBackRingArray::ReadBackRingArray(const Texture::RenderTargetTextureKey& descriptor_, uint32 initialSize)
     : descriptor(descriptor_)
 {
     for (uint32 i = 0; i < initialSize; ++i)
@@ -26,7 +26,7 @@ ReadBackRingArray::~ReadBackRingArray()
     nodes.clear();
 }
 
-RefPtr<Texture> ReadBackRingArray::AcquireTexture(rhi::HSyncObject syncObject)
+Asset<Texture> ReadBackRingArray::AcquireTexture(rhi::HSyncObject syncObject)
 {
     for (TextureNode& node : nodes)
     {
@@ -40,11 +40,11 @@ RefPtr<Texture> ReadBackRingArray::AcquireTexture(rhi::HSyncObject syncObject)
     return AcquireTexture(nodes.back(), syncObject);
 }
 
-RefPtr<Texture> ReadBackRingArray::AcquireTexture(TextureNode& node, rhi::HSyncObject syncObject)
+Asset<Texture> ReadBackRingArray::AcquireTexture(TextureNode& node, rhi::HSyncObject syncObject)
 {
     DVASSERT(node.callbackToken.IsEmpty() == true);
     DVASSERT(node.syncObject.IsValid() == false);
-    DVASSERT(node.texture.Get() != nullptr);
+    DVASSERT(node.texture != nullptr);
     node.syncObject = syncObject;
     node.callbackToken = Renderer::RegisterSyncCallback(syncObject, [this](rhi::HSyncObject syncObject) {
         for (TextureNode& node : nodes)
@@ -64,7 +64,7 @@ RefPtr<Texture> ReadBackRingArray::AcquireTexture(TextureNode& node, rhi::HSyncO
 void ReadBackRingArray::AllocateTexture()
 {
     TextureNode node;
-    node.texture.Set(Texture::CreateFBO(descriptor));
+    node.texture = GetEngineContext()->assetManager->GetAsset<Texture>(descriptor, AssetManager::SYNC);
     node.texture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
     node.texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     nodes.push_back(node);

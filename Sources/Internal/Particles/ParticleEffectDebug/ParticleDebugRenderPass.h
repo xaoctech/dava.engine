@@ -4,6 +4,7 @@
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 
 #include "Render/RenderBase.h"
+#include "Render/Texture.h"
 #include "Render/Highlevel/RenderPass.h"
 
 namespace DAVA
@@ -32,7 +33,7 @@ public:
     ~ParticleDebugRenderPass();
 
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
-    Texture* GetTexture() const;
+    Asset<Texture> GetTexture() const;
 
     static const FastName PASS_DEBUG_DRAW_PARTICLES;
 
@@ -43,7 +44,7 @@ private:
     void MakePacket(Camera* camera);
     NMaterial* SelectMaterial(RenderBatch* batch);
 
-    Texture* debugTexture;
+    Asset<Texture> debugTexture;
     NMaterial* wireframeMaterial;
     NMaterial* overdrawMaterial;
     NMaterial* showAlphaMaterial;

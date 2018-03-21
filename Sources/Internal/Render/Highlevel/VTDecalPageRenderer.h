@@ -6,6 +6,7 @@
 #include "Base/RefPtr.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Highlevel/LandscapePageRenderer.h"
+#include "Render/Texture.h"
 
 class Camera;
 
@@ -44,7 +45,7 @@ private:
     VTDecalManager* vtDecalManager = nullptr;
     Vector<DecalRenderObject*> clipResult;
 
-    Vector<RefPtr<Texture>> blendTargetsTerrain;
+    Vector<Asset<Texture>> blendTargetsTerrain;
     uint32 blendTargetTerrainSize = 0;
     RefPtr<NMaterial> blendTerrainMaterial;
 

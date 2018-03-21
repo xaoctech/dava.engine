@@ -1,5 +1,8 @@
 #include "REPlatform/Scene/Private/Systems/LandscapeEditorDrawSystem/NotPassableTerrainProxy.h"
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <FileSystem/YamlNode.h>
 #include <FileSystem/YamlParser.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
@@ -21,7 +24,13 @@ NotPassableTerrainProxy::NotPassableTerrainProxy(int32 heightmapSize)
     LoadColorsArray();
 
     notPassableAngleTan = static_cast<float32>(tan(DegToRad(static_cast<float32>(NOT_PASSABLE_ANGLE))));
-    notPassableTexture = Texture::CreateFBO(2048, 2048, FORMAT_RGBA8888);
+
+    Texture::RenderTargetTextureKey key;
+    key.width = 2048;
+    key.height = 2048;
+    key.format = FORMAT_RGBA8888;
+    key.isDepth = false;
+    notPassableTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     notPassableTexture->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
 
     rhi::Viewport viewport;
@@ -42,7 +51,6 @@ NotPassableTerrainProxy::NotPassableTerrainProxy(int32 heightmapSize)
 
 NotPassableTerrainProxy::~NotPassableTerrainProxy()
 {
-    SafeRelease(notPassableTexture);
     for (const rhi::HVertexBuffer& quadBuffer : gridBuffers)
         rhi::DeleteVertexBuffer(quadBuffer);
 }
@@ -115,7 +123,7 @@ bool NotPassableTerrainProxy::IsEnabled() const
     return enabled;
 }
 
-Texture* NotPassableTerrainProxy::GetTexture()
+Asset<Texture> NotPassableTerrainProxy::GetTexture()
 {
     return notPassableTexture;
 }
@@ -130,12 +138,12 @@ void NotPassableTerrainProxy::UpdateTexture(Heightmap* heightmap, const AABBox3&
 
     const int32 heightmapSize = heightmap->Size();
 
-    const float32 targetWidth = static_cast<float32>(notPassableTexture->GetWidth());
+    const float32 targetWidth = static_cast<float32>(notPassableTexture->width);
     const float32 dx = targetWidth / static_cast<float32>(heightmapSize);
 
     ///////////////////////////////
 
-    Size2f textureSize(float32(notPassableTexture->GetWidth()), float32(notPassableTexture->GetHeight()));
+    Size2f textureSize(float32(notPassableTexture->width), float32(notPassableTexture->height));
 
     Matrix4 projMatrix;
     if (!rhi::DeviceCaps().isUpperLeftRTOrigin)
@@ -170,8 +178,8 @@ void NotPassableTerrainProxy::UpdateTexture(Heightmap* heightmap, const AABBox3&
     passConfig.colorBuffer[0].loadAction = rhi::LOADACTION_NONE;
     passConfig.colorBuffer[0].storeAction = rhi::STOREACTION_STORE;
     passConfig.priority = PRIORITY_SERVICE_2D;
-    passConfig.viewport.width = notPassableTexture->GetWidth();
-    passConfig.viewport.height = notPassableTexture->GetHeight();
+    passConfig.viewport.width = notPassableTexture->width;
+    passConfig.viewport.height = notPassableTexture->height;
 
     rhi::HPacketList packetListHandle;
     rhi::HRenderPass passTargetHandle = rhi::AllocateRenderPass(passConfig, 1, &packetListHandle);

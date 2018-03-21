@@ -49,7 +49,6 @@
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderBatchArray.h>
 #include <Render/Highlevel/RenderPass.h>
-#include <Scene3D/AssetLoaders/PrefabAssetLoader.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/Controller/RotationControllerComponent.h>
@@ -76,6 +75,7 @@
 #include <Utils/Utils.h>
 
 #include <time.h>
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -215,7 +215,7 @@ SceneFileV2::eError SceneEditor2::LoadScene(const FilePath& path)
 
 SceneFileV2::eError SceneEditor2::LoadAsPrefab(const FilePath& path)
 {
-    Asset<Prefab> prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(PrefabAssetLoader::PathKey(path), AssetManager::SYNC);
+    Asset<Prefab> prefab = GetEngineContext()->assetManager->GetAsset<Prefab>(Prefab::PathKey(path), AssetManager::SYNC);
 
     if (prefab != nullptr)
     {
@@ -263,7 +263,7 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
 
     ExtractEditorEntities();
 
-    Vector<ScopedPtr<Texture>> tilemaskTexture;
+    Vector<Asset<Texture>> tilemaskTexture;
     bool needToRestoreTilemask = false;
 
     LandscapeEditorDrawSystem* landscapeEditorDrawSystem = GetSystem<LandscapeEditorDrawSystem>();
@@ -271,7 +271,7 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
     { //dirty magic to work with new saving of materials and FBO landscape texture
         for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
         {
-            tilemaskTexture.push_back(ScopedPtr<Texture>(SafeRetain(landscapeEditorDrawSystem->GetTileMaskTexture(i))));
+            tilemaskTexture.push_back(landscapeEditorDrawSystem->GetTileMaskTexture(i));
         }
         needToRestoreTilemask = landscapeEditorDrawSystem->SaveTileMaskTexture();
         landscapeEditorDrawSystem->ResetTileMaskTextures();
@@ -340,7 +340,7 @@ SceneFileV2::eError SceneEditor2::SaveAsLevel(const FilePath& pathname)
 
     ExtractEditorEntities();
 
-    Vector<ScopedPtr<Texture>> tilemaskTexture;
+    Vector<Asset<Texture>> tilemaskTexture;
     bool needToRestoreTilemask = false;
 
     LandscapeEditorDrawSystem* landscapeEditorDrawSystem = GetSystem<LandscapeEditorDrawSystem>();
@@ -348,7 +348,7 @@ SceneFileV2::eError SceneEditor2::SaveAsLevel(const FilePath& pathname)
     { //dirty magic to work with new saving of materials and FBO landscape texture
         for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
         {
-            tilemaskTexture.push_back(ScopedPtr<Texture>(SafeRetain(landscapeEditorDrawSystem->GetTileMaskTexture(i))));
+            tilemaskTexture.push_back(landscapeEditorDrawSystem->GetTileMaskTexture(i));
         }
         needToRestoreTilemask = landscapeEditorDrawSystem->SaveTileMaskTexture();
         landscapeEditorDrawSystem->ResetTileMaskTextures();
@@ -364,7 +364,7 @@ SceneFileV2::eError SceneEditor2::SaveAsLevel(const FilePath& pathname)
     else if (pathname.GetExtension() == ".prefab")
     {
         ScopedPtr<SceneEditor2> clone(static_cast<SceneEditor2*>(Clone(nullptr)));
-        DAVA::PrefabAssetLoader::PathKey assetKey(pathname);
+        DAVA::Prefab::PathKey assetKey(pathname);
         DAVA::GetEngineContext()->assetManager->SaveAssetFromData(static_cast<Scene*>(clone.get()), assetKey);
     }
 

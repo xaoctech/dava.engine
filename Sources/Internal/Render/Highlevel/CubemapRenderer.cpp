@@ -79,8 +79,11 @@ CubemapRenderer::CubemapRenderer()
     cubemapFunctionsMaterial->AddProperty(DYNAMIC_HAMMERSLEY_SET_INDEX, &tempFloat, rhi::ShaderProp::TYPE_FLOAT1);
 
     //CUBEMAP_SRC_MIP_LEVEL
-    cubemapFunctionsMaterial->AddTexture(HAMMERSLEY_SAMPLER_NAME, hammersleyTexture);
-    //cubemapFunctionsMaterial->AddTexture(SRC_SAMPLER_NAME, hammersleyTexture); // GFX_COMPLETE
+    if (hammersleyTexture->handle != rhi::HTexture())
+    {
+        cubemapFunctionsMaterial->AddTexture(HAMMERSLEY_SAMPLER_NAME, hammersleyTexture);
+        //cubemapFunctionsMaterial->AddTexture(SRC_SAMPLER_NAME, hammersleyTexture); // GFX_COMPLETE
+    }
 
     cubemapFunctionsMaterial->PreBuildMaterial(CUBEMAP_DIFFUSE_CONVOLUTION);
     cubemapFunctionsMaterial->PreBuildMaterial(CUBEMAP_SPECULAR_CONVOLUTION);
@@ -91,7 +94,6 @@ CubemapRenderer::~CubemapRenderer()
 {
     SafeRelease(cubemapCamera);
     SafeRelease(cubemapFunctionsMaterial);
-    SafeRelease(hammersleyTexture);
 }
 
 void CubemapRenderer::InvalidateMaterials()
@@ -99,12 +101,15 @@ void CubemapRenderer::InvalidateMaterials()
     cubemapFunctionsMaterial->InvalidateRenderVariants();
 }
 
-void CubemapRenderer::RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point, Texture* target, uint32 drawLayersMask)
+void CubemapRenderer::RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point, const Asset<Texture>& target, const Asset<Texture>& depthStencil, uint32 drawLayersMask)
 {
     renderTargetConfig.colorBuffer[0].texture = target->handle;
-    renderTargetConfig.depthStencilBuffer.texture = target->handleDepthStencil;
-    renderTargetConfig.viewport.width = target->GetWidth();
-    renderTargetConfig.viewport.height = target->GetHeight();
+    if (depthStencil != nullptr)
+    {
+        renderTargetConfig.depthStencilBuffer.texture = depthStencil->handle;
+    }
+    renderTargetConfig.viewport.width = target->width;
+    renderTargetConfig.viewport.height = target->height;
 
     cubemapCamera->SetPosition(point);
 
@@ -148,7 +153,7 @@ void CubemapRenderer::RenderFace(RenderSystem* renderSystem, RenderPass* renderP
     renderSystem->SetDrawCamera(oldDrawCamera);
 }
 
-void CubemapRenderer::ConvoluteDiffuseCubemap(Texture* inputTexture, rhi::HTexture cubemapOutput, uint32 outputWidth, uint32 outputHeight, uint32 outputMipLevels)
+void CubemapRenderer::ConvoluteDiffuseCubemap(Asset<Texture>& inputTexture, rhi::HTexture cubemapOutput, uint32 outputWidth, uint32 outputHeight, uint32 outputMipLevels)
 {
     cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
 
@@ -173,7 +178,7 @@ void CubemapRenderer::ConvoluteDiffuseCubemap(Texture* inputTexture, rhi::HTextu
     }
 }
 
-void CubemapRenderer::ConvoluteSphericalHarmonics(Texture* inputTexture, rhi::HTexture target)
+void CubemapRenderer::ConvoluteSphericalHarmonics(Asset<Texture>& inputTexture, rhi::HTexture target)
 {
     cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
     if (cubemapFunctionsMaterial->PreBuildMaterial(SH_DIFFUSE_CONVOLUTION))
@@ -183,7 +188,7 @@ void CubemapRenderer::ConvoluteSphericalHarmonics(Texture* inputTexture, rhi::HT
     }
 }
 
-void CubemapRenderer::ConvoluteSpecularCubemap(Texture* inputTexture, Texture* outputTexture, uint32 outputMipLevels)
+void CubemapRenderer::ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels)
 {
     cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
 
@@ -245,7 +250,7 @@ void CubemapRenderer::ConvoluteSpecularCubemap(Texture* inputTexture, Texture* o
     }
 }
 
-void CubemapRenderer::EdgeFilterCubemap(Texture* inputTexture, Texture* outputTexture, uint32 outputMipLevels)
+void CubemapRenderer::EdgeFilterCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels)
 {
     if (cubemapFunctionsMaterial->HasLocalTexture(SRC_SAMPLER_NAME))
         cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
@@ -301,9 +306,9 @@ void CubemapRenderer::EdgeFilterCubemap(Texture* inputTexture, Texture* outputTe
     }
 }
 
-void CubemapRenderer::CopyCubemap(Texture* inputTexture,
+void CubemapRenderer::CopyCubemap(const Asset<Texture>& inputTexture,
                                   uint32 inputStartMip, uint32 mipCount,
-                                  Texture* outputTexture, uint32 outputStartMip)
+                                  const Asset<Texture>& outputTexture, uint32 outputStartMip)
 {
     DVASSERT(inputTexture->width == inputTexture->height);
     DVASSERT(outputTexture->width == outputTexture->height);

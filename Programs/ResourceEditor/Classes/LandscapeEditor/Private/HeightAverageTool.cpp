@@ -222,15 +222,15 @@ void HeightAverageTool::Activate(const DAVA::PropertiesItem& settings)
 
     if (system->GetLandscapeTextureCount(DAVA::Landscape::HEIGHTMAP_TEXTURE) > 0)
     {
-        DAVA::RefPtr<DAVA::Texture> heightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
-        normalDebugDrawMaterial->AddTexture(DAVA::FastName("landscapeSourceHeightMap"), heightTexture.Get());
+        DAVA::Asset<DAVA::Texture> heightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
+        normalDebugDrawMaterial->AddTexture(DAVA::FastName("landscapeSourceHeightMap"), heightTexture);
         system->AddDebugDraw(normalDebugDrawGeometry.Get());
     }
 }
 
 void HeightAverageTool::Process(DAVA::float32 delta)
 {
-    if (morphTexture.Get() == nullptr)
+    if (morphTexture == nullptr)
     {
         return;
     }
@@ -295,7 +295,7 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightA
 
     InitTextures();
     {
-        DAVA::RefPtr<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
+        DAVA::Asset<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
 
         DAVA::Vector4 params = DAVA::Vector4(0.0, 0.0, 0.0, 0.0);
 
@@ -305,8 +305,8 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightA
         descr.phaseMaterial.Set(new DAVA::NMaterial());
         descr.phaseMaterial->SetFXName(DAVA::NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(DAVA::FastName("HEIGHT_AVERAGE"), 1);
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture.Get());
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture1"), srcHeightTexture.Get());
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), morphTexture);
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture1"), srcHeightTexture);
         descr.phaseMaterial->AddProperty(DAVA::FastName("uvPos"), params.data, rhi::ShaderProp::TYPE_FLOAT2, 1);
         descr.phaseMaterial->AddProperty(DAVA::FastName("kernel"), params.data, rhi::ShaderProp::TYPE_FLOAT2, 1);
         descr.phaseMaterial->AddProperty(DAVA::FastName("landscapeParams"), params.data, rhi::ShaderProp::TYPE_FLOAT4, 1);

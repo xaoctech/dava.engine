@@ -49,8 +49,8 @@ public:
 protected:
     uint32 curToolSize;
 
-    Texture* toolImageTexture;
-    Texture* landscapeTilemaskTexture;
+    Asset<Texture> toolImageTexture;
+    Asset<Texture> landscapeTilemaskTexture;
 
     uint32 tileTextureNum;
 
@@ -76,7 +76,7 @@ protected:
 
     bool editingIsEnabled;
 
-    Texture* toolTexture;
+    Asset<Texture> toolTexture;
     bool toolSpriteUpdated;
 
     bool needCreateUndo;

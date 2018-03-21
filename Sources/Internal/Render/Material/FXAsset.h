@@ -60,6 +60,18 @@ class FXAsset : public AssetBase, public AssetListener
     friend class FXAssetLoader;
 
 public:
+    struct Key
+    {
+        Key() = default;
+        Key(const FastName& fxName, const FastName& quality, UnorderedMap<FastName, int32>&& inputDefines);
+
+        FastName fxName;
+        FastName quality;
+        UnorderedMap<FastName, int32> defines;
+        Vector<size_t> fxKey;
+        size_t fxKeyHash;
+    };
+
     FXAsset(const Any& assetKey);
     ~FXAsset();
 
@@ -73,4 +85,8 @@ private:
     FXDescriptor descriptor;
     UnorderedMap<FastName, int32> defines = UnorderedMap<FastName, int32>(16);
 };
+
+template <>
+bool AnyCompare<FXAsset::Key>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<FXAsset::Key>;
 } // namespace DAVA

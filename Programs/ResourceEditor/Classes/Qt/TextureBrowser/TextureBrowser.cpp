@@ -149,7 +149,7 @@ void TextureBrowser::closeEvent(QCloseEvent* e)
     Close();
 }
 
-void TextureBrowser::UpdateTexture(DAVA::Texture* texture)
+void TextureBrowser::UpdateTexture(const DAVA::Asset<DAVA::Texture>& texture)
 {
     if (curTexture == texture)
     {
@@ -158,7 +158,7 @@ void TextureBrowser::UpdateTexture(DAVA::Texture* texture)
     }
 }
 
-void TextureBrowser::setTexture(DAVA::Texture* texture, DAVA::TextureDescriptor* descriptor)
+void TextureBrowser::setTexture(const DAVA::Asset<DAVA::Texture>& texture, DAVA::TextureDescriptor* descriptor)
 {
     curTexture = texture;
     curDescriptor = descriptor;
@@ -632,7 +632,7 @@ void TextureBrowser::resetTextureInfo()
     updateInfoConverted();
 }
 
-void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::TextureDescriptor* descriptor, DAVA::eGPUFamily gpu)
+void TextureBrowser::reloadTextureToScene(const DAVA::Asset<DAVA::Texture>& texture, const DAVA::TextureDescriptor* descriptor, DAVA::eGPUFamily gpu)
 {
     if (NULL != descriptor && NULL != texture)
     {
@@ -642,13 +642,14 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture* texture, const DAVA::Te
         // or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
         if (!DAVA::GPUFamilyDescriptor::IsGPUForDevice(gpu) || gpu == curEditorImageGPUForTextures)
         {
-            texture->ReloadAs(curEditorImageGPUForTextures);
-            UpdateSceneMaterialsWithTexture(texture);
+            // GFX_COMPLETE
+            /*texture->ReloadAs(curEditorImageGPUForTextures);
+            UpdateSceneMaterialsWithTexture(texture);*/
         }
     }
 }
 
-void TextureBrowser::UpdateSceneMaterialsWithTexture(DAVA::Texture* texture)
+void TextureBrowser::UpdateSceneMaterialsWithTexture(const DAVA::Asset<DAVA::Texture>& texture)
 {
     DAVA::Set<DAVA::NMaterial*> materials;
     DAVA::SceneHelper::EnumerateMaterials(curScene, materials);
@@ -800,7 +801,7 @@ void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor* descri
             updateConvertedImageAndInfo(images.images, *curDescriptor);
         }
 
-        DAVA::Texture* texture = textureListModel->getTexture(descriptor);
+        DAVA::Asset<DAVA::Texture> texture = textureListModel->getTexture(descriptor);
         if (NULL != texture)
         {
             // reload this texture into scene
@@ -1049,7 +1050,7 @@ void TextureBrowser::setScene(DAVA::SceneEditor2* scene)
 
     if (selectedDescriptor != nullptr)
     {
-        DAVA::Texture* texture = textureListModel->getTexture(selectedDescriptor);
+        DAVA::Asset<DAVA::Texture> texture = textureListModel->getTexture(selectedDescriptor);
         if (texture != nullptr)
         {
             setTexture(texture, selectedDescriptor);
@@ -1126,10 +1127,10 @@ void TextureBrowser::clearFilter()
 
 void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor)
 {
-    DAVA::Texture* texture = textureListModel->getTexture(descriptor);
+    DAVA::Asset<DAVA::Texture> texture = textureListModel->getTexture(descriptor);
     if (nullptr != texture)
     {
-        DAVA::Vector<DAVA::Texture*> reloadTextures;
+        DAVA::Vector<DAVA::Asset<DAVA::Texture>> reloadTextures;
         reloadTextures.push_back(texture);
 
         DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);

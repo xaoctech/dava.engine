@@ -11,7 +11,11 @@
 #include "Render/Highlevel/PostEffectRenderer.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/TextureDescriptor.h"
+#include "Render/Texture.h"
 #include "Logger/Logger.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -54,25 +58,31 @@ void PostEffectSystem::ImmediateEvent(Component* component, uint32 event)
 
         posteffect->SetResetHistory(false);
 
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+
         if (posteffect->GetColorGradingTable().IsEmpty())
         {
-            settings->colorGradingTable = Texture::CreateFromFile("~res:/Textures/colorgrading.png");
+            Texture::PathKey key("~res:/Textures/colorgrading.png");
+            settings->colorGradingTable = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
         else
         {
-            settings->colorGradingTable = Texture::CreateFromFile(posteffect->GetColorGradingTable());
+            Texture::PathKey key(posteffect->GetColorGradingTable());
+            settings->colorGradingTable = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
-        posteffect->SetColorGradingTexture(settings->colorGradingTable.Get());
+        posteffect->SetColorGradingTexture(settings->colorGradingTable);
 
         if (posteffect->GetHeatmapTable().IsEmpty())
         {
-            settings->heatmapTable = Texture::CreateFromFile("~res:/Textures/heatmap.png");
+            Texture::PathKey key("~res:/Textures/heatmap.png");
+            settings->heatmapTable = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
         else
         {
-            settings->heatmapTable = Texture::CreateFromFile(posteffect->GetHeatmapTable());
+            Texture::PathKey key(posteffect->GetHeatmapTable());
+            settings->heatmapTable = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         }
-        posteffect->SetHeatmapTexture(settings->heatmapTable.Get());
+        posteffect->SetHeatmapTexture(settings->heatmapTable);
 
         FilePath lightMeterTablePath = posteffect->GetLightMeterTable();
         if (posteffect->GetLightMeterTable().IsEmpty())
@@ -125,8 +135,10 @@ void PostEffectSystem::ImmediateEvent(Component* component, uint32 event)
         {
             settings->lightMeterTableWeight = 1.0f;
         }
-        settings->lightMeterTable = Texture::CreateFromFile(lightMeterTablePath);
-        posteffect->SetLightMeterTexture(settings->lightMeterTable.Get());
+
+        Texture::PathKey key(lightMeterTablePath);
+        settings->lightMeterTable = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+        posteffect->SetLightMeterTexture(settings->lightMeterTable);
         SafeDelete(desc);
     }
 }

@@ -5,6 +5,9 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
 #include "Render/Material/NMaterialManager.h"
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 #include "Render/RhiUtils.h"
 #include "Logger/Logger.h"
 
@@ -37,8 +40,18 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_TRANSLUCENT));
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_AFTER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_AFTER_TRANSLUCENT));
 
-    temporaryFramebuffer = Texture::CreateFBO(HIGH_RES_FBO_CUBEMAP_SIZE, HIGH_RES_FBO_CUBEMAP_SIZE, ReflectionsIntermediateTextureFormat, true, rhi::TEXTURE_TYPE_CUBE);
+    Texture::RenderTargetTextureKey key;
+    key.width = HIGH_RES_FBO_CUBEMAP_SIZE;
+    key.height = HIGH_RES_FBO_CUBEMAP_SIZE;
+    key.format = ReflectionsIntermediateTextureFormat;
+    key.textureType = rhi::TEXTURE_TYPE_CUBE;
+    key.isDepth = false;
+
+    temporaryFramebuffer = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     temporaryFramebuffer->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+
+    key.isDepth = true;
+    temporaryFramebufferDepth = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
     globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
@@ -47,7 +60,7 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     {
         for (uint32 t = 0; t < maxCacheCubemapOnEachLevel[qualityLevel]; ++t)
         {
-            Texture* texture = CreateCubeTextureForReflection(cacheCubemapFaceSize[qualityLevel].first, cacheCubemapFaceSize[qualityLevel].second, ReflectionsTargetTextureFormat);
+            Asset<Texture> texture = CreateCubeTextureForReflection(cacheCubemapFaceSize[qualityLevel].first, cacheCubemapFaceSize[qualityLevel].second, ReflectionsTargetTextureFormat);
             textureCache[qualityLevel].push_back(texture);
             allCacheTextures.push_back(texture);
         }
@@ -73,27 +86,20 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
 ReflectionRenderer::~ReflectionRenderer()
 {
     NMaterialManager::Instance().UnregisterInvalidateCallback(invalidateCallback);
-
-    for (size_t k = 0; k < allCacheTextures.size(); ++k)
-        SafeRelease(allCacheTextures[k]);
-
-    SafeRelease(globalProbeSpecularConvolution);
-    SafeRelease(downsampledFramebuffer);
-    SafeRelease(temporaryFramebuffer);
     SafeDelete(reflectionPass);
 }
 
-Texture* ReflectionRenderer::CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format)
+Asset<Texture> ReflectionRenderer::CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format)
 {
-    Texture::FBODescriptor fboDesc;
-    fboDesc.width = size;
-    fboDesc.height = size;
-    fboDesc.mipLevelsCount = mipCount;
-    fboDesc.format = format;
-    fboDesc.textureType = rhi::TEXTURE_TYPE_CUBE;
-    fboDesc.needDepth = false;
+    Texture::RenderTargetTextureKey key;
+    key.width = size;
+    key.height = size;
+    key.mipLevelsCount = mipCount;
+    key.format = format;
+    key.textureType = rhi::TEXTURE_TYPE_CUBE;
+    key.isDepth = false;
 
-    Texture* texture = Texture::CreateFBO(fboDesc);
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     texture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_LINEAR);
     texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
     return texture;
@@ -179,7 +185,7 @@ void ReflectionRenderer::SaveCubemap(const FilePath & filePath, Texture * cubema
     texDescriptor.Save(texDescriptorFilePath);
 }*/
 
-Texture* ReflectionRenderer::GetSpecularConvolution2()
+Asset<Texture> ReflectionRenderer::GetSpecularConvolution2()
 {
     return globalProbeSpecularConvolution;
 }
@@ -210,7 +216,7 @@ void ReflectionRenderer::AllocateProbeTexture(ReflectionProbe* probe)
         uint32 qualityLevel = probe->GetNextQualityLevel();
         DVASSERT(qualityLevel < CUBEMAP_QUALITY_LEVELS);
 
-        Texture* texture = textureCache[qualityLevel].front();
+        Asset<Texture> texture = textureCache[qualityLevel].front();
         textureCache[qualityLevel].pop_front();
 
         probe->SetCurrentTexture(texture);
@@ -220,7 +226,7 @@ void ReflectionRenderer::AllocateProbeTexture(ReflectionProbe* probe)
 
 void ReflectionRenderer::ReleaseProbeTexture(ReflectionProbe* probe)
 {
-    Texture* probeTexture = probe->GetCurrentTexture();
+    Asset<Texture> probeTexture = probe->GetCurrentTexture();
     if (probe->IsStaticProbe() || (probeTexture == nullptr) || (probeTexture == globalProbeSpecularConvolution))
         return;
 
@@ -236,7 +242,7 @@ void ReflectionRenderer::RenderReflectionProbe(ReflectionProbe* probe)
     if (probe->IsStaticProbe())
         return;
 
-    Texture* target = probe->GetCurrentTexture();
+    Asset<Texture> target = probe->GetCurrentTexture();
     DVASSERT(target != nullptr);
 
     const uint32 layerFilter = 0xffffffff;
@@ -244,7 +250,7 @@ void ReflectionRenderer::RenderReflectionProbe(ReflectionProbe* probe)
     SphericalHarmonicsUpdate shUpdate = EnqueueSphericalHarmonicsUpdate(probe);
 
     Vector3 capturePosition = probe->GetPosition() + probe->GetCapturePosition();
-    cmr->RenderCubemap(renderSystem, reflectionPass, capturePosition, temporaryFramebuffer, layerFilter);
+    cmr->RenderCubemap(renderSystem, reflectionPass, capturePosition, temporaryFramebuffer, temporaryFramebufferDepth, layerFilter);
     cmr->EdgeFilterCubemap(temporaryFramebuffer, downsampledFramebuffer, CONVOLUTION_MIP_COUNT);
     cmr->ConvoluteSphericalHarmonics(downsampledFramebuffer, shUpdate.targetTexture);
     cmr->ConvoluteSpecularCubemap(downsampledFramebuffer, target, target->GetMipLevelsCount());

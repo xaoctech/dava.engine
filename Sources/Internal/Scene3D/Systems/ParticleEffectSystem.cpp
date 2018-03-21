@@ -188,9 +188,9 @@ void ParticleEffectSystem::PrebuildMaterials(ParticleEffectComponent* component)
         {
             if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
             {
-                DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
-                DAVA::Texture* noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
-                DAVA::Texture* alphaRemap = layer->alphaRemapSprite.get() != nullptr ? layer->alphaRemapSprite->GetTexture(0) : nullptr;
+                Asset<Texture> flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
+                Asset<Texture> noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
+                Asset<Texture> alphaRemap = layer->alphaRemapSprite.get() != nullptr ? layer->alphaRemapSprite->GetTexture(0) : nullptr;
                 ParticleEffectSystem::MaterialData matData = {};
                 matData.texture = layer->sprite->GetTexture(0);
                 matData.enableFog = layer->enableFog;
@@ -234,9 +234,9 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent* effect, ParticleE
 
         if (layer->sprite && (layer->type != ParticleLayer::TYPE_SUPEREMITTER_PARTICLES))
         {
-            DAVA::Texture* flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
-            DAVA::Texture* noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
-            DAVA::Texture* alphaRemap = layer->alphaRemapSprite.get() != nullptr ? layer->alphaRemapSprite->GetTexture(0) : nullptr;
+            Asset<Texture> flowmap = layer->flowmap.get() != nullptr ? layer->flowmap->GetTexture(0) : nullptr;
+            Asset<Texture> noise = layer->noise.get() != nullptr ? layer->noise->GetTexture(0) : nullptr;
+            Asset<Texture> alphaRemap = layer->alphaRemapSprite.get() != nullptr ? layer->alphaRemapSprite->GetTexture(0) : nullptr;
             ParticleEffectSystem::MaterialData matData = {};
             matData.texture = layer->sprite->GetTexture(0);
             matData.enableFog = layer->enableFog;

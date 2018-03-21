@@ -5,6 +5,9 @@
 
 #include <TArc/Core/Deprecated.h>
 
+#include <Asset/Asset.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Render/Texture.h>
 #include <Render/Material/NMaterial.h>
 
@@ -18,14 +21,14 @@ CustomColorsProxy::CustomColorsProxy(int32 _size)
     , changes(0)
     , brushMaterial(new NMaterial())
 {
-    Texture::FBODescriptor fboDesc;
-    fboDesc.width = size;
-    fboDesc.height = size;
-    fboDesc.textureType = rhi::TextureType::TEXTURE_TYPE_2D;
-    fboDesc.format = PixelFormat::FORMAT_RGBA8888;
-    fboDesc.needDepth = false;
-    fboDesc.needPixelReadback = true;
-    customColorsRenderTarget = Texture::CreateFBO(fboDesc);
+    Texture::RenderTargetTextureKey key;
+    key.width = size;
+    key.height = size;
+    key.textureType = rhi::TextureType::TEXTURE_TYPE_2D;
+    key.format = PixelFormat::FORMAT_RGBA8888;
+    key.isDepth = false;
+    key.needPixelReadback = true;
+    customColorsRenderTarget = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     // clear texture, to initialize frame buffer object
     // using PRIORITY_SERVICE_2D + 1 to ensure it will be cleared before drawing existing image into render target
@@ -48,10 +51,9 @@ bool CustomColorsProxy::IsTextureLoaded() const
 
 CustomColorsProxy::~CustomColorsProxy()
 {
-    SafeRelease(customColorsRenderTarget);
 }
 
-Texture* CustomColorsProxy::GetTexture()
+const Asset<Texture>& CustomColorsProxy::GetTexture()
 {
     return customColorsRenderTarget;
 }

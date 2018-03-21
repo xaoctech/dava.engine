@@ -78,15 +78,21 @@ void CreatePlaneImageForRequest(RequestPointer& request)
         secondSideViewport = rhi::Viewport(halfSizef, 0, halfSizef, textureSize);
     }
 
+    DVASSERT(request->targetTexture == nullptr);
+    Texture::RenderTargetTextureKey key;
+    key.width = textureSize;
+    key.height = textureSize;
+    key.textureType = rhi::TEXTURE_TYPE_2D;
+    key.format = FORMAT_RGBA8888;
+    key.isDepth = false;
+    request->targetTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+
     rhi::Texture::Descriptor descriptor = {};
     descriptor.width = textureSize;
     descriptor.height = textureSize;
     descriptor.autoGenMipmaps = false;
     descriptor.type = rhi::TEXTURE_TYPE_2D;
     descriptor.format = rhi::TEXTURE_FORMAT_D24S8;
-
-    DVASSERT(request->targetTexture == nullptr);
-    request->targetTexture = Texture::CreateFBO(textureSize, textureSize, FORMAT_RGBA8888);
     request->depthTexture = rhi::CreateTexture(descriptor);
     request->RegisterRenderCallback();
 
@@ -277,7 +283,7 @@ void DrawToTextureForRequest(RequestPointer& request, Entity* fromEntity, Camera
                                    clearTarget ? rhi::LOADACTION_CLEAR : rhi::LOADACTION_NONE, Color::Clear);
 
     tempScene->SetMainPassProperties(PRIORITY_SERVICE_3D, Rect(viewport.x, viewport.y, viewport.width, viewport.height),
-                                     request->targetTexture->GetWidth(), request->targetTexture->GetHeight(), request->targetTexture->GetFormat());
+                                     request->targetTexture->width, request->targetTexture->height, request->targetTexture->GetFormat());
 
     tempScene->GetRenderSystem()->SetAntialiasingAllowed(false);
 
@@ -328,7 +334,6 @@ Request::~Request()
 {
     SafeRelease(planeBatch);
     SafeRelease(planeImage);
-    SafeRelease(targetTexture);
     rhi::DeleteTexture(depthTexture);
 }
 
@@ -340,11 +345,12 @@ void Request::RegisterRenderCallback()
 
 void Request::ReloadTexturesToGPU(eGPUFamily targetGPU)
 {
-    auto entity = lodComponent->GetEntity();
+    // GFX_COMPLETE - WTF??? Why  we reload texture here???
+    /*auto entity = lodComponent->GetEntity();
 
     SceneHelper::TextureCollector collector;
     SceneHelper::EnumerateEntityTextures(entity->GetScene(), entity, collector);
-    TexturesMap& textures = collector.GetTextures();
+    const Map<FilePath, Asset<Texture>>& textures = collector.GetTextures();
 
     for (auto& tex : textures)
     {
@@ -356,7 +362,7 @@ void Request::ReloadTexturesToGPU(eGPUFamily targetGPU)
     for (auto& mat : materials)
     {
         mat->InvalidateTextureBindings();
-    }
+    }*/
 }
 
 void Request::OnRenderCallback(rhi::HSyncObject object)
@@ -364,8 +370,8 @@ void Request::OnRenderCallback(rhi::HSyncObject object)
     completed = true;
 
     DVASSERT(planeImage == nullptr);
-    planeImage = targetTexture->CreateImageFromMemory();
-    SafeRelease(targetTexture);
+    planeImage = targetTexture->CreateImageFromRegion();
+    targetTexture.reset();
 
     CommonInternalSettings* settings = Deprecated::GetDataNode<CommonInternalSettings>();
 

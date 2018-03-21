@@ -4,8 +4,6 @@
 #include "Render/Highlevel/MeshLODDescriptor.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
-#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 
 namespace DAVA
 {
@@ -58,7 +56,7 @@ void MeshLODDescriptor::Deserialize(Vector<MeshLODDescriptor>* meshLODDescriptor
         if (lodDescriptorArchive != nullptr)
         {
             lodDesc.geometryPath = serializationContext->GetScenePath() + lodDescriptorArchive->GetString("GeometryPath");
-            lodDesc.geometryAsset = GetEngineContext()->assetManager->GetAsset<Geometry>(GeometryAssetLoader::PathKey(lodDesc.geometryPath), AssetManager::SYNC);
+            lodDesc.geometryAsset = GetEngineContext()->assetManager->GetAsset<Geometry>(Geometry::PathKey(lodDesc.geometryPath), AssetManager::SYNC);
 
             lodDesc.lodIndex = lodDescriptorArchive->GetInt32("LODIndex");
 
@@ -72,7 +70,7 @@ void MeshLODDescriptor::Deserialize(Vector<MeshLODDescriptor>* meshLODDescriptor
                 if (batchDescriptorArchive != nullptr)
                 {
                     batchDesc.materialPath = serializationContext->GetScenePath() + batchDescriptorArchive->GetString("MaterialPath");
-                    batchDesc.materialAsset = GetEngineContext()->assetManager->GetAsset<Material>(MaterialAssetLoader::PathKey(batchDesc.materialPath), AssetManager::SYNC);
+                    batchDesc.materialAsset = GetEngineContext()->assetManager->GetAsset<Material>(Material::PathKey(batchDesc.materialPath), AssetManager::SYNC);
 
                     batchDesc.switchIndex = batchDescriptorArchive->GetInt32("SwitchIndex");
                     batchDesc.geometryIndex = batchDescriptorArchive->GetUInt32("GeometryIndex");

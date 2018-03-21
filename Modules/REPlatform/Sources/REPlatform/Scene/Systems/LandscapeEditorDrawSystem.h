@@ -52,7 +52,7 @@ public:
 
     void EnableCursor();
     void DisableCursor();
-    void SetCursorTexture(Texture* cursorTexture);
+    void SetCursorTexture(const Asset<Texture>& cursorTexture);
     void SetCursorSize(float32 cursorSize);
     void SetCursorPosition(const Vector2& cursorPos);
 
@@ -84,8 +84,8 @@ public:
 
     bool SaveTileMaskTexture();
     void ResetTileMaskTextures();
-    Texture* GetTileMaskTexture(uint32 layerIndex);
-    void SetTileMaskTexture(uint32 layerIndex, Texture* texture);
+    Asset<Texture> GetTileMaskTexture(uint32 layerIndex);
+    void SetTileMaskTexture(uint32 layerIndex, const Asset<Texture>& texture);
 
     eErrorType VerifyLandscape() const;
 

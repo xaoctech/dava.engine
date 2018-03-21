@@ -8,6 +8,7 @@
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -15,20 +16,20 @@ namespace ShaderAssetLoaderDetail
 {
 size_t KeyHash(const Any& v)
 {
-    const ShaderAssetLoader::Key& key = v.Get<ShaderAssetLoader::Key>();
+    const ShaderDescriptor::Key& key = v.Get<ShaderDescriptor::Key>();
     return key.shaderKeyHash;
 }
 } // namespace ShaderAssetLoaderDetail
 
 ShaderAssetLoader::ShaderAssetLoader()
 {
-    AnyHash<ShaderAssetLoader::Key>::Register(&ShaderAssetLoaderDetail::KeyHash);
+    AnyHash<ShaderDescriptor::Key>::Register(&ShaderAssetLoaderDetail::KeyHash);
 }
 
 AssetFileInfo ShaderAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
-    DVASSERT(assetKey.CanGet<Key>());
-    const Key& k = assetKey.Get<Key>();
+    DVASSERT(assetKey.CanGet<ShaderDescriptor::Key>());
+    const ShaderDescriptor::Key& k = assetKey.Get<ShaderDescriptor::Key>();
 
     AssetFileInfo info;
     if (k.name.IsValid() == false)
@@ -41,9 +42,20 @@ AssetFileInfo ShaderAssetLoader::GetAssetFileInfo(const Any& assetKey) const
     return info;
 }
 
+bool ShaderAssetLoader::ExistsOnDisk(const Any& assetKey) const
+{
+    AssetFileInfo info = GetAssetFileInfo(assetKey);
+
+    FilePath vertexProgSourcePath = FilePath(info.fileName + "-vp.sl");
+    FilePath fragmentProgSourcePath = FilePath(info.fileName + "-fp.sl");
+
+    return GetEngineContext()->fileSystem->IsFile(vertexProgSourcePath) &&
+    GetEngineContext()->fileSystem->IsFile(fragmentProgSourcePath);
+}
+
 AssetBase* ShaderAssetLoader::CreateAsset(const Any& assetKey) const
 {
-    DVASSERT(assetKey.CanGet<Key>());
+    DVASSERT(assetKey.CanGet<ShaderDescriptor::Key>());
     ShaderDescriptor* res = new ShaderDescriptor(assetKey);
     res->valid = false;
     return res;
@@ -70,7 +82,7 @@ void ShaderAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloa
     Asset<ShaderDescriptor> descr = std::dynamic_pointer_cast<ShaderDescriptor>(asset);
     DVASSERT(descr != nullptr);
 
-    const Key& k = descr->GetKey().Get<Key>();
+    const ShaderDescriptor::Key& k = descr->GetKey().Get<ShaderDescriptor::Key>();
 
     Vector<String> progDefines;
     String resName = BuildResourceName(k, progDefines);
@@ -217,8 +229,8 @@ bool ShaderAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode
 Vector<String> ShaderAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
     const Any& assetKey = asset->GetKey();
-    DVASSERT(assetKey.CanGet<Key>());
-    const Key& k = assetKey.Get<Key>();
+    DVASSERT(assetKey.CanGet<ShaderDescriptor::Key>());
+    const ShaderDescriptor::Key& k = assetKey.Get<ShaderDescriptor::Key>();
 
     String error;
     const ShaderSourceCode& source = GetSourceCode(k.name, false, error);
@@ -231,12 +243,7 @@ Vector<String> ShaderAssetLoader::GetDependsOnFiles(const AssetBase* asset) cons
 
 Vector<const Type*> ShaderAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<Key>() };
-}
-
-Vector<const Type*> ShaderAssetLoader::GetAssetTypes() const
-{
-    return Vector<const Type*>{ Type::Instance<ShaderDescriptor>() };
+    return Vector<const Type*>{ Type::Instance<ShaderDescriptor::Key>() };
 }
 
 size_t ShaderAssetLoader::GetUniqueFlagKey(FastName flagName)
@@ -245,7 +252,7 @@ size_t ShaderAssetLoader::GetUniqueFlagKey(FastName flagName)
     return reinterpret_cast<size_t>(flagName.c_str());
 }
 
-String ShaderAssetLoader::BuildResourceName(const Key& key, Vector<String>& progDefines)
+String ShaderAssetLoader::BuildResourceName(const ShaderDescriptor::Key& key, Vector<String>& progDefines)
 {
     progDefines.reserve(key.defines.size() * 2);
     String resName(key.name.c_str());
@@ -369,17 +376,21 @@ bool ShaderAssetLoader::LoadShaderSource(const String& source, Vector<char>& sha
     return false;
 }
 
-ShaderAssetLoader::Key::Key(const FastName& name_, const UnorderedMap<FastName, int32>& inputDefines)
+ShaderDescriptor::Key::Key(const FastName& name_, const UnorderedMap<FastName, int32>& inputDefines)
     : name(name_)
     , defines(inputDefines)
 {
     Renderer::GetRuntimeFlags().AddToDefines(defines);
-    shaderKey = BuildFlagsKey(name, inputDefines);
+    shaderKey = ShaderAssetLoader::BuildFlagsKey(name, inputDefines);
 
     for (size_t v : shaderKey)
     {
         HashCombine<size_t>(shaderKeyHash, v);
     }
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ShaderAssetLoader)
+{
 }
 
 void ShaderAssetListener::Init()
@@ -448,7 +459,7 @@ void ShaderAssetListener::OnAssetError(const Asset<AssetBase>& asset, bool reloa
     shaders.emplace(std::dynamic_pointer_cast<ShaderDescriptor>(asset));
     if (loadingNotify == true)
     {
-        ShaderAssetLoader::Key k = asset->GetKey().Get<ShaderAssetLoader::Key>();
+        ShaderDescriptor::Key k = asset->GetKey().Get<ShaderDescriptor::Key>();
 
         Vector<String> progDefines;
         String resName = ShaderAssetLoader::BuildResourceName(k, progDefines);
@@ -471,11 +482,5 @@ void ShaderAssetListener::Cleanup()
             ++iter;
         }
     }
-}
-
-template <>
-bool AnyCompare<ShaderAssetLoader::Key>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<ShaderAssetLoader::Key>().shaderKey == v2.Get<ShaderAssetLoader::Key>().shaderKey;
 }
 } // namespace DAVA

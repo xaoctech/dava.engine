@@ -7,7 +7,6 @@
 #include "Render/Material/Material.h"
 #include "Render/Material/FXAsset.h"
 #include "Render/Material/NMaterial.h"
-#include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 
 namespace DAVA
 {
@@ -28,6 +27,8 @@ void SetMaterialAssetsFolder(const FilePath& filepath)
 FilePath ImportMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexInfluence)
 {
     using namespace FBXMaterialImportDetails;
+
+    AssetManager* assetManager = GetEngineContext()->assetManager;
 
     auto found = materialCache.find(std::make_pair(fbxMaterial, maxVertexInfluence));
     if (found == materialCache.end())
@@ -58,7 +59,10 @@ FilePath ImportMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexI
             {
                 FilePath texturePath = GetFBXTexturePath(fbxMaterial, tex.first);
                 if (!texturePath.IsEmpty())
-                    material->AddTexture(tex.second, Texture::CreateFromFile(texturePath));
+                {
+                    Texture::PathKey key(texturePath);
+                    material->AddTexture(tex.second, assetManager->GetAsset<Texture>(key, AssetManager::SYNC));
+                }
             }
         }
 
@@ -66,7 +70,7 @@ FilePath ImportMaterial(const FbxSurfaceMaterial* fbxMaterial, uint32 maxVertexI
 
         FilePath materialPath = currentAssetsFolder + materialName + ".mat";
 
-        Asset<Material> materialAsset = GetEngineContext()->assetManager->CreateAsset<Material>(MaterialAssetLoader::PathKey(materialPath));
+        Asset<Material> materialAsset = GetEngineContext()->assetManager->CreateAsset<Material>(Material::PathKey(materialPath));
         materialAsset->SetMaterial(material);
         GetEngineContext()->assetManager->SaveAsset(materialAsset);
 

@@ -5,16 +5,18 @@
 
 #include <TArc/Utils/ModuleCollection.h>
 
-#include <Logger/Logger.h>
-#include <Base/ScopedPtr.h>
+#include <Asset/AssetManager.h>
 #include <Base/BaseTypes.h>
+#include <Base/ScopedPtr.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
+#include <Logger/Logger.h>
 #include <Render/GPUFamilyDescriptor.h>
-#include <Render/Texture.h>
-#include <Render/RHI/rhi_Public.h>
 #include <Render/Renderer.h>
 #include <Render/RenderHelper.h>
-#include <Render/GPUFamilyDescriptor.h>
+#include <Render/RHI/rhi_Public.h>
 #include <Render/Texture.h>
+#include <Render/TextureAssetLoader.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Scene.h>
 
@@ -80,8 +82,10 @@ DAVA::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
     const rhi::HTexture nullTexture;
     const rhi::Viewport nullViewport(0, 0, 1, 1);
 
-    Vector<eGPUFamily> textureLoadingOrder = Texture::GetGPULoadingOrder();
-    Texture::SetGPULoadingOrder({ gpuFamily });
+    TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+
+    Vector<eGPUFamily> textureLoadingOrder = loader->GetGPULoadingOrder();
+    loader->SetGPULoadingOrder({ gpuFamily });
 
     ScopedPtr<Scene> scene(new Scene());
     if (scene->LoadScene(sceneFilePath) == SceneFileV2::eError::ERROR_NO_ERROR)
@@ -121,7 +125,7 @@ DAVA::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
         }
     }
 
-    Texture::SetGPULoadingOrder(textureLoadingOrder);
+    loader->SetGPULoadingOrder(textureLoadingOrder);
 
     return ConsoleModule::eFrameResult::FINISHED;
 }

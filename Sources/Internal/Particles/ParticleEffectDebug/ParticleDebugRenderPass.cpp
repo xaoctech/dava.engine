@@ -4,9 +4,12 @@
 #include "Render/RHI/rhi_Public.h"
 #include "Render/Shader/ShaderAssetLoader.h"
 
+#include "Asset/AssetManager.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/EngineContext.h"
+#include "Engine/Engine.h"
 
 namespace DAVA
 {
@@ -24,7 +27,11 @@ ParticleDebugRenderPass::ParticleDebugRenderPass(ParticleDebugRenderPassConfig c
 {
     static const int width = 1024;
     static const int height = 1024;
-    debugTexture = Texture::CreateFBO(width, height, PixelFormat::FORMAT_RGBA8888);
+    Texture::RenderTargetTextureKey key;
+    key.height = height;
+    key.width = width;
+    key.format = PixelFormat::FORMAT_RGBA8888;
+    debugTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     SetRenderTargetProperties(width, height, PixelFormat::FORMAT_RGBA8888);
 
     passConfig.colorBuffer[0].texture = debugTexture->handle;
@@ -42,7 +49,6 @@ ParticleDebugRenderPass::ParticleDebugRenderPass(ParticleDebugRenderPassConfig c
 
 ParticleDebugRenderPass::~ParticleDebugRenderPass()
 {
-    SafeRelease(debugTexture);
 }
 
 void ParticleDebugRenderPass::Draw(DAVA::RenderSystem* renderSystem, uint32 drawLayersMask)
@@ -59,7 +65,7 @@ void ParticleDebugRenderPass::Draw(DAVA::RenderSystem* renderSystem, uint32 draw
     }
 }
 
-Texture* ParticleDebugRenderPass::GetTexture() const
+Asset<Texture> ParticleDebugRenderPass::GetTexture() const
 {
     return debugTexture;
 }

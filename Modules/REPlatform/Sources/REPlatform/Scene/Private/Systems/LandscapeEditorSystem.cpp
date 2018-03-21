@@ -25,7 +25,6 @@ LandscapeEditorSystem::LandscapeEditorSystem(Scene* scene, const FilePath& curso
 LandscapeEditorSystem::~LandscapeEditorSystem()
 {
     Renderer::GetSignals().needRestoreResources.Disconnect(this);
-    SafeRelease(cursorTexture);
     drawSystem = nullptr;
 }
 

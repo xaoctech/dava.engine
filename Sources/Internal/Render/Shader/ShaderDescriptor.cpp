@@ -230,4 +230,10 @@ void ShaderDescriptor::UpdateConfigFromSource(rhi::ShaderSource* vSource, rhi::S
     vertexSamplerList = vSource->Samplers();
     fragmentSamplerList = fSource->Samplers();
 }
+
+template <>
+bool AnyCompare<ShaderDescriptor::Key>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<ShaderDescriptor::Key>().shaderKey == v2.Get<ShaderDescriptor::Key>().shaderKey;
 }
+} // namespace DAVA

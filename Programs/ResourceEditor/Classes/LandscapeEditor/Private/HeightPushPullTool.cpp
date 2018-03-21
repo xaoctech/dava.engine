@@ -14,6 +14,7 @@
 #include <Engine/Engine.h>
 #include <Engine/EngineTypes.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Render/Texture.h>
 #include <Render/Highlevel/RenderPassNames.h>
 #include <UI/UIEvent.h>
 
@@ -115,7 +116,7 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightP
 
     InitTextures();
     {
-        DAVA::RefPtr<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
+        DAVA::Asset<DAVA::Texture> srcHeightTexture = system->GetOriginalLandscapeTexture(DAVA::Landscape::HEIGHTMAP_TEXTURE, 0);
         DAVA::Vector4 params;
         params.x = strength;
 
@@ -125,7 +126,7 @@ DAVA::Vector<DAVA::BaseTextureRenderLandscapeTool::BrushPhaseDescriptor> HeightP
         descr.phaseMaterial.Set(new DAVA::NMaterial());
         descr.phaseMaterial->SetFXName(DAVA::NMaterialName::LANDSCAPE_BRUSH);
         descr.phaseMaterial->AddFlag(DAVA::FastName("HEIGHTMAP_PUSH_PULL"), 1);
-        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), srcHeightTexture.Get());
+        descr.phaseMaterial->AddTexture(DAVA::FastName("texture0"), srcHeightTexture);
         descr.phaseMaterial->AddProperty(DAVA::FastName("params"), params.data, rhi::ShaderProp::TYPE_FLOAT4, 1);
         descr.renderTarget = floatTexture;
 

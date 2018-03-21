@@ -443,7 +443,7 @@ void QtMainWindow::SetupActions()
     connect(ui->actionReloadLandscapeDependencies, &QAction::triggered, developerTools, &DeveloperTools::OnReloadLandscapeDependencies);
 
     connect(ui->actionDumpTextures, &QAction::triggered, [] {
-        DAVA::Texture::DumpTextures();
+        //DAVA::Texture::DumpTextures();
     });
     connect(ui->actionDumpSprites, &QAction::triggered, [] {
         DAVA::Sprite::DumpSprites();
@@ -952,7 +952,7 @@ void QtMainWindow::OnSaveTiledTexture()
     }
 }
 
-void QtMainWindow::OnTiledTextureRetreived(DAVA::Landscape* landscape, DAVA::Texture* landscapeTexture)
+void QtMainWindow::OnTiledTextureRetreived(DAVA::Landscape* landscape, DAVA::Asset<DAVA::Texture> landscapeTexture)
 {
     DAVA::FilePath pathToSave = landscape->GetPageMaterials(0, 0)->GetEffectiveTexture(DAVA::Landscape::TEXTURE_COLOR)->GetPathname();
     if (pathToSave.IsEmpty())
@@ -990,7 +990,7 @@ void QtMainWindow::OnConvertModifiedTextures()
     }
 
     WaitStart("Conversion of modified textures.", "Checking for modified textures.", 0, 0);
-    DAVA::Map<DAVA::Texture*, DAVA::Vector<DAVA::eGPUFamily>> textures;
+    DAVA::Map<DAVA::Asset<DAVA::Texture>, DAVA::Vector<DAVA::eGPUFamily>> textures;
     int filesToUpdate = DAVA::SceneHelper::EnumerateModifiedTextures(scene.Get(), textures);
 
     if (filesToUpdate == 0)
@@ -1004,7 +1004,7 @@ void QtMainWindow::OnConvertModifiedTextures()
     int convretedNumber = 0;
     waitDialog->SetRange(convretedNumber, filesToUpdate);
     WaitSetValue(convretedNumber);
-    for (DAVA::Map<DAVA::Texture*, DAVA::Vector<DAVA::eGPUFamily>>::iterator it = textures.begin(); it != textures.end(); ++it)
+    for (DAVA::Map<DAVA::Asset<DAVA::Texture>, DAVA::Vector<DAVA::eGPUFamily>>::iterator it = textures.begin(); it != textures.end(); ++it)
     {
         DAVA::TextureDescriptor* descriptor = it->first->GetDescriptor();
 
@@ -1018,15 +1018,6 @@ void QtMainWindow::OnConvertModifiedTextures()
         for (DAVA::eGPUFamily gpu : updatedGPUs)
         {
             DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, quality);
-
-            DAVA::TexturesMap texturesMap = DAVA::Texture::GetTextureMap();
-            DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
-            if (found != texturesMap.end())
-            {
-                DAVA::Texture* tex = found->second;
-                tex->Reload();
-            }
-
             WaitSetValue(++convretedNumber);
         }
     }

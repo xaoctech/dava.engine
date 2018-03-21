@@ -16,11 +16,12 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/RhiUtils.h"
 #include "Render/Highlevel/VelocityPass.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
 #include "Render/Image/Image.h"
+#include "Render/Texture.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 namespace DAVA
 {
@@ -31,7 +32,7 @@ public:
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
 
 private:
-    ScopedPtr<Texture> defaultCubemap;
+    Asset<Texture> defaultCubemap;
 };
 
 class HDRDeferredPass::DeferredDecalPass : public RenderPass
@@ -68,8 +69,8 @@ private:
 
 HDRDeferredPass::GBufferPass::GBufferPass()
     : RenderPass(PASS_GBUFFER)
-    , defaultCubemap(Texture::CreatePink(rhi::TextureType::TEXTURE_TYPE_CUBE))
 {
+    defaultCubemap = GetEngineContext()->assetManager->GetAsset<Texture>(Texture::MakePinkKey(rhi::TextureType::TEXTURE_TYPE_CUBE), AssetManager::SYNC);
     AddRenderLayer(new RenderLayer(RENDER_LAYER_OPAQUE_ID, RenderLayer::LAYER_SORTING_FLAGS_OPAQUE));
 
     Renderer::GetDynamicBindings().SetDynamicTexture(DynamicBindings::DYNAMIC_TEXTURE_GLOBAL_REFLECTION, defaultCubemap->handle);
@@ -286,7 +287,7 @@ void HDRDeferredPass::GBufferResolvePass::Draw(RenderSystem* renderSystem, uint3
     Vector4 lightsCount = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_LIGHTING_PARAMETERS, lightsCount.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
-    Texture* reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetSpecularConvolution2();
+    Asset<Texture> reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetSpecularConvolution2();
     if (screenResolveMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION))
     {
         screenResolveMaterial->SetTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);

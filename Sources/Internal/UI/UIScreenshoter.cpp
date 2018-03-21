@@ -9,6 +9,9 @@
 #include "UI/UI3DView.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Update/UIUpdateSystem.h"
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -18,10 +21,7 @@ UIScreenshoter::UIScreenshoter()
 
 UIScreenshoter::~UIScreenshoter()
 {
-    for (auto& waiter : waiters)
-    {
-        SafeRelease(waiter.texture);
-    }
+    waiters.clear();
 }
 
 void UIScreenshoter::OnFrame()
@@ -36,8 +36,6 @@ void UIScreenshoter::OnFrame()
                 it->callback(it->texture);
             }
 
-            SafeRelease(it->texture);
-
             it = waiters.erase(it);
             itEnd = waiters.end();
         }
@@ -48,37 +46,44 @@ void UIScreenshoter::OnFrame()
     }
 }
 
-RefPtr<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFormat format, bool clearAlpha, bool prepareControl)
+Asset<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFormat format, bool clearAlpha, bool prepareControl)
+{
+    return MakeScreenshot(control, format, nullptr, clearAlpha, prepareControl);
+}
+
+Asset<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFormat format, Function<void(const Asset<Texture>&)> callback, bool clearAlpha, bool prepareControl)
 {
     const Vector2 size(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(control->GetSize()));
-    RefPtr<Texture> screenshot(Texture::CreateFBO(static_cast<int32>(size.dx), static_cast<int32>(size.dy), format, true));
+    AssetManager* assetManager = GetEngineContext()->assetManager;
 
-    MakeScreenshotInternal(control, screenshot.Get(), nullptr, clearAlpha, prepareControl);
+    Texture::RenderTargetTextureKey key;
+    key.width = static_cast<int32>(size.dx);
+    key.height = static_cast<int32>(size.dy);
+    key.format = format;
+    key.isDepth = false;
+    Asset<Texture> screenshot = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+
+    key.isDepth = true;
+    Asset<Texture> depthTarget = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+
+    MakeScreenshotInternal(control, screenshot, depthTarget, callback, clearAlpha, prepareControl);
 
     return screenshot;
 }
 
-RefPtr<Texture> UIScreenshoter::MakeScreenshot(UIControl* control, const PixelFormat format, Function<void(Texture*)> callback, bool clearAlpha, bool prepareControl)
+void UIScreenshoter::MakeScreenshot(UIControl* control, const Asset<Texture>& screenshot, const Asset<Texture>& depthTarget, bool clearAlpha, bool prepareControl)
 {
-    const Vector2 size(GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(control->GetSize()));
-    RefPtr<Texture> screenshot(Texture::CreateFBO(static_cast<int32>(size.dx), static_cast<int32>(size.dy), format, true));
-
-    MakeScreenshotInternal(control, screenshot.Get(), callback, clearAlpha, prepareControl);
-
-    return screenshot;
+    MakeScreenshotInternal(control, screenshot, depthTarget, nullptr, clearAlpha, prepareControl);
 }
 
-void UIScreenshoter::MakeScreenshot(UIControl* control, Texture* screenshot, bool clearAlpha, bool prepareControl)
+void UIScreenshoter::MakeScreenshot(UIControl* control, const Asset<Texture>& screenshot, const Asset<Texture>& depthTarget,
+                                    Function<void(const Asset<Texture>&)> callback, bool clearAlpha, bool prepareControl,
+                                    const rhi::Viewport& viewport)
 {
-    MakeScreenshotInternal(control, screenshot, nullptr, clearAlpha, prepareControl);
+    MakeScreenshotInternal(control, screenshot, depthTarget, callback, clearAlpha, prepareControl, viewport);
 }
 
-void UIScreenshoter::MakeScreenshot(UIControl* control, Texture* screenshot, Function<void(Texture*)> callback, bool clearAlpha, bool prepareControl, const rhi::Viewport& viewport)
-{
-    MakeScreenshotInternal(control, screenshot, callback, clearAlpha, prepareControl, viewport);
-}
-
-void UIScreenshoter::Unsubscribe(Texture* screenshot)
+void UIScreenshoter::Unsubscribe(const Asset<Texture>& screenshot)
 {
     for (auto& waiter : waiters)
     {
@@ -89,14 +94,17 @@ void UIScreenshoter::Unsubscribe(Texture* screenshot)
     }
 }
 
-void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Texture* screenshot, Function<void(Texture*)> callback, bool clearAlpha, bool prepareControl, const rhi::Viewport& viewport)
+void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Asset<Texture> screenshot, Asset<Texture> depthBuffer,
+                                            Function<void(Asset<Texture>)> callback, bool clearAlpha,
+                                            bool prepareControl, const rhi::Viewport& viewport)
 {
     if (control == nullptr)
         return;
     DVASSERT(screenshot);
     // Prepare waiter
     ScreenshotWaiter waiter;
-    waiter.texture = SafeRetain(screenshot);
+    waiter.texture = screenshot;
+    waiter.depth = depthBuffer;
     waiter.callback = callback;
     waiter.syncObj = rhi::GetCurrentFrameSyncObject();
     waiters.push_back(waiter);
@@ -107,9 +115,9 @@ void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Texture* screens
     // Render to texture
     RenderSystem2D::RenderTargetPassDescriptor desc;
     desc.colorAttachment = screenshot->handle;
-    desc.depthAttachment = screenshot->handleDepthStencil;
-    desc.width = viewport.width ? viewport.width : screenshot->GetWidth();
-    desc.height = viewport.height ? viewport.height : screenshot->GetHeight();
+    desc.depthAttachment = depthBuffer->handle;
+    desc.width = viewport.width ? viewport.width : screenshot->width;
+    desc.height = viewport.height ? viewport.height : screenshot->height;
     desc.format = screenshot->GetFormat();
     desc.priority = PRIORITY_SCREENSHOT + PRIORITY_MAIN_2D;
     desc.clearTarget = controlSystem->GetRenderSystem()->GetUI3DViewCount() == 0;
@@ -125,7 +133,7 @@ void UIScreenshoter::MakeScreenshotInternal(UIControl* control, Texture* screens
     //[CLEAR ALPHA]
     if (clearAlpha)
     {
-        Vector2 rectSize = controlSystem->vcs->ConvertPhysicalToVirtual(Vector2(float32(screenshot->GetWidth()), float32(screenshot->GetHeight())));
+        Vector2 rectSize = controlSystem->vcs->ConvertPhysicalToVirtual(Vector2(float32(screenshot->width), float32(screenshot->height)));
         RenderSystem2D::Instance()->FillRect(Rect(0.0f, 0.0f, rectSize.dx, rectSize.dy), Color::White, RenderSystem2D::DEFAULT_2D_FILL_ALPHA_MATERIAL);
     }
 

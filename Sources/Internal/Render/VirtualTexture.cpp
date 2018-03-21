@@ -1,6 +1,5 @@
 #include "Render/VirtualTexture.h"
 #include "Render/DynamicBufferAllocator.h"
-#include "Render/Texture.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/RHI/rhi_Public.h"
@@ -24,22 +23,22 @@ VirtualTexture::VirtualTexture(const Descriptor& descriptor)
     DVASSERT((width % pageSize) == 0 && (height % pageSize) == 0);
     DVASSERT(descriptor.intermediateBuffers.size() >= descriptor.virtualTextureLayers.size());
 
-    Texture::FBODescriptor textureConfig;
+    Texture::RenderTargetTextureKey textureConfig;
     textureConfig.width = width;
     textureConfig.height = height;
     textureConfig.sampleCount = 1;
     textureConfig.mipLevelsCount = mipLevelCount;
     textureConfig.textureType = rhi::TEXTURE_TYPE_2D;
-    textureConfig.needDepth = false;
+    textureConfig.isDepth = false;
     textureConfig.needPixelReadback = false;
     textureConfig.ensurePowerOf2 = false;
 
-    Texture::FBODescriptor pageConfig;
+    Texture::RenderTargetTextureKey pageConfig;
     pageConfig.width = pageSize;
     pageConfig.height = pageSize;
     pageConfig.sampleCount = 1;
     pageConfig.textureType = rhi::TEXTURE_TYPE_2D;
-    pageConfig.needDepth = false;
+    pageConfig.isDepth = false;
     pageConfig.needPixelReadback = false;
     pageConfig.ensurePowerOf2 = false;
 
@@ -50,16 +49,17 @@ VirtualTexture::VirtualTexture(const Descriptor& descriptor)
     intermediateBuffers.dst.resize(intermediateBuffers.size);
 
     uint32 layersCount = uint32(virtualTextureLayers.size());
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     for (uint32 i = 0; i < layersCount; ++i)
     {
         textureConfig.format = descriptor.virtualTextureLayers[i];
-        virtualTextureLayers[i] = Texture::CreateFBO(textureConfig);
+        virtualTextureLayers[i] = assetManager->GetAsset<Texture>(textureConfig, AssetManager::SYNC);
     }
     for (uint32 i = 0; i < intermediateBuffers.size; ++i)
     {
         pageConfig.format = descriptor.intermediateBuffers[i];
-        intermediateBuffers.src[i] = Texture::CreateFBO(pageConfig);
-        intermediateBuffers.dst[i] = Texture::CreateFBO(pageConfig);
+        intermediateBuffers.src[i] = assetManager->GetAsset<Texture>(pageConfig, AssetManager::SYNC);
+        intermediateBuffers.dst[i] = assetManager->GetAsset<Texture>(pageConfig, AssetManager::SYNC);
     }
 
     pageCount = width / pageSize;
@@ -105,46 +105,37 @@ VirtualTexture::VirtualTexture(const Descriptor& descriptor)
 
 VirtualTexture::~VirtualTexture()
 {
-    for (Texture*& l : virtualTextureLayers)
-    {
-        SafeRelease(l);
-    }
     virtualTextureLayers.clear();
-    for (Texture*& src : intermediateBuffers.src)
-        SafeRelease(src);
-    for (Texture*& dst : intermediateBuffers.dst)
-        SafeRelease(dst);
-
     intermediateBuffers.src.clear();
     intermediateBuffers.dst.clear();
 
     SafeRelease(blitMaterial);
 }
 
-Texture* VirtualTexture::GetLayerTexture(uint32 layer) const
+Asset<Texture> VirtualTexture::GetLayerTexture(uint32 layer) const
 {
     DVASSERT(std::size_t(layer) < virtualTextureLayers.size());
     return virtualTextureLayers[layer];
 }
 
-Texture* VirtualTexture::GetIntermediateSourceBuffer(uint32 intermediateBufferLayer) const
+Asset<Texture> VirtualTexture::GetIntermediateSourceBuffer(uint32 intermediateBufferLayer) const
 {
     DVASSERT(std::size_t(intermediateBufferLayer) < intermediateBuffers.size);
     return intermediateBuffers.src[intermediateBufferLayer];
 }
 
-Texture* VirtualTexture::GetIntermediateDestinationBuffer(uint32 intermediateBufferLayer) const
+Asset<Texture> VirtualTexture::GetIntermediateDestinationBuffer(uint32 intermediateBufferLayer) const
 {
     DVASSERT(std::size_t(intermediateBufferLayer) < intermediateBuffers.size);
     return intermediateBuffers.dst[intermediateBufferLayer];
 }
 
-Vector<Texture*> VirtualTexture::GetIntermediateSourceBuffers() const
+Vector<Asset<Texture>> VirtualTexture::GetIntermediateSourceBuffers() const
 {
     return intermediateBuffers.src;
 }
 
-Vector<Texture*> VirtualTexture::GetIntermediateDestinationBuffers() const
+Vector<Asset<Texture>> VirtualTexture::GetIntermediateDestinationBuffers() const
 {
     return intermediateBuffers.dst;
 }

@@ -5,22 +5,13 @@
 #include "FileSystem/File.h"
 #include "Base/Type.h"
 #include "Base/BaseTypes.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
-class MaterialAssetLoader : public AbstractAssetLoader
+class MaterialAssetLoader final : public AbstractAssetLoader
 {
 public:
-    struct PathKey
-    {
-        PathKey() = default;
-        PathKey(const FilePath& filepath)
-            : path(filepath)
-        {
-        }
-        FilePath path;
-    };
-
     MaterialAssetLoader();
     AssetFileInfo GetAssetFileInfo(const Any& assetKey) const override;
 
@@ -32,11 +23,9 @@ public:
     Vector<String> GetDependsOnFiles(const AssetBase* asset) const override;
 
     Vector<const Type*> GetAssetKeyTypes() const override;
-    Vector<const Type*> GetAssetTypes() const override;
-};
 
-template <>
-bool AnyCompare<MaterialAssetLoader::PathKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<MaterialAssetLoader::PathKey>;
+private:
+    DAVA_VIRTUAL_REFLECTION(MaterialAssetLoader, AbstractAssetLoader);
+};
 
 } // namespace DAVA

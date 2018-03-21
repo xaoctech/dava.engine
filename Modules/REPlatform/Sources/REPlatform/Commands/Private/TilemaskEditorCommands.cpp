@@ -2,6 +2,9 @@
 #include "REPlatform/Scene/Systems/LandscapeProxy.h"
 #include "REPlatform/Scene/SceneEditor2.h"
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/Highlevel/Landscape.h>
@@ -19,7 +22,7 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy_, co
 
     for (uint32 i = 0; i < landscapeProxy->GetLayersCount(); ++i)
     {
-        ScopedPtr<Image> currentImageMask(landscapeProxy->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->CreateImageFromMemory());
+        ScopedPtr<Image> currentImageMask(landscapeProxy->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->CreateImageFromRegion());
         redoImageMask.push_back(Image::CopyImageRegion(currentImageMask, updatedRect));
 
         undoImageMask.push_back(Image::CopyImageRegion(landscapeProxy->GetTilemaskImageCopy(i), updatedRect));
@@ -73,30 +76,31 @@ void ModifyTilemaskCommand::InvalidateLandscapePart()
     Rect fullRect;
     for (uint32 i = 0; i < landscapeProxy->GetLayersCount(); ++i)
     {
-        Texture* tilemask = landscapeProxy->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
+        Asset<Texture> tilemask = landscapeProxy->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
         Rect rect = updatedRect;
-        rect.x /= tilemask->GetWidth();
-        rect.dx /= tilemask->GetWidth();
-        rect.y /= tilemask->GetHeight();
-        rect.dy /= tilemask->GetHeight();
+        rect.x /= tilemask->width;
+        rect.dx /= tilemask->width;
+        rect.y /= tilemask->height;
+        rect.dy /= tilemask->height;
         rect.y = 1.f - (rect.y + rect.dy);
         fullRect.Combine(rect);
     }
     landscapeProxy->GetBaseLandscape()->InvalidatePages(fullRect);
 }
 
-void ModifyTilemaskCommand::ApplyImageToTexture(Image* image, Texture* dstTex)
+void ModifyTilemaskCommand::ApplyImageToTexture(Image* image, const Asset<Texture>& dstTex)
 {
-    ScopedPtr<Texture> fboTexture(Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false));
+    Texture::UniqueTextureKey key(RefPtr<Image>::ConstructWithRetain(image), false);
+    Asset<Texture> fboTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     auto material = RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL;
 
     RenderSystem2D::RenderTargetPassDescriptor desc;
     desc.priority = PRIORITY_SERVICE_2D;
     desc.colorAttachment = dstTex->handle;
-    desc.depthAttachment = dstTex->handleDepthStencil;
-    desc.width = dstTex->GetWidth();
-    desc.height = dstTex->GetHeight();
+    desc.depthAttachment = rhi::HTexture();
+    desc.width = dstTex->width;
+    desc.height = dstTex->height;
     desc.clearTarget = false;
     desc.transformVirtualToPhysical = false;
     RenderSystem2D::Instance()->BeginRenderTargetPass(desc);

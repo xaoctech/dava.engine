@@ -45,6 +45,17 @@ public: //utility
     static uint32 CalculateDataSize(rhi::ShaderProp::Type type, uint32 arraySize); //return in float
 
 public:
+    struct Key
+    {
+        Key() = default;
+        Key(const FastName& name, const UnorderedMap<FastName, int32>& inputDefines);
+
+        FastName name;
+        UnorderedMap<FastName, int32> defines;
+        Vector<size_t> shaderKey;
+        size_t shaderKeyHash = 0;
+    };
+
     void UpdateDynamicParams();
     void ClearDynamicBindings();
 
@@ -104,4 +115,8 @@ inline bool ShaderDescriptor::IsValid()
 {
     return valid;
 }
+
+template <>
+bool AnyCompare<ShaderDescriptor::Key>::IsEqual(const Any& v1, const Any& v2);
+extern template struct AnyCompare<ShaderDescriptor::Key>;
 };

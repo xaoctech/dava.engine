@@ -3,9 +3,11 @@
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Asset/Asset.h"
 
 namespace DAVA
 {
+class Texture;
 class Component;
 class ParticleForce;
 
@@ -19,10 +21,10 @@ public:
 
     struct MaterialData
     {
-        Texture* texture = nullptr;
-        Texture* flowmap = nullptr;
-        Texture* noise = nullptr;
-        Texture* alphaRemapTexture = nullptr;
+        Asset<Texture> texture;
+        Asset<Texture> flowmap;
+        Asset<Texture> noise;
+        Asset<Texture> alphaRemapTexture;
         eBlending blending = BLENDING_ALPHABLEND;
         uint64 layerId = 1;
         bool enableFog = false;
@@ -81,8 +83,6 @@ public:
     inline void SetAllowLodDegrade(bool allowDegrade);
     inline bool GetAllowLodDegrade() const;
 
-    inline const Vector<std::pair<MaterialData, NMaterial*>>& GetMaterialInstances() const;
-
     void PrebuildMaterials(ParticleEffectComponent* component);
 
 protected:
@@ -125,11 +125,6 @@ private: //materials stuff
     bool allowLodDegrade;
     bool is2DMode;
 };
-
-inline const Vector<std::pair<ParticleEffectSystem::MaterialData, NMaterial*>>& ParticleEffectSystem::GetMaterialInstances() const
-{
-    return particlesMaterials;
-}
 
 inline void ParticleEffectSystem::SetAllowLodDegrade(bool allowDegrade)
 {

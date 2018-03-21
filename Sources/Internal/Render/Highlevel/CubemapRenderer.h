@@ -4,6 +4,7 @@
 #include "Base/RefPtr.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Highlevel/QuadRenderer.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -18,27 +19,19 @@ public:
     CubemapRenderer();
     ~CubemapRenderer();
 
-    void RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point, Texture* target, uint32 drawLayersMask);
+    void RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point,
+                       const Asset<Texture>& target, const Asset<Texture>& depthStencil, uint32 drawLayersMask);
 
-    void ConvoluteDiffuseCubemap(Texture* inputTexture,
-                                 rhi::HTexture cubemapOutput,
-                                 uint32 outputWidth,
-                                 uint32 outputHeight,
-                                 uint32 outputMipLevels);
+    void ConvoluteDiffuseCubemap(Asset<Texture>& inputTexture, rhi::HTexture cubemapOutput,
+                                 uint32 outputWidth, uint32 outputHeight, uint32 outputMipLevels);
 
-    void ConvoluteSpecularCubemap(Texture* inputTexture,
-                                  Texture* outputTexture,
-                                  uint32 outputMipLevels);
+    void ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels);
 
-    void EdgeFilterCubemap(Texture* inputTexture,
-                           Texture* outputTexture,
-                           uint32 outputMipLevels);
+    void EdgeFilterCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels);
+    void CopyCubemap(const Asset<Texture>& inputTexture, uint32 inputStartMip, uint32 mipCount,
+                     const Asset<Texture>& outputTexture, uint32 outputStartMip);
 
-    void CopyCubemap(Texture* inputTexture,
-                     uint32 inputStartMip, uint32 mipCount,
-                     Texture* outputTexture, uint32 outputStartMip);
-
-    void ConvoluteSphericalHarmonics(Texture* input, rhi::HTexture target);
+    void ConvoluteSphericalHarmonics(Asset<Texture>& input, rhi::HTexture target);
 
     void InvalidateMaterials();
 
@@ -54,7 +47,7 @@ private:
     QuadRenderer quadRenderer;
 
     NMaterial* cubemapFunctionsMaterial = nullptr;
-    Texture* hammersleyTexture = nullptr;
+    Asset<Texture> hammersleyTexture;
 
     const FastName CUBEMAP_SPECULAR_CONVOLUTION = FastName("ConvolutionSpecular");
     const FastName CUBEMAP_DIFFUSE_CONVOLUTION = FastName("ConvolutionDiffuse");

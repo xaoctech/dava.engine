@@ -11,12 +11,12 @@ namespace DAVA
 class ReadBackRingArray final
 {
 public:
-    ReadBackRingArray(const Texture::FBODescriptor& descriptor, uint32 initialSize);
+    ReadBackRingArray(const Texture::RenderTargetTextureKey& descriptor, uint32 initialSize);
     ~ReadBackRingArray();
 
-    RefPtr<Texture> AcquireTexture(rhi::HSyncObject syncObject);
+    Asset<Texture> AcquireTexture(rhi::HSyncObject syncObject);
 
-    Signal<RefPtr<Texture>> textureReady;
+    Signal<const Asset<Texture>&> textureReady;
 
 private:
     void AllocateTexture();
@@ -24,12 +24,12 @@ private:
     {
         Token callbackToken;
         rhi::HSyncObject syncObject;
-        RefPtr<Texture> texture;
+        Asset<Texture> texture;
     };
 
-    RefPtr<Texture> AcquireTexture(TextureNode& node, rhi::HSyncObject syncObject);
+    Asset<Texture> AcquireTexture(TextureNode& node, rhi::HSyncObject syncObject);
 
     Vector<TextureNode> nodes;
-    Texture::FBODescriptor descriptor;
+    Texture::RenderTargetTextureKey descriptor;
 };
 } // namespace DAVA

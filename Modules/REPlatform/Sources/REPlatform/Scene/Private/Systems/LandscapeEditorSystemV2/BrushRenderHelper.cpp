@@ -80,7 +80,7 @@ UVPickTextureCopier::~UVPickTextureCopier()
     blitMaterial.Set(nullptr);
 }
 
-void UVPickTextureCopier::BlitTextureRect(const Rect& srcRect, RefPtr<Texture> targetTexture, int32 basePriority)
+void UVPickTextureCopier::BlitTextureRect(const Rect& srcRect, Asset<Texture> targetTexture, int32 basePriority)
 {
     using namespace BrushRenderHelperDetails;
 

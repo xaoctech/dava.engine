@@ -10,6 +10,8 @@
 #include "DeviceManager/DeviceManager.h"
 #include "DeviceManager/DeviceManagerTypes.h"
 #include "Render/Renderer.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -63,7 +65,13 @@ RuntimeTextures::RuntimeTextures()
 
 RuntimeTextures::~RuntimeTextures()
 {
+}
+
+void RuntimeTextures::Teardown()
+{
     NMaterialManager::Instance().UnregisterInvalidateCallback(RuntimeTexturesInvalidateCallback);
+    pinkTexture[0].reset();
+    pinkTexture[1].reset();
 }
 
 void RuntimeTextures::Reset(Size2i screenDim)
@@ -160,7 +168,7 @@ rhi::HTexture RuntimeTextures::GetPinkTexture(rhi::TextureType type)
     int32 textureIndex = type - 1;
 
     if (!pinkTexture[textureIndex])
-        pinkTexture[textureIndex] = Texture::CreatePink(type);
+        pinkTexture[textureIndex] = GetEngineContext()->assetManager->GetAsset<Texture>(Texture::MakePinkKey(type), AssetManager::SYNC);
 
     return pinkTexture[textureIndex]->handle;
 }
@@ -170,7 +178,7 @@ rhi::SamplerState::Descriptor::Sampler RuntimeTextures::GetPinkTextureSamplerSta
     int32 textureIndex = type - 1;
 
     if (!pinkTexture[textureIndex])
-        pinkTexture[textureIndex] = Texture::CreatePink(type);
+        pinkTexture[textureIndex] = GetEngineContext()->assetManager->GetAsset<Texture>(Texture::MakePinkKey(type), AssetManager::SYNC);
 
     return pinkTexture[textureIndex]->samplerState;
 }
@@ -189,8 +197,8 @@ void RuntimeTextures::ClearRuntimeTextures()
     for (int32 i = 0; i < RUNTIME_TEXTURES_COUNT; i++)
         InvalidateTexture(static_cast<eRuntimeTextureSemantic>(i));
 
-    SafeRelease(pinkTexture[0]);
-    SafeRelease(pinkTexture[1]);
+    pinkTexture[0].reset();
+    pinkTexture[1].reset();
 }
 
 void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
@@ -390,15 +398,25 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
 #if (LOAD_BRDF_LOOKUP_TEXTURE)
         ScopedPtr<Image> image(ImageSystem::LoadSingleMip("~res:/Textures/brdflookup.png"));
         runtimeTextureSizes[semantic] = Size2i(image->width, image->height);
-        runtimeTextures[semantic] = Texture::CreateFromData(image, false)->handle;
+
+        rhi::Texture::Descriptor descriptor;
+        descriptor.autoGenMipmaps = false;
+        descriptor.isRenderTarget = false;
+        descriptor.width = image->width;
+        descriptor.height = image->height;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
+        descriptor.format = PixelFormatDescriptor::GetPixelFormatDescriptor(image->format).format;
+        descriptor.levelCount = 1;
+        descriptor.initialData[0] = image->data;
+        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
 #else
-        runtimeTextures[semantic] = ServiceTextures::GenerateSplitSumApproximationLookupTexture(descriptor.width, descriptor.height)->handle;
+        runtimeTextures[semantic] = ServiceTextures::GenerateSplitSumApproximationLookupTexture(descriptor.width, descriptor.height);
 #endif
         break;
     }
     case RuntimeTextures::TEXTURE_HAMMERSLEY_SET:
     {
-        runtimeTextures[semantic] = ServiceTextures::CreateHammersleySet(1024)->handle;
+        runtimeTextures[semantic] = ServiceTextures::CreateHammersleySet(1024);
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
@@ -410,7 +428,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     case RuntimeTextures::TEXTURE_SCREEN_SPACE_NOISE:
     {
 #if (USE_BLUE_NOISE_TEXTURE)
-        ScopedPtr<Image> image(ImageSystem::LoadSingleMip("~res:/Textures/bluenoise.png"));
+        RefPtr<Image> image(ImageSystem::LoadSingleMip("~res:/Textures/bluenoise.png"));
         runtimeTextureSizes[semantic] = Size2i(image->width, image->height);
         DVASSERT(image->format == PixelFormat::FORMAT_RGBA8888);
 
@@ -422,8 +440,17 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
             image->data[4 * i + 0] = static_cast<uint32>((cosA * 0.5f + 0.5f) * 255.0f);
             image->data[4 * i + 1] = static_cast<uint32>((sinA * 0.5f + 0.5f) * 255.0f);
         }
-        Texture* noiseTexture = Texture::CreateFromData(image, false);
-        runtimeTextures[semantic] = noiseTexture->handle;
+
+        rhi::Texture::Descriptor descriptor;
+        descriptor.autoGenMipmaps = false;
+        descriptor.isRenderTarget = false;
+        descriptor.width = image->width;
+        descriptor.height = image->height;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
+        descriptor.format = PixelFormatDescriptor::GetPixelFormatDescriptor(image->format).format;
+        descriptor.levelCount = 1;
+        descriptor.initialData[0] = image->data;
+        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
 #else
         runtimeTextureSizes[TEXTURE_SCREEN_SPACE_NOISE] = Size2i(64, 64);
         Texture* noiseTexture = ServiceTextures::GenerateNoiseTexture(64, 64);

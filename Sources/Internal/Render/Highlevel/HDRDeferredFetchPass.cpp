@@ -4,7 +4,6 @@
 #include "Render/3D/MeshUtils.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/DynamicBufferAllocator.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
@@ -66,7 +65,7 @@ void DeferredLightsRenderer::InvalidateMaterials()
     if (useFetch)
         flags[NMaterialFlagName::FLAG_USE_FRAMEBUFFER_FETCH] = 1;
 
-    ShaderAssetLoader::Key key(FastName("~res:/Materials2/Shaders/deferred-light"), flags);
+    ShaderDescriptor::Key key(FastName("~res:/Materials2/Shaders/deferred-light"), flags);
     deferredLightsShader = GetEngineContext()->assetManager->GetAsset<ShaderDescriptor>(key, AssetManager::SYNC);
     if (!deferredLightsShader->IsValid())
         return;

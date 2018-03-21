@@ -20,7 +20,7 @@ public:
     void SetEnabled(bool enabled);
     bool IsEnabled() const;
 
-    Texture* GetTexture();
+    Asset<Texture> GetTexture();
     void UpdateTexture(Heightmap* heightmap,
                        const AABBox3& landscapeBoundingBox,
                        const Rect2i& forRect);
@@ -41,7 +41,7 @@ private:
     };
 
     bool enabled;
-    Texture* notPassableTexture;
+    Asset<Texture> notPassableTexture;
     float32 notPassableAngleTan;
     Vector<TerrainColor> angleColor;
 

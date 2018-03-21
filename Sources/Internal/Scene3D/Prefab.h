@@ -11,6 +11,16 @@ class Scene;
 class Prefab : public AssetBase
 {
 public:
+    struct PathKey
+    {
+        PathKey() = default;
+        PathKey(const FilePath& filepath)
+            : path(filepath)
+        {
+        }
+        FilePath path;
+    };
+
     Prefab(const Any& assetKey);
     ~Prefab() override;
 
@@ -44,4 +54,8 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(Prefab, AssetBase);
 };
+
+template <>
+bool AnyCompare<Prefab::PathKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Prefab::PathKey>;
 }

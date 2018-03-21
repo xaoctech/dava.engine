@@ -6,7 +6,6 @@
 #include "Render/Highlevel/ShadowVolumeRenderLayer.h"
 #include "Render/Highlevel/PostEffectRenderer.h"
 #include "Render/Highlevel/ReflectionRenderer.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -17,6 +16,7 @@
 #include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"
 #include "Render/VisibilityQueryResults.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
@@ -54,7 +54,6 @@ RenderPass::~RenderPass()
     {
         SafeDelete(layer);
     }
-    SafeRelease(multisampledTexture);
 }
 
 void RenderPass::AddRenderLayer(RenderLayer* layer, eRenderLayerID afterLayer)
@@ -218,19 +217,21 @@ void RenderPass::ValidateMultisampledTextures(const rhi::RenderPassConfig& confi
     (multisampledDescription.width != renderTargetProperties.width) ||
     (multisampledDescription.height != renderTargetProperties.height);
 
-    if (invalidDescription || (multisampledTexture == nullptr))
+    if (invalidDescription || (multisampledTexture == nullptr) || (multisampledDepthTexture))
     {
-        SafeRelease(multisampledTexture);
-
         multisampledDescription.width = renderTargetProperties.width;
         multisampledDescription.height = renderTargetProperties.height;
         multisampledDescription.format = renderTargetProperties.format;
-        multisampledDescription.needDepth = true;
         multisampledDescription.needPixelReadback = false;
         multisampledDescription.ensurePowerOf2 = false;
         multisampledDescription.sampleCount = requestedSamples;
+        multisampledDescription.isDepth = true;
 
-        multisampledTexture = Texture::CreateFBO(multisampledDescription);
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        multisampledDepthTexture = assetManager->GetAsset<Texture>(multisampledDescription, AssetManager::SYNC);
+
+        multisampledDescription.isDepth = false;
+        multisampledTexture = assetManager->GetAsset<Texture>(multisampledDescription, AssetManager::SYNC);
     }
 }
 
@@ -267,7 +268,7 @@ bool RenderPass::BeginRenderPass(const rhi::RenderPassConfig& config)
 
         ValidateMultisampledTextures(internalConfig);
         internalConfig.colorBuffer[0].multisampleTexture = multisampledTexture->handle;
-        internalConfig.depthStencilBuffer.multisampleTexture = multisampledTexture->handleDepthStencil;
+        internalConfig.depthStencilBuffer.multisampleTexture = multisampledDepthTexture->handle;
     }
 
     renderPass = rhi::AllocateRenderPass(internalConfig, 1, &packetList);

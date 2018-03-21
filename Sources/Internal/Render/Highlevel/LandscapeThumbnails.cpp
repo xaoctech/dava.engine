@@ -1,9 +1,13 @@
 #include "Render/Highlevel/LandscapeThumbnails.h"
 #include "Concurrency/LockGuard.h"
 #include "Render/Renderer.h"
-#include "Render/Shader/ShaderAssetLoader.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderPassNames.h"
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Render/Texture.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 namespace DAVA
 {
@@ -55,7 +59,7 @@ struct ThumbnailRequest
 {
     rhi::HSyncObject syncObject;
     Landscape* landscape = nullptr;
-    Texture* texture = nullptr;
+    Asset<Texture> texture = nullptr;
     LandscapeThumbnails::Callback callback;
     MaterialFlagsDisabler flagsDisabler;
     RequestID requestID = InvalidID;
@@ -66,7 +70,7 @@ struct ThumbnailRequest
     Landscape* l,
     const ScopedPtr<NMaterial>& thumbnailMaterial,
     const Vector<FastName>& flagsToDisable,
-    Texture* tex,
+    Asset<Texture> tex,
     LandscapeThumbnails::Callback cb,
     RequestID requestId)
         : syncObject(so)
@@ -142,7 +146,13 @@ RequestID Create(Landscape* landscape, LandscapeThumbnails::Callback handler)
 
     ScopedPtr<NMaterial> thumbnailMaterial(landscape->GetPageMaterials(0, 0)->Clone());
     rhi::HSyncObject syncObject = rhi::CreateSyncObject();
-    Texture* texture = Texture::CreateFBO(TEXTURE_TILE_FULL_SIZE, TEXTURE_TILE_FULL_SIZE, FORMAT_RGBA8888);
+
+    Texture::RenderTargetTextureKey key;
+    key.width = TEXTURE_TILE_FULL_SIZE;
+    key.height = TEXTURE_TILE_FULL_SIZE;
+    key.format = FORMAT_RGBA8888;
+
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     {
         Vector<FastName> flagsToDisable{ NMaterialFlagName::FLAG_VERTEXFOG,
                                          NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING

@@ -1,5 +1,4 @@
-#ifndef __DAVEAENGINE_UI_SCREENSHOTER__
-#define __DAVEAENGINE_UI_SCREENSHOTER__
+#pragma once
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
@@ -42,7 +41,7 @@ public:
      * \param format PixelFormat
      * \return target texture
      */
-    RefPtr<Texture> MakeScreenshot(UIControl* control, const PixelFormat format, bool clearAlpha = false, bool prepareControl = true);
+    Asset<Texture> MakeScreenshot(UIControl* control, const PixelFormat format, bool clearAlpha = false, bool prepareControl = true);
 
     /**
      * \brief Render control to texture and call callback when it will rendered
@@ -51,7 +50,7 @@ public:
      * \param format PixelFormat
      * \param callback function which be called after render
      */
-    RefPtr<Texture> MakeScreenshot(UIControl* control, const PixelFormat format, Function<void(Texture*)> callback, bool clearAlpha = false, bool prepareControl = true);
+    Asset<Texture> MakeScreenshot(UIControl* control, const PixelFormat format, Function<void(const Asset<Texture>&)> callback, bool clearAlpha = false, bool prepareControl = true);
 
     /**
      * \brief Render control to target texture
@@ -59,7 +58,7 @@ public:
      * \param control pointer to source UIControl
      * \param screenshot pointer to target Texture
      */
-    void MakeScreenshot(UIControl* control, Texture* screenshot, bool clearAlpha = false, bool prepareControl = true);
+    void MakeScreenshot(UIControl* control, const Asset<Texture>& screenshot, const Asset<Texture>& depthTarget, bool clearAlpha = false, bool prepareControl = true);
 
     /**
     * \brief Render control to target texture
@@ -68,27 +67,28 @@ public:
     * \param screenshot pointer to target Texture
     * \param callback function which be called after render
     */
-    void MakeScreenshot(UIControl* control, Texture* screenshot, Function<void(Texture*)> callback, bool clearAlpha = false, bool prepareControl = true, const rhi::Viewport& viewport = rhi::Viewport());
+    void MakeScreenshot(UIControl* control, const Asset<Texture>& screenshot, const Asset<Texture>& depthTarget,
+                        Function<void(const Asset<Texture>&)> callback, bool clearAlpha = false, bool prepareControl = true,
+                        const rhi::Viewport& viewport = rhi::Viewport());
 
     /**
      * \brief Unsubscribe callback by texture pointer after making screenshot 
      * 
      * \param screenshot pointer to screenshot texture
      */
-    void Unsubscribe(Texture* screenshot);
+    void Unsubscribe(const Asset<Texture>& screenshot);
 
 private:
     struct ScreenshotWaiter
     {
-        Texture* texture = nullptr;
+        Asset<Texture> texture;
+        Asset<Texture> depth;
         rhi::HSyncObject syncObj;
-        Function<void(Texture*)> callback;
+        Function<void(const Asset<Texture>&)> callback;
     };
 
-    void MakeScreenshotInternal(UIControl* control, Texture* screenshot, Function<void(Texture*)> callback, bool clearAlpha, bool prepareControl, const rhi::Viewport& viewport = rhi::Viewport());
+    void MakeScreenshotInternal(UIControl* control, Asset<Texture> screenshot, Asset<Texture> depthBuffer, Function<void(Asset<Texture>)> callback, bool clearAlpha, bool prepareControl, const rhi::Viewport& viewport = rhi::Viewport());
 
     List<ScreenshotWaiter> waiters;
 };
 };
-
-#endif //__DAVEAENGINE_UI_SCREENSHOTER__

@@ -1,8 +1,11 @@
 #include "REPlatform/Scene/Private/Systems/VisibilityCheckRenderer.h"
 
-#include <Render/Shader/ShaderAssetLoader.h>
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
+#include <Render/Shader/ShaderAssetLoader.h>
 #include <UI/UIControlSystem.h>
 
 namespace DAVA
@@ -121,12 +124,15 @@ void VisibilityCheckRenderer::SetDelegate(VisibilityCheckRendererDelegate* de)
     renderDelegate = de;
 }
 
-void VisibilityCheckRenderer::RenderToCubemapFromPoint(RenderSystem* renderSystem, const Vector3& point, Texture* cubemapTarget)
+void VisibilityCheckRenderer::RenderToCubemapFromPoint(RenderSystem* renderSystem, const Vector3& point, const Asset<Texture>& cubemapTarget, const Asset<Texture>& depthTarget)
 {
     renderTargetConfig.colorBuffer[0].texture = cubemapTarget->handle;
-    renderTargetConfig.depthStencilBuffer.texture = cubemapTarget->handleDepthStencil;
-    renderTargetConfig.viewport.width = cubemapTarget->GetWidth();
-    renderTargetConfig.viewport.height = cubemapTarget->GetHeight();
+    if (depthTarget != nullptr)
+    {
+        renderTargetConfig.depthStencilBuffer.texture = depthTarget->handle;
+    }
+    renderTargetConfig.viewport.width = cubemapTarget->width;
+    renderTargetConfig.viewport.height = cubemapTarget->height;
 
     cubemapCamera->SetPosition(point);
     for (uint32 i = 0; i < 6; ++i)
@@ -247,7 +253,7 @@ void VisibilityCheckRenderer::PreRenderScene(RenderSystem* renderSystem, Camera*
 
     prerenderConfig.name = "PreRenderScene";
     prerenderConfig.colorBuffer[0].texture = renderTarget->handle;
-    prerenderConfig.depthStencilBuffer.texture = renderTarget->handleDepthStencil;
+    prerenderConfig.depthStencilBuffer.texture = renderTargetDepth->handle;
     RenderPassScope pass(prerenderConfig);
 
     fromCamera->SetupDynamicParameters(false, false);
@@ -282,7 +288,7 @@ void VisibilityCheckRenderer::RenderWithCurrentSettings(RenderSystem* renderSyst
     }
 }
 
-void VisibilityCheckRenderer::UpdateVisibilityMaterialProperties(Texture* cubemapTexture, const VisbilityPoint& vp)
+void VisibilityCheckRenderer::UpdateVisibilityMaterialProperties(Asset<Texture> cubemapTexture, const VisbilityPoint& vp)
 {
     if (visibilityMaterial->HasLocalTexture(MaterialParamCubemap))
     {
@@ -302,7 +308,7 @@ void VisibilityCheckRenderer::UpdateVisibilityMaterialProperties(Texture* cubema
 }
 
 void VisibilityCheckRenderer::RenderVisibilityToTexture(RenderSystem* renderSystem, Camera* batchesCamera,
-                                                        Camera* fromCamera, Texture* cubemap, const VisbilityPoint& vp)
+                                                        Camera* fromCamera, Asset<Texture> cubemap, const VisbilityPoint& vp)
 {
     Vector<RenderBatch*> renderBatches;
     UpdateVisibilityMaterialProperties(cubemap, vp);
@@ -310,7 +316,7 @@ void VisibilityCheckRenderer::RenderVisibilityToTexture(RenderSystem* renderSyst
 
     visibilityConfig.name = "Visibility_RenderVisibilityToTexture";
     visibilityConfig.colorBuffer[0].texture = renderTarget->handle;
-    visibilityConfig.depthStencilBuffer.texture = renderTarget->handleDepthStencil;
+    visibilityConfig.depthStencilBuffer.texture = renderTargetDepth->handle;
 
     ShaderAssetListener::Instance()->ClearDynamicBindigs();
     fromCamera->SetupDynamicParameters(false, false);
@@ -355,17 +361,27 @@ void VisibilityCheckRenderer::ReleaseFrame()
 
 void VisibilityCheckRenderer::CreateOrUpdateRenderTarget(const Size2i& sz)
 {
-    if ((renderTarget == nullptr) || (renderTarget->GetWidth() != sz.dx) || (renderTarget->GetHeight() != sz.dy))
+    if ((renderTarget == nullptr) || (renderTarget->width != sz.dx) || (renderTarget->height != sz.dy))
     {
-        SafeRelease(renderTarget);
-        renderTarget = Texture::CreateFBO(sz.dx, sz.dy, PixelFormat::FORMAT_RGBA8888, true, rhi::TEXTURE_TYPE_2D, false);
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        Texture::RenderTargetTextureKey key;
+        key.width = sz.dx;
+        key.height = sz.dy;
+        key.format = FORMAT_RGBA8888;
+        key.isDepth = false;
+        key.ensurePowerOf2 = false;
+
+        renderTarget = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         renderTarget->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
+
+        key.isDepth = true;
+        renderTargetDepth = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     }
 }
 
 namespace VCRLocal
 {
-inline void PutTexture(NMaterial* mat, const FastName& slot, Texture* tex)
+inline void PutTexture(NMaterial* mat, const FastName& slot, const Asset<Texture>& tex)
 {
     if (mat->HasLocalTexture(slot))
     {
@@ -380,15 +396,22 @@ inline void PutTexture(NMaterial* mat, const FastName& slot, Texture* tex)
 
 void VisibilityCheckRenderer::FixFrame(RenderSystem* renderSystem, Camera* fromCamera)
 {
-    SafeRelease(fixedFrame);
-    SafeRelease(reprojectionTexture);
-    SafeRelease(distanceRenderTarget);
+    fixedFrame.reset();
+    reprojectionTexture.reset();
+    distanceRenderTarget.reset();
 
     auto rs2d = RenderSystem2D::Instance();
-    uint32 w = renderTarget->GetWidth();
-    uint32 h = renderTarget->GetHeight();
+    uint32 w = renderTarget->width;
+    uint32 h = renderTarget->height;
 
-    fixedFrame = Texture::CreateFBO(w, h, PixelFormat::FORMAT_RGBA8888, false, rhi::TextureType::TEXTURE_TYPE_2D, false);
+    Texture::RenderTargetTextureKey key;
+    key.width = w;
+    key.height = h;
+    key.format = FORMAT_RGBA8888;
+    key.isDepth = false;
+    key.ensurePowerOf2 = false;
+
+    fixedFrame = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     fixedFrame->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureFilter::TEXFILTER_LINEAR, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
     fromCamera->PrepareDynamicParameters(false, false);
     fixedFrameMatrix = fromCamera->GetViewProjMatrix(false, false);
@@ -399,20 +422,28 @@ void VisibilityCheckRenderer::FixFrame(RenderSystem* renderSystem, Camera* fromC
     desc.priority = PRIORITY_SERVICE_2D;
     desc.clearColor = Color::Clear;
     desc.colorAttachment = fixedFrame->handle;
-    desc.depthAttachment = fixedFrame->handleDepthStencil;
+    desc.depthAttachment = rhi::HTexture();
     desc.transformVirtualToPhysical = false;
     rs2d->BeginRenderTargetPass(desc);
     rs2d->DrawTexture(renderTarget, RenderSystem2D::DEFAULT_2D_TEXTURE_ADDITIVE_MATERIAL, Color::White);
     rs2d->EndRenderTargetPass();
 
-    reprojectionTexture = Texture::CreateFBO(w, h, PixelFormat::FORMAT_RGBA8888, true, rhi::TextureType::TEXTURE_TYPE_2D, false);
+    Texture::RenderTargetTextureKey reprojKey = key;
+    reprojectionTexture = GetEngineContext()->assetManager->GetAsset<Texture>(reprojKey, AssetManager::SYNC);
+    reprojKey.isDepth = true;
+    reprojectionTextureDepth = GetEngineContext()->assetManager->GetAsset<Texture>(reprojKey, AssetManager::SYNC);
     reprojectionConfig.colorBuffer[0].texture = reprojectionTexture->handle;
-    reprojectionConfig.depthStencilBuffer.texture = reprojectionTexture->handleDepthStencil;
+    reprojectionConfig.depthStencilBuffer.texture = reprojectionTextureDepth->handle;
 
-    distanceRenderTarget = Texture::CreateFBO(w, h, TEXTURE_FORMAT, true, rhi::TEXTURE_TYPE_2D, false);
+    Texture::RenderTargetTextureKey distanceKey = key;
+    distanceKey.format = TEXTURE_FORMAT;
+    distanceRenderTarget = GetEngineContext()->assetManager->GetAsset<Texture>(distanceKey, AssetManager::SYNC);
     distanceRenderTarget->SetMinMagFilter(rhi::TextureFilter::TEXFILTER_NEAREST, rhi::TextureFilter::TEXFILTER_NEAREST, rhi::TextureMipFilter::TEXMIPFILTER_NONE);
+    distanceKey.isDepth = true;
+    distanceRenderTargetDepth = GetEngineContext()->assetManager->GetAsset<Texture>(distanceKey, AssetManager::SYNC);
+
     distanceMapConfig.colorBuffer[0].texture = distanceRenderTarget->handle;
-    distanceMapConfig.depthStencilBuffer.texture = distanceRenderTarget->handleDepthStencil;
+    distanceMapConfig.depthStencilBuffer.texture = distanceRenderTargetDepth->handle;
 
     RenderToDistanceMapFromCamera(renderSystem, fromCamera);
 
@@ -472,7 +503,7 @@ void VisibilityCheckRenderer::RenderWithReprojection(RenderSystem* renderSystem,
     Vector<RenderBatch*> renderBatches;
     CollectRenderBatches(renderSystem, fromCamera, renderBatches);
 
-    Vector2 vpSize(static_cast<float>(reprojectionTexture->GetWidth()), static_cast<float>(reprojectionTexture->GetHeight()));
+    Vector2 vpSize(static_cast<float>(reprojectionTexture->width), static_cast<float>(reprojectionTexture->height));
     reprojectionMaterial->SetPropertyValue(MaterialParamOrigin, fixedFrameCameraPosition.data);
     reprojectionMaterial->SetPropertyValue(MaterialParamFixedFrameMatrix, fixedFrameMatrix.data);
     reprojectionMaterial->SetPropertyValue(MaterialParamViewportSize, vpSize.data);

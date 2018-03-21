@@ -4,10 +4,11 @@
 #include "Reflection/Reflection.h"
 #include "Entity/Component.h"
 #include "Scene3D/Prefab.h"
+#include "Asset/AssetListener.h"
 
 namespace DAVA
 {
-class PrefabComponent : public Component
+class PrefabComponent : public Component, private AssetListener
 {
 protected:
     virtual ~PrefabComponent();
@@ -23,6 +24,8 @@ public:
     const FilePath& GetFilepath() const;
 
     const Asset<Prefab>& GetPrefab() const;
+
+    void OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded) override;
 
 private:
     Asset<Prefab> prefab = nullptr;

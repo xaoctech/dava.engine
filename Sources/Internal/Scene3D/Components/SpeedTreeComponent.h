@@ -6,12 +6,13 @@
 #include "Render/Highlevel/MeshLODDescriptor.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Asset/AssetListener.h"
 
 namespace DAVA
 {
 class SpeedTreeObject;
 class SpeedTreeUpdateSystem;
-class SpeedTreeComponent : public Component
+class SpeedTreeComponent : public Component, public AssetListener
 {
 public:
     enum Element : uint32
@@ -76,6 +77,8 @@ public:
     float GetTrunkDamping() const;
 
     Vector<RuntimeBone>& GetRuntimeBones();
+
+    void OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloaded) override;
 
 protected:
     void RebuildObject();

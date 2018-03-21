@@ -114,7 +114,7 @@ void TextureListDelegate::drawPreviewBig(QPainter* painter, const QStyleOptionVi
 
     if (nullptr != curTextureDescriptor)
     {
-        DAVA::Texture* curTexture = curModel->getTexture(index);
+        DAVA::Asset<DAVA::Texture> curTexture = curModel->getTexture(index);
 
         QString textureName = QString::fromStdString(curTextureDescriptor->GetSourceTexturePathname().GetFilename());
 
@@ -267,7 +267,7 @@ void TextureListDelegate::drawPreviewSmall(QPainter* painter, const QStyleOption
 {
     const TextureListModel* curModel = (TextureListModel*)index.model();
     DAVA::TextureDescriptor* curTextureDescriptor = curModel->getDescriptor(index);
-    DAVA::Texture* curTexture = curModel->getTexture(index);
+    DAVA::Asset<DAVA::Texture> curTexture = curModel->getTexture(index);
 
     if (nullptr != curTextureDescriptor)
     {
@@ -319,7 +319,7 @@ void TextureListDelegate::drawPreviewSmall(QPainter* painter, const QStyleOption
     }
 }
 
-int TextureListDelegate::drawFormatInfo(QPainter* painter, QRect rect, const DAVA::Texture* texture, const DAVA::TextureDescriptor* descriptor) const
+int TextureListDelegate::drawFormatInfo(QPainter* painter, QRect rect, const DAVA::Asset<DAVA::Texture>& texture, const DAVA::TextureDescriptor* descriptor) const
 {
     int ret = 0;
     QRect r = rect;

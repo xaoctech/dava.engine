@@ -10,6 +10,9 @@
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/Highlevel/DecalRenderObject.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
@@ -19,8 +22,8 @@ namespace DAVA
 {
 HDRDeferredFetchPass::HDRDeferredFetchPass()
     : RenderPass(PASS_GBUFFER_FETCH)
-    , defaultCubemap(Texture::CreatePink(rhi::TextureType::TEXTURE_TYPE_CUBE))
 {
+    defaultCubemap = GetEngineContext()->assetManager->GetAsset<Texture>(Texture::MakePinkKey(rhi::TextureType::TEXTURE_TYPE_CUBE), AssetManager::SYNC);
     //init layers
     //deferred
     AddRenderLayer(new RenderLayer(RENDER_LAYER_OPAQUE_ID, RenderLayer::LAYER_SORTING_FLAGS_OPAQUE));
@@ -139,7 +142,7 @@ void HDRDeferredFetchPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMas
 
 void HDRDeferredFetchPass::UpdateScreenResolveData(RenderSystem* renderSystem)
 {
-    Texture* reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetSpecularConvolution2();
+    Asset<Texture> reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetSpecularConvolution2();
     if (screenResolveMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION))
     {
         screenResolveMaterial->SetTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);

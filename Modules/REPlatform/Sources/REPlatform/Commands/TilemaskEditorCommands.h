@@ -31,7 +31,7 @@ protected:
     Rect updatedRect;
 
     void InvalidateLandscapePart();
-    void ApplyImageToTexture(Image* image, Texture* dstTex);
+    void ApplyImageToTexture(Image* image, const Asset<Texture>& dstTex);
 
     DAVA_VIRTUAL_REFLECTION(ModifyTilemaskCommand, RECommand);
 };

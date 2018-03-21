@@ -509,7 +509,7 @@ void StructureSystem::CopyLightmapSettings(NMaterial* fromState, NMaterial* toSt
 {
     if (fromState->HasLocalTexture(NMaterialTextureName::TEXTURE_LIGHTMAP))
     {
-        Texture* lightmap = fromState->GetLocalTexture(NMaterialTextureName::TEXTURE_LIGHTMAP);
+        Asset<Texture> lightmap = fromState->GetLocalTexture(NMaterialTextureName::TEXTURE_LIGHTMAP);
         if (toState->HasLocalTexture(NMaterialTextureName::TEXTURE_LIGHTMAP))
             toState->SetTexture(NMaterialTextureName::TEXTURE_LIGHTMAP, lightmap);
         else

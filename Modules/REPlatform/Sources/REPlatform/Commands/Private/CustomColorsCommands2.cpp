@@ -1,6 +1,9 @@
 #include "REPlatform/Commands/CustomColorsCommands2.h"
 #include "REPlatform/Scene/Private/Systems/LandscapeEditorDrawSystem/CustomColorsProxy.h"
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/Image/Image.h>
@@ -45,18 +48,19 @@ void ModifyCustomColorsCommand::Redo()
 
 void ModifyCustomColorsCommand::ApplyImage(Image* image, bool disableBlend)
 {
-    ScopedPtr<Texture> fboTexture(Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false));
+    Texture::UniqueTextureKey key(RefPtr<Image>::ConstructWithRetain(image), false);
+    Asset<Texture> fboTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     RenderSystem2D::RenderTargetPassDescriptor desc;
 
     auto material = disableBlend ? RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL : customColorsProxy->GetBrushMaterial();
 
-    Texture* proxy = customColorsProxy->GetTexture();
+    Asset<Texture> proxy = customColorsProxy->GetTexture();
     desc.priority = PRIORITY_SERVICE_2D;
     desc.colorAttachment = proxy->handle;
-    desc.depthAttachment = proxy->handleDepthStencil;
-    desc.width = proxy->GetWidth();
-    desc.height = proxy->GetHeight();
+    desc.depthAttachment = rhi::HTexture();
+    desc.width = proxy->width;
+    desc.height = proxy->height;
     desc.clearTarget = shouldClearTexture;
     desc.transformVirtualToPhysical = false;
 

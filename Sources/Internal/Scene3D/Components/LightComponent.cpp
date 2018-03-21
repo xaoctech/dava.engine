@@ -6,6 +6,9 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 #include "FileSystem/FileSystem.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -189,7 +192,8 @@ void LightComponent::GetDataNodes(Set<DataNode*>& dataNodes)
     if ((light->GetLightType() == Light::eType::TYPE_ENVIRONMENT_IMAGE) &&
         FileSystem::Instance()->Exists(light->GetEnvironmentMap()))
     {
-        ScopedPtr<Texture> tex(Texture::CreateFromFile(light->GetEnvironmentMap()));
+        Texture::PathKey key(light->GetEnvironmentMap());
+        Asset<Texture> tex = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         lightMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, tex);
     }
 

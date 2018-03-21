@@ -10,6 +10,7 @@
 
 #include <Reflection/Reflection.h>
 #include <Base/Set.h>
+#include <Asset/Asset.h>
 
 #include <QShowEvent>
 
@@ -104,9 +105,10 @@ private:
     void CollectSelectedRenderObjects(const DAVA::SelectableGroup* selected);
     void CollectSelectedRenderObjectsRecursivly(DAVA::Entity* entity);
 
-    void CollectTexture(DAVA::TexturesMap& textures, const DAVA::FilePath& pathname, DAVA::Texture* tex);
+    void CollectTexture(DAVA::Map<DAVA::FilePath, DAVA::Asset<DAVA::Texture>>& textures,
+                        const DAVA::FilePath& pathname, DAVA::Asset<DAVA::Texture> tex);
 
-    static DAVA::uint32 CalculateTextureSize(const DAVA::TexturesMap& textures);
+    static DAVA::uint32 CalculateTextureSize(const DAVA::Map<DAVA::FilePath, DAVA::Asset<DAVA::Texture>>& textures);
 
     static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity* entity, bool onlyVisibleBatches);
 
@@ -120,7 +122,7 @@ protected:
     DAVA::Vector<DAVA::Entity*> nodesAtScene;
     DAVA::Landscape* landscape = nullptr;
 
-    DAVA::TexturesMap particleTextures;
+    DAVA::Map<DAVA::FilePath, DAVA::Asset<DAVA::Texture>> particleTextures;
 
     DAVA::Vector<SpeedTreeInfo> speedTreesInfo;
 

@@ -1,6 +1,7 @@
-#ifndef __DAVAENGINE_TEXTURE_H__
-#define __DAVAENGINE_TEXTURE_H__
+#pragma once
 
+#include "Asset/Asset.h"
+#include "Base/Any.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
@@ -8,6 +9,7 @@
 #include "FileSystem/FilePath.h"
 #include "Concurrency/Mutex.h"
 #include "Render/RHI/rhi_Public.h"
+#include "Render/RHI/rhi_Type.h"
 #include "Render/RenderBase.h"
 #include "Render/UniqueStateSet.h"
 
@@ -23,19 +25,64 @@ namespace DAVA
  */
 class Image;
 class TextureDescriptor;
-class File;
-class Texture;
 
-#ifdef USE_FILEPATH_IN_MAP
-using TexturesMap = Map<FilePath, Texture*>;
-#else //#ifdef USE_FILEPATH_IN_MAP
-using TexturesMap = Map<String, Texture*>;
-#endif //#ifdef USE_FILEPATH_IN_MAP
-
-class Texture : public BaseObject
+class Texture : public AssetBase
 {
+    friend class TextureAssetLoader;
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_TEXTURE)
 public:
+    struct PathKey
+    {
+        PathKey(const FilePath& filePath);
+        PathKey(const FilePath& filePath, rhi::TextureType typeHint);
+        PathKey(const FilePath& filePath, eGPUFamily requestedGpu, rhi::TextureType typeHint = rhi::TEXTURE_TYPE_2D);
+
+        bool operator==(const PathKey& other) const;
+
+        FilePath path;
+        eGPUFamily requestedGpu = GPU_INVALID;
+        rhi::TextureType typeHint = rhi::TEXTURE_TYPE_2D;
+    };
+    static PathKey MakePinkKey(rhi::TextureType type = rhi::TEXTURE_TYPE_2D);
+
+    struct UniqueTextureKey
+    {
+        UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps);
+        UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps, std::shared_ptr<uint8[]> data);
+        UniqueTextureKey(RefPtr<Image> image, bool generateMipMaps);
+        UniqueTextureKey(Vector<RefPtr<Image>>&& images);
+
+        size_t uniqueKey;
+        Any creationData;
+
+    private:
+        UniqueTextureKey(Vector<RefPtr<Image>>&& images, bool generateMipMaps);
+        static size_t nextUniqueKey;
+    };
+
+    struct RenderTargetTextureKey
+    {
+        RenderTargetTextureKey();
+        RenderTargetTextureKey(const String& uniqueName);
+
+        bool operator==(const RenderTargetTextureKey& other) const;
+
+        uint32 width = 0;
+        uint32 height = 0;
+        uint32 sampleCount = 1;
+        uint32 mipLevelsCount = 1;
+        PixelFormat format = PixelFormat::FORMAT_INVALID;
+        rhi::TextureType textureType = rhi::TEXTURE_TYPE_2D;
+        bool isDepth = false;
+        bool needPixelReadback = false;
+        bool ensurePowerOf2 = true;
+
+        String uniqueKey;
+
+    private:
+        static uint32 newUniqueKey;
+    };
+
     enum TextureState : uint8
     {
         STATE_INVALID = 0,
@@ -51,103 +98,13 @@ public:
 
     static Array<String, CUBE_FACE_COUNT> FACE_NAME_SUFFIX;
 
-    struct
-    FBODescriptor
-    {
-        uint32 width = 0;
-        uint32 height = 0;
-        uint32 sampleCount = 1;
-        uint32 mipLevelsCount = 1;
-        PixelFormat format = PixelFormat::FORMAT_INVALID;
-        rhi::TextureType textureType = rhi::TEXTURE_TYPE_2D;
-        bool needDepth = false;
-        bool needPixelReadback = false;
-        bool ensurePowerOf2 = true;
-    };
-
-    // Main constructors
-    /**
-        \brief Create texture from data arrray
-        This function creates texture from given format, data pointer and width + height
-
-        \param[in] format desired pixel format
-        \param[in] data desired data
-        \param[in] width width of new texture
-        \param[in] height height of new texture
-        \param[in] generateMipMaps generate mipmaps or not
-     */
-    static Texture* CreateFromData(PixelFormat format, const uint8* data, uint32 width, uint32 height, bool generateMipMaps);
-
-    /**
-        \brief Create texture from data arrray stored at Image
-        This function creates texture from given image
-
-        \param[in] image stores data
-        \param[in] generateMipMaps generate mipmaps or not
-     */
-    static Texture* CreateFromData(Image* img, bool generateMipMaps);
-
-    static Texture* CreateFromData(const Vector<Image*>& images);
-
-    /**
-        \brief Create text texture from data arrray
-        This function creates texture from given format, data pointer and width + height, but adds addInfo string to relativePathname variable for easy identification of textures
-
-        \param[in] format desired pixel format
-        \param[in] data desired data
-        \param[in] width width of new texture
-        \param[in] height height of new texture
-        \param[in] addInfo additional info
-     */
-    static Texture* CreateTextFromData(PixelFormat format, uint8* data, uint32 width, uint32 height, bool generateMipMaps, const char* addInfo = 0);
-
-    /**
-        \brief Create texture from given file. Supported formats .png, .pvr (only on iOS).
-		If file cannot be opened, returns "pink placeholder" texture.
-        \param[in] pathName path to the png or pvr file
-     */
-    static Texture* CreateFromFile(const FilePath& pathName, const FastName& group = FastName(), rhi::TextureType typeHint = rhi::TEXTURE_TYPE_2D);
-
-    /**
-        \brief Create texture from given file. Supported formats .png, .pvr (only on iOS).
-		If file cannot be opened, returns 0
-        \param[in] pathName path to the png or pvr file
-     */
-    static Texture* PureCreate(const FilePath& pathName, const FastName& group = FastName());
-
-    static Texture* CreatePink(rhi::TextureType requestedType = rhi::TEXTURE_TYPE_2D, bool checkers = true);
-
-    static Texture* CreateFBO(uint32 width, uint32 height, PixelFormat format, bool needDepth = false,
-                              rhi::TextureType requestedType = rhi::TEXTURE_TYPE_2D, bool ensurePowerOf2 = true);
-
-    static Texture* CreateFBO(const FBODescriptor& desc);
-
-    /**
-        \brief Get texture from cache.
-        If texture isn't in cache, returns 0
-        \param[in] name path of TextureDescriptor
-     */
-    static Texture* Get(const FilePath& name);
-
-    static bool CreateDescriptor(const FilePath& texturePath, std::unique_ptr<TextureDescriptor>& descriptor, bool descriptorChanged);
-    static bool CreateDescriptor(const FilePath& texturePath);
-
-    int32 Release() override;
-
-    static void DumpTextures();
-
-    inline int32 GetWidth() const
-    {
-        return width;
-    }
-    inline int32 GetHeight() const
-    {
-        return height;
-    }
-
-    void GenerateMipmaps();
+    Texture(const Any& assetKey);
+    ~Texture() override;
 
     void TexImage(int32 level, uint32 width, uint32 height, const void* _data, uint32 dataSize, uint32 cubeFaceId);
+    void CreateCubemapMipmapImages(Vector<Vector<Image*>>& images, uint32 mipmapLevelCount);
+
+    Image* CreateImageFromRegion(const Rect2i& rect = Rect2i(0, 0, -1, -1), uint32 level = 0);
 
     void SetWrapMode(rhi::TextureAddrMode wrapU, rhi::TextureAddrMode wrapV, rhi::TextureAddrMode wrapW = rhi::TEXADDR_WRAP);
     void SetMinMagFilter(rhi::TextureFilter minFilter, rhi::TextureFilter magFilter, rhi::TextureMipFilter mipFilter);
@@ -157,99 +114,48 @@ public:
         \returns pathname of texture
      */
     const FilePath& GetPathname() const;
-    void SetPathname(const FilePath& path);
 
-    DAVA_DEPRECATED(Image* CreateImageFromMemory());
-    Image* CreateImageFromRegion(const Rect2i& rect = Rect2i(0, 0, -1, -1), uint32 level = 0);
-
-    bool IsPinkPlaceholder();
-
-    void Reload();
-    void ReloadAs(eGPUFamily gpuFamily);
-    void ReloadFromData(PixelFormat format, uint8* data, uint32 width, uint32 height);
-
+    bool IsPinkPlaceholder() const;
     inline TextureState GetState() const;
 
     void SetDebugInfo(const String& _debugInfo);
-
-    static const TexturesMap& GetTextureMap();
-
     uint32 GetDataSize() const;
-
-    static void SetGPULoadingOrder(const Vector<eGPUFamily>& gpuLoadingOrder);
-    static const Vector<eGPUFamily>& GetGPULoadingOrder();
-    static eGPUFamily GetPrimaryGPUForLoading();
 
     inline eGPUFamily GetSourceFileGPUFamily() const;
     inline TextureDescriptor* GetDescriptor() const;
 
     PixelFormat GetFormat() const;
-
-    static void SetPixelization(bool value);
-
-    uint32 GetBaseMipMap() const;
     uint32 GetMipLevelsCount() const;
 
     static rhi::HSamplerState CreateSamplerStateHandle(const rhi::SamplerState::Descriptor::Sampler& samplerState);
 
-    //void CreateCubemapImages(Vector<Image *> & images);
-    void CreateCubemapMipmapImages(Vector<Vector<Image*>>& images, uint32 mipmapLevelCount);
-
 protected:
-    void RestoreRenderResource();
-
     void ReleaseTextureData();
 
-    static void AddToMap(Texture* tex);
-
-    static Texture* CreateFromImage(TextureDescriptor* descriptor, eGPUFamily gpu);
-
-    bool LoadImages(eGPUFamily gpu, Vector<Image*>* images);
-
-    void SetParamsFromImages(const Vector<Image*>* images);
-
-    void FlushDataToRenderer(Vector<Image*>* images);
-
-    void ReleaseImages(Vector<Image*>* images);
-
-    void MakePink(bool checkers = true);
-
-    Texture();
-    virtual ~Texture();
-
-    bool IsLoadAvailable(const eGPUFamily gpuFamily) const;
-
-    static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor* descriptor);
-
 public: // properties for fast access
-    rhi::HTexture handle;
-    rhi::HTexture handleDepthStencil; //it's legacy and should be removed. (maybe together with CreateFBO method)
-    rhi::HSamplerState samplerStateHandle;
-    rhi::HTextureSet singleTextureSet;
+    rhi::HTexture handle = rhi::HTexture();
+    rhi::HSamplerState samplerStateHandle = rhi::HSamplerState();
+    rhi::HTextureSet singleTextureSet = rhi::HTextureSet();
     rhi::SamplerState::Descriptor::Sampler samplerState;
 
     uint32 maxAnisotropyLevel = 16; // GFX_COMPLETE - used to disable anisotropy in GPU landscape editor
 
-    eGPUFamily loadedAsFile;
+    eGPUFamily loadedAsFile = GPU_ORIGIN;
     uint32 width = 0; // texture width
     uint32 height = 0; // texture height
-    uint32 textureType = 0;
-    TextureState state;
+    uint32 textureType = rhi::TEXTURE_TYPE_2D;
+    TextureState state = STATE_INVALID;
     bool isRenderTarget = false;
     bool isPink = false;
+    bool isDepth = false;
 
+#if defined(__DAVAENGINE_DEBUG__)
     FastName debugInfo;
+#endif
 
-    TextureDescriptor* texDescriptor;
+    TextureDescriptor* texDescriptor = nullptr;
     uint32 levelsCount = 1;
     bool autoGeneratedMips = false;
-
-    static Mutex textureMapMutex;
-
-    static TexturesMap textureMap;
-    static Vector<eGPUFamily> gpuLoadingOrder;
-
-    static bool pixelizationFlag;
 };
 
 // Implementation of inline functions
@@ -268,6 +174,16 @@ inline TextureDescriptor* Texture::GetDescriptor() const
 {
     return texDescriptor;
 }
-};
 
-#endif // __DAVAENGINE_TEXTUREGLES_H__
+template <>
+bool AnyCompare<Texture::PathKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Texture::PathKey>;
+
+template <>
+bool AnyCompare<Texture::UniqueTextureKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Texture::UniqueTextureKey>;
+
+template <>
+bool AnyCompare<Texture::RenderTargetTextureKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Texture::RenderTargetTextureKey>;
+}

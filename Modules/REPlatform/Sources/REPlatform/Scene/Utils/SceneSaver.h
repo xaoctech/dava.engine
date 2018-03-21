@@ -49,7 +49,7 @@ private:
     void CopyCustomColorTexture(Scene* scene, const FilePath& sceneFolder);
 
     RESceneUtils sceneUtils;
-    TexturesMap texturesForSave;
+    Map<FilePath, Asset<Texture>> texturesForSave;
     Set<FilePath> effectFolders;
     Set<FilePath> savedExternalScenes;
 

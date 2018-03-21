@@ -59,8 +59,8 @@ private:
     std::unique_ptr<Command> CreateSaveFileNameCommand(const String& filePath);
 
 private:
-    Texture* toolImageTexture = nullptr;
-    Texture* loadedTexture = nullptr;
+    Asset<Texture> toolImageTexture;
+    Asset<Texture> loadedTexture;
     Image* originalImage = nullptr;
     Color drawColor = Color::Transparent;
     int32 colorIndex = 0;

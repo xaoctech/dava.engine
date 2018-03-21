@@ -237,24 +237,4 @@ void FoliageSystem::DebugDrawVegetation()
         }
     }
 }
-
-void FoliageSystem::CollectFoliageMaterials(Set<NMaterial*>& materials)
-{
-    for (auto foliageEntity : foliageEntities)
-    {
-        Set<DataNode*> dataNodes;
-        foliageEntity->GetDataNodes(dataNodes);
-
-        Set<DataNode*>::iterator it = dataNodes.begin();
-        Set<DataNode*>::iterator itEnd = dataNodes.end();
-        for (; it != itEnd; ++it)
-        {
-            NMaterial* material = dynamic_cast<NMaterial*>(*it);
-            if (material)
-            {
-                materials.insert(material);
-            }
-        }
-    }
-}
 };

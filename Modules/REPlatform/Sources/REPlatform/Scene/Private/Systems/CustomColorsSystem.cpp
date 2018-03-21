@@ -32,8 +32,6 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 
 CustomColorsSystem::~CustomColorsSystem()
 {
-    SafeRelease(toolImageTexture);
-    SafeRelease(loadedTexture);
 }
 
 LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing()
@@ -77,7 +75,7 @@ LandscapeEditorDrawSystem::eErrorType CustomColorsSystem::EnableLandscapeEditing
     drawSystem->SetCursorTexture(cursorTexture);
     SetBrushSize(curToolSize);
 
-    Texture* customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Asset<Texture> customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
     drawSystem->GetLandscapeProxy()->SetToolTexture(customColorsTexture, true);
 
     if (!toolImageTexture)
@@ -120,9 +118,6 @@ bool CustomColorsSystem::DisableLandscapeEdititing(bool saveNeeded)
 
     drawSystem->GetLandscapeProxy()->SetToolTexture(nullptr, true);
     enabled = false;
-
-    SafeRelease(toolImageTexture);
-    SafeRelease(loadedTexture);
 
     return !enabled;
 }
@@ -202,7 +197,7 @@ void CustomColorsSystem::FinishEditing(bool applyModification)
                 SceneEditor2* scene = dynamic_cast<SceneEditor2*>(GetScene());
                 DVASSERT(scene);
 
-                ScopedPtr<Image> image(drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromMemory());
+                ScopedPtr<Image> image(drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromRegion());
                 scene->Exec(std::unique_ptr<Command>(new ModifyCustomColorsCommand(originalImage, image, drawSystem->GetCustomColorsProxy(), updatedRect, false)));
             }
         }
@@ -217,13 +212,11 @@ void CustomColorsSystem::UpdateToolImage(bool force)
 
 void CustomColorsSystem::CreateToolImage(const FilePath& filePath)
 {
-    Texture* toolTexture = CreateSingleMipTexture(filePath);
+    Asset<Texture> toolTexture = CreateSingleMipTexture(filePath);
     if (!toolTexture)
     {
         return;
     }
-
-    SafeRelease(toolImageTexture);
 
     toolImageTexture = toolTexture;
     toolImageTexture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
@@ -231,7 +224,7 @@ void CustomColorsSystem::CreateToolImage(const FilePath& filePath)
 
 void CustomColorsSystem::UpdateBrushTool()
 {
-    Texture* colorTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Asset<Texture> colorTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
 
     Vector2 spriteSize = Vector2(cursorSize, cursorSize) * landscapeSize;
     Vector2 spritePos = cursorPosition * landscapeSize - spriteSize / 2.f;
@@ -245,9 +238,9 @@ void CustomColorsSystem::UpdateBrushTool()
     RenderSystem2D::RenderTargetPassDescriptor desc;
     desc.priority = PRIORITY_SERVICE_2D;
     desc.colorAttachment = colorTexture->handle;
-    desc.depthAttachment = colorTexture->handleDepthStencil;
-    desc.width = colorTexture->GetWidth();
-    desc.height = colorTexture->GetHeight();
+    desc.depthAttachment = rhi::HTexture();
+    desc.width = colorTexture->width;
+    desc.height = colorTexture->height;
     desc.clearTarget = false;
     desc.transformVirtualToPhysical = false;
     RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
@@ -309,7 +302,7 @@ void CustomColorsSystem::SetColor(int32 colorIndex)
 void CustomColorsSystem::StoreOriginalState()
 {
     DVASSERT(originalImage == NULL);
-    originalImage = drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromMemory();
+    originalImage = drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromRegion();
     ResetAccumulatorRect();
 }
 
@@ -318,7 +311,7 @@ void CustomColorsSystem::SaveTexture(const FilePath& filePath)
     if (filePath.IsEmpty())
         return;
 
-    Texture* customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Asset<Texture> customColorsTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
 
     rhi::HSyncObject frameSyncObject = rhi::GetCurrentFrameSyncObject();
     Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [this, customColorsTexture, filePath, frameSyncObject](rhi::HSyncObject syncObject)
@@ -326,7 +319,7 @@ void CustomColorsSystem::SaveTexture(const FilePath& filePath)
                                        if (frameSyncObject != syncObject)
                                            return;
 
-                                       Image* image = customColorsTexture->CreateImageFromMemory();
+                                       Image* image = customColorsTexture->CreateImageFromRegion();
                                        ImageSystem::Save(filePath, image);
                                        SafeRelease(image);
 
@@ -358,7 +351,7 @@ bool CustomColorsSystem::LoadTexture(const FilePath& filePath, bool createUndo)
         if (createUndo)
         {
             DVASSERT(originalImage == nullptr);
-            originalImage = drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromMemory();
+            originalImage = drawSystem->GetCustomColorsProxy()->GetTexture()->CreateImageFromRegion();
 
             SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
 
@@ -371,17 +364,17 @@ bool CustomColorsSystem::LoadTexture(const FilePath& filePath, bool createUndo)
         }
         else
         {
-            SafeRelease(loadedTexture);
-            loadedTexture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(), image->GetWidth(), image->GetHeight(), false);
+            Texture::UniqueTextureKey key(RefPtr<Image>::ConstructWithRetain(image), false);
+            loadedTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
-            Texture* target = drawSystem->GetCustomColorsProxy()->GetTexture();
+            Asset<Texture> target = drawSystem->GetCustomColorsProxy()->GetTexture();
 
             RenderSystem2D::RenderTargetPassDescriptor desc;
             desc.priority = PRIORITY_SERVICE_2D;
             desc.colorAttachment = target->handle;
-            desc.depthAttachment = target->handleDepthStencil;
-            desc.width = target->GetWidth();
-            desc.height = target->GetHeight();
+            desc.depthAttachment = rhi::HTexture();
+            desc.width = target->width;
+            desc.height = target->height;
             desc.clearTarget = false;
             desc.transformVirtualToPhysical = false;
             RenderSystem2D::Instance()->BeginRenderTargetPass(desc);
@@ -407,11 +400,11 @@ bool CustomColorsSystem::CouldApplyImage(Image* image, const String& imageName) 
         return false;
     }
 
-    const Texture* oldTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
+    Asset<Texture> oldTexture = drawSystem->GetCustomColorsProxy()->GetTexture();
     if (oldTexture != nullptr)
     {
         const Size2i imageSize(image->GetWidth(), image->GetHeight());
-        const Size2i textureSize(oldTexture->GetWidth(), oldTexture->GetHeight());
+        const Size2i textureSize(oldTexture->width, oldTexture->height);
 
         if (imageSize != textureSize)
         {
@@ -471,7 +464,7 @@ FilePath CustomColorsSystem::GetCurrentSaveFileName()
         scenePathName.ReplaceExtension("");
 
         // GFX_COMPLETE
-        Texture* colorMapTexture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(0, Landscape::TEXTURE_TILEMASK);
+        Asset<Texture> colorMapTexture = drawSystem->GetLandscapeProxy()->GetLandscapeTexture(0, Landscape::TEXTURE_TILEMASK);
         DVASSERT(colorMapTexture != nullptr);
 
         FilePath colorMapDir = colorMapTexture->GetPathname().GetDirectory();

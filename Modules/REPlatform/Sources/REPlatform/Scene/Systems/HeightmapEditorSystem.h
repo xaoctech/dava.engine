@@ -59,7 +59,7 @@ protected:
     Vector2 GetHeightmapPositionFromCursor() const;
 
 protected:
-    Texture* squareTexture = nullptr;
+    Asset<Texture> squareTexture;
     uint32 curToolSize = 30;
     Image* curToolImage = nullptr;
 

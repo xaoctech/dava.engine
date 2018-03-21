@@ -27,7 +27,6 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
     SafeRelease(curToolImage);
-    SafeRelease(squareTexture);
 }
 
 LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEditing()

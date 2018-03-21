@@ -60,9 +60,9 @@ public:
 
     void GetDataNodes(Set<DataNode*>& dataNodes) override;
 
-    void SetColorGradingTexture(Texture* texture);
-    void SetHeatmapTexture(Texture* texture);
-    void SetLightMeterTexture(Texture* texture);
+    void SetColorGradingTexture(const Asset<Texture>& texture);
+    void SetHeatmapTexture(const Asset<Texture>& texture);
+    void SetLightMeterTexture(const Asset<Texture>& texture);
 
     bool GetToneMapping() const;
     void SetToneMapping(bool value);

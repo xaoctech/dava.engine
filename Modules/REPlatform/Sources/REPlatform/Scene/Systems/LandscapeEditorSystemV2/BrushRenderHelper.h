@@ -2,6 +2,7 @@
 
 #include "REPlatform/Scene/Systems/LandscapeEditorSystemV2/BaseTextureRenderLandscapeTool.h"
 
+#include <Asset/Asset.h>
 #include <Base/RefPtr.h>
 #include <Render/RHI/rhi_Public.h>
 
@@ -16,7 +17,7 @@ public:
     UVPickTextureCopier();
     ~UVPickTextureCopier();
 
-    void BlitTextureRect(const Rect& srcRect, RefPtr<Texture> targetTexture, int32 basePriority);
+    void BlitTextureRect(const Rect& srcRect, Asset<Texture> targetTexture, int32 basePriority);
     int32 GetPriority(int32 basePriority) const;
 
 private:
@@ -35,7 +36,7 @@ public:
 
     struct TargetInfo
     {
-        RefPtr<Texture> renderTarget;
+        Asset<Texture> renderTarget;
         uint32 textureLevel = 0;
     };
     void BlitTexture(const TargetInfo& renderTerget, RefPtr<NMaterial> material, int32 priority);

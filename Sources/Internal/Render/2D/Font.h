@@ -12,7 +12,6 @@ namespace DAVA
 	\defgroup fonts Font
  */
 
-class Texture;
 class YamlNode;
 
 /** 

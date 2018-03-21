@@ -16,12 +16,11 @@ MaterialRemoveTexture::MaterialRemoveTexture(const DAVA::FastName& textureSlot_,
 
     textureSlot = textureSlot_;
     material = DAVA::SafeRetain(material_);
-    texture = DAVA::SafeRetain(material->GetLocalTexture(textureSlot));
+    texture = material->GetLocalTexture(textureSlot);
 }
 
 MaterialRemoveTexture::~MaterialRemoveTexture()
 {
-    DAVA::SafeRelease(texture);
     DAVA::SafeRelease(material);
 }
 

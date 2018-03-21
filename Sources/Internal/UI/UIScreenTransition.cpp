@@ -15,6 +15,8 @@
 #include "UI/UIControlSystem.h"
 #include "UI/UIScreenshoter.h"
 #include "UI/Update/UIUpdateComponent.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -52,14 +54,26 @@ void UIScreenTransition::CreateRenderTargets()
     uint32 width = physicalTargetSize.dx;
     uint32 height = physicalTargetSize.dy;
 
-    Texture* tex1 = Texture::CreateFBO(width, height, rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
-    Texture* tex2 = Texture::CreateFBO(width, height, rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+
+    Texture::RenderTargetTextureKey key;
+    key.width = width;
+    key.height = height;
+    key.format = rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888;
+    key.isDepth = false;
+    key.needPixelReadback = false;
+    key.textureType = rhi::TEXTURE_TYPE_2D;
+    key.ensurePowerOf2 = true;
+
+    Asset<Texture> tex1 = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+    Asset<Texture> tex2 = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+
+    key.isDepth = true;
+    depthTargetPrevScreen = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+    depthTargetNextScreen = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, static_cast<float32>(width), static_cast<float32>(height), true);
     renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, static_cast<float32>(width), static_cast<float32>(height), true);
-
-    SafeRelease(tex1);
-    SafeRelease(tex2);
 }
 
 void UIScreenTransition::ReleaseRenderTargets()
@@ -91,7 +105,7 @@ void UIScreenTransition::SetSourceControl(UIControl* prevControl, bool updateCon
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
     UIScreenshoter* screenshoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
-    screenshoter->MakeScreenshot(prevControl, renderTargetPrevScreen->GetTexture(), true, updateControl);
+    screenshoter->MakeScreenshot(prevControl, renderTargetPrevScreen->GetTexture(), depthTargetPrevScreen, true, updateControl);
 }
 
 void UIScreenTransition::SetDestinationControl(UIControl* nextControl, bool updateControl /*= true*/)
@@ -99,7 +113,7 @@ void UIScreenTransition::SetDestinationControl(UIControl* nextControl, bool upda
     DVASSERT(renderTargetPrevScreen && renderTargetNextScreen);
 
     UIScreenshoter* screenshoter = GetEngineContext()->uiControlSystem->GetRenderSystem()->GetScreenshoter();
-    screenshoter->MakeScreenshot(nextControl, renderTargetNextScreen->GetTexture(), true, updateControl);
+    screenshoter->MakeScreenshot(nextControl, renderTargetNextScreen->GetTexture(), depthTargetNextScreen, true, updateControl);
 }
 
 void UIScreenTransition::EndTransition()

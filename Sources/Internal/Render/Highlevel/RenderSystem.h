@@ -131,8 +131,6 @@ public:
     CubemapRenderer* GetCubemapRenderer() const;
     PostEffectRenderer* GetPostEffectRenderer() const;
 
-    void InvalidateMaterials();
-
     Vector<RenderObject*>& GetRenderObjectArray();
 
     const Vector<Light*> GetDynamicLights() const
@@ -156,7 +154,6 @@ public:
 private:
     void UpdateSceneLights();
 
-    void FindNearestLights(RenderObject* renderObject);
     void AddRenderObject(RenderObject* renderObject);
     void RemoveRenderObject(RenderObject* renderObject);
     void PrebuildMaterial(NMaterial* material);

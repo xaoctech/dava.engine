@@ -12,6 +12,8 @@ public:
     };
 
     HeightNoiseTool(DAVA::LandscapeEditorSystemV2* system);
+    ~HeightNoiseTool();
+
     void Activate(const DAVA::PropertiesItem& settings) override;
     QWidget* CreateEditorWidget(const BaseLandscapeTool::WidgetParams& params) override;
     DAVA::Vector<BrushPhaseDescriptor> CreateBrushPhases() override;
@@ -27,7 +29,7 @@ private:
 
     eMode mode = MODE_UNSIGNED;
     DAVA::float32 kernelSize = 0.1f;
-    DAVA::RefPtr<DAVA::Texture> noiseTexture;
+    DAVA::Asset<DAVA::Texture> noiseTexture;
 
     DAVA_VIRTUAL_REFLECTION(HeightNoiseTool, BaseHeightEditTool);
 };

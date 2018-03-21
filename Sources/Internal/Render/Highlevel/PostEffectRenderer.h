@@ -71,9 +71,9 @@ public:
 
     struct Settings
     {
-        RefPtr<Texture> colorGradingTable;
-        RefPtr<Texture> heatmapTable;
-        RefPtr<Texture> lightMeterTable;
+        Asset<Texture> colorGradingTable;
+        Asset<Texture> heatmapTable;
+        Asset<Texture> lightMeterTable;
 
         float32 lightMeterTableWeight = 1.0f;
         Vector2 adaptationRange = Vector2{ 128.0, 2048.0f }; // +/- 2EV, exp2(12 - 3 - 2) .. exp2(12 - 3 + 2)
@@ -92,7 +92,6 @@ public:
     DebugRenderer* GetDebugRenderer();
     Settings* GetSettings();
 
-    void ResetHistory();
     void Combine(CombineMode mode, rhi::HPacketList pl = rhi::HPacketList());
     void DownsampleLuminance(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority = 0);
     void DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority = 0);

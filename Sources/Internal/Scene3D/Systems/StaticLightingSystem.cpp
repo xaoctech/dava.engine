@@ -177,7 +177,6 @@ void StaticLightingSystem::UpdateLightmapData()
 {
     for (LightmapDataComponent* dataComponent : lightmapDataComponents)
     {
-        dataComponent->ReloadLightmaps();
         UpdateDynamicParams(dataComponent);
     }
 }

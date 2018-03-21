@@ -262,19 +262,7 @@ DAVA::M::ValidationResult ValidateTexture(const DAVA::Any& value, const DAVA::An
             const EngineContext* ctx = GetEngineContext();
             if (ctx->fileSystem->Exists(texturePath) && RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
             {
-                FilePath descriptorPath = TextureDescriptor::GetDescriptorPathname(texturePath);
-
-                const TexturesMap& texturesMap = Texture::GetTextureMap();
-                auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
-                if (found != texturesMap.end())
-                {
-                    DAVA::Vector<DAVA::Texture*> reloadTextures;
-                    reloadTextures.push_back(found->second);
-
-                    DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
-                }
-
-                result.fixedValue = FilePath(descriptorPath);
+                result.fixedValue = TextureDescriptor::GetDescriptorPathname(texturePath);
             }
             return result;
         }

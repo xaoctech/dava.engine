@@ -18,6 +18,8 @@
 #include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
 #include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
+#include "Render/TextureAssetLoader.h"
 
 #define NEW_PPA
 
@@ -43,8 +45,6 @@ SpriteDrawState::SpriteDrawState()
 
 Sprite::Sprite()
 {
-    textures = 0;
-    textureNames = 0;
     frameTextureIndex = 0;
     textureCount = 0;
 
@@ -192,8 +192,10 @@ void Sprite::InitFromFile(File* file)
     char tempBuf[1024];
     file->ReadLine(tempBuf, 1024);
     sscanf(tempBuf, "%d", &textureCount);
-    textures = new Texture*[textureCount];
-    textureNames = new FilePath[textureCount];
+    textures.resize(textureCount);
+    textureNames.resize(textureCount);
+
+    AssetManager* assetManager = GetEngineContext()->assetManager;
 
     char textureCharName[128];
     for (int32 k = 0; k < textureCount; ++k)
@@ -202,9 +204,9 @@ void Sprite::InitFromFile(File* file)
         sscanf(tempBuf, "%s", textureCharName);
 
         FilePath tp = pathName.GetDirectory() + String(textureCharName);
-        Texture* testTexture = Texture::CreateFromFile(tp);
 
-        textures[k] = testTexture;
+        Texture::PathKey key(tp);
+        textures[k] = assetManager->GetAsset<Texture>(key, AssetManager::SYNC, this);
         textureNames[k] = tp;
         DVASSERT(textures[k], "ERROR: Texture loading failed" /* + pathName*/);
     }
@@ -302,16 +304,15 @@ Sprite* Sprite::Create(const FilePath& spriteName)
 
     if (!spr)
     {
-        Texture* pinkTexture = Texture::CreatePink();
+        Texture::PathKey key = Texture::MakePinkKey();
+        Asset<Texture> pinkTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         spr = CreateFromTexture(pinkTexture, 0, 0, 16, 16, 16.f, 16.f, spriteName);
         spr->type = SPRITE_FROM_FILE;
-
-        pinkTexture->Release();
     }
     return spr;
 }
 
-Sprite* Sprite::CreateFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded)
+Sprite* Sprite::CreateFromTexture(Asset<Texture> fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded)
 {
     DVASSERT(fromTexture);
     Sprite* spr = new Sprite();
@@ -320,7 +321,7 @@ Sprite* Sprite::CreateFromTexture(Texture* fromTexture, int32 xOffset, int32 yOf
     return spr;
 }
 
-Sprite* Sprite::CreateFromTexture(Texture* fromTexture, int32 textureRegionOffsetX, int32 textureRegionOffsetY, int32 textureRegionWidth, int32 textureRegionHeigth, float32 sprWidth, float32 sprHeight, const FilePath& spriteName /* = FilePath()*/)
+Sprite* Sprite::CreateFromTexture(Asset<Texture> fromTexture, int32 textureRegionOffsetX, int32 textureRegionOffsetY, int32 textureRegionWidth, int32 textureRegionHeigth, float32 sprWidth, float32 sprHeight, const FilePath& spriteName /* = FilePath()*/)
 {
     DVASSERT(fromTexture);
     Sprite* spr = new Sprite();
@@ -334,8 +335,9 @@ Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = fal
     uint32 width = image->GetWidth();
     uint32 height = image->GetHeight();
 
-    ScopedPtr<Image> squareImage(ImageSystem::EnsurePowerOf2Image(image));
-    ScopedPtr<Texture> texture(Texture::CreateFromData(squareImage, false));
+    RefPtr<Image> squareImage(ImageSystem::EnsurePowerOf2Image(image));
+    Texture::UniqueTextureKey key(squareImage, false);
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     Sprite* sprite = nullptr;
     if (texture)
@@ -422,7 +424,7 @@ Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncl
     return sprite;
 }
 
-void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded, const FilePath& spriteName /* = FilePath() */)
+void Sprite::InitFromTexture(Asset<Texture> fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded, const FilePath& spriteName /* = FilePath() */)
 {
     Clear();
 
@@ -441,11 +443,12 @@ void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset,
 
     type = SPRITE_FROM_TEXTURE;
     textureCount = 1;
-    textures = new Texture*[textureCount];
-    textureNames = new FilePath[textureCount];
+    textures.resize(textureCount);
+    textureNames.resize(textureCount);
     textureInVirtualSpace = contentScaleIncluded;
 
-    textures[0] = SafeRetain(fromTexture);
+    textures[0] = fromTexture;
+    GetEngineContext()->assetManager->RegisterListener(fromTexture, this);
     if (textures[0])
     {
         textureNames[0] = textures[0]->GetPathname();
@@ -497,7 +500,7 @@ void Sprite::InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset,
         dy += y;
 
         int32 frameIndex = frameTextureIndex[i];
-        Texture* texture = textures[frameIndex];
+        Asset<Texture> texture = textures[frameIndex];
         float32* texCoord = texCoords[i];
 
         texCoord[0] = x / texture->width;
@@ -543,12 +546,8 @@ void Sprite::SetOffsetsForFrame(int frame, float32 xOff, float32 yOff)
 
 void Sprite::Clear()
 {
-    for (int32 k = 0; k < textureCount; ++k)
-    {
-        SafeRelease(textures[k]);
-    }
-    SafeDeleteArray(textures);
-    SafeDeleteArray(textureNames);
+    textures.clear();
+    textureNames.clear();
 
     if (frameVertices != 0)
     {
@@ -575,12 +574,12 @@ Sprite::~Sprite()
     Clear();
 }
 
-Texture* Sprite::GetTexture() const
+Asset<Texture> Sprite::GetTexture() const
 {
     return textures[0];
 }
 
-Texture* Sprite::GetTexture(int32 frameNumber) const
+Asset<Texture> Sprite::GetTexture(int32 frameNumber) const
 {
     frameNumber = Clamp(frameNumber, 0, frameCount - 1);
     return textures[frameTextureIndex[frameNumber]];
@@ -712,8 +711,8 @@ void Sprite::PrepareForNewSize()
     spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
     spriteMapMutex.Unlock();
 
-    textures = 0;
-    textureNames = 0;
+    textures.clear();
+    textureNames.clear();
 
     frameTextureIndex = 0;
     textureCount = 0;
@@ -760,7 +759,6 @@ void Sprite::ValidateForSize()
         (*it)->PrepareForNewSize();
     }
     Logger::FrameworkDebug("----------- Sprites validation for new resolution DONE  --------------");
-    // Texture::DumpTextures();
 }
 
 void Sprite::DumpSprites()
@@ -856,7 +854,8 @@ void SpriteDrawState::BuildStateFromParentAndLocal(const SpriteDrawState& parent
 
 void Sprite::ReloadSprites()
 {
-    ReloadSprites(Texture::GetPrimaryGPUForLoading());
+    TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+    ReloadSprites(loader->GetPrimaryGPUForLoading());
 }
 
 void Sprite::ReloadSprites(eGPUFamily gpu)
@@ -867,9 +866,19 @@ void Sprite::ReloadSprites(eGPUFamily gpu)
     }
 }
 
+void Sprite::OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded)
+{
+    auto iter = std::find(textures.begin(), textures.end(), original);
+    if (iter != textures.end())
+    {
+        *iter = std::static_pointer_cast<Texture>(original);
+    }
+}
+
 void Sprite::Reload()
 {
-    Reload(Texture::GetPrimaryGPUForLoading());
+    TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+    Reload(loader->GetPrimaryGPUForLoading());
 }
 
 void Sprite::Reload(eGPUFamily gpu)
@@ -889,9 +898,9 @@ void Sprite::Reload(eGPUFamily gpu)
         {
             Logger::Warning("Unable to reload sprite %s", relativePathname.GetAbsolutePathname().c_str());
 
-            Texture* pinkTexture = Texture::CreatePink();
+            Texture::PathKey key = Texture::MakePinkKey();
+            Asset<Texture> pinkTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
             InitFromTexture(pinkTexture, 0, 0, 16.0f, 16.0f, 16, 16, false, relativePathname);
-            pinkTexture->Release();
 
             type = SPRITE_FROM_FILE;
         }
@@ -933,6 +942,7 @@ File* Sprite::GetSpriteFile(const FilePath& spriteName, int32& resourceSizeIndex
 void Sprite::ReloadExistingTextures(eGPUFamily gpu)
 {
     //this function need to be sure that textures really would reload
+    AssetManager* assetManager = GetEngineContext()->assetManager;
     for (int32 i = 0; i < textureCount; ++i)
     {
         if (textures[i])
@@ -941,7 +951,8 @@ void Sprite::ReloadExistingTextures(eGPUFamily gpu)
             {
                 if (FileSystem::Instance()->Exists(textures[i]->GetPathname()))
                 {
-                    textures[i]->ReloadAs(gpu);
+                    Texture::PathKey key(textures[i]->GetPathname(), gpu);
+                    textures[i] = assetManager->GetAsset<Texture>(key, AssetManager::SYNC, this);
                 }
             }
             else if (!textures[i]->IsPinkPlaceholder())
@@ -959,6 +970,7 @@ void Sprite::SetRelativePathname(const FilePath& path)
     relativePathname = path;
     spriteMap[FILEPATH_MAP_KEY(this->relativePathname)] = this;
     spriteMapMutex.Unlock();
-    GetTexture()->SetPathname(path);
+    // GFX_COMPLETE - It's not correct to set path name for texture as texture is shared asset
+    //GetTexture()->SetPathname(path);
 }
 };

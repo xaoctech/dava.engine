@@ -11,6 +11,7 @@
 #include "Render/Texture.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
@@ -214,30 +215,30 @@ void VegetationGeometry::Build(VegetationRenderData* renderData)
     }
 }
 
-void VegetationGeometry::OnVegetationPropertiesChanged(NMaterial* mat, KeyedArchive* props)
+void VegetationGeometry::OnVegetationPropertiesChanged(NMaterial* mat, KeyedArchive* props, const Asset<Texture>& heightTexture)
 {
     if (mat)
     {
+        AssetManager* assetManager = GetEngineContext()->assetManager;
         String lightmapKeyName = VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str();
-        if (props->IsKeyExists(lightmapKeyName))
+        if (props != nullptr && props->IsKeyExists(lightmapKeyName))
         {
             FilePath lightmapPath = props->GetString(lightmapKeyName);
 
-            ScopedPtr<Texture> lightmapTexture(Texture::CreateFromFile(lightmapPath));
+            Texture::PathKey key(lightmapPath);
+            Asset<Texture> lightmapTexture = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
             if (mat->HasLocalTexture(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP))
                 mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP, lightmapTexture);
             else
                 mat->AddTexture(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP, lightmapTexture);
         }
 
-        String heightmapKeyName = NMaterialTextureName::TEXTURE_HEIGHTMAP.c_str();
-        if (props->IsKeyExists(heightmapKeyName))
+        if (heightTexture != nullptr)
         {
-            Texture* heightmap = reinterpret_cast<Texture*>(props->GetUInt64(heightmapKeyName));
             if (mat->HasLocalTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP))
-                mat->SetTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightmap);
+                mat->SetTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightTexture);
             else
-                mat->AddTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightmap);
+                mat->AddTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightTexture);
         }
     }
 }

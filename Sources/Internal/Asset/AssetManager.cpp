@@ -94,11 +94,11 @@ AssetManager::~AssetManager()
     }
     keyTypeToLoader.clear();
 
-    for (auto node : assetTypeToLoader)
+    for (auto node : loaderTypeToLoader)
     {
         loaders.insert(node.second);
     }
-    assetTypeToLoader.clear();
+    loaderTypeToLoader.clear();
 
     for (AbstractAssetLoader* loader : loaders)
     {
@@ -214,12 +214,12 @@ void AssetManager::RegisterAssetLoader(std::unique_ptr<AbstractAssetLoader>&& lo
 
     AbstractAssetLoader* assetLoader = loader.release();
     DVASSERT(assetLoader != nullptr);
-    Vector<const Type*> types = assetLoader->GetAssetTypes();
-    for (const Type* assetType : types)
-    {
-        DVASSERT(assetTypeToLoader.find(assetType) == assetTypeToLoader.end());
-        assetTypeToLoader[assetType] = assetLoader;
-    }
+    const ReflectedType* loaderRefType = ReflectedTypeDB::GetByPointer(assetLoader);
+    DVASSERT(loaderRefType != nullptr);
+
+    const Type* loaderType = loaderRefType->GetType();
+    bool successed = loaderTypeToLoader.emplace(loaderType, assetLoader).second;
+    DVASSERT(successed == true);
 
     Vector<const Type*> keyTypes = assetLoader->GetAssetKeyTypes();
     for (const Type* keyType : keyTypes)
@@ -386,6 +386,23 @@ Asset<AssetBase> AssetManager::CreateAsset(const Any& assetKey)
     node.backtrace.push_back(Debug::GetBacktraceString(backtrace));
 #endif
     return asset;
+}
+
+Asset<AssetBase> AssetManager::FindLoadOrCreate(const Any& assetKey)
+{
+    Asset<AssetBase> asset = FindAsset(assetKey);
+    if (asset == nullptr && ExistsOnDisk(assetKey))
+    {
+        return GetAsset(assetKey, LoadingMode::SYNC);
+    }
+
+    return CreateAsset(assetKey);
+}
+
+bool AssetManager::ExistsOnDisk(const Any& assetKey)
+{
+    AbstractAssetLoader* loader = GetAssetLoader(assetKey);
+    return loader->ExistsOnDisk(assetKey);
 }
 
 bool AssetManager::SaveAsset(const Asset<AssetBase>& asset, AbstractAssetLoader::eSaveMode saveMode)

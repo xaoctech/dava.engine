@@ -2,22 +2,13 @@
 
 #include "Asset/AbstractAssetLoader.h"
 #include "FileSystem/FilePath.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
-class GeometryAssetLoader : public AbstractAssetLoader
+class GeometryAssetLoader final : public AbstractAssetLoader
 {
 public:
-    struct PathKey
-    {
-        PathKey() = default;
-        PathKey(const FilePath& filepath)
-            : path(filepath)
-        {
-        }
-        FilePath path;
-    };
-
     GeometryAssetLoader();
     AssetFileInfo GetAssetFileInfo(const Any& assetKey) const override;
 
@@ -31,10 +22,8 @@ public:
     Vector<String> GetDependsOnFiles(const AssetBase* asset) const override;
 
     Vector<const Type*> GetAssetKeyTypes() const override;
-    Vector<const Type*> GetAssetTypes() const override;
-};
 
-template <>
-bool AnyCompare<GeometryAssetLoader::PathKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<GeometryAssetLoader::PathKey>;
+private:
+    DAVA_VIRTUAL_REFLECTION(GeometryAssetLoader, AbstractAssetLoader);
+};
 } // namespace DAVA

@@ -11,6 +11,7 @@
 
 #include "Render/UniqueStateSet.h"
 #include "Concurrency/Mutex.h"
+#include "Asset/AssetListener.h"
 
 namespace DAVA
 {
@@ -70,7 +71,7 @@ private:
 	It supports texture-atlassing and it uses texture atlasses automatically.
 	You can set scale, rotate, pivot point, angle and position for any sprite object before rendering.
  */
-class Sprite : public BaseObject
+class Sprite : public BaseObject, private AssetListener
 {
 public:
     enum eSpriteType
@@ -122,11 +123,10 @@ public:
 
 	 \return sprite pointer or 0 if it will be impossible to create such render target
 	 */
-    static Sprite* CreateFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded = false);
+    static Sprite* CreateFromTexture(Asset<Texture> fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, bool contentScaleIncluded = false);
+    static Sprite* CreateFromTexture(Asset<Texture> fromTexture, int32 textureRegionOffsetX, int32 textureRegionOffsetY, int32 textureRegionWidth, int32 textureRegionHeigth, float32 sprWidth, float32 sprHeight, const FilePath& spriteName = FilePath());
 
-    static Sprite* CreateFromTexture(Texture* fromTexture, int32 textureRegionOffsetX, int32 textureRegionOffsetY, int32 textureRegionWidth, int32 textureRegionHeigth, float32 sprWidth, float32 sprHeight, const FilePath& spriteName = FilePath());
-
-    void InitFromTexture(Texture* fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded = false, const FilePath& spriteName = FilePath());
+    void InitFromTexture(Asset<Texture> fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded = false, const FilePath& spriteName = FilePath());
 
     static Sprite* CreateFromImage(Image* image, bool contentScaleIncluded = false, bool inVirtualSpace = false);
     static Sprite* CreateFromSourceFile(const FilePath& path, bool contentScaleIncluded = false, bool inVirtualSpace = false);
@@ -136,8 +136,8 @@ public:
 
     void SetOffsetsForFrame(int frame, float32 xOff, float32 yOff);
 
-    Texture* GetTexture() const;
-    Texture* GetTexture(int32 frameNumber) const;
+    Asset<Texture> GetTexture() const;
+    Asset<Texture> GetTexture(int32 frameNumber) const;
 
     int32 GetFrameCount() const;
 
@@ -228,9 +228,10 @@ public:
     static void ReloadSprites();
     static void ReloadSprites(eGPUFamily gpu);
 
+    void OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded) override;
+
 protected:
     Sprite();
-    Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);
     virtual ~Sprite();
 
     static Sprite* GetSpriteFromMap(const FilePath& pathname);
@@ -252,8 +253,8 @@ protected:
         EST_MODIFICATION = 1 << 2
     };
 
-    Texture** textures;
-    FilePath* textureNames;
+    Vector<Asset<Texture>> textures;
+    Vector<FilePath> textureNames;
     int32* frameTextureIndex;
     int32 textureCount;
 

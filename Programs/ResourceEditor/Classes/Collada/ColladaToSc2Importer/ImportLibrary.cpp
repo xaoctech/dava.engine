@@ -7,6 +7,9 @@
 
 #include <REPlatform/Scene/Utils/RETextureDescriptorUtils.h>
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
 #include <Render/3D/MeshUtils.h>
 #include <Render/3D/PolygonGroup.h>
@@ -14,9 +17,10 @@
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Image/ImageSystem.h>
+#include <Render/Material/FXAsset.h>
 #include <Render/Material/NMaterial.h>
 #include <Render/Material/NMaterialNames.h>
-#include <Render/Material/FXAsset.h>
+#include <Render/Texture.h>
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/AnimationData.h>
 #include <Scene3D/Components/AnimationComponent.h>
@@ -197,10 +201,12 @@ AnimationData* ImportLibrary::GetOrCreateAnimation(SceneNodeAnimation* colladaAn
     return animation;
 }
 
-Texture* ImportLibrary::GetTextureForPath(const FilePath& imagePath) const
+Asset<Texture> ImportLibrary::GetTextureForPath(const FilePath& imagePath) const
 {
     RETextureDescriptorUtils::CreateOrUpdateDescriptor(imagePath);
-    return Texture::CreateFromFile(imagePath);
+
+    Texture::PathKey key(imagePath);
+    return GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 }
 
 NMaterial* ImportLibrary::GetOrCreateMaterialParent(ColladaMaterial* colladaMaterial, bool isShadow, uint32 maxInfluenceCount)
@@ -243,13 +249,13 @@ NMaterial* ImportLibrary::GetOrCreateMaterialParent(ColladaMaterial* colladaMate
         bool hasTexture = GetTextureTypeAndPathFromCollada(colladaMaterial, textureType, texturePath);
         if (!isShadow && hasTexture && !texturePath.IsEmpty())
         {
-            ScopedPtr<Texture> texture(GetTextureForPath(texturePath));
+            Asset<Texture> texture(GetTextureForPath(texturePath));
             davaMaterialParent->AddTexture(textureType, texture);
 
             FilePath normalMap = GetNormalMapTexturePath(texturePath);
             if (FileSystem::Instance()->IsFile(normalMap))
             {
-                ScopedPtr<Texture> nmTexture(GetTextureForPath(normalMap));
+                Asset<Texture> nmTexture(GetTextureForPath(normalMap));
                 davaMaterialParent->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, nmTexture);
             }
         }

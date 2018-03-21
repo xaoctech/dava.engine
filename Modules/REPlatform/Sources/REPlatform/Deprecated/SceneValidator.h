@@ -38,7 +38,7 @@ public:
      \param[out] errorsLog set for validation errors
 	 */
 
-    void ValidateTexture(Texture* texture, const String& validatedObjectName);
+    void ValidateTexture(const Asset<Texture>& texture, const String& validatedObjectName);
 
     /*
      \brief Function to validate LandscapeNode errors

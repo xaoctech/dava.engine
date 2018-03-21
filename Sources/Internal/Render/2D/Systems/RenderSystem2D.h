@@ -6,6 +6,7 @@
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Systems/BatchDescriptor2D.h"
 #include "Render/RenderBase.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -30,7 +31,7 @@ struct TiledDrawData
     void GenerateTransformData();
 
     Sprite* sprite;
-    Texture* texture;
+    Asset<Texture> texture;
     int32 frame;
     Vector2 size;
     Vector2 stretchCap;
@@ -49,7 +50,7 @@ struct StretchDrawData
     uint32 GetVertexInTrianglesCount() const;
 
     Sprite* sprite;
-    Texture* texture;
+    Asset<Texture> texture;
     int32 frame;
     Vector2 size;
     int32 type;
@@ -76,10 +77,10 @@ struct TiledMultilayerData
     Sprite* gradient = nullptr;
     Sprite* contour = nullptr;
 
-    Texture* mask_texture = nullptr;
-    Texture* detail_texture = nullptr;
-    Texture* gradient_texture = nullptr;
-    Texture* contour_texture = nullptr;
+    Asset<Texture> mask_texture;
+    Asset<Texture> detail_texture;
+    Asset<Texture> gradient_texture;
+    Asset<Texture> contour_texture;
 
     Vector2 size;
     Vector2 stretchCap;
@@ -204,7 +205,7 @@ public:
     void SetSpriteClipping(bool clipping);
     bool GetSpriteClipping() const;
 
-    void BeginRenderTargetPass(Texture* target, bool needClear = true, const Color& clearColor = Color::Clear, int32 priority = PRIORITY_SERVICE_2D);
+    void BeginRenderTargetPass(const Asset<Texture>& target, const Asset<Texture>& depthStencil = nullptr, bool needClear = true, const Color& clearColor = Color::Clear, int32 priority = PRIORITY_SERVICE_2D);
     void BeginRenderTargetPass(const RenderTargetPassDescriptor&);
     void EndRenderTargetPass();
 
@@ -300,10 +301,10 @@ public:
     */
     void DrawPolygonTransformed(const Polygon2& polygon, bool closed, const Matrix3& transform, const Color& color);
 
-    void DrawTexture(Texture* texture, NMaterial* material, const Color& color,
+    void DrawTexture(const Asset<Texture>& texture, NMaterial* material, const Color& color,
                      const Rect& dstRect = Rect(0.f, 0.f, -1.f, -1.f), const Rect& srcRect = Rect(0.f, 0.f, -1.f, -1.f));
 
-    void DrawTextureWithoutAdjustingRects(Texture* texture, NMaterial* material, const Color& color, const Rect& dstRect, const Rect& srcRect);
+    void DrawTextureWithoutAdjustingRects(const Asset<Texture>& texture, NMaterial* material, const Color& color, const Rect& dstRect, const Rect& srcRect);
 
     const RenderTargetPassDescriptor& GetActiveTargetDescriptor();
     const RenderTargetPassDescriptor& GetMainTargetDescriptor();

@@ -6,6 +6,8 @@
 #include "Reflection/ReflectedMeta.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 #include "Utils/StringFormat.h"
+#include "Render/Material/Material.h"
+#include "Render/3D/Geometry.h"
 
 namespace DAVA
 {
@@ -38,6 +40,8 @@ SpeedTreeComponent::SpeedTreeComponent()
 
 SpeedTreeComponent::~SpeedTreeComponent()
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    assetManager->UnregisterListener(this);
     SafeRelease(treeObject);
 }
 
@@ -57,7 +61,24 @@ Component* SpeedTreeComponent::Clone(Entity* toEntity)
 
 void SpeedTreeComponent::SetMeshDescriptor(const Vector<MeshLODDescriptor>& desc)
 {
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        assetManager->UnregisterListener(descr.geometryAsset, this);
+        for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        {
+            assetManager->UnregisterListener(batchDescr.materialAsset, this);
+        }
+    }
     meshLODDescriptors = desc;
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        assetManager->RegisterListener(descr.geometryAsset, this);
+        for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        {
+            assetManager->RegisterListener(batchDescr.materialAsset, this);
+        }
+    }
     RebuildObject();
 }
 
@@ -171,5 +192,31 @@ void SpeedTreeComponent::RebuildObject()
 
     treeObject->SetDynamicProperty(DynamicBindings::PARAM_WIND, wind.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
     treeObject->SetDynamicProperty(DynamicBindings::PARAM_FLEXIBILITY, leafsFlexibility.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+}
+
+void SpeedTreeComponent::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloaded)
+{
+    Asset<Material> material = std::dynamic_pointer_cast<Material>(reloaded);
+    Asset<Geometry> geometry = std::dynamic_pointer_cast<Geometry>(reloaded);
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        if (geometry != nullptr && descr.geometryAsset == originalAsset)
+        {
+            descr.geometryAsset = geometry;
+        }
+
+        if (material != nullptr)
+        {
+            for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+            {
+                if (batchDescr.materialAsset == originalAsset)
+                {
+                    batchDescr.materialAsset = material;
+                }
+            }
+        }
+    }
+
+    RebuildObject();
 }
 };

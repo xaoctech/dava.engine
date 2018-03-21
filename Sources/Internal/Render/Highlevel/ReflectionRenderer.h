@@ -5,6 +5,7 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Highlevel/ReflectionProbe.h"
 #include "Render/Highlevel/QuadRenderer.h"
+#include "Render/Texture.h"
 
 /*
     TODO:
@@ -39,7 +40,7 @@ public:
 
     void SetDebugDrawProbe(ReflectionProbe* probe);
 
-    Texture* GetSpecularConvolution2();
+    Asset<Texture> GetSpecularConvolution2();
 
 private:
     struct SphericalHarmonicsUpdate
@@ -80,7 +81,7 @@ private:
     void UpdateProbeMaterialBindings(ReflectionProbe* probe);
 
     void EnumerateMaterials(Set<NMaterial*>& materials);
-    Texture* CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format);
+    Asset<Texture> CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format);
 
     void RenderReflectionProbe(ReflectionProbe* probe);
     void DrawDebugInfo();
@@ -93,14 +94,15 @@ private:
     ReflectionProbe* debugDrawProbe = nullptr;
     Vector<ReflectionProbe*> localReflectionProbes;
     Vector<ReflectionProbeToUpdate> probesForUpdate;
-    Texture* temporaryFramebuffer = nullptr;
-    Texture* downsampledFramebuffer = nullptr; // temporary convolution textures
-    Texture* globalProbeSpecularConvolution = nullptr;
+    Asset<Texture> temporaryFramebuffer;
+    Asset<Texture> temporaryFramebufferDepth;
+    Asset<Texture> downsampledFramebuffer; // temporary convolution textures
+    Asset<Texture> globalProbeSpecularConvolution;
 
     Vector<SphericalHarmonicsUpdate> shUpdateQueue;
-    Vector<Texture*> reflectionTextureCache;
-    List<Texture*> textureCache[CUBEMAP_QUALITY_LEVELS];
-    Vector<Texture*> allCacheTextures;
+    Vector<Asset<Texture>> reflectionTextureCache;
+    List<Asset<Texture>> textureCache[CUBEMAP_QUALITY_LEVELS];
+    Vector<Asset<Texture>> allCacheTextures;
     ScopedPtr<NMaterial> debugMaterial;
     QuadRenderer quadRenderer;
     Vector4 emptySphericalHarmonicsArray[9]{};

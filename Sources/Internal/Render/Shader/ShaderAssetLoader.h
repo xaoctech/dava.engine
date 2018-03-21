@@ -9,27 +9,19 @@
 #include "Concurrency/Mutex.h"
 #include "FileSystem/File.h"
 #include "Asset/AssetListener.h"
+#include "Reflection/Reflection.h"
 
 namespace DAVA
 {
 class ShaderDescriptor;
-class ShaderAssetLoader : public AbstractAssetLoader
+class ShaderAssetLoader final : public AbstractAssetLoader
 {
 public:
-    struct Key
-    {
-        Key() = default;
-        Key(const FastName& name, const UnorderedMap<FastName, int32>& inputDefines);
-
-        FastName name;
-        UnorderedMap<FastName, int32> defines;
-        Vector<size_t> shaderKey;
-        size_t shaderKeyHash = 0;
-    };
-
     ShaderAssetLoader();
 
     AssetFileInfo GetAssetFileInfo(const Any& assetKey) const override;
+    bool ExistsOnDisk(const Any& assetKey) const override;
+
     AssetBase* CreateAsset(const Any& assetKey) const override;
     void DeleteAsset(AssetBase* asset) const override;
     void LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const override;
@@ -37,11 +29,10 @@ public:
     bool SaveAssetFromData(const Any& data, File* file, eSaveMode requestedMode) const override;
     Vector<String> GetDependsOnFiles(const AssetBase* asset) const override;
     Vector<const Type*> GetAssetKeyTypes() const override;
-    Vector<const Type*> GetAssetTypes() const override;
 
     static Vector<size_t> BuildFlagsKey(const FastName& name, const UnorderedMap<FastName, int32>& defines);
     static size_t GetUniqueFlagKey(FastName flagName);
-    static String BuildResourceName(const Key& key, Vector<String>& progDefines);
+    static String BuildResourceName(const ShaderDescriptor::Key& key, Vector<String>& progDefines);
 
 private:
     struct ShaderSourceCode
@@ -64,6 +55,8 @@ private:
 
     Mutex mutex;
     Map<FastName, ShaderSourceCode> shaderSourceCodes;
+
+    DAVA_VIRTUAL_REFLECTION(ShaderAssetLoader, AbstractAssetLoader);
 };
 
 class ShaderAssetListener : public StaticSingleton<ShaderAssetListener>
@@ -89,8 +82,4 @@ private:
     bool cleanupEnabled = false;
     bool loadingNotify = false;
 };
-
-template <>
-bool AnyCompare<ShaderAssetLoader::Key>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<ShaderAssetLoader::Key>;
 } // namespace DAVA

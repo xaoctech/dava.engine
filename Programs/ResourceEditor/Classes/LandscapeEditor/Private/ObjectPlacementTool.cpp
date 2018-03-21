@@ -498,6 +498,7 @@ ObjectPlacementTool::ObjectPlacementTool(DAVA::LandscapeEditorSystemV2* system)
 ObjectPlacementTool::~ObjectPlacementTool()
 {
     DVASSERT(models.empty() == true);
+    cursorTexture.reset();
 }
 
 DAVA::BaseLandscapeTool::ButtonInfo ObjectPlacementTool::GetButtonInfo() const
@@ -687,7 +688,7 @@ QWidget* ObjectPlacementTool::CreateEditorWidget(const WidgetParams& params)
     return builder.GetWidget();
 }
 
-DAVA::RefPtr<DAVA::Texture> ObjectPlacementTool::GetCursorTexture() const
+DAVA::Asset<DAVA::Texture> ObjectPlacementTool::GetCursorTexture() const
 {
     return cursorTexture;
 }

@@ -8,7 +8,6 @@
 #include <Logger/Logger.h>
 #include <Engine/Engine.h>
 #include <Scene3D/Prefab.h>
-#include <Scene3D/AssetLoaders/PrefabAssetLoader.h>
 
 namespace DAEConverter
 {
@@ -25,7 +24,7 @@ bool Convert(const DAVA::FilePath& daePath)
             DAVA::RefPtr<DAVA::Scene> scene;
             scene.ConstructInplace();
 
-            DAVA::PrefabAssetLoader::PathKey key(etalonScenePath);
+            DAVA::Prefab::PathKey key(etalonScenePath);
             DAVA::Asset<DAVA::Prefab> prefabAsset = DAVA::GetEngineContext()->assetManager->GetAsset<DAVA::Prefab>(key, DAVA::AssetManager::SYNC);
             scene->ConstructFromPrefab(prefabAsset);
 

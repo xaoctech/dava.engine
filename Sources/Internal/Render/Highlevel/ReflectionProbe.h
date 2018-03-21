@@ -6,6 +6,11 @@
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Asset/AssetListener.h"
+#include "Asset/Asset.h"
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -13,7 +18,7 @@ class PolygonGroup;
 class RenderBatch;
 class NMaterial;
 
-class ReflectionProbe : public RenderObject
+class ReflectionProbe : public RenderObject, public AssetListener
 {
 public:
     enum class ProbeType : uint32
@@ -49,8 +54,8 @@ public:
 
     virtual RenderObject* Clone(RenderObject* newObject);
 
-    void SetCurrentTexture(Texture* texture_);
-    Texture* GetCurrentTexture() const;
+    void SetCurrentTexture(const Asset<Texture>& texture);
+    const Asset<Texture>& GetCurrentTexture() const;
 
     void SetNextQualityLevel(uint32 qualityLevel_);
     uint32 GetNextQualityLevel() const;
@@ -67,6 +72,8 @@ public:
     const Vector3& GetCapturePositionInWorldSpace() const;
     const Matrix4& GetCaptureWorldToLocalMatrix() const;
 
+    void OnAssetReloaded(const Asset<AssetBase>& original, const Asset<AssetBase>& reloaded) override;
+
 protected:
     ProbeType probeType = ProbeType::GLOBAL;
     Vector3 position;
@@ -74,7 +81,7 @@ protected:
     Vector3 captureSize;
     Vector3 capturePositionInWorldSpace;
     Matrix4 captureWorldToLocalMatrix;
-    Texture* currentTexture = nullptr;
+    Asset<Texture> currentTexture;
     uint32 nextQualityLevel = INVALID_QUALITY_LEVEL;
     uint32 activeQualityLevel = INVALID_QUALITY_LEVEL;
     Vector4 diffuseSphericalHarmonics[9];
@@ -121,16 +128,18 @@ inline const Vector3& ReflectionProbe::GetCaptureSize() const
     return captureSize;
 }
 
-inline void ReflectionProbe::SetCurrentTexture(Texture* texture_)
+inline void ReflectionProbe::SetCurrentTexture(const Asset<Texture>& texture_)
 {
     if (texture_ != currentTexture)
     {
-        SafeRelease(currentTexture);
-        currentTexture = SafeRetain(texture_);
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        assetManager->UnregisterListener(currentTexture, this);
+        currentTexture = texture_;
+        assetManager->RegisterListener(currentTexture, this);
     }
 }
 
-inline Texture* ReflectionProbe::GetCurrentTexture() const
+inline const Asset<Texture>& ReflectionProbe::GetCurrentTexture() const
 {
     return currentTexture;
 }

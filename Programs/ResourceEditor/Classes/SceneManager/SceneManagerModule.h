@@ -57,7 +57,7 @@ private:
     void ExportScene();
     void CloseAllScenes(bool needSavingReqiest);
     void ReloadAllTextures(DAVA::eGPUFamily gpu);
-    void ReloadTextures(DAVA::Vector<DAVA::Texture*> textures);
+    void ReloadTextures(const DAVA::Vector<DAVA::Asset<DAVA::Texture>>& textures);
 
     /// Fields value handlers
     void OnProjectPathChanged(const DAVA::Any& projectPath);

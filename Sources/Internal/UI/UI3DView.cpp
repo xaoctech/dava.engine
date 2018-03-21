@@ -13,6 +13,9 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "UI/Update/UIUpdateComponent.h"
 #include "UI/Scene3D/UISceneComponent.h"
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
 
 namespace DAVA
 {
@@ -40,7 +43,6 @@ UI3DView::UI3DView(const Rect& rect)
 
 UI3DView::~UI3DView()
 {
-    SafeRelease(frameBuffer);
     SafeRelease(scene);
 }
 
@@ -113,11 +115,11 @@ void UI3DView::Draw(const UIGeometricData& geometricData)
         PrepareFrameBuffer();
 
         priority += PRIORITY_SERVICE_3D;
-        colorTexture = frameBuffer->handle;
-        depthStencilTexture = frameBuffer->handleDepthStencil;
-        targetFormat = frameBuffer->GetFormat();
-        targetWidth = frameBuffer->GetWidth();
-        targetHeight = frameBuffer->GetHeight();
+        colorTexture = colorFrameBuffer->handle;
+        depthStencilTexture = depthFrameBuffer->handle;
+        targetFormat = colorFrameBuffer->GetFormat();
+        targetWidth = colorFrameBuffer->width;
+        targetHeight = colorFrameBuffer->height;
     }
     else
     {
@@ -154,7 +156,7 @@ void UI3DView::Draw(const UIGeometricData& geometricData)
 
     if (drawToFrameBuffer)
     {
-        RenderSystem2D::Instance()->DrawTexture(frameBuffer, RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, geometricData.GetUnrotatedRect(), Rect(Vector2(), fbTexSize));
+        RenderSystem2D::Instance()->DrawTexture(colorFrameBuffer, RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, geometricData.GetUnrotatedRect(), Rect(Vector2(), fbTexSize));
     }
 }
 
@@ -226,7 +228,8 @@ void UI3DView::SetDrawToFrameBuffer(bool enable)
 
     if (!enable)
     {
-        SafeRelease(frameBuffer);
+        colorFrameBuffer.reset();
+        depthFrameBuffer.reset();
     }
 }
 
@@ -241,15 +244,28 @@ void UI3DView::PrepareFrameBuffer()
 
     fbRenderSize = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToPhysical(GetSize()) * fbScaleFactor;
 
-    if (frameBuffer == nullptr || frameBuffer->GetWidth() < fbRenderSize.dx || frameBuffer->GetHeight() < fbRenderSize.dy)
+    if (colorFrameBuffer == nullptr || colorFrameBuffer->width < fbRenderSize.dx || colorFrameBuffer->height < fbRenderSize.dy)
     {
-        SafeRelease(frameBuffer);
-        int32 dx = static_cast<int32>(fbRenderSize.dx);
-        int32 dy = static_cast<int32>(fbRenderSize.dy);
-        frameBuffer = Texture::CreateFBO(dx, dy, FORMAT_RGBA8888, true);
+        colorFrameBuffer.reset();
+        depthFrameBuffer.reset();
+
+        Texture::RenderTargetTextureKey key;
+        key.width = static_cast<int32>(fbRenderSize.dx);
+        key.height = static_cast<int32>(fbRenderSize.dy);
+        key.format = FORMAT_RGBA8888;
+        key.isDepth = false;
+        key.needPixelReadback = false;
+        key.textureType = rhi::TEXTURE_TYPE_2D;
+        key.ensurePowerOf2 = true;
+
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        colorFrameBuffer = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+
+        key.isDepth = true;
+        depthFrameBuffer = assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     }
 
-    Vector2 fbSize = Vector2(static_cast<float32>(frameBuffer->GetWidth()), static_cast<float32>(frameBuffer->GetHeight()));
+    Vector2 fbSize = Vector2(static_cast<float32>(colorFrameBuffer->width), static_cast<float32>(colorFrameBuffer->height));
 
     fbTexSize = fbRenderSize / fbSize;
 }

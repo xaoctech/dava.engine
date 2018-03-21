@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Asset/Asset.h>
 #include <Base/BaseTypes.h>
 #include <Input/InputElements.h>
 
@@ -27,9 +28,9 @@ String ReplaceInString(const String& sourceString, const String& what, const Str
 
 // Method for debugging. Save image to file
 void SaveSpriteToFile(Sprite* sprite, const FilePath& path);
-void SaveTextureToFile(Texture* texture, const FilePath& path);
+void SaveTextureToFile(const Asset<Texture>& texture, const FilePath& path);
 void SaveImageToFile(Image* image, const FilePath& path);
 
-Texture* CreateSingleMipTexture(const FilePath& pngPathname);
+Asset<Texture> CreateSingleMipTexture(const FilePath& pngPathname);
 const FilePath& DefaultCursorPath();
 } // namespace DAVA

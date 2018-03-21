@@ -20,6 +20,7 @@
 
 #include <QtHelpers/CrashDumpHandler.h>
 
+#include <Asset/AssetManager.h>
 #include <Debug/DVAssert.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -31,6 +32,7 @@
 #include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Render/Renderer.h>
 #include <Render/RenderHelper.h>
+#include <Render/TextureAssetLoader.h>
 #include <UI/UIControlSystem.h>
 #include <Utils/Utils.h>
 
@@ -381,7 +383,8 @@ public:
         vcs->RegisterAvailableResourceSize(rendererParams.width, rendererParams.height, "Gfx");
         vcs->ScreenSizeChanged();
 
-        Texture::SetGPULoadingOrder({ GPU_ORIGIN });
+        DAVA::TextureAssetLoader* loader = DAVA::GetEngineContext()->assetManager->GetAssetLoader<DAVA::TextureAssetLoader>();
+        loader->SetGPULoadingOrder({ GPU_ORIGIN });
 
         ActivateContextImpl(globalContext);
         for (std::unique_ptr<ConsoleModule>& module : modules)

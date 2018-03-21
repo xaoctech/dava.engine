@@ -44,7 +44,7 @@ public:
     virtual ~VegetationGeometry();
 
     void Build(VegetationRenderData* renderData);
-    void OnVegetationPropertiesChanged(NMaterial* material, KeyedArchive* props);
+    void OnVegetationPropertiesChanged(NMaterial* material, KeyedArchive* props, const Asset<Texture>& heightTexture);
 
     void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
 

@@ -104,7 +104,7 @@ void ReflectionsModule::BakeReflections()
             descriptorBaseName.ReplaceExtension(String());
 
             Vector<Vector<Image*>> images;
-            Texture* tex = probe->GetCurrentTexture();
+            Asset<Texture> tex = probe->GetCurrentTexture();
             tex->CreateCubemapMipmapImages(images, tex->GetMipLevelsCount());
 
             uint32 faceIndex = 0;
