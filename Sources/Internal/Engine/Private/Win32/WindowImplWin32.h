@@ -32,6 +32,7 @@ public:
 
     bool Create(float32 width, float32 height);
     void Resize(float32 width, float32 height);
+    void Activate();
     void Close(bool appIsTerminating);
     void SetTitle(const String& title);
     void SetMinimumSize(Size2f size);
@@ -73,6 +74,7 @@ private:
 
     void SetCursorInCenter();
     void DoResizeWindow(float32 width, float32 height, int resizeFlags);
+    void DoActivateWindow();
     void DoCloseWindow();
     void DoSetTitle(const char8* title);
     void DoSetMinimumSize(float32 width, float32 height);

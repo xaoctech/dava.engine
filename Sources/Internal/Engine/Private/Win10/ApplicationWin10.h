@@ -21,6 +21,7 @@ protected:
     // ::Windows::UI::Xaml::Application overriden methods
     void OnLaunched(::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs^ args) override;
     void OnActivated(::Windows::ApplicationModel::Activation::IActivatedEventArgs^ args) override;
+    void OnFileActivated(::Windows::ApplicationModel::Activation::FileActivatedEventArgs^ args) override;
     void OnWindowCreated(::Windows::UI::Xaml::WindowCreatedEventArgs^ args) override;
 
 private:

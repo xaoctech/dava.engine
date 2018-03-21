@@ -507,14 +507,43 @@ private:
 
         DAVA::FastName itemName(item);
         DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
+        DAVA::SlotSystem* slotSystem = scene->GetSystem<DAVA::SlotSystem>();
+        DAVA::SelectionSystem* selectionSystem = scene->GetSystem<DAVA::SelectionSystem>();
+
+        DAVA::Set<DAVA::Entity*> selectedEntities;
+        for (DAVA::Entity* e : selectionSystem->GetSelection().ObjectsOfType<DAVA::Entity>())
+        {
+            selectedEntities.emplace(e);
+        }
 
         std::shared_ptr<ModifyExtension> extension = GetModifyInterface();
         ModifyExtension::MultiCommandInterface cmdInterface = extension->GetMultiCommandInterface("Load preview item to slot", static_cast<DAVA::uint32>(nodes.size()));
         ForEachSlotComponent([&](DAVA::SlotComponent* component, bool) {
+            DAVA::Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
+            bool applySelectionChange = false;
+            auto iter = selectedEntities.find(loadedEntity);
+            if (iter != selectedEntities.end())
+            {
+                applySelectionChange = true;
+                selectedEntities.erase(iter);
+            }
+
             cmdInterface.Exec(std::make_unique<DAVA::AttachEntityToSlot>(scene.Get(), component, itemName));
+
+            if (applySelectionChange == true)
+            {
+                selectedEntities.emplace(slotSystem->LookUpLoadedEntity(component));
+            }
             return true;
         });
 
+        SelectableGroup::CollectionType newSelection;
+        std::transform(selectedEntities.begin(), selectedEntities.end(), std::back_inserter(newSelection), [](DAVA::Entity* e) {
+            return DAVA::Selectable(e);
+        });
+        SelectableGroup group;
+        group.Add(newSelection);
+        selectionSystem->SetSelection(group);
         RebuildItemsList();
     }
 

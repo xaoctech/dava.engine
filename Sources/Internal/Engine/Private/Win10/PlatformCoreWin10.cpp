@@ -3,7 +3,7 @@
 #if defined(__DAVAENGINE_WIN_UAP__)
 
 #include "Base/Exception.h"
-#include "Engine/Window.h"
+#include "Engine/Engine.h"
 #include "Engine/PlatformApiWin10.h"
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcherEvent.h"
@@ -16,6 +16,7 @@
 #include "Logger/Logger.h"
 #include "Platform/DeviceInfo.h"
 #include "Time/SystemTimer.h"
+#include "Utils/UTF8Utils.h"
 #include "Utils/Utils.h"
 
 extern int DAVAMain(DAVA::Vector<DAVA::String> cmdline);
@@ -140,6 +141,12 @@ void PlatformCore::OnLaunchedOrActivated(::Windows::ApplicationModel::Activation
     ApplicationExecutionState prevExecState = args->PreviousExecutionState;
     if (prevExecState != ApplicationExecutionState::Running && prevExecState != ApplicationExecutionState::Suspended)
     {
+        if (args->Kind == ActivationKind::File)
+        {
+            // Main thread is not running yet so we can safely collect filenames without any synchronization
+            CollectActivationFilenames(static_cast<FileActivatedEventArgs ^>(args));
+        }
+
         Thread* gameThread = Thread::Create(MakeFunction(this, &PlatformCore::GameThread));
         gameThread->Start();
         gameThread->BindToProcessor(0);
@@ -154,6 +161,14 @@ void PlatformCore::OnLaunchedOrActivated(::Windows::ApplicationModel::Activation
     }
     else
     {
+        if (args->Kind == ActivationKind::File)
+        {
+            RunOnMainThreadAsync([ this, args = static_cast<FileActivatedEventArgs ^>(args) ]() {
+                CollectActivationFilenames(args);
+                engineBackend->OnFileActivated();
+            });
+        }
+
         NotifyListeners(args->Kind == ActivationKind::Launch ? ON_LAUNCHED : ON_ACTIVATED, args);
     }
 }
@@ -304,6 +319,20 @@ void PlatformCore::NotifyListeners(eNotificationType type, ::Platform::Object ^ 
         default:
             break;
         }
+    }
+}
+
+void PlatformCore::CollectActivationFilenames(::Windows::ApplicationModel::Activation::FileActivatedEventArgs ^ args)
+{
+    using ::Windows::ApplicationModel::Activation::FileActivatedEventArgs;
+    using ::Windows::Storage::StorageFile;
+
+    auto files = args->Files;
+    const unsigned int nfiles = files->Size;
+    for (unsigned int i = 0; i < nfiles; ++i)
+    {
+        StorageFile ^ file = static_cast<StorageFile ^>(files->GetAt(i));
+        engineBackend->AddActivationFilename(UTF8Utils::EncodeToUTF8(file->Path->Data()));
     }
 }
 

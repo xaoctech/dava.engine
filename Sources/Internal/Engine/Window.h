@@ -144,11 +144,20 @@ public:
         Request has no effect in these cases:
             - window does not support resizing, this is the case on mobile platforms.
             - the requested size is greater than the available work area which depends on system settings.
-            - the requested size is less than minimum size defined by aplication or system.
+            - the requested size is less than minimum size defined by application or system.
 
         Performed asynchronously, use `sizeChanged` signal to track window size changing.
     */
     void SetSizeAsync(Size2f size);
+
+    /**
+        Request to activate minimized or inactive window, i.e. put it at the top of window hierarchy to be visible by user.
+
+        Note that this method is supported only on desktop platforms except Win10.
+
+        Performed asynchronously, window activation state changes can be traced by `visibilityChanged` and `focusChanged` signals.
+    */
+    void ActivateAsync();
 
     /**
         Set the smallest size, in DIPs, of window client area.

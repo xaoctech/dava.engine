@@ -42,11 +42,11 @@
      
       <Extensions> 
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="zip">
-            <uap:DisplayName>ZIP</uap:DisplayName>
+          <uap:FileTypeAssociation Name="dava">
+            <uap:DisplayName>DAVA Test File</uap:DisplayName>
             <uap:EditFlags OpenIsSafe="true" />
             <uap:SupportedFileTypes>
-              <uap:FileType ContentType="archive/zip">.zip</uap:FileType>
+              <uap:FileType ContentType="application/dava">.dava</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

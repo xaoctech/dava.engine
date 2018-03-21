@@ -364,8 +364,15 @@ void BaseComponentValue::EnsureEditorCreated(QWidget* parent)
         typeProducer = nullptr;
     }
 
+    bool disableOperations = false;
+    if (GetTypeMeta<M::DisableOperations>(nodes.front()->cachedValue) != nullptr ||
+        nodes.front()->field.ref.GetMeta<M::DisableOperations>() != nullptr)
+    {
+        disableOperations = true;
+    }
+
     bool realProperty = nodes.front()->propertyType == PropertyNode::RealProperty;
-    if (realProperty == true && (fieldProducer != nullptr || typeProducer != nullptr))
+    if (disableOperations == false && realProperty == true && (fieldProducer != nullptr || typeProducer != nullptr))
     {
         QtHBoxLayout* layout = new QtHBoxLayout();
         buttonsLayout = new Widget(parent);

@@ -12,6 +12,7 @@
 @class NSObject;
 @class NSMutableArray;
 @class NSNotification;
+@class NSString;
 @class NSUserNotification;
 @class NSUserNotificationCenter;
 @class FrameTimer;
@@ -42,6 +43,7 @@ struct CoreNativeBridge final
     // Callbacks from AppDelegate
     void ApplicationWillFinishLaunching(NSNotification* notification);
     void ApplicationDidFinishLaunching(NSNotification* notification);
+    bool ApplicationOpenFile(NSString* filename);
     void ApplicationDidChangeScreenParameters();
     void ApplicationDidBecomeActive(NSNotification* notification);
     void ApplicationDidResignActive(NSNotification* notification);
@@ -80,6 +82,8 @@ struct CoreNativeBridge final
     bool quitSent = false;
     bool closeRequestByApp = false;
     int32 curFps = 0;
+
+    bool didFinishLaunching = false;
 };
 
 } // namespace Private

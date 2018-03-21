@@ -55,7 +55,6 @@ namespace Mac
 {
 void AddNSView(Window* targetWindow, NSView* nsview);
 void RemoveNSView(Window* targetWindow, NSView* nsview);
-void PrimaryWindowDeminiaturize();
 
 /**
     \ingroup engine_mac
