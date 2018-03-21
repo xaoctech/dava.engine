@@ -64,7 +64,7 @@ public:
 
     virtual ~NetworkTimeSingleComponent(){};
 
-    static uint32 FrameFrequencyHz;
+    static float32 FrameFrequencyHz;
     static float32 FrameDurationS;
     static uint32 FrameDurationMs;
     static uint32 FrameDurationUs;

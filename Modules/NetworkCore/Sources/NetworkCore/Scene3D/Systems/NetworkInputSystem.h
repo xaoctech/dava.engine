@@ -73,7 +73,7 @@ public:
 
 private:
     static const uint8 DUPLICATE_INPUT_MARK = 0xFF;
-    
+
 #ifdef SERVER
     using NetworkInputBuffer = NetworkBuffer<NetworkInputComponent::Data>;
     UnorderedMap<Entity*, NetworkInputBuffer> entitiesToBuffers;

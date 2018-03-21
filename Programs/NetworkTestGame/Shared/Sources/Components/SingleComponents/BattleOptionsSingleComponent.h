@@ -16,7 +16,7 @@ struct BattleOptions
     DAVA::uint16 port = 0;
     PlayerKind playerKind;
     bool isDebug = false;
-    DAVA::uint32 freqHz = 0;
+    DAVA::float32 freqHz = 0.f;
     DAVA::String gameStatsLogPath;
 
     static BattleOptions FromKeyedArchive(DAVA::KeyedArchive* archive);

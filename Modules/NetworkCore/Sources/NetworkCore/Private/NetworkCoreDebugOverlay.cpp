@@ -52,7 +52,7 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
             ImGui::NextColumn();
             ImGui::Text("frequency");
             ImGui::NextColumn();
-            ImGui::Text("%u Hz (%u ms)", NetworkTimeSingleComponent::FrameFrequencyHz, NetworkTimeSingleComponent::FrameDurationMs);
+            ImGui::Text("%.2f Hz (%u ms)", NetworkTimeSingleComponent::FrameFrequencyHz, NetworkTimeSingleComponent::FrameDurationMs);
             ImGui::NextColumn();
             ImGui::Text("uptime");
             ImGui::NextColumn();

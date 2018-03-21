@@ -3,6 +3,7 @@
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
 #include "Reflection/Reflection.h"
+#include "Functional/Function.h"
 #include "NetworkCore/NetworkFactoryUtils.h"
 
 namespace DAVA

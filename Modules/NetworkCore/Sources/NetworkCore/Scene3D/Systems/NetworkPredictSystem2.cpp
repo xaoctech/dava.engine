@@ -17,7 +17,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictSystem2)
 {
     ReflectionRegistrator<NetworkPredictSystem2>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkPredictSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.1f)]
+    .Method("ProcessFixed", &NetworkPredictSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.1f)]
     .End();
 }
 
@@ -144,17 +144,16 @@ void NetworkPredictSystem2::ProcessFixed(float32 timeElapsed)
                             uint32 creationFrameId = entityId.GetPlayerActionFrameId();
                             const auto hasFullyFrame = [creationFrameId](const uint32 frameId)
                             {
-                                return creationFrameId <= frameId;
+                                return creationFrameId < frameId;
                             };
 
                             // if there is fullyReceived server frame older than
                             // frameId for client-entity we should stop waiting
                             // for that entity confirmation
-                            auto findIt = std::find_if(fullyReceivedFrames.begin(), fullyReceivedFrames.end(), hasFullyFrame);
-                            if (findIt != fullyReceivedFrames.end())
+                            if (std::any_of(fullyReceivedFrames.begin(), fullyReceivedFrames.end(), hasFullyFrame))
                             {
                                 // such entity will be deleted
-                                //waitConfirmation = false;
+                                waitConfirmation = false;
                             }
                         }
                     }

@@ -148,7 +148,7 @@ float32 NetworkRemoteInputSystem::GetIncorrectServerFramesPercentage() const
 {
     // total number of incorrect frames / (number of seconds * fps)
     return std::accumulate(numIncorrectInputs.begin(), numIncorrectInputs.end(), 0) /
-    static_cast<float32>(numIncorrectInputs.size() * NetworkTimeSingleComponent::FrameFrequencyHz);
+    static_cast<float32>(numIncorrectInputs.size()) * NetworkTimeSingleComponent::FrameFrequencyHz;
 }
 
 uint32 NetworkRemoteInputSystem::GetIncorrectServerFramesNumber() const
@@ -389,11 +389,11 @@ void NetworkRemoteInputSystem::CompareRemoteToLocalInput(NetworkRemoteInputCompo
     NetworkInputComponent* localInputComponent = entity->GetComponent<NetworkInputComponent>();
     DVASSERT(localInputComponent != nullptr);
 
-    if (numHandledFrames >= NetworkTimeSingleComponent::FrameFrequencyHz)
+    if (numHandledFrames >= NetworkInputComponent::MAX_HISTORY_SIZE)
     {
-        numHandledFrames -= NetworkTimeSingleComponent::FrameFrequencyHz;
+        numHandledFrames -= NetworkInputComponent::MAX_HISTORY_SIZE;
 
-        // Dump information for last 60 frames
+        // Dump information for last 64 frames
 
         numIncorrectInputs[numIncorrectInputsIndex] = numIncorrectInputsCurrent;
         numIncorrectInputsIndex = NetworkRemoteInputSystemDetails::GetIncrementedRingBufferIndex(numIncorrectInputsIndex, 1, COMPARISON_BUFFER_SIZE);

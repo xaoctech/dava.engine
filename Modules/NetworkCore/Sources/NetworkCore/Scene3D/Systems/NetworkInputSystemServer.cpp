@@ -40,7 +40,7 @@ NetworkInputSystem::NetworkInputSystem(Scene* scene)
 void NetworkInputSystem::AddEntity(Entity* entity)
 {
     const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
-    entitiesToBuffers.emplace(entity, NetworkInputBuffer(NetworkTimeSingleComponent::FrameFrequencyHz, netTimeComp->GetFrameId()));
+    entitiesToBuffers.emplace(entity, NetworkInputBuffer(NetworkInputComponent::MAX_HISTORY_SIZE, netTimeComp->GetFrameId()));
 }
 
 void NetworkInputSystem::RemoveEntity(Entity* entity)

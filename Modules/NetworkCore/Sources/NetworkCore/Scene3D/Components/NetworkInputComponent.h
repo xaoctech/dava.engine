@@ -48,6 +48,8 @@ public:
     void SetLastCameraOrientation(const Quaternion& camOrient);
     const Quaternion& GetLastCameraOrientation() const;
 
+    static const uint8 MAX_HISTORY_SIZE = 64;
+
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkInputComponent, Component);
 
@@ -58,7 +60,5 @@ private:
     History history;
 
     Quaternion lastCamOrient;
-
-    static const uint8 MAX_HISTORY_SIZE = 64;
 };
 }

@@ -6,6 +6,7 @@
 #include "UI/HealthMarkersController.h"
 
 #include <NetworkCore/NetworkCoreUtils.h>
+#include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimelineSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
@@ -160,7 +161,7 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
 
     NetworkTimeSingleComponent* netTimeComp = battleScene->GetSingleComponent<NetworkTimeSingleComponent>();
     int32 frameDiff = netTimeComp->GetClientOutrunning(udpClient.GetAuthToken());
-    float32 a = 2.f / (NetworkTimeSingleComponent::FrameFrequencyHz + 1.f);
+    float32 a = 2.f / (NetworkInputComponent::MAX_HISTORY_SIZE + 1.f);
     diffAvg = a * frameDiff + (1.f - a) * diffAvg;
 
     if (udpClient.IsConnected())

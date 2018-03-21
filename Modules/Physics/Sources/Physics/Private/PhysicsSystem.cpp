@@ -759,7 +759,11 @@ void PhysicsSystem::ProcessFixedSimulate(float32 timeElapsed)
                 {
                     if (!body->GetIsKinematic())
                     {
-                        body->GetPxActor()->is<physx::PxRigidDynamic>()->setWakeCounter(body->wakeCounter);
+                        physx::PxRigidActor* actor = body->GetPxActor();
+                        if (actor != nullptr)
+                        {
+                            actor->is<physx::PxRigidDynamic>()->setWakeCounter(body->wakeCounter);
+                        }
                     }
                 }
             }

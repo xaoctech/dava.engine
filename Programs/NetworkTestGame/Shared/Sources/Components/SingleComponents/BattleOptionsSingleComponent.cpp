@@ -15,7 +15,7 @@ BattleOptions BattleOptions::FromKeyedArchive(DAVA::KeyedArchive* archive)
         options.port = archive->GetUInt32("port");
         options.playerKind = PlayerKind(archive->GetUInt32("playerKind"));
         options.isDebug = archive->GetBool("isDebug");
-        options.freqHz = archive->GetUInt32("freqHz");
+        options.freqHz = archive->GetFloat("freqHz");
         options.gameStatsLogPath = archive->GetString("gameStatsLogPath");
     }
     return options;
