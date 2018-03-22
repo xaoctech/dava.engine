@@ -248,7 +248,7 @@ Landscape::Landscape()
     renderMode = RENDERMODE_NO_INSTANCING;
     if (rhi::DeviceCaps().isInstancingSupported && rhi::DeviceCaps().isVertexTextureUnitsSupported)
     {
-        if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX))
+        if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX) || rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R16G16, rhi::PROG_VERTEX))
         {
             renderMode = RENDERMODE_INSTANCING_MORPHING;
         }
@@ -256,12 +256,9 @@ Landscape::Landscape()
         {
             renderMode = RENDERMODE_INSTANCING;
         }
-        else if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R32F, rhi::PROG_VERTEX))
-        {
-            renderMode = RENDERMODE_INSTANCING;
-            floatHeightTexture = true;
-        }
     }
+
+    SelectHeightmapTextureFormat();
 
     EngineSettings* settings = GetEngineContext()->settings;
     EngineSettings::eSettingValue landscapeSetting = settings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
@@ -269,8 +266,6 @@ Landscape::Landscape()
         renderMode = RENDERMODE_NO_INSTANCING;
     else if (landscapeSetting == EngineSettings::LANDSCAPE_INSTANCING && renderMode == RENDERMODE_INSTANCING_MORPHING)
         renderMode = RENDERMODE_INSTANCING;
-
-    isRequireNormal = true; // (QualitySettingsSystem::Instance()->GetCurMaterialQuality(LANDSCAPE_QUALITY_NAME) == LANDSCAPE_QUALITY_VALUE_HIGH);
 
 #if defined(__DAVAENGINE_ANDROID__)
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
@@ -611,7 +606,8 @@ void Landscape::PrepareMaterial(NMaterial* material)
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
-    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FLOAT_TEXTURE, floatHeightTexture ? 1 : 0);
+    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
+    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
 }
 
@@ -634,14 +630,15 @@ void Landscape::CreateTextures()
     normalTexture->texDescriptor->pathname = "memoryfile_landscape_normal";
     normalTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
 
+    rhi::TextureFilter textureFilter = manualHeightInterpolation ? rhi::TEXFILTER_NEAREST : rhi::TEXFILTER_LINEAR;
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        heightTexture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NEAREST);
+        heightTexture->SetMinMagFilter(textureFilter, textureFilter, rhi::TEXMIPFILTER_NEAREST);
         normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
     }
     else
     {
-        heightTexture->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
+        heightTexture->SetMinMagFilter(textureFilter, textureFilter, rhi::TEXMIPFILTER_NONE);
         normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
     }
 
@@ -694,7 +691,7 @@ void Landscape::CreateTextureData()
         uint32 mipLevel = 0;
         while (mipSize)
         {
-            heightTextureData.push_back(Image::Create(mipSize, mipSize, FORMAT_RGBA8888));
+            heightTextureData.push_back(Image::Create(mipSize, mipSize, (heightTextureFormat == rhi::TEXTURE_FORMAT_R8G8B8A8) ? FORMAT_RGBA8888 : FORMAT_RG1616));
             normalTextureData.push_back(Image::Create(mipSize, mipSize, FORMAT_RGBA8888));
 
             heightTextureData.back()->mipmapLevel = mipLevel;
@@ -706,24 +703,11 @@ void Landscape::CreateTextureData()
     }
     else
     {
-        Image* heightImage = nullptr;
-        if (floatHeightTexture)
-        {
-            DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R32F, rhi::PROG_VERTEX));
-            heightImage = Image::Create(hmSize, hmSize, FORMAT_R32F);
-        }
-        else
-        {
-            DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX));
-            heightImage = Image::Create(hmSize, hmSize, FORMAT_RGBA4444);
-        }
-        heightTextureData.push_back(heightImage);
+        DVASSERT(heightTextureFormat == rhi::TEXTURE_FORMAT_R4G4B4A4);
+        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX));
 
-        if (isRequireNormal)
-        {
-            DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX));
-            normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
-        }
+        heightTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
+        normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
     }
 }
 
@@ -731,13 +715,11 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
 {
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX));
-
         uint32 mipCount = uint32(heightTextureData.size());
         for (uint32 mip = 0; mip < mipCount; ++mip)
         {
             Image* hMipImage = heightTextureData[mip];
-            Image* nMipImage = isRequireNormal ? normalTextureData[mip] : nullptr;
+            Image* nMipImage = normalTextureData[mip];
 
             int32 step = 1 << mip;
             int32 mipSize = heightmap->Size() >> mip;
@@ -780,30 +762,27 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
 
                     uint16 h1 = heightmap->GetHeightClamp(x1, y1);
                     uint16 h2 = heightmap->GetHeightClamp(x2, y2);
-                    uint16 hAvg = (h1 + h2) / 2;
+                    uint32 hAvg = uint32(h1 + h2) / 2;
 
                     int32 pixelIndex = (hMipImage->GetWidth() * y + x);
                     uint32* heightPixel = reinterpret_cast<uint32*>(hMipImage->data) + pixelIndex;
-                    *heightPixel = (hAvg << 16) | hAcc;
+                    *heightPixel = (hAvg << 16) | hAcc; //RGBA8888 or RG1616
 
                     //Normal
-                    if (nMipImage)
-                    {
-                        Vector3 normal = CalculateNormal(xx, yy);
-                        Vector3 normal1 = CalculateNormal(x1, y1);
-                        Vector3 normal2 = CalculateNormal(x2, y2);
+                    Vector3 normal = CalculateNormal(xx, yy);
+                    Vector3 normal1 = CalculateNormal(x1, y1);
+                    Vector3 normal2 = CalculateNormal(x2, y2);
 
-                        normal = normal * 0.5f + 0.5f;
-                        uint8 nxAcc = uint8(normal.x * 255.f);
-                        uint8 nyAcc = uint8(normal.y * 255.f);
+                    normal = normal * 0.5f + 0.5f;
+                    uint8 nxAcc = uint8(normal.x * 255.f);
+                    uint8 nyAcc = uint8(normal.y * 255.f);
 
-                        normal = Normalize(normal1 + normal2) * 0.5f + 0.5f;
-                        uint8 nxAvg = uint8(normal.x * 255.f);
-                        uint8 nyAvg = uint8(normal.y * 255.f);
+                    normal = Normalize(normal1 + normal2) * 0.5f + 0.5f;
+                    uint8 nxAvg = uint8(normal.x * 255.f);
+                    uint8 nyAvg = uint8(normal.y * 255.f);
 
-                        uint32* normalPixel = reinterpret_cast<uint32*>(nMipImage->data) + pixelIndex;
-                        *normalPixel = (nyAvg << 24) | (nxAvg << 16) | (nyAcc << 8) | (nxAcc);
-                    }
+                    uint32* normalPixel = reinterpret_cast<uint32*>(nMipImage->data) + pixelIndex;
+                    *normalPixel = (nyAvg << 24) | (nxAvg << 16) | (nyAcc << 8) | (nxAcc);
                 }
             }
         }
@@ -811,35 +790,25 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
     else
     {
         DVASSERT(heightTextureData.size() == 1);
-        DVASSERT(!isRequireNormal || normalTextureData.size() == 1);
+        DVASSERT(normalTextureData.size() == 1);
 
         Image* heightImage = heightTextureData[0];
-        Image* normalImage = isRequireNormal ? normalTextureData[0] : nullptr;
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R32F, rhi::PROG_VERTEX));
+        Image* normalImage = normalTextureData[0];
 
         for (int32 y = rect.y; y < (rect.y + rect.dy); ++y)
         {
             for (int32 x = rect.x; x < (rect.x + rect.dx); ++x)
             {
                 int32 pixelIndex = (heightImage->GetWidth() * y + x);
-                if (floatHeightTexture)
-                {
-                    float32* heightPixel = reinterpret_cast<float32*>(heightImage->data) + pixelIndex;
-                    *heightPixel = float32(heightmap->GetHeight(x, y)) / Heightmap::MAX_VALUE;
-                }
-                else
-                {
-                    uint16* heightPixel = reinterpret_cast<uint16*>(heightImage->data) + pixelIndex;
-                    *heightPixel = heightmap->GetHeight(x, y);
-                }
 
-                if (normalImage)
-                {
-                    uint16* normalPixel = reinterpret_cast<uint16*>(normalImage->data) + pixelIndex;
+                //Height
+                uint16* heightPixel = reinterpret_cast<uint16*>(heightImage->data) + pixelIndex;
+                *heightPixel = heightmap->GetHeight(x, y);
 
-                    Vector3 normal = CalculateNormal(x, y) * 0.5f + 0.5f;
-                    *normalPixel = (uint8(normal.y * 255.f) << 8) | uint8(normal.x * 255.f);
-                }
+                //Normal
+                uint16* normalPixel = reinterpret_cast<uint16*>(normalImage->data) + pixelIndex;
+                Vector3 normal = CalculateNormal(x, y) * 0.5f + 0.5f;
+                *normalPixel = (uint8(normal.y * 255.f) << 8) | uint8(normal.x * 255.f);
             }
         }
     }
@@ -1058,11 +1027,8 @@ void Landscape::AllocateGeometryDataNoInstancing()
     rhi::VertexLayout vLayout;
     vLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
     vLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
-    if (isRequireNormal)
-    {
-        vLayout.AddElement(rhi::VS_NORMAL, 0, rhi::VDT_FLOAT, 3);
-        vLayout.AddElement(rhi::VS_TANGENT, 0, rhi::VDT_FLOAT, 3);
-    }
+    vLayout.AddElement(rhi::VS_NORMAL, 0, rhi::VDT_FLOAT, 3);
+    vLayout.AddElement(rhi::VS_TANGENT, 0, rhi::VDT_FLOAT, 3);
     vLayoutUIDNoInstancing = rhi::VertexLayout::UniqueId(vLayout);
 
     for (uint32 i = 0; i < LANDSCAPE_BATCHES_POOL_SIZE; i++)
@@ -1109,11 +1075,6 @@ int16 Landscape::AllocateParcelVertexBuffer(uint32 quadX, uint32 quadY, uint32 q
 
     uint32 verticesCount = (quadSize + 1) * (quadSize + 1);
     uint32 vertexSize = sizeof(VertexNoInstancing);
-    if (!isRequireNormal)
-    {
-        vertexSize -= sizeof(Vector3); // (Vertex::normal);
-        vertexSize -= sizeof(Vector3); // (Vertex::tangent);
-    }
 
     uint8* landscapeVertices = new uint8[verticesCount * vertexSize];
     uint32 index = 0;
@@ -1127,11 +1088,8 @@ int16 Landscape::AllocateParcelVertexBuffer(uint32 quadX, uint32 quadY, uint32 q
             Vector2 texCoord = Vector2(x / heightmapSizeProperty.x, 1.0f - y / heightmapSizeProperty.x);
             vertex->texCoord = texCoord;
 
-            if (isRequireNormal)
-            {
-                vertex->normal = CalculateNormal(x, y);
-                vertex->tangent = Normalize(CrossProduct(Vector3(0.f, 1.f, 0.f), vertex->normal));
-            }
+            vertex->normal = CalculateNormal(x, y);
+            vertex->tangent = Normalize(CrossProduct(Vector3(0.f, 1.f, 0.f), vertex->normal));
 
             index++;
         }
@@ -2380,6 +2338,24 @@ uint32 Landscape::GetMacroLODLevel() const
     return pageManager ? pageManager->GetMacroLODLevel() : 0u;
 }
 
+void Landscape::SelectHeightmapTextureFormat()
+{
+    if (renderMode == RENDERMODE_INSTANCING_MORPHING)
+    {
+        heightTextureFormat = (rhi::HostApi() == rhi::RHI_METAL) ? rhi::TEXTURE_FORMAT_R16G16 : rhi::TEXTURE_FORMAT_R8G8B8A8;
+    }
+    else if (renderMode == RENDERMODE_INSTANCING)
+    {
+        heightTextureFormat = rhi::TEXTURE_FORMAT_R4G4B4A4;
+    }
+    
+#if defined(__DAVAENGINE_MACOS__)
+    manualHeightInterpolation = true;
+#else
+    manualHeightInterpolation = false;
+#endif
+}
+
 void Landscape::SetRenderMode(RenderMode newRenderMode)
 {
     //TODO: fix no-instancing render-mode
@@ -2392,6 +2368,7 @@ void Landscape::SetRenderMode(RenderMode newRenderMode)
 
     renderMode = newRenderMode;
 
+    SelectHeightmapTextureFormat();
     RebuildLandscape();
     UpdateMaterialFlags();
 }
@@ -2402,6 +2379,8 @@ void Landscape::UpdateMaterialFlags()
     landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
     landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
     landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
     landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
     landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
 }

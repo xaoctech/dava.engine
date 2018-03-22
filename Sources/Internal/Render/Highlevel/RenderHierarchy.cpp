@@ -77,7 +77,7 @@ void LinearRenderHierarchy::ObjectUpdated(RenderObject* renderObject)
 
 void LinearRenderHierarchy::Clip(Camera* camera, ClipResult& visibilityArray, uint32 visibilityCriteria)
 {
-    Frustum* frustum = camera->GetFrustum();
+    const Frustum& frustum = camera->GetFrustum();
     uint32 size = static_cast<uint32>(renderObjectArray.size());
     for (uint32 pos = 0; pos < size; ++pos)
     {
@@ -85,7 +85,7 @@ void LinearRenderHierarchy::Clip(Camera* camera, ClipResult& visibilityArray, ui
         if ((node->GetFlags() & visibilityCriteria) != visibilityCriteria)
             continue;
         //still need to add flags for particles to dicede if to use DefferedUpdate
-        if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) || frustum->IsInside(node->GetWorldBoundingBox()))
+        if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) || frustum.IsInside(node->GetWorldBoundingBox()))
             visibilityArray.AddObject(node);
     }
 }

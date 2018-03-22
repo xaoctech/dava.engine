@@ -52,7 +52,7 @@ void CullingSystem::Process(float32 timeElapsed)
 {
     int32 objectsCulled = 0;
 
-    //Frustum * frustum = camera->GetFrustum();
+    //const Frustum& frustum = camera->GetFrustum();
 
     uint32 size = static_cast<uint32>(renderObjectArray.size());
     for (uint32 pos = 0; pos < size; ++pos)
@@ -60,7 +60,7 @@ void CullingSystem::Process(float32 timeElapsed)
         //RenderObject * node = renderObjectArray[pos];
         //node->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
         //Logger::FrameworkDebug("Cull Node: %s rc: %d", node->GetFullName().c_str(), node->GetRetainCount());
-        //if (!frustum->IsInside(node->GetWorldTransformedBox()))
+        //if (!frustum.IsInside(node->GetWorldTransformedBox()))
         {
             //node->RemoveFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
             objectsCulled++;

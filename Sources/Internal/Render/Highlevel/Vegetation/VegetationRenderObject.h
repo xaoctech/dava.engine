@@ -160,7 +160,7 @@ private:
 
     Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& BuildVisibleCellList(Camera* forCamera);
 
-    void BuildVisibleCellList(const Vector3& cameraPoint, Frustum* frustum, uint8 planeMask, AbstractQuadTreeNode<VegetationSpatialData>* node,
+    void BuildVisibleCellList(const Vector3& cameraPoint, const Frustum& frustum, uint8 planeMask, AbstractQuadTreeNode<VegetationSpatialData>* node,
                               Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList, bool evaluateVisibility);
 
     inline void AddVisibleCell(AbstractQuadTreeNode<VegetationSpatialData>* node, float32 refDistance, Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList);

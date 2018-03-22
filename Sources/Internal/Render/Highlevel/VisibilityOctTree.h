@@ -84,7 +84,6 @@ private:
 
     Camera* camera = nullptr;
     uint32 visibilityCriteria = 0;
-    Frustum* frustum = nullptr;
 
     AABBox3 worldBBox;
     uint32 maxSubdivisionLevel = 6;

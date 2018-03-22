@@ -44,12 +44,13 @@ float2 OpticalDensity(float3 pos)
 float2 OpticalLength(float3 from, float3 to)
 {
     float3 directionStep = (to - from) / float(ATMOSPHERE_SCATTERING_SAMPLES);
+    float3 direction = from;
 
     float2 result = 0.0;
     for (int i = 0; i < ATMOSPHERE_SCATTERING_SAMPLES; ++i)
     {
-        result += OpticalDensity(from);
-        from += directionStep;
+        result += OpticalDensity(direction);
+        direction += directionStep;
     }
     return result * length(directionStep);
 }

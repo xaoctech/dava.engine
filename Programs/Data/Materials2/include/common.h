@@ -43,6 +43,8 @@
 #ensuredefined LANDSCAPE_TOOL 0
 #ensuredefined LANDSCAPE_TOOL_MIX 0
 #ensuredefined LANDSCAPE_CURSOR 0
+#ensuredefined HEIGHTMAP_INTERPOLATION 0
+#ensuredefined HEIGHTMAP_FORMAT 0
 
 #ensuredefined HEIGHTMAP_FLOAT_TEXTURE 0
 #ensuredefined LANDSCAPE_PICKING_UV 0

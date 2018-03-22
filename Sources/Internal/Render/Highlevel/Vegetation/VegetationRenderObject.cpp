@@ -601,7 +601,7 @@ Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& VegetationRenderObject::Bu
     return visibleCells;
 }
 
-void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint, Frustum* frustum, uint8 planeMask,
+void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint, const Frustum& frustum, uint8 planeMask,
                                                   AbstractQuadTreeNode<VegetationSpatialData>* node, Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList, bool evaluateVisibility)
 {
     static Array<Vector3, 4> corners;
@@ -611,7 +611,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint, Fr
 
         if (evaluateVisibility)
         {
-            result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
+            result = frustum.Classify(node->data.bbox, planeMask, node->data.clippingPlane);
         }
 
         if (Frustum::EFR_OUTSIDE != result)

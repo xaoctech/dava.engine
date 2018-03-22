@@ -93,11 +93,7 @@ vertex_out vp_main(vertex_in input)
         
 #if ORIENT_ON_LANDSCAPE
     {
-    #if LANDSCAPE_LOD_MORPHING
-        float2 nxy = SampleTangent8888Accurate(relativePosition);
-    #else
-        float2 nxy = SampleTangent4444(relativePosition);
-    #endif
+        float2 nxy = SampleTangentAccurate(relativePosition);
 
         nxy = 2.0 * nxy - 1.0;
         nxy *= orientvalue;
@@ -110,11 +106,7 @@ vertex_out vp_main(vertex_in input)
     }
 #endif
 
-#if LANDSCAPE_LOD_MORPHING
-    float height = SampleHeight8888Accurate(relativePosition);
-#else
-    float height = SampleHeight4444(relativePosition);
-#endif
+    float height = SampleHeightAccurate(relativePosition);
 
     float2 decorTexCoord = input.decorPageCoords.xy + pivot * input.decorPageCoords.zw;
     float decoration = dot(tex2Dlod(decorationtexture, decorTexCoord, 0.0), decorationmask);

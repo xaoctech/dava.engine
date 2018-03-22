@@ -36,25 +36,18 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Camera)
     .Field("cameraTransform", &Camera::cameraTransform)[M::ReadOnly(), M::DisplayName("Transform"), M::DeveloperModeOnly()]
     .Field("viewMatrix", &Camera::viewMatrix)[M::ReadOnly(), M::DisplayName("View"), M::DeveloperModeOnly()]
     .Field("projMatrix", &Camera::projMatrix)[M::ReadOnly(), M::DisplayName("Projection"), M::DeveloperModeOnly()]
+    .Field("infiniteFarPlane", &Camera::GetInfiniteFarPlaneEnabled, &Camera::SetInfiniteFarPlaneEnabled)[M::DisplayName("Attempt to use inf far plane"), M::DeveloperModeOnly()]
     .End();
 }
 
 Camera::Camera()
-    : orthoWidth(35.f)
-    , backup(nullptr)
 {
     SetupPerspective(35.0f, 1.0f, 1.0f, 2500.f);
-    up = Vector3(0.0f, 1.0f, 0.0f);
-    left = Vector3(1.0f, 0.0f, 0.0f);
-    flags = REQUIRE_REBUILD | REQUIRE_REBUILD_MODEL | REQUIRE_REBUILD_PROJECTION;
-
     cameraTransform.Identity();
-    currentFrustum = new Frustum();
 }
 
 Camera::~Camera()
 {
-    SafeRelease(currentFrustum);
     SafeRelease(backup);
 }
 
@@ -312,16 +305,22 @@ void Camera::RebuildProjectionMatrix(bool invertProjection, bool invertZ)
     }
 
     bool zeroBasedClipRange = GetReverseZEnabled() || rhi::DeviceCaps().isZeroBaseClipRange;
+    bool infFarPlane = infitineFarPlane && zeroBasedClipRange;
+
+    uint32 projectionFlags = (ortho) ? Matrix4::ProjectionFlags::Orthographic : 0;
+    projectionFlags |= GetReverseZEnabled() ? Matrix4::ProjectionFlags::ReverseProjection : 0;
+    projectionFlags |= zeroBasedClipRange ? Matrix4::ProjectionFlags::ZeroBasedClipRange : 0;
+    projectionFlags |= infFarPlane ? Matrix4::ProjectionFlags::InfiniteFarPlane : 0;
+
+    projMatrix.BuildProjection(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, projectionFlags);
 
     if (ortho)
     {
-        projMatrix.BuildOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, zeroBasedClipRange, GetReverseZEnabled());
         projMatrix.data[12] += projectionMatrixOffset.x + jitterOffset.x;
         projMatrix.data[13] += projectionMatrixOffset.y + jitterOffset.y;
     }
     else
     {
-        projMatrix.BuildPerspective(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar, zeroBasedClipRange, GetReverseZEnabled());
         projMatrix.data[8] += projectionMatrixOffset.x + jitterOffset.x;
         projMatrix.data[9] += projectionMatrixOffset.y + jitterOffset.y;
     }
@@ -497,11 +496,8 @@ void Camera::PrepareDynamicParameters(bool invertProjection, bool invertZ, Vecto
 
     viewProjMatrix.GetInverse(invViewProjMatrix);
 
-    if (currentFrustum)
-    {
-        bool zeroClip = GetReverseZEnabled() || rhi::DeviceCaps().isZeroBaseClipRange;
-        currentFrustum->Build(viewProjMatrix, zeroClip, GetReverseZEnabled());
-    }
+    bool zeroClip = GetReverseZEnabled() || rhi::DeviceCaps().isZeroBaseClipRange;
+    frustum.Build(viewProjMatrix, zeroClip, GetReverseZEnabled());
 }
 
 void Camera::SetupDynamicParameters(bool invertProjection, bool invertZ, Vector4* externalClipPlane)
@@ -551,9 +547,9 @@ BaseObject* Camera::Clone(BaseObject* dstNode)
     return dstNode;
 }
 
-Frustum* Camera::GetFrustum() const
+const Frustum& Camera::GetFrustum() const
 {
-    return currentFrustum;
+    return frustum;
 }
 
 void Camera::CalculateZoomFactor()
@@ -652,7 +648,7 @@ void Camera::LoadObject(KeyedArchive* archive)
 
 void Camera::CopyMathOnly(const Camera& c)
 {
-    *currentFrustum = *c.currentFrustum;
+    frustum = c.frustum;
     zoomFactor = c.zoomFactor;
 
     xmin = c.xmin;
@@ -721,6 +717,12 @@ void Camera::RestoreCameraTransform()
     {
         CopyMathOnly(*backup);
     }
+}
+
+void Camera::SetInfiniteFarPlaneEnabled(bool value)
+{
+    infitineFarPlane = value;
+    Recalc();
 }
 
 } // ns

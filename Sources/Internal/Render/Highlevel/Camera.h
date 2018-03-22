@@ -293,9 +293,9 @@ public:
         \brief Get frustum object for this camera.
         This function is widely used everywhere where you need object clipping.
      
-        \returns pointer to frustum object
+        \returns constant refernce to frustum object
      */
-    Frustum* GetFrustum() const;
+    const Frustum& GetFrustum() const;
 
     /**
         \brief Get camera zoom factor. 
@@ -336,6 +336,9 @@ public:
 
     bool GetReverseZEnabled() const;
 
+    bool GetInfiniteFarPlaneEnabled() const;
+    void SetInfiniteFarPlaneEnabled(bool value);
+
     enum eFlags
     {
         REQUIRE_REBUILD = 1,
@@ -345,49 +348,46 @@ public:
         USES_REVERSED_Z = 1 << 4,
     };
 
-protected:
-    //    virtual SceneNode* CopyDataTo(SceneNode *dstNode);
-    float32 xmin, xmax, ymin, ymax, znear, zfar, aspect;
-    float32 fovX;
-    float32 orthoWidth;
+private:
+    void Recalc();
+    void ValidateProperties();
+    void CalculateZoomFactor();
 
-    Vector3 position; //
-    Vector3 target; //
-    Vector3 up;
-    Vector3 left;
-    Vector2 projectionMatrixOffset;
-    Vector2 jitterOffset;
-    Vector3 direction; // right now this variable updated only when you call GetDirection.
-
-    //Quaternion rotation;	//
+private:
+    Camera* backup = nullptr;
+    Frustum frustum;
     Matrix4 cameraTransform;
-    Camera* backup;
-
     Matrix4 viewMatrix;
     Matrix4 projMatrix;
     Matrix4 invProjMatrix;
     Matrix4 viewProjMatrix;
     Matrix4 invViewMatrix;
     Matrix4 invViewProjMatrix;
-
+    float32 xmin;
+    float32 xmax;
+    float32 ymin;
+    float32 ymax;
+    float32 znear;
+    float32 zfar;
+    float32 aspect;
+    float32 fovX;
+    float32 orthoWidth = 35.0f;
+    Vector3 position;
+    Vector3 target;
+    Vector3 up = Vector3(0.0f, 1.0f, 0.0f);
+    Vector3 left = Vector3(1.0f, 0.0f, 0.0f);
+    Vector2 projectionMatrixOffset;
+    Vector2 jitterOffset;
+    Vector3 direction; // right now this variable updated only when you call GetDirection.
     Vector2 z_near_far;
-
-    uint32 flags;
-
-    // TODO: not necessary to be a pointer here.
-    Frustum* currentFrustum;
-
-    bool ortho = false;
-
-    void Recalc();
-    void ValidateProperties();
-
-    void CalculateZoomFactor();
-
     float32 zoomFactor = 1.0f;
     float32 validZNear = 0.01f;
     float32 validZFar = 65536.0f;
+    uint32 flags = REQUIRE_REBUILD | REQUIRE_REBUILD_MODEL | REQUIRE_REBUILD_PROJECTION;
+    bool ortho = false;
+    bool infitineFarPlane = false;
 
+public:
     DAVA_VIRTUAL_REFLECTION(Camera, BaseObject);
 };
 
@@ -405,6 +405,11 @@ inline const Vector2& Camera::GetProjectionMatrixOffset() const
 inline bool Camera::GetReverseZEnabled() const
 {
     return (flags & USES_REVERSED_Z) == USES_REVERSED_Z;
+}
+
+inline bool Camera::GetInfiniteFarPlaneEnabled() const
+{
+    return infitineFarPlane;
 }
 
 } // ns

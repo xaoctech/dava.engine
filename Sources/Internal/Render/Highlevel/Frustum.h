@@ -18,7 +18,7 @@ namespace DAVA
     The answer is simple: I assume that culling code can differ for OGL, DX matrices. Let's see when we'll add DirectX am I right.  
 */
 class RenderHelper;
-class Frustum : public BaseObject
+class Frustum
 {
 public:
     enum eFrustumPlane

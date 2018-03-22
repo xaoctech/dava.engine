@@ -91,6 +91,9 @@ vertex_out vp_main(vertex_in input)
 
     float2 relativePosition = patchOffsetScale.xy + in_pos.xy * patchOffsetScale.z; //[0.0, 1.0]
     
+    float morphAmount = 0.0;
+    float sampleLod = 0.0;
+
 #if LANDSCAPE_LOD_MORPHING
 
     float4 neighbourPatchMorph = input.data8;
@@ -103,25 +106,17 @@ vertex_out vp_main(vertex_in input)
     float zeroLodMul = 1.0 - min(1.0, zeroLod.x + zeroLod.y);
 
     //Calculate fetch parameters
-    float sampleLod = max((baseLod + lodOffset) * zeroLodMul, 0.0);
-    float morphAmount = dot(edgeMask, neighbourPatchMorph) + patchMorph * edgeMaskNull;
-
-    float height = SampleHeight8888Morphed(relativePosition, morphAmount, sampleLod);
-    float2 nxy = SampleTangent8888Morphed(relativePosition, morphAmount, sampleLod);
+    sampleLod = max((baseLod + lodOffset) * zeroLodMul, 0.0);
+    morphAmount = dot(edgeMask, neighbourPatchMorph) + patchMorph * edgeMaskNull;
     
     #if LANDSCAPE_MORPHING_COLOR
     output.vertexColor = float4(1.0 - morphAmount, morphAmount, 1.0, 1.0);
     #endif
 
-#else
-    #if HEIGHTMAP_FLOAT_TEXTURE
-    float height = tex2Dlod(heightmap, relativePosition, 0.0).r;
-    #else
-    float height = SampleHeight4444(relativePosition);
-    #endif
-
-    float2 nxy = SampleTangent4444(relativePosition);
 #endif
+
+    float height = SampleHeightMorphed(relativePosition, morphAmount, sampleLod);
+    float2 nxy = SampleTangentMorphed(relativePosition, morphAmount, sampleLod);
 
     output.texCoord0.xy = input.data5.xy + in_pos.xy * input.data5.zw;
     output.texCoord0.zw = input.data6.xy + in_pos.xy * input.data6.zw;

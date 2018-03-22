@@ -173,6 +173,7 @@ public:
     RenderMode GetRenderMode() const;
     void SetRenderMode(RenderMode mode);
     void UpdateMaterialFlags();
+    void SelectHeightmapTextureFormat();
 
     void RecursiveRayTrace(uint32 level, uint32 x, uint32 y, const Ray3& rayInObjectSpace, float32& resultT);
     bool RayTrace(const Ray3& rayInObjectSpace, float32& resultT);
@@ -354,8 +355,6 @@ protected:
     uint32 quadsInWidthPow2 = 0;
     uint64 invalidateCallback = 0;
 
-    bool isRequireNormal = false;
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Instancing render
 
@@ -414,7 +413,8 @@ protected:
 
     Texture* heightTexture = nullptr;
     Texture* normalTexture = nullptr;
-    bool floatHeightTexture = false;
+    rhi::TextureFormat heightTextureFormat = rhi::TEXTURE_FORMAT_R8G8B8A8;
+    bool manualHeightInterpolation = false;
 
     Vector<Image*> heightTextureData;
     Vector<Image*> normalTextureData;

@@ -63,11 +63,7 @@ vertex_out vp_main(vertex_in input)
 
     float2 relativePosition = patchOffsetScale.xy + in_pos.xy * patchOffsetScale.z; //[0.0, 1.0]
     
-#if LANDSCAPE_LOD_MORPHING
-    float height = SampleHeight8888Accurate(relativePosition);
-#else
-    float height = SampleHeight4444(relativePosition);
-#endif
+    float height = SampleHeightAccurate(relativePosition);
 
     float3 vx_position = float3(relativePosition - 0.5, height) * boundingBoxSize;
     

@@ -275,7 +275,8 @@ public:
 
     static const FastName FLAG_USE_PREVIOUS_LANDSCAPE_LAYER;
 
-    static const FastName FLAG_HEIGHTMAP_FLOAT_TEXTURE;
+    static const FastName FLAG_HEIGHTMAP_INTERPOLATION;
+    static const FastName FLAG_HEIGHTMAP_FORMAT;
 
     static const FastName FLAG_TEXTURE_COUNT;
 
