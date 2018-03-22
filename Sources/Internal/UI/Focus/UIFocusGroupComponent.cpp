@@ -7,7 +7,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFocusGroupComponent)
 {
-    ReflectionRegistrator<UIFocusGroupComponent>::Begin()
+    ReflectionRegistrator<UIFocusGroupComponent>::Begin()[M::DisplayName("Focus Group"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFocusGroupComponent* o) { o->Release(); })
     .End();

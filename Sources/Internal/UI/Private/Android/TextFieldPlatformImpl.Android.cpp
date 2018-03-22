@@ -13,6 +13,7 @@
 #include "UI/Focus/FocusHelpers.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "UI/UIControlSystem.h"
 #include "UI/UIControlBackground.h"
 extern "C"
@@ -303,7 +304,7 @@ void TextFieldPlatformImpl::SetTextUseRtlAlign(bool useRtlAlign)
 
 void TextFieldPlatformImpl::SetFontSize(float32 virtualFontSize)
 {
-    if (javaTextField != nullptr)
+    if (javaTextField != nullptr && virtualFontSize > 0.f) // Font size must be greater than 0
     {
         // TODO: window.GetVirtualCoordinatesSystem
         float32 fontSize = GetEngineContext()->uiControlSystem->vcs->ConvertVirtualToInputY(virtualFontSize);

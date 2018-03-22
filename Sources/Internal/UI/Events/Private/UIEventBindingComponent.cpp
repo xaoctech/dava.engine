@@ -9,7 +9,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIEventBindingComponent)
 {
-    ReflectionRegistrator<UIEventBindingComponent>::Begin()
+    ReflectionRegistrator<UIEventBindingComponent>::Begin()[M::DisplayName("Event Binding"), M::Group("Input")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIEventBindingComponent* o) { o->Release(); })
     .End();

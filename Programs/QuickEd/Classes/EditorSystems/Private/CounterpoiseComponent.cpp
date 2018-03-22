@@ -7,7 +7,7 @@
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CounterpoiseComponent)
 {
-    DAVA::ReflectionRegistrator<CounterpoiseComponent>::Begin()
+    DAVA::ReflectionRegistrator<CounterpoiseComponent>::Begin()[DAVA::M::HiddenField()]
     .ConstructorByPointer()
     .DestructorByPointer([](CounterpoiseComponent* o) { o->Release(); })
     .End();

@@ -130,7 +130,7 @@ public:
         return orientation;
     };
 
-    const List<UIControl*>& GetVisibleCells();
+    const List<RefPtr<UIControl>>& GetVisibleCells() const;
 
     UIListCell* GetReusableCell(const String& cellIdentifier); //returns cell from the cells cache, if returns 0 you need to create the new one
 

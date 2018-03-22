@@ -7,10 +7,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIClipContentComponent)
 {
-    ReflectionRegistrator<UIClipContentComponent>::Begin()
+    ReflectionRegistrator<UIClipContentComponent>::Begin()[M::DisplayName("Clip"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIClipContentComponent* c) { SafeRelease(c); })
-    .Field("enabled", &UIClipContentComponent::IsEnabled, &UIClipContentComponent::SetEnabled)
+    .Field("enabled", &UIClipContentComponent::IsEnabled, &UIClipContentComponent::SetEnabled)[M::DisplayName("Enabled")]
     .End();
 }
 IMPLEMENT_UI_COMPONENT(UIClipContentComponent);

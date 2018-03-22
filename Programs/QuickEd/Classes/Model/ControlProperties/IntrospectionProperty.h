@@ -29,6 +29,7 @@ public:
     ePropertyType GetType() const override;
     const EnumMap* GetEnumMap() const override;
 
+    const DAVA::String& GetDisplayName() const override;
     DAVA::Any GetValue() const override;
     DAVA::Any GetSerializationValue() const override;
 

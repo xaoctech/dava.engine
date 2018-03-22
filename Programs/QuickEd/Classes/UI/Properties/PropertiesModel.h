@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Model/ControlProperties/PropertyListener.h"
-
-#include <UI/Styles/UIStyleSheetSystem.h>
 #include <QtTools/Updaters/ContinuousUpdater.h>
 
 #include <Base/RefPtr.h>
 #include <FileSystem/VariantType.h>
+#include <UI/Styles/UIStyleSheetPropertyDataBase.h>
 
 #include <QAbstractItemModel>
 #include <QSet>
@@ -14,17 +12,24 @@
 namespace DAVA
 {
 class Any;
+class UIControl;
 class ContextAccessor;
 class FieldBinder;
 }
 
 class AbstractProperty;
+class RootProperty;
 class PackageBaseNode;
 class ControlNode;
 class StyleSheetNode;
+class StyleSheetProperty;
+class StyleSheetSelectorProperty;
+class StyleSheetPropertiesSection;
+class StyleSheetSelectorsSection;
 class ComponentPropertiesSection;
+class VirtualPropertiesSection;
 
-class PropertiesModel : public QAbstractItemModel, private PropertyListener, private DAVA::UIStyleSheetSystemListener
+class PropertiesModel : public QAbstractItemModel
 {
     Q_OBJECT
 
@@ -62,38 +67,34 @@ signals:
 protected:
     void UpdateAllChangedProperties();
     // PropertyListener
-    void PropertyChanged(AbstractProperty* property) override;
     void UpdateProperty(AbstractProperty* property);
 
-    void ComponentPropertiesWillBeAdded(RootProperty* root, ComponentPropertiesSection* section, int index) override;
-    void ComponentPropertiesWasAdded(RootProperty* root, ComponentPropertiesSection* section, int index) override;
+    void PropertyChanged(AbstractProperty* property);
+    void ComponentPropertiesWillBeAdded(RootProperty* root, ComponentPropertiesSection* section, int index);
+    void ComponentPropertiesWasAdded(RootProperty* root, ComponentPropertiesSection* section, int index);
 
-    void ComponentVirtualPropertiesWillBeAdded(RootProperty* root, VirtualPropertiesSection* section, int index) override;
+    void VirtualPropertiesWillBeAdded(RootProperty* root, VirtualPropertiesSection* section, int index);
+    void VirtualPropertiesWasAdded(RootProperty* root, VirtualPropertiesSection* section, int index);
+    void VirtualPropertiesWillBeRemoved(RootProperty* root, VirtualPropertiesSection* section, int index);
+    void VirtualPropertiesWasRemoved(RootProperty* root, VirtualPropertiesSection* section, int index);
+    void VirtualSectionRebuild(VirtualPropertiesSection* section, int oldCount, int newCount);
 
-    void ComponentVirtualPropertiesWasAdded(RootProperty* root, VirtualPropertiesSection* section, int index) override;
+    void ComponentPropertiesWillBeRemoved(RootProperty* root, ComponentPropertiesSection* section, int index);
+    void ComponentPropertiesWasRemoved(RootProperty* root, ComponentPropertiesSection* section, int index);
 
-    void ComponenttVirtualPropertiesWillBeRemoved(RootProperty* root, VirtualPropertiesSection* section, int index) override;
+    void StylePropertyWillBeAdded(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index);
+    void StylePropertyWasAdded(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index);
 
-    void ComponenttVirtualPropertiesWasRemoved(RootProperty* root, VirtualPropertiesSection* section, int index) override;
+    void StylePropertyWillBeRemoved(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index);
+    void StylePropertyWasRemoved(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index);
 
-    void ComponentPropertiesWillBeRemoved(RootProperty* root, ComponentPropertiesSection* section, int index) override;
-    void ComponentPropertiesWasRemoved(RootProperty* root, ComponentPropertiesSection* section, int index) override;
+    void StyleSelectorWillBeAdded(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index);
+    void StyleSelectorWasAdded(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index);
 
-    void StylePropertyWillBeAdded(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index) override;
-    void StylePropertyWasAdded(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index) override;
+    void StyleSelectorWillBeRemoved(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index);
+    void StyleSelectorWasRemoved(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index);
 
-    void StylePropertyWillBeRemoved(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index) override;
-    void StylePropertyWasRemoved(StyleSheetPropertiesSection* section, StyleSheetProperty* property, int index) override;
-
-    void StyleSelectorWillBeAdded(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index) override;
-    void StyleSelectorWasAdded(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index) override;
-
-    void StyleSelectorWillBeRemoved(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index) override;
-    void StyleSelectorWasRemoved(StyleSheetSelectorsSection* section, StyleSheetSelectorProperty* property, int index) override;
-    void VirtualSectionRebuild(VirtualPropertiesSection* section, int oldCount, int newCount) override;
-
-    // UIStyleSheetSystemListener
-    void OnStylePropertyChanged(DAVA::UIControl* control, DAVA::UIComponent* component, DAVA::uint32 propertyIndex) override;
+    void OnStylePropertiesChanged(DAVA::UIControl* control, const DAVA::UIStyleSheetPropertySet& properties);
 
     virtual void ChangeProperty(AbstractProperty* property, const DAVA::Any& value);
     virtual void ChangeBindingProperty(AbstractProperty* property, const DAVA::String& value, DAVA::int32 mode);

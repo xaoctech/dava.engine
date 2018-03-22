@@ -147,7 +147,7 @@ void CalculateTotalRectImpl(UIControl* control, Rect& totalRect, Vector2& rootCo
 
     for (const auto& child : control->GetChildren())
     {
-        CalculateTotalRectImpl(child, totalRect, rootControlPosition, tempGeometricData);
+        CalculateTotalRectImpl(child.Get(), totalRect, rootControlPosition, tempGeometricData);
     }
 }
 
@@ -267,7 +267,7 @@ void BackgroundController::CalculateTotalRect(DAVA::Rect& totalRect, DAVA::Vecto
 
         for (const auto& child : nestedControl->GetChildren())
         {
-            EditorControlsViewDetails::CalculateTotalRectImpl(child, totalRect, rootControlPosition, gd);
+            EditorControlsViewDetails::CalculateTotalRectImpl(child.Get(), totalRect, rootControlPosition, gd);
         }
     }
 }
@@ -346,7 +346,7 @@ EditorControlsView::EditorControlsView(DAVA::UIControl* canvas, DAVA::ContextAcc
     canvas->AddControl(controlsCanvas.Get());
     controlsCanvas->SetName(FastName("controls_canvas"));
 
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->controlLayouted.Connect(this, &EditorControlsView::OnControlLayouted);
 
     Engine::Instance()->beginFrame.Connect(this, &EditorControlsView::PlaceControlsOnCanvas);
     Engine::Instance()->gameLoopStopped.Connect(this, &EditorControlsView::OnGameLoopStopped);
@@ -493,7 +493,7 @@ void EditorControlsView::AddBackgroundControllerToCanvas(BackgroundController* b
     {
         auto iterToInsertControl = controlsCanvas->GetChildren().begin();
         std::advance(iterToInsertControl, pos);
-        controlsCanvas->InsertChildBelow(grid, *iterToInsertControl);
+        controlsCanvas->InsertChildBelow(grid, iterToInsertControl->Get());
 
         auto iterToInsertController = gridControls.begin();
         std::advance(iterToInsertController, pos);
@@ -663,7 +663,6 @@ SortedControlNodeSet EditorControlsView::GetDisplayedControls() const
 void EditorControlsView::OnGameLoopStopped()
 {
     using namespace DAVA;
-
-    GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
+    GetEngineContext()->uiControlSystem->GetLayoutSystem()->controlLayouted.Disconnect(this);
     Engine::Instance()->beginFrame.Disconnect(this);
 }

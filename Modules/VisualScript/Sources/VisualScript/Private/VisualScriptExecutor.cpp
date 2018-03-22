@@ -159,7 +159,8 @@ void VisualScriptExecutor::ExecuteGetMemberNode(VisualScriptGetMemberNode* node,
     const ReflectedType* objRefType = ReflectedTypeDB::GetByType(objType->IsPointer() ? objType->Deref() : objType);
     if (objRefType)
     {
-        ReflectedObject refObj(object.Cast<void*>(), objRefType);
+        void* objPtr = objType->IsPointer() ? object.Cast<void*>() : const_cast<void*>(object.GetData());
+        ReflectedObject refObj(objPtr, objRefType);
 
         Any result = vw->GetValue(refObj);
         node->GetDataOutputPin(0)->SetValue(result);
@@ -183,7 +184,8 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
         const ReflectedType* objRefType = ReflectedTypeDB::GetByType(objType->IsPointer() ? objType->Deref() : objType);
         if (objRefType)
         {
-            ReflectedObject refObj(object.Cast<void*>(), objRefType);
+            void* objPtr = objType->IsPointer() ? object.Cast<void*>() : const_cast<void*>(object.GetData());
+            ReflectedObject refObj(objPtr, objRefType);
 
             Any value = node->GetDataInputPin(1)->GetValue();
             vw->SetValueWithCast(refObj, value);
@@ -198,7 +200,8 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
         const ReflectedType* objRefType = ReflectedTypeDB::GetByType(objType->IsPointer() ? objType->Deref() : objType);
         if (objRefType)
         {
-            ReflectedObject refObj(object.Cast<void*>(), objRefType);
+            void* objPtr = objType->IsPointer() ? object.Cast<void*>() : const_cast<void*>(object.GetData());
+            ReflectedObject refObj(objPtr, objRefType);
 
             Any result = vw->GetValue(refObj);
             node->GetDataOutputPin(0)->SetValue(result);

@@ -25,6 +25,7 @@
 
 #include "Utils/QtDavaConvertion.h"
 
+#include <UI/Components/UIComponentUtils.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/UIPackage.h>
 #include <UI/UIControl.h>
@@ -370,7 +371,7 @@ void PackageSerializer::VisitComponentSection(ComponentPropertiesSection* proper
     if (property->HasChanges() && property->GetComponentType() != Type::Instance<UIDataBindingComponent>())
     {
         String name = property->GetComponentName();
-        if (UIComponent::IsMultiple(property->GetComponentType()))
+        if (UIComponentUtils::IsMultiple(property->GetComponentType()))
             name += Format("%d", property->GetComponentIndex());
 
         BeginMap(name);

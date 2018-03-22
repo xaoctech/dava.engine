@@ -8,24 +8,24 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowLayoutComponent)
 {
-    ReflectionRegistrator<UIFlowLayoutComponent>::Begin()
+    ReflectionRegistrator<UIFlowLayoutComponent>::Begin()[M::DisplayName("Flow Layout"), M::Group("Layout")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowLayoutComponent* o) { o->Release(); })
-    .Field("enabled", &UIFlowLayoutComponent::IsEnabled, &UIFlowLayoutComponent::SetEnabled)
-    .Field("orientation", &UIFlowLayoutComponent::GetOrientation, &UIFlowLayoutComponent::SetOrientation)[M::EnumT<eOrientation>()]
-    .Field("hPadding", &UIFlowLayoutComponent::GetHorizontalPadding, &UIFlowLayoutComponent::SetHorizontalPadding)
-    .Field("hDynamicPadding", &UIFlowLayoutComponent::IsDynamicHorizontalPadding, &UIFlowLayoutComponent::SetDynamicHorizontalPadding)
-    .Field("hDynamicInLinePadding", &UIFlowLayoutComponent::IsDynamicHorizontalInLinePadding, &UIFlowLayoutComponent::SetDynamicHorizontalInLinePadding)
-    .Field("hSafeAreaPaddingInset", &UIFlowLayoutComponent::IsHorizontalSafeAreaPaddingInset, &UIFlowLayoutComponent::SetHorizontalSafeAreaPaddingInset)
-    .Field("hSpacing", &UIFlowLayoutComponent::GetHorizontalSpacing, &UIFlowLayoutComponent::SetHorizontalSpacing)
-    .Field("hDynamicSpacing", &UIFlowLayoutComponent::IsDynamicHorizontalSpacing, &UIFlowLayoutComponent::SetDynamicHorizontalSpacing)
-    .Field("vPadding", &UIFlowLayoutComponent::GetVerticalPadding, &UIFlowLayoutComponent::SetVerticalPadding)
-    .Field("vDynamicPadding", &UIFlowLayoutComponent::IsDynamicVerticalPadding, &UIFlowLayoutComponent::SetDynamicVerticalPadding)
-    .Field("vSpacing", &UIFlowLayoutComponent::GetVerticalSpacing, &UIFlowLayoutComponent::SetVerticalSpacing)
-    .Field("vSafeAreaPaddingInset", &UIFlowLayoutComponent::IsVerticalSafeAreaPaddingInset, &UIFlowLayoutComponent::SetVerticalSafeAreaPaddingInset)
-    .Field("vDynamicSpacing", &UIFlowLayoutComponent::IsDynamicVerticalSpacing, &UIFlowLayoutComponent::SetDynamicVerticalSpacing)
-    .Field("skipInvisible", &UIFlowLayoutComponent::IsSkipInvisibleControls, &UIFlowLayoutComponent::SetSkipInvisibleControls)
-    .Field("useRtl", &UIFlowLayoutComponent::IsUseRtl, &UIFlowLayoutComponent::SetUseRtl)
+    .Field("enabled", &UIFlowLayoutComponent::IsEnabled, &UIFlowLayoutComponent::SetEnabled)[M::DisplayName("Enabled")]
+    .Field("orientation", &UIFlowLayoutComponent::GetOrientation, &UIFlowLayoutComponent::SetOrientation)[M::EnumT<eOrientation>(), M::DisplayName("Orientation")]
+    .Field("hPadding", &UIFlowLayoutComponent::GetHorizontalPadding, &UIFlowLayoutComponent::SetHorizontalPadding)[M::DisplayName("H. Padding")]
+    .Field("hDynamicPadding", &UIFlowLayoutComponent::IsDynamicHorizontalPadding, &UIFlowLayoutComponent::SetDynamicHorizontalPadding)[M::DisplayName("H. Dynamic Padding")]
+    .Field("hDynamicInLinePadding", &UIFlowLayoutComponent::IsDynamicHorizontalInLinePadding, &UIFlowLayoutComponent::SetDynamicHorizontalInLinePadding)[M::DisplayName("H. Dynamic In Line Padding")]
+    .Field("hSpacing", &UIFlowLayoutComponent::GetHorizontalSpacing, &UIFlowLayoutComponent::SetHorizontalSpacing)[M::DisplayName("H. Spacing")]
+    .Field("hDynamicSpacing", &UIFlowLayoutComponent::IsDynamicHorizontalSpacing, &UIFlowLayoutComponent::SetDynamicHorizontalSpacing)[M::DisplayName("H. Dynamic Spacing")]
+    .Field("hSafeAreaPaddingInset", &UIFlowLayoutComponent::IsHorizontalSafeAreaPaddingInset, &UIFlowLayoutComponent::SetHorizontalSafeAreaPaddingInset)[M::DisplayName("H. Safe Area Inset")]
+    .Field("vPadding", &UIFlowLayoutComponent::GetVerticalPadding, &UIFlowLayoutComponent::SetVerticalPadding)[M::DisplayName("V. Padding")]
+    .Field("vDynamicPadding", &UIFlowLayoutComponent::IsDynamicVerticalPadding, &UIFlowLayoutComponent::SetDynamicVerticalPadding)[M::DisplayName("V. Dynamic Padding")]
+    .Field("vSpacing", &UIFlowLayoutComponent::GetVerticalSpacing, &UIFlowLayoutComponent::SetVerticalSpacing)[M::DisplayName("V. Spacing")]
+    .Field("vDynamicSpacing", &UIFlowLayoutComponent::IsDynamicVerticalSpacing, &UIFlowLayoutComponent::SetDynamicVerticalSpacing)[M::DisplayName("V. Dynamic Spacing")]
+    .Field("vSafeAreaPaddingInset", &UIFlowLayoutComponent::IsVerticalSafeAreaPaddingInset, &UIFlowLayoutComponent::SetVerticalSafeAreaPaddingInset)[M::DisplayName("V. Safe Area Inset")]
+    .Field("skipInvisible", &UIFlowLayoutComponent::IsSkipInvisibleControls, &UIFlowLayoutComponent::SetSkipInvisibleControls)[M::DisplayName("Skip Invisible")]
+    .Field("useRtl", &UIFlowLayoutComponent::IsUseRtl, &UIFlowLayoutComponent::SetUseRtl)[M::DisplayName("Use RTL")]
     .End();
 }
 

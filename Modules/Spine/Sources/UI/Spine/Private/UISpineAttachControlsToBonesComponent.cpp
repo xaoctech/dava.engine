@@ -14,10 +14,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISpineAttachControlsToBonesComponent)
 {
-    ReflectionRegistrator<UISpineAttachControlsToBonesComponent>::Begin()[M::DisplayName("SpineAttachControlsToBones")]
+    ReflectionRegistrator<UISpineAttachControlsToBonesComponent>::Begin()[M::DisplayName("Spine Bone Attachements"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISpineAttachControlsToBonesComponent* c) { SafeRelease(c); })
-    .Field("bonesBinds", &UISpineAttachControlsToBonesComponent::GetBindsAsString, &UISpineAttachControlsToBonesComponent::SetBindsFromString)
+    .Field("bonesBinds", &UISpineAttachControlsToBonesComponent::GetBindsAsString, &UISpineAttachControlsToBonesComponent::SetBindsFromString)[M::DisplayName("Bones Bindings")]
     .End();
 }
 IMPLEMENT_UI_COMPONENT(UISpineAttachControlsToBonesComponent);

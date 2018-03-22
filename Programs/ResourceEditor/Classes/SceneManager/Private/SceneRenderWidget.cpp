@@ -101,14 +101,14 @@ void SceneRenderWidget::OnDataChanged(const DAVA::DataWrapper& wrapper, const DA
     {
         if (dava3DView->GetParent() == nullptr)
         {
-            const DAVA::List<DAVA::UIControl*>& children = davaUIScreen->GetChildren();
+            const auto& children = davaUIScreen->GetChildren();
             if (children.empty())
             {
                 davaUIScreen->AddControl(dava3DView.Get());
             }
             else
             {
-                davaUIScreen->InsertChildBelow(dava3DView.Get(), children.front());
+                davaUIScreen->InsertChildBelow(dava3DView.Get(), children.front().Get());
             }
         }
 

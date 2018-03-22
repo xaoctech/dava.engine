@@ -19,11 +19,13 @@ protected:
 
 public:
     void Accept(PropertyVisitor* visitor) override;
-    const DAVA::Type* GetSectionType();
+    const DAVA::Type* GetSectionType() const;
+    const DAVA::String& GetDisplayName() const override;
 
 private:
     DAVA::UIControl* control;
     const DAVA::Type* type;
+    DAVA::String displayName;
 };
 
 #endif // __UI_EDITOR_CONTROL_PROPERTIES_SECTION_H__

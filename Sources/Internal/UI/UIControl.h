@@ -381,8 +381,8 @@ public:
     Function uses stable sort, sets layout dirty flag and invalidates iteration.
     \param[in] predicate sorting predicate. All predicates for std::list<>::sort are allowed for this function too.
     */
-    template <class T>
-    inline void SortChildren(const T& predicate);
+    using SortFunction = Function<bool(const RefPtr<UIControl>&, const RefPtr<UIControl>&)>;
+    void SortChildren(const SortFunction& predicate);
 
     /*
      \brief Sets the control name.
@@ -458,20 +458,22 @@ public:
      \brief Returns list of control children.
      \returns list of control children.
      */
-    const List<UIControl*>& GetChildren() const;
+    const List<RefPtr<UIControl>>& GetChildren() const;
     /**
      \brief Add control as a child.
         Children draws in the sequence of adding. If child has another parent
         this child removes from the parent firstly.
      \param[in] control control to add.
      */
-    virtual void AddControl(UIControl* control);
+    void AddControl(RefPtr<UIControl> control);
+    DAVA_DEPRECATED(virtual void AddControl(UIControl* control));
     /**
      \brief Removes control from the children list.
         If child isn't present in the method owners list nothing happens.
      \param[in] control control to remove.
      */
-    virtual void RemoveControl(UIControl* control);
+    void RemoveControl(RefPtr<UIControl> control);
+    DAVA_DEPRECATED(virtual void RemoveControl(UIControl* control));
     /**
      \brief Remove this control from its parent, if any.
      */
@@ -486,42 +488,44 @@ public:
         If child isn't present in the owners list nothing happens.
      \param[in] _control control to bring front.
      */
-    virtual void BringChildFront(UIControl* _control);
+    virtual void BringChildFront(const UIControl* _control);
     /**
      \brief Brings given child back.
         This child will be drawn at the bottom of the control children.
         If child isn't present in the owners list nothing happens.
      \param[in] _control control to bring back.
      */
-    virtual void BringChildBack(UIControl* _control);
+    virtual void BringChildBack(const UIControl* _control);
     /**
      \brief Inserts given child before the requested.
      \param[in] _control control to insert.
      \param[in] _belowThisChild control to insert before. If this control isn't present in the
         children list new child adds at the top of the list.
      */
-    virtual void InsertChildBelow(UIControl* _control, UIControl* _belowThisChild);
+    void InsertChildBelow(RefPtr<UIControl> _control, const UIControl* _belowThisChild);
+    DAVA_DEPRECATED(virtual void InsertChildBelow(UIControl* _control, const UIControl* _belowThisChild));
     /**
      \brief Inserts given child after the requested.
      \param[in] _control control to insert.
      \param[in] _aboveThisChild control to insert after. If this control isn't present in the
      children list new child adds at the top of the list.
      */
-    virtual void InsertChildAbove(UIControl* _control, UIControl* _aboveThisChild);
+    void InsertChildAbove(RefPtr<UIControl> _control, const UIControl* _aboveThisChild);
+    DAVA_DEPRECATED(virtual void InsertChildAbove(UIControl* _control, const UIControl* _aboveThisChild));
     /**
      \brief Sends given child before the requested.
         If one of the given children isn't present in the owners list nothing happens.
      \param[in] _control control to move.
      \param[in] _belowThisChild control to sends before.
      */
-    virtual void SendChildBelow(UIControl* _control, UIControl* _belowThisChild);
+    virtual void SendChildBelow(const UIControl* _control, const UIControl* _belowThisChild);
     /**
      \brief Sends given child after the requested.
         If one of the given children isn't present in the owners list nothing happens.
      \param[in] _control control to move.
      \param[in] _aboveThisChild control to sends after.
      */
-    virtual void SendChildAbove(UIControl* _control, UIControl* _aboveThisChild);
+    virtual void SendChildAbove(const UIControl* _control, const UIControl* _aboveThisChild);
 
     /**
      \brief Adds callback message for the event trigger.
@@ -871,7 +875,7 @@ private:
     UIControlSystem* scene = nullptr;
 
     UIControl* parent = nullptr;
-    List<UIControl*> children;
+    List<RefPtr<UIControl>> children;
 
     DAVA_DEPRECATED(bool isUpdated = false);
     // Need for old implementation of SystemUpdate.
@@ -1078,9 +1082,9 @@ public:
     void SetLayoutOrderDirty();
     void ResetLayoutOrderDirty();
 
-    UIControlPackageContext* GetPackageContext() const;
-    UIControlPackageContext* GetLocalPackageContext() const;
-    void SetPackageContext(UIControlPackageContext* packageContext);
+    RefPtr<UIControlPackageContext> GetPackageContext() const;
+    const RefPtr<UIControlPackageContext>& GetLocalPackageContext() const;
+    void SetPackageContext(const RefPtr<UIControlPackageContext>& packageContext);
     UIControl* GetParentWithContext() const;
 
 private:
@@ -1174,15 +1178,6 @@ inline bool UIControl::GetExclusiveInput() const
 inline bool UIControl::GetMultiInput() const
 {
     return multiInput;
-}
-
-template <class T>
-inline void UIControl::SortChildren(const T& predicate)
-{
-    children.sort(predicate); // std::stable_sort and std::sort are not allowed for list
-
-    isIteratorCorrupted = true;
-    SetLayoutOrderDirty();
 }
 
 inline int32 UIControl::GetState() const

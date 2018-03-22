@@ -141,7 +141,7 @@ void JobManager::WaitMainJobs(Thread::Id invokerThreadId /* = 0 */)
         // if wait was invoked from main-thread
         // and there are some jobs user is waiting for
         // we should immediately execute them
-        if (HasMainJobs())
+        if (HasMainJobs(invokerThreadId))
         {
             // just run update, it will execute all of main-thread jobs
             Update();
@@ -158,7 +158,7 @@ void JobManager::WaitMainJobs(Thread::Id invokerThreadId /* = 0 */)
 
         // Now check if there are some jobs in the queue and wait for them
         UniqueLock<Mutex> lock(mainCVMutex);
-        while (HasMainJobs())
+        while (HasMainJobs(invokerThreadId))
         {
             mainCV.Wait(lock);
         }

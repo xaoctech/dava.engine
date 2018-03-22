@@ -19,6 +19,7 @@
 #include <TArc/Core/ContextAccessor.h>
 
 #include <UI/Components/UIComponent.h>
+#include <UI/Components/UIComponentUtils.h>
 #include <UI/UIControl.h>
 #include <UI/Styles/UIStyleSheetPropertyDataBase.h>
 #include <Engine/Engine.h>
@@ -123,7 +124,7 @@ void PropertiesWidget::OnAddComponent(QAction* action)
 
     const Type* componentType = action->data().value<Any>().Cast<const Type*>();
     ComponentPropertiesSection* componentSection = rootProperty->FindComponentPropertiesSection(componentType, 0);
-    if (componentSection != nullptr && !UIComponent::IsMultiple(componentType))
+    if (componentSection != nullptr && !UIComponentUtils::IsMultiple(componentType))
     {
         QModelIndex index = propertiesModel->indexByProperty(componentSection);
         OnComponentAdded(index);
@@ -211,9 +212,9 @@ QAction* PropertiesWidget::CreateAddComponentAction()
     const Vector<const Type*>& components = GetEngineContext()->componentManager->GetRegisteredUIComponents();
     for (const Type* c : components)
     {
-        if (!ComponentPropertiesSection::IsHiddenComponent(c))
+        if (!UIComponentUtils::IsHidden(c))
         {
-            const String& name = ReflectedTypeDB::GetByType(c)->GetPermanentName();
+            String name = UIComponentUtils::GetDisplayName(c);
             QAction* componentAction = new QAction(name.c_str(), this); // TODO: Localize name
             componentAction->setData(QVariant::fromValue(Any(c)));
             addComponentMenu->addAction(componentAction);

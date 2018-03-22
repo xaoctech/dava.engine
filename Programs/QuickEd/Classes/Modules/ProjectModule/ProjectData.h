@@ -96,6 +96,8 @@ public:
 
     DAVA::PropertiesItem CreatePropertiesNode(const DAVA::String& nodeName);
 
+    QString RestoreResourcesSymLinkInFilePath(const QString& filePath) const;
+
     static DAVA::FastName projectPathPropertyName;
 
 private:
@@ -162,4 +164,8 @@ private:
     std::unique_ptr<DAVA::PropertiesHolder> propertiesHolder;
 
     DAVA_VIRTUAL_REFLECTION(ProjectData, DAVA::TArcDataNode);
+    
+#if defined(__DAVAENGINE_MACOS__)
+    std::unique_ptr<class MacOSSymLinkRestorer> symLinkRestorer;
+#endif
 };

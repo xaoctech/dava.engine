@@ -612,7 +612,7 @@ void EditorTransformSystem::CreateMagnetLinesToNeghbours(const DAVA::Rect& box, 
 
     lines.reserve(lines.size() + neighbours.size() * bordersToMagnet.size());
 
-    for (UIControl* neighbour : neighbours)
+    for (const auto& neighbour : neighbours)
     {
         DVASSERT(nullptr != neighbour);
         Rect neighbourBox = neighbour->GetLocalGeometricData().GetAABBox();
@@ -679,10 +679,10 @@ void EditorTransformSystem::CreateMagnetLinesToChildren(const DAVA::Rect& box, c
         { 1.0f, 1.0f }
     };
 
-    List<UIControl*> children = activeControlNode->GetControl()->GetChildren();
+    const auto& children = activeControlNode->GetControl()->GetChildren();
     lines.reserve(lines.size() + children.size() * bordersToMagnet.size());
 
-    for (UIControl* child : children)
+    for (const auto& child : children)
     {
         Rect neighbourBox = child->GetLocalGeometricData().GetAABBox();
         neighbourBox.SetPosition(neighbourBox.GetPosition() + box.GetPosition());
@@ -1283,8 +1283,12 @@ void EditorTransformSystem::UpdateNeighbours()
                 }
             }
 
-            const List<UIControl*>& children = parent->GetChildren();
-            Set<UIControl*> sortedChildren(children.begin(), children.end());
+            const auto& children = parent->GetChildren();
+            Set<UIControl*> sortedChildren;
+            for (const auto& child : children)
+            {
+                sortedChildren.insert(child.Get());
+            }
             std::set_difference(sortedChildren.begin(), sortedChildren.end(), ignoredNeighbours.begin(), ignoredNeighbours.end(), std::back_inserter(neighbours));
         }
     }

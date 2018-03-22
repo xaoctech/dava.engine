@@ -58,6 +58,7 @@ public:
     virtual void Accept(PropertyVisitor* visitor) = 0;
 
     virtual const DAVA::String& GetName() const = 0;
+    virtual const DAVA::String& GetDisplayName() const;
     virtual ePropertyType GetType() const = 0;
     virtual DAVA::uint32 GetFlags() const;
     virtual DAVA::int32 GetStylePropertyIndex() const;

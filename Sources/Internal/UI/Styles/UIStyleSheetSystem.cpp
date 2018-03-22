@@ -145,11 +145,6 @@ void UIStyleSheetSystem::SetPopupContainer(const RefPtr<UIControl>& _popupContai
     popupContainer = _popupContainer;
 }
 
-void UIStyleSheetSystem::SetListener(UIStyleSheetSystemListener* listener_)
-{
-    listener = listener_;
-}
-
 void UIStyleSheetSystem::ProcessControl(UIControl* control, bool styleSheetListChanged /* = false*/)
 {
 #if STYLESHEET_STATS
@@ -168,7 +163,7 @@ void UIStyleSheetSystem::DebugControl(UIControl* control, UIStyleSheetProcessDeb
 
 void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFromDirty, bool styleSheetListChanged, bool recursively, bool dryRun, UIStyleSheetProcessDebugData* debugData)
 {
-    UIControlPackageContext* packageContext = control->GetPackageContext();
+    RefPtr<UIControlPackageContext> packageContext = control->GetPackageContext();
     const UIStyleSheetPropertyDataBase* propertyDB = UIStyleSheetPropertyDataBase::Instance();
 
     if (control->IsStyleSheetDirty())
@@ -257,6 +252,11 @@ void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFr
         if (!dryRun)
         {
             control->SetStyledPropertySet(propertiesToApply);
+
+            if (propertiesToReset.any() || propertiesToApply.any())
+            {
+                stylePropertiesChanged.Emit(control, propertiesToApply | propertiesToReset);
+            }
         }
     }
 
@@ -268,9 +268,9 @@ void UIStyleSheetSystem::ProcessControlImpl(UIControl* control, int32 distanceFr
 
     if (recursively)
     {
-        for (UIControl* child : control->GetChildren())
+        for (const auto& child : control->GetChildren())
         {
-            ProcessControlImpl(child, distanceFromDirty + 1, styleSheetListChanged, true, dryRun, debugData);
+            ProcessControlImpl(child.Get(), distanceFromDirty + 1, styleSheetListChanged, true, dryRun, debugData);
         }
     }
 }
@@ -343,9 +343,9 @@ void UIStyleSheetSystem::ProcessControlHierarhy(UIControl* control)
         ProcessControl(control, globalStyleSheetDirty);
     }
 
-    for (UIControl* child : control->GetChildren())
+    for (const auto& child : control->GetChildren())
     {
-        ProcessControlHierarhy(child);
+        ProcessControlHierarhy(child.Get());
     }
 }
 
@@ -401,11 +401,6 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
             if (ref.IsValid())
             {
                 action(control, ref);
-
-                if (listener != nullptr)
-                {
-                    listener->OnStylePropertyChanged(control, nullptr, propertyIndex);
-                }
             }
         }
     }
@@ -418,11 +413,6 @@ void UIStyleSheetSystem::DoForAllPropertyInstances(UIControl* control, uint32 pr
             if (ref.IsValid())
             {
                 action(control, ref);
-
-                if (listener != nullptr)
-                {
-                    listener->OnStylePropertyChanged(control, component, propertyIndex);
-                }
             }
         }
         else

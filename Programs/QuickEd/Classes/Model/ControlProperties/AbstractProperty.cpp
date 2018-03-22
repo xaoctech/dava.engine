@@ -83,6 +83,11 @@ bool AbstractProperty::HasChanges() const
     return false;
 }
 
+const DAVA::String& AbstractProperty::GetDisplayName() const
+{
+    return GetName();
+}
+
 uint32 AbstractProperty::GetFlags() const
 {
     return EF_NONE;

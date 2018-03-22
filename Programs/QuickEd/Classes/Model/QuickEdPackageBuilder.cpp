@@ -23,6 +23,7 @@
 #include <UI/UIControl.h>
 #include <UI/UIControlPackageContext.h>
 #include <UI/UIPackage.h>
+#include <UI/Components/UIComponentUtils.h>
 #include <Utils/Utils.h>
 
 using namespace DAVA;
@@ -155,7 +156,6 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const Fa
     }
 
     ControlNode* node = ControlNode::CreateFromControl(control.Get());
-
     if (control.Valid())
     {
         if (className != QuickEdPackageBuilderDetails::EXCEPTION_CLASS_UI_TEXT_FIELD && className != QuickEdPackageBuilderDetails::EXCEPTION_CLASS_UI_LIST) //TODO: fix internal staticText for Win\Mac
@@ -169,7 +169,9 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithCustomClass(const Fa
         }
     }
 
+    node->GetRootProperty()->GetCustomClassProperty()->SetForceOverride(true);
     node->GetRootProperty()->GetCustomClassProperty()->SetValue(customClassName);
+
     controlsStack.push_back(ControlDescr(node, true));
 
     return (control != nullptr) ? ReflectedTypeDB::GetByPointer(control.Get()) : nullptr;
@@ -224,6 +226,7 @@ const ReflectedType* QuickEdPackageBuilder::BeginControlWithPrototype(const Fast
 
     if (customClassName)
     {
+        node->GetRootProperty()->GetCustomClassProperty()->SetForceOverride(true);
         node->GetRootProperty()->GetCustomClassProperty()->SetValue(*customClassName);
     }
 
@@ -285,7 +288,7 @@ void QuickEdPackageBuilder::EndControl(eControlPlace controlPlace)
         const ComponentPropertiesSection* section = lastControl->GetRootProperty()->FindComponentPropertiesSection(c, 0);
 
         if (section == nullptr && lastControl->GetControl()->GetComponentCount(c) > 0 &&
-            !ComponentPropertiesSection::IsHiddenComponent(c))
+            !UIComponentUtils::IsHidden(c))
         {
             BeginComponentPropertiesSection(c, 0);
             EndComponentPropertiesSection();
@@ -365,6 +368,7 @@ void QuickEdPackageBuilder::ProcessProperty(const ReflectedStructure::Field& fie
             if (property->GetStylePropertyIndex() != -1)
                 controlsStack.back().node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), true);
 
+            property->SetForceOverride(true);
             property->SetValue(value);
         }
     }

@@ -14,6 +14,7 @@
 #include "Model/PackageHierarchy/StyleSheetNode.h"
 #include "Utils/QtDavaConvertion.h"
 #include "QECommands/ChangePropertyValueCommand.h"
+#include "QECommands/ChangePropertyForceOverrideCommand.h"
 #include "QECommands/ChangeStylePropertyCommand.h"
 #include "QECommands/ChangeBindingCommand.h"
 
@@ -30,6 +31,7 @@
 #include <Utils/StringFormat.h>
 #include <UI/UIControlSystem.h>
 #include <UI/Properties/VarTable.h>
+#include <UI/Styles/UIStyleSheetSystem.h>
 
 #include <QFont>
 #include <QIcon>
@@ -45,12 +47,12 @@ PropertiesModel::PropertiesModel(QObject* parent)
 {
     propertiesUpdater.SetUpdater(MakeFunction(this, &PropertiesModel::UpdateAllChangedProperties));
 
-    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(this);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->stylePropertiesChanged.Connect(this, &PropertiesModel::OnStylePropertiesChanged);
 }
 
 PropertiesModel::~PropertiesModel()
 {
-    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->SetListener(nullptr);
+    GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->stylePropertiesChanged.Disconnect(this);
 
     CleanUp();
     propertiesUpdater.Abort();
@@ -70,7 +72,19 @@ void PropertiesModel::Reset(PackageBaseNode* nodeToReset)
     controlNode = dynamic_cast<ControlNode*>(nodeToReset);
     if (nullptr != controlNode)
     {
-        controlNode->GetRootProperty()->AddListener(this);
+        controlNode->GetRootProperty()->propertyChanged.Connect(this, &PropertiesModel::PropertyChanged);
+        controlNode->GetRootProperty()->componentPropertiesWillBeAdded.Connect(this, &PropertiesModel::ComponentPropertiesWillBeAdded);
+        controlNode->GetRootProperty()->componentPropertiesWasAdded.Connect(this, &PropertiesModel::ComponentPropertiesWasAdded);
+
+        controlNode->GetRootProperty()->componentPropertiesWillBeRemoved.Connect(this, &PropertiesModel::ComponentPropertiesWillBeRemoved);
+        controlNode->GetRootProperty()->componentPropertiesWasRemoved.Connect(this, &PropertiesModel::ComponentPropertiesWasRemoved);
+
+        controlNode->GetRootProperty()->virtualSectionRebuild.Connect(this, &PropertiesModel::VirtualSectionRebuild);
+        controlNode->GetRootProperty()->virtualPropertiesWillBeAdded.Connect(this, &PropertiesModel::VirtualPropertiesWillBeAdded);
+        controlNode->GetRootProperty()->virtualPropertiesWasAdded.Connect(this, &PropertiesModel::VirtualPropertiesWasAdded);
+        controlNode->GetRootProperty()->virtualPropertiesWillBeRemoved.Connect(this, &PropertiesModel::VirtualPropertiesWillBeRemoved);
+        controlNode->GetRootProperty()->virtualPropertiesWasRemoved.Connect(this, &PropertiesModel::VirtualPropertiesWasRemoved);
+
         rootProperty = controlNode->GetRootProperty();
         controlNode->GetRootProperty()->RebuildVirtualProperties();
     }
@@ -78,7 +92,20 @@ void PropertiesModel::Reset(PackageBaseNode* nodeToReset)
     styleSheet = dynamic_cast<StyleSheetNode*>(nodeToReset);
     if (nullptr != styleSheet)
     {
-        styleSheet->GetRootProperty()->AddListener(this);
+        styleSheet->GetRootProperty()->propertyChanged.Connect(this, &PropertiesModel::PropertyChanged);
+
+        styleSheet->GetRootProperty()->stylePropertyWillBeAdded.Connect(this, &PropertiesModel::StylePropertyWillBeAdded);
+        styleSheet->GetRootProperty()->stylePropertyWasAdded.Connect(this, &PropertiesModel::StylePropertyWasAdded);
+
+        styleSheet->GetRootProperty()->stylePropertyWillBeRemoved.Connect(this, &PropertiesModel::StylePropertyWillBeRemoved);
+        styleSheet->GetRootProperty()->stylePropertyWasRemoved.Connect(this, &PropertiesModel::StylePropertyWasRemoved);
+
+        styleSheet->GetRootProperty()->styleSelectorWillBeAdded.Connect(this, &PropertiesModel::StyleSelectorWillBeAdded);
+        styleSheet->GetRootProperty()->styleSelectorWasAdded.Connect(this, &PropertiesModel::StyleSelectorWasAdded);
+
+        styleSheet->GetRootProperty()->styleSelectorWillBeRemoved.Connect(this, &PropertiesModel::StyleSelectorWillBeRemoved);
+        styleSheet->GetRootProperty()->styleSelectorWasRemoved.Connect(this, &PropertiesModel::StyleSelectorWasRemoved);
+
         rootProperty = styleSheet->GetRootProperty();
     }
     endResetModel();
@@ -149,7 +176,7 @@ QVariant PropertiesModel::data(const QModelIndex& index, int role) const
     case Qt::DisplayRole:
     {
         if (index.column() == 0)
-            return QVariant(property->GetName().c_str());
+            return QVariant(property->GetDisplayName().c_str());
         else if (index.column() == 1)
         {
             QString res = makeQVariant(property);
@@ -444,26 +471,26 @@ void PropertiesModel::ComponentPropertiesWasRemoved(RootProperty* root, Componen
     endRemoveRows();
 }
 
-void PropertiesModel::ComponentVirtualPropertiesWillBeAdded(RootProperty* root, VirtualPropertiesSection* section, int index)
+void PropertiesModel::VirtualPropertiesWillBeAdded(RootProperty* root, VirtualPropertiesSection* section, int index)
 {
     QModelIndex parentIndex = indexByProperty(root, 0);
     beginInsertRows(parentIndex, index, index);
 }
 
-void PropertiesModel::ComponentVirtualPropertiesWasAdded(RootProperty* root, VirtualPropertiesSection* section, int index)
+void PropertiesModel::VirtualPropertiesWasAdded(RootProperty* root, VirtualPropertiesSection* section, int index)
 {
     endInsertRows();
     QModelIndex modelIndex = indexByProperty(root->GetProperty(index), 0);
     emit ComponentAdded(modelIndex);
 }
 
-void PropertiesModel::ComponenttVirtualPropertiesWillBeRemoved(RootProperty* root, VirtualPropertiesSection* section, int index)
+void PropertiesModel::VirtualPropertiesWillBeRemoved(RootProperty* root, VirtualPropertiesSection* section, int index)
 {
     QModelIndex parentIndex = indexByProperty(root, 0);
     beginRemoveRows(parentIndex, index, index);
 }
 
-void PropertiesModel::ComponenttVirtualPropertiesWasRemoved(RootProperty* root, VirtualPropertiesSection* section, int index)
+void PropertiesModel::VirtualPropertiesWasRemoved(RootProperty* root, VirtualPropertiesSection* section, int index)
 {
     endRemoveRows();
 }
@@ -527,14 +554,20 @@ void PropertiesModel::VirtualSectionRebuild(VirtualPropertiesSection* section, i
     }
 }
 
-void PropertiesModel::OnStylePropertyChanged(DAVA::UIControl* control, DAVA::UIComponent* component, uint32 propertyIndex)
+void PropertiesModel::OnStylePropertiesChanged(DAVA::UIControl* control, const DAVA::UIStyleSheetPropertySet& properties)
 {
     if (controlNode != nullptr && rootProperty != nullptr && controlNode->GetControl() == control)
     {
-        AbstractProperty* changedProperty = rootProperty->FindPropertyByStyleIndex(static_cast<int32>(propertyIndex));
-        if (changedProperty != nullptr)
+        for (int32 index = 0; index < UIStyleSheetPropertyDataBase::STYLE_SHEET_PROPERTY_COUNT; index++)
         {
-            PropertyChanged(changedProperty);
+            if (properties.test(index))
+            {
+                AbstractProperty* changedProperty = rootProperty->FindPropertyByStyleIndex(index);
+                if (changedProperty != nullptr)
+                {
+                    PropertyChanged(changedProperty);
+                }
+            }
         }
     }
 }
@@ -549,6 +582,14 @@ void PropertiesModel::ChangeProperty(AbstractProperty* property, const Any& valu
     if (nullptr != controlNode)
     {
         SubValueProperty* subValueProperty = dynamic_cast<SubValueProperty*>(property);
+        documentData->BeginBatch(Format("Change Property"));
+
+        ValueProperty* vp = dynamic_cast<ValueProperty*>(property);
+        if (vp)
+        {
+            documentData->ExecCommand<ChangePropertyForceOverrideCommand>(controlNode, vp);
+        }
+
         if (subValueProperty)
         {
             ValueProperty* valueProperty = subValueProperty->GetValueProperty();
@@ -559,6 +600,7 @@ void PropertiesModel::ChangeProperty(AbstractProperty* property, const Any& valu
         {
             documentData->ExecCommand<ChangePropertyValueCommand>(controlNode, property, value);
         }
+        documentData->EndBatch();
     }
     else if (styleSheet)
     {
@@ -814,11 +856,34 @@ void PropertiesModel::CleanUp()
 {
     if (nullptr != controlNode)
     {
-        controlNode->GetRootProperty()->RemoveListener(this);
+        controlNode->GetRootProperty()->propertyChanged.Disconnect(this);
+        controlNode->GetRootProperty()->componentPropertiesWillBeAdded.Disconnect(this);
+        controlNode->GetRootProperty()->componentPropertiesWasAdded.Disconnect(this);
+
+        controlNode->GetRootProperty()->componentPropertiesWillBeRemoved.Disconnect(this);
+        controlNode->GetRootProperty()->componentPropertiesWasRemoved.Disconnect(this);
+
+        controlNode->GetRootProperty()->virtualSectionRebuild.Disconnect(this);
+        controlNode->GetRootProperty()->virtualPropertiesWillBeAdded.Disconnect(this);
+        controlNode->GetRootProperty()->virtualPropertiesWasAdded.Disconnect(this);
+        controlNode->GetRootProperty()->virtualPropertiesWillBeRemoved.Disconnect(this);
+        controlNode->GetRootProperty()->virtualPropertiesWasRemoved.Disconnect(this);
     }
     if (nullptr != styleSheet)
     {
-        styleSheet->GetRootProperty()->RemoveListener(this);
+        styleSheet->GetRootProperty()->propertyChanged.Disconnect(this);
+
+        styleSheet->GetRootProperty()->stylePropertyWillBeAdded.Disconnect(this);
+        styleSheet->GetRootProperty()->stylePropertyWasAdded.Disconnect(this);
+
+        styleSheet->GetRootProperty()->stylePropertyWillBeRemoved.Disconnect(this);
+        styleSheet->GetRootProperty()->stylePropertyWasRemoved.Disconnect(this);
+
+        styleSheet->GetRootProperty()->styleSelectorWillBeAdded.Disconnect(this);
+        styleSheet->GetRootProperty()->styleSelectorWasAdded.Disconnect(this);
+
+        styleSheet->GetRootProperty()->styleSelectorWillBeRemoved.Disconnect(this);
+        styleSheet->GetRootProperty()->styleSelectorWasRemoved.Disconnect(this);
     }
     controlNode = nullptr;
     styleSheet = nullptr;

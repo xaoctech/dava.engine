@@ -248,7 +248,6 @@ public:
         }
     }
 
-protected:
     virtual void BeforeContextSwitch(DataContext* currentContext, DataContext* newOne)
     {
     }
@@ -288,7 +287,6 @@ protected:
         core->syncSignal.Emit();
     }
 
-protected:
     Engine& engine;
     Core* core;
     std::unique_ptr<TArcPluginManager> pluginsManager;
@@ -989,6 +987,12 @@ void Core::OnWindowCreated(Window* w)
 {
     DVASSERT(impl);
     impl->OnWindowCreated(w);
+}
+
+void Core::OnTestClassShoutdown()
+{
+    DVASSERT(impl);
+    impl->wrappersProcessor.Shoutdown();
 }
 
 bool Core::HasControllerModule() const

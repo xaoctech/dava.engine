@@ -10,10 +10,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentAliasesComponent)
 {
-    ReflectionRegistrator<UIRichContentAliasesComponent>::Begin()[M::Multiple()]
+    ReflectionRegistrator<UIRichContentAliasesComponent>::Begin()[M::Multiple(), M::DisplayName("Rich Content Aliases"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIRichContentAliasesComponent* o) { o->Release(); })
-    .Field("aliases", &UIRichContentAliasesComponent::GetAliasesAsString, &UIRichContentAliasesComponent::SetAliasesFromString)
+    .Field("aliases", &UIRichContentAliasesComponent::GetAliasesAsString, &UIRichContentAliasesComponent::SetAliasesFromString)[M::DisplayName("Aliases")]
     .End();
 }
 

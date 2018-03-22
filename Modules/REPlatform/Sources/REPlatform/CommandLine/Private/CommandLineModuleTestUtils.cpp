@@ -92,41 +92,6 @@ PolygonGroup* CreatePolygonGroup()
     return renderData;
 }
 
-bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, uint8 color, const String& tag = "")
-{
-    FilePath taggedTexturePath = texturePathname;
-    taggedTexturePath.ReplaceBasename(texturePathname.GetBasename() + tag);
-
-    FilePath pngPathname = FilePath::CreateWithNewExtension(taggedTexturePath, ".png");
-    if (CreateImageFile(pngPathname, width, height, format, color))
-    {
-        RETextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
-
-        std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(taggedTexturePath));
-        if (descriptor)
-        {
-            descriptor->compression[eGPUFamily::GPU_POWERVR_IOS].format = PixelFormat::FORMAT_RGBA8888;
-            descriptor->compression[eGPUFamily::GPU_POWERVR_ANDROID].format = PixelFormat::FORMAT_RGBA5551;
-            descriptor->compression[eGPUFamily::GPU_ADRENO].format = PixelFormat::FORMAT_RGBA4444;
-            descriptor->compression[eGPUFamily::GPU_MALI].format = PixelFormat::FORMAT_RGB888;
-            descriptor->compression[eGPUFamily::GPU_TEGRA].format = PixelFormat::FORMAT_RGB565;
-            descriptor->compression[eGPUFamily::GPU_DX11].format = PixelFormat::FORMAT_A8;
-
-            descriptor->compression[eGPUFamily::GPU_POWERVR_IOS].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
-            descriptor->compression[eGPUFamily::GPU_POWERVR_ANDROID].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
-            descriptor->compression[eGPUFamily::GPU_ADRENO].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
-            descriptor->compression[eGPUFamily::GPU_MALI].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
-            descriptor->compression[eGPUFamily::GPU_TEGRA].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
-            descriptor->compression[eGPUFamily::GPU_DX11].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
-            descriptor->SetGenerateMipmaps(true);
-            descriptor->Save();
-
-            return true;
-        }
-    }
-    return false;
-}
-
 void CreateR2OCustomProperty(Entity* entity, FilePath pathname)
 {
     String entityName = entity->GetName().c_str();
@@ -406,6 +371,41 @@ std::unique_ptr<TextureLoadingGuard> CreateTextureGuard(const Vector<eGPUFamily>
     return std::make_unique<TextureLoadingGuard>(newLoadingOrder);
 }
 
+bool CreateTextureFiles(const FilePath& texturePathname, uint32 width, uint32 height, PixelFormat format, uint8 color, const String& tag)
+{
+    FilePath taggedTexturePath = texturePathname;
+    taggedTexturePath.ReplaceBasename(texturePathname.GetBasename() + tag);
+
+    FilePath pngPathname = FilePath::CreateWithNewExtension(taggedTexturePath, ".png");
+    if (Detail::CreateImageFile(pngPathname, width, height, format, color))
+    {
+        RETextureDescriptorUtils::CreateOrUpdateDescriptor(pngPathname);
+
+        std::unique_ptr<TextureDescriptor> descriptor(TextureDescriptor::CreateFromFile(taggedTexturePath));
+        if (descriptor)
+        {
+            descriptor->compression[eGPUFamily::GPU_POWERVR_IOS].format = PixelFormat::FORMAT_RGBA8888;
+            descriptor->compression[eGPUFamily::GPU_POWERVR_ANDROID].format = PixelFormat::FORMAT_RGBA5551;
+            descriptor->compression[eGPUFamily::GPU_ADRENO].format = PixelFormat::FORMAT_RGBA4444;
+            descriptor->compression[eGPUFamily::GPU_MALI].format = PixelFormat::FORMAT_RGB888;
+            descriptor->compression[eGPUFamily::GPU_TEGRA].format = PixelFormat::FORMAT_RGB565;
+            descriptor->compression[eGPUFamily::GPU_DX11].format = PixelFormat::FORMAT_A8;
+
+            descriptor->compression[eGPUFamily::GPU_POWERVR_IOS].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
+            descriptor->compression[eGPUFamily::GPU_POWERVR_ANDROID].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
+            descriptor->compression[eGPUFamily::GPU_ADRENO].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
+            descriptor->compression[eGPUFamily::GPU_MALI].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
+            descriptor->compression[eGPUFamily::GPU_TEGRA].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
+            descriptor->compression[eGPUFamily::GPU_DX11].imageFormat = ImageFormat::IMAGE_FORMAT_PVR;
+            descriptor->SetGenerateMipmaps(true);
+            descriptor->Save();
+
+            return true;
+        }
+    }
+    return false;
+}
+
 SceneBuilder::BoxBuilder& SceneBuilder::BoxBuilder::Create(const FilePath& newPath, const String& newName, const String& newTag)
 {
     tag = newTag;
@@ -431,7 +431,7 @@ void SceneBuilder::BoxBuilder::SetupMaterial(NMaterial* material, const String& 
     DVASSERT(box.get() != nullptr);
     FilePath texturePath = path;
     texturePath.ReplaceFilename(fileName);
-    Detail::CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, color, tag);
+    CreateTextureFiles(texturePath, 32u, 32u, PixelFormat::FORMAT_RGBA8888, color, tag);
 
     ScopedPtr<Texture> texture(Texture::CreateFromFile(texturePath));
     material->AddTexture(slotName, texture);

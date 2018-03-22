@@ -323,6 +323,7 @@ private:
     WideString text;
     String fontPresetName;
     UITextFieldDelegate* delegate = nullptr;
+    float32 fontSize = 0.f; // Font size for native text fields
     float32 cursorBlinkingTime = 0.0f;
 
     // Keyboard customization params.

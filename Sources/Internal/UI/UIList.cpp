@@ -20,13 +20,13 @@ static const int32 INVALID_INDEX = -1;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIList)
 {
-    ReflectionRegistrator<UIList>::Begin()
+    ReflectionRegistrator<UIList>::Begin()[M::DisplayName("List")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIList* o) { o->Release(); })
-    .Field("orientation", &UIList::GetOrientation, &UIList::SetOrientation)[M::EnumT<eListOrientation>()]
-    .Field("slowDownTime", &UIList::GetSlowDownTime, &UIList::SetSlowDownTime)
-    .Field("borderMoveModifer", &UIList::GetBorderMoveModifer, &UIList::SetBorderMoveModifer)
-    .Field("touchHoldDelta", &UIList::GetTouchHoldDelta, &UIList::SetTouchHoldDelta)
+    .Field("orientation", &UIList::GetOrientation, &UIList::SetOrientation)[M::EnumT<eListOrientation>(), M::DisplayName("Orientation")]
+    .Field("slowDownTime", &UIList::GetSlowDownTime, &UIList::SetSlowDownTime)[M::DisplayName("Slow Down Time")]
+    .Field("borderMoveModifer", &UIList::GetBorderMoveModifer, &UIList::SetBorderMoveModifer)[M::DisplayName("Border Move Modifier")]
+    .Field("touchHoldDelta", &UIList::GetTouchHoldDelta, &UIList::SetTouchHoldDelta)[M::DisplayName("Touch Hold Delta")]
     .End();
 }
 
@@ -305,15 +305,14 @@ void UIList::Update(float32 timeElapsed)
         scrollContainer->SetPosition(r.GetPosition());
     }
 
-    List<UIControl*>::const_iterator it;
     Rect viewRect = GetGeometricData().GetUnrotatedRect();
-    const List<UIControl*>& scrollList = scrollContainer->GetChildren();
+    const auto& scrollList = scrollContainer->GetChildren();
     List<UIListCell*> removeList;
 
     //removing invisible elements
-    for (it = scrollList.begin(); it != scrollList.end(); it++)
+    for (auto it = scrollList.begin(); it != scrollList.end(); it++)
     {
-        UIListCell* cell = DynamicTypeCheck<UIListCell*>(*it);
+        UIListCell* cell = DynamicTypeCheck<UIListCell*>(it->Get());
 
         Rect crect = cell->GetGeometricData().GetUnrotatedRect();
         if (orientation == ORIENTATION_HORIZONTAL)
@@ -341,9 +340,9 @@ void UIList::Update(float32 timeElapsed)
         //adding elements at the list end
         int32 ind = -1;
         UIListCell* fc = NULL;
-        for (it = scrollList.begin(); it != scrollList.end(); it++)
+        for (auto it = scrollList.begin(); it != scrollList.end(); it++)
         {
-            UIListCell* lc = static_cast<UIListCell*>(*it);
+            UIListCell* lc = static_cast<UIListCell*>(it->Get());
             int32 i = lc->GetIndex();
             if (i > ind)
             {
@@ -392,9 +391,9 @@ void UIList::Update(float32 timeElapsed)
         //adding elements at the list begin
         ind = maximumElementsCount;
         fc = NULL;
-        for (it = scrollList.begin(); it != scrollList.end(); it++)
+        for (auto it = scrollList.begin(); it != scrollList.end(); it++)
         {
-            UIListCell* lc = static_cast<UIListCell*>(*it);
+            UIListCell* lc = static_cast<UIListCell*>(it->Get());
             int32 i = lc->GetIndex();
             if (i < ind)
             {
@@ -675,7 +674,7 @@ UIListCell* UIList::GetReusableCell(const String& cellIdentifier)
     return NULL;
 }
 
-const List<UIControl*>& UIList::GetVisibleCells()
+const List<RefPtr<UIControl>>& UIList::GetVisibleCells() const
 {
     return scrollContainer->GetChildren();
 }

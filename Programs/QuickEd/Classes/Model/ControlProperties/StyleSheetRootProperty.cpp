@@ -5,7 +5,6 @@
 #include "StyleSheetSelectorProperty.h"
 
 #include "PropertyVisitor.h"
-#include "PropertyListener.h"
 #include "Model/PackageHierarchy/StyleSheetNode.h"
 #include "UI/Styles/UIStyleSheet.h"
 
@@ -94,31 +93,12 @@ AbstractProperty::ePropertyType StyleSheetRootProperty::GetType() const
     return TYPE_HEADER;
 }
 
-void StyleSheetRootProperty::AddListener(PropertyListener* listener)
-{
-    listeners.push_back(listener);
-}
-
-void StyleSheetRootProperty::RemoveListener(PropertyListener* listener)
-{
-    auto it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it != listeners.end())
-    {
-        listeners.erase(it);
-    }
-    else
-    {
-        DVASSERT(false);
-    }
-}
-
 void StyleSheetRootProperty::SetProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetValue(newValue);
     UpdateStyleSheetPropertyTable();
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 bool StyleSheetRootProperty::CanAddProperty(DAVA::uint32 propertyIndex) const
@@ -135,8 +115,7 @@ void StyleSheetRootProperty::AddProperty(StyleSheetProperty* property)
 {
     if (CanAddProperty(property->GetPropertyIndex()) && property->GetParent() == nullptr)
     {
-        for (PropertyListener* listener : listeners)
-            listener->StylePropertyWillBeAdded(propertiesSection, property, property->GetPropertyIndex());
+        stylePropertyWillBeAdded.Emit(propertiesSection, property, property->GetPropertyIndex());
 
         uint32 index = 0;
         while (index < propertiesSection->GetCount())
@@ -149,8 +128,7 @@ void StyleSheetRootProperty::AddProperty(StyleSheetProperty* property)
         propertiesSection->InsertProperty(property, index);
         UpdateStyleSheetPropertyTable();
 
-        for (PropertyListener* listener : listeners)
-            listener->StylePropertyWasAdded(propertiesSection, property, property->GetPropertyIndex());
+        stylePropertyWasAdded.Emit(propertiesSection, property, property->GetPropertyIndex());
     }
 }
 
@@ -159,14 +137,12 @@ void StyleSheetRootProperty::RemoveProperty(StyleSheetProperty* property)
     uint32 index = propertiesSection->GetIndex(property);
     if (!IsReadOnly() && index != -1)
     {
-        for (PropertyListener* listener : listeners)
-            listener->StylePropertyWillBeRemoved(propertiesSection, property, index);
+        stylePropertyWillBeRemoved.Emit(propertiesSection, property, index);
 
         propertiesSection->RemoveProperty(property);
         UpdateStyleSheetPropertyTable();
 
-        for (PropertyListener* listener : listeners)
-            listener->StylePropertyWasRemoved(propertiesSection, property, index);
+        stylePropertyWasRemoved.Emit(propertiesSection, property, index);
     }
 }
 
@@ -184,14 +160,12 @@ void StyleSheetRootProperty::InsertSelector(StyleSheetSelectorProperty* property
 {
     if (CanAddSelector() && selectors->GetIndex(property) == -1)
     {
-        for (PropertyListener* listener : listeners)
-            listener->StyleSelectorWillBeAdded(selectors, property, index);
+        styleSelectorWillBeAdded.Emit(selectors, property, index);
 
         selectors->InsertProperty(property, index);
         property->SetStyleSheetPropertyTable(propertyTable);
 
-        for (PropertyListener* listener : listeners)
-            listener->StyleSelectorWasAdded(selectors, property, index);
+        styleSelectorWasAdded.Emit(selectors, property, index);
     }
     else
     {
@@ -204,14 +178,12 @@ void StyleSheetRootProperty::RemoveSelector(StyleSheetSelectorProperty* property
     int32 index = selectors->GetIndex(property);
     if (CanRemoveSelector() && index != -1)
     {
-        for (PropertyListener* listener : listeners)
-            listener->StyleSelectorWillBeRemoved(selectors, property, index);
+        styleSelectorWillBeRemoved.Emit(selectors, property, index);
 
         selectors->RemoveProperty(property);
         property->SetStyleSheetPropertyTable(nullptr);
 
-        for (PropertyListener* listener : listeners)
-            listener->StyleSelectorWasRemoved(selectors, property, index);
+        styleSelectorWasRemoved.Emit(selectors, property, index);
     }
     else
     {

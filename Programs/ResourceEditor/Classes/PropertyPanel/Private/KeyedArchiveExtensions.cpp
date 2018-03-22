@@ -39,11 +39,27 @@ public:
         std::shared_ptr<DAVA::PropertyNode> parent = node->parent.lock();
         DVASSERT(parent != nullptr);
 
-        DAVA::KeyedArchive* archive = *parent->field.ref.GetValueObject().GetPtr<DAVA::KeyedArchive*>();
-        DAVA::String key = node->field.key.Cast<DAVA::String>();
-        if (archive->Count(key) > 0)
+        DAVA::ReflectedObject refObject = parent->field.ref.GetValueObject();
+        const DAVA::ReflectedType* refType = refObject.GetReflectedType();
+
+        DAVA::KeyedArchive* archive = nullptr;
+        if (refType == DAVA::ReflectedTypeDB::Get<DAVA::KeyedArchive>())
         {
-            return std::make_unique<DAVA::KeyeadArchiveRemValueCommand>(archive, key);
+            archive = refObject.GetPtr<DAVA::KeyedArchive>();
+        }
+        else if (refType == DAVA::ReflectedTypeDB::Get<DAVA::KeyedArchive*>())
+        {
+            archive = *refObject.GetPtr<DAVA::KeyedArchive*>();
+        }
+
+        DVASSERT(archive != nullptr);
+        if (archive != nullptr)
+        {
+            DAVA::String key = node->field.key.Cast<DAVA::String>();
+            if (archive->Count(key) > 0)
+            {
+                return std::make_unique<DAVA::KeyeadArchiveRemValueCommand>(archive, key);
+            }
         }
 
         return nullptr;

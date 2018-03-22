@@ -242,6 +242,11 @@ void VarTable::SetOverriddenIfNotEqualDefaultValues()
     }
 }
 
+bool VarTable::operator==(const VarTable& other) const
+{
+    return properties == other.properties;
+}
+
 Any VarTable::ParseString(const Type* type, const String& str)
 {
     if (type == Type::Instance<bool>())
@@ -367,5 +372,11 @@ String VarTable::AnyToString(const Any& val)
 
     DVASSERT(false);
     return String("");
+}
+
+template <>
+bool AnyCompare<VarTable>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<VarTable>() == v2.Get<VarTable>();
 }
 }

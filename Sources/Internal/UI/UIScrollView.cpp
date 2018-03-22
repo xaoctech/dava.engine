@@ -12,13 +12,13 @@ static const FastName UISCROLL_VIEW_CONTAINER_NAME("scrollContainerControl");
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIScrollView)
 {
-    ReflectionRegistrator<UIScrollView>::Begin()
+    ReflectionRegistrator<UIScrollView>::Begin()[M::DisplayName("Scroll View")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIScrollView* o) { o->Release(); })
-    .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)
-    .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)
-    .Field("returnSpeed", &UIScrollView::GetReturnSpeed, &UIScrollView::SetReturnSpeed)
-    .Field("scrollSpeed", &UIScrollView::GetScrollSpeed, &UIScrollView::SetScrollSpeed)
+    .Field("autoUpdate", &UIScrollView::IsAutoUpdate, &UIScrollView::SetAutoUpdate)[M::DisplayName("Auto Update")]
+    .Field("centerContent", &UIScrollView::IsCenterContent, &UIScrollView::SetCenterContent)[M::DisplayName("Center Content")]
+    .Field("returnSpeed", &UIScrollView::GetReturnSpeed, &UIScrollView::SetReturnSpeed)[M::DisplayName("Return Speed")]
+    .Field("scrollSpeed", &UIScrollView::GetScrollSpeed, &UIScrollView::SetScrollSpeed)[M::DisplayName("Scroll Speed")]
     .End();
 }
 
@@ -92,10 +92,10 @@ void UIScrollView::RemoveControl(UIControl* control)
 void UIScrollView::PushContentToBounds(UIControl* parentControl)
 {
     // We have to shift each child of ScrollContent to fit its bounds
-    const List<UIControl*>& childslist = parentControl->GetChildren();
-    for (List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
+    const auto& childslist = parentControl->GetChildren();
+    for (auto it = childslist.begin(); it != childslist.end(); ++it)
     {
-        UIControl* childControl = (*it);
+        UIControl* childControl = it->Get();
         if (!(childControl && childControl->GetVisibilityFlag()))
             continue;
 
@@ -125,10 +125,10 @@ Vector2 UIScrollView::GetControlOffset(UIControl* parentControl, Vector2 current
 {
     Vector2 currentOffset = currentContentOffset;
     // Get control's farest position inside scrollContainer
-    const List<UIControl*>& childslist = parentControl->GetChildren();
-    for (List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
+    const auto& childslist = parentControl->GetChildren();
+    for (auto it = childslist.begin(); it != childslist.end(); ++it)
     {
-        UIControl* childControl = (*it);
+        UIControl* childControl = it->Get();
         if (!(childControl && childControl->GetVisibilityFlag()))
             continue;
 
@@ -148,10 +148,10 @@ Vector2 UIScrollView::GetMaxSize(UIControl* parentControl, Vector2 currentMaxSiz
     // Initial content max size is actual control sizes
     Vector2 maxSize = currentMaxSize;
 
-    const List<UIControl*>& childslist = parentControl->GetChildren();
-    for (List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
+    const auto& childslist = parentControl->GetChildren();
+    for (auto it = childslist.begin(); it != childslist.end(); ++it)
     {
-        UIControl* childControl = (*it);
+        UIControl* childControl = it->Get();
         if (!(childControl && childControl->GetVisibilityFlag()))
             continue;
 

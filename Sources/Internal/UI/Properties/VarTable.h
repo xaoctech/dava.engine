@@ -58,6 +58,7 @@ public:
     void SetPropertyOverriddenFlagIfNotEqual(const FastName& propertyName, const Any& otherValue);
 
     String GetNamesString(const String& sep = ", ") const;
+    bool operator==(const VarTable& other) const;
 
     static Any ParseString(const Type* type, const String& str);
     static String AnyToString(const Any& val);
@@ -68,4 +69,8 @@ private:
     MetaMap metaMap;
     VarMap properties;
 };
+
+template <>
+bool AnyCompare<VarTable>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<VarTable>;
 }

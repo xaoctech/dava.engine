@@ -17,24 +17,24 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIControlBackground)
 {
-    ReflectionRegistrator<UIControlBackground>::Begin()
+    ReflectionRegistrator<UIControlBackground>::Begin()[M::DisplayName("Background"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIControlBackground* o) { o->Release(); })
-    .Field("drawType", &UIControlBackground::GetDrawType, &UIControlBackground::SetDrawType)[M::EnumT<eDrawType>()]
-    .Field<FilePath (UIControlBackground::*)() const, void (UIControlBackground::*)(const FilePath&)>("sprite", &UIControlBackground::GetBgSpritePath, &UIControlBackground::SetSprite)
-    .Field<int32 (UIControlBackground::*)() const, void (UIControlBackground::*)(int32)>("frame", &UIControlBackground::GetFrame, &UIControlBackground::SetFrame)
-    .Field("mask", &UIControlBackground::GetMaskSpritePath, &UIControlBackground::SetMaskSpriteFromPath)
-    .Field("detail", &UIControlBackground::GetDetailSpritePath, &UIControlBackground::SetDetailSpriteFromPath)
-    .Field("gradient", &UIControlBackground::GetGradientSpritePath, &UIControlBackground::SetGradientSpriteFromPath)
-    .Field("contour", &UIControlBackground::GetContourSpritePath, &UIControlBackground::SetContourSpriteFromPath)
-    .Field("spriteModification", &UIControlBackground::GetModification, &UIControlBackground::SetModification)[M::FlagsT<eSpriteModification>()]
-    .Field("gradientMode", &UIControlBackground::GetGradientBlendMode, &UIControlBackground::SetGradientBlendMode)[M::EnumT<eGradientBlendMode>()]
-    .Field("color", &UIControlBackground::GetColor, &UIControlBackground::SetColor)
-    .Field("colorInherit", &UIControlBackground::GetColorInheritType, &UIControlBackground::SetColorInheritType)[M::EnumT<eColorInheritType>()]
-    .Field("perPixelAccuracy", &UIControlBackground::GetPerPixelAccuracyType, &UIControlBackground::SetPerPixelAccuracyType)[M::EnumT<ePerPixelAccuracyType>()]
-    .Field("align", &UIControlBackground::GetAlign, &UIControlBackground::SetAlign)[M::FlagsT<eAlign>()]
-    .Field("leftRightStretchCap", &UIControlBackground::GetLeftRightStretchCap, &UIControlBackground::SetLeftRightStretchCap)
-    .Field("topBottomStretchCap", &UIControlBackground::GetTopBottomStretchCap, &UIControlBackground::SetTopBottomStretchCap)
+    .Field("drawType", &UIControlBackground::GetDrawType, &UIControlBackground::SetDrawType)[M::EnumT<eDrawType>(), M::DisplayName("Draw Type")]
+    .Field<FilePath (UIControlBackground::*)() const, void (UIControlBackground::*)(const FilePath&)>("sprite", &UIControlBackground::GetBgSpritePath, &UIControlBackground::SetSprite)[M::DisplayName("Sprite")]
+    .Field<int32 (UIControlBackground::*)() const, void (UIControlBackground::*)(int32)>("frame", &UIControlBackground::GetFrame, &UIControlBackground::SetFrame)[M::DisplayName("Frame")]
+    .Field("mask", &UIControlBackground::GetMaskSpritePath, &UIControlBackground::SetMaskSpriteFromPath)[M::DisplayName("Mask Sprite")]
+    .Field("detail", &UIControlBackground::GetDetailSpritePath, &UIControlBackground::SetDetailSpriteFromPath)[M::DisplayName("Detail Sprite")]
+    .Field("gradient", &UIControlBackground::GetGradientSpritePath, &UIControlBackground::SetGradientSpriteFromPath)[M::DisplayName("Gradient Sprite")]
+    .Field("contour", &UIControlBackground::GetContourSpritePath, &UIControlBackground::SetContourSpriteFromPath)[M::DisplayName("Contour Sprite")]
+    .Field("spriteModification", &UIControlBackground::GetModification, &UIControlBackground::SetModification)[M::FlagsT<eSpriteModification>(), M::DisplayName("Flip")]
+    .Field("gradientMode", &UIControlBackground::GetGradientBlendMode, &UIControlBackground::SetGradientBlendMode)[M::EnumT<eGradientBlendMode>(), M::DisplayName("Gradient Blend Mode")]
+    .Field("color", &UIControlBackground::GetColor, &UIControlBackground::SetColor)[M::DisplayName("Color")]
+    .Field("colorInherit", &UIControlBackground::GetColorInheritType, &UIControlBackground::SetColorInheritType)[M::EnumT<eColorInheritType>(), M::DisplayName("Color Inherit")]
+    .Field("perPixelAccuracy", &UIControlBackground::GetPerPixelAccuracyType, &UIControlBackground::SetPerPixelAccuracyType)[M::EnumT<ePerPixelAccuracyType>(), M::DisplayName("PPA")]
+    .Field("align", &UIControlBackground::GetAlign, &UIControlBackground::SetAlign)[M::FlagsT<eAlign>(), M::DisplayName("Align")]
+    .Field("leftRightStretchCap", &UIControlBackground::GetLeftRightStretchCap, &UIControlBackground::SetLeftRightStretchCap)[M::DisplayName("H. Stretch Cap")]
+    .Field("topBottomStretchCap", &UIControlBackground::GetTopBottomStretchCap, &UIControlBackground::SetTopBottomStretchCap)[M::DisplayName("V. Stretch Cap")]
     .End();
 }
 IMPLEMENT_UI_COMPONENT(UIControlBackground);
@@ -43,7 +43,7 @@ UIControlBackground::UIControlBackground()
     : color(Color::White)
     , lastDrawPos(0, 0)
     , drawColor(Color::White)
-    , material(SafeRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL))
+    , material(RefPtr<NMaterial>::ConstructWithRetain(RenderSystem2D::DEFAULT_2D_TEXTURE_MATERIAL))
 #if defined(LOCALIZATION_DEBUG)
     , lastDrawState(std::make_unique<SpriteDrawState>())
 #endif
@@ -69,7 +69,7 @@ UIControlBackground::UIControlBackground(const UIControlBackground& src)
     , contour(src.contour)
     , gradientMode(src.gradientMode)
     , drawColor(src.drawColor)
-    , material(SafeRetain(src.material))
+    , material(src.material)
 #if defined(LOCALIZATION_DEBUG)
     , lastDrawState(std::make_unique<SpriteDrawState>(*src.lastDrawState))
 #endif
@@ -84,7 +84,7 @@ UIControlBackground* UIControlBackground::Clone() const
 UIControlBackground::~UIControlBackground()
 {
     spr = nullptr;
-    SafeRelease(material);
+    material = nullptr;
     ReleaseDrawData();
 }
 
@@ -272,7 +272,7 @@ void UIControlBackground::Draw(const UIGeometricData& parentGeometricData)
 
     SpriteDrawState drawState;
 
-    drawState.SetMaterial(material);
+    drawState.SetMaterial(material.Get());
     if (spr != nullptr)
     {
         //drawState.SetShader(shader);
@@ -578,13 +578,12 @@ float32 UIControlBackground::GetTopBottomStretchCap() const
 
 void UIControlBackground::SetMaterial(NMaterial* _material)
 {
-    SafeRelease(material);
-    material = SafeRetain(_material);
+    material = _material;
 }
 
 inline NMaterial* UIControlBackground::GetMaterial() const
 {
-    return material;
+    return material.Get();
 }
 
 void UIControlBackground::SetRenderBatches(const Vector<BatchDescriptor2D>& batches)

@@ -201,8 +201,8 @@ void UIControlSystem::RemovePopup(UIPopup* popup)
         return;
     }
 
-    const List<UIControl*>& popups = popupContainer->GetChildren();
-    if (popups.end() == std::find(popups.begin(), popups.end(), DynamicTypeCheck<UIPopup*>(popup)))
+    const auto& popups = popupContainer->GetChildren();
+    if (popups.end() == std::find(popups.begin(), popups.end(), RefPtr<UIControl>::ConstructWithRetain(popup)))
     {
         Logger::Error("[UIControlSystem::RemovePopup] attempt to remove uknown popup.");
         DVASSERT(false);
@@ -215,10 +215,10 @@ void UIControlSystem::RemovePopup(UIPopup* popup)
 void UIControlSystem::RemoveAllPopups()
 {
     popupsToRemove.clear();
-    const List<UIControl*>& totalChilds = popupContainer->GetChildren();
-    for (List<UIControl*>::const_iterator it = totalChilds.begin(); it != totalChilds.end(); it++)
+    const auto& totalChilds = popupContainer->GetChildren();
+    for (auto it = totalChilds.begin(); it != totalChilds.end(); it++)
     {
-        popupsToRemove.insert(DynamicTypeCheck<UIPopup*>(*it));
+        popupsToRemove.insert(DynamicTypeCheck<UIPopup*>(it->Get()));
     }
 }
 

@@ -1,5 +1,7 @@
 #include "Modules/ProjectModule/ProjectData.h"
 
+#include "Utils/MacOSSymLinkRestorer.h"
+
 #include <Engine/Engine.h>
 #include <FileSystem/FilePath.h>
 #include <FileSystem/FileSystem.h>
@@ -240,6 +242,11 @@ void ProjectData::RefreshAbsolutePaths()
         section.packagePath.absolute = MakeAbsolutePath(section.packagePath.relative);
         section.iconPath.absolute = MakeAbsolutePath(section.iconPath.relative);
     }
+    
+#if defined(__DAVAENGINE_MACOS__)
+    QString directoryPath = QString::fromStdString(resourceDirectory.absolute.GetStringValue());
+    symLinkRestorer = std::make_unique<MacOSSymLinkRestorer>(directoryPath);
+#endif
 }
 
 const ProjectData::ResDir& ProjectData::GetResourceDirectory() const
@@ -314,6 +321,15 @@ DAVA::PropertiesItem ProjectData::CreatePropertiesNode(const DAVA::String& nodeN
 {
     DVASSERT(propertiesHolder != nullptr);
     return propertiesHolder->CreateSubHolder(nodeName);
+}
+
+QString ProjectData::RestoreResourcesSymLinkInFilePath(const QString& filePath) const
+{
+#if defined(__DAVAENGINE_MACOS__)
+    return symLinkRestorer->RestoreSymLinkInFilePath(filePath);
+#else
+    return filePath;
+#endif
 }
 
 void ProjectData::SetDefaultLanguage(const DAVA::String& lang)

@@ -8,12 +8,12 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIRichContentComponent)
 {
-    ReflectionRegistrator<UIRichContentComponent>::Begin()
+    ReflectionRegistrator<UIRichContentComponent>::Begin()[M::DisplayName("Rich Content"), M::Group("Content")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIRichContentComponent* o) { o->Release(); })
-    .Field("text", &UIRichContentComponent::GetText, &UIRichContentComponent::SetText)
-    .Field("baseClasses", &UIRichContentComponent::GetBaseClasses, &UIRichContentComponent::SetBaseClasses)
-    .Field("classesInheritance", &UIRichContentComponent::GetClassesInheritance, &UIRichContentComponent::SetClassesInheritance)
+    .Field("text", &UIRichContentComponent::GetText, &UIRichContentComponent::SetText)[M::DisplayName("Text")]
+    .Field("baseClasses", &UIRichContentComponent::GetBaseClasses, &UIRichContentComponent::SetBaseClasses)[M::DisplayName("Base Classes")]
+    .Field("classesInheritance", &UIRichContentComponent::GetClassesInheritance, &UIRichContentComponent::SetClassesInheritance)[M::DisplayName("Classes Inheritance")]
     .End();
 }
 

@@ -2,13 +2,13 @@
 #define __UI_EDITOR_ROOT_PROPERTY_H__
 
 #include "Model/ControlProperties/AbstractProperty.h"
+#include <Functional/Signal.h>
 
 class ControlPropertiesSection;
 class ComponentPropertiesSection;
 class BackgroundPropertiesSection;
 class InternalControlPropertiesSection;
 class VirtualPropertiesSection;
-class PropertyListener;
 class ValueProperty;
 class NameProperty;
 class PrototypeNameProperty;
@@ -62,7 +62,7 @@ public:
     ControlPropertiesSection* GetControlPropertiesSection(const DAVA::String& name) const;
 
     bool CanAddComponent(const DAVA::Type* componentType) const;
-    bool CanRemoveComponent(const DAVA::Type* componentType) const;
+    bool CanRemoveComponent(const DAVA::Type* componentType, DAVA::uint32 index = 0) const;
     const DAVA::Vector<ComponentPropertiesSection*>& GetComponents() const;
     DAVA::int32 GetIndexOfCompoentPropertiesSection(ComponentPropertiesSection* section) const;
     ComponentPropertiesSection* FindComponentPropertiesSection(const DAVA::Type* componentType, DAVA::uint32 index) const;
@@ -74,13 +74,11 @@ public:
     void AttachPrototypeComponent(ComponentPropertiesSection* section, ComponentPropertiesSection* prototypeSection);
     void DetachPrototypeComponent(ComponentPropertiesSection* section, ComponentPropertiesSection* prototypeSection);
 
-    void AddListener(PropertyListener* listener);
-    void RemoveListener(PropertyListener* listener);
-
     void SetProperty(AbstractProperty* property, const DAVA::Any& newValue);
     void SetBindingProperty(AbstractProperty* property, const DAVA::String& newValue, DAVA::int32 bindingUpdateMode);
     void SetDefaultProperty(AbstractProperty* property, const DAVA::Any& newValue);
     void ResetProperty(AbstractProperty* property);
+    void SetPropertyForceOverride(ValueProperty* property, bool forceOverride);
     void RefreshProperty(AbstractProperty* property, DAVA::int32 refreshFlags);
 
     void RebuildVirtualProperties();
@@ -97,6 +95,18 @@ public:
 
     void AddVirtualSection(ComponentPropertiesSection* section);
     void RemoveVirtualSection(ComponentPropertiesSection* section);
+
+    DAVA::Signal<AbstractProperty*> propertyChanged;
+    DAVA::Signal<RootProperty*, ComponentPropertiesSection*, DAVA::int32> componentPropertiesWillBeAdded;
+    DAVA::Signal<RootProperty*, ComponentPropertiesSection*, DAVA::int32> componentPropertiesWasAdded;
+    DAVA::Signal<RootProperty*, ComponentPropertiesSection*, DAVA::int32> componentPropertiesWillBeRemoved;
+    DAVA::Signal<RootProperty*, ComponentPropertiesSection*, DAVA::int32> componentPropertiesWasRemoved;
+
+    DAVA::Signal<VirtualPropertiesSection*, DAVA::int32, DAVA::int32> virtualSectionRebuild;
+    DAVA::Signal<RootProperty*, VirtualPropertiesSection*, DAVA::int32> virtualPropertiesWillBeAdded;
+    DAVA::Signal<RootProperty*, VirtualPropertiesSection*, DAVA::int32> virtualPropertiesWasAdded;
+    DAVA::Signal<RootProperty*, VirtualPropertiesSection*, DAVA::int32> virtualPropertiesWillBeRemoved;
+    DAVA::Signal<RootProperty*, VirtualPropertiesSection*, DAVA::int32> virtualPropertiesWasRemoved;
 
 private:
     void AddBaseProperties(DAVA::UIControl* control, const RootProperty* sourceProperties);
@@ -117,8 +127,6 @@ private:
     DAVA::Vector<ControlPropertiesSection*> controlProperties;
     DAVA::Vector<ComponentPropertiesSection*> componentProperties;
     DAVA::Vector<VirtualPropertiesSection*> virtualProperties;
-
-    DAVA::Vector<PropertyListener*> listeners;
 };
 
 #endif // __UI_EDITOR_ROOT_PROPERTY_H__

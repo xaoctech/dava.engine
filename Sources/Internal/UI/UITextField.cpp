@@ -43,31 +43,31 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UITextField)
 {
-    ReflectionRegistrator<UITextField>::Begin()
+    ReflectionRegistrator<UITextField>::Begin()[M::DisplayName("Text Field")]
     .ConstructorByPointer()
     .DestructorByPointer([](UITextField* o) { o->Release(); })
-    .Field("text", &UITextField::GetUtf8Text, &UITextField::SetUtf8Text)[M::Bindable()]
-    .Field("font", &UITextField::GetFontPresetName, &UITextField::SetFontByPresetName)
-    .Field("fontPath", &UITextField::GetFontPath, &UITextField::SetFontPath)
-    .Field("fontSize", &UITextField::GetFontSize, &UITextField::SetFontSize)
-    .Field("textcolor", &UITextField::GetTextColor, &UITextField::SetTextColor) // TODO: camel style
-    .Field("selectioncolor", &UITextField::GetSelectionColor, &UITextField::SetSelectionColor) // TODO: camel style
-    .Field("shadowoffset", &UITextField::GetShadowOffset, &UITextField::SetShadowOffset) // TODO: camel style
-    .Field("shadowcolor", &UITextField::GetShadowColor, &UITextField::SetShadowColor) // TODO: camel style
-    .Field("textalign", &UITextField::GetTextAlign, &UITextField::SetTextAlign)[M::FlagsT<eAlign>()] // TODO: camel style
-    .Field("textUseRtlAlign", &UITextField::GetTextUseRtlAlign, &UITextField::SetTextUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>()]
-    .Field("maxLength", &UITextField::GetMaxLength, &UITextField::SetMaxLength)
-    .Field("isPassword", &UITextField::IsPassword, &UITextField::SetIsPassword)
-    .Field("isMultiline", &UITextField::IsMultiline, &UITextField::SetMultiline)
-    .Field("autoCapitalizationType", &UITextField::GetAutoCapitalizationType, &UITextField::SetAutoCapitalizationType)[M::EnumT<eAutoCapitalizationType>()]
-    .Field("autoCorrectionType", &UITextField::GetAutoCorrectionType, &UITextField::SetAutoCorrectionType)[M::EnumT<eAutoCorrectionType>()]
-    .Field("spellCheckingType", &UITextField::GetSpellCheckingType, &UITextField::SetSpellCheckingType)[M::EnumT<eSpellCheckingType>()]
-    .Field("keyboardAppearanceType", &UITextField::GetKeyboardAppearanceType, &UITextField::SetKeyboardAppearanceType)[M::EnumT<eKeyboardAppearanceType>()]
-    .Field("keyboardType", &UITextField::GetKeyboardType, &UITextField::SetKeyboardType)[M::EnumT<eKeyboardType>()]
-    .Field("returnKeyType", &UITextField::GetReturnKeyType, &UITextField::SetReturnKeyType)[M::EnumT<eReturnKeyType>()]
-    .Field("enableReturnKeyAutomatically", &UITextField::IsEnableReturnKeyAutomatically, &UITextField::SetEnableReturnKeyAutomatically)
-    .Field("startEditPolicy", &UITextField::GetStartEditPolicy, &UITextField::SetStartEditPolicy)[M::EnumT<eStartEditPolicy>()]
-    .Field("stopEditPolicy", &UITextField::GetStopEditPolicy, &UITextField::SetStopEditPolicy)[M::EnumT<eStopEditPolicy>()]
+    .Field("text", &UITextField::GetUtf8Text, &UITextField::SetUtf8Text)[M::DisplayName("Text"), M::Bindable()]
+    .Field("font", &UITextField::GetFontPresetName, &UITextField::SetFontByPresetName)[M::DisplayName("Font Preset")]
+    .Field("fontPath", &UITextField::GetFontPath, &UITextField::SetFontPath)[M::DisplayName("Font Path")]
+    .Field("fontSize", &UITextField::GetFontSize, &UITextField::SetFontSize)[M::DisplayName("Font Size")]
+    .Field("textcolor", &UITextField::GetTextColor, &UITextField::SetTextColor)[M::DisplayName("Text Color")] // TODO: camel style
+    .Field("selectioncolor", &UITextField::GetSelectionColor, &UITextField::SetSelectionColor)[M::DisplayName("Selection Color")] // TODO: camel style
+    .Field("shadowoffset", &UITextField::GetShadowOffset, &UITextField::SetShadowOffset)[M::DisplayName("Shadow Offset")] // TODO: camel style
+    .Field("shadowcolor", &UITextField::GetShadowColor, &UITextField::SetShadowColor)[M::DisplayName("Shadow Color")] // TODO: camel style
+    .Field("textalign", &UITextField::GetTextAlign, &UITextField::SetTextAlign)[M::FlagsT<eAlign>(), M::DisplayName("Text Align")] // TODO: camel style
+    .Field("textUseRtlAlign", &UITextField::GetTextUseRtlAlign, &UITextField::SetTextUseRtlAlign)[M::EnumT<TextBlock::eUseRtlAlign>(), M::DisplayName("Use RTL")]
+    .Field("maxLength", &UITextField::GetMaxLength, &UITextField::SetMaxLength)[M::DisplayName("Max Length")]
+    .Field("isPassword", &UITextField::IsPassword, &UITextField::SetIsPassword)[M::DisplayName("Is Password")]
+    .Field("isMultiline", &UITextField::IsMultiline, &UITextField::SetMultiline)[M::DisplayName("Multiline")]
+    .Field("autoCapitalizationType", &UITextField::GetAutoCapitalizationType, &UITextField::SetAutoCapitalizationType)[M::EnumT<eAutoCapitalizationType>(), M::DisplayName("Auto Capitalization")]
+    .Field("autoCorrectionType", &UITextField::GetAutoCorrectionType, &UITextField::SetAutoCorrectionType)[M::EnumT<eAutoCorrectionType>(), M::DisplayName("Auto Correction")]
+    .Field("spellCheckingType", &UITextField::GetSpellCheckingType, &UITextField::SetSpellCheckingType)[M::EnumT<eSpellCheckingType>(), M::DisplayName("Spell Checking")]
+    .Field("keyboardAppearanceType", &UITextField::GetKeyboardAppearanceType, &UITextField::SetKeyboardAppearanceType)[M::EnumT<eKeyboardAppearanceType>(), M::DisplayName("Keyboard Appearance")]
+    .Field("keyboardType", &UITextField::GetKeyboardType, &UITextField::SetKeyboardType)[M::EnumT<eKeyboardType>(), M::DisplayName("Keyboard")]
+    .Field("returnKeyType", &UITextField::GetReturnKeyType, &UITextField::SetReturnKeyType)[M::EnumT<eReturnKeyType>(), M::DisplayName("Return Key")]
+    .Field("enableReturnKeyAutomatically", &UITextField::IsEnableReturnKeyAutomatically, &UITextField::SetEnableReturnKeyAutomatically)[M::DisplayName("Enable Auto Return Key")]
+    .Field("startEditPolicy", &UITextField::GetStartEditPolicy, &UITextField::SetStartEditPolicy)[M::EnumT<eStartEditPolicy>(), M::DisplayName("Start Editing")]
+    .Field("stopEditPolicy", &UITextField::GetStopEditPolicy, &UITextField::SetStopEditPolicy)[M::EnumT<eStopEditPolicy>(), M::DisplayName("Stop Editing")]
     .End();
 }
 
@@ -287,6 +287,7 @@ void UITextField::SetTextUseRtlAlign(TextBlock::eUseRtlAlign useRtlAlign)
 void UITextField::SetFontSize(float32 size)
 {
     textFieldImpl->SetFontSize(size);
+    fontSize = size;
 }
 
 void UITextField::SetDelegate(UITextFieldDelegate* _delegate)
@@ -365,7 +366,7 @@ float32 UITextField::GetFontSize() const
 #if defined(DAVA_TEXTFIELD_USE_STB)
     return textFieldImpl->GetFontSize();
 #else
-    return 0.f;
+    return fontSize;
 #endif
 }
 
@@ -462,10 +463,13 @@ void UITextField::CopyDataFrom(UIControl* srcControl)
 #if defined(DAVA_TEXTFIELD_USE_STB)
     textFieldImpl->CopyDataFrom(t->textFieldImpl.get());
 #endif
+
     cursorBlinkingTime = t->cursorBlinkingTime;
     SetText(t->GetText());
     SetRect(t->GetRect());
-
+    SetFontByPresetName(t->GetFontPresetName());
+    SetFontPath(t->GetFontPath());
+    SetFontSize(t->GetFontSize());
     SetAutoCapitalizationType(t->GetAutoCapitalizationType());
     SetAutoCorrectionType(t->GetAutoCorrectionType());
     SetSpellCheckingType(t->GetSpellCheckingType());
@@ -705,12 +709,9 @@ void UITextField::SetFontByPresetName(const String& presetName)
             preset = GetEngineContext()->fontManager->GetFontPreset(presetName);
         }
 
-        if (preset.Valid())
+        if (fontSize > 0.f) // Font size has high priority that preset size
         {
-            // WORKAROUND: For compatibility with old version of font size setter
-            // we should use font height in pixels as font size in native fields.
-            uint32 height = preset.GetFont()->GetFontHeight(preset.GetSize());
-            textFieldImpl->SetFontSize(static_cast<float32>(height));
+            textFieldImpl->SetFontSize(fontSize);
         }
         else
         {

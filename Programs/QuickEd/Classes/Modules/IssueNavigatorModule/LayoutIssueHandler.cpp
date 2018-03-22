@@ -21,12 +21,14 @@ LayoutIssueHandler::LayoutIssueHandler(DAVA::ContextAccessor* accessor_, DAVA::i
     , indexGenerator(indexGenerator_)
     , packageListenerProxy(this, accessor_)
 {
-    DAVA::GetEngineContext()->uiControlSystem->GetLayoutSystem()->AddListener(this);
+    accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->formulaProcessed.Connect(this, &LayoutIssueHandler::OnFormulaProcessed);
+    accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->formulaRemoved.Connect(this, &LayoutIssueHandler::OnFormulaRemoved);
 }
 
 LayoutIssueHandler::~LayoutIssueHandler()
 {
-    DAVA::GetEngineContext()->uiControlSystem->GetLayoutSystem()->RemoveListener(this);
+    accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->formulaProcessed.Disconnect(this);
+    accessor->GetEngineContext()->uiControlSystem->GetLayoutSystem()->formulaRemoved.Disconnect(this);
 }
 
 void LayoutIssueHandler::OnFormulaProcessed(DAVA::UIControl* control, DAVA::Vector2::eAxis axis, const DAVA::LayoutFormula* formula)

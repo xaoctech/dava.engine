@@ -7,13 +7,13 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UISoundComponent)
 {
-    ReflectionRegistrator<UISoundComponent>::Begin()
+    ReflectionRegistrator<UISoundComponent>::Begin()[M::DisplayName("Sound")]
     .ConstructorByPointer()
     .DestructorByPointer([](UISoundComponent* c) { SafeRelease(c); })
-    .Field("touchDown", &UISoundComponent::GetOnTouchDownSoundEventName, &UISoundComponent::SetOnTouchDownSoundEventName)
-    .Field("touchUpInside", &UISoundComponent::GetOnTouchUpInsideSoundEventName, &UISoundComponent::SetOnTouchUpInsideSoundEventName)
-    .Field("touchUpOutside", &UISoundComponent::GetOnTouchUpOutsideSoundEventName, &UISoundComponent::SetOnTouchUpOutsideSoundEventName)
-    .Field("valueChanged", &UISoundComponent::GetOnValueChangedSoundEventName, &UISoundComponent::SetOnValueChangedSoundEventName)
+    .Field("touchDown", &UISoundComponent::GetOnTouchDownSoundEventName, &UISoundComponent::SetOnTouchDownSoundEventName)[M::DisplayName("Touch Down")]
+    .Field("touchUpInside", &UISoundComponent::GetOnTouchUpInsideSoundEventName, &UISoundComponent::SetOnTouchUpInsideSoundEventName)[M::DisplayName("Touch Up Inside")]
+    .Field("touchUpOutside", &UISoundComponent::GetOnTouchUpOutsideSoundEventName, &UISoundComponent::SetOnTouchUpOutsideSoundEventName)[M::DisplayName("Touch Up Outside")]
+    .Field("valueChanged", &UISoundComponent::GetOnValueChangedSoundEventName, &UISoundComponent::SetOnValueChangedSoundEventName)[M::DisplayName("Value Changed")]
     .End();
 }
 

@@ -14,6 +14,7 @@
 #include <QQuickWindow>
 #include <QOpenGLContext>
 #include <QOpenGLFramebufferObject>
+#include <QPointer>
 
 namespace DAVA
 {
@@ -97,7 +98,7 @@ private:
         }
 
         QSurface* surface = nullptr;
-        QOpenGLContext* context = nullptr;
+        QPointer<QOpenGLContext> context;
     };
 
     ContextNode davaContext;

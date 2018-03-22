@@ -6,7 +6,6 @@
 #include "ControlPropertiesSection.h"
 #include "VirtualPropertiesSection.h"
 
-#include "PropertyListener.h"
 #include "ValueProperty.h"
 
 #include "ClassProperty.h"
@@ -17,10 +16,13 @@
 #include "VisibleValueProperty.h"
 #include "VarTableValueProperty.h"
 
+#include <UI/UIControl.h>
+#include <UI/Components/UIComponentUtils.h>
+#include <Reflection/ReflectedTypeDB.h>
+#include <Entity/ComponentManager.h>
 #include <Engine/Engine.h>
 #include <Entity/ComponentManager.h>
 #include <Reflection/ReflectedTypeDB.h>
-#include <UI/UIControl.h>
 
 using namespace DAVA;
 
@@ -85,8 +87,6 @@ RootProperty::~RootProperty()
         section->Release();
     }
     virtualProperties.clear();
-
-    listeners.clear();
 }
 
 bool RootProperty::HasVirtualProperties() const
@@ -156,7 +156,7 @@ bool RootProperty::CanAddComponent(const DAVA::Type* componentType) const
     if (IsReadOnly())
         return false;
 
-    if (UIComponent::IsMultiple(componentType))
+    if (UIComponentUtils::IsMultiple(componentType))
         return true;
 
     if (FindComponentPropertiesSection(componentType, 0) == nullptr)
@@ -165,9 +165,14 @@ bool RootProperty::CanAddComponent(const DAVA::Type* componentType) const
     return false;
 }
 
-bool RootProperty::CanRemoveComponent(const DAVA::Type* componentType) const
+bool RootProperty::CanRemoveComponent(const DAVA::Type* componentType, DAVA::uint32 index) const
 {
-    return !IsReadOnly() && FindComponentPropertiesSection(componentType, 0) != nullptr; // TODO
+    if (IsReadOnly())
+    {
+        return false;
+    }
+    ComponentPropertiesSection* section = FindComponentPropertiesSection(componentType, index);
+    return section != nullptr && section->GetFlags() & AbstractProperty::EF_CAN_REMOVE && !section->IsReadOnly();
 }
 
 const Vector<ComponentPropertiesSection*>& RootProperty::GetComponents() const
@@ -223,21 +228,19 @@ ComponentPropertiesSection* RootProperty::AddComponentPropertiesSection(const DA
 void RootProperty::AddComponentPropertiesSection(ComponentPropertiesSection* section)
 {
     const DAVA::Type* componentType = section->GetComponentType();
-    if (UIComponent::IsMultiple(componentType) || FindComponentPropertiesSection(componentType, 0) == nullptr)
+    if (UIComponentUtils::IsMultiple(componentType) || FindComponentPropertiesSection(componentType, 0) == nullptr)
     {
         int32 index = GetComponentAbsIndex(componentType, section->GetComponentIndex());
 
         int32 globalIndex = GetIndexOfCompoentPropertiesSection(section);
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWillBeAdded(this, section, globalIndex);
+        componentPropertiesWillBeAdded.Emit(this, section, globalIndex);
 
         componentProperties.insert(componentProperties.begin() + index, SafeRetain(section));
         DVASSERT(section->GetParent() == nullptr);
         section->SetParent(this);
         section->InstallComponent();
 
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWasAdded(this, section, globalIndex);
+        componentPropertiesWasAdded.Emit(this, section, globalIndex);
 
         AddVirtualSection(section);
 
@@ -266,8 +269,7 @@ void RootProperty::RemoveComponentPropertiesSection(ComponentPropertiesSection* 
         RemoveVirtualSection(section);
 
         int index = GetIndexOfCompoentPropertiesSection(section);
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWillBeRemoved(this, section, index);
+        componentPropertiesWillBeRemoved.Emit(this, section, index);
 
         auto it = std::find(componentProperties.begin(), componentProperties.end(), section);
         if (it != componentProperties.end())
@@ -280,8 +282,7 @@ void RootProperty::RemoveComponentPropertiesSection(ComponentPropertiesSection* 
             section->Release();
         }
 
-        for (PropertyListener* listener : listeners)
-            listener->ComponentPropertiesWasRemoved(this, section, index);
+        componentPropertiesWasRemoved.Emit(this, section, index);
 
         RefreshComponentIndices();
     }
@@ -303,13 +304,8 @@ void RootProperty::DetachPrototypeComponent(ComponentPropertiesSection* section,
 
 void RootProperty::AddVirtualSection(ComponentPropertiesSection* localSection)
 {
-    //if (GetControlNode()->GetPrototype() == nullptr)
-    //{
-    //    return;
-    //}
     const DAVA::Type* componentType = localSection->GetComponentType();
 
-    //if (componentType == Type::Instance<UIUserPropertiesComponent>() || componentType == Type::Instance<UIVisualScriptComponent>())
     {
         for (uint32 idx = 0; idx < localSection->GetCount(); idx++)
         {
@@ -326,12 +322,9 @@ void RootProperty::AddVirtualSection(ComponentPropertiesSection* localSection)
                     VirtualPropertiesSection* vSection = new VirtualPropertiesSection(sectionName, component, propertiesProperty);
                     vSection->SetParent(this);
 
-                    for (PropertyListener* listener : listeners)
-                        listener->ComponentVirtualPropertiesWillBeAdded(this, vSection, globalIndex);
+                    virtualPropertiesWillBeAdded.Emit(this, vSection, globalIndex);
                     virtualProperties.push_back(vSection);
-
-                    for (PropertyListener* listener : listeners)
-                        listener->ComponentVirtualPropertiesWasAdded(this, vSection, globalIndex);
+                    virtualPropertiesWasAdded.Emit(this, vSection, globalIndex);
                 }
             }
         }
@@ -342,7 +335,6 @@ void RootProperty::RemoveVirtualSection(ComponentPropertiesSection* section)
 {
     const DAVA::Type* componentType = section->GetComponentType();
 
-    //if (componentType == Type::Instance<UIUserPropertiesComponent>() || componentType == Type::Instance<UIVisualScriptComponent>())
     {
         DAVA::UIComponent* component = section->GetComponent();
         auto it = std::find_if(virtualProperties.begin(), virtualProperties.end(), [&](VirtualPropertiesSection* vSection) { return component == vSection->GetComponent(); });
@@ -350,79 +342,63 @@ void RootProperty::RemoveVirtualSection(ComponentPropertiesSection* section)
         {
             int32 globalIndex = static_cast<uint32>(baseProperties.size() + controlProperties.size() + componentProperties.size() + (it - virtualProperties.begin()));
 
-            RefPtr<VirtualPropertiesSection> vSectionRef;
-            vSectionRef = (*it);
+            RefPtr<VirtualPropertiesSection> vSectionRef = RefPtr<VirtualPropertiesSection>::ConstructWithRetain(*it);
 
-            VirtualPropertiesSection* vSection = *it;
-            for (PropertyListener* listener : listeners)
-                listener->ComponenttVirtualPropertiesWillBeRemoved(this, vSection, globalIndex);
+            virtualPropertiesWillBeRemoved.Emit(this, vSectionRef.Get(), globalIndex);
 
             virtualProperties.erase(it);
-            vSection->SetParent(nullptr);
-            vSection->Release();
+            vSectionRef->SetParent(nullptr);
+            vSectionRef->Release();
 
-            for (PropertyListener* listener : listeners)
-                listener->ComponenttVirtualPropertiesWasRemoved(this, vSection, globalIndex);
+            virtualPropertiesWasRemoved.Emit(this, vSectionRef.Get(), globalIndex);
         }
     }
 }
-
-void RootProperty::AddListener(PropertyListener* listener)
-{
-    listeners.push_back(listener);
-}
-
-void RootProperty::RemoveListener(PropertyListener* listener)
-{
-    auto it = std::find(listeners.begin(), listeners.end(), listener);
-    if (it != listeners.end())
-    {
-        listeners.erase(it);
-    }
-    else
-    {
-        DVASSERT(false);
-    }
-}
-
 void RootProperty::SetProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetValue(newValue);
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::SetBindingProperty(AbstractProperty* property, const DAVA::String& newValue, int32 bindingUpdateMode)
 {
     property->SetBindingExpression(newValue, bindingUpdateMode);
-
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::SetDefaultProperty(AbstractProperty* property, const DAVA::Any& newValue)
 {
     property->SetDefaultValue(newValue);
-
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::ResetProperty(AbstractProperty* property)
 {
     property->ResetValue();
+    propertyChanged.Emit(property);
+}
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+void RootProperty::SetPropertyForceOverride(ValueProperty* property, bool forceOverride)
+{
+    property->SetForceOverride(forceOverride);
+
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
+
+    propertyChanged.Emit(property);
 }
 
 void RootProperty::RefreshProperty(AbstractProperty* property, DAVA::int32 refreshFlags)
 {
     property->Refresh(refreshFlags);
 
-    for (PropertyListener* listener : listeners)
-        listener->PropertyChanged(property);
+    if (property->GetStylePropertyIndex() != -1)
+        node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), property->IsOverridden() || property->IsBound());
+
+    propertyChanged.Emit(property);
 
     if (property->GetParent())
     {
@@ -442,8 +418,7 @@ void RootProperty::RebuildVirtualProperties()
         int32 oldCount = static_cast<int32>(vSection->GetCount());
         vSection->RebuildVirtualProperties();
         int32 newCount = static_cast<int32>(vSection->GetCount());
-        for (PropertyListener* listener : listeners)
-            listener->VirtualSectionRebuild(vSection, oldCount, newCount);
+        virtualSectionRebuild.Emit(vSection, oldCount, newCount);
     }
 }
 
@@ -572,7 +547,6 @@ void RootProperty::RefreshComponentIndices()
     {
         section->RefreshIndex();
 
-        for (PropertyListener* listener : listeners)
-            listener->PropertyChanged(section);
+        propertyChanged.Emit(section);
     }
 }
