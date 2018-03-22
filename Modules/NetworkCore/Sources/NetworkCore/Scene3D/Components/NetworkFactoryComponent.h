@@ -32,7 +32,7 @@ struct CallbackHolder : ICallbackHolder
 }
 
 #define SETUP_AFTER_INIT(fc, SetupCompType, compAlias, ...) \
-    std::unique_ptr<NetworkFactoryComponentDetail::ICallbackHolder>& holder##SetupCompType = fc->componetTypeToOverrideData[Type::Instance<SetupCompType>()].callback; \
+    std::unique_ptr<NetworkFactoryComponentDetail::ICallbackHolder>& holder##SetupCompType = fc->componentTypeToOverrideData[Type::Instance<SetupCompType>()].callbackHolder; \
     if (!holder##SetupCompType) holder##SetupCompType.reset(new NetworkFactoryComponentDetail::CallbackHolder<SetupCompType>()); \
     auto* theHolder##SetupCompType = static_cast<NetworkFactoryComponentDetail::CallbackHolder<SetupCompType>*>(holder##SetupCompType.get()); \
     theHolder##SetupCompType->callback = [__VA_ARGS__](SetupCompType * compAlias)
@@ -64,14 +64,31 @@ public:
 
     struct OverrideFieldData
     {
-        std::unique_ptr<NetworkFactoryComponentDetail::ICallbackHolder> callback;
+        std::unique_ptr<NetworkFactoryComponentDetail::ICallbackHolder> callbackHolder;
+        CallbackWithCast callbackWithCast = {};
         Vector<FieldValue> fieldValues;
     };
 
-    UnorderedMap<const Type*, OverrideFieldData> componetTypeToOverrideData;
+    UnorderedMap<const Type*, OverrideFieldData> componentTypeToOverrideData;
+    Function<void(Entity*)> overrideEntityDataCallback = {};
 
     template <typename T>
     void OverrideField(const String& path, const T& value);
+
+    template <typename T>
+    void SetupAfterInit(Function<void(T*)> callback)
+    {
+        OverrideFieldData& overrideFieldData = componentTypeToOverrideData[Type::Instance<T>()];
+        overrideFieldData.callbackWithCast = [callback](Component* component)
+        {
+            callback(static_cast<T*>(component));
+        };
+    };
+
+    void SetupAfterInit(Function<void(Entity*)> callback)
+    {
+        overrideEntityDataCallback = callback;
+    }
 
 private:
     struct ComponentField
@@ -88,7 +105,7 @@ template <typename T>
 void NetworkFactoryComponent::OverrideField(const String& path, const T& value)
 {
     const ComponentField& splitData = ParsePath(path);
-    OverrideFieldData& overrideFieldData = componetTypeToOverrideData[splitData.compType];
+    OverrideFieldData& overrideFieldData = componentTypeToOverrideData[splitData.compType];
     overrideFieldData.fieldValues.push_back({ splitData.fieldName, Any(value) });
 }
 }

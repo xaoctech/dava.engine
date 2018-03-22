@@ -22,7 +22,7 @@ struct EntityCfg
     };
 
     static Domain GetDomainByName(FastName name);
-    static M::Privacy GetPrivacyByName(String name);
+    static M::Privacy GetPrivacyByName(FastName name);
     static M::Privacy GetPrivacyByDomain(uint8 domainMask);
 
     struct ComponentCfg

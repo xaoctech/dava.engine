@@ -82,7 +82,7 @@ void NetworkDeltaReplicationSystemServer::RemoveEntity(Entity* entity)
             {
                 FrameRange& frameRange = findIt->second;
                 frameRange.delFrameId = frameId;
-                data.removedEntities[netEntityId] = GetPrivacy(playerId, entPlayerId);
+                data.removedEntities[netEntityId] = GetPlayerPrivacy(playerId, entPlayerId);
             }
         }
     }
@@ -375,15 +375,10 @@ void NetworkDeltaReplicationSystemServer::SendTmpBlock(ResponderEnvironment& env
     ++env.currPktCount;
 }
 
-M::Privacy NetworkDeltaReplicationSystemServer::GetPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId)
+M::Privacy NetworkDeltaReplicationSystemServer::GetPlayerPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId)
 {
     const bool isSelfEntity = entityPlayerId == playerId;
-    if (isSelfEntity)
-    {
-        return M::Privacy::PRIVATE;
-    }
-
-    return M::Privacy::PUBLIC;
+    return (isSelfEntity) ? M::Privacy::OWNER : M::Privacy::NOT_OWNER;
 }
 
 void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& responderData, NetworkPlayerID playerId)
@@ -440,7 +435,7 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
 
             NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
             const NetworkID netEntityId = netReplComp->GetNetworkID();
-            M::Privacy privacy = GetPrivacy(playerId, netReplComp->GetNetworkPlayerID());
+            M::Privacy privacy = GetPlayerPrivacy(playerId, netReplComp->GetNetworkPlayerID());
             ProcessEntity(netEntityId, privacy, env);
         }
     }

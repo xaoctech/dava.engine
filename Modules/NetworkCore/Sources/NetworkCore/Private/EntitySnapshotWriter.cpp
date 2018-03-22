@@ -12,7 +12,7 @@ namespace DAVA
 EntitySnapshotWriter::EntitySnapshotWriter(BitWriter& bitStream, NetworkID rootEntityId, M::Privacy privacy, const Snapshot* snapshot1, const Snapshot* snapshot2)
     : bstream(bitStream)
     , rootEntityId(rootEntityId)
-    , privacy(privacy)
+    , playerPrivacy(privacy)
     , snapshot1(snapshot1)
     , snapshot2(snapshot2)
 {

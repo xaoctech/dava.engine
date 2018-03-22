@@ -143,12 +143,29 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
                     factoryComponent->OverrideField("DynamicBodyComponent/BodyFlags",
                                                     PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
 
-                    SETUP_AFTER_INIT(factoryComponent, BoxShapeComponent, c)
                     {
-                        Entity* rocketModel = c->GetEntity()->FindByName("Model");
-                        const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
-                        c->SetHalfSize(bbox.GetSize() / 2.0);
-                    };
+                        //TODO : Two syntax equal variants.
+
+                        SETUP_AFTER_INIT(factoryComponent, BoxShapeComponent, c)
+                        {
+                            Entity* rocketModel = c->GetEntity()->FindByName("Model");
+                            const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
+                            c->SetHalfSize(bbox.GetSize() / 2.0);
+                        };
+
+                        factoryComponent->SetupAfterInit<BoxShapeComponent>([shooterReplComp](BoxShapeComponent* c)
+                                                                            {
+                                                                                Entity* rocketModel = c->GetEntity()->FindByName(
+                                                                                "Model");
+                                                                                const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
+                                                                                c->SetHalfSize(bbox.GetSize() / 2.0);
+                                                                            });
+                    }
+
+                    factoryComponent->SetupAfterInit([](Entity* e)
+                                                     {
+                                                         Logger::Debug("SetupAfterInit entity:%s", e->GetName());
+                                                     });
                 }
 
                 GetScene()->AddNode(bullet);

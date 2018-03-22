@@ -44,14 +44,14 @@ EntityCfg::Domain EntityCfg::GetDomainByName(FastName name)
 
 static const UnorderedMap<FastName, M::Privacy> gPrivacyFromName =
 {
-  { FastName("PRIVATE"), M::Privacy::PRIVATE },
-  { FastName("PUBLIC"), M::Privacy::PUBLIC },
+  { FastName("ClientOwner"), M::Privacy::OWNER },
+  { FastName("ClientNotOwner"), M::Privacy::NOT_OWNER },
+  { FastName("Client"), M::Privacy::PUBLIC },
 };
 
-M::Privacy EntityCfg::GetPrivacyByName(String name)
+M::Privacy EntityCfg::GetPrivacyByName(FastName name)
 {
-    std::transform(name.begin(), name.end(), name.begin(), toupper);
-    auto findIt = gPrivacyFromName.find(FastName(name));
+    auto findIt = gPrivacyFromName.find(name);
     if (findIt == gPrivacyFromName.end())
     {
         return M::Privacy::SERVER_ONLY;
@@ -136,7 +136,17 @@ M::Privacy ReadReplicationPrivacy(const YamlNode* node, const String& sectionNam
     if (!privacyNode)
         return defaultValue;
 
-    return EntityCfg::GetPrivacyByName(privacyNode->AsString());
+    uint8 result = 0;
+    const size_t numberOfPrivacy = privacyNode->GetCount();
+    for (size_t idx = 0; idx < numberOfPrivacy; ++idx)
+    {
+        FastName domainName = privacyNode->Get(idx)->AsFastName();
+        M::Privacy privacy = EntityCfg::GetPrivacyByName(domainName);
+        DVASSERT(privacy != M::Privacy::SERVER_ONLY);
+        result |= privacy;
+    }
+
+    return static_cast<M::Privacy>(result);
 }
 
 const EntityCfg& EntityCfg::LoadFromYaml(const String& name)
@@ -204,7 +214,19 @@ const EntityCfg& EntityCfg::LoadFromYaml(const String& name)
 
         ComponentCfg& componentCfg = entityCfg.components[reflectedType];
         componentCfg.domainMask = ReadDomainMask(compNode, "Domains", entityCfg.domainMask);
+        if ((entityCfg.domainMask & componentCfg.domainMask) != componentCfg.domainMask)
+        {
+            Logger::Error("Component:%s has invalid domain", compName.c_str());
+            DVASSERT(0);
+        }
+
         componentCfg.predictDomainMask = ReadDomainMask(compNode, "Predict", 0);
+        if ((componentCfg.domainMask & componentCfg.predictDomainMask) != componentCfg.predictDomainMask)
+        {
+            Logger::Error("Component:%s has invalid prediction domain", compName.c_str());
+            DVASSERT(0);
+        }
+
         componentCfg.replicationPrivacy = ReadReplicationPrivacy(compNode, "Replicate", M::Privacy::SERVER_ONLY);
 
         const YamlNode* fieldsNode = compNode->Get("Fields");

@@ -121,7 +121,7 @@ private:
     void SendMtuBlock(ResponderEnvironment& env);
     void SendTmpBlock(ResponderEnvironment& env);
 
-    M::Privacy GetPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId);
+    M::Privacy GetPlayerPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId);
 
     UnorderedMap<const Responder*, NetworkPlayerID> responderToPlayerID;
     Vector<ResponderData> responderDataList;

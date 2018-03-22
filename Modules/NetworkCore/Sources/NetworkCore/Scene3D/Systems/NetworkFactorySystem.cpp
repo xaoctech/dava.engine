@@ -71,6 +71,12 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
                 continue;
             }
 
+            if (entity->GetComponent(reflectedType->GetType()))
+            {
+                Logger::Error("Duplicate component:%s", reflectedType->GetPermanentName().c_str());
+                continue;
+            }
+
             Component* component = ComponentUtils::Create(reflectedType->GetType());
             Reflection refComp = Reflection::Create(ReflectedObject(component));
 
@@ -87,20 +93,31 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
 
             entity->AddComponent(component);
 
-            auto findIt = fc->componetTypeToOverrideData.find(reflectedType->GetType());
-            if (findIt != fc->componetTypeToOverrideData.end())
+            auto findIt = fc->componentTypeToOverrideData.find(reflectedType->GetType());
+            if (findIt != fc->componentTypeToOverrideData.end())
             {
                 NetworkFactoryComponent::OverrideFieldData& overrideFieldData = findIt->second;
-                if (overrideFieldData.callback)
-                {
-                    overrideFieldData.callback->Invoke(component);
-                }
 
                 for (const NetworkFactoryComponent::FieldValue& fieldValue : overrideFieldData.fieldValues)
                 {
                     refComp.GetField(fieldValue.name).SetValueWithCast(fieldValue.value);
                 }
+
+                if (overrideFieldData.callbackHolder)
+                {
+                    overrideFieldData.callbackHolder->Invoke(component);
+                }
+
+                if (overrideFieldData.callbackWithCast)
+                {
+                    overrideFieldData.callbackWithCast(component);
+                }
             }
+        }
+
+        if (fc->overrideEntityDataCallback)
+        {
+            fc->overrideEntityDataCallback(entity);
         }
 
         if (!predictComponentTypes.empty())

@@ -267,12 +267,14 @@ public:
     String tooltipFieldName;
 };
 
-enum class Privacy : uint8
+enum Privacy : uint8
 {
-    SERVER_ONLY,
-    PRIVATE,
-    TEAM_ONLY,
-    PUBLIC,
+    SERVER_ONLY = 0,
+    OWNER = 1 << 0,
+    TEAMMATE = 1 << 1,
+    NOT_OWNER = 1 << 2,
+    PRIVATE = OWNER,
+    PUBLIC = OWNER | NOT_OWNER | TEAMMATE,
     AS_PARENT,
 };
 
