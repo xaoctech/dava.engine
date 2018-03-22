@@ -2,6 +2,7 @@
 
 #include "REPlatform/Commands/RECommand.h"
 
+#include <Asset/Asset.h>
 #include <Base/FastName.h>
 #include <Math/Color.h>
 #include <Math/Rect.h>

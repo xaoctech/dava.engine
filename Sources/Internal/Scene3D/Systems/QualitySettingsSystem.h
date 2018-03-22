@@ -282,15 +282,18 @@ inline typename QualityGroupValueClass<group>::ValueClass QualitySettingsSystem:
 }
 
 template <QualityGroup group>
-inline typename QualityGroupValueClass<group>::ValueClass QualitySettingsSystem::GetQualityValue(const FastName& name) const
+inline typename QualityGroupValueClass<group>::ValueClass
+QualitySettingsSystem::GetQualityValue(const FastName& name) const
 {
-    auto i = std::find_if(qualityGroups[group].values.begin(), qualityGroups[group].values.end(), [&name](const auto& p) {
-        return (p.first == name);
-    });
+    auto i = std::find_if(qualityGroups[group].values.begin(),
+                          qualityGroups[group].values.end(),
+                          [&name](const auto& p) {
+                              return (p.first == name);
+                          });
     DVASSERT(i != qualityGroups[group].values.end());
 
-    DVASSERT(i->second.CanGet<typename QualityGroupValueClass<group>::ValueClass>());
-    return i->second.Get<typename QualityGroupValueClass<group>::ValueClass>();
+    DVASSERT(i->second.template CanGet<typename QualityGroupValueClass<group>::ValueClass>());
+    return i->second.template Get<typename QualityGroupValueClass<group>::ValueClass>();
 }
 
 template <QualityGroup group>

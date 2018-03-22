@@ -3,6 +3,7 @@
 #include <Asset/AssetListener.h>
 #include <Asset/AssetManager.h>
 #include <Base/BaseTypes.h>
+#include <Base/String.h>
 #include <Debug/DebuggerDetection.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -39,7 +40,7 @@ struct ListenerResult
 class TestListener : public AssetListener
 {
 public:
-    void OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded) override
+    void OnAssetLoaded(const Asset<AssetBase>& asset, bool reloaded)
     {
         ListenerResult r;
         r.asset = asset.get();
@@ -48,7 +49,7 @@ public:
         results.push_back(r);
     }
 
-    void OnAssetError(const Asset<AssetBase>& asset, bool reloaded, const String& msg) override
+    void OnAssetError(const Asset<AssetBase>& asset, bool reloaded, const DAVA::String& msg) override
     {
         ListenerResult r;
         r.asset = asset.get();

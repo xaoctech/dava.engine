@@ -29,7 +29,7 @@ Component* PrefabComponent::Clone(Entity* toEntity)
     PrefabComponent* newPrefab = new PrefabComponent();
     newPrefab->SetEntity(toEntity);
     newPrefab->filepath = filepath;
-
+    newPrefab->prefab = prefab;
     return newPrefab;
 }
 

@@ -1,6 +1,8 @@
 #include "ServiceTextures.h"
+#include "Asset/AssetManager.h"
 #include "Render/Highlevel/QuadRenderer.h"
 #include "Render/Material/NMaterial.h"
+#include "Render/PixelFormatDescriptor.h"
 #include "Image/Image.h"
 #include "Image/ImageSystem.h"
 
@@ -18,9 +20,9 @@ Asset<Texture> ServiceTextures::CreateHammersleySet(std::array<uint32, 4> sizes)
 {
     uint32 height = static_cast<uint32>(sizes.size());
     uint32 width = *std::max_element(sizes.begin(), sizes.end());
-    std::shared_ptr<uint8[]> buffer(new uint8[sizeof(Vector2) * width * height]);
+    std::shared_ptr<Vector<uint8>> buffer(std::make_shared<Vector<uint8>>(sizeof(Vector2) * width * height, uint8()));
 
-    Vector2* data = reinterpret_cast<Vector2*>(buffer.get());
+    Vector2* data = reinterpret_cast<Vector2*>(buffer.get()->data());
 
     for (uint32 y = 0; y < height; ++y)
     {

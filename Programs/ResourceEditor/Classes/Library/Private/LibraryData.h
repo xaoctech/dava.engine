@@ -1,7 +1,8 @@
 #pragma once
 
-#include "TArc/DataProcessing/TArcDataNode.h"
-#include "FileSystem/FilePath.h"
+#include <TArc/DataProcessing/TArcDataNode.h>
+
+#include <FileSystem/FilePath.h>
 
 class LibraryData : public DAVA::TArcDataNode
 {

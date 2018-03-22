@@ -1,5 +1,7 @@
 #include "REPlatform/Scene/Systems/LandscapeEditorSystemV2/ReadBackRingArray.h"
 
+#include <Asset/AssetManager.h>
+#include <Engine/Engine.h>
 #include <Render/Renderer.h>
 
 namespace DAVA

@@ -1,8 +1,18 @@
 #include "Render/TextureAssetLoader.h"
+
 #include "Base/Hash.h"
+#include "Concurrency/LockGuard.h"
 #include "Image/Image.h"
+#include "Image/ImageConvert.h"
+#include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/GPUFamilyDescriptor.h"
+#include "Render/PixelFormatDescriptor.h"
+#include "Render/Renderer.h"
 #include "Render/Texture.h"
+#include "Render/TextureDescriptor.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 namespace DAVA
 {
@@ -343,7 +353,7 @@ struct TextureRawData
     uint32 height;
     bool generateMipmaps;
 
-    std::shared_ptr<uint8[]> data;
+    std::shared_ptr<Vector<uint8>> data;
 };
 
 struct TextureImageData
@@ -366,7 +376,7 @@ Texture::PathKey::PathKey(const FilePath& filePath_)
 }
 
 Texture::PathKey::PathKey(const FilePath& filePath_, rhi::TextureType typeHint_)
-    : PathKey(filePath_, GPU_INVALID, typeHint)
+    : PathKey(filePath_, GPU_INVALID, typeHint_)
 {
 }
 
@@ -389,7 +399,7 @@ Texture::UniqueTextureKey::UniqueTextureKey(PixelFormat format, uint32 width, ui
 {
 }
 
-Texture::UniqueTextureKey::UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps, std::shared_ptr<uint8[]> data)
+Texture::UniqueTextureKey::UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps, std::shared_ptr<Vector<uint8>> data)
     : uniqueKey(nextUniqueKey++)
 {
     using namespace TextureAssetLoaderDetails;
@@ -735,7 +745,7 @@ void TextureAssetLoader::LoadUniqueTextureKeyAsset(Asset<AssetBase> asset, File*
     if (key.creationData.CanGet<TextureRawData>())
     {
         TextureRawData texData = key.creationData.Get<TextureRawData>();
-        images.push_back(RefPtr<Image>(Image::CreateFromData(texData.width, texData.height, texData.format, texData.data.get())));
+        images.push_back(RefPtr<Image>(Image::CreateFromData(texData.width, texData.height, texData.format, texData.data.get()->data())));
         generateMipMaps = texData.generateMipmaps;
         texData.data.reset();
         key.creationData = texData;

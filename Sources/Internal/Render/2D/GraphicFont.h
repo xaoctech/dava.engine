@@ -7,7 +7,7 @@
 
 namespace DAVA
 {
-	
+
 #define GRAPHIC_FONT_CACHE_SIZE 1000 //text cache size
 #define GRAPHIC_FONT_INDEX_BUFFER_SIZE ((GRAPHIC_FONT_CACHE_SIZE)*6)
 
@@ -37,25 +37,25 @@ public:
      \param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str
      \returns bounding rect for string in pixels
      */
-    virtual Font::StringMetrics GetStringMetrics(const WideString& str, Vector<float32>* charSizes = 0) const;
+    Font::StringMetrics GetStringMetrics(const WideString& str, Vector<float32>* charSizes = 0) const override;
 
     /**
      \brief Checks if symbol is present in font.
      \param[in] ch - tested symbol
      \returns true if symbol is available, false otherwise
      */
-    virtual bool IsCharAvaliable(char16 ch) const;
+    bool IsCharAvaliable(char16 ch) const override;
 
     /**
      \brief Get height of highest symbol in font.
      \returns height in pixels
      */
-    virtual uint32 GetFontHeight() const;
+    uint32 GetFontHeight() const override;
 
     /**
      \brief Clone font.
      */
-    virtual Font* Clone() const;
+    Font* Clone() const override;
 
     /**
      \brief Get font texture
@@ -65,10 +65,10 @@ public:
     /**
      \brief Tests if two fonts are the same.
      */
-    virtual bool IsEqual(const Font* font) const;
+    bool IsEqual(const Font* font) const override;
 
     // Put font properties into YamlNode
-    virtual YamlNode* SaveToYamlNode() const;
+    YamlNode* SaveToYamlNode() const override;
 
     //We need to return font path
     const FilePath& GetFontPath() const;
@@ -88,7 +88,7 @@ public:
 
 protected:
     // Get the raw hash string (identical for identical fonts).
-    virtual String GetRawHashString();
+    String GetRawHashString() override;
 
 private:
     float32 GetSizeScale() const;

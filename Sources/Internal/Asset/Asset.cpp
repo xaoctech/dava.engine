@@ -19,6 +19,11 @@ AssetBase::eState AssetBase::GetState() const
     return state.Get();
 }
 
+const Any& AssetBase::GetAssetKey() const
+{
+    return assetKey;
+}
+
 DAVA_VIRTUAL_REFLECTION_IMPL(AssetBase)
 {
     ReflectionRegistrator<AssetBase>::Begin()

@@ -2,6 +2,7 @@
 
 #include "REPlatform/Global/Constants.h"
 
+#include <Asset/AssetManager.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Components/TransformComponent.h>

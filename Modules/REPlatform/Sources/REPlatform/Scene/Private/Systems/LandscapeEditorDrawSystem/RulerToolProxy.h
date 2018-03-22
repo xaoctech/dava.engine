@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Asset/Asset.h>
 #include <Base/BaseTypes.h>
 #include <Base/BaseObject.h>
 

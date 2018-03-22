@@ -1556,8 +1556,7 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
         }
         else if (scenePath.GetExtension() == ".level")
         {
-            // TODO UVR
-            //scene->streamingSystem->LoadLevel(scenePath);
+            scene->streamingSystem->LoadLevel(scenePath);
         }
         else if (scenePath.GetExtension() == ".prefab")
         {

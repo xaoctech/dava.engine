@@ -8,7 +8,8 @@ template <typename AssetType>
 Asset<AssetType> AssetManager::GetAsset(const Any& assetKey, LoadingMode mode, AssetListener* listener)
 {
     Asset<AssetBase> asset = GetAsset(assetKey, mode, listener);
-    return std::dynamic_pointer_cast<AssetType>(asset);
+    Asset<AssetType> assetTyped = std::dynamic_pointer_cast<AssetType>(asset);
+    return assetTyped;
 }
 
 template <typename AssetType>

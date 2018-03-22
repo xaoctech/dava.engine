@@ -22,8 +22,9 @@ inline ReflectedObject::ReflectedObject(void* ptr_, const ReflectedType* rtype_)
 template <typename T>
 inline ReflectedObject::ReflectedObject(T* ptr_, bool isConst_)
     : ptr(ptr_)
-    , isConst(isConst_)
     , reflectedType(ReflectedTypeDB::GetByPointer(ptr_))
+    , isConst(isConst_)
+
 {
 }
 

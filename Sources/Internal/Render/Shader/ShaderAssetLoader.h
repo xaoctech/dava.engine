@@ -10,6 +10,7 @@
 #include "FileSystem/File.h"
 #include "Asset/AssetListener.h"
 #include "Reflection/Reflection.h"
+#include "Render/Shader/ShaderDescriptor.h"
 
 namespace DAVA
 {

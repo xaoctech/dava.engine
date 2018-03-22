@@ -1,13 +1,15 @@
 #include "Scene3D/Components/SpeedTreeComponent.h"
+
+#include "Asset/AssetManager.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
-#include "Render/Highlevel/SpeedTreeObject.h"
-#include "Utils/StringFormat.h"
-#include "Render/Material/Material.h"
 #include "Render/3D/Geometry.h"
+#include "Render/Highlevel/SpeedTreeObject.h"
+#include "Render/Material/Material.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

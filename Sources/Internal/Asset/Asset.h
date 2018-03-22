@@ -8,6 +8,9 @@ namespace DAVA
 class AssetManager;
 class AssetBase;
 
+template <typename T>
+using Asset = std::shared_ptr<T>;
+
 class AssetBase : public ReflectionBase
 {
 public:
@@ -26,6 +29,13 @@ public:
     const Any& GetKey() const;
 
     eState GetState() const;
+    const Any& GetAssetKey() const;
+
+    template <class T>
+    const T& GetAssetKey() const;
+
+    template <class T>
+    Asset<T> GetAs() const;
 
 private:
     DAVA_VIRTUAL_REFLECTION(AssetBase);
@@ -36,6 +46,9 @@ private:
     Any assetKey;
 };
 
-template <typename T>
-using Asset = std::shared_ptr<T>;
+template <class T>
+const T& AssetBase::GetAssetKey() const
+{
+    return GetAssetKey().Get<T>();
+}
 };

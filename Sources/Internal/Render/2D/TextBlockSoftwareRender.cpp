@@ -1,4 +1,6 @@
 #include "Render/2D/TextBlockSoftwareRender.h"
+
+#include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/RHI/rhi_Public.h"
@@ -77,9 +79,8 @@ void TextBlockSoftwareRender::Prepare()
     textOffsetBR.x = 0;
     textOffsetBR.y = 0;
 #endif
-
-    std::shared_ptr<uint8[]> buffer(new uint8[width * height]);
-    buf = reinterpret_cast<int8*>(buffer.get());
+    std::shared_ptr<Vector<uint8>> buffer(std::make_shared<Vector<uint8>>(width * height, uint8()));
+    buf = reinterpret_cast<int8*>(buffer.get()->data());
     DrawText();
     buf = nullptr;
 

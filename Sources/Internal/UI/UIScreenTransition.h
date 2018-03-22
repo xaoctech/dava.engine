@@ -1,9 +1,10 @@
-#ifndef __DAVAENGINE_UI_SCREEN_TRANSITION_H__
-#define __DAVAENGINE_UI_SCREEN_TRANSITION_H__
+#pragma once
 
+#include "Asset/Asset.h"
 #include "Base/BaseTypes.h"
 #include "UI/UIControl.h"
 #include "Reflection/Reflection.h"
+#include "Render/Texture.h"
 
 namespace DAVA
 {
@@ -48,7 +49,3 @@ protected:
     bool complete = false;
 };
 };
-
-
-
-#endif // __DAVAENGINE_UI_SCREEN_TRANSITION_H__

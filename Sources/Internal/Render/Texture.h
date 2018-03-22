@@ -48,7 +48,7 @@ public:
     struct UniqueTextureKey
     {
         UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps);
-        UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps, std::shared_ptr<uint8[]> data);
+        UniqueTextureKey(PixelFormat format, uint32 width, uint32 height, bool generateMipMaps, std::shared_ptr<Vector<uint8>> data);
         UniqueTextureKey(RefPtr<Image> image, bool generateMipMaps);
         UniqueTextureKey(Vector<RefPtr<Image>>&& images);
 

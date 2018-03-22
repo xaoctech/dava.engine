@@ -2,10 +2,13 @@
 
 #include "Asset/AbstractAssetLoader.h"
 #include "Asset/Asset.h"
-
 #include "Base/FastName.h"
-#include "FileSystem/FilePath.h"
+#include "Base/RefPtr.h"
 #include "Concurrency/Mutex.h"
+#include "FileSystem/FilePath.h"
+#include "Functional/Function.h"
+#include "Render/Texture.h"
+#include "Render/RenderBase.h"
 #include "Render/RHI/rhi_Type.h"
 
 namespace DAVA

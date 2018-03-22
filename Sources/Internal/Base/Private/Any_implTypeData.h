@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef __Dava_Any__
-#include "Base/Any.h"
-#endif
-
 #include "Base/BaseTypes.h"
 
 namespace DAVA

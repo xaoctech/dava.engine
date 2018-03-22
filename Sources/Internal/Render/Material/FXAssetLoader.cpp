@@ -10,6 +10,7 @@
 #include "Debug/DVAssert.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
+#include "FileSystem/FileSystem.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlParser.h"

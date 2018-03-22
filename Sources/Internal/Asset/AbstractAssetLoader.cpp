@@ -1,5 +1,9 @@
 #include "Asset/AbstractAssetLoader.h"
 
+#include "Engine/Engine.h"
+#include "FileSystem/FileSystem.h"
+#include "Reflection/ReflectionRegistrator.h"
+
 namespace DAVA
 {
 const uint64 AssetFileInfo::FULL_FILE = std::numeric_limits<uint32>::max();

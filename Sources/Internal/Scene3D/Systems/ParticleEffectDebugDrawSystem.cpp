@@ -141,9 +141,9 @@ void ParticleEffectDebugDrawSystem::GenerateQuadMaterials()
 
 Asset<Texture> ParticleEffectDebugDrawSystem::GenerateHeatTexture() const
 {
-    std::shared_ptr<uint8[]> buffer(new uint8[heatmapDataSize]);
+    std::shared_ptr<Vector<uint8>> buffer(std::make_shared<Vector<uint8>>(heatmapDataSize, uint8()));
 
-    GenerateHeatTextureData(buffer.get(), heatmapDataSize, heatmapWidth);
+    GenerateHeatTextureData(buffer.get()->data(), heatmapDataSize, heatmapWidth);
 
     Texture::UniqueTextureKey key(FORMAT_RGBA8888, heatmapWidth, heatmapHeight, false, buffer);
     return GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);

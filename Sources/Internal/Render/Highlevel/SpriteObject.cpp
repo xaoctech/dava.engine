@@ -1,4 +1,6 @@
 #include "Render/Highlevel/SpriteObject.h"
+
+#include "Asset/AssetManager.h"
 #include "Render/Renderer.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Texture.h"

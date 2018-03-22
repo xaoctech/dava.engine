@@ -14,10 +14,10 @@ namespace DAVA
 
 class YamlNode;
 
-/** 
+/**
 	\ingroup fonts
 	\brief This class is base class for all fonts.
- 
+
 	This class implements all base functions to handle properties of the font.
 	All fonts in system should be inherited from this class.
  */
@@ -81,7 +81,7 @@ public:
     virtual void SetVerticalSpacing(int32 verticalSpacing);
 
     /**
-	 \brief Get vertical spacing 
+	 \brief Get vertical spacing
 	 \returns vertical spacing value in pixels
 	 */
     virtual int32 GetVerticalSpacing() const;
@@ -113,7 +113,7 @@ public:
     /**
 		\brief Get string size(rect).
 		\param[in] str - processed string
-		\param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str 
+		\param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str
 		\returns bounding rect for string in pixels
 	*/
     virtual Size2i GetStringSize(const WideString& str, Vector<float32>* charSizes = 0);

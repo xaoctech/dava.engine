@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset/Asset.h"
 #include "Base/BaseObject.h"
 #include "Base/BaseTypes.h"
 #include "Math/AABBox3.h"

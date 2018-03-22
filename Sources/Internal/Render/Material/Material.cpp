@@ -1,6 +1,5 @@
 #include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
-#include "Filesystem/FilePath.h"
 #include "Render/Material/Material.h"
 #include "Render/Material/NMaterial.h"
 #include "Scene3D/AssetLoaders/MaterialAssetLoader.h"

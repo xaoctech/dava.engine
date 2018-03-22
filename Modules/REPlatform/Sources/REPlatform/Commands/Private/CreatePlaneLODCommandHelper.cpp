@@ -4,6 +4,7 @@
 
 #include <TArc/Core/Deprecated.h>
 
+#include <Asset/AssetManager.h>
 #include <Render/Highlevel/SpeedTreeObject.h>
 #include <Render/Image/Image.h>
 #include <Render/Material/NMaterialNames.h>

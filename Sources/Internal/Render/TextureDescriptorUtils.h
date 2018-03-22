@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Vector.h"
+#include "Render/TextureDescriptor.h"
 
 namespace DAVA
 {

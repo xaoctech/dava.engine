@@ -1,3 +1,4 @@
+#include "Asset/AssetManager.h"
 #include "Base/UnordererMap.h"
 #include "Time/SystemTimer.h"
 #include "FileSystem/FileSystem.h"
@@ -906,14 +907,14 @@ Vector3 Landscape::CalculateNormal(uint32 _x, uint32 _y, uint32 step) const
      VS: Algorithm
      // # P.xy store the position for which we want to calculate the normals
      // # height() here is a function that return the height at a point in the terrain
-     
+
      // read neighbor heights using an arbitrary small offset
      vec3 off = vec3(1.0, 1.0, 0.0);
      float hL = height(P.xy - off.xz);
      float hR = height(P.xy + off.xz);
      float hD = height(P.xy - off.zy);
      float hU = height(P.xy + off.zy);
-     
+
      // deduce terrain normal
      N.x = hL - hR;
      N.y = hD - hU;

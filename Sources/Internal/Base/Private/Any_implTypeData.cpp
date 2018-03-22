@@ -1,5 +1,7 @@
 #include "Base/Private/Any_implTypeData.h"
 
+#include "Base/Type.h"
+
 namespace DAVA
 {
 uint32 AnyTypeData::GetCastMapIndex()

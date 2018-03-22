@@ -52,7 +52,7 @@ public:
 
     void UpdateProbe();
 
-    virtual RenderObject* Clone(RenderObject* newObject);
+    RenderObject* Clone(RenderObject* newObject) override;
 
     void SetCurrentTexture(const Asset<Texture>& texture);
     const Asset<Texture>& GetCurrentTexture() const;

@@ -7,6 +7,7 @@
 #include "Concurrency/LockGuard.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
+#include "FileSystem/FileSystem.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 

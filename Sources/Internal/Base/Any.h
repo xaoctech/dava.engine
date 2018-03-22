@@ -7,10 +7,10 @@
 
 namespace DAVA
 {
-/** 
+/**
     \ingroup Base
     The class Any is a type-safe container for single value of any type.
-    Stored value is always copied into internal storage. Implementations is encouraged to 
+    Stored value is always copied into internal storage. Implementations is encouraged to
     avoid dynamic allocations for small objects, but such an optimization may only
     be applied to types for which std::is_nothrow_move_constructible returns true.
     \remark This class cannot be inherited.
@@ -55,8 +55,8 @@ public:
     Any(Any&& any);
     Any(const void* data, const Type* type);
 
-    /** 
-        Constructor. 
+    /**
+        Constructor.
         \remark `notAny` is used to prevent creating Any from the other Any. Shouldn't be specified by user.
     */
     template <typename T>
@@ -78,14 +78,14 @@ public:
     template <typename T>
     bool CanGet() const;
 
-    /** 
-        Gets value with specified type T from internal storage. 
-        If specified T can't be get due to type mismatch `DAVA::Exception` will be raised. 
+    /**
+        Gets value with specified type T from internal storage.
+        If specified T can't be get due to type mismatch `DAVA::Exception` will be raised.
     */
     template <typename T>
     const T& Get() const;
 
-    /** 
+    /**
         Gets value with specified type T from internal storage.
         If specified T can't be get due to type mismatch then `defaultValue` will be returned.
     */
@@ -137,7 +137,7 @@ public:
     /// \param          size    The size of the destination memory.
     bool StoreData(void* data, size_t size) const;
 
-    /** Returns pointer on internal data. If Any is empty internal data is unspecified. 
+    /** Returns pointer on internal data. If Any is empty internal data is unspecified.
         WARNING: You mustn't change this data in any way */
     const void* GetData() const;
 

@@ -5,11 +5,11 @@
 #include "Asset/AssetListener.h"
 
 #include "Reflection/Reflection.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
 class NMaterial;
-class FilePath;
 class Material : public AssetBase
 {
 public:

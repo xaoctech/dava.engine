@@ -15,6 +15,7 @@
 #include "Scene3D/AssetLoaders/PrefabAssetLoader.h"
 #include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
 #include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
+#include "Scene3D/AssetLoaders/LevelAssetLoader.h"
 
 #if defined(TRACE_ASSET_REQUESTER)
 #include "Debug/Backtrace.h"
@@ -36,6 +37,7 @@ AssetManager::AssetManager()
     RegisterAssetLoader(std::make_unique<PrefabAssetLoader>());
     RegisterAssetLoader(std::make_unique<GeometryAssetLoader>());
     RegisterAssetLoader(std::make_unique<MaterialAssetLoader>());
+    RegisterAssetLoader(std::make_unique<LevelAssetLoader>());
 
     fileWatcher.onWatchersChanged.Connect(this, &AssetManager::OnFileEvent);
     loadingThread = Thread::Create(MakeFunction(this, &AssetManager::LoadingThreadFn));

@@ -2,12 +2,13 @@
 
 #include <QtTools/ConsoleWidget/PointerSerializer.h>
 
+#include <Asset/AssetManager.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
 #include <Input/Keyboard.h>
 #include <Render/2D/Sprite.h>
 #include <Render/Image/ImageSystem.h>
-#include <Render/Texture.h>
+#include <Render/TextureDescriptor.h>
 #include <Utils/StringFormat.h>
 
 namespace DAVA
@@ -86,7 +87,7 @@ Asset<Texture> CreateSingleMipTexture(const FilePath& imagePath)
     Texture::UniqueTextureKey key(image, false);
     Asset<Texture> result = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     String baseName = imagePath.GetFilename();
-    result->texDescriptor->OverridePathName(Format("memoryfile_%s_%p", baseName.c_str(), result));
+    result->texDescriptor->OverridePathName(Format("memoryfile_%s_%p", baseName.c_str(), result.get()));
 
     return result;
 }

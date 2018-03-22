@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Asset/Asset.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
 #include "Base/RefPtr.h"
@@ -35,8 +36,8 @@ public:
     void OnFrame();
 
     /**
-     * \brief Render control to texture and return it immediately (but not rendered) 
-     * 
+     * \brief Render control to texture and return it immediately (but not rendered)
+     *
      * \param control pointer to source UIControl
      * \param format PixelFormat
      * \return target texture
@@ -45,7 +46,7 @@ public:
 
     /**
      * \brief Render control to texture and call callback when it will rendered
-     * 
+     *
      * \param control pointer to source UIControl
      * \param format PixelFormat
      * \param callback function which be called after render
@@ -54,7 +55,7 @@ public:
 
     /**
      * \brief Render control to target texture
-     * 
+     *
      * \param control pointer to source UIControl
      * \param screenshot pointer to target Texture
      */
@@ -72,8 +73,8 @@ public:
                         const rhi::Viewport& viewport = rhi::Viewport());
 
     /**
-     * \brief Unsubscribe callback by texture pointer after making screenshot 
-     * 
+     * \brief Unsubscribe callback by texture pointer after making screenshot
+     *
      * \param screenshot pointer to screenshot texture
      */
     void Unsubscribe(const Asset<Texture>& screenshot);

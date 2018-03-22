@@ -122,7 +122,7 @@ public:
 
     /**
         \brief Function to load data from byte array as keyed archive.
-        Call to this function is equivalent to creation of KeyedArchive class. Object returned from this function should be released. 
+        Call to this function is equivalent to creation of KeyedArchive class. Object returned from this function should be released.
         If key is unavailable function returns 0
         \param[in] key string key
         \param[in] value we want to set for this key
@@ -385,7 +385,7 @@ public:
     void SetColor(const String& key, const Color& value);
 
     /**
-        \brief Function to set value from template type to byte array.  
+        \brief Function to set value from template type to byte array.
         This functionality is added to perform simple storage of complex types, like Vector3, Vector4, Matrix4 and others to byte arrays
         \param[in] key string key
         \param[in] value value we want to set for given key

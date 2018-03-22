@@ -1,5 +1,6 @@
 #include <cfloat>
 
+#include "Asset/AssetManager.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Material/NMaterial.h"
@@ -684,7 +685,7 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
         DVASSERT(IsPowerOf2(hmSize));
 
         uint32 bytesCount = sizeof(uint16) * hmSize * hmSize;
-        std::shared_ptr<uint8[]> texData(new uint8[bytesCount]);
+        std::shared_ptr<Vector<uint8>> texData(std::make_shared<Vector<uint8>>(bytesCount, uint8()));
         memcmp(heightMap->Data(), texData.get(), bytesCount);
 
         Texture::UniqueTextureKey key(FORMAT_RGBA4444, hmSize, hmSize, false, texData);

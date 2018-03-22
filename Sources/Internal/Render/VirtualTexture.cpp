@@ -1,4 +1,8 @@
 #include "Render/VirtualTexture.h"
+
+#include "Asset/AssetManager.h"
+#include "Debug/ProfilerGPU.h"
+#include "Debug/ProfilerMarkerNames.h"
 #include "Render/DynamicBufferAllocator.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/NMaterialNames.h"
@@ -6,8 +10,6 @@
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
-#include "Debug/ProfilerGPU.h"
-#include "Debug/ProfilerMarkerNames.h"
 
 #define VIRTUAL_TEXTURE_USE_BLITAPI 0
 
