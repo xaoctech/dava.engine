@@ -32,6 +32,12 @@ struct Header
 
 bool SaveImpl(const Vector<Entity*> entities, File* file, SerializationContext* serializationContext)
 {
+    Header currentHeader;
+    file->Write(&currentHeader, sizeof(Header));
+
+    uint32 entityCount = static_cast<uint32>(entities.size());
+    file->Write(&entityCount, sizeof(uint32));
+
     for (Entity* entity : entities)
     {
         KeyedArchive* archive = new KeyedArchive();
@@ -114,11 +120,7 @@ bool PrefabAssetLoader::SaveAsset(Asset<AssetBase> asset, File* file, eSaveMode 
     serializationContext.SetScenePath(file->GetFilename().GetDirectory());
     serializationContext.SetVersion(STREAMING_SCENE_VERSION);
 
-    Header currentHeader;
-    file->Write(&currentHeader, sizeof(Header));
-
     uint32 entityCount = prefab->rootEntity->GetChildrenCount();
-    file->Write(&entityCount, sizeof(uint32));
     Vector<Entity*> entities;
     entities.reserve(entityCount);
 

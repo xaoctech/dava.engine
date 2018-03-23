@@ -237,161 +237,20 @@ SceneFileV2::eError SceneEditor2::LoadAsPrefab(const FilePath& path)
 SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGame /*= false*/)
 {
     using namespace DAVA;
-    EditorLightSystem* lightSystem = GetSystem<EditorLightSystem>();
-    RenderContextGuard guard;
-    bool cameraLightState = false;
-    if (lightSystem != nullptr)
-    {
-        cameraLightState = lightSystem->GetCameraLightEnabled();
-        lightSystem->SetCameraLightEnabled(false);
-    }
 
-    Vector<std::unique_ptr<Command>> prepareForSaveCommands;
-    prepareForSaveCommands.reserve(editorSystems.size());
-    for (EditorSceneSystem* editorSceneSystem : editorSystems)
+    SceneFileV2::eError err;
     {
-        std::unique_ptr<Command> cmd = editorSceneSystem->PrepareForSave(saveForGame);
-        if (cmd != nullptr)
+        RenderContextGuard guard;
+        SceneSaveGuard saveGuard(this, saveForGame);
+
+        err = Scene::SaveScene(path, saveForGame);
+        if (SceneFileV2::ERROR_NO_ERROR == err)
         {
-            prepareForSaveCommands.push_back(std::move(cmd));
+            saveGuard.SavedSuccesfull(path);
         }
-    }
-
-    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<Command>& cmd) {
-        cmd->Redo();
-    });
-
-    ExtractEditorEntities();
-
-    Vector<Asset<Texture>> tilemaskTexture;
-    bool needToRestoreTilemask = false;
-
-    LandscapeEditorDrawSystem* landscapeEditorDrawSystem = GetSystem<LandscapeEditorDrawSystem>();
-    if (landscapeEditorDrawSystem)
-    { //dirty magic to work with new saving of materials and FBO landscape texture
-        for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
-        {
-            tilemaskTexture.push_back(landscapeEditorDrawSystem->GetTileMaskTexture(i));
-        }
-        needToRestoreTilemask = landscapeEditorDrawSystem->SaveTileMaskTexture();
-        landscapeEditorDrawSystem->ResetTileMaskTextures();
-    }
-
-    SceneFileV2::eError err = Scene::SaveScene(path, saveForGame);
-    if (SceneFileV2::ERROR_NO_ERROR == err)
-    {
-        curScenePath = path;
-        isLoaded = true;
-
-        // mark current position in command stack as clean
-        commandStack->SetClean();
-    }
-
-    if (needToRestoreTilemask)
-    {
-        for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
-            landscapeEditorDrawSystem->SetTileMaskTexture(i, tilemaskTexture[i]);
-    }
-
-    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<Command>& cmd) {
-        cmd->Undo();
-    });
-
-    InjectEditorEntities();
-
-    if (lightSystem != nullptr)
-    {
-        lightSystem->SetCameraLightEnabled(cameraLightState);
     }
 
     return err;
-}
-
-SceneFileV2::eError SceneEditor2::SaveAsLevel(const FilePath& pathname)
-{
-    /*
-    Copy paste from SaveScene. Require refactoring.
-    */
-
-    using namespace DAVA;
-    EditorLightSystem* lightSystem = GetSystem<EditorLightSystem>();
-    RenderContextGuard guard;
-    bool cameraLightState = false;
-    if (lightSystem != nullptr)
-    {
-        cameraLightState = lightSystem->GetCameraLightEnabled();
-        lightSystem->SetCameraLightEnabled(false);
-    }
-
-    Vector<std::unique_ptr<Command>> prepareForSaveCommands;
-    prepareForSaveCommands.reserve(editorSystems.size());
-    for (EditorSceneSystem* editorSceneSystem : editorSystems)
-    {
-        std::unique_ptr<Command> cmd = editorSceneSystem->PrepareForSave(false);
-        if (cmd != nullptr)
-        {
-            prepareForSaveCommands.push_back(std::move(cmd));
-        }
-    }
-
-    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<Command>& cmd) {
-        cmd->Redo();
-    });
-
-    ExtractEditorEntities();
-
-    Vector<Asset<Texture>> tilemaskTexture;
-    bool needToRestoreTilemask = false;
-
-    LandscapeEditorDrawSystem* landscapeEditorDrawSystem = GetSystem<LandscapeEditorDrawSystem>();
-    if (landscapeEditorDrawSystem)
-    { //dirty magic to work with new saving of materials and FBO landscape texture
-        for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
-        {
-            tilemaskTexture.push_back(landscapeEditorDrawSystem->GetTileMaskTexture(i));
-        }
-        needToRestoreTilemask = landscapeEditorDrawSystem->SaveTileMaskTexture();
-        landscapeEditorDrawSystem->ResetTileMaskTextures();
-    }
-
-    if (pathname.GetExtension() == ".level")
-    {
-        // TODO UVR
-        /*DAVA::Asset<DAVA::Level> level = DAVA::GetEngineContext()->assetManager->CreateNewAsset<DAVA::Level>(pathname);
-        level->SetScene(this);
-        level->Save(pathname);*/
-    }
-    else if (pathname.GetExtension() == ".prefab")
-    {
-        ScopedPtr<SceneEditor2> clone(static_cast<SceneEditor2*>(Clone(nullptr)));
-        DAVA::Prefab::PathKey assetKey(pathname);
-        DAVA::GetEngineContext()->assetManager->SaveAssetFromData(static_cast<Scene*>(clone.get()), assetKey);
-    }
-
-    curScenePath = pathname;
-    isLoaded = true;
-
-    // mark current position in command stack as clean
-    commandStack->SetClean();
-
-    if (needToRestoreTilemask)
-    {
-        for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
-            landscapeEditorDrawSystem->SetTileMaskTexture(i, tilemaskTexture[i]);
-    }
-
-    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<Command>& cmd) {
-        cmd->Undo();
-    });
-
-    InjectEditorEntities();
-
-    if (lightSystem != nullptr)
-    {
-        lightSystem->SetCameraLightEnabled(cameraLightState);
-    }
-
-    return SceneFileV2::ERROR_NO_ERROR;
 }
 
 void SceneEditor2::AddSystem(SceneSystem* sceneSystem, SceneSystem* insertBeforeSceneForProcess, SceneSystem* insertBeforeSceneForInput, SceneSystem* insertBeforeSceneForFixedProcess)
@@ -692,6 +551,14 @@ void SceneEditor2::Draw()
             system->Draw();
         }
     }
+}
+
+void SceneEditor2::BeforeSave()
+{
+}
+
+void SceneEditor2::AfterSave()
+{
 }
 
 void SceneEditor2::AccumulateDependentCommands(REDependentCommandsHolder& holder)
@@ -998,4 +865,72 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SceneEditor2)
     ReflectionRegistrator<SceneEditor2>::Begin()
     .End();
 }
+
+SceneEditor2::SceneSaveGuard::SceneSaveGuard(SceneEditor2* scene_, bool saveForGame)
+    : scene(scene_)
+{
+    EditorLightSystem* lightSystem = scene->GetSystem<EditorLightSystem>();
+    if (lightSystem != nullptr)
+    {
+        cameraLightState = lightSystem->GetCameraLightEnabled();
+        lightSystem->SetCameraLightEnabled(false);
+    }
+
+    prepareForSaveCommands.reserve(scene->editorSystems.size());
+    for (EditorSceneSystem* editorSceneSystem : scene->editorSystems)
+    {
+        std::unique_ptr<Command> cmd = editorSceneSystem->PrepareForSave(saveForGame);
+        if (cmd != nullptr)
+        {
+            prepareForSaveCommands.push_back(std::move(cmd));
+        }
+    }
+
+    std::for_each(prepareForSaveCommands.begin(), prepareForSaveCommands.end(), [](std::unique_ptr<Command>& cmd) {
+        cmd->Redo();
+    });
+
+    scene->ExtractEditorEntities();
+
+    LandscapeEditorDrawSystem* landscapeEditorDrawSystem = scene->GetSystem<LandscapeEditorDrawSystem>();
+    if (landscapeEditorDrawSystem)
+    { //dirty magic to work with new saving of materials and FBO landscape texture
+        for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
+        {
+            tilemaskTexture.push_back(landscapeEditorDrawSystem->GetTileMaskTexture(i));
+        }
+        needToRestoreTilemask = landscapeEditorDrawSystem->SaveTileMaskTexture();
+        landscapeEditorDrawSystem->ResetTileMaskTextures();
+    }
+}
+
+SceneEditor2::SceneSaveGuard::~SceneSaveGuard()
+{
+    if (needToRestoreTilemask)
+    {
+        LandscapeEditorDrawSystem* landscapeEditorDrawSystem = scene->GetSystem<LandscapeEditorDrawSystem>();
+        for (uint32 i = 0; i < landscapeEditorDrawSystem->GetLayerCount(); ++i)
+            landscapeEditorDrawSystem->SetTileMaskTexture(i, tilemaskTexture[i]);
+    }
+
+    std::for_each(prepareForSaveCommands.rbegin(), prepareForSaveCommands.rend(), [](std::unique_ptr<Command>& cmd) {
+        cmd->Undo();
+    });
+
+    scene->InjectEditorEntities();
+
+    EditorLightSystem* lightSystem = scene->GetSystem<EditorLightSystem>();
+    if (lightSystem != nullptr)
+    {
+        lightSystem->SetCameraLightEnabled(cameraLightState);
+    }
+}
+
+void SceneEditor2::SceneSaveGuard::SavedSuccesfull(const FilePath& savedPath)
+{
+    scene->curScenePath = savedPath;
+    scene->isLoaded = true;
+    scene->commandStack->SetClean();
+}
+
 } // namespace DAVA

@@ -562,16 +562,6 @@ void SceneTreeModule::PostInit()
         widgetLayout->addWidget(toolBar);
     }
 
-    // Top-Level Menu
-    {
-        QMenu* createEntityMenu = new QMenu(QStringLiteral("Entity"));
-        createEntityMenu->addAction(addEntityAction);
-        createEntityMenu->addAction(removeSelectionAction);
-
-        ActionPlacementInfo placement(CreateMenuPoint("", { InsertionParams::eInsertionMethod::BeforeItem, "Scene" }));
-        ui->AddAction(DAVA::mainWindowKey, placement, createEntityMenu->menuAction());
-    }
-
     // Filter edit
     {
         ContentFilter::Params p(accessor, ui, DAVA::mainWindowKey);

@@ -10,6 +10,7 @@
 #include <REPlatform/Global/GlobalOperations.h>
 #include <REPlatform/Scene/Systems/CollisionSystem.h>
 #include <REPlatform/Scene/Systems/EditorStatisticsSystem.h>
+#include <REPlatform/Global/MenuScheme.h>
 
 #include <TArc/WindowSubSystem/Private/UIManager.h>
 #include <TArc/DataProcessing/TArcDataNode.h>
@@ -88,6 +89,7 @@ void REModule::PostInit()
     TData* globalData = globalContext->GetData<TData>();
 
     DAVA::UI* ui = GetUI();
+    DAVA::BuildMenuPrositionsFromLegacy(globalData->mainWindow->menuBar());
     ui->InjectWindow(DAVA::mainWindowKey, globalData->mainWindow);
     globalData->mainWindow->AfterInjectInit();
     globalData->mainWindow->EnableGlobalTimeout(true);

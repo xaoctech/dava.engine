@@ -8,15 +8,19 @@
 #include <REPlatform/DataNodes/SelectableGroup.h>
 #include <REPlatform/DataNodes/SelectionData.h>
 #include <REPlatform/Deprecated/SceneValidator.h>
+#include <REPlatform/Commands/RECommand.h>
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Utils/Utils.h>
 
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/MeshComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Debug/DVAssert.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Render/Highlevel/MeshLODDescriptor.h>
 
 namespace RenderObjectExtensionsDetail
 {
@@ -353,5 +357,123 @@ DAVA::M::CommandProducerHolder CreateRenderBatchCommandProducer()
     holder.AddCommandProducer(std::make_shared<RemoveRenderBatch>());
     holder.AddCommandProducer(std::make_shared<ConvertToShadow>());
     holder.AddCommandProducer(std::make_shared<RebuildTangentSpace>());
+    return holder;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                     AddMeshLodDescriptor                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class AddMeshLodDescriptor : public DAVA::M::CommandProducer
+{
+public:
+    class AddMeshLodCommand : public DAVA::RECommand
+    {
+    public:
+        AddMeshLodCommand(DAVA::MeshComponent* component_)
+            : RECommand("Mesh component added")
+            , component(component_)
+        {
+            oldDescriptor = component->GetMeshDescriptor();
+            newDescriptor = oldDescriptor;
+            newDescriptor.push_back(DAVA::MeshLODDescriptor());
+        }
+
+        void Redo() override
+        {
+            component->SetMeshDescriptor(newDescriptor);
+        }
+
+        void Undo() override
+        {
+            component->SetMeshDescriptor(oldDescriptor);
+        }
+
+    private:
+        DAVA::MeshComponent* component = nullptr;
+        DAVA::Vector<DAVA::MeshLODDescriptor> oldDescriptor;
+        DAVA::Vector<DAVA::MeshLODDescriptor> newDescriptor;
+
+        DAVA_VIRTUAL_REFLECTION_IMPL(AddMeshLodCommand)
+        {
+            DAVA::ReflectionRegistrator<AddMeshLodCommand>::Begin()
+            .End();
+        }
+    };
+
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "Mesh lod added";
+        info.tooltip = "Add mesh lod";
+        info.icon = DAVA::SharedIcon(":/QtIcons/cplus.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::MeshComponent* component = nullptr;
+        DAVA::ReflectedObject object = node->field.ref.GetValueObject();
+        if (object.GetReflectedType()->GetType()->IsPointer())
+        {
+            component = *object.GetPtr<DAVA::MeshComponent*>();
+        }
+        else
+        {
+            component = object.GetPtr<DAVA::MeshComponent>();
+        }
+
+        return std::make_unique<AddMeshLodCommand>(component);
+    }
+};
+
+class RebuildMesh : public DAVA::M::CommandProducer
+{
+public:
+    bool IsApplyable(const std::shared_ptr<DAVA::PropertyNode>& node) const override
+    {
+        return true;
+    }
+
+    Info GetInfo() const override
+    {
+        Info info;
+        info.description = "";
+        info.tooltip = "Rebuild mesh";
+        info.icon = DAVA::SharedIcon(":/QtIcons/reloadtextures.png");
+
+        return info;
+    }
+
+    std::unique_ptr<DAVA::Command> CreateCommand(const std::shared_ptr<DAVA::PropertyNode>& node, const Params& params) const override
+    {
+        DAVA::MeshComponent* component = nullptr;
+        DAVA::ReflectedObject object = node->field.ref.GetValueObject();
+        if (object.GetReflectedType()->GetType()->IsPointer())
+        {
+            component = *object.GetPtr<DAVA::MeshComponent*>();
+        }
+        else
+        {
+            component = object.GetPtr<DAVA::MeshComponent>();
+        }
+
+        component->Rebuild();
+        return nullptr;
+    }
+};
+
+DAVA::M::CommandProducerHolder CreateMeshComponentCommandProducer()
+{
+    using namespace RenderObjectExtensionsDetail;
+
+    DAVA::M::CommandProducerHolder holder;
+    holder.AddCommandProducer(std::make_shared<AddMeshLodDescriptor>());
+    holder.AddCommandProducer(std::make_shared<RebuildMesh>());
     return holder;
 }

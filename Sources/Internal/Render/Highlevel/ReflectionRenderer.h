@@ -46,7 +46,7 @@ private:
     struct SphericalHarmonicsUpdate
     {
         rhi::HTexture targetTexture;
-        ReflectionProbe* probe = nullptr;
+        RefPtr<ReflectionProbe> probe;
         uint32 countdown = 0;
     };
 
@@ -100,7 +100,6 @@ private:
     Asset<Texture> globalProbeSpecularConvolution;
 
     Vector<SphericalHarmonicsUpdate> shUpdateQueue;
-    Vector<Asset<Texture>> reflectionTextureCache;
     List<Asset<Texture>> textureCache[CUBEMAP_QUALITY_LEVELS];
     Vector<Asset<Texture>> allCacheTextures;
     ScopedPtr<NMaterial> debugMaterial;

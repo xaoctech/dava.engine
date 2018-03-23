@@ -54,13 +54,16 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     temporaryFramebufferDepth = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
 
     downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
+    downsampledFramebuffer->SetDebugInfo("downsampledFramebuffer");
     globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
+    globalProbeSpecularConvolution->SetDebugInfo("globalProbeSpecularConvolution");
 
     for (uint32 qualityLevel = 0; qualityLevel < CUBEMAP_QUALITY_LEVELS; ++qualityLevel)
     {
         for (uint32 t = 0; t < maxCacheCubemapOnEachLevel[qualityLevel]; ++t)
         {
             Asset<Texture> texture = CreateCubeTextureForReflection(cacheCubemapFaceSize[qualityLevel].first, cacheCubemapFaceSize[qualityLevel].second, ReflectionsTargetTextureFormat);
+            texture->SetDebugInfo(Format("Quality level %d", qualityLevel));
             textureCache[qualityLevel].push_back(texture);
             allCacheTextures.push_back(texture);
         }
@@ -87,6 +90,9 @@ ReflectionRenderer::~ReflectionRenderer()
 {
     NMaterialManager::Instance().UnregisterInvalidateCallback(invalidateCallback);
     SafeDelete(reflectionPass);
+    DVASSERT(globalReflectionProbe == nullptr);
+    DVASSERT(localReflectionProbes.empty() == true);
+    SafeRelease(debugDrawProbe);
 }
 
 Asset<Texture> ReflectionRenderer::CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format)
@@ -552,7 +558,7 @@ ReflectionRenderer::SphericalHarmonicsUpdate ReflectionRenderer::EnqueueSpherica
     shUpdateQueue.emplace_back();
     SphericalHarmonicsUpdate& update = shUpdateQueue.back();
     update.targetTexture = rhi::CreateTexture(shDesc);
-    update.probe = SafeRetain(probe);
+    update.probe = probe;
     update.countdown = 4;
     return update;
 }

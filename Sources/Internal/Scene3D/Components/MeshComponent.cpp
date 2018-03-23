@@ -1,19 +1,18 @@
 #include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Scene3D/Components/MeshComponent.h"
+#include "Scene3D/Components/SingleComponents/RenderObjectSingleComponent.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
-#include "Render/Highlevel/Mesh.h"
 
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(MeshComponent)
 {
-    ReflectionRegistrator<MeshComponent>::Begin()[M::CantBeCreatedManualyComponent()]
+    ReflectionRegistrator<MeshComponent>::Begin()[M::DisplayName("Mesh component")]
     .ConstructorByPointer()
-    .Field("meshDescriptors", &MeshComponent::meshLODDescriptors)[M::DisplayName("LOD Descriptors")]
-    .Field("mesh", &MeshComponent::mesh)[M::DisplayName("Mesh")]
+    .Field("meshDescriptors", &MeshComponent::meshLODDescriptors)[M::DisplayName("LODs")]
     .End();
 }
 
@@ -21,6 +20,22 @@ MeshComponent::MeshComponent()
 {
     mesh = new Mesh();
     listener.onReloaded = MakeFunction(this, &MeshComponent::OnAssetReloaded);
+}
+
+void MeshComponent::Rebuild()
+{
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    assetManager->UnregisterListener(&listener);
+
+    for (MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        assetManager->RegisterListener(descr.geometryAsset, &listener);
+        for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        {
+            assetManager->RegisterListener(batchDescr.materialAsset, &listener);
+        }
+    }
+    RebuildMesh();
 }
 
 MeshComponent::~MeshComponent()
@@ -44,13 +59,12 @@ void MeshComponent::SetMeshDescriptor(const Vector<MeshLODDescriptor>& desc)
     meshLODDescriptors = desc;
     for (MeshLODDescriptor& descr : meshLODDescriptors)
     {
-        assetManager->RegisterListener(descr.geometryAsset, &listener);
-        for (MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        if (descr.geometryAsset == nullptr)
         {
-            assetManager->RegisterListener(batchDescr.materialAsset, &listener);
+            descr.geometryAsset = assetManager->GetAsset<Geometry>(Geometry::PathKey(descr.geometryPath), AssetManager::SYNC);
         }
     }
-    RebuildMesh();
+    Rebuild();
 }
 
 const Vector<MeshLODDescriptor>& MeshComponent::GetMeshDescriptor() const
@@ -88,7 +102,7 @@ void MeshComponent::Deserialize(KeyedArchive* archive, SerializationContext* ser
     MeshLODDescriptor::Deserialize(&meshLODDescriptors, archive, serializationContext);
     mesh->LoadFlags(archive, serializationContext);
 
-    RebuildMesh();
+    Rebuild();
 }
 
 void MeshComponent::RebuildMesh()
@@ -100,17 +114,28 @@ void MeshComponent::RebuildMesh()
         mesh->AddFlag(RenderObject::eFlags::CUSTOM_PREPARE_TO_RENDER);
     else
         mesh->RemoveFlag(RenderObject::eFlags::CUSTOM_PREPARE_TO_RENDER);
+
+    if (entity != nullptr)
+    {
+        Scene* scene = entity->GetScene();
+        if (scene != nullptr)
+        {
+            scene->GetSingletonComponent<RenderObjectSingleComponent>()->changedRenderObjects.emplace(mesh, entity);
+        }
+    }
 }
 
 void MeshComponent::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset)
 {
     Asset<Material> material = std::dynamic_pointer_cast<Material>(reloadedAsset);
     Asset<Geometry> geometry = std::dynamic_pointer_cast<Geometry>(reloadedAsset);
+    bool rebuildMesh = false;
     for (MeshLODDescriptor& descr : meshLODDescriptors)
     {
         if (geometry != nullptr && descr.geometryAsset == originalAsset)
         {
-            descr.geometryAsset = geometry;
+            descr.SetGeometry(geometry);
+            rebuildMesh = true;
         }
 
         if (material != nullptr)
@@ -120,6 +145,7 @@ void MeshComponent::OnAssetReloaded(const Asset<AssetBase>& originalAsset, const
                 if (batchDescr.materialAsset == originalAsset)
                 {
                     batchDescr.materialAsset = material;
+                    rebuildMesh = true;
                 }
             }
         }

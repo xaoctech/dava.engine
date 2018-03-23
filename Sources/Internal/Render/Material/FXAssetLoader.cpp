@@ -294,7 +294,10 @@ AssetFileInfo FXAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
     const FXAsset::Key& k = assetKey.Get<FXAsset::Key>();
     AssetFileInfo info;
-    info.fileName = k.fxName.c_str();
+    if (k.fxName.IsValid())
+    {
+        info.fileName = k.fxName.c_str();
+    }
     info.inMemoryAsset = true;
 
     return info;
@@ -322,6 +325,11 @@ void FXAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading
 {
     Asset<FXAsset> fxAsset = std::dynamic_pointer_cast<FXAsset>(asset);
     const FXAsset::Key& key = asset->GetKey().Get<FXAsset::Key>();
+
+    if (key.fxName.IsValid() == false)
+    {
+        return;
+    }
 
     FXDescriptor target = LoadOldTemplate(key.fxName, key.quality, reloading, errorMessage); //we copy it to new fxdescr as single template can be compiled to many descriptors
     if (errorMessage.empty() == false)
@@ -379,7 +387,12 @@ bool FXAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode req
 Vector<String> FXAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
     const FXAsset::Key& k = asset->GetKey().Get<FXAsset::Key>();
-    return Vector<String>{ FilePath(k.fxName.c_str()).GetAbsolutePathname() };
+    Vector<String> result;
+    if (k.fxName.IsValid() == true)
+    {
+        result.push_back(FilePath(k.fxName.c_str()).GetAbsolutePathname());
+    }
+    return result;
 }
 
 Vector<const Type*> FXAssetLoader::GetAssetKeyTypes() const

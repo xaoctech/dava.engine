@@ -39,7 +39,7 @@ void BeastModule::PostInit()
     connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &BeastModule::OnBeastAndSave));
 
     ActionPlacementInfo placementInfo;
-    placementInfo.AddPlacementPoint(CreateMenuPoint("Scene", { InsertionParams::eInsertionMethod::AfterItem, "actionInvalidateStaticOcclusion" }));
+    placementInfo.AddPlacementPoint(CreateMenuPoint("SceneUtils", { InsertionParams::eInsertionMethod::AfterItem, "actionInvalidateStaticOcclusion" }));
 
     GetUI()->AddAction(DAVA::mainWindowKey, placementInfo, action);
 }

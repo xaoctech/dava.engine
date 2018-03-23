@@ -14,7 +14,7 @@
 #include <QAbstractItemView>
 #include <QKeyEvent>
 
-QString FindFileDialog::GetFilePath(DAVA::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent)
+QString FindFileDialog::GetFilePath(DAVA::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QStringList& extension, QWidget* parent)
 {
     //Qt::Popup do not prevent us to show another dialog
     static bool shown = false;
@@ -34,7 +34,7 @@ QString FindFileDialog::GetFilePath(DAVA::ContextAccessor* accessor, const FileS
         QString filePath = dialog.ui->lineEdit->text();
         filePath = dialog.FromShortName(filePath);
         QFileInfo fileInfo(filePath);
-        if (fileInfo.isFile() && fileInfo.suffix().toLower() == extension.toLower())
+        if (extension.contains(fileInfo.suffix().toLower()) == true)
         {
             dialog.lastUsedPath = filePath.toStdString();
         }
@@ -48,7 +48,7 @@ QString FindFileDialog::GetFilePath(DAVA::ContextAccessor* accessor, const FileS
     return QString();
 }
 
-FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, const DAVA::String& lastUsedPath_, QWidget* parent)
+FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QStringList& extension, const DAVA::String& lastUsedPath_, QWidget* parent)
     : QDialog(parent, Qt::Popup)
     , ui(new Ui::FindFileDialog())
     , lastUsedPath(lastUsedPath_)
@@ -75,7 +75,12 @@ FindFileDialog::FindFileDialog(const FileSystemCache* projectStructure, const QS
 
     if (files.empty())
     {
-        ui->lineEdit->setPlaceholderText(tr("Project not contains files with extension %1").arg(extension));
+        QString extensionsValue;
+        foreach (const QString& ext, extension)
+        {
+            extensionsValue = QString("%1 %2").arg(extensionsValue).arg(ext);
+        }
+        ui->lineEdit->setPlaceholderText(tr("Project not contains files with extensions %1").arg(extensionsValue));
     }
 }
 

@@ -20,7 +20,7 @@ struct AssetFileInfo
 
     bool IsValid() const
     {
-        return fileName.empty() == false;
+        return fileName.empty() == false || inMemoryAsset == true;
     }
 };
 

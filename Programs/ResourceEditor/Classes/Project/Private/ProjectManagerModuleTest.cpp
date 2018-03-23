@@ -5,6 +5,7 @@
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Global/MenuScheme.h>
 
 #include <TArc/Testing/TArcUnitTests.h>
 #include <TArc/Testing/MockListener.h>
@@ -171,7 +172,7 @@ DAVA_TARC_TESTCLASS(ProjectManagerTests)
         TEST_VERIFY(wnd != nullptr);
 
         QMenuBar* menu = mainWnd->menuBar();
-        QMenu* fileMenu = menu->findChild<QMenu*>(MenuItems::menuFile);
+        QMenu* fileMenu = menu->findChild<QMenu*>(DAVA::ProjectMenuName);
 
         QAction* closeProjectAction = nullptr;
         QList<QAction*> actions = fileMenu->actions();

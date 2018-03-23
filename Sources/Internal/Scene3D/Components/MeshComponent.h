@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Base/BaseTypes.h"
-#include "Reflection/Reflection.h"
-#include "Entity/Component.h"
-#include "Render/Highlevel/MeshLODDescriptor.h"
 #include "Asset/AssetListener.h"
+#include "Base/BaseTypes.h"
+#include "Entity/Component.h"
+#include "Reflection/Reflection.h"
+#include "Render/Highlevel/MeshLODDescriptor.h"
 
 namespace DAVA
 {
@@ -18,6 +18,7 @@ protected:
 public:
     MeshComponent();
 
+    void Rebuild();
     void SetMeshDescriptor(const Vector<MeshLODDescriptor>& desc);
     const Vector<MeshLODDescriptor>& GetMeshDescriptor() const;
 

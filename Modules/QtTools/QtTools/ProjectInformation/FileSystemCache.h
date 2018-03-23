@@ -14,7 +14,7 @@ public:
     void UntrackAllDirectories();
     const QStringList& GetTrackedDirectories() const;
 
-    QStringList GetFiles(const QString& extension) const;
+    QStringList GetFiles(const QStringList& extension) const;
 
 private:
     class Impl;

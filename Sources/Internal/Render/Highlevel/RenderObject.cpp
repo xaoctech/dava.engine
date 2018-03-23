@@ -97,6 +97,9 @@ RenderObject::~RenderObject()
 
     for (RenderBatchProvider* provider : renderBatchProviders)
         SafeRelease(provider);
+
+    SafeRelease(globalReflectionProbe);
+    SafeRelease(localReflectionProbe);
 }
 
 void RenderObject::UpdateAddedRenderBatch(RenderBatch* batch)

@@ -7,6 +7,54 @@
 
 namespace DAVA
 {
+const FilePath& MeshBatchDescriptor::GetMaterialPath() const
+{
+    return materialPath;
+}
+
+void MeshBatchDescriptor::SetMaterialPath(const FilePath& path)
+{
+    materialPath = path;
+    materialAsset = GetEngineContext()->assetManager->GetAsset<Material>(Material::PathKey(path), AssetManager::SYNC);
+}
+
+const FilePath& MeshLODDescriptor::GetGeometryPath() const
+{
+    return geometryPath;
+}
+
+void MeshLODDescriptor::SetGeometryPath(const FilePath& path)
+{
+    geometryPath = path;
+    SetGeometry(GetEngineContext()->assetManager->GetAsset<Geometry>(Geometry::PathKey(geometryPath), AssetManager::SYNC));
+}
+
+void MeshLODDescriptor::SetGeometry(const Asset<Geometry>& geometry_)
+{
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    Vector<MeshBatchDescriptor> batchDescrOld = std::move(batchDescriptors);
+    geometryAsset = geometry_;
+
+    if (geometryAsset->GetState() == AssetBase::LOADED)
+    {
+        uint32 groupsCount = geometryAsset->GetPolygonGroupCount();
+        batchDescriptors.reserve(groupsCount);
+
+        for (uint32 i = 0; i < geometryAsset->GetPolygonGroupCount(); ++i)
+        {
+            MeshBatchDescriptor descr;
+            PolygonGroup* group = geometryAsset->GetPolygonGroup(i);
+            descr.geometryIndex = i;
+            if (i < batchDescrOld.size())
+            {
+                descr.materialPath = batchDescrOld[i].materialPath;
+            }
+            descr.materialAsset = assetManager->GetAsset<Material>(Material::PathKey(descr.materialPath), AssetManager::SYNC);
+            batchDescriptors.push_back(descr);
+        }
+    }
+}
+
 void MeshLODDescriptor::Serialize(const Vector<MeshLODDescriptor>& meshLODDescriptors, KeyedArchive* archive, SerializationContext* serializationContext)
 {
     uint32 lodCount = uint32(meshLODDescriptors.size());

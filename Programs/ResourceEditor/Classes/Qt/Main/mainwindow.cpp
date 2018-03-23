@@ -536,7 +536,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
     ui->actionSaveTiledTexture->setEnabled(enable);
 
     ui->Edit->setEnabled(enable);
-    ui->Scene->setEnabled(enable);
+    ui->SceneUtils->setEnabled(enable);
     ui->menuLightView->setEnabled(enable);
 
     ui->sceneToolBar->setEnabled(enable);

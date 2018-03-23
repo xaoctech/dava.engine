@@ -42,7 +42,7 @@ void ReflectionsModule::PostInit()
         return fieldValue.CanCast<DAVA::FilePath>() && !fieldValue.Cast<DAVA::FilePath>().IsEmpty();
     });
 
-    ActionPlacementInfo menuPlacement(CreateMenuPoint("Scene", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "actionEnableCameraLight")));
+    ActionPlacementInfo menuPlacement(CreateMenuPoint("SceneUtils", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "actionEnableCameraLight")));
     GetUI()->AddAction(DAVA::mainWindowKey, menuPlacement, bakeReflectionsAction);
 
     // ActionPlacementInfo toolbarPlacement(CreateToolbarPoint("sceneToolBar", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "Reload Sprites")));

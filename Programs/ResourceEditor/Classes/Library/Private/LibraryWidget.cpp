@@ -143,6 +143,7 @@ void LibraryWidget::SetupFileTypes()
     allFiles.filter << "*.3ds";
     allFiles.filter << "*.obj";
     allFiles.filter << "*.sc2";
+    allFiles.filter << "*.level";
     allFiles.filter << "*.prefab";
     allFiles.filter << sourceImagesList;
 
@@ -155,6 +156,7 @@ void LibraryWidget::SetupFileTypes()
            << "*.3ds"
            << "*.obj"
            << "*.sc2"
+           << "*.level"
            << "*.prefab";
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Models", models));
 

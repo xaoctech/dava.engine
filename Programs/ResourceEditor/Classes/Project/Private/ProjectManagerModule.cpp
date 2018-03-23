@@ -12,6 +12,7 @@
 #include <REPlatform/Deprecated/EditorConfig.h>
 #include <REPlatform/Global/Constants.h>
 #include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Global/MenuScheme.h>
 
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
@@ -58,23 +59,6 @@ void ProjectManagerModule::PostInit()
 
     CreateActions();
     RegisterOperations();
-
-    RecentMenuItems::Params params(DAVA::mainWindowKey, GetAccessor(), "Recent projects");
-    params.ui = GetUI();
-    params.getMaximumCount = []() {
-        return 5;
-    };
-
-    params.recentMenuName = "Recent Projects";
-    params.recentMenuPlacementInfo.AddPlacementPoint(CreateMenuPoint(MenuItems::menuFile, InsertionParams(InsertionParams::eInsertionMethod::AfterItem, "Open Project")));
-
-    params.menuSubPath << MenuItems::menuFile << params.recentMenuName;
-
-    recentProjects.reset(new RecentMenuItems(std::move(params)));
-    recentProjects->actionTriggered.Connect([this](const DAVA::String& projectPath)
-                                            {
-                                                OpenProjectByPath(DAVA::FilePath(projectPath));
-                                            });
 }
 
 void ProjectManagerModule::CreateActions()
@@ -86,6 +70,12 @@ void ProjectManagerModule::CreateActions()
     const QString recentProjectsName("Recent Projects");
     const QString closeProjectsName("Close Project");
 
+    // Create top level menu
+    {
+        QAction* projectAction = new QAction(ProjectMenuName, nullptr);
+        ui->AddAction(DAVA::mainWindowKey, CreateREMenuPoint(ProjectMenuName), projectAction);
+    }
+
     // OpenProject action
     {
         QAction* openProjectAction = new QAction(QIcon(":/QtIcons/openproject.png"), openProjectName, nullptr);
@@ -94,7 +84,7 @@ void ProjectManagerModule::CreateActions()
                                       OpenProject();
                                   });
 
-        ActionPlacementInfo placementInfo(CreateMenuPoint(MenuItems::menuFile, InsertionParams(InsertionParams::eInsertionMethod::BeforeItem)));
+        ActionPlacementInfo placementInfo(CreateMenuPoint(ProjectMenuName));
         ui->AddAction(DAVA::mainWindowKey, placementInfo, openProjectAction);
     }
 
@@ -110,7 +100,7 @@ void ProjectManagerModule::CreateActions()
         connections.AddConnection(closeProjectAction, &QAction::triggered, [this]() {
             CloseProject();
         });
-        ActionPlacementInfo placementInfo(DAVA::CreateMenuPoint(MenuItems::menuFile, InsertionParams(InsertionParams::eInsertionMethod::AfterItem, openProjectName)));
+        ActionPlacementInfo placementInfo(DAVA::CreateMenuPoint(ProjectMenuName));
         ui->AddAction(DAVA::mainWindowKey, placementInfo, closeProjectAction);
     }
 
@@ -119,7 +109,7 @@ void ProjectManagerModule::CreateActions()
         QAction* separator = new QAction(nullptr);
         separator->setObjectName(QStringLiteral("projectSeparator"));
         separator->setSeparator(true);
-        ActionPlacementInfo placementInfo(CreateMenuPoint(MenuItems::menuFile, InsertionParams(InsertionParams::eInsertionMethod::AfterItem, closeProjectsName)));
+        ActionPlacementInfo placementInfo(CreateMenuPoint(ProjectMenuName, InsertionParams(InsertionParams::eInsertionMethod::AfterItem, closeProjectsName)));
         ui->AddAction(DAVA::mainWindowKey, placementInfo, separator);
     }
 
@@ -132,6 +122,22 @@ void ProjectManagerModule::CreateActions()
                                   ReloadSprites();
                               });
     ui->AddAction(mainWindowKey, reloadSpritePlacement, reloadSprites);
+
+    RecentMenuItems::Params params(DAVA::mainWindowKey, GetAccessor(), "Recent projects");
+    params.ui = GetUI();
+    params.getMaximumCount = []() {
+        return 5;
+    };
+
+    params.recentMenuName = "Recent Projects";
+    params.recentMenuPlacementInfo.AddPlacementPoint(CreateMenuPoint(ProjectMenuName));
+
+    params.menuSubPath << ProjectMenuName << params.recentMenuName;
+
+    recentProjects.reset(new RecentMenuItems(std::move(params)));
+    recentProjects->actionTriggered.Connect([this](const DAVA::String& projectPath) {
+        OpenProjectByPath(DAVA::FilePath(projectPath));
+    });
 }
 
 void ProjectManagerModule::CreateTagsActions()

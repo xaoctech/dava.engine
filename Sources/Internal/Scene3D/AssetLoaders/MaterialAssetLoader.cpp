@@ -39,6 +39,10 @@ AssetFileInfo MaterialAssetLoader::GetAssetFileInfo(const Any& assetKey) const
     const Material::PathKey& key = assetKey.Get<Material::PathKey>();
     AssetFileInfo info;
     info.fileName = key.path.GetAbsolutePathname();
+    if (info.fileName.empty() == true)
+    {
+        info.inMemoryAsset = true;
+    }
 
     return info;
 }
@@ -57,6 +61,11 @@ void MaterialAssetLoader::DeleteAsset(AssetBase* asset) const
 void MaterialAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
 {
     Asset<Material> materialAsset = std::dynamic_pointer_cast<Material>(asset);
+    if (file == nullptr)
+    {
+        materialAsset->material = new NMaterial();
+        return;
+    }
     SerializationContext serializationContext;
     serializationContext.SetScenePath(file->GetFilename().GetDirectory());
     serializationContext.SetVersion(STREAMING_SCENE_VERSION);

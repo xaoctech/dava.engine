@@ -25,6 +25,10 @@ AssetFileInfo GeometryAssetLoader::GetAssetFileInfo(const Any& assetKey) const
     const Geometry::PathKey& key = assetKey.Get<Geometry::PathKey>();
     AssetFileInfo info;
     info.fileName = key.path.GetAbsolutePathname();
+    if (info.fileName.empty())
+    {
+        info.inMemoryAsset = true;
+    }
 
     return info;
 }
@@ -42,6 +46,11 @@ void GeometryAssetLoader::DeleteAsset(AssetBase* asset) const
 
 void GeometryAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
 {
+    if (file == nullptr)
+    {
+        return;
+    }
+
     Asset<Geometry> geometry = std::dynamic_pointer_cast<Geometry>(asset);
     DVASSERT(geometry != nullptr);
 

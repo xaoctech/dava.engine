@@ -75,6 +75,7 @@
 #include "Scene3D/Components/SingleComponents/ChangedSystemsSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/VTSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/LightmapSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/RenderObjectSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Scene3D/Lod/LodSystem.h"
@@ -85,6 +86,9 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/AnimationSystem.h"
 #include "Scene3D/Systems/BaseSimulationSystem.h"
+#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
+#include "Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h"
+#include "Scene3D/Systems/Controller/WASDControllerSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Scene3D/Systems/DiffMonitoringSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
@@ -107,9 +111,6 @@
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
-#include "Scene3D/Systems/Controller/SnapToLandscapeControllerSystem.h"
-#include "Scene3D/Systems/Controller/WASDControllerSystem.h"
 #include "Particles/ParticleEmitterInstance.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleForce.h"
@@ -388,6 +389,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TransformSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VTSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LightmapSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderObjectSingleComponent);
 
     // Systems
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BaseSimulationSystem);

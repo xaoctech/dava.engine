@@ -42,7 +42,7 @@ private:
     void UpdateActiveIndexes(Entity* entity, RenderObject* object);
 
     RenderSystem* renderSystem = nullptr;
-    UnorderedSet<RenderObject*> renderObjects;
+    UnorderedMap<RenderObject*, bool> renderObjects;
 };
 
 } // ns

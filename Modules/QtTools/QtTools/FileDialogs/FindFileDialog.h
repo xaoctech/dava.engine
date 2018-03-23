@@ -20,10 +20,10 @@ class QAction;
 class FindFileDialog final : public QDialog
 {
 public:
-    static QString GetFilePath(DAVA::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QString& extension, QWidget* parent);
+    static QString GetFilePath(DAVA::ContextAccessor* accessor, const FileSystemCache* fileSystemCache, const QStringList& extension, QWidget* parent);
 
 private:
-    explicit FindFileDialog(const FileSystemCache* projectStructure, const QString& extension, const DAVA::String& lastUsedPath, QWidget* parent = nullptr);
+    explicit FindFileDialog(const FileSystemCache* projectStructure, const QStringList& extension, const DAVA::String& lastUsedPath, QWidget* parent = nullptr);
 
     void Init(const QStringList& files);
 

@@ -29,7 +29,7 @@ public:
 
     const QStringList& GetTrackedDirectories() const;
 
-    QStringList GetFiles(const QString& extension) const;
+    QStringList GetFiles(const QStringList& extension) const;
 
 private slots:
     void OnDirChanged(const QString& path);
@@ -73,7 +73,7 @@ const QStringList& FileSystemCache::GetTrackedDirectories() const
     return impl->GetTrackedDirectories();
 }
 
-QStringList FileSystemCache::GetFiles(const QString& extension) const
+QStringList FileSystemCache::GetFiles(const QStringList& extension) const
 {
     return impl->GetFiles(extension);
 }
@@ -160,12 +160,12 @@ const QStringList& FileSystemCache::Impl::GetTrackedDirectories() const
     return directories;
 }
 
-QStringList FileSystemCache::Impl::GetFiles(const QString& extension) const
+QStringList FileSystemCache::Impl::GetFiles(const QStringList& extension) const
 {
     QStringList filesList;
     for (const QFileInfo& fileInfo : files)
     {
-        if (fileInfo.suffix().toLower() == extension.toLower())
+        if (extension.contains(fileInfo.suffix().toLower()) == true)
         {
             filesList << fileInfo.absoluteFilePath();
         }

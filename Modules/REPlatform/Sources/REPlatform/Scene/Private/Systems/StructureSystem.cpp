@@ -23,6 +23,7 @@
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
+#include "Scene3D/Components/PrefabComponent.h"
 
 namespace DAVA
 {
@@ -353,51 +354,40 @@ void StructureSystem::Add(const FilePath& newModelPath, const Vector3 pos)
     SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
     if (nullptr != sceneEditor)
     {
-        ScopedPtr<Entity> loadedEntity(Load(newModelPath));
-        if (loadedEntity.get() != nullptr)
+        DVASSERT(newModelPath.GetExtension() == ".prefab");
+        ScopedPtr<Entity> loadedEntity(new Entity());
+        loadedEntity->SetName(newModelPath.GetFilename().c_str());
+        Vector3 entityPos = pos;
+        if (entityPos.IsZero() && FindLandscape(loadedEntity) == nullptr)
         {
-            Vector3 entityPos = pos;
-            if (entityPos.IsZero() && FindLandscape(loadedEntity) == nullptr)
+            SceneCameraSystem* cameraSystem = sceneEditor->GetSystem<SceneCameraSystem>();
+
+            Vector3 camDirection = cameraSystem->GetCameraDirection();
+            Vector3 camPosition = cameraSystem->GetCameraPosition();
+
+            AABBox3 commonBBox = loadedEntity->GetWTMaximumBoundingBoxSlow();
+            float32 bboxSize = 5.0f;
+
+            if (!commonBBox.IsEmpty())
             {
-                SceneCameraSystem* cameraSystem = sceneEditor->GetSystem<SceneCameraSystem>();
-
-                Vector3 camDirection = cameraSystem->GetCameraDirection();
-                Vector3 camPosition = cameraSystem->GetCameraPosition();
-
-                AABBox3 commonBBox = loadedEntity->GetWTMaximumBoundingBoxSlow();
-                float32 bboxSize = 5.0f;
-
-                if (!commonBBox.IsEmpty())
-                {
-                    bboxSize += (commonBBox.max - commonBBox.min).Length();
-                }
-
-                camDirection.Normalize();
-
-                entityPos = camPosition + camDirection * bboxSize;
+                bboxSize += (commonBBox.max - commonBBox.min).Length();
             }
 
-            Matrix4 transform = loadedEntity->GetLocalTransform();
-            transform.SetTranslationVector(entityPos);
-            loadedEntity->SetLocalTransform(transform);
+            camDirection.Normalize();
 
-            sceneEditor->Exec(std::unique_ptr<Command>(new EntityAddCommand(loadedEntity, sceneEditor)));
-
-            // TODO: move this code to some another place (into command itself or into ProcessCommand function)
-            //
-            // Перенести в Load и завалидейтить только подгруженную Entity
-            // -->
-            SceneValidator validator;
-            ProjectManagerData* data = Deprecated::GetDataNode<ProjectManagerData>();
-            if (data)
-            {
-                validator.SetPathForChecking(data->GetProjectPath());
-            }
-            validator.ValidateScene(sceneEditor, sceneEditor->GetScenePath());
-            // <--
-
-            EmitChanged();
+            entityPos = camPosition + camDirection * bboxSize;
         }
+
+        Matrix4 transform = loadedEntity->GetLocalTransform();
+        transform.SetTranslationVector(entityPos);
+        loadedEntity->SetLocalTransform(transform);
+
+        PrefabComponent* prefabComponent = new PrefabComponent();
+        prefabComponent->SetFilepath(newModelPath);
+        loadedEntity->AddComponent(prefabComponent);
+
+        sceneEditor->Exec(std::unique_ptr<Command>(new EntityAddCommand(loadedEntity, sceneEditor)));
+        EmitChanged();
     }
 }
 

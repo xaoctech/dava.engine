@@ -116,7 +116,7 @@ void DebugDrawModule::PostInit()
 
     QAction* collisionTypeMenuAction = new QAction("Collision Type", nullptr);
     QList<QString> upperMenuPath;
-    upperMenuPath.push_back("Scene");
+    upperMenuPath.push_back("SceneUtils");
 
     InsertionParams upperMenuInsertion(InsertionParams::eInsertionMethod::AfterItem, "VisibilityCheckSystem");
     ActionPlacementInfo placementInfo(CreateMenuPoint(upperMenuPath, upperMenuInsertion));
@@ -127,7 +127,7 @@ void DebugDrawModule::PostInit()
     sceneFieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
 
     QList<QString> menuCollisionPath, menuScenePath;
-    menuScenePath << "Scene";
+    menuScenePath << "SceneUtils";
     menuCollisionPath << menuScenePath << "Collision Type";
 
     //Create menu

@@ -41,6 +41,12 @@ public:
     static const char* sceneCanRedoPropertyName;
     static const char* sceneRedoDescriptionPropertyName;
 
+    enum eEditMode
+    {
+        Level,
+        Prefab
+    };
+
 private:
     friend class ::SceneManagerModule;
 
@@ -49,6 +55,8 @@ private:
     SceneEditor2* GetScenePtr() const;
     RefPtr<SceneEditor2> scene;
     std::unique_ptr<PropertiesHolder> propertiesRoot = nullptr;
+
+    eEditMode mode = Prefab;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneData, TArcDataNode)
     {
@@ -63,6 +71,7 @@ private:
         .Field(sceneUndoDescriptionPropertyName, [](SceneData* data) { return data->scene->GetUndoText(); }, nullptr)
         .Field(sceneCanRedoPropertyName, [](SceneData* data) { return data->scene->CanRedo(); }, nullptr)
         .Field(sceneRedoDescriptionPropertyName, [](SceneData* data) { return data->scene->GetRedoText(); }, nullptr)
+        .Field("editMode", &SceneData::mode)
         .End();
     }
 };

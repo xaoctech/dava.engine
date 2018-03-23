@@ -20,6 +20,9 @@ struct MeshBatchDescriptor : public ReflectionBase
 
     Asset<Material> materialAsset;
 
+    const FilePath& GetMaterialPath() const;
+    void SetMaterialPath(const FilePath& path);
+
     bool operator==(const MeshBatchDescriptor& other) const
     {
         return materialPath == other.materialPath &&
@@ -31,9 +34,9 @@ struct MeshBatchDescriptor : public ReflectionBase
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(MeshBatchDescriptor, ReflectionBase)
     {
         ReflectionRegistrator<MeshBatchDescriptor>::Begin()
-        .Field("material", &MeshBatchDescriptor::materialPath)
-        .Field("switchIndex", &MeshBatchDescriptor::switchIndex)
-        .Field("geometryIndex", &MeshBatchDescriptor::geometryIndex)
+        .Field("material", &MeshBatchDescriptor::GetMaterialPath, &MeshBatchDescriptor::SetMaterialPath)[M::DisplayName("Material")]
+        .Field("switchIndex", &MeshBatchDescriptor::switchIndex)[M::DisplayName("Switch index"), M::Range(-1, 1, 1)]
+        .Field("geometryIndex", &MeshBatchDescriptor::geometryIndex)[M::DisplayName("Geometry index"), M::ReadOnly(), M::DeveloperModeOnly()]
         .End();
     }
 };
@@ -46,6 +49,10 @@ struct MeshLODDescriptor : public ReflectionBase
 
     Asset<Geometry> geometryAsset;
 
+    const FilePath& GetGeometryPath() const;
+    void SetGeometryPath(const FilePath& path);
+    void SetGeometry(const Asset<Geometry>& geometry);
+
     bool operator==(const MeshLODDescriptor& other) const
     {
         return geometryPath == other.geometryPath &&
@@ -56,9 +63,9 @@ struct MeshLODDescriptor : public ReflectionBase
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(MeshLODDescriptor, ReflectionBase)
     {
         ReflectionRegistrator<MeshLODDescriptor>::Begin()
-        .Field("geometryPath", &MeshLODDescriptor::geometryPath)
-        .Field("lodIndex", &MeshLODDescriptor::lodIndex)
-        .Field("batchDescriptors", &MeshLODDescriptor::batchDescriptors)
+        .Field("geometry", &MeshLODDescriptor::GetGeometryPath, &MeshLODDescriptor::SetGeometryPath)[M::DisplayName("Geometry")]
+        .Field("lodIndex", &MeshLODDescriptor::lodIndex)[M::DisplayName("Lod index"), M::Range(-1, 3, 1)]
+        .Field("batchDescriptors", &MeshLODDescriptor::batchDescriptors)[M::DisplayName("Batches"), M::ReadOnly()]
         .End();
     }
 

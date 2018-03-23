@@ -25,6 +25,7 @@
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/WaveComponent.h>
 #include <Scene3D/Components/ReflectionComponent.h>
+#include <Scene3D/Components/MeshComponent.h>
 
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/Landscape.h>
@@ -44,6 +45,7 @@ void RegisterRenderComponentExtensions()
     EmplaceTypeMeta<RenderObject>(CreateRenderObjectCommandProducer());
     EmplaceTypeMeta<RenderBatch>(CreateRenderBatchCommandProducer());
     EmplaceTypeMeta<NMaterial>(CreateNMaterialCommandProducer());
+    EmplaceTypeMeta<MeshComponent>(CreateMeshComponentCommandProducer());
 }
 
 void RegisterFilePathExtensions(DAVA::ContextAccessor* accessor)
@@ -70,6 +72,12 @@ void RegisterFilePathExtensions(DAVA::ContextAccessor* accessor)
     EmplaceFieldMeta<PostEffectComponent>(DAVA::FastName("heatmapTable"), CreateTextureValidator(false));
     EmplaceFieldMeta<PostEffectComponent>(DAVA::FastName("lightMeterTable"), CreateTextureValidator(false));
     EmplaceFieldMeta<ReflectionComponent>(DAVA::FastName("reflectionsMap"), CreateTextureValidator(true));
+
+    EmplaceFieldMeta<MeshBatchDescriptor>(DAVA::FastName("material"), GenericFileMeta<REFileMeta>("Material (*.mat)", "Open material"));
+    EmplaceFieldMeta<MeshBatchDescriptor>(DAVA::FastName("material"), CreateExistsFile());
+
+    EmplaceFieldMeta<MeshLODDescriptor>(DAVA::FastName("geometry"), GenericFileMeta<REFileMeta>("Geometry (*.geo)", "Open geometry"));
+    EmplaceFieldMeta<MeshLODDescriptor>(DAVA::FastName("geometry"), CreateExistsFile());
 }
 
 void RegisterComponentExtensions(const TypeInheritance::Info& type)

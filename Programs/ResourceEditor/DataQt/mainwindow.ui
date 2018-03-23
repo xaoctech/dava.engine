@@ -83,11 +83,6 @@
    <property name="path" stdset="0">
     <string/>
    </property>
-   <widget class="QMenu" name="File">
-    <property name="title">
-     <string>File</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="Tools">
     <property name="title">
      <string>Tools</string>
@@ -166,9 +161,9 @@
     </property>
     <addaction name="actionHelp"/>
    </widget>
-   <widget class="QMenu" name="Scene">
+   <widget class="QMenu" name="SceneUtils">
     <property name="title">
-     <string>Scene</string>
+     <string>Scene Utils</string>
     </property>
     <widget class="QMenu" name="menuLandscape_2">
      <property name="title">
@@ -236,11 +231,10 @@
     <addaction name="actionToggleUseInstancing"/>
     <addaction name="actionReloadLandscapeDependencies"/>
    </widget>
-   <addaction name="File"/>
    <addaction name="Edit"/>
    <addaction name="View"/>
    <addaction name="Quality"/>
-   <addaction name="Scene"/>
+   <addaction name="SceneUtils"/>
    <addaction name="Tools"/>
    <addaction name="Help"/>
    <addaction name="DebugFunctions"/>

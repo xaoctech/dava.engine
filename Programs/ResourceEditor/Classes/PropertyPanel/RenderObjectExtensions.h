@@ -4,3 +4,4 @@
 
 DAVA::M::CommandProducerHolder CreateRenderObjectCommandProducer();
 DAVA::M::CommandProducerHolder CreateRenderBatchCommandProducer();
+DAVA::M::CommandProducerHolder CreateMeshComponentCommandProducer();

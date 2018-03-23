@@ -2,6 +2,8 @@
 
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 
+#include <REPlatform/DataNodes/SceneData.h>
+
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Utils/QtConnections.h>
@@ -40,19 +42,20 @@ protected:
 
 private:
     void CreateModuleControls(DAVA::UI* ui);
-    void CreateModuleActions(DAVA::UI* ui);
+    void CreateOtherModuleActions();
+    void CreateSceneActions();
     void RegisterOperations();
 
     /// Action and operation handlers
     void CreateFirstScene();
-    void CreateNewScene();
+    void CreateNewScene(DAVA::SceneData::eEditMode mode);
     void OpenScene();
     void OpenSceneQuckly();
     void OpenSceneByPath(const DAVA::FilePath& scenePath);
     void AddSceneByPath(const DAVA::FilePath& scenePath);
     void SaveScene();
     void SaveScene(bool saveAs);
-    void SaveLevel(bool saveAs);
+
     void SaveSceneToFolder(bool compressedTextures);
     void ExportScene();
     void CloseAllScenes(bool needSavingReqiest);
@@ -70,7 +73,7 @@ private:
 
     /// Helpers
     bool CanCloseScene(DAVA::SceneData* data);
-    DAVA::RefPtr<DAVA::SceneEditor2> OpenSceneImpl(const DAVA::FilePath& scenePath);
+    DAVA::RefPtr<DAVA::SceneEditor2> OpenSceneImpl(const DAVA::FilePath& scenePath, DAVA::SceneData::eEditMode& mode);
 
     /// This method try to scene at "scenePath" place.
     /// If "scenePath" is empty, method try to save scene at current scene file.
@@ -78,9 +81,8 @@ private:
     /// return true if scene was saved
     /// Preconditions:
     ///     "scenePath" - should be a file
-    bool SaveSceneImpl(DAVA::RefPtr<DAVA::SceneEditor2> scene, const DAVA::FilePath& scenePath = DAVA::FilePath());
-    DAVA::FilePath GetSceneSavePath(const DAVA::RefPtr<DAVA::SceneEditor2>& scene);
-    DAVA::FilePath GetLevelSavePath(const DAVA::RefPtr<DAVA::SceneEditor2>& scene);
+    bool SaveSceneImpl(DAVA::SceneData* sceneData, const DAVA::FilePath& scenePath = DAVA::FilePath());
+    DAVA::FilePath GetSceneSavePath(DAVA::SceneData* sceneData);
 
     void GetPropertiesFilePath(const DAVA::FilePath& scenePath, DAVA::FilePath& path,
                                DAVA::FilePath& fileName, bool sceneIsTemp = false);
@@ -97,7 +99,7 @@ private:
     void RestartParticles();
     bool IsSavingAllowed(DAVA::SceneData* sceneData);
     void DefaultDragHandler(QObject* target, QDropEvent* event);
-    bool IsValidMimeData(QDropEvent* event);
+    bool IsValidMimeData(QDropEvent* event, bool isRenderWidget);
     void DeleteSelection();
     void MoveToSelection();
 

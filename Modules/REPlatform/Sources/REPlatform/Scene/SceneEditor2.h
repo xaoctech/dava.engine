@@ -57,7 +57,6 @@ public:
     SceneFileV2::eError LoadScene(const FilePath& path) override;
     SceneFileV2::eError LoadAsPrefab(const FilePath& path);
     SceneFileV2::eError SaveScene(const FilePath& pathname, bool saveForGame = false) override;
-    SceneFileV2::eError SaveAsLevel(const FilePath& pathname);
     SceneFileV2::eError SaveScene();
     bool Export(const SceneExporter::Params& exportingParams);
 
@@ -131,7 +130,26 @@ public:
 
     DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
 
+    struct SceneSaveGuard
+    {
+    public:
+        SceneSaveGuard(SceneEditor2* scene_, bool saveForGame);
+        ~SceneSaveGuard();
+
+        void SavedSuccesfull(const FilePath& savedPath);
+
+    private:
+        SceneEditor2* scene = nullptr;
+        bool needToRestoreTilemask = false;
+        bool cameraLightState = false;
+        Vector<Asset<Texture>> tilemaskTexture;
+        Vector<std::unique_ptr<Command>> prepareForSaveCommands;
+    };
+
 protected:
+    void BeforeSave();
+    void AfterSave();
+
     bool isLoaded = false;
     bool isHUDVisible = true;
 

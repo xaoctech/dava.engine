@@ -22,6 +22,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/RenderObjectSingleComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Entity.h"
@@ -76,8 +77,14 @@ void RenderUpdateSystem::RegisterRenderObject(Entity* entity, RenderObject* obje
     const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
     object->SetWorldTransformPtr(worldTransformPointer);
     UpdateActiveIndexes(entity, object);
-    renderObjects.insert(object);
-    GetScene()->GetRenderSystem()->RenderPermanent(object);
+    object->RecalculateWorldBoundingBox();
+    bool isValid = !object->GetWorldBoundingBox().IsEmpty();
+
+    renderObjects.emplace(object, isValid);
+    if (isValid == true)
+    {
+        GetScene()->GetRenderSystem()->RenderPermanent(object);
+    }
 }
 
 void RenderUpdateSystem::UnregisterRenderObject(Entity* entity, RenderObject* object)
@@ -88,17 +95,25 @@ void RenderUpdateSystem::UnregisterRenderObject(Entity* entity, RenderObject* ob
     auto found = renderObjects.find(object);
     if (found != renderObjects.end())
     {
-        GetScene()->GetRenderSystem()->RemoveFromRender(object);
+        if (found->second == true)
+        {
+            GetScene()->GetRenderSystem()->RemoveFromRender(object);
+        }
         renderObjects.erase(object);
     }
+
+    GetScene()->GetSingletonComponent<RenderObjectSingleComponent>()->changedRenderObjects.erase(object);
 }
 
 void RenderUpdateSystem::PrepareForRemove()
 {
     RenderSystem* renderSystem = GetScene()->GetRenderSystem();
-    for (RenderObject* renderObject : renderObjects)
+    for (const auto& node : renderObjects)
     {
-        renderSystem->RemoveFromRender(renderObject);
+        if (node.second == true)
+        {
+            renderSystem->RemoveFromRender(node.first);
+        }
     }
     renderObjects.clear();
 }
@@ -113,6 +128,30 @@ void RenderUpdateSystem::Process(float32 timeElapsed)
         UpdateRenderObject(pair.first, pair.second);
 
     RenderSystem* renderSystem = GetScene()->GetRenderSystem();
+
+    RenderObjectSingleComponent* rosc = GetScene()->GetSingletonComponent<RenderObjectSingleComponent>();
+    for (const auto& pair : rosc->changedRenderObjects)
+    {
+        RenderObject* ro = pair.first;
+        auto iter = renderObjects.find(ro);
+        if (iter->second == true)
+        {
+            renderSystem->RemoveFromRender(ro);
+            iter->second = false;
+        }
+
+        UpdateRenderObject(pair.second, ro);
+        ro->RecalculateWorldBoundingBox();
+
+        if (ro->GetWorldBoundingBox().IsEmpty() == false)
+        {
+            renderSystem->RenderPermanent(ro);
+            iter->second = true;
+        }
+    }
+
+    rosc->changedRenderObjects.clear();
+
     renderSystem->SetMainCamera(GetScene()->GetCurrentCamera());
     renderSystem->SetDrawCamera(GetScene()->GetDrawCamera());
 

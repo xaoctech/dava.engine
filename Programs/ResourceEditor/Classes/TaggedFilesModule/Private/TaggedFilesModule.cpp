@@ -76,7 +76,7 @@ void TaggedFilesModule::PostInit()
                                                       return value.CanCast<SceneData::TSceneType>();
                                                   });
 
-    ActionPlacementInfo menuPlacement(CreateMenuPoint("Scene", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, QStringLiteral("actionConvertModifiedTextures"))));
+    ActionPlacementInfo menuPlacement(CreateMenuPoint("SceneUtils", InsertionParams(InsertionParams::eInsertionMethod::AfterItem, QStringLiteral("actionConvertModifiedTextures"))));
     GetUI()->AddAction(DAVA::mainWindowKey, menuPlacement, convertTaggedAction);
 
     connections.AddConnection(convertTaggedAction, &QAction::triggered, DAVA::MakeFunction(this, &TaggedFilesModule::OnConvertTaggedTextures));

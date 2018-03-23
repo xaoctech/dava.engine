@@ -89,6 +89,7 @@
 
 #include "Sound/SoundSystem.h"
 
+#include "Asset/AssetManager.h"
 #include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
 #include "Scene3D/Systems/SwitchSystem.h"
@@ -123,7 +124,6 @@
 #endif
 
 #include <functional>
-#include "Asset/AssetManager.h"
 
 namespace DAVA
 {
