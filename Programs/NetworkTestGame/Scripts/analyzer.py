@@ -100,6 +100,9 @@ def print_snapshot_stat(snapshotstat):
             print '    {0}: nfull={1} ndelta={2} bits={3} avg_per_item={4:.1f}'.format(
                 name, count_new, count - count_new, bits, float(bits) / count)
 
+def print_resimulation(resimulation):
+    print 'Resimulation max count: {0}'.format(resimulation)
+
 def check_metrics(response, args):
     fails = []
     metrics = response['metrics']
@@ -124,6 +127,10 @@ def check_metrics(response, args):
     if total_traffic > args.max_client_traffic:
         fails.append('Total traffic exceeded the limit: {0} > {1} bytes'.format(
                      total_traffic, args.max_client_traffic))
+    resimulation_count = response['resimulation']
+    if resimulation_count > args.max_resimulation_count:
+        fails.append('Resimulation count exceeded the limit: {0} > {1}'.format(
+            resimulation_count, args.max_resimulation_count))
     return fails
 
 if __name__ == '__main__':
@@ -136,6 +143,8 @@ if __name__ == '__main__':
                             help='max client memory in MB (default=64)')
     arg_parser.add_argument('--max-client-traffic', type=int, default=100*1024*1024,
                             help='max client traffic in bytes (default=100*1024*1024)')
+    arg_parser.add_argument('--max-resimulation-count', type=int, default=100,
+                            help='max resimulation count (default=100)')
     args = arg_parser.parse_args()
     data = sys.stdin.read()
     response = json.loads(data)
@@ -143,6 +152,7 @@ if __name__ == '__main__':
     print_traffic(response['traffic'])
     print_system(response['system'], args)
     print_snapshot_stat(response['snapshotstat'])
+    print_resimulation(response['resimulation'])
 
     fails = check_metrics(response, args)
     if len(fails) > 0:

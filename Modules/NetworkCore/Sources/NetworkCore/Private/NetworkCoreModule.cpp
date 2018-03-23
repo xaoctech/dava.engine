@@ -22,9 +22,9 @@
 #include "NetworkCore/Scene3D/Systems/NetworkIdSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkInputSimulationSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkInputSystem.h"
-#include "NetworkCore/Scene3D/Systems/NetworkPredictSystem2.h"
+#include "NetworkCore/Scene3D/Systems/NetworkPredictSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkRemoteInputSystem.h"
-#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h"
+#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkResimulationSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkTimelineControlSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkTimeSystem.h"
@@ -55,7 +55,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientConnectionSingleComponent.h"
 
 #include "NetworkCore/Private/NetworkCoreDebugOverlay.h"
-#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h"
+#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h"
 #include "NetworkCore/Snapshot.h"
 
 #include <Entity/ComponentManager.h>
@@ -112,15 +112,14 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkIdSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkInputSimulationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkInputSystem);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkPredictSystem2);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkPredictSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkRemoteInputSystem);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkReplicationSystem2);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkReplicationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkResimulationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimelineControlSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimeSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformFromLocalToNetSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformFromNetToLocalSystem);
-    //DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTransformInterpolationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkMovementSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemBase);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemClient);

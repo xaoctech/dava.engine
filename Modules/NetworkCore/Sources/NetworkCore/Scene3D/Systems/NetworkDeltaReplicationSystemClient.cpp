@@ -5,7 +5,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkReplicationSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientConnectionSingleComponent.h"
-#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h"
+#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h"
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/SnapshotUtils.h>
 

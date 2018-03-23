@@ -196,6 +196,7 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
         }
 
         BaseSimulationSystem::ReSimulationOff();
+        Logger::Info("[Resimulation] total count: %u", resimulationsCount);
 
         LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#< Resimulate Done\n");
     }

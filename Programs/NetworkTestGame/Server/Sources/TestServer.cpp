@@ -43,7 +43,7 @@
 #include <NetworkCore/Scene3D/Systems/NetworkGameModeSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkInputSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h>
+#include <NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkTimeSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkTimelineControlSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemServer.h>

@@ -5,6 +5,7 @@ import psutil
 NET_IO_FILENAME = '/tmp/net_io_counters'
 
 response = {
+    'resimulation': 0,
     'metrics': {},
     'traffic': {
         'send': {'bytes': {}, 'packets': {}},
@@ -110,6 +111,11 @@ def load_typestat(line):
     dest = response['snapshotstat']
     append_metric('typestat', [int(id), name, int(count), int(count_new), int(bits)], dest)
 
+@noexcept
+def load_resimulation(line):
+    resimulation = int(line.split(' ')[-1])
+    response['resimulation'] = max(response.get('resimulation', 0), resimulation)
+
 if __name__ == '__main__':
     assert len(sys.argv) > 1, 'Usage: $> python analyzer_agent.py start|stop'
     if sys.argv[1] == 'start':
@@ -129,4 +135,6 @@ if __name__ == '__main__':
                 load_componentstat(line)
             if 'typestat:' in line:
                 load_typestat(line)
+            if '[Resimulation]' in line:
+                load_resimulation(line)
         print json.dumps(response)

@@ -2,7 +2,7 @@
 #include "NetworkCore/SnapshotUtils.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
-#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h"
+#include "NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Reflection/ReflectionRegistrator.h>

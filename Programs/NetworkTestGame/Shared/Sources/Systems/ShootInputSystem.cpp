@@ -164,7 +164,7 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
 
                     factoryComponent->SetupAfterInit([](Entity* e)
                                                      {
-                                                         Logger::Debug("SetupAfterInit entity:%s", e->GetName());
+                                                         //                                                         Logger::Debug("SetupAfterInit entity:%s", e->GetName());
                                                      });
                 }
 

@@ -50,8 +50,8 @@
 #include <NetworkCore/Scene3D/Systems/NetworkRemoteInputSystem.h>
 
 #include <NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemClient.h>
-#include <NetworkCore/Scene3D/Systems/NetworkPredictSystem2.h>
-#include <NetworkCore/Scene3D/Systems/NetworkReplicationSystem2.h>
+#include <NetworkCore/Scene3D/Systems/NetworkPredictSystem.h>
+#include <NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h>
 #include <NetworkCore/Scene3D/Systems/NetworkResimulationSystem.h>
 #include <NetworkCore/Scene3D/Systems/SnapshotSystemClient.h>
 

@@ -52,7 +52,7 @@ if [ "${cmd}" == "stop" ]; then
 
     for host in ${hosts[@]}; do
         ssh ${SSH_OPTS} ec2-user@${host} << 'ENDSSH'
-grep -hs --exclude=analyzer_agent.py "Timestamps\|FPS\|\[send\]\|\[recv\]\|generalstat\|componentstat\|typestat" * | python analyzer_agent.py stop > analyzer_result.json
+grep -hs --exclude=analyzer_agent.py "Timestamps\|FPS\|\[send\]\|\[recv\]\|generalstat\|componentstat\|typestat\|\[Resimulation\]" * | python analyzer_agent.py stop > analyzer_result.json
 ENDSSH
         scp ${SSH_OPTS} ec2-user@${host}:analyzer_result.json .
         cat analyzer_result.json | python analyzer.py ${ANALYZER_OPTS}
