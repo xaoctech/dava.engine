@@ -62,7 +62,7 @@ vertex_out vp_main(vertex_in input)
     in_pos += edgeShiftDirection * fmod(edgeVertexIndex, edgeShiftAmount);
 
     float2 relativePosition = patchOffsetScale.xy + in_pos.xy * patchOffsetScale.z; //[0.0, 1.0]
-    
+
     float height = SampleHeightAccurate(relativePosition);
 
     float3 vx_position = float3(relativePosition - 0.5, height) * boundingBoxSize;

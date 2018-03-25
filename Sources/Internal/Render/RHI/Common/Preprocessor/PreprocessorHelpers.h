@@ -3,9 +3,105 @@
 #include "Base/BaseTypes.h"
 #include "Base/Hash.h"
 #include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
+
+#define PREPROCESSOR_COLLECT_INFO 0
+
+struct PreprocessorTokenSet
+{
+    void RegisterConditionToken(const char* token)
+    {
+    #if (PREPROCESSOR_COLLECT_INFO)
+        currentNode->conditionTokens.emplace_back(token);
+    #endif
+    }
+
+    void RegisterConditionToken(const char* token, uint32 tokenSize)
+    {
+    #if (PREPROCESSOR_COLLECT_INFO)
+        currentNode->conditionTokens.emplace_back(token, tokenSize);
+    #endif
+    }
+
+    void RegisterTextSubstitutionToken(const char* token)
+    {
+    #if (PREPROCESSOR_COLLECT_INFO)
+        currentNode->textSubstitution.emplace_back(token);
+    #endif
+    }
+
+    void RegisterTextSubstitutionToken(const char* token, uint32 tokenSize)
+    {
+    #if (PREPROCESSOR_COLLECT_INFO)
+        currentNode->textSubstitution.emplace_back(token, tokenSize);
+    #endif
+    }
+
+    void PushNode()
+    {
+    #if (PREPROCESSOR_COLLECT_INFO)
+        currentNode->children.emplace_back();
+        Node* newNode = &currentNode->children.back();
+        newNode->parent = currentNode;
+        currentNode = newNode;
+    #endif
+    }
+
+    void PopNode()
+    {
+    #if (PREPROCESSOR_COLLECT_INFO)
+        DVASSERT(currentNode->parent != nullptr);
+        currentNode = currentNode->parent;
+    #endif
+    }
+
+    struct Node
+    {
+        Node* parent = nullptr;
+        Vector<String> conditionTokens;
+        Vector<String> textSubstitution;
+        Vector<Node> children;
+    } root;
+
+    Node* currentNode = &root;
+
+    void PrintNode(const Node& node, const String& ident)
+    {
+        String tokens;
+
+        Logger::Info("%s{", ident.c_str());
+        if (node.textSubstitution.empty() == false)
+        {
+            tokens = "    #subsitutions:";
+            for (const String& t : node.textSubstitution)
+                tokens += " " + t;
+            Logger::Info("%s%s", ident.c_str(), tokens.c_str());
+        }
+
+        if (node.conditionTokens.empty() == false)
+        {
+            tokens = "    #conditions:";
+            for (const String& t : node.conditionTokens)
+                tokens += " " + t;
+            Logger::Info("%s%s", ident.c_str(), tokens.c_str());
+        }
+
+        for (const Node& c : node.children)
+            PrintNode(c, ident + "    ");
+
+        Logger::Info("%s}", ident.c_str());
+    }
+
+    void PrintInfo()
+    {
+        for (const Node& c : root.children)
+            PrintNode(c, String());
+    }
+};
+
 inline bool IsValidAlphaChar(char c)
 {
     return (c == '_') || ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'));

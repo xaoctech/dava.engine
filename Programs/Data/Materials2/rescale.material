@@ -2,3 +2,4 @@ RenderTechnique:
     Passes:
         RescalePass:
             Shader: "~res:/Materials2/ShadersShared/rescale"
+            SupportedRenderFlows: ["all"]

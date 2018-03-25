@@ -1,6 +1,7 @@
 RenderTechnique:
     Layers: ["PostEffectRenderLayer"]
     Shader: "~res:/Materials2/ShadersShared/convolution"
+    SupportedRenderFlows: ["all"]
     RenderPass0:
         Name: "ConvolutionDiffuse"
         UniqueDefines: ["DIFFUSE_CONVOLUTION", "CUT_HALFSPACE"]

@@ -49,6 +49,7 @@ fragment_out fp_main(fragment_in input)
 
     float3 sunLuminance = dot(lightColor0.xyz, float3(0.2126, 0.7152, 0.0722)) / GLOBAL_LUMINANCE_SCALE;
     float3 value = SampleAtmosphere(cameraPosition, normalizedDir, lightPosition0.xyz, sunLuminance, fogParameters.y, fogParameters.z);
+    value = LinearTosRGB(value);
 
 #elif (CUBEMAP_ENVIRONMENT_TEXTURE)
 
@@ -77,10 +78,6 @@ fragment_out fp_main(fragment_in input)
 
     float3 value = environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
 
-#endif
-
-#if (!IB_REFLECTIONS_PREPARE)
-    value = PerformToneMapping(value, cameraDynamicRange, 1.0);
 #endif
 
     fragment_out output;

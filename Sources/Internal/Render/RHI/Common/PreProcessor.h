@@ -15,14 +15,14 @@ public:
         virtual uint32 Size() const = 0;
         virtual uint32 Read(uint32 /*max_sz*/, void* /*dst*/) = 0;
     };
-    using TextBuffer = std::vector<char>;
+    using TextBuffer = Vector<char>;
 
 public:
     PreProc(FileCallback* fc = nullptr);
     ~PreProc();
 
-    bool ProcessFile(const char* file_name, TextBuffer* output);
-    bool Process(const char* src_text, TextBuffer* output);
+    bool ProcessFile(const char* file_name, TextBuffer* output, PreprocessorTokenSet& tokens);
+    bool Process(const char* src_text, TextBuffer* output, PreprocessorTokenSet& tokens);
     void Clear();
 
     bool AddDefine(const char* name, const char* value);
@@ -38,14 +38,14 @@ private:
         {
         }
     };
-    using LineVector = std::vector<Line>;
+    using LineVector = Vector<Line>;
 
     void Reset();
     char* AllocBuffer(uint32 sz);
-    bool ProcessInplaceInternal(char* src_text, TextBuffer* output);
-    bool ProcessBuffer(char* text, LineVector& line);
-    bool ProcessInclude(const char* file_name, LineVector& line);
-    bool ProcessDefine(const char* name, const char* val);
+    bool ProcessInplaceInternal(char* src_text, TextBuffer* output, PreprocessorTokenSet& tokens);
+    bool ProcessBuffer(char* text, LineVector& line, PreprocessorTokenSet& tokens);
+    bool ProcessInclude(const char* file_name, LineVector& line, PreprocessorTokenSet& tokens);
+    bool ProcessDefine(const char* name, const char* val, PreprocessorTokenSet& tokens);
     void Undefine(const char* name);
     void GenerateOutput(TextBuffer* output, LineVector& line);
 
@@ -53,7 +53,7 @@ private:
     char* GetIdentifier(char* txt, char** end) const;
     int32 GetNameAndValue(char* txt, char** name, char** value, char** end) const;
     void ReportExprEvalError(uint32 line_n);
-    char* ExpandMacroInLine(char* txt);
+    char* ExpandMacroInLine(char* txt, PreprocessorTokenSet& tokens);
 
     char* GetNextToken(char* txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize);
     const char* GetNextToken(const char* txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize);
@@ -76,6 +76,11 @@ public:
             : value(nm)
             , length(sz)
         {
+        }
+
+        bool IsValid() const
+        {
+            return length > 0;
         }
 
         bool operator==(const MacroStringBuffer& r) const

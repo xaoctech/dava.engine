@@ -6,46 +6,46 @@ RenderTechnique:
         depthFunc: "CMP_LESS"
         depthWrite: true
         depthTest: true
-    RenderPass0:
-        Name: "ForwardPass"
-    RenderPass1:
-        Name: "LDRForwardPass"
-        Shader: "~res:/Materials2/ShadersLDR/landscape/decoration"
-    RenderPass2:
-        Name: "ForwardPassWithCombine"
-        UniqueDefines: ["FOWARD_WITH_COMBINE"]
-    RenderPassShadows:
-        Name: "ShadowCascadePass"
-        SupportedRenderFlows: ["all"]
-        UniqueDefines: ["WRITE_SHADOW_MAP"]
-    RenderPass3:
-        Name: "gBufferPass"
-        Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
-        Stencil:
-            enabled: true
-            failBack: "STENCILOP_REPLACE"
-            failFront: "STENCILOP_REPLACE"
-            funcBack: "CMP_ALWAYS"
-            funcFront: "CMP_ALWAYS"
-            mask: 1
-            passBack: "STENCILOP_REPLACE"
-            passFront: "STENCILOP_REPLACE"
-            ref: 1
-            zFailBack: "STENCILOP_REPLACE"
-            zFailFront: "STENCILOP_REPLACE"
-    RenderPass4:
-        Name: "gBufferFetchPass"
-        Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
-        Stencil:
-            enabled: true
-            failBack: "STENCILOP_REPLACE"
-            failFront: "STENCILOP_REPLACE"
-            funcBack: "CMP_ALWAYS"
-            funcFront: "CMP_ALWAYS"
-            mask: 1
-            passBack: "STENCILOP_REPLACE"
-            passFront: "STENCILOP_REPLACE"
-            ref: 1
-            zFailBack: "STENCILOP_REPLACE"
-            zFailFront: "STENCILOP_REPLACE"
+    Passes:
+        ForwardPass:
+            SupportedRenderFlows: ["HDRForward"]
+        LDRForwardPass:
+            SupportedRenderFlows: ["LDRForward"]
+            Shader: "~res:/Materials2/ShadersLDR/landscape/decoration"
+        ForwardPassWithCombine:
+            SupportedRenderFlows: ["TileBasedHDRForward"]
+            UniqueDefines: ["FOWARD_WITH_COMBINE"]
+        ShadowCascadePass:
+            SupportedRenderFlows: ["all"]
+            UniqueDefines: ["WRITE_SHADOW_MAP"]
+        gBufferPass:
+            SupportedRenderFlows: ["HDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
+            Stencil:
+                enabled: true
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"
+        gBufferFetchPass:
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            Stencil:
+                enabled: true
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"

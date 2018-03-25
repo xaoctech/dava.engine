@@ -1,10 +1,20 @@
-
 color_mask = rgba;
 
+#if (1)
 blending
 {
-    src = one dst = one
+    src = one
+    dst = one
 }
+#endif
+
+#if (0)
+    #ensuredefined SOME_VARIABLE 1
+    #if (SOME_VARIABLE)
+    #endif
+#elif (0)
+float t;
+#endif
 
 fragment_in
 {

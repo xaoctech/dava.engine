@@ -39,6 +39,8 @@ void Initialize()
     initialized = true;
 
     UnorderedMap<FastName, int32> defFlags;
+    ShaderDescriptorCache::GetShaderDescriptor(FastName("~res:/Materials2/ShadersShared/_test"), defFlags);
+
     defFlags[FastName("MATERIAL_TEXTURE")] = 1;
 
     RenderPassDescriptor defaultPass;
@@ -554,6 +556,8 @@ const FXDescriptor& LoadFXFromClassicTemplate(const FastName& fxName, UnorderedM
 
         if (shaderHasValidRenderFlow)
         {
+            // ShaderDescriptor* baseShader = ShaderDescriptorCache::GetShaderDescriptor(pass.shaderFileName, {});
+
             UnorderedMap<FastName, int32> shaderDefines = defines;
             for (auto& templateDefine : pass.templateDefines)
                 shaderDefines[templateDefine.first] = templateDefine.second;

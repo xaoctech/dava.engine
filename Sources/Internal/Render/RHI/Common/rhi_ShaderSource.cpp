@@ -201,7 +201,7 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
         pre_proc.AddDefine(name, value);
     }
 
-    if (pre_proc.Process(srcText, &src))
+    if (pre_proc.Process(srcText, &src, tokens))
     {
         #if RHI_DUMP_SHADERSOURCE
         PrintSource(src.data(), static_cast<uint32>(src.size()));
@@ -2060,7 +2060,10 @@ void ShaderSource::PurgeIncludesCache()
     ShaderSourceFileCallback.ClearCache();
 }
 
-//------------------------------------------------------------------------------
+void ShaderSource::DumpPreprocessorTokens()
+{
+    tokens.PrintInfo();
+}
 
 void ShaderSource::Dump() const
 {
@@ -2130,7 +2133,7 @@ void ShaderSource::PrintSource(const char* source, uint32 sourceSize)
         return;
 
     DAVA::Vector<char> output;
-    output.resize(2 * sourceSize);
+    output.resize(2 * sourceSize + 1024);
     std::fill_n(output.data(), output.size(), 0);
 
     char* ptr = output.data();

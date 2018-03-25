@@ -23,7 +23,7 @@ vertex_out
 {
     float4 position : SV_POSITION;
     float4 varTexCoord : TEXCOORD0;
-#if (!WRITE_SHADOW_MAP)
+#if (WRITE_SHADOW_MAP == 0)
     float4 worldPosition : TEXCOORD1;
     float4 projectedPosition : TEXCOORD2;
     float4 shadowTexCoord : TEXCOORD3;
@@ -98,7 +98,7 @@ vertex_out vp_main(vertex_in input)
 #if ORIENT_ON_LANDSCAPE
     {
         float2 nxy = SampleTangentAccurate(relativePosition);
-    
+
         nxy = 2.0 * nxy - 1.0;
         nxy *= orientvalue;
         float3 normal = float3(nxy, sqrt(1.0 - dot(nxy, nxy)));
@@ -113,7 +113,7 @@ vertex_out vp_main(vertex_in input)
     float height = SampleHeightAccurate(relativePosition);
 
     float2 decorTexCoord = input.decorPageCoords.xy + pivot * input.decorPageCoords.zw;
-    float decoration = dot(tex2Dlod(decorationtexture, decorTexCoord + 0.5 / 2048.0, 0.0), decorationmask);
+    float decoration = dot(tex2Dlod(decorationtexture, decorTexCoord, 0.0), decorationmask);
 
     float3 pivotObjectSpace = float3(relativePosition - 0.5, height) * boundingBoxSize;
     float3 vx_position = position * decoration * decorScale + pivotObjectSpace;
@@ -145,8 +145,7 @@ vertex_out vp_main(vertex_in input)
     }
     #endif
     output.projectedPosition = output.position;
-    output.varToCamera.xyz = toCamera;
-    output.varToCamera.w = 1.0;
+    output.varToCamera = float4(toCamera, 1.0);
     output.tangentToFinal0 = float3(worldTangent.x, worldBinormal.x, worldNormal.x);
     output.tangentToFinal1 = float3(worldTangent.y, worldBinormal.y, worldNormal.y);
     output.tangentToFinal2 = float3(worldTangent.z, worldBinormal.z, worldNormal.z);

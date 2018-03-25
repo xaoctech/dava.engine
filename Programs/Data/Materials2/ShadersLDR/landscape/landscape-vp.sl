@@ -89,7 +89,7 @@ vertex_out vp_main(vertex_in input)
     in_pos += edgeShiftDirection * edgeShift;
 
     float2 relativePosition = patchOffsetScale.xy + in_pos.xy * patchOffsetScale.z; //[0.0, 1.0]
-    
+
     float morphAmount = 0.0;
     float sampleLod = 0.0;
 

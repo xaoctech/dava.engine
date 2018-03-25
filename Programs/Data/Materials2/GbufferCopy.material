@@ -2,3 +2,4 @@ RenderTechnique:
     Passes:
         gBufferPass:
             Shader: "~res:/Materials2/Shaders/gbuffer-copy"
+            SupportedRenderFlows: ["HDRDeferred", "TileBasedHDRDeferred"]

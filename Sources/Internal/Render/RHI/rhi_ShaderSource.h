@@ -1,10 +1,10 @@
-#ifndef __RHI_SHADERSOURCE_H__
-#define __RHI_SHADERSOURCE_H__
+#pragma once
 
 #include "rhi_Type.h"
 #include "Base/BaseTypes.h"    
 #include "Base/FastName.h"
 #include "FileSystem/FilePath.h"
+#include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 
 namespace DAVA
 {
@@ -93,6 +93,7 @@ public:
     static void AddIncludeDirectory(const char* dir);
     void Dump() const;
     void PrintSource(const char* source, uint32 sourceSize);
+    void DumpPreprocessorTokens();
 
 private:
     void Reset();
@@ -114,10 +115,11 @@ private:
     ProgType type;
     uint32 codeLineCount;
     VertexLayout vertexLayout;
-    std::vector<ShaderProp> property;
-    std::vector<buf_t> buf;
-    std::vector<ShaderSampler> sampler;
+    DAVA::Vector<ShaderProp> property;
+    DAVA::Vector<buf_t> buf;
+    DAVA::Vector<ShaderSampler> sampler;
     BlendState blending;
+    DAVA::PreprocessorTokenSet tokens;
 };
 
 class ShaderSourceCache
@@ -143,7 +145,4 @@ private:
     static std::vector<entry_t> Entry;
     static const uint32 FormatVersion;
 };
-
-} // namespace rhi
-
-#endif // __RHI_SHADERSOURCE_H__
+}

@@ -257,6 +257,4 @@ float4 ConvoluteSpecular(float2 texcoord_, Convolution conv)
     result = EncodeRGBM(result.xyz / result.w);
     return result;
 }
-#else
-    #error Invalid Shader Configuration
 #endif

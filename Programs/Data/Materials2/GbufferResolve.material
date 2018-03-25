@@ -13,8 +13,9 @@ RenderTechnique:
         ref: 1
         zFailBack: "STENCILOP_KEEP"
         zFailFront: "STENCILOP_KEEP"
-    RenderPass:
-        Name: "gBufferResolvePass"
-    RenderPassDeferredFetch:
-        Name: "gBufferFetchPass"
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+    Passes:
+        gBufferResolvePass:
+            SupportedRenderFlows: ["HDRDeferred"]
+        gBufferFetchPass:
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]

@@ -37,29 +37,12 @@ fragment_out
     float4 color : SV_TARGET0;
 };
 
-#if LANDSCAPE_PICKING_UV
-fragment_out fp_main(fragment_in input)
-{
-    fragment_out output;
-    output.color = float4(input.texCoord1.xy, 0.0, 0.0);
-    return output;
-}
-#else
 fragment_out fp_main(fragment_in input)
 {
     float4 albedoSample0 = tex2D(albedo, input.texCoord0.xy);
     float4 albedoSample1 = tex2D(albedo, input.texCoord0.zw);
     float4 albedoSample = lerp(albedoSample1, albedoSample0, input.texCoord1.z);
     
-#if LANDSCAPE_TOOL
-    float4 toolColor = tex2D(toolTexture, input.texCoord1.xy);
-#if LANDSCAPE_TOOL_MIX
-    albedoSample.rgb = (albedoSample.rgb + toolColor.rgb) / 2.0;
-#else
-    albedoSample.rgb *= 1.0 - toolColor.a;
-    albedoSample.rgb += toolColor.rgb * toolColor.a;
-#endif
-
 #endif
 
 #if (LANDSCAPE_LOD_MORPHING && LANDSCAPE_MORPHING_COLOR) || (LANDSCAPE_TESSELLATION_COLOR && LANDSCAPE_MICRO_TESSELLATION)
@@ -105,9 +88,9 @@ fragment_out fp_main(fragment_in input)
     float4 saSample = tex2D(shadowaotexture, input.texCoord1.xy);
     float4 normalmapSample0 = tex2D(normalmap, input.texCoord0.xy);
     float4 normalmapSample1 = tex2D(normalmap, input.texCoord0.zw);
-    float4 normalmapSample = lerp(normalmapSample1, normalmapSample0, input.texCoord1.z);
+    float4 normalmapSample = float4(0.5, 0.5, 1.0, 1.0); // lerp(normalmapSample1, normalmapSample0, input.texCoord1.z);
 
-    float3 linearColor = SRGBToLinear(albedoSample.rgb);
+    float3 linearColor = albedoSample.rgb;
 
     ResolveInputValues resolve;
     resolve.vLength = length(input.toCameraDir);
@@ -173,29 +156,7 @@ fragment_out fp_main(fragment_in input)
 
     float3 result = ResolveFinalColor(resolve, surface, shadow);
 
-#if (VIEW_MODE & VIEW_TEXTURE_MIP_LEVEL_BIT)
-    float2 firstMipSize = tex2Dsize(albedo, 0);
-    float mipA = QueryLodLevel(input.texCoord0.xy, firstMipSize);
-    float mipB = QueryLodLevel(input.texCoord0.zw, firstMipSize);
-    float mip = lerp(mipB, mipA, input.texCoord1.z);
-    float3 mipColors[5] = {
-        float3(1.0, 1.0, 1.0), /* 0 */
-        float3(0.0, 1.0, 0.0), /* 1 */
-        float3(0.0, 0.0, 1.0), /* 2 */
-        float3(1.0, 0.0, 1.0), /* 3 */
-        float3(1.0, 0.0, 0.0) /* 4 */
-    };
-    float base = floor(mip);
-    float next = min(4.0, base + 1.0);
-    result = lerp(mipColors[int(base)], mipColors[int(next)], mip - base);
-#endif
-
-#if (!IB_REFLECTIONS_PREPARE)
-    result = PerformToneMapping(result, cameraDynamicRange, 1.0);
-#endif
-
     fragment_out output;
     output.color = float4(result, 1.0);
     return output;
 }
-#endif

@@ -415,6 +415,7 @@ protected:
     Texture* normalTexture = nullptr;
     rhi::TextureFormat heightTextureFormat = rhi::TEXTURE_FORMAT_R8G8B8A8;
     bool manualHeightInterpolation = false;
+    bool usesSingleBakedTexture = false;
 
     Vector<Image*> heightTextureData;
     Vector<Image*> normalTextureData;

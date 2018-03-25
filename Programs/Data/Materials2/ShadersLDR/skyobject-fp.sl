@@ -3,6 +3,8 @@
 #include "include/all-input.h"
 #include "include/math.h"
 
+#ensuredefined RGBM_INPUT 0
+
 fragment_in
 {
     float2 varTexCoord0 : TEXCOORD0;
@@ -17,12 +19,13 @@ uniform sampler2D environmentMap;
 
 fragment_out fp_main(fragment_in input)
 {
-    float3 value = environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
-    value *= tex2D(environmentMap, input.varTexCoord0).xyz;
+    float4 sampledColor = tex2D(environmentMap, input.varTexCoord0);
 
-#if (!IB_REFLECTIONS_PREPARE)
-    value = PerformToneMapping(value, cameraDynamicRange, 1.0);
+#if (RGBM_INPUT)
+    sampledColor.xyz = DecodeRGBM(sampledColor);
 #endif
+
+    float3 value = sampledColor.xyz * environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
 
     fragment_out output;
     output.color = float4(value, 1.0);

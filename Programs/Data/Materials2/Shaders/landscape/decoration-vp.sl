@@ -109,7 +109,7 @@ vertex_out vp_main(vertex_in input)
         position = mul(position, rotation);
     }
 #endif
-    
+
     float height = SampleHeightAccurate(relativePosition);
 
     float2 decorTexCoord = input.decorPageCoords.xy + pivot * input.decorPageCoords.zw;

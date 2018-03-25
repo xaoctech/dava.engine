@@ -194,6 +194,8 @@ Landscape::Landscape()
 
     type = TYPE_LANDSCAPE;
 
+    usesSingleBakedTexture = Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward;
+
     subdivision = new LandscapeSubdivision();
     decoration = new DecorationData();
 
@@ -201,8 +203,16 @@ Landscape::Landscape()
     vtDesc.width = TERRAIN_VIRTUAL_TEXTURE_WIDTH;
     vtDesc.height = TERRAIN_VIRTUAL_TEXTURE_HEIGHT;
     vtDesc.pageSize = TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE;
-    vtDesc.virtualTextureLayers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } }; /* [albedo + height], [normal + roughness + shadow] */
-    vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    if (usesSingleBakedTexture)
+    {
+        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 }; /* baked image only */
+        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
+    }
+    else
+    {
+        vtDesc.virtualTextureLayers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } }; /* [albedo + height], [normal + roughness + shadow] */
+        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    }
     vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT;
 
     pageManager = new LandscapePageManager(vtDesc);
@@ -577,9 +587,11 @@ void Landscape::RebuildLandscape()
         landscapeMaterial->SetMaterialName(FastName("Landscape_Material"));
         landscapeMaterial->SetFXName(NMaterialName::LANDSCAPE);
         landscapeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, terrainVTexture->GetLayerTexture(0));
-        landscapeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
         landscapeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
-
+        if (usesSingleBakedTexture == false)
+        {
+            landscapeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
+        }
         PrepareMaterial(landscapeMaterial);
     }
 
@@ -2065,12 +2077,16 @@ void Landscape::Load(KeyedArchive* archive, SerializationContext* serializationC
     {
         landscapeMaterial = SafeRetain(static_cast<NMaterial*>(serializationContext->GetDataBlock(matKey)));
         landscapeMaterial->SetTexture(NMaterialTextureName::TEXTURE_ALBEDO, terrainVTexture->GetLayerTexture(0));
-        landscapeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
 
         if (landscapeMaterial->HasLocalTexture(TEXTURE_TERRAIN))
             landscapeMaterial->SetTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
         else
             landscapeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
+
+        if (usesSingleBakedTexture == false)
+        {
+            landscapeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
+        }
 
         PrepareMaterial(landscapeMaterial);
     }
@@ -2516,11 +2532,16 @@ void Landscape::DebugDraw2D(Window*)
 {
     if (debugDrawVTexture)
     {
-        DVASSERT(terrainVTexture->GetLayersCount() == 2);
+        DVASSERT(terrainVTexture->GetLayersCount() > 0);
         RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 5.0f, 512.f, 256.f));
-        RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
 
-        DVASSERT(decorationVTexture->GetLayersCount() == 1);
+        if (usesSingleBakedTexture == false)
+        {
+            DVASSERT(terrainVTexture->GetLayersCount() > 1);
+            RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
+        }
+
+        DVASSERT(decorationVTexture->GetLayersCount() > 0);
         RenderSystem2D::Instance()->DrawTexture(decorationVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 266.f, 512.f, 256.f));
     }
 }

@@ -3,37 +3,38 @@ RenderTechnique:
     RenderState:
         cullMode: "FACE_BACK"
         depthFunc: "CMP_LESS"
-        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
-    RenderPassPicking:
-        Name: "PickingPass"
-        Shader: "~res:/Materials2/Shaders/landscape/landscape"
-        UniqueDefines: ["LANDSCAPE_PICKING_UV"]
-    RenderPass:
-        Name: "ForwardPass"
-        Shader: "~res:/Materials2/Shaders/landscape/landscape"
-    RenderPassLDR:
-        Name: "LDRForwardPass"
-        Shader: "~res:/Materials2/ShadersLDR/landscape/landscape"
-    RenderPassReflections:
-        Name: "IBReflectionPass"
-        Shader: "~res:/Materials2/Shaders/landscape/landscape"
-        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-    RenderPassReflectionsLDR:
-        Name: "LDRIBReflectionPass"
-        Shader: "~res:/Materials2/ShadersLDR/landscape/landscape"
-        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-    RenderPassWithCombine:
-        Name: "ForwardPassWithCombine"
-        Shader: "~res:/Materials2/Shaders/landscape/landscape"
-    RenderPassShadow:
-        Name: "ShadowCascadePass"
-        Shader: "~res:/Materials2/Shaders/landscape/shadowmap-write-landscape"
-    RenderPassDeferred:
-        Name: "gBufferPass"
-        Shader: "~res:/Materials2/Shaders/landscape/landscape-deferred"
-        RenderState:   
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        depthTest: true
+        depthWrite: true
+    Passes:
+        PickingPass:
+            SupportedRenderFlows: ["all"]
+            Shader: "~res:/Materials2/Shaders/landscape/landscape"
+            UniqueDefines: ["LANDSCAPE_PICKING_UV"]
+        ForwardPass:
+            SupportedRenderFlows: ["HDRForward"]
+            Shader: "~res:/Materials2/Shaders/landscape/landscape"
+        LDRForwardPass:
+            SupportedRenderFlows: ["LDRForward"]
+            Shader: "~res:/Materials2/ShadersLDR/landscape/landscape"
+        IBReflectionPass:
+            SupportedRenderFlows: ["HDR"]
+            Shader: "~res:/Materials2/Shaders/landscape/landscape"
+            UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        LDRIBReflectionPass:
+            SupportedRenderFlows: ["LDR"]
+            Shader: "~res:/Materials2/ShadersLDR/landscape/landscape"
+            UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        ForwardPassWithCombine:
+            SupportedRenderFlows: ["TileBasedHDRForward"]
+            Shader: "~res:/Materials2/Shaders/landscape/landscape"
+        ShadowCascadePass:
+            SupportedRenderFlows: ["all"]
+            Shader: "~res:/Materials2/Shaders/landscape/shadowmap-write-landscape"
+        gBufferPass:
+            SupportedRenderFlows: ["HDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/landscape/landscape-deferred"
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"
@@ -44,13 +45,12 @@ RenderTechnique:
                 ref: 1
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
-    RenderPassDeferredFetch:
-        Name: "gBufferFetchPass"
-        Shader: "~res:/Materials2/Shaders/landscape/landscape-deferred"
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
-        RenderState: 
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        gBufferFetchPass:
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/landscape/landscape-deferred"
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"

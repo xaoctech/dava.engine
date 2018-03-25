@@ -443,8 +443,4 @@ fragment_out fp_main(fragment_in input)
     return output;
 }
 
-#else
-
-#error Invalid technique
-
 #endif

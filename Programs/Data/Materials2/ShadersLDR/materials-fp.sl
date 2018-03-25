@@ -8,6 +8,10 @@
 #include "include/atmosphere.h"
 #include "include/resolve.h"
 
+#if (ALBEDO_TINT_BLEND_MODE != 0)
+uniform sampler2D albedoTint;
+#endif
+
 fragment_out
 {
     float4 color : SV_TARGET0;
@@ -56,6 +60,14 @@ fragment_out fp_main(fragment_in input)
     baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * input.vertexColor.xyz, input.vertexColor.a);
 #elif (VERTEX_COLOR == VERTEX_COLOR_SOFT_LIGHT)
     baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, input.vertexColor.xyz), input.vertexColor.a);
+#endif
+
+#if (ALBEDO_TINT_BLEND_MODE == 1)
+    float4 albedoTintSample = tex2D(albedoTint, input.varTexCoord.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, baseColorSample.xyz * albedoTintSample.xyz, albedoTintSample.w);
+#elif (ALBEDO_TINT_BLEND_MODE == 2)
+    float4 albedoTintSample = tex2D(albedoTint, input.varTexCoord.zw);
+    baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoTintSample.xyz), albedoTintSample.w);
 #endif
 
     float bakedAo = max(albedoMinAOValue, baseColorSample.w);
