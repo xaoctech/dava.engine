@@ -45,6 +45,7 @@ struct CoreNativeBridge final
     // Callbacks from AppDelegate
     BOOL ApplicationWillFinishLaunchingWithOptions(UIApplication* app, NSDictionary* launchOptions);
     BOOL ApplicationDidFinishLaunchingWithOptions(UIApplication* app, NSDictionary* launchOptions);
+    BOOL ApplicationOpenUrl(NSURL* url);
     void ApplicationDidBecomeActive(UIApplication* app);
     void ApplicationWillResignActive(UIApplication* app);
     void ApplicationDidEnterBackground(UIApplication* app);
@@ -89,10 +90,17 @@ struct CoreNativeBridge final
 
     BOOL NotifyListeners(eNotificationType type, NSObject* arg1 = nullptr, NSObject* arg2 = nullptr, NSObject* arg3 = nullptr, id arg4 = nullptr);
 
+    bool CollectActivationFilenames(NSURL* url);
+
     PlatformCore* core = nullptr;
     EngineBackend* engineBackend = nullptr;
     MainDispatcher* mainDispatcher = nullptr;
     ObjectiveCInterop* objcInterop = nullptr;
+
+    // Even if request to open URL comes with didFinishLaunchingWithOptions system calls
+    // openURL of UIApplicationDelegate implementation. This flags prevents collecting
+    // startup file twice.
+    bool ignoreOpenUrlJustAfterStartup = false;
 
     Mutex listenersMutex;
     NSMutableArray* appDelegateListeners;

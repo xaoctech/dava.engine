@@ -125,6 +125,11 @@ void WindowImpl::Resize(float32 /*width*/, float32 /*height*/)
     // Android windows are always stretched to display size
 }
 
+void WindowImpl::Activate()
+{
+    // not supported on android
+}
+
 void WindowImpl::SetFullscreen(eFullscreen /*newMode*/)
 {
     // Fullscreen mode cannot be changed on Android

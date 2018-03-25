@@ -16,6 +16,7 @@
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
+#include <TArc/Controls/PropertyPanel/PropertyPanelMeta.h>
 
 #include <Base/BaseTypes.h>
 #include <Render/Highlevel/RenderSystem.h>
@@ -27,6 +28,7 @@
 #include <Scene3D/SceneFile/VersionInfo.h>
 #include <Scene3D/Systems/SlotSystem.h>
 #include <Utils/Utils.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 #include <QObject>
 
@@ -49,7 +51,33 @@ void DetachSlotForRemovingEntity(Entity* entity, SceneEditor2* scene, REDependen
         holder.AddPreCommand(std::make_unique<AttachEntityToSlot>(scene, component, nullptr, FastName()));
     }
 }
+
+void InitChildEntity(Entity* entity, SlotComponent* slot)
+{
+    LoadedSlotItemComponent* loadedComponent = new LoadedSlotItemComponent();
+    loadedComponent->parentComponent = slot;
+    entity->AddComponent(loadedComponent);
+}
 } // namespace EditorSlotSystemDetail
+
+Component* LoadedSlotItemComponent::Clone(Entity* toEntity)
+{
+    LoadedSlotItemComponent* component = new LoadedSlotItemComponent();
+    component->SetEntity(toEntity);
+
+    return component;
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(LoadedSlotItemComponent)
+{
+    DAVA::ReflectionRegistrator<LoadedSlotItemComponent>::Begin()[DAVA::M::NonExportableComponent(),
+                                                                  DAVA::M::NonSerializableComponent(),
+                                                                  DAVA::M::CantBeCreatedManualyComponent(),
+                                                                  DAVA::M::CantBeDeletedManualyComponent(),
+                                                                  DAVA::M::DisplayName("Loaded to Slot Item")]
+    .Field("Parent's slot", &LoadedSlotItemComponent::parentComponent)[DAVA::M::DisableOperations()]
+    .End();
+}
 
 EditorSlotSystem::EditorSlotSystem(Scene* scene, ContextAccessor* accessor_)
     : SceneSystem(scene, ComponentUtils::MakeMask<SlotComponent>())
@@ -151,16 +179,18 @@ void EditorSlotSystem::Process(float32 timeElapsed)
                 Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
                 if (loadedEntity == nullptr)
                 {
+                    RefPtr<Entity> attachedEntity;
                     FastName itemName = GetSuitableItemName(component);
                     if (itemName.IsValid() == false)
                     {
-                        RefPtr<Entity> newEntity(new Entity());
-                        slotSystem->AttachEntityToSlot(component, newEntity.Get(), emptyItemName);
+                        attachedEntity.ConstructInplace();
+                        slotSystem->AttachEntityToSlot(component, attachedEntity.Get(), emptyItemName);
                     }
                     else
                     {
-                        slotSystem->AttachItemToSlot(component, itemName);
+                        attachedEntity = slotSystem->AttachItemToSlot(component, itemName);
                     }
+                    EditorSlotSystemDetail::InitChildEntity(attachedEntity.Get(), component);
                 }
                 else
                 {
@@ -417,6 +447,15 @@ void EditorSlotSystem::DetachEntity(SlotComponent* component, Entity* entity)
     DVASSERT(slotEntity == entity->GetParent());
 
     slotEntity->RemoveNode(entity);
+    uint32 count = entity->GetComponentCount<LoadedSlotItemComponent>();
+    for (uint32 i = 0; i < count; ++i)
+    {
+        LoadedSlotItemComponent* loadedItemComponent = entity->GetComponent<LoadedSlotItemComponent>(i);
+        if (loadedItemComponent->parentComponent == component)
+        {
+            entity->RemoveComponent(loadedItemComponent);
+        }
+    }
 }
 
 void EditorSlotSystem::AttachEntity(SlotComponent* component, Entity* entity, FastName itemName)
@@ -426,6 +465,7 @@ void EditorSlotSystem::AttachEntity(SlotComponent* component, Entity* entity, Fa
     SlotSystem* slotSystem = GetScene()->slotSystem;
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
     slotSystem->AttachEntityToSlot(component, entity, itemName);
+    EditorSlotSystemDetail::InitChildEntity(entity, component);
     scene->GetSystem<SelectionSystem>()->SetLocked(false);
 }
 
@@ -442,11 +482,14 @@ RefPtr<Entity> EditorSlotSystem::AttachEntity(SlotComponent* component, FastName
     {
         RefPtr<Entity> newEntity(new Entity());
         slotSystem->AttachEntityToSlot(component, newEntity.Get(), itemName);
+        EditorSlotSystemDetail::InitChildEntity(newEntity.Get(), component);
         return newEntity;
     }
     else
     {
-        return slotSystem->AttachItemToSlot(component, itemName);
+        RefPtr<Entity> result = slotSystem->AttachItemToSlot(component, itemName);
+        EditorSlotSystemDetail::InitChildEntity(result.Get(), component);
+        return result;
     }
 }
 
@@ -827,4 +870,5 @@ void EditorSlotSystem::LoadSlotsPresetImpl(Entity* entity, RefPtr<KeyedArchive> 
         }
     }
 }
+
 } // namespace DAVA

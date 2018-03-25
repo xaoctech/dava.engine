@@ -139,8 +139,10 @@ private:
         Includes controller releasing and deactivation of UIFlowServices from context. */
     void FinishDeactivation(UIFlowStateComponent* state);
 
-    // TODO:
+    /** Hide state's view root control. */
     void HideStateView(UIFlowStateComponent* state);
+
+    /** Show state's view root control. */
     void ShowStateView(UIFlowStateComponent* state);
 
     /** Finish current transition and pop it from transitions queue. */

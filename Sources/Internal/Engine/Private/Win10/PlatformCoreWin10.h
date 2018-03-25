@@ -54,6 +54,7 @@ private:
         ON_SUSPENDING,
     };
     void NotifyListeners(eNotificationType type, ::Platform::Object ^ arg1);
+    void CollectActivationFilenames(::Windows::ApplicationModel::Activation::FileActivatedEventArgs ^ args);
 
     EngineBackend* engineBackend = nullptr;
     MainDispatcher* dispatcher = nullptr;

@@ -3,6 +3,7 @@
 #include "Engine/EngineContext.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/DataBinding/UIDataBindingSystem.h"
 #include "UI/Flow/UIFlowContext.h"
 #include "UI/UIControlSystem.h"
 
@@ -19,11 +20,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowDataService)
 
 void UIFlowDataService::SetDataDirty(const Reflection& ref)
 {
-    // TODO: Uncomment after merging Bindings
-    //    UIDataBindingSystem* dbs = Engine::Instance()->GetContext()->uiControlSystem->GetSystem<UIDataBindingSystem>();
-    //    if (dbs)
-    //    {
-    //        dbs->SetDataDirty(ref.GetValueObject().GetVoidPtr());
-    //    }
+    UIDataBindingSystem* dbs = Engine::Instance()->GetContext()->uiControlSystem->GetSystem<UIDataBindingSystem>();
+    if (dbs)
+    {
+        dbs->SetDataDirty(ref.GetValueObject().GetVoidPtr());
+    }
 }
 }

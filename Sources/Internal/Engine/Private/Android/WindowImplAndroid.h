@@ -33,6 +33,7 @@ public:
     WindowImpl& operator=(const WindowImpl&) = delete;
 
     void Resize(float32 width, float32 height);
+    void Activate();
     void Close(bool appIsTerminating);
     void SetTitle(const String& title);
     void SetMinimumSize(Size2f size);

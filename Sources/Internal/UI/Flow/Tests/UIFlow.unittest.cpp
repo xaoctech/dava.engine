@@ -8,6 +8,8 @@
 #include "Job/JobManager.h"
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "UI/DataBinding/UIDataScopeComponent.h"
+#include "UI/DataBinding/UIDataSourceComponent.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Events/UIEventsSingleComponent.h"
 #include "UI/Events/UIEventsSystem.h"
@@ -645,16 +647,15 @@ DAVA_TESTCLASS (UIFlowTest)
         stateSys->ActivateState(state, false);
         SystemsUpdate();
 
-        // TODO: uncomment after merging Bindings
-        //        UIControl* view = controlSys->GetScreen()->FindByPath("**/View1");
-        //        UIDataSourceComponent* dataCom = view->GetComponent<UIDataSourceComponent>();
-        //        TEST_VERIFY(dataCom != nullptr);
-        //        TEST_VERIFY(dataCom->GetData().IsValid());
-        //        TEST_VERIFY(dataCom->GetData().GetField("a").IsValid());
-        //
-        //        UIDataScopeComponent* scopeCom = view->GetComponent<UIDataScopeComponent>();
-        //        TEST_VERIFY(scopeCom != nullptr);
-        //        TEST_VERIFY(scopeCom->GetExpression() == "{b = 2}");
+        UIControl* view = controlSys->GetScreen()->FindByPath("**/View1");
+        UIDataSourceComponent* dataCom = view->GetComponent<UIDataSourceComponent>();
+        TEST_VERIFY(dataCom != nullptr);
+        TEST_VERIFY(dataCom->GetData().IsValid());
+        TEST_VERIFY(dataCom->GetData().GetField("a").IsValid());
+
+        UIDataScopeComponent* scopeCom = view->GetComponent<UIDataScopeComponent>();
+        TEST_VERIFY(scopeCom != nullptr);
+        TEST_VERIFY(scopeCom->GetExpression() == "{b = 2}");
     }
 
     DAVA_TEST (TransitionEffects)

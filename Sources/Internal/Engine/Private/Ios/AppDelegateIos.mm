@@ -25,6 +25,11 @@ extern CoreNativeBridge* coreNativeBridge;
     return bridge->ApplicationDidFinishLaunchingWithOptions(application, launchOptions);
 }
 
+- (BOOL)application:(UIApplication*)app openURL:(NSURL*)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options
+{
+    return bridge->ApplicationOpenUrl(url);
+}
+
 - (void)applicationDidBecomeActive:(UIApplication*)application
 {
     bridge->ApplicationDidBecomeActive(application);

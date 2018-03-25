@@ -17,6 +17,7 @@
 #include <Entity/Component.h>
 #include <Entity/ComponentUtils.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Entity/Component.h>
 
 namespace SlotSupportModuleDetails
 {
@@ -56,6 +57,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SlotSupportModule)
 SlotSupportModule::SlotSupportModule()
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DAVA::SlotSystemSettings);
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(DAVA::LoadedSlotItemComponent, "LoadedSlotItemComponent");
 }
 
 void SlotSupportModule::OnContextCreated(DAVA::DataContext* context)
@@ -158,6 +160,8 @@ void SlotSupportModule::PostInit()
 
     DAVA::ActionPlacementInfo placement(DAVA::CreateMenuPoint(QList<QString>() << "DebugFunctions"));
     GetUI()->AddAction(DAVA::mainWindowKey, placement, action);
+
+    GetAccessor()->GetEngineContext()->componentManager->RegisterComponent<DAVA::LoadedSlotItemComponent>();
 }
 
 DECL_TARC_MODULE(SlotSupportModule);

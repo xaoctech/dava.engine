@@ -9,7 +9,7 @@
 #import <AppKit/NSScreen.h>
 #import <Carbon/Carbon.h>
 
-#import "Engine/Private/OsX/DVApplication.h"
+#import "Engine/Private/Mac/DVApplication.h"
 
 #include "Engine/Window.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
@@ -101,6 +101,17 @@ void WindowNativeBridge::ResizeWindow(float32 width, float32 height)
 
     [nswindow setFrameOrigin:pos];
     [nswindow setContentSize:sz];
+}
+
+void WindowNativeBridge::ActivateWindow()
+{
+    // https://snippets.aktagon.com/snippets/357-showing-and-hiding-an-nswindow-programatically
+    if ([nswindow isMiniaturized])
+    {
+        [nswindow deminiaturize:nil];
+    }
+    [nswindow makeKeyAndOrderFront:nil];
+    [[DVApplication sharedApplication] activateIgnoringOtherApps:YES];
 }
 
 void WindowNativeBridge::CloseWindow()

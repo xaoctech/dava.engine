@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -183,6 +185,7 @@ public final class DavaActivity extends Activity
                                                      String cmdline);
     public static native void nativeShutdownEngine();
     public static native long nativeOnCreate(DavaActivity activity);
+    public static native void nativeOnFileIntent(String filename, boolean onStartup);
     public static native void nativeOnResume();
     public static native void nativeOnPause();
     public static native void nativeOnDestroy();
@@ -328,6 +331,7 @@ public final class DavaActivity extends Activity
         keyboardState = new DavaKeyboardState();
         registerActivityListener(keyboardState);
 
+        CollectActivationFilenames(getIntent(), true);
         notifyListeners(ON_ACTIVITY_CREATE, savedInstanceState);
 
         super.onCreate(savedInstanceState);
@@ -577,6 +581,8 @@ public final class DavaActivity extends Activity
     protected void onNewIntent(Intent intent)
     {
         super.onNewIntent(intent);
+
+        CollectActivationFilenames(intent, false);
         notifyListeners(ON_ACTIVITY_NEW_INTENT, intent);
     }
 
@@ -590,6 +596,23 @@ public final class DavaActivity extends Activity
         args.permissions = permissions;
         args.grantResults = grantResults;
         notifyListeners(ON_ACTIVITY_REQUEST_PERMISSION_RESULT, args);
+    }
+
+    void CollectActivationFilenames(Intent intent, boolean onStartup)
+    {
+        if (intent != null)
+        {
+            String action = intent.getAction();
+            if (action != null && action.compareTo(Intent.ACTION_VIEW) == 0)
+            {
+                String scheme = intent.getScheme();
+                if (scheme != null && scheme.compareTo(ContentResolver.SCHEME_FILE) == 0)
+                {
+                    Uri uri = intent.getData();
+                    nativeOnFileIntent(uri.getPath(), onStartup);
+                }
+            }
+        }
     }
 
     void hideNavigationBar()

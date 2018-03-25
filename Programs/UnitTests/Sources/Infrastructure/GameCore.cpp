@@ -124,6 +124,8 @@ int DAVAMain(Vector<String> cmdline)
 
     DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UnitTests");
 
+    CommandLineParser::Instance()->SetFlags(cmdline);
+
     GameCore g(e);
     e.Run();
     return 0;

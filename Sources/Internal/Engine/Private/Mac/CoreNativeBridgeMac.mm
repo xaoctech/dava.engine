@@ -12,13 +12,14 @@
 #include "Engine/Private/Mac/WindowImplMac.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
 
-#import "Engine/Private/OsX/DVApplication.h"
+#import "Engine/Private/Mac/DVApplication.h"
 #import "Engine/PlatformApiMac.h"
 #import "Engine/Private/Mac/AppDelegateMac.h"
 
 #include "Concurrency/LockGuard.h"
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
+#include "Utils/NSStringUtils.h"
 
 // Wrapper over NSTimer to connect Objective-C NSTimer object to
 // C++ class CoreNativeBridge
@@ -162,6 +163,24 @@ void CoreNativeBridge::ApplicationDidFinishLaunching(NSNotification* notificatio
     [frameTimer set:1.0 / 60.0];
 
     NotifyListeners(ON_DID_FINISH_LAUNCHING, notification, nullptr, nullptr);
+    didFinishLaunching = true;
+}
+
+bool CoreNativeBridge::ApplicationOpenFile(NSString* filename)
+{
+    core->engineBackend->AddActivationFilename(StringFromNSString(filename));
+    if (didFinishLaunching)
+    {
+        core->engineBackend->OnFileActivated();
+
+        // System does not brings to front miniaturized window so do it explicitly
+        Window* w = core->engineBackend->GetPrimaryWindow();
+        if (w != nullptr)
+        {
+            w->ActivateAsync();
+        }
+    }
+    return true;
 }
 
 void CoreNativeBridge::ApplicationDidChangeScreenParameters()

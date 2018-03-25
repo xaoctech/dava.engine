@@ -27,6 +27,7 @@ public:
 
     bool Create();
     void Resize(float32 width, float32 height);
+    void Activate();
     void Close(bool appIsTerminating);
     void SetTitle(const String& title);
     void SetMinimumSize(Size2f size);

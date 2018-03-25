@@ -1,5 +1,6 @@
 #include "Engine/Private/EngineBackend.h"
 
+#include "Engine/AppInstanceMonitor.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
@@ -124,6 +125,11 @@ void RunOnUIThreadAsync(const Function<void()>& task)
 void RunOnUIThread(const Function<void()>& task)
 {
     GetPrimaryWindow()->RunOnUIThread(task);
+}
+
+AppInstanceMonitor* GetAppInstanceMonitor(const char* uniqueAppId)
+{
+    return Private::EngineBackend::Instance()->GetAppInstanceMonitor(uniqueAppId);
 }
 
 namespace Private
@@ -367,6 +373,10 @@ void EngineBackend::OnGameLoopStarted()
 
     engine->gameLoopStarted.Emit();
 
+    // Intentionally clear startup activation filenames to not mess with filenames
+    // when running application was activated with file
+    activationFilenames.clear();
+
     Logger::Info("EngineBackend::OnGameLoopStarted: leave");
 }
 
@@ -406,11 +416,20 @@ void EngineBackend::OnEngineCleanup()
     if (Renderer::IsInitialized())
         Renderer::Uninitialize();
 
+    delete appInstanceMonitor;
     SafeDelete(context);
     SafeDelete(dispatcher);
     SafeDelete(platformCore);
 
     DAVA_MEMORY_PROFILER_FINISH();
+}
+
+void EngineBackend::OnFileActivated()
+{
+    if (!activationFilenames.empty())
+    {
+        engine->fileActivated.Emit(std::move(activationFilenames));
+    }
 }
 
 void EngineBackend::DoEvents()
@@ -1141,6 +1160,26 @@ bool EngineBackend::IsRunning() const
 void EngineBackend::DrawSingleFrameWhileSuspended()
 {
     drawSingleFrameWhileSuspended = true;
+}
+
+void EngineBackend::AddActivationFilename(String filename)
+{
+    activationFilenames.push_back(std::move(filename));
+}
+
+Vector<String> EngineBackend::GetActivationFilenames() const
+{
+    return std::move(activationFilenames);
+}
+
+AppInstanceMonitor* EngineBackend::GetAppInstanceMonitor(const char* uniqueAppId)
+{
+    if (appInstanceMonitor == nullptr)
+    {
+        // Lazy AppInstanceMonitor instance creation only if needed by client
+        appInstanceMonitor = new AppInstanceMonitor(uniqueAppId);
+    }
+    return appInstanceMonitor;
 }
 
 } // namespace Private

@@ -62,6 +62,10 @@ public:
 private:
     Vector<std::shared_ptr<CommandProducer>> commandProducers;
 };
+
+class DisableOperations
+{
+};
 } // namespace Metas
 
 namespace M
@@ -70,5 +74,6 @@ using ProxyMetaRequire = Meta<Metas::ProxyMetaRequire>;
 using FieldExpanded = Meta<Metas::FieldExpanded>;
 using CommandProducer = Metas::CommandProducer;
 using CommandProducerHolder = Meta<Metas::CommandProducerHolder>;
+using DisableOperations = Meta<Metas::DisableOperations>;
 } // namespace M
 } // namespace DAVA

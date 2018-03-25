@@ -120,6 +120,11 @@ void WindowImpl::Resize(float32 width, float32 height)
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
+void WindowImpl::Activate()
+{
+    // do nothing as application runs in embedded mode
+}
+
 void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     closeRequestByApp = true;

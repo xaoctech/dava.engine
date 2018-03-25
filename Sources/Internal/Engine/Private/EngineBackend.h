@@ -10,6 +10,7 @@
 
 namespace DAVA
 {
+class AppInstanceMonitor;
 class KeyedArchive;
 namespace Private
 {
@@ -70,6 +71,8 @@ public:
     void OnGameLoopStopped();
     void OnEngineCleanup();
 
+    void OnFileActivated();
+
     void OnWindowCreated(Window* window);
     void OnWindowDestroyed(Window* window);
 
@@ -97,6 +100,11 @@ public:
     // but it leads to a black screen if we have another non fullscreen activity on top and surface was destroyed while it's active
     // This eliminates black screen and shows a correct image instead
     void DrawSingleFrameWhileSuspended();
+
+    void AddActivationFilename(String filename);
+    Vector<String> GetActivationFilenames() const;
+
+    AppInstanceMonitor* GetAppInstanceMonitor(const char* uniqueAppId);
 
 private:
     void RunConsole();
@@ -166,6 +174,10 @@ private:
     bool screenTimeoutEnabled = true;
 
     bool drawSingleFrameWhileSuspended = false;
+
+    Vector<String> activationFilenames; // List of filenames application was started or activated with
+
+    AppInstanceMonitor* appInstanceMonitor = nullptr;
 
     static EngineBackend* instance;
 };

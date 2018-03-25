@@ -24,6 +24,11 @@ void WindowImpl::Resize(float32 width, float32 height)
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
+void WindowImpl::Activate()
+{
+    uiDispatcher.PostEvent(UIDispatcherEvent::CreateActivateEvent());
+}
+
 void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());
@@ -88,6 +93,8 @@ void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
     switch (e.type)
     {
     case UIDispatcherEvent::RESIZE_WINDOW:
+        break;
+    case UIDispatcherEvent::ACTIVATE_WINDOW:
         break;
     case UIDispatcherEvent::CLOSE_WINDOW:
         break;

@@ -28,6 +28,11 @@ void WindowImpl::Resize(float32 width, float32 height)
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
+void WindowImpl::Activate()
+{
+    // do nothing as it seems that win10 does not allow to activate window
+}
+
 void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateCloseEvent());

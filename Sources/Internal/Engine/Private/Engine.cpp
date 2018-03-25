@@ -148,4 +148,9 @@ void Engine::SetScreenTimeoutEnabled(bool enabled)
     engineBackend->SetScreenTimeoutEnabled(enabled);
 }
 
+Vector<String> Engine::GetStartupActivationFilenames() const
+{
+    return engineBackend->GetActivationFilenames();
+}
+
 } // namespace DAVA
