@@ -74,6 +74,7 @@ UnorderedMap<eGPUFamily, GPUData, std::hash<uint8>> gpuData = {
                                    { FORMAT_RGB565, IMAGE_FORMAT_PVR },
                                    { FORMAT_A8, IMAGE_FORMAT_PVR },
                                    { FORMAT_ETC1, IMAGE_FORMAT_PVR },
+                                   { FORMAT_ETC2_RGBA, IMAGE_FORMAT_PVR },
                                    { FORMAT_RGBA16F, IMAGE_FORMAT_PVR },
                                    { FORMAT_RGBA32F, IMAGE_FORMAT_PVR },
                                    { FORMAT_RGBM, IMAGE_FORMAT_PVR }

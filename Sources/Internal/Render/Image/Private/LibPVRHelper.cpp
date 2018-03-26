@@ -26,6 +26,7 @@ LibPVRHelper::LibPVRHelper()
                            FORMAT_PVR2,
                            FORMAT_PVR4,
                            FORMAT_ETC1,
+                           FORMAT_ETC2_RGBA,
                            })
 {
 }

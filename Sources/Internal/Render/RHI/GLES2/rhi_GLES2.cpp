@@ -262,6 +262,7 @@ static void gles_check_GL_extensions()
                 MutableDeviceCaps::Get().isInstancingSupported = true;
                 Short_Int_Supported = true;
                 PackedFloat_Supported = true;
+                EAC_Supported = ETC2_Supported = true;
                 checkForMaxRT = true;
             }
 
