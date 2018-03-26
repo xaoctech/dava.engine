@@ -46,12 +46,9 @@
         <file>Icons/ignore-case.png</file>
         <file>Icons/editclear.png</file>
         <file>Icons/link.png</file>
-        <file>Icons/link-r-classic.png</file>
-        <file>Icons/link-w-classic.png</file>
-        <file>Icons/link-rw-classic.png</file>
-        <file>Icons/link-r-dark.png</file>
-        <file>Icons/link-w-dark.png</file>
-        <file>Icons/link-rw-dark.png</file>
+        <file>Icons/link-r.png</file>
+        <file>Icons/link-w.png</file>
+        <file>Icons/link-rw.png</file>
         <file>Icons/play.png</file>
         <file>Icons/pause.png</file>
         <file>Icons/QtControlIcons/custom_icon.png</file>

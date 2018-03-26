@@ -14,7 +14,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIDataBindingComponent)
 {
-    ReflectionRegistrator<UIDataBindingComponent>::Begin()[M::HiddenField(), M::Multiple()]
+    ReflectionRegistrator<UIDataBindingComponent>::Begin()[M::HiddenField(), M::Multiple(), M::Group("Data")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIDataBindingComponent* o) { o->Release(); })
     .Field("controlField", &UIDataBindingComponent::GetControlFieldName, &UIDataBindingComponent::SetControlFieldName)

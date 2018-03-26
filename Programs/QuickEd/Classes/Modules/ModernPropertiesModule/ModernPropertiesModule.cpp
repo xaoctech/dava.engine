@@ -125,7 +125,7 @@ void ModernPropertiesModule::PostInit()
     widget->addTab(new ModernPropertiesTab(GetAccessor(), GetUI(), Vector<const Type*>()), "General");
 
     // Add priority component group properties
-    Vector<String> priorityGroups = { "Content", "Layout", "Input" };
+    Vector<String> priorityGroups = { "Content", "Layout", "Input", "Data" };
     for (const String& priorityGroup : priorityGroups)
     {
         auto it = components.find(priorityGroup);

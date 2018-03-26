@@ -8,11 +8,11 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIDataChildFactoryComponent)
 {
-    ReflectionRegistrator<UIDataChildFactoryComponent>::Begin()
+    ReflectionRegistrator<UIDataChildFactoryComponent>::Begin()[M::DisplayName("Data Child Factory"), M::Group("Data")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIDataChildFactoryComponent* o) { o->Release(); })
-    .Field("package", &UIDataChildFactoryComponent::GetPackageExpression, &UIDataChildFactoryComponent::SetPackageExpression)
-    .Field("control", &UIDataChildFactoryComponent::GetControlExpression, &UIDataChildFactoryComponent::SetControlExpression)
+    .Field("package", &UIDataChildFactoryComponent::GetPackageExpression, &UIDataChildFactoryComponent::SetPackageExpression)[M::DisplayName("Package")]
+    .Field("control", &UIDataChildFactoryComponent::GetControlExpression, &UIDataChildFactoryComponent::SetControlExpression)[M::DisplayName("Control")]
     .End();
 }
 

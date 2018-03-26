@@ -87,7 +87,7 @@ void BasePropertyDelegate::enumEditorActions(QWidget* parent, const QModelIndex&
     {
         QAction* bindAction = new QAction(QIcon(":/Icons/link.png"), tr("bind"), parent);
         QString expr;
-        DataBindingInspectorModel* model = new DataBindingInspectorModel(parent);
+        DataBindingInspectorModel* model = new DataBindingInspectorModel(true, parent);
         RootProperty* root = dynamic_cast<RootProperty*>(property->GetRootProperty());
         UIControl* control = nullptr;
         if (root)

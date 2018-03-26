@@ -21,8 +21,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControlBackground)
     .ConstructorByPointer()
     .DestructorByPointer([](UIControlBackground* o) { o->Release(); })
     .Field("drawType", &UIControlBackground::GetDrawType, &UIControlBackground::SetDrawType)[M::EnumT<eDrawType>(), M::DisplayName("Draw Type")]
-    .Field<FilePath (UIControlBackground::*)() const, void (UIControlBackground::*)(const FilePath&)>("sprite", &UIControlBackground::GetBgSpritePath, &UIControlBackground::SetSprite)[M::DisplayName("Sprite")]
-    .Field<int32 (UIControlBackground::*)() const, void (UIControlBackground::*)(int32)>("frame", &UIControlBackground::GetFrame, &UIControlBackground::SetFrame)[M::DisplayName("Frame")]
+    .Field<FilePath (UIControlBackground::*)() const, void (UIControlBackground::*)(const FilePath&)>("sprite", &UIControlBackground::GetBgSpritePath, &UIControlBackground::SetSprite)[M::DisplayName("Sprite"), M::Bindable()]
+    .Field<int32 (UIControlBackground::*)() const, void (UIControlBackground::*)(int32)>("frame", &UIControlBackground::GetFrame, &UIControlBackground::SetFrame)[M::DisplayName("Frame"), M::Bindable()]
     .Field("mask", &UIControlBackground::GetMaskSpritePath, &UIControlBackground::SetMaskSpriteFromPath)[M::DisplayName("Mask Sprite")]
     .Field("detail", &UIControlBackground::GetDetailSpritePath, &UIControlBackground::SetDetailSpriteFromPath)[M::DisplayName("Detail Sprite")]
     .Field("gradient", &UIControlBackground::GetGradientSpritePath, &UIControlBackground::SetGradientSpriteFromPath)[M::DisplayName("Gradient Sprite")]

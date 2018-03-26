@@ -35,4 +35,10 @@ class ModernControlSectionWidget : public ModernSectionWidget
 public:
     ModernControlSectionWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, ControlNode* controlNode, ControlPropertiesSection* section);
     ~ModernControlSectionWidget() override;
+
+    ControlPropertiesSection* GetSection() const;
+    void RecreateProperties();
+
+private:
+    ControlPropertiesSection* section = nullptr;
 };
