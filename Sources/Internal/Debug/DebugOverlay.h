@@ -58,8 +58,6 @@ public:
     */
     void HideItem(DebugOverlayItem* overlayItem);
 
-    void SetScene(Scene* scene);
-
 private:
     DebugOverlay();
     ~DebugOverlay();
@@ -80,6 +78,8 @@ private:
     };
 
     bool shown = false;
+    bool skipNextFrame = false;
+
     Vector<ItemData> items;
 
     // Items added by default

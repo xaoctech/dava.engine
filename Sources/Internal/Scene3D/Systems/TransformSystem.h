@@ -31,7 +31,6 @@ private:
 
     void EntityNeedUpdate(Entity* entity);
     void HierarchicAddToUpdate(Entity* entity);
-    void OnEngineSettingsChanged(EngineSettings::eSetting);
 
     bool UpdateEntity(Entity* entity, bool forceUpdate = false);
     Matrix4 GetWorldTransform(TransformComponent* tc, bool* isFinal) const;
@@ -39,8 +38,5 @@ private:
     int32 passedNodes;
     int32 multipliedNodes;
     float32 timeElapsed;
-
-    EngineSettings::eSettingValue interpolationMode;
-    float32 interpolationSpeed;
 };
 };

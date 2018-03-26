@@ -22,12 +22,14 @@ String NetworkCoreDebugOverlayItem::GetName() const
     return "NetworkCore";
 }
 
-void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
+void NetworkCoreDebugOverlayItem::Draw(bool* shown, float32 timeElapsed)
 {
-    bool isShown = true;
+// Temporary disabled, unit there will be way
+// to get current scene
 
+#if 0
     ImGui::SetNextWindowSizeConstraints(ImVec2(450.0f, 600.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
-    if (ImGui::Begin("NetworkCore", &isShown, ImGuiWindowFlags_NoFocusOnAppearing))
+    if (ImGui::Begin("NetworkCore", shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         if (ImGui::CollapsingHeader("Snapshot misprediction"))
         {
@@ -162,13 +164,7 @@ void NetworkCoreDebugOverlayItem::Draw(float32 elapsedTime)
         }
     }
     ImGui::End();
-
-    if (!isShown)
-    {
-        GetEngineContext()->debugOverlay->HideItem(this);
-    }
-
-    // ImGui::ShowTestWindow();
+#endif
 }
 
 void NetworkCoreDebugOverlayItem::PlotResponderHistory(

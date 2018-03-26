@@ -57,7 +57,7 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
             if (transComp)
             {
                 const NetworkFactoryComponent::InitialTransform& src = *fc->initialTransformPtr;
-                transComp->SetLocalTransform(src.position, src.rotation, transComp->GetScale());
+                transComp->SetLocalTransform(src.position, src.rotation, Vector3(src.scale, src.scale, src.scale));
             }
         }
 

@@ -235,8 +235,7 @@ private:
     bool IsLocalMetaAndFileTableAlreadyExist() const;
     void TestRetryCountLocalMetaAndGoTo(InitState nextState, InitState alternateState);
     void ClearResouces();
-    void OnSettingsChanged(EngineSettings::eSetting value);
-    bool IsProfilingEnabled() const;
+    void DrawProfilerDebugWindow();
     String DumpToJsonProfilerTrace();
     static PackRequest* CastToPackRequest(const IRequest* request);
 
@@ -302,8 +301,6 @@ private:
     mutable Progress lastProgress;
 
     Hints hints;
-
-    String profilerState;
     DebugGestureListener gestureChecker;
 
     float32 timeWaitingNextInitializationAttempt = 0;
@@ -319,6 +316,7 @@ private:
 
     bool prevNetworkState = false;
     bool firstTimeNetworkState = false;
+    EngineSettingsVar* profilerEnabled = nullptr;
 };
 
 inline uint32 DLCManagerImpl::GetServerFooterCrc32() const

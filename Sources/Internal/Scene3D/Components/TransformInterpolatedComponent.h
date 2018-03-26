@@ -14,7 +14,6 @@ class TransformInterpolatedComponent : public Component
     DAVA_VIRTUAL_REFLECTION(TransformInterpolationComponent, Component);
 
 public:
-    bool isActual = false;
     Vector3 translation;
     Quaternion rotation;
 

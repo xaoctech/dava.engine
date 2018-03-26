@@ -55,6 +55,9 @@ void GetCurrentAimRay(ShooterAimComponent const& aimComponent, RaycastFilter fil
 // Get aim ray for final angle
 void GetFinalAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outAimRayEndEntity);
 
+// Get aim ray for final angle depending on character worldTransform
+void GetWorldAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outAimRayEndEntity);
+
 // Initialize game scene
 void InitializeScene(DAVA::Scene& scene);
 

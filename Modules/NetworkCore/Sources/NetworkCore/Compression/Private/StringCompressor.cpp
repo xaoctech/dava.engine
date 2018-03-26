@@ -100,13 +100,21 @@ bool FastNameCompressor::CompressDelta(const FastName& value1, const FastName& v
 
 void FastNameCompressor::CompressFull(const FastName& value, CompressionScheme /*scheme*/, float32 /*deltaPrecision*/, BitWriter& writer)
 {
-    uint32 length = static_cast<uint32>(value.size());
-    const char* str = value.c_str();
-    DVASSERT(length < 250);
-    writer.WriteBits(length, 8);
-    for (uint32 i = 0; i < length; ++i)
+    if (value.IsValid())
     {
-        writer.WriteBits(str[i], 8);
+        uint32 length = static_cast<uint32>(value.size());
+        const char* str = value.c_str();
+        DVASSERT(length < 250);
+        writer.WriteBits(1, 1);
+        writer.WriteBits(length, 8);
+        for (uint32 i = 0; i < length; ++i)
+        {
+            writer.WriteBits(str[i], 8);
+        }
+    }
+    else
+    {
+        writer.WriteBits(0, 1);
     }
 }
 
@@ -117,15 +125,23 @@ void FastNameCompressor::DecompressDelta(const FastName& baseValue, FastName* ta
 
 void FastNameCompressor::DecompressFull(FastName* targetValue, CompressionScheme /*scheme*/, BitReader& reader)
 {
-    String r;
-    uint32 length = reader.ReadBits(8);
-    r.reserve(length);
-    for (uint32 i = 0; i < length; ++i)
+    bool isValid = reader.ReadBits(1) != 0;
+    if (isValid)
     {
-        char c = static_cast<char>(reader.ReadBits(8));
-        r.push_back(c);
+        String r;
+        uint32 length = reader.ReadBits(8);
+        r.reserve(length);
+        for (uint32 i = 0; i < length; ++i)
+        {
+            char c = static_cast<char>(reader.ReadBits(8));
+            r.push_back(c);
+        }
+        *targetValue = FastName(r);
     }
-    *targetValue = FastName(r);
+    else
+    {
+        *targetValue = FastName();
+    }
 }
 
 } // namespace DAVA

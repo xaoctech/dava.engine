@@ -19,11 +19,10 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
-    void MoveSmothly(const Vector3& positionDelta, const Quaternion& rotationDelta);
-
+private:
     struct MoveState
     {
-        uint32 frameId;
+        uint32 frameId = 0;
         Vector3 translation;
         Quaternion rotation;
     };
@@ -33,16 +32,11 @@ public:
     MoveState& HistoryBack();
     void HistoryResize(size_t size);
     void HistoryPushBack(MoveState&&);
-    void CorrectionApply(MoveState&&);
 
-    uint32 correctionRule = 0;
-    float32 correctionTimeoutSec = 1.0f;
+    size_t interpolationHistoryPushBackPos = 0;
+    Vector<MoveState> interpolationHistory;
 
-private:
-    float32 correctionTimeLeft = 0.0f;
-    MoveState correction;
-
-    size_t pushBackPos = 0;
-    Vector<MoveState> history;
+    MoveState smoothCorrection;
+    float32 smoothCorrectionTimeLeft = 0.0f;
 };
 }

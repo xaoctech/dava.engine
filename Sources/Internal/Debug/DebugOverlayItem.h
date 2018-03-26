@@ -18,7 +18,7 @@ public:
     virtual String GetName() const = 0;
 
     /** Draw information. Will be called by `DebugOverlay` every frame if object is enabled. */
-    virtual void Draw(float32 elapsedTime) = 0;
+    virtual void Draw(bool* shown, float32 timeElapsed) = 0;
 
     /** Called by `DebugOverlay` when item switches to enabled state. */
     virtual void OnShown(){};
@@ -26,12 +26,12 @@ public:
     /** Called by `DebugOverlay` when item switches to disabled state. */
     virtual void OnHidden(){};
 
-    void SetScene(Scene* scene_)
-    {
-        scene = scene_;
-    }
+    //    void SetScene(Scene* scene_)
+    //    {
+    //        scene = scene_;
+    //    }
 
 protected:
-    Scene* scene = nullptr;
+    //Scene* scene = nullptr;
 };
 }

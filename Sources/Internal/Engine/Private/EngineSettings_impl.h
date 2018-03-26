@@ -6,41 +6,38 @@
 
 namespace DAVA
 {
-template <EngineSettings::eSetting ID>
-inline const Any& EngineSettings::GetSetting() const
+inline FastName EngineSettingsVar::GetName() const
 {
-    return setting[ID];
+    return name;
 }
 
-template <EngineSettings::eSetting ID>
-inline void EngineSettings::SetSetting(const Any& value)
+inline const Any& EngineSettingsVar::GetValue() const
 {
-    DVASSERT(setting[ID].GetType() == value.GetType());
-    if (setting[ID] != value)
+    return value;
+}
+
+inline const String& EngineSettingsVar::GetHelp() const
+{
+    return help;
+}
+
+inline const ReflectedMeta* EngineSettingsVar::GetMeta() const
+{
+    return meta.get();
+}
+
+inline size_t EngineSettings::GetVarsCount() const
+{
+    return vars.size();
+}
+
+inline EngineSettingsVar* EngineSettings::GetVar(size_t index)
+{
+    if (index < vars.size())
     {
-        setting[ID] = value;
-        settingChanged.Emit(ID);
+        return vars[index].get();
     }
-}
 
-template <typename T>
-EngineSettings::SettingRange<T>::SettingRange(const T& _min, const T& _max)
-    : min(_min)
-    , max(_max)
-{
+    return nullptr;
 }
-
-template <EngineSettings::eSetting ID, typename T>
-inline const T& EngineSettings::GetSettingRefl() const
-{
-    const Any& v = GetSetting<ID>();
-    return v.Get<T>();
-}
-
-template <EngineSettings::eSetting ID, typename T>
-inline void EngineSettings::SetSettingRefl(const T& value)
-{
-    SetSetting<ID>(value);
-}
-
 } //ns DAVA

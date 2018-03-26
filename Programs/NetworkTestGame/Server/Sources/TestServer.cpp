@@ -166,6 +166,16 @@ TestServer::TestServer(Engine& engine, GameMode::Id gameModeId, uint16 port, uin
         lossFactor = std::stof(lossFactorStr);
     }
 
+    String frequencyHzStr = CommandLineParser::GetCommandParam("--hz");
+    if (!frequencyHzStr.empty())
+    {
+        float32 frequencyHz = std::stof(frequencyHzStr);
+        if (frequencyHz > 0.f)
+        {
+            NetworkTimeSingleComponent::SetFrameFrequencyHz(frequencyHz);
+        }
+    }
+
     healthCheckHost = CommandLineParser::GetCommandParam("--health-check-host");
     if (!healthCheckHost.empty())
     {
@@ -557,11 +567,6 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
             AddServerBots(netGameModeComp, scene->GetSystem<GameModeSystemCars>());
         if (IsGm("gm_shooter"))
             DVASSERT(false, "No bots for shooter mode ftm.");
-    }
-
-    if (GetEngineContext()->debugOverlay != nullptr)
-    {
-        GetEngineContext()->debugOverlay->SetScene(scene);
     }
 }
 

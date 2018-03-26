@@ -180,6 +180,10 @@ void NetworkReplicationSystem::ProcessFixed(float32 timeElapsed)
                         maxServerFrameID = info.second.frameIdServer;
                     }
                 }
+                else
+                {
+                    LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Changes for entity " << info.first << " ignored, current frame " << currentFrameId << " is less than diffFrame " << info.second.frameIdLastTouch << std::endl);
+                }
             }
 
             if (networkTimeSingleComponent->IsInitialized() && maxServerFrameID > 0)

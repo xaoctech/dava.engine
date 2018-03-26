@@ -11,6 +11,10 @@
 #include "NetworkTimeSystem.h"
 
 #include "Debug/DVAssert.h"
+#include "DeviceManager/DeviceManager.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Input/Keyboard.h"
 #include "Logger/Logger.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
@@ -106,6 +110,17 @@ void NetworkInputSystem::ProcessFixedClientBegin(float32 timeElapsed)
 
     for (Entity* entity : entities)
     {
+        static bool emulateRunning = false;
+        if (GetEngineContext()->deviceManager->GetKeyboard()->GetKeyState(eInputElements::KB_P).IsJustPressed())
+        {
+            emulateRunning = !emulateRunning;
+        }
+
+        if (emulateRunning)
+        {
+            AddDigitalActionForClient(this, entity, FastName("SHOOTER_MOVE_FORWARD"));
+        }
+
         for (auto& actions : GetCollectedActionsForClient(GetScene(), entity))
         {
             actions.clientFrameId = netTimeComp->GetFrameId();

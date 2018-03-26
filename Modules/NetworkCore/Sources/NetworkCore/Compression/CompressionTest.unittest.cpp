@@ -84,6 +84,7 @@ DAVA_TESTCLASS (CompressionTest)
 
             { Any{ String  {"1234567890abcdefghijk"} }, Any{ String  {"qwertyuiopzxcvbnm,.;"} }, Any{ String  {} }, Any{ String  {} }, Any{ String  {} }, 0.f },
             { Any{ FastName{"1234567890abcdefghijk"} }, Any{ FastName{"qwertyuiopzxcvbnm,.;"} }, Any{ FastName{} }, Any{ FastName{} }, Any{ FastName{} }, 0.f },
+            { Any{ FastName{"kaboom"}                }, Any{ FastName{}                       }, Any{ FastName{} }, Any{ FastName{} }, Any{ FastName{} }, 0.f },
 
             { Any{ matrix1 }, Any{ matrix2 }, Any{ Matrix4{} }, Any{ Matrix4{} }, Any{ Matrix4{} }, defPrecision },
 

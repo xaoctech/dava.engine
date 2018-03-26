@@ -30,32 +30,28 @@ void NetworkMovementComponent::Deserialize(KeyedArchive* archive, SerializationC
 {
 }
 
-void NetworkMovementComponent::MoveSmothly(const Vector3& position, const Quaternion& rotation)
-{
-}
-
 size_t NetworkMovementComponent::HistoryGetSize()
 {
-    return history.size();
+    return interpolationHistory.size();
 }
 
 NetworkMovementComponent::MoveState& NetworkMovementComponent::HistoryAt(size_t index)
 {
-    DVASSERT(index < history.size());
+    DVASSERT(index < interpolationHistory.size());
 
-    index += pushBackPos;
+    index += interpolationHistoryPushBackPos;
 
-    if (index >= history.size())
+    if (index >= interpolationHistory.size())
     {
-        index -= history.size();
+        index -= interpolationHistory.size();
     }
 
-    return history[index];
+    return interpolationHistory[index];
 }
 
 NetworkMovementComponent::MoveState& NetworkMovementComponent::HistoryBack()
 {
-    size_t index = pushBackPos;
+    size_t index = interpolationHistoryPushBackPos;
 
     if (index > 0)
     {
@@ -63,40 +59,33 @@ NetworkMovementComponent::MoveState& NetworkMovementComponent::HistoryBack()
     }
     else
     {
-        index = history.size() - 1;
+        index = interpolationHistory.size() - 1;
     }
 
-    return history[index];
+    return interpolationHistory[index];
 }
 
 void NetworkMovementComponent::HistoryResize(size_t size)
 {
-    // TODO:
-    // ...
+    interpolationHistory.resize(size);
+    interpolationHistoryPushBackPos = 0;
 
-    history.resize(size);
+    // clear previous history
+    for (auto& v : interpolationHistory)
+    {
+        v = MoveState();
+    }
 }
 
 void NetworkMovementComponent::HistoryPushBack(MoveState&& state)
 {
-    history[pushBackPos] = std::move(state);
+    interpolationHistory[interpolationHistoryPushBackPos] = std::move(state);
 
-    pushBackPos++;
-    if (pushBackPos == history.size())
+    interpolationHistoryPushBackPos++;
+    if (interpolationHistoryPushBackPos == interpolationHistory.size())
     {
-        pushBackPos = 0;
+        interpolationHistoryPushBackPos = 0;
     }
 }
 
-void NetworkMovementComponent::CorrectionApply(MoveState&& state)
-{
-    correctionTimeLeft = correctionTimeoutSec;
-    correction.translation += state.translation;
-    correction.rotation *= state.rotation;
-
-    if (correction.frameId == 0)
-    {
-        correction.frameId = state.frameId;
-    }
-}
 };

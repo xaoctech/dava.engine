@@ -11,7 +11,7 @@ public:
     ~DebugOverlayItemRenderStats() = default;
 
     String GetName() const override;
-    void Draw(float32 elapsedTime) override;
+    void Draw(bool* shown, float32 timeElapsed) override;
 
 private:
     void AddUIntStat(const char* name, uint32 value);

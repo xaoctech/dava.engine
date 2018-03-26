@@ -139,7 +139,7 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
                     NetworkFactoryComponent* factoryComponent = CreateFactoryEntity("Bullet", bulletId);
                     bullet = factoryComponent->GetEntity();
                     const TransformComponent* src = shooter->GetComponent<TransformComponent>();
-                    factoryComponent->SetInitialTransform(src->GetPosition(), src->GetRotation());
+                    factoryComponent->SetInitialTransform(src->GetPosition(), src->GetRotation(), 8.f);
                     factoryComponent->OverrideField("DynamicBodyComponent/BodyFlags",
                                                     PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
 

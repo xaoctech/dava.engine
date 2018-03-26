@@ -167,7 +167,7 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
                 }
             }
 
-            MoveCar(car, acceleration, steer);
+            MoveCar(car, acceleration, steer, duration);
         }
     }
     // Moving character
@@ -206,10 +206,10 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
 
             if (accelerate)
             {
-                offset *= 1.5f;
+                offset *= 1.7f;
             }
 
-            MoveCharacter(entity, offset);
+            MoveCharacter(entity, offset, duration);
         }
     }
 }
@@ -236,7 +236,7 @@ void ShooterMovementSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA:
                 VehicleCarComponent* car = carEntity->GetComponent<VehicleCarComponent>();
                 if (car != nullptr)
                 {
-                    MoveCar(car, -analogActionState.y, -analogActionState.x);
+                    MoveCar(car, -analogActionState.y, -analogActionState.x, duration);
                 }
             }
             else
@@ -247,7 +247,7 @@ void ShooterMovementSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA:
                     analogActionState *= 1.5f;
                 }
 
-                MoveCharacter(entity, Vector3(-analogActionState.x * SHOOTER_MOVEMENT_SPEED, analogActionState.y * SHOOTER_MOVEMENT_SPEED, 0.0f));
+                MoveCharacter(entity, Vector3(-analogActionState.x * SHOOTER_MOVEMENT_SPEED, analogActionState.y * SHOOTER_MOVEMENT_SPEED, 0.0f), duration);
             }
         }
     }
@@ -459,7 +459,7 @@ void ShooterMovementSystem::AfterCharacterMove(DAVA::CharacterControllerComponen
     }
 }
 
-void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vector3& offset) const
+void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 duration) const
 {
     using namespace DAVA;
 
@@ -469,12 +469,12 @@ void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vect
         if (characterControllerComponent != nullptr && characterControllerComponent->IsGrounded())
         {
             TransformComponent* transformComponent = player->GetComponent<TransformComponent>();
-            characterControllerComponent->Move(transformComponent->GetRotation().ApplyToVectorFast(offset));
+            characterControllerComponent->Move(transformComponent->GetRotation().ApplyToVectorFast(offset * duration));
         }
     }
 }
 
-void ShooterMovementSystem::MoveCar(DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer) const
+void ShooterMovementSystem::MoveCar(DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const
 {
     using namespace DAVA;
 

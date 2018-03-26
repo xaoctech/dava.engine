@@ -13,7 +13,7 @@ class Window;
 class TestOverlayItem final : public DAVA::DebugOverlayItem
 {
     virtual DAVA::String GetName() const override;
-    virtual void Draw() override;
+    virtual void Draw(bool* shown) override;
 };
 
 class DebugOverlayTest final : public BaseScreen

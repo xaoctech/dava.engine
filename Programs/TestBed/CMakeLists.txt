@@ -48,6 +48,7 @@ find_dava_module( LoggerService )
 find_dava_module( MemoryProfilerService )
 find_dava_module( EmbeddedWebServer )
 find_dava_module( DocDirSetup )
+find_dava_module( DevConsole )
 
 find_package( DavaFramework REQUIRED COMPONENTS ${DAVA_COMPONENTS} )
 

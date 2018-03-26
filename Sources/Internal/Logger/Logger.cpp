@@ -299,6 +299,15 @@ void Logger::RemoveCustomOutput(DAVA::LoggerOutput* lo)
     }
 }
 
+void Logger::ReleaseCustomOutput(DAVA::LoggerOutput* lo)
+{
+    RemoveCustomOutput(lo);
+    if (nullptr != lo)
+    {
+        delete lo;
+    }
+}
+
 void Logger::SetLogFilename(const String& filename)
 {
     if (filename.empty())

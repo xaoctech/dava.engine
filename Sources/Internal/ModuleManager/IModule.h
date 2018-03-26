@@ -15,7 +15,8 @@ class IModule : public ReflectionBase
 {
 public:
     /** Create module. Called by ModuleManager for each module in unspecified order. */
-    IModule(Engine* engine)
+    IModule(Engine* engine_)
+        : engine(engine_)
     {
     }
 
@@ -31,5 +32,7 @@ public:
     virtual void Shutdown()
     {
     }
+
+    Engine* engine;
 };
 }

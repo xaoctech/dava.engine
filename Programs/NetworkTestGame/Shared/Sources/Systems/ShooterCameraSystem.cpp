@@ -125,7 +125,7 @@ void ShooterCameraSystem::Process(DAVA::float32 dt)
             Vector3 aimRayDirection;
             Vector3 aimRayEnd;
             Entity* aimRayEndEntity;
-            GetFinalAimRay(*trackedAimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS, aimRayOrigin, aimRayDirection, aimRayEnd, &aimRayEndEntity);
+            GetWorldAimRay(*trackedAimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS, aimRayOrigin, aimRayDirection, aimRayEnd, &aimRayEndEntity);
 
             // Update camera properties
             Camera* camera = cameraComponent->GetCamera();

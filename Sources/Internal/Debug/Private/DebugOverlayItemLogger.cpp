@@ -56,13 +56,12 @@ String DebugOverlayItemLogger::GetName() const
     return "Logger";
 }
 
-void DebugOverlayItemLogger::Draw(float32 elapsedTime)
+void DebugOverlayItemLogger::Draw(bool* shown, float32 timeElapsed)
 {
     using namespace DebugOverlayItemLoggerDetail;
 
-    bool shown = true;
-    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiSetCond_FirstUseEver);
-    if (ImGui::Begin("Logger", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
+    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin("Logger", shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         static ImGuiTextFilter filter;
 
@@ -98,10 +97,5 @@ void DebugOverlayItemLogger::Draw(float32 elapsedTime)
         ImGui::EndChild();
     }
     ImGui::End();
-
-    if (!shown)
-    {
-        GetEngineContext()->debugOverlay->HideItem(this);
-    }
 }
 }

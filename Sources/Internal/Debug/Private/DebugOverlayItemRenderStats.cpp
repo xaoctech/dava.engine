@@ -12,12 +12,10 @@ String DebugOverlayItemRenderStats::GetName() const
     return "Render stats";
 }
 
-void DebugOverlayItemRenderStats::Draw(float32 elapsedTime)
+void DebugOverlayItemRenderStats::Draw(bool* shown, float32 timeElapsed)
 {
-    bool shown = true;
     ImGui::SetNextWindowSizeConstraints(ImVec2(300.0f, 200.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
-
-    if (ImGui::Begin("RenderStatsWindow", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
+    if (ImGui::Begin("RenderStatsWindow", shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
 #if defined(__DAVAENGINE_RENDERSTATS__)
         RenderStats& stats = Renderer::GetRenderStats();
@@ -68,11 +66,6 @@ void DebugOverlayItemRenderStats::Draw(float32 elapsedTime)
     }
 
     ImGui::End();
-
-    if (!shown)
-    {
-        GetEngineContext()->debugOverlay->HideItem(this);
-    }
 }
 
 void DebugOverlayItemRenderStats::AddUIntStat(const char* name, uint32 value)

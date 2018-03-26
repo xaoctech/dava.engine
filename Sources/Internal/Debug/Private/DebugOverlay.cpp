@@ -54,6 +54,11 @@ void DebugOverlay::Show()
         primaryWindow->update.Connect(this, &DebugOverlay::OnUpdate);
 
         shown = true;
+
+        // we should skip first frame to ignore input events
+        // that happened on current frame but DebugOverlay
+        // wasn't shown yet
+        skipNextFrame = true;
     }
 }
 
@@ -68,6 +73,11 @@ void DebugOverlay::Hide()
         primaryWindow->update.Disconnect(this);
 
         shown = false;
+
+        // we should skip first frame to ignore input events
+        // that happened on current frame but DebugOverlay
+        // already hidden
+        skipNextFrame = true;
     }
 }
 
@@ -170,11 +180,18 @@ void DebugOverlay::OnUpdate(Window* window, float32 elapsedTime)
         ImGui::PopStyleColor(3);
     };
 
+    if (skipNextFrame)
+    {
+        skipNextFrame = false;
+        return;
+    }
+
     if (ImGui::IsInitialized())
     {
         ImGui::SetNextWindowPos(ImVec2(20.0f, 20.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(0.0f, 0.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         uint32 windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize;
         if (ImGui::Begin("DebugOverlayWindow", nullptr, windowFlags))
         {
@@ -203,7 +220,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 elapsedTime)
         }
 
         ImGui::End();
-        ImGui::PopStyleVar(2);
+        ImGui::PopStyleVar(3);
 
         float32 scale = ImGuiUtils::GetScale();
 
@@ -245,8 +262,9 @@ void DebugOverlay::OnUpdate(Window* window, float32 elapsedTime)
         };
 
         ImGui::SetNextWindowPos(ImVec2(x, 0.f));
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImColor(0, 0, 0, 0));
+        ImGui::SetNextWindowBgAlpha(0);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         if (ImGui::Begin("DebugOverlayButtons", nullptr, windowFlags))
         {
             NextButton();
@@ -308,24 +326,15 @@ void DebugOverlay::OnUpdate(Window* window, float32 elapsedTime)
             DrawRect({ x, y }, { buttonSide * 0.5f, buttonSide * 0.5f });
         }
         ImGui::End();
-        ImGui::PopStyleVar(1);
-        ImGui::PopStyleColor(1);
+        ImGui::PopStyleVar(2);
 
         for (ItemData& itemData : items)
         {
             if (itemData.shown)
             {
-                itemData.item->Draw(elapsedTime);
+                itemData.item->Draw(&itemData.shown, elapsedTime);
             }
         }
-    }
-}
-
-void DebugOverlay::SetScene(Scene* scene)
-{
-    for (ItemData& itemData : items)
-    {
-        itemData.item->SetScene(scene);
     }
 }
 }

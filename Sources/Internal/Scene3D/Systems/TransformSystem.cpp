@@ -25,13 +25,10 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TransformSystem)
 TransformSystem::TransformSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<TransformComponent>())
 {
-    GetEngineContext()->settings->settingChanged.Connect(this, &TransformSystem::OnEngineSettingsChanged);
-    OnEngineSettingsChanged(EngineSettings::SETTING_INTERPOLATION_MODE);
 }
 
 TransformSystem::~TransformSystem()
 {
-    GetEngineContext()->settings->settingChanged.Disconnect(this);
 }
 
 void TransformSystem::Process(float32 timeElapsed)
@@ -129,83 +126,13 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
 
 Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool* isFinal) const
 {
-    DVASSERT(interpolationMode >= EngineSettings::INTERPOLATION_OFF && interpolationMode <= EngineSettings::INTERPOLATION_CUBIC);
     DVASSERT(nullptr != isFinal);
 
     TransformInterpolatedComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolatedComponent>();
-    if (tic && tic->isActual)
+    if (tic)
     {
         *isFinal = false;
-        tic->isActual = false;
         return Matrix4(tic->translation, tic->rotation, tc->GetScale());
-
-        /*
-        if (!tic->done)
-        {
-            if (tic->state == InterpolationState::FIXED)
-            {
-                DVASSERT(false);
-                //const float32 fx = GetScene()->GetTimeOverrunInterpolatedFactor();
-                const float32 fx = 0;
-                const Vector3& position = Lerp(tic->prevPosition, tic->curPosition, fx);
-                const Vector3& scale = Lerp(tic->prevScale, tic->curScale, fx);
-                Quaternion rotation = tic->prevRotation;
-                rotation.Slerp(tic->prevRotation, tic->curRotation, fx);
-                isFinal = true;
-                return Matrix4(position, rotation, scale);
-            }
-
-            if (EngineSettings::INTERPOLATION_OFF != interpolationMode)
-            {
-                float32 fx = 1.0f;
-                bool continueInterpolation = tic->time > 0 && tic->elapsed < tic->time;
-                if (continueInterpolation)
-                {
-                    float32 lenPosition = (tc->position - tic->curPosition).Length();
-                    float32 lenScale = (tc->scale - tic->curScale).Length();
-                    float32 lenRotation = (Vector3(tc->rotation.x, tc->rotation.y, tc->rotation.z) -
-                                           Vector3(tic->curRotation.x, tic->curRotation.y,
-                                                   tic->curRotation.z))
-                                          .Length();
-                    float32 force = std::max({ lenPosition, lenScale, lenRotation }) * tic->spring;
-
-                    tic->elapsed += (timeElapsed * (1.0f + force) * interpolationSpeed);
-                    float32 x = std::min(1.0f, tic->elapsed / tic->time);
-
-                    if (interpolationMode == EngineSettings::INTERPOLATION_LINEAR)
-                    {
-                        fx = x;
-                    }
-                    else if (interpolationMode == EngineSettings::INTERPOLATION_SIN)
-                    {
-                        static const float32 pi = static_cast<float32>(std::acos(-1));
-                        static const float32 pi05 = pi * 0.5f;
-                        fx = std::sin(pi05 * x);
-                    }
-                    else if (interpolationMode == EngineSettings::INTERPOLATION_LOG)
-                    {
-                        fx = std::max(0.1f, 0.5f * std::log(x) + 1);
-                    }
-                    else if (interpolationMode == EngineSettings::INTERPOLATION_CUBIC)
-                    {
-                        fx = x * x * x;
-                    }
-                }
-                else if (tic->state == InterpolationState::TRANSIENT)
-                {
-                    tic->state = InterpolationState::FIXED;
-                }
-
-                tic->curPosition = Lerp(tic->prevPosition, tc->position, fx);
-                tic->curScale = Lerp(tic->prevScale, tc->scale, fx);
-                tic->curRotation.Slerp(tic->prevRotation, tc->rotation, fx);
-
-                tic->done = !continueInterpolation;
-                isFinal = tic->done;
-                return Matrix4(tic->curPosition, tic->curRotation, tic->curScale);
-            }
-        }
-        */
     }
 
     *isFinal = true;
@@ -228,17 +155,12 @@ void TransformSystem::HierarchicAddToUpdate(Entity* entity)
             HierarchicAddToUpdate(entity->GetParent());
         }
         else
-        { //topmost parent
+        {
+            //topmost parent
             DVASSERT(entity->GetRetainCount() >= 1);
             updatableEntities.push_back(entity);
         }
     }
-}
-
-void TransformSystem::OnEngineSettingsChanged(EngineSettings::eSetting)
-{
-    interpolationMode = GetEngineContext()->settings->GetSetting<EngineSettings::SETTING_INTERPOLATION_MODE>().Get<EngineSettings::eSettingValue>();
-    interpolationSpeed = GetEngineContext()->settings->GetSetting<EngineSettings::SETTING_INTERPOLATION_SPEED>().Get<float32>();
 }
 
 void TransformSystem::AddEntity(Entity* entity)

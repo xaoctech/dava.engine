@@ -33,8 +33,8 @@ public:
 private:
     void BeforeCharacterMove(DAVA::CharacterControllerComponent* cct);
     void AfterCharacterMove(DAVA::CharacterControllerComponent* cct);
-    void MoveCharacter(DAVA::Entity* player, const DAVA::Vector3& offset) const;
-    void MoveCar(DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer) const;
+    void MoveCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 duration) const;
+    void MoveCar(DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const;
 
 private:
     DAVA::EntityGroup* entityGroup = nullptr;

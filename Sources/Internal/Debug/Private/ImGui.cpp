@@ -406,8 +406,10 @@ void Initialize()
 
     DVASSERT(!ImGuiImplDetails::initialized);
 
+    ImGui::CreateContext();
+
     ImGuiIO& io = ImGui::GetIO();
-    io.RenderDrawListsFn = ImGuiImplDetails::ImGuiDrawFn;
+    io.Fonts->AddFontDefault();
 
     io.IniFilename = nullptr;
     io.LogFilename = nullptr;
@@ -593,6 +595,7 @@ void OnFrameEnd()
     if (ImGuiImplDetails::initialized)
     {
         ImGui::Render();
+        ImGuiImplDetails::ImGuiDrawFn(ImGui::GetDrawData());
 
         DAVA::float32 x = Settings::scale / Settings::pendingScale;
 
@@ -654,13 +657,17 @@ bool OnInput(const DAVA::InputEvent& input)
         {
             bool keyIsPressed = input.digitalState.IsPressed();
 
-            io.KeysDown[static_cast<size_t>(input.elementId) - KB_FIRST] = keyIsPressed;
+            io.KeysDown[static_cast<size_t>(input.elementId)] = keyIsPressed;
 
             if (IsKeyboardModifierInputElement(input.elementId))
             {
                 if (input.elementId == KB_LCTRL || input.elementId == KB_RCTRL)
                 {
                     io.KeyCtrl = keyIsPressed;
+                }
+                else if (input.elementId == KB_LSHIFT || input.elementId == KB_RSHIFT)
+                {
+                    io.KeyShift = keyIsPressed;
                 }
                 else if (input.elementId == KB_LALT || input.elementId == KB_RALT)
                 {
@@ -697,13 +704,7 @@ bool OnInput(const DAVA::InputEvent& input)
         }
     }
 
-    // This is just an ugly hack, but it works on current frame unlike io.Want* functions
-    if (pointerInputToProcess)
-    {
-        return ImGui::IsPosHoveringAnyWindow(io.MousePos);
-    }
-
-    return io.WantCaptureKeyboard || io.WantTextInput;
+    return io.WantCaptureMouse || io.WantCaptureKeyboard || io.WantTextInput;
 }
 
 void Uninitialize()
@@ -732,7 +733,7 @@ void Uninitialize()
         rhi::DeleteConstBuffer(ImGuiImplDetails::constBufferPC);
         rhi::DeleteConstBuffer(ImGuiImplDetails::constBufferPTC);
 
-        ImGui::Shutdown();
+        ImGui::DestroyContext();
 
         DAVA::InputSystem::Instance()->RemoveHandler(ImGuiImplDetails::inputHandlerToken);
         ImGuiImplDetails::inputHandlerToken = 0;

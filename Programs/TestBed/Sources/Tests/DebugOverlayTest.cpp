@@ -15,20 +15,14 @@ String TestOverlayItem::GetName() const
     return "Test item (testbed)";
 }
 
-void TestOverlayItem::Draw()
+void TestOverlayItem::Draw(bool* shown)
 {
-    bool shown = true;
-    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiSetCond_FirstUseEver);
-    if (ImGui::Begin("Test window", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
+    ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin("Test window", shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         ImGui::Text("Test info");
     }
     ImGui::End();
-
-    if (!shown)
-    {
-        GetEngineContext()->debugOverlay->HideItem(this);
-    }
 }
 
 DebugOverlayTest::DebugOverlayTest(TestBed& app)

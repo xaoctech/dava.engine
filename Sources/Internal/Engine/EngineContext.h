@@ -33,6 +33,7 @@ class AssetsManagerAndroid;
 class ModuleManager;
 class PluginManager;
 class EngineSettings;
+class EngineSettings2;
 
 class DeviceManager;
 

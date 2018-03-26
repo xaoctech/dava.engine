@@ -820,7 +820,7 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
                 fuCount++;
             }
 
-            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.adjustment + fixedUpdate.accumulatedTime) / (fixedUpdate.fixedTime + fixedUpdate.adjustment);
+            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.accumulatedTime) / fixedUpdate.fixedTime;
             //Logger::Info("FixedUpdate call count = %u, overlap = %f", fuCount, fixedUpdate.overlap);
         }
     }
@@ -899,7 +899,7 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
                 fuCount++;
             }
 
-            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.adjustment + fixedUpdate.accumulatedTime) / (fixedUpdate.fixedTime + fixedUpdate.adjustment);
+            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.accumulatedTime) / fixedUpdate.fixedTime;
             //Logger::Info("FixedUpdate call count = %u, adjustment = %f, overlap = %f", fuCount, fixedUpdate.adjustment, fixedUpdate.overlap);
         }
     }

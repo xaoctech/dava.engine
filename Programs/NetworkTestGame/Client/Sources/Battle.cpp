@@ -183,9 +183,4 @@ void Battle::SetupTestGame()
     {
         battleScene->GetSystem<PhysicsSystem>()->SetSimulationEnabled(true);
     }
-
-    if (GetEngineContext()->debugOverlay != nullptr)
-    {
-        GetEngineContext()->debugOverlay->SetScene(battleScene);
-    }
 }

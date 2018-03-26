@@ -14,7 +14,7 @@ class NetworkCoreDebugOverlayItem final : public DebugOverlayItem
 {
 public:
     String GetName() const override;
-    void Draw(float32 elapsedTime) override;
+    void Draw(bool* shown, float32 timeElapsed) override;
 
 private:
     void PlotResponderHistory(UnorderedMap<FastName, Vector<float>>& history, const FastName& token, uint32 frameId,

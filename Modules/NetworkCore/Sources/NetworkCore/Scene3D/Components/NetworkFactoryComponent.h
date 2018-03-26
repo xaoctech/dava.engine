@@ -47,10 +47,11 @@ public:
     {
         Vector3 position;
         Quaternion rotation;
+        float32 scale;
     };
 
     std::unique_ptr<InitialTransform> initialTransformPtr;
-    void SetInitialTransform(const Vector3& position, const Quaternion& rotation);
+    void SetInitialTransform(const Vector3& position, const Quaternion& rotation, float32 scale = 1.0f);
 
     Component* Clone(Entity* toEntity) override;
 

@@ -199,7 +199,7 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
             name = "Enemy player";
         }
 
-        //entity->AddComponent(new NetworkMovementComponent());
+        entity->AddComponent(new NetworkMovementComponent());
     }
 
     entity->SetName(name.c_str());

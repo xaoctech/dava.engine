@@ -55,12 +55,10 @@ String DebugOverlayItemProfiler::GetName() const
     return "Profiler";
 }
 
-void DebugOverlayItemProfiler::Draw(float32 elapsedTime)
+void DebugOverlayItemProfiler::Draw(bool* shown, float32 timeElapsed)
 {
-    bool shown = true;
     ImGui::SetNextWindowSizeConstraints(ImVec2(420.0f, 400.0f), ImVec2(FLOAT_MAX, FLOAT_MAX));
-
-    if (ImGui::Begin("ProfilerWindow", &shown, ImGuiWindowFlags_NoFocusOnAppearing))
+    if (ImGui::Begin("ProfilerWindow", shown, ImGuiWindowFlags_NoFocusOnAppearing))
     {
         Update();
 
@@ -120,11 +118,6 @@ void DebugOverlayItemProfiler::Draw(float32 elapsedTime)
     }
 
     ImGui::End();
-
-    if (!shown)
-    {
-        GetEngineContext()->debugOverlay->HideItem(this);
-    }
 }
 
 void DebugOverlayItemProfiler::Update()
@@ -392,7 +385,8 @@ bool DebugOverlayItemProfiler::ShowMarkerHistory(const FastName& marker)
 {
     bool open = true;
 
-    if (ImGui::Begin(marker.c_str(), &open, ImVec2(400.f, 80.f)))
+    ImGui::SetNextWindowSize(ImVec2(400.f, 80.f), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin(marker.c_str(), &open))
     {
         MarkerHistory& markerHistory = markersHistory[marker];
         void* history = reinterpret_cast<void*>(&markerHistory);

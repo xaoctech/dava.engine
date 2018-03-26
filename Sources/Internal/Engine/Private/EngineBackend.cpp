@@ -1037,6 +1037,12 @@ void EngineBackend::DestroySubsystems()
         context->jobManager->WaitMainJobs();
     }
 
+    if (context->debugOverlay != nullptr)
+    {
+        delete context->debugOverlay; // Private destructor
+        context->debugOverlay = nullptr;
+    }
+
 // Free subsystems
 
 #ifdef __DAVAENGINE_AUTOTESTING__

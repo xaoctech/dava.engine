@@ -18,13 +18,13 @@ static const DAVA::FastName SHOOTER_ACTION_INTERACT("SECOND_SHOOT");
 
 // Character traits
 static const DAVA::float32 SHOOTER_CHARACTER_CAPSULE_HEIGHT = 1.0f;
-static const DAVA::float32 SHOOTER_CHARACTER_CAPSULE_RADIUS = 0.55f;
+static const DAVA::float32 SHOOTER_CHARACTER_CAPSULE_RADIUS = 0.35f;
 static const DAVA::Vector3 SHOOTER_CHARACTER_FORWARD = DAVA::Vector3(0.0f, -1.0f, 0.0f);
 static const DAVA::Vector3 SHOOTER_CHARACTER_RIGHT = DAVA::Vector3(-1.0f, 0.0f, 0.0f);
 static const DAVA::Vector3 SHOOTER_CHARACTER_LOOK_FROM = DAVA::Vector3(-0.17f, -0.37f, 1.8f); // Used for raycasting to camera position to avoid looking through obstacles
 static const DAVA::uint32 SHOOTER_CHARACTER_MAX_HEALTH = 10;
 static const DAVA::float32 SHOOTER_CHARACTER_ROTATION_SPEED = 0.20f;
-static const DAVA::float32 SHOOTER_MOVEMENT_SPEED = 0.05f;
+static const DAVA::float32 SHOOTER_MOVEMENT_SPEED = 2.0f; // m/s
 
 // Shooting traits
 static const DAVA::float32 SHOOTER_MAX_SHOOTING_DISTANCE = 80.0f;

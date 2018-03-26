@@ -100,7 +100,12 @@ struct TimeSyncHeader
     {
         uint32 frameId;
         uint32 uptimeMs;
+    };
+
+    union
+    {
         int32 diff;
+        float32 frequencyHz;
     };
 
     int8 netDiff;

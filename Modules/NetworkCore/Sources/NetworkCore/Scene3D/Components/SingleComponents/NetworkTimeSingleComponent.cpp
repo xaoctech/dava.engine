@@ -4,8 +4,8 @@
 
 namespace DAVA
 {
-float32 NetworkTimeSingleComponent::FrameFrequencyHz = 60.f;
-float32 NetworkTimeSingleComponent::FrameDurationS = 1.f / NetworkTimeSingleComponent::FrameFrequencyHz;
+float32 NetworkTimeSingleComponent::FrameFrequencyHz = 50.0f;
+float32 NetworkTimeSingleComponent::FrameDurationS = 1.f / static_cast<float32>(NetworkTimeSingleComponent::FrameFrequencyHz);
 uint32 NetworkTimeSingleComponent::FrameDurationMs = 1000 / NetworkTimeSingleComponent::FrameFrequencyHz;
 uint32 NetworkTimeSingleComponent::FrameDurationUs = 1000000 / NetworkTimeSingleComponent::FrameFrequencyHz;
 float32 NetworkTimeSingleComponent::FrameSpeedupS = 0.001f;
@@ -173,5 +173,13 @@ void NetworkTimeSingleComponent::SetNumTimeSyncs(uint32 value)
 uint32 NetworkTimeSingleComponent::GetNumTimeSyncs() const
 {
     return numTimeSyncs;
+}
+
+void NetworkTimeSingleComponent::SetFrameFrequencyHz(float32 value)
+{
+    FrameFrequencyHz = value;
+    FrameDurationS = 1.f / value;
+    FrameDurationMs = 1000 / value;
+    FrameDurationUs = 1000000 / value;
 }
 }

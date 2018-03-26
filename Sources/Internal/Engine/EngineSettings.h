@@ -6,9 +6,11 @@
 #include "Debug/DVAssert.h"
 #include "Functional/Signal.h"
 #include "Reflection/Reflection.h"
+#include "Reflection/ReflectedMeta.h"
 
 namespace DAVA
 {
+#if 0
 class FilePath;
 
 /**
@@ -135,7 +137,51 @@ protected:
 
     friend struct EngineSettingsDetails;
 };
+#endif
 
+class EngineSettingsVar;
+class EngineSettings
+{
+public:
+    size_t GetVarsCount() const;
+    EngineSettingsVar* RegisterVar(FastName name, Any defaultValue, String helpString, ReflectedMeta&& meta = ReflectedMeta());
+    EngineSettingsVar* GetVar(FastName name);
+    EngineSettingsVar* GetVar(size_t index);
+
+    const Any& GetValue(FastName name);
+    void SetValue(FastName name, Any value);
+
+    void Save(String path);
+    void Load(String path);
+
+    Signal<EngineSettingsVar*> varChanged; //!< Emitted when any setting var is changed
+    Signal<EngineSettingsVar*> varRegistered; //!< Emitted when new setting var is registered
+
+private:
+    Vector<std::unique_ptr<EngineSettingsVar>> vars;
+    UnorderedMap<FastName, size_t> varsNameMap;
+};
+
+class EngineSettingsVar final
+{
+    friend class EngineSettings;
+
+public:
+    FastName GetName() const;
+    const Any& GetValue() const;
+    const String& GetHelp() const;
+    const ReflectedMeta* GetMeta() const;
+
+    void SetValue(Any value);
+    void SetValueWithCast(Any value);
+
+private:
+    Any value;
+    FastName name;
+    String help;
+    std::unique_ptr<ReflectedMeta> meta;
+    EngineSettings* settings = nullptr;
+};
 } //ns DAVA
 
 #define __DAVA_ENGINE_SETTINGS_IMPL__

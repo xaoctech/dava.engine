@@ -104,11 +104,21 @@ Landscape::Landscape()
     }
 
     EngineSettings* settings = GetEngineContext()->settings;
-    EngineSettings::eSettingValue landscapeSetting = settings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
-    if (landscapeSetting == EngineSettings::LANDSCAPE_NO_INSTANCING)
-        renderMode = RENDERMODE_NO_INSTANCING;
-    else if (landscapeSetting == EngineSettings::LANDSCAPE_INSTANCING && renderMode == RENDERMODE_INSTANCING_MORPHING)
+    EngineSettingsVar* var = settings->RegisterVar(FastName("r_landcape_creation_mode"), uint32(0), "0 - morphing, 1 - instancing, 2 - no instancing");
+
+    uint32 landscapeRenderMode = var->GetValue().Get<uint32>();
+    switch (landscapeRenderMode)
+    {
+    case 1:
         renderMode = RENDERMODE_INSTANCING;
+        break;
+    case 2:
+        renderMode = RENDERMODE_NO_INSTANCING;
+        break;
+    default:
+        // leave renderMode as it was initialized above
+        break;
+    }
 
     isRequireTangentBasis = (QualitySettingsSystem::Instance()->GetCurMaterialQuality(LANDSCAPE_QUALITY_NAME) == LANDSCAPE_QUALITY_VALUE_HIGH);
 

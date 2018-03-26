@@ -104,13 +104,6 @@ bool DLCManagerImpl::CountError(int32 errCode)
     return errorCounter >= hints.maxSameErrorCounter;
 }
 
-bool DLCManagerImpl::IsProfilingEnabled() const
-{
-    EngineSettings* engineSettings = engine.GetContext()->settings;
-    Any value = engineSettings->GetSetting<EngineSettings::SETTING_PROFILE_DLC_MANAGER>();
-    return value.Get<bool>(false);
-}
-
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     : profiler(1024 * 16)
     , engine(*engine_)
@@ -134,67 +127,23 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
 #endif
 
     DVASSERT(Thread::IsMainThread());
-    engine.update.Connect(this, [this](float32 frameDelta)
-                          {
-                              Update(frameDelta, false);
-                          });
-    engine.backgroundUpdate.Connect(this, [this](float32 frameDelta)
-                                    {
-                                        Update(frameDelta, true);
-                                    });
 
-    if (IsProfilingEnabled())
-    {
-        profiler.Start();
-    }
+    EngineSettings* engineSettings = engine.GetContext()->settings;
+    profilerEnabled = engineSettings->RegisterVar(FastName("dlc_profiling"), false, "Enable DLC Manager profiling");
 
-    engine.GetContext()->settings->settingChanged.Connect(this, &DLCManagerImpl::OnSettingsChanged);
+    engine.update.Connect(this, [this](float32 frameDelta) { Update(frameDelta, false); });
+    engine.backgroundUpdate.Connect(this, [this](float32 frameDelta) { Update(frameDelta, true); });
 
-    gestureChecker.debugGestureMatch.DisconnectAll();
-    gestureChecker.debugGestureMatch.Connect(this, [this]() {
-        Logger::Debug("enable mini imgui for dlc profiling");
-        GetPrimaryWindow()->draw.Disconnect(this);
-        GetPrimaryWindow()->draw.Connect(this, [this](Window*) {
-            // TODO move it later to common ImGui setting system
-            if (ImGui::IsInitialized())
-            {
-                {
-                    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
-                    ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
+    GetPrimaryWindow()->update.Connect(this, [this](Window*, float32) {
+        if (profilerEnabled->GetValue().Get<bool>())
+        {
+            DrawProfilerDebugWindow();
+        }
+    });
 
-                    bool isImWindowOpened = true;
-                    ImGui::Begin("DLC Profiling Window", &isImWindowOpened);
-
-                    if (isImWindowOpened)
-                    {
-                        if (ImGui::Button("start dlc profiler"))
-                        {
-                            profiler.Start();
-                            profilerState = "started";
-                        }
-
-                        if (ImGui::Button("stop dlc profiler"))
-                        {
-                            profiler.Stop();
-                            profilerState = "stopped";
-                        }
-
-                        if (ImGui::Button("dump to"))
-                        {
-                            profilerState = "dumpped: (" + DumpToJsonProfilerTrace() + ")";
-                        }
-
-                        ImGui::Text("profiler state: %s", profilerState.c_str());
-                    }
-                    else
-                    {
-                        profiler.Stop();
-                        GetPrimaryWindow()->draw.Disconnect(this);
-                    }
-                    ImGui::End();
-                }
-            }
-        });
+    gestureChecker.debugGestureMatch.Connect([this]() {
+        bool isEnabled = profilerEnabled->GetValue().Get<bool>();
+        profilerEnabled->SetValue(!isEnabled);
     });
 }
 
@@ -236,18 +185,39 @@ PackRequest* DLCManagerImpl::CastToPackRequest(const IRequest* request)
     return packRequest;
 }
 
-void DLCManagerImpl::OnSettingsChanged(EngineSettings::eSetting value)
+void DLCManagerImpl::DrawProfilerDebugWindow()
 {
-    if (EngineSettings::SETTING_PROFILE_DLC_MANAGER == value)
+    if (ImGui::IsInitialized())
     {
-        if (IsProfilingEnabled())
+        bool shown = true;
+        if (ImGui::Begin("DlcProfiling", &shown, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
         {
-            profiler.Start();
+            if (ImGui::Button("Start"))
+                profiler.Start();
+
+            ImGui::SameLine();
+            if (ImGui::Button("Stop"))
+                profiler.Stop();
+
+            ImGui::SameLine();
+            if (ImGui::Button("Dump"))
+            {
+                String path = DumpToJsonProfilerTrace();
+                Logger::Info("DLC trace was dumped to: %s", path.c_str());
+            }
+
+            ImGui::SameLine();
+            if (profiler.IsStarted())
+                ImGui::Text("Is started");
+            else
+                ImGui::Text("Is stopped");
         }
-        else
+        ImGui::End();
+
+        if (!shown)
         {
             profiler.Stop();
-            DumpToJsonProfilerTrace();
+            profilerEnabled->SetValue(false);
         }
     }
 }
@@ -318,6 +288,7 @@ DLCManagerImpl::~DLCManagerImpl()
 
     engine.update.Disconnect(this);
     engine.backgroundUpdate.Disconnect(this);
+    GetPrimaryWindow()->update.Disconnect(this);
 
     ClearResouces();
 }
@@ -450,10 +421,7 @@ void DLCManagerImpl::Initialize(const FilePath& dirToDownloadPacks_,
 {
     DVASSERT(Thread::IsMainThread());
 
-    profiler.Start();
-
     const bool isFirstTimeCall = (log.is_open() == false);
-
     DumpInitialParams(dirToDownloadPacks_, urlToServerSuperpack_, hints_);
 
     log << __FUNCTION__ << std::endl;
@@ -523,7 +491,6 @@ void DLCManagerImpl::Deinitialize()
     if (profiler.IsStarted())
     {
         profiler.Stop();
-        DumpToJsonProfilerTrace();
     }
 
     log.close();

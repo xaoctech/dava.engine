@@ -45,21 +45,25 @@ void CreateGameModeSystem::Process(DAVA::float32 timeElapsed)
 {
     NetworkReplicationSingleComponent::EntityToInfo& entityToInfo = GetScene()->GetSingleComponent<NetworkReplicationSingleComponent>()->replicationInfo;
     BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
-    if (!isInit && entityToInfo.find(NetworkID::SCENE_ID) != entityToInfo.end())
+    if (!isInit)
     {
-        CreateGameSystems(optionsComp->gameModeId);
-
-        if (optionsComp->isEnemyPredicted)
+        const auto& findIt = entityToInfo.find(NetworkID::SCENE_ID);
+        if (findIt != entityToInfo.end() && findIt->second.frameIdLastApply > 0)
         {
-            GetScene()->AddTag(FastName("enemy_predict"));
-        }
+            CreateGameSystems(optionsComp->gameModeId);
 
-        if (!optionsComp->options.gameStatsLogPath.empty())
-        {
-            GetScene()->AddTag(FastName("log_game_stats"));
-        }
+            if (optionsComp->isEnemyPredicted)
+            {
+                GetScene()->AddTag(FastName("enemy_predict"));
+            }
 
-        isInit = true;
+            if (!optionsComp->options.gameStatsLogPath.empty())
+            {
+                GetScene()->AddTag(FastName("log_game_stats"));
+            }
+
+            isInit = true;
+        }
     }
 
     if (GetScene()->HasTag(FastName("input")) && nullptr == remoteInputSystem)

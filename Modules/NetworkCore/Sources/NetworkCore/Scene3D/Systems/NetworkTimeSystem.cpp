@@ -47,8 +47,9 @@ static int8 GetNetDiff(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA
 static void SendUptime(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA::Responder& responder)
 {
     TimeSyncHeader timeSyncHeader;
-    timeSyncHeader.uptimeMs = netTimeComp->GetUptimeMs() +
-    static_cast<uint32>(responder.GetRtt() * NetworkTimeSingleComponent::UptimeInitFactor);
+    uint32 targetUptime = netTimeComp->GetUptimeMs() + static_cast<uint32>(responder.GetRtt() * NetworkTimeSingleComponent::UptimeInitFactor);
+    timeSyncHeader.uptimeMs = targetUptime;
+    timeSyncHeader.frequencyHz = NetworkTimeSingleComponent::FrameFrequencyHz;
     timeSyncHeader.type = TimeSyncHeader::Type::UPTIME;
     timeSyncHeader.netDiff = GetNetDiff(netTimeComp, responder);
     responder.Send(reinterpret_cast<const uint8*>(&timeSyncHeader), TIMESYNC_PACKET_HEADER_SIZE,
@@ -57,6 +58,7 @@ static void SendUptime(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA
     uint32 resyncDelayUptime = netTimeComp->GetUptimeMs() +
     static_cast<uint32>(responder.GetRtt() * NetworkTimeSingleComponent::UptimeDelayFactor);
     netTimeComp->SetResyncDelayUptime(responder.GetToken(), resyncDelayUptime);
+    netTimeComp->SetLastClientFrameId(responder.GetToken(), 0);
 }
 
 NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
@@ -120,22 +122,24 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
 
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     netTimeComp->SetClientOutrunning(client->GetAuthToken(), timeSyncHeader->netDiff);
-    netTimeComp->SetLastSyncDiff(timeSyncHeader->diff);
 
     switch (timeSyncHeader->type)
     {
     case TimeSyncHeader::Type::UPTIME:
     {
+        netTimeComp->SetFrameFrequencyHz(timeSyncHeader->frequencyHz);
         netTimeComp->SetUptimeMs(timeSyncHeader->uptimeMs);
         netTimeComp->SetFrameId(timeSyncHeader->uptimeMs / NetworkTimeSingleComponent::FrameDurationMs);
         netTimeComp->SetIsInitialized(true);
 
         netTimeComp->SetNumTimeSyncs(netTimeComp->GetNumTimeSyncs() + 1);
 
+        GetScene()->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
         break;
     }
     case TimeSyncHeader::Type::DIFF:
     {
+        netTimeComp->SetLastSyncDiff(timeSyncHeader->diff);
         ProcessFrameDiff(timeSyncHeader->diff);
         break;
     }

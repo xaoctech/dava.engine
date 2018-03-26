@@ -62,6 +62,8 @@ public:
     void SetNumTimeSyncs(uint32 value);
     uint32 GetNumTimeSyncs() const;
 
+    static void SetFrameFrequencyHz(float32 value);
+
     virtual ~NetworkTimeSingleComponent(){};
 
     static float32 FrameFrequencyHz;

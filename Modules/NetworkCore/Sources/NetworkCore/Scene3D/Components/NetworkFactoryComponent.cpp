@@ -23,9 +23,9 @@ Component* NetworkFactoryComponent::Clone(Entity* toEntity)
     return newComp;
 }
 
-void NetworkFactoryComponent::SetInitialTransform(const Vector3& position, const Quaternion& rotation)
+void NetworkFactoryComponent::SetInitialTransform(const Vector3& position, const Quaternion& rotation, float32 scale)
 {
-    initialTransformPtr.reset(new InitialTransform{ position, rotation });
+    initialTransformPtr.reset(new InitialTransform{ position, rotation, scale });
 }
 
 UnorderedMap<FastName, NetworkFactoryComponent::ComponentField> NetworkFactoryComponent::componentFieldsCache = {};

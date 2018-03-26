@@ -107,7 +107,7 @@ bool GetRaycastHit(DAVA::Scene& scene, const DAVA::Vector3& origin, const DAVA::
     return false;
 }
 
-void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outEntity, bool current)
+void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outEntity, bool current, bool local)
 {
     using namespace DAVA;
 
@@ -132,7 +132,22 @@ void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DA
 
     // Calculate aim offset in world space
 
-    const Vector3& characterPosition = aimingEntityTransform->GetPosition();
+    Vector3 characterPosition;
+
+    if (local)
+    {
+        characterPosition = aimingEntityTransform->GetPosition();
+    }
+    else
+    {
+        // Calculate aim offset in world space
+        Matrix4 characterWorldTransform = aimingEntityTransform->GetWorldTransform();
+        Vector3 characterWorldScale;
+        Quaternion characterWorldRotation;
+
+        characterWorldTransform.Decomposition(characterPosition, characterWorldScale, characterWorldRotation);
+    }
+
     Vector3 aimPositionAbsolute = characterPosition + aimPositionRelative + Vector3(0.0f, 0.0f, SHOOTER_AIM_OFFSET.z);
 
     // Check if something is between aim and the character. Move aim in this case so that the character is always visible to the camera
@@ -171,12 +186,17 @@ void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DA
 
 void GetCurrentAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outEntity)
 {
-    GetAimRay(aimComponent, filter, outAimRayOrigin, outAimRayDirection, outAimRayEnd, outEntity, true);
+    GetAimRay(aimComponent, filter, outAimRayOrigin, outAimRayDirection, outAimRayEnd, outEntity, true, true);
 }
 
 void GetFinalAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outEntity)
 {
-    GetAimRay(aimComponent, filter, outAimRayOrigin, outAimRayDirection, outAimRayEnd, outEntity, false);
+    GetAimRay(aimComponent, filter, outAimRayOrigin, outAimRayDirection, outAimRayEnd, outEntity, false, true);
+}
+
+void GetWorldAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DAVA::Vector3& outAimRayOrigin, DAVA::Vector3& outAimRayDirection, DAVA::Vector3& outAimRayEnd, DAVA::Entity** outEntity)
+{
+    GetAimRay(aimComponent, filter, outAimRayOrigin, outAimRayDirection, outAimRayEnd, outEntity, false, false);
 }
 
 DAVA::Vector3 GetRandomCarSpawnPosition()

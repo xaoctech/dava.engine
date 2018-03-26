@@ -102,6 +102,7 @@ public:
 
     static void AddCustomOutput(DAVA::LoggerOutput* lo);
     static void RemoveCustomOutput(DAVA::LoggerOutput* lo);
+    static void ReleaseCustomOutput(DAVA::LoggerOutput* lo);
 
 #if defined(__DAVAENGINE_ANDROID__)
     static void SetTag(const char8* logTag);
