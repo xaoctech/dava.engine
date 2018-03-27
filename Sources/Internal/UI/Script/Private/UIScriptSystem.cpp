@@ -142,6 +142,10 @@ void UIScriptSystem::UpdateController(DAVA::UIScriptSystem::ScriptLink& l)
         l.controller = std::make_shared<UILuaScriptComponentController>(luaPath);
         l.controller->Init(component);
     }
+    else
+    {
+        Logger::Warning("Lua file '%s' does not exist !", luaPath.GetStringValue().c_str());
+    }
     component->SetModifiedScripts(false);
 }
 

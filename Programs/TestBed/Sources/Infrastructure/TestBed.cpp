@@ -42,6 +42,7 @@
 #include "Tests/GPUTest.h"
 #include "Tests/DLCManagerTest.h"
 #include "Tests/ScriptingTest.h"
+#include "Tests/ScriptingPerformanceTest.h"
 #include "Tests/SamplePluginTest.h"
 #include "Tests/AssertTest.h"
 #include "Tests/CoreV2Test.h"
@@ -431,6 +432,7 @@ void TestBed::RegisterTests()
     new UILoggingTest(*this);
     new ProfilerTest(*this);
     new ScriptingTest(*this);
+    new ScriptingPerformanceTest(*this);
     new ImGuiTest(*this);
     new SoundTest(*this);
     new AnyPerformanceTest(*this);

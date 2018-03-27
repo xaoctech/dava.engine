@@ -36,6 +36,9 @@ find_dava_module( Physics )
 find_dava_module( PhysicsDebug )
 find_dava_module( Version )
 
+# add Visual Script
+find_dava_module( VisualScript )
+
 list( APPEND DAVA_COMPONENTS DAVA_LOCALIZATION_DEBUG )
 
 

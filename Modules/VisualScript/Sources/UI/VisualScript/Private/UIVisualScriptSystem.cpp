@@ -123,6 +123,10 @@ void UIVisualScriptSystem::Process(float32 elapsedTime)
                     Logger::Error(e.what());
                 }
             }
+            else
+            {
+                Logger::Warning("VisualScript file '%s' does not exist !.", scriptPath.GetStringValue().c_str());
+            }
             component->SetNeedReload(false);
         }
 

@@ -1,0 +1,234 @@
+variables:
+    _time: ["float32", 0.000000]
+    _sum: ["float32", 0.000000]
+    _start_index: ["int32", 0]
+    _last_index: ["int32", 500]
+nodes:
+    VisualScriptFunctionNode3:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode2"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode3"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode4"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode3"
+        -   out:
+                pin: "frameDelta"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode3"
+        node:
+            functionName: "Sum"
+            defaults: {}
+            className: "FloatMath"
+            position: [442.795227, -35.103451]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode3"
+    VisualScriptEventNode1:
+        connections:
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode2"
+            in:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "frameDelta"
+                name: "VisualScriptEventNode1"
+        node:
+            eventName: "UIProcessEvent"
+            position: [94.645706, -108.520020]
+        type: "VisualScriptEventNode"
+        name: "VisualScriptEventNode1"
+    VisualScriptSetVarNode2:
+        connections:
+        -   out:
+                pin: "exec"
+                name: "VisualScriptForNode1"
+            in:
+                pin: "exit"
+                name: "VisualScriptSetVarNode2"
+        -   out:
+                pin: "event"
+                name: "VisualScriptEventNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode2"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode2"
+        node:
+            defaults: {}
+            varPath: "_time"
+            position: [794.821106, -113.128433]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode2"
+    VisualScriptSetVarNode1:
+        connections:
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "set"
+                name: "VisualScriptSetVarNode1"
+        -   out:
+                pin: "loop body"
+                name: "VisualScriptForNode1"
+            in:
+                pin: "exec"
+                name: "VisualScriptSetVarNode1"
+        node:
+            defaults: {}
+            varPath: "_sum"
+            position: [1510.931763, -50.530365]
+        type: "VisualScriptSetVarNode"
+        name: "VisualScriptSetVarNode1"
+    VisualScriptFunctionNode2:
+        connections:
+        -   out:
+                pin: "set"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode2"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode2"
+        -   out:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode2"
+        node:
+            functionName: "Sum"
+            defaults: {}
+            className: "FloatMath"
+            position: [1116.011597, 162.570236]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode2"
+    VisualScriptForNode1:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode2"
+            in:
+                pin: "last index"
+                name: "VisualScriptForNode1"
+        -   out:
+                pin: "exit"
+                name: "VisualScriptSetVarNode2"
+            in:
+                pin: "exec"
+                name: "VisualScriptForNode1"
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode3"
+            in:
+                pin: "first index"
+                name: "VisualScriptForNode1"
+        -   out:
+                pin: "exec"
+                name: "VisualScriptSetVarNode1"
+            in:
+                pin: "loop body"
+                name: "VisualScriptForNode1"
+        node:
+            position: [1177.804810, -74.649597]
+        type: "VisualScriptForNode"
+        name: "VisualScriptForNode1"
+    VisualScriptGetVarNode4:
+        connections:
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode3"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode4"
+        node:
+            varPath: "_time"
+            position: [245.973770, 48.658417]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode4"
+    VisualScriptGetVarNode3:
+        connections:
+        -   out:
+                pin: "first index"
+                name: "VisualScriptForNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode3"
+        node:
+            varPath: "_start_index"
+            position: [848.390381, 21.772800]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode3"
+    VisualScriptFunctionNode1:
+        connections:
+        -   out:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+            in:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode1"
+        -   out:
+                pin: "arg1"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "result"
+                name: "VisualScriptFunctionNode1"
+        node:
+            functionName: "Sin"
+            defaults: {}
+            className: "FloatMath"
+            position: [752.302124, 257.126404]
+        type: "VisualScriptFunctionNode"
+        name: "VisualScriptFunctionNode1"
+    VisualScriptGetVarNode2:
+        connections:
+        -   out:
+                pin: "last index"
+                name: "VisualScriptForNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode2"
+        node:
+            varPath: "_last_index"
+            position: [849.830383, 102.239998]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode2"
+    VisualScriptGetVarNode1:
+        connections:
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode1"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+        -   out:
+                pin: "arg0"
+                name: "VisualScriptFunctionNode2"
+            in:
+                pin: "value"
+                name: "VisualScriptGetVarNode1"
+        node:
+            varPath: "_sum"
+            position: [512.707520, 161.698578]
+        type: "VisualScriptGetVarNode"
+        name: "VisualScriptGetVarNode1"
