@@ -6,6 +6,7 @@
 #include "Components/ShooterRocketComponent.h"
 #include "Components/ShooterStateComponent.h"
 #include "Components/RocketSpawnComponent.h"
+#include "Components/SingleComponents/EffectQueueSingleComponent.h"
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
 
@@ -67,11 +68,14 @@ ShooterPlayerAttackSystem::ShooterPlayerAttackSystem(DAVA::Scene* scene)
     actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_ATTACK_BULLET);
     actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_INTERACT);
     actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET);
+    actionsSingleComponent->AddAvailableDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET2);
 
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_BULLET, eInputElements::MOUSE_LBUTTON, mouseId, DigitalElementState::JustPressed());
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET, eInputElements::MOUSE_RBUTTON, mouseId, DigitalElementState::Pressed());
+    actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ATTACK_ROCKET2, eInputElements::MOUSE_MBUTTON, mouseId, DigitalElementState::JustPressed());
 
     optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
+    effectQueue = scene->GetSingleComponent<EffectQueueSingleComponent>();
 
     entityGroup = scene->AquireEntityGroup<ShooterRoleComponent, ShooterStateComponent>();
 }
@@ -112,6 +116,7 @@ void ShooterPlayerAttackSystem::ApplyDigitalActions(DAVA::Entity* entity, const 
     DVASSERT(roleComponent->GetRole() == ShooterRoleComponent::Role::Player);
 
     bool hasActionAttackRocket = false;
+    bool hasActionAttackRocket2 = false;
 
     for (const FastName& action : actions)
     {
@@ -125,6 +130,7 @@ void ShooterPlayerAttackSystem::ApplyDigitalActions(DAVA::Entity* entity, const 
         }
 
         hasActionAttackRocket |= (action == SHOOTER_ACTION_ATTACK_ROCKET);
+        hasActionAttackRocket2 |= (action == SHOOTER_ACTION_ATTACK_ROCKET2);
     }
 
     if (IsServer(GetScene()) || IsClientOwner(entity))
@@ -138,12 +144,18 @@ void ShooterPlayerAttackSystem::ApplyDigitalActions(DAVA::Entity* entity, const 
             ++rocketSpawnProgress;
             if (rocketSpawnProgress == RocketSpawnComponent::THRESHOLD)
             {
-                RocketAttack(entity, clientFrameId);
+                RocketAttack(entity, clientFrameId, true);
+                rocketSpawnProgress = 0;
             }
         }
         else
         {
             rocketSpawnProgress = 0;
+        }
+
+        if (hasActionAttackRocket2)
+        {
+            RocketAttack(entity, clientFrameId, false);
         }
     }
 }
@@ -319,7 +331,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
     }
 }
 
-void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::uint32 clientFrameId) const
+void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::uint32 clientFrameId, bool multirocket) const
 {
     using namespace DAVA;
 
@@ -364,6 +376,7 @@ void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::u
 
             ShooterRocketComponent* rocketComp = new ShooterRocketComponent();
             rocketComp->shooterId = shooterReplComp->GetNetworkID();
+            rocketComp->multirocket = multirocket;
             rocket->AddComponent(rocketComp);
 
             NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent(entityId);
@@ -375,6 +388,21 @@ void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::u
             rocket->GetComponent<TransformComponent>()->SetLocalTransform(weaponTrans.GetTranslationVector(),
                                                                           weaponTrans.GetRotation(),
                                                                           weaponTrans.GetScaleVector());
+
+            // effect: rocket shot
+            NetworkID shotEffectId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, 2);
+            effectQueue->CreateEffect(1)
+            .SetDuration(5.f)
+            .SetPosition(weaponTrans.GetTranslationVector())
+            .SetRotation(weaponTrans.GetRotation())
+            .SetNetworkId(shotEffectId);
+
+            // effect: rocket smoke track
+            NetworkID trackEffectId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, 3);
+            effectQueue->CreateEffect(2)
+            .SetNetworkId(trackEffectId)
+            .SetParentId(entityId);
+
             GetScene()->AddNode(rocket);
         }
     }

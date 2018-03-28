@@ -74,4 +74,6 @@ private:
     std::mutex lock;
     std::condition_variable notifier;
     bool hasProducedMetrics = false;
+
+    bool disableNetworkInReplayMode = false;
 };

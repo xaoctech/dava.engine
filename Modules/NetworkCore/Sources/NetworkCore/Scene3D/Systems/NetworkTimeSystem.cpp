@@ -74,7 +74,7 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
         client->SubscribeOnConnect(OnClientConnectCb(this, &NetworkTimeSystem::OnConnectClient));
         client->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
                                    OnClientReceiveCb(this, &NetworkTimeSystem::OnReceiveClient));
-        networkResimulationSingleComponent = scene->GetSingleComponentForRead<NetworkResimulationSingleComponent>(this);
+        networkResimulationSingleComponent = scene->GetSingleComponent<NetworkResimulationSingleComponent>();
     }
     else if (IsServer(this))
     {

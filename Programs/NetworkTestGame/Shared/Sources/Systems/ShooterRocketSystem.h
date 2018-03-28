@@ -12,6 +12,7 @@ class Entity;
 class FrameActionID;
 class NetworkEntitiesSingleComponent;
 }
+class EffectQueueSingleComponent;
 class ShooterRocketComponent;
 
 class ShooterRocketSystem : public DAVA::BaseSimulationSystem
@@ -24,7 +25,8 @@ public:
 
     void ProcessFixed(DAVA::float32 timeElapsed) override;
 
-    void SimulateRocket(DAVA::Entity* entity);
+    void SimulateRocket(DAVA::Entity* rocket);
+    void SimulateRocket2(DAVA::Entity* rocket);
     void PrepareForRemove() override{};
 
 protected:
@@ -45,4 +47,5 @@ protected:
     DAVA::Entity* rocketModel = nullptr;
 
     DAVA::NetworkEntitiesSingleComponent* entitiesComp = nullptr;
+    EffectQueueSingleComponent* effectQueue = nullptr;
 };

@@ -42,6 +42,7 @@ public:
 
     DAVA::NetworkID shooterId;
     DAVA::NetworkID targetId;
+    bool multirocket = true;
 
 protected:
     Stage stage = Stage::BOOSTER;

@@ -29,8 +29,8 @@ float32 ImGuiUtils::GetImGuiScreenToPhysicalScreenSizeScale()
     VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
 
     Size2i screen = vcs->GetPhysicalScreenSize();
-    float32 scaleX = static_cast<float32>(screen.dx) / ImGui::screenWidth;
-    float32 scaleY = static_cast<float32>(screen.dy) / ImGui::screenHeight;
+    float32 scaleX = static_cast<float32>(screen.dx) / ImGui::Settings::screenWidth;
+    float32 scaleY = static_cast<float32>(screen.dy) / ImGui::Settings::screenHeight;
 
     return Min(scaleX, scaleY);
 }

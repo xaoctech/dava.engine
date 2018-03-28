@@ -7,10 +7,12 @@
 namespace DAVA
 {
 class EntityGroup;
+class NetworkEntitiesSingleComponent;
 class Scene;
 }
 
 class ExplosionEffectComponent;
+class EffectQueueSingleComponent;
 
 class ExplosionEffectSystem : public DAVA::SceneSystem
 {
@@ -23,11 +25,16 @@ public:
     void ProcessFixed(DAVA::float32 timeElapsed) override;
 
 private:
+    void ProcessNewEffects(DAVA::Scene* scene);
     DAVA::Entity* CreateExplosionEffect(int type);
+    void LoadEffectModels();
 
-    DAVA::EntityGroup* rocketEntities = nullptr;
+    bool isGuiMode = true;
+
+    DAVA::NetworkEntitiesSingleComponent* networkEntities = nullptr;
+    const EffectQueueSingleComponent* effectQueue = nullptr;
+
     DAVA::ComponentGroup<ExplosionEffectComponent>* explosionEffectComponents = nullptr;
 
-    DAVA::Entity* explosionModel1 = nullptr;
-    DAVA::Entity* explosionModel2 = nullptr;
+    DAVA::Vector<DAVA::Entity*> effectModelCache;
 };

@@ -9,8 +9,9 @@
 
 #include "NetworkCore/NetworkCoreUtils.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
-#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkResimulationSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
 
 #include <Scene3D/Scene.h>
 #include <Utils/FpsMeter.h>
@@ -160,6 +161,47 @@ void NetworkCoreDebugOverlayItem::Draw(bool* shown, float32 timeElapsed)
                                         ImGui::TreePop();
                                     }
                                 });
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Network Resimulation System"))
+        {
+            if (scene != nullptr)
+            {
+                NetworkResimulationSingleComponent* networkResimulationSingleComponent = scene->GetSingleComponent<NetworkResimulationSingleComponent>();
+                auto& boundingBoxResimulation = networkResimulationSingleComponent->boundingBoxResimulation;
+                bool enableBbResimulation = boundingBoxResimulation.IsEnabled();
+                ImGui::Checkbox("Enable bounding box resimulation", &enableBbResimulation);
+                if (enableBbResimulation != boundingBoxResimulation.IsEnabled())
+                {
+                    enableBbResimulation ? boundingBoxResimulation.Enable() : boundingBoxResimulation.Disable();
+                }
+
+                auto& debugDraw = networkResimulationSingleComponent->debugDraw;
+
+                bool enableDebugDraw = debugDraw.enabled;
+                ImGui::Checkbox("Enable debug draw", &enableDebugDraw);
+                if (enableDebugDraw != debugDraw.enabled)
+                {
+                    debugDraw.enabled = enableDebugDraw;
+                }
+
+                if (debugDraw.enabled)
+                {
+                    int fadeTime = static_cast<int>(debugDraw.fadeTimeInSeconds);
+                    ImGui::SliderInt("Fade time (seconds)", &fadeTime, 1, 10);
+                    debugDraw.fadeTimeInSeconds = static_cast<uint16>(fadeTime);
+
+                    if (boundingBoxResimulation.IsEnabled())
+                    {
+                        bool enableBbDraw = debugDraw.drawBbs;
+                        ImGui::Checkbox("Enable bounding box debug draw", &enableBbDraw);
+                        if (enableBbDraw != debugDraw.drawBbs)
+                        {
+                            debugDraw.drawBbs = enableBbDraw;
+                        }
+                    }
+                }
             }
         }
     }

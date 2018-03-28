@@ -15,6 +15,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRocketComponent)
     .ConstructorByPointer()
     .Field("Distance", &ShooterRocketComponent::distance)[M::Replicable()]
     .Field("Stage", &ShooterRocketComponent::stage)[M::Replicable()]
+    .Field("Multirocket", &ShooterRocketComponent::multirocket)[M::Replicable()]
     .Field("ShooterID", &ShooterRocketComponent::shooterId)[M::Replicable()]
     .Field("TragetID", &ShooterRocketComponent::targetId)[M::Replicable()]
     .End();

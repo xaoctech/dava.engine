@@ -33,7 +33,7 @@ public:
 
 private:
     NetworkTimeSingleComponent* netTimeComp = nullptr;
-    const NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
+    NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
 
     IClient* client = nullptr;
     FpsMeter fpsMeter;

@@ -14,6 +14,10 @@ inline NetworkID::NetworkID()
 inline NetworkID::NetworkID(uint32 id)
     : fullValue(id)
 {
+    // clear union
+    static_assert(sizeof(playerValue) == sizeof(fullValue), "fix enum");
+    static_assert(sizeof(actionValue) == sizeof(fullValue), "fix enum");
+    static_assert(sizeof(staticValue) == sizeof(fullValue), "fix enum");
 }
 
 inline NetworkID::operator uint32() const

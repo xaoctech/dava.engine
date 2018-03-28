@@ -1,17 +1,16 @@
 #include "Scene3D/Entity.h"
 
-#include "Scene3D/Scene.h"
+#include "Base/ObjectFactory.h"
+#include "Debug/ProfilerCPU.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
+#include "Entity/ComponentUtils.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Base/ObjectFactory.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
-#include "Entity/ComponentManager.h"
-#include "Entity/ComponentUtils.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Scene3D/Systems/EventSystem.h"
@@ -482,6 +481,8 @@ bool Entity::FindNodesByNamePart(const String& namePart, List<Entity*>& outNodeL
 
 AABBox3 Entity::GetWTMaximumBoundingBoxSlow()
 {
+    DAVA_PROFILER_CPU_SCOPE("Entity::GetWTMaximumBoundingBoxSlow");
+
     AABBox3 retBBox;
 
     RenderComponent* renderComponent = GetComponent<RenderComponent>();

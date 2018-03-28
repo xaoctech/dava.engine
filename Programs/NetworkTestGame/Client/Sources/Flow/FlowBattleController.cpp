@@ -98,10 +98,15 @@ void FlowBattleController::Activate(DAVA::UIFlowContext* context, DAVA::UIContro
     incorrectInputTextComponent = incorrectInputControl->GetOrCreateComponent<UITextComponent>();
     DVASSERT(incorrectInputTextComponent);
 
-    UIControl* resimulationsControl = view->FindByPath("HUD/InfoPanel/*/NumResimulationsText");
-    DVASSERT(resimulationsControl);
-    resimulationsCountTextComponent = resimulationsControl->GetOrCreateComponent<UITextComponent>();
-    DVASSERT(resimulationsCountTextComponent);
+    UIControl* mispredictedEntitiesControl = view->FindByPath("HUD/InfoPanel/*/MispredictedEntitiesText");
+    DVASSERT(mispredictedEntitiesControl);
+    mispredictedEntitiesCountTextComponent = mispredictedEntitiesControl->GetOrCreateComponent<UITextComponent>();
+    DVASSERT(mispredictedEntitiesCountTextComponent);
+
+    UIControl* resimulatedEntitiesControl = view->FindByPath("HUD/InfoPanel/*/ResimulatedEntitiesText");
+    DVASSERT(resimulatedEntitiesControl);
+    resimulatedEntitiesCountTextComponent = resimulatedEntitiesControl->GetOrCreateComponent<UITextComponent>();
+    DVASSERT(resimulatedEntitiesCountTextComponent);
 
     BattleControls& controls = battleScene->GetSingleComponent<BattleOptionsSingleComponent>()->controls;
     controls.currentAim = view->FindByPath("HUD/CurrentAim");
@@ -135,7 +140,8 @@ void FlowBattleController::Deactivate(DAVA::UIFlowContext* context, DAVA::UICont
     pauseTextComponent = nullptr;
     timeSyncsTextComponent = nullptr;
     incorrectInputTextComponent = nullptr;
-    resimulationsCountTextComponent = nullptr;
+    mispredictedEntitiesCountTextComponent = nullptr;
+    resimulatedEntitiesCountTextComponent = nullptr;
 }
 
 void FlowBattleController::Process(DAVA::float32 frameDelta)
@@ -183,10 +189,11 @@ void FlowBattleController::Process(DAVA::float32 frameDelta)
             incorrectInputTextComponent->SetText("disabled");
         }
 
-        NetworkResimulationSystem* resimSystem = battleScene->GetSystem<NetworkResimulationSystem>();
-        if (resimSystem)
+        NetworkResimulationSystem* resimulationSystem = battleScene->GetSystem<NetworkResimulationSystem>();
+        if (resimulationSystem)
         {
-            resimulationsCountTextComponent->SetText(std::to_string(resimSystem->GetResimulationsCount()));
+            mispredictedEntitiesCountTextComponent->SetText(std::to_string(resimulationSystem->GetMispredictedEntitiesCount()));
+            resimulatedEntitiesCountTextComponent->SetText(std::to_string(resimulationSystem->GetResimulatedEntitiesCount()));
         }
     }
     else

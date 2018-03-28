@@ -18,7 +18,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkFrequencySystem)
 {
     ReflectionRegistrator<NetworkFrequencySystem>::Begin()[M::Tags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkFrequencySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 21.4f)]
+    .Method("ProcessFixed", &NetworkFrequencySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.4f)]
     .End();
 }
 

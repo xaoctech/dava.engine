@@ -23,6 +23,7 @@
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkReplicationSingleComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkResimulationSingleComponent.h>
 #include <NetworkCore/Scene3D/Systems/NetworkRemoteInputSystem.h>
 
 using namespace DAVA;
@@ -78,9 +79,11 @@ void CreateGameModeSystem::Process(DAVA::float32 timeElapsed)
 
 void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
 {
+    // TODO: clean up this mess.
     UnorderedSet<FastName> tags = { FastName("input") };
     bool isShooterGm = false;
     bool isInvaderGm = false;
+    bool isCubesGm = false;
     switch (gameModeId)
     {
     case GameMode::Id::CARS:
@@ -96,6 +99,10 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
     case GameMode::Id::INVADERS:
         tags.insert({ FastName("gm_invaders") });
         isInvaderGm = true;
+        break;
+    case GameMode::Id::CUBES:
+        tags.insert({ FastName("gm_cubes") }); // this is actually ignored.
+        isCubesGm = true;
         break;
     default:
         DVASSERT(0);
@@ -116,8 +123,18 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
         tags.insert({ FastName("gameinput"), FastName("gameshow"), FastName("playerentity") });
     }
 
-    for (auto& tag : tags)
+    if (isCubesGm)
     {
-        GetScene()->AddTag(tag);
+        for (const char* tag : { "gm_cubes", "input", "gameshow" })
+        {
+            GetScene()->AddTag(FastName(tag));
+        }
+    }
+    else
+    {
+        for (auto& tag : tags)
+        {
+            GetScene()->AddTag(tag);
+        }
     }
 }

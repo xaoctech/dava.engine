@@ -23,6 +23,7 @@ void NetworkEntitiesSingleComponent::RegisterEntity(NetworkID networkID, Entity*
     if (findIt == networkEntities.end())
     {
         networkEntities.emplace(networkID, entity);
+        Logger::Info("register network_id: %d for entiry: %s", networkID, entity->GetName().c_str());
     }
     else
     {

@@ -73,7 +73,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterVisibilitySystem)
 {
     ReflectionRegistrator<ShooterVisibilitySystem>::Begin()[M::Tags("server", "gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterVisibilitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 21.3f)]
+    .Method("ProcessFixed", &ShooterVisibilitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.3f)]
     .Method("Process", &ShooterVisibilitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 999.f)]
     .End();
 }

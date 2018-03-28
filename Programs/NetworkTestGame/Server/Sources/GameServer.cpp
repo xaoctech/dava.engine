@@ -58,7 +58,7 @@ void GameServer::UpdateConsoleMode()
     {
         DAVA_PROFILER_CPU_SCOPE("while(udpServer.Update())");
         int64 beginUs = SystemTimer::GetUs();
-        while (SystemTimer::GetUs() - beginUs < NetworkTimeSingleComponent::FrameDurationUs - delta)
+        while (!disableNetworkInReplayMode && SystemTimer::GetUs() - beginUs < NetworkTimeSingleComponent::FrameDurationUs - delta)
         {
             udpServer.Update();
         }
@@ -84,7 +84,7 @@ void GameServer::UpdateGUIMode()
 {
     using namespace GameServerDetail;
     int64 updUs = SystemTimer::GetUs();
-    while (udpServer.Update())
+    while (!disableNetworkInReplayMode && udpServer.Update())
     {
         if (SystemTimer::GetUs() - updUs > MAX_UPDATE_DURATION_US)
         {

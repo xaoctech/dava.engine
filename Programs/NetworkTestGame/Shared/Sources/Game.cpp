@@ -42,7 +42,11 @@
 #include "Visibility/CharacterVisibilityShapeComponent.h"
 #include "Visibility/SimpleVisibilityShapeComponent.h"
 
+#include "GameModes/Cubes/BigCubeComponent.h"
+#include "GameModes/Cubes/SmallCubeComponent.h"
+
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
+#include "Components/SingleComponents/EffectQueueSingleComponent.h"
 #include "Components/SingleComponents/GameCollisionSingleComponent.h"
 #include "Components/SingleComponents/GameModeSingleComponent.h"
 #include "Components/SingleComponents/StatsLoggingSingleComponent.h"
@@ -94,13 +98,24 @@
 #include "Systems/AI/InvaderBehaviorSystem.h"
 #include "Systems/AI/BotTaskSystem.h"
 
+#include "GameModes/Cubes/CubesEntityFillSystem.h"
+#include "GameModes/Cubes/CubesGameplaySystem.h"
+#include "GameModes/Cubes/CubesPlayerConnectSystem.h"
+
 #include "Utils/StringUtils.h"
+
+class RegisterReflectionForGamemode final
+{
+public:
+    static void Cubes();
+};
 
 const DAVA::Vector<DAVA::String> GameMode::idNames = {
     "CARS",
     "TANKS",
     "SHOOTER",
-    "INVADERS"
+    "INVADERS",
+    "CUBES"
 };
 
 void RegisterGameComponents()
@@ -154,8 +169,9 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CharacterVisibilityShapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SimpleVisibilityShapeComponent);
 
-    // Singlecomponents
+    // Single components
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BattleOptionsSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EffectQueueSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameCollisionSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameModeSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StatsLoggingSingleComponent);
@@ -208,6 +224,8 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BotTaskSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderBehaviorSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterBehaviorSystem);
+
+    RegisterReflectionForGamemode::Cubes();
 }
 
 GameMode::Id GameMode::IdByName(DAVA::String name)
@@ -225,3 +243,15 @@ GameMode::Id GameMode::IdByName(DAVA::String name)
 
     return Id::TANKS;
 };
+
+void RegisterReflectionForGamemode::Cubes()
+{
+    // Components
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BigCubeComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SmallCubeComponent);
+
+    // Systems
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CubesEntityFillSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CubesGameplaySystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CubesPlayerConnectSystem);
+}

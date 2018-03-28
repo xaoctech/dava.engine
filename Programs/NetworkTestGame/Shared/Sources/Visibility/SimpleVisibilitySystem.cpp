@@ -20,7 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SimpleVisibilitySystem)
 {
     ReflectionRegistrator<SimpleVisibilitySystem>::Begin()[M::Tags("server", "simple_visibility")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SimpleVisibilitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 21.2f)]
+    .Method("ProcessFixed", &SimpleVisibilitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.2f)]
     .End();
 }
 

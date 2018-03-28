@@ -7,6 +7,7 @@
 namespace physx
 {
 class PxController;
+class PxActor;
 }
 
 namespace DAVA
@@ -65,6 +66,8 @@ public:
 
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
+
+    physx::PxActor* GetPxActor() const;
 
 protected:
     void ScheduleUpdate();

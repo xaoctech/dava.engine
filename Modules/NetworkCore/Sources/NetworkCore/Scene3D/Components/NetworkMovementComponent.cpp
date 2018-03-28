@@ -87,5 +87,4 @@ void NetworkMovementComponent::HistoryPushBack(MoveState&& state)
         interpolationHistoryPushBackPos = 0;
     }
 }
-
 };

@@ -27,6 +27,7 @@
 #include "Components/DamageComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/ShooterRocketComponent.h"
+#include "Components/SingleComponents/EffectQueueSingleComponent.h"
 #include "Visibility/ObservableComponent.h"
 #include "Visibility/SimpleVisibilityShapeComponent.h"
 
@@ -52,6 +53,7 @@ ShooterRocketSystem::ShooterRocketSystem(Scene* scene)
     , pendingEntities(scene->AquireEntityGroupOnAdd(entityGroup, this))
 {
     entitiesComp = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
+    effectQueue = scene->GetSingleComponent<EffectQueueSingleComponent>();
 }
 
 ShooterRocketSystem::~ShooterRocketSystem()
@@ -68,9 +70,27 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
         return;
     }
 
-    if (distance > ShooterRocketComponent::MAX_DISTANCE ||
-        !collisionSingleComponent->GetCollisionsWithEntity(rocket).empty())
+    Vector<CollisionInfo> collisions = collisionSingleComponent->GetCollisionsWithEntity(rocket);
+    if (distance > ShooterRocketComponent::MAX_DISTANCE || !collisions.empty())
     {
+        Vector3 explosionPosition;
+        if (!collisions.empty())
+        {
+            const CollisionPoint& cp = collisions[0].points[0];
+            explosionPosition = cp.position;
+        }
+        else
+        {
+            TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
+            Vector3 position = transComp->GetPosition();
+            explosionPosition = transComp->GetPosition();
+        }
+
+        // effect: rocket explosion
+        effectQueue->CreateEffect(0)
+        .SetDuration(5.f)
+        .SetPosition(explosionPosition);
+
         destroyedEntities.insert(rocket);
         return;
     }
@@ -97,6 +117,11 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
     if (rocketComp->GetStage() == ShooterRocketComponent::Stage::BOOSTER &&
         distance == ShooterRocketComponent::SPLIT_DISTANCE)
     {
+        // effect: rocket split
+        effectQueue->CreateEffect(1)
+        .SetDuration(5.f)
+        .SetPosition(position);
+
         destroyedEntities.insert(rocket);
         const Entity* target = GetTarget(rocket, shooter);
         if (!target)
@@ -121,6 +146,13 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
             if (!subRocket)
             {
                 subRocket = SpawnSubRocket(shooter, target, rocketId);
+
+                // effect: subrocket smoke track
+                NetworkID trackEffectId = NetworkID::CreatePlayerActionId(playerId, frameId, subRocketIdx + subRocketCount);
+                effectQueue->CreateEffect(2)
+                .SetNetworkId(trackEffectId)
+                .SetParentId(rocketId);
+
                 TransformComponent* subTrunsComp = subRocket->GetComponent<TransformComponent>();
                 float32 angle = (subRocketIdx - (subRocketCount / 2.f)) * DEG_TO_RAD * 45.f;
                 Quaternion subRotation = rotation * Quaternion::MakeRotation(Vector3::UnitZ, -angle);
@@ -168,6 +200,59 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
     rocketComp->SetDistance(distance + 1);
 }
 
+void ShooterRocketSystem::SimulateRocket2(DAVA::Entity* rocket)
+{
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
+
+    TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
+    ShooterRocketComponent* rocketComp = rocket->GetComponent<ShooterRocketComponent>();
+    Vector3 position = transComp->GetPosition();
+    Quaternion rotation = transComp->GetRotation();
+
+    bool createExplosionAndReturn = false;
+    Vector3 explosionPosition;
+
+    Vector<CollisionInfo> collisions = collisionSingleComponent->GetCollisionsWithEntity(rocket);
+    if (!collisions.empty())
+    {
+        const CollisionPoint& cp = collisions[0].points[0];
+        createExplosionAndReturn = true;
+        explosionPosition = cp.position;
+    }
+
+    const uint32 distance = rocketComp->GetDistance();
+    if (distance > ShooterRocketComponent::MAX_DISTANCE)
+    {
+        createExplosionAndReturn = true;
+        explosionPosition = position;
+    }
+
+    if (createExplosionAndReturn)
+    {
+        // effect: rocket explosion
+        effectQueue->CreateEffect(0)
+        .SetDuration(5.f)
+        .SetPosition(explosionPosition);
+        destroyedEntities.insert(rocket);
+        return;
+    }
+
+    BoxShapeComponent* boxShape = rocket->GetComponent<BoxShapeComponent>();
+    if (boxShape)
+    {
+        boxShape->SetTypeMask(SHOOTER_PROJECTILE_COLLISION_TYPE);
+        uint32 collideWith = static_cast<uint32>(~0) & ~SHOOTER_PROJECTILE_COLLISION_TYPE;
+        boxShape->SetTypeMaskToCollideWith(collideWith);
+    }
+
+    const float32 timeElapsed = NetworkTimeSingleComponent::FrameDurationS;
+
+    position += rotation.ApplyToVectorFast(Vector3(0, ShooterRocketComponent::MOVE_SPEED, 0) * timeElapsed);
+
+    transComp->SetLocalTransform(position, rotation, Vector3(1.0, 1.0, 1.0));
+    rocketComp->SetDistance(distance + 1);
+}
+
 void ShooterRocketSystem::ProcessFixed(float32 timeElapsed)
 {
     DVASSERT(pendingEntities->entities.size() < 100);
@@ -184,7 +269,12 @@ void ShooterRocketSystem::ProcessFixed(float32 timeElapsed)
         {
             continue;
         }
-        SimulateRocket(rocket);
+
+        ShooterRocketComponent* rocketComponent = rocket->GetComponent<ShooterRocketComponent>();
+        if (rocketComponent->multirocket)
+            SimulateRocket(rocket);
+        else
+            SimulateRocket2(rocket);
     }
 
     for (Entity* destroyedBullet : destroyedEntities)

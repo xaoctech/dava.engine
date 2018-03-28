@@ -107,6 +107,11 @@ void CharacterControllerComponent::Deserialize(KeyedArchive* archive, Serializat
     mode = static_cast<MovementMode>(archive->GetUInt32("mode", static_cast<uint32>(mode)));
 }
 
+physx::PxActor* CharacterControllerComponent::GetPxActor() const
+{
+    return controller->getActor();
+}
+
 void CharacterControllerComponent::ScheduleUpdate()
 {
     if (controller != nullptr)

@@ -399,6 +399,8 @@ namespace ImGui
 {
 DAVA::float32 Settings::scale = 1.f;
 DAVA::float32 Settings::pendingScale = Settings::scale;
+DAVA::uint32 Settings::screenWidth = 1024;
+DAVA::uint32 Settings::screenHeight = 768;
 
 void Initialize()
 {
@@ -529,8 +531,8 @@ void OnFrameBegin()
     ImGuiImplDetails::framebufferSize.dx = int32(Renderer::GetFramebufferWidth());
     ImGuiImplDetails::framebufferSize.dy = int32(Renderer::GetFramebufferHeight());
 
-    ImGui::GetIO().DisplaySize.x = static_cast<float32>(screenWidth) / Settings::scale;
-    ImGui::GetIO().DisplaySize.y = static_cast<float32>(screenHeight) / Settings::scale;
+    ImGui::GetIO().DisplaySize.x = static_cast<float32>(Settings::screenWidth) / Settings::scale;
+    ImGui::GetIO().DisplaySize.y = static_cast<float32>(Settings::screenHeight) / Settings::scale;
 
     //check whether to recreate font texture
     for (ImFont* font : ImGui::GetIO().Fonts->Fonts)

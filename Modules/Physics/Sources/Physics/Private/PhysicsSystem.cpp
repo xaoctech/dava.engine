@@ -1569,6 +1569,8 @@ void PhysicsSystem::AddForce(DynamicBodyComponent* component, const Vector3& for
 
 void PhysicsSystem::ApplyForces()
 {
+    DAVA_PROFILER_CPU_SCOPE("PhysicsSystem::ApplyForces");
+
     for (const PendingForce& force : forces)
     {
         physx::PxActor* actor = force.component->GetPxActor();

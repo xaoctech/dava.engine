@@ -79,6 +79,7 @@ define_source                  ( SOURCE "Sources"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Components/AI/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Components/SingleComponents/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Visibility/*.cpp"
+                                "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/GameModes/Cubes/*.cpp"
                                 )
 
 set( STEAM_APPID                Platforms/Win32/steam_appid.txt )

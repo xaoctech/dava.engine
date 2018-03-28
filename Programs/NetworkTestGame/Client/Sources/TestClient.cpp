@@ -202,6 +202,8 @@ void TestClient::OnWindowCreated(DAVA::Window* w)
     vcs->RegisterAvailableResourceSize(static_cast<int32>(windowSize.dx),
                                        static_cast<int32>(windowSize.dy),
                                        "Gfx");
+    ImGui::Settings::screenWidth = windowSize.dx;
+    ImGui::Settings::screenHeight = windowSize.dy;
 
     // Init UI
     UIControlSystem* controlSys = w->GetUIControlSystem();

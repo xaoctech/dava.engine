@@ -249,7 +249,7 @@ void DebugOverlay::OnUpdate(Window* window, float32 elapsedTime)
             ImGui::GetWindowDrawList()->AddRectFilled({ pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, 0xFFFFFFFF);
         };
 
-        float32 x = static_cast<float32>(ImGui::screenWidth - 20) / scale - buttonSide;
+        float32 x = static_cast<float32>(ImGui::Settings::screenWidth - 20) / scale - buttonSide;
         float32 y = -buttonSide;
 
         const float32 maxScale = 2.5f;

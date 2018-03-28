@@ -11,6 +11,8 @@ namespace DAVA
 class Scene;
 }
 
+class EffectQueueSingleComponent;
+
 // System that responsible for invoking attack actions (i.e. raycasting, spawning bullets etc.)
 class ShooterPlayerAttackSystem : public DAVA::BaseSimulationSystem
 {
@@ -27,9 +29,11 @@ public:
 private:
     void SpawnBullet(DAVA::Entity* player, DAVA::uint32 clientFrameId) const;
     void RaycastAttack(DAVA::Entity* player, DAVA::uint32 clientFrameId) const;
-    void RocketAttack(DAVA::Entity* player, DAVA::uint32 clientFrameId) const;
+    void RocketAttack(DAVA::Entity* player, DAVA::uint32 clientFrameId, bool multirocket) const;
 
 private:
     BattleOptionsSingleComponent* optionsComp = nullptr;
     DAVA::EntityGroup* entityGroup = nullptr;
+
+    EffectQueueSingleComponent* effectQueue = nullptr;
 };

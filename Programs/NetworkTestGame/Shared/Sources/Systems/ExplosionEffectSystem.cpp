@@ -1,6 +1,7 @@
 #include "ExplosionEffectSystem.h"
 #include "Components/ExplosionEffectComponent.h"
 #include "Components/ShooterRocketComponent.h"
+#include "Components/SingleComponents/EffectQueueSingleComponent.h"
 #include "Visibility/ObservableComponent.h"
 #include "Visibility/SimpleVisibilityShapeComponent.h"
 
@@ -16,6 +17,7 @@
 #include <NetworkCore/NetworkCoreUtils.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 
 #include <Physics/CollisionSingleComponent.h>
 
@@ -25,18 +27,21 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ExplosionEffectSystem)
 {
     ReflectionRegistrator<ExplosionEffectSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ExplosionEffectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 14.1f)]
+    .Method("ProcessFixed", &ExplosionEffectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 30.f)]
     .End();
 }
 
 ExplosionEffectSystem::ExplosionEffectSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene, ComponentMask())
+    , isGuiMode(!Engine::Instance()->IsConsoleMode())
+    , networkEntities(scene->GetSingleComponent<NetworkEntitiesSingleComponent>())
+    , effectQueue(scene->GetSingleComponent<EffectQueueSingleComponent>())
+    , explosionEffectComponents(scene->AquireComponentGroup<ExplosionEffectComponent, ExplosionEffectComponent>())
 {
-    if (IsServer(scene))
+    if (isGuiMode)
     {
-        rocketEntities = scene->AquireEntityGroup<ShooterRocketComponent>();
+        LoadEffectModels();
     }
-    explosionEffectComponents = scene->AquireComponentGroup<ExplosionEffectComponent, ExplosionEffectComponent>();
 }
 
 ExplosionEffectSystem::~ExplosionEffectSystem() = default;
@@ -44,93 +49,106 @@ ExplosionEffectSystem::~ExplosionEffectSystem() = default;
 void ExplosionEffectSystem::ProcessFixed(DAVA::float32 timeElapsed)
 {
     Scene* scene = GetScene();
-    if (IsServer(scene))
+
+    ProcessNewEffects(scene);
+
+    for (ExplosionEffectComponent* x : explosionEffectComponents->components)
     {
-        for (ExplosionEffectComponent* x : explosionEffectComponents->components)
+        Entity* parent = x->GetEntity();
+        if (!x->effectStarted)
         {
-            x->duration -= timeElapsed;
-            if (x->duration <= 0.f)
+            x->effectStarted = true;
+
+            if (isGuiMode)
             {
-                Entity* e = x->GetEntity();
-                scene->RemoveNode(e);
-            }
-        }
-
-        CollisionSingleComponent* collisionComponent = scene->GetSingleComponent<CollisionSingleComponent>();
-        for (Entity* rocket : rocketEntities->GetEntities())
-        {
-            Vector<CollisionInfo> collisions = collisionComponent->GetCollisionsWithEntity(rocket);
-            if (!collisions.empty())
-            {
-                const CollisionPoint& cp = collisions[0].points[0];
-
-                static int n = 0;
-                const int type = n & 1;
-                Entity* explosion = nullptr;
-                if (!Engine::Instance()->IsConsoleMode())
-                {
-                    explosion = CreateExplosionEffect(type);
-
-                    ParticleEffectComponent* particle = explosion->GetComponent<ParticleEffectComponent>();
-                    particle->Start();
-                }
-                else
-                {
-                    explosion = new Entity;
-                }
-
-                explosion->AddComponent(new ObservableComponent);
-                explosion->AddComponent(new SimpleVisibilityShapeComponent);
-
-                NetworkTransformComponent* ntc = new NetworkTransformComponent;
-                explosion->AddComponent(ntc);
-
-                NetworkReplicationComponent* r = new NetworkReplicationComponent(NetworkID::CreatePlayerOwnId(0));
-                r->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
-                r->SetForReplication<ExplosionEffectComponent>(M::Privacy::PUBLIC);
-                explosion->AddComponent(r);
-
-                static float32 duration = 5.f;
-                ExplosionEffectComponent* effectComponent = new ExplosionEffectComponent;
-                effectComponent->duration = duration;
-                effectComponent->effectType = type;
-                explosion->AddComponent(effectComponent);
-                n += 1;
-
-                TransformComponent* transformComponent = explosion->GetComponent<TransformComponent>();
-                transformComponent->SetLocalTransform(cp.position, Quaternion{}, Vector3{ 1.f, 1.f, 1.f });
-
-                scene->AddNode(explosion);
-            }
-        }
-    }
-    else
-    {
-        for (ExplosionEffectComponent* x : explosionEffectComponents->components)
-        {
-            Entity* parent = x->GetEntity();
-            if (!x->effectStarted)
-            {
-                x->effectStarted = true;
-
                 Entity* explosion = CreateExplosionEffect(x->effectType);
                 ParticleEffectComponent* particle = explosion->GetComponent<ParticleEffectComponent>();
                 particle->Start();
 
                 parent->AddNode(explosion);
-                continue;
             }
+            continue;
+        }
 
-            x->duration -= timeElapsed;
-            if (x->duration <= 0.f)
-            {
-                scene->RemoveNode(parent);
-            }
+        x->duration -= timeElapsed;
+        if (x->duration <= 0.f && !x->linkedEffect)
+        {
+            scene->RemoveNode(parent);
         }
     }
 }
 
+void ExplosionEffectSystem::ProcessNewEffects(DAVA::Scene* scene)
+{
+    const bool isClient = IsClient(scene);
+    const auto& newEffects = effectQueue->GetQueuedEffects();
+    for (const auto& descriptor : newEffects)
+    {
+        if (descriptor.networkId == NetworkID::INVALID && isClient)
+            continue;
+
+        const bool isLinkedEffect = descriptor.parentId != NetworkID::INVALID;
+
+        Entity* parentEntity = nullptr;
+        if (isLinkedEffect)
+        {
+            parentEntity = networkEntities->FindByID(descriptor.parentId);
+            if (parentEntity == nullptr)
+            {
+                DVASSERT(0);
+                continue;
+            }
+        }
+
+        NetworkID effectEntityId = descriptor.networkId == NetworkID::INVALID ? NetworkID::CreatePlayerOwnId(0) : descriptor.networkId;
+
+        Entity* effectEntity = new Entity;
+        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(effectEntityId);
+
+        ExplosionEffectComponent* effectComponent = new ExplosionEffectComponent;
+        effectComponent->effectType = descriptor.resourceId;
+        effectComponent->duration = descriptor.duration;
+        effectComponent->linkedEffect = isLinkedEffect;
+
+        replicationComponent->SetForReplication<ExplosionEffectComponent>(M::Privacy::PUBLIC);
+        effectEntity->AddComponent(effectComponent);
+
+        if (!isLinkedEffect)
+        {
+            effectEntity->AddComponent(new ObservableComponent);
+            effectEntity->AddComponent(new SimpleVisibilityShapeComponent);
+
+            replicationComponent->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
+            effectEntity->AddComponent(new NetworkTransformComponent);
+
+            TransformComponent* transformComponent = effectEntity->GetComponent<TransformComponent>();
+            transformComponent->SetLocalTransform(descriptor.position, descriptor.rotation, Vector3{ 1.f, 1.f, 1.f });
+
+            scene->AddNode(effectEntity);
+        }
+        else
+        {
+            effectEntity->SetName("rocket_linked_effect");
+
+            parentEntity->AddNode(effectEntity);
+        }
+
+        effectEntity->AddComponent(replicationComponent);
+    }
+}
+
 Entity* ExplosionEffectSystem::CreateExplosionEffect(int type)
+{
+    Entity* e = nullptr;
+    if (0 <= type && type < static_cast<int>(effectModelCache.size()))
+    {
+        e = effectModelCache[type]->Clone();
+    }
+    DVASSERT(e != nullptr);
+    return e;
+}
+
+void ExplosionEffectSystem::LoadEffectModels()
 {
     auto loadModel = [](const FilePath& filename, const char* modelName = nullptr) -> Entity* {
         ScopedPtr<Scene> scene(new Scene);
@@ -138,24 +156,13 @@ Entity* ExplosionEffectSystem::CreateExplosionEffect(int type)
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
         Entity* model = scene->GetEntityByID(1)->Clone();
         if (modelName != nullptr)
+        {
             model->SetName(modelName);
+        }
         return model;
     };
 
-    Entity* result = nullptr;
-    switch (type)
-    {
-    case 0:
-        if (explosionModel1 == nullptr)
-            explosionModel1 = loadModel("~res:/3d/Explosion/groundHit_APCR1.sc2", "ExplosionModel_0");
-        result = explosionModel1->Clone();
-        break;
-    case 1:
-        if (explosionModel2 == nullptr)
-            explosionModel2 = loadModel("~res:/3d/Explosion/shot_large_mb.sc2", "ExplosionModel_1");
-        result = explosionModel2->Clone();
-        break;
-    }
-    DVASSERT(result != nullptr);
-    return result;
+    effectModelCache.push_back(loadModel("~res:/3d/Explosion/groundHit_APCR1.sc2", "effect:rocket_explosion"));
+    effectModelCache.push_back(loadModel("~res:/3d/Explosion/shot_large_mb.sc2", "effect:rocket_shoot"));
+    effectModelCache.push_back(loadModel("~res:/3d/Explosion/Fire_and_Smoke_small.sc2", "effect:rocket_track"));
 }

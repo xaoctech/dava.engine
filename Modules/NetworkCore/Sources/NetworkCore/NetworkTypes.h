@@ -17,6 +17,7 @@ struct NetworkID
     static const NetworkID SCENE_ID;
 
     NetworkID();
+
     explicit NetworkID(uint32 value);
 
     bool IsValid() const;

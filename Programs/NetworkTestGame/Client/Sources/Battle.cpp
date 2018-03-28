@@ -117,9 +117,6 @@ void Battle::CreateBattleScene()
 {
     using namespace DAVA;
 
-    const Size2i& physicalSize = GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
-    float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
-
     tags.insert({ FastName("client"), FastName("network"), FastName("marker") });
 
     if (optionsSingleComp->options.isDebug)

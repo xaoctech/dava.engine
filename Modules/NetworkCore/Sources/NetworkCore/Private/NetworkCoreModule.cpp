@@ -15,6 +15,7 @@
 
 #include "NetworkCore/Scene3D/Systems/NetworkDebugDrawSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDebugPredictDrawSystem.h"
+#include "NetworkCore/Scene3D/Systems/NetworkDebugResimulationDrawSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemBase.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemClient.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemServer.h"
@@ -38,6 +39,7 @@
 #include "NetworkCore/Scene3D/Systems/NetworkConnectionsSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkFactorySystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkMovementSystem.h"
+#include "NetworkCore/Scene3D/Systems/ReplayServerSystem.h"
 
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
@@ -104,6 +106,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     // Systems
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugDrawSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugPredictDrawSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDebugResimulationDrawSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDeltaReplicationSystemBase);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDeltaReplicationSystemClient);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkDeltaReplicationSystemServer);
@@ -126,6 +129,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemServer);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkConnectionsSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkFactorySystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ReplayServerSystem);
 
     RegisterStandardTypeCompressors();
     netDebugOverlay.reset(new NetworkCoreDebugOverlayItem());

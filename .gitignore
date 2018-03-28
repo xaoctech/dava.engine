@@ -115,3 +115,4 @@ secret.tfvars
 secret.json
 Programs/TestBed/Platforms/Android/TestBed/assets/
 Programs/NetworkTestGame/_docker/
+Programs/TestBed/Data/local_meta.db

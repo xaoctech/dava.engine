@@ -18,4 +18,5 @@ public:
     DAVA::float32 duration = 1.f;
     int effectType = 0;
     bool effectStarted = false;
+    bool linkedEffect = false;
 };

@@ -269,6 +269,9 @@ void TestServer::OnWindowCreated(DAVA::Window* w)
                                        static_cast<int32>(windowSize.dy),
                                        "Gfx");
 
+    ImGui::Settings::screenWidth = windowSize.dx;
+    ImGui::Settings::screenHeight = windowSize.dy;
+
     CreateScene(screenAspect);
 
     mainScreen = new MainScreen(scene);
@@ -448,6 +451,9 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
             tags.insert(FastName("log_game_stats"));
         }
         break;
+    case GameMode::Id::CUBES:
+        tags.insert({ FastName("gm_cubes"), FastName("simple_visibility") });
+        break;
     default:
         tags.insert({ FastName("gm_tanks"), FastName("shoot"), FastName("gameinput"), FastName("playerentity"),
                       FastName("simple_visibility") });
@@ -456,6 +462,13 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
             tags.insert({ FastName("monitor_game_stats"), FastName("log_game_stats") });
         }
         break;
+    }
+
+    auto& args = Engine::Instance()->GetCommandLine();
+
+    if (std::any_of(begin(args), end(args), [](const String& arg) { return arg == "--replay" || arg == "--record"; }))
+    {
+        tags.insert({ FastName("tools") }); // add ReplayServerSystem for now
     }
 
     scene = new Scene(tags);
@@ -565,8 +578,8 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
             AddServerBots(netGameModeComp, scene->GetSystem<GameModeSystem>());
         if (IsGm("gm_cars"))
             AddServerBots(netGameModeComp, scene->GetSystem<GameModeSystemCars>());
-        if (IsGm("gm_shooter"))
-            DVASSERT(false, "No bots for shooter mode ftm.");
+        if (IsGm("gm_shooter") || IsGm("gm_cubes"))
+            DVASSERT(false, "No bots for selected mode ftm.");
     }
 }
 

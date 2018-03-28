@@ -11,9 +11,6 @@ struct InputEvent;
 
 namespace ImGui
 {
-static const DAVA::uint32 screenWidth = 1024;
-static const DAVA::uint32 screenHeight = 768;
-
 void Initialize();
 bool IsInitialized();
 void OnFrameBegin();
@@ -25,5 +22,7 @@ struct Settings
 {
     static DAVA::float32 scale;
     static DAVA::float32 pendingScale;
+    static DAVA::uint32 screenWidth;
+    static DAVA::uint32 screenHeight;
 };
 } // namespace ImGui

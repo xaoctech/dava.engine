@@ -14,7 +14,8 @@ public:
         CARS = 0,
         TANKS,
         SHOOTER,
-        INVADERS
+        INVADERS,
+        CUBES
     };
 
     static Id IdByName(DAVA::String name);

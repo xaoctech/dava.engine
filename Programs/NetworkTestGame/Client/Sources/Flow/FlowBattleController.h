@@ -42,6 +42,7 @@ private:
     DAVA::UITextComponent* pauseTextComponent = nullptr;
     DAVA::UITextComponent* timeSyncsTextComponent = nullptr;
     DAVA::UITextComponent* incorrectInputTextComponent = nullptr;
-    DAVA::UITextComponent* resimulationsCountTextComponent = nullptr;
+    DAVA::UITextComponent* mispredictedEntitiesCountTextComponent = nullptr;
+    DAVA::UITextComponent* resimulatedEntitiesCountTextComponent = nullptr;
     DAVA::float32 diffAvg = 0.f;
 };
