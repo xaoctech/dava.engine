@@ -198,17 +198,19 @@ bool IsRenderFlowSupported(RenderFlow flow)
         return false;
 
     case RenderFlow::LDRForward:
-    case RenderFlow::HDRForward:
         return true;
 
+    case RenderFlow::HDRForward:
+        return (rhi::DeviceCaps().maxRenderTargetCount >= 2);
+
     case RenderFlow::HDRDeferred:
-        return (rhi::DeviceCaps().maxSimultaneousRT >= 4);
+        return (rhi::DeviceCaps().maxRenderTargetCount >= 4);
 
     case RenderFlow::TileBasedHDRForward:
-        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxSimultaneousRT >= 2);
+        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxRenderTargetCount >= 2);
 
     case RenderFlow::TileBasedHDRDeferred:
-        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxSimultaneousRT >= 4);
+        return rhi::DeviceCaps().isFramebufferFetchSupported && (rhi::DeviceCaps().maxRenderTargetCount >= 6);
 
     default:
         DVASSERT(0, "Invalid RenderFlow");
@@ -218,8 +220,7 @@ bool IsRenderFlowSupported(RenderFlow flow)
 
 void SetRenderFlow(RenderFlow flow)
 {
-    // allow at least current render flow
-    RendererDetails::allowedRenderFlows.insert(flow);
+    DVASSERT(IsRenderFlowSupported(flow));
 
     if (RendererDetails::currentRenderFlow == flow)
         return;

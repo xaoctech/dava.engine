@@ -18,7 +18,7 @@ fragment_in
     float4 texCoord0 : TEXCOORD0;
     float3 texCoord1 : TEXCOORD1;
     float4 shadowTexCoord : TEXCOORD2;
-    float3 toCameraDir : TEXCOORD3;
+    float3 varToCamera : TEXCOORD3;
     float3 worldPosition : TEXCOORD5;
     float4 projectedPosition : TEXCOORD6;
     #if (LANDSCAPE_LOD_MORPHING && LANDSCAPE_MORPHING_COLOR) || (LANDSCAPE_TESSELLATION_COLOR && LANDSCAPE_MICRO_TESSELLATION)
@@ -114,8 +114,8 @@ fragment_out fp_main(fragment_in input)
     float3 linearColor = SRGBToLinear(albedoSample.rgb);
 
     ResolveInputValues resolve;
-    resolve.vLength = length(input.toCameraDir);
-    resolve.v = input.toCameraDir / resolve.vLength;
+    resolve.vLength = length(input.varToCamera);
+    resolve.v = input.varToCamera / resolve.vLength;
 
 #if (VIEW_MODE & RESOLVE_NORMAL_MAP)
     float2 nxy = (2.0 * normalmapSample.xy - 1.0);

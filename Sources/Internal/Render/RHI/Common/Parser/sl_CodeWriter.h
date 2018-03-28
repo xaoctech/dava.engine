@@ -16,7 +16,7 @@ public:
     void EndLine(const char* text = NULL);
 
     void WriteLine(int indent, const char* format, ...);
-    void WriteLine(int indent, const char* fileName, int lineNumber, const char* format, ...);
+    void WriteLineWithNumber(int indent, const char* fileName, int lineNumber, const char* format, ...);
 
     const char* GetResult() const;
     void Reset(std::string* buf = nullptr);

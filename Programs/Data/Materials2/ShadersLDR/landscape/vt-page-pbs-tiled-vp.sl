@@ -1,3 +1,5 @@
+#define LDR_FLOW 1
+
 #include "include/common.h"
 #include "include/shading-options.h"
 

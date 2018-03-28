@@ -26,112 +26,6 @@ public:
     virtual void InvalidateMaterials(){};
 };
 
-class TXAARenderer : public HelperRenderer
-{
-public:
-    TXAARenderer()
-    {
-        blitMaterial = new NMaterial();
-        blitMaterial->SetFXName(FastName("~res:/Materials2/PostEffect.material"));
-
-        blitMaterial->AddProperty(FastName("srcRectOffset"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        blitMaterial->AddProperty(FastName("srcRectSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        blitMaterial->AddProperty(FastName("srcTexSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        blitMaterial->AddFlag(FastName("TECH_COPY"), 1);
-
-        Size2i sizei = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
-        textureSize = Vector2(static_cast<float32>(sizei.dx), static_cast<float32>(sizei.dy));
-        invRtSize.x = 1.0f / textureSize.x;
-        invRtSize.y = 1.0f / textureSize.y;
-
-        Texture::FBODescriptor config;
-        config.width = sizei.dx;
-        config.height = sizei.dy;
-        config.sampleCount = 1;
-        config.textureType = rhi::TEXTURE_TYPE_2D;
-        config.needDepth = false;
-        config.needPixelReadback = false;
-        config.ensurePowerOf2 = false;
-        config.format = PixelFormat::FORMAT_RGBA8888;
-        dst = Texture::CreateFBO(config);
-        src = Texture::CreateFBO(config);
-    }
-
-    void Render(rhi::Handle dest, rhi::Viewport viewport)
-    {
-        std::swap(dst, src);
-
-        QuadRenderer::Options options;
-        options.srcRect = Rect2f(0.f, 0.f, float32(viewport.width), float32(viewport.height));
-        options.dstRect = Rect2f(float32(viewport.x), float32(viewport.y), float32(viewport.width), float32(viewport.height));
-
-        options.srcTexSize = textureSize;
-        options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
-
-        options.srcTexture = src->handle;
-        options.dstTexture = dest;
-
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
-        options.material = blitMaterial;
-        options.renderPassPriority = -1;
-        options.renderPassName = "BlitTXAA";
-        quad.Render(options);
-
-        //options.srcRect = Rect2f(0.f, 0.f, size, size);
-        //options.dstRect = { 5.0f, 5.0f, 128.0f, 128.0f };
-        //quad.Render(options);
-
-        //options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
-        //options.dstRect = { 133.0f, 5.0f, 128.0f, 128.0f };
-        //quad.Render(options);
-
-        //options.srcRect = Rect2f(0.f, 0.f, 2048.0f, 2048.0f);
-        //options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
-        //options.dstRect = { 5.0f, 5.0f, 256.0f, 256.0f };
-        //quad.Render(options);
-    }
-
-    void ReleaseResources()
-    {
-        SafeRelease(dst);
-        SafeRelease(src);
-    }
-
-    ~TXAARenderer()
-    {
-        ReleaseResources();
-        SafeRelease(blitMaterial);
-    }
-
-    Texture* GetSrc() const
-    {
-        return src;
-    }
-
-    Texture* GetDst() const
-    {
-        return dst;
-    }
-
-    Vector2 GetTextureSize() const
-    {
-        return textureSize;
-    }
-
-    Vector2 GetInvTextureSize() const
-    {
-        return invRtSize;
-    }
-
-private:
-    Texture* dst = nullptr;
-    Texture* src = nullptr;
-    Vector2 textureSize;
-    NMaterial* blitMaterial = nullptr;
-    QuadRenderer quad;
-    Vector2 invRtSize;
-};
-
 class HistogramRenderer : public HelperRenderer
 {
 public:
@@ -320,7 +214,6 @@ PostEffectRenderer::PostEffectRenderer()
 {
     for (HelperRenderer*& r : renderers)
         r = nullptr;
-    renderers[RendererType::TXAA] = new TXAARenderer();
 
     // renderers[RendererType::HISTOGRAM] = new HistogramRenderer();
     // renderers[RendererType::BLOOM] = new BloomRenderer;
@@ -490,6 +383,14 @@ void PostEffectRenderer::Render(rhi::Handle destination, const rhi::Viewport& vi
     Debug();
 
     // TODO : enable bloom again some day
+}
+
+void PostEffectRenderer::Render(rhi::Handle hdrImage, rhi::Handle destination, const rhi::Viewport& viewport)
+{
+    SetFrameContext(rhi::HTexture(hdrImage), rhi::HTexture(destination), viewport);
+    GetAverageLuminance();
+    Combine(CombineMode::Separate);
+    Debug();
 }
 
 void PostEffectRenderer::GetAverageLuminance()
@@ -723,14 +624,12 @@ void PostEffectRenderer::GetHistogram()
 void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
 {
     bool txaaEnabled =
-    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
+    ((Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) || (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred)) &&
     (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
 
     BloomRenderer* bloomRenderer = static_cast<BloomRenderer*>(renderers[RendererType::BLOOM]);
     rhi::HTexture bloomTexture = (bloomRenderer != nullptr) ? bloomRenderer->blurChain[0].blur.handle : rhi::HTexture();
     rhi::HTexture lumTexture = (mode == CombineMode::Separate) ? allRenderer.luminanceHistory : allRenderer.luminanceTexture;
-
-    TXAARenderer* txaa = static_cast<TXAARenderer*>(renderers[RendererType::TXAA]);
 
     NMaterial* material = materials[MaterialType::COMBINE];
     material->SetPropertyValue(FastName("lightMeterMaskWeight"), &settings.lightMeterTableWeight);
@@ -741,18 +640,21 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     material->SetFlag(FastName("ENABLE_TXAA"), txaaEnabled);
 
     QuadRenderer::Options options;
-    if (txaaEnabled && txaa != nullptr)
+    if (txaaEnabled)
     {
-        material->SetPropertyValue(FastName("texelOffset"), txaa->GetInvTextureSize().data);
+        Size2i sizei = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+        Vector2 dstSize(static_cast<float32>(sizei.dx), static_cast<float32>(sizei.dy));
+        Vector2 invSize(1.0f / dstSize.x, 1.0f / dstSize.y);
+        material->SetPropertyValue(FastName("texelOffset"), invSize.data);
 
-        Vector2 dstSize = txaa->GetTextureSize();
         options.dstTexSize = dstSize;
         options.srcRect = Rect2f(0.f, 0.f, dstSize.x, dstSize.y);
 
         options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
         options.dstRect = Rect2f(0.0f, 0.0f, dstSize.x, dstSize.y);
         options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
-        options.dstTexture = txaa->GetDst()->handle;
+
+        options.dstTexture = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT));
     }
     else
     {
@@ -801,9 +703,9 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
             uint32 textureIndex = 0;
             fragmentTextures[textureIndex++] = hdrRenderer.hdrTarget;
 
-            if (txaaEnabled && (txaa != nullptr))
+            if (txaaEnabled)
             {
-                fragmentTextures[textureIndex++] = txaa->GetSrc()->handle;
+                fragmentTextures[textureIndex++] = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY));
                 fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
             }
 
@@ -830,7 +732,7 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
             RenderFlow flow = Renderer::GetCurrentRenderFlow();
             bool halfRes = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D);
 
-            if ((flow != RenderFlow::TileBasedHDRDeferred) || (flow == RenderFlow::TileBasedHDRDeferred && !halfRes))
+            if ((flow != RenderFlow::TileBasedHDRDeferred) || (flow == RenderFlow::TileBasedHDRDeferred && (!halfRes || txaaEnabled)))
                 cv = 1.f;
         }
 
@@ -874,8 +776,6 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     {
         hdrRenderer.debugPickerIndex = 0;
     }
-    if (txaa != nullptr && txaaEnabled)
-        txaa->Render(frameContext.destination, frameContext.viewport);
 }
 
 void PostEffectRenderer::BuildDebugPickerLuminance()

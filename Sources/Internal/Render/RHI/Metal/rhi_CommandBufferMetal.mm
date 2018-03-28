@@ -673,12 +673,23 @@ void CheckDefaultBuffers()
         _Metal_ResetPending = false;
     }
 }
-    
+
 #if !RHI_METAL__USE_NATIVE_COMMAND_BUFFERS
 
 bool RenderPassMetal_t::Initialize()
 {
     bool need_drawable = cfg.colorBuffer[0].texture == InvalidHandle;
+    if (!need_drawable && cfg.explicitColorBuffersCount != RenderPassConfig::ColorBuffersCountAutoDeduction && cfg.explicitColorBuffersCount > 1)
+    {
+        for (uint32 i = 1; i < cfg.explicitColorBuffersCount; ++i)
+        {
+            if (cfg.colorBuffer[i].texture == InvalidHandle)
+            {
+                need_drawable = true;
+                break;
+            }
+        }
+    }
     if (need_drawable && !_Metal_currentDrawable)
     {
         if (_Metal_DrawableDispatchSemaphore != nullptr)
@@ -836,7 +847,17 @@ static Handle metal_RenderPass_Allocate(const RenderPassConfig& passConf, uint32
 #if RHI_METAL__USE_NATIVE_COMMAND_BUFFERS
 
     bool need_drawable = passConf.colorBuffer[0].texture == InvalidHandle && !_Metal_currentDrawable;
-
+    if (!need_drawable && cfg.explicitColorBuffersCount != RenderPassConfig::ColorBuffersCountAutoDeduction && cfg.explicitColorBuffersCount > 1)
+    {
+        for (uint32 i = 1; i < cfg.explicitColorBuffersCount; ++i)
+        {
+            if (cfg.colorBuffer[i].texture == InvalidHandle)
+            {
+                need_drawable = true;
+                break;
+            }
+        }
+    }
     if (need_drawable)
     {
         @autoreleasepool

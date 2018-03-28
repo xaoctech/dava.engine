@@ -6,13 +6,6 @@
 
 [auto][global] property float4x4 prevViewProjMatrix;
 
-#if (SOFT_SKINNING) || (HARD_SKINNING)
-[auto][jposp] property float4 prevJointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
-[auto][jrotp] property float4 prevJointQuaternions[MAX_JOINTS] : "bigarray";
-[auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
-[auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
-#endif
-
 vertex_in
 {
     float3 position : POSITION;

@@ -157,7 +157,9 @@ inline float3 SRGBToLinear(float3 value)
 
 float3 LinearTosRGB(float3 linearValue)
 {
-#if (USE_PRECISE_SRGB_CONVERSION)
+#if defined(LDR_FLOW)
+    return linearValue;
+#elif (USE_PRECISE_SRGB_CONVERSION)
     float3 srgbLO = linearValue * 12.92;
     float3 srgbHI = (pow(abs(linearValue), 0.41677) * 1.055) - 0.055;
     float r = (linearValue.r <= 0.0031308) ? srgbLO.r : srgbHI.r;

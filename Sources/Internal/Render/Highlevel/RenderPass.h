@@ -81,6 +81,8 @@ protected:
     RenderTargetProperites renderTargetProperties;
     float currentDistantDepthValue = 1.0f;
 
+    uint32 bindFlags = 0;
+
     friend class RenderSystem;
 };
 

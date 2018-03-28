@@ -95,7 +95,6 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
     DVASSERT(mainCamera);
 
     bool invertProjection = rhi::IsInvertedProjectionRequired(passConfig.IsRenderTargetPass(), passConfig.IsCubeRenderTargetPass());
-    passConfig.invertCulling = invertProjection ? 1 : 0;
 
     Vector2 offset = enableFrameJittering ? GetCurrentFrameJitterOffset() : Vector2::Zero;
     mainCamera->SetProjectionJitterOffset(offset);
@@ -104,6 +103,11 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
 
     if (mainCamera != drawCamera)
         mainCamera->PrepareDynamicParameters(invertProjection, passConfig.usesReverseDepth, externalClipPlane);
+    bindFlags = 0;
+    if (invertProjection)
+        bindFlags |= NMaterial::FLAG_INV_CULL;
+    if (passConfig.usesReverseDepth)
+        bindFlags |= NMaterial::FLAG_INV_Z;
 }
 
 void RenderPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
@@ -206,7 +210,7 @@ void RenderPass::DrawLayers(Camera* camera, uint32 drawLayersMask)
         {
             RenderBatchArray& batchArray = layersBatchArrays[id];
             batchArray.Sort(camera);
-            layer->Draw(camera, batchArray, packetList);
+            layer->Draw(camera, batchArray, packetList, bindFlags);
         }
     }
 }
@@ -215,7 +219,7 @@ void RenderPass::DrawDebug(Camera* camera, RenderSystem* renderSystem)
 {
     if (!renderSystem->GetDebugDrawer()->IsEmpty())
     {
-        renderSystem->GetDebugDrawer()->Present(packetList, &camera->GetMatrix(), &camera->GetProjectionMatrix());
+        renderSystem->GetDebugDrawer()->Present(packetList, &camera->GetMatrix(), &camera->GetProjectionMatrix(), bindFlags);
         renderSystem->GetDebugDrawer()->Clear();
     }
 }

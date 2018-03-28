@@ -408,6 +408,8 @@ enum TextureFormat
     TEXTURE_FORMAT_D32F,
 };
 
+const char* TextureFormatToString(TextureFormat format);
+
 enum TextureFace
 {
     TEXTURE_FACE_POSITIVE_X,
@@ -851,7 +853,7 @@ struct RenderPassConfig
 
     float depthBias = 0.0f;
     float depthSlopeScale = 0.0f;
-    bool invertCulling = false;
+
     bool usesReverseDepth = false;
 
     bool IsValid() const

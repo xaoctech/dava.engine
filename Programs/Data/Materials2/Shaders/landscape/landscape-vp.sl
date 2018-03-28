@@ -45,7 +45,7 @@ vertex_out
     float4 texCoord0 : TEXCOORD0;
     float3 texCoord1 : TEXCOORD1;
     float4 shadowTexCoord : TEXCOORD2;
-    float3 toCameraDir : TEXCOORD3;
+    float3 varToCamera : TEXCOORD3;
     float3 worldPosition : TEXCOORD5;
     float4 projectedPosition : TEXCOORD6;
     #if (LANDSCAPE_LOD_MORPHING && LANDSCAPE_MORPHING_COLOR) || (LANDSCAPE_TESSELLATION_COLOR && LANDSCAPE_MICRO_TESSELLATION)
@@ -171,7 +171,7 @@ vertex_out vp_main(vertex_in input)
     float4 worldSpacePosition = mul(float4(vx_position.xyz, 1.0), worldMatrix);
     float3 toCamera = cameraPosition - worldSpacePosition.xyz;
 
-    output.toCameraDir = toCamera;
+    output.varToCamera = toCamera;
     output.tangentToFinal0 = float3(tangent.x, binormal.x, normal.x);
     output.tangentToFinal1 = float3(tangent.y, binormal.y, normal.y);
     output.tangentToFinal2 = float3(tangent.z, binormal.z, normal.z);

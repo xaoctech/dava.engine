@@ -56,7 +56,7 @@ void ShadowVolumeRenderLayer::PrepareRenderData()
     shadowRectMaterial->SetFXName(NMaterialName::SHADOWRECT);
 }
 
-void ShadowVolumeRenderLayer::Draw(Camera* camera, const RenderBatchArray& renderBatchArray, rhi::HPacketList packetList)
+void ShadowVolumeRenderLayer::Draw(Camera* camera, const RenderBatchArray& renderBatchArray, rhi::HPacketList packetList, uint32 flags)
 {
     if (!QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_STENCIL_SHADOW) ||
         !Renderer::GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW))
@@ -66,7 +66,7 @@ void ShadowVolumeRenderLayer::Draw(Camera* camera, const RenderBatchArray& rende
 
     if (renderBatchArray.GetRenderBatchCount())
     {
-        RenderLayer::Draw(camera, renderBatchArray, packetList);
+        RenderLayer::Draw(camera, renderBatchArray, packetList, flags);
 
         shadowRectMaterial->BindParams(shadowRectPacket);
         rhi::AddPacket(packetList, shadowRectPacket);

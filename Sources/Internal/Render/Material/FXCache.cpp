@@ -39,8 +39,6 @@ void Initialize()
     initialized = true;
 
     UnorderedMap<FastName, int32> defFlags;
-    ShaderDescriptorCache::GetShaderDescriptor(FastName("~res:/Materials2/ShadersShared/_test"), defFlags);
-
     defFlags[FastName("MATERIAL_TEXTURE")] = 1;
 
     RenderPassDescriptor defaultPass;
@@ -305,7 +303,7 @@ void ParseFlowsNode(const YamlNode* node, RenderPassDescriptor& target, const Fa
             {
                 target.supportsRenderFlow[uint32(RenderFlow::LDRForward)] = true;
             }
-            else if (flowName == "TiledBasedHDR")
+            else if (flowName == "TileBasedHDR")
             {
                 target.supportsRenderFlow[uint32(RenderFlow::TileBasedHDRForward)] = true;
                 target.supportsRenderFlow[uint32(RenderFlow::TileBasedHDRDeferred)] = true;
@@ -317,7 +315,7 @@ void ParseFlowsNode(const YamlNode* node, RenderPassDescriptor& target, const Fa
             else
             {
                 Logger::Error("Render pass %s in material %s contains invalid render flow id: %s. Supported identifiers are: "
-                              "[\"all\", \"HDR\", \"HDR\", \"TiledBasedHDR\", \"LDRForward\", \"HDRForward\", \"HDRDeferred\", \"TileBasedHDRForward\", \"TileBasedHDRDeferred\"]",
+                              "[\"all\", \"HDR\", \"HDR\", \"TileBasedHDR\", \"LDRForward\", \"HDRForward\", \"HDRDeferred\", \"TileBasedHDRForward\", \"TileBasedHDRDeferred\"]",
                               target.passName.c_str(), fxName.c_str(), flowName.c_str());
                 DVASSERT(0, "Invalid render flow id. See log for details");
             }
@@ -537,6 +535,7 @@ const FXDescriptor& LoadClassicTempalte(const FastName& fxName, const FastName& 
 
 const FXDescriptor& LoadFXFromClassicTemplate(const FastName& fxName, UnorderedMap<FastName, int32>& defines, const Vector<size_t>& key, const FastName& quality)
 {
+    static rhi::CullMode invCullModes[3] = { rhi::CULL_NONE, rhi::CULL_CW, rhi::CULL_CCW };
     //the stuff below is old old legacy carried from RenderTechnique and NMaterialTemplate
 
     FXDescriptor target = LoadClassicTempalte(fxName, quality); //we copy it to new fxdescr as single template can be compiled to many descriptors
@@ -574,6 +573,40 @@ const FXDescriptor& LoadFXFromClassicTemplate(const FastName& fxName, UnorderedM
 
             pass.shader = ShaderDescriptorCache::GetShaderDescriptor(pass.shaderFileName, shaderDefines);
             pass.depthStencilState = rhi::AcquireDepthStencilState(pass.depthStateDescriptor);
+
+            //create alt states
+            rhi::DepthStencilState::Descriptor reversDesc = pass.depthStateDescriptor;
+            bool createReverseState = false;
+            switch (reversDesc.depthFunc)
+            {
+            case rhi::CmpFunc::CMP_LESS:
+                reversDesc.depthFunc = rhi::CmpFunc::CMP_GREATER;
+                createReverseState = true;
+                break;
+            case rhi::CmpFunc::CMP_LESSEQUAL:
+                reversDesc.depthFunc = rhi::CmpFunc::CMP_GREATEREQUAL;
+                createReverseState = true;
+                break;
+            case rhi::CmpFunc::CMP_GREATER:
+                reversDesc.depthFunc = rhi::CmpFunc::CMP_LESS;
+                createReverseState = true;
+                break;
+            case rhi::CmpFunc::CMP_GREATEREQUAL:
+                reversDesc.depthFunc = rhi::CmpFunc::CMP_LESSEQUAL;
+                createReverseState = true;
+                break;
+            }
+
+            if (createReverseState)
+            {
+                pass.invDepthStencilState = rhi::AcquireDepthStencilState(reversDesc);
+            }
+            else
+            {
+                pass.invDepthStencilState = pass.depthStencilState;
+            }
+
+            pass.invCullMode = invCullModes[pass.cullMode];
         }
     }
 

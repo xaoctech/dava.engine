@@ -30,7 +30,11 @@ void LoadFromSettings(Settings& appSettings)
                 qs->SetCurrentQualityForGroup(group, value->AsFastName());
                 if (group == QualityGroup::RenderFlowType)
                 {
-                    Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
+                    RenderFlow currentFlow = qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>();
+                    if (Renderer::IsRenderFlowSupported(currentFlow) == false)
+                        currentFlow = RenderFlow::LDRForward;
+
+                    Renderer::SetRenderFlow(currentFlow);
                 }
 
                 if (group == QualityGroup::Shadow)

@@ -33,7 +33,6 @@ const FastName RUNTIME_TEXTURE_NAMES[RuntimeTextures::RUNTIME_TEXTURES_COUNT] =
   FastName("hammersleySet"),
   FastName("noiseTexture64x64"),
   FastName("directionalShadowMap"),
-  FastName("scaledLDR"),
   FastName("velocityBuffer")
 };
 
@@ -101,7 +100,6 @@ void RuntimeTextures::Reset(Size2i screenDim)
     runtimeTextureSizes[TEXTURE_GBUFFER_2_COPY] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
     runtimeTextureSizes[TEXTURE_GBUFFER_3_COPY] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
     runtimeTextureSizes[TEXTURE_HAMMERSLEY_SET] = Size2i(1024, 1);
-    runtimeTextureSizes[TEXTURE_SCALED_LDR] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
 
 #if (!LOAD_BRDF_LOOKUP_TEXTURE)
     runtimeTextures[TEXTURE_INDIRECT_SPECULAR_LOOKUP] = rhi::HTexture();
@@ -299,20 +297,23 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
 
     case RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER:
     {
-        int32 cascadesCount = Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES);
+        rhi::TextureFormat textureFormat = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? rhi::TEXTURE_FORMAT_D16 : rhi::TEXTURE_FORMAT_D32F;
+
+        int32 cascadesCount = std::max(1, Renderer::GetRuntimeFlags().GetFlagValue(RuntimeFlags::Flag::SHADOW_CASCADES));
         runtimeTextureSizes[TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER] = Size2i(SHADOW_CASCADE_SIZE, cascadesCount * SHADOW_CASCADE_SIZE);
-        if (cascadesCount > 0)
-        {
-            descriptor.autoGenMipmaps = false;
-            descriptor.isRenderTarget = true;
-            descriptor.needRestore = false;
-            descriptor.cpuAccessRead = false;
-            descriptor.cpuAccessWrite = false;
-            descriptor.type = rhi::TEXTURE_TYPE_2D;
-            descriptor.format = rhi::TEXTURE_FORMAT_D32F;
-            runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
-            runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_INVALID;
-        }
+
+        descriptor.autoGenMipmaps = false;
+        descriptor.isRenderTarget = true;
+        descriptor.needRestore = false;
+        descriptor.cpuAccessRead = false;
+        descriptor.cpuAccessWrite = false;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
+        descriptor.format = textureFormat;
+        descriptor.width = runtimeTextureSizes[TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER].dx;
+        descriptor.height = runtimeTextureSizes[TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER].dy;
+        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
+        runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_INVALID;
+
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
@@ -356,25 +357,6 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
             runtimeTexturesFormat[semantic] = GBUFFER_PIXEL_FORMAT;
         }
 
-        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
-
-        samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
-        samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
-        samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
-        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_NEAREST;
-        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_NEAREST;
-        samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
-        break;
-    }
-    case RuntimeTextures::TEXTURE_SCALED_LDR:
-    {
-        descriptor.autoGenMipmaps = false;
-        descriptor.isRenderTarget = true;
-        descriptor.needRestore = false;
-        descriptor.type = rhi::TEXTURE_TYPE_2D;
-        DVASSERT(PixelFormatDescriptor::GetPixelFormatDescriptor(LDR_PIXEL_FORMAT).format == rhi::TEXTURE_FORMAT_R8G8B8A8);
-        descriptor.format = rhi::TEXTURE_FORMAT_R8G8B8A8;
-        runtimeTexturesFormat[semantic] = LDR_PIXEL_FORMAT;
         runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
 
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;

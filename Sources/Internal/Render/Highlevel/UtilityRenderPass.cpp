@@ -62,7 +62,7 @@ void RescalePass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask /* = 0x
     if (BeginRenderPass(passConfig))
     {
         SetupCameraParams(renderSystem->GetMainCamera(), renderSystem->GetDrawCamera());
-        Size2i rtSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SCALED_LDR);
+        Size2i rtSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
         scaledRtDimensions = Vector2(float32(rtSize.dx), float32(rtSize.dy));
         //GFX_COMPLETE as binding in BeginRenderPass is trash - everything should be set up before
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_RENDER_TARGET_SIZE, scaledRtDimensions.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);

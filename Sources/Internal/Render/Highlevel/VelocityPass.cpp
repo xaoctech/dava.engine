@@ -129,7 +129,7 @@ void VelocityPass::DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarc
             {
                 RenderBatchArray& batchArray = layersBatchArrays[id];
                 batchArray.Sort(mainCamera);
-                layer->Draw(mainCamera, batchArray, packetList);
+                layer->Draw(mainCamera, batchArray, packetList, bindFlags);
             }
         }
     }

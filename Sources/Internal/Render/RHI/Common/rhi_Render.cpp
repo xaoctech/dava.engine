@@ -39,8 +39,6 @@ struct PacketList_t
     uint32 setDefaultViewport : 1;
     uint32 restoreDefScissorRect : 1;
     uint32 restoreSolidFill : 1;
-    uint32 invertCulling : 1;
-    uint32 invertZ : 1;
     uint32 restoreDefViewportRect : 1;
 
     // debug
@@ -84,8 +82,6 @@ HRenderPass AllocateRenderPass(const RenderPassConfig& passDesc, uint32 packetLi
         pl->queryBuffer = passDesc.queryBuffer;
         pl->setDefaultViewport = i == 0;
         pl->viewport = passDesc.viewport;
-        pl->invertCulling = passDesc.invertCulling;
-        pl->invertZ = passDesc.usesReverseDepth;
 
         packetList[i] = HPacketList(plh);
     }
@@ -193,9 +189,6 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
         Handle dsState = (p->depthStencilState != rhi::InvalidHandle) ? p->depthStencilState : pl->defDepthStencilState;
         Handle sState = (p->samplerState != rhi::InvalidHandle) ? p->samplerState : pl->defSamplerState;
 
-        if (pl->invertZ)
-            dsState = AcquireReverseDepthStencilState(HDepthStencilState(dsState));
-
         if (p->renderPipelineState != pl->curPipelineState || p->vertexLayoutUID != pl->curVertexLayout)
         {
             rhi::CommandBuffer::SetPipelineState(cmdBuf, p->renderPipelineState, p->vertexLayoutUID);
@@ -206,7 +199,7 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
         if (dsState != pl->curDepthStencilState)
         {
             rhi::CommandBuffer::SetDepthStencilState(cmdBuf, dsState);
-            pl->curDepthStencilState = p->depthStencilState;
+            pl->curDepthStencilState = dsState;
         }
         if (sState != pl->curSamplerState)
         {
@@ -215,24 +208,7 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
         }
         if (p->cullMode != pl->curCullMode)
         {
-            CullMode mode = p->cullMode;
-
-            if (pl->invertCulling)
-            {
-                switch (mode)
-                {
-                case CULL_CW:
-                    mode = CULL_CCW;
-                    break;
-                case CULL_CCW:
-                    mode = CULL_CW;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            rhi::CommandBuffer::SetCullMode(cmdBuf, mode);
+            rhi::CommandBuffer::SetCullMode(cmdBuf, p->cullMode);
             pl->curCullMode = p->cullMode;
         }
 

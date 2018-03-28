@@ -115,7 +115,7 @@ void CodeWriter::WriteLine(int indent, const char* format, ...)
     va_end(args);
 }
 
-void CodeWriter::WriteLine(int indent, const char* fileName, int lineNumber, const char* format, ...)
+void CodeWriter::WriteLineWithNumber(int indent, const char* fileName, int lineNumber, const char* format, ...)
 {
     va_list args;
     va_start(args, format);

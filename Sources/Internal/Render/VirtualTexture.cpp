@@ -23,6 +23,8 @@ VirtualTexture::VirtualTexture(const Descriptor& descriptor)
     DVASSERT(IsPowerOf2(width) && IsPowerOf2(height));
     DVASSERT((width % pageSize) == 0 && (height % pageSize) == 0);
     DVASSERT(descriptor.intermediateBuffers.size() >= descriptor.virtualTextureLayers.size());
+    DVASSERT(descriptor.virtualTextureLayers.size() <= rhi::DeviceCaps().maxRenderTargetCount);
+    DVASSERT(descriptor.intermediateBuffers.size() <= rhi::DeviceCaps().maxRenderTargetCount);
 
     Texture::FBODescriptor textureConfig;
     textureConfig.width = width;

@@ -150,6 +150,8 @@ public:
         return geoDecalManager;
     }
 
+    bool GetTxaaEnabled() const;
+
 public:
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
 
@@ -162,6 +164,9 @@ private:
     void PrebuildMaterial(NMaterial* material);
 
     void ConfigureActivePass();
+
+    Texture::FBODescriptor GetFBOConfig() const;
+    void ConfigureFBOs(bool rescale, bool txaa);
 
 private:
     friend class RenderPass;
@@ -202,6 +207,9 @@ private:
 
     bool hierarchyInitialized = false;
     bool forceUpdateLights = false;
+
+    Texture* ldrHistory = nullptr;
+    Texture* ldrCurrent = nullptr;
 };
 
 inline void RenderSystem::SetMainCamera(Camera* _camera)

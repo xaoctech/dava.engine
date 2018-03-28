@@ -1,4 +1,5 @@
 #pragma once
+
 #include "sl_CodeWriter.h"
 #include "sl_Tree.h"
 
@@ -7,9 +8,17 @@ namespace sl
 class GLESGenerator
 {
 public:
+    enum GLSLVersion
+    {
+        GLSL_100 = 0,
+        GLSL_300,
+
+        GLSL_VERSION_COUNT,
+    };
+
     explicit GLESGenerator(Allocator* allocator);
 
-    bool Generate(const HLSLTree* tree, Target target, const char* entryName, std::string* code);
+    bool Generate(const HLSLTree* tree, GLSLVersion version, Target target, const char* entryName, std::string* code);
     const char* GetResult() const;
 
 private:
@@ -53,13 +62,14 @@ private:
 
     CodeWriter writer;
 
-    const HLSLTree* tree;
-    const char* entryName;
-    Target target;
-    bool outputPosition;
+    const HLSLTree* tree = nullptr;
+    const char* entryName = nullptr;
+    GLSLVersion version = GLSL_100;
+    Target target = TARGET_VERTEX;
+    bool outputPosition = false;
 
-    const char* outAttribPrefix;
-    const char* inAttribPrefix;
+    const char* outAttribPrefix = nullptr;
+    const char* inAttribPrefix = nullptr;
 
     char matrixRowFunction[64];
     char clipFunction[64];
@@ -72,10 +82,10 @@ private:
     char scalarSwizzle4Function[64];
     char sinCosFunction[64];
 
-    bool hasError;
-    bool mrtUsed;
-
     char reservedWord[NumReservedWords][64];
+
+    bool mrtUsed = false;
+    bool hasError = false;
 };
 
 } // namespace sl

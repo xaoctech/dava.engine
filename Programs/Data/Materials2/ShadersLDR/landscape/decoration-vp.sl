@@ -1,3 +1,5 @@
+#define LDR_FLOW 1
+
 #include "include/common.h"
 #include "include/shading-options.h"
 #include "include/all-input.h"
@@ -28,9 +30,7 @@ vertex_out
     float4 projectedPosition : TEXCOORD2;
     float4 shadowTexCoord : TEXCOORD3;
     float4 varToCamera : TEXCOORD4;
-    float3 tangentToFinal0 : NORMAL0;
-    float3 tangentToFinal1 : NORMAL1;
-    float3 tangentToFinal2 : NORMAL2;
+    float3 normal : NORMAL0;
     #if (VERTEX_BAKED_AO)
     float vertexBakedAO : COLOR0;
     #endif
@@ -41,18 +41,12 @@ vertex_out
 };
 
 uniform sampler2D decorationtexture;
-
-#if VERTEX_COLOR
 uniform sampler2D decorationcolortexture;
-#endif
 
 [auto][a] property float3 boundingBoxSize;
 
 [material][instance] property float4 decorationmask = float4(0, 0, 0, 0);
-
-#if ORIENT_ON_LANDSCAPE
 [material][instance] property float orientvalue = 0.0;
-#endif
 
 vertex_out vp_main(vertex_in input)
 {
@@ -127,14 +121,10 @@ vertex_out vp_main(vertex_in input)
     float3 toCamera = cameraPosition - worldSpacePosition.xyz;
 
     float3 worldNormal = normalize(mul(float4(normal, 0.0), worldInvTransposeMatrix).xyz);
-    float3 worldTangent = normalize(mul(float4(tangent, 0.0), worldInvTransposeMatrix).xyz);
-    float3 worldBinormal = normalize(mul(float4(binormal, 0.0), worldInvTransposeMatrix).xyz); 
     
 #if FLIP_BACKFACE_NORMALS
     float normalsScale = sign(dot(worldNormal, toCamera));
     worldNormal *= normalsScale;
-    worldTangent *= normalsScale;
-    worldBinormal *= normalsScale;
 #endif
 
 #if (WRITE_SHADOW_MAP == 0)
@@ -145,10 +135,8 @@ vertex_out vp_main(vertex_in input)
     }
     #endif
     output.projectedPosition = output.position;
+    output.normal = worldNormal;
     output.varToCamera = float4(toCamera, 1.0);
-    output.tangentToFinal0 = float3(worldTangent.x, worldBinormal.x, worldNormal.x);
-    output.tangentToFinal1 = float3(worldTangent.y, worldBinormal.y, worldNormal.y);
-    output.tangentToFinal2 = float3(worldTangent.z, worldBinormal.z, worldNormal.z);
     output.shadowTexCoord = mul(worldSpacePosition, shadowView);
     output.worldPosition = worldSpacePosition;
 #endif

@@ -38,6 +38,11 @@
 [auto][global] property float4x4 worldViewMatrix;
 [auto][global] property float4x4 worldViewProjMatrix;
 
+[auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
+[auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
+[auto][jposp] property float4 prevJointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
+[auto][jrotp] property float4 prevJointQuaternions[MAX_JOINTS] : "bigarray";
+
 [auto][pl] property float4 pointLights[POINT_LIGHTS_BUFFER_SIZE] : "bigarray"; /* (xyz: position, w: linear attenuation), (xyz: color, w: exponential attenuation) */
 [auto][sh] property float4 sphericalHarmonics[9] : "bigarray";
 

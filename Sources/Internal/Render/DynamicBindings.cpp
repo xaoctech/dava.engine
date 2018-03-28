@@ -118,6 +118,8 @@ const FastName DYNAMIC_TEXTURE_NAMES[DynamicBindings::DYNAMIC_TEXTURE_COUNT] =
   FastName("dynamicTextureSrc1"),
   FastName("dynamicTextureSrc2"),
   FastName("dynamicTextureSrc3"),
+  FastName("dynamicTextureLdrHistory"),
+  FastName("dynamicTextureLdrCurrent")
 };
 }
 

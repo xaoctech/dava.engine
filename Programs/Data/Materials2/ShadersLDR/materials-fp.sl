@@ -1,3 +1,5 @@
+#define LDR_FLOW 1
+
 #include "include/common.h"
 #include "include/shading-options.h"
 #include "include/all-input.h"
@@ -20,14 +22,12 @@ fragment_out
 fragment_in
 {
     float4 varTexCoord : TEXCOORD0;
-#if (!WRITE_SHADOW_MAP)
+#if (WRITE_SHADOW_MAP == 0)
     float4 worldPosition : TEXCOORD1;
     float4 projectedPosition : TEXCOORD2;
     float4 shadowTexCoord : TEXCOORD3;
     float4 varToCamera : TEXCOORD4;
-    float3 tangentToFinal0 : NORMAL0;
-    float3 tangentToFinal1 : NORMAL1;
-    float3 tangentToFinal2 : NORMAL2;
+    float3 normal : NORMAL0;
     #if (VERTEX_BAKED_AO)
     float vertexBakedAO : COLOR0;
     #endif
@@ -72,16 +72,8 @@ fragment_out fp_main(fragment_in input)
 
     float bakedAo = max(albedoMinAOValue, baseColorSample.w);
     float4 normalMapSample = tex2D(normalmap, input.varTexCoord.xy);
+    resolve.n = normalize(input.normal);
 
-#if (VIEW_MODE & RESOLVE_NORMAL_MAP)
-    float2 xy = (normalMapSample.xy * 2.0 - 1.0) * normalScale;
-    float3 nts = float3(xy, clamp(sqrt(1.0 - saturate(dot(xy, xy))), 0.0, 1.0));
-    resolve.n = normalize(float3(dot(nts, float3(input.tangentToFinal0)), dot(nts, float3(input.tangentToFinal1)), dot(nts, float3(input.tangentToFinal2))));
-#else
-    resolve.n = normalize(float3(input.tangentToFinal0.z, input.tangentToFinal1.z, input.tangentToFinal2.z));
-#endif
-
-#define LDR_FLOW 1
 #include "include/forward.materials.resolve.h"
 
 #endif

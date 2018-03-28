@@ -916,6 +916,7 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 
     if (uint32(_GLES2_LastActiveTexture) != GL_TEXTURE0 + sampler_i)
     {
+        DVASSERT(sampler_i < DeviceCaps().maxShaderTextures);
         GL_CALL(glActiveTexture(GL_TEXTURE0 + sampler_i));
         _GLES2_LastActiveTexture = GL_TEXTURE0 + sampler_i;
     }
@@ -957,6 +958,8 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 
 uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32* level, uint32 colorCount, Handle depthStencil)
 {
+    DVASSERT(colorCount <= DeviceCaps().maxRenderTargetCount);
+
     GLuint fb = 0;
 
     for (const FramebufferGLES2_t& f : framebufferCache)
@@ -1106,7 +1109,24 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
         }
         else
         {
-            DAVA::Logger::Error("glCheckFramebufferStatus = %08X", status);
+            DAVA::Logger::Error("Failed to create framebuffer, status: %08X", status);
+            for (uint32 i = 0; i < colorCount; ++i)
+            {
+                if (color[i] != InvalidHandle)
+                {
+                    TextureGLES2_t* col = TextureGLES2Pool::Get(color[i]);
+                    DAVA::Logger::Error("Color%u: %s, %ux%u, face: %u, level: %u", i, TextureFormatToString(col->format), col->width, col->height, uint32(face[i]), level[i]);
+                }
+                else
+                {
+                    DAVA::Logger::Error("Color%u: none", i);
+                }
+            }
+            if (depthStencil != InvalidHandle)
+            {
+                TextureGLES2_t* ds = TextureGLES2Pool::Get(depthStencil);
+                DAVA::Logger::Error("Depth: %s, %ux%u", TextureFormatToString(ds->format), ds->width, ds->height);
+            }
             DVASSERT(status == GL_FRAMEBUFFER_COMPLETE);
         }
 

@@ -61,8 +61,8 @@ RenderTechnique:
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
         VelocityPass:
-                SupportedRenderFlows: ["HDRDeferred", "TileBasedHDRDeferred"]
-                Shader: "~res:/Materials2/Shaders/velocity-dynamic"
-                RenderState:
-                    depthFunc: "CMP_EQUAL"
-                    depthWrite: false
+            SupportedRenderFlows: ["HDRDeferred", "TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/velocity-dynamic"
+            RenderState:
+                depthFunc: "CMP_EQUAL"
+                depthWrite: false

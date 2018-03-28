@@ -322,6 +322,8 @@ void EngineBackend::RunConsole()
         {
             rhi::InitParam rendererParams{};
             rendererParams.threadedRenderFrameCount = options->GetInt32("rhi_threaded_frame_count");
+            rendererParams.useSRGBFramebuffer = options->GetBool("srgb_framebuffer");
+
             if (rendererParams.threadedRenderFrameCount > 1)
             {
                 rendererParams.threadedRenderEnabled = true;
@@ -783,6 +785,8 @@ void EngineBackend::InitRenderer(Window* w)
 
     rhi::InitParam rendererParams;
     rendererParams.threadedRenderFrameCount = options->GetInt32("rhi_threaded_frame_count");
+    rendererParams.useSRGBFramebuffer = options->GetBool("srgb_framebuffer");
+
     if (rendererParams.threadedRenderFrameCount > 1)
     {
         rendererParams.threadedRenderEnabled = true;

@@ -309,12 +309,12 @@ static void gles_check_GL_extensions()
                 }
             }
             Short_Int_Supported = true;
+            checkForMaxRT = true;
         }
 
         Float_Supported |= _GLES2_APIVersion >= 3;
         Half_Supported |= _GLES2_APIVersion >= 3;
         RG_Supported |= _GLES2_APIVersion >= 3;
-        checkForMaxRT = true;
     }
 
     if (checkForMaxRT)
@@ -326,13 +326,17 @@ static void gles_check_GL_extensions()
         #define GL_MAX_DRAW_BUFFERS 0x8824
     #endif
         GLint maxDrawBuffers = 0;
-        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
-        MutableDeviceCaps::Get().maxSimultaneousRT = uint32(maxDrawBuffers);
+        GL_CALL(glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers));
+        MutableDeviceCaps::Get().maxRenderTargetCount = uint32(std::max(1, maxDrawBuffers));
     }
     else
     {
-        MutableDeviceCaps::Get().maxSimultaneousRT = 1;
+        MutableDeviceCaps::Get().maxRenderTargetCount = 1;
     }
+
+    GLint maxTextures = 0;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextures);
+    MutableDeviceCaps::Get().maxShaderTextures = static_cast<uint32>(maxTextures);
 
     if (MutableDeviceCaps::Get().isReverseDepthSupported)
     {
@@ -587,7 +591,7 @@ void gles2_Initialize(const InitParam& param)
     _GLES2_AcquireContext = (param.acquireContextFunc) ? param.acquireContextFunc : &macos_gl_acquire_context;
     _GLES2_ReleaseContext = (param.releaseContextFunc) ? param.releaseContextFunc : &macos_gl_release_context;    
 #elif defined(__DAVAENGINE_IPHONE__)
-    ios_gl_init(param.window);
+    ios_gl_init(param.window, param.useSRGBFramebuffer);
     _GLES2_AcquireContext = (param.acquireContextFunc) ? param.acquireContextFunc : &ios_gl_acquire_context;
     _GLES2_ReleaseContext = (param.releaseContextFunc) ? param.releaseContextFunc : &ios_gl_release_context;
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -656,7 +660,6 @@ void gles2_Initialize(const InitParam& param)
     SetDispatchTable(DispatchGLES2);
 
     gles_check_GL_extensions();    
-    
 
 #if ENABLE_DEBUG_OUTPUT
     gles2_enable_debug_output();

@@ -30,11 +30,17 @@ class Landscape : public RenderObject
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_LANDSCAPE)
 
 public:
-    enum eLandscapeTexture
+    enum eLandscapeTexture : uint32
     {
         HEIGHTMAP_TEXTURE,
         TANGENT_TEXTURE,
         TILEMASK_TEXTURE
+    };
+
+    enum LandscapeQuality : uint32
+    {
+        Low,
+        Full,
     };
 
     Landscape();
@@ -300,6 +306,7 @@ protected:
     uint32 tessellationLevelCount = 3;
     float32 tessellationHeight = 0.4f;
 
+    LandscapeQuality quality = LandscapeQuality::Full;
     LansdcapeRenderStats renderStats;
 
     RenderMode renderMode = RENDERMODE_NO_INSTANCING;
@@ -415,7 +422,6 @@ protected:
     Texture* normalTexture = nullptr;
     rhi::TextureFormat heightTextureFormat = rhi::TEXTURE_FORMAT_R8G8B8A8;
     bool manualHeightInterpolation = false;
-    bool usesSingleBakedTexture = false;
 
     Vector<Image*> heightTextureData;
     Vector<Image*> normalTextureData;

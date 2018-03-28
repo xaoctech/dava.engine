@@ -249,9 +249,10 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
                     }
                 }
 
-                if (maxRenderTarget + 1 > rhi::DeviceCaps().maxSimultaneousRT)
+                if (maxRenderTarget + 1 > rhi::DeviceCaps().maxRenderTargetCount)
                 {
-                    DAVA::Logger::Error("Fragment shader uses more render targets than current implementation supports.");
+                    DAVA::Logger::Error("Fragment shader (%s) uses more render targets (%u) than current implementation supports (%u)",
+                                        fileName.GetFilename().c_str(), maxRenderTarget + 1, rhi::DeviceCaps().maxRenderTargetCount);
                     return false;
                 }
             }
@@ -1049,6 +1050,13 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                     ++sampler_reg;
 
                     decl->registerName = ast->AddString(regName);
+
+                    if (sampler_reg + 1 > rhi::DeviceCaps().maxShaderTextures)
+                    {
+                        Logger::Error("Shader (%s) uses more texture units (%u) than current implementation supports (%u)",
+                                      fileName.GetFilename().c_str(), sampler_reg + 1, rhi::DeviceCaps().maxShaderTextures);
+                        return false;
+                    }
                 }
             }
 
@@ -1918,7 +1926,7 @@ const DAVA::String& ShaderSource::GetSourceCode(Api targetApi) const
         case RHI_GLES2:
         {
             sl::GLESGenerator gles_gen(&alloc);
-            codeGenerated = gles_gen.Generate(ast, target, main, src);
+            codeGenerated = gles_gen.Generate(ast, sl::GLESGenerator::GLSL_100, target, main, src);
             break;
         }
 

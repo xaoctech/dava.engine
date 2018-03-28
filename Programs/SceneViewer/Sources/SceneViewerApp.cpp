@@ -285,6 +285,7 @@ DAVA::KeyedArchive* CreateOptions()
 #endif
 
     appOptions->SetBool("separate_net_thread", true);
+    appOptions->SetBool("srgb_framebuffer", false);
 
     return appOptions;
 }

@@ -42,6 +42,7 @@ public:
 
     void SetFrameContext(rhi::HTexture hdrImage, rhi::HTexture destination, const rhi::Viewport& vp);
     void Render(rhi::Handle destination, const rhi::Viewport& viewport);
+    void Render(rhi::Handle hdrImage, rhi::Handle destination, const rhi::Viewport& viewport);
     void InvalidateMaterials();
     void OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f surfaceSize);
 
@@ -85,7 +86,6 @@ public:
         bool enableColorGrading = false;
         bool enableToneMapping = false;
         bool enableHeatMap = false;
-        bool enableTXAA = false;
         bool resetHistory = false;
     };
 
@@ -169,7 +169,6 @@ private:
     {
         HISTOGRAM,
         BLOOM,
-        TXAA,
 
         RENDERER_COUNT
     };

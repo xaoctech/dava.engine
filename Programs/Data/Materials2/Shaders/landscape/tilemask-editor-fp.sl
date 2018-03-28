@@ -34,6 +34,7 @@ uniform sampler2D sourceTexture2;
 #if LANDSCAPE_LAYERS_COUNT > 3
 uniform sampler2D sourceTexture3;
 #endif
+
 uniform sampler2D toolTexture;
 
 [material][instance] property float intensity = 1.0;

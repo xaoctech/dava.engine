@@ -258,7 +258,7 @@ void dx9_InitCaps(const AdapterInfo& adapterInfo)
     MutableDeviceCaps::Get().isZeroBaseClipRange = true;
     MutableDeviceCaps::Get().isCenterPixelMapping = true;
     MutableDeviceCaps::Get().maxTextureSize = DAVA::Min(caps.MaxTextureWidth, caps.MaxTextureHeight);
-    MutableDeviceCaps::Get().maxSimultaneousRT = uint32(caps.NumSimultaneousRTs);
+    MutableDeviceCaps::Get().maxRenderTargetCount = uint32(caps.NumSimultaneousRTs);
 
     if (adapterInfo.caps.RasterCaps & D3DPRASTERCAPS_ANISOTROPY)
     {

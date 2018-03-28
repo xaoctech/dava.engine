@@ -47,11 +47,6 @@ vertex_out
 #endif
 };
 
-#if (SOFT_SKINNING) || (HARD_SKINNING)
-[auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
-[auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
-#endif
-
 vertex_out vp_main(vertex_in input)
 {
     float3 inputPosition = input.position.xyz;

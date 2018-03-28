@@ -4,8 +4,6 @@
 #include "include/structures.h"
 #include "include/math.h"
 
-[material][a] property float3 speedTreeNormalScale = float3(1.0, 1.0, 1.0);
-
 vertex_in
 {
     float3 position : POSITION;
@@ -53,11 +51,6 @@ vertex_out
     #endif
 #endif
 };
-
-#if (SOFT_SKINNING) || (HARD_SKINNING)
-[auto][jpos] property float4 jointPositions[MAX_JOINTS] : "bigarray"; // (x, y, z, scale)
-[auto][jrot] property float4 jointQuaternions[MAX_JOINTS] : "bigarray";
-#endif
 
 vertex_out vp_main(vertex_in input)
 {
@@ -132,10 +125,6 @@ vertex_out vp_main(vertex_in input)
 
     inputPosition = skinnedPosition;
 
-#endif
-
-#if (SPEED_TREE_OBJECT)
-    inputNormal *= speedTreeNormalScale;
 #endif
 
     vertex_out output;

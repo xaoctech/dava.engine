@@ -18,7 +18,6 @@ struct TextureSetInfo
 struct DepthStencilState_t
 {
     DepthStencilState::Descriptor desc;
-    HDepthStencilState reverseState;
     uint32_t references = 0;
 };
 
@@ -436,49 +435,9 @@ HDepthStencilState AcquireDepthStencilState(const DepthStencilState::Descriptor&
     DepthStencilState_t& info = _DepthStencilStateInfo[state];
     info.references = 1;
     info.desc = desc;
-
-    DepthStencilState::Descriptor reversDesc = desc;
-
-    bool createReverseState = false;
-    switch (desc.depthFunc)
-    {
-    case CmpFunc::CMP_LESS:
-        reversDesc.depthFunc = CmpFunc::CMP_GREATER;
-        createReverseState = true;
-        break;
-    case CmpFunc::CMP_LESSEQUAL:
-        reversDesc.depthFunc = CmpFunc::CMP_GREATEREQUAL;
-        createReverseState = true;
-        break;
-    case CmpFunc::CMP_GREATER:
-        reversDesc.depthFunc = CmpFunc::CMP_LESS;
-        createReverseState = true;
-        break;
-    case CmpFunc::CMP_GREATEREQUAL:
-        reversDesc.depthFunc = CmpFunc::CMP_LESSEQUAL;
-        createReverseState = true;
-        break;
-    }
-
-    if (createReverseState)
-    {
-        info.reverseState = HDepthStencilState(DepthStencilState::Create(reversDesc));
-    }
-    else
-    {
-        info.reverseState = state;
-    }
-
     return state;
 }
 
-HDepthStencilState AcquireReverseDepthStencilState(HDepthStencilState ds)
-{
-    DAVA::LockGuard<DAVA::Mutex> lock(_DepthStencilStateInfoMutex);
-    auto i = _DepthStencilStateInfo.find(ds);
-    DVASSERT(i != _DepthStencilStateInfo.end());
-    return (i == _DepthStencilStateInfo.end()) ? HDepthStencilState() : i->second.reverseState;
-}
 
 void ReleaseDepthStencilState(HDepthStencilState ds, bool scheduleDeletion)
 {

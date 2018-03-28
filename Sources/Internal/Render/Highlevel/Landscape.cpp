@@ -110,8 +110,6 @@ const FastName Landscape::TEXTURE_DECORATION_COLOR("decorationcolortexture");
 const FastName Landscape::LANDSCAPE_QUALITY_NAME("Landscape");
 const FastName Landscape::LANDSCAPE_QUALITY_VALUE_HIGH("HIGH");
 
-#define REDUCE_LANDSCAPE_QUALITY 0 /* possible values : 0 1 2 */
-
 const uint32 LANDSCAPE_BATCHES_POOL_SIZE = 32;
 const uint32 LANDSCAPE_MATERIAL_SORTING_KEY = 10;
 
@@ -120,15 +118,15 @@ static const uint32 PATCH_SIZE_QUADS = (PATCH_SIZE_VERTICES - 1);
 
 static const uint32 INSTANCE_DATA_BUFFERS_POOL_SIZE = 9;
 
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT = 3 - REDUCE_LANDSCAPE_QUALITY;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT = 3;
 
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_WIDTH = 4096u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_HEIGHT = 2048u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE = 128u >> REDUCE_LANDSCAPE_QUALITY;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_WIDTH = 4096u;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_HEIGHT = 2048u;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE = 128u;
 
-static const uint32 DECORATION_VIRTUAL_TEXTURE_WIDTH = 2048u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 DECORATION_VIRTUAL_TEXTURE_HEIGHT = 1024u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE = 64u >> REDUCE_LANDSCAPE_QUALITY;
+static const uint32 DECORATION_VIRTUAL_TEXTURE_WIDTH = 2048u;
+static const uint32 DECORATION_VIRTUAL_TEXTURE_HEIGHT = 1024u;
+static const uint32 DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE = 64u;
 
 static const uint32 VT_PAGE_UPDATES_PER_FRAME_DEFAULT_COUNT = 16u;
 static const uint32 VT_PAGE_LOD_COUNT = 3; //macro-, middle- and micro-tiles
@@ -194,26 +192,27 @@ Landscape::Landscape()
 
     type = TYPE_LANDSCAPE;
 
-    usesSingleBakedTexture = Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward;
+    quality = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? LandscapeQuality::Low : LandscapeQuality::Full;
+    uint32 REDUCE_LANDSCAPE_QUALITY = (quality == LandscapeQuality::Low) ? 1 : 0;
 
     subdivision = new LandscapeSubdivision();
-    decoration = new DecorationData();
 
     VirtualTexture::Descriptor vtDesc;
-    vtDesc.width = TERRAIN_VIRTUAL_TEXTURE_WIDTH;
-    vtDesc.height = TERRAIN_VIRTUAL_TEXTURE_HEIGHT;
-    vtDesc.pageSize = TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE;
-    if (usesSingleBakedTexture)
+    vtDesc.width = TERRAIN_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.height = TERRAIN_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.pageSize = TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
+    if (quality == LandscapeQuality::Low)
     {
         vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 }; /* baked image only */
         vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
     }
     else
     {
+        decoration = new DecorationData();
         vtDesc.virtualTextureLayers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } }; /* [albedo + height], [normal + roughness + shadow] */
         vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
     }
-    vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT;
+    vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT - REDUCE_LANDSCAPE_QUALITY;
 
     pageManager = new LandscapePageManager(vtDesc);
     terrainVTexture = pageManager->GetVirtualTexture();
@@ -223,11 +222,19 @@ Landscape::Landscape()
         terrainVTexture->GetLayerTexture(l)->samplerState.anisotropyLevel = 1;
     }
 
-    vtDesc.width = DECORATION_VIRTUAL_TEXTURE_WIDTH;
-    vtDesc.height = DECORATION_VIRTUAL_TEXTURE_HEIGHT;
-    vtDesc.pageSize = DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE;
-    vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
-    vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    vtDesc.width = DECORATION_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.height = DECORATION_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.pageSize = DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
+    if (quality == LandscapeQuality::Low)
+    {
+        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
+        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
+    }
+    else
+    {
+        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
+        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    }
     vtDesc.mipLevelCount = 1;
 
     vtDecalRenderer = new VTDecalPageRenderer(false);
@@ -588,7 +595,7 @@ void Landscape::RebuildLandscape()
         landscapeMaterial->SetFXName(NMaterialName::LANDSCAPE);
         landscapeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, terrainVTexture->GetLayerTexture(0));
         landscapeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
-        if (usesSingleBakedTexture == false)
+        if (quality == LandscapeQuality::Full)
         {
             landscapeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
         }
@@ -2083,7 +2090,7 @@ void Landscape::Load(KeyedArchive* archive, SerializationContext* serializationC
         else
             landscapeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
 
-        if (usesSingleBakedTexture == false)
+        if (quality == LandscapeQuality::Full)
         {
             landscapeMaterial->SetTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
         }
@@ -2535,7 +2542,7 @@ void Landscape::DebugDraw2D(Window*)
         DVASSERT(terrainVTexture->GetLayersCount() > 0);
         RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 5.0f, 512.f, 256.f));
 
-        if (usesSingleBakedTexture == false)
+        if (quality == LandscapeQuality::Full)
         {
             DVASSERT(terrainVTexture->GetLayersCount() > 1);
             RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
