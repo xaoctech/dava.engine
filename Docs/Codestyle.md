@@ -323,11 +323,11 @@ When class is separated on inteface definition and implementation (e.g. `.h` and
 Declaration comments describe use of the function (when it is non-obvious); comments at the definition of a function describe operation.
 
 ## Unittests
-Unittests files should be named 'MyClass.unittest' and placed along with .cpp files with tested code.
+Unittests files should be named 'MyClass.unittest.cpp' and placed along with .cpp files with tested code.
 
 ```
 Profiler.cpp
-Profiler.unittest
+Profiler.unittest.cpp
 ```
 
 Python codestyle
