@@ -2,12 +2,20 @@
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
 namespace EngineSingletonNamespace
 {
 Engine* engineSingleton = nullptr;
+}
+
+DAVA_REFLECTION_IMPL(Engine)
+{
+    ReflectionRegistrator<Engine>::Begin()
+    .Method("QuitAsync", &Engine::QuitAsync)[M::Params({ "exitCode" })]
+    .End();
 }
 
 Engine* Engine::Instance()
