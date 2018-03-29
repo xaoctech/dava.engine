@@ -267,11 +267,16 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Priva
         params.frameIdBase = range.baseFrameId;
         params.privacy = privacy;
         const size_t diffSize = CreateDiff(params);
-        if (netEntityId.IsStaticId() && diffSize == 1 && *params.buff == EMPTY_DIFF)
-        { // static object has no changes
-            return WriteResult::CONTINUE;
+        // We can save net-traffic by ignoring to send touch-info for static objects.
+        // If we have such entity we should just skip it and continue to the next one.
+        if (netEntityId != NetworkID::SCENE_ID && netEntityId.IsStaticId())
+        {
+            // check if diff for static entity is empty
+            if (diffSize == 1 && *params.buff == EMPTY_DIFF)
+            {
+                return WriteResult::CONTINUE;
+            }
         }
-
 #if 0
         static UnorderedMap<uint32, uint32> stats;
         static uint32 counter__ = 0;

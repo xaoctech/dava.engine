@@ -26,7 +26,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemClient)
 {
     ReflectionRegistrator<NetworkDeltaReplicationSystemClient>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkDeltaReplicationSystemClient::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.0f)]
+    .Method("ProcessReceivePackets", &NetworkDeltaReplicationSystemClient::ProcessReceivePackets)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.0f)]
+    .Method("ProcessAppliedPackets", &NetworkDeltaReplicationSystemClient::ProcessAppliedPackets)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.1f)]
     .End();
 }
 
@@ -127,14 +128,71 @@ NetworkDeltaReplicationSystemClient::NetworkDeltaReplicationSystemClient(Scene* 
     netConnectionComp = scene->GetSingleComponent<NetworkClientConnectionSingleComponent>();
 }
 
-void NetworkDeltaReplicationSystemClient::ProcessFixed(float32 timeElapsed)
+void NetworkDeltaReplicationSystemClient::ProcessReceivePackets(float32 timeElapsed)
 {
     const auto& recvPackets = netConnectionComp->GetRecvPackets(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
     for (const auto& packet : recvPackets)
     {
         OnReceive(packet);
     }
-    ProcessAppliedPackets();
+}
+
+void NetworkDeltaReplicationSystemClient::ProcessAppliedPackets(float32 timeElapsed)
+{
+    NetworkDeltaSingleComponent::Deltas& deltas = deltaSingleComponent->deltas;
+    for (NetworkDeltaSingleComponent::Delta& delta : deltas)
+    {
+        DVASSERT(delta.status != NetworkDeltaSingleComponent::Delta::Status::PENDING);
+        if (delta.status == NetworkDeltaSingleComponent::Delta::Status::APPLIED)
+        {
+            if (delta.sequenceId)
+            {
+                uint32& numberOfEntities = sequenceToCounter[delta.sequenceId];
+                if (numberOfEntities > 0)
+                {
+                    --numberOfEntities;
+                    if (delta.sequenceId && 0 == numberOfEntities)
+                    {
+                        ackPacket.sequenceIds.push_back(delta.sequenceId);
+                    }
+                }
+            }
+        }
+        else if (delta.status == NetworkDeltaSingleComponent::Delta::Status::SKIPPED)
+        {
+            frameToFragments.erase(delta.frameId);
+        }
+    }
+
+    sequenceToCounter.clear();
+    if (!ackPacket.sequenceIds.empty())
+    {
+        PacketParams packetParams = PacketParams::Unreliable(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
+        mtuBlock.size = ackPacket.Save(mtuBlock.buff);
+        client->Send(mtuBlock.buff, mtuBlock.size, packetParams);
+        ackPacket.sequenceIds.clear();
+    }
+
+    NetworkReplicationSingleComponent::FullyReceivedFrames& fullyReceivedFrames = replicationSingleComponent->fullyReceivedFrames;
+    for (const auto& it : frameToFragments)
+    {
+        const UnreliableFragments& fragments = it.second;
+        if (fragments.isEntire)
+        {
+            const uint32 frameId = it.first;
+            fullyReceivedFrames.insert(frameId);
+        }
+    }
+    frameToFragments.clear();
+    const int32 excessCount = static_cast<int32>(fullyReceivedFrames.size() - NetworkReplicationSingleComponent::MAX_ASSEMBLED_FRAMES);
+    if (excessCount > 0)
+    {
+        auto begin = fullyReceivedFrames.begin();
+        auto it = begin;
+        std::advance(it, std::min(static_cast<size_t>(excessCount), fullyReceivedFrames.size()));
+        fullyReceivedFrames.erase(begin, it);
+    }
+
     elasticBuffer.Reset();
 }
 
@@ -205,67 +263,11 @@ void NetworkDeltaReplicationSystemClient::OnReceive(const Vector<uint8>& packet)
         size += diffSize;
     }
 
+    DVASSERT(size == packet.size());
+
     if (sequenceId && numberOfEntities)
     {
         sequenceToCounter[sequenceId] = numberOfEntities;
     }
 }
-
-void NetworkDeltaReplicationSystemClient::ProcessAppliedPackets()
-{
-    NetworkDeltaSingleComponent::Deltas& deltas = deltaSingleComponent->deltas;
-    for (NetworkDeltaSingleComponent::Delta& delta : deltas)
-    {
-        //DVASSERT(delta.status != NetworkDeltaSingleComponent::Delta::Status::PENDING);
-        if (delta.status == NetworkDeltaSingleComponent::Delta::Status::APPLIED)
-        {
-            if (delta.sequenceId)
-            {
-                uint32& numberOfEntities = sequenceToCounter[delta.sequenceId];
-                if (numberOfEntities > 0)
-                {
-                    --numberOfEntities;
-                    if (delta.sequenceId && 0 == numberOfEntities)
-                    {
-                        ackPacket.sequenceIds.push_back(delta.sequenceId);
-                    }
-                }
-            }
-        }
-        else if (delta.status == NetworkDeltaSingleComponent::Delta::Status::SKIPPED)
-        {
-            frameToFragments.erase(delta.frameId);
-        }
-    }
-
-    sequenceToCounter.clear();
-    if (!ackPacket.sequenceIds.empty())
-    {
-        PacketParams packetParams = PacketParams::Unreliable(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
-        mtuBlock.size = ackPacket.Save(mtuBlock.buff);
-        client->Send(mtuBlock.buff, mtuBlock.size, packetParams);
-        ackPacket.sequenceIds.clear();
-    }
-
-    NetworkReplicationSingleComponent::FullyReceivedFrames& fullyReceivedFrames = replicationSingleComponent->fullyReceivedFrames;
-    for (const auto& it : frameToFragments)
-    {
-        const UnreliableFragments& fragments = it.second;
-        if (fragments.isEntire)
-        {
-            const uint32 frameId = it.first;
-            fullyReceivedFrames.insert(frameId);
-        }
-    }
-    frameToFragments.clear();
-    const int32 excessCount = static_cast<int32>(fullyReceivedFrames.size() - NetworkReplicationSingleComponent::MAX_ASSEMBLED_FRAMES);
-    if (excessCount > 0)
-    {
-        auto begin = fullyReceivedFrames.begin();
-        auto it = begin;
-        std::advance(it, std::min(static_cast<size_t>(excessCount), fullyReceivedFrames.size()));
-        fullyReceivedFrames.erase(begin, it);
-    }
-}
-
 } //namespace DAVA

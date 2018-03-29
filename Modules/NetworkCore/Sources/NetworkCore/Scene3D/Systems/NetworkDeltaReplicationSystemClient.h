@@ -45,12 +45,11 @@ public:
     DAVA_VIRTUAL_REFLECTION(NetworkDeltaReplicationSystemClient, NetworkDeltaReplicationSystemBase);
 
     NetworkDeltaReplicationSystemClient(Scene* scene);
-    void ProcessFixed(float32 timeElapsed) override;
+    void ProcessReceivePackets(float32 timeElapsed);
+    void ProcessAppliedPackets(float32 timeElapsed);
     void OnReceive(const Vector<uint8>& packet);
 
 private:
-    void ProcessAppliedPackets();
-
     IClient* client;
 
     NetworkReplicationSingleComponent* replicationSingleComponent;

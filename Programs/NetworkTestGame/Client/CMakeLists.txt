@@ -1,5 +1,4 @@
 cmake_minimum_required (VERSION 3.0)
-cmake_minimum_required (VERSION 3.0)
 
 project ( Client )
 
@@ -15,7 +14,6 @@ dava_add_definitions(-DUSER_VERSIONING_DEBUG_FEATURES)
 
 find_dava_module( NetworkCore )
 find_dava_module( Physics )
-#find_dava_module( PhysicsDebug )
 find_dava_module( NetworkPhysics )
 find_dava_module( TestCharacterController )
 find_package( DavaFramework REQUIRED COMPONENTS "${DAVA_COMPONENTS}" )

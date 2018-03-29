@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDebugResimulationDrawSystem)
 {
     ReflectionRegistrator<NetworkDebugResimulationDrawSystem>::Begin()[M::Tags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkDebugResimulationDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.3f)] // should be after NetworkResimulationSystem
+    .Method("ProcessFixed", &NetworkDebugResimulationDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.4f)] // should be after NetworkResimulationSystem
     .Method("Process", &NetworkDebugResimulationDrawSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 0.1f)]
     .End();
 }
