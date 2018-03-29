@@ -1,9 +1,12 @@
 #include "PrefabComponent.h"
+
 #include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "FileSystem/FilePath.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Scene3D/Components/SingleComponents/PrefabSingleComponent.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
@@ -11,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PrefabComponent)
 {
     ReflectionRegistrator<PrefabComponent>::Begin()
     .ConstructorByPointer()
-    .Field("filepath", &PrefabComponent::filepath)[M::DisplayName("Prefab Path")]
+    .Field("filepath", &PrefabComponent::GetFilepath, &PrefabComponent::SetFilepath)[M::DisplayName("Prefab Path")]
     .End();
 }
 
@@ -57,7 +60,23 @@ void PrefabComponent::SetFilepath(const FilePath& path)
     filepath = path;
     AssetManager* assetManager = GetEngineContext()->assetManager;
     assetManager->UnregisterListener(prefab, this);
-    prefab = assetManager->GetAsset<Prefab>(Prefab::PathKey(filepath), AssetManager::SYNC, this);
+    if (path.IsEmpty())
+    {
+        prefab.reset();
+    }
+    else
+    {
+        prefab = assetManager->GetAsset<Prefab>(Prefab::PathKey(filepath), AssetManager::SYNC, this);
+    }
+
+    if (entity != nullptr)
+    {
+        Scene* scene = entity->GetScene();
+        if (scene != nullptr)
+        {
+            scene->GetSingletonComponent<PrefabSingleComponent>()->changedPrefabComponent.insert(this);
+        }
+    }
 }
 
 const FilePath& PrefabComponent::GetFilepath() const

@@ -393,7 +393,7 @@ public:
         DAVA::Vector<DAVA::MeshLODDescriptor> oldDescriptor;
         DAVA::Vector<DAVA::MeshLODDescriptor> newDescriptor;
 
-        DAVA_VIRTUAL_REFLECTION_IMPL(AddMeshLodCommand)
+        DAVA_VIRTUAL_REFLECTION_IN_PLACE(AddMeshLodCommand)
         {
             DAVA::ReflectionRegistrator<AddMeshLodCommand>::Begin()
             .End();

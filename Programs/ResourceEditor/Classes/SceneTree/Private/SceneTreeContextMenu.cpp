@@ -24,12 +24,15 @@
 #include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/UI.h>
 
+#include <Asset/Asset.h>
+#include <Asset/AssetManager.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/SlotComponent.h>
 #include <Reflection/ReflectedTypeDB.h>
+#include <Scene3D/Prefab.h>
 
 #include <QMenu>
 #include <QModelIndex>
@@ -272,50 +275,7 @@ void EntityContextMenu::FillActions(QMenu& menu)
         }
 
         menu.addSeparator();
-        Connect(menu.addAction(DAVA::SharedIcon(":/QtIcons/save_as.png"), QStringLiteral("Save Entity As...")), DAVA::MakeFunction(this, &EntityContextMenu::SaveEntityAs));
-
-        DAVA::KeyedArchive* customProp = GetCustomPropertiesArchieve(entity);
-        bool isConstReference = false;
-        if (nullptr != customProp)
-        {
-            DAVA::FilePath ownerRef = customProp->GetString(DAVA::ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-            if (!ownerRef.IsEmpty())
-            {
-                if (selectionSize == 1)
-                {
-                    Connect(menu.addAction(QStringLiteral("Edit Model")), DAVA::MakeFunction(this, &EntityContextMenu::EditModel));
-                }
-
-                Connect(menu.addAction(QStringLiteral("Reload Model...")), DAVA::MakeFunction(this, &EntityContextMenu::ReloadModel));
-            }
-
-            isConstReference = customProp->GetBool(DAVA::ResourceEditor::EDITOR_CONST_REFERENCE, false);
-        }
-
-        if (isConstReference != true)
-        {
-            Connect(menu.addAction(QStringLiteral("Reload Model As...")), DAVA::MakeFunction(this, &EntityContextMenu::ReloadModelAs));
-        }
-
-        // Reload textures in selection
-        {
-            bool hasTextures = false;
-
-            for (DAVA::Selectable obj : selectedObjects)
-            {
-                if (obj.CanBeCastedTo<DAVA::Entity>())
-                {
-                    DAVA::Entity* e = obj.Cast<DAVA::Entity>();
-                    DAVA::SceneHelper::TextureCollector collector;
-                    DAVA::SceneHelper::EnumerateEntityTextures(scene, e, collector);
-                    if (collector.GetTextures().empty() == false)
-                    {
-                        hasTextures = true;
-                        break;
-                    }
-                }
-            }
-        }
+        Connect(menu.addAction(DAVA::SharedIcon(":/QtIcons/save_as.png"), QStringLiteral("Save Entity As Prefab...")), DAVA::MakeFunction(this, &EntityContextMenu::SaveEntityAs));
 
         // particle effect
         DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);
@@ -374,130 +334,35 @@ void EntityContextMenu::FillCameraActions(QMenu& menu)
 void EntityContextMenu::SaveEntityAs()
 {
     DVASSERT(selectedObjects.empty() == false);
+    using namespace DAVA;
 
-    DAVA::FilePath scenePath = scene->GetScenePath().GetDirectory();
-    if (!DAVA::GetEngineContext()->fileSystem->Exists(scenePath) || !scene->IsLoaded())
+    FilePath scenePath = scene->GetScenePath().GetDirectory();
+    if (!GetEngineContext()->fileSystem->Exists(scenePath) || !scene->IsLoaded())
     {
         scenePath = GetDataSourcePath();
     }
 
-    DAVA::FileDialogParams params;
+    FileDialogParams params;
     params.dir = QString::fromStdString(scenePath.GetDirectory().GetAbsolutePathname());
-    params.filters = QStringLiteral("DAVA SceneV2 (*.sc2)");
-    params.title = QStringLiteral("Save scene file");
+    params.filters = QStringLiteral("DAVA Prefab (*.prefab)");
+    params.title = QStringLiteral("Save prefab");
 
     QString filePath = ui->GetSaveFileName(DAVA::mainWindowKey, params);
     if (!filePath.isEmpty())
     {
-        DAVA::SelectableGroup group;
-        group.Add(selectedObjects);
-        SaveEntityAsAction saver(&group, filePath.toStdString());
-        saver.Run();
-    }
-}
-
-void EntityContextMenu::EditModel()
-{
-    DAVA::SelectionData* selectionData = accessor->GetActiveContext()->GetData<DAVA::SelectionData>();
-    const DAVA::SelectableGroup& selection = selectionData->GetSelection();
-    for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
-    {
-        DAVA::KeyedArchive* archive = GetCustomPropertiesArchieve(entity);
-        if (archive)
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        Asset<Prefab> prefab = assetManager->CreateAsset<Prefab>(Prefab::PathKey(filePath.toStdString()));
+        Vector<Entity*> entities;
+        entities.reserve(selectedObjects.size());
+        for (const Selectable& obj : selectedObjects)
         {
-            DAVA::FilePath entityRefPath = archive->GetString(DAVA::ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-            if (DAVA::FileSystem::Instance()->Exists(entityRefPath))
+            if (obj.CanBeCastedTo<Entity>())
             {
-                invoker->Invoke(DAVA::OpenSceneOperation.ID, entityRefPath);
-            }
-            else
-            {
-                DAVA::Logger::Error((DAVA::ResourceEditor::SCENE_TREE_WRONG_REF_TO_OWNER + entityRefPath.GetAbsolutePathname()).c_str());
-            }
+                entities.push_back(obj.Cast<Entity>());
+            };
         }
-    }
-}
-
-void EntityContextMenu::ReloadModel()
-{
-    QDialog dlg;
-
-    QVBoxLayout* dlgLayout = new QVBoxLayout();
-    dlgLayout->setMargin(10);
-
-    dlg.setWindowTitle("Reload Model options");
-    dlg.setLayout(dlgLayout);
-
-    QCheckBox* lightmapsChBox = new QCheckBox(QStringLiteral("Leave lightmap settings"), &dlg);
-    dlgLayout->addWidget(lightmapsChBox);
-    lightmapsChBox->setCheckState(Qt::Checked);
-
-    QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dlg);
-    dlgLayout->addWidget(buttons);
-
-    QObject::connect(buttons, SIGNAL(accepted()), &dlg, SLOT(accept()));
-    QObject::connect(buttons, SIGNAL(rejected()), &dlg, SLOT(reject()));
-
-    if (QDialog::Accepted == ui->ShowModalDialog(DAVA::mainWindowKey, &dlg))
-    {
-        DAVA::String wrongPathes;
-        DAVA::SelectionData* selectionData = accessor->GetActiveContext()->GetData<DAVA::SelectionData>();
-        const DAVA::SelectableGroup& selection = selectionData->GetSelection();
-        for (auto entity : selection.ObjectsOfType<DAVA::Entity>())
-        {
-            DAVA::KeyedArchive* archive = GetCustomPropertiesArchieve(entity);
-            if (archive)
-            {
-                DAVA::FilePath pathToReload(archive->GetString(DAVA::ResourceEditor::EDITOR_REFERENCE_TO_OWNER));
-                if (!DAVA::FileSystem::Instance()->Exists(pathToReload))
-                {
-                    wrongPathes += DAVA::Format("\r\n%s : %s", entity->GetName().c_str(),
-                                                pathToReload.GetAbsolutePathname().c_str());
-                }
-            }
-        }
-        if (!wrongPathes.empty())
-        {
-            DAVA::Logger::Error((DAVA::ResourceEditor::SCENE_TREE_WRONG_REF_TO_OWNER + wrongPathes).c_str());
-        }
-        DAVA::SelectableGroup newSelection = scene->GetSystem<DAVA::StructureSystem>()->ReloadEntities(selection, lightmapsChBox->isChecked());
-        selectionData->SetSelection(newSelection);
-    }
-}
-
-void EntityContextMenu::ReloadModelAs()
-{
-    DAVA::SelectionData* selectionData = accessor->GetActiveContext()->GetData<DAVA::SelectionData>();
-    const DAVA::SelectableGroup& selection = selectionData->GetSelection();
-    DAVA::Entity* entity = selection.GetContent().front().AsEntity();
-    DAVA::KeyedArchive* archive = GetCustomPropertiesArchieve(entity);
-    if (archive != nullptr)
-    {
-        DAVA::String ownerPath = archive->GetString(DAVA::ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-        if (ownerPath.empty())
-        {
-            DAVA::FilePath p = scene->GetScenePath().GetDirectory();
-            if (DAVA::FileSystem::Instance()->Exists(p) && scene->IsLoaded())
-            {
-                ownerPath = p.GetAbsolutePathname();
-            }
-            else
-            {
-                ownerPath = GetDataSourcePath().GetAbsolutePathname();
-            }
-        }
-
-        DAVA::FileDialogParams params;
-        params.dir = QString::fromStdString(ownerPath);
-        params.filters = QStringLiteral("DAVA SceneV2 (*.sc2)");
-        params.title = QStringLiteral("Open scene file");
-
-        QString filePath = ui->GetOpenFileName(DAVA::mainWindowKey, params);
-        if (!filePath.isEmpty())
-        {
-            DAVA::SelectableGroup newSelection = scene->GetSystem<DAVA::StructureSystem>()->ReloadEntitiesAs(selection, filePath.toStdString());
-            selectionData->SetSelection(newSelection);
-        }
+        prefab->ConstructFrom(entities);
+        assetManager->SaveAsset(prefab);
     }
 }
 

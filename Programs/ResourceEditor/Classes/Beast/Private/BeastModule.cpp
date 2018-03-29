@@ -111,14 +111,6 @@ void BeastModule::RunBeast(const QString& outputPath, Beast::eBeastMode mode)
     std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
     BeastRunner beast(scene.Get(), scene->GetScenePath(), path, mode, std::move(waitHandle));
     beast.RunUIMode();
-
-    if (mode == Beast::eBeastMode::MODE_LIGHTMAPS)
-    {
-        // ReloadTextures should be delayed to give Qt some time for closing wait dialog before we will open new one for texture reloading.
-        delayedExecutor.DelayedExecute([this]() {
-            InvokeOperation(DAVA::ReloadAllTextures.ID, DAVA::Deprecated::GetDataNode<DAVA::CommonInternalSettings>()->textureViewGPU);
-        });
-    }
 }
 
 bool BeastModule::GetBeastAvailable() const

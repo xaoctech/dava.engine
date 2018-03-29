@@ -93,6 +93,7 @@ public:
 
     // checks whether the scene changed since the last save
     bool IsLoaded() const;
+    void SetLoaded(bool isLoaded);
     bool IsChanged() const;
     void SetChanged();
 

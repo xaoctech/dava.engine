@@ -69,7 +69,6 @@ public:
         FastName quality;
         UnorderedMap<FastName, int32> defines;
         Vector<size_t> fxKey;
-        size_t fxKeyHash;
     };
 
     FXAsset(const Any& assetKey);

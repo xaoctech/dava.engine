@@ -1,6 +1,6 @@
 #pragma once
 
-#include <REPlatform/Global/REFileOperationsIntarface.h>
+#include <REPlatform/Global/REFileOperationsInterface.h>
 
 #include <Base/BaseTypes.h>
 

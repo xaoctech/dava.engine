@@ -1,8 +1,5 @@
 #include "Classes/Qt/MaterialEditor/MaterialModel.h"
 #include "Classes/Qt/MaterialEditor/MaterialItem.h"
-#include "Classes/Qt/TextureBrowser/TextureCache.h"
-#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
-#include "Classes/Qt/TextureBrowser/TextureInfo.h"
 #include "Classes/Qt/Tools/MimeData/MimeDataHelper2.h"
 
 #include <REPlatform/Commands/MaterialTreeModifyCommands.h>

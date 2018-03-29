@@ -21,16 +21,16 @@ Prefab::~Prefab()
     SafeRelease(rootEntity);
 }
 
-Vector<Entity*> Prefab::GetPrefabEntities() const
+Vector<Entity*> Prefab::ClonePrefabEntities() const
 {
     Vector<Entity*> clonedEntities;
     uint32 size = rootEntity->GetChildrenCount();
     clonedEntities.resize(size);
     for (uint32 i = 0; i < size; ++i)
     {
-        clonedEntities[i] = rootEntity->GetChild(i);
+        clonedEntities[i] = rootEntity->GetChild(i)->Clone();
     }
-    return std::move(clonedEntities);
+    return clonedEntities;
 }
 
 void Prefab::ConstructFrom(const Vector<Entity*>& prefabEntities)

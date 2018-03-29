@@ -15,6 +15,7 @@
 #include "Scene3D/Scene.h"
 #include "Render/Material/Material.h"
 #include "Render/3D/Geometry.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -34,21 +35,24 @@ struct Header
     AABBox3 worldBounds;
 };
 
-template <class T>
-size_t PathKeyHash(const Any& v)
+size_t LevelKeyHash(const Any& v)
 {
-    const T& key = v.Get<T>();
+    const Level::Key& key = v.Get<Level::Key>();
     std::hash<String> hashFn;
     return hashFn(key.path.GetAbsolutePathname());
 }
 
-size_t StreamEntityKeyHash(const Any& v)
+size_t EntityKeyHash(const Any& v)
 {
-    const LevelAssetLoader::StreamEntityKey& key = v.Get<LevelAssetLoader::StreamEntityKey>();
-    std::hash<Asset<Level>> levelHash;
+    const LevelEntity::Key& key = v.Get<LevelEntity::Key>();
+    std::hash<Level*> levelHash;
     std::hash<uint32> indexHash;
 
-    return levelHash(key.level) ^ (indexHash(key.entityIndex) << 1);
+    size_t seed;
+    HashCombine(seed, key.level);
+    HashCombine(seed, key.entityIndex);
+
+    return seed;
 }
 
 AABBox3 ComputeEntitiesBoxesAndWorldExtents(Scene* scene, Vector<AABBox3>& boxes)
@@ -163,18 +167,6 @@ void WriteEntities(File* file, Scene* scene, SerializationContext* serialization
     Vector<Level::EntityInfo> infoArray(entityCount);
     // Save entities and record entity info offsets
 
-    /*
-    auto GetOwnerSet = [&](DataNode* node) -> String
-   {
-       String res = "";
-       for (const FastName& owner : ownerSet[node])
-       {
-           res += String(owner.c_str());
-       }
-       return res;
-   };
-    */
-
     for (size_t entityIndex = 0; entityIndex < entityCount; ++entityIndex)
     {
         Entity* entity = scene->GetChild(int32(entityIndex));
@@ -187,21 +179,6 @@ void WriteEntities(File* file, Scene* scene, SerializationContext* serialization
         entityInfo.fileSize = uint32(file->GetPos()) - entityInfo.fileOffset;
 
         SafeRelease(archive);
-        /** Debug info **/
-        //       Set<DataNode*> dataNodesInEntity;
-        //       entity->GetDataNodes(dataNodesInEntity);
-        //       Logger::Debug<Level>("Entity: %s DataNodes Count: %d", entity->GetName().c_str(), dataNodesInEntity.size());
-        //       for (DataNode* node : dataNodesInEntity)
-        //       {
-        //           PolygonGroup* geometry = dynamic_cast<PolygonGroup*>(node);
-        //           if (geometry)
-        //           {
-        //               Logger::Debug<Level>("-- Geometry: %s vertices: %d, primitives: %d owners: %s", dataNodesWithNames[node].GetFilename().c_str(),
-        //                                    geometry->GetVertexCount(), geometry->GetPrimitiveCount(), GetOwnerSet(node).c_str());
-        //           }
-        //           else
-        //               Logger::Debug<Level>("-- DataNode: %s owners: %s", dataNodesWithNames[node].GetFilename().c_str(), GetOwnerSet(node).c_str());
-        //       }
     }
 
     // Build entity info table
@@ -253,6 +230,7 @@ void ReadChunkTable(File* file,
         uint16 cnt = 0;
         file->Read(&cnt, sizeof(uint16));
         chunk->entitiesIndices.resize(cnt);
+        chunk->entitiesLoaded.resize(cnt);
         if (cnt > 0)
         {
             file->Read(chunk->entitiesIndices.data(), sizeof(uint32) * cnt);
@@ -267,6 +245,7 @@ void ReadChunkTable(File* file,
             uint16 cnt = 0;
             file->Read(&cnt, sizeof(uint16));
             chunk->entitiesIndices.resize(cnt);
+            chunk->entitiesLoaded.resize(cnt);
             if (cnt > 0)
             {
                 file->Read(chunk->entitiesIndices.data(), sizeof(uint32) * cnt);
@@ -305,67 +284,61 @@ void ReadAllEntities(File* file, Asset<Level> level, SerializationContext* seria
 
 LevelAssetLoader::LevelAssetLoader()
 {
-    AnyHash<LevelAssetLoader::FullLevelKey>::Register(&LevelAssetLoaderDetail::PathKeyHash<LevelAssetLoader::FullLevelKey>);
-    AnyHash<LevelAssetLoader::StreamLevelKey>::Register(&LevelAssetLoaderDetail::PathKeyHash<LevelAssetLoader::StreamLevelKey>);
-    AnyHash<LevelAssetLoader::StreamEntityKey>::Register(&LevelAssetLoaderDetail::StreamEntityKeyHash);
+    AnyHash<Level::Key>::Register(&LevelAssetLoaderDetail::LevelKeyHash);
+    AnyHash<LevelEntity::Key>::Register(&LevelAssetLoaderDetail::EntityKeyHash);
 }
 
 AssetFileInfo LevelAssetLoader::GetAssetFileInfo(const Any& assetKey) const
 {
     AssetFileInfo info;
-    if (assetKey.CanGet<LevelAssetLoader::FullLevelKey>())
+    if (assetKey.CanGet<Level::Key>())
     {
-        const auto& key = assetKey.Get<LevelAssetLoader::FullLevelKey>();
+        const Level::Key& key = assetKey.Get<Level::Key>();
         info.fileName = key.path.GetAbsolutePathname();
     }
-    else if (assetKey.CanGet<LevelAssetLoader::StreamLevelKey>())
+    else if (assetKey.CanGet<LevelEntity::Key>())
     {
-        const auto& key = assetKey.Get<LevelAssetLoader::StreamLevelKey>();
-        info.fileName = key.path.GetAbsolutePathname();
+        const LevelEntity::Key& key = assetKey.Get<LevelEntity::Key>();
+        info.fileName = Format("ID %u", key.entityIndex);
     }
-    else if (assetKey.CanGet<LevelAssetLoader::StreamEntityKey>())
-    {
-        const auto& key = assetKey.Get<LevelAssetLoader::StreamEntityKey>();
-        info.inMemoryAsset = true;
-    }
+    info.inMemoryAsset = true;
     return info;
 }
 
 AssetBase* LevelAssetLoader::CreateAsset(const Any& assetKey) const
 {
-    if (assetKey.CanGet<LevelAssetLoader::FullLevelKey>())
+    AssetBase* asset = nullptr;
+    if (assetKey.CanGet<Level::Key>())
     {
-        return new Level(assetKey);
+        asset = new Level(assetKey);
     }
-    else if (assetKey.CanGet<LevelAssetLoader::StreamLevelKey>())
+    else if (assetKey.CanGet<LevelEntity::Key>())
     {
-        return new Level(assetKey);
+        asset = new LevelEntity(assetKey);
     }
-    else if (assetKey.CanGet<LevelAssetLoader::StreamEntityKey>())
-    {
-        return new LevelEntity(assetKey);
-    }
-    DVASSERT(0 && "Invalid Asset Key");
-    return nullptr;
+    DVASSERT(asset != nullptr, "Invalid Asset Key");
+    return asset;
 }
 
 void LevelAssetLoader::DeleteAsset(AssetBase* asset) const
 {
-    DVASSERT(dynamic_cast<Level*>(asset) != nullptr);
     delete asset;
 }
 
-void LevelAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMessage) const
+void LevelAssetLoader::LoadAsset(Asset<AssetBase> asset, File* /*file*/, bool reloading, String& errorMessage) const
 {
     using namespace LevelAssetLoaderDetail;
+    DVASSERT(reloading == false);
 
     const Any& assetKey = asset->GetAssetKey();
-    if (!assetKey.CanGet<LevelAssetLoader::StreamEntityKey>())
+    if (assetKey.CanGet<Level::Key>())
     {
+        const Level::Key& levelKey = assetKey.Get<Level::Key>();
         Asset<Level> level = std::dynamic_pointer_cast<Level>(asset);
+        level->levelFile = RefPtr<File>(File::Create(levelKey.path.GetAbsolutePathname(), File::OPEN | File::READ));
 
         Header header;
-        file->Read(&header, sizeof(Header));
+        level->levelFile->Read(&header, sizeof(Header));
 
         if (header.version < Header::SUPPORTED_VERSION)
         {
@@ -374,39 +347,26 @@ void LevelAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reload
         }
         SerializationContext serializationContext;
         serializationContext.SetVersion(STREAMING_SCENE_VERSION);
-        serializationContext.SetScenePath(file->GetFilename().GetDirectory());
+        serializationContext.SetScenePath(level->levelFile->GetFilename().GetDirectory());
 
-        LevelAssetLoaderDetail::ReadChunkTable(file, level, header.worldBounds);
-        LevelAssetLoaderDetail::ReadEntitiesTable(file, level, header.allEntitiesCount);
-
-        if (assetKey.CanGet<LevelAssetLoader::FullLevelKey>())
-        {
-            LevelAssetLoaderDetail::ReadAllEntities(file, level, &serializationContext, header.allEntitiesCount);
-        }
-        else if (assetKey.CanGet<LevelAssetLoader::StreamLevelKey>())
-        {
-            /* save reference to file * to avoid it's closing */
-            StreamLevelKey levelKey = assetKey.Get<StreamLevelKey>();
-
-            // retain here
-            levelKey.file = file;
-        }
+        LevelAssetLoaderDetail::ReadChunkTable(level->levelFile.Get(), level, header.worldBounds);
+        LevelAssetLoaderDetail::ReadEntitiesTable(level->levelFile.Get(), level, header.allEntitiesCount);
     }
-    else if (assetKey.CanGet<LevelAssetLoader::StreamEntityKey>())
+    else if (assetKey.CanGet<LevelEntity::Key>())
     {
         Asset<LevelEntity> levelEntity = std::dynamic_pointer_cast<LevelEntity>(asset);
-        StreamEntityKey streamEntityKey = levelEntity->GetAssetKey<StreamEntityKey>();
-        StreamLevelKey levelKey = streamEntityKey.level->GetAssetKey<StreamLevelKey>();
+        LevelEntity::Key entityKey = levelEntity->GetAssetKey<LevelEntity::Key>();
 
-        Level::EntityInfo& entityInfo = streamEntityKey.level->loadedInfoArray[streamEntityKey.entityIndex];
-        levelKey.file->Seek(entityInfo.fileOffset, File::SEEK_FROM_START);
+        Level::EntityInfo& entityInfo = entityKey.level->loadedInfoArray[entityKey.entityIndex];
+        entityKey.level->levelFile->Seek(entityInfo.fileOffset, File::SEEK_FROM_START);
 
         KeyedArchive* archive = new KeyedArchive();
-        archive->Load(levelKey.file.Get());
+        archive->Load(entityKey.level->levelFile.Get());
 
-        Entity* entity = SceneSerialization::LoadHierarchy(nullptr, archive,
-                                                           nullptr,
-                                                           SceneSerialization::LEVEL);
+        SerializationContext serializationContext;
+        serializationContext.SetVersion(STREAMING_SCENE_VERSION);
+        serializationContext.SetScenePath(entityKey.level->levelFile->GetFilename().GetDirectory());
+        Entity* entity = SceneSerialization::LoadHierarchy(nullptr, archive, &serializationContext, SceneSerialization::LEVEL);
         DVASSERT(levelEntity->rootEntity == nullptr);
         levelEntity->rootEntity = entity;
         SafeRelease(archive);
@@ -415,28 +375,6 @@ void LevelAssetLoader::LoadAsset(Asset<AssetBase> asset, File* file, bool reload
 
 bool LevelAssetLoader::SaveAsset(Asset<AssetBase> asset, File* file, eSaveMode /*requestedMode*/) const
 {
-    /*
-     using namespace LevelAssetLoaderDetail;
-    Asset<Level> level = std::dynamic_pointer_cast<Level>(asset);
-    FullLevelKey levelKey = level->GetAssetKey<FullLevelKey>();
-    Scene* scene = levelKey.scene;
-    
-    SerializationContext serializationContext;
-    serializationContext.SetScenePath(file->GetFilename().GetDirectory());
-    serializationContext.SetVersion(STREAMING_SCENE_VERSION);
-    
-    Header currentHeader;
-    currentHeader.allEntitiesCount = scene->GetChildrenCount();
-        
-    Vector<AABBox3> entitiesBoxes;
-    AABBox3 worldBounds = LevelAssetLoaderDetail::ComputeEntitiesBoxesAndWorldExtents(scene, entitiesBoxes);
-    ChunkGrid chunkGrid(worldBounds);
-    currentHeader.worldBounds = worldBounds;
-    
-    file->Write(&currentHeader, sizeof(Header));
-    LevelAssetLoaderDetail::WriteChunkTable(file, chunkGrid, entitiesBoxes);
-    LevelAssetLoaderDetail::WriteEntities(file, entitiesBoxes);*/
-
     return false;
 }
 
@@ -471,12 +409,13 @@ bool LevelAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode 
 
 Vector<const Type*> LevelAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<FullLevelKey>(), Type::Instance<StreamLevelKey>(), Type::Instance<StreamEntityKey>() };
+    return Vector<const Type*>{ Type::Instance<Level::Key>(), Type::Instance<LevelEntity::Key>() };
 }
 
 Vector<String> LevelAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
 {
-    const Any& assetKey = asset->GetKey();
+    // STREAMING_COMPLETE - we need to discuss this
+    /*const Any& assetKey = asset->GetKey();
     if (assetKey.CanGet<LevelAssetLoader::FullLevelKey>())
     {
         const LevelAssetLoader::FullLevelKey& key = assetKey.Get<LevelAssetLoader::FullLevelKey>();
@@ -492,20 +431,7 @@ Vector<String> LevelAssetLoader::GetDependsOnFiles(const AssetBase* asset) const
         const LevelAssetLoader::StreamEntityKey& key = assetKey.Get<LevelAssetLoader::StreamEntityKey>();
         return Vector<String>{};
     }
-    DVASSERT(0 && "Wrong asset");
+    DVASSERT(0 && "Wrong asset");*/
     return Vector<String>{};
 }
-
-template <>
-bool AnyCompare<LevelAssetLoader::FullLevelKey>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<LevelAssetLoader::FullLevelKey>().path == v2.Get<LevelAssetLoader::FullLevelKey>().path;
-}
-
-template <>
-bool AnyCompare<LevelAssetLoader::StreamLevelKey>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<LevelAssetLoader::StreamLevelKey>().path == v2.Get<LevelAssetLoader::StreamLevelKey>().path;
-}
-
 } // namespace DAVA

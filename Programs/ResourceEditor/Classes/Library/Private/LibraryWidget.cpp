@@ -5,7 +5,7 @@
 
 #include <REPlatform/DataNodes/ProjectManagerData.h>
 #include <REPlatform/DataNodes/SceneData.h>
-#include <REPlatform/Global/REFileOperationsIntarface.h>
+#include <REPlatform/Global/REFileOperationsInterface.h>
 
 #include <TArc/Core/FieldBinder.h>
 #include <TArc/Core/ContextAccessor.h>

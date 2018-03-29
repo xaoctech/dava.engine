@@ -27,7 +27,7 @@ public:
     /**
         Clone prefab entities
      */
-    Vector<Entity*> GetPrefabEntities() const;
+    Vector<Entity*> ClonePrefabEntities() const;
 
     /**
         Construct from vector of entities

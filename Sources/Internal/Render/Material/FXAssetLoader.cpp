@@ -3,6 +3,7 @@
 #include "Render/Highlevel/RenderPassNames.h"
 #include "Render/Renderer.h"
 #include "Render/Shader/ShaderDescriptor.h"
+#include "Render/Shader/ShaderAssetLoader.h"
 
 #include "Asset/AssetManager.h"
 #include "Base/ScopedPtr.h"
@@ -17,7 +18,6 @@
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Utils/Utils.h"
-#include "../Shader/ShaderAssetLoader.h"
 
 namespace DAVA
 {
@@ -26,7 +26,12 @@ namespace FXAssetLoaderDetail
 size_t KeyHash(const Any& v)
 {
     const FXAsset::Key& key = v.Get<FXAsset::Key>();
-    return key.fxKeyHash;
+    size_t seed = 0;
+    for (size_t v : key.fxKey)
+    {
+        HashCombine(seed, v);
+    }
+    return seed;
 }
 
 using ParseNodeFunction = void (*)(const YamlNode*, RenderPassDescriptor&, const FastName&);
@@ -614,11 +619,6 @@ FXAsset::Key::Key(const FastName& fxName_, const FastName& quality_, UnorderedMa
     if (quality.IsValid()) //quality made as part of fx key
     {
         fxKey.push_back(ShaderAssetLoader::GetUniqueFlagKey(quality));
-    }
-
-    for (size_t v : fxKey)
-    {
-        HashCombine(fxKeyHash, v);
     }
 }
 } // namespace DAVA

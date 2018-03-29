@@ -59,7 +59,6 @@ TextureBrowser::TextureBrowser(QWidget* parent)
     textureListModel = new TextureListModel();
     textureListImagesDelegate = new TextureListDelegate();
     QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorChanged, this, &TextureBrowser::textureDescriptorChanged);
-    QObject::connect(textureListImagesDelegate, &TextureListDelegate::textureDescriptorReload, this, &TextureBrowser::textureDescriptorReload);
 
     textureListSortModes["File size"] = TextureListModel::SortByFileSize;
     textureListSortModes["Data size"] = TextureListModel::SortByDataSize;
@@ -1125,19 +1124,6 @@ void TextureBrowser::clearFilter()
     ui->textureFilterEdit->setText("");
 }
 
-void TextureBrowser::textureDescriptorReload(DAVA::TextureDescriptor* descriptor)
-{
-    DAVA::Asset<DAVA::Texture> texture = textureListModel->getTexture(descriptor);
-    if (nullptr != texture)
-    {
-        DAVA::Vector<DAVA::Asset<DAVA::Texture>> reloadTextures;
-        reloadTextures.push_back(texture);
-
-        DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
-        setTexture(texture, descriptor);
-    }
-}
-
 void TextureBrowser::textureDescriptorChanged(DAVA::TextureDescriptor* descriptor)
 {
     setTexture(textureListModel->getTexture(descriptor), descriptor);
@@ -1204,7 +1190,6 @@ void TextureBrowser::OnConvertToRGBM()
 
     if (ImageSystem::Save(imagePath, outputImages, PixelFormat::FORMAT_RGBM) == eErrorCode::SUCCESS)
     {
-        textureChanged = true;
         curDescriptor->format = PixelFormat::FORMAT_RGBM;
         curDescriptor->dataSettings.sourceFileExtension = targetExtension;
         curDescriptor->Save();
@@ -1220,9 +1205,4 @@ void TextureBrowser::OnConvertToRGBM()
         SafeRelease(inputImage);
     for (Image* outputImage : outputImages)
         SafeRelease(outputImage);
-
-    if (textureChanged)
-    {
-        textureDescriptorReload(curDescriptor);
-    }
 }

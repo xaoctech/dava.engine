@@ -56,6 +56,7 @@ private:
     RefPtr<SceneEditor2> scene;
     std::unique_ptr<PropertiesHolder> propertiesRoot = nullptr;
 
+    bool defaultFirstScene = false;
     eEditMode mode = Prefab;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SceneData, TArcDataNode)

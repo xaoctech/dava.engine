@@ -9,7 +9,9 @@
 #include "Functional/Function.h"
 #include "FileSystem/FileWatcher.h"
 
-#define TRACE_ASSET_REQUESTER
+#if !defined(DEPLOY_BUILD)
+//#define TRACE_ASSET_REQUESTER
+#endif
 
 namespace DAVA
 {
@@ -57,7 +59,7 @@ public:
 
     bool SaveAssetFromData(const Any& saveInfo, const Any& assetKey, AbstractAssetLoader::eSaveMode saveMode = AbstractAssetLoader::eSaveMode::MODE_BIN);
     bool SaveAsset(const Asset<AssetBase>& asset, AbstractAssetLoader::eSaveMode saveMode = AbstractAssetLoader::eSaveMode::MODE_BIN);
-    void ReloadAsset(const Any& assetKey);
+    void ReloadAsset(const Any& assetKey, LoadingMode mode = ASYNC);
 
     AssetFileInfo GetAssetFileInfo(const Asset<AssetBase>& asset) const;
 

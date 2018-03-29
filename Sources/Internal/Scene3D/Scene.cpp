@@ -99,6 +99,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/StaticLightingSystem.h"
 #include "Scene3D/Systems/StreamingSystem.h"
+#include "Scene3D/Systems/PrefabLoadingSystem.h"
 #include "Engine/Engine.h"
 #include "Sound/SoundSystem.h"
 #include "Time/SystemTimer.h"
@@ -327,8 +328,8 @@ void Scene::CreateSystems()
         return;
     }
 
-    // TODO UVR
-    //AddSystem(new StreamingSystem(this));
+    AddSystem(new StreamingSystem(this));
+    AddSystem(new PrefabLoadingSystem(this));
     AddSystem(new ActionCollectSystem(this));
     AddSystem(new StaticOcclusionSystem(this));
     AddSystem(new AnimationSystem(this));
@@ -675,8 +676,7 @@ void Scene::InitLegacyPointers()
     staticOcclusionDebugDrawSystem = GetSystem<StaticOcclusionDebugDrawSystem>();
     particleEffectDebugDrawSystem = GetSystem<ParticleEffectDebugDrawSystem>();
     geoDecalSystem = GetSystem<GeoDecalSystem>();
-    // TODO UVR
-    //streamingSystem = GetSystem<StreamingSystem>();
+    streamingSystem = GetSystem<StreamingSystem>();
 }
 
 void Scene::ProcessChangedTags()
@@ -1195,7 +1195,7 @@ void Scene::ConstructFromPrefab(const Asset<Prefab>& prefab)
         AssetFileInfo fileInfo = GetEngineContext()->assetManager->GetAssetFileInfo(prefab);
         SetName(fileInfo.fileName.c_str());
 
-        Vector<Entity*> prefabEntities = prefab->GetPrefabEntities();
+        Vector<Entity*> prefabEntities = prefab->ClonePrefabEntities();
         for (Entity* prefabChildren : prefabEntities)
         {
             ScopedPtr<Entity> entityClone(prefabChildren->Clone());

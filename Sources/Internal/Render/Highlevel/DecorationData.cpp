@@ -64,7 +64,7 @@ void DecorationData::ReloadDecoration()
     if (decorationPrefab == nullptr)
         return;
 
-    Vector<Entity*> decorationEntities = decorationPrefab->GetPrefabEntities();
+    Vector<Entity*> decorationEntities = decorationPrefab->ClonePrefabEntities();
     layersCount = uint32(decorationEntities.size());
 
     layersData.resize(layersCount);

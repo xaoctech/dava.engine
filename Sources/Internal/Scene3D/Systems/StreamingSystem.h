@@ -6,10 +6,11 @@
 #include "Base/BaseMath.h"
 #include "Base/Observer.h"
 #include "Entity/SceneSystem.h"
+#include "Scene3D/Level.h"
+#include "Functional/Function.h"
 
 namespace DAVA
 {
-class Level;
 class FilePath;
 class StreamingSystem : public SceneSystem
 {
@@ -17,46 +18,38 @@ public:
     StreamingSystem(Scene* scene);
     virtual ~StreamingSystem();
 
-    enum eStatus
-    {
-        NO_LEVEL = 0,
-        LEVEL_BASE_PART_LOADING = 1,
-        LEVEL_STREAMING = 2, // base part loaded.
-    };
-
-    void RegisterEntity(Entity* entity) override;
-    void UnregisterEntity(Entity* entity) override;
-    void RegisterComponent(Entity* entity, Component* component) override;
-    void UnregisterComponent(Entity* entity, Component* component) override;
+    void Process(float32 timeElapsed) override;
     void PrepareForRemove() override;
 
-    void LoadModel(const FilePath& filepath);
-    void LoadLevel(const FilePath& filepath);
+    void LoadStreamingLevel(const FilePath& filepath);
+
+    using TLoadingProgressCallback = Function<void(uint32 /*loaded*/, uint32 /*summary count*/)>;
+    void LoadFullLevel(const FilePath& filepath, const TLoadingProgressCallback& callback);
     void UnloadLevel();
-
-    void Process(float32 timeElapsed) override;
-
-    eStatus GetStatus() const;
 
 protected:
     void EntityOnLoaded(const Asset<AssetBase>& asset);
     void EntityOnError(const Asset<AssetBase>& asset, bool reloaded, const String& msg);
     void EntityOnUnloaded(const AssetBase* asset);
 
-    void RequestLoadEntity(uint32 entityIndex, uint32 chunkAddress);
-    void RequestUnloadEntity(uint32 entityIndex, uint32 chunkAddress);
     void RequestGlobalChunk();
     void RequestLoadChunk(const Level::ChunkCoord& chunkCoord);
     void RequestUnloadChunk(const Level::ChunkCoord& chunkCoord);
-
-    void StreamEntityCallback(const Asset<AssetBase>& asset, bool reload);
+    void RequestVisibleChunk(const Level::ChunkCoord& chunkCoord);
+    void RequestInvisibleChunk(const Level::ChunkCoord& chunkCoord);
 
     Asset<Level> level = nullptr;
     Vector3 cameraPosition;
     Level::ChunkCoord previousCameraPos;
 
-    SimpleAssetListener levelAssetListener;
     SimpleAssetListener entityAssetListener;
+
+    enum eStreamingPolicy
+    {
+        EntityStreaming,
+        VisibilityStreaming
+    };
+    eStreamingPolicy policy = EntityStreaming;
 };
 
 } // ns

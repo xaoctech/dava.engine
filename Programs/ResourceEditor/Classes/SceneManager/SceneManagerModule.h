@@ -3,6 +3,7 @@
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 
 #include <REPlatform/DataNodes/SceneData.h>
+#include <REPlatform/Global/REFileOperationsInterface.h>
 
 #include <TArc/Core/ControllerModule.h>
 #include <TArc/Core/FieldBinder.h>
@@ -16,6 +17,7 @@ namespace DAVA
 class FilePath;
 class SceneEditor2;
 class SceneData;
+class Type;
 }
 class FileSystemCache;
 
@@ -39,6 +41,8 @@ protected:
     void OnWindowClosed(const DAVA::WindowKey& key) override;
 
     void PostInit() override;
+    void OnInterfaceRegistered(const DAVA::Type* interfaceType) override;
+    void OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType) override;
 
 private:
     void CreateModuleControls(DAVA::UI* ui);
@@ -60,7 +64,6 @@ private:
     void ExportScene();
     void CloseAllScenes(bool needSavingReqiest);
     void ReloadAllTextures(DAVA::eGPUFamily gpu);
-    void ReloadTextures(const DAVA::Vector<DAVA::Asset<DAVA::Texture>>& textures);
 
     /// Fields value handlers
     void OnProjectPathChanged(const DAVA::Any& projectPath);
@@ -73,7 +76,8 @@ private:
 
     /// Helpers
     bool CanCloseScene(DAVA::SceneData* data);
-    DAVA::RefPtr<DAVA::SceneEditor2> OpenSceneImpl(const DAVA::FilePath& scenePath, DAVA::SceneData::eEditMode& mode);
+    DAVA::RefPtr<DAVA::SceneEditor2> OpenSceneImpl(const DAVA::FilePath& scenePath, DAVA::SceneData::eEditMode& mode,
+                                                   DAVA::WaitHandle* waitHandle = nullptr);
 
     /// This method try to scene at "scenePath" place.
     /// If "scenePath" is empty, method try to save scene at current scene file.
@@ -106,6 +110,8 @@ private:
     bool SaveToFolderAvailable() const;
 
 private:
+    DAVA::Vector<std::shared_ptr<DAVA::REFileOperation>> operations;
+
     DAVA::QtConnections connections;
     DAVA::uint32 newSceneCounter = 0;
 

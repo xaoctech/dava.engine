@@ -2,120 +2,102 @@
 #include "Scene3D/Systems/StreamingSystem.h"
 #include "Scene3D/Components/PrefabComponent.h"
 #include "Scene3D/Entity.h"
-#include "Scene3D/Level.h"
 #include "Scene3D/AssetLoaders/LevelAssetLoader.h"
 #include "Scene3D/Scene.h"
+#include "Render/Highlevel/RenderSystem.h"
+#include "Render/RenderHelper.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
 StreamingSystem::StreamingSystem(Scene* scene)
     : SceneSystem(scene, 0)
 {
-    levelAssetListener.onLoaded = MakeFunction(this, &StreamingSystem::EntityOnLoaded);
-    levelAssetListener.onError = MakeFunction(this, &StreamingSystem::EntityOnError);
-    levelAssetListener.onUnloaded = MakeFunction(this, &StreamingSystem::EntityOnUnloaded);
+    entityAssetListener.onLoaded = MakeFunction(this, &StreamingSystem::EntityOnLoaded);
+    entityAssetListener.onError = MakeFunction(this, &StreamingSystem::EntityOnError);
+    entityAssetListener.onUnloaded = MakeFunction(this, &StreamingSystem::EntityOnUnloaded);
 }
 
 StreamingSystem::~StreamingSystem()
 {
-}
-
-void StreamingSystem::RegisterEntity(Entity* entity)
-{
-    /*
-    for (Component* comp : entity->GetComponents())
-    {
-        RegisterComponent(entity, comp);
-    }
-*/
-}
-void StreamingSystem::UnregisterEntity(Entity* entity)
-{
-    /*
-    for (Component* comp : entity->GetComponents())
-    {
-        UnregisterComponent(entity, comp);
-    }
- */
-}
-
-void StreamingSystem::RegisterComponent(Entity* entity, Component* component)
-{
-    // TODO: PrefabInstanceComponent
-    if (component->GetType() == Type::Instance<PrefabComponent>())
-    {
-        PrefabComponent* prefabComponent = static_cast<PrefabComponent*>(component);
-        if (prefabComponent->GetPrefab())
-        {
-            Vector<Entity*> prefabEntities = prefabComponent->GetPrefab()->GetPrefabEntities();
-            for (Entity* prefabChildren : prefabEntities)
-            {
-                ScopedPtr<Entity> entityClone(prefabChildren->Clone());
-                entity->AddEntity(entityClone);
-            }
-        }
-    }
-}
-
-void StreamingSystem::UnregisterComponent(Entity* entity, Component* component)
-{
-    /*
-    if (component->GetType() == Type::Instance<PrefabComponent>())
-    {
-        // I am not sure that this is valid behavior. We can potentially delete more than added.
-        PrefabComponent* prefabComponent = static_cast<PrefabComponent*>(component);
-        entity->RemoveAllChildren();
-    }
- */
+    DVASSERT(level == nullptr);
 }
 
 void StreamingSystem::PrepareForRemove()
 {
+    UnloadLevel();
 }
 
-void StreamingSystem::LoadLevel(const FilePath& filepath)
+void StreamingSystem::LoadStreamingLevel(const FilePath& filepath)
 {
-    level = GetEngineContext()->assetManager->GetAsset<Level>(LevelAssetLoader::StreamLevelKey(filepath), AssetManager::SYNC);
+    level = GetEngineContext()->assetManager->GetAsset<Level>(Level::Key(filepath), AssetManager::SYNC);
+    previousCameraPos = Level::ChunkCoord(std::numeric_limits<int32>::min(), std::numeric_limits<int32>::min());
+    GetEngineContext()->assetManager->RegisterListener(&entityAssetListener, Type::Instance<LevelEntity>());
+    policy = EntityStreaming;
 }
 
-void StreamingSystem::StreamEntityCallback(const Asset<AssetBase>& asset, bool reload)
+void StreamingSystem::LoadFullLevel(const FilePath& filepath, const TLoadingProgressCallback& callback)
 {
-    DVASSERT(reload == false); // ??? hmm ???
+    level = GetEngineContext()->assetManager->GetAsset<Level>(Level::Key(filepath), AssetManager::SYNC);
+    previousCameraPos = Level::ChunkCoord(std::numeric_limits<int32>::min(), std::numeric_limits<int32>::min());
+    GetEngineContext()->assetManager->RegisterListener(&entityAssetListener, Type::Instance<LevelEntity>());
+    policy = VisibilityStreaming;
 
-    /*const Vector<Level::StreamingEvent>& streamingEvents = level->GetActiveStreamingEvents();
+    auto foreachChunk = [](Level* level, const Function<void(Level::Chunk * chunk)>& fn) {
+        fn(&level->loadedChunkGrid->specialStreamingSettingsChunk);
 
-    size_t eventCount = streamingEvents.size();
-    for (size_t eventIndex = 0; eventIndex < eventCount; ++eventIndex)
-    {
-        const Level::StreamingEvent& event = streamingEvents[eventIndex];
-        if (event.type == Level::StreamingEvent::ENTITY_ADDED)
+        for (Level::Chunk& chunk : level->loadedChunkGrid->chunkData)
         {
-            GetScene()->AddEntity(event.entity);
-        }else if (event.type == Level::StreamingEvent::ENTITY_REMOVED)
-        {
-            GetScene()->RemoveEntity(event.entity);
+            fn(&chunk);
         }
-    }
-    level->ClearActiveStreamingEvents();*/
+    };
+
+    uint32 entitiesCount = 0;
+    auto calcEntitiesCount = [&entitiesCount](Level::Chunk* chunk) {
+        entitiesCount += static_cast<uint32>(chunk->entitiesIndices.size());
+    };
+
+    uint32 loadedCount = 0;
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    auto loadEntities = [&callback, &loadedCount, entitiesCount, this, assetManager](Level::Chunk* chunk) {
+        uint32 index = 0;
+        for (uint32 entityIndex : chunk->entitiesIndices)
+        {
+            LevelEntity::Key key(level.get(), entityIndex);
+            Asset<LevelEntity> levelEntity = assetManager->GetAsset<LevelEntity>(key, AssetManager::SYNC);
+            chunk->entitiesLoaded[index++] = levelEntity;
+            levelEntity->rootEntity->SetVisible(false);
+            callback(++loadedCount, entitiesCount);
+        }
+    };
+
+    foreachChunk(level.get(), calcEntitiesCount);
+
+    callback(0, entitiesCount);
+    foreachChunk(level.get(), loadEntities);
 }
 
 void StreamingSystem::UnloadLevel()
 {
+    if (level == nullptr)
+    {
+        return;
+    }
+
+    for (Level::Chunk& chunk : level->loadedChunkGrid->chunkData)
+    {
+        chunk.entitiesLoaded.clear();
+    }
+    GetEngineContext()->assetManager->UnregisterListener(&entityAssetListener);
     level = nullptr;
 }
-
-/*
- Function<void(const Asset<AssetBase>&, bool)> onLoaded;
- Function<void(const Asset<AssetBase>&, bool, const String&)> onError;
- Function<void(const Asset<AssetBase>&)> onUnloaded;
- */
 
 void StreamingSystem::EntityOnLoaded(const Asset<AssetBase>& asset)
 {
     Asset<LevelEntity> levelEntity = std::dynamic_pointer_cast<LevelEntity>(asset);
     DVASSERT(levelEntity != nullptr);
 
-    LevelAssetLoader::StreamEntityKey streamEntityKey = levelEntity->GetAssetKey<LevelAssetLoader::StreamEntityKey>();
+    LevelEntity::Key streamEntityKey = levelEntity->GetAssetKey<LevelEntity::Key>();
 
     level->entitiesAddedToScene.emplace(streamEntityKey.entityIndex, levelEntity->rootEntity);
     GetScene()->AddEntity(levelEntity->rootEntity);
@@ -131,7 +113,7 @@ void StreamingSystem::EntityOnUnloaded(const AssetBase* asset)
     const LevelEntity* levelEntity = dynamic_cast<const LevelEntity*>(asset);
     DVASSERT(levelEntity != nullptr);
 
-    LevelAssetLoader::StreamEntityKey streamEntityKey = levelEntity->GetAssetKey<LevelAssetLoader::StreamEntityKey>();
+    LevelEntity::Key streamEntityKey = levelEntity->GetAssetKey<LevelEntity::Key>();
 
     level->entitiesAddedToScene.erase(streamEntityKey.entityIndex);
     GetScene()->RemoveEntity(levelEntity->rootEntity);
@@ -147,8 +129,7 @@ void StreamingSystem::RequestGlobalChunk()
     uint32 index = 0;
     for (uint32 entityIndex : chunk->entitiesIndices)
     {
-        //RequestLoadEntity(entityIndex, (uint32)(0xFFFFFFFF));
-        Asset<LevelEntity> levelEntity = GetEngineContext()->assetManager->GetAsset<LevelEntity>(LevelAssetLoader::StreamEntityKey(level, entityIndex), AssetManager::ASYNC, &entityAssetListener);
+        Asset<LevelEntity> levelEntity = GetEngineContext()->assetManager->GetAsset<LevelEntity>(LevelEntity::Key(level.get(), entityIndex), AssetManager::ASYNC);
 
         chunk->entitiesLoaded[index++] = levelEntity;
     }
@@ -168,7 +149,7 @@ void StreamingSystem::RequestLoadChunk(const Level::ChunkCoord& chunkCoord)
         uint32 index = 0;
         for (uint32 entityIndex : chunk->entitiesIndices)
         {
-            Asset<LevelEntity> levelEntity = GetEngineContext()->assetManager->GetAsset<LevelEntity>(LevelAssetLoader::StreamEntityKey(level, entityIndex), AssetManager::ASYNC, &entityAssetListener);
+            Asset<LevelEntity> levelEntity = GetEngineContext()->assetManager->GetAsset<LevelEntity>(LevelEntity::Key(level.get(), entityIndex), AssetManager::ASYNC);
 
             chunk->entitiesLoaded[index] = levelEntity;
 
@@ -198,8 +179,39 @@ void StreamingSystem::RequestUnloadChunk(const Level::ChunkCoord& chunkCoord)
     }
 }
 
+void StreamingSystem::RequestVisibleChunk(const Level::ChunkCoord& chunkCoord)
+{
+    uint32 chunkAddress = level->loadedChunkGrid->GetChunkAddress(chunkCoord);
+    Level::Chunk* chunk = level->loadedChunkGrid->GetChunk(chunkAddress);
+
+    uint32 index = 0;
+    for (uint32 entityIndex : chunk->entitiesIndices)
+    {
+        Asset<LevelEntity> entity = chunk->entitiesLoaded[index];
+        entity->rootEntity->SetVisible(true);
+    }
+}
+
+void StreamingSystem::RequestInvisibleChunk(const Level::ChunkCoord& chunkCoord)
+{
+    uint32 chunkAddress = level->loadedChunkGrid->GetChunkAddress(chunkCoord);
+    Level::Chunk* chunk = level->loadedChunkGrid->GetChunk(chunkAddress);
+
+    uint32 index = 0;
+    for (uint32 entityIndex : chunk->entitiesIndices)
+    {
+        Asset<LevelEntity> entity = chunk->entitiesLoaded[index];
+        entity->rootEntity->SetVisible(false);
+    }
+}
+
+//#define STREAMING_DEBUG_DRAW
 void StreamingSystem::Process(float32 timeElapsed)
 {
+#if defined(STREAMING_DEBUG_DRAW)
+    static Set<Level::ChunkCoord> loadedChunks;
+    static Level::ChunkCoord currentChunk;
+#endif
     if (level)
     {
         Camera* camera = GetScene()->GetCurrentCamera();
@@ -221,6 +233,9 @@ void StreamingSystem::Process(float32 timeElapsed)
 
             std::queue<Level::ChunkCoord> queue;
             queue.push(currentCameraPosInChunk);
+#if defined(STREAMING_DEBUG_DRAW)
+            currentChunk = currentCameraPosInChunk;
+#endif
 
             Level::ChunkGrid* loadedChunkGrid = level->loadedChunkGrid;
 
@@ -235,6 +250,7 @@ void StreamingSystem::Process(float32 timeElapsed)
                     || (currentPos.y > loadedChunkGrid->worldChunkBounds.max.y))
                 {
                     // Exit from streaming update if we out of streaming area
+                    // STREAMING_COMPLETE Should we unload all chunks???
                     break;
                 }
 
@@ -251,11 +267,23 @@ void StreamingSystem::Process(float32 timeElapsed)
                     chunk->visitedLastFrameIndex = globalFrameIndex;
                     if (squareDistance < chunkVisibilityRadius * chunkVisibilityRadius)
                     {
-                        RequestLoadChunk(currentPos);
+#if defined(STREAMING_DEBUG_DRAW)
+                        loadedChunks.insert(currentPos);
+#endif
+                        if (policy == EntityStreaming)
+                            RequestLoadChunk(currentPos);
+                        else
+                            RequestVisibleChunk(currentPos);
                     }
                     else
                     {
-                        RequestUnloadChunk(currentPos);
+#if defined(STREAMING_DEBUG_DRAW)
+                        loadedChunks.erase(currentPos);
+#endif
+                        if (policy == EntityStreaming)
+                            RequestUnloadChunk(currentPos);
+                        else
+                            RequestInvisibleChunk(currentPos);
                     }
 
                     for (uint32 direction = 0; direction < 8; ++direction)
@@ -275,6 +303,37 @@ void StreamingSystem::Process(float32 timeElapsed)
             }
             previousCameraPos = currentCameraPosInChunk;
         }
+        
+#if defined(STREAMING_DEBUG_DRAW)
+        Level::ChunkCoord min = level->loadedChunkGrid->worldChunkBounds.min;
+        Level::ChunkCoord max = level->loadedChunkGrid->worldChunkBounds.max;
+        RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+
+        float32 chunkSize = level->loadedChunkGrid->chunkSize;
+        float32 halfChunkSize = chunkSize * 0.5;
+        for (int32 y = min.y; y <= max.y; ++y)
+        {
+            for (int32 x = min.x; x <= max.x; ++x)
+            {
+                float32 centerX = x * chunkSize + halfChunkSize;
+                float32 centerY = y * chunkSize + halfChunkSize;
+                AABBox3 box(Vector3(centerX, centerY, 0.0), chunkSize);
+
+                Level::ChunkCoord coord(x, y);
+                Color boxColor = Color(0.5, 0.5, 0.5, 0.3);
+                if (coord == currentChunk)
+                {
+                    boxColor = Color(0.0, 1.0, 0.0, 0.5);
+                }
+                else if (loadedChunks.count(coord) > 0)
+                {
+                    boxColor = Color(0.0, 0.0, 1.0, 0.5);
+                }
+
+                drawer->DrawAABox(box, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
+            }
+        }
+#endif
     }
 }
 };

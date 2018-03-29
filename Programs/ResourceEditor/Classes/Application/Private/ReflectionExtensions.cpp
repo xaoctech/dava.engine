@@ -26,6 +26,7 @@
 #include <Scene3D/Components/WaveComponent.h>
 #include <Scene3D/Components/ReflectionComponent.h>
 #include <Scene3D/Components/MeshComponent.h>
+#include <Scene3D/Components/PrefabComponent.h>
 
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/Landscape.h>
@@ -78,6 +79,7 @@ void RegisterFilePathExtensions(DAVA::ContextAccessor* accessor)
 
     EmplaceFieldMeta<MeshLODDescriptor>(DAVA::FastName("geometry"), GenericFileMeta<REFileMeta>("Geometry (*.geo)", "Open geometry"));
     EmplaceFieldMeta<MeshLODDescriptor>(DAVA::FastName("geometry"), CreateExistsFile());
+    EmplaceFieldMeta<PrefabComponent>(DAVA::FastName("filepath"), GenericFileMeta<REFileMeta>("Geometry (*.prefab)", "Open prefab"));
 }
 
 void RegisterComponentExtensions(const TypeInheritance::Info& type)

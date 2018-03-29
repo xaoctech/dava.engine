@@ -393,7 +393,12 @@ Asset<AssetBase> AssetManager::CreateAsset(const Any& assetKey)
 Asset<AssetBase> AssetManager::FindLoadOrCreate(const Any& assetKey)
 {
     Asset<AssetBase> asset = FindAsset(assetKey);
-    if (asset == nullptr && ExistsOnDisk(assetKey))
+    if (asset != nullptr)
+    {
+        return asset;
+    }
+
+    if (ExistsOnDisk(assetKey))
     {
         return GetAsset(assetKey, LoadingMode::SYNC);
     }
@@ -461,7 +466,7 @@ bool AssetManager::SaveAssetFromData(const Any& saveInfo, const Any& assetKey, A
     return loader->SaveAssetFromData(saveInfo, file.Get(), saveMode);
 }
 
-void AssetManager::ReloadAsset(const Any& assetKey)
+void AssetManager::ReloadAsset(const Any& assetKey, LoadingMode mode)
 {
     bool applyReloading = false;
     Asset<AssetBase> originalAsset;
@@ -488,9 +493,42 @@ void AssetManager::ReloadAsset(const Any& assetKey)
         AbstractAssetLoader* loader = GetAssetLoader(assetKey);
         Asset<AssetBase> asset = Asset<AssetBase>(loader->CreateAsset(assetKey), AssetDeleter());
         asset->state = AssetBase::QUEUED;
-        CreateAsyncLoadingTask(asset, loader, true);
-        LockGuard<Mutex> guard(loadedMutex);
-        toReloadAssets[assetKey] = asset;
+        if (mode == ASYNC)
+        {
+            CreateAsyncLoadingTask(asset, loader, true);
+            LockGuard<Mutex> guard(loadedMutex);
+            toReloadAssets[assetKey] = asset;
+        }
+        else
+        {
+            String errorMsg;
+            SyncLoadAsset(asset, loader, true, errorMsg);
+
+            {
+                LockGuard<Mutex> guard(assetMapMutex);
+                auto iter = assetMap.find(assetKey);
+                if (iter == assetMap.end())
+                {
+                    return;
+                }
+
+                AssetNode& node = iter->second;
+                node.asset = asset;
+            }
+
+            if (errorMsg.empty() == true)
+            {
+                GetEngineContext()->jobManager->CreateMainJob([this, originalAsset, asset]() {
+                    NotifyReloaded(originalAsset, asset);
+                });
+            }
+            else
+            {
+                GetEngineContext()->jobManager->CreateMainJob([this, asset, errorMsg]() {
+                    NotifyError(asset, false, errorMsg);
+                });
+            }
+        }
     }
 }
 
@@ -576,11 +614,15 @@ void AssetManager::Notify(AssetBase* asset, bool notifyInstance, const Function<
     if (notifyInstance == true)
     {
         // Per instance notification
-        LockGuard<Mutex> guard(assetMapMutex);
-        auto iter = assetMap.find(asset->assetKey);
-        DVASSERT(iter != assetMap.end());
+        Vector<AssetListener*> listeners;
+        {
+            LockGuard<Mutex> guard(assetMapMutex);
+            auto iter = assetMap.find(asset->assetKey);
+            DVASSERT(iter != assetMap.end());
+            listeners = iter->second.listeners;
+        }
 
-        for (AssetListener* listener : iter->second.listeners)
+        for (AssetListener* listener : listeners)
         {
             callback(listener);
         }

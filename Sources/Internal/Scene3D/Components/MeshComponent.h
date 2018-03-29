@@ -26,6 +26,8 @@ public:
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
+    void GetDataNodes(Set<DataNode*>& dataNodes) override;
+
     Mesh* GetMesh() const;
 
 protected:

@@ -3,6 +3,7 @@
 #include "Scene3D/Components/MeshComponent.h"
 #include "Scene3D/Components/SingleComponents/RenderObjectSingleComponent.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Render/Highlevel/Mesh.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 
@@ -103,6 +104,24 @@ void MeshComponent::Deserialize(KeyedArchive* archive, SerializationContext* ser
     mesh->LoadFlags(archive, serializationContext);
 
     Rebuild();
+}
+
+void MeshComponent::GetDataNodes(Set<DataNode*>& dataNodes)
+{
+    for (const MeshLODDescriptor& descr : meshLODDescriptors)
+    {
+        for (const MeshBatchDescriptor& batchDescr : descr.batchDescriptors)
+        {
+            if (batchDescr.materialAsset != nullptr)
+            {
+                NMaterial* material = batchDescr.materialAsset->GetMaterial();
+                if (material != nullptr)
+                {
+                    dataNodes.insert(material);
+                }
+            }
+        }
+    }
 }
 
 void MeshComponent::RebuildMesh()

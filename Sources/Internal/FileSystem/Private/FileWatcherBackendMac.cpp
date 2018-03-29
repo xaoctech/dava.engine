@@ -133,6 +133,8 @@ void FileWatcherBackend::Remove(const String& directory)
             nodes.erase(iter);
             break;
         }
+
+        ++iter;
     }
 }
 

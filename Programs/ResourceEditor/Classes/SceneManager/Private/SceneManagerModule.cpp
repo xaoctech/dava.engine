@@ -17,6 +17,7 @@
 #include <REPlatform/Deprecated/EditorConfig.h>
 #include <REPlatform/Global/Constants.h>
 #include <REPlatform/Global/GlobalOperations.h>
+#include <REPlatform/Global/REFileOperationsInterface.h>
 #include <REPlatform/Global/MenuScheme.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/Scene/SceneHelper.h>
@@ -41,6 +42,7 @@
 #include <Base/FastName.h>
 #include <Base/GlobalEnum.h>
 #include <Base/String.h>
+#include <Base/Type.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
@@ -54,6 +56,7 @@
 #include <Scene3D/Converters/SceneFileConverter.h>
 #include <Scene3D/Level.h>
 #include <Scene3D/Systems/StreamingSystem.h>
+#include <Scene3D/AssetLoaders/LevelAssetLoader.h>
 
 #include <QActionGroup>
 #include <QList>
@@ -116,7 +119,10 @@ SceneManagerModule::SceneManagerModule()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GlobalSceneSettings);
 }
 
-SceneManagerModule::~SceneManagerModule() = default;
+SceneManagerModule::~SceneManagerModule()
+{
+    DVASSERT(operations.empty() == true);
+}
 
 void SceneManagerModule::OnRenderSystemInitialized(DAVA::Window* w)
 {
@@ -263,20 +269,51 @@ void SceneManagerModule::PostInit()
     fieldBinder.reset(new DAVA::FieldBinder(accessor));
 
     {
-        DAVA::FieldDescriptor fieldDescr;
+        FieldDescriptor fieldDescr;
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<ProjectManagerData>();
         fieldDescr.fieldName = DAVA::FastName(ProjectManagerData::ProjectPathProperty);
         fieldBinder->BindField(fieldDescr, DAVA::MakeFunction(this, &SceneManagerModule::OnProjectPathChanged));
     }
 
     {
-        DAVA::FieldDescriptor fieldDescr;
+        FieldDescriptor fieldDescr;
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<GeneralSettings>();
         fieldDescr.fieldName = DAVA::FastName("recentScenesCount");
         fieldBinder->BindField(fieldDescr, [this](const DAVA::Any& v)
                                {
                                    recentItems->Truncate();
                                });
+    }
+
+    operations.push_back(std::make_shared<RESimpleFileOperation>(QIcon(), "Add prefab", REFileOperation::eOperationType::IMPORT, "Prefab (*.prefab)", MakeFunction(this, &SceneManagerModule::AddSceneByPath)));
+    operations.push_back(std::make_shared<RESimpleFileOperation>(QIcon(), "Edit prefab", REFileOperation::eOperationType::IMPORT, "Prefab (*.prefab)", MakeFunction(this, &SceneManagerModule::OpenSceneByPath)));
+    operations.push_back(std::make_shared<RESimpleFileOperation>(QIcon(), "Edit level", REFileOperation::eOperationType::IMPORT, "Level (*.level)", MakeFunction(this, &SceneManagerModule::OpenSceneByPath)));
+}
+
+void SceneManagerModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)
+{
+    using namespace DAVA;
+    if (interfaceType == Type::Instance<REFileOperationsInterface>())
+    {
+        REFileOperationsInterface* fileOperations = QueryInterface<REFileOperationsInterface>();
+        for (const std::shared_ptr<REFileOperation>& operation : operations)
+        {
+            fileOperations->RegisterFileOperation(operation);
+        }
+    }
+}
+
+void SceneManagerModule::OnBeforeInterfaceUnregistered(const DAVA::Type* interfaceType)
+{
+    using namespace DAVA;
+    if (interfaceType == Type::Instance<REFileOperationsInterface>())
+    {
+        REFileOperationsInterface* fileOperations = QueryInterface<REFileOperationsInterface>();
+        for (const std::shared_ptr<REFileOperation>& operation : operations)
+        {
+            fileOperations->UnregisterFileOperation(operation);
+        }
+        operations.clear();
     }
 }
 
@@ -443,10 +480,7 @@ void SceneManagerModule::CreateOtherModuleActions()
 
     // Separator
     {
-        QAction* action = new QAction(nullptr);
-        action->setObjectName("originSeparator");
-        action->setSeparator(true);
-
+        QAction* action = new QtActionSeparator("originSeparator");
         ui->AddAction(DAVA::mainWindowKey, placement, action);
         gpuFormatActions.push_back(action);
     }
@@ -707,7 +741,6 @@ void SceneManagerModule::RegisterOperations()
     RegisterOperation(DAVA::AddSceneOperation.ID, this, &SceneManagerModule::AddSceneByPath);
     RegisterOperation(DAVA::SaveCurrentScene.ID, this, static_cast<void (SceneManagerModule::*)()>(&SceneManagerModule::SaveScene));
     RegisterOperation(DAVA::ReloadAllTextures.ID, this, &SceneManagerModule::ReloadAllTextures);
-    RegisterOperation(DAVA::ReloadTextures.ID, this, &SceneManagerModule::ReloadTextures);
 }
 
 void SceneManagerModule::CreateFirstScene()
@@ -733,7 +766,10 @@ void SceneManagerModule::CreateFirstScene()
         }
     }
 
-    CreateNewScene(SceneData::Prefab);
+    CreateNewScene(SceneData::Level);
+
+    SceneData* data = GetAccessor()->GetActiveContext()->GetData<SceneData>();
+    data->defaultFirstScene = true;
 }
 
 void SceneManagerModule::CreateNewScene(DAVA::SceneData::eEditMode mode)
@@ -747,6 +783,7 @@ void SceneManagerModule::CreateNewScene(DAVA::SceneData::eEditMode mode)
 
     DAVA::FilePath scenePath = QString("%1 %2.%3").arg(newSceneName).arg(++newSceneCounter).arg(newSceneName.toLower()).toStdString();
     sceneData->scene = OpenSceneImpl(scenePath, sceneData->mode);
+    sceneData->mode = mode;
 
     CreateSceneProperties(sceneData.get(), true);
     DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>> initialData;
@@ -831,8 +868,9 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
         if (accessor->GetContextCount() == 1)
         {
             DataContext* activeContext = accessor->GetActiveContext();
-            DAVA::RefPtr<SceneEditor2> scene = activeContext->GetData<SceneData>()->scene;
-            if (!scene->IsLoaded() && !scene->IsChanged() && scene->GetScenePath().GetFilename() == "newscene1.sc2")
+            SceneData* sceneData = activeContext->GetData<SceneData>();
+            DAVA::RefPtr<SceneEditor2> scene = sceneData->scene;
+            if (!scene->IsChanged() && sceneData->defaultFirstScene == true)
             {
                 contextManager->ActivateContext(DataContext::Empty);
                 contextManager->DeleteContext(activeContext->GetID());
@@ -866,12 +904,12 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
     UI* ui = GetUI();
     WaitDialogParams waitDlgParams;
     waitDlgParams.message = QString("Opening scene\n%1").arg(scenePath.GetAbsolutePathname().c_str());
-    waitDlgParams.needProgressBar = false;
+    waitDlgParams.needProgressBar = true;
 
     std::unique_ptr<WaitHandle> waitHandle = ui->ShowWaitDialog(DAVA::mainWindowKey, waitDlgParams);
 
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
-    sceneData->scene = OpenSceneImpl(scenePath, sceneData->mode);
+    sceneData->scene = OpenSceneImpl(scenePath, sceneData->mode, waitHandle.get());
 
     CreateSceneProperties(sceneData.get());
     sceneData->scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot(), accessor);
@@ -1093,9 +1131,6 @@ void SceneManagerModule::ExportScene()
             exportingParams.filenamesTag = dlg.GetFilenamesTag();
             scene->Export(exportingParams);
         }
-
-        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
-        ReloadAllTextures(loader->GetPrimaryGPUForLoading());
     }
 }
 
@@ -1117,74 +1152,17 @@ void SceneManagerModule::CloseAllScenes(bool needSavingReqiest)
     }
 }
 
-void SceneManagerModule::ReloadTextures(const DAVA::Vector<DAVA::Asset<DAVA::Texture>>& textures)
-{
-    // GFX_COMPLETE
-    /*using namespace DAVA;
-
-    CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
-
-    DAVA::eGPUFamily gpuFormat = settings->textureViewGPU;
-
-    ContextAccessor* accessor = GetAccessor();
-    DataContext* activeContext = accessor->GetActiveContext();
-    DAVA::RefPtr<SceneEditor2> scene = activeContext->GetData<SceneData>()->scene;
-
-    DAVA::Set<DAVA::NMaterial*> materials;
-    SceneHelper::EnumerateMaterials(scene.Get(), materials);
-
-    int progress = 0;
-    WaitDialogParams params;
-    std::unique_ptr<WaitHandle> waitHandle;
-
-    if (textures.size() > 1)
-    {
-        params.needProgressBar = true;
-        params.message = "Reloading textures.";
-        params.min = 0;
-        params.max = static_cast<int>(textures.size());
-        waitHandle = GetUI()->ShowWaitDialog(DAVA::mainWindowKey, params);
-    }
-
-    DAVA::AssetManager* assetManager = GetEngineContext()->assetManager;
-    DAVA::TextureAssetLoader* loader = assetManager->GetAssetLoader<DAVA::TextureAssetLoader>();
-    loader->SetGPULoadingOrder({ gpuFormat });
-
-    for (DAVA::Asset<DAVA::Texture> tex : textures)
-    {
-        DAVA::TextureDescriptor* descriptor = tex->GetDescriptor();
-
-        if (textures.size() > 1)
-        {
-            QString message = QString("Reloading texture:%1");
-            message = message.arg(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
-            waitHandle->SetMessage(message);
-            waitHandle->SetProgressValue(progress++);
-        }
-
-        assetManager->ReloadAsset(tex->GetKey());
-        TextureCache::Instance()->clearOriginal(descriptor);
-        TextureCache::Instance()->clearThumbnail(descriptor);
-
-        for (auto mat : materials)
-        {
-            if (mat->ContainsTexture(tex))
-                mat->InvalidateTextureBindings();
-        }
-
-        TextureBrowser::Instance()->UpdateTexture(tex);
-    }*/
-}
-
 void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 {
-    // GFX_COMPLETE
-    /*using namespace DAVA;
+    using namespace DAVA;
     if (SaveTileMaskInAllScenes())
     {
         CommonInternalSettings* settings = GetAccessor()->GetGlobalContext()->GetData<CommonInternalSettings>();
         settings->textureViewGPU = gpu;
-        DAVA::Texture::SetGPULoadingOrder({ gpu });
+
+        AssetManager* assetManager = GetEngineContext()->assetManager;
+        TextureAssetLoader* loader = assetManager->GetAssetLoader<TextureAssetLoader>();
+        loader->SetGPULoadingOrder({ gpu });
 
         SceneHelper::TextureCollector collector;
         DAVA::Set<DAVA::NMaterial*> allSceneMaterials;
@@ -1198,7 +1176,7 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
                                      SceneHelper::EnumerateMaterials(data->scene.Get(), allSceneMaterials);
                                  });
 
-        DAVA::TexturesMap& allScenesTextures = collector.GetTextures();
+        const Map<FilePath, Asset<Texture>>& allScenesTextures = collector.GetTextures();
         if (!allScenesTextures.empty())
         {
             int progress = 0;
@@ -1210,17 +1188,14 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 
             std::unique_ptr<WaitHandle> waitHandle = GetUI()->ShowWaitDialog(DAVA::mainWindowKey, params);
 
-            DAVA::TexturesMap::const_iterator it = allScenesTextures.begin();
-            DAVA::TexturesMap::const_iterator end = allScenesTextures.end();
-
-            for (; it != end; ++it)
+            for (const auto& node : allScenesTextures)
             {
                 QString message = QString("Reloading texture:%1");
-                message = message.arg(it->first.GetAbsolutePathname().c_str());
+                message = message.arg(node.first.GetAbsolutePathname().c_str());
                 waitHandle->SetMessage(message);
                 waitHandle->SetProgressValue(progress++);
 
-                it->second->ReloadAs(gpu);
+                assetManager->ReloadAsset(node.second->GetKey(), AssetManager::SYNC);
             }
 
             TextureCache::Instance()->ClearCache();
@@ -1234,7 +1209,7 @@ void SceneManagerModule::ReloadAllTextures(DAVA::eGPUFamily gpu)
 
         DAVA::Sprite::ReloadSprites(gpu);
         RestartParticles();
-    }*/
+    }
 }
 
 void SceneManagerModule::OnProjectPathChanged(const DAVA::Any& projectPath)
@@ -1413,7 +1388,9 @@ bool SceneManagerModule::CanCloseScene(DAVA::SceneData* data)
     return true;
 }
 
-DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::FilePath& scenePath, DAVA::SceneData::eEditMode& mode)
+DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::FilePath& scenePath,
+                                                                   DAVA::SceneData::eEditMode& mode,
+                                                                   DAVA::WaitHandle* waitHandle)
 {
     using namespace DAVA;
 
@@ -1441,6 +1418,8 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
             else
             {
                 DAVA::SceneFileConverter::ConvertSceneToLevelFormat(scene.Get(), scenePath.GetDirectory());
+                scene->SetLoaded(false);
+                scene->SetChanged();
             }
 
             mode = SceneData::Level;
@@ -1448,7 +1427,21 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
         else if (scenePath.GetExtension() == ".level")
         {
             mode = SceneData::Level;
-            scene->streamingSystem->LoadLevel(scenePath);
+            auto callbackFn = [waitHandle](DAVA::uint32 loaded, DAVA::uint32 count) {
+                if (waitHandle != nullptr)
+                {
+                    if (loaded == 0)
+                    {
+                        waitHandle->SetRange(0, count);
+                    }
+                    else
+                    {
+                        waitHandle->SetProgressValue(loaded);
+                    }
+                }
+            };
+            scene->streamingSystem->LoadFullLevel(scenePath, callbackFn);
+            scene->SetLoaded(true);
         }
         else if (scenePath.GetExtension() == ".prefab")
         {
@@ -1506,9 +1499,9 @@ bool SceneManagerModule::SaveSceneImpl(DAVA::SceneData* sceneData, const DAVA::F
         }
         else
         {
-            DVASSERT(pathToSaveScene.GetExtension() == ".prefab");
-            //DAVA::Level::PathKey key(pathToSaveScene);
-            //sceneSaved = assetManager->SaveAssetFromData(static_cast<DAVA::Scene*>(sceneData->scene.Get()), key);
+            DVASSERT(pathToSaveScene.GetExtension() == ".level");
+            DAVA::Level::Key key(pathToSaveScene);
+            sceneSaved = assetManager->SaveAssetFromData(static_cast<DAVA::Scene*>(sceneData->scene.Get()), key);
         }
 
         if (sceneSaved == true)

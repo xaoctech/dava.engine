@@ -25,6 +25,7 @@
 #include <Base/Any.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/RuntimeEntityMarkComponent.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 
 namespace DAVA
@@ -874,9 +875,12 @@ Entity* GetSelectableEntity(Entity* selectionCandidate)
     Entity* parent = selectionCandidate;
     while (nullptr != parent)
     {
-        if (parent->GetSolid())
+        if (parent->GetComponent<RuntimeEntityMarkComponent>() == nullptr)
         {
-            selectionCandidate = parent;
+            if (parent->GetSolid())
+            {
+                selectionCandidate = parent;
+            }
         }
         parent = parent->GetParent();
     }

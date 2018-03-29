@@ -1,6 +1,5 @@
 #include "Classes/Qt/DockParticleEditor/EmitterLayerWidget.h"
 #include "Classes/Qt/DockParticleEditor/WheellIgnorantComboBox.h"
-#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 
 #include <REPlatform/Commands/ParticleLayerCommands.h>
 #include <REPlatform/Commands/ParticleEditorCommands.h>

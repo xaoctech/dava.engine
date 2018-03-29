@@ -1,5 +1,4 @@
-#ifndef __TEXTURE_LIST_MODEL_H__
-#define __TEXTURE_LIST_MODEL_H__
+#pragma once
 
 #include "DAVAEngine.h"
 
@@ -93,5 +92,3 @@ struct SortFnByDataSize
 protected:
     const TextureListModel* model;
 };
-
-#endif // __TEXTURE_LIST_MODEL_H__

@@ -12,39 +12,6 @@ class Level;
 class LevelAssetLoader : public AbstractAssetLoader
 {
 public:
-    struct FullLevelKey
-    {
-        FullLevelKey() = default;
-        FullLevelKey(const FilePath& filepath_)
-            : path(filepath_)
-        {
-        }
-        FilePath path;
-    };
-
-    struct StreamLevelKey
-    {
-        StreamLevelKey() = default;
-        StreamLevelKey(const FilePath& filepath_)
-            : path(filepath_)
-        {
-        }
-        FilePath path;
-        RefPtr<File> file;
-    };
-
-    struct StreamEntityKey
-    {
-        StreamEntityKey() = default;
-        StreamEntityKey(const Asset<Level>& level_, uint32 entityIndex_)
-            : level(level_)
-            , entityIndex(entityIndex_)
-        {
-        }
-        Asset<Level> level;
-        uint32 entityIndex;
-    };
-
     LevelAssetLoader();
     AssetFileInfo GetAssetFileInfo(const Any& assetKey) const override;
 
@@ -60,17 +27,5 @@ public:
     Vector<const Type*> GetAssetKeyTypes() const override;
     Vector<String> GetDependsOnFiles(const AssetBase* asset) const override;
 };
-
-template <>
-bool AnyCompare<LevelAssetLoader::FullLevelKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<LevelAssetLoader::FullLevelKey>;
-
-template <>
-bool AnyCompare<LevelAssetLoader::StreamLevelKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<LevelAssetLoader::StreamLevelKey>;
-
-template <>
-bool AnyCompare<LevelAssetLoader::StreamEntityKey>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<LevelAssetLoader::StreamEntityKey>;
 
 } // namespace DAVA

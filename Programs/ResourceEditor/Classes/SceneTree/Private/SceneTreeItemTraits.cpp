@@ -22,6 +22,7 @@
 #include <Scene3D/Components/StaticOcclusionComponent.h>
 #include <Scene3D/Components/TextComponent.h>
 #include <Scene3D/Components/UserComponent.h>
+#include <Scene3D/Components/RuntimeEntityMarkComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 
@@ -138,6 +139,16 @@ DAVA::int32 EntityTraits::GetChildrenCount(const DAVA::Selectable& object) const
     DVASSERT(object.CanBeCastedTo<DAVA::Entity>());
     DAVA::Entity* entity = object.Cast<DAVA::Entity>();
     DAVA::int32 entityChildrenCount = entity->GetChildrenCount();
+    DAVA::int32 resultEntityCount = entityChildrenCount;
+    for (DAVA::int32 entityIndex = 0; entityIndex < entityChildrenCount; ++entityIndex)
+    {
+        DAVA::Entity* child = entity->GetChild(entityIndex);
+        if (child->GetComponent<DAVA::RuntimeEntityMarkComponent>() != nullptr)
+        {
+            --resultEntityCount;
+        }
+    }
+
     DAVA::int32 particleEffectsCount = 0;
     DAVA::ParticleEffectComponent* effectComponent = DAVA::GetParticleEffectComponent(entity);
     if (effectComponent != nullptr)
@@ -159,9 +170,12 @@ void EntityTraits::BuildUnfetchedList(const DAVA::Selectable& object,
     for (DAVA::int32 childIndex = 0; childIndex < childCount; ++childIndex)
     {
         DAVA::Entity* childEntity = entity->GetChild(childIndex);
-        if (isFetchedFn(DAVA::Selectable(DAVA::Any(childEntity))) == false)
+        if (childEntity->GetComponent<DAVA::RuntimeEntityMarkComponent>() == nullptr)
         {
-            unfetchedIndexes.push_back(childIndex);
+            if (isFetchedFn(DAVA::Selectable(DAVA::Any(childEntity))) == false)
+            {
+                unfetchedIndexes.push_back(childIndex);
+            }
         }
     }
 

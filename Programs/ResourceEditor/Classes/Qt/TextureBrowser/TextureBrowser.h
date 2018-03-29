@@ -5,6 +5,8 @@
 #include "Classes/Qt/TextureBrowser/TextureInfo.h"
 #include "Classes/Qt/TextureBrowser/TextureConvertMode.h"
 
+#include <Asset/Asset.h>
+
 #include <QDialog>
 #include <QMap>
 
@@ -148,5 +150,4 @@ private slots:
     void clearFilter();
 
     void textureDescriptorChanged(DAVA::TextureDescriptor* descriptor);
-    void textureDescriptorReload(DAVA::TextureDescriptor* descriptor);
 };

@@ -1,25 +1,40 @@
 #include "Scene3D/Level.h"
-#include "Scene3D/Scene.h"
-#include "FileSystem/File.h"
-#include "FileSystem/FileSystem.h"
-#include "Base/BaseMath.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/StreamingSettingsComponent.h"
-#include "Render/3D/PolygonGroup.h"
-#include "Render/Material/NMaterial.h"
 #include "Scene3D/AnimationData.h"
+#include "Scene3D/Components/StreamingSettingsComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneSerialization.h"
-#include "Engine/Engine.h"
-#include "Job/JobManager.h"
-#include "Debug/ProfilerMarkerNames.h"
+
+#include "Base/BaseMath.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerGPU.h"
+#include "Debug/ProfilerMarkerNames.h"
+#include "Engine/Engine.h"
+#include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
+#include "Job/JobManager.h"
+#include "Render/3D/PolygonGroup.h"
+#include "Render/Material/NMaterial.h"
 #include "Time/SystemTimer.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 #define DISABLE_LEVEL_STREAMING 1
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(LevelEntity)
+{
+    ReflectionRegistrator<LevelEntity>::Begin()
+    .End();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Level)
+{
+    ReflectionRegistrator<Level>::Begin()
+    .End();
+}
+
 LevelEntity::LevelEntity(const Any& assetKey)
     : AssetBase(assetKey)
 {
@@ -27,6 +42,7 @@ LevelEntity::LevelEntity(const Any& assetKey)
 
 LevelEntity::~LevelEntity()
 {
+    SafeRelease(rootEntity);
 }
 
 Level::Level(const Any& assetKey)
@@ -91,4 +107,20 @@ Level::Chunk* Level::ChunkGrid::GetChunk(const ChunkCoord& coord)
     uint32 address = GetChunkAddress(coord);
     return GetChunk(address);
 }
-};
+
+template <>
+bool AnyCompare<Level::Key>::IsEqual(const Any& v1, const Any& v2)
+{
+    return v1.Get<Level::Key>().path == v2.Get<Level::Key>().path;
+}
+
+template <>
+bool AnyCompare<LevelEntity::Key>::IsEqual(const Any& v1, const Any& v2)
+{
+    const LevelEntity::Key& left = v1.Get<LevelEntity::Key>();
+    const LevelEntity::Key& right = v2.Get<LevelEntity::Key>();
+
+    return left.level == right.level && left.entityIndex == right.entityIndex;
+}
+
+} // namespace DAVA

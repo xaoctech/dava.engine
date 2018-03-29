@@ -498,6 +498,11 @@ bool SceneEditor2::IsLoaded() const
     return isLoaded;
 }
 
+void SceneEditor2::SetLoaded(bool isLoaded_)
+{
+    isLoaded = isLoaded_;
+}
+
 void SceneEditor2::SetHUDVisible(bool visible)
 {
     isHUDVisible = visible;

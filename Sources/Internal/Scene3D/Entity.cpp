@@ -17,21 +17,22 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/DebugRenderComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/DebugRenderComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/ReflectionComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/RuntimeEntityMarkComponent.h"
+#include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Private/EntityHelpers.h"
 #include "Reflection/ReflectionRegistrator.h"
 
 #include <functional>
-#include "Scene3D/Components/RenderComponent.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/StaticBodyComponent.h>
@@ -372,6 +373,11 @@ Entity* Entity::Clone(Entity* dstNode)
 
     for (auto child : children)
     {
+        if (child->GetComponent<RuntimeEntityMarkComponent>() != nullptr)
+        {
+            continue;
+        }
+
         Entity* n = child->Clone();
         dstNode->AddNode(n);
         n->Release();
@@ -736,14 +742,18 @@ inline void Entity::RemoveComponent(Vector<Component*>::iterator& it)
 
 void Entity::SetVisible(const bool& isVisible)
 {
-    RenderComponent* renderComponent = GetComponent<RenderComponent>();
+    if (isVisible == GetVisible())
+    {
+        return;
+    }
+
+    Vector<RenderObject*> renderObjects = GetRenderObjects(this);
     if (isVisible)
     {
         AddFlag(NODE_VISIBLE);
 
-        if (nullptr != renderComponent)
+        for (RenderObject* renderObject : renderObjects)
         {
-            RenderObject* renderObject = renderComponent->GetRenderObject();
             renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE);
             if ((renderObject->GetFlags() & RenderObject::NEED_UPDATE) &&
                 renderObject->GetRenderSystem() != nullptr)
@@ -755,9 +765,8 @@ void Entity::SetVisible(const bool& isVisible)
     else
     {
         RemoveFlag(NODE_VISIBLE);
-        if (nullptr != renderComponent)
+        for (RenderObject* renderObject : renderObjects)
         {
-            RenderObject* renderObject = renderComponent->GetRenderObject();
             renderObject->SetFlags(renderObject->GetFlags() & ~RenderObject::VISIBLE);
         }
     }

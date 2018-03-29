@@ -770,25 +770,22 @@ void SceneCollisionSystem::Process(float32 timeElapsed)
     // check in there are entities that should be added or removed
     if (!(objectsToAdd.empty() && objectsToRemove.empty()))
     {
-        for (auto obj : objectsToRemove)
+        for (const auto& object : objectsToRemove)
         {
-            Selectable wrapper(obj);
-            EnumerateObjectHierarchy(wrapper, false, [this](const Any& object, physx::PxRigidActor*, bool) {
-                DVASSERT(object.IsEmpty() == false);
-                auto iter = objToPhysx.find(object);
-                if (iter != objToPhysx.end())
-                {
-                    physx::PxRigidActor* rigidActor = iter->second;
-                    DVASSERT(rigidActor != nullptr);
-                    AABBox3* bounds = SceneCollisionSystemDetail::GetBounds(rigidActor);
-                    SafeDelete(bounds);
+            DVASSERT(object.IsEmpty() == false);
+            auto iter = objToPhysx.find(object);
+            if (iter != objToPhysx.end())
+            {
+                physx::PxRigidActor* rigidActor = iter->second;
+                DVASSERT(rigidActor != nullptr);
+                AABBox3* bounds = SceneCollisionSystemDetail::GetBounds(rigidActor);
+                SafeDelete(bounds);
 
-                    physicsScene->removeActor(*rigidActor);
-                    rigidActor->release();
-                    size_t removedCount = objToPhysx.erase(object);
-                    DVASSERT(removedCount == 1);
-                }
-            });
+                physicsScene->removeActor(*rigidActor);
+                rigidActor->release();
+                size_t removedCount = objToPhysx.erase(object);
+                DVASSERT(removedCount == 1);
+            }
         }
 
         for (auto obj : objectsToAdd)
@@ -1005,7 +1002,11 @@ void SceneCollisionSystem::RemoveEntity(Entity* entity)
     }
 
     objectsToAdd.erase(entity);
-    objectsToRemove.insert(entity);
+
+    Selectable wrapper(entity);
+    EnumerateObjectHierarchy(wrapper, false, [this](const Any& object, physx::PxRigidActor*, bool) {
+        objectsToRemove.insert(object);
+    });
 
     // destroy collision object for entities childs
     for (int i = 0; i < entity->GetChildrenCount(); ++i)

@@ -232,7 +232,7 @@ void SceneValidator::ValidateMaterials(Scene* scene)
     //GFX_COMPLETE, GFX_TMP - to test count of const buffers
     return;
 
-    Set<NMaterial*> materials;
+    /*Set<NMaterial*> materials;
     SceneHelper::BuildMaterialList(scene, materials, false);
     auto globalMaterial = scene->GetGlobalMaterial();
     if (nullptr != globalMaterial)
@@ -335,7 +335,7 @@ void SceneValidator::ValidateMaterials(Scene* scene)
     for (auto it = texturesMap.begin(); it != endItTextures; ++it)
     {
         ValidateTexture(it->first, it->second);
-    }
+    }*/
 }
 
 void SceneValidator::ValidateLandscape(Landscape* landscape)

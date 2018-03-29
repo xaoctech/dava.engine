@@ -34,20 +34,8 @@ void TexturePathValidator::FixupInternal(QVariant& v) const
         DAVA::FilePath texturePath = DAVA::FilePath(v.toString().toStdString());
         if (DAVA::FileSystem::Instance()->Exists(texturePath) && DAVA::RETextureDescriptorUtils::CreateOrUpdateDescriptor(texturePath))
         {
-            // GFX_COMPLETE
-            /* DAVA::FilePath descriptorPath = DAVA::TextureDescriptor::GetDescriptorPathname(texturePath);
-
-            auto& texturesMap = DAVA::Texture::GetTextureMap();
-            auto found = texturesMap.find(FILEPATH_MAP_KEY(descriptorPath));
-            if (found != texturesMap.end())
-            {
-                DAVA::Vector<DAVA::Texture*> reloadTextures;
-                reloadTextures.push_back(found->second);
-
-                DAVA::Deprecated::GetInvoker()->Invoke(DAVA::ReloadTextures.ID, reloadTextures);
-            }
-
-            v = QVariant(QString::fromStdString(descriptorPath.GetAbsolutePathname()));*/
+            DAVA::FilePath descriptorPath = DAVA::TextureDescriptor::GetDescriptorPathname(texturePath);
+            v = QVariant(QString::fromStdString(descriptorPath.GetAbsolutePathname()));
         }
     }
 }

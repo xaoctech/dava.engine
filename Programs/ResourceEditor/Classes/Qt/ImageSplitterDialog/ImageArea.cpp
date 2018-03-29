@@ -1,7 +1,6 @@
 #include "ImageArea.h"
 
 #include "Classes/Qt/ImageSplitterDialog/SizeDialog.h"
-#include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 #include "Classes/Qt/Tools/PathDescriptor/PathDescriptor.h"
 
 #include <REPlatform/DataNodes/Settings/RESettings.h>

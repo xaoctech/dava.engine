@@ -46,49 +46,56 @@ void SceneFileConverter::ConvertSceneToLevelFormat(Scene* scene, const FilePath&
 
     AssetManager* assetManager = GetEngineContext()->assetManager;
 
-    int32 childrenCount = scene->GetChildrenCount();
-    for (int32 childIndex = 0; childIndex < childrenCount; ++childIndex)
-    {
-        Entity* child = scene->GetChild(childIndex);
-
-        if (child->GetComponent<PrefabComponent>() != nullptr)
-            continue;
-
-        KeyedArchive* props = GetCustomPropertiesArchieve(child);
-        if (props != nullptr && props->IsKeyExists("editor.referenceToOwner"))
+    Function<void(Entity*)> fn = [&](Entity* entity) {
+        int32 childrenCount = entity->GetChildrenCount();
+        for (int32 childIndex = 0; childIndex < childrenCount; ++childIndex)
         {
-            FilePath ownerPath = FilePath(props->GetString("editor.referenceToOwner"));
-            props->DeleteKey("editor.referenceToOwner");
+            Entity* child = entity->GetChild(childIndex);
 
-            FilePath prefabPath = FilePath::CreateWithNewExtension(ownerPath, ".prefab");
-            Prefab::PathKey assetKey(prefabPath);
-
-            Matrix4 prefabLocalTransform = child->GetLocalTransform();
-
-            Asset<Prefab> prefab = assetManager->FindLoadOrCreate<Prefab>(assetKey);
-            if (prefab->GetState() == AssetBase::EMPTY)
+            if (child->GetComponent<PrefabComponent>() == nullptr)
             {
-                FileSystem::Instance()->CreateDirectory(prefabPath.GetDirectory(), true);
+                KeyedArchive* props = GetCustomPropertiesArchieve(child);
+                if (props != nullptr && props->IsKeyExists("editor.referenceToOwner"))
+                {
+                    FilePath ownerPath = FilePath(props->GetString("editor.referenceToOwner"));
+                    props->DeleteKey("editor.referenceToOwner");
 
-                child->SetLocalTransform(Matrix4::IDENTITY);
-                prefab = assetManager->CreateAsset<Prefab>(assetKey);
+                    FilePath prefabPath = FilePath::CreateWithNewExtension(ownerPath, ".prefab");
+                    Prefab::PathKey assetKey(prefabPath);
 
-                ScopedPtr<Entity> childClone(child->Clone());
-                prefab->ConstructFrom(childClone);
-                assetManager->SaveAsset(prefab);
+                    Matrix4 prefabLocalTransform = child->GetLocalTransform();
+
+                    Asset<Prefab> prefab = assetManager->FindLoadOrCreate<Prefab>(assetKey);
+                    if (prefab->GetState() == AssetBase::EMPTY)
+                    {
+                        FileSystem::Instance()->CreateDirectory(prefabPath.GetDirectory(), true);
+
+                        child->SetLocalTransform(Matrix4::IDENTITY);
+
+                        ScopedPtr<Entity> childClone(child->Clone());
+                        prefab->ConstructFrom(childClone);
+                        assetManager->SaveAsset(prefab);
+                    }
+
+                    ScopedPtr<Entity> prefabEntity(new Entity());
+                    PrefabComponent* prefabComponent = new PrefabComponent();
+                    prefabComponent->SetFilepath(prefabPath);
+                    prefabEntity->AddComponent(prefabComponent);
+                    prefabEntity->SetName(prefabPath.GetFilename().c_str());
+                    prefabEntity->SetLocalTransform(prefabLocalTransform);
+
+                    entity->InsertBeforeNode(prefabEntity, child);
+                    entity->RemoveNode(child);
+                }
+                else
+                {
+                    fn(child);
+                }
             }
-
-            ScopedPtr<Entity> prefabEntity(new Entity());
-            PrefabComponent* prefabComponent = new PrefabComponent();
-            prefabComponent->SetFilepath(prefabPath);
-            prefabEntity->AddComponent(prefabComponent);
-            prefabEntity->SetName(prefabPath.GetFilename().c_str());
-            prefabEntity->SetLocalTransform(prefabLocalTransform);
-
-            scene->InsertBeforeNode(prefabEntity, child);
-            scene->RemoveNode(child);
         }
-    }
+    };
+
+    fn(scene);
 }
 
 void SceneFileConverter::ConvertRenderComponentsRecursive(Entity* entity, const FilePath& rootFolder)
@@ -397,8 +404,6 @@ Asset<Material> SceneFileConverter::CreateMaterialAsset(NMaterial* material, con
 
         if (materialAsset->GetState() == AssetBase::EMPTY)
         {
-            materialAsset = assetManager->CreateAsset<Material>(Material::PathKey(materialPath));
-
             NMaterial* materialCopy = materialHierarchyCopy.back();
             materialAsset->SetMaterial(materialCopy);
 

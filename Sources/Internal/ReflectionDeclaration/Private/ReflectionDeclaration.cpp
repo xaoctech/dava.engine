@@ -27,55 +27,57 @@
 #include "Scene3D/Components/AnimationComponent.h"
 #include "Scene3D/Components/BulletComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/Controller/RotationControllerComponent.h"
+#include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
+#include "Scene3D/Components/Controller/WASDControllerComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/DecalComponent.h"
-#include "Scene3D/Components/VTDecalComponent.h"
-#include "Scene3D/Components/SplineComponent.h"
+#include "Scene3D/Components/EnvironmentComponent.h"
+#include "Scene3D/Components/GeoDecalComponent.h"
+#include "Scene3D/Components/LandscapeComponent.h"
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/LightmapComponent.h"
+#include "Scene3D/Components/LightmapDataComponent.h"
 #include "Scene3D/Components/LightRenderComponent.h"
+#include "Scene3D/Components/MeshComponent.h"
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/PostEffectComponent.h"
+#include "Scene3D/Components/PostEffectDebugComponent.h"
+#include "Scene3D/Components/PrefabComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
+#include "Scene3D/Components/ReflectionComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/RuntimeEntityMarkComponent.h"
 #include "Scene3D/Components/SkeletonComponent.h"
+#include "Scene3D/Components/SlotComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/SplineComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
+#include "Scene3D/Components/TextComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/TransformInterpolationComponent.h"
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/VisibilityCheckComponent.h"
+#include "Scene3D/Components/VTDecalComponent.h"
 #include "Scene3D/Components/WaveComponent.h"
-#include "Scene3D/Components/Controller/RotationControllerComponent.h"
-#include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
-#include "Scene3D/Components/Controller/WASDControllerComponent.h"
 #include "Scene3D/Components/Waypoint/EdgeComponent.h"
 #include "Scene3D/Components/Waypoint/PathComponent.h"
 #include "Scene3D/Components/Waypoint/WaypointComponent.h"
 #include "Scene3D/Components/WindComponent.h"
-#include "Scene3D/Components/GeoDecalComponent.h"
-#include "Scene3D/Components/SlotComponent.h"
-#include "Scene3D/Components/TextComponent.h"
-#include "Scene3D/Components/ReflectionComponent.h"
-#include "Scene3D/Components/PostEffectComponent.h"
-#include "Scene3D/Components/PostEffectDebugComponent.h"
-#include "Scene3D/Components/EnvironmentComponent.h"
-#include "Scene3D/Components/MeshComponent.h"
-#include "Scene3D/Components/PrefabComponent.h"
-#include "Scene3D/Components/LandscapeComponent.h"
-#include "Scene3D/Components/LightmapDataComponent.h"
-#include "Scene3D/Components/LightmapComponent.h"
 #include "Scene3D/Components/StreamingSettingsComponent.h"
 #include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/ChangedSystemsSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/VTSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/LightmapSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/PrefabSingleComponent.h"
 #include "Scene3D/Components/SingleComponents/RenderObjectSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/SingleComponents/VTSingleComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Scene3D/Lod/LodSystem.h"
@@ -99,6 +101,7 @@
 #include "Scene3D/Systems/MotionSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
+#include "Scene3D/Systems/PrefabLoadingSystem.h"
 #include "Scene3D/Systems/RenderUpdateSystem.h"
 #include "Scene3D/Systems/SkeletonSystem.h"
 #include "Scene3D/Systems/SlotSystem.h"
@@ -377,6 +380,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WaypointComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WindComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StreamingSettingsComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RuntimeEntityMarkComponent);
 
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(PathComponent::Waypoint, "Waypoint");
     DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(PathComponent::Edge, "Edge");
@@ -390,6 +394,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VTSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LightmapSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RenderObjectSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PrefabSingleComponent);
 
     // Systems
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BaseSimulationSystem);
@@ -434,6 +439,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WASDControllerSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WaveSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WindSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PrefabLoadingSystem);
 
     // 3D classes
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PolygonGroup);

@@ -3,7 +3,7 @@
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
-#include "Scene3D/Components/PrefabComponent.h"
+#include "Scene3D/Components/RuntimeEntityMarkComponent.h"
 #include "Reflection/ReflectedTypeDB.h"
 #include "Base/ObjectFactory.h"
 
@@ -13,18 +13,27 @@ void SceneSerialization::SaveHierarchy(Entity* entity, KeyedArchive* keyedArchiv
 {
     SceneSerialization::SaveEntity(entity, keyedArchive, serializationContext, type);
 
-    PrefabComponent* prefabComponent = entity->GetComponent<PrefabComponent>();
-    if (!prefabComponent)
+    uint32 childrenCount = entity->GetChildrenCount();
+    Vector<Entity*> entitiesForSave;
+    entitiesForSave.reserve(childrenCount);
+
+    for (uint32 i = 0; i < childrenCount; ++i)
     {
-        keyedArchive->SetInt32("#childrenCount", entity->GetChildrenCount());
-        for (int ci = 0; ci < entity->GetChildrenCount(); ++ci)
+        Entity* child = entity->GetChild(i);
+        if (child->GetComponent<RuntimeEntityMarkComponent>() == nullptr)
         {
-            KeyedArchive* childArchive = new KeyedArchive();
-            Entity* child = entity->GetChild(ci);
-            SaveHierarchy(child, childArchive, serializationContext, type);
-            keyedArchive->SetArchive(Format("#child_%d", ci), childArchive);
-            SafeRelease(childArchive);
+            entitiesForSave.push_back(child);
         }
+    }
+
+    keyedArchive->SetInt32("#childrenCount", static_cast<int32>(entitiesForSave.size()));
+    for (size_t i = 0; i < entitiesForSave.size(); ++i)
+    {
+        Entity* child = entitiesForSave[i];
+        KeyedArchive* childArchive = new KeyedArchive();
+        SaveHierarchy(child, childArchive, serializationContext, type);
+        keyedArchive->SetArchive(Format("#child_%d", static_cast<int32>(i)), childArchive);
+        SafeRelease(childArchive);
     }
 }
 

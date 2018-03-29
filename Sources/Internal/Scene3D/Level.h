@@ -2,30 +2,32 @@
 
 #include "Asset/Asset.h"
 #include "Asset/AssetManager.h"
+#include "Base/Any.h"
+#include "Base/BaseTypes.h"
 #include "Math/AABBox3.h"
-#include "Scene3D/SceneFile/SerializationContext.h"
-#include "Logger/Logger.h"
-#include "Concurrency/AutoResetEvent.h"
-#include <mutex>
+#include "Reflection/Reflection.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
 class DataNode;
 class Scene;
 class Camera;
-
-class LevelEntity : public AssetBase
-{
-public:
-    LevelEntity(const Any& assetKey);
-    ~LevelEntity();
-
-    Entity* rootEntity = nullptr;
-};
+class LevelEntity;
 
 class Level : public AssetBase
 {
 public:
+    struct Key
+    {
+        Key() = default;
+        Key(const FilePath& filepath_)
+            : path(filepath_)
+        {
+        }
+        FilePath path;
+    };
+
     Level(const Any& assetKey);
     ~Level();
 
@@ -83,13 +85,23 @@ public:
             : x(x_)
             , y(y_){};
 
-        bool operator==(const ChunkCoord& other)
+        bool operator==(const ChunkCoord& other) const
         {
             return x == other.x && y == other.y;
         }
-        bool operator!=(const ChunkCoord& other)
+        bool operator!=(const ChunkCoord& other) const
         {
             return x != other.x || y != other.y;
+        }
+
+        bool operator<(const ChunkCoord& other) const
+        {
+            if (x != other.x)
+            {
+                return x < other.x;
+            }
+
+            return y < other.y;
         }
 
         int32 x = 0;
@@ -137,7 +149,40 @@ public:
     ChunkGrid* loadedChunkGrid = nullptr;
     Vector<EntityInfo> loadedInfoArray;
     UnorderedMap<uint32, Entity*> entitiesAddedToScene;
+    RefPtr<File> levelFile;
+
+    DAVA_VIRTUAL_REFLECTION(Level, AssetBase);
 };
 
-LoggerEnable(Level);
+class LevelEntity : public AssetBase
+{
+public:
+    struct Key
+    {
+        Key() = default;
+        Key(Level* level_, uint32 entityIndex_)
+            : level(level_)
+            , entityIndex(entityIndex_)
+        {
+        }
+        Level* level;
+        uint32 entityIndex;
+    };
+
+    LevelEntity(const Any& assetKey);
+    ~LevelEntity();
+
+    Entity* rootEntity = nullptr;
+
+    DAVA_VIRTUAL_REFLECTION(LevelEntity, AssetBase);
 };
+
+template <>
+bool AnyCompare<Level::Key>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<Level::Key>;
+
+template <>
+bool AnyCompare<LevelEntity::Key>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
+extern template struct AnyCompare<LevelEntity::Key>;
+
+} // namespace DAVA
