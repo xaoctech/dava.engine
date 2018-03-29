@@ -12,9 +12,8 @@ struct Dispatch
 {
     void (*impl_Reset)(const ResetParam&);
     void (*impl_Uninitialize)();
-    Api (*impl_HostApi)();
+    const HostAPI& (*impl_HostApi)();
     bool (*impl_NeedRestoreResources)();
-    bool (*impl_TextureFormatSupported)(TextureFormat, ProgType);
 
     void (*impl_InvalidateCache)();
     void (*impl_SyncCPUGPU)(uint64* cpuTimestamp, uint64* gpuTimestamp);

@@ -39,56 +39,11 @@ std::vector<DisplayMode> _DisplayMode;
 
 //------------------------------------------------------------------------------
 
-static Api
+static const HostAPI&
 dx9_HostApi()
 {
-    return RHI_DX9;
-}
-
-//------------------------------------------------------------------------------
-
-static bool
-dx9_TextureFormatSupported(TextureFormat format, ProgType progType)
-{
-    bool supported = false;
-
-    switch (format)
-    {
-    case TEXTURE_FORMAT_R8G8B8A8:
-    case TEXTURE_FORMAT_R5G5B5A1:
-    case TEXTURE_FORMAT_R5G6B5:
-    case TEXTURE_FORMAT_R4G4B4A4:
-    case TEXTURE_FORMAT_R8:
-    case TEXTURE_FORMAT_R16:
-    case TEXTURE_FORMAT_RGB10A2:
-    case TEXTURE_FORMAT_DXT1:
-    case TEXTURE_FORMAT_DXT3:
-    case TEXTURE_FORMAT_DXT5:
-    case TEXTURE_FORMAT_R16F:
-    case TEXTURE_FORMAT_RG16F:
-    case TEXTURE_FORMAT_RGBA16F:
-    case TEXTURE_FORMAT_R32F:
-    case TEXTURE_FORMAT_RG32F:
-    case TEXTURE_FORMAT_RGBA32F:
-        supported = true;
-        break;
-    default:
-        break;
-    }
-
-    if (progType == PROG_VERTEX)
-    {
-        const char* found = strstr(DeviceCaps().deviceDescription, "GeForce");
-        if (found && strlen(found) >= strlen("GeForce XXXX")) //filter GeForce 6 and 7 series
-        {
-            if ((found[8] == '6' || found[8] == '7') && (found[11] == '0' || found[11] == '5'))
-            {
-                supported = (format == TEXTURE_FORMAT_R32F || format == TEXTURE_FORMAT_RGBA32F);
-            }
-        }
-    }
-
-    return supported;
+    static const HostAPI api = { RHI_DX9, 9, 3 };
+    return api;
 }
 
 //------------------------------------------------------------------------------
@@ -292,6 +247,37 @@ void dx9_InitCaps(const AdapterInfo& adapterInfo)
     }
 
     DX9CheckMultisampleSupport(adapterInfo.index);
+
+    for (uint32 format = 0; format < uint32(TEXTURE_FORMAT_COUNT); ++format)
+    {
+        RenderDeviceCaps::TextureFormatCaps& formatCaps = MutableDeviceCaps::Get().textureFormat[format];
+        switch (format)
+        {
+        case TEXTURE_FORMAT_R8G8B8A8:
+        case TEXTURE_FORMAT_R5G5B5A1:
+        case TEXTURE_FORMAT_R5G6B5:
+        case TEXTURE_FORMAT_R4G4B4A4:
+        case TEXTURE_FORMAT_R8:
+        case TEXTURE_FORMAT_R16:
+        case TEXTURE_FORMAT_RGB10A2:
+        case TEXTURE_FORMAT_DXT1:
+        case TEXTURE_FORMAT_DXT3:
+        case TEXTURE_FORMAT_DXT5:
+        case TEXTURE_FORMAT_R16F:
+        case TEXTURE_FORMAT_RG16F:
+        case TEXTURE_FORMAT_RGBA16F:
+        case TEXTURE_FORMAT_R32F:
+        case TEXTURE_FORMAT_RG32F:
+        case TEXTURE_FORMAT_RGBA32F:
+            formatCaps.fetchable = true;
+            formatCaps.renderable = true;
+            formatCaps.filterable = true;
+            break;
+
+        default:
+            break;
+        }
+    }
 }
 
 const char* dx9_AdapterInfo(const D3DADAPTER_IDENTIFIER9& info)
@@ -511,7 +497,6 @@ void dx9_Initialize(const InitParam& param)
     DispatchDX9.impl_Reset = &dx9_Reset;
     DispatchDX9.impl_HostApi = &dx9_HostApi;
     DispatchDX9.impl_NeedRestoreResources = &dx9_NeedRestoreResources;
-    DispatchDX9.impl_TextureFormatSupported = &dx9_TextureFormatSupported;
     DispatchDX9.impl_SyncCPUGPU = &dx9_SynchronizeCPUGPU;
 
     DispatchDX9.impl_InitContext = &dx9_InitContext;

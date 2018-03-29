@@ -59,6 +59,23 @@ enum Api
     RHI_API_COUNT
 };
 
+struct HostAPI
+{
+    Api api;
+    uint32 majorVersion;
+    uint32 minorVersion;
+
+    bool operator==(const HostAPI& other) const
+    {
+        return (api == other.api) && (majorVersion == other.majorVersion) && (minorVersion == other.minorVersion);
+    }
+
+    bool operator!=(const HostAPI& other) const
+    {
+        return !(*this == other);
+    }
+};
+
 enum class RenderingError : uint32_t
 {
     FailedToCreateDevice,
@@ -391,9 +408,6 @@ enum TextureFormat
     TEXTURE_FORMAT_EAC_R11G11_UNSIGNED,
     TEXTURE_FORMAT_EAC_R11G11_SIGNED,
 
-    TEXTURE_FORMAT_D16,
-    TEXTURE_FORMAT_D24S8,
-
     TEXTURE_FORMAT_R16F,
     TEXTURE_FORMAT_RG16F,
     TEXTURE_FORMAT_RGBA16F,
@@ -405,7 +419,11 @@ enum TextureFormat
 
     TEXTURE_FORMAT_R11G11B10F,
 
+    TEXTURE_FORMAT_D16,
+    TEXTURE_FORMAT_D24S8,
     TEXTURE_FORMAT_D32F,
+
+    TEXTURE_FORMAT_COUNT
 };
 
 const char* TextureFormatToString(TextureFormat format);

@@ -36,6 +36,7 @@ static Dispatch DispatchDX11 = {};
 static ResetParam resetParams;
 static DAVA::Mutex resetParamsSync;
 static DWORD _DX11_RenderThreadId = 0;
+static HostAPI hostApiDX11 = { RHI_DX11, 0, 0 };
 static D3D_FEATURE_LEVEL _DX11_SupportedFeatureLevels[] =
 {
 #if (!RHI_DX11_FORCE_FEATURE_LEVEL_9)
@@ -69,19 +70,32 @@ void dx11_InitCaps()
     switch (dx11.usedFeatureLevel)
     {
     case D3D_FEATURE_LEVEL_9_1:
+        hostApiDX11.majorVersion = 9;
+        hostApiDX11.minorVersion = 1;
     case D3D_FEATURE_LEVEL_9_2:
         MutableDeviceCaps::Get().maxTextureSize = D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+        hostApiDX11.minorVersion = 2;
         break;
+
     case D3D_FEATURE_LEVEL_9_3:
         MutableDeviceCaps::Get().maxTextureSize = D3D_FL9_3_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+        hostApiDX11.majorVersion = 9;
+        hostApiDX11.minorVersion = 3;
         break;
+
     case D3D_FEATURE_LEVEL_10_0:
+        hostApiDX11.majorVersion = 10;
+        hostApiDX11.minorVersion = 0;
     case D3D_FEATURE_LEVEL_10_1:
         MutableDeviceCaps::Get().maxTextureSize = D3D10_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+        hostApiDX11.minorVersion = 1;
         break;
     case D3D_FEATURE_LEVEL_11_0:
+        hostApiDX11.majorVersion = 11;
+        hostApiDX11.minorVersion = 0;
     case D3D_FEATURE_LEVEL_11_1:
         MutableDeviceCaps::Get().maxTextureSize = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+        hostApiDX11.minorVersion = 1;
         break;
     }
 
@@ -105,6 +119,26 @@ void dx11_InitCaps()
         dx11.device->CreateQuery(&desc, &freqQuery);
         MutableDeviceCaps::Get().isPerfQuerySupported = (freqQuery != nullptr);
         DAVA::SafeRelease(freqQuery);
+    }
+
+    //Check texture formats support
+    {
+        UINT formatSupport = 0;
+        DXGI_FORMAT dxgiFormat;
+        for (uint32 format = 0; format < uint32(TEXTURE_FORMAT_COUNT); ++format)
+        {
+            RenderDeviceCaps::TextureFormatCaps& formatCaps = MutableDeviceCaps::Get().textureFormat[format];
+
+            dxgiFormat = DX11_TextureFormat(TextureFormat(format));
+            if (dxgiFormat != DXGI_FORMAT_UNKNOWN)
+            {
+                DX11DeviceCommand(DX11Command::CHECK_FORMAT_SUPPORT, dxgiFormat, &formatSupport);
+
+                formatCaps.fetchable = (formatSupport & D3D11_FORMAT_SUPPORT_SHADER_SAMPLE) != 0;
+                formatCaps.filterable = formatCaps.fetchable;
+                formatCaps.renderable = (formatSupport & D3D11_FORMAT_SUPPORT_RENDER_TARGET) != 0;
+            }
+        }
     }
 
     D3D11_FEATURE_DATA_THREADING threadingData = {};
@@ -564,25 +598,14 @@ void dx11_DetectUWPWorkaround(const InitParam& param)
 /*
  * Main dispatch implemenation
  */
-static Api dx11_HostApi()
+static const HostAPI& dx11_HostApi()
 {
-    return RHI_DX11;
+    return hostApiDX11;
 }
 
 static bool dx11_NeedRestoreResources()
 {
     return false;
-}
-
-static bool dx11_TextureFormatSupported(TextureFormat format, ProgType)
-{
-    UINT formatSupport = 0;
-    DXGI_FORMAT dxgiFormat = DX11_TextureFormat(format);
-
-    if (dxgiFormat != DXGI_FORMAT_UNKNOWN)
-        DX11DeviceCommand(DX11Command::CHECK_FORMAT_SUPPORT, dxgiFormat, &formatSupport);
-
-    return (formatSupport & D3D11_FORMAT_SUPPORT_TEXTURE2D) != 0;
 }
 
 static void dx11_Uninitialize()
@@ -722,7 +745,6 @@ void dx11_Initialize(const InitParam& param)
     DispatchDX11.impl_Uninitialize = &dx11_Uninitialize;
     DispatchDX11.impl_Reset = &dx11_Reset;
     DispatchDX11.impl_HostApi = &dx11_HostApi;
-    DispatchDX11.impl_TextureFormatSupported = &dx11_TextureFormatSupported;
     DispatchDX11.impl_NeedRestoreResources = &dx11_NeedRestoreResources;
     DispatchDX11.impl_InitContext = &dx11_InitContext;
     DispatchDX11.impl_ValidateSurface = &dx11_CheckSurface;

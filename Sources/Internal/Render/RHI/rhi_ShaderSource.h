@@ -79,7 +79,7 @@ public:
     bool Load(Api api, DAVA::File* in);
     bool Save(Api api, DAVA::File* out) const;
 
-    const DAVA::String& GetSourceCode(Api targetApi) const;
+    const DAVA::String& GetSourceCode(const HostAPI& targetApi) const;
     const ShaderPropList& Properties() const;
     const ShaderSamplerList& Samplers() const;
     const VertexLayout& ShaderVertexLayout() const;
@@ -137,7 +137,7 @@ private:
     entry_t
     {
         FastName uid;
-        uint32 api = 0;
+        HostAPI api = { RHI_API_COUNT, 0, 0 };
         uint32 srcHash = 0;
         ShaderSource* src = nullptr;
     };

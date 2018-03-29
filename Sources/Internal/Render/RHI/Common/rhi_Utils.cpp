@@ -316,7 +316,7 @@ uint32 NativeColorRGBA(float red, float green, float blue, float alpha)
 
     DVASSERT((r >= 0) && (r <= 0xff) && (g >= 0) && (g <= 0xff) && (b >= 0) && (b <= 0xff) && (a >= 0) && (a <= 0xff));
 
-    switch (HostApi())
+    switch (HostApi().api)
     {
     case RHI_DX9:
         color = static_cast<uint32>(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF));
@@ -341,7 +341,7 @@ uint32 NativeColorRGBA(uint32 color)
 {
     uint32 c = 0;
 
-    switch (HostApi())
+    switch (HostApi().api)
     {
     case RHI_DX9:
         c = (color & 0xff000000) | ((color & 0x000000ff) << 16) | (color & 0x0000ff00) | ((color & 0x00ff0000) >> 16);

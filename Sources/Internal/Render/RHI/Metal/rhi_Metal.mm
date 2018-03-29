@@ -28,14 +28,15 @@ const uint32 _Metal_DrawableDispatchSemaphoreFrameCount = 4;
 static const DAVA::uint32 METAL_CONSTS_RING_BUFFER_CAPACITY_MULTIPLIER = 4;
 
 InitParam _Metal_InitParam;
+static HostAPI _Metal_HostAPI = { RHI_METAL, 1, 0 };
 
 Dispatch DispatchMetal = { 0 };
 
 //------------------------------------------------------------------------------
 
-static Api metal_HostApi()
+static const HostAPI& metal_HostApi()
 {
-    return RHI_METAL;
+    return _Metal_HostAPI;
 }
 
 //------------------------------------------------------------------------------
@@ -259,7 +260,6 @@ void metal_Initialize(const InitParam& param)
 
     DispatchMetal.impl_Uninitialize = &metal_Uninitialize;
     DispatchMetal.impl_HostApi = &metal_HostApi;
-    DispatchMetal.impl_TextureFormatSupported = &metal_TextureFormatSupported;
     DispatchMetal.impl_NeedRestoreResources = &metal_NeedRestoreResources;
     DispatchMetal.impl_NeedRestoreResources = &metal_NeedRestoreResources;
 

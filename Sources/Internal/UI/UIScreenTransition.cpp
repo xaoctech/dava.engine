@@ -52,8 +52,8 @@ void UIScreenTransition::CreateRenderTargets()
     uint32 width = physicalTargetSize.dx;
     uint32 height = physicalTargetSize.dy;
 
-    Texture* tex1 = Texture::CreateFBO(width, height, rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
-    Texture* tex2 = Texture::CreateFBO(width, height, rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
+    Texture* tex1 = Texture::CreateFBO(width, height, rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R5G6B5].renderable ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
+    Texture* tex2 = Texture::CreateFBO(width, height, rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R5G6B5].renderable ? FORMAT_RGB565 : FORMAT_RGBA8888, true);
 
     renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, static_cast<float32>(width), static_cast<float32>(height), true);
     renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, static_cast<float32>(width), static_cast<float32>(height), true);

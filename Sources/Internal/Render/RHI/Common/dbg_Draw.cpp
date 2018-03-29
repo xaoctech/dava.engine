@@ -587,7 +587,7 @@ DbgDraw::Text2D(int x, int y, uint32 color, const char* format, ...)
         return 0;
 
     // make exact texel-to-pixel match
-    switch (rhi::HostApi())
+    switch (rhi::HostApi().api)
     {
     case rhi::RHI_DX9:
         left += 0.5f;

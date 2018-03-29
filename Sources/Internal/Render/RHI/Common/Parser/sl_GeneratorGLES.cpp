@@ -3,6 +3,7 @@
 #include "sl_Tree.h"
 
 #include "Logger/Logger.h"
+#include "Render/RHI/rhi_Type.h"
 #include "Utils/StringFormat.h"
 
 #include <stdarg.h>
@@ -230,7 +231,8 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
     writer.WriteLine(0, "#version 120");
     writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : enable");
     writer.WriteLine(0, "#extension GL_EXT_gpu_shader4 : enable");
-
+    
+    writer.WriteLine(0, "#define textureGrad texture2DGrad");
     writer.WriteLine(0, "#define highp ");
     writer.WriteLine(0, "#define mediump ");
     writer.WriteLine(0, "#define lowp ");
@@ -240,9 +242,7 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
 #else
 
     writer.WriteLine(0, (version == GLSL_100) ? "#version 130" : "#version 330");
-
     writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : enable");
-    writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
 
     writer.WriteLine(0, "#define highp ");
     writer.WriteLine(0, "#define mediump ");

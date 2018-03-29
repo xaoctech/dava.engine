@@ -310,7 +310,7 @@ void ImGuiDrawFn(ImDrawData* data)
         // Copy data
 
         void* vertexBufferMappedData = rhi::MapVertexBuffer(buffers->vbuffer, 0, vbufferSize);
-        if (rhi::HostApi() == rhi::RHI_DX9)
+        if (rhi::HostApi().api == rhi::RHI_DX9)
         {
             ImDrawVert* vxPtr = reinterpret_cast<ImDrawVert*>(vertexBufferMappedData);
             for (ImDrawVert& vx : cmdList->VtxBuffer)

@@ -70,6 +70,13 @@ struct ResetParam
 
 struct RenderDeviceCaps
 {
+    struct TextureFormatCaps
+    {
+        bool fetchable = false;
+        bool filterable = false;
+        bool renderable = false;
+    };
+
     uint32 maxAnisotropy = 1;
     uint32 maxSamples = 1;
     uint32 maxTextureSize = 2048;
@@ -78,6 +85,8 @@ struct RenderDeviceCaps
     uint32 maxFPS = 60; // DEPRECATED. Will be removed, use DeviceManager::DisplayInfo::maxFps;
 
     char deviceDescription[128];
+
+    TextureFormatCaps textureFormat[TEXTURE_FORMAT_COUNT] = {};
 
     bool is32BitIndicesSupported = false;
     bool isVertexTextureUnitsSupported = false;
@@ -95,7 +104,7 @@ struct RenderDeviceCaps
         memset(deviceDescription, 0, sizeof(deviceDescription));
     }
 
-    bool isAnisotropicFilteringSupported() const
+    bool IsAnisotropicFilteringSupported() const
     {
         return maxAnisotropy > 1;
     }
@@ -127,8 +136,7 @@ bool NeedRestoreResources();
 
 void Present(); // execute all submitted command-buffers & do flip/present
 
-Api HostApi();
-bool TextureFormatSupported(TextureFormat format, ProgType progType = PROG_FRAGMENT);
+const HostAPI& HostApi();
 const RenderDeviceCaps& DeviceCaps();
 
 //Suspend/Resume function should be called only from valid state, if you see state assert, it means that you have some error in your application flow.

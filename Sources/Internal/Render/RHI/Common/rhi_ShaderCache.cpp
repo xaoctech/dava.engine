@@ -59,7 +59,7 @@ const std::vector<uint8>& GetProg(const DAVA::FastName& uid)
     return empty;
 }
 
-void UpdateProg(Api targetApi, ProgType progType, const DAVA::FastName& uid, const char* srcText)
+void UpdateProg(const HostAPI& targetApi, ProgType progType, const DAVA::FastName& uid, const char* srcText)
 {
     ShaderSource src;
 
@@ -73,7 +73,7 @@ void UpdateProg(Api targetApi, ProgType progType, const DAVA::FastName& uid, con
     }
 }
 
-void UpdateProgBinary(Api targetApi, ProgType progType, const DAVA::FastName& uid, const void* bin, unsigned binSize)
+void UpdateProgBinary(const HostAPI& targetApi, ProgType progType, const DAVA::FastName& uid, const void* bin, unsigned binSize)
 {
     std::vector<uint8>* pbin = nullptr;
 

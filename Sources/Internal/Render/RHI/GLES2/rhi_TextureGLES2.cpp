@@ -908,6 +908,17 @@ void InvalidateCache()
 void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
+
+    DVASSERT(DeviceCaps().textureFormat[self->format].filterable ||
+             (self->samplerState.minFilter != TEXFILTER_LINEAR
+              && self->samplerState.magFilter != TEXFILTER_LINEAR
+              && self->samplerState.minFilter != TEXMIPFILTER_LINEAR),
+             DAVA::Format("Texture format %d is non-filterable", self->format).c_str()
+             );
+
+    DVASSERT(DeviceCaps().textureFormat[self->format].fetchable,
+             DAVA::Format("Texture format %d is non-fetchable", self->format).c_str());
+
     bool fragment = base_i != DAVA::InvalidIndex;
     uint32 sampler_i = (base_i == DAVA::InvalidIndex) ? unit_i : base_i + unit_i;
     GLenum target = (self->isCubeMap) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
@@ -944,7 +955,7 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
             GL_CALL(glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, GetComparisonFunctionValue(static_cast<CmpFunc>(sampler->comparisonFunction))));
         }
 
-        if (rhi::DeviceCaps().isAnisotropicFilteringSupported())
+        if (rhi::DeviceCaps().IsAnisotropicFilteringSupported())
         {
             DVASSERT(sampler->anisotropyLevel >= 1);
             DVASSERT(sampler->anisotropyLevel <= rhi::DeviceCaps().maxAnisotropy);
@@ -991,6 +1002,8 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
         for (uint32 i = 0; i != colorCount; ++i)
         {
             TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
+
+            DVASSERT(DeviceCaps().textureFormat[tex->format].renderable, DAVA::Format("Texture format %d is non-renderable", tex->format).c_str());
 
             if (tex->isRenderBuffer)
             {
@@ -1064,7 +1077,7 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
             }
         }
 
-        if (_GLES2_APIVersion >= 3)
+        if (_GLES2_MultipleRenderTargets)
         {
             GLenum b[MAX_RENDER_TARGET_COUNT] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
             GL_CALL(glDrawBuffers(colorCount, b));

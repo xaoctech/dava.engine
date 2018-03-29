@@ -418,6 +418,10 @@ extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 #define GL_TEXTURE_MAX_LEVEL 0x813D
 #endif
 
+#if !defined(GL_MAX_DRAW_BUFFERS)
+#define GL_MAX_DRAW_BUFFERS 0x8824
+#endif
+
 #if !defined(GL_DEBUG_OUTPUT) && defined(GL_DEBUG_OUTPUT_KHR)
     #define GL_DEBUG_OUTPUT GL_DEBUG_OUTPUT_KHR
 #endif
@@ -484,7 +488,7 @@ extern void* _GLES2_Context;
 extern void (*_GLES2_AcquireContext)();
 extern void (*_GLES2_ReleaseContext)();
 
-extern int _GLES2_APIVersion;
+extern rhi::HostAPI _GLES2_API;
 extern int _GLES2_DefaultFrameBuffer_Width;
 extern int _GLES2_DefaultFrameBuffer_Height;
 
@@ -500,6 +504,8 @@ extern bool _GLES2_IsGlDepth24Stencil8Supported;
 extern bool _GLES2_IsGlDepthNvNonLinearSupported;
 extern bool _GLES2_UseUserProvidedIndices;
 extern bool _GLES2_TimeStampQuerySupported;
+extern bool _GLES2_MultipleRenderTargets;
+extern bool _GLES2_EmbeddedProfile;
 extern volatile bool _GLES2_ValidateNeonCalleeSavedRegisters;
 
 bool GetGLTextureFormat(rhi::TextureFormat rhiFormat, GLint* internalFormat, GLint* format, GLenum* type, bool* compressed);

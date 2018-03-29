@@ -265,11 +265,11 @@ Landscape::Landscape()
     renderMode = RENDERMODE_NO_INSTANCING;
     if (rhi::DeviceCaps().isInstancingSupported && rhi::DeviceCaps().isVertexTextureUnitsSupported)
     {
-        if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX) || rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R16G16, rhi::PROG_VERTEX))
+        if (rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R8G8B8A8].fetchable || rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R16G16].fetchable)
         {
             renderMode = RENDERMODE_INSTANCING_MORPHING;
         }
-        else if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX))
+        else if (rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R4G4B4A4].fetchable)
         {
             renderMode = RENDERMODE_INSTANCING;
         }
@@ -701,8 +701,6 @@ void Landscape::CreateTextureData()
 
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX));
-
         heightTextureData.reserve(HighestBitIndex(hmSize));
         normalTextureData.reserve(HighestBitIndex(hmSize));
 
@@ -723,7 +721,6 @@ void Landscape::CreateTextureData()
     else
     {
         DVASSERT(heightTextureFormat == rhi::TEXTURE_FORMAT_R4G4B4A4);
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX));
 
         heightTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
         normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
@@ -2365,17 +2362,18 @@ void Landscape::SelectHeightmapTextureFormat()
 {
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        heightTextureFormat = (rhi::HostApi() == rhi::RHI_METAL) ? rhi::TEXTURE_FORMAT_R16G16 : rhi::TEXTURE_FORMAT_R8G8B8A8;
+        heightTextureFormat = (rhi::HostApi().api == rhi::RHI_METAL) ? rhi::TEXTURE_FORMAT_R16G16 : rhi::TEXTURE_FORMAT_R8G8B8A8;
     }
     else if (renderMode == RENDERMODE_INSTANCING)
     {
         heightTextureFormat = rhi::TEXTURE_FORMAT_R4G4B4A4;
     }
-    
+
+    manualHeightInterpolation = rhi::DeviceCaps().textureFormat[heightTextureFormat].filterable;
+
+//GFX_COMPLETE resolve caps for MacOS
 #if defined(__DAVAENGINE_MACOS__)
     manualHeightInterpolation = true;
-#else
-    manualHeightInterpolation = false;
 #endif
 }
 

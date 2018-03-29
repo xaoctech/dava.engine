@@ -207,7 +207,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     case RuntimeTextures::TEXTURE_REFLECTION:
     {
         PixelFormatDescriptor formatDesc = PixelFormatDescriptor::GetPixelFormatDescriptor(REFLECTION_PIXEL_FORMAT);
-        PixelFormat format = rhi::TextureFormatSupported(formatDesc.format) ? REFLECTION_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
+        PixelFormat format = rhi::DeviceCaps().textureFormat[formatDesc.format].renderable ? REFLECTION_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
 
         descriptor.autoGenMipmaps = false;
         descriptor.isRenderTarget = true;
@@ -230,7 +230,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     case RuntimeTextures::TEXTURE_REFRACTION:
     {
         PixelFormatDescriptor formatDesc = PixelFormatDescriptor::GetPixelFormatDescriptor(REFRACTION_PIXEL_FORMAT);
-        PixelFormat format = rhi::TextureFormatSupported(formatDesc.format) ? REFRACTION_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
+        PixelFormat format = rhi::DeviceCaps().textureFormat[formatDesc.format].renderable ? REFRACTION_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
 
         descriptor.autoGenMipmaps = false;
         descriptor.isRenderTarget = true;
@@ -253,7 +253,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     case RuntimeTextures::TEXTURE_UVPICKING:
     {
         PixelFormatDescriptor formatDesc = PixelFormatDescriptor::GetPixelFormatDescriptor(PICKING_PIXEL_FORMAT);
-        PixelFormat format = rhi::TextureFormatSupported(formatDesc.format) ? PICKING_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
+        PixelFormat format = rhi::DeviceCaps().textureFormat[formatDesc.format].renderable ? PICKING_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
 
         descriptor.autoGenMipmaps = false;
         descriptor.isRenderTarget = true;

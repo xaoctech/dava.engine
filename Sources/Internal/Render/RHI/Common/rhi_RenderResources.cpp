@@ -438,7 +438,6 @@ HDepthStencilState AcquireDepthStencilState(const DepthStencilState::Descriptor&
     return state;
 }
 
-
 void ReleaseDepthStencilState(HDepthStencilState ds, bool scheduleDeletion)
 {
 #if (RHI_ALLOW_RELEASE_DEPTH_STENCIL_STATE)

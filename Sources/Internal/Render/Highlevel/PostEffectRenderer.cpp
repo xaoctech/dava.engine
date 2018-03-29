@@ -727,7 +727,7 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
         float32 cv = invertProjection ? 1.0f : -1.0f;
 
         //GFX_COMPLETE fix projection flip for all back-ends
-        if (rhi::HostApi() == rhi::RHI_METAL)
+        if (rhi::HostApi().api == rhi::RHI_METAL)
         {
             RenderFlow flow = Renderer::GetCurrentRenderFlow();
             bool halfRes = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D);
