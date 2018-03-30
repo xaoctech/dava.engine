@@ -282,47 +282,58 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
     const YamlNode* defsNode = node->Get("defaults");
     if (defsNode)
     {
-        for (VisualScriptPin* inPin : GetDataInputPins())
+        uint32 defsCount = defsNode->GetCount();
+        for (uint32 i = 0; i < defsCount; ++i)
         {
-            const YamlNode* valNode = defsNode->Get(inPin->GetName().c_str());
-            if (valNode)
+            const String pinName = defsNode->GetItemKeyName(i);
+            const YamlNode* valNode = defsNode->Get(i);
+            const Type* checkType = nullptr;
+
+            DVASSERT(valNode);
+
+            if (valNode->GetType() == YamlNode::eType::TYPE_STRING) // Legacy loader (without type check)
             {
-                if (valNode->GetType() == YamlNode::eType::TYPE_STRING) // Legacy loader
+                // valNode is a value
+                // type check impossible
+            }
+            else if (valNode->GetType() == YamlNode::eType::TYPE_ARRAY)
+            {
+                DVASSERT(valNode->GetCount() == 2);
+                const String typeName = valNode->Get(0)->AsString();
+                const ReflectedType* refType = ReflectedTypeDB::GetByPermanentName(typeName);
+                DVASSERT(refType);
+                checkType = refType->GetType();
+                valNode = valNode->Get(1); // valNode now contains value
+                DVASSERT(valNode);
+            }
+
+            VisualScriptPin* inPin = GetPinByName(FastName(pinName));
+            if (inPin)
+            {
+                const Type* inPinType = inPin->GetType();
+                if (inPinType)
                 {
-                    const Type* inPinType = inPin->GetType();
-                    if (inPinType)
+                    if (inPinType->IsReference())
                     {
-                        inPin->SetDefaultValue(valNode->AsAny(inPinType->Decay() ? inPinType->Decay() : inPinType));
+                        inPinType = inPinType->Deref();
                     }
-                }
-                else if (valNode->GetType() == YamlNode::eType::TYPE_ARRAY)
-                {
-                    DVASSERT(valNode->GetCount() == 2);
-
-                    const String typeName = valNode->Get(0)->AsString();
-                    DVASSERT(typeName != "");
-                    const ReflectedType* refType = ReflectedTypeDB::GetByPermanentName(typeName);
-                    DVASSERT(refType);
-                    const Type* type = refType->GetType();
-
-                    const Type* inPinType = inPin->GetType();
-                    if (inPinType)
+                    if (inPinType->IsConst())
                     {
-                        if (inPinType->IsReference())
-                        {
-                            inPinType = inPinType->Deref();
-                        }
-                        if (inPinType->IsConst())
-                        {
-                            inPinType = inPinType->Decay();
-                        }
-
-                        // TODO: check type here or check cast between types
-                        DVASSERT(inPinType == type);
+                        inPinType = inPinType->Decay();
                     }
 
-                    inPin->SetDefaultValue(valNode->Get(1)->AsAny(type));
+                    // TODO: check type here or check cast between types
+                    DVASSERT(checkType == nullptr || inPinType == checkType);
+
+                    inPin->SetDefaultValue(valNode->AsAny(inPinType));
                 }
+            }
+            else
+            {
+                Logger::Error("Pin `%s.%s` not found while setting default value `%s`!",
+                              GetName().c_str(),
+                              pinName.c_str(),
+                              valNode->AsString().c_str());
             }
         }
     }

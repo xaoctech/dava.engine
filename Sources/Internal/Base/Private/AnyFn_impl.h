@@ -13,7 +13,6 @@ public:
     {
     }
 
-    virtual bool IsStatic() const = 0;
     virtual Any Invoke(const AnyFn::AnyFnStorage&, bool castArguments) const = 0;
     virtual Any Invoke(const AnyFn::AnyFnStorage&, bool castArguments, const Any&) const = 0;
     virtual Any Invoke(const AnyFn::AnyFnStorage&, bool castArguments, const Any&, const Any&) const = 0;
@@ -23,6 +22,7 @@ public:
     virtual Any Invoke(const AnyFn::AnyFnStorage&, bool castArguments, const Any&, const Any&, const Any&, const Any&, const Any&, const Any&) const = 0;
 
     virtual AnyFn BindThis(const AnyFn::AnyFnStorage& storage, const void*) const = 0;
+    virtual bool IsStatic() const = 0;
 };
 
 namespace AnyFnDetails
@@ -32,11 +32,6 @@ struct StaticAnyFnInvoker : AnyFnInvoker
 {
     template <bool, typename R, typename... A>
     struct FinalInvoker;
-
-    bool IsStatic() const override
-    {
-        return true;
-    }
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments) const override
     {
@@ -76,6 +71,11 @@ struct StaticAnyFnInvoker : AnyFnInvoker
     AnyFn BindThis(const AnyFn::AnyFnStorage& storage, const void* this_) const override
     {
         DAVA_THROW(Exception, "AnyFn:: 'this' can't be binded to static function");
+    }
+
+    bool IsStatic() const override
+    {
+        return true;
     }
 };
 
@@ -126,11 +126,6 @@ struct ClassAnyFnInvoker : AnyFnInvoker
     template <bool, typename R, typename... A>
     struct FinalInvoker;
 
-    bool IsStatic() const override
-    {
-        return false;
-    }
-
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments) const override
     {
         return FinalInvoker<false, Ret>::Invoke(storage, castArguments, Any());
@@ -174,6 +169,11 @@ struct ClassAnyFnInvoker : AnyFnInvoker
                      {
                          return (p->*fn)(std::forward<Args>(args)...);
                      });
+    }
+
+    bool IsStatic() const override
+    {
+        return false;
     }
 };
 

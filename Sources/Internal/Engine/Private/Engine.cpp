@@ -14,7 +14,7 @@ Engine* engineSingleton = nullptr;
 DAVA_REFLECTION_IMPL(Engine)
 {
     ReflectionRegistrator<Engine>::Begin()
-    .Method("QuitAsync", &Engine::QuitAsync)[M::Params({ "exitCode" })]
+    .Method("QuitAsync", &Engine::QuitAsync)[M::Params("exitCode")]
     .End();
 }
 

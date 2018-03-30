@@ -53,9 +53,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIControl)
     .Field("tag", &UIControl::GetTag, &UIControl::SetTag)[M::DisplayName("Tag")]
     .Field("classes", &UIControl::GetClassesAsString, &UIControl::SetClassesFromString)[M::DisplayName("Style Classes"), M::Bindable()]
     .Field("components", &UIControl::GetComponents, nullptr)[M::HiddenField()]
-    .Method<UIControl* (UIControl::*)(const String&)>("FindByPath", &UIControl::FindByPath)
-    .Method("GetComponentByName", &UIControl::GetComponentByName)
-    .Method("GetOrCreateComponentByName", &UIControl::GetOrCreateComponentByName)
+    .Method<UIControl* (UIControl::*)(const String&)>("FindByPath", &UIControl::FindByPath)[M::Params("controlPath")]
+    .Method("GetComponentByName", &UIControl::GetComponentByName)[M::Params("typeName", "index")]
+    .Method("GetOrCreateComponentByName", &UIControl::GetOrCreateComponentByName)[M::Params("typeName", "index")]
     .End();
 }
 

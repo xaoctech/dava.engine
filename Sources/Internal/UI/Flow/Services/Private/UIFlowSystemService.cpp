@@ -18,11 +18,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowSystemService)
     ReflectionRegistrator<UIFlowSystemService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowSystemService* s) { delete s; })
-    .Method("ActivateState", &UIFlowSystemService::ActivateState)
-    .Method("DeactivateState", &UIFlowSystemService::DeactivateState)
-    .Method("PreloadState", &UIFlowSystemService::PreloadState)
-    .Method("IsStateLoaded", &UIFlowSystemService::IsStateLoaded)
-    .Method("IsStateActive", &UIFlowSystemService::IsStateActive)
+    .Method("ActivateState", &UIFlowSystemService::ActivateState)[M::Params("statePath", "background")]
+    .Method("DeactivateState", &UIFlowSystemService::DeactivateState)[M::Params("statePath", "background")]
+    .Method("PreloadState", &UIFlowSystemService::PreloadState)[M::Params("statePath", "background")]
+    .Method("IsStateLoaded", &UIFlowSystemService::IsStateLoaded)[M::Params("statePath")]
+    .Method("IsStateActive", &UIFlowSystemService::IsStateActive)[M::Params("statePath")]
     .Method("HasTransitions", &UIFlowSystemService::HasTransitions)
     .Method("GetCurrentSingleState", &UIFlowSystemService::GetCurrentSingleState)
     .Method("GetCurrentMultipleStates", &UIFlowSystemService::GetCurrentMultipleStates)

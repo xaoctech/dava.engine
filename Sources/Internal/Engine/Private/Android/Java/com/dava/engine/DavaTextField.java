@@ -1056,6 +1056,11 @@ final class DavaTextField implements TextWatcher,
 
     void renderToTexture()
     {
+        if (nativeTextField == null)
+        {
+            return;
+        }
+
         nativeTextField.setDrawingCacheEnabled(true);
         nativeTextField.buildDrawingCache();
 

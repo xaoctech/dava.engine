@@ -28,9 +28,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SizeMeasuringAlgorithm)
     .Field("value", &SizeMeasuringAlgorithm::GetValue, nullptr)
     .Field("visibilityMargins", &SizeMeasuringAlgorithm::CalculateVisibilityMargins, nullptr)
     .Field("safeAreaInsets", &SizeMeasuringAlgorithm::GetSafeAreaInsets, nullptr)
-    .Method("min", &SizeMeasuringAlgorithm::Min)
-    .Method("max", &SizeMeasuringAlgorithm::Max)
-    .Method("clamp", &SizeMeasuringAlgorithm::Clamp)
+    .Method("min", &SizeMeasuringAlgorithm::Min)[M::Params("a", "b")]
+    .Method("max", &SizeMeasuringAlgorithm::Max)[M::Params("a", "b")]
+    .Method("clamp", &SizeMeasuringAlgorithm::Clamp)[M::Params("val", "a", "b")]
     .End();
 }
 

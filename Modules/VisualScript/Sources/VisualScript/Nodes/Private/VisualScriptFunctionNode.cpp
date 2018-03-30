@@ -60,10 +60,10 @@ void VisualScriptFunctionNode::InitPins()
         SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
-        AnyFn func = type->GetStructure()->GetMethod(functionName);
-        if (func.IsValid())
+        const ReflectedStructure::Method* method = type->GetStructure()->GetMethod(functionName);
+        if (method)
         {
-            function = func;
+            function = method->fn;
 
             if (!function.IsConst() && !function.IsStatic())
             {
@@ -71,10 +71,26 @@ void VisualScriptFunctionNode::InitPins()
                 RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
             }
 
-            uint32 index = 0;
+            const M::Params* paramsMeta = method->meta ? method->meta->GetMeta<M::Params>() : nullptr;
+            int32 index = function.IsStatic() ? 0 : -1; // First argument is pointer to object
             for (auto type : function.GetInvokeParams().argsType)
             {
-                RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName(Format("arg%d", index++)), type, VisualScriptPin::DEFAULT_PARAM));
+                FastName paramName;
+                if (index == -1) // Give name to self-object first argument
+                {
+                    paramName = FastName("self");
+                }
+                else if (paramsMeta && paramsMeta->paramsNames.size() > index) // Give name to argument from meta
+                {
+                    paramName = FastName(paramsMeta->paramsNames[index]);
+                }
+                else // Give name to argument from argument' number
+                {
+                    FastName(Format("arg%d", index));
+                }
+                index++;
+
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, paramName, type, VisualScriptPin::DEFAULT_PARAM));
             }
 
             const Type* returnType = function.GetInvokeParams().retType;

@@ -17,6 +17,7 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Render/Image/Image.h"
+#include "Utils/StringUtils.h"
 
 #include <algorithm>
 
@@ -373,8 +374,56 @@ void VisualScript::Compile()
             VisualScriptPin* inPin = inNode->GetPinByName(connection.in.pinName);
             VisualScriptPin* outPin = outNode->GetPinByName(connection.out.pinName);
 
+            // Legacy support (pin names like `argN`)
+            if (inPin == nullptr)
+            {
+                if (StringUtils::StartsWith(connection.in.pinName.c_str(), "arg"))
+                {
+                    int32 index = atoi(connection.in.pinName.c_str() + 3);
+                    inPin = inNode->GetDataInputPin(index);
+                    if (inPin)
+                    {
+                        Logger::Warning("Find input pin by order %s.%s = %s.%s",
+                                        connection.in.nodeName.c_str(),
+                                        connection.in.pinName.c_str(),
+                                        connection.in.nodeName.c_str(),
+                                        inPin->GetName().c_str());
+                    }
+                }
+            }
+            if (outPin == nullptr)
+            {
+                if (StringUtils::StartsWith(connection.out.pinName.c_str(), "arg"))
+                {
+                    int32 index = atoi(connection.out.pinName.c_str() + 3);
+                    outPin = outNode->GetDataInputPin(index);
+                    if (outPin)
+                    {
+                        Logger::Warning("Find output pin by order %s.%s = %s.%s",
+                                        connection.out.nodeName.c_str(),
+                                        connection.out.pinName.c_str(),
+                                        connection.out.nodeName.c_str(),
+                                        outPin->GetName().c_str());
+                    }
+                }
+            }
+            // End legacy support
+
             if (inPin && outPin)
+            {
                 inPin->Connect(outPin);
+            }
+            else
+            {
+                if (!inPin)
+                {
+                    Logger::Error("Input pin not found: %s.%s", connection.in.nodeName.c_str(), connection.in.pinName.c_str());
+                }
+                if (!outPin)
+                {
+                    Logger::Error("Output pin not found: %s.%s", connection.out.nodeName.c_str(), connection.out.pinName.c_str());
+                }
+            }
         }
     }
 

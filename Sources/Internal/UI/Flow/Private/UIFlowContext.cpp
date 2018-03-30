@@ -12,7 +12,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowContext)
     ReflectionRegistrator<UIFlowContext>::Begin()
     .DestructorByPointer([](UIFlowContext* c) { delete c; })
     .Field("data", &UIFlowContext::GetData, nullptr)
-    .Method<UIFlowService* (UIFlowContext::*)(const FastName&) const>("GetService", &UIFlowContext::GetService)
+    .Method<UIFlowService* (UIFlowContext::*)(const FastName&) const>("GetService", &UIFlowContext::GetService)[M::Params("name")]
     .End();
 }
 

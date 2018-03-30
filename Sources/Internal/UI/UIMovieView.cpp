@@ -39,7 +39,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIMovieView)
     .ConstructorByPointer()
     .DestructorByPointer([](UIMovieView* o) { o->Release(); })
     .Field("state", &UIMovieView::GetState, nullptr)[M::EnumT<eMoviePlayingState>()]
-    .Method<void (UIMovieView::*)(const FilePath& moviePath)>("OpenMovie", &UIMovieView::OpenMovie)
+    .Method<void (UIMovieView::*)(const FilePath& moviePath)>("OpenMovie", &UIMovieView::OpenMovie)[M::Params("moviePath")]
     .Method("Play", &UIMovieView::Play)
     .Method("Stop", &UIMovieView::Stop)
     .Method("Pause", &UIMovieView::Pause)

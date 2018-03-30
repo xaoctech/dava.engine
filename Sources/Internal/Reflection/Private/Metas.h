@@ -308,7 +308,7 @@ public:
     template <typename... Args>
     Params(Args&&... args)
     {
-        paramsNames = { (args)... };
+        paramsNames = { args... };
     }
 
     Vector<String> paramsNames;

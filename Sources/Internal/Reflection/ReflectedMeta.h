@@ -299,11 +299,11 @@ using MutableCollection = Meta<Metas::MutableCollection>;
     Field value must be merged with value from UIControl prototype when serialize.
 */
 using MergeableField = Meta<Metas::MergeableField>;
-}
 
 /**
     \ingroup metas
     Defines parameters' names for reflected method. Usefull for scripting.
  */
 using Params = Meta<Metas::Params>;
+}
 } // namespace DAVA
