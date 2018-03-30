@@ -78,7 +78,7 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     }
     else if (IsServer(this))
     {
-        IServer* server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
+        server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkTimeSystem::OnConnectServer));
         server->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
                                    OnServerReceiveCb(this, &NetworkTimeSystem::OnReceiveServer));
@@ -127,6 +127,8 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
     {
     case TimeSyncHeader::Type::UPTIME:
     {
+        client->EmitFakeReconnect();
+
         netTimeComp->SetFrameFrequencyHz(timeSyncHeader->frequencyHz);
         netTimeComp->SetUptimeMs(timeSyncHeader->uptimeMs);
         netTimeComp->SetFrameId(timeSyncHeader->uptimeMs / NetworkTimeSingleComponent::FrameDurationMs);
@@ -179,7 +181,7 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8*
     }
     else
     {
-        SendUptime(netTimeComp, responder);
+        server->EmitFakeReconnect(responder);
     }
 }
 

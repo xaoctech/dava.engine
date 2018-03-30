@@ -13,6 +13,7 @@
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyCompletionsEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyTableEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyFMODEventEditor.h"
+#include "Modules/ModernPropertiesModule/Editors/ModernPropertyBindingEditor.h"
 
 #include "UI/Properties/PredefinedCompletionsProvider.h"
 #include "UI/Properties/CompletionsProviderForScrollBar.h"
@@ -74,6 +75,18 @@ ModernSectionWidget::ModernSectionWidget(DAVA::ContextAccessor* accessor_, DAVA:
 ModernSectionWidget::~ModernSectionWidget()
 {
     RemoveAllProperties();
+}
+
+ModernPropertyEditor* ModernSectionWidget::FindEditorForProperty(AbstractProperty* property)
+{
+    for (ModernPropertyEditor* e : editors)
+    {
+        if (e->GetProperty() == property)
+        {
+            return e;
+        }
+    }
+    return nullptr;
 }
 
 void ModernSectionWidget::RemoveAllProperties()
@@ -251,7 +264,15 @@ void ModernSectionWidget::AddCustomPropertyEditor(AbstractProperty* section, con
         ValueProperty* property = DynamicTypeCheck<ValueProperty*>(section->GetProperty(i));
         if (property->GetName() == name)
         {
-            ModernPropertyEditor* w = createFn(property);
+            ModernPropertyEditor* w = nullptr;
+            if (property->IsBound())
+            {
+                w = new ModernPropertyBindingEditor(context, property);
+            }
+            else
+            {
+                w = createFn(property);
+            }
             createdProperties.insert(name);
             w->AddToGrid(containerLayout, row, col, colSpan);
             editors.push_back(w);

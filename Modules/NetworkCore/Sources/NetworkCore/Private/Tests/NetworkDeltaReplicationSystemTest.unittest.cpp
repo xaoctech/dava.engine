@@ -108,6 +108,9 @@ public:
     void SubscribeOnReceive(uint8 channel, const OnServerReceiveCb& callback) override{};
     void SubscribeOnTokenConfirmation(const OnServerTokenConfirmationCb& callback) override{};
     void SubscribeOnDisconnect(const OnServerDisconnectCb& callback) override{};
+    void EmitFakeReconnect(const Responder& responder) override
+    {
+    }
 
     UDPResponderMock responder;
 };
@@ -134,6 +137,8 @@ public:
     void SubscribeOnDisconnect(const OnClientDisconnectCb& callback) override{};
     void SubscribeOnError(const OnClientErrorCb& callback) override{};
     void SubscribeOnReceive(uint8 channel, const OnClientReceiveCb& callback) override{};
+
+    void EmitFakeReconnect() override{};
 
     const FastName& GetAuthToken() const override
     {

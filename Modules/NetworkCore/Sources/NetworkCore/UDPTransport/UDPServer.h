@@ -82,6 +82,7 @@ public:
     virtual bool HasResponder(const FastName& token) const = 0;
     virtual void SetValidToken(const FastName& token) = 0;
     virtual void Disconnect(const FastName& token) = 0;
+    virtual void EmitFakeReconnect(const Responder& responder) = 0;
 
     virtual void SubscribeOnConnect(const OnServerConnectCb& callback) = 0;
     virtual void SubscribeOnError(const OnServerErrorCb& callback) = 0;
@@ -104,6 +105,7 @@ public:
     bool HasResponder(const FastName& token) const override;
     void SetValidToken(const FastName& token) override;
     void Disconnect(const FastName& token) override;
+    void EmitFakeReconnect(const Responder& responder) override;
 
     void SubscribeOnConnect(const OnServerConnectCb& callback) override;
     void SubscribeOnError(const OnServerErrorCb& callback) override;

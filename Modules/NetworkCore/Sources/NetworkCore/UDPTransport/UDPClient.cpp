@@ -217,4 +217,10 @@ float32 UDPClient::GetPacketLoss() const
     return DAVA::GetPacketLoss(peer, packetLosses);
 }
 
+void UDPClient::EmitFakeReconnect()
+{
+    disconnectSignal.Emit();
+    connectSignal.Emit();
+}
+
 } // namespace DAVA

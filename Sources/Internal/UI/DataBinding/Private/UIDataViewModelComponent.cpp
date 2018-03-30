@@ -9,10 +9,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIDataViewModelComponent)
 {
-    ReflectionRegistrator<UIDataViewModelComponent>::Begin()
+    ReflectionRegistrator<UIDataViewModelComponent>::Begin()[M::DisplayName("Data View Model"), M::Group("Data")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIDataViewModelComponent* o) { o->Release(); })
-    .Field("viewModel", &UIDataViewModelComponent::GetViewModelFile, &UIDataViewModelComponent::SetViewModelFile)
+    .Field("viewModel", &UIDataViewModelComponent::GetViewModelFile, &UIDataViewModelComponent::SetViewModelFile)[M::DisplayName("View Model")]
     .End();
 }
 

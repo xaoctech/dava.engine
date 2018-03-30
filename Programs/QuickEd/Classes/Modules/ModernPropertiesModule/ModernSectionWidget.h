@@ -34,6 +34,8 @@ public:
     ModernSectionWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, ControlNode* controlNode);
     ~ModernSectionWidget() override;
 
+    ModernPropertyEditor* FindEditorForProperty(AbstractProperty* property);
+
 protected:
     void RemoveAllProperties();
     void RemoveAllPropertiesImpl(QLayout* layout);

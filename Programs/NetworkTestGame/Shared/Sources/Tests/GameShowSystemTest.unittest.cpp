@@ -56,6 +56,9 @@ DAVA_TESTCLASS (GameShowSystemTest)
             void SubscribeOnReceive(uint8 channel, const OnClientReceiveCb& callback) override
             {
             }
+            void EmitFakeReconnect() override
+            {
+            }
 
             const FastName& GetAuthToken() const override
             {

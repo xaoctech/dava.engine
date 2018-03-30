@@ -182,4 +182,5 @@ void NetworkTimeSingleComponent::SetFrameFrequencyHz(float32 value)
     FrameDurationMs = 1000 / value;
     FrameDurationUs = 1000000 / value;
 }
+
 }

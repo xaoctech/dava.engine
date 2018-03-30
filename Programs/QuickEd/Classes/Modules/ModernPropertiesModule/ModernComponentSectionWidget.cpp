@@ -17,6 +17,9 @@
 #include "UI/CommandExecutor.h"
 
 #include <Reflection/ReflectedTypeDB.h>
+#include <UI/DataBinding/UIDataSourceComponent.h>
+#include <UI/DataBinding/UIDataViewModelComponent.h>
+#include <UI/DataBinding/UIDataListComponent.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Layouts/UISizePolicyComponent.h>
 #include <UI/Layouts/UILinearLayoutComponent.h>
@@ -215,6 +218,18 @@ void ModernComponentSectionWidget::AttachComponentPropertiesSection(ComponentPro
         AddFMODEventEditor(section, "touchUpInside", row++, 0, -1);
         AddFMODEventEditor(section, "touchUpOutside", row++, 0, -1);
         AddFMODEventEditor(section, "valueChanged", row++, 0, -1);
+    }
+    else if (componentType == DAVA::Type::Instance<DAVA::UIDataSourceComponent>())
+    {
+        AddPathPropertyEditor(section, "dataFile", { ".model" }, "/UI/", false, row++, 0, -1);
+    }
+    else if (componentType == DAVA::Type::Instance<DAVA::UIDataViewModelComponent>())
+    {
+        AddPathPropertyEditor(section, "viewModel", { ".model" }, "/UI/", false, row++, 0, -1);
+    }
+    else if (componentType == DAVA::Type::Instance<DAVA::UIDataListComponent>())
+    {
+        AddPathPropertyEditor(section, "cellPackage", { ".yaml" }, "/UI/", false, row++, 0, -1);
     }
 
     if (section->GetCount() == 0)

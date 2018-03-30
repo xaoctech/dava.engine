@@ -90,8 +90,12 @@ void NetworkGameModeSystem::OnTokenConfirmationServer(const Responder& responder
     bool isValidToken = validTokens.find(token) != validTokens.end();
 #ifndef NDEBUG
     isValidToken = true;
-    NetworkPlayerID playerID = netGameModeComp->GetNextNetworkPlayerID();
-    netGameModeComp->AddNetworkPlayerID(token, playerID);
+    NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
+    if (playerID == 0)
+    {
+        playerID = netGameModeComp->GetNextNetworkPlayerID();
+        netGameModeComp->AddNetworkPlayerID(token, playerID);
+    }
 #endif
     if (isValidToken)
     {

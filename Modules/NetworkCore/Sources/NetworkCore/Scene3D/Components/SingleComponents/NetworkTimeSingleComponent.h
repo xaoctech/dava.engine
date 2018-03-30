@@ -93,5 +93,6 @@ private:
     UnorderedMap<FastName, uint32> lastClientFrameId;
     UnorderedMap<FastName, int32> clientOutrunning;
     UnorderedMap<FastName, Vector<int32>> clientViewDelayHistory;
+
 };
 }

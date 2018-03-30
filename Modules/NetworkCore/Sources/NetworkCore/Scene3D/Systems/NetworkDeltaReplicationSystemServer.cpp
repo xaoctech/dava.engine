@@ -237,7 +237,6 @@ void NetworkDeltaReplicationSystemServer::OnClientDisconnect(const FastName& tok
     if (server->HasResponder(token))
     {
         Logger::Debug("[NetworkDeltaReplicationSystemServer::OnClientDisconnect] Wipe state token:%s", token.c_str());
-        const Responder& responder = server->GetResponder(token);
         const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
 
         ResponderData& data = responderDataList[playerID];

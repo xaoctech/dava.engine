@@ -338,4 +338,10 @@ void UDPServer::Disconnect(const FastName& token)
     Logger::FrameworkDebug("CLIENT_DISCONNECTED: host:%d port:%d", peer->address.host, peer->address.port);
 }
 
+void UDPServer::EmitFakeReconnect(const Responder& responder)
+{
+    disconnectSignal.Emit(responder.GetToken());
+    connectSignal.Emit(responder);
+}
+
 } // namespace DAVA

@@ -14,7 +14,6 @@ class NetworkEntitiesSingleComponent;
 class NetworkDeltaSingleComponent;
 class NetworkReplicationSingleComponent;
 class NetworkTimeSingleComponent;
-class NetworkClientSingleComponent;
 class SnapshotSingleComponent;
 class NetworkReplicationSystem : public SceneSystem
 {

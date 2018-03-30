@@ -135,6 +135,9 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         void SubscribeOnReceive(DAVA::uint8 channel, const DAVA::OnClientReceiveCb& callback) override
         {
         }
+        void EmitFakeReconnect() override
+        {
+        }
 
         const DAVA::FastName& GetAuthToken() const override
         {
@@ -199,6 +202,9 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         {
         }
         void SubscribeOnDisconnect(const DAVA::OnServerDisconnectCb& callback) override
+        {
+        }
+        void EmitFakeReconnect(const DAVA::Responder& responder) override
         {
         }
     };

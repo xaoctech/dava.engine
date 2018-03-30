@@ -863,15 +863,14 @@ QColor PropertiesModel::GetBoundColor() const
 
 QString PropertiesModel::GetDataBindingIcon(DAVA::int32 bindingUpdateMode) const
 {
-    DAVA::ThemesSettings::eTheme theme = accessor->GetGlobalContext()->GetData<DAVA::ThemesSettings>()->GetTheme();
     switch (bindingUpdateMode)
     {
     case UIDataBindingComponent::MODE_READ:
-        return theme == DAVA::ThemesSettings::Light ? ":/Icons/link-r-classic.png" : ":/Icons/link-r-dark.png";
+        return ":/Icons/link-r.png";
     case UIDataBindingComponent::MODE_WRITE:
-        return theme == DAVA::ThemesSettings::Light ? ":/Icons/link-w-classic.png" : ":/Icons/link-w-dark.png";
+        return ":/Icons/link-w.png";
     case UIDataBindingComponent::MODE_READ_WRITE:
-        return theme == DAVA::ThemesSettings::Light ? ":/Icons/link-rw-classic.png" : ":/Icons/link-rw-dark.png";
+        return ":/Icons/link-rw.png";
     }
     DVASSERT(false);
     return "";

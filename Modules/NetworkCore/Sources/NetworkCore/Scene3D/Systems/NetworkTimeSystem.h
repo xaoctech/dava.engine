@@ -36,6 +36,7 @@ private:
     NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
 
     IClient* client = nullptr;
+    IServer* server = nullptr;
     FpsMeter fpsMeter;
     uint32 realCurrFrameId = 0;
 };

@@ -36,6 +36,8 @@ public:
     virtual uint32 GetPing() const = 0;
     virtual float32 GetPacketLoss() const = 0;
 
+    virtual void EmitFakeReconnect() = 0;
+
     virtual ~IClient(){};
 };
 
@@ -60,6 +62,8 @@ public:
     /* on error return std::numeric_limits<uint32>::max() */
     uint32 GetPing() const override;
     float32 GetPacketLoss() const override;
+
+    void EmitFakeReconnect() override;
 
 private:
     void Connect();

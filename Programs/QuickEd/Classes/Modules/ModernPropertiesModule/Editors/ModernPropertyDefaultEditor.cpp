@@ -4,7 +4,6 @@
 
 #include <QLabel>
 #include <QAction>
-#include <QMenu>
 
 ModernPropertyDefaultEditor::ModernPropertyDefaultEditor(const std::shared_ptr<ModernPropertyContext>& context, ValueProperty* property)
     : ModernPropertyEditor(context, property)
@@ -33,8 +32,5 @@ void ModernPropertyDefaultEditor::OnPropertyChanged()
 
 void ModernPropertyDefaultEditor::OnCustomContextMenuRequested(const QPoint& pos)
 {
-    QMenu menu;
-    menu.addAction(resetAction);
-    menu.addAction(forceOverrideAction);
-    menu.exec(propertyName->mapToGlobal(pos));
+    ShowActionsMenu(propertyName->mapToGlobal(pos));
 }

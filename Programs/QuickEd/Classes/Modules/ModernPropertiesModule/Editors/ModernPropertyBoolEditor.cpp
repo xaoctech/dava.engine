@@ -53,8 +53,5 @@ void ModernPropertyBoolEditor::OnCheckBoxToggled(bool checked)
 
 void ModernPropertyBoolEditor::OnCustomContextMenuRequested(const QPoint& pos)
 {
-    QMenu menu;
-    menu.addAction(resetAction);
-    menu.addAction(forceOverrideAction);
-    menu.exec(checkBox->mapToGlobal(pos));
+    ShowActionsMenu(checkBox->mapToGlobal(pos));
 }

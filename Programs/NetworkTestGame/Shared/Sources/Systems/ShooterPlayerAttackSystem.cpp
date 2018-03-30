@@ -267,10 +267,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
             NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
             DVASSERT(timeSingleComponent != nullptr);
             const uint32 frameId = timeSingleComponent->GetFrameId();
-
-            Entity* player = nullptr;
-            uint32 damage = 0;
-
+            
             physx::PxRaycastHit hit;
             bool collision = false;
 
@@ -314,16 +311,18 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
                 Component* bodyComponent = static_cast<Component*>(hit.actor->userData);
                 if (bodyComponent->GetType()->Is<DynamicBodyComponent>())
                 {
-                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit.shape);
-                    if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
+                    Entity* entity = bodyComponent->GetEntity();
+                    DVASSERT(entity);
+
+                    HealthComponent* healthComponent = entity->GetComponent<HealthComponent>();
+                    if (healthComponent)
                     {
-                        player = bodyComponent->GetEntity();
-                        damage = GetBodyPartDamage(shapeComponent->GetJointName());
-
-                        HealthComponent* healthComponent = player->GetComponent<HealthComponent>();
-                        DVASSERT(healthComponent);
-
-                        healthComponent->DecHealth(damage, frameId);
+                        CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit.shape);
+                        if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
+                        {                            
+                            uint32 damage = GetBodyPartDamage(shapeComponent->GetJointName());
+                            healthComponent->DecHealth(damage, frameId);
+                        }
                     }
                 }
             }
