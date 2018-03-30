@@ -86,7 +86,8 @@ TextureGLES2_t::TextureGLES2_t()
 bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
 {
     DVASSERT(desc.levelCount);
-
+    DVASSERT(!desc.isRenderTarget || DeviceCaps().textureFormat[desc.format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(desc.format)).c_str());
+    
     bool success = false;
     UpdateCreationDesc(desc);
 
@@ -913,11 +914,11 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
              (self->samplerState.minFilter != TEXFILTER_LINEAR
               && self->samplerState.magFilter != TEXFILTER_LINEAR
               && self->samplerState.minFilter != TEXMIPFILTER_LINEAR),
-             DAVA::Format("Texture format %d is non-filterable", self->format).c_str()
+             DAVA::Format("Texture format '%s' is non-filterable", TextureFormatToString(self->format)).c_str()
              );
 
     DVASSERT(DeviceCaps().textureFormat[self->format].fetchable,
-             DAVA::Format("Texture format %d is non-fetchable", self->format).c_str());
+             DAVA::Format("Texture format '%s' is non-fetchable", TextureFormatToString(self->format)).c_str());
 
     bool fragment = base_i != DAVA::InvalidIndex;
     uint32 sampler_i = (base_i == DAVA::InvalidIndex) ? unit_i : base_i + unit_i;
@@ -1003,7 +1004,7 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
         {
             TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
 
-            DVASSERT(DeviceCaps().textureFormat[tex->format].renderable, DAVA::Format("Texture format %d is non-renderable", tex->format).c_str());
+            DVASSERT(DeviceCaps().textureFormat[tex->format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(tex->format)).c_str());
 
             if (tex->isRenderBuffer)
             {

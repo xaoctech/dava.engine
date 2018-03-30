@@ -14,13 +14,14 @@ namespace rhi
 {
 //==============================================================================
 
-struct
-SamplerStateMetal_t
+struct SamplerStateMetal_t
 {
     uint32 fp_count;
     id<MTLSamplerState> fp_uid[MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT];
     uint32 vp_count;
     id<MTLSamplerState> vp_uid[MAX_VERTEX_TEXTURE_SAMPLER_COUNT];
+    
+    SamplerState::Descriptor creationDesc;
 };
 
 typedef ResourcePool<SamplerStateMetal_t, RESOURCE_SAMPLER_STATE, SamplerState::Descriptor, false> SamplerStateMetalPool;
@@ -135,6 +136,7 @@ metal_SamplerState_Create(const SamplerState::Descriptor& desc)
 {
     Handle handle = SamplerStateMetalPool::Alloc();
     SamplerStateMetal_t* state = SamplerStateMetalPool::Get(handle);
+    state->creationDesc = desc;
 
     state->fp_count = desc.fragmentSamplerCount;
     for (unsigned s = 0; s != desc.fragmentSamplerCount; ++s)
@@ -187,6 +189,20 @@ void SetToRHI(Handle hstate, id<MTLRenderCommandEncoder> ce)
 
     for (unsigned s = 0; s != state->vp_count; ++s)
         [ce setVertexSamplerState:state->vp_uid[s] atIndex:s];
+}
+
+const SamplerState::Descriptor::Sampler& GetFragmentSampler(Handle ss, uint32 index)
+{
+    SamplerStateMetal_t* state = SamplerStateMetalPool::Get(ss);
+    DVASSERT(index < state->creationDesc.fragmentSamplerCount);
+    return state->creationDesc.fragmentSampler[index];
+}
+
+const SamplerState::Descriptor::Sampler& GetVertexSampler(Handle ss, uint32 index)
+{
+    SamplerStateMetal_t* state = SamplerStateMetalPool::Get(ss);
+    DVASSERT(index < state->creationDesc.vertexSamplerCount);
+    return state->creationDesc.vertexSampler[index];
 }
 }
 

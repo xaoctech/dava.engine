@@ -82,7 +82,7 @@ void PixelFormatDescriptor::SetHardwareSupportedFormats()
         PixelFormatDescriptor& descr = entry.second;
         if (descr.format != TEXTURE_FORMAT_INVALID)
         {
-            descr.isHardwareSupported = rhi::DeviceCaps().textureFormat[descr.format].renderable;
+            descr.isHardwareSupported = rhi::DeviceCaps().textureFormat[descr.format].fetchable;
         }
     }
 }

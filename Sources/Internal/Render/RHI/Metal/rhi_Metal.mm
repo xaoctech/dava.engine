@@ -41,47 +41,81 @@ static const HostAPI& metal_HostApi()
 
 //------------------------------------------------------------------------------
 
-static bool metal_TextureFormatSupported(TextureFormat format, ProgType)
+static void metal_CheckTextureFormats()
 {
-    bool supported = false;
-
-    switch (format)
+    
+    for(uint32 format = 0; format < uint32(TEXTURE_FORMAT_COUNT); ++format)
     {
-    case TEXTURE_FORMAT_R8G8B8A8:
-    case TEXTURE_FORMAT_R5G5B5A1:
-    case TEXTURE_FORMAT_R5G6B5:
-    case TEXTURE_FORMAT_R4G4B4A4:
-    case TEXTURE_FORMAT_R8:
-    case TEXTURE_FORMAT_RGB10A2:
-
-    case TEXTURE_FORMAT_PVRTC_4BPP_RGBA:
-    case TEXTURE_FORMAT_PVRTC_2BPP_RGBA:
-
-    case TEXTURE_FORMAT_ETC2_R8G8B8:
-    case TEXTURE_FORMAT_ETC2_R8G8B8A1:
-    case TEXTURE_FORMAT_EAC_R11_UNSIGNED:
-    case TEXTURE_FORMAT_EAC_R11_SIGNED:
-
-    case TEXTURE_FORMAT_D24S8:
-    case TEXTURE_FORMAT_D16:
-    case TEXTURE_FORMAT_D32F:
-
-    case TEXTURE_FORMAT_R16F:
-    case TEXTURE_FORMAT_R32F:
-    case TEXTURE_FORMAT_RG16F:
-    case TEXTURE_FORMAT_RG32F:
-    case TEXTURE_FORMAT_RGBA16F:
-    case TEXTURE_FORMAT_RGBA32F:
-    case TEXTURE_FORMAT_R11G11B10F:
-
-        supported = true;
-        break;
-
-    default:
-        break;
+        RenderDeviceCaps::TextureFormatCaps& formatCaps = MutableDeviceCaps::Get().textureFormat[format];
+        switch (format)
+        {
+            case TEXTURE_FORMAT_R8G8B8A8:
+            case TEXTURE_FORMAT_R5G5B5A1:
+            case TEXTURE_FORMAT_R5G6B5:
+            case TEXTURE_FORMAT_R4G4B4A4:
+            case TEXTURE_FORMAT_RGB10A2:
+            case TEXTURE_FORMAT_R8:
+            case TEXTURE_FORMAT_R16:
+            case TEXTURE_FORMAT_R16G16:
+            case TEXTURE_FORMAT_A16R16G16B16:
+                formatCaps.fetchable = true;
+                formatCaps.filterable = true;
+                formatCaps.renderable = true;
+                break;
+                
+                //float formats
+            case TEXTURE_FORMAT_R16F:
+            case TEXTURE_FORMAT_RG16F:
+            case TEXTURE_FORMAT_RGBA16F:
+                formatCaps.fetchable = true;
+                formatCaps.filterable = true;
+                formatCaps.renderable = true;
+                break;
+                
+            case TEXTURE_FORMAT_R32F:
+            case TEXTURE_FORMAT_RG32F:
+            case TEXTURE_FORMAT_RGBA32F:
+                formatCaps.fetchable = true;
+                formatCaps.renderable = true;
+                break;
+                
+            case TEXTURE_FORMAT_R11G11B10F:
+                formatCaps.fetchable = true;
+                formatCaps.filterable = true;
+                formatCaps.renderable = true;
+                break;
+                
+                //compressed formats
+            case TEXTURE_FORMAT_PVRTC_4BPP_RGBA:
+            case TEXTURE_FORMAT_PVRTC_2BPP_RGBA:
+                
+            case TEXTURE_FORMAT_ETC1:
+            case TEXTURE_FORMAT_ETC2_R8G8B8:
+            case TEXTURE_FORMAT_ETC2_R8G8B8A8:
+            case TEXTURE_FORMAT_ETC2_R8G8B8A1:
+                
+            case TEXTURE_FORMAT_EAC_R11_UNSIGNED:
+            case TEXTURE_FORMAT_EAC_R11_SIGNED:
+            case TEXTURE_FORMAT_EAC_R11G11_UNSIGNED:
+            case TEXTURE_FORMAT_EAC_R11G11_SIGNED:
+                formatCaps.fetchable = true;
+                formatCaps.filterable = true;
+                break;
+                
+                //depth
+            case TEXTURE_FORMAT_D24S8: //aliased to D32F_S8
+            case TEXTURE_FORMAT_D32F:
+                formatCaps.fetchable = true;
+                formatCaps.renderable = true;
+                break;
+                
+            default:
+                formatCaps.fetchable = false;
+                formatCaps.filterable = false;
+                formatCaps.renderable = false;
+                break;
+        }
     }
-
-    return supported;
 }
 
 //------------------------------------------------------------------------------
@@ -217,6 +251,8 @@ void Metal_InitContext()
 
     MutableDeviceCaps::Get().maxTextureSize = maxTextureSize;
     MutableDeviceCaps::Get().isReverseDepthSupported = true;
+
+    metal_CheckTextureFormats();
 }
 
 bool Metal_CheckSurface()

@@ -51,6 +51,7 @@ public:
     Handle cur_ib;
     unsigned cur_vstream_count;
     Handle cur_vb[MAX_VERTEX_STREAM_COUNT];
+    Handle cur_ss;
     uint32 cur_stride;
     uint32 sampleCount;
     uint32 targetLevel;
@@ -292,6 +293,12 @@ void CommandBufferMetal_t::Execute()
             Handle tex = static_cast<const SWCommand_SetVertexTexture*>(cmd)->tex;
             unsigned unitIndex = static_cast<const SWCommand_SetVertexTexture*>(cmd)->unitIndex;
 
+            const SamplerState::Descriptor::Sampler& sampler = SamplerStateMetal::GetVertexSampler(cur_ss, unitIndex);
+            DVASSERT(DeviceCaps().textureFormat[TextureMetal::GetFormat(tex)].filterable ||
+                     (sampler.minFilter != TEXFILTER_LINEAR && sampler.magFilter != TEXFILTER_LINEAR && sampler.minFilter != TEXMIPFILTER_LINEAR),
+                     DAVA::Format("Texture format '%s' is non-filterable", TextureFormatToString(TextureMetal::GetFormat(tex))).c_str()
+                     );
+            
             TextureMetal::SetToRHIVertex(tex, unitIndex, encoder);
             StatSet::IncStat(stat_SET_TEX, 1);
         }
@@ -337,6 +344,13 @@ void CommandBufferMetal_t::Execute()
             Handle tex = static_cast<const SWCommand_SetFragmentTexture*>(cmd)->tex;
             unsigned unitIndex = static_cast<const SWCommand_SetFragmentTexture*>(cmd)->unitIndex;
 
+            const SamplerState::Descriptor::Sampler& sampler = SamplerStateMetal::GetFragmentSampler(cur_ss, unitIndex);
+            TextureFormat texFormat = TextureMetal::GetFormat(tex);
+            DVASSERT(DeviceCaps().textureFormat[texFormat].filterable ||
+                     (sampler.minFilter != TEXFILTER_LINEAR && sampler.magFilter != TEXFILTER_LINEAR && sampler.minFilter != TEXMIPFILTER_LINEAR),
+                     DAVA::Format("Texture format '%s' is non-filterable", TextureFormatToString(texFormat)).c_str()
+                     );
+            
             TextureMetal::SetToRHIFragment(tex, unitIndex, encoder);
             StatSet::IncStat(stat_SET_TEX, 1);
         }
@@ -350,7 +364,8 @@ void CommandBufferMetal_t::Execute()
 
         case CMD_SET_SAMPLER_STATE:
         {
-            SamplerStateMetal::SetToRHI(static_cast<const SWCommand_SetSamplerState*>(cmd)->samplerState, encoder);
+            cur_ss = static_cast<const SWCommand_SetSamplerState*>(cmd)->samplerState;
+            SamplerStateMetal::SetToRHI(cur_ss, encoder);
             StatSet::IncStat(stat_SET_SS, 1);
         }
         break;
@@ -786,6 +801,7 @@ bool RenderPassMetal_t::Initialize()
         cb->stencil_used = stencil_used;
         cb->cur_ib = InvalidHandle;
         cb->cur_vstream_count = 0;
+        cb->cur_ss = InvalidHandle;
         cb->sampleCount = rhi::TextureSampleCountForAAType(cfg.antialiasingType);
         for (unsigned s = 0; s != countof(cb->cur_vb); ++s)
             cb->cur_vb[s] = InvalidHandle;
@@ -925,6 +941,7 @@ static Handle metal_RenderPass_Allocate(const RenderPassConfig& passConf, uint32
         cb->stencil_used = stencil_used;
         cb->cur_ib = InvalidHandle;
         cb->cur_vstream_count = 0;
+        cb->cur_ss = InvalidHandle;
         cb->sampleCount = rhi::TextureSampleCountForAAType(passConf.antialiasingType);
         for (unsigned s = 0; s != countof(cb->cur_vb); ++s)
             cb->cur_vb[s] = InvalidHandle;
@@ -1378,7 +1395,7 @@ static void
 metal_CommandBuffer_SetFragmentTexture(Handle cmdBuf, uint32 unitIndex, Handle tex)
 {
     CommandBufferMetal_t* cb = CommandBufferPoolMetal::Get(cmdBuf);
-
+    
 #if RHI_METAL__USE_NATIVE_COMMAND_BUFFERS
     TextureMetal::SetToRHIFragment(tex, unitIndex, cb->encoder);
     StatSet::IncStat(stat_SET_TEX, 1);

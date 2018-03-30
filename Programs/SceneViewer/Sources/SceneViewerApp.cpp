@@ -86,7 +86,7 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
 
     const char* api = "";
 
-    switch (rhi::HostApi())
+    switch (rhi::HostApi().api)
     {
     case rhi::RHI_GLES2:
         api = "GLES2";
@@ -208,7 +208,7 @@ void SceneViewerApp::EndFrame()
     const int x0 = 10;
     const int y0 = 40;
 
-    switch (rhi::HostApi())
+    switch (rhi::HostApi().api)
     {
     case rhi::RHI_DX9:
         backend = "DX9";

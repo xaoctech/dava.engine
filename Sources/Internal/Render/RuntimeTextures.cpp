@@ -317,8 +317,8 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
-        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_LINEAR;
-        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_LINEAR;
+        samplerDescriptors[semantic].magFilter = rhi::DeviceCaps().textureFormat[textureFormat].filterable ? rhi::TEXFILTER_LINEAR : rhi::TEXFILTER_NEAREST;
+        samplerDescriptors[semantic].minFilter = rhi::DeviceCaps().textureFormat[textureFormat].filterable ? rhi::TEXFILTER_LINEAR : rhi::TEXFILTER_NEAREST;
         samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
         samplerDescriptors[semantic].anisotropyLevel = 1;
         samplerDescriptors[semantic].comparisonEnabled = true;
