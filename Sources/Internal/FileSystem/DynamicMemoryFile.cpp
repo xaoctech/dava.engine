@@ -113,9 +113,6 @@ uint32 DynamicMemoryFile::Read(void* pointerToData, uint32 dataSize)
     {
         isEof = true;
         realReadSize = size - static_cast<uint32>(currentPtr);
-
-        Logger::Error("memory_file read failed: %d(expected: %u) bytes from file: %s errno: %s",
-                      realReadSize, dataSize, filename.GetStringValue().c_str(), std::strerror(ENOBUFS));
     }
     if (realReadSize > 0)
     {
