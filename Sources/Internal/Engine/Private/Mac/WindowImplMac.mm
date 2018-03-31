@@ -44,6 +44,11 @@ bool WindowImpl::Create(float32 width, float32 height)
     return bridge->CreateWindow(x, y, width, height);
 }
 
+void WindowImpl::Activate()
+{
+    uiDispatcher.PostEvent(UIDispatcherEvent::CreateActivateEvent());
+}
+
 void WindowImpl::Resize(float32 width, float32 height)
 {
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
@@ -118,6 +123,9 @@ void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
     {
     case UIDispatcherEvent::RESIZE_WINDOW:
         bridge->ResizeWindow(e.resizeEvent.width, e.resizeEvent.height);
+        break;
+    case UIDispatcherEvent::ACTIVATE_WINDOW:
+        bridge->ActivateWindow();
         break;
     case UIDispatcherEvent::CLOSE_WINDOW:
         bridge->CloseWindow();

@@ -11,6 +11,7 @@
 
 #include "Logger/Logger.h"
 #include "Time/SystemTimer.h"
+#include "Utils/NSStringUtils.h"
 
 #import <UIKit/UIKit.h>
 
@@ -177,6 +178,13 @@ BOOL CoreNativeBridge::ApplicationDidFinishLaunchingWithOptions(UIApplication* a
 {
     Logger::FrameworkDebug("******** applicationDidFinishLaunchingWithOptions");
 
+    NSURL* launchUrl = static_cast<NSURL*>(launchOptions[UIApplicationLaunchOptionsURLKey]);
+    if (launchUrl != nil)
+    {
+        CollectActivationFilenames(launchUrl);
+        ignoreOpenUrlJustAfterStartup = true;
+    }
+
     engineBackend->OnGameLoopStarted();
 
     WindowImpl* primaryWindowImpl = EngineBackend::GetWindowImpl(engineBackend->GetPrimaryWindow());
@@ -186,6 +194,27 @@ BOOL CoreNativeBridge::ApplicationDidFinishLaunchingWithOptions(UIApplication* a
     [objcInterop enableGameControllerObserver:YES];
 
     return NotifyListeners(ON_DID_FINISH_LAUNCHING, app, launchOptions);
+}
+
+BOOL CoreNativeBridge::ApplicationOpenUrl(NSURL* url)
+{
+    if (!ignoreOpenUrlJustAfterStartup && CollectActivationFilenames(url))
+    {
+        engineBackend->OnFileActivated();
+        return YES;
+    }
+    ignoreOpenUrlJustAfterStartup = false;
+    return NO;
+}
+
+bool CoreNativeBridge::CollectActivationFilenames(NSURL* url)
+{
+    if ([[url scheme] isEqualToString:@"file"])
+    {
+        engineBackend->AddActivationFilename(StringFromNSString([url path]));
+        return true;
+    }
+    return false;
 }
 
 void CoreNativeBridge::ApplicationDidBecomeActive(UIApplication* app)
@@ -291,7 +320,9 @@ void CoreNativeBridge::HandleActionWithIdentifier(UIApplication* app, NSString* 
 
 BOOL CoreNativeBridge::OpenURL(UIApplication* app, NSURL* url, NSString* sourceApplication, id annotation)
 {
-    return NotifyListeners(ON_OPEN_URL, app, url, sourceApplication, annotation);
+    BOOL r = ApplicationOpenUrl(url);
+    r |= NotifyListeners(ON_OPEN_URL, app, url, sourceApplication, annotation);
+    return r;
 }
 
 BOOL CoreNativeBridge::ContinueUserActivity(UIApplication* app, NSUserActivity* userActivity, id restorationHandler)

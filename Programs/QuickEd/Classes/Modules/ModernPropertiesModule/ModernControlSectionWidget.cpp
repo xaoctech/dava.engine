@@ -18,8 +18,9 @@
 #include <QMoveEvent>
 #include <QStyle>
 
-ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, ControlNode* controlNode_, ControlPropertiesSection* section)
+ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, ControlNode* controlNode_, ControlPropertiesSection* section_)
     : ModernSectionWidget(accessor_, ui_, controlNode_)
+    , section(section_)
 {
     using namespace DAVA;
 
@@ -32,12 +33,28 @@ ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* ac
     headerCaption->style()->unpolish(headerCaption);
     headerCaption->style()->polish(headerCaption);
 
+    RecreateProperties();
+}
+
+ModernControlSectionWidget::~ModernControlSectionWidget()
+{
+}
+
+ControlPropertiesSection* ModernControlSectionWidget::GetSection() const
+{
+    return section;
+}
+
+void ModernControlSectionWidget::RecreateProperties()
+{
+    RemoveAllProperties();
+
     int row = 0;
     if (section->GetName() == "UIControl")
     {
         header->hide();
 
-        RootProperty* root = controlNode_->GetRootProperty();
+        RootProperty* root = controlNode->GetRootProperty();
         AddPropertyEditor(root->GetNameProperty(), row++, 0);
         if (root->GetControlNode()->GetPrototype())
         {
@@ -51,10 +68,10 @@ ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* ac
         AddPropertyEditor(section, "scale", row++, 0, -1);
         AddPropertyEditor(section, "pivot", row++, 0, -1);
         AddPropertyEditor(section, "angle", row++, 0, -1);
-        AddPropertyEditor(section, "visible", row, 0, -1);
-        AddPropertyEditor(section, "enabled", row++, 1, -1);
-        AddPropertyEditor(section, "selected", row, 0, -1);
-        AddPropertyEditor(section, "noInput", row++, 1, -1);
+        AddPropertyEditor(section, "visible", row++, 0, -1);
+        AddPropertyEditor(section, "enabled", row++, 0, -1);
+        AddPropertyEditor(section, "selected", row++, 0, -1);
+        AddPropertyEditor(section, "noInput", row++, 0, -1);
         AddPropertyEditor(section, "exclusiveInput", row++, 0, -1);
         AddPropertyEditor(section, "wheelSensitivity", row++, 0, -1);
         AddPropertyEditor(section, "tag", row++, 0, -1);
@@ -64,10 +81,15 @@ ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* ac
     {
         AddPathPropertyEditor(section, "effectPath", { ".sc2" }, "/3d/", false, row++, 0, -1);
     }
+    else if (section->GetName() == "UITextField")
+    {
+        AddPropertyEditor(section, "text", row++, 0, -1);
+        AddPathPropertyEditor(section, "fontPath", { ".ttf", ".otf", ".fnt", ".fntconf" }, "/Fonts/", true, row++, 0, -1);
+        AddPropertyEditor(section, "fontSize", row++, 0, -1);
+        AddPropertyEditor(section, "font", row++, 0, -1);
+    }
 
     AddRestEditorsForSection(section, row);
-}
 
-ModernControlSectionWidget::~ModernControlSectionWidget()
-{
+    container->show();
 }

@@ -2,6 +2,7 @@
 
 #include <DocDirSetup/DocDirSetup.h>
 
+#include <Engine/AppInstanceMonitor.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineSettings.h>
 
@@ -64,6 +65,7 @@
 #include "Tests/UIJoypadSystemTest.h"
 #include "Tests/TexturesLoadingTest.h"
 #include "Tests/OnLowMemorySignalTest.h"
+#include "Tests/FileActivationTest.h"
 #include "Tests/FileWatcherTest.h"
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include "Tests/PhysicsTest.h"
@@ -98,6 +100,16 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     using namespace DAVA;
     using namespace Net;
 
+    // Instantiate Engine as CommandLineParser depends on it
+    Engine e;
+
+    AppInstanceMonitor* appInstanceMonitor = GetAppInstanceMonitor("{DD67F14C-3926-4BEE-BA40-463EE105C7C8}");
+    appInstanceMonitor->PassActivationFilename(CommandLineParser::GetCommandParam("--file"));
+    if (appInstanceMonitor->IsAnotherInstanceRunning())
+    {
+        return 0;
+    }
+
     Assert::SetupDefaultHandlers();
 
     KeyedArchive* appOptions = new KeyedArchive();
@@ -127,7 +139,7 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
     appOptions->SetBool("init_imgui", true);
 
     eEngineRunMode runmode = eEngineRunMode::GUI_STANDALONE;
-    if (cmdline.size() > 1 && cmdline[1] == "--console")
+    if (CommandLineParser::CommandIsFound("--console"))
     {
         runmode = eEngineRunMode::CONSOLE_MODE;
     }
@@ -141,7 +153,6 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
         "PackManager"
     };
 
-    Engine e;
     e.Init(runmode, modules, appOptions);
 
     CheckDeviceInfoValid();
@@ -157,9 +168,7 @@ TestBed::TestBed(Engine& engine)
 {
     using namespace DAVA;
 
-#if defined(__DAVAENGINE_QT__)
-// TODO: plarform defines
-#elif defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_MACOS__)
     RegisterMacApplicationListener();
 #elif defined(__DAVAENGINE_IPHONE__)
     RegisterIosApplicationListener();
@@ -223,6 +232,16 @@ void TestBed::OnGameLoopStarted()
 
     UIYamlLoader::LoadFonts("~res:/TestBed/UI/Fonts/fonts.yaml");
 
+    startupActivationFilenames = engine.GetStartupActivationFilenames();
+    if (!startupActivationFilenames.empty())
+    {
+        Logger::Debug("Testbed was started with files:");
+        for (const String& filename : startupActivationFilenames)
+        {
+            Logger::Debug("      %s", filename.c_str());
+        }
+    }
+
     InitNetwork();
     RunOnlyThisTest();
 
@@ -247,9 +266,7 @@ void TestBed::OnGameLoopStopped()
     screens.clear();
     SafeRelease(testListScreen);
 
-#if defined(__DAVAENGINE_QT__)
-// TODO: plarform defines
-#elif defined(__DAVAENGINE_WIN_UAP__)
+#if defined(__DAVAENGINE_WIN_UAP__)
     PlatformApi::Win10::UnregisterXamlApplicationListener(nativeDelegate.get());
 #endif
 }
@@ -404,6 +421,7 @@ void TestBed::RegisterTests()
     new FileWatcherTest(*this);
     new OnLowMemorySignalTest(*this);
     new CoreV2Test(*this);
+    new FileActivationTest(*this);
     new DeviceManagerTest(*this);
     new DeviceInfoTest(*this);
     new DlcTest(*this);

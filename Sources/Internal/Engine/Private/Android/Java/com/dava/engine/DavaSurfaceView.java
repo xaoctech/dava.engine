@@ -54,7 +54,7 @@ final class DavaSurfaceView extends SurfaceView
     {
         super(context);
         getHolder().addCallback(this);
-        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        getHolder().setFormat(PixelFormat.OPAQUE);
         
         windowImplPointer = windowImplPtr;
 

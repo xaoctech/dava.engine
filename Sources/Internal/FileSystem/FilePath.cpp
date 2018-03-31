@@ -526,22 +526,42 @@ String FilePath::GetFilename() const
 
 String FilePath::GetFilename(const String& pathname)
 {
-    String::size_type dotpos = pathname.rfind(String("/"));
-    if (dotpos == String::npos)
+    String::size_type slashpos = pathname.rfind(String("/"));
+    if (slashpos == String::npos)
         return pathname;
 
-    return pathname.substr(dotpos + 1);
+    return pathname.substr(slashpos + 1);
 }
 
 String FilePath::GetBasename() const
 {
-    const String filename = GetFilename();
+    if (IsDirectoryPathname())
+    {
+        return GetLastDirectoryName();
+    }
+    else
+    {
+        String filename = GetFilename();
+        const String::size_type dotpos = filename.rfind(String("."));
+        if (String::npos != dotpos)
+        {
+            filename = filename.substr(0, dotpos);
+        }
 
-    const String::size_type dotpos = filename.rfind(String("."));
-    if (dotpos == String::npos)
         return filename;
+    }
+}
 
-    return filename.substr(0, dotpos);
+DAVA::String FilePath::GetName() const
+{
+    if (IsDirectoryPathname())
+    {
+        return GetLastDirectoryName();
+    }
+    else
+    {
+        return GetFilename();
+    }
 }
 
 String FilePath::GetExtension() const

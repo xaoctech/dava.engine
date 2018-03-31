@@ -1,4 +1,4 @@
-#import "Engine/Private/OsX/DVApplication.h"
+#import "Engine/Private/Mac/DVApplication.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 

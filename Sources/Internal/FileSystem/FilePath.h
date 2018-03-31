@@ -100,13 +100,23 @@ public:
         \brief Function to retrieve filename from pathname. Filename for path "/Users/Folder/image.png" is "image.png".
         \returns filename value
         */
-    String GetFilename() const;
+    DAVA_DEPRECATED(String GetFilename() const);
 
     /**
-        \brief Function to retrieve basename from pathname. Basename for path "/Users/Folder/image.png" is "image".
+        \brief Function to retrieve basename from pathname without extension. 
+        Basename for path "/Users/Folder/image.png" is "image".
+        Basename for path "/Users/Folder/" is "Folder".
         \returns basename value
         */
     String GetBasename() const;
+
+    /**
+        \brief Function to retrieve name from pathname with extension.
+        Name for path "/Users/Folder/image.png" is "image.png".
+        Name for path "/Users/Folder/" is "Folder".
+        \returns name value
+    */
+    String GetName() const;
 
     /**
         \brief Function to retrieve extension from pathname. Extension for path "/Users/Folder/image.png" is ".png".

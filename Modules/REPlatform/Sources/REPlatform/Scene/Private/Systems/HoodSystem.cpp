@@ -160,7 +160,8 @@ void HoodSystem::SetModifRotate(const float32& angle)
 {
     if (!IsLocked())
     {
-        rotateHood->modifRotate = angle;
+        static const DAVA::float32 eps = 0.001f;
+        rotateHood->modifRotate = (fabs(angle) < eps) ? 0.f : angle;
     }
 }
 

@@ -2,7 +2,11 @@
 #include "Base/TemplateHelpers.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
+#include "FileSystem/KeyedArchive.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectedTypeDB.h"
+#include "UI/DataBinding/UIDataScopeComponent.h"
+#include "UI/DataBinding/UIDataSourceComponent.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Flow/UIFlowContext.h"
 #include "UI/Flow/UIFlowViewComponent.h"
@@ -123,17 +127,15 @@ UIControl* UIFlowViewSystem::InitView(UIFlowViewComponent* component, UIFlowCont
                         KeyedArchive* data = context->GetData()->GetArchive(component->GetModelName());
                         if (data)
                         {
-                            // TODO: Uncomment after merging Bindings
-                            //                            UIDataSourceComponent* dataSource = root->GetOrCreateComponent<UIDataSourceComponent>();
-                            //                            dataSource->SetData(Reflection::Create(ReflectedObject(data)));
+                            UIDataSourceComponent* dataSource = root->GetOrCreateComponent<UIDataSourceComponent>();
+                            dataSource->SetData(Reflection::Create(ReflectedObject(data)));
                         }
                     }
 
                     if (!component->GetModelScope().empty())
                     {
-                        // TODO: Uncomment after merging Bindings
-                        //                        UIDataScopeComponent* dataScope = root->GetOrCreateComponent<UIDataScopeComponent>();
-                        //                        dataScope->SetExpression(component->GetModelScope());
+                        UIDataScopeComponent* dataScope = root->GetOrCreateComponent<UIDataScopeComponent>();
+                        dataScope->SetExpression(component->GetModelScope());
                     }
 
                     // Update link

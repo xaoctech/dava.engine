@@ -42,9 +42,12 @@ public:
     virtual ~ModernPropertyEditor();
 
     virtual void AddToGrid(QGridLayout* layout, int row, int col, int colSpan) = 0;
+    virtual bool IsBindingEditor() const;
+    ValueProperty* GetProperty() const;
 
 protected:
     void ChangeProperty(const DAVA::Any& value);
+    void ChangeBinding(const DAVA::String& expr, DAVA::int32 mode);
     void ApplyStyleToWidget(QWidget* widget);
     virtual void OnPropertyChanged();
     bool eventFilter(QObject* o, QEvent* e);
@@ -54,10 +57,13 @@ protected:
     QWidget* GetParentWidget() const;
 
     virtual void ResetProperty();
+    void BindProperty();
+    void ShowActionsMenu(const QPoint& pos);
 
     DAVA::RefPtr<ValueProperty> property;
     QAction* resetAction = nullptr;
     QAction* forceOverrideAction = nullptr;
+    QAction* bindAction = nullptr;
     QLabel* propertyName = nullptr;
 
     bool overriden = false;

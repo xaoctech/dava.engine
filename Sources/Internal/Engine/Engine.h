@@ -14,6 +14,7 @@
 
 namespace DAVA
 {
+class AppInstanceMonitor;
 class KeyedArchive;
 class Window;
 namespace Private
@@ -78,6 +79,19 @@ void RunOnUIThreadAsync(const Function<void()>& task);
         - if called after `Engine::windowDestroyed` signal emitted for primary window.
 */
 void RunOnUIThread(const Function<void()>& task);
+
+/**
+    \ingroup engine
+    Utility function for obtaining AppInstanceMonitor instance which can check whether another application instance is
+    running and pass activation filename to that running instance.
+
+    Each application should pass some arbitrary string. This string should be as unique as possible, e.g. you can generate UUID.
+    \note `uniqueAppId` is not null pointer or empty string.
+
+    This function always returns the same object not regarding how many times you have called this function. Value of
+    `uniqueAppId` is taken into account only on first call.
+*/
+AppInstanceMonitor* GetAppInstanceMonitor(const char* uniqueAppId);
 
 /**
     \ingroup engine
@@ -348,6 +362,13 @@ public:
     */
     void SetScreenTimeoutEnabled(bool enabled);
 
+    /**
+        Get list of filenames application was started with.
+        Application can retrieve that list only in `Engine::gameLoopStarted` signal handler. If you want to get filenames
+        later then save the list.
+    */
+    Vector<String> GetStartupActivationFilenames() const;
+
 public:
     Signal<> registerUserTypes; //!< Emitted just before initializing subsystems, place here user types/reflections/components/systems registration. Note: should be connected before Engine::Init(...) call.
     Signal<> gameLoopStarted; //!< Emitted just before entering game loop. Note: native windows are not created yet and renderer is not initialized.
@@ -368,6 +389,8 @@ public:
     //!< Ignoring this signal or continuing work after it may lead to undefined behaviour
 
     Signal<> lowMemory; //!< Emitted when OS running low on memory and corresponding event received by engine. (works on Android, iOS, Win64 and UWP on some devices).
+
+    Signal<Vector<String>> fileActivated; //!< Emitted when already running application was activated with given filenames.
 
 private:
     Private::EngineBackend* engineBackend = nullptr;

@@ -51,6 +51,11 @@ void WindowImpl::Resize(float32 /*width*/, float32 /*height*/)
     // iOS windows are always stretched to screen size
 }
 
+void WindowImpl::Activate()
+{
+    // not supported on ios
+}
+
 void WindowImpl::Close(bool appIsTerminating)
 {
     // iOS windows cannot be closed

@@ -82,6 +82,11 @@ void WindowImpl::Resize(float32 width, float32 height)
     uiDispatcher.PostEvent(UIDispatcherEvent::CreateResizeEvent(width, height));
 }
 
+void WindowImpl::Activate()
+{
+    uiDispatcher.PostEvent(UIDispatcherEvent::CreateActivateEvent());
+}
+
 void WindowImpl::Close(bool /*appIsTerminating*/)
 {
     closeRequestByApp = true;
@@ -251,6 +256,18 @@ void WindowImpl::DoResizeWindow(float32 width, float32 height, int resizeFlags)
     }
 
     ::SetWindowPos(hwnd, nullptr, x, y, w, h, flags);
+}
+
+void WindowImpl::DoActivateWindow()
+{
+    if (::IsIconic(hwnd))
+    {
+        ::OpenIcon(hwnd);
+    }
+    else
+    {
+        ::SetForegroundWindow(hwnd);
+    }
 }
 
 void WindowImpl::DoCloseWindow()
@@ -429,6 +446,9 @@ void WindowImpl::UIEventHandler(const UIDispatcherEvent& e)
     {
     case UIDispatcherEvent::RESIZE_WINDOW:
         DoResizeWindow(e.resizeEvent.width, e.resizeEvent.height, CENTER_ON_DISPLAY);
+        break;
+    case UIDispatcherEvent::ACTIVATE_WINDOW:
+        DoActivateWindow();
         break;
     case UIDispatcherEvent::CLOSE_WINDOW:
         DoCloseWindow();

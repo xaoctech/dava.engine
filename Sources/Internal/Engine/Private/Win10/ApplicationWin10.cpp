@@ -37,6 +37,11 @@ void Application::OnActivated(::Windows::ApplicationModel::Activation::IActivate
     OnLaunchedOrActivated(args);
 }
 
+void Application::OnFileActivated(::Windows::ApplicationModel::Activation::FileActivatedEventArgs^ args)
+{
+    OnLaunchedOrActivated(args);
+}
+
 void Application::OnLaunchedOrActivated(::Windows::ApplicationModel::Activation::IActivatedEventArgs^ args)
 {
     using ::Windows::ApplicationModel::Activation::ApplicationExecutionState;

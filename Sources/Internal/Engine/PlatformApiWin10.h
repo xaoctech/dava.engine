@@ -28,6 +28,12 @@ struct XamlApplicationListener
     // clang-format off
     virtual ~XamlApplicationListener() = default;
     virtual void OnLaunched(::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs ^ args) {}
+    /**
+        Invoked when the application is activated by some means other than normal launching.
+        You can cast `args` to specific type depending on `IActivatedEventArgs::Kind`, e.g.
+        if `IActivatedEventArgs::Kind` is `ActivationKind::File` then you can safely cast `args` to
+        pointer to `FileActivatedEventArgs`.
+    */
     virtual void OnActivated(::Windows::ApplicationModel::Activation::IActivatedEventArgs^ args) {}
     virtual void OnSuspending() {}
     // clang-format on

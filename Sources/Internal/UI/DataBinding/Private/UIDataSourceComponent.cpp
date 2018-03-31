@@ -9,10 +9,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIDataSourceComponent)
 {
-    ReflectionRegistrator<UIDataSourceComponent>::Begin()
+    ReflectionRegistrator<UIDataSourceComponent>::Begin()[M::DisplayName("Data Source"), M::Group("Data")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIDataSourceComponent* o) { o->Release(); })
-    .Field("dataFile", &UIDataSourceComponent::GetDataFile, &UIDataSourceComponent::SetDataFile)
+    .Field("dataFile", &UIDataSourceComponent::GetDataFile, &UIDataSourceComponent::SetDataFile)[M::DisplayName("Data File")]
     .End();
 }
 

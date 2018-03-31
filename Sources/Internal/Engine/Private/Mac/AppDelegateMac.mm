@@ -29,6 +29,12 @@
     bridge->ApplicationDidFinishLaunching(notification);
 }
 
+- (BOOL)application:(NSApplication*)sender openFile:(NSString*)filename
+{
+    bool r = bridge->ApplicationOpenFile(filename);
+    return r ? YES : NO;
+}
+
 - (void)applicationDidChangeScreenParameters:(NSNotification*)notification
 {
     bridge->ApplicationDidChangeScreenParameters();

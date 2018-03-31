@@ -11,10 +11,10 @@ using std::shared_ptr;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(UIDataScopeComponent)
 {
-    ReflectionRegistrator<UIDataScopeComponent>::Begin()
+    ReflectionRegistrator<UIDataScopeComponent>::Begin()[M::DisplayName("Data Scope"), M::Group("Data")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIDataScopeComponent* o) { o->Release(); })
-    .Field("expression", &UIDataScopeComponent::GetExpression, &UIDataScopeComponent::SetExpression)
+    .Field("expression", &UIDataScopeComponent::GetExpression, &UIDataScopeComponent::SetExpression)[M::DisplayName("Expression")]
     .End();
 }
 

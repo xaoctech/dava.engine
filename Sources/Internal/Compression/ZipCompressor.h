@@ -26,13 +26,21 @@ public:
     ~ZipFile();
 
     uint32 GetNumFiles() const;
+    DAVA::int32 GetFileIndex(const String& relativeFilePath) const;
+    bool Exists(const String& relativeFilePath) const;
     bool GetFileInfo(uint32 fileIndex, String& relativeFilePath, uint32& fileOriginalSize, uint32& fileCompressedSize, bool& isDirectory) const;
 
     bool LoadFile(const String& relativeFilePath, Vector<uint8>& fileContent) const;
+    bool SaveFile(const String& relativeFilePath, Vector<uint8>& fileContent) const;
 
 private:
+    void StartWrite() const;
+    void StartRead() const;
+    void Finalize() const;
+
     std::unique_ptr<ZipPrivateData> zipData;
 };
+
 } // end namespace DAVA
 
 #endif // COMPRESSION_ZIP_COMPRESSOR_H

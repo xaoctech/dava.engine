@@ -49,6 +49,8 @@ public:
     void RegisterScreen(BaseScreen* screen);
     void ShowStartScreen();
 
+    DAVA::Vector<DAVA::String> startupActivationFilenames;
+
 private:
     void RegisterTests();
     void RunTests();

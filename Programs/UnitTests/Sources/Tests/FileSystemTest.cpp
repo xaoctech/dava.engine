@@ -738,5 +738,40 @@ DAVA_TESTCLASS (FileSystemTest)
             fs->DeleteDirectoryFiles(resDir, false);
         }
     }
+
+    DAVA_TEST (CheckDirectoryPathname)
+    {
+        FilePath filePath("c:/test.txt");
+        FilePath dirPath("c:/test/");
+
+        TEST_VERIFY(false == filePath.IsDirectoryPathname());
+        TEST_VERIFY(true == dirPath.IsDirectoryPathname());
+    }
+
+    DAVA_TEST (CheckFilename)
+    {
+        FilePath filePath("c:/test.txt");
+        FilePath dirPath("c:/test/");
+
+        TEST_VERIFY("test.txt" == filePath.GetFilename());
+        TEST_VERIFY_WITH_MESSAGE("" == dirPath.GetFilename(), filePath.GetFilename());
+    }
+
+    DAVA_TEST (GetBasenameForFile)
+    {
+        FilePath filePath("c:/test.txt");
+
+        TEST_VERIFY("test" == filePath.GetBasename());
+        TEST_VERIFY("test.txt" == filePath.GetName());
+    }
+
+    DAVA_TEST (GetBasenameForDirectory)
+    {
+        FilePath dirPath("c:/test/");
+        FilePath dirPathWithDot("c:/test.dir/");
+
+        TEST_VERIFY("test" == dirPath.GetBasename());
+        TEST_VERIFY("test.dir" == dirPathWithDot.GetName());
+    }
 }
 ;

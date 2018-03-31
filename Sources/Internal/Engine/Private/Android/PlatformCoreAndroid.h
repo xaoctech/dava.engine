@@ -28,6 +28,7 @@ public:
 
 private:
     WindowImpl* ActivityOnCreate();
+    void ActivityOnFileIntent(String filename, bool onStartup);
     void ActivityOnResume();
     void ActivityOnPause();
     void ActivityOnDestroy();

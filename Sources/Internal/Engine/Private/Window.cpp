@@ -46,6 +46,14 @@ void Window::SetSizeAsync(Size2f sz)
     }
 }
 
+void Window::ActivateAsync()
+{
+    if (!engineBackend->IsEmbeddedGUIMode())
+    {
+        windowImpl->Activate();
+    }
+}
+
 void Window::SetMinimumSize(Size2f size)
 {
     DVASSERT(size.dx >= 0.f && size.dy >= 0.f);

@@ -121,6 +121,22 @@ WindowImpl* PlatformCore::ActivityOnCreate()
     return primaryWindowImpl;
 }
 
+void PlatformCore::ActivityOnFileIntent(String filename, bool onStartup)
+{
+    if (onStartup)
+    {
+        // Main thread is not running yet so we can safely add filenames without any synchronization
+        engineBackend->AddActivationFilename(std::move(filename));
+    }
+    else
+    {
+        RunOnMainThreadAsync([ this, filename = std::move(filename) ]() mutable {
+            engineBackend->AddActivationFilename(std::move(filename));
+            engineBackend->OnFileActivated();
+        });
+    }
+}
+
 void PlatformCore::ActivityOnResume()
 {
     if (goBackgroundTimeRelativeToBoot > 0)

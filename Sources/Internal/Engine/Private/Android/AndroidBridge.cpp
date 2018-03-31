@@ -44,6 +44,11 @@ JNIEXPORT jlong JNICALL Java_com_dava_engine_DavaActivity_nativeOnCreate(JNIEnv*
     return static_cast<jlong>(reinterpret_cast<uintptr_t>(wbackend));
 }
 
+JNIEXPORT void JNICALL Java_com_dava_engine_DavaActivity_nativeOnFileIntent(JNIEnv* env, jclass jclazz, jstring filename, jboolean onStartup)
+{
+    androidBridge->ActivityOnFileIntent(env, filename, onStartup);
+}
+
 JNIEXPORT void JNICALL Java_com_dava_engine_DavaActivity_nativeOnResume(JNIEnv* env, jclass jclazz)
 {
     androidBridge->ActivityOnResume();
@@ -263,6 +268,11 @@ WindowImpl* AndroidBridge::ActivityOnCreate(JNIEnv* env, jobject activityInstanc
 {
     activity = env->NewGlobalRef(activityInstance);
     return core->ActivityOnCreate();
+}
+
+void AndroidBridge::ActivityOnFileIntent(JNIEnv* env, jstring filename, jboolean onStartup)
+{
+    core->ActivityOnFileIntent(JavaStringToModifiedUtfString(env, filename), onStartup == JNI_TRUE);
 }
 
 void AndroidBridge::ActivityOnResume()

@@ -65,7 +65,12 @@
         RunOnMainThreadAsync(func);
 
         [[NSUserNotificationCenter defaultUserNotificationCenter] removeAllDeliveredNotifications];
-        PlatformApi::Mac::PrimaryWindowDeminiaturize();
+
+        Window* w = GetPrimaryWindow();
+        if (w != nullptr)
+        {
+            w->ActivateAsync();
+        }
     }
 }
 

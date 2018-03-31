@@ -2,6 +2,7 @@
 
 #include "Modules/ModernPropertiesModule/ModernControlSectionWidget.h"
 #include "Modules/ModernPropertiesModule/ModernComponentSectionWidget.h"
+#include "Modules/ModernPropertiesModule/Editors/ModernPropertyEditor.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 
 #include "Model/ControlProperties/RootProperty.h"
@@ -173,6 +174,28 @@ void ModernPropertiesTab::PropertyChanged(AbstractProperty* property)
         if (sectionWidget->GetSection() == property)
         {
             sectionWidget->RefreshTitle();
+        }
+        else if (sectionWidget->GetSection() == property->GetParent())
+        {
+            ModernPropertyEditor* editor = sectionWidget->FindEditorForProperty(property);
+            if (editor != nullptr && editor->IsBindingEditor() != property->IsBound())
+            {
+                // recreate section because editor widget must be changed
+                sectionWidget->AttachComponentPropertiesSection(sectionWidget->GetSection(), static_cast<RootProperty*>(property->GetRootProperty()));
+            }
+        }
+    }
+
+    for (ModernControlSectionWidget* sectionWidget : controlSections)
+    {
+        if (property->GetParent() == sectionWidget->GetSection())
+        {
+            ModernPropertyEditor* editor = sectionWidget->FindEditorForProperty(property);
+            if (editor != nullptr && editor->IsBindingEditor() != property->IsBound())
+            {
+                // recreate section because editor widget must be changed
+                sectionWidget->RecreateProperties();
+            }
         }
     }
 }

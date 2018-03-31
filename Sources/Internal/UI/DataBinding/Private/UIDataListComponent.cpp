@@ -9,14 +9,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UIDataListComponent)
 {
-    ReflectionRegistrator<UIDataListComponent>::Begin()
+    ReflectionRegistrator<UIDataListComponent>::Begin()[M::DisplayName("Data List"), M::Group("Data")]
     .ConstructorByPointer()
     .DestructorByPointer([](UIDataListComponent* o) { o->Release(); })
-    .Field("cellPackage", &UIDataListComponent::GetCellPackage, &UIDataListComponent::SetCellPackage)
-    .Field("cellControl", &UIDataListComponent::GetCellControlName, &UIDataListComponent::SetCellControlName)
-    .Field("dataContainer", &UIDataListComponent::GetDataContainer, &UIDataListComponent::SetDataContainer)
-    .Field("selectionSupported", &UIDataListComponent::IsSelectionSupported, &UIDataListComponent::SetSelectionSupported)
-    .Field("selectedIndex", &UIDataListComponent::GetSelectedIndex, &UIDataListComponent::SetSelectedIndex)[M::Bindable()]
+    .Field("cellPackage", &UIDataListComponent::GetCellPackage, &UIDataListComponent::SetCellPackage)[M::DisplayName("Package")]
+    .Field("cellControl", &UIDataListComponent::GetCellControlName, &UIDataListComponent::SetCellControlName)[M::DisplayName("Control")]
+    .Field("dataContainer", &UIDataListComponent::GetDataContainer, &UIDataListComponent::SetDataContainer)[M::DisplayName("Data Container")]
+    .Field("selectionSupported", &UIDataListComponent::IsSelectionSupported, &UIDataListComponent::SetSelectionSupported)[M::DisplayName("Selection Supported")]
+    .Field("selectedIndex", &UIDataListComponent::GetSelectedIndex, &UIDataListComponent::SetSelectedIndex)[M::Bindable(), M::DisplayName("Selected Index")]
     .End();
 }
 

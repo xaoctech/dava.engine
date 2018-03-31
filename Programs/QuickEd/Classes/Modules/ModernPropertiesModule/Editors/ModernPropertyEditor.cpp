@@ -5,6 +5,7 @@
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Modules/DocumentsModule/DocumentData.h"
 #include "QECommands/ChangePropertyValueCommand.h"
+#include "QECommands/ChangeBindingCommand.h"
 #include "QECommands/ChangePropertyForceOverrideCommand.h"
 
 #include <TArc/Core/ContextAccessor.h>
@@ -24,6 +25,7 @@
 #include <QLineEdit>
 #include <QStyle>
 #include <QEvent>
+#include <QMenu>
 
 ModernPropertyContext::ModernPropertyContext(RootProperty* root_, DAVA::ContextAccessor* accessor_, QWidget* parent_)
     : accessor(accessor_)
@@ -65,6 +67,9 @@ ModernPropertyEditor::ModernPropertyEditor(const std::shared_ptr<ModernPropertyC
     forceOverrideAction = new QAction("Force Override", context->GetParent());
     QObject::connect(forceOverrideAction, &QAction::triggered, this, &ModernPropertyEditor::ForceOverride);
 
+    bindAction = new QAction("Bind", context->GetParent());
+    QObject::connect(bindAction, &QAction::triggered, this, &ModernPropertyEditor::BindProperty);
+
     GetRootProperty()->propertyChanged.Connect(this, &ModernPropertyEditor::PropertyChanged);
     DAVA::GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->stylePropertiesChanged.Connect(this, &ModernPropertyEditor::OnStylePropertiesChanged);
     DAVA::GetEngineContext()->uiControlSystem->GetLayoutSystem()->controlLayouted.Connect(this, &ModernPropertyEditor::OnControlLayouted);
@@ -75,6 +80,16 @@ ModernPropertyEditor::~ModernPropertyEditor()
     GetRootProperty()->propertyChanged.Disconnect(this);
     DAVA::GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->stylePropertiesChanged.Disconnect(this);
     DAVA::GetEngineContext()->uiControlSystem->GetLayoutSystem()->controlLayouted.Disconnect(this);
+}
+
+bool ModernPropertyEditor::IsBindingEditor() const
+{
+    return false;
+}
+
+ValueProperty* ModernPropertyEditor::GetProperty() const
+{
+    return property.Get();
 }
 
 void ModernPropertyEditor::ChangeProperty(const DAVA::Any& value)
@@ -88,6 +103,20 @@ void ModernPropertyEditor::ChangeProperty(const DAVA::Any& value)
 
         RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
         documentData->ExecCommand<ChangePropertyValueCommand>(root->GetControlNode(), property.Get(), value);
+    }
+}
+
+void ModernPropertyEditor::ChangeBinding(const DAVA::String& expr, DAVA::int32 mode)
+{
+    if (!property->IsReadOnly())
+    {
+        DAVA::DataContext* activeContext = context->GetAccessor()->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        DocumentData* documentData = activeContext->GetData<DocumentData>();
+        DVASSERT(documentData != nullptr);
+
+        RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
+        documentData->ExecCommand<ChangeBindingCommand>(root->GetControlNode(), property.Get(), expr, mode);
     }
 }
 
@@ -182,6 +211,32 @@ void ModernPropertyEditor::ResetProperty()
         RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
         documentData->ExecCommand<ChangePropertyValueCommand>(root->GetControlNode(), property.Get(), DAVA::Any());
     }
+}
+
+void ModernPropertyEditor::BindProperty()
+{
+    if (!property->IsReadOnly())
+    {
+        DAVA::DataContext* activeContext = context->GetAccessor()->GetActiveContext();
+        DVASSERT(activeContext != nullptr);
+        DocumentData* documentData = activeContext->GetData<DocumentData>();
+        DVASSERT(documentData != nullptr);
+
+        RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
+        documentData->ExecCommand<ChangeBindingCommand>(root->GetControlNode(), property.Get(), "", 0);
+    }
+}
+
+void ModernPropertyEditor::ShowActionsMenu(const QPoint& pos)
+{
+    QMenu menu;
+    menu.addAction(resetAction);
+    menu.addAction(forceOverrideAction);
+    if (property->IsBindable() && !property->IsBound())
+    {
+        menu.addAction(bindAction);
+    }
+    menu.exec(pos);
 }
 
 void ModernPropertyEditor::ForceOverride()

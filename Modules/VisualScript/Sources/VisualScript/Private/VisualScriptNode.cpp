@@ -1,4 +1,7 @@
 #include "VisualScript/VisualScriptNode.h"
+#include "VisualScript/VisualScript.h"
+#include "VisualScript/VisualScriptPin.h"
+
 #include "Engine/Engine.h"
 #include "FileSystem/YamlNode.h"
 #include "Job/JobManager.h"
@@ -6,8 +9,7 @@
 #include "Reflection/ReflectedType.h"
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "VisualScript/VisualScript.h"
-#include "VisualScript/VisualScriptPin.h"
+#include "Utils/StringUtils.h"
 
 #include <locale>
 
@@ -291,12 +293,7 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
 
             DVASSERT(valNode);
 
-            if (valNode->GetType() == YamlNode::eType::TYPE_STRING) // Legacy loader (without type check)
-            {
-                // valNode is a value
-                // type check impossible
-            }
-            else if (valNode->GetType() == YamlNode::eType::TYPE_ARRAY)
+            if (valNode->GetType() == YamlNode::eType::TYPE_ARRAY) // Variant then we store type of default value
             {
                 DVASSERT(valNode->GetCount() == 2);
                 const String typeName = valNode->Get(0)->AsString();
@@ -308,6 +305,16 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
             }
 
             VisualScriptPin* inPin = GetPinByName(FastName(pinName));
+
+            if (inPin == nullptr) // Check legacy support (pins with names like `argN`)
+            {
+                if (StringUtils::StartsWith(pinName, "arg"))
+                {
+                    int32 index = atoi(pinName.c_str() + 3);
+                    inPin = GetDataInputPin(index);
+                }
+            }
+
             if (inPin)
             {
                 const Type* inPinType = inPin->GetType();

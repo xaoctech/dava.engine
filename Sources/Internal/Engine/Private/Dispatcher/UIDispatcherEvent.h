@@ -14,6 +14,7 @@ struct UIDispatcherEvent final
     {
         DUMMY = 0,
         RESIZE_WINDOW,
+        ACTIVATE_WINDOW,
         CREATE_WINDOW,
         CLOSE_WINDOW,
         SET_TITLE,
@@ -75,6 +76,7 @@ struct UIDispatcherEvent final
     };
 
     static UIDispatcherEvent CreateResizeEvent(float32 width, float32 height);
+    static UIDispatcherEvent CreateActivateEvent();
     static UIDispatcherEvent CreateMinimumSizeEvent(float32 width, float32 height);
     static UIDispatcherEvent CreateCloseEvent();
     static UIDispatcherEvent CreateSetTitleEvent(const String& title);

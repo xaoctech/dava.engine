@@ -8,9 +8,20 @@
 #include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Reflection/Reflection.h>
 
 namespace DAVA
 {
+class LoadedSlotItemComponent : public Component
+{
+public:
+    Component* Clone(Entity* toEntity) override;
+
+    SlotComponent* parentComponent = nullptr;
+
+    DAVA_VIRTUAL_REFLECTION(LoadedSlotItemComponent, Component);
+};
+
 class ContextAccessor;
 class EditorSlotSystem : public SceneSystem,
                          public EditorSceneSystem,

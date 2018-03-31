@@ -26,6 +26,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:label="Testbed">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="file"/>
+                <data android:mimeType="*/*"/>
+                <data android:host="*"/>
+                <data android:pathPattern=".*\\.dava"/>
+                <data android:pathPattern=".*\\..*\\.dava"/>
+                <data android:pathPattern=".*\\..*\\..*\\.dava"/>
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.dava"/>
+            </intent-filter>
         </activity>
         <receiver android:name="com.dava.engine.notification.ScheduledNotificationReceiver"/>
     </application>

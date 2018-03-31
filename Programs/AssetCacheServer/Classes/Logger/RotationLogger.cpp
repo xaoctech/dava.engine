@@ -100,7 +100,7 @@ void RotationLogger::ShiftLogFiles()
         // log.09.txt -> log.10.txt
         //.....
         // log.txt > log.01.txt
-        for (DAVA::uint32 i = ServerLoggerDetails::FILES_COUNT; i > 0; --i)
+        for (DAVA::uint32 i = ServerLoggerDetails::FILES_COUNT - 1; i > 0; --i)
         {
             if (fs->Exists(logPathNames[i - 1]))
                 fs->MoveFile(logPathNames[i - 1], logPathNames[i], true);
