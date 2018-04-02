@@ -20,7 +20,7 @@ public:
 
     explicit InvaderEntityFillSystem(DAVA::Scene* scene);
 
-    void Process(DAVA::float32 timeElapsed) override;
+    void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
 private:

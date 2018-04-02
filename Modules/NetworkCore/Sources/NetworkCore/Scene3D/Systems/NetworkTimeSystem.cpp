@@ -64,6 +64,7 @@ static void SendUptime(DAVA::NetworkTimeSingleComponent* netTimeComp, const DAVA
 NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     : BaseSimulationSystem(scene, ComponentMask())
     , fpsMeter(10.f)
+    , ffpsMeter(10.f)
 {
     netTimeComp = scene->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     scene->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
@@ -198,6 +199,18 @@ void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
         DVASSERT(realCurrFrameId);
         return;
     }
+
+    static float32 lastCallTime = SystemTimer::GetMs();
+    const float32 currentCallTime = SystemTimer::GetMs();
+
+    ffpsMeter.Update(static_cast<float32>(currentCallTime - lastCallTime) / 1e3f);
+    if (ffpsMeter.IsFpsReady())
+    {
+        netTimeComp->SetFps(fpsMeter.GetFps());
+        Logger::Debug("[NetworkTimeSystem] FFPS %.2f", ffpsMeter.GetFps());
+    }
+
+    lastCallTime = currentCallTime;
 
     uint32 uptime = netTimeComp->GetUptimeMs();
     uptime += static_cast<uint32>(timeElapsed * 1000);

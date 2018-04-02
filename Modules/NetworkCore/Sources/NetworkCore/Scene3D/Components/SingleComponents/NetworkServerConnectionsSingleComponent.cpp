@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkServerConnectionsSingleComponent)
 }
 
 NetworkServerConnectionsSingleComponent::NetworkServerConnectionsSingleComponent()
-    : ClearableSingleComponent(ClearableSingleComponent::Usage::AllProcesses)
+    : ClearableSingleComponent(ClearableSingleComponent::Usage::FixedProcesses)
     , recvPacketsByChannels(PacketParams::CHANNELS_COUNT)
 {
     for (int32 i = 0; i < PacketParams::CHANNELS_COUNT; ++i)

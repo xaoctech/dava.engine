@@ -42,6 +42,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystemCars)
     ReflectionRegistrator<GameModeSystemCars>::Begin()[M::Tags("gm_cars")]
     .ConstructorByPointer<Scene*>()
     .Method("Process", &GameModeSystemCars::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 4.0f)]
+    .Method("ProcessFixed", &GameModeSystemCars::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.2f)]
     .End();
 }
 
@@ -120,13 +121,6 @@ GameModeSystemCars::GameModeSystemCars(Scene* scene)
 void GameModeSystemCars::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameModeSystemCars::Process");
-    if (IsServer(this))
-    {
-        for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
-        {
-            OnClientConnected(justConnectedToken);
-        }
-    }
 
     if (countdown > 0.f)
     {
@@ -175,6 +169,17 @@ void GameModeSystemCars::Process(float32 timeElapsed)
         camera->SetPosition(focusedCarTransform->GetPosition() + cameraOffset);
         camera->SetTarget(focusedCarTransform->GetPosition());
         camera->RebuildCameraFromValues();
+    }
+}
+
+void GameModeSystemCars::ProcessFixed(DAVA::float32 timeElapsed)
+{
+    if (IsServer(this))
+    {
+        for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
+        {
+            OnClientConnected(justConnectedToken);
+        }
     }
 }
 

@@ -22,6 +22,7 @@ public:
     GameModeSystemCars(DAVA::Scene* scene);
 
     void Process(DAVA::float32 timeElapsed) override;
+    void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override;
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;

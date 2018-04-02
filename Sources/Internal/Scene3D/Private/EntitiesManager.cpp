@@ -66,6 +66,12 @@ void EntitiesManager::RegisterEntity(Entity* entity)
 
 void EntitiesManager::UnregisterEntity(Entity* entity)
 {
+    if (isInDetachedState && entitiesAddedInDetachedState.erase(entity) == 0)
+    {
+        entitiesRemovedInDetachedState.insert(entity);
+        return;
+    }
+
     for (auto& pair : componentGroups)
     {
         ComponentMask mask = pair.first.mask;
@@ -98,11 +104,6 @@ void EntitiesManager::UnregisterEntity(Entity* entity)
         {
             CacheEntityRemoved(&eg, entity);
         }
-    }
-
-    if (isInDetachedState && entitiesAddedInDetachedState.erase(entity) == 0)
-    {
-        entitiesRemovedInDetachedState.insert(entity);
     }
 }
 
@@ -202,6 +203,12 @@ void EntitiesManager::RegisterComponent(Entity* entity, Component* component)
 
 void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
 {
+    if (isInDetachedState && componentsAddedInDetachedState.erase(component) == 0)
+    {
+        componentsRemovedInDetachedState[component] = entity;
+        return;
+    }
+
     const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
     ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
 
@@ -241,11 +248,6 @@ void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
                 }
             }
         }
-    }
-
-    if (isInDetachedState && componentsAddedInDetachedState.erase(component) == 0)
-    {
-        componentsRemovedInDetachedState[component] = entity;
     }
 
     if (entity->GetComponentCount(component->GetType()) == 1)
