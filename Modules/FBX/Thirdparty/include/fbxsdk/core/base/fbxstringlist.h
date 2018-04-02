@@ -40,17 +40,17 @@ public:
 
 inline int FbxCompareStringListSort(const void* E1, const void* E2)
 {
-    return FBXSDK_stricmp((*(FbxStringListItem**)E1)->mString.Buffer(), (*(FbxStringListItem**)E2)->mString.Buffer());
+    return FBXSDK_stricmp((*(FbxStringListItem * const*)E1)->mString.Buffer(), (*(FbxStringListItem * const*)E2)->mString.Buffer());
 }
 
 inline int FbxCompareStringListFindEqual(const void* E1, const void* E2)
 {
-    return FBXSDK_stricmp((*(FbxStringListItem*)E1).mString.Buffer(), (*(FbxStringListItem**)E2)->mString.Buffer());
+    return FBXSDK_stricmp((*(const FbxStringListItem*)E1).mString.Buffer(), (*(const FbxStringListItem* const*)E2)->mString.Buffer());
 }
 
 inline int FbxCompareCaseSensitiveStringList(const void* E1, const void* E2)
 {
-    return strcmp((*(FbxStringListItem*)E1).mString.Buffer(), (*(FbxStringListItem**)E2)->mString.Buffer());
+    return strcmp((*(const FbxStringListItem*)E1).mString.Buffer(), (*(const FbxStringListItem* const*)E2)->mString.Buffer());
 }
 
 //! Base class of FbxStringList.

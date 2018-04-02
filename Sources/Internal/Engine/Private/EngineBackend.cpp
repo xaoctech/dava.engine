@@ -776,10 +776,12 @@ void EngineBackend::PostUserCloseRequest()
 void EngineBackend::InitRenderer(Window* w)
 {
     rhi::Api renderer = static_cast<rhi::Api>(options->GetInt32("renderer", rhi::RHI_GLES2));
-    DVASSERT(rhi::ApiIsSupported(renderer));
+
+    // DVASSERT(rhi::ApiIsSupported(renderer));
 
     if (!rhi::ApiIsSupported(renderer))
     {
+        options->SetInt32("renderer", rhi::RHI_GLES2);
         renderer = rhi::RHI_GLES2;
     }
 

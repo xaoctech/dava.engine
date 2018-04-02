@@ -257,7 +257,7 @@ private:
 	*/
 	PxVehicleDriveTankControlModel::Enum mDriveModel;
 
-	PxU32 mPad[3];
+	PxU32 mPad2[3];
 
 //serialization
 public:

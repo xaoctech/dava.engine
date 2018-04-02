@@ -56,12 +56,12 @@ RenderObject* Light::Clone(RenderObject* dstNode)
 
     Light* lightNode = static_cast<Light*>(dstNode);
 
-    lightNode->type = type;
+    lightNode->lightType = lightType;
     lightNode->baseColor = baseColor;
     lightNode->ambientColorDeprecated = ambientColorDeprecated;
     lightNode->intensityDeprecated = intensityDeprecated;
     lightNode->radius = radius;
-    lightNode->flags = flags;
+    lightNode->lightFlags = lightFlags;
 
     return dstNode;
 }
@@ -77,7 +77,7 @@ void Light::Save(KeyedArchive* archive, SerializationContext* serializationConte
 {
     BaseObject::SaveObject(archive);
 
-    archive->SetInt32("type", type);
+    archive->SetInt32("type", GetLightType());
     archive->SetFloat("ambColor.r", ambientColorDeprecated.r);
     archive->SetFloat("ambColor.g", ambientColorDeprecated.g);
     archive->SetFloat("ambColor.b", ambientColorDeprecated.b);
@@ -89,7 +89,7 @@ void Light::Save(KeyedArchive* archive, SerializationContext* serializationConte
     archive->SetFloat("intensity", intensityDeprecated);
     archive->SetFloat("radius", radius);
     archive->SetFloat("ao.radius", aoRadius);
-    archive->SetUInt32("flags", flags);
+    archive->SetUInt32("flags", lightFlags);
     archive->SetBool("autoColor", autoColor);
 
     archive->SetFloat("shadow.cascades1.0", shadowCascadesIntervals1);
@@ -118,7 +118,7 @@ void Light::Load(KeyedArchive* archive, SerializationContext* serializationConte
 {
     BaseObject::LoadObject(archive);
 
-    type = eType(archive->GetInt32("type"));
+    lightType = eType(archive->GetInt32("type"));
 
     ambientColorDeprecated.r = archive->GetFloat("ambColor.r", ambientColorDeprecated.r);
     ambientColorDeprecated.g = archive->GetFloat("ambColor.g", ambientColorDeprecated.g);
@@ -133,7 +133,7 @@ void Light::Load(KeyedArchive* archive, SerializationContext* serializationConte
 
     intensityDeprecated = archive->GetFloat("intensity", intensityDeprecated);
 
-    flags = archive->GetUInt32("flags", flags);
+    lightFlags = archive->GetUInt32("flags", lightFlags);
 
     String envMap = archive->GetString("env.map");
     if (!envMap.empty())
@@ -166,9 +166,9 @@ void Light::Load(KeyedArchive* archive, SerializationContext* serializationConte
 void Light::SaveToYaml(const FilePath& presetPath, YamlNode* parentNode, const FilePath& realEnvMapPath)
 {
     YamlNode* lightNode = new YamlNode(YamlNode::TYPE_MAP);
-    parentNode->AddNodeToMap(Format("light%d", type), lightNode);
+    parentNode->AddNodeToMap(Format("light%d", GetLightType()), lightNode);
 
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(lightNode, "type", static_cast<int32>(type));
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(lightNode, "type", static_cast<int32>(GetLightType()));
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "ambColor.r", ambientColorDeprecated.r);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "ambColor.g", ambientColorDeprecated.g);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "ambColor.b", ambientColorDeprecated.b);
@@ -180,7 +180,7 @@ void Light::SaveToYaml(const FilePath& presetPath, YamlNode* parentNode, const F
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "intensity", intensityDeprecated);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "radius", radius);
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "ao.radius", aoRadius);
-    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(lightNode, "flags", flags);
+    PropertyLineYamlWriter::WritePropertyValueToYamlNode<int32>(lightNode, "flags", lightFlags);
 
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<float32>(lightNode, "shadow.cascades1.0", shadowCascadesIntervals1);
 
@@ -207,10 +207,10 @@ void Light::SaveToYaml(const FilePath& presetPath, YamlNode* parentNode, const F
 
 void Light::LoadFromYaml(const FilePath& presetPath, const YamlNode* parentNode)
 {
-    type = eType::TYPE_DIRECTIONAL;
+    lightType = eType::TYPE_DIRECTIONAL;
     const YamlNode* typeNode = parentNode->Get("type");
     if (typeNode != nullptr)
-        type = static_cast<eType>(typeNode->AsInt32());
+        lightType = static_cast<eType>(typeNode->AsInt32());
 
     const YamlNode* abmColorDeprNodeR = parentNode->Get("ambColor.r");
     if (abmColorDeprNodeR != nullptr)
@@ -250,7 +250,7 @@ void Light::LoadFromYaml(const FilePath& presetPath, const YamlNode* parentNode)
 
     const YamlNode* flagsNode = parentNode->Get("intensity");
     if (flagsNode != nullptr)
-        flags = static_cast<uint32>(flagsNode->AsInt32());
+        lightFlags = static_cast<uint32>(flagsNode->AsInt32());
 
     auto GetCascade = [parentNode](const char* keyId, float& output) {
         const YamlNode* node = parentNode->Get(keyId);
@@ -312,7 +312,7 @@ void Light::SetIsDynamic(const bool& isDynamic)
 
 bool Light::GetIsDynamic()
 {
-    return (flags & DYNAMIC_LIGHT) == DYNAMIC_LIGHT;
+    return (lightFlags & DYNAMIC_LIGHT) == DYNAMIC_LIGHT;
 }
 
 void Light::SetCastsShadow(const bool& castsShadow)
@@ -329,22 +329,22 @@ void Light::SetCastsShadow(const bool& castsShadow)
 
 bool Light::GetCastsShadow()
 {
-    return (flags & CASTS_SHADOW) == CASTS_SHADOW;
+    return (lightFlags & CASTS_SHADOW) == CASTS_SHADOW;
 }
 
 void Light::AddFlag(uint32 flag)
 {
-    flags |= flag;
+    lightFlags |= flag;
 }
 
 void Light::RemoveFlag(uint32 flag)
 {
-    flags &= ~flag;
+    lightFlags &= ~flag;
 }
 
 uint32 Light::GetFlags()
 {
-    return flags;
+    return lightFlags;
 }
 
 const Vector4& Light::CalculatePositionDirectionBindVector(Camera* inCamera)
@@ -356,7 +356,7 @@ const Vector4& Light::CalculatePositionDirectionBindVector(Camera* inCamera)
 
         lastUsedCamera = inCamera;
         lastUpdatedFrame = globalFrameIndex;
-        if (type == TYPE_DIRECTIONAL)
+        if (GetLightType() == TYPE_DIRECTIONAL)
         {
             // Here we prepare direction according to shader direction usage.
             // Shaders use it as ToLightDirection, so we have to invert it here

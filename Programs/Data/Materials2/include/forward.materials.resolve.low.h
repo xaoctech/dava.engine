@@ -10,7 +10,7 @@
     float bakedShadow = 1.0;
     
 #if (USE_BAKED_LIGHTING)
-    float2 bakedShadowAOSample = tex2D(shadowaotexture, input.varTexCoord.zw * uvScale + uvOffset).xy;
+    float2 bakedShadowAOSample = tex2D(shadowaotexture, input.varTexCoord.zw).xy;
     bakedShadow *= bakedShadowAOSample.x;
     bakedAo *= bakedShadowAOSample.y;
 #endif
@@ -22,6 +22,11 @@
 #endif
 
     float LdotN = max(0.0, dot(resolve.n, lightPosition0.xyz));
+    
+#if (TRANSMITTANCE)
+    LdotN = LdotN * 0.75 + 0.25;
+#endif
+
     float3 result = baseColorSample.xyz * (bakedShadow * LdotN + bakedAo * environmentDiffuseSample);
 
     output.color = float4(result, 1.0);

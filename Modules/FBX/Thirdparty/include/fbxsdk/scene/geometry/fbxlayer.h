@@ -212,7 +212,7 @@ public:
 	  */
     const char* GetName() const
     {
-        return ((FbxLayerElement*)this)->mName.Buffer();
+        return ((const FbxLayerElement*)this)->mName.Buffer();
     }
 
     /** Equivalence operator

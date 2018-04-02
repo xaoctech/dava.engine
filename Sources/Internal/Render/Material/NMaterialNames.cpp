@@ -270,6 +270,7 @@ const FastName NMaterialFlagName::FLAG_TEST_OCCLUSION = FastName("TEST_OCCLUSION
 
 const FastName NMaterialFlagName::FLAG_TRANSMITTANCE("TRANSMITTANCE");
 const FastName NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION = FastName("FORCED_SHADOW_DIRECTION");
+const FastName NMaterialFlagName::FLAG_FULL_NORMAL("FULL_NORMAL");
 
 const FastName NMaterialFlagName::FLAG_USE_FRAMEBUFFER_FETCH = FastName("USE_FRAMEBUFFER_FETCH");
 

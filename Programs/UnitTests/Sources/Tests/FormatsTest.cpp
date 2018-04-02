@@ -52,8 +52,6 @@ DAVA_TESTCLASS (FormatsTest)
         suportedFormats.push_back(FORMAT_RGBA8888);
         suportedFormats.push_back(FORMAT_RGBA5551);
         suportedFormats.push_back(FORMAT_RGBA4444);
-        if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8))
-            suportedFormats.push_back(FORMAT_RGB888);
         suportedFormats.push_back(FORMAT_RGB565);
         suportedFormats.push_back(FORMAT_A8);
         suportedFormats.push_back(FORMAT_PVR2);
@@ -61,6 +59,9 @@ DAVA_TESTCLASS (FormatsTest)
         suportedFormats.push_back(FORMAT_ETC1);
         suportedFormats.push_back(FORMAT_RGBA16F);
         suportedFormats.push_back(FORMAT_RGBA32F);
+
+        if (rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R8G8B8].fetchable)
+            suportedFormats.push_back(FORMAT_RGB888);
 
         for (PixelFormat requestedFormat : suportedFormats)
         {

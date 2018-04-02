@@ -281,7 +281,7 @@ template <class Key, class Type, class Compare>
 class FBXSDK_DLL FbxSimpleMap
 {
 public:
-    typedef typename FbxMap<Key, Type, Compare>::RecordType* Iterator;
+    typedef typename FbxMap<Key, Type, Compare>::RecordType const* Iterator;
 
     /** Add a key-value pair as an element.
 	* \param pKey The new key.
@@ -294,9 +294,9 @@ public:
     /** Find an element with a given key.
 	* \param pKey The given key.
 	* \return The iterator pointing to the found element or NULL if fails. */
-    inline Iterator Find(const Key& pKey) const
+    inline auto Find(const Key& pKey) const
     {
-        return (Iterator)mMap.Find(pKey);
+        return mMap.Find(pKey);
     }
 
     /** Find an element with a given value.
@@ -328,7 +328,7 @@ public:
 	* \return The the heading element. */
     inline Iterator GetFirst() const
     {
-        return (Iterator)mMap.Minimum();
+        return (Iterator)(mMap.Minimum());
     }
 
     /** Get the next element of a given element.

@@ -2569,50 +2569,50 @@ inline bool FbxTypeCopy(T& pDst, const void* pSrc, EFbxType pSrcType)
     switch (pSrcType)
     {
     case eFbxChar:
-        return FbxTypeCopy(pDst, *(FbxChar*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxChar*)pSrc);
     case eFbxUChar:
-        return FbxTypeCopy(pDst, *(FbxUChar*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxUChar*)pSrc);
     case eFbxShort:
-        return FbxTypeCopy(pDst, *(FbxShort*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxShort*)pSrc);
     case eFbxUShort:
-        return FbxTypeCopy(pDst, *(FbxUShort*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxUShort*)pSrc);
     case eFbxUInt:
-        return FbxTypeCopy(pDst, *(FbxUInt*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxUInt*)pSrc);
     case eFbxLongLong:
-        return FbxTypeCopy(pDst, *(FbxLongLong*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxLongLong*)pSrc);
     case eFbxULongLong:
-        return FbxTypeCopy(pDst, *(FbxULongLong*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxULongLong*)pSrc);
     case eFbxHalfFloat:
-        return FbxTypeCopy(pDst, *(FbxHalfFloat*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxHalfFloat*)pSrc);
     case eFbxBool:
-        return FbxTypeCopy(pDst, *(FbxBool*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxBool*)pSrc);
     case eFbxInt:
-        return FbxTypeCopy(pDst, *(FbxInt*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxInt*)pSrc);
     case eFbxFloat:
-        return FbxTypeCopy(pDst, *(FbxFloat*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxFloat*)pSrc);
     case eFbxDouble:
-        return FbxTypeCopy(pDst, *(FbxDouble*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDouble*)pSrc);
     case eFbxDouble2:
-        return FbxTypeCopy(pDst, *(FbxDouble2*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDouble2*)pSrc);
     case eFbxDouble3:
-        return FbxTypeCopy(pDst, *(FbxDouble3*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDouble3*)pSrc);
     case eFbxDouble4:
-        return FbxTypeCopy(pDst, *(FbxDouble4*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDouble4*)pSrc);
     case eFbxDouble4x4:
-        return FbxTypeCopy(pDst, *(FbxDouble4x4*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDouble4x4*)pSrc);
     case eFbxEnumM:
     case eFbxEnum:
-        return FbxTypeCopy(pDst, *(FbxEnum*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxEnum*)pSrc);
     case eFbxString:
-        return FbxTypeCopy(pDst, *(FbxString*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxString*)pSrc);
     case eFbxTime:
-        return FbxTypeCopy(pDst, *(FbxTime*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxTime*)pSrc);
     case eFbxBlob:
-        return FbxTypeCopy(pDst, *(FbxBlob*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxBlob*)pSrc);
     case eFbxDistance:
-        return FbxTypeCopy(pDst, *(FbxDistance*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDistance*)pSrc);
     case eFbxDateTime:
-        return FbxTypeCopy(pDst, *(FbxDateTime*)pSrc);
+        return FbxTypeCopy(pDst, *(const FbxDateTime*)pSrc);
 
     case eFbxReference:
         FBX_ASSERT_NOW("Trying to set value on a void Reference type");
@@ -2692,50 +2692,50 @@ inline bool FbxTypeCopy(void* pDst, EFbxType pDstType, const void* pSrc, EFbxTyp
     switch (pSrcType)
     {
     case eFbxChar:
-        return FbxTypeCopy(pDst, pDstType, *(FbxChar*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxChar*)pSrc);
     case eFbxUChar:
-        return FbxTypeCopy(pDst, pDstType, *(FbxUChar*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxUChar*)pSrc);
     case eFbxShort:
-        return FbxTypeCopy(pDst, pDstType, *(FbxShort*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxShort*)pSrc);
     case eFbxUShort:
-        return FbxTypeCopy(pDst, pDstType, *(FbxUShort*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxUShort*)pSrc);
     case eFbxUInt:
-        return FbxTypeCopy(pDst, pDstType, *(FbxUInt*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxUInt*)pSrc);
     case eFbxLongLong:
-        return FbxTypeCopy(pDst, pDstType, *(FbxLongLong*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxLongLong*)pSrc);
     case eFbxULongLong:
-        return FbxTypeCopy(pDst, pDstType, *(FbxULongLong*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxULongLong*)pSrc);
     case eFbxHalfFloat:
-        return FbxTypeCopy(pDst, pDstType, *(FbxHalfFloat*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxHalfFloat*)pSrc);
     case eFbxBool:
-        return FbxTypeCopy(pDst, pDstType, *(FbxBool*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxBool*)pSrc);
     case eFbxInt:
-        return FbxTypeCopy(pDst, pDstType, *(FbxInt*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxInt*)pSrc);
     case eFbxFloat:
-        return FbxTypeCopy(pDst, pDstType, *(FbxFloat*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxFloat*)pSrc);
     case eFbxDouble:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDouble*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDouble*)pSrc);
     case eFbxDouble2:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDouble2*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDouble2*)pSrc);
     case eFbxDouble3:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDouble3*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDouble3*)pSrc);
     case eFbxDouble4:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDouble4*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDouble4*)pSrc);
     case eFbxDouble4x4:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDouble4x4*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDouble4x4*)pSrc);
     case eFbxEnumM:
     case eFbxEnum:
-        return FbxTypeCopy(pDst, pDstType, *(FbxEnum*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxEnum*)pSrc);
     case eFbxString:
-        return FbxTypeCopy(pDst, pDstType, *(FbxString*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxString*)pSrc);
     case eFbxTime:
-        return FbxTypeCopy(pDst, pDstType, *(FbxTime*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxTime*)pSrc);
     case eFbxBlob:
-        return FbxTypeCopy(pDst, pDstType, *(FbxBlob*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxBlob*)pSrc);
     case eFbxDistance:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDistance*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDistance*)pSrc);
     case eFbxDateTime:
-        return FbxTypeCopy(pDst, pDstType, *(FbxDateTime*)pSrc);
+        return FbxTypeCopy(pDst, pDstType, *(const FbxDateTime*)pSrc);
 
     case eFbxReference:
         FBX_ASSERT_NOW("Trying to set value on a void Reference type");

@@ -108,13 +108,18 @@ static void gles_CheckTexturesFormats()
 
         case TEXTURE_FORMAT_R8:
         case TEXTURE_FORMAT_R16:
+        case TEXTURE_FORMAT_R16G16:
+            formatCaps.fetchable = true;
+            formatCaps.filterable = RG_Supported;
+            formatCaps.renderable = RG_Supported;
+            break;
+
         case TEXTURE_FORMAT_RGB10A2:
             formatCaps.fetchable = true;
             formatCaps.filterable = ES30Compatible;
             formatCaps.renderable = ES30Compatible;
             break;
 
-        case TEXTURE_FORMAT_R16G16:
         case TEXTURE_FORMAT_A16R16G16B16:
         case TEXTURE_FORMAT_A32R32G32B32:
             formatCaps.fetchable = Short_Int_Supported;
@@ -124,14 +129,14 @@ static void gles_CheckTexturesFormats()
         case TEXTURE_FORMAT_R16F:
         case TEXTURE_FORMAT_RG16F:
             formatCaps.fetchable = (Half_Supported && RG_Supported);
-            formatCaps.filterable = formatCaps.fetchable && ES30Compatible;
-            formatCaps.renderable = formatCaps.fetchable && ES32Compatible;
+            formatCaps.filterable = formatCaps.fetchable;
+            formatCaps.renderable = formatCaps.fetchable;
             break;
 
         case TEXTURE_FORMAT_RGBA16F:
             formatCaps.fetchable = Half_Supported;
-            formatCaps.filterable = formatCaps.fetchable && ES30Compatible;
-            formatCaps.renderable = formatCaps.fetchable && ES32Compatible;
+            formatCaps.filterable = formatCaps.fetchable;
+            formatCaps.renderable = formatCaps.fetchable;
             break;
 
         case TEXTURE_FORMAT_R32F:
@@ -149,7 +154,7 @@ static void gles_CheckTexturesFormats()
 
         case TEXTURE_FORMAT_R11G11B10F:
             formatCaps.fetchable = PackedFloat_Supported;
-            formatCaps.filterable = formatCaps.fetchable && ES30Compatible;
+            formatCaps.filterable = formatCaps.fetchable;
             formatCaps.renderable = formatCaps.fetchable && ES32Compatible;
             break;
 

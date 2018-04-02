@@ -160,7 +160,7 @@ void HDRDeferredFetchPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMas
 
 void HDRDeferredFetchPass::UpdateScreenResolveData(RenderSystem* renderSystem)
 {
-    Texture* reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetSpecularConvolution2();
+    Texture* reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetGlobalProbeSpecularConvolution();
     if (screenResolveMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION))
     {
         screenResolveMaterial->SetTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);

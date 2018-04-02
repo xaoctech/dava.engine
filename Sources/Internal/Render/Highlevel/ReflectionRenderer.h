@@ -39,7 +39,7 @@ public:
 
     void SetDebugDrawProbe(ReflectionProbe* probe);
 
-    Texture* GetSpecularConvolution2();
+    Texture* GetGlobalProbeSpecularConvolution();
 
 private:
     struct SphericalHarmonicsUpdate
@@ -85,6 +85,9 @@ private:
     void RenderReflectionProbe(ReflectionProbe* probe);
     void DrawDebugInfo();
 
+    Texture* GetTemporaryFramebuffer();
+    Texture* GetDownsampledFramebuffer();
+
 private:
     RenderSystem* renderSystem = nullptr;
     RenderPass* reflectionPass = nullptr;
@@ -93,9 +96,13 @@ private:
     ReflectionProbe* debugDrawProbe = nullptr;
     Vector<ReflectionProbe*> localReflectionProbes;
     Vector<ReflectionProbeToUpdate> probesForUpdate;
-    Texture* temporaryFramebuffer = nullptr;
-    Texture* downsampledFramebuffer = nullptr; // temporary convolution textures
-    Texture* globalProbeSpecularConvolution = nullptr;
+
+    struct
+    {
+        Texture* temporaryFramebuffer = nullptr;
+        Texture* downsampledFramebuffer = nullptr; // temporary convolution textures
+        Texture* globalProbeSpecularConvolution = nullptr;
+    } sharedTextures;
 
     Vector<SphericalHarmonicsUpdate> shUpdateQueue;
     Vector<Texture*> reflectionTextureCache;

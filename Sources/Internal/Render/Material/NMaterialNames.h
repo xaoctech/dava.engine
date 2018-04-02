@@ -282,6 +282,7 @@ public:
 
     static const FastName FLAG_TRANSMITTANCE;
     static const FastName FLAG_RGBM_INPUT;
+    static const FastName FLAG_FULL_NORMAL;
 
     //Illumination params
     static const FastName FLAG_ILLUMINATION_USED;

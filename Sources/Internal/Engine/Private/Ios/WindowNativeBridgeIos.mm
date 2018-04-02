@@ -85,7 +85,8 @@ bool WindowNativeBridge::CreateWindow()
 
     renderViewController = [[RenderViewController alloc] initWithBridge:this];
 
-    if (engineOptions->GetInt32("renderer", rhi::RHI_GLES2) == rhi::RHI_METAL)
+    rhi::Api api = static_cast<rhi::Api>(engineOptions->GetInt32("renderer", rhi::RHI_GLES2));
+    if ((api == rhi::RHI_METAL) && rhi::ApiIsSupported(api))
         renderView = [[RenderViewMetal alloc] initWithFrame:rect andBridge:this];
     else
         renderView = [[RenderViewGL alloc] initWithFrame:rect andBridge:this];

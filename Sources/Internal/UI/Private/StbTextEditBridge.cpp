@@ -90,7 +90,7 @@ inline float stb_getwidth(STB_TEXTEDIT_STRING* str, int n, int i)
     return 0.f;
 }
 
-inline int stb_insertchars(STB_TEXTEDIT_STRING* str, int pos, STB_TEXTEDIT_CHARTYPE* newtext, int num)
+inline int stb_insertchars(STB_TEXTEDIT_STRING* str, int pos, const STB_TEXTEDIT_CHARTYPE* newtext, int num)
 {
     return int(str->GetDelegate()->InsertText(DAVA::uint32(pos), newtext, DAVA::uint32(num)));
 }

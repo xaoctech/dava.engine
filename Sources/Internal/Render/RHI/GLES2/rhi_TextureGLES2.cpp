@@ -54,7 +54,7 @@ public:
     GLenum mappedFace = 0;
 
     void* mappedData = nullptr;
-    SamplerState::Descriptor::Sampler samplerState;
+    SamplerState::Descriptor::Sampler usedSamplerState;
     GLint fbo = 0;
     GLint attachmentID = 0;
 
@@ -744,8 +744,7 @@ bool gles2_Texture_NeedRestore(Handle tex)
 
 //==============================================================================
 
-struct
-SamplerStateGLES2_t
+struct SamplerStateGLES2_t
 {
     SamplerState::Descriptor::Sampler fragmentSampler[MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT];
     uint32 fragmentSamplerCount;
@@ -910,13 +909,6 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
 
-    DVASSERT(DeviceCaps().textureFormat[self->format].filterable ||
-             (self->samplerState.minFilter != TEXFILTER_LINEAR
-              && self->samplerState.magFilter != TEXFILTER_LINEAR
-              && self->samplerState.minFilter != TEXMIPFILTER_LINEAR),
-             DAVA::Format("Texture format '%s' is non-filterable", TextureFormatToString(self->format)).c_str()
-             );
-
     DVASSERT(DeviceCaps().textureFormat[self->format].fetchable,
              DAVA::Format("Texture format '%s' is non-fetchable", TextureFormatToString(self->format)).c_str());
 
@@ -942,8 +934,12 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
     }
 
     // GFX_COMPLETE: Боже что это и почему это тут?
-    if ((self->forceSetSamplerState || memcmp(&(self->samplerState), sampler, sizeof(rhi::SamplerState::Descriptor::Sampler))) && !self->isRenderBuffer)
+    if (!self->isRenderBuffer && (self->forceSetSamplerState || (memcmp(&self->usedSamplerState, sampler, sizeof(rhi::SamplerState::Descriptor::Sampler)) != 0)))
     {
+        DVASSERT(DeviceCaps().textureFormat[self->format].filterable ||
+                 ((sampler->minFilter != TEXFILTER_LINEAR) && (sampler->magFilter != TEXFILTER_LINEAR) && (sampler->minFilter != TEXMIPFILTER_LINEAR)),
+                 DAVA::Format("Texture format '%s' is non-filterable", TextureFormatToString(self->format)).c_str());
+
         GL_CALL(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, _TextureMinMipFilterGLES2(TextureFilter(sampler->minFilter), TextureMipFilter(sampler->mipFilter))));
         GL_CALL(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, _TextureFilterGLES2(TextureFilter(sampler->magFilter))));
 
@@ -963,7 +959,7 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
             GL_CALL(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, sampler->anisotropyLevel));
         }
 
-        self->samplerState = *sampler;
+        self->usedSamplerState = *sampler;
         self->forceSetSamplerState = false;
     }
 }

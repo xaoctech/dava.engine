@@ -179,7 +179,7 @@ private:
 	PxReal* mBrakeTorques;
 
 #if PX_P64_FAMILY
-	PxU32 mPad[2];
+	PxU32 mPad2[2];
 #else 
 	PxU32 mPad[1];
 #endif

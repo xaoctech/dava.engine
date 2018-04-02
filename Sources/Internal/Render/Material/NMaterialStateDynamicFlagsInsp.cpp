@@ -130,6 +130,7 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
 
         ret.emplace_back(NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT);
         ret.emplace_back(NMaterialFlagName::FLAG_RGBM_INPUT);
+        ret.emplace_back(NMaterialFlagName::FLAG_FULL_NORMAL);
     }
 
     return ret;

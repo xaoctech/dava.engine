@@ -31,8 +31,8 @@ struct PacketList_t
 
     Handle defDepthStencilState;
     Handle defSamplerState;
-    ScissorRect defScissorRect;
-    Viewport defViewportRect;
+    ScissorRect defScissorRect, currScissorRect;
+    Viewport defViewportRect, currViewportRect;
 
     Handle curVertexStream[MAX_VERTEX_STREAM_COUNT];
 
@@ -256,24 +256,34 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
 
         if (p->options & Packet::OPT_OVERRIDE_SCISSOR)
         {
-            rhi::CommandBuffer::SetScissorRect(cmdBuf, p->scissorRect);
-            pl->restoreDefScissorRect = true;
+            if (pl->currScissorRect != p->scissorRect)
+            {
+                rhi::CommandBuffer::SetScissorRect(cmdBuf, p->scissorRect);
+                pl->currScissorRect = p->scissorRect;
+                pl->restoreDefScissorRect = true;
+            }
         }
         else if (pl->restoreDefScissorRect)
         {
             rhi::CommandBuffer::SetScissorRect(cmdBuf, pl->defScissorRect);
             pl->restoreDefScissorRect = false;
+            pl->currScissorRect = pl->defScissorRect;
         }
 
         if (p->options & Packet::OPT_OVERRIDE_VIEWPORT)
         {
-            rhi::CommandBuffer::SetViewport(cmdBuf, p->viewportRect);
-            pl->restoreDefViewportRect = true;
+            if (pl->currViewportRect != p->viewportRect)
+            {
+                rhi::CommandBuffer::SetViewport(cmdBuf, p->viewportRect);
+                pl->currViewportRect = p->viewportRect;
+                pl->restoreDefViewportRect = true;
+            }
         }
         else if (pl->restoreDefViewportRect)
         {
             rhi::CommandBuffer::SetViewport(cmdBuf, pl->defViewportRect);
             pl->restoreDefViewportRect = false;
+            pl->currViewportRect = pl->defViewportRect;
         }
 
         if (p->options & Packet::OPT_WIREFRAME)

@@ -311,6 +311,7 @@ PostEffectRenderer::PostEffectRenderer()
     settings.colorGradingTable = Texture::CreateFromFile("~res:/Textures/colorgrading.png");
     settings.heatmapTable = Texture::CreateFromFile("~res:/Textures/heatmap.png");
     settings.lightMeterTable = Texture::CreateFromFile("~res:/Textures/lightmeter.png");
+    settings.lightMeterTable->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
 
     rhi::SamplerState::Descriptor linearDesc;
     for (uint32 i = 0; i < rhi::MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT; ++i)
@@ -1077,7 +1078,7 @@ void PostEffectRenderer::DumpAverageTexture(int32 index)
 
 void PostEffectRenderer::InitResources(const Size2i& newSize)
 {
-    if (sharedResourcesCreated == false)
+    if ((sharedResourcesCreated == false) && (Renderer::GetCurrentRenderFlow() != RenderFlow::LDRForward))
     {
         hdrTargetSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
 
@@ -1124,7 +1125,7 @@ void PostEffectRenderer::InitResources(const Size2i& newSize)
         sharedResourcesCreated = true;
     }
 
-    if (newSize != lastWindowSize)
+    if (sharedResourcesCreated && (newSize != lastWindowSize))
     {
         int32 baseDownsampleChainSize = NextPowerOf2(std::min(newSize.dx, newSize.dy));
         int32 lastDownsampleChainSize = allRenderer.averageColorSize.empty() ? 0 : (static_cast<int32>(allRenderer.averageColorSize.front()) * 2);

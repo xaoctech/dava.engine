@@ -502,9 +502,6 @@ const FXDescriptor& LoadClassicTempalte(const FastName& fxName, const FastName& 
         }
     }
 
-    if (strstr(fxName.c_str(), "PBS.material"))
-        printf(".");
-
     // legacy - find passes by "RenderPass" entry
     result.renderPassDescriptors.reserve(renderTechniqueNode->GetCount());
     for (uint32 k = 0; k < renderTechniqueNode->GetCount(); ++k)

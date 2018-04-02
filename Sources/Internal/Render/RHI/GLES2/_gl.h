@@ -439,7 +439,7 @@ extern volatile struct alignas(32) GLCallRegisters
 
 #endif
 
-#if 1
+#if 0
 
 #define GL_CALL(expr) { \
     GLint err = glGetError(); \
@@ -453,9 +453,7 @@ extern volatile struct alignas(32) GLCallRegisters
     } \
 }
 
-#else
-
-#if defined(__DAVAENGINE_ANDROID__) && defined(__DAVAENGINE_ARM_7__)
+#elif defined(__DAVAENGINE_ANDROID__) && defined(__DAVAENGINE_ARM_7__)
 
 #define GL_CALL(expr) \
 { \
@@ -476,8 +474,6 @@ extern volatile struct alignas(32) GLCallRegisters
 #else
 
 #define GL_CALL(expr) expr;
-
-#endif
 
 #endif
 

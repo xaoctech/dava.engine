@@ -140,7 +140,7 @@ vertex_out vp_main(vertex_in input)
 #else
 
 #if (USE_BAKED_LIGHTING || ALBEDO_TINT_BLEND_MODE != 0)
-    output.varTexCoord = float4(input.texCoord0, input.texCoord1 * uvScale + uvOffset);
+    output.varTexCoord = float4(input.texCoord0, input.texCoord1);
 #else
     output.varTexCoord = float4(input.texCoord0, 0.0, 0.0);
 #endif

@@ -296,7 +296,7 @@ void HDRDeferredPass::GBufferResolvePass::Draw(RenderSystem* renderSystem, uint3
     Vector4 lightsCount = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_LIGHTING_PARAMETERS, lightsCount.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
-    Texture* reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetSpecularConvolution2();
+    Texture* reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetGlobalProbeSpecularConvolution();
     if (screenResolveMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION))
     {
         screenResolveMaterial->SetTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);

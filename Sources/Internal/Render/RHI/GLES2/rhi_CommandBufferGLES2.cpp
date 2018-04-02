@@ -669,17 +669,18 @@ void CommandBufferGLES2_t::Execute()
                 {
                     GLuint flags = 0;
 
-                    //GFX_COMPLETE - s_reznik - (passCfg.colorBuffer[0].texture != InvalidHandle) means it is on-screen. depth only shadow should chnage this logic
-                    //for now it is left this way but this means screen color buffer will never be cleared
-                    if ((passCfg.colorBuffer[0].texture != InvalidHandle) && (passCfg.colorBuffer[0].loadAction == LOADACTION_CLEAR))
+                    if (passCfg.colorBuffer[0].loadAction == LOADACTION_CLEAR)
                     {
                         GL_CALL(glClearColor(passCfg.colorBuffer[0].clearColor[0], passCfg.colorBuffer[0].clearColor[1], passCfg.colorBuffer[0].clearColor[2], passCfg.colorBuffer[0].clearColor[3]));
                         flags |= GL_COLOR_BUFFER_BIT;
                     }
 
-                    if ((passCfg.depthStencilBuffer.loadAction == LOADACTION_CLEAR) && (passCfg.depthStencilBuffer.texture != InvalidHandle))
+                    if (passCfg.depthStencilBuffer.loadAction == LOADACTION_CLEAR)
                     {
-                        bool hasStencil = TextureGLES2::GetFormat(passCfg.depthStencilBuffer.texture) == TEXTURE_FORMAT_D24S8;
+                        bool hasStencil = (passCfg.depthStencilBuffer.texture == DefaultDepthBuffer);
+                        if(passCfg.depthStencilBuffer.texture != InvalidHandle && passCfg.depthStencilBuffer.texture != DefaultDepthBuffer)
+                            hasStencil |= TextureGLES2::GetFormat(passCfg.depthStencilBuffer.texture) == TEXTURE_FORMAT_D24S8;
+                        
                         float clearDepthValue = passCfg.usesReverseDepth ? (1.0f - passCfg.depthStencilBuffer.clearDepth) : passCfg.depthStencilBuffer.clearDepth;
                         
                     #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)

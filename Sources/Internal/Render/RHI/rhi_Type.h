@@ -813,7 +813,14 @@ struct Viewport
         , height(h_)
     {
     }
+    Viewport(const Viewport& v) = default;
+    bool operator!=(const Viewport& v) const;
 };
+
+inline bool Viewport::operator!=(const Viewport& v) const
+{
+    return x != v.x || y != v.y || width != v.width || height != v.height;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // render-target state
@@ -992,7 +999,14 @@ struct ScissorRect
         , height(ah)
     {
     }
+    ScissorRect(const ScissorRect& v) = default;
+    bool operator!=(const ScissorRect& v) const;
 };
+
+inline bool ScissorRect::operator!=(const ScissorRect& v) const
+{
+    return x != v.x || y != v.y || width != v.width || height != v.height;
+}
 
 } // namespace rhi
 

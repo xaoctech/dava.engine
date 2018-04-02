@@ -37,12 +37,6 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_TRANSLUCENT));
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_AFTER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_AFTER_TRANSLUCENT));
 
-    temporaryFramebuffer = Texture::CreateFBO(HIGH_RES_FBO_CUBEMAP_SIZE, HIGH_RES_FBO_CUBEMAP_SIZE, ReflectionsIntermediateTextureFormat, true, rhi::TEXTURE_TYPE_CUBE);
-    temporaryFramebuffer->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
-
-    downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
-    globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
-
     for (uint32 qualityLevel = 0; qualityLevel < CUBEMAP_QUALITY_LEVELS; ++qualityLevel)
     {
         for (uint32 t = 0; t < maxCacheCubemapOnEachLevel[qualityLevel]; ++t)
@@ -77,10 +71,39 @@ ReflectionRenderer::~ReflectionRenderer()
     for (size_t k = 0; k < allCacheTextures.size(); ++k)
         SafeRelease(allCacheTextures[k]);
 
-    SafeRelease(globalProbeSpecularConvolution);
-    SafeRelease(downsampledFramebuffer);
-    SafeRelease(temporaryFramebuffer);
+    SafeRelease(sharedTextures.globalProbeSpecularConvolution);
+    SafeRelease(sharedTextures.downsampledFramebuffer);
+    SafeRelease(sharedTextures.temporaryFramebuffer);
+
     SafeDelete(reflectionPass);
+}
+
+Texture* ReflectionRenderer::GetTemporaryFramebuffer()
+{
+    if (sharedTextures.temporaryFramebuffer == nullptr)
+    {
+        sharedTextures.temporaryFramebuffer = Texture::CreateFBO(HIGH_RES_FBO_CUBEMAP_SIZE, HIGH_RES_FBO_CUBEMAP_SIZE, ReflectionsIntermediateTextureFormat, true, rhi::TEXTURE_TYPE_CUBE);
+        sharedTextures.temporaryFramebuffer->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+    }
+    return sharedTextures.temporaryFramebuffer;
+}
+
+Texture* ReflectionRenderer::GetDownsampledFramebuffer()
+{
+    if (sharedTextures.downsampledFramebuffer == nullptr)
+    {
+        sharedTextures.downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
+    }
+    return sharedTextures.downsampledFramebuffer;
+}
+
+Texture* ReflectionRenderer::GetGlobalProbeSpecularConvolution()
+{
+    if (sharedTextures.globalProbeSpecularConvolution == nullptr)
+    {
+        sharedTextures.globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
+    }
+    return sharedTextures.globalProbeSpecularConvolution;
 }
 
 Texture* ReflectionRenderer::CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format)
@@ -179,11 +202,6 @@ void ReflectionRenderer::SaveCubemap(const FilePath & filePath, Texture * cubema
     texDescriptor.Save(texDescriptorFilePath);
 }*/
 
-Texture* ReflectionRenderer::GetSpecularConvolution2()
-{
-    return globalProbeSpecularConvolution;
-}
-
 void ReflectionRenderer::EnumerateMaterials(Set<NMaterial*>& materials)
 {
     Vector<RenderObject*>& renderObjectArray = renderSystem->GetRenderObjectArray();
@@ -203,9 +221,9 @@ void ReflectionRenderer::AllocateProbeTexture(ReflectionProbe* probe)
 
     if (probe->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL)
     {
-        probe->SetCurrentTexture(globalProbeSpecularConvolution);
+        probe->SetCurrentTexture(GetGlobalProbeSpecularConvolution());
     }
-    else if ((probe->GetCurrentTexture() == globalProbeSpecularConvolution) || (probe->GetCurrentTexture() == nullptr))
+    else if ((probe->GetCurrentTexture() == GetGlobalProbeSpecularConvolution()) || (probe->GetCurrentTexture() == nullptr))
     {
         uint32 qualityLevel = probe->GetNextQualityLevel();
         DVASSERT(qualityLevel < CUBEMAP_QUALITY_LEVELS);
@@ -221,12 +239,12 @@ void ReflectionRenderer::AllocateProbeTexture(ReflectionProbe* probe)
 void ReflectionRenderer::ReleaseProbeTexture(ReflectionProbe* probe)
 {
     Texture* probeTexture = probe->GetCurrentTexture();
-    if (probe->IsStaticProbe() || (probeTexture == nullptr) || (probeTexture == globalProbeSpecularConvolution))
+    if (probe->IsStaticProbe() || (probeTexture == nullptr) || (probeTexture == GetGlobalProbeSpecularConvolution()))
         return;
 
     uint32 probeQualityLevel = probe->GetActiveQualityLevel();
     textureCache[probeQualityLevel].push_back(probeTexture);
-    probe->SetCurrentTexture(globalProbeSpecularConvolution);
+    probe->SetCurrentTexture(GetGlobalProbeSpecularConvolution());
 }
 
 void ReflectionRenderer::RenderReflectionProbe(ReflectionProbe* probe)
@@ -244,10 +262,10 @@ void ReflectionRenderer::RenderReflectionProbe(ReflectionProbe* probe)
     SphericalHarmonicsUpdate shUpdate = EnqueueSphericalHarmonicsUpdate(probe);
 
     Vector3 capturePosition = probe->GetPosition() + probe->GetCapturePosition();
-    cmr->RenderCubemap(renderSystem, reflectionPass, capturePosition, temporaryFramebuffer, layerFilter);
-    cmr->EdgeFilterCubemap(temporaryFramebuffer, downsampledFramebuffer, CONVOLUTION_MIP_COUNT);
-    cmr->ConvoluteSphericalHarmonics(downsampledFramebuffer, shUpdate.targetTexture);
-    cmr->ConvoluteSpecularCubemap(downsampledFramebuffer, target, target->GetMipLevelsCount());
+    cmr->RenderCubemap(renderSystem, reflectionPass, capturePosition, GetTemporaryFramebuffer(), layerFilter);
+    cmr->EdgeFilterCubemap(GetTemporaryFramebuffer(), GetDownsampledFramebuffer(), CONVOLUTION_MIP_COUNT);
+    cmr->ConvoluteSphericalHarmonics(GetDownsampledFramebuffer(), shUpdate.targetTexture);
+    cmr->ConvoluteSpecularCubemap(GetDownsampledFramebuffer(), target, target->GetMipLevelsCount());
 }
 
 void ReflectionRenderer::UpdateProbeMaterialBindings(ReflectionProbe* probe)

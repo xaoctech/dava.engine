@@ -149,11 +149,6 @@ if( WARNING_DISABLE)
 
 elseif( WARNINGS_AS_ERRORS )
 
-
-    if( ANDROID OR MACOS)
-        set( LOCAL_DISABLED_WARNINGS "-Werror " ) 
-    endif()
-
     set( LOCAL_DISABLED_WARNINGS "${LOCAL_DISABLED_WARNINGS}\
         -Weverything \
         -Wno-c++98-compat-pedantic \
@@ -223,7 +218,10 @@ elseif( WARNINGS_AS_ERRORS )
             -Wno-pessimizing-move \
             -Wno-partial-availability \
             -Wno-#warnings \
-            \
+            -Wno-zero-as-null-pointer-constant \
+            -Wno-inconsistent-missing-destructor-override \
+            -Wno-expansion-to-defined \
+            -Wno-shadow-field \
             -Wno-unused-private-field \
             -Wno-objc-method-access \
             -Wno-undefined-reinterpret-cast \

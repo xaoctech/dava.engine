@@ -12,16 +12,9 @@ namespace rhi
 {
 //==============================================================================
 
-struct
-DepthStencilStateGLES2_t
+struct DepthStencilStateGLES2_t
 {
-    uint32 depthTestEnabled : 1;
-    GLuint depthMask;
-    GLenum depthFunc;
-
-    uint32 stencilEnabled : 1;
-    uint32 stencilSeparate : 1;
-    struct
+    struct StencilState
     {
         GLenum failOp;
         GLenum depthFailOp;
@@ -30,7 +23,15 @@ DepthStencilStateGLES2_t
         uint32 writeMask;
         uint32 readMask;
         uint32 refValue;
-    } stencilFront, stencilBack;
+    };
+
+    uint32 depthTestEnabled : 1;
+    GLuint depthMask;
+    GLenum depthFunc;
+
+    uint32 stencilEnabled : 1;
+    uint32 stencilSeparate : 1;
+    StencilState stencilFront, stencilBack;
 };
 
 typedef ResourcePool<DepthStencilStateGLES2_t, RESOURCE_DEPTHSTENCIL_STATE, DepthStencilState::Descriptor, false> DepthStencilStateGLES2Pool;
@@ -123,6 +124,9 @@ int _GLES2_stencilEnabled = -1;
 int _GLES2_depthMask = -1;
 GLenum _GLES2_depthFunc = 0;
 
+DepthStencilStateGLES2_t::StencilState _GLES_StencilFront, _GLES_StencilBack;
+bool stencilStateValid = false;
+
 void Init(uint32 maxCount)
 {
     DepthStencilStateGLES2Pool::Reserve(maxCount);
@@ -140,6 +144,7 @@ void InvalidateCache()
     _GLES2_stencilEnabled = -1;
     _GLES2_depthMask = -1;
     _GLES2_depthFunc = 0;
+    stencilStateValid = false;
 }
 
 void SetToRHI(Handle hstate)
@@ -182,19 +187,34 @@ void SetToRHI(Handle hstate)
 
         if (state->stencilSeparate)
         {
-            GL_CALL(glStencilOpSeparate(GL_FRONT, state->stencilFront.failOp, state->stencilFront.depthFailOp, state->stencilFront.depthStencilPassOp));
-            GL_CALL(glStencilFuncSeparate(GL_FRONT, state->stencilFront.func, state->stencilFront.refValue, state->stencilFront.readMask));
-            GL_CALL(glStencilMaskSeparate(GL_FRONT, state->stencilFront.writeMask));
+            if ((!stencilStateValid) || (memcmp(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0))
+            {
+                GL_CALL(glStencilOpSeparate(GL_FRONT, state->stencilFront.failOp, state->stencilFront.depthFailOp, state->stencilFront.depthStencilPassOp));
+                GL_CALL(glStencilFuncSeparate(GL_FRONT, state->stencilFront.func, state->stencilFront.refValue, state->stencilFront.readMask));
+                GL_CALL(glStencilMaskSeparate(GL_FRONT, state->stencilFront.writeMask));
+                memcpy(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState));
+            }
 
-            GL_CALL(glStencilOpSeparate(GL_BACK, state->stencilBack.failOp, state->stencilBack.depthFailOp, state->stencilBack.depthStencilPassOp));
-            GL_CALL(glStencilFuncSeparate(GL_BACK, state->stencilBack.func, state->stencilBack.refValue, state->stencilBack.readMask));
-            GL_CALL(glStencilMaskSeparate(GL_BACK, state->stencilBack.writeMask));
+            if ((!stencilStateValid) || (memcmp(&_GLES_StencilBack, &(state->stencilBack), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0))
+            {
+                GL_CALL(glStencilOpSeparate(GL_BACK, state->stencilBack.failOp, state->stencilBack.depthFailOp, state->stencilBack.depthStencilPassOp));
+                GL_CALL(glStencilFuncSeparate(GL_BACK, state->stencilBack.func, state->stencilBack.refValue, state->stencilBack.readMask));
+                GL_CALL(glStencilMaskSeparate(GL_BACK, state->stencilBack.writeMask));
+                memcpy(&_GLES_StencilBack, &(state->stencilBack), sizeof(DepthStencilStateGLES2_t::StencilState));
+            }
+            stencilStateValid = true;
         }
         else
         {
-            GL_CALL(glStencilOp(state->stencilFront.failOp, state->stencilFront.depthFailOp, state->stencilFront.depthStencilPassOp));
-            GL_CALL(glStencilFunc(state->stencilFront.func, state->stencilFront.refValue, state->stencilFront.readMask));
-            GL_CALL(glStencilMask(state->stencilFront.writeMask));
+            if ((!stencilStateValid) || (memcmp(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0) || (memcmp(&_GLES_StencilBack, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0))
+            {
+                GL_CALL(glStencilOp(state->stencilFront.failOp, state->stencilFront.depthFailOp, state->stencilFront.depthStencilPassOp));
+                GL_CALL(glStencilFunc(state->stencilFront.func, state->stencilFront.refValue, state->stencilFront.readMask));
+                GL_CALL(glStencilMask(state->stencilFront.writeMask));
+                memcpy(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState));
+                memcpy(&_GLES_StencilBack, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState));
+                stencilStateValid = true;
+            }
         }
     }
     else

@@ -366,6 +366,11 @@ void ViewSceneScreen::SetCameraAtCenter(DAVA::Camera* camera)
     cameraTarget = DAVA::Vector3(18.437426f, 1451.497192f, 172.325546f);
     // */
 
+    //*/ Tech demo map
+    cameraPos = DAVA::Vector3(81.985f, -10.875f, 15.472f);
+    cameraTarget = DAVA::Vector3(72.431f, -12.269f, 12.871f);
+    // */
+
     camera->SetPosition(cameraPos);
     camera->SetTarget(cameraTarget);
 }
