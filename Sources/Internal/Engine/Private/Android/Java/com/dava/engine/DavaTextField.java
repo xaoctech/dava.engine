@@ -533,21 +533,25 @@ final class DavaTextField implements TextWatcher,
         {
             createNativeControl();
         }
-        if (props.anyPropertyChanged)
-        {
-            applyChangedProperties(props);
-        }
 
-        if (!multiline && !nativeTextField.hasFocus())
+        if (nativeTextField != null)
         {
-            // We need make deferred rendering because updating layout of native field
-            // will been applied on handler's next tick.
-            DavaActivity.commandHandler().post(new Runnable() {
-                @Override public void run()
-                {
-                    renderToTexture();
-                }
-            });
+            if (props.anyPropertyChanged)
+            {
+                applyChangedProperties(props);
+            }
+
+            if (!multiline && !nativeTextField.hasFocus())
+            {
+                // We need make deferred rendering because updating layout of native field
+                // will been applied on handler's next tick.
+                DavaActivity.commandHandler().post(new Runnable() {
+                    @Override public void run()
+                    {
+                        renderToTexture();
+                    }
+                });
+            }
         }
     }
 
@@ -1056,6 +1060,11 @@ final class DavaTextField implements TextWatcher,
 
     void renderToTexture()
     {
+        if (nativeTextField == null)
+        {
+            return;
+        }
+
         nativeTextField.setDrawingCacheEnabled(true);
         nativeTextField.buildDrawingCache();
 
