@@ -431,7 +431,7 @@ void FbxDelete(const T* p)
 {
     if (p)
     {
-        ((const T*)p)->~T();
+        ((T*)p)->~T();
         FbxFree(const_cast<T*>(p));
     }
 }

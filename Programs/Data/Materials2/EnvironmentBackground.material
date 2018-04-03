@@ -5,7 +5,7 @@ RenderTechnique:
         depthTest: true
     Passes:
         ForwardPass:
-            SupportedRenderFlows: ["HDRForward"]
+            SupportedRenderFlows: ["HDR"]
         LDRForwardPass:
             Shader: "~res:/Materials2/ShadersLDR/background"
             SupportedRenderFlows: ["LDRForward"]

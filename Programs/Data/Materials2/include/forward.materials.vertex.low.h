@@ -141,7 +141,12 @@ vertex_out vp_main(vertex_in input)
     output.projectedPosition = mul(output.worldPosition, viewProjMatrix);
     output.normal = mul(float4(inputNormal, 0.0), worldInvTransposeMatrix).xyz;
     float3 toCamera = cameraPosition - output.worldPosition.xyz;
-    output.varToCamera = float4(toCamera, dot(output.normal, toCamera));
+    
+#if (FLIP_BACKFACE_NORMALS)
+    output.normal *= sign(dot(output.normal, toCamera));
+#endif
+
+    output.varToCamera = float4(toCamera, 1.0);
     output.shadowTexCoord = mul(output.worldPosition, shadowView);
     output.position = output.projectedPosition;
 #endif

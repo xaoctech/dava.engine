@@ -39,14 +39,15 @@ vertex_out
 {
     float4 pos : SV_POSITION;
     
+    float2 albedoCoord0 : TEXCOORD0;
+    float2 albedoCoord1 : TEXCOORD1;
+
 #if LANDSCAPE_USE_INSTANCING
     float3 normal : NORMAL0;
-    float4 texCoord0 : TEXCOORD0;
-    float3 texCoord1 : TEXCOORD1;
+    float2 lightmapTexCoord : TEXCOORD2;
     float4 shadowTexCoord : TEXCOORD2;
     float3 varToCamera : TEXCOORD3;
-#else
-    float4 texCoord0 : TEXCOORD0;
+    float albedoFactor : TEXCOORD4;
 #endif
 };
 
@@ -101,10 +102,10 @@ vertex_out vp_main(vertex_in input)
     float height = SampleHeightMorphed(relativePosition, morphAmount, sampleLod);
     float2 nxy = SampleTangentMorphed(relativePosition, morphAmount, sampleLod);
 
-    output.texCoord0.xy = input.data5.xy + in_pos.xy * input.data5.zw;
-    output.texCoord0.zw = input.data6.xy + in_pos.xy * input.data6.zw;
-    output.texCoord1.xy = float2(relativePosition.x, 1.0 - relativePosition.y);
-    output.texCoord1.z = input.data3.w;
+    output.albedoCoord0 = input.data5.xy + in_pos.xy * input.data5.zw;
+    output.albedoCoord1 = input.data6.xy + in_pos.xy * input.data6.zw;
+    output.lightmapTexCoord = float2(relativePosition.x, 1.0 - relativePosition.y);
+    output.albedoFactor = input.data3.w;
 
     height -= input.data2.y * 0.05 / boundingBoxSize.z; //fences
 
@@ -124,8 +125,9 @@ vertex_out vp_main(vertex_in input)
 
     float3 vx_position = input.pos.xyz;
     output.pos = mul(float4(vx_position.x, vx_position.y, vx_position.z, 1.0), worldViewProjMatrix);
-    output.texCoord0 = input.uv.xyxy;
-    
+    output.albedoCoord0 = input.uv.xy;
+    output.albedoCoord1 = input.uv.xy;
+
 #endif
 
     return output;

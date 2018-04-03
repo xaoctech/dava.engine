@@ -9,7 +9,7 @@ RenderTechnique:
         depthTest: true
     Passes:
         ForwardPass:
-            SupportedRenderFlows: ["HDRForward"]
+            SupportedRenderFlows: ["HDR"]
         ForwardPassWithCombine:
             UniqueDefines: ["FOWARD_WITH_COMBINE"]
             SupportedRenderFlows: ["TileBasedHDRForward"]

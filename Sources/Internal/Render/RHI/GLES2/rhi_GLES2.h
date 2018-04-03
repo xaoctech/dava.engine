@@ -98,7 +98,7 @@ void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 void InitializeRingBuffer(uint32 size);
 
-void SetToRHI(Handle cb, uint32 progUid, const void* instData);
+void SetToRHI(Handle cb, uint32 progUid, const float* instData);
 const void* Instance(Handle cb);
 }
 

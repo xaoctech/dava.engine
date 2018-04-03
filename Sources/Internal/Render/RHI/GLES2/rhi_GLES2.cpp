@@ -15,6 +15,7 @@ using DAVA::Logger;
 #include <cstring>
 
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 GLuint _GLES2_Bound_FrameBuffer = 0;
 GLuint _GLES2_Default_FrameBuffer = 0;
@@ -30,7 +31,6 @@ DAVA::uint8* _GLES2_LastSetIndices = nullptr;
 GLuint _GLES2_LastSetVB = 0;
 GLuint _GLES2_LastSetTex0 = 0;
 GLenum _GLES2_LastSetTex0Target = GL_TEXTURE_2D;
-int _GLES2_LastActiveTexture = -1;
 bool _GLES2_IsDebugSupported = true;
 bool _GLES2_IsGlDepth24Stencil8Supported = true;
 bool _GLES2_IsGlDepthNvNonLinearSupported = false;
@@ -58,8 +58,7 @@ volatile GLCallRegisters gl_call_registers;
 
 namespace rhi
 {
-//==============================================================================
-
+OpenGLState glState;
 Dispatch DispatchGLES2 = {};
 
 static bool ATC_Supported = false;
@@ -210,10 +209,15 @@ static void gles_CheckTexturesFormats()
         //depth
         case TEXTURE_FORMAT_D16:
         case TEXTURE_FORMAT_D24S8:
-        case TEXTURE_FORMAT_D32F:
             formatCaps.renderable = true;
             formatCaps.filterable = !_GLES2_EmbeddedProfile;
             formatCaps.fetchable = !_GLES2_EmbeddedProfile;
+            break;
+
+        case TEXTURE_FORMAT_D32F:
+            formatCaps.renderable = ES30Compatible || !_GLES2_EmbeddedProfile;
+            formatCaps.fetchable = formatCaps.renderable;
+            formatCaps.filterable = !_GLES2_EmbeddedProfile;
             break;
 
         default:

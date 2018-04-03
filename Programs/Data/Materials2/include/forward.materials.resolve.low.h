@@ -1,8 +1,4 @@
 {
-#if (FLIP_BACKFACE_NORMALS)
-    resolve.n *= sign(input.varToCamera.w);
-#endif
-
 #if (VERTEX_BAKED_AO)
     bakedAo *= input.vertexBakedAO;
 #endif

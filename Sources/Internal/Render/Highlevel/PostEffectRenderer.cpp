@@ -298,7 +298,11 @@ PostEffectRenderer::PostEffectRenderer()
         {
             materials[i]->AddProperty(FastName("mulAdd"), float2.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
         }
-        materials[i]->PreBuildMaterial(PASS_FORWARD);
+
+        if (i != MaterialType::LUMINANCE_COMBINED || rhi::DeviceCaps().isFramebufferFetchSupported)
+        {
+            materials[i]->PreBuildMaterial(PASS_FORWARD);
+        }
     }
 
     if (nullptr != Engine::Instance()->PrimaryWindow())
@@ -314,12 +318,13 @@ PostEffectRenderer::PostEffectRenderer()
     settings.lightMeterTable->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
 
     rhi::SamplerState::Descriptor linearDesc;
+    rhi::TextureFilter samplerFilter = rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R16F].filterable ? rhi::TEXFILTER_LINEAR : rhi::TEXFILTER_NEAREST;
     for (uint32 i = 0; i < rhi::MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT; ++i)
     {
         linearDesc.fragmentSampler[i].addrU = rhi::TEXADDR_CLAMP;
         linearDesc.fragmentSampler[i].addrV = rhi::TEXADDR_CLAMP;
-        linearDesc.fragmentSampler[i].magFilter = rhi::TEXFILTER_LINEAR;
-        linearDesc.fragmentSampler[i].minFilter = rhi::TEXFILTER_LINEAR;
+        linearDesc.fragmentSampler[i].magFilter = samplerFilter;
+        linearDesc.fragmentSampler[i].minFilter = samplerFilter;
         linearDesc.fragmentSampler[i].mipFilter = rhi::TEXMIPFILTER_NONE;
         linearDesc.fragmentSampler[i].anisotropyLevel = 1;
     }
@@ -328,8 +333,8 @@ PostEffectRenderer::PostEffectRenderer()
     {
         linearDesc.vertexSampler[i].addrU = rhi::TEXADDR_CLAMP;
         linearDesc.vertexSampler[i].addrV = rhi::TEXADDR_CLAMP;
-        linearDesc.vertexSampler[i].magFilter = rhi::TEXFILTER_LINEAR;
-        linearDesc.vertexSampler[i].minFilter = rhi::TEXFILTER_LINEAR;
+        linearDesc.vertexSampler[i].magFilter = samplerFilter;
+        linearDesc.vertexSampler[i].minFilter = samplerFilter;
         linearDesc.vertexSampler[i].mipFilter = rhi::TEXMIPFILTER_NONE;
         linearDesc.vertexSampler[i].anisotropyLevel = 1;
     }

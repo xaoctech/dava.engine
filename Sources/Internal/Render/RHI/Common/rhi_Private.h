@@ -1,5 +1,4 @@
-#ifndef __RHI_PRIVATE_H__
-#define __RHI_PRIVATE_H__
+#pragma once
 
 #include "../rhi_Type.h"
 #include "rhi_CommonImpl.h"
@@ -212,12 +211,3 @@ extern uint32 stat_SET_VB;
 extern uint32 stat_SET_IB;
 
 } // namespace rhi
-
-
-
-#define RHI_GL__USE_UNIFORMBUFFER_OBJECT 0
-#define RHI_GL__USE_STATIC_CONST_BUFFER_OPTIMIZATION 0
-#define RHI_GL__DEBUG_CONST_BUFFERS 0
-
-
-#endif // __RHI_PRIVATE_H__

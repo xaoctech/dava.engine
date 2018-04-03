@@ -15,10 +15,12 @@ fragment_in
 {
 #if LANDSCAPE_USE_INSTANCING
     float3 normal : NORMAL0;
-    float4 texCoord0 : TEXCOORD0;
-    float3 texCoord1 : TEXCOORD1;
+    float2 albedoCoord0 : TEXCOORD0;
+    float2 albedoCoord1 : TEXCOORD1;
+    float2 lightmapTexCoord : TEXCOORD2;
     float4 shadowTexCoord : TEXCOORD2;
     float3 varToCamera : TEXCOORD3;
+    float albedoFactor : TEXCOORD4;
 #else
     float4 texCoord0 : TEXCOORD0;
 #endif
@@ -31,13 +33,13 @@ fragment_out
 
 fragment_out fp_main(fragment_in input)
 {
-    float4 albedoSample0 = tex2D(albedo, input.texCoord0.xy);
-    float4 albedoSample1 = tex2D(albedo, input.texCoord0.zw);
-    float4 baseColorSample = lerp(albedoSample1, albedoSample0, input.texCoord1.z);
+    float4 albedoSample0 = tex2D(albedo, input.albedoCoord0);
+    float4 albedoSample1 = tex2D(albedo, input.albedoCoord1);
+    float4 baseColorSample = lerp(albedoSample1, albedoSample0, input.albedoFactor);
 
     fragment_out output;
     {
-        float2 bakedShadowAOSample = tex2D(shadowaotexture, input.texCoord1.xy).xy;
+        float2 bakedShadowAOSample = tex2D(shadowaotexture, input.lightmapTexCoord).xy;
         float bakedShadow = bakedShadowAOSample.x;
         float bakedAo = bakedShadowAOSample.y;
         float3 environmentDiffuseSample = 0.0;

@@ -1,12 +1,13 @@
 #include "../Common/rhi_Private.h"
-    #include "../Common/rhi_Pool.h"
-    #include "rhi_GLES2.h"
+#include "../Common/rhi_Pool.h"
+#include "rhi_GLES2.h"
 
-    #include "Debug/DVAssert.h"
-    #include "Logger/Logger.h"
+#include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
 using DAVA::Logger;
 
-    #include "_gl.h"
+#include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 namespace rhi
 {
@@ -119,12 +120,8 @@ void gles2_DepthStencilState_Delete(Handle state)
 
 namespace DepthStencilStateGLES2
 {
-int _GLES2_depthTestEnabled = -1;
-int _GLES2_stencilEnabled = -1;
-int _GLES2_depthMask = -1;
-GLenum _GLES2_depthFunc = 0;
-
-DepthStencilStateGLES2_t::StencilState _GLES_StencilFront, _GLES_StencilBack;
+DepthStencilStateGLES2_t::StencilState _GLES_StencilFront;
+DepthStencilStateGLES2_t::StencilState _GLES_StencilBack;
 bool stencilStateValid = false;
 
 void Init(uint32 maxCount)
@@ -140,10 +137,6 @@ void SetupDispatch(Dispatch* dispatch)
 
 void InvalidateCache()
 {
-    _GLES2_depthTestEnabled = -1;
-    _GLES2_stencilEnabled = -1;
-    _GLES2_depthMask = -1;
-    _GLES2_depthFunc = 0;
     stencilStateValid = false;
 }
 
@@ -151,43 +144,16 @@ void SetToRHI(Handle hstate)
 {
     DepthStencilStateGLES2_t* state = DepthStencilStateGLES2Pool::Get(hstate);
 
-    if (state->depthTestEnabled != _GLES2_depthTestEnabled)
-    {
-        if (state->depthTestEnabled)
-        {
-            GL_CALL(glEnable(GL_DEPTH_TEST));
-            _GLES2_depthTestEnabled = true;
-        }
-        else
-        {
-            GL_CALL(glDisable(GL_DEPTH_TEST));
-            _GLES2_depthTestEnabled = false;
-        }
-    }
+    glState.SetEnabled(OpenGLState::StateDepthTest, state->depthTestEnabled ? OpenGLState::Enabled : OpenGLState::Disabled);
+    glState.SetEnabled(OpenGLState::StateDepthWrite, state->depthMask ? OpenGLState::Enabled : OpenGLState::Disabled);
+    glState.SetEnabled(OpenGLState::StateStencilTest, state->stencilEnabled ? rhi::OpenGLState::Enabled : rhi::OpenGLState::Disabled);
+    glState.SetDepthFunction(state->depthFunc);
 
-    if ((state->depthTestEnabled) && (_GLES2_depthFunc != state->depthFunc))
+    if (state->stencilEnabled && (stencilStateValid == false))
     {
-        GL_CALL(glDepthFunc(state->depthFunc));
-        _GLES2_depthFunc = state->depthFunc;
-    }
-
-    if (_GLES2_depthMask != state->depthMask)
-    {
-        GL_CALL(glDepthMask(state->depthMask));
-        _GLES2_depthMask = state->depthMask;
-    }
-
-    if (state->stencilEnabled)
-    {
-        if (_GLES2_stencilEnabled != GL_TRUE)
-        {
-            GL_CALL(glEnable(GL_STENCIL_TEST));
-            _GLES2_stencilEnabled = GL_TRUE;
-        }
-
         if (state->stencilSeparate)
         {
-            if ((!stencilStateValid) || (memcmp(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0))
+            if (memcmp(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)))
             {
                 GL_CALL(glStencilOpSeparate(GL_FRONT, state->stencilFront.failOp, state->stencilFront.depthFailOp, state->stencilFront.depthStencilPassOp));
                 GL_CALL(glStencilFuncSeparate(GL_FRONT, state->stencilFront.func, state->stencilFront.refValue, state->stencilFront.readMask));
@@ -195,35 +161,28 @@ void SetToRHI(Handle hstate)
                 memcpy(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState));
             }
 
-            if ((!stencilStateValid) || (memcmp(&_GLES_StencilBack, &(state->stencilBack), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0))
+            if (memcmp(&_GLES_StencilBack, &(state->stencilBack), sizeof(DepthStencilStateGLES2_t::StencilState)))
             {
                 GL_CALL(glStencilOpSeparate(GL_BACK, state->stencilBack.failOp, state->stencilBack.depthFailOp, state->stencilBack.depthStencilPassOp));
                 GL_CALL(glStencilFuncSeparate(GL_BACK, state->stencilBack.func, state->stencilBack.refValue, state->stencilBack.readMask));
                 GL_CALL(glStencilMaskSeparate(GL_BACK, state->stencilBack.writeMask));
                 memcpy(&_GLES_StencilBack, &(state->stencilBack), sizeof(DepthStencilStateGLES2_t::StencilState));
             }
-            stencilStateValid = true;
         }
         else
         {
-            if ((!stencilStateValid) || (memcmp(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0) || (memcmp(&_GLES_StencilBack, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) != 0))
+            if (memcmp(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)) ||
+                memcmp(&_GLES_StencilBack, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState)))
             {
                 GL_CALL(glStencilOp(state->stencilFront.failOp, state->stencilFront.depthFailOp, state->stencilFront.depthStencilPassOp));
                 GL_CALL(glStencilFunc(state->stencilFront.func, state->stencilFront.refValue, state->stencilFront.readMask));
                 GL_CALL(glStencilMask(state->stencilFront.writeMask));
                 memcpy(&_GLES_StencilFront, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState));
                 memcpy(&_GLES_StencilBack, &(state->stencilFront), sizeof(DepthStencilStateGLES2_t::StencilState));
-                stencilStateValid = true;
             }
         }
-    }
-    else
-    {
-        if (_GLES2_stencilEnabled != GL_FALSE)
-        {
-            GL_CALL(glDisable(GL_STENCIL_TEST));
-            _GLES2_stencilEnabled = GL_FALSE;
-        }
+
+        stencilStateValid = true;
     }
 }
 }

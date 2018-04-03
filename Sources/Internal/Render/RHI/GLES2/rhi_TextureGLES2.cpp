@@ -7,6 +7,7 @@
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 namespace rhi
 {
@@ -171,7 +172,7 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
         GLCommand cmd2[4 + countof(desc.initialData)] =
         {
           { GLCommand::GEN_TEXTURES, { 1, reinterpret_cast<uint64>(glObjects) } },
-          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } }
+          { GLCommand::SET_ACTIVE_TEXTURE, { 0 } }
         };
 
         if (desc.autoGenMipmaps && !desc.isRenderTarget)
@@ -275,8 +276,8 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                 uint32 cmd3Count = 2;
                 GLCommand cmd3[4 + 6 * 16] =
                 {
+                  { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
                   { GLCommand::BIND_TEXTURE, { GL_TEXTURE_CUBE_MAP, uint64(&(this->uid)) } },
-                  { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } }
                 };
 
                 for (uint32 m = 0; m != desc.levelCount; ++m)
@@ -349,8 +350,8 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                 uint32 cmd3Count = 2;
                 GLCommand cmd3[4 + 3 * 16] =
                 {
+                  { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
                   { GLCommand::BIND_TEXTURE, { GL_TEXTURE_2D, uint64(&(this->uid)) } },
-                  { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
                 };
 
                 for (uint32 m = 0; m != desc.levelCount; ++m)
@@ -621,7 +622,7 @@ static void gles2_Texture_Unmap(Handle tex)
 
         GLCommand cmd[] =
         {
-          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
+          { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
           { GLCommand::BIND_TEXTURE, { ttarget, uint64(&(self->uid)) } },
           { GLCommand::TEX_IMAGE2D, { target, self->mappedLevel, uint64(int_fmt), uint64(sz.dx), uint64(sz.dy), 0, uint64(fmt), type, uint64(textureDataSize), reinterpret_cast<uint64>(self->mappedData), compressed } },
           { GLCommand::RESTORE_TEXTURE0, {} }
@@ -691,7 +692,7 @@ void gles2_Texture_Update(Handle tex, const void* data, uint32 level, TextureFac
 
         GLCommand cmd[] =
         {
-          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
+          { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
           { GLCommand::BIND_TEXTURE, { ttarget, uint64(&(self->uid)) } },
           { GLCommand::TEX_IMAGE2D, { target, uint64(level), uint64(int_fmt), uint64(sz.dx), uint64(sz.dy), 0, uint64(fmt), type, uint64(textureDataSize), reinterpret_cast<uint64>(data), compressed } },
           { GLCommand::RESTORE_TEXTURE0, {} }
@@ -902,7 +903,6 @@ void SetupDispatch(Dispatch* dispatch)
 
 void InvalidateCache()
 {
-    _GLES2_LastActiveTexture = -1;
 }
 
 void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
@@ -918,14 +918,10 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 
     const SamplerState::Descriptor::Sampler* sampler = (fragment) ? _CurSamplerState->fragmentSampler + unit_i : _CurSamplerState->vertexSampler + unit_i;
 
-    if (uint32(_GLES2_LastActiveTexture) != GL_TEXTURE0 + sampler_i)
-    {
-        DVASSERT(sampler_i < DeviceCaps().maxShaderTextures);
-        GL_CALL(glActiveTexture(GL_TEXTURE0 + sampler_i));
-        _GLES2_LastActiveTexture = GL_TEXTURE0 + sampler_i;
-    }
+    DVASSERT(sampler_i < DeviceCaps().maxShaderTextures);
 
-    GL_CALL(glBindTexture(target, self->uid));
+    glState.SetActiveTexture(sampler_i);
+    glState.BindTexture(target, self->uid);
 
     if (sampler_i == 0)
     {

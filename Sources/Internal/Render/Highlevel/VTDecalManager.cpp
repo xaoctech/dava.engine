@@ -47,7 +47,7 @@ void VTDecalManager::RemoveDecal(DecalRenderObject* ro)
     uint32 index = FindAndRemoveExchangingWithLastIndex(decals, ro);
     DVASSERT(index != static_cast<uint32>(-1));
 
-    if (!decals.empty())
+    if (index < decals.size())
         decals[index]->SetTreeNodeIndex(index);
 
     if (worldInitialized)

@@ -1928,11 +1928,13 @@ const DAVA::String& ShaderSource::GetSourceCode(const HostAPI& targetApi) const
             sl::GLESGenerator gles_gen(&alloc);
             sl::GLESGenerator::GLSLVersion version = sl::GLESGenerator::GLSL_100;
 
-#ifdef __DAVAENGINE_WIN32__
+#if defined(__DAVAENGINE_WIN32__)
             if ((targetApi.majorVersion > 3) || (targetApi.majorVersion == 3 && targetApi.minorVersion >= 3))
-                version = sl::GLESGenerator::GLSL_100;
+                version = sl::GLESGenerator::GLSL_300;
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+            if (targetApi.majorVersion >= 3)
+                version = sl::GLESGenerator::GLSL_300;
 #endif
-
             codeGenerated = gles_gen.Generate(ast, version, target, main, src);
             break;
         }

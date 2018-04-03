@@ -28,13 +28,14 @@ using DAVA::Logger;
 #include "Debug/ProfilerMarkerNames.h"
 
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 #if defined(DAVA_ACQUIRE_OGL_CONTEXT_EVERYTIME)
-    #define ACQUIRE_CONTEXT() _GLES2_AcquireContext()
-    #define RELEASE_CONTEXT() _GLES2_ReleaseContext()
+    #define ACQUIRE_CONTEXT() do { _GLES2_AcquireContext(); glState.InvalidateState(); } while (0)
+    #define RELEASE_CONTEXT() do { _GLES2_ReleaseContext(); } while (0)
 #else
-    #define ACQUIRE_CONTEXT()
-    #define RELEASE_CONTEXT()
+    #define ACQUIRE_CONTEXT() do { } while (0)
+    #define RELEASE_CONTEXT() do { } while (0)
 #endif
 
 #define RHI_GL_DUMP_PASS_ORDER 0
@@ -534,10 +535,10 @@ void CommandBufferGLES2_t::Execute()
     uint32 cur_gl_prog = 0;
 
     Handle vp_const[MAX_CONST_BUFFER_COUNT] = {};
-    const void* vp_const_data[MAX_CONST_BUFFER_COUNT] = {};
+    const float* vp_const_data[MAX_CONST_BUFFER_COUNT] = {};
 
     Handle fp_const[MAX_CONST_BUFFER_COUNT] = {};
-    const void* fp_const_data[MAX_CONST_BUFFER_COUNT] = {};
+    const float* fp_const_data[MAX_CONST_BUFFER_COUNT] = {};
 
     Handle cur_vb[MAX_VERTEX_STREAM_COUNT] = {};
     Handle cur_ib = InvalidHandle;
@@ -562,23 +563,22 @@ void CommandBufferGLES2_t::Execute()
         {
             InvalidateCache();
 
-            GL_CALL(glFrontFace(GL_CW));
-            GL_CALL(glDisable(GL_CULL_FACE));
-            GL_CALL(glCullFace(GL_BACK));
-
-            GL_CALL(glEnable(GL_DEPTH_TEST));
-            GL_CALL(glDepthFunc(GL_LEQUAL));
-            GL_CALL(glDepthMask(GL_TRUE));
-            GL_CALL(glDisable(GL_SCISSOR_TEST));
+            glState.SetEnabled(OpenGLState::StateScissorTest, OpenGLState::Disabled);
+            glState.SetEnabled(OpenGLState::StateCullFace, OpenGLState::Disabled);
+            glState.SetEnabled(OpenGLState::StateDepthTest, OpenGLState::Enabled);
+            glState.SetCullFace(OpenGLState::CullFace::Back);
+            glState.SetFrontFace(OpenGLState::FrontFace::Clockwise);
+            glState.SetEnabled(OpenGLState::StateDepthWrite, OpenGLState::Enabled);
+            glState.SetDepthFunction(GL_LESS);
 
             if ((passCfg.depthSlopeScale != 0.0f) || (passCfg.depthBias != 0.0f))
             {
                 GL_CALL(glPolygonOffset(passCfg.depthSlopeScale, passCfg.depthBias));
-                GL_CALL(glEnable(GL_POLYGON_OFFSET_FILL));
+                glState.SetEnabled(OpenGLState::StatePolygonOffsetFill, OpenGLState::Enabled);
             }
             else
             {
-                GL_CALL(glDisable(GL_POLYGON_OFFSET_FILL));
+                glState.SetEnabled(OpenGLState::StatePolygonOffsetFill, OpenGLState::Disabled);
             }
 
             if (isFirstInPass)
@@ -645,7 +645,7 @@ void CommandBufferGLES2_t::Execute()
                         break;
                     }
                 }
-                GL_CALL(glViewport(def_viewport[0], def_viewport[1], def_viewport[2], def_viewport[3]));
+                glState.SetViewport(def_viewport[0], def_viewport[1], def_viewport[2], def_viewport[3]);
 
                 if (apply_fb)
                 {
@@ -826,19 +826,19 @@ void CommandBufferGLES2_t::Execute()
             switch (mode)
             {
             case CULL_NONE:
-                GL_CALL(glDisable(GL_CULL_FACE));
+                glState.SetEnabled(OpenGLState::StateCullFace, OpenGLState::Disabled);
                 break;
 
             case CULL_CCW:
-                GL_CALL(glEnable(GL_CULL_FACE));
-                GL_CALL(glFrontFace(GL_CW));
-                GL_CALL(glCullFace(GL_BACK));
+                glState.SetEnabled(OpenGLState::StateCullFace, OpenGLState::Enabled);
+                glState.SetCullFace(OpenGLState::CullFace::Back);
+                glState.SetFrontFace(OpenGLState::FrontFace::Clockwise);
                 break;
 
             case CULL_CW:
-                GL_CALL(glEnable(GL_CULL_FACE));
-                GL_CALL(glFrontFace(GL_CW));
-                GL_CALL(glCullFace(GL_FRONT));
+                glState.SetEnabled(OpenGLState::StateCullFace, OpenGLState::Enabled);
+                glState.SetCullFace(OpenGLState::CullFace::Front);
+                glState.SetFrontFace(OpenGLState::FrontFace::Clockwise);
                 break;
             }
         }
@@ -856,12 +856,12 @@ void CommandBufferGLES2_t::Execute()
                 if (usingDefaultFrameBuffer)
                     y = _GLES2_DefaultFrameBuffer_Height - y - h;
 
-                GL_CALL(glEnable(GL_SCISSOR_TEST));
+                glState.SetEnabled(OpenGLState::StateScissorTest, OpenGLState::Enabled);
                 GL_CALL(glScissor(x, y, w, h));
             }
             else
             {
-                GL_CALL(glDisable(GL_SCISSOR_TEST));
+                glState.SetEnabled(OpenGLState::StateScissorTest, OpenGLState::Disabled);
             }
         }
         break;
@@ -878,11 +878,11 @@ void CommandBufferGLES2_t::Execute()
                 if (usingDefaultFrameBuffer)
                     y = _GLES2_DefaultFrameBuffer_Height - y - h;
 
-                GL_CALL(glViewport(x, y, w, h));
+                glState.SetViewport(x, y, w, h);
             }
             else
             {
-                GL_CALL(glViewport(def_viewport[0], def_viewport[1], def_viewport[2], def_viewport[3]));
+                glState.SetViewport(def_viewport[0], def_viewport[1], def_viewport[2], def_viewport[3]);
             }
         }
         break;
@@ -918,7 +918,7 @@ void CommandBufferGLES2_t::Execute()
             const void* inst = (static_cast<const SWCommand_SetVertexProgConstBuffer*>(cmd))->inst;
             Handle buf = (static_cast<const SWCommand_SetVertexProgConstBuffer*>(cmd))->buffer;
             vp_const[buf_i] = buf;
-            vp_const_data[buf_i] = inst;
+            vp_const_data[buf_i] = reinterpret_cast<const float*>(inst);
         }
         break;
 
@@ -929,7 +929,7 @@ void CommandBufferGLES2_t::Execute()
             const void* inst = (static_cast<const SWCommand_SetFragmentProgConstBuffer*>(cmd))->inst;
             Handle buf = (static_cast<const SWCommand_SetFragmentProgConstBuffer*>(cmd))->buffer;
             fp_const[buf_i] = buf;
-            fp_const_data[buf_i] = inst;
+            fp_const_data[buf_i] = reinterpret_cast<const float*>(inst);
         }
         break;
 
@@ -985,6 +985,7 @@ void CommandBufferGLES2_t::Execute()
             }
 
             GL_CALL(glDrawArrays(mode, 0, v_cnt));
+
             StatSet::IncStat(stat_DP, 1);
             switch (mode)
             {
@@ -1047,6 +1048,7 @@ void CommandBufferGLES2_t::Execute()
             }
 
             GL_CALL(glDrawElements(mode, v_cnt, i_sz, _GLES2_LastSetIndices + i_off));
+
             StatSet::IncStat(stat_DIP, 1);
             switch (mode)
             {
@@ -1183,6 +1185,7 @@ void CommandBufferGLES2_t::Execute()
             #else
             GL_CALL(glDrawElementsInstancedBaseInstance(mode, v_cnt, i_sz, reinterpret_cast<void*>(static_cast<uint64>(i_off)), instCount, baseInst));
             #endif
+
             StatSet::IncStat(stat_DIP, 1);
             switch (mode)
             {
@@ -1525,21 +1528,21 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
         case GLCommand::BIND_BUFFER:
         {
-            GL_CALL(glBindBuffer(GLenum(arg[0]), *(reinterpret_cast<GLuint*>(arg[1]))));
+            glState.BindBuffer(GLenum(arg[0]), *(reinterpret_cast<GLuint*>(arg[1])));
             cmd->status = err;
         }
         break;
 
         case GLCommand::RESTORE_VERTEX_BUFFER:
         {
-            GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, _GLES2_LastSetVB));
+            glState.SetBufferBinding(OpenGLState::ArrayBuffer, _GLES2_LastSetVB);
             cmd->status = err;
         }
         break;
 
         case GLCommand::RESTORE_INDEX_BUFFER:
         {
-            GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _GLES2_LastSetIB));
+            glState.SetBufferBinding(OpenGLState::ElementArrayBuffer, _GLES2_LastSetIB);
             cmd->status = err;
         }
         break;
@@ -1582,27 +1585,22 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
         case GLCommand::SET_ACTIVE_TEXTURE:
         {
-            int t = int(arg[0]);
-
-            if (t != _GLES2_LastActiveTexture)
-            {
-                GL_CALL(glActiveTexture(GLenum(t)));
-                _GLES2_LastActiveTexture = t;
-                cmd->status = err;
-            }
+            DVASSERT(GLenum(arg[0]) < DeviceCaps().maxShaderTextures);
+            glState.SetActiveTexture(GLenum(arg[0]));
+            cmd->status = err;
         }
         break;
 
         case GLCommand::BIND_TEXTURE:
         {
-            GL_CALL(glBindTexture(GLenum(cmd->arg[0]), *(reinterpret_cast<GLuint*>(cmd->arg[1]))));
+            glState.BindTexture(GLenum(cmd->arg[0]), *(reinterpret_cast<GLuint*>(cmd->arg[1])));
             cmd->status = err;
         }
         break;
 
         case GLCommand::RESTORE_TEXTURE0:
         {
-            GL_CALL(glBindTexture(_GLES2_LastSetTex0Target, _GLES2_LastSetTex0));
+            glState.BindTexture(_GLES2_LastSetTex0Target, _GLES2_LastSetTex0);
             cmd->status = err;
         }
         break;
@@ -1716,7 +1714,7 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
             GLint validateStatus = 0;
             GLchar validateLog[2048] = {};
             GLsizei validateLogLength = 0;
-            GL_CALL(glUseProgram(program));
+            glState.UseProgram(program);
             GL_CALL(glValidateProgram(program));
             GL_CALL(glGetProgramiv(program, GL_VALIDATE_STATUS, &validateStatus));
             GL_CALL(glGetProgramInfoLog(program, 2048, &validateLogLength, validateLog));
@@ -1734,7 +1732,7 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
         case GLCommand::SET_CURRENT_PROGRAM_PTR:
         {
             GLint program = *(reinterpret_cast<GLint*>(arg[0]));
-            GL_CALL(glUseProgram(program));
+            glState.UseProgram(program);
         }
         break;
 
@@ -1884,11 +1882,10 @@ static void _GLES2_ExecImmediateCommand(CommonImpl::ImmediateCommand* command)
 
         case GLCommand::DRAWBUFFERS:
         {
-                #if defined __DAVAENGINE_IPHONE__ || defined __DAVAENGINE_ANDROID__
-                #else
+        #if !(defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__))
             GL_CALL(glDrawBuffers(GLuint(arg[0]), reinterpret_cast<GLenum*>(arg[1])));
             cmd->status = err;
-                #endif
+        #endif
         }
         break;
 

@@ -197,36 +197,64 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
     
     
 #if defined(__DAVAENGINE_IPHONE__)
-    writer.WriteLine(0, "#version 100");
-    writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
-    writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
-    writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
-    writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
-    writer.WriteLine(0, "#define shadow2D shadow2DEXT");
-    writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
 
-    if (usesTex2Dlod && (target == TARGET_FRAGMENT))
+    if (version == GLSL_300)
     {
+        writer.WriteLine(0, "#version 300 es");
+        if (target == TARGET_FRAGMENT)
+            writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+    }
+    else
+    {
+        writer.WriteLine(0, "#version 100");
+        writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
         writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
-        writer.WriteLine(0, "#define texture2DLod texture2DLodEXT");
-        writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
+        writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
+        writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
+        writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+        if (usesTex2Dlod && (target == TARGET_FRAGMENT))
+        {
+            writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
+            writer.WriteLine(0, "#define texture2DLod texture2DLodEXT");
+            writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
+        }
+        
+        writer.WriteLine(0, "#define textureGrad(s, uv, dx, dy) texture2D(s, uv)");
+        writer.WriteLine(0, "#define FramebufferFetch(i) gl_LastFragData[i]");
     }
 
-    writer.WriteLine(0, "#define textureGrad(s, uv, dx, dy) texture2D(s, uv)");
-
+    writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
     writer.WriteLine(0, "precision highp float;");
 
 #elif defined(__DAVAENGINE_ANDROID__)
-    writer.WriteLine(0, "#version 100");
-    writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
-    writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
-    writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
-    writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
-    writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+
+    if (version == GLSL_300)
+    {
+        writer.WriteLine(0, "#version 300 es");
+        if (target == TARGET_FRAGMENT)
+            writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+    }
+    else
+    {
+        writer.WriteLine(0, "#version 100");
+        writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
+        writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
+        writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
+        if (target == TARGET_FRAGMENT)
+        {
+            writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+            writer.WriteLine(0, "#define FramebufferFetch(i) gl_LastFragData[i]");
+        }
+        writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
+        writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+    }
+
     writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
     writer.WriteLine(0, "precision highp float;");
 
 #elif defined(__DAVAENGINE_MACOS__)
+
+    DVASSERT(version == GLSL_100);
 
     writer.WriteLine(0, "#version 120");
     writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : enable");
@@ -252,13 +280,6 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
 #endif
 
     writer.WriteLine(0, "#define FP_A8(t)       (t).a");
-
-#if defined(__DAVAENGINE_IPHONE__)
-    writer.WriteLine(0, "#define FramebufferFetch(i) gl_LastFragData[i]");
-#else
-    writer.WriteLine(0, "#define FramebufferFetch(i) vec4(1.0, 0.9, 0.3, 1.0)"); //GFX_COMPLETE - later just test it with caps, for now suppress compilation errors
-#endif
-
     writer.WriteLine(0, "");
     writer.WriteLine(0, "// per api bindings");
     writer.WriteLine(0, "#define ndcToUvMapping vec4(0.5, 0.5, 0.5, 0.5)"); // vec4(0.5, -0.5, 0.5, 0.5) - for non GL
@@ -408,13 +429,31 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
         HLSLStruct* fragment_out = tree->FindGlobalStruct("fragment_out");
         if (fragment_out != nullptr)
         {
+            Allocator allocator;
+            Array<sl::HLSLFunctionCall*> fbFetchcalls(&allocator);
+            std::set<uint32_t> fbFetchUnits;
+
+            const_cast<HLSLTree*>(tree)->FindFunctionCall("FramebufferFetch", &fbFetchcalls);
+            for (int i = 0; i < fbFetchcalls.GetSize(); ++i)
+            {
+                sl::HLSLFunctionCall* call = fbFetchcalls[i];
+                if ((call->numArguments == 1) && (call->argument->nodeType == HLSLNodeType_LiteralExpression))
+                {
+                    HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(call->argument);
+                    if (literalExpression->type == HLSLBaseType_Int)
+                        fbFetchUnits.insert(uint32_t(literalExpression->iValue));
+                }
+            }
+
             for (HLSLStructField* f = fragment_out->field; f; f = f->nextField)
             {
                 if (f->semantic != nullptr)
                 {
                     if (stricmp(f->semantic, "SV_TARGET") == 0)
                     {
-                        writer.WriteLine(0, "layout (location = 0) out vec4 %s;", DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], 0).c_str());
+                        const char* qualifier = (fbFetchUnits.count(0u) != 0u) ? "inout" : "out";
+                        writer.WriteLine(0, "layout (location = 0) %s vec4 %s;", qualifier, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], 0).c_str());
+                        fbFetchUnits.erase(0u);
                         continue;
                     }
 
@@ -422,11 +461,19 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
                     {
                         if (stricmp(f->semantic, GetFragmentOutTargetSemantic(outIndex)) == 0)
                         {
-                            writer.WriteLine(0, "layout (location = %d) out vec4 %s;", outIndex, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], outIndex).c_str());
+                            const char* qualifier = (fbFetchUnits.count(outIndex) != 0) ? "inout" : "out";
+                            writer.WriteLine(0, "layout (location = %d) %s vec4 %s;", outIndex, qualifier, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], outIndex).c_str());
+                            fbFetchUnits.erase(outIndex);
                             break;
                         }
                     }
                 }
+            }
+
+            //units used only for framebuffer-fetch
+            for (uint32_t unitIndex : fbFetchUnits)
+            {
+                writer.WriteLine(0, "layout (location = %d) inout vec4 %s;", unitIndex, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], unitIndex).c_str());
             }
         }
     }
@@ -903,6 +950,19 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             writer.Write("clamp(");
             OutputExpression(argument[0]);
             writer.Write(", 0.0, 1.0)");
+            handled = true;
+        }
+        else if (version == GLSL_300 && String_Equal(functionName, "FramebufferFetch"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1 || argument[0]->nodeType != HLSLNodeType_LiteralExpression || static_cast<HLSLLiteralExpression*>(argument[0])->type != HLSLBaseType_Int)
+            {
+                Error("FramebufferFetch expects 1 integer argument");
+                return;
+            }
+
+            HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(argument[0]);
+            writer.Write(DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], literalExpression->iValue).c_str());
             handled = true;
         }
 

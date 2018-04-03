@@ -368,7 +368,7 @@ public:
     }
     inline operator FbxVectorTemplate2<T>&() const
     {
-        return *((const FbxVectorTemplate2<T>*)this);
+        return *((FbxVectorTemplate2<T>*)this);
     }
     inline FbxVectorTemplate3<T>& operator=(T const& pValue)
     {
@@ -439,9 +439,9 @@ public:
     {
         return mData[pIndex];
     }
-    inline operator const FbxVectorTemplate3<T>&() const
+    inline operator FbxVectorTemplate3<T>&() const
     {
-        return *((const FbxVectorTemplate3<T>*)this);
+        return *((FbxVectorTemplate3<T>*)this);
     }
     inline FbxVectorTemplate4<T>& operator=(const T& pValue)
     {

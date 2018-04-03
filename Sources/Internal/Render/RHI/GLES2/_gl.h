@@ -493,7 +493,6 @@ extern DAVA::uint8* _GLES2_LastSetIndices;
 extern GLuint _GLES2_LastSetVB;
 extern GLuint _GLES2_LastSetTex0;
 extern GLenum _GLES2_LastSetTex0Target;
-extern int _GLES2_LastActiveTexture;
 
 extern bool _GLES2_IsDebugSupported;
 extern bool _GLES2_IsGlDepth24Stencil8Supported;

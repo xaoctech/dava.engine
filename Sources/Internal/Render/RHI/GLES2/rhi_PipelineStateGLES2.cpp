@@ -13,6 +13,7 @@
 using DAVA::Logger;
 
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 #define SAVE_GLES_SHADERS 0
 
@@ -20,11 +21,8 @@ namespace rhi
 {
 namespace PipelineStateGLES2
 {
-static int cachedBlendEnabled = -1;
 static GLenum cachedBlendSrc = 0;
 static GLenum cachedBlendDst = 0;
-static uint32 cachedProgram = 0;
-static GLboolean mask[4] = { false, false, false, false };
 }
 
 struct
@@ -38,7 +36,7 @@ VertexDeclGLES2
         GLenum type;
         int divisor;
         GLboolean normalized;
-        bool enabled;
+        // bool enabled;
     };
 
     static vattr_t vattr[VATTR_COUNT];
@@ -55,12 +53,12 @@ VertexDeclGLES2
     {
         elemCount = 0;
 
-        for (unsigned i = 0; i != layout.ElementCount(); ++i)
+        for (uint32 i = 0; i != layout.ElementCount(); ++i)
         {
             if (layout.ElementSemantics(i) == VS_PAD)
                 continue;
 
-            unsigned stream_i = layout.ElementStreamIndex(i);
+            uint32 stream_i = layout.ElementStreamIndex(i);
 
             switch (layout.ElementDataType(i))
             {
@@ -167,7 +165,7 @@ VertexDeclGLES2
     {
         GLCommand cmd[16];
 
-        for (unsigned i = 0; i != elemCount; ++i)
+        for (uint32 i = 0; i != elemCount; ++i)
         {
             cmd[i].func = GLCommand::GET_ATTRIB_LOCATION;
             cmd[i].arg[0] = gl_prog;
@@ -176,7 +174,7 @@ VertexDeclGLES2
 
         ExecGL(cmd, elemCount, forceExecute);
 
-        for (unsigned i = 0; i != elemCount; ++i)
+        for (uint32 i = 0; i != elemCount; ++i)
             elem[i].index = cmd[i].retval;
 
         vattrInited = true;
@@ -188,54 +186,41 @@ VertexDeclGLES2
         uint32 base[MAX_VERTEX_STREAM_COUNT];
         int attr_used[VATTR_COUNT];
 
-        for (unsigned s = 0; s != streamCount; ++s)
+        for (uint32 s = 0; s != streamCount; ++s)
             base[s] = firstVertex * stride[s];
 
         memset(attr_used, 0, sizeof(attr_used));
 
-        static unsigned cur_stride[MAX_VERTEX_STREAM_COUNT];
-        static unsigned cur_stream_count = 0;
+        static uint32 cur_stride[MAX_VERTEX_STREAM_COUNT];
+        static uint32 cur_stream_count = 0;
         static bool needInit = true;
 
         if (needInit)
         {
-            //                            for( vattr_t* a=vattr,*a_end=vattr+countof(vattr); a!=a_end; ++a )
-            //                                a->enabled = false;
             memset(vattr, 0, sizeof(vattr));
             memset(cur_stride, 0, sizeof(cur_stride));
-
-            // for (unsigned i = 0; i != VATTR_COUNT; ++i)
-            //    GL_CALL(glDisableVertexAttribArray(i));
-
             needInit = false;
         }
 
         //Trace("gl.vattr-array\n");
         //Trace("  base= %u  stride= %u  first_v= %u\n",base,stride,firstVertex);
 
-        for (unsigned i = 0; i != elemCount; ++i)
+        for (uint32 i = 0; i != elemCount; ++i)
         {
-            unsigned idx = elem[i].index;
+            uint32 idx = elem[i].index;
 
             if (idx != DAVA::InvalidIndex)
                 attr_used[idx] = 1;
         }
 
-        for (unsigned i = 0; i != countof(attr_used); ++i)
+        for (uint32 i = 0; i != countof(attr_used); ++i)
         {
-            if (!attr_used[i])
-            {
-                if (vattr[i].enabled)
-                {
-                    GL_CALL(glDisableVertexAttribArray(i));
-                    vattr[i].enabled = false;
-                }
-            }
+            glState.SetVertexAttributeEnabled(i, attr_used[i] ? OpenGLState::Enabled : OpenGLState::Disabled);
         }
 
-        unsigned stream = unsigned(-1);
+        uint32 stream = unsigned(-1);
 
-        for (unsigned i = 0; i != elemCount; ++i)
+        for (uint32 i = 0; i != elemCount; ++i)
         {
             if (!VAttrCacheValid || cur_stream_count != streamCount)
             {
@@ -248,16 +233,11 @@ VertexDeclGLES2
             }
             stream = elem[i].streamIndex;
 
-            unsigned idx = elem[i].index;
+            uint32 idx = elem[i].index;
 
             if (idx != DAVA::InvalidIndex)
             {
-                //Trace("[%u] count= %u  type= %u  norm= %i  stride= %u  offset= %u\n",idx,elem[i].count,elem[i].type,elem[i].normalized,stride,base+(uint8_t*)elem[i].offset);
-                if (!vattr[idx].enabled)
-                {
-                    GL_CALL(glEnableVertexAttribArray(idx));
-                    vattr[idx].enabled = true;
-                }
+                glState.SetVertexAttributeEnabled(idx, OpenGLState::Enabled);
 
                 if (!VAttrCacheValid || vattr[idx].size != elem[i].count || vattr[idx].type != elem[i].type || vattr[idx].normalized != GLboolean(elem[i].normalized) || cur_stride[stream] != stride[stream] || vattr[idx].pointer != static_cast<const GLvoid*>(base[stream] + static_cast<uint8_t*>(elem[i].offset)))
                 {
@@ -271,18 +251,7 @@ VertexDeclGLES2
 
                 if (DeviceCaps().isInstancingSupported && (!VAttrCacheValid || vattr[idx].divisor != elem[i].attrDivisor))
                 {
-                    #if defined(__DAVAENGINE_IPHONE__)
-                    GL_CALL(glVertexAttribDivisorEXT(idx, elem[i].attrDivisor));
-                    #elif defined(__DAVAENGINE_ANDROID__)
-                    if (glVertexAttribDivisor)
-                    {
-                        GL_CALL(glVertexAttribDivisor(idx, elem[i].attrDivisor));
-                    }
-                    #elif defined(__DAVAENGINE_MACOS__)
-                    GL_CALL(glVertexAttribDivisorARB(idx, elem[i].attrDivisor));
-                    #else
-                    GL_CALL(glVertexAttribDivisor(idx, elem[i].attrDivisor));
-                    #endif
+                    glState.SetVertexAttribDivisor(idx, elem[i].attrDivisor);
                     vattr[idx].divisor = elem[i].attrDivisor;
                 }
             }
@@ -301,31 +270,26 @@ VertexDeclGLES2
     static void InvalidateVAttrCacheForTools()
     {
         InvalidateVAttrCache();
-
-        for (size_t i = 0; i < VATTR_COUNT; ++i)
-        {
-            vattr[i].enabled = false;
-        }
     }
 
     struct
     Elem
     {
         char name[32];
-        unsigned index;
+        uint32 index;
 
-        unsigned type;
-        unsigned count;
-        unsigned streamIndex;
+        uint32 type;
+        uint32 count;
+        uint32 streamIndex;
         int normalized;
         int attrDivisor;
         void* offset;
     };
 
     Elem elem[VATTR_COUNT]; //-V730_NOINIT
-    unsigned elemCount;
-    unsigned stride[MAX_VERTEX_STREAM_COUNT];
-    unsigned streamCount;
+    uint32 elemCount;
+    uint32 stride[MAX_VERTEX_STREAM_COUNT];
+    uint32 streamCount;
     uint32 vattrInited : 1;
 
     static bool VAttrCacheValid;
@@ -388,9 +352,9 @@ public:
 
     struct program_t
     {
-        const VertexProgGLES2* vprog = nullptr;
-        const FragmentProgGLES2* fprog = nullptr;
-        unsigned glProg = 0;
+        VertexProgGLES2* vprog = nullptr;
+        FragmentProgGLES2* fprog = nullptr;
+        uint32 glProg = 0;
     };
 
     struct ProgramEntry
@@ -399,7 +363,7 @@ public:
         VertexProgGLES2* vprog;
         uint32 fprogSrcHash;
         FragmentProgGLES2* fprog;
-        unsigned glProg;
+        uint32 glProg;
         int refCount;
     };
 
@@ -519,7 +483,7 @@ bool PipelineStateGLES2_t::AcquireProgram(const PipelineState::Descriptor& desc,
 
             ExecGL(cmd1, countof(cmd1));
 
-            unsigned gl_prog = cmd1[0].retval;
+            uint32 gl_prog = cmd1[0].retval;
             GLCommand cmd2[] =
             {
               { GLCommand::ATTACH_SHADER, { gl_prog, entry.vprog->ShaderUid() } },
@@ -657,7 +621,7 @@ static Handle gles2_PipelineState_Create(const PipelineState::Descriptor& desc)
 
 //------------------------------------------------------------------------------
 
-static Handle gles2_PipelineState_CreateVertexConstBuffer(Handle ps, unsigned bufIndex)
+static Handle gles2_PipelineState_CreateVertexConstBuffer(Handle ps, uint32 bufIndex)
 {
     PipelineStateGLES2_t* ps2 = PipelineStateGLES2Pool::Get(ps);
 
@@ -666,7 +630,7 @@ static Handle gles2_PipelineState_CreateVertexConstBuffer(Handle ps, unsigned bu
 
 //------------------------------------------------------------------------------
 
-static Handle gles2_PipelineState_CreateFragmentConstBuffer(Handle ps, unsigned bufIndex)
+static Handle gles2_PipelineState_CreateFragmentConstBuffer(Handle ps, uint32 bufIndex)
 {
     PipelineStateGLES2_t* ps2 = PipelineStateGLES2Pool::Get(ps);
 
@@ -694,20 +658,13 @@ void SetToRHI(Handle ps)
 
     DVASSERT(ps2);
 
-    if (ps2->prog.glProg != cachedProgram)
-    {
-        GL_CALL(glUseProgram(ps2->prog.glProg));
-        cachedProgram = ps2->prog.glProg;
-        VertexDeclGLES2::InvalidateVAttrCache();
-    }
+    glState.UseProgram(ps2->prog.glProg);
+    VertexDeclGLES2::InvalidateVAttrCache();
 
     if (ps2->blendEnabled)
     {
-        if (cachedBlendEnabled != GL_TRUE)
-        {
-            GL_CALL(glEnable(GL_BLEND));
-            cachedBlendEnabled = GL_TRUE;
-        }
+        glState.SetEnabled(OpenGLState::StateBlend, OpenGLState::Enabled);
+
         if (ps2->blendSrc != cachedBlendSrc || ps2->blendDst != cachedBlendDst)
         {
             GL_CALL(glBlendFunc(ps2->blendSrc, ps2->blendDst));
@@ -717,21 +674,10 @@ void SetToRHI(Handle ps)
     }
     else
     {
-        if (cachedBlendEnabled != GL_FALSE)
-        {
-            GL_CALL(glDisable(GL_BLEND));
-            cachedBlendEnabled = GL_FALSE;
-        }
+        glState.SetEnabled(OpenGLState::StateBlend, OpenGLState::Disabled);
     }
 
-    if (ps2->maskR != mask[0] || ps2->maskG != mask[1] || ps2->maskB != mask[2] || ps2->maskA != mask[3])
-    {
-        GL_CALL(glColorMask(ps2->maskR, ps2->maskG, ps2->maskB, ps2->maskA));
-        mask[0] = ps2->maskR;
-        mask[1] = ps2->maskG;
-        mask[2] = ps2->maskB;
-        mask[3] = ps2->maskA;
-    }
+    glState.SetColorMask(ps2->maskR, ps2->maskG, ps2->maskB, ps2->maskA);
 }
 
 void SetVertexDeclToRHI(Handle ps, uint32 layoutUID, uint32 firstVertex, uint32 vertexStreamCount, const Handle* vb)
@@ -764,21 +710,16 @@ void SetVertexDeclToRHI(Handle ps, uint32 layoutUID, uint32 firstVertex, uint32 
         }
     }
 
-    //if( layoutUID != VertexLayout::InvalidUID )
-    //VertexLayout::Get( layoutUID )->Dump();
     ps2->prog.vprog->SetToRHI(layoutUID, firstVertex, vertexStreamCount, vb);
 }
 
-uint32
-VertexSamplerCount(Handle ps)
+uint32 VertexSamplerCount(Handle ps)
 {
     PipelineStateGLES2_t* ps2 = PipelineStateGLES2Pool::Get(ps);
-
     return ps2->prog.vprog->SamplerCount();
 }
 
-uint32
-ProgramUid(Handle ps)
+uint32 ProgramUid(Handle ps)
 {
     PipelineStateGLES2_t* ps2 = PipelineStateGLES2Pool::Get(ps);
 
@@ -787,12 +728,8 @@ ProgramUid(Handle ps)
 
 void InvalidateCache()
 {
-    cachedBlendEnabled = -1;
     cachedBlendSrc = 0;
     cachedBlendDst = 0;
-    cachedProgram = 0;
-    mask[0] = mask[1] = mask[2] = mask[3] = false;
-
     VertexDeclGLES2::InvalidateVAttrCacheForTools();
 }
 
