@@ -38,7 +38,6 @@ private:
     IClient* client = nullptr;
     IServer* server = nullptr;
     FpsMeter fpsMeter;
-    FpsMeter ffpsMeter;
     uint32 realCurrFrameId = 0;
 };
 }

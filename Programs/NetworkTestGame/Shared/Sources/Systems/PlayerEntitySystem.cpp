@@ -76,7 +76,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerEntitySystem)
 {
     ReflectionRegistrator<PlayerEntitySystem>::Begin()[M::Tags("playerentity")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PlayerEntitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 24.0f)]
+    .Method("Process", &PlayerEntitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 24.0f)]
     .End();
 }
 
@@ -88,7 +88,7 @@ PlayerEntitySystem::PlayerEntitySystem(DAVA::Scene* scene)
     optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
 }
 
-void PlayerEntitySystem::ProcessFixed(DAVA::float32 timeElapsed)
+void PlayerEntitySystem::Process(DAVA::float32 timeElapsed)
 {
     for (Entity* e : tanksSubscriber->entities)
     {

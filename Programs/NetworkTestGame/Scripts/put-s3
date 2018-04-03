@@ -4,7 +4,7 @@ set -e
 
 ARCH_NAME=${1:-logs.tar.gz}
 BUCKET=${2:-ci.autobot.terraform@eu-central-1}
-CLIENT_BIN=${3:-_game/Client/Client}
+CLIENT_BIN=${3:-_game/app/Client}
 
 . aws_env.sh
 

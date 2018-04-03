@@ -62,6 +62,10 @@ void NetworkResimulationSingleComponent::RegisterEngineVariables()
 
         registered = true;
     }
+    else
+    {
+        DVASSERT(false);
+    }
 }
 
 namespace NetworkResimulationSingleComponentDetails

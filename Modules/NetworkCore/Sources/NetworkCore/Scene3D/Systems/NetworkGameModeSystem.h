@@ -36,7 +36,7 @@ private:
     IClient* client = nullptr;
 
     NetworkGameModeSingleComponent* netGameModeComp = nullptr;
-    NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
+    const NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
     ActionsSingleComponent* actionSingleComponent = nullptr;
 };
 }

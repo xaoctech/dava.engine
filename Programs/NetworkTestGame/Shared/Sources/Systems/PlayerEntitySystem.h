@@ -20,7 +20,7 @@ public:
 
     PlayerEntitySystem(DAVA::Scene* scene);
 
-    void ProcessFixed(DAVA::float32 timeElapsed) override;
+    void Process(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
 private:

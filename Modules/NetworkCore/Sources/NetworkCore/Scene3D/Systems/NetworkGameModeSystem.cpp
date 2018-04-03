@@ -33,7 +33,7 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
 {
     if (IsServer(this))
     {
-        netConnectionsComp = scene->GetSingleComponent<NetworkServerConnectionsSingleComponent>();
+        netConnectionsComp = scene->GetSingleComponentForRead<NetworkServerConnectionsSingleComponent>(this);
         DVASSERT(netConnectionsComp);
         server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
         server->SubscribeOnTokenConfirmation(OnServerTokenConfirmationCb(this, &NetworkGameModeSystem::OnTokenConfirmationServer));

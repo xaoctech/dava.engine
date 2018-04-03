@@ -38,10 +38,7 @@ MotionSystem::~MotionSystem()
 
 void MotionSystem::SetScene(Scene* scene)
 {
-    if (scene != nullptr)
-    {
-        motionSingleComponent = scene->GetSingleComponentForWrite<MotionSingleComponent>(this);
-    }
+    motionSingleComponent = scene->GetSingleComponentForWrite<MotionSingleComponent>(this);
 }
 
 void MotionSystem::AddEntity(Entity* entity)

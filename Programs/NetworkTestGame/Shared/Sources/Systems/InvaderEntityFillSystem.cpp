@@ -39,7 +39,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(InvaderEntityFillSystem)
 {
     ReflectionRegistrator<InvaderEntityFillSystem>::Begin()[M::Tags("gm_invaders")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &InvaderEntityFillSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.31f)]
+    .Method("Process", &InvaderEntityFillSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 8.0f)]
     .End();
 }
 
@@ -50,7 +50,7 @@ InvaderEntityFillSystem::InvaderEntityFillSystem(DAVA::Scene* scene)
     subscriber = scene->AquireEntityGroupOnAdd(scene->AquireEntityGroup<PlayerInvaderComponent>(), this);
 }
 
-void InvaderEntityFillSystem::ProcessFixed(DAVA::float32 timeElapsed)
+void InvaderEntityFillSystem::Process(DAVA::float32 timeElapsed)
 {
     for (Entity* e : subscriber->entities)
     {

@@ -349,7 +349,6 @@ protected:
         float32 overlap = 0.f;
         bool paused = false;
         bool onlyOnce = false;
-        bool firstUpdate = true;
     } fixedUpdate;
 
     friend class Entity;

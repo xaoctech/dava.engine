@@ -38,7 +38,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystem)
     ReflectionRegistrator<GameModeSystem>::Begin()[M::Tags("gm_tanks")]
     .ConstructorByPointer<Scene*>()
     .Method("Process", &GameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 5.0f)]
-    .Method("ProcessFixed", &GameModeSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.1f)]
     .End();
 }
 
@@ -53,6 +52,10 @@ GameModeSystem::GameModeSystem(Scene* scene)
 void GameModeSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameModeSystem::Process");
+    for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
+    {
+        OnClientConnected(justConnectedToken);
+    }
 
     if (!gameModeComp->IsMapLoaded())
     {
@@ -77,14 +80,6 @@ void GameModeSystem::Process(float32 timeElapsed)
     default:
         break;
     };
-}
-
-void GameModeSystem::ProcessFixed(DAVA::float32 timeElapsed)
-{
-    for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
-    {
-        OnClientConnected(justConnectedToken);
-    }
 }
 
 void GameModeSystem::OnClientConnected(const FastName& token)

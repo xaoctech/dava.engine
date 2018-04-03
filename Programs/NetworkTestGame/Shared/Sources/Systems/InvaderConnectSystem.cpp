@@ -32,7 +32,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(InvaderConnectSystem)
     ReflectionRegistrator<InvaderConnectSystem>::Begin()[M::Tags("gm_invaders", "server")]
     .ConstructorByPointer<Scene*>()
     .Method("Process", &InvaderConnectSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 7.0f)]
-    .Method("ProcessFixed", &InvaderConnectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.3f)]
     .End();
 }
 
@@ -49,6 +48,13 @@ InvaderConnectSystem::InvaderConnectSystem(Scene* scene)
 void InvaderConnectSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("GameModeSystem::Process");
+    if (IsServer(this))
+    {
+        for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
+        {
+            OnClientConnected(justConnectedToken);
+        }
+    }
 
     NetworkGameModeSingleComponent* netGameModeComponent = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     if (nullptr != netGameModeComponent)
@@ -64,17 +70,6 @@ void InvaderConnectSystem::Process(float32 timeElapsed)
                 netGameModeComponent->SetIsLoaded(true);
                 Logger::Debug("Map is loaded: %s", mapName.c_str());
             }
-        }
-    }
-}
-
-void InvaderConnectSystem::ProcessFixed(DAVA::float32 timeElapsed)
-{
-    if (IsServer(this))
-    {
-        for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
-        {
-            OnClientConnected(justConnectedToken);
         }
     }
 }

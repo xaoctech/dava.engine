@@ -29,7 +29,6 @@ public:
 
     GameModeSystem(DAVA::Scene* scene);
     void Process(DAVA::float32 timeElapsed) override;
-    void ProcessFixed(DAVA::float32 timeElapsed) override;
     void PrepareForRemove() override{};
     void OnClientConnected(const DAVA::FastName& token);
 
