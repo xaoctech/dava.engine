@@ -536,7 +536,7 @@ void Scene::RegisterComponent(Entity* entity, Component* component)
 {
     DVASSERT(entity && component);
     static bool entered = false;
-    DVASSERT(entered == false, "Scene::RegisterComponent should not be called recurlively");
+    DVASSERT(entered == false, "Scene::RegisterComponent should not be called recursively");
     entered = true;
     uint32 systemsCount = static_cast<uint32>(systemsVector.size());
     for (uint32 k = 0; k < systemsCount; ++k)
@@ -645,7 +645,7 @@ void Scene::AddTag(FastName tag)
 
 void Scene::RemoveTag(FastName tag)
 {
-    DVASSERT(!tags.empty() && tag != FastName("base"));
+    DVASSERT(HasTag(tag));
 
     tagsToChange.emplace_back(tag, TagAction::REMOVE);
 }
@@ -727,15 +727,23 @@ void Scene::ProcessChangedTags()
         }
         else if (p.second == TagAction::REMOVE && it != tags.end())
         {
+            Vector<SceneSystem*> systemsToRemove;
+
             for (const auto& sp : systemsMap)
             {
                 const auto& tagsForSystem = sm->GetTagsForSystem(sp.first);
                 if (std::find(tagsForSystem.begin(), tagsForSystem.end(), tag) != tagsForSystem.end())
                 {
-                    RemoveSystem(sp.second);
-                    entitiesManager->UpdateCaches();
+                    systemsToRemove.push_back(sp.second);
                 }
             }
+
+            for (SceneSystem* system : systemsToRemove)
+            {
+                RemoveSystem(system);
+                entitiesManager->UpdateCaches();
+            }
+
             tags.erase(it);
         }
     }
@@ -783,18 +791,23 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
 {
     if (!fixedUpdate.paused)
     {
-        if (fixedUpdate.onlyOnce)
-        {
+        auto ProcessFixedMethods = [this]() {
             for (SceneSystem* system : systemsToFixedProcess)
             {
                 system->ProcessFixed(fixedUpdate.fixedTime);
                 entitiesManager->UpdateCaches();
             }
+        };
 
+        if (fixedUpdate.accumulatedTime >= fixedUpdate.fixedTime || fixedUpdate.firstUpdate)
+        {
+            DVASSERT(!Renderer::IsInitialized() || (fixedUpdate.fixedTime >= 1.f / Renderer::GetDesiredFPS()));
+
+            ProcessFixedMethods();
             ClearFixedProcessesSingleComponents();
 
             fixedUpdate.overlap = 1.0f;
-            fixedUpdate.accumulatedTime = 0.0f;
+            fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
@@ -803,12 +816,7 @@ void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
             fixedUpdate.accumulatedTime += timeElapsed;
             while (fixedUpdate.accumulatedTime > 0)
             {
-                for (SceneSystem* system : systemsToFixedProcess)
-                {
-                    system->ProcessFixed(fixedUpdate.fixedTime);
-                    entitiesManager->UpdateCaches();
-                }
-
+                ProcessFixedMethods();
                 ClearFixedProcessesSingleComponents();
 
                 if (fixedUpdate.paused)
@@ -872,19 +880,25 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
             }
         };
 
+        fixedUpdate.accumulatedTime += timeElapsed;
+
         if (fixedUpdate.onlyOnce)
         {
-            ProcessFixedMethods();
-            ClearFixedProcessesSingleComponents();
+            if (fixedUpdate.accumulatedTime >= fixedUpdate.fixedTime || fixedUpdate.firstUpdate)
+            {
+                DVASSERT(!Renderer::IsInitialized() || (fixedUpdate.fixedTime >= 1.f / Renderer::GetDesiredFPS()));
 
-            fixedUpdate.overlap = 1.0f;
-            fixedUpdate.accumulatedTime = 0.0f;
+                ProcessFixedMethods();
+                ClearFixedProcessesSingleComponents();
+
+                fixedUpdate.overlap = 1.0f;
+                fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
+            }
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
             size_t fuCount = 0;
 
-            fixedUpdate.accumulatedTime += timeElapsed;
             while (fixedUpdate.accumulatedTime > 0)
             {
                 ProcessFixedMethods();
@@ -1224,6 +1238,8 @@ void Scene::Update(float32 timeElapsed)
         pendingSingleComponentsUsageValidation = false;
     }
 #endif
+
+    fixedUpdate.firstUpdate = false;
 }
 
 void Scene::Draw()

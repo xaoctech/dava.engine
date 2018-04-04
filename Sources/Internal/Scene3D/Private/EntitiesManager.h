@@ -109,6 +109,8 @@ private:
         Vector<std::unique_ptr<ComponentGroupOnAddBase>> componentGroupsOnAdd;
     } backUp;
 
+    // TODO: Detach mechanism needs to be simplified. Too many cases we need to check.
+    UnorderedSet<Entity*> detachedEntities;
     UnorderedSet<Entity*> entitiesAddedInDetachedState;
     UnorderedSet<Entity*> entitiesRemovedInDetachedState;
     UnorderedMap<Component*, Entity*> componentsAddedInDetachedState;

@@ -61,11 +61,25 @@ void EntitiesManager::RegisterEntity(Entity* entity)
     if (isInDetachedState)
     {
         entitiesAddedInDetachedState.insert(entity);
+
+        DVASSERT(detachedEntities.count(entity) == 0);
     }
 }
 
 void EntitiesManager::UnregisterEntity(Entity* entity)
 {
+    if (isInDetachedState)
+    {
+        if (detachedEntities.erase(entity) != 0)
+        {
+            entitiesRemovedInDetachedState.insert(entity);
+        }
+        else if (entitiesAddedInDetachedState.erase(entity) == 0)
+        {
+            return;
+        }
+    }
+
     for (auto& pair : componentGroups)
     {
         ComponentMask mask = pair.first.mask;
@@ -98,11 +112,6 @@ void EntitiesManager::UnregisterEntity(Entity* entity)
         {
             CacheEntityRemoved(&eg, entity);
         }
-    }
-
-    if (isInDetachedState && entitiesAddedInDetachedState.erase(entity) == 0)
-    {
-        entitiesRemovedInDetachedState.insert(entity);
     }
 }
 
@@ -202,6 +211,17 @@ void EntitiesManager::RegisterComponent(Entity* entity, Component* component)
 
 void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
 {
+    if (isInDetachedState)
+    {
+        componentsAddedInDetachedState.erase(component);
+
+        if (entitiesAddedInDetachedState.count(entity) == 0 && detachedEntities.count(entity) == 0)
+        {
+            componentsRemovedInDetachedState[component] = entity;
+            return;
+        }
+    }
+
     const ComponentMask& entityComponentMask = entity->GetAvailableComponentMask();
     ComponentMask componentToCheckType = ComponentUtils::MakeMask(component->GetType());
 
@@ -243,11 +263,6 @@ void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
         }
     }
 
-    if (isInDetachedState && componentsAddedInDetachedState.erase(component) == 0)
-    {
-        componentsRemovedInDetachedState[component] = entity;
-    }
-
     if (entity->GetComponentCount(component->GetType()) == 1)
     {
         for (auto& pair : entityGroups)
@@ -270,6 +285,8 @@ void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
 void EntitiesManager::RegisterDetachedEntity(Entity* entity)
 {
     DVASSERT(isInDetachedState);
+
+    DVASSERT(detachedEntities.count(entity) == 0);
 
     SuppressSignals();
     for (auto& pair : componentGroups)
@@ -306,6 +323,8 @@ void EntitiesManager::RegisterDetachedEntity(Entity* entity)
         }
     }
     AllowSignals();
+
+    detachedEntities.insert(entity);
 }
 
 bool EntitiesManager::IsInDetachedState()
@@ -537,12 +556,14 @@ void EntitiesManager::RestoreGroups()
             Entity* entity = p.second;
             if (entitiesAddedInDetachedState.count(entity) == 0)
             {
+                DVASSERT(entity->GetScene() != nullptr);
                 RegisterComponent(entity, component);
             }
         }
 
         for (Entity* entity : entitiesAddedInDetachedState)
         {
+            DVASSERT(entity->GetScene() != nullptr);
             RegisterEntity(entity);
         }
 
@@ -567,6 +588,7 @@ void EntitiesManager::RestoreGroups()
     }
     AllowSignals();
 
+    detachedEntities.clear();
     entitiesAddedInDetachedState.clear();
     entitiesRemovedInDetachedState.clear();
     componentsAddedInDetachedState.clear();

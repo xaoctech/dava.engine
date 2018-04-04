@@ -2064,8 +2064,6 @@ void PhysicsSystem::UnfreezeResimulatedBody(DynamicBodyComponent* body)
     auto it = frozenDynamicBodiesParams.find(body);
     DVASSERT(it != frozenDynamicBodiesParams.end());
 
-    auto& params = it->second;
-
     body->SetIsKinematic(false);
 
     // We do not restore velocity for a body we will resimulate
