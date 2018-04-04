@@ -437,4 +437,51 @@ DAVA_TESTCLASS (FileListTest)
 
 #endif //PLATFORMS
     }
+
+    DAVA_TEST (FileSizeTest)
+    {
+        RefPtr<File> emptyFile(File::Create("~doc:/TestData/FileListTest/Folder1/file1", File::CREATE | File::WRITE));
+        TEST_VERIFY(emptyFile != nullptr);
+        emptyFile = nullptr;
+
+        RefPtr<File> textFile(File::Create("~doc:/TestData/FileListTest/Folder1/file2.txt", File::CREATE | File::WRITE));
+        TEST_VERIFY(textFile != nullptr);
+        String textFileContents = "Hello! :)";
+        textFile->WriteNonTerminatedString(textFileContents);
+        textFile = nullptr;
+
+        RefPtr<File> binaryFile(File::Create("~doc:/TestData/FileListTest/Folder1/file3.doc", File::CREATE | File::WRITE));
+        TEST_VERIFY(binaryFile != nullptr);
+        uint32 binaryFileSize = 1337;
+        Vector<uint8> binaryFileContents(binaryFileSize);
+        for (uint32 i = 0; i < binaryFileSize; i++)
+        {
+            binaryFileContents[binaryFileSize] = static_cast<uint8>(i % 256U);
+        }
+        binaryFile->Write(binaryFileContents.data(), binaryFileSize);
+        binaryFile = nullptr;
+
+        ScopedPtr<FileList> fileList(new FileList("~doc:/TestData/FileListTest/Folder1/"));
+        for (uint32 i = 0; i < fileList->GetCount(); ++i)
+        {
+            if (fileList->IsNavigationDirectory(i))
+                continue;
+
+            String f = fileList->GetFilename(i);
+            uint32 s = fileList->GetFileSize(i);
+
+            if (f == "file1")
+            {
+                TEST_VERIFY(s == 0);
+            }
+            else if (f == "file2.txt")
+            {
+                TEST_VERIFY(s == textFileContents.size());
+            }
+            else if (f == "file3.doc")
+            {
+                TEST_VERIFY(s == binaryFileSize);
+            }
+        }
+    }
 };
