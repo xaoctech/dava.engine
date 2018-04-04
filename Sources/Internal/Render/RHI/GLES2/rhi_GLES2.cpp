@@ -188,14 +188,14 @@ static void gles_CheckTexturesFormats()
 
         case TEXTURE_FORMAT_ETC1:
             formatCaps.fetchable = ETC1_Supported;
-            formatCaps.filterable = ATC_Supported;
+            formatCaps.filterable = ETC1_Supported;
             break;
 
         case TEXTURE_FORMAT_ETC2_R8G8B8:
         case TEXTURE_FORMAT_ETC2_R8G8B8A8:
         case TEXTURE_FORMAT_ETC2_R8G8B8A1:
             formatCaps.fetchable = ETC2_Supported;
-            formatCaps.filterable = ATC_Supported;
+            formatCaps.filterable = ETC2_Supported;
             break;
 
         case TEXTURE_FORMAT_EAC_R11_UNSIGNED:

@@ -19,13 +19,14 @@ void HDRForwardPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 
     if (inplaceCombine && (!hdrTexture.IsValid() || !luminanceTexture.IsValid()))
     {
+        Size2i sizei = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
         rhi::Texture::Descriptor textureConfig;
         textureConfig.needRestore = false;
         textureConfig.isRenderTarget = true;
         textureConfig.cpuAccessRead = false;
         textureConfig.cpuAccessWrite = false;
-        textureConfig.width = passConfig.viewport.width;
-        textureConfig.height = passConfig.viewport.height;
+        textureConfig.width = uint32(sizei.dx);
+        textureConfig.height = uint32(sizei.dy);
 
         textureConfig.memoryless = true;
         textureConfig.format = rhi::TEXTURE_FORMAT_RGBA16F;
@@ -44,14 +45,13 @@ void HDRForwardPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 
     if (inplaceCombine)
     {
-        passConfig.colorBuffer[0].texture = rhi::InvalidHandle;
         passConfig.colorBuffer[0].storeAction = rhi::STOREACTION_STORE;
         passConfig.colorBuffer[1].texture = hdrTexture;
         passConfig.colorBuffer[1].storeAction = rhi::STOREACTION_NONE;
         passConfig.colorBuffer[2].texture = luminanceTexture;
         passConfig.colorBuffer[2].storeAction = rhi::STOREACTION_STORE;
         passConfig.explicitColorBuffersCount = 3;
-        postEffectRenderer->SetFrameContext(hdrTexture, rhi::HTexture(), passConfig.viewport);
+        postEffectRenderer->SetFrameContext(hdrTexture, rhi::HTexture(passConfig.colorBuffer[0].texture), passConfig.viewport);
     }
     else
     {

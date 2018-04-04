@@ -432,24 +432,6 @@ void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 
 void RenderSystem::ConfigureActivePass()
 {
-    renderConfig.rescale = false;
-    renderConfig.scaledViewport.x = 0;
-    renderConfig.scaledViewport.y = 0;
-
-    if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D))
-    {
-        renderConfig.rescale = true;
-        renderConfig.scaledViewport.dx = floorf(renderConfig.viewport.dx * 0.5f + 0.5f);
-        renderConfig.scaledViewport.dy = floorf(renderConfig.viewport.dy * 0.5f + 0.5f);
-    }
-    else
-    {
-        renderConfig.scaledViewport.dx = renderConfig.viewport.dx;
-        renderConfig.scaledViewport.dy = renderConfig.viewport.dy;
-    }
-
-    renderConfig.rescale |= QualitySettingsSystem::Instance()->GetForceRescale() || GetTxaaEnabled();
-
     if (Renderer::GetCurrentRenderFlow() != currentRenderFlow)
     {
         currentRenderFlow = Renderer::GetCurrentRenderFlow();
@@ -492,6 +474,30 @@ void RenderSystem::ConfigureActivePass()
 
     DVASSERT(activeRenderPass != nullptr);
 
+    renderConfig.intermediateLDRBuffer = false;
+    renderConfig.scaledViewport.x = 0;
+    renderConfig.scaledViewport.y = 0;
+
+    if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D))
+    {
+        renderConfig.intermediateLDRBuffer = true;
+        renderConfig.scaledViewport.dx = floorf(renderConfig.viewport.dx * 0.5f + 0.5f);
+        renderConfig.scaledViewport.dy = floorf(renderConfig.viewport.dy * 0.5f + 0.5f);
+    }
+    else
+    {
+        renderConfig.scaledViewport.dx = renderConfig.viewport.dx;
+        renderConfig.scaledViewport.dy = renderConfig.viewport.dy;
+    }
+
+    if (rhi::HostApi().api == rhi::RHI_GLES2)
+    {
+        //on GL we can't attach screen frame-buffer to FBO
+        renderConfig.intermediateLDRBuffer |= (currentRenderFlow == RenderFlow::TileBasedHDRForward) || (currentRenderFlow == RenderFlow::TileBasedHDRDeferred);
+    }
+    renderConfig.intermediateLDRBuffer |= GetTxaaEnabled();
+    renderConfig.intermediateLDRBuffer |= QualitySettingsSystem::Instance()->GetForceRescale();
+
     // set active pass configuration
     rhi::RenderPassConfig& config = activeRenderPass->GetPassConfig();
 
@@ -506,14 +512,14 @@ void RenderSystem::ConfigureActivePass()
     config.depthStencilBuffer.storeAction = renderConfig.storeDepth ? rhi::STOREACTION_STORE : rhi::STOREACTION_NONE;
 
 #if (ENABLE_DEBUG_DRAW)
-    if (renderConfig.rescale)
+    if (renderConfig.intermediateLDRBuffer)
         config.depthStencilBuffer.storeAction = rhi::STOREACTION_STORE;
 #endif
 
     config.priority = renderConfig.basePriority; // +PRIORITY_SERVICE_3D;
 
-    ConfigureFBOs(renderConfig.rescale, GetTxaaEnabled());
-    if (renderConfig.rescale)
+    ConfigureFBOs();
+    if (renderConfig.intermediateLDRBuffer)
     {
         uint32 ldrBuffer = (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred) ? 5u : 0u;
         config.colorBuffer[ldrBuffer].texture = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT));
@@ -553,26 +559,30 @@ Texture::FBODescriptor RenderSystem::GetFBOConfig() const
     return config;
 }
 
-void RenderSystem::ConfigureFBOs(bool rescale, bool txaa)
+void RenderSystem::ConfigureFBOs()
 {
     // Set ldr_current and ldr_history here because ConfigureActivePass called after the moment when current and history had been set.
-    if (rescale && ldrCurrent == nullptr)
+    if (renderConfig.intermediateLDRBuffer && ldrCurrent == nullptr)
     {
         Texture::FBODescriptor config = GetFBOConfig();
         ldrCurrent = Texture::CreateFBO(config);
         Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT), ldrCurrent->handle);
     }
-    else if (!rescale && ldrCurrent != nullptr)
+    else if (!renderConfig.intermediateLDRBuffer && ldrCurrent != nullptr)
+    {
         SafeRelease(ldrCurrent);
+    }
 
-    if (txaa && ldrHistory == nullptr)
+    if (GetTxaaEnabled() && ldrHistory == nullptr)
     {
         Texture::FBODescriptor config = GetFBOConfig();
         ldrHistory = Texture::CreateFBO(config);
         Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY), ldrHistory->handle);
     }
-    else if (!txaa && ldrHistory != nullptr)
+    else if (!GetTxaaEnabled() && ldrHistory != nullptr)
+    {
         SafeRelease(ldrHistory);
+    }
 }
 
 bool RenderSystem::GetTxaaEnabled() const
@@ -625,7 +635,7 @@ void RenderSystem::Render()
 #endif
 
     //GFX_COMPLETE - if required use upscale pass
-    if (renderConfig.rescale)
+    if (renderConfig.intermediateLDRBuffer)
     {
         rescalePass->Draw(this);
 
