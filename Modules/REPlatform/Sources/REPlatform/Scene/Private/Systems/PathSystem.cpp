@@ -242,6 +242,32 @@ void PathSystem::OnEdgeDeleted(PathComponent* path, PathComponent::Waypoint* way
     }
 }
 
+void PathSystem::BakeWaypoints()
+{
+    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
+    scene->BeginBatch("Bake waypoints");
+
+    for (Entity* path : pathes)
+    {
+        const Matrix4& worldTransform = path->GetWorldTransform();
+        PathComponent* component = path->GetComponent<PathComponent>();
+        for (PathComponent::Waypoint* point : component->GetPoints())
+        {
+            Vector3 newPosition = point->position * worldTransform;
+            Reflection::Field field;
+            field.ref = Reflection::Create(point).GetField("waypointPosition");
+            scene->Exec(std::make_unique<SetFieldValueCommand>(field, newPosition));
+        }
+
+        for (Entity* parentEntity = path; parentEntity != nullptr && parentEntity != scene; parentEntity = parentEntity->GetParent())
+        {
+            scene->Exec(std::make_unique<TransformCommand>(Selectable(Any(parentEntity)), parentEntity->GetLocalTransform(), Matrix4::IDENTITY));
+        }
+    }
+
+    scene->EndBatch();
+}
+
 void PathSystem::Draw()
 {
     const uint32 count = static_cast<uint32>(pathes.size());

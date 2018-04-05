@@ -879,15 +879,16 @@ void SceneManagerModule::OpenSceneByPath(const DAVA::FilePath& scenePath)
 
     DAVA::RefPtr<SceneEditor2> scene = OpenSceneImpl(scenePath);
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
+    SceneData* sceneDataPtr = sceneData.get();
     sceneData->scene = scene;
-
-    CreateSceneProperties(sceneData.get());
-    scene->LoadSystemsLocalProperties(sceneData.get()->GetPropertiesRoot(), accessor);
 
     DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>> initialData;
     initialData.emplace_back(std::move(sceneData));
     DataContext::ContextID newContext = contextManager->CreateContext(std::move(initialData));
     contextManager->ActivateContext(newContext);
+
+    CreateSceneProperties(sceneDataPtr);
+    scene->LoadSystemsLocalProperties(sceneDataPtr->GetPropertiesRoot(), accessor);
 }
 
 void SceneManagerModule::AddSceneByPath(const DAVA::FilePath& scenePath)
