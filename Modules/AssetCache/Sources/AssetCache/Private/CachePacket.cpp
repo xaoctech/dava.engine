@@ -168,7 +168,10 @@ DataChunkPacket::DataChunkPacket(ePacketID packetId, const CacheItemKey& key, ui
     serializationBuffer->Write(&numOfChunks, sizeof(numOfChunks));
     serializationBuffer->Write(&chunkNumber, sizeof(chunkNumber));
     serializationBuffer->Write(&chunkDataSize, sizeof(chunkDataSize));
-    serializationBuffer->Write(chunkData.data(), chunkDataSize);
+    if (chunkDataSize > 0)
+    {
+        serializationBuffer->Write(chunkData.data(), chunkDataSize);
+    }
 }
 
 DataChunkPacket::DataChunkPacket(ePacketID packetId)

@@ -55,7 +55,7 @@ EngineSettingsVar* EngineSettings::RegisterVar(FastName name, Any defaultValue, 
     }
     else
     {
-        EngineSettingsVar* var = GetVar(it->second);
+        var = GetVar(it->second);
 
         DVASSERT(nullptr != var);
         DVASSERT(var->help == help);

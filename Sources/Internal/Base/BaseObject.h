@@ -204,18 +204,22 @@ public:
 };
 };
 
-#define REGISTER_CLASS(class_name) \
-static void* Create##class_name()\
-{\
-return new class_name();\
-};\
-static DAVA::ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name));
+#define REGISTER_CLASS(class_name) REGISTER_CLASS_WITH_NAMESPACE(class_name, )
 
-#define REGISTER_CLASS_WITH_ALIAS(class_name, alias) \
+#define REGISTER_CLASS_WITH_NAMESPACE(class_name, namespace_name) \
 static void* Create##class_name()\
 {\
-return new class_name();\
+return new namespace_name class_name();\
 };\
-static DAVA::ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(class_name), sizeof(class_name), alias);
+static DAVA::ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(namespace_name class_name), sizeof(namespace_name class_name));
+
+#define REGISTER_CLASS_WITH_ALIAS(class_name, alias) REGISTER_CLASS_WITH_ALIAS_AND_NAMESPACE(class_name, alias, )
+
+#define REGISTER_CLASS_WITH_ALIAS_AND_NAMESPACE(class_name, alias, namespace_name) \
+static void* Create##class_name()\
+{\
+return new namespace_name class_name();\
+};\
+static DAVA::ObjectRegistrator registrator##class_name(#class_name, &Create##class_name, typeid(namespace_name class_name), sizeof(namespace_name class_name), alias);
 
 #endif // __DAVAENGINE_BASEOBJECT_H__
