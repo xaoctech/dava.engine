@@ -97,7 +97,7 @@ static std::pair<PrinterFn, PrinterFn> GetPrinterFns(const Type* type)
     return ret;
 }
 
-String VisualScriptExecutor::DumpAny(Any& any)
+String VisualScriptExecutor::DumpAny(const Any& any)
 {
     std::ostringstream line;
     std::pair<PrinterFn, PrinterFn> fns = GetPrinterFns(any.GetType());
@@ -116,7 +116,7 @@ void VisualScriptExecutor::ExecuteGetVarNode(VisualScriptGetVarNode* node, Visua
 {
     Any result = node->GetReflection().GetValue();
     node->GetDataOutputPin(0)->SetValue(result);
-    Logger::Debug("Get Var: %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
+    VSLogger_Debug("Get Var: %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
 }
 
 void VisualScriptExecutor::ExecuteSetVarNode(VisualScriptSetVarNode* node, VisualScriptPin* entryPin)
@@ -126,14 +126,14 @@ void VisualScriptExecutor::ExecuteSetVarNode(VisualScriptSetVarNode* node, Visua
     {
         Any setValue = node->GetDataInputPin(0)->GetValue();
         node->GetReflection().SetValueWithCast(setValue);
-        Logger::Debug("Set Var (setter): %s => %s", DumpAny(setValue).c_str(), node->GetVarPath().c_str());
+        VSLogger_Debug("Set Var (setter): %s => %s", DumpAny(setValue).c_str(), node->GetVarPath().c_str());
     }
 
     // Getter
     {
         Any result = node->GetReflection().GetValue();
         node->GetDataOutputPin(0)->SetValue(result);
-        Logger::Debug("Set Var (getter): %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
+        VSLogger_Debug("Set Var (getter): %s => %s", node->GetVarPath().c_str(), DumpAny(result).c_str());
     }
 
     if (node->GetExecOutputPins().size() == 1)
@@ -164,7 +164,7 @@ void VisualScriptExecutor::ExecuteGetMemberNode(VisualScriptGetMemberNode* node,
 
         Any result = vw->GetValue(refObj);
         node->GetDataOutputPin(0)->SetValue(result);
-        Logger::Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
+        VSLogger_Debug("Get Member: %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
     }
 }
 
@@ -189,7 +189,7 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
 
             Any value = node->GetDataInputPin(1)->GetValue();
             vw->SetValueWithCast(refObj, value);
-            Logger::Debug("Set Member (setter): %s => %s::%s", DumpAny(value).c_str(), node->GetClassName().c_str(), node->GetFieldName().c_str());
+            VSLogger_Debug("Set Member (setter): %s => %s::%s", DumpAny(value).c_str(), node->GetClassName().c_str(), node->GetFieldName().c_str());
         }
     }
 
@@ -205,7 +205,7 @@ void VisualScriptExecutor::ExecuteSetMemberNode(VisualScriptSetMemberNode* node,
 
             Any result = vw->GetValue(refObj);
             node->GetDataOutputPin(0)->SetValue(result);
-            Logger::Debug("Set Member (getter): %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
+            VSLogger_Debug("Set Member (getter): %s::%s => %s", node->GetClassName().c_str(), node->GetFieldName().c_str(), DumpAny(result).c_str());
         }
     }
 
@@ -225,7 +225,6 @@ void VisualScriptExecutor::ExecuteFunctionNode(VisualScriptFunctionNode* node, V
     if (!function.IsValid())
         return;
 
-    Vector<Any> params;
     auto& inputPins = node->GetDataInputPins();
     size_t size = inputPins.size();
     for (size_t pinIndex = 0; pinIndex < size; ++pinIndex)
@@ -246,9 +245,6 @@ void VisualScriptExecutor::ExecuteFunctionNode(VisualScriptFunctionNode* node, V
         {
             DAVA_THROW(Exception, Format("Pin #%lld is not connected", pinIndex));
         }
-
-        Any value = pin->GetValue();
-        params.emplace_back(value);
     }
 
     // TODO: Support cast check between Type* and Type* or Any and Type*
@@ -261,26 +257,17 @@ void VisualScriptExecutor::ExecuteFunctionNode(VisualScriptFunctionNode* node, V
     //        }
     //    }
 
-    // Debug
-    String strParams;
-    for (size_t ti = 0; ti < size; ++ti)
-    {
-        strParams += DumpAny(params[ti]);
-        if (ti != size - 1)
-            strParams += ",";
-    }
-
     Any result;
     if (size == 0)
         result = function.Invoke();
     else if (size == 1)
-        result = function.InvokeWithCast(params[0]);
+        result = function.InvokeWithCast(inputPins[0]->GetValue());
     else if (size == 2)
-        result = function.InvokeWithCast(params[0], params[1]);
+        result = function.InvokeWithCast(inputPins[0]->GetValue(), inputPins[1]->GetValue());
     else if (size == 3)
-        result = function.InvokeWithCast(params[0], params[1], params[2]);
+        result = function.InvokeWithCast(inputPins[0]->GetValue(), inputPins[1]->GetValue(), inputPins[2]->GetValue());
     else if (size == 4)
-        result = function.InvokeWithCast(params[0], params[1], params[2], params[3]);
+        result = function.InvokeWithCast(inputPins[0]->GetValue(), inputPins[1]->GetValue(), inputPins[2]->GetValue(), inputPins[3]->GetValue());
 
     // Has return types
     if (node->GetDataOutputPins().size() >= 1)
@@ -288,7 +275,18 @@ void VisualScriptExecutor::ExecuteFunctionNode(VisualScriptFunctionNode* node, V
         node->GetDataOutputPin(0)->SetValue(result);
     }
 
-    Logger::Debug("%s = %s::%s(%s)", DumpAny(result).c_str(), node->GetClassName().c_str(), node->GetFunctionName().c_str(), strParams.c_str());
+// Debug
+    #ifdef VS_LOGGER
+    String strParams;
+    for (size_t ti = 0; ti < size; ++ti)
+    {
+        strParams += DumpAny(inputPins[ti]->GetValue());
+        if (ti != size - 1)
+            strParams += ",";
+    }
+
+    VSLogger_Debug("%s = %s::%s(%s)", DumpAny(result).c_str(), node->GetClassName().c_str(), node->GetFunctionName().c_str(), strParams.c_str());
+    #endif
 
     if (node->GetExecOutputPins().size() == 1)
     {
@@ -324,7 +322,7 @@ void VisualScriptExecutor::ExecuteForNode(VisualScriptForNode* node, VisualScrip
         PushInstruction(node->loopBodyPin->GetConnectedTo());
         node->index++;
 
-        Logger::Debug("index: %d ", node->index);
+        VSLogger_Debug("index: %d ", node->index);
         node->indexPin->SetValue(Any(node->index));
     }
     else if (entryPin == node->cyclePin)
@@ -337,11 +335,11 @@ void VisualScriptExecutor::ExecuteForNode(VisualScriptForNode* node, VisualScrip
             if (loopCompletedExecIn != nullptr)
                 PushInstruction(loopCompletedExecIn);
 
-            Logger::Debug("completed: %d ", node->index);
+            VSLogger_Debug("completed: %d ", node->index);
         }
         else
         {
-            Logger::Debug("cycle: %d ", node->index);
+            VSLogger_Debug("cycle: %d ", node->index);
 
             PushInstruction(node->cyclePin); // return to cycle pin after body execution
             PushInstruction(node->loopBodyPin->GetConnectedTo());
@@ -471,39 +469,40 @@ void VisualScriptExecutor::ExecuteSubTree(VisualScriptNode* node, VisualScriptPi
 
     for (size_t i = 0; i < size; ++i)
     {
-        VisualScriptPin* passPin = (executionOrder[i] == node) ? (entryPin) : (nullptr);
+        VisualScriptNode* execNode = executionOrder[i];
+        VisualScriptPin* passPin = (execNode == node) ? (entryPin) : (nullptr);
 
-        switch (executionOrder[i]->GetType())
+        switch (execNode->GetType())
         {
         case VisualScriptNode::GET_VAR:
-            ExecuteGetVarNode(static_cast<VisualScriptGetVarNode*>(executionOrder[i]), passPin);
+            ExecuteGetVarNode(static_cast<VisualScriptGetVarNode*>(execNode), passPin);
             break;
         case VisualScriptNode::SET_VAR:
-            ExecuteSetVarNode(static_cast<VisualScriptSetVarNode*>(executionOrder[i]), passPin);
+            ExecuteSetVarNode(static_cast<VisualScriptSetVarNode*>(execNode), passPin);
             break;
         case VisualScriptNode::FUNCTION:
-            ExecuteFunctionNode(static_cast<VisualScriptFunctionNode*>(executionOrder[i]), passPin);
+            ExecuteFunctionNode(static_cast<VisualScriptFunctionNode*>(execNode), passPin);
             break;
         case VisualScriptNode::BRANCH:
-            ExecuteBranchNode(static_cast<VisualScriptBranchNode*>(executionOrder[i]), passPin);
+            ExecuteBranchNode(static_cast<VisualScriptBranchNode*>(execNode), passPin);
             break;
         case VisualScriptNode::FOR:
-            ExecuteForNode(static_cast<VisualScriptForNode*>(executionOrder[i]), passPin);
+            ExecuteForNode(static_cast<VisualScriptForNode*>(execNode), passPin);
             break;
         case VisualScriptNode::WHILE:
-            ExecuteWhileNode(static_cast<VisualScriptWhileNode*>(executionOrder[i]), passPin);
+            ExecuteWhileNode(static_cast<VisualScriptWhileNode*>(execNode), passPin);
             break;
         case VisualScriptNode::EVENT:
-            ExecuteEventNode(static_cast<VisualScriptEventNode*>(executionOrder[i]), passPin);
+            ExecuteEventNode(static_cast<VisualScriptEventNode*>(execNode), passPin);
             break;
         case VisualScriptNode::GET_MEMBER:
-            ExecuteGetMemberNode(static_cast<VisualScriptGetMemberNode*>(executionOrder[i]), passPin);
+            ExecuteGetMemberNode(static_cast<VisualScriptGetMemberNode*>(execNode), passPin);
             break;
         case VisualScriptNode::SET_MEMBER:
-            ExecuteSetMemberNode(static_cast<VisualScriptSetMemberNode*>(executionOrder[i]), passPin);
+            ExecuteSetMemberNode(static_cast<VisualScriptSetMemberNode*>(execNode), passPin);
             break;
         default:
-            DAVA_THROW(Exception, Format("Untyped node: %d", executionOrder[i]->GetType()));
+            DAVA_THROW(Exception, Format("Untyped node: %d", execNode->GetType()));
         }
     }
 }

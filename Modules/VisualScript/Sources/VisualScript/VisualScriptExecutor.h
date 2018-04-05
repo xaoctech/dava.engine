@@ -48,7 +48,7 @@ private:
     void ExecuteGetMemberNode(VisualScriptGetMemberNode* node, VisualScriptPin* entryPin);
     void ExecuteSetMemberNode(VisualScriptSetMemberNode* node, VisualScriptPin* entryPin);
 
-    String DumpAny(Any& any);
+    String DumpAny(const Any& any);
 
     void PushInstruction(VisualScriptPin* activationPin);
 

@@ -151,7 +151,7 @@ void VisualScript::Save(const FilePath& filepath)
 
             const ReflectedType* reflectedType = ReflectedTypeDB::GetByPointer(node);
 
-            Logger::Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), type->GetDemangledName().c_str(), reflectedType->GetPermanentName().c_str());
+            VSLogger_Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), type->GetDemangledName().c_str(), reflectedType->GetPermanentName().c_str());
 
             YamlNode* yNode = YamlNode::CreateMapNode();
             yAllNodes->Add(uniqueNames[node].c_str(), yNode);
@@ -175,10 +175,10 @@ void VisualScript::Save(const FilePath& filepath)
                 VisualScriptPin* pinOut = connection.second;
                 VisualScriptNode* otherNode = pinOut->GetSerializationOwner();
 
-                Logger::Debug("%s.%s -> %s.%s", uniqueNames[node].c_str(),
-                              pinIn->GetName().c_str(),
-                              uniqueNames[otherNode].c_str(),
-                              pinOut->GetName().c_str());
+                VSLogger_Debug("%s.%s -> %s.%s", uniqueNames[node].c_str(),
+                               pinIn->GetName().c_str(),
+                               uniqueNames[otherNode].c_str(),
+                               pinOut->GetName().c_str());
 
                 auto yOneConnectionNode = YamlNode::CreateMapNode();
                 yConnectionsNode->Add(yOneConnectionNode);
@@ -254,7 +254,7 @@ void VisualScript::LoadContext::MoveToScript(VisualScript* script)
 
 void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filepath)
 {
-    Logger::Debug("VisualScript::Load(%s)", filepath.GetStringValue().c_str());
+    VSLogger_Debug("VisualScript::Load(%s)", filepath.GetStringValue().c_str());
     ScopedPtr<YamlParser> parser(YamlParser::Create(filepath));
 
     // Create nodes
@@ -434,7 +434,7 @@ void VisualScript::Compile()
 
 void VisualScript::Execute(const FastName& eventNodeName, const Reflection& eventReflection)
 {
-    Logger::Debug("VisualScript::Execute(%s)", eventNodeName.c_str());
+    VSLogger_Debug("VisualScript::Execute(%s)", eventNodeName.c_str());
     auto it = eventNodes.find(eventNodeName);
     if (it == eventNodes.end())
         return;
@@ -451,12 +451,12 @@ void VisualScript::Execute(const FastName& eventNodeName, const Reflection& even
         }
         catch (Exception& exception)
         {
-            DAVA::Logger::Error(exception.what());
+            VSLogger_Error(exception.what());
         }
     }
     executor.Execute(entryPin);
 
-    Logger::Debug("VisualScript::Execute finished");
+    VSLogger_Debug("VisualScript::Execute finished");
 }
 
 const Vector<VisualScriptNode*>& VisualScript::GetNodes() const

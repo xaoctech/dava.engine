@@ -28,29 +28,6 @@ VisualScriptFunctionNode::VisualScriptFunctionNode(const FastName& className_, c
     InitPins();
 }
 
-void VisualScriptFunctionNode::SetClassName(const FastName& className_)
-{
-    className = className_;
-}
-void VisualScriptFunctionNode::SetFunctionName(const FastName& functionName_)
-{
-    functionName = functionName_;
-}
-
-const FastName& VisualScriptFunctionNode::GetClassName() const
-{
-    return className;
-}
-
-const FastName& VisualScriptFunctionNode::GetFunctionName() const
-{
-    return functionName;
-}
-
-const AnyFn& VisualScriptFunctionNode::GetFunction() const
-{
-    return function;
-}
 
 void VisualScriptFunctionNode::InitPins()
 {
@@ -101,7 +78,7 @@ void VisualScriptFunctionNode::InitPins()
         }
         else
         {
-            Logger::Error("Failed to find function %s in class %s", functionName.c_str(), className.c_str());
+            VSLogger_Error("Failed to find function %s in class %s", functionName.c_str(), className.c_str());
         }
     }
 }

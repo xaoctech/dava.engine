@@ -70,31 +70,6 @@ VisualScriptNode::~VisualScriptNode()
     }
 }
 
-void VisualScriptNode::SetType(eType type_)
-{
-    type = type_;
-}
-
-void VisualScriptNode::SetName(const FastName& name_)
-{
-    name = name_;
-}
-
-VisualScriptNode::eType VisualScriptNode::GetType() const
-{
-    return type;
-}
-
-const FastName& VisualScriptNode::GetName() const
-{
-    return name;
-}
-
-const FastName& VisualScriptNode::GetTypeName()
-{
-    return typeNames[type];
-}
-
 VisualScriptPin* VisualScriptNode::RegisterPin(VisualScriptPin* pin)
 {
     allPinsMap.emplace(pin->GetName(), pin);
@@ -154,64 +129,6 @@ VisualScriptPin* VisualScriptNode::GetPinByName(const FastName& pinName)
     return nullptr;
 }
 
-const Vector<VisualScriptPin*>& VisualScriptNode::GetAllInputPins() const
-{
-    return allInputPins;
-}
-const Vector<VisualScriptPin*>& VisualScriptNode::GetAllOutputPins() const
-{
-    return allOutputPins;
-}
-
-VisualScriptPin* VisualScriptNode::GetDataInputPin(uint32 index) const
-{
-    return dataInputPins[index];
-}
-
-VisualScriptPin* VisualScriptNode::GetDataOutputPin(uint32 index) const
-{
-    return dataOutputPins[index];
-}
-
-VisualScriptPin* VisualScriptNode::GetExecInputPin(uint32 index) const
-{
-    return execInPins[index];
-}
-
-VisualScriptPin* VisualScriptNode::GetExecOutputPin(uint32 index) const
-{
-    return execOutPins[index];
-}
-
-const Vector<VisualScriptPin*>& VisualScriptNode::GetDataInputPins() const
-{
-    return dataInputPins;
-}
-
-const Vector<VisualScriptPin*>& VisualScriptNode::GetDataOutputPins() const
-{
-    return dataOutputPins;
-}
-
-const Vector<VisualScriptPin*>& VisualScriptNode::GetExecInputPins() const
-{
-    return execInPins;
-}
-
-const Vector<VisualScriptPin*>& VisualScriptNode::GetExecOutputPins() const
-{
-    return execOutPins;
-}
-
-void VisualScriptNode::SetScript(VisualScript* script_)
-{
-    script = script_;
-}
-
-VisualScript* VisualScriptNode::GetScript() const
-{
-    return script;
-}
 
 Set<std::pair<VisualScriptPin*, VisualScriptPin*>> VisualScriptNode::GetAllConnections() const
 {
@@ -318,7 +235,7 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
             if (inPin)
             {
                 const Type* inPinType = inPin->GetType();
-                if (inPinType)
+                if (inPinType && checkType)
                 {
                     if (inPinType->IsReference())
                     {
@@ -330,9 +247,16 @@ void VisualScriptNode::LoadDefaults(const YamlNode* node)
                     }
 
                     // TODO: check type here or check cast between types
-                    DVASSERT(checkType == nullptr || inPinType == checkType);
+                    DVASSERT(inPinType == checkType);
+                }
 
-                    inPin->SetDefaultValue(valNode->AsAny(inPinType));
+                if (inPinType || checkType)
+                {
+                    inPin->SetDefaultValue(valNode->AsAny(checkType ? checkType : inPinType));
+                }
+                else
+                {
+                    Logger::Error("Pin type error: %s", pinName.c_str());
                 }
             }
             else

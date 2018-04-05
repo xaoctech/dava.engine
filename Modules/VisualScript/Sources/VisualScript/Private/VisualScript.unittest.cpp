@@ -151,7 +151,7 @@ DAVA_TESTCLASS (VisualScriptTest)
         }
         catch (Exception& exception)
         {
-            DAVA::Logger::Error(exception.what());
+            VSLogger_Error(exception.what());
         }
     }
 
@@ -206,7 +206,7 @@ DAVA_TESTCLASS (VisualScriptTest)
         }
         catch (Exception& exception)
         {
-            DAVA::Logger::Error(exception.what());
+            VSLogger_Error(exception.what());
         }
     }
 
@@ -261,7 +261,7 @@ DAVA_TESTCLASS (VisualScriptTest)
         }
         catch (Exception& exception)
         {
-            DAVA::Logger::Error(exception.what());
+            VSLogger_Error(exception.what());
             TEST_VERIFY(0 && "Exception thrown");
         }
     }
@@ -321,7 +321,7 @@ DAVA_TESTCLASS (VisualScriptTest)
         }
         catch (Exception& exception)
         {
-            DAVA::Logger::Error(exception.what());
+            VSLogger_Error(exception.what());
             TEST_VERIFY(0 && "Exception thrown");
         }
     };

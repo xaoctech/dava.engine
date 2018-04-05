@@ -87,7 +87,7 @@ void UIVisualScriptSystem::Process(float32 elapsedTime)
                 }
                 catch (Exception& e)
                 {
-                    Logger::Error(e.what());
+                    VSLogger_Error(e.what());
                 }
                 l.ready = false;
                 l.script.reset();
@@ -113,19 +113,19 @@ void UIVisualScriptSystem::Process(float32 elapsedTime)
                     }
                     catch (Exception& e)
                     {
-                        Logger::Error(e.what());
+                        VSLogger_Error(e.what());
                     }
                 }
                 catch (Exception& e)
                 {
                     l.ready = false;
                     l.script.reset();
-                    Logger::Error(e.what());
+                    VSLogger_Error(e.what());
                 }
             }
             else
             {
-                Logger::Warning("VisualScript file '%s' does not exist !.", scriptPath.GetStringValue().c_str());
+                VSLogger_Warning("VisualScript file '%s' does not exist !.", scriptPath.GetStringValue().c_str());
             }
             component->SetNeedReload(false);
         }
@@ -141,7 +141,7 @@ void UIVisualScriptSystem::Process(float32 elapsedTime)
             }
             catch (Exception& e)
             {
-                Logger::Error(e.what());
+                VSLogger_Error(e.what());
             }
         }
     }
@@ -167,7 +167,7 @@ bool UIVisualScriptSystem::ProcessEvent(UIControl* control, const FastName& even
                 }
                 catch (Exception& e)
                 {
-                    Logger::Error(e.what());
+                    VSLogger_Error(e.what());
                 }
             }
         }
@@ -196,7 +196,7 @@ void UIVisualScriptSystem::RemoveLink(UIVisualScriptComponent* c)
             }
             catch (Exception& e)
             {
-                Logger::Error(e.what());
+                VSLogger_Error(e.what());
             }
         }
         links.erase(it);
@@ -224,7 +224,7 @@ void UIVisualScriptSystem::UpdateVariables(UIVisualScriptComponent* component, L
         {
             if (value.GetType() != varTable.GetPropertyValue(propertyName).GetType())
             {
-                Logger::Error("Script property '%s' has invalid type.", propertyName.c_str());
+                VSLogger_Error("Script property '%s' has invalid type.", propertyName.c_str());
                 varTable.SetPropertyValue(propertyName, value);
             }
             else

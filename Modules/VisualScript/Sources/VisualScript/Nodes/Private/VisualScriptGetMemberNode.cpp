@@ -100,7 +100,7 @@ void VisualScriptGetMemberNode::InitPins()
         }
         else
         {
-            Logger::Error("Failed to find value wrapper for %s in class %s", fieldName.c_str(), className.c_str());
+            VSLogger_Error("Failed to find value wrapper for %s in class %s", fieldName.c_str(), className.c_str());
         }
     }
 }

@@ -24,9 +24,13 @@ VisualScriptPin::VisualScriptPin(VisualScriptNode* owner_, eAttribute attr_, con
 {
 }
 
+VisualScriptPin::~VisualScriptPin()
+{
+}
+
 /*
      Data pins allow only 1 input pin
- */
+*/
 
 VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnect(VisualScriptPin* pin1, VisualScriptPin* pin2)
 {
@@ -196,94 +200,6 @@ void VisualScriptPin::Disconnect(VisualScriptPin* disconnectFrom)
 {
     connectedTo.erase(disconnectFrom);
     disconnectFrom->connectedTo.erase(this);
-}
-
-VisualScriptPin* VisualScriptPin::GetConnectedTo() const
-{
-    DVASSERT(attr == ATTR_IN || attr == EXEC_OUT);
-    if (connectedTo.size() != 1)
-        return nullptr;
-    return *connectedTo.begin();
-};
-
-const Set<VisualScriptPin*>& VisualScriptPin::GetConnectedSet() const
-{
-    return connectedTo;
-}
-
-VisualScriptPin::~VisualScriptPin()
-{
-}
-
-void VisualScriptPin::SetType(const Type* type_)
-{
-    type = type_;
-}
-
-const Type* VisualScriptPin::GetType() const
-{
-    return type;
-}
-void VisualScriptPin::SetName(const FastName& name_)
-{
-    name = name_;
-}
-
-const FastName& VisualScriptPin::GetName() const
-{
-    return name;
-}
-
-VisualScriptNode* VisualScriptPin::GetExecutionOwner() const
-{
-    return owner;
-};
-
-void VisualScriptPin::SetSerializationOwner(DAVA::VisualScriptNode* serializationOwner_)
-{
-    serializationOwner = serializationOwner_;
-}
-
-VisualScriptNode* VisualScriptPin::GetSerializationOwner() const
-{
-    if (serializationOwner == nullptr)
-        return owner;
-    return serializationOwner;
-};
-
-VisualScriptPin::eAttribute VisualScriptPin::GetAttribute() const
-{
-    return attr;
-}
-
-bool VisualScriptPin::IsInputDataRequired() const
-{
-    if (defaultParam == DEFAULT_PARAM && defaultValue.IsEmpty() == false)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool VisualScriptPin::HasDefaultValue() const
-{
-    return (defaultParam == DEFAULT_PARAM);
-}
-
-void VisualScriptPin::SetDefaultValue(Any defaultValue_)
-{
-    defaultValue = defaultValue_;
-}
-
-const Any& VisualScriptPin::GetDefaultValue() const
-{
-    return defaultValue;
-}
-
-void VisualScriptPin::SetValue(Any value_)
-{
-    value = value_;
 }
 
 const Any& VisualScriptPin::GetValue() const

@@ -63,7 +63,7 @@ public:
     void SetDefaultValue(Any defaultValue_);
     const Any& GetDefaultValue() const;
 
-    void SetValue(Any value_);
+    void SetValue(const Any& value_);
     const Any& GetValue() const;
 
     /*
@@ -98,5 +98,85 @@ private:
     Any defaultValue;
     Any value;
 };
+
+inline VisualScriptPin* VisualScriptPin::GetConnectedTo() const
+{
+    DVASSERT(attr == ATTR_IN || attr == EXEC_OUT);
+    if (connectedTo.size() != 1)
+        return nullptr;
+    return *connectedTo.begin();
+}
+
+inline const Set<VisualScriptPin*>& VisualScriptPin::GetConnectedSet() const
+{
+    return connectedTo;
+}
+
+inline void VisualScriptPin::SetType(const Type* type_)
+{
+    type = type_;
+}
+
+inline const Type* VisualScriptPin::GetType() const
+{
+    return type;
+}
+
+inline void VisualScriptPin::SetName(const FastName& name_)
+{
+    name = name_;
+}
+
+inline const FastName& VisualScriptPin::GetName() const
+{
+    return name;
+}
+
+inline VisualScriptNode* VisualScriptPin::GetExecutionOwner() const
+{
+    return owner;
+};
+
+inline void VisualScriptPin::SetSerializationOwner(VisualScriptNode* serializationOwner_)
+{
+    serializationOwner = serializationOwner_;
+}
+
+inline VisualScriptNode* VisualScriptPin::GetSerializationOwner() const
+{
+    if (serializationOwner == nullptr)
+        return owner;
+    return serializationOwner;
+}
+
+inline VisualScriptPin::eAttribute VisualScriptPin::GetAttribute() const
+{
+    return attr;
+}
+
+inline bool VisualScriptPin::IsInputDataRequired() const
+{
+    return !(defaultParam == DEFAULT_PARAM && defaultValue.IsEmpty() == false);
+}
+
+inline bool VisualScriptPin::HasDefaultValue() const
+{
+    return (defaultParam == DEFAULT_PARAM);
+}
+
+inline void VisualScriptPin::SetDefaultValue(Any defaultValue_)
+{
+    defaultValue = defaultValue_;
+}
+
+inline const Any& VisualScriptPin::GetDefaultValue() const
+{
+    return defaultValue;
+}
+
+inline void VisualScriptPin::SetValue(const Any& value_)
+{
+    value = value_;
+}
 
 } //DAVA

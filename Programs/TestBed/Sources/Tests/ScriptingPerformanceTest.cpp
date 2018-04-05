@@ -31,7 +31,7 @@ void ScriptingPerformanceTest::LoadResources()
     timeVsText = static_cast<UIStaticText*>(dialog->FindByName("TimeVs"));
     timeLuaText = static_cast<UIStaticText*>(dialog->FindByName("TimeLua"));
 
-    countArgText->SetUtf8Text("100");
+    countArgText->SetUtf8Text("200");
     outputText->SetUtf8Text("");
 
     auto actions = dialog->GetOrCreateComponent<UIEventBindingComponent>();

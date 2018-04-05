@@ -34,4 +34,29 @@ private:
     FastName functionName;
     AnyFn function;
 };
+
+inline void VisualScriptFunctionNode::SetClassName(const FastName& className_)
+{
+    className = className_;
+}
+
+inline void VisualScriptFunctionNode::SetFunctionName(const FastName& functionName_)
+{
+    functionName = functionName_;
+}
+
+inline const FastName& VisualScriptFunctionNode::GetClassName() const
+{
+    return className;
+}
+
+inline const FastName& VisualScriptFunctionNode::GetFunctionName() const
+{
+    return functionName;
+}
+
+inline const AnyFn& VisualScriptFunctionNode::GetFunction() const
+{
+    return function;
+}
 }

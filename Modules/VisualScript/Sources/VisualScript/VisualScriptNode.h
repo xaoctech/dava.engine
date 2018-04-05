@@ -107,15 +107,88 @@ public:
     Vector2 position;
 };
 
+inline void VisualScriptNode::SetType(eType type_)
+{
+    type = type_;
+}
 
+inline void VisualScriptNode::SetName(const FastName& name_)
+{
+    name = name_;
+}
 
+inline VisualScriptNode::eType VisualScriptNode::GetType() const
+{
+    return type;
+}
 
+inline const FastName& VisualScriptNode::GetName() const
+{
+    return name;
+}
 
+inline const FastName& VisualScriptNode::GetTypeName()
+{
+    return typeNames[type];
+}
 
+inline const Vector<VisualScriptPin*>& VisualScriptNode::GetAllInputPins() const
+{
+    return allInputPins;
+}
+inline const Vector<VisualScriptPin*>& VisualScriptNode::GetAllOutputPins() const
+{
+    return allOutputPins;
+}
 
+inline VisualScriptPin* VisualScriptNode::GetDataInputPin(uint32 index) const
+{
+    return dataInputPins[index];
+}
 
+inline VisualScriptPin* VisualScriptNode::GetDataOutputPin(uint32 index) const
+{
+    return dataOutputPins[index];
+}
 
+inline VisualScriptPin* VisualScriptNode::GetExecInputPin(uint32 index) const
+{
+    return execInPins[index];
+}
 
+inline VisualScriptPin* VisualScriptNode::GetExecOutputPin(uint32 index) const
+{
+    return execOutPins[index];
+}
 
+inline const Vector<VisualScriptPin*>& VisualScriptNode::GetDataInputPins() const
+{
+    return dataInputPins;
+}
+
+inline const Vector<VisualScriptPin*>& VisualScriptNode::GetDataOutputPins() const
+{
+    return dataOutputPins;
+}
+
+inline const Vector<VisualScriptPin*>& VisualScriptNode::GetExecInputPins() const
+{
+    return execInPins;
+}
+
+inline const Vector<VisualScriptPin*>& VisualScriptNode::GetExecOutputPins() const
+{
+    return execOutPins;
+}
+
+inline void VisualScriptNode::SetScript(VisualScript* script_)
+{
+    script = script_;
+}
+
+inline VisualScript* VisualScriptNode::GetScript() const
+{
+    return script;
+}
 
 } //DAVA

@@ -10,6 +10,23 @@
 #include <VisualScript/VisualScriptExecutor.h>
 #include <VisualScript/VisualScriptNode.h>
 
+
+#ifdef NDEBUG
+
+#undef VS_LOGGER 
+#define VSLogger_Debug(...) 
+#define VSLogger_Warning(...) 
+#define VSLogger_Error(...) (Logger::Error(__VA_ARGS__))
+
+#else
+
+#define VS_LOGGER
+#define VSLogger_Debug(...) (Logger::Debug(__VA_ARGS__))
+#define VSLogger_Warning(...) (Logger::Warning(__VA_ARGS__))
+#define VSLogger_Error(...) (Logger::Error(__VA_ARGS__))
+
+#endif
+
 namespace DAVA
 {
 struct VSFastNameLess
@@ -145,7 +162,7 @@ VisualScriptNode* VisualScript::CreateNodeWithoutAdd(const ReflectedType* reflec
     }
     catch (Exception& exception)
     {
-        Logger::Error(exception.what());
+        VSLogger_Error(exception.what());
         return nullptr;
     }
 }
