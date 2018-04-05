@@ -4,7 +4,14 @@
 #include "include/math.h"
 #include "include/hdr.h"
 
-#ensuredefined TXAA_YCOCG_SPACE 0
+#ensuredefined TXAA_YCOCG_SPACE 1
+#ensuredefined TXAA_DEPTH_DILATION 0
+#ensuredefined TXAA_USE_CLIP_MODE 2 // 0 - clamp, 1 - intersect fast (maybe), 2 - intersect as a king, but slower.
+
+int CmpZ(float a, float b)
+{
+    return a < b; // GFX_COMPLETE wrong for non inverse z.
+}
 
 fragment_in
 {
@@ -47,6 +54,11 @@ uniform sampler2D hdrImage;
 #if (ENABLE_TXAA)
 uniform sampler2D history;
 uniform sampler2D velocity;
+
+#if TXAA_DEPTH_DILATION
+uniform sampler2D depth; // Do not forget to pass this texture from c++ side.
+#endif
+
 [material][a] property float2 destRectOffset;
 [material][a] property float2 destRectSize;
 [material][a] property float2 destTexSize;
@@ -94,9 +106,58 @@ uniform sampler2D tex1;
 #if TECH_COMBINE
 
 #if (ENABLE_TXAA)
+
+#if TXAA_DEPTH_DILATION
+float3 DilateDepth(float2 texcoord_depth)
+{
+    float du = texelOffset.x;
+    float dv = texelOffset.y;
+
+    float3 depth_tl = float3(-du, -dv, tex2D(depth, texcoord_depth - dv - du).x);
+    float3 depth_tc = float3(0, -dv, tex2D(depth, texcoord_depth - dv).x);
+    float3 depth_tr = float3(du, -dv, tex2D(depth, texcoord_depth - dv + du).x);
+
+    float3 depth_ml = float3(-du, 0, tex2D(depth, texcoord_depth - du).x);
+    float3 depth_mc = float3(0, 0, tex2D(depth, texcoord_depth).x);
+    float3 depth_mr = float3(du, 0, tex2D(depth, texcoord_depth + du).x);
+
+    float3 depth_bl = float3(-du, dv, tex2D(depth, texcoord_depth + dv - du).x);
+    float3 depth_bc = float3(0, dv, tex2D(depth, texcoord_depth + dv).x);
+    float3 depth_br = float3(du, dv, tex2D(depth, texcoord_depth + dv + du).x);
+
+    float3 depthMin = depth_tl;
+
+    if (CmpZ(depth_tl.z, depth_tc.z))
+        depthMin = depth_tc;
+    if (CmpZ(depthMin.z, depth_tr.z))
+        depthMin = depth_tr;
+
+    if (CmpZ(depthMin.z, depth_ml.z))
+        depthMin = depth_ml;
+    if (CmpZ(depthMin.z, depth_mc.z))
+        depthMin = depth_mc;
+    if (CmpZ(depthMin.z, depth_mr.z))
+        depthMin = depth_mr;
+
+    if (CmpZ(depthMin.z, depth_bl.z))
+        depthMin = depth_bl;
+    if (CmpZ(depthMin.z, depth_bc.z))
+        depthMin = depth_bc;
+    if (CmpZ(depthMin.z, depth_br.z))
+        depthMin = depth_br;
+
+    return float3(texcoord_depth + depthMin.xy, depthMin.z);
+}
+#endif
+
 float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texClmp)
 {
-    float2 velocitySample = tex2D(velocity, texcoord).xy;
+    float2 velocityUv = texcoord;
+#if TXAA_DEPTH_DILATION
+    float3 dilated = DilateDepth(velocityUv);
+    velocityUv = dilated.xy;
+#endif
+    float2 velocitySample = tex2D(velocity, velocityUv).xy;
 
     float2 historyUv = texcoord + velocitySample;
     float3 historySample = tex2D(history, historyUv).xyz;
@@ -122,20 +183,50 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
     s21 = HDRtoLDR(s21, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
     s22 = HDRtoLDR(s22, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
 
-    float3 minSample = min(s00, min(min(min(s01, s02), min(s10, s11)), min(min(s12, s20), min(s21, s22))));
-    float3 maxSample = max(s00, max(max(max(s01, s02), max(s10, s11)), max(max(s12, s20), max(s21, s22))));
-    float3 average = 1.0 / 9.0 * (s00 + s01 + s02 + s10 + s11 + s12 + s20 + s21 + s22);
-
 #if TXAA_YCOCG_SPACE
-    float3 currentSample = RGBToYCoCg(s11);
-    minSample = RGBToYCoCg(minSample);
-    maxSample = RGBToYCoCg(maxSample);
     historySample = RGBToYCoCg(historySample);
-#else
-    float3 currentSample = s11;
+    s00 = RGBToYCoCg(s00);
+    s01 = RGBToYCoCg(s01);
+    s02 = RGBToYCoCg(s02);
+    s10 = RGBToYCoCg(s10);
+    s11 = RGBToYCoCg(s11);
+    s12 = RGBToYCoCg(s12);
+    s20 = RGBToYCoCg(s20);
+    s21 = RGBToYCoCg(s21);
+    s22 = RGBToYCoCg(s22);
 #endif
+    float3 crossMin = min(s01, s10);
+    crossMin = min(crossMin, s11);
+    crossMin = min(crossMin, s12);
+    crossMin = min(crossMin, s21);
+    float3 minSample = min(crossMin, s00);
+    minSample = min(minSample, s02);
+    minSample = min(minSample, s20);
+    minSample = min(minSample, s22);
 
+    float3 crossMax = max(s01, s10);
+    crossMax = max(crossMax, s11);
+    crossMax = max(crossMax, s12);
+    crossMax = max(crossMax, s21);
+    float3 maxSample = max(crossMax, s00);
+    maxSample = max(maxSample, s02);
+    maxSample = max(maxSample, s20);
+    maxSample = max(maxSample, s22);
+    minSample = lerp(minSample, crossMin, 0.5);
+    maxSample = lerp(maxSample, crossMax, 0.5);
+
+    float3 average = 1.0 / 9.0 * (s00 + s01 + s02 + s10 + s11 + s12 + s20 + s21 + s22);
+    float3 currentSample = s11;
+
+#if TXAA_USE_CLIP_MODE == 1
+    historySample = IntersectionAabbCenter(historySample, minSample, maxSample); // col origin - histSample, colDirection - (histSample - (minSample + maxSample)/2)
+#elif TXAA_USE_CLIP_MODE == 2
+    float3 colDir = average - historySample;
+    float t = IntersectionAabbNear(historySample, colDir + float3(0.000001, 0.000001, 0.000001), minSample, maxSample);
+    historySample = lerp(historySample, average, saturate(t));
+#else
     historySample = clamp(historySample, minSample, maxSample);
+#endif
 
     float weightMin = 0.15;
     float weightMax = 0.1;

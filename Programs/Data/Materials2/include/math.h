@@ -416,7 +416,7 @@ float QueryLodLevel(float2 texCoords, float2 texSize)
 /// RDB <--> YCoCg color space transitions.
 float3 RGBToYCoCg(float3 c)
 {
-    return float3(c.x / 4.0 + c.y / 2.0 + c.z / 4.0, c.x / 2.0 - c.z / 2.0, -c.x / 4.0 + c.y / 2.0 - c.z / 4.0);
+    return float3(c.x * 0.25f + c.y * 0.5f + c.z * 0.25f, c.x * 0.5f - c.z * 0.5f, -c.x * 0.25f + c.y * 0.5f - c.z * 0.25f);
 }
 
 float3 YCoCgToRGB(float3 c)
@@ -502,4 +502,32 @@ float4 EncodeRGBD(float3 inColor)
 float3 DecodeRGBD(float4 inColor)
 {
     return inColor.xyz * ((RGBM_ENCODING_RANGE / 255.0) / inColor.w);
+}
+
+// https://github.com/playdeadgames/temporal/blob/master/Assets/Shaders/TemporalReprojection.shader
+// note: only clips towards aabb center (but faster!)
+float3 IntersectionAabbCenter(float3 smp, float3 aabbMin, float3 aabbMax)
+{
+    float3 pClip = 0.5f * (aabbMax + aabbMin);
+    float3 eClip = 0.5f * (aabbMax - aabbMin) + 0.000001f;
+
+    float3 vClip = smp - pClip;
+    float3 vUnit = vClip.xyz / eClip;
+    float3 aUnit = abs(vUnit);
+    float maUnit = max(aUnit.x, max(aUnit.y, aUnit.z));
+
+    float3 res = smp;
+    if (maUnit > 1.0f)
+        res = pClip + vClip / maUnit;
+    return res;
+}
+
+// returns t of intersection, such as o + dir * t
+float IntersectionAabbNear(float3 o, float3 dir, float3 aabbMin, float3 aabbMax)
+{
+    float3 invD = 1.0 / dir;
+    float3 minD = invD * (aabbMin - o);
+    float3 maxD = invD * (aabbMax - o);
+    float3 minT = min(minD, maxD);
+    return max(max(minT.x, minT.y), minT.z);
 }

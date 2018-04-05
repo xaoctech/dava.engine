@@ -12,7 +12,6 @@ public:
 
     void Draw(RenderSystem* renderSystem, uint32 drawLayersMask = 0xFFFFFFFF) override;
     void DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask = 0xFFFFFFFF) override;
-    void DebugDraw2D(Window*);
 
     void InvalidateMaterials() override;
 
@@ -22,7 +21,6 @@ private:
     Vector4 prevCurrJitter;
 
     NMaterial* velocityMaterial = nullptr;
-    Texture* rt = nullptr;
 
     rhi::Packet reprojectVelocityPacket;
     rhi::HVertexBuffer quadBuffer;

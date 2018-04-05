@@ -59,7 +59,7 @@ public:
 
     static const FastName PARAM_TEXTURE_TILING;
     static const FastName PARAM_DECORATION_LEVEL_COLOR;
-    static const FastName PARAM_DECORATION_DECORATION_MASK;
+    static const FastName PARAM_DECORATION_DECORATION_INDEX;
     static const FastName PARAM_DECORATION_ORIENT_VALUE;
 
     static const FastName TEXTURE_COLOR;

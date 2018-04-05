@@ -48,7 +48,7 @@ uniform sampler2D decorationcolortexture;
 
 [auto][a] property float3 boundingBoxSize;
 
-[material][instance] property float4 decorationmask = float4(0, 0, 0, 0);
+[material][instance] property float decorationindex = 0.0;
 
 #if ORIENT_ON_LANDSCAPE
 [material][instance] property float orientvalue = 0.0;
@@ -113,7 +113,11 @@ vertex_out vp_main(vertex_in input)
     float height = SampleHeightAccurate(relativePosition);
 
     float2 decorTexCoord = input.decorPageCoords.xy + pivot * input.decorPageCoords.zw;
-    float decoration = dot(tex2Dlod(decorationtexture, decorTexCoord, 0.0), decorationmask);
+    float4 decarationSample = tex2Dlod(decorationtexture, decorTexCoord, 0.0);
+
+    int decorationIndex = int(decorationindex);
+    int decorationMaskIndex = int(decarationSample.r * 256.0 + 0.5);
+    float decoration = ((decorationIndex == decorationMaskIndex) ? 1.0 : 0.0) * decarationSample.g;
 
     float3 pivotObjectSpace = float3(relativePosition - 0.5, height) * boundingBoxSize;
     float3 vx_position = position * decoration * decorScale + pivotObjectSpace;

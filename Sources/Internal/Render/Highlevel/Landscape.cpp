@@ -90,7 +90,7 @@ const FastName Landscape::FLAG_DECORATION_GPU_RANDOMIZATION("DECORATION_GPU_RAND
 
 const FastName Landscape::PARAM_TEXTURE_TILING("textureTiling");
 const FastName Landscape::PARAM_DECORATION_LEVEL_COLOR("levelColor");
-const FastName Landscape::PARAM_DECORATION_DECORATION_MASK("decorationmask");
+const FastName Landscape::PARAM_DECORATION_DECORATION_INDEX("decorationindex");
 const FastName Landscape::PARAM_DECORATION_ORIENT_VALUE("orientvalue");
 
 const FastName Landscape::TEXTURE_COLOR("colortexture");
@@ -225,16 +225,8 @@ Landscape::Landscape()
     vtDesc.width = DECORATION_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
     vtDesc.height = DECORATION_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
     vtDesc.pageSize = DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
-    if (quality == LandscapeQuality::Low)
-    {
-        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
-        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
-    }
-    else
-    {
-        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
-        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
-    }
+    vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
+    vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
     vtDesc.mipLevelCount = 1;
 
     vtDecalRenderer = new VTDecalPageRenderer(false);
@@ -250,7 +242,7 @@ Landscape::Landscape()
     decorationPageManager->AddPageRenderer(vtDecalRenderer);
 
     decorationVTexture = decorationPageManager->GetVirtualTexture();
-    decorationVTexture->GetLayerTexture(0)->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+    decorationVTexture->GetLayerTexture(0)->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
 
     for (LandscapeLayerRenderer* rend : landscapeLayerRenderers)
         pageManager->AddPageRenderer(rend);
@@ -2884,8 +2876,8 @@ void Landscape::RebuildDecoration()
                     decorationBatches[layerIndex][levelIndex].itemsCount += variationItemCount;
             }
 
-            uint8 layerMask = decoration->GetLayerMask(layerIndex);
-            if (!geometryData.empty() && !indexData.empty() && layerMask != 0u)
+            uint8 layerMaskIndex = decoration->GetLayerMaskIndex(layerIndex);
+            if (!geometryData.empty() && !indexData.empty() && layerMaskIndex != 0u)
             {
                 rhi::VertexBuffer::Descriptor vbufferDesc;
                 vbufferDesc.initialData = geometryData.data();
@@ -2911,19 +2903,13 @@ void Landscape::RebuildDecoration()
                     Vector4(1.f, 1.f, 0.f, 1.f)
                 };
 
-                Vector4 layerMaskProperty = Vector4(
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_R) ? 1.f : 0.f),
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_G) ? 1.f : 0.f),
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_B) ? 1.f : 0.f),
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_A) ? 1.f : 0.f)
-                );
-
                 float32 layerOrientValue = decoration->GetLayerOrientValue(layerIndex);
+                float32 layerIndexValue = float32(layerMaskIndex);
 
                 NMaterial* material = layerMaterial->Clone();
                 material->SetFXName(decoration->GetLayerCullface(layerIndex) ? NMaterialName::DECORATION_CULLFACE : NMaterialName::DECORATION);
                 //material->AddProperty(FastName("baseColorScale"), levelColor[Min(levelIndex, 5u)].data, rhi::ShaderProp::TYPE_FLOAT4);
-                material->AddProperty(PARAM_DECORATION_DECORATION_MASK, layerMaskProperty.data, rhi::ShaderProp::TYPE_FLOAT4);
+                material->AddProperty(PARAM_DECORATION_DECORATION_INDEX, &layerIndexValue, rhi::ShaderProp::TYPE_FLOAT1);
                 material->AddProperty(PARAM_DECORATION_ORIENT_VALUE, &layerOrientValue, rhi::ShaderProp::TYPE_FLOAT1);
                 material->AddFlag(NMaterialFlagName::FLAG_VERTEX_COLOR, tintFlag ? 2 : 0);
                 material->AddFlag(FLAG_DECORATION_ORIENT_ON_LANDSCAPE, decoration->GetLayerOrientOnLandscape(layerIndex) ? 1 : 0);

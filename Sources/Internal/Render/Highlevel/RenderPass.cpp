@@ -200,6 +200,8 @@ void RenderPass::DrawLayers(Camera* camera, uint32 drawLayersMask)
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_RCP_VIEWPORT_SIZE, &rcpViewportSize, reinterpret_cast<pointer_size>(&rcpViewportSize));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_OFFSET, &viewportOffset, reinterpret_cast<pointer_size>(&viewportOffset));
 
+    SetNdcToZMapping();
+
     size_t size = renderLayers.size();
     for (size_t k = 0; k < size; ++k)
     {
@@ -256,6 +258,17 @@ void RenderPass::ValidateMultisampledTextures(const rhi::RenderPassConfig& confi
 
         multisampledTexture = Texture::CreateFBO(multisampledDescription);
     }
+}
+
+void RenderPass::SetNdcToZMapping()
+{
+    static const Vector2 glNdcToZMapping(0.5f, 0.5f);
+    static const Vector2 nonGlNdcToZMapping(1.0f, 0.0f);
+
+    if (Renderer::GetAPI() == rhi::RHI_GLES2 && !passConfig.usesReverseDepth)
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_NDC_TO_Z_MAPPING, glNdcToZMapping.data, reinterpret_cast<pointer_size>(glNdcToZMapping.data));
+    else
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_NDC_TO_Z_MAPPING, nonGlNdcToZMapping.data, reinterpret_cast<pointer_size>(nonGlNdcToZMapping.data));
 }
 
 Vector2 RenderPass::GetCurrentFrameJitterOffset() const

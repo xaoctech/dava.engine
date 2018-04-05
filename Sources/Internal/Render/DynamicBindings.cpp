@@ -107,6 +107,8 @@ void InitDynamicParamNames()
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_CAMERA_TARGET_LUMINANCE] = FastName("cameraTargetLuminance");
 
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_CAMERA_PROJ_JITTER_PREV_CURR] = FastName("cameraProjJitterPrevCurr");
+
+        DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_NDC_TO_Z_MAPPING] = FastName("ndcToZMapping");
     }
 };
 

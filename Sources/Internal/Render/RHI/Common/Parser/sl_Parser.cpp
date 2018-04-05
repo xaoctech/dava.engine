@@ -637,7 +637,6 @@ const Intrinsic _intrinsic[] =
   Intrinsic("FramebufferFetch", HLSLBaseType_Float4, HLSLBaseType_Int)
 
   /*Intrinsic("ndcToUvMapping", HLSLBaseType_Float4),
-  Intrinsic("ndcToZMapping", HLSLBaseType_Float2),
   Intrinsic("centerPixelMapping", HLSLBaseType_Float2)*/
 
 };
@@ -647,7 +646,6 @@ const int _numIntrinsics = sizeof(_intrinsic) / sizeof(Intrinsic);
 IntrinsicRegister _intrinsicRegisters[] =
 {
   IntrinsicRegister("ndcToUvMapping", HLSLBaseType_Float4),
-  IntrinsicRegister("ndcToZMapping", HLSLBaseType_Float2),
   IntrinsicRegister("centerPixelMapping", HLSLBaseType_Float2)
 };
 

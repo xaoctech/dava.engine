@@ -111,6 +111,7 @@ void HDRDeferredFetchPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMas
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_OFFSET, &viewportOffset, reinterpret_cast<pointer_size>(&viewportOffset));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_LIGHTING_PARAMETERS, lightsCount.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
     deferredPassConfig.priority = passConfig.priority + PRIORITY_SERVICE_3D - 1;
+    SetNdcToZMapping();
 
     PostEffectRenderer* postEffectRenderer = renderSystem->GetPostEffectRenderer();
 
@@ -229,6 +230,7 @@ void HDRDeferredFetchPass::PreparePassConfig(rhi::HTexture colorTarget)
     if (enableFrameJittering)
     {
         deferredPassConfig.colorBuffer[3].loadAction = rhi::LOADACTION_CLEAR; // Clear depth for velocity.
+        deferredPassConfig.colorBuffer[3].clearColor[0] = 0.0f;
         deferredPassConfig.colorBuffer[4].storeAction = rhi::STOREACTION_STORE; // HDR target.
 
         deferredPassConfig.depthStencilBuffer.storeAction = rhi::STOREACTION_STORE; // We use the same depth stencil for velocity pass.

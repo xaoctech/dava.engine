@@ -112,7 +112,7 @@ void DecorationData::Save(KeyedArchive* archive, SerializationContext* serializa
         archive->SetFloat(Format("decoration.layer%d.orientValue", l), layer.orientValue);
         archive->SetFloat(Format("decoration.layer%d.tintHeight", l), layer.tintHeight);
 
-        archive->SetUInt32(Format("decoration.layer%d.mask", l), uint32(layer.mask));
+        archive->SetUInt32(Format("decoration.layer%d.index", l), uint32(layer.index));
 
         uint32 varCount = uint32(layer.variations.size());
         archive->SetUInt32(Format("decoration.layer%d.variationsCount", l), varCount);
@@ -157,7 +157,19 @@ void DecorationData::Load(KeyedArchive* archive, SerializationContext* serializa
         layer.orientValue = archive->GetFloat(Format("decoration.layer%d.orientValue", l));
         layer.tintHeight = archive->GetFloat(Format("decoration.layer%d.tintHeight", l));
 
-        layer.mask = uint8(archive->GetUInt32(Format("decoration.layer%d.mask", l)));
+        if (archive->IsKeyExists(Format("decoration.layer%d.mask", l))) //backward compatibility
+        {
+            uint8 mask = uint8(archive->GetUInt32(Format("decoration.layer%d.mask", l)));
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                if (mask & (1 << i))
+                    layer.index = i + 1;
+            }
+        }
+        else
+        {
+            layer.index = uint8(archive->GetUInt32(Format("decoration.layer%d.index", l)));
+        }
 
         uint32 varCount = Min(uint32(layer.variations.size()), archive->GetUInt32(Format("decoration.layer%d.variationsCount", l)));
         for (uint32 v = 0; v < varCount; ++v)
@@ -260,18 +272,18 @@ void DecorationData::SetDecorationPath(const FilePath& path)
     paramsChanged = true;
 }
 
-uint8 DecorationData::GetLayerMask(uint32 layer) const
+uint8 DecorationData::GetLayerMaskIndex(uint32 layer) const
 {
     DVASSERT(layer < layersCount);
 
-    return layersParams[layer].mask;
+    return layersParams[layer].index;
 }
 
-void DecorationData::SetLayerMask(uint32 layer, uint8 mask)
+void DecorationData::SetLayerMaskIndex(uint32 layer, uint8 index)
 {
     DVASSERT(layer < layersCount);
 
-    layersParams[layer].mask = mask;
+    layersParams[layer].index = index;
 
     paramsChanged = true;
 }

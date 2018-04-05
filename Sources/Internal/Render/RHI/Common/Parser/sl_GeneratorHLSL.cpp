@@ -158,7 +158,6 @@ bool HLSLGenerator::Generate(HLSLTree* tree_, Mode mode_, Target target_, const 
     writer.WriteLine(0, "#define FramebufferFetch(i) float4(0.0, 0.0, 0.0, 0.0)");
     writer.WriteLine(0, "#define equal(a, b) ((a) == (b))");
     writer.WriteLine(0, "#define ndcToUvMapping float4(0.5, -0.5, 0.5, 0.5)");
-    writer.WriteLine(0, "#define ndcToZMapping float2(1.0, 0.0)");
     if (mode == MODE_DX11)
         writer.WriteLine(0, "#define centerPixelMapping float2(0.0, 0.0)");
     else

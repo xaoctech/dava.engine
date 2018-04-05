@@ -16,6 +16,8 @@
 
 namespace DAVA
 {
+bool txaaDepthDilation = false;
+
 class HelperRenderer
 {
 public:
@@ -713,6 +715,8 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
             {
                 fragmentTextures[textureIndex++] = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY));
                 fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
+                if (txaaDepthDilation)
+                    fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
             }
 
             if (settings.enableColorGrading)

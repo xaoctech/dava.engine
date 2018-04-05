@@ -14,6 +14,7 @@ color_mask = rg;
 [auto][global] property float4x4 invViewProjMatrix;
 [auto][global] property float4x4 invWorldViewMatrix;
 [auto][global] property float4x4 worldInvTransposeMatrix;
+[auto][global] property float2 ndcToZMapping;
 
 [auto][global] property float4 cameraProjJitterPrevCurr;
 
@@ -47,8 +48,6 @@ fragment_out fp_main(fragment_in input)
     float2 thisCoordNDCunjitter = input.inPos.xy + cameraProjJitterPrevCurr.zw;
     float2 vel = (prevCoordNDCunjitter.xy - thisCoordNDCunjitter.xy) * ndcToUvMapping.xy;
 
-    if (depthSample < 0.000001f)
-        vel.xy = float2(0.0f, 0.0f);
     output.color = float4(vel * input.uvScale, 0.0f, 0.0f);
     return output;
 }

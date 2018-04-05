@@ -44,10 +44,7 @@ uniform sampler2D albedoTile1;
 uniform sampler2D albedoTile2;
 uniform sampler2D albedoTile3;
 
-[material][instance] property float4 tile0DecorationChannels = float4(1, 0, 0, 0);
-[material][instance] property float4 tile1DecorationChannels = float4(0, 1, 0, 0);
-[material][instance] property float4 tile2DecorationChannels = float4(0, 0, 1, 0);
-[material][instance] property float4 tile3DecorationChannels = float4(0, 0, 0, 1);
+[material][instance] property float4 tileDecorationIDs = float4(1.0, 2.0, 3.0, 4.0);
 [material][instance] property float4 materialsHeight = float4(0.2, 0.2, 0.2, 0.2);
 [material][instance] property float tilemaskHeight = 0.2;
 
@@ -101,22 +98,20 @@ fragment_out fp_main(fragment_in input)
     maskHeight += materialsHeight * (float4(baseColorSample0.w, baseColorSample1.w, baseColorSample2.w, baseColorSample3.w) - 0.5);
 
     float maxHeight = max(max(maskHeight.x, maskHeight.y), max(maskHeight.z, maskHeight.w));
+    float4 indexMask = step(maxHeight, maskHeight);
     
 #if DECORATION
     {
-        float4 mixMask = normalize(step(maxHeight, maskHeight)) * tilemaskSample;
-
-        float4 decorationMask =
-        tile0DecorationChannels * mixMask.x +
-        tile1DecorationChannels * mixMask.y +
-        tile2DecorationChannels * mixMask.z +
-        tile3DecorationChannels * mixMask.w;
+        float4 mixMask = normalize(indexMask) * tilemaskSample;
+        float decorationIndex = dot(indexMask, tileDecorationIDs / 256.0);
+        float4 decorationMask = float4(decorationIndex, dot(mixMask, indexMask), maxHeight, 0.0);
         
     #if USE_PREVIOUS_LANDSCAPE_LAYER
+
         float4 prevMask = tex2D(dynamicTextureSrc0, input.pageTexCoord);
-        float prevHeight = FP_A8(tex2D(dynamicTextureSrc1, input.pageTexCoord));
-        decorationMask = lerp(prevMask, decorationMask, step(prevHeight, maxHeight));
-        maxHeight = max(maxHeight, prevHeight);
+        decorationMask.xy = lerp(prevMask.xy, decorationMask.xy, step(prevMask.z, decorationMask.z));
+        decorationMask.z = max(prevMask.z, decorationMask.z);
+
     #endif // USE_PREVIOUS_LANDSCAPE_LAYER
 
         output.decorationmask = decorationMask;
@@ -127,7 +122,7 @@ fragment_out fp_main(fragment_in input)
         float3 resultBaseColor = 0;
         
     #if BLEND_LANDSCAPE_HEIGHT == 0
-        float4 mixMask = normalize(step(maxHeight, maskHeight));
+        float4 mixMask = normalize(indexMask);
         float3 baseColorMixed = baseColorSample0.xyz * mixMask.x + baseColorSample1.xyz * mixMask.y + baseColorSample2.xyz * mixMask.z + baseColorSample3.xyz * mixMask.w;
         resultBaseColor = SoftLightBlend(baseColorMixed, colorSample.xyz);
     #else // BLEND_LANDSCAPE_HEIGHT != 0

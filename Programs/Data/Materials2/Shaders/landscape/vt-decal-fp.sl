@@ -21,7 +21,7 @@ color_mask1 = rgba;
 #if DECORATION
 blending
 {
-    src = zero dst = inv_src_alpha
+    src = src_alpha dst = inv_src_alpha
 }
 #elif BLEND_LAYER
 blending
@@ -63,6 +63,7 @@ uniform sampler2D dynamicTextureSrc1;
 #endif
 
 [material][instance] property float2 decalHeightRange = float2(-0.2, 0.2);
+[material][instance] property float decalDecoIndex = 0.0;
 [auto][a] property float tessellationHeight;
 
 fragment_out fp_main(fragment_in input)
@@ -74,7 +75,7 @@ fragment_out fp_main(fragment_in input)
 #if DECORATION
     float4 decalNormalSample = tex2D(normalDecal, uvDecal);
     float alphaValue = decalNormalSample.w * input.value;
-    output.decorationmask = float4(0, 0, 0, alphaValue);
+    output.decorationmask = float4(decalDecoIndex / 256.0, alphaValue, 0.0, step(0.5, alphaValue));
 #else
     float4 decalAlbedoSample = tex2D(albedoDecal, uvDecal);
     float4 decalNormalSample = tex2D(normalDecal, uvDecal);   

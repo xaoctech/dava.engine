@@ -16,14 +16,6 @@ class NMaterial;
 class DecorationData
 {
 public:
-    enum eMask : uint8
-    {
-        LAYER_MASK_CHANNEL_R = 1 << 0,
-        LAYER_MASK_CHANNEL_G = 1 << 1,
-        LAYER_MASK_CHANNEL_B = 1 << 2,
-        LAYER_MASK_CHANNEL_A = 1 << 3,
-    };
-
     void Save(KeyedArchive* archive, SerializationContext* serializationContext);
     void Load(KeyedArchive* archive, SerializationContext* serializationContext);
 
@@ -45,8 +37,8 @@ public:
     const FilePath& GetDecorationPath() const;
     void SetDecorationPath(const FilePath& path);
 
-    uint8 GetLayerMask(uint32 layer) const;
-    void SetLayerMask(uint32 layer, uint8 mask);
+    uint8 GetLayerMaskIndex(uint32 layer) const;
+    void SetLayerMaskIndex(uint32 layer, uint8 index);
 
     bool GetLayerCullface(uint32 layer) const;
     void SetLayerCullface(uint32 layer, bool cullface);
@@ -108,7 +100,7 @@ protected:
         Vector<VariationParams> variations;
         float32 orientValue = 0.f;
         float32 tintHeight = 0.f;
-        uint8 mask = 0;
+        uint8 index = 0;
         bool cullface = false;
         bool orient = false;
         bool collisionDetection = false;

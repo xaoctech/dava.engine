@@ -140,8 +140,8 @@ SceneEditor2::SceneEditor2()
     AddSystem(new SceneGridSystem(this), renderUpdateSystem);
     AddSystem(new SceneCameraSystem(this), transformSystem);
     AddSystem(new RotationControllerSystem(this));
-    AddSystem(new SnapToLandscapeControllerSystem(this));
     AddSystem(new WASDControllerSystem(this));
+    AddSystem(new SnapToLandscapeControllerSystem(this));
     AddSystem(new SceneCollisionSystem(this), renderUpdateSystem);
     AddSystem(new HoodSystem(this), renderUpdateSystem);
     AddSystem(new EntityModificationSystem(this), renderUpdateSystem);

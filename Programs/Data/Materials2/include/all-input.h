@@ -4,6 +4,7 @@
 [auto][global] property float2 cameraDynamicRange;
 [auto][global] property float2 flexibility;
 [auto][global] property float2 globalTime; // x - current time. y - previous time.
+[auto][global] property float2 ndcToZMapping;
 [auto][global] property float2 pointLightFaceSize;
 [auto][global] property float2 renderTargetSize;
 [auto][global] property float2 viewportOffset;

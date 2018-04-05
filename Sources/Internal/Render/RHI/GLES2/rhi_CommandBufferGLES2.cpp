@@ -671,6 +671,8 @@ void CommandBufferGLES2_t::Execute()
 
                     if (passCfg.colorBuffer[0].loadAction == LOADACTION_CLEAR)
                     {
+                        // GFX_COMPLETE Now it doesn't matter what color you choose to clear non 0 attachments, they always will be cleared by 0 attachment's color.
+
                         GL_CALL(glClearColor(passCfg.colorBuffer[0].clearColor[0], passCfg.colorBuffer[0].clearColor[1], passCfg.colorBuffer[0].clearColor[2], passCfg.colorBuffer[0].clearColor[3]));
                         flags |= GL_COLOR_BUFFER_BIT;
                     }

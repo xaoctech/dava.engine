@@ -67,6 +67,8 @@ protected:
 
     void ValidateMultisampledTextures(const rhi::RenderPassConfig& forConfig);
 
+    void SetNdcToZMapping();
+
     Vector2 GetCurrentFrameJitterOffset() const;
 
     Vector<RenderLayer*> renderLayers;

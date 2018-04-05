@@ -54,9 +54,7 @@ DecorationEditor::DecorationEditor(DAVA::ContextAccessor* contextAccessor_, DAVA
     connect(collisionCheckBox, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
     connect(enabledCheckBox, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
 
-    for (QCheckBox* cb : maskCheckBox)
-        connect(cb, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
-
+    connect(layerIndexEdit, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &DecorationEditor::OnSpinBoxChanged);
     connect(orientEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
     connect(tintHeightEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
     connect(scaleMinEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
@@ -164,6 +162,14 @@ void DecorationEditor::OnSpinBoxChanged(int value)
         UpdateVariationSettings();
         UpdateDecorationSettings();
     }
+    else if (obj == layerIndexEdit)
+    {
+        DAVA::uint32 layerIndex = selectedLayer.last().row();
+        decorationData->SetLayerMaskIndex(layerIndex, DAVA::uint8(value));
+
+        UpdateLayerSettings();
+        MarkSceneChanged();
+    }
     else if (obj == collisionGroupEdit)
     {
         DAVA::uint32 layerIndex = selectedLayer.last().row();
@@ -213,22 +219,6 @@ void DecorationEditor::OnCheckBoxChanged(int state)
     {
         for (QModelIndex& index : selectedVariations)
             decorationData->SetVariationEnabled(layerIndex, DAVA::uint32(index.row()), value);
-    }
-    else
-    {
-        DAVA::uint8 channelMask = 0;
-        if (obj == maskCheckBox[0])
-            channelMask = DAVA::DecorationData::LAYER_MASK_CHANNEL_R;
-        if (obj == maskCheckBox[1])
-            channelMask = DAVA::DecorationData::LAYER_MASK_CHANNEL_G;
-        if (obj == maskCheckBox[2])
-            channelMask = DAVA::DecorationData::LAYER_MASK_CHANNEL_B;
-        if (obj == maskCheckBox[3])
-            channelMask = DAVA::DecorationData::LAYER_MASK_CHANNEL_A;
-
-        DAVA::uint8 mask = decorationData->GetLayerMask(layerIndex);
-        mask = value ? (mask | channelMask) : (mask & (~channelMask));
-        decorationData->SetLayerMask(layerIndex, mask);
     }
 
     UpdateLayerSettings();
@@ -362,12 +352,7 @@ void DecorationEditor::UpdateLayerSettings()
 
         tintCheckBox->setChecked(decorationData->GetLayerTint(layerIndex));
         tintHeightEdit->setValue(decorationData->GetLayerTintHeight(layerIndex));
-
-        DAVA::uint8 layerMask = decorationData->GetLayerMask(layerIndex);
-        maskCheckBox[0]->setChecked(layerMask & DAVA::DecorationData::LAYER_MASK_CHANNEL_R);
-        maskCheckBox[1]->setChecked(layerMask & DAVA::DecorationData::LAYER_MASK_CHANNEL_G);
-        maskCheckBox[2]->setChecked(layerMask & DAVA::DecorationData::LAYER_MASK_CHANNEL_B);
-        maskCheckBox[3]->setChecked(layerMask & DAVA::DecorationData::LAYER_MASK_CHANNEL_A);
+        layerIndexEdit->setValue(decorationData->GetLayerMaskIndex(layerIndex));
 
         DAVA::uint32 variationCount = decorationData->GetVariationCount(layerIndex);
         variationListModel->setRowCount(variationCount);
@@ -524,6 +509,18 @@ void DecorationEditor::SetupUI()
     {
         QVBoxLayout* layerSettingsLayout = new QVBoxLayout(layerSettingsWidget);
 
+        QHBoxLayout* maskSettingLayout = new QHBoxLayout();
+        {
+            maskSettingLayout->addWidget(new QLabel(QStringLiteral("Layer Index:"), layerSettingsWidget));
+            maskSettingLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+
+            layerIndexEdit = new QSpinBox(layerSettingsWidget);
+            layerIndexEdit->setSingleStep(1);
+            layerIndexEdit->setRange(0, 255);
+            maskSettingLayout->addWidget(layerIndexEdit);
+        }
+        layerSettingsLayout->addLayout(maskSettingLayout);
+
         cullfaceCheckBox = new QCheckBox(QStringLiteral("Cull backface"), layerSettingsWidget);
         layerSettingsLayout->addWidget(cullfaceCheckBox);
 
@@ -557,18 +554,6 @@ void DecorationEditor::SetupUI()
             tintLayout->addWidget(tintHeightEdit);
         }
         layerSettingsLayout->addLayout(tintLayout);
-
-        QHBoxLayout* maskSettingLayout = new QHBoxLayout();
-        {
-            maskCheckBox[0] = new QCheckBox(QStringLiteral("R-channel"), layerSettingsWidget);
-            maskCheckBox[1] = new QCheckBox(QStringLiteral("G-channel"), layerSettingsWidget);
-            maskCheckBox[2] = new QCheckBox(QStringLiteral("B-channel"), layerSettingsWidget);
-            maskCheckBox[3] = new QCheckBox(QStringLiteral("A-channel"), layerSettingsWidget);
-
-            for (QCheckBox* cb : maskCheckBox)
-                maskSettingLayout->addWidget(cb);
-        }
-        layerSettingsLayout->addLayout(maskSettingLayout);
 
         layerSettingsLayout->addWidget(new QLabel(QStringLiteral("Variations:"), layerSettingsWidget));
 
